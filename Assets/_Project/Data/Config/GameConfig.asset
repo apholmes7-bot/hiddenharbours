@@ -109,6 +109,24 @@ MonoBehaviour:
     FocusCenterY01: 0.5
   FishFinder:
     DefaultRangeMetres: 20
+    WaterfallHz: 4
+    DefaultFishId: 1
+    CardScale: 0.5
+    FocusScale: 1
+    MarginX: 24
+    MarginY: 16
+    FocusCenterX01: 0.5
+    FocusCenterY01: 0.5
+    MarkSizeMin: 0.7
+    MarkSizeMax: 1.6
+    MarkSizeJitter01: 0.25
+    MarkXMargin01: 0.12
+    MarkDepthJitterMetres: 0.6
+    MaxMarksPerSchool: 8
+    PlaceholderSens01: 0.75
+    PlaceholderLink: 1
+    PlaceholderBatt01: 0.8
+    PlaceholderVolts: 4
   HelmWheel:
     Turns: 1.5
     Friction: 2.4

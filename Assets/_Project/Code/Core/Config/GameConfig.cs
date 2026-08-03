@@ -222,10 +222,10 @@ namespace HiddenHarbours.Core
         public DepthSounderSettings DepthSounder = DepthSounderSettings.Default;
 
         [Header("Fish finder (the sonar upgrade — ADR 0025 S3)")]
-        [Tooltip("The colour sonar that replaces the plain depth sounder in the same cutout. Today: the " +
-                 "vertical RANGE (metres) a freshly fitted unit starts at — the scale the bottom contour " +
-                 "and every fish mark are drawn against. It must stay above zero (the contour is drawn " +
-                 "at depth ÷ range). The shallow alarm is NOT here: the finder keeps the depth sounder's " +
+        [Tooltip("The colour sonar that replaces the plain depth sounder in the same cutout: the vertical " +
+                 "RANGE (metres) a freshly fitted unit starts at, how often the scan repaints, where its " +
+                 "card sits on screen, how fish marks are sized and scattered, and the four PLACEHOLDER " +
+                 "status-strip values. The shallow alarm is NOT here: the finder keeps the depth sounder's " +
                  "alarm and reads its settings, so there is only ever one alarm rule.")]
         public FishFinderSettings FishFinder = FishFinderSettings.Default;
 
@@ -676,7 +676,21 @@ namespace HiddenHarbours.Core
     /// safety-critical number rather than a taste one: at zero the contour is Inf/NaN, not small. Naming it
     /// here, once, is what lets the save migration heal an old row and the UI draw a fresh one from the SAME
     /// value (rule 6 — the number is data, never a literal in two places). The rest of the finder's tuning
-    /// (card placement, scan speed, mark sizing) extends this block in the UI slice.</para>
+    /// — card placement, scan cadence, mark sizing and the placeholder strip — joined it in the UI slice
+    /// (S3b) and is documented field by field below.</para>
+    ///
+    /// <para><b><see cref="WaterfallHz"/> is the perf knob, not a taste one.</b> The rig's scan phase
+    /// free-runs, and its <c>sonarView</c> is O(width) in <c>fillRect</c> spans plus a whole-texture
+    /// upload; repainting it per frame is a rule-7 break on its own. The host quantizes the phase to this
+    /// rate and folds the bucket into its change key, so the instrument's cost is data the owner can dial
+    /// rather than a frame counter.</para>
+    ///
+    /// <para><b>Four fields are ⚠ PLACEHOLDERS</b> (<see cref="PlaceholderSens01"/>,
+    /// <see cref="PlaceholderLink"/>, <see cref="PlaceholderBatt01"/>, <see cref="PlaceholderVolts"/>) —
+    /// the rig's status strip shows a sensitivity, a transducer link, a battery and a supply voltage, and
+    /// the simulation models none of those. Following the shipped precedent
+    /// (<see cref="DepthSounderSettings.PlaceholderWaterTempC"/>) they are constants with a tooltip that
+    /// says what they are and why, rather than an invented electrical model (rule 8).</para>
     ///
     /// <para>The alarm, its set-point, units and night backlight are deliberately NOT here: the finder
     /// keeps the depth sounder's shallow alarm unchanged, reading the same
@@ -694,12 +708,119 @@ namespace HiddenHarbours.Core
                  "is not positive back to this value.")]
         [Min(1f)] public float DefaultRangeMetres;
 
-        /// <summary>The rig's own default scale — 20 m, the second of its four RANGE steps
-        /// (<c>fishRig.js:131</c> <c>RANGE_STEPS = [10,20,40,60]</c>, <c>:317</c>
-        /// <c>range == null ? 20</c>).</summary>
+        [Tooltip("How many times a second the sonar redraws its scan — the finder's PING RATE, and the " +
+                 "single number that decides what it costs (rule 7). The rig's scan phase free-runs, so a " +
+                 "naive port would raster thousands of spans AND upload a whole texture EVERY FRAME; the " +
+                 "host quantizes the phase to this rate instead and change-detects on the bucket. " +
+                 "MEASURED: one repaint is ~4.8 ms (480x660, raster + upload), so each Hz here costs " +
+                 "~4.8 ms per second of a 16.7 ms frame budget. Shipped at 4 = ~19 ms/s; 8 scrolls more " +
+                 "smoothly for ~38 ms/s. ⚠ Keep it a MULTIPLE of 2x DepthSounder.AlarmBlinkHz, so a " +
+                 "sounding alarm's flashes land on scan steps and cost no extra repaints.")]
+        [Min(0.5f)] public float WaterfallHz;
+
+        [Tooltip("Does a freshly fitted finder tag each fish mark with its depth? The player toggles it by " +
+                 "tapping the sonar glass; this is only where it starts. Not persisted — unlike the alarm " +
+                 "and the range, it is a look-at-it-now toggle, not a setting a fisherman expects to find " +
+                 "tomorrow.")]
+        public bool DefaultFishId;
+
+        [Tooltip("Scale of the small dash card — applied to the RENDERED RIG RESOLUTION, not to a texture " +
+                 "blit. The finder is PORTRAIT (480x660) and point-filtered pixel art does not survive a " +
+                 "fractional downscale, so the card draws a smaller instrument (which is also cheaper) " +
+                 "rather than shrinking a big one. 1 = the rig's native 480x660.")]
+        [Range(0.2f, 2f)] public float CardScale;
+
+        [Tooltip("Scale of the FOCUSED state (click the finder to enlarge; Esc/click-away returns). Same " +
+                 "rendered-resolution meaning as CardScale. Bigger = the three pushers are easier to hit; " +
+                 "the rig's hit geometry scales with it.")]
+        [Range(0.2f, 2f)] public float FocusScale;
+
+        [Tooltip("Margin (px) from the screen's RIGHT edge to the small card. The finder is a BROW " +
+                 "instrument in the same cutout as the sounder, so it parks in the same corner.")]
+        [Min(0f)] public float MarginX;
+
+        [Tooltip("Margin (px) from the screen's TOP edge to the small card.")]
+        [Min(0f)] public float MarginY;
+
+        [Tooltip("Where the FOCUSED card centres on screen, as a 0..1 fraction of screen width.")]
+        [Range(0f, 1f)] public float FocusCenterX01;
+
+        [Tooltip("Where the FOCUSED card centres on screen, as a 0..1 fraction of screen height.")]
+        [Range(0f, 1f)] public float FocusCenterY01;
+
+        [Tooltip("Fish-mark size (the rig's own 'size' multiplier, ~0.5-2.5) for a school you are only " +
+                 "clipping the EDGE of — signal strength 0. Small marks read as a weak return.")]
+        [Range(0.2f, 3f)] public float MarkSizeMin;
+
+        [Tooltip("Fish-mark size for a school you are sitting on the CENTRE of — signal strength 1.")]
+        [Range(0.2f, 3f)] public float MarkSizeMax;
+
+        [Tooltip("How much each individual mark's size wanders from the school's, 0..1. Pure look: a " +
+                 "shoal of identical fish reads as a graphic, not a return. Deterministic (the rig's own " +
+                 "hash noise), never random — a repaint must not reshuffle the picture.")]
+        [Range(0f, 1f)] public float MarkSizeJitter01;
+
+        [Tooltip("How far in from the left/right edges of the sonar box marks are scattered, as a 0..1 " +
+                 "fraction of its width. Keeps a mark from being half-clipped by the ruler or the bezel.")]
+        [Range(0f, 0.45f)] public float MarkXMargin01;
+
+        [Tooltip("How far above/below the school's stated depth individual marks may sit (metres). A " +
+                 "school is an AREA at a DEPTH, not a line of fish at one exact metre. Purely cosmetic: " +
+                 "the depth that fishes is the school's own.")]
+        [Min(0f)] public float MarkDepthJitterMetres;
+
+        [Tooltip("Hard cap on how many fish icons ONE school draws, however dense it is. The glass is " +
+                 "small and the raster is per-mark (rule 7) — beyond a handful you are drawing soup.")]
+        [Range(1, 24)] public int MaxMarksPerSchool;
+
+        [Tooltip("⚠ PLACEHOLDER. Signal-strength bars (0..1) on the status strip. There is NO transducer " +
+                 "or sensitivity model in the simulation and this slice does not build one (rule 8 — stay " +
+                 "in phase); the rig has the bars, so they show this constant. Flagged in the PR that " +
+                 "shipped it.")]
+        [Range(0f, 1f)] public float PlaceholderSens01;
+
+        [Tooltip("⚠ PLACEHOLDER. Transducer-link indicator on the status strip. No transducer model " +
+                 "exists; a fitted finder is simply linked. Flagged in the PR that shipped it.")]
+        public bool PlaceholderLink;
+
+        [Tooltip("⚠ PLACEHOLDER. Battery fill (0..1) on the status strip. There is NO electrical model on " +
+                 "any boat and this slice does not build one (rule 8). Below 0.2 the rig draws the cell " +
+                 "red, so leave it above that unless you want a permanent low-battery warning. Flagged in " +
+                 "the PR that shipped it.")]
+        [Range(0f, 1f)] public float PlaceholderBatt01;
+
+        [Tooltip("⚠ PLACEHOLDER. Supply volts printed on the status strip. No electrical model exists. " +
+                 "Flagged in the PR that shipped it.")]
+        [Min(0f)] public float PlaceholderVolts;
+
+        /// <summary>The rig's own defaults where it has them — 20 m scale (the second of its four RANGE
+        /// steps, <c>fishRig.js:131</c>/<c>:317</c>), fish-ID on (<c>:319</c>), and the four status-strip
+        /// placeholders exactly as <c>fishRig.js:320-321</c> states them (sens 0.75, link on, batt 0.8,
+        /// 4.0 V) — so the shipped glass looks like the art director's preview until real models exist.
+        /// A 4 Hz scan (measured at ~4.8 ms a repaint, so ~19 ms of every second — and a multiple of
+        /// 2× the 2 Hz alarm blink, so the flash costs nothing extra), a half-size card in the top-right,
+        /// and a native-size focused state.</summary>
         public static FishFinderSettings Default => new FishFinderSettings
         {
             DefaultRangeMetres = 20f,
+            WaterfallHz = 4f,
+            DefaultFishId = true,
+            CardScale = 0.5f,
+            FocusScale = 1f,
+            MarginX = 24f,
+            MarginY = 16f,
+            FocusCenterX01 = 0.5f,
+            FocusCenterY01 = 0.5f,
+            MarkSizeMin = 0.7f,
+            MarkSizeMax = 1.6f,
+            MarkSizeJitter01 = 0.25f,
+            MarkXMargin01 = 0.12f,
+            MarkDepthJitterMetres = 0.6f,
+            MaxMarksPerSchool = 8,
+            PlaceholderSens01 = 0.75f,
+            PlaceholderLink = true,
+            PlaceholderBatt01 = 0.8f,
+            PlaceholderVolts = 4f,
         };
     }
 
