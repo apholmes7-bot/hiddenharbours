@@ -128,19 +128,6 @@ namespace HiddenHarbours.Boats
         }
 
         /// <inheritdoc/>
-        public HelmFit Fit
-        {
-            get
-            {
-                if (!HasHelm) return HelmFit.None;
-                // The hull's authored default fit. The owned-per-hull upgrade set is S2's save
-                // schema — when it lands, its ids feed this same call (BoatEquipment.EffectiveFit
-                // is already the one resolver, tested and waiting).
-                return BoatEquipment.EffectiveFit(Boat().Hull, null);
-            }
-        }
-
-        /// <inheritdoc/>
         public float Drive { get { var b = Boat(); return b != null ? b.Throttle : 0f; } }
 
         /// <inheritdoc/>
