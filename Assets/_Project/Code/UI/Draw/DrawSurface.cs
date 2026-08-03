@@ -11,6 +11,12 @@ namespace HiddenHarbours.UI
     /// (<c>ctx.imageSmoothingEnabled = false</c>); no 'lighter', no gradients, no paths until a rig
     /// actually needs them (the sounder/radar slices grow this layer then).
     ///
+    /// <para><b>Grown by S2 (the depth sounder):</b> a radial wash (<see cref="BlendRadial"/> — the
+    /// night backlight bloom) and a two-stop colour interpolation (<see cref="Lerp"/>) that callers
+    /// apply per span, so a linear gradient follows a rounded rect's row insets without a path+clip
+    /// pipeline. Still no anti-aliasing anywhere: the one deliberate deviation from the source (canvas
+    /// anti-aliases its rounded LCD clip; we do not) is documented at the call site.</para>
+    ///
     /// <para><b>Perf discipline (rule 7, the ADR's own consequence note):</b> one reused
     /// <see cref="Color32"/> buffer per surface, zero per-frame allocation once constructed; callers
     /// repaint only on change-detection, never unconditionally. Coordinates are CANVAS convention —
@@ -86,6 +92,53 @@ namespace HiddenHarbours.UI
                 if (a == 0) continue;
                 Pixels[i] = a == 255 ? new Color32(s.r, s.g, s.b, 255) : Over(Pixels[i], s, a);
             }
+        }
+
+        /// <summary>
+        /// A radial-gradient WASH over a rect — the canvas
+        /// <c>createRadialGradient(cx,cy,r0, cx,cy,r1)</c> with an inner colour stop fading to fully
+        /// transparent at <paramref name="r1"/> (depthRig.js:215-218, the night backlight bloom). Alpha
+        /// is <paramref name="innerAlpha01"/> inside <paramref name="r0"/> and falls linearly to 0 at
+        /// <paramref name="r1"/>; outside <paramref name="r1"/> nothing is drawn (canvas extends the last
+        /// stop, which is transparent).
+        /// </summary>
+        public void BlendRadial(int x, int y, int w, int h, double cx, double cy, double r0, double r1,
+                                Color32 color, float innerAlpha01)
+        {
+            if (innerAlpha01 <= 0f || r1 <= r0) return;
+            int x0 = x < 0 ? 0 : x, y0 = y < 0 ? 0 : y;
+            int x1 = x + w, y1 = y + h;
+            if (x1 > Width) x1 = Width;
+            if (y1 > Height) y1 = Height;
+            double span = r1 - r0;
+            for (int yy = y0; yy < y1; yy++)
+            {
+                int row = yy * Width;
+                double dy = yy + 0.5 - cy;
+                for (int xx = x0; xx < x1; xx++)
+                {
+                    double dx = xx + 0.5 - cx;
+                    double d = System.Math.Sqrt(dx * dx + dy * dy);
+                    if (d >= r1) continue;
+                    double t = d <= r0 ? 0.0 : (d - r0) / span;
+                    int a = (int)(innerAlpha01 * (1.0 - t) * 255.0 + 0.5);
+                    if (a <= 0) continue;
+                    Pixels[row + xx] = Over(Pixels[row + xx], color, a);
+                }
+            }
+        }
+
+        /// <summary>Linear colour blend between two opaque stops — the canvas linear gradient's
+        /// interpolation, done per span by the caller so a gradient can follow a rounded-rect's row
+        /// insets without a path rasteriser (depthRig.js:232-240).</summary>
+        public static Color32 Lerp(Color32 a, Color32 b, double t)
+        {
+            if (t <= 0.0) return a;
+            if (t >= 1.0) return b;
+            return new Color32((byte)(a.r + (b.r - a.r) * t + 0.5),
+                               (byte)(a.g + (b.g - a.g) * t + 0.5),
+                               (byte)(a.b + (b.b - a.b) * t + 0.5),
+                               (byte)(a.a + (b.a - a.a) * t + 0.5));
         }
 
         /// <summary>Source-over: <c>src</c> (treated opaque) at coverage <paramref name="a"/> (0..255)

@@ -16,7 +16,7 @@ MonoBehaviour:
   Rig: 1
   Lever: 0
   Wheel: 0
-  DefaultSounder: 1
+  DefaultSounder: 0
   DefaultCompass: 1
   DefaultRadar: 0
   DefaultGps: 0

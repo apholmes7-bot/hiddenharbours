@@ -13,7 +13,7 @@ namespace HiddenHarbours.Core
     public static class SaveMigration
     {
         /// <summary>The schema version this build writes. Bump when you add a field + a migration step.</summary>
-        public const int CurrentVersion = 7;
+        public const int CurrentVersion = 8;
 
         /// <summary>
         /// The region id Port Greywick was saved under before it was renamed Nine Mile Creek, and the id
@@ -144,6 +144,23 @@ namespace HiddenHarbours.Core
                 data.SchemaVersion = 7;
             }
 
+            // ---- v7 → v8: helm instruments become PURCHASABLE, PER HULL (ADR 0025 S2 / ADR 0030 — the
+            // depth sounder is the first). Two new sparse lists: which instruments the player bought for
+            // which hull, and that hull's sounder preferences (set-point / armed / units / night). A pre-v8
+            // save simply owned no bought instruments and had touched no glass: it gets two empty lists, and
+            // EVERY hull therefore resolves to its console's AUTHORED default fit — which is exactly the
+            // pre-v8 behaviour, so nothing a player already had changes. Nothing is reinterpreted.
+            //
+            // ⚠ Deliberately NOT here: the depth itself. A sounding is recomputed from the one height map
+            // (water level − seabed elevation) every tick; a saved depth is the precise bug rule 5 exists to
+            // prevent, and it would go stale the moment the tide moved.
+            if (data.SchemaVersion < 8)
+            {
+                data.HullInstruments ??= new System.Collections.Generic.List<HullInstrument>();
+                data.HullSounderPrefs ??= new System.Collections.Generic.List<SounderPrefsDto>();
+                data.SchemaVersion = 8;
+            }
+
             // ---- future steps go here, each guarded by `if (data.SchemaVersion < N)` and bumping to N.
 
             // Defensive null-repair (a hand-edited or partial JSON can omit reference-typed fields).
@@ -159,6 +176,8 @@ namespace HiddenHarbours.Core
             data.BucketCatch ??= new System.Collections.Generic.List<HeldCatchDto>();
             data.FreezerCatch ??= new System.Collections.Generic.List<HeldCatchDto>();
             data.SupplyStock ??= new System.Collections.Generic.List<SupplyStock>();
+            data.HullInstruments ??= new System.Collections.Generic.List<HullInstrument>();
+            data.HullSounderPrefs ??= new System.Collections.Generic.List<SounderPrefsDto>();
             data.ActiveHullId ??= "";
 
             // Clamp to the version we actually understand (never claim to be newer than this build).

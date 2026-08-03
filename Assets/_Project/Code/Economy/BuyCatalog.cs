@@ -106,6 +106,20 @@ namespace HiddenHarbours.Economy
                     BuyLogic.Supply(s.Price, money)));
             }
 
+            foreach (var ins in stall.GetComponents<InstrumentShop>())
+            {
+                InstrumentOffer o = ins.Offer;
+                if (o == null) continue;
+                // An instrument is fitted to ONE hull, so ownership is asked of the boat the player is
+                // aboard — and the Note names it, because "you already own this" is only meaningful
+                // once you know which boat it is on.
+                string hull = InstrumentShop.TargetHull(save);
+                bool hasHull = !string.IsNullOrEmpty(hull);
+                bool owned = hasHull && InstrumentLocker.Owns(save, hull, o.Id);
+                into.Add(new BuyRow(ins, o.Id, o.DisplayName, o.Flavor, InstrumentNoteFor(hull, owned),
+                    BuyLogic.Instrument(o.Price, money, owned, hasHull)));
+            }
+
             foreach (var lv in stall.GetComponents<LicenseVendor>())
             {
                 LicenseDef l = lv.License;
@@ -151,6 +165,15 @@ namespace HiddenHarbours.Economy
             return have <= 0
                 ? ""
                 : "You have " + have.ToString(System.Globalization.CultureInfo.InvariantCulture) + " in the box.";
+        }
+
+        // Fitment note for an instrument row: WHICH BOAT this purchase would bolt it into, read through the
+        // same save the vendor writes. Without a boat the row says so rather than silently refusing at
+        // Confirm. (Loc-seam literals, HudStrings convention.)
+        private static string InstrumentNoteFor(string hullId, bool owned)
+        {
+            if (string.IsNullOrEmpty(hullId)) return "Fitted to a boat - you aren't aboard one.";
+            return owned ? "Already fitted to " + hullId + "." : "Fits to " + hullId + ".";
         }
 
         // Stock note for a supply row (ice), read through SupplyLocker — the same locker the purchase writes.

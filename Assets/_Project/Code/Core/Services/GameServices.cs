@@ -45,6 +45,17 @@ namespace HiddenHarbours.Core
         public static IHelmControl HelmControl { get; set; }
 
         /// <summary>
+        /// The active hull's instrument GLASS seam (ADR 0025 S2): what is fitted in this boat's helm, what
+        /// those instruments read from the live sim, and the per-hull display preferences. Sibling of
+        /// <see cref="HelmControl"/> — that one MOVES the boat, this one REPORTS the dash — and same
+        /// lifetime + discipline: OPTIONAL, NOT part of <see cref="Ready"/>, self-registered by the
+        /// Boats-lane producer (<c>HelmControlRelay</c>), null on foot / in EditMode. Consumers must
+        /// null-check (ADR 0007).
+        /// FLAG lead-architect: new Core contract (the ADR 0025 S2 helm-instrument seam).
+        /// </summary>
+        public static IHelmInstruments HelmInstruments { get; set; }
+
+        /// <summary>
         /// The versioned save system (VS-08). Self-installing and persistent (SaveService bootstraps
         /// itself before the first scene), so unlike the others it is not wired by GameRoot. The world
         /// reads/writes persisted flags through it (the onboarding-flags consolidation off PlayerPrefs).
@@ -222,6 +233,15 @@ namespace HiddenHarbours.Core
         public static HelmOverlaySettings HelmOverlay =>
             Config != null ? Config.HelmOverlay : HelmOverlaySettings.Default;
 
+        /// <summary>The depth sounder's tunables (ADR 0025 S2 — sounding cadence, the shallow-alarm
+        /// defaults and travel, the flash rate, the card's placement, and the placeholder water
+        /// temperature). Same contract as <see cref="WaveField"/>, including the <c>Config != null</c>
+        /// discipline (never <c>?.</c>/<c>??</c> on a <c>UnityEngine.Object</c>). Read by BOTH the Boats
+        /// relay (which takes the sounding) and the UI card (which draws it), so the instrument's
+        /// behaviour and its picture can never be tuned apart.</summary>
+        public static DepthSounderSettings DepthSounder =>
+            Config != null ? Config.DepthSounder : DepthSounderSettings.Default;
+
         /// <summary>The grabbable steering wheel's spin-feel tunables (ADR 0025 S2a — lock-to-lock
         /// turns, coast friction, self-centre, rim-grab pad). Same contract as
         /// <see cref="WaveField"/>, including the <c>Config != null</c> discipline.</summary>
@@ -266,6 +286,7 @@ namespace HiddenHarbours.Core
             Licenses = null;
             ActiveBoat = null;
             HelmControl = null;
+            HelmInstruments = null;
             Save = null;
             TidalTerrain = null;
             CurrentRegionId = null;

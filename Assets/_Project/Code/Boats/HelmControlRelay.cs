@@ -26,14 +26,26 @@ namespace HiddenHarbours.Boats
     /// <para><b>Dev F-cycle (owner addition 2026-08-03).</b> <see cref="Style"/> is resolved from the
     /// LIVE <see cref="BoatController.Hull"/> every read, so the dev boat picker's F-swap shows each
     /// hull's control instantly. <see cref="DevIgnoreEquipmentGating"/> is the clearly-marked dev-only
-    /// override for the S2+ purchase/equipment gating (none exists yet for the piloting controls —
-    /// a motor ships with its tiller, a console with its lever); it is FALSE unless this is the editor
-    /// or a development build, so a shipped build gets the real gating by default when S2 lands it.</para>
+    /// override for the S2+ purchase/equipment gating; it is FALSE unless this is the editor or a
+    /// development build, so a shipped build gets the real gating.</para>
+    ///
+    /// <para><b>S2 (ADR 0025) also makes this the instrument GLASS producer</b>
+    /// (<see cref="IHelmInstruments"/>): the piloted hull's effective fit, the live throttled sounding,
+    /// and the per-hull sounder preferences. The piloting controls still ship with the hull (a motor
+    /// comes with its tiller), so the dev override touches only the INSTRUMENTS — which is the job it was
+    /// declared for in S1 and has been a no-op until now.</para>
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class HelmControlRelay : MonoBehaviour, IHelmControl
+    public sealed class HelmControlRelay : MonoBehaviour, IHelmControl, IHelmInstruments
     {
         private BoatController _boat;
+
+        // Instrument-seam scratch (ADR 0025 S2). The owned-id list is reused, never re-allocated, so
+        // resolving the fit costs nothing per frame (rule 7).
+        private readonly System.Collections.Generic.List<string> _ownedScratch = new();
+        private float _depthMetres;
+        private bool _depthValid;
+        private float _nextDepthReadTime = float.NegativeInfinity;
 
         /// <summary>DEV-ONLY (owner addition 2026-08-03): show each F-cycled hull's control with no
         /// purchase/equipment gating, so the owner can feel tiller vs lever across the fleet NOW.
@@ -53,12 +65,18 @@ namespace HiddenHarbours.Boats
         // Register/clear the Core slot with this component's enable lifetime (scene-scoped service,
         // the ActiveBoatProbe pattern). EditMode never fires OnEnable — registration is PlayMode-only
         // by construction, which is exactly what the presentation seam wants.
-        private void OnEnable() => GameServices.HelmControl = this;
+        private void OnEnable()
+        {
+            GameServices.HelmControl = this;
+            GameServices.HelmInstruments = this;
+        }
 
         private void OnDisable()
         {
             if (ReferenceEquals(GameServices.HelmControl, this))
                 GameServices.HelmControl = null;
+            if (ReferenceEquals(GameServices.HelmInstruments, this))
+                GameServices.HelmInstruments = null;
         }
 
         // ---- reads (pull — the overlay samples these per frame) --------------------------------
@@ -110,23 +128,107 @@ namespace HiddenHarbours.Boats
         }
 
         /// <inheritdoc/>
-        public HelmFit Fit
-        {
-            get
-            {
-                if (!HasHelm) return HelmFit.None;
-                // The hull's authored default fit. The owned-per-hull upgrade set is S2's save
-                // schema — when it lands, its ids feed this same call (BoatEquipment.EffectiveFit
-                // is already the one resolver, tested and waiting).
-                return BoatEquipment.EffectiveFit(Boat().Hull, null);
-            }
-        }
-
-        /// <inheritdoc/>
         public float Drive { get { var b = Boat(); return b != null ? b.Throttle : 0f; } }
 
         /// <inheritdoc/>
         public float Steer { get { var b = Boat(); return b != null ? b.Steer : 0f; } }
+
+        // ---- IHelmInstruments: the GLASS (ADR 0025 S2) -----------------------------------------
+
+        /// <inheritdoc/>
+        public string HullId
+        {
+            get
+            {
+                var boat = Boat();
+                return boat != null && boat.Hull != null ? boat.Hull.Id : "";
+            }
+        }
+
+        /// <summary>
+        /// The piloted hull's EFFECTIVE fit, resolved fresh from its console's authored default plus the
+        /// instruments the player bought FOR THIS HULL (<see cref="InstrumentLocker"/>) — never stored
+        /// (rule 5, <see cref="BoatEquipment"/>'s own discipline).
+        ///
+        /// <para><b>This is where <see cref="DevIgnoreEquipmentGating"/> starts doing its job</b> (it was
+        /// a declared no-op through S1): with it on, the basic instruments read as fitted on every
+        /// consoled hull, so the owner can F-cycle the fleet and see each dash without shopping. It is
+        /// FALSE in a shipped build, where ownership and the console default are the only gates.</para>
+        /// </summary>
+        public HelmFit Fit
+        {
+            get
+            {
+                var boat = Boat();
+                HelmConsoleDef console = boat != null && boat.Hull != null ? boat.Hull.Helm : null;
+                if (console == null) return HelmFit.None;
+
+                InstrumentLocker.OwnedFor(GameServices.Save?.Current, HullId, _ownedScratch);
+                if (DevIgnoreEquipmentGating && !_ownedScratch.Contains(BoatEquipment.DepthSounderId))
+                    _ownedScratch.Add(BoatEquipment.DepthSounderId);
+                return BoatEquipment.EffectiveFit(console, _ownedScratch);
+            }
+        }
+
+        /// <summary>
+        /// The live sounding under the hull — <see cref="DepthSounder.DisplayDepth"/> over the ONE height
+        /// map (<see cref="GameServices.TidalTerrain"/>) and the deterministic water level
+        /// (<see cref="IEnvironmentService.WaterLevelAt"/>). Recomputed on a THROTTLED tick
+        /// (<see cref="DepthSounderSettings.ReadIntervalSec"/> — the tide moves in minutes, rule 7) and
+        /// cached only until the next tick; nothing about it is ever saved.
+        ///
+        /// <para>Returns false — meaning "no transducer read", show nothing — when there is no piloted
+        /// hull, no clock/environment service, or no terrain registered for the region (a null terrain is
+        /// "open water", which is not a sounding).</para>
+        /// </summary>
+        public bool TryReadDepth(out float metres)
+        {
+            float now = Time.time;
+            if (now >= _nextDepthReadTime)
+            {
+                _nextDepthReadTime = now + Mathf.Max(0.01f, GameServices.DepthSounder.ReadIntervalSec);
+                _depthValid = Sound(out _depthMetres);
+            }
+            metres = _depthMetres;
+            return _depthValid;
+        }
+
+        private bool Sound(out float metres)
+        {
+            metres = 0f;
+            var boat = Boat();
+            if (boat == null || !HasHelm) return false;
+            IEnvironmentService environment = GameServices.Environment;
+            IGameClock clock = GameServices.Clock;
+            ITidalTerrain terrain = GameServices.TidalTerrain;
+            if (environment == null || clock == null || terrain == null) return false;
+
+            Vector3 p = boat.transform.position;
+            float waterLevel = environment.WaterLevelAt(clock.TotalSeconds);
+            metres = DepthSounder.DisplayDepth(waterLevel, terrain.ElevationAt(new Vector2(p.x, p.y)));
+            return true;
+        }
+
+        /// <inheritdoc/>
+        // ⚠ Property and type deliberately share a name (the interface reads best that way); qualify the
+        // static call so nothing rests on C#'s "Color Color" resolution rule.
+        public SounderPrefs SounderPrefs
+        {
+            get
+            {
+                DepthSounderSettings cfg = GameServices.DepthSounder;
+                return InstrumentLocker.PrefsFor(GameServices.Save?.Current, HullId,
+                                                 HiddenHarbours.Core.SounderPrefs.FromDefaults(in cfg));
+            }
+        }
+
+        /// <inheritdoc/>
+        public void SetSounderPrefs(in SounderPrefs prefs)
+        {
+            SaveData save = GameServices.Save?.Current;
+            if (save == null) return;
+            if (InstrumentLocker.SetPrefs(save, HullId, in prefs)) GameServices.Save?.Save();
+        }
 
         /// <summary>
         /// Which control a hull's helm shows — THE tiller-vs-lever decision, data-driven (rule 2):

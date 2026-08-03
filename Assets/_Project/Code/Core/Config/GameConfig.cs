@@ -214,6 +214,13 @@ namespace HiddenHarbours.Core
                  "pointer-mapping radii. Presentation only — reposition/rescale freely, no code (rule 6).")]
         public HelmOverlaySettings HelmOverlay = HelmOverlaySettings.Default;
 
+        [Header("Depth sounder (the purchasable brow instrument — ADR 0025 S2)")]
+        [Tooltip("The diegetic depth sounder: how often it takes a sounding, its shallow-alarm defaults " +
+                 "and travel, the alarm flash rate, and where its card sits on screen. Also carries the " +
+                 "PLACEHOLDER water temperature the LCD shows until a real water-temperature model " +
+                 "exists (there is none in the sim today — no temperature is invented here).")]
+        public DepthSounderSettings DepthSounder = DepthSounderSettings.Default;
+
         [Header("Helm wheel (the grabbable steering wheel — ADR 0025 S2a)")]
         [Tooltip("Mouse-spin feel of the console/sport steering wheel: lock-to-lock turns, coast " +
                  "friction, and the optional self-centre spring (0 = a real cable helm that HOLDS " +
@@ -552,6 +559,102 @@ namespace HiddenHarbours.Core
             Friction = 2.4f,
             SelfCentre = 0f,
             RimGrabPadPx = 8f,
+        };
+    }
+
+    /// <summary>
+    /// Owner tuning for the <b>depth sounder</b> (<see cref="GameConfig.DepthSounder"/>) — the first
+    /// purchasable brow instrument (ADR 0025 S2, <c>docs/art/rigs/ui/depth-finder/</c>). Everything the
+    /// instrument's behaviour and placement depends on lives here so it is dialled in the Inspector with
+    /// no code (rule 6).
+    ///
+    /// <para><b>The reading itself is not tunable</b> — it is <c>waterLevel − seabedElevation</c> over the
+    /// one shared height map (<see cref="DepthSounder.DisplayDepth"/>, rule 5). These are the instrument's
+    /// dials, not the sea's.</para>
+    ///
+    /// <para><b>Why the card placement lives here and not in <see cref="HelmOverlaySettings"/>:</b> the
+    /// sounder is a SECOND card that can be on screen beside the piloting control, so it needs its own
+    /// corner and its own scale. Keeping them separate also means the owner can move one without moving
+    /// the other.</para>
+    /// </summary>
+    [System.Serializable]
+    public struct DepthSounderSettings
+    {
+        [Tooltip("How often the transducer takes a sounding (real seconds). The tide moves in MINUTES, so " +
+                 "reading per frame would be pure waste (rule 7). Smaller = more responsive when the boat " +
+                 "is crossing a bar quickly.")]
+        [Min(0.01f)] public float ReadIntervalSec;
+
+        [Tooltip("Shallow set-point (m) a freshly fitted sounder starts at — the depth at or below which " +
+                 "the glass flashes SHALLOW.")]
+        [Min(0f)] public float DefaultAlarmMetres;
+
+        [Tooltip("Is the shallow alarm armed out of the box? (A new sounder normally arrives armed.)")]
+        public bool DefaultArmed;
+
+        [Tooltip("Does a freshly fitted sounder read in FEET rather than metres? The player can toggle it " +
+                 "on the glass either way; this is only where it starts.")]
+        public bool DefaultFeet;
+
+        [Tooltip("How far each press of the ALARM up/down pushers moves the set-point (m). The rig's own " +
+                 "pushers are labelled ±0.5.")]
+        [Min(0.01f)] public float AlarmStepMetres;
+
+        [Tooltip("Shallowest set-point the pushers can reach (m).")]
+        [Min(0f)] public float MinAlarmMetres;
+
+        [Tooltip("Deepest set-point the pushers can reach (m).")]
+        [Min(0f)] public float MaxAlarmMetres;
+
+        [Tooltip("Flash rate of the SHALLOW alarm, full on/off cycles per second. The card repaints only " +
+                 "on a flash FLIP and only while the alarm is sounding (rule 7).")]
+        [Min(0f)] public float AlarmBlinkHz;
+
+        [Tooltip("⚠ PLACEHOLDER. The water temperature (°C) the LCD prints. There is NO water-temperature " +
+                 "model in the simulation yet and this slice does not build one (rule 8 — stay in phase); " +
+                 "the rig has a temp line, so it shows this constant until a real one exists. Flagged in " +
+                 "the PR that shipped it.")]
+        public float PlaceholderWaterTempC;
+
+        [Tooltip("Scale of the small dash-card state (screen pixels per rig pixel). 1 = native rig size.")]
+        [Min(0.1f)] public float CardScale;
+
+        [Tooltip("Scale of the FOCUSED state (click the sounder to enlarge; Esc/click-away returns). " +
+                 "Bigger = the three pushers are easier to hit; the rig's hit geometry scales with it.")]
+        [Min(0.1f)] public float FocusScale;
+
+        [Tooltip("Margin (px) from the screen's RIGHT edge to the small card. The sounder is a BROW " +
+                 "instrument, so it parks high-right — clear of the piloting control's card.")]
+        [Min(0f)] public float MarginX;
+
+        [Tooltip("Margin (px) from the screen's TOP edge to the small card.")]
+        [Min(0f)] public float MarginY;
+
+        [Tooltip("Where the FOCUSED card centres on screen, as a 0..1 fraction of screen width.")]
+        [Range(0f, 1f)] public float FocusCenterX01;
+
+        [Tooltip("Where the FOCUSED card centres on screen, as a 0..1 fraction of screen height.")]
+        [Range(0f, 1f)] public float FocusCenterY01;
+
+        /// <summary>A 4 Hz sounding, armed at 3 m with ±0.5 m pushers (the rig's own defaults), a 2 Hz
+        /// flash, metres, and a native-size card in the top-right with a 2× focused state.</summary>
+        public static DepthSounderSettings Default => new DepthSounderSettings
+        {
+            ReadIntervalSec = 0.25f,
+            DefaultAlarmMetres = 3f,
+            DefaultArmed = true,
+            DefaultFeet = false,
+            AlarmStepMetres = 0.5f,
+            MinAlarmMetres = 0.5f,
+            MaxAlarmMetres = 20f,
+            AlarmBlinkHz = 2f,
+            PlaceholderWaterTempC = 12f,
+            CardScale = 1f,
+            FocusScale = 2f,
+            MarginX = 24f,
+            MarginY = 16f,
+            FocusCenterX01 = 0.5f,
+            FocusCenterY01 = 0.5f,
         };
     }
 

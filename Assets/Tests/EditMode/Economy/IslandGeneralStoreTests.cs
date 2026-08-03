@@ -534,9 +534,11 @@ namespace HiddenHarbours.Tests.Economy
         // =====================================================================================
 
         [Test]
-        public void OneStall_ListsTheRod_TheBait_TheIce_AndTheLicence_Together()
+        public void OneStall_ListsTheRod_TheBait_TheIce_TheSounder_AndTheLicence_Together()
         {
-            var save = new SaveData();
+            // ActiveHullId matters now: an INSTRUMENT is fitted to the boat you are aboard, so the
+            // counter's chandlery row needs a boat to quote against (ADR 0025 S2 / ADR 0030).
+            var save = new SaveData { ActiveHullId = "boat.dory" };
             var stall = new GameObject("GeneralStoreCounter");
             _spawned.Add(stall);
 
@@ -558,6 +560,16 @@ namespace HiddenHarbours.Tests.Economy
                                                    System.Reflection.BindingFlags.Instance)
                               .SetValue(supplyShop, MakeSupply("supply.ice", 6));
 
+            var instrument = ScriptableObject.CreateInstance<InstrumentOffer>();
+            instrument.Id = "instrument.depth_sounder";
+            instrument.DisplayName = "Depth Sounder";
+            instrument.Price = 40;
+            _spawned.Add(instrument);
+            var chandlery = stall.AddComponent<InstrumentShop>();
+            typeof(InstrumentShop).GetField("_offer", System.Reflection.BindingFlags.NonPublic |
+                                                      System.Reflection.BindingFlags.Instance)
+                                  .SetValue(chandlery, instrument);
+
             var vendor = stall.AddComponent<LicenseVendor>();
             typeof(LicenseVendor).GetField("_license", System.Reflection.BindingFlags.NonPublic |
                                                        System.Reflection.BindingFlags.Instance)
@@ -569,11 +581,14 @@ namespace HiddenHarbours.Tests.Economy
             var byId = new Dictionary<string, BuyRow>();
             foreach (BuyRow r in rows) byId[r.Id] = r;
 
-            Assert.AreEqual(4, rows.Count, "a general store is four vendors on one counter, one screen");
+            Assert.AreEqual(5, rows.Count, "a general store is five vendors on one counter, one screen");
             Assert.AreEqual(BuyRowKind.Gear, byId["gear.rod"].Quote.Kind);
             Assert.AreEqual(BuyRowKind.Bait, byId["bait.capelin"].Quote.Kind);
             Assert.AreEqual(BuyRowKind.Supply, byId["supply.ice"].Quote.Kind);
+            Assert.AreEqual(BuyRowKind.Instrument, byId["instrument.depth_sounder"].Quote.Kind);
             Assert.AreEqual(BuyRowKind.License, byId["license.clam"].Quote.Kind);
+            StringAssert.Contains("boat.dory", byId["instrument.depth_sounder"].Note,
+                "the chandlery row names the boat it would be bolted into");
 
             Assert.AreEqual(20, byId["bait.capelin"].Quote.Price, "the bait row prices the LOT, not one hook");
             StringAssert.Contains("x10", byId["bait.capelin"].DisplayName,

@@ -65,9 +65,18 @@ plain serializable DTOs owned by `SaveService` (`architecture/tech-architecture.
 | `WorldState` | region reveal/fog, quest & story flags, NPC relationship scores | regionId / npcId / flagId |
 | `WorldClock` | `worldSeed`, `gameTime`, season/year | — |
 
+> **Save schema v8 (helm instruments, ADR 0030)** — `SaveData` gained two append-only lists at v8:
+> `HullInstruments[]` (flat `(hullId, instrumentId)` rows — the first PER-HULL ownership record; an
+> instrument is bolted into one boat's dash, not carried) and `HullSounderPrefs[]` (per-hull sounder
+> preferences: set-point, armed, units, night). Both are **sparse**: a hull with no rows carries its
+> `HelmConsoleDef`'s authored default fit, so the `v7→v8` migration is a pure addition and every
+> existing boat comes out exactly as authored. Read/written only through `InstrumentLocker` (Core).
+> The **resolved fit** (`BoatEquipment.EffectiveFit`) and the **depth reading** are recomputed, never
+> stored. Cross-lane (`SaveData`/`SaveMigration` are Core/lead-architect) — ADR 0030.
+
 **Recomputed, never saved:** tide height, wind, weather, sea state, visibility (from
-`worldSeed + gameTime`), dormant NPC positions, authored geometry. This is the determinism
-dividend — small, robust saves.
+`worldSeed + gameTime`), dormant NPC positions, authored geometry, **a boat's effective helm fit and
+its depth-sounder reading** (ADR 0030). This is the determinism dividend — small, robust saves.
 
 ## 5. ID & naming conventions
 
