@@ -107,6 +107,8 @@ MonoBehaviour:
     MarginY: 16
     FocusCenterX01: 0.5
     FocusCenterY01: 0.5
+  FishFinder:
+    DefaultRangeMetres: 20
   HelmWheel:
     Turns: 1.5
     Friction: 2.4

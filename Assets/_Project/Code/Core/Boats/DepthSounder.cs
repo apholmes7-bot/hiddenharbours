@@ -1,16 +1,21 @@
 namespace HiddenHarbours.Core
 {
     /// <summary>
-    /// One hull's depth-sounder <b>preferences</b> — the shallow set-point, whether the alarm is armed,
-    /// and the two display toggles (feet vs metres, night backlight). A fisherman sets his shallow alarm
-    /// once and expects to find it there tomorrow, so these DO persist (per hull, beside the owned
-    /// instrument ids — <c>InstrumentLocker</c>).
+    /// One hull's <b>sounder preferences</b> — the shallow set-point, whether the alarm is armed, the two
+    /// display toggles (feet vs metres, night backlight), and the fish finder's vertical RANGE. A fisherman
+    /// sets his shallow alarm once and expects to find it there tomorrow, so these DO persist (per hull,
+    /// beside the owned instrument ids — <c>InstrumentLocker</c>).
+    ///
+    /// <para><b>One record for both instruments.</b> The fish finder supersedes the depth sounder in the
+    /// same cutout (<c>BoatEquipment.EffectiveFit</c>) and keeps its shallow alarm unchanged, so it shares
+    /// this record rather than growing a parallel one that could be tuned apart.
+    /// <see cref="RangeMetres"/> is the only field the finder adds (ADR 0025 S3, schema v9).</para>
     ///
     /// <para><b>Preferences, never sim inputs.</b> Nothing here feeds the simulation: the alarm decides
-    /// whether the glass flashes, not whether the boat grounds. The <em>depth</em> itself is never in
-    /// this struct and never in the save — it is recomputed from the one height map every tick
-    /// (<see cref="DepthSounder.DisplayDepth"/>, rule 5). A saved depth is the exact bug that rule
-    /// exists to prevent.</para>
+    /// whether the glass flashes, not whether the boat grounds; the range decides how tall the picture is,
+    /// not where the fish are. The <em>depth</em> itself is never in this struct and never in the save — it
+    /// is recomputed from the one height map every tick (<see cref="DepthSounder.DisplayDepth"/>, rule 5).
+    /// A saved depth is the exact bug that rule exists to prevent, and the same goes for a saved school.</para>
     /// </summary>
     [System.Serializable]
     public struct SounderPrefs
@@ -28,18 +33,46 @@ namespace HiddenHarbours.Core
         /// <summary>Amber night backlight rather than the day panel (the rig's <c>night</c> signal).</summary>
         public bool Night;
 
+        /// <summary>
+        /// The fish finder's vertical scale in METRES — how deep the bottom of the glass reaches (the rig's
+        /// <c>range</c> signal; its own steps are 10/20/40/60 m). Stored in metres whatever the display
+        /// units, exactly like <see cref="AlarmMetres"/>, so toggling feet never re-scales the picture.
+        ///
+        /// <para><b>⚠ Must be positive.</b> Every mark and the bottom contour are drawn at
+        /// <c>depth / range</c>, so a zero here is Inf/NaN — a garbage picture, not a small one. No
+        /// constructor on this type can produce a zero, and <c>SaveMigration</c> heals any stored row that
+        /// somehow carries one.</para>
+        /// </summary>
+        public float RangeMetres;
+
+        /// <summary>The four-field constructor as v8 had it. Kept so no S2 call site churns; the finder's
+        /// range takes the shipped default rather than a zero, because a zero range is never a legal
+        /// value (see <see cref="RangeMetres"/>).</summary>
         public SounderPrefs(float alarmMetres, bool armed, bool feet, bool night)
+            : this(alarmMetres, armed, feet, night, FishFinderSettings.Default.DefaultRangeMetres) { }
+
+        public SounderPrefs(float alarmMetres, bool armed, bool feet, bool night, float rangeMetres)
         {
             AlarmMetres = alarmMetres;
             Armed = armed;
             Feet = feet;
             Night = night;
+            RangeMetres = rangeMetres;
         }
 
         /// <summary>The out-of-the-box preferences for a freshly fitted sounder, from the owner's tuning
-        /// (rule 6 — the numbers are data, not literals here).</summary>
+        /// (rule 6 — the numbers are data, not literals here). The finder's range takes
+        /// <see cref="FishFinderSettings.Default"/>; use the two-settings overload to honour the owner's
+        /// tuned value.</summary>
         public static SounderPrefs FromDefaults(in DepthSounderSettings settings)
-            => new SounderPrefs(settings.DefaultAlarmMetres, settings.DefaultArmed, settings.DefaultFeet, false);
+            => FromDefaults(in settings, FishFinderSettings.Default);
+
+        /// <summary>The out-of-the-box preferences for a freshly fitted sounder OR finder, both blocks of
+        /// the owner's tuning honoured.</summary>
+        public static SounderPrefs FromDefaults(in DepthSounderSettings settings,
+                                                in FishFinderSettings finder)
+            => new SounderPrefs(settings.DefaultAlarmMetres, settings.DefaultArmed, settings.DefaultFeet,
+                                false, finder.DefaultRangeMetres);
     }
 
     /// <summary>

@@ -221,6 +221,14 @@ namespace HiddenHarbours.Core
                  "exists (there is none in the sim today — no temperature is invented here).")]
         public DepthSounderSettings DepthSounder = DepthSounderSettings.Default;
 
+        [Header("Fish finder (the sonar upgrade — ADR 0025 S3)")]
+        [Tooltip("The colour sonar that replaces the plain depth sounder in the same cutout. Today: the " +
+                 "vertical RANGE (metres) a freshly fitted unit starts at — the scale the bottom contour " +
+                 "and every fish mark are drawn against. It must stay above zero (the contour is drawn " +
+                 "at depth ÷ range). The shallow alarm is NOT here: the finder keeps the depth sounder's " +
+                 "alarm and reads its settings, so there is only ever one alarm rule.")]
+        public FishFinderSettings FishFinder = FishFinderSettings.Default;
+
         [Header("Helm wheel (the grabbable steering wheel — ADR 0025 S2a)")]
         [Tooltip("Mouse-spin feel of the console/sport steering wheel: lock-to-lock turns, coast " +
                  "friction, and the optional self-centre spring (0 = a real cable helm that HOLDS " +
@@ -655,6 +663,43 @@ namespace HiddenHarbours.Core
             MarginY = 16f,
             FocusCenterX01 = 0.5f,
             FocusCenterY01 = 0.5f,
+        };
+    }
+
+    /// <summary>
+    /// The <b>fish finder's</b> owner tunables (<see cref="GameConfig.FishFinder"/> — ADR 0025 S3, the sonar
+    /// that supersedes the plain depth sounder in the same cutout).
+    ///
+    /// <para><b>Why this block exists at Step 0 with one field in it.</b> The vertical RANGE is the finder's
+    /// only genuinely NEW piece of persisted state, and it is the denominator of the whole picture — the
+    /// bottom contour sits at <c>depth / range</c> (<c>fishRig.js:239</c>). That makes its default a
+    /// safety-critical number rather than a taste one: at zero the contour is Inf/NaN, not small. Naming it
+    /// here, once, is what lets the save migration heal an old row and the UI draw a fresh one from the SAME
+    /// value (rule 6 — the number is data, never a literal in two places). The rest of the finder's tuning
+    /// (card placement, scan speed, mark sizing) extends this block in the UI slice.</para>
+    ///
+    /// <para>The alarm, its set-point, units and night backlight are deliberately NOT here: the finder
+    /// keeps the depth sounder's shallow alarm unchanged, reading the same
+    /// <see cref="DepthSounderSettings"/> and the same <see cref="SounderPrefs"/> (one alarm rule, not
+    /// two).</para>
+    /// </summary>
+    [System.Serializable]
+    public struct FishFinderSettings
+    {
+        [Tooltip("Vertical sonar scale (metres) a freshly fitted fish finder starts at — how deep the " +
+                 "bottom of the glass reaches. The player steps it with the RANGE pushers; the rig's own " +
+                 "scale choices are 10 / 20 / 40 / 60 m. ⚠ Must stay ABOVE ZERO: the bottom contour is " +
+                 "drawn at depth ÷ range, so a zero range is a divide-by-zero (Inf/NaN — a garbage " +
+                 "contour), not merely a small picture. The save migration heals any stored range that " +
+                 "is not positive back to this value.")]
+        [Min(1f)] public float DefaultRangeMetres;
+
+        /// <summary>The rig's own default scale — 20 m, the second of its four RANGE steps
+        /// (<c>fishRig.js:131</c> <c>RANGE_STEPS = [10,20,40,60]</c>, <c>:317</c>
+        /// <c>range == null ? 20</c>).</summary>
+        public static FishFinderSettings Default => new FishFinderSettings
+        {
+            DefaultRangeMetres = 20f,
         };
     }
 
