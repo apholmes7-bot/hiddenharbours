@@ -112,6 +112,22 @@ Two additive Core pieces, both deterministic (recomputed from `(worldSeed, gameT
   scene, in EditMode, and in a region with no fish authored yet. Producers **clear the registration on
   disable** (assign null — the getter turns that back into the empty sea); the getter also checks Unity
   fake-null, so a destroyed MonoBehaviour producer degrades to the empty sea rather than throwing.
+  **The producing model** (ADR 0025 S3a, gameplay-side) is `Fishing.FishSchoolModel` over
+  `Fishing.FishSchoolMath`: a *pure function* of `(worldSeed, gameTime, place, weather, season)` — the
+  world is diced into cells and time into slots, and each `(cell, slot)` is one hashed coin-flip gated by
+  **location** (water deep enough), **weather** (sea state) and **date** (season), with everything else
+  about the school drawn from the same key. No spawner, no `Update`, no timer, nothing saved. It is
+  registered by `FishingController` (so schools exist whether or not any boat has a finder fitted) off the
+  **same species array the catch resolver rolls from**, and the fishing path reads the registered seam —
+  not its own instance — through `Fishing.SchoolInfluence`, which is what makes the honesty invariant
+  structural rather than remembered. Tuning: `GameConfig.FishSchools`.
+- **`IEnvironmentService.SeaState01At(double t)`** — the continuous sea state (0 glass .. 1 storm) at an
+  **arbitrary** time; the weather twin of `TideHeightAt`, and additive in the same shape (a **default
+  interface method** returning `Sample().SeaState01`, overridden by the real `EnvironmentService` with the
+  pure `WeatherModel` evaluation). Needed by any consumer reasoning about a *span* rather than this
+  instant: the fish-school sim decides a school from the weather at the moment it formed and then lets it
+  stand for its whole window — reading "now" instead would make schools blink in and out as the wind
+  wandered across a threshold, and the finder would faithfully draw the blinking.
 - **`Core.IStandableSurface` + `Core.StandableSurfaces`** — the **standable-structure** seam: things
   BUILT (a wharf deck today; boat decks and washboards in M2) that a person stands *on*, whose standing
   height is their own rather than the seabed's. `TryGetDeckElevation(worldPos, out deck)` answers "am I
