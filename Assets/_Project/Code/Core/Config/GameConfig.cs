@@ -467,18 +467,16 @@ namespace HiddenHarbours.Core
                  "Bigger = controls easier to hit; the rig's hit geometry scales with it.")]
         [Min(0.1f)] public float FocusScale;
 
-        [Tooltip("Margin (px) from the screen's right edge to the small card (placeholder bottom-right " +
-                 "placement — reposition freely).")]
-        [Min(0f)] public float MarginX;
+        [Tooltip("Where the SMALL card centres horizontally, as a 0..1 fraction of screen width. " +
+                 "0.5 = bottom-centre (the owner's placement ruling, 2026-08-03).")]
+        [Range(0f, 1f)] public float SmallCenterX01;
 
-        [Tooltip("Margin (px) from the screen's bottom edge to the small card.")]
-        [Min(0f)] public float MarginY;
-
-        [Tooltip("Where the FOCUSED card centres on screen, as a 0..1 fraction of screen width.")]
+        [Tooltip("Where the FOCUSED card centres horizontally, as a 0..1 fraction of screen width.")]
         [Range(0f, 1f)] public float FocusCenterX01;
 
-        [Tooltip("Where the FOCUSED card centres on screen, as a 0..1 fraction of screen height.")]
-        [Range(0f, 1f)] public float FocusCenterY01;
+        [Tooltip("Margin (px) from the screen's bottom edge — BOTH states anchor to the bottom of the " +
+                 "screen (the helm rises from the dash).")]
+        [Min(0f)] public float MarginY;
 
         [Tooltip("How close (rig-space px) a click must land to the lever's grip to START a drag; " +
                  "clicks further out on the card jump-to-sig along the travel arc instead.")]
@@ -488,15 +486,15 @@ namespace HiddenHarbours.Core
                  "drive across its FULL range (up = ahead). Smaller = twitchier.")]
         [Min(1f)] public float TillerDragFullDrivePx;
 
-        /// <summary>Native-size card bottom-right, 2× focus centred just above screen centre.</summary>
+        /// <summary>Native-size card CENTRED AT THE BOTTOM (the owner's 2026-08-03 placement ruling),
+        /// 2× focus rising from the same bottom-centre anchor.</summary>
         public static HelmOverlaySettings Default => new HelmOverlaySettings
         {
             SmallScale = 1f,
             FocusScale = 2f,
-            MarginX = 24f,
-            MarginY = 16f,
+            SmallCenterX01 = 0.5f,
             FocusCenterX01 = 0.5f,
-            FocusCenterY01 = 0.5f,
+            MarginY = 16f,
             GrabRadiusPx = 30f,
             TillerDragFullDrivePx = 140f,
         };
