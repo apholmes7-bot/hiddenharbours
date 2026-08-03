@@ -39,5 +39,28 @@ namespace HiddenHarbours.Core
         /// (CLAUDE.md rule 5).</para>
         /// </summary>
         float WaterLevelAt(double totalSeconds) => TideHeightAt(totalSeconds);
+
+        /// <summary>
+        /// The deterministic <b>continuous sea state</b> (0 glass .. 1 storm) at an arbitrary time — the
+        /// weather twin of <see cref="TideHeightAt"/>, and read for exactly the same reason: a consumer
+        /// that reasons about a SPAN of time rather than this instant needs the weather at the instant it
+        /// is reasoning about, not at the instant it happens to be asking.
+        ///
+        /// <para><b>Who needed it.</b> The fish-school sim (ADR 0025 S3) decides whether a patch of water
+        /// holds fish from the weather at the moment that school formed, and then that school stands for
+        /// its whole window. Reading <see cref="Sample"/> instead would re-decide the question every
+        /// frame against a drifting wind, and a school would blink in and out as the sea state wandered
+        /// across a threshold — which the fish finder would faithfully draw. Schools are recomputed from
+        /// <c>(worldSeed, gameTime)</c> like the tide (rule 5), and that is only meaningful if the weather
+        /// term is evaluated at a FIXED time.</para>
+        ///
+        /// <para><b>Additive &amp; non-breaking</b>, exactly as <see cref="WaterLevelAt"/> is: a
+        /// <i>default interface method</i> returning <see cref="Sample"/>'s value, so every existing
+        /// implementer and test fake compiles unchanged and degrades to "the weather I can see". The real
+        /// <c>EnvironmentService</c> overrides it with the pure <c>WeatherModel</c> evaluation at the
+        /// requested time.</para>
+        /// FLAG lead-architect: additive Core contract (the weather-at-a-time read the S3 school sim needs).
+        /// </summary>
+        float SeaState01At(double totalSeconds) => Sample().SeaState01;
     }
 }
