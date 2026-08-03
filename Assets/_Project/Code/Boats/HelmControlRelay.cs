@@ -117,6 +117,30 @@ namespace HiddenHarbours.Boats
         }
 
         /// <inheritdoc/>
+        public HelmWheelRim WheelRim
+        {
+            get
+            {
+                var boat = Boat();
+                var helm = boat != null && boat.Hull != null ? boat.Hull.Helm : null;
+                return helm != null ? helm.Wheel : HelmWheelRim.Rubber;
+            }
+        }
+
+        /// <inheritdoc/>
+        public HelmFit Fit
+        {
+            get
+            {
+                if (!HasHelm) return HelmFit.None;
+                // The hull's authored default fit. The owned-per-hull upgrade set is S2's save
+                // schema — when it lands, its ids feed this same call (BoatEquipment.EffectiveFit
+                // is already the one resolver, tested and waiting).
+                return BoatEquipment.EffectiveFit(Boat().Hull, null);
+            }
+        }
+
+        /// <inheritdoc/>
         public float Drive { get { var b = Boat(); return b != null ? b.Throttle : 0f; } }
 
         /// <inheritdoc/>
@@ -284,6 +308,28 @@ namespace HiddenHarbours.Boats
                 boat.Throttle, GameServices.HelmThrottle.NeutralSnapWindow01);
             boat.SetControl(snapped, boat.Steer);
         }
+
+        // ---- the wheel's steer session (S2a) ----------------------------------------------------
+        // Arbitration contract (IHelmControl doc): while the session is live, DevBoatInput PRESERVES
+        // the held steer when its own momentary read is zero, and a real key press calls
+        // EndSteerDrag — keys win with one decisive handover, never a per-frame fight.
+
+        private bool _steerDrag;
+
+        /// <inheritdoc/>
+        public bool SteerDragActive => _steerDrag && HasHelm;
+
+        /// <inheritdoc/>
+        public void DragSteer(float steer)
+        {
+            var boat = Boat();
+            if (boat == null || !HasHelm) return;
+            _steerDrag = true;
+            boat.SetControl(boat.Throttle, Mathf.Clamp(steer, -1f, 1f));
+        }
+
+        /// <inheritdoc/>
+        public void EndSteerDrag() => _steerDrag = false;
 
         // Resolve lazily (the Stop()/SetHull precedent): the relay can be added + queried in rigs
         // where Awake ordering isn't guaranteed.

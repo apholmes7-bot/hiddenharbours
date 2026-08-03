@@ -40,12 +40,17 @@ namespace HiddenHarbours.Boats
         [SerializeField] private Key _neutralKey = Key.Z;
 
         private BoatController _boat;
+        private HelmControlRelay _relay;   // steer-session arbitration (S2a) — same GameObject
 
         // Auto-repeat timers for the held throttle keys (transient input state — never saved, rule 5).
         private HeldRepeatState _aheadRepeat;
         private HeldRepeatState _asternRepeat;
 
-        private void Awake() => _boat = GetComponent<BoatController>();
+        private void Awake()
+        {
+            _boat = GetComponent<BoatController>();
+            _relay = GetComponent<HelmControlRelay>();
+        }
 
         private void Update()
         {
@@ -61,6 +66,25 @@ namespace HiddenHarbours.Boats
                 ReadEngine(kb, gp);
             else if (kb != null)
                 ReadOars(kb);
+        }
+
+        /// <summary>
+        /// The wheel steer-session arbitration (S2a, the <see cref="HiddenHarbours.Core.IHelmControl"/>
+        /// contract): while the focused wheel holds a live session, a ZERO momentary read PRESERVES
+        /// the wheel's held steer instead of stomping it back to centre; a REAL key/stick input ends
+        /// the session and takes the channel back — one decisive handover, keys win, never a
+        /// per-frame fight. Pure + static so the truth table is EditMode-testable without input
+        /// devices (headless batchmode drops key events, so the PlayMode key-press check can only
+        /// run opportunistically).
+        /// </summary>
+        public static float ArbitrateSteer(float momentarySteer, bool sessionActive, float heldSteer,
+                                           out bool endSession)
+        {
+            endSession = false;
+            if (!sessionActive) return momentarySteer;
+            if (momentarySteer == 0f) return heldSteer;
+            endSession = true;
+            return momentarySteer;
         }
 
         /// <summary>
@@ -127,6 +151,12 @@ namespace HiddenHarbours.Boats
             float steer = ((kb != null && (kb.dKey.isPressed || kb.rightArrowKey.isPressed)) ? 1f : 0f)
                         - ((kb != null && (kb.aKey.isPressed || kb.leftArrowKey.isPressed)) ? 1f : 0f);
             if (gp != null && steer == 0f) steer = gp.leftStick.x.ReadValue();
+
+            // Wheel steer-session arbitration (S2a, the IHelmControl contract).
+            if (_relay == null) _relay = GetComponent<HelmControlRelay>();
+            bool sessionActive = _relay != null && _relay.SteerDragActive;
+            steer = ArbitrateSteer(steer, sessionActive, _boat.Steer, out bool endSession);
+            if (endSession) _relay.EndSteerDrag();
 
             _boat.SetControl(drive, steer);
         }

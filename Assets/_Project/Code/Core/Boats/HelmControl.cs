@@ -27,6 +27,19 @@ namespace HiddenHarbours.Core
     }
 
     /// <summary>
+    /// The steering wheel's rim finish — <c>WheelRig.RIMS</c> (docs/art/rigs/ui/console-wheel):
+    /// <c>rubber</c> (stock helm — moulded rim, graphite knobs), <c>teak</c> (turned teak rim and
+    /// handles), <c>steel</c> (polished stainless, bright rim — the sport skiff's chrome destroyer
+    /// wheel). Authored per console on <c>HelmConsoleDef</c> (content is data, rule 2).
+    /// </summary>
+    public enum HelmWheelRim
+    {
+        Rubber = 0,
+        Teak   = 1,
+        Steel  = 2,
+    }
+
+    /// <summary>
     /// The active boat's piloting-control seam (ADR 0025 S1): what control the helm shows, the live
     /// drive/steer to DRAW it with, and the input intents a presentation layer may send back. The
     /// Boats lane implements it (<c>HelmControlRelay</c>, riding the active <c>BoatController</c>);
@@ -57,6 +70,19 @@ namespace HiddenHarbours.Core
         /// <summary>The lever's housing finish for this hull's console (Lever style only).</summary>
         HelmLeverFinish LeverFinish { get; }
 
+        /// <summary>The steering wheel's rim finish for this hull's console (composed dashes, S2a).</summary>
+        HelmWheelRim WheelRim { get; }
+
+        /// <summary>
+        /// The EFFECTIVE equipment fit of the active hull's helm (S2a of the boat-UI arc): which
+        /// console rig draws the dash and which instruments are actually fitted. Derived data,
+        /// recomputed per read (<c>BoatEquipment.EffectiveFit</c> — hull default + owned upgrades);
+        /// <see cref="HelmFit.None"/> while unmanned or on a console-less hull. The overlay uses it
+        /// to choose the composed dash vs the lone S1 instrument card.
+        /// FLAG lead-architect: Core contract growth (the ADR 0025 S2a dash-composition seam).
+        /// </summary>
+        HelmFit Fit { get; }
+
         /// <summary>The signed drive in [-1..+1] the physics is running RIGHT NOW — the LeverRig
         /// <c>sig</c> / TillerRig throttle+gear source. Read-only: presentation draws it, intents move it.</summary>
         float Drive { get; }
@@ -80,5 +106,26 @@ namespace HiddenHarbours.Core
         /// <summary>The drag released: the lever HOLDS where it was left, except inside the neutral
         /// snap window (data — <c>HelmThrottleSettings.NeutralSnapWindow01</c>), which snaps to 0.</summary>
         void EndDrag();
+
+        // ---- the wheel's steer session (S2a) ----------------------------------------------------
+        // Steer stays ONE value with ONE owner (BoatController._steer). Keys write it momentarily
+        // every frame (DevBoatInput); the focused wheel writes it through THIS session instead, and
+        // the two never interleave: while a session is live the key layer PRESERVES the held steer
+        // when its own read is zero, and a real key press ENDS the session (keys win — the single
+        // decisive handover, no per-frame fight). The wheel overlay must watch
+        // <see cref="SteerDragActive"/> and drop its grab when the session is broken under it.
+
+        /// <summary>True while a wheel steer session is live (set by <see cref="DragSteer"/>, cleared
+        /// by <see cref="EndSteerDrag"/> or by the key layer taking steer back).</summary>
+        bool SteerDragActive { get; }
+
+        /// <summary>The focused wheel's steer write: set the live steer in [-1..+1] and keep the
+        /// steer session open. Called every frame the wheel is grabbed or coasting under focus.</summary>
+        void DragSteer(float steer);
+
+        /// <summary>End the wheel steer session. The steer VALUE is left as written — the momentary
+        /// key layer resumes ownership next frame (centred unless a key is held), exactly the
+        /// untouched S1 key semantics.</summary>
+        void EndSteerDrag();
     }
 }

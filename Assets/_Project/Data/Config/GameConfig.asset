@@ -89,6 +89,8 @@ MonoBehaviour:
     MarginY: 16
     GrabRadiusPx: 30
     TillerDragFullDrivePx: 140
+    DashSmallScale: 0.5
+    DashFocusScale: 1.5
   DepthSounder:
     ReadIntervalSec: 0.25
     DefaultAlarmMetres: 3
@@ -105,6 +107,11 @@ MonoBehaviour:
     MarginY: 16
     FocusCenterX01: 0.5
     FocusCenterY01: 0.5
+  HelmWheel:
+    Turns: 1.5
+    Friction: 2.4
+    SelfCentre: 0
+    RimGrabPadPx: 8
   RodFight:
     TensionRisePerSec: 0.55
     TensionFallPerSec: 0.7

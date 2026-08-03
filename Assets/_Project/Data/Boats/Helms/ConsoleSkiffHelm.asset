@@ -15,8 +15,9 @@ MonoBehaviour:
   Id: helm.console_skiff
   Rig: 1
   Lever: 0
+  Wheel: 0
   DefaultSounder: 0
-  DefaultCompass: 0
+  DefaultCompass: 1
   DefaultRadar: 0
   DefaultGps: 0
   SupportsFishFinder: 1
