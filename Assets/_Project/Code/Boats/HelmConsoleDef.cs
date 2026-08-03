@@ -32,6 +32,11 @@ namespace HiddenHarbours.Boats
                  "not code — the S1 lever overlay draws whichever this console says.")]
         public HelmLeverFinish Lever = HelmLeverFinish.Graphite;
 
+        [Tooltip("The steering wheel's rim finish on this console (WheelRig.RIMS, S2a): rubber = the " +
+                 "stock moulded rim with graphite knobs (centre-console), steel = the polished " +
+                 "stainless destroyer wheel (sport), teak = turned teak. Data, not code.")]
+        public HelmWheelRim Wheel = HelmWheelRim.Rubber;
+
         [Header("Default fit — what this hull ships with")]
         [Tooltip("The sounder fitted out of the box (Depth = the basic read; None = bare brow).")]
         public SounderKind DefaultSounder = SounderKind.Depth;

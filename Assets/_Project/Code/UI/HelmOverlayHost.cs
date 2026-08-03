@@ -64,6 +64,22 @@ namespace HiddenHarbours.UI
         private float _dragStartScreenY;
         private bool _dragIsTiller;
 
+        // The composed skiff dash (S2a): compositor + per-instrument interaction.
+        private readonly HelmDashController _dashCtl = new HelmDashController();
+        private bool _dashShown;
+
+        /// <summary>Which card the overlay shows right now (test seam).</summary>
+        public enum HelmCardKind { None, Tiller, Lever, Dash }
+
+        /// <summary>The card currently shown. Exposed for tests.</summary>
+        public HelmCardKind CardKind { get; private set; }
+
+        /// <summary>The dash compositor (test seam — wheel mirror angle, steer session).</summary>
+        public HelmDashController DashController => _dashCtl;
+
+        /// <summary>The live host instance (test seam — the bootstrap spawns exactly one).</summary>
+        public static HelmOverlayHost Instance => _instance;
+
         /// <summary>Focused state (click-to-focus, owner addition 2026-08-03). Exposed for tests.</summary>
         public bool Focused => _focused;
 
@@ -118,14 +134,48 @@ namespace HiddenHarbours.UI
             {
                 if (_dragging && helm != null) helm.EndDrag();
                 _dragging = false;
+                _dashCtl.Deactivate(helm);
                 _focused = false;
                 _shownStyle = HelmControlStyle.None;
+                CardKind = HelmCardKind.None;
                 if (_cardGo.activeSelf) _cardGo.SetActive(false);
                 return;
             }
             if (!_cardGo.activeSelf) _cardGo.SetActive(true);
 
             HelmOverlaySettings cfg = GameServices.HelmOverlay;
+
+            // S2a: a lever hull whose console is one of the ported skiff dashes (Console/Sport)
+            // shows the COMPOSED DASH; Novi + Cape stay on the lone lever card until their slice.
+            HelmFit fit = helm.Fit;
+            bool dash = style == HelmControlStyle.Lever
+                     && (fit.Rig == ConsoleRigKind.Console || fit.Rig == ConsoleRigKind.Sport);
+            if (dash != _dashShown)
+            {
+                // Crossing the dash boundary invalidates the other path's change-detection keys.
+                _dashCtl.Invalidate();
+                if (!dash) _dashCtl.Deactivate(helm);
+                if (_dragging) { helm.EndDrag(); _dragging = false; }
+                _shownStyle = HelmControlStyle.None;
+                _shownLeverKey = int.MinValue;
+                _shownBandLit = -1;
+                _dashShown = dash;
+            }
+
+            if (dash)
+            {
+                CardKind = HelmCardKind.Dash;
+                Rect dashCard = HelmOverlayLayout.DashCardRect(_focused, HelmDashGeometry.W,
+                                                               HelmDashGeometry.H, in cfg,
+                                                               Screen.width, Screen.height);
+                LayoutCard(HelmControlStyle.Lever, dashCard, HelmDashGeometry.W, HelmDashGeometry.H, 0f);
+                _dashCtl.UpdateAndPaint(helm, fit, SampleHeadingDegrees(), Time.deltaTime, _focused,
+                                        ref _texture, _image);
+                ReadDashPointer(helm, dashCard, in cfg);
+                return;
+            }
+
+            CardKind = style == HelmControlStyle.Lever ? HelmCardKind.Lever : HelmCardKind.Tiller;
             int rigW = style == HelmControlStyle.Lever ? LeverRigRender.W : TillerRigRender.W;
             int rigH = style == HelmControlStyle.Lever ? LeverRigRender.H : TillerRigRender.H;
 
@@ -133,6 +183,17 @@ namespace HiddenHarbours.UI
             LayoutCard(style, card, rigW, rigH, helm.Steer);
             Repaint(style, helm);
             ReadPointer(style, helm, card, in cfg);
+        }
+
+        /// <summary>The compass's heading source: the PHYSICS ROOT's bow through the Core kinematics
+        /// seam (<see cref="GameServices.ActiveBoat"/> — 0 = N, clockwise; never the counter-rotating
+        /// visual child). 0 (North) when no probe is registered.</summary>
+        private static float SampleHeadingDegrees()
+        {
+            IActiveBoatService probe = GameServices.ActiveBoat;
+            if (probe == null) return 0f;
+            BoatKinematics k = probe.Sample();
+            return k.HasBoat ? k.HeadingDegrees : 0f;
         }
 
         // ---- layout -------------------------------------------------------------------------------
@@ -211,6 +272,60 @@ namespace HiddenHarbours.UI
         }
 
         // ---- pointer + keys ------------------------------------------------------------------------
+
+        /// <summary>The composed dash's pointer routing (S2a): the card-level focus mechanics are
+        /// S1's (click-to-focus, Esc/click-away out); WITHIN focus the press lands on the instrument
+        /// under it — wheel rim grab, lever grip drag, binnacle travel-guide — via
+        /// <see cref="HelmDashController"/>. Hit tests run in the dash's own rig pixels, so the
+        /// card scale needs no special-casing (the S1 ScreenToRig discipline).</summary>
+        private void ReadDashPointer(IHelmControl helm, Rect card, in HelmOverlaySettings cfg)
+        {
+            var kb = Keyboard.current;
+            if (_focused && kb != null && kb.escapeKey.wasPressedThisFrame)
+            {
+                _dashCtl.Deactivate(helm);
+                _focused = false;
+                return;
+            }
+
+            var mouse = Mouse.current;
+            if (mouse == null) return;
+            Vector2 pos = mouse.position.ReadValue();
+            bool down = mouse.leftButton.wasPressedThisFrame;
+            bool held = mouse.leftButton.isPressed;
+            bool inCard = card.Contains(pos);
+
+            if (_dashCtl.Interacting)
+            {
+                // Off-card during a drag still tracks (the S1 lever precedent).
+                HelmOverlayLayout.ScreenToRig(pos, card, HelmDashGeometry.W, HelmDashGeometry.H,
+                                              out Vector2 rigPx);
+                _dashCtl.Track(helm, rigPx, held, Time.deltaTime);
+                return;
+            }
+
+            if (!down) return;
+
+            if (!inCard)
+            {
+                if (_focused)
+                {
+                    _dashCtl.Deactivate(helm);
+                    _focused = false;
+                }
+                return;
+            }
+
+            if (!_focused)
+            {
+                _focused = true;    // SMALL state: the whole card is the focus button (S1)
+                return;
+            }
+
+            HelmOverlayLayout.ScreenToRig(pos, card, HelmDashGeometry.W, HelmDashGeometry.H,
+                                          out Vector2 pressPx);
+            _dashCtl.Press(helm, pressPx, in cfg);
+        }
 
         private void ReadPointer(HelmControlStyle style, IHelmControl helm, Rect card,
                                  in HelmOverlaySettings cfg)

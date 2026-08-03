@@ -214,6 +214,13 @@ namespace HiddenHarbours.Core
                  "pointer-mapping radii. Presentation only — reposition/rescale freely, no code (rule 6).")]
         public HelmOverlaySettings HelmOverlay = HelmOverlaySettings.Default;
 
+        [Header("Helm wheel (the grabbable steering wheel — ADR 0025 S2a)")]
+        [Tooltip("Mouse-spin feel of the console/sport steering wheel: lock-to-lock turns, coast " +
+                 "friction, and the optional self-centre spring (0 = a real cable helm that HOLDS " +
+                 "where released; > 0 = springy arcade feel). Rig defaults from wheelRig.js; " +
+                 "owner-tunable, no code (rule 6).")]
+        public HelmWheelSettings HelmWheel = HelmWheelSettings.Default;
+
         [Header("The strike (owner drop §10.2 — \"pull back and press maybe?\": BOTH candidates, tunable)")]
         [Tooltip("Which gesture sets the hook on the true take, and how hard the pull-back must be. " +
                  "BOTH candidates ship ON so the owner picks in play — turn one off to feel the other " +
@@ -486,6 +493,14 @@ namespace HiddenHarbours.Core
                  "drive across its FULL range (up = ahead). Smaller = twitchier.")]
         [Min(1f)] public float TillerDragFullDrivePx;
 
+        [Tooltip("Scale of the COMPOSED DASH's small state (S2a — the 600×510 console/sport card is " +
+                 "far bigger than a lone instrument, so it gets its own dial). 0.5 = half rig size.")]
+        [Min(0.1f)] public float DashSmallScale;
+
+        [Tooltip("Scale of the composed dash's FOCUSED state. Clamped at runtime so the card always " +
+                 "fits the screen.")]
+        [Min(0.1f)] public float DashFocusScale;
+
         /// <summary>Native-size card CENTRED AT THE BOTTOM (the owner's 2026-08-03 placement ruling),
         /// 2× focus rising from the same bottom-centre anchor.</summary>
         public static HelmOverlaySettings Default => new HelmOverlaySettings
@@ -497,6 +512,46 @@ namespace HiddenHarbours.Core
             MarginY = 16f,
             GrabRadiusPx = 30f,
             TillerDragFullDrivePx = 140f,
+            DashSmallScale = 0.5f,
+            DashFocusScale = 1.5f,
+        };
+    }
+
+    /// <summary>
+    /// Owner tuning for the <b>grabbable steering wheel</b> (<see cref="GameConfig.HelmWheel"/> —
+    /// ADR 0025 S2a). The spin model itself is the wheel rig's own
+    /// (<c>docs/art/rigs/ui/console-wheel/Art/wheelRig.js</c> <c>step()</c>, ported to
+    /// <c>WheelRigGeometry</c>); these are the three knobs the rig exposes, defaulted to its own
+    /// values, plus the rim-grab pad. The wheel only ever DRIVES steer during a focused grab — it
+    /// otherwise mirrors <c>BoatController.Steer</c> (one state, one owner).
+    /// </summary>
+    [System.Serializable]
+    public struct HelmWheelSettings
+    {
+        [Tooltip("Lock-to-lock turns EACH WAY (wheelRig.js default 1.5 — cable steer on a 7 m " +
+                 "skiff). Full lock = turns × 360° of wheel; steer = wheel angle / lock.")]
+        [Min(0.25f)] public float Turns;
+
+        [Tooltip("Coast friction (per-second exponential decay of spin velocity) after the rim is " +
+                 "released. wheelRig.js default 2.4. Higher = the wheel dies faster.")]
+        [Min(0f)] public float Friction;
+
+        [Tooltip("Self-centre spring (0 = a working cable helm: released, the wheel coasts and " +
+                 "HOLDS — the rig's stock feel). > 0 opts into a springy arcade return-to-centre.")]
+        [Min(0f)] public float SelfCentre;
+
+        [Tooltip("How far outside the wheel's outer rim (rig px) a grab still catches — the same " +
+                 "kind of forgiveness as the lever's GrabRadiusPx.")]
+        [Min(0f)] public float RimGrabPadPx;
+
+        /// <summary>The wheel rig's own stock feel (wheelRig.js:183-191): 1.5 turns, friction 2.4,
+        /// no self-centre (cable steer holds), an 8 px rim-grab pad.</summary>
+        public static HelmWheelSettings Default => new HelmWheelSettings
+        {
+            Turns = 1.5f,
+            Friction = 2.4f,
+            SelfCentre = 0f,
+            RimGrabPadPx = 8f,
         };
     }
 
