@@ -84,10 +84,9 @@ MonoBehaviour:
   HelmOverlay:
     SmallScale: 1
     FocusScale: 2
-    MarginX: 24
-    MarginY: 16
+    SmallCenterX01: 0.5
     FocusCenterX01: 0.5
-    FocusCenterY01: 0.5
+    MarginY: 16
     GrabRadiusPx: 30
     TillerDragFullDrivePx: 140
   RodFight:

@@ -13,22 +13,36 @@ namespace HiddenHarbours.UI
     public static class HelmOverlayLayout
     {
         /// <summary>
-        /// The instrument card's screen rect for a state: SMALL sits in the bottom-right at
-        /// <c>SmallScale</c> (placeholder placement — the owner repositions via the settings);
-        /// FOCUSED is centred on the configured anchor at <c>FocusScale</c>, so the rig's controls —
-        /// and its hit geometry, which scales with the same rect — are properly clickable
-        /// (owner addition 2026-08-03).
+        /// The instrument card's screen rect for a state — BOTH states anchor CENTRED AT THE BOTTOM
+        /// of the screen (the owner's placement ruling, 2026-08-03, replacing S1's bottom-right
+        /// placeholder): the small dash card sits at <c>SmallCenterX01</c>/<c>MarginY</c>, and the
+        /// FOCUSED state rises from the same bottom anchor at <c>FocusScale</c>, so the rig's
+        /// controls — and its hit geometry, which scales with the same rect — are properly
+        /// clickable. All anchors are data (rule 6).
         /// </summary>
         public static Rect CardRect(bool focused, int rigW, int rigH, in HelmOverlaySettings s,
                                     float screenW, float screenH)
         {
             float scale = focused ? s.FocusScale : s.SmallScale;
             float w = rigW * scale, h = rigH * scale;
-            if (!focused)
-                return new Rect(screenW - s.MarginX - w, s.MarginY, w, h);
-            return new Rect(screenW * s.FocusCenterX01 - w * 0.5f,
-                            screenH * s.FocusCenterY01 - h * 0.5f, w, h);
+            float cx = screenW * (focused ? s.FocusCenterX01 : s.SmallCenterX01);
+            return new Rect(cx - w * 0.5f, s.MarginY, w, h);
         }
+
+        /// <summary>
+        /// The tiller handle's Z rotation (deg, Unity CCW-positive) for a helm steer — the
+        /// PHYSICAL tiller sense (owner fix 2026-08-03: "it should match the outboard tiller's
+        /// position"): on a real outboard the whole motor pivots about the clamp, so steering to
+        /// STARBOARD (+1) pushes the handle to PORT. The rig's own README
+        /// (docs/art/rigs/ui/outboard-tiller/README.md, "Steering is not a render parameter":
+        /// <c>ctx.rotate(steer * maxSteer)</c>, canvas clockwise-positive) swings the handle TOWARD
+        /// the turn — a display-joystick convention its preview harness shares, which is exactly
+        /// the backwards feel the owner flagged. So this deliberately INVERTS the harness's
+        /// cosmetic sense: +steer → +Z (counter-clockwise on screen, y-up) → handle tip to port.
+        /// Hardcoded, not a data knob — a tiller's geometry is physics, not taste; pinned by test.
+        /// </summary>
+        public static float TillerHandleAngleZDeg(float steer)
+            => Mathf.Clamp(steer, -1f, 1f) * TillerRigRender.MaxSteerDeg;
 
         /// <summary>
         /// Map a screen point into RIG pixels (top-left origin, y down — the rigs' own space, so hit

@@ -18,19 +18,22 @@ namespace HiddenHarbours.Tests.UI.EditMode
         private const float ScreenW = 1920f, ScreenH = 1080f;
 
         [Test]
-        public void CardRect_Small_SitsBottomRight_AtSmallScale()
+        public void CardRect_Small_SitsBottomCentre_AtSmallScale()
         {
+            // The owner's placement ruling (2026-08-03): "the placement of the ui to be centred at
+            // the bottom" — replacing the S1 bottom-right placeholder.
             HelmOverlaySettings s = Cfg;
             Rect r = HelmOverlayLayout.CardRect(false, LeverRigGeometry.W, LeverRigGeometry.H,
                                                 in s, ScreenW, ScreenH);
             Assert.That(r.width, Is.EqualTo(LeverRigGeometry.W * s.SmallScale).Within(1e-3f));
             Assert.That(r.height, Is.EqualTo(LeverRigGeometry.H * s.SmallScale).Within(1e-3f));
-            Assert.That(r.xMax, Is.EqualTo(ScreenW - s.MarginX).Within(1e-3f), "right margin");
+            Assert.That(r.center.x, Is.EqualTo(ScreenW * s.SmallCenterX01).Within(1e-3f), "centred");
+            Assert.That(s.SmallCenterX01, Is.EqualTo(0.5f), "the default IS bottom-centre");
             Assert.That(r.yMin, Is.EqualTo(s.MarginY).Within(1e-3f), "bottom margin");
         }
 
         [Test]
-        public void CardRect_Focused_CentresOnTheAnchor_AtFocusScale()
+        public void CardRect_Focused_RisesFromTheSameBottomCentreAnchor_AtFocusScale()
         {
             HelmOverlaySettings s = Cfg;
             Rect r = HelmOverlayLayout.CardRect(true, TillerRigRender.W, TillerRigRender.H,
@@ -38,7 +41,29 @@ namespace HiddenHarbours.Tests.UI.EditMode
             Assert.That(r.width, Is.EqualTo(TillerRigRender.W * s.FocusScale).Within(1e-3f),
                         "the enlargement IS the focus state — controls become properly clickable");
             Assert.That(r.center.x, Is.EqualTo(ScreenW * s.FocusCenterX01).Within(1e-3f));
-            Assert.That(r.center.y, Is.EqualTo(ScreenH * s.FocusCenterY01).Within(1e-3f));
+            Assert.That(r.yMin, Is.EqualTo(s.MarginY).Within(1e-3f),
+                        "focused anchors to the bottom too — the helm rises from the dash");
+        }
+
+        [Test]
+        public void TillerHandleAngle_SwingsOppositeTheTurn_ThePhysicalTillerSense()
+        {
+            // Owner fix (2026-08-03): "the tiller is wired backwards — it should match the outboard
+            // tiller's position." A real outboard pivots the whole motor about the clamp: steer to
+            // STARBOARD (+1) pushes the handle to PORT. Unity Z is CCW-positive (y-up), so handle-
+            // to-port = POSITIVE Z. The rig harness's own rotation (README: ctx.rotate(steer *
+            // maxSteer), canvas clockwise-positive) is the display-joystick sense S1 shipped — no
+            // S1 test pinned the direction, which is exactly how the wrong sense got through; this
+            // test is that pin.
+            Assert.That(HelmOverlayLayout.TillerHandleAngleZDeg(1f),
+                        Is.EqualTo(TillerRigRender.MaxSteerDeg),
+                        "full starboard → handle hard to port (+Z, CCW on screen)");
+            Assert.That(HelmOverlayLayout.TillerHandleAngleZDeg(-1f),
+                        Is.EqualTo(-TillerRigRender.MaxSteerDeg),
+                        "full port → handle hard to starboard (−Z)");
+            Assert.That(HelmOverlayLayout.TillerHandleAngleZDeg(0f), Is.EqualTo(0f), "amidships");
+            Assert.That(HelmOverlayLayout.TillerHandleAngleZDeg(2f),
+                        Is.EqualTo(TillerRigRender.MaxSteerDeg), "clamped at full lock");
         }
 
         [Test]

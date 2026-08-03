@@ -153,9 +153,11 @@ namespace HiddenHarbours.UI
                 // (tillerRig.js:37-45). Pivot in UI space: x centred, y measured from the BOTTOM.
                 _imageRect.pivot = new Vector2(TillerRigRender.PivotX / (float)TillerRigRender.W,
                                                1f - TillerRigRender.PivotY / (float)TillerRigRender.H);
-                // steer +1 = starboard; canvas rotation is clockwise-positive with y down, Unity's is
-                // counter-clockwise-positive with y up → negate to match the preview's sense.
-                _imageRect.localEulerAngles = new Vector3(0f, 0f, -steer * TillerRigRender.MaxSteerDeg);
+                // The PHYSICAL tiller sense (owner fix 2026-08-03): steer to starboard = handle to
+                // port — the deliberate inverse of the preview harness's display-joystick rotation.
+                // See HelmOverlayLayout.TillerHandleAngleZDeg for the full convention citation.
+                _imageRect.localEulerAngles =
+                    new Vector3(0f, 0f, HelmOverlayLayout.TillerHandleAngleZDeg(steer));
             }
             else
             {
