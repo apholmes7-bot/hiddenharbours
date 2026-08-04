@@ -95,6 +95,39 @@ Two additive Core pieces, both deterministic (recomputed from `(worldSeed, gameT
   and the future **water depth-gradient shader** read it through Core, never referencing World. **Null =
   open water** (everywhere submerged / no walkable ground) — callers null-check rather than throw. Closes
   ADR 0009's "within-region elevation source" open question; world + gameplay can now build in parallel.
+- **`Core.IFishSchools` + `Core.FishSchool`/`FishMark` + `GameServices.FishSchools`** — the **fish-school**
+  seam (ADR 0025 S3): where "there are fish here" is asked and answered. A `FishSchool` is an *area*
+  (centre + `RadiusMetres`) at a *depth in metres*, for a *while* (`[Start, End)` game seconds), carrying a
+  `MarkCount` and a species-id set. **Gameplay** produces schools and reads `SchoolsAt` to raise the bite
+  rate and weight the species roll; **UI** reads `MarksAt` to draw the sonar — one model, two readers, so
+  the marks on the glass are literally the object that changes the fishing (the owner's honesty invariant).
+  `MarkCount` is that invariant in one field: it is both how many fish the glass draws and the expected
+  bite rate. Both calls fill a caller-owned list and allocate nothing (rule 7); depths cross the seam in
+  **metres** and the presenter divides by the player's RANGE at paint time, so a normalised depth is never
+  stored. Schools are **recomputed, never saved** (rule 5) — no DTO, no save field.
+  **⚠ Unlike every other optional service on `GameServices`, this one is NEVER null**: absent a registered
+  model it is `EmptyFishSchools`, an honest empty sea. That is deliberate — it is what lets the finder's UI
+  and the fish model be built in parallel (the UI host draws an empty sonar with no model in the project,
+  and the model swaps in with a single assignment), and it is the right shipped behaviour in a bare art
+  scene, in EditMode, and in a region with no fish authored yet. Producers **clear the registration on
+  disable** (assign null — the getter turns that back into the empty sea); the getter also checks Unity
+  fake-null, so a destroyed MonoBehaviour producer degrades to the empty sea rather than throwing.
+  **The producing model** (ADR 0025 S3a, gameplay-side) is `Fishing.FishSchoolModel` over
+  `Fishing.FishSchoolMath`: a *pure function* of `(worldSeed, gameTime, place, weather, season)` — the
+  world is diced into cells and time into slots, and each `(cell, slot)` is one hashed coin-flip gated by
+  **location** (water deep enough), **weather** (sea state) and **date** (season), with everything else
+  about the school drawn from the same key. No spawner, no `Update`, no timer, nothing saved. It is
+  registered by `FishingController` (so schools exist whether or not any boat has a finder fitted) off the
+  **same species array the catch resolver rolls from**, and the fishing path reads the registered seam —
+  not its own instance — through `Fishing.SchoolInfluence`, which is what makes the honesty invariant
+  structural rather than remembered. Tuning: `GameConfig.FishSchools`.
+- **`IEnvironmentService.SeaState01At(double t)`** — the continuous sea state (0 glass .. 1 storm) at an
+  **arbitrary** time; the weather twin of `TideHeightAt`, and additive in the same shape (a **default
+  interface method** returning `Sample().SeaState01`, overridden by the real `EnvironmentService` with the
+  pure `WeatherModel` evaluation). Needed by any consumer reasoning about a *span* rather than this
+  instant: the fish-school sim decides a school from the weather at the moment it formed and then lets it
+  stand for its whole window — reading "now" instead would make schools blink in and out as the wind
+  wandered across a threshold, and the finder would faithfully draw the blinking.
 - **`Core.IStandableSurface` + `Core.StandableSurfaces`** — the **standable-structure** seam: things
   BUILT (a wharf deck today; boat decks and washboards in M2) that a person stands *on*, whose standing
   height is their own rather than the seabed's. `TryGetDeckElevation(worldPos, out deck)` answers "am I

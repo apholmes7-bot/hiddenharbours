@@ -88,6 +88,43 @@ choice is informed rather than surprising.
 The alternative (a pick-a-boat step on the buy screen) is a pure UI addition on top of this schema; if
 the owner prefers it, nothing here changes.
 
+## Amendment — 2026-08-03: schema **v9** adds the fish finder's `RangeMetres` (a preference, not a row)
+
+Landed with ADR 0025 **S3 Step 0** (the fish-finder seam), by lead-architect as save-schema owner.
+
+**What changed.** `SounderPrefsDto` (and its runtime twin `SounderPrefs`) gains one field —
+`RangeMetres`, the finder's vertical sonar scale in metres — and `SaveMigration.CurrentVersion` goes
+8 → 9. Nothing else moves: no new list, no new shape, no change to `HullInstruments`.
+
+**Why this does not contradict "no further schema bump" above.** That sentence, in *Consequences*, is
+about **ownership rows**: fitting a finder, a radar or a GPS is one more `(hullId, instrumentId)` pair
+in `HullInstruments`, and that promise holds exactly as written — S3 adds zero rows-shapes and the
+fitment of `instrument.fish_finder` needed no schema work at all. What bumped is a **preference**, the
+case the same paragraph already flagged as separate ("the chartplotter's waypoints/routes are a
+genuinely different shape and still need their own step"). A new preference field is the smallest
+possible instance of that, and ADR 0008's contract is that *any* new persisted field ships with a bump
+and a forward migration — preferences are not exempt. The distinction to carry forward: **one shape,
+many contents** was the promise; a new *field* is a new shape, however small.
+
+**The step HEALS; it does not merely default.** A v8 row read under the v9 struct arrives with
+`RangeMetres = 0` (JsonUtility zero-fills an absent value field), and zero is not a small range — the
+bottom contour and every fish mark are drawn at `depth / range`, so it is Inf/NaN and a garbage picture
+on exactly the hull whose glass the player had already touched. The v8→v9 step therefore walks
+`HullSounderPrefs` and repairs any non-positive range to `FishFinderSettings.Default.DefaultRangeMetres`
+(20 m — the rig's own default scale). The repair is also run unconditionally after the version chain, so
+a hand-edited file cannot reintroduce the divide-by-zero. It is asset-free (the code default, never
+`GameServices.Config`), following the v3→v4 precedent that a migration never depends on a
+ScriptableObject having been wired.
+
+**Still true after v9:** §5 of ADR 0025 S2's rule that the reading is never stored. The save carries the
+finder's display *scale*; it does not carry a depth, and it does not carry a **fish school** — schools are
+recomputed from `(worldSeed, gameTime)` + place + weather like the tide is (rule 5), and
+`SaveMigrationV9Tests` asserts by reflection that no save field ever names one.
+
+**One alarm, not two.** The finder keeps the depth sounder's shallow alarm unchanged — same
+`DepthSounder.ShallowAlarm` rule, same `Armed`/`AlarmMetres` fields, which already persist at v8. That is
+why the bump is exactly one field.
+
 ## §5 — "Can this helm take it?"
 
 `HelmConsoleDef` carries `SupportsFishFinder` but no `SupportsSounder`, and this ADR deliberately does

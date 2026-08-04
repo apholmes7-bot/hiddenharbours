@@ -54,11 +54,29 @@ namespace HiddenHarbours.Fishing
         /// something to chase. The mode the owner's "no bait, no bait-fishing" rule turns on.</summary>
         public bool HasBait => BaitFavours != null && BaitFavours.Count > 0;
 
-        /// <summary>Full constructor — a cast carrying depth, tackle and bait.</summary>
+        /// <summary>
+        /// THE FISH ACTUALLY UNDER THE ROD (ADR 0025 S3) — the schools at this spot, this instant, reduced
+        /// to what they are worth (<see cref="SchoolInfluence"/>). The <b>same</b> schools the fish finder
+        /// is drawing on its glass, read from the same model: that identity is the owner's honesty
+        /// invariant, and carrying the reduced school here is how it reaches the roll.
+        ///
+        /// <para><b>⚠ Weather is deliberately NOT a field on this struct.</b> Weather is an INPUT to the
+        /// school (it decides whether one is here at all, and how deep it sits); the school is what reaches
+        /// the resolver. That keeps the weather dependency in one place — the school sim — instead of
+        /// spreading a second weather read through the catch path, and it is why
+        /// <see cref="CatchResolver"/>'s signatures did not have to change to carry any of this.</para>
+        ///
+        /// <para><see cref="SchoolInfluence.None"/> on every existing constructor, so a context built the
+        /// old way rolls bit-for-bit as it always did.</para>
+        /// </summary>
+        public readonly SchoolInfluence School;
+
+        /// <summary>The fullest constructor — a cast carrying depth, tackle, bait and the fish under it.</summary>
         public CatchContext(string regionId, float tideHeight, float hourOfDay, Season season, Gear gear,
                             float heldDepthM, float floorDepthM,
                             LureTag lure,
-                            System.Collections.Generic.IReadOnlyList<string> baitFavours)
+                            System.Collections.Generic.IReadOnlyList<string> baitFavours,
+                            in SchoolInfluence school)
         {
             RegionId = regionId;
             TideHeight = tideHeight;
@@ -69,6 +87,18 @@ namespace HiddenHarbours.Fishing
             FloorDepthM = floorDepthM;
             Lure = lure;
             BaitFavours = baitFavours;
+            School = school;
+        }
+
+        /// <summary>Full constructor (preserved) — a cast carrying depth, tackle and bait, with no school
+        /// under it: the roll is exactly the one that shipped before the school sim existed.</summary>
+        public CatchContext(string regionId, float tideHeight, float hourOfDay, Season season, Gear gear,
+                            float heldDepthM, float floorDepthM,
+                            LureTag lure,
+                            System.Collections.Generic.IReadOnlyList<string> baitFavours)
+            : this(regionId, tideHeight, hourOfDay, season, gear, heldDepthM, floorDepthM, lure,
+                   baitFavours, SchoolInfluence.None)
+        {
         }
 
         /// <summary>Depth constructor (preserved) — no tackle, no bait, so the roll is exactly the
@@ -185,6 +215,12 @@ namespace HiddenHarbours.Fishing
         /// squid strip on a cod jig should be better for a cod than either alone. Neutral (×1) whenever
         /// there is nothing to say — no bait, no tackle, or an unauthored species — so a context carrying
         /// neither is bit-for-bit the roll that shipped before this existed.</para>
+        ///
+        /// <para><b>And the SCHOOL under the rod</b> (ADR 0025 S3) — the last multiplier, and the one that
+        /// makes the fish finder honest: the marks on the glass and this weight are read from the same
+        /// <see cref="SchoolInfluence"/>, so what you can see is what is biting. Same rules as the others —
+        /// a soft weight eased by how well you are sitting on the school, ×1 with no school under you, and
+        /// never zero for a species the school does not hold.</para>
         /// </summary>
         public static float EffectiveWeight(FishSpeciesDef f, in CatchContext ctx,
                                             in DepthDropSettings depth, in BaitTackleSettings kit)
@@ -197,6 +233,7 @@ namespace HiddenHarbours.Fishing
 
             w *= BaitAffinity(f, in ctx, in kit);
             w *= LureAffinity(f, in ctx, in kit);
+            w *= ctx.School.AffinityFor(f.Id);
             return w;
         }
 

@@ -181,6 +181,16 @@ namespace HiddenHarbours.Core
         /// <summary>Amber night backlight rather than the day panel.</summary>
         public bool Night;
 
+        /// <summary>
+        /// The fish finder's vertical scale in METRES — NEW at schema v9 (ADR 0025 S3).
+        ///
+        /// <para><b>⚠ A v8 row deserialized under this struct arrives with 0, and 0 is not a small range —
+        /// it is a divide-by-zero</b> (the contour and every mark are drawn at <c>depth / range</c>). The
+        /// v8→v9 migration therefore HEALS a non-positive value to the shipped default rather than merely
+        /// defaulting the field on new rows. See <see cref="SaveMigration"/>.</para>
+        /// </summary>
+        public float RangeMetres;
+
         public SounderPrefsDto(string hullId, in SounderPrefs prefs)
         {
             HullId = hullId;
@@ -188,10 +198,11 @@ namespace HiddenHarbours.Core
             Armed = prefs.Armed;
             Feet = prefs.Feet;
             Night = prefs.Night;
+            RangeMetres = prefs.RangeMetres;
         }
 
         /// <summary>This record as the runtime value.</summary>
-        public SounderPrefs Prefs => new SounderPrefs(AlarmMetres, Armed, Feet, Night);
+        public SounderPrefs Prefs => new SounderPrefs(AlarmMetres, Armed, Feet, Night, RangeMetres);
     }
 
     /// <summary>

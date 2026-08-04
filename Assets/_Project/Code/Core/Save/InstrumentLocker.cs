@@ -94,8 +94,11 @@ namespace HiddenHarbours.Core
             {
                 if (save.HullSounderPrefs[i].HullId != hullId) continue;
                 SounderPrefsDto existing = save.HullSounderPrefs[i];
+                // ⚠ EVERY field, or a preference silently stops persisting. RangeMetres joined at v9;
+                // omitting it here would make the finder's RANGE pushers move the glass and never the save.
                 if (existing.AlarmMetres == row.AlarmMetres && existing.Armed == row.Armed
-                    && existing.Feet == row.Feet && existing.Night == row.Night) return false;
+                    && existing.Feet == row.Feet && existing.Night == row.Night
+                    && existing.RangeMetres == row.RangeMetres) return false;
                 save.HullSounderPrefs[i] = row;    // SounderPrefsDto is a struct — write it back
                 return true;
             }

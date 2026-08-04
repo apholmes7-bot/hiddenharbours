@@ -13,7 +13,7 @@ namespace HiddenHarbours.Core
     public static class SaveMigration
     {
         /// <summary>The schema version this build writes. Bump when you add a field + a migration step.</summary>
-        public const int CurrentVersion = 8;
+        public const int CurrentVersion = 9;
 
         /// <summary>
         /// The region id Port Greywick was saved under before it was renamed Nine Mile Creek, and the id
@@ -161,6 +161,36 @@ namespace HiddenHarbours.Core
                 data.SchemaVersion = 8;
             }
 
+            // ---- v8 → v9: the fish finder's vertical RANGE joins the per-hull sounder preferences
+            // (ADR 0025 S3 — the sonar supersedes the plain sounder in the same cutout and keeps its
+            // shallow alarm, so it shares that record rather than growing a parallel one). ONE new field:
+            // SounderPrefsDto.RangeMetres.
+            //
+            // ⚠ THIS STEP HEALS, IT DOES NOT MERELY DEFAULT — and that distinction is the whole reason it
+            // exists. A v8 row deserialized under the v9 struct arrives with RangeMetres = 0 (JsonUtility
+            // zero-fills an absent value field), and 0 is not "a small range": every fish mark and the
+            // bottom contour are drawn at `depth / range`, so a zero produces Inf/NaN and a garbage
+            // picture on the first hull the player ever touched the glass on. Defaulting the field on NEW
+            // rows would leave exactly those existing rows broken. So we walk the list and repair.
+            //
+            // ⚠ ADR 0030 said the per-hull instrument shape needs "no further schema bump" for S3–S5.
+            // That sentence is about OWNERSHIP ROWS — fitting a finder, a radar or a GPS is one more
+            // (hullId, instrumentId) pair in HullInstruments, and that promise holds exactly as written:
+            // nothing here touches that list or its shape. What is bumping is a PREFERENCE, which ADR 0030
+            // §"Consequences" already anticipated as a separate matter ("the chartplotter's
+            // waypoints/routes are a genuinely different shape and still need their own step"). A new
+            // preference field is the smallest possible version of that, and the schema contract in ADR
+            // 0008 is that a new persisted field ships with a bump and a forward migration — not that
+            // preferences are exempt. Recorded as an amendment on ADR 0030.
+            //
+            // Deliberately NOT here (Ruling E): a second alarm. The finder reuses DepthSounder.ShallowAlarm
+            // and the Armed/AlarmMetres fields that already persist at v8, so this bump stays ONE field.
+            if (data.SchemaVersion < 9)
+            {
+                HealSounderRange(data);
+                data.SchemaVersion = 9;
+            }
+
             // ---- future steps go here, each guarded by `if (data.SchemaVersion < N)` and bumping to N.
 
             // Defensive null-repair (a hand-edited or partial JSON can omit reference-typed fields).
@@ -179,12 +209,39 @@ namespace HiddenHarbours.Core
             data.HullInstruments ??= new System.Collections.Generic.List<HullInstrument>();
             data.HullSounderPrefs ??= new System.Collections.Generic.List<SounderPrefsDto>();
             data.ActiveHullId ??= "";
+            // Same defensive spirit as the null-repair above, for the one field where a zero is not a
+            // value but a crash: a hand-edited JSON, or a row written by a build between the field landing
+            // and this heal, would otherwise divide by it. Idempotent — after the v9 step there is nothing
+            // left to fix.
+            HealSounderRange(data);
 
             // Clamp to the version we actually understand (never claim to be newer than this build).
             if (data.SchemaVersion > CurrentVersion)
                 data.SchemaVersion = CurrentVersion;
 
             return data;
+        }
+
+        /// <summary>
+        /// Repair every sounder-preference row whose fish-finder RANGE is not a positive number of metres,
+        /// setting it to the shipped default (<see cref="FishFinderSettings.Default"/>). The ONE place that
+        /// rule lives, called from the v8→v9 step and once more unconditionally.
+        ///
+        /// <para><b>Asset-free on purpose</b> (the v3→v4 precedent): the migration reads the code default
+        /// rather than <c>GameServices.Config</c>, so loading a save can never depend on a
+        /// <c>ScriptableObject</c> having been wired first — and so this is testable with no scene.</para>
+        /// </summary>
+        private static void HealSounderRange(SaveData data)
+        {
+            if (data?.HullSounderPrefs == null) return;
+            float defaultRange = FishFinderSettings.Default.DefaultRangeMetres;
+            for (int i = 0; i < data.HullSounderPrefs.Count; i++)
+            {
+                SounderPrefsDto dto = data.HullSounderPrefs[i];
+                if (dto.RangeMetres > 0f) continue;         // a dialled range is never overwritten
+                dto.RangeMetres = defaultRange;
+                data.HullSounderPrefs[i] = dto;             // SounderPrefsDto is a struct — write it back
+            }
         }
     }
 }

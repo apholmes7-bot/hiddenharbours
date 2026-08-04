@@ -100,5 +100,31 @@ namespace HiddenHarbours.Environment
 
         public float TideHeightAt(double totalSeconds) =>
             TideModel.Height(totalSeconds, _activeTideProfile, _config);
+
+        /// <summary>
+        /// The continuous sea state at an ARBITRARY time (<see cref="IEnvironmentService.SeaState01At"/>) —
+        /// the same pure <see cref="WeatherModel"/> evaluation <see cref="Sample"/> performs, just at the
+        /// requested instant instead of now. Deterministic from <c>(worldSeed, t)</c> and allocation-free,
+        /// so a consumer reasoning about a SPAN of time (the fish-school windows) can hold the weather
+        /// still instead of re-deciding against a drifting wind every frame.
+        ///
+        /// <para><b>The dev storm override applies here too</b>, and must: it exists so the owner can VIEW
+        /// the sea in a storm, and if this read stayed on the pure sim the fish would still be shoaling
+        /// like a calm day while the sea around them raged. One overridden truth, every consumer — the
+        /// discipline <see cref="Sample"/>'s own note sets out. Editor/dev builds only; a release build is
+        /// the pure sim.</para>
+        /// </summary>
+        public float SeaState01At(double totalSeconds)
+        {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            if (_devForceSeaState) return Mathf.Clamp01(_devSeaState01);
+#endif
+            float secondsPerHour = _config != null
+                ? _config.SecondsPerHour
+                : GameConfig.DefaultSecondsPerDay / 24f;
+            Vector2 wind = WeatherModel.SampleWind(totalSeconds, _worldSeed, secondsPerHour,
+                                                   _activeWindProfile);
+            return WeatherModel.SeaState01(wind.magnitude);
+        }
     }
 }

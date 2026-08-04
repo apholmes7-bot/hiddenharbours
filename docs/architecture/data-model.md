@@ -74,9 +74,20 @@ plain serializable DTOs owned by `SaveService` (`architecture/tech-architecture.
 > The **resolved fit** (`BoatEquipment.EffectiveFit`) and the **depth reading** are recomputed, never
 > stored. Cross-lane (`SaveData`/`SaveMigration` are Core/lead-architect) — ADR 0030.
 
+> **Save schema v9 (the fish finder's range, ADR 0025 S3 / ADR 0030 amendment)** — `SounderPrefsDto`
+> gained ONE field at v9: `RangeMetres`, the finder's vertical sonar scale in metres. No new list and no
+> new shape — fitting a fish finder is still one more `(hullId, instrumentId)` row in the v8 shape. The
+> `v8→v9` step **heals** rather than merely defaults: a v8 row read under the v9 struct arrives with
+> `RangeMetres = 0`, and zero is a divide-by-zero (every mark and the bottom contour are drawn at
+> `depth / range`), so the step repairs any non-positive range to
+> `FishFinderSettings.Default.DefaultRangeMetres`. The finder keeps the depth sounder's shallow alarm
+> unchanged, which is why the bump is exactly one field.
+
 **Recomputed, never saved:** tide height, wind, weather, sea state, visibility (from
 `worldSeed + gameTime`), dormant NPC positions, authored geometry, **a boat's effective helm fit and
-its depth-sounder reading** (ADR 0030). This is the determinism dividend — small, robust saves.
+its depth-sounder reading** (ADR 0030), and **fish schools** — where the fish are is a function of
+`(worldSeed, gameTime)` + place + weather like the tide is, so the finder's marks are never stored
+(ADR 0025 S3). This is the determinism dividend — small, robust saves.
 
 ## 5. ID & naming conventions
 
