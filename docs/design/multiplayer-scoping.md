@@ -14,6 +14,9 @@
 > - **Date:** 2026-08-04
 > - **Measured against:** commit `b8dcebe`, Unity 6000.5.0f1, ~128.6k lines of non-test C# across
 >   957 files and 142 MonoBehaviours.
+> - **Owner rulings recorded here:** **shared purse** (2026-08-04, §6.1.1) — one business, one
+>   wallet, several skippers. Deciding it shrank the largest workstream and closed the study's
+>   biggest design risk; the sizings below already reflect it.
 
 ---
 
@@ -102,17 +105,23 @@ The useful discovery is that the members split cleanly in two:
 
 | **World-scoped — fine as globals, no change needed** | **Player-scoped — must become per-player** |
 |---|---|
-| `Clock`, `Environment` | `Wallet` — *whose* money |
-| `TidalTerrain`, `CurrentRegionBounds` | `Licenses` — *whose* cod licence |
-| `Config`, `WaveField`, `WaveFetch`, all tunables | `ActiveBoat` — ⚠ **one slot, one boat** |
-| `FishSchools` | `HelmControl` — whose hand is on the tiller |
-| `CatchFactory`, `AudioMix`, `IconRegistry`, `RegionDisplayNames` | `HelmInstruments` — whose dash |
-| | `Save` — one blob, one player |
-| | `CurrentRegionId` — players can be in different regions |
+| `Clock`, `Environment` | `ActiveBoat` — ⚠ **one slot, one boat** |
+| `TidalTerrain`, `CurrentRegionBounds` | `HelmControl` — whose hand is on the tiller |
+| `Config`, `WaveField`, `WaveFetch`, all tunables | `HelmInstruments` — whose dash |
+| `FishSchools` | `CurrentRegionId` — *if* players may be apart (§6.1.2, open) |
+| `CatchFactory`, `AudioMix`, `IconRegistry`, `RegionDisplayNames` | |
+| `Wallet` — **stays shared** (owner ruling, §6.1.1) | |
+| `Licenses` — **stays shared** (owner ruling, §6.1.1) | |
+| `Save` — **one world blob**, plus a thin per-player record (§6.1.1) | |
 
-That right-hand column is the project. Seven singletons, but they are reached from the Player, Boats,
-Fishing, Economy, UI and World modules, and each has a documented "there is exactly ONE of these"
+That right-hand column is the project. Each has a documented "there is exactly ONE of these"
 invariant that a second player breaks:
+
+**⚠ That table already reflects the owner's shared-purse ruling (§6.1.1).** Before it, the
+player-scoped column held **seven** members; the ruling returns `Wallet`, `Licenses` and most of
+`Save` to the world-scoped column, leaving **three** irreducible ones (plus a conditional fourth).
+Those three are irreducible for a real reason: two people cannot stand at the same helm. Everything
+else about "the player" is now, by ruling, about *the business*.
 
 - **`ActiveBoat` is a single slot** (`Boats/ActiveBoatProbe.cs:48` — `OnEnable() => GameServices.ActiveBoat = this`).
   Put two crewed boats in a scene and **whichever enables last wins**; the depth sounder, fish finder,
@@ -123,11 +132,17 @@ invariant that a second player breaks:
   co-op you cannot stop the sea because your friend opened a menu — so the shell, the title flow,
   `ShellPause`, `WorldInputBlocked` and the settings sheet all need rework.
 - **The EventBus has no sender.** `FishCaught`, `MoneyChanged`, `CatchSold`, `BoatPurchased`,
-  `TrapPlaced` all mean *"the player did this"*. Every one needs a player identity, and every
-  subscriber needs to decide whether it cares about *this* player or *any* player.
-- **The save is one blob** (ADR 0008, schema v2). It becomes a host-owned world save plus per-player
-  records — schema v3 with a migration, and `SaveService.WritesAllowed` / the quit-to-title teardown
-  both change meaning when four people share a world.
+  `TrapPlaced` all mean *"the player did this"*. The shared-purse ruling softens this considerably:
+  `MoneyChanged` and `BoatPurchased` are now genuinely *business*-level facts and need no identity to
+  be **correct**. But the catch/sell/trap signals still want a sender for **attribution** — "Sam
+  landed a 12 kg cod" is most of what makes co-op feel like co-op, and a trap needs to know whose
+  hands set it. Identity becomes a presentation need rather than a correctness need, which is a much
+  cheaper kind of need.
+- **The save is one blob** (ADR 0008, schema v2). Under the ruling it stays *mostly* one blob — a
+  host-owned world save (money, fleet, licences, market, flags: all shared) plus a **thin** per-player
+  record (position, which boat you're at the helm of, gear in hand). Still a schema bump with a
+  migration, but a far smaller one than separate purses would have forced. `SaveService.WritesAllowed`
+  and the quit-to-title teardown still change meaning when several people share a world.
 
 ### 4.1 The input layer that was specified but never built
 
@@ -192,13 +207,13 @@ current pace, not a promise.
 | # | Workstream | What it means | Cost |
 |---|---|---|---|
 | 1 | **Input → intents** | Build the `InputService` §4.1 already owes. 31 files, 55 sites. Remote players become intent sources. | **M** — *owed anyway for gamepad* |
-| 2 | **Player identity split** | The 7 player-scoped singletons → a per-player context. Thread "which player" through the Player, Boats, Fishing, Economy, UI and World modules. **The big one.** | **XL** |
-| 3 | **EventBus player identity** | Sender on every player-scoped signal; every subscriber decides *this player* vs *any player*. 217 sites to audit. | **L** |
+| 2 | **Player identity split** | ~~7~~ **3** player-scoped singletons → a per-player context (the helm trio; §4). Still threads "which player" through Player, Boats, Fishing and UI — but **no longer through Economy**, which the ruling leaves shared. Still the big one, just materially smaller. | ~~XL~~ **L** |
+| 3 | **EventBus player identity** | Sender on the catch/sell/trap signals for **attribution**; money/purchase signals stay identity-free (§4). 217 sites to audit, most needing no change. | ~~L~~ **M** |
 | 4 | **Transport + ownership** | Netcode for GameObjects, `NetworkObject` on boats/players/traps, client-authoritative movement with host reconciliation. **State-sync, never lockstep** (§3). | **L** |
 | 5 | **Shell, pause & title rework** | The one-pause-path invariant dies (§4). Menus must not stop the world. Join/leave/host-migration flows are new UI that does not exist. | **L** |
-| 6 | **Economy authority** | Host-authoritative market ticks and transaction ordering. *Two players selling into one market that moves with supply is a genuinely great co-op feature* — and it needs real work to not be exploitable. | **L** |
+| 6 | **Economy authority** | Host-authoritative market ticks + transaction ordering (two simultaneous sells must not double-credit one purse). The *rival-economy* balance problem — trade, undercutting, the exploitable spread — **is deleted by the ruling**: partners pool, they don't compete. | ~~L~~ **M** |
 | 7 | **Fishing authority** | *Where* fish are is free (deterministic); *whether you hooked one* is not — the fight is explicitly RNG-injected (§3). Needs an authoritative roll. | **M** |
-| 8 | **Save schema v3** | Host-owned world save + per-player records, with a migration off v2 (ADR 0008/0020). Never strand a save. | **M** |
+| 8 | **Save schema** | One world blob + a thin per-player record, migrated off v2 (ADR 0008/0020). Never strand a save. | ~~M~~ **S–M** |
 | 9 | **Per-player region streaming** | Two players in different regions = two additively-loaded scenes at once. ADR 0004's scene model assumes one active region. | **M–L** |
 | 10 | **Camera** | `App/CameraFollow.cs` follows one player and clamps to `CurrentRegionBounds`. | **S** |
 | 11 | **Content rework** | NPC routines, dialogue and onboarding all address "the player". Ginny teaches *one* fisher. Quest and onboarding flags are per-world today. | **M** |
@@ -214,8 +229,9 @@ work**, in the same way the owner's buy-and-repair ruling already flagged VS-21 
 These are design, not engineering, and **the engineering cannot start without them** — each one
 changes workstream 2 and 6 substantially:
 
-1. **Shared purse or separate?** One boat, one business, two skippers — or two rival operations in
-   one harbour? This is *the* fork; it decides the shape of the economy work.
+1. ~~**Shared purse or separate?**~~ **✅ DECIDED — owner ruling, 2026-08-04: SHARED PURSE ("for
+   now").** One business, one wallet, one set of licences, one fleet; two or more skippers crewing
+   it. See §6.1.1 for what it changes and the three follow-ons it opens.
 2. **Can players be in different regions at once?** "Yes" costs workstream 9 and complicates
    everything. "No — you sail together" is dramatically cheaper *and* arguably cozier.
 3. **What happens when someone sleeps?** Time advance is a shared resource. Does the world wait for
@@ -224,6 +240,47 @@ changes workstream 2 and 6 substantially:
    fishing-trip-with-a-friend. "Always there" is T3 and a different product.
 5. **What happens to your dory when your friend quits mid-trip?**
 6. **How many players?** 2 is meaningfully cheaper than 4.
+
+#### 6.1.1 The shared-purse ruling (owner, 2026-08-04)
+
+**Ruling: one business, one purse, several skippers — "for now".** Recorded here rather than in the
+canon because multiplayer is not in the canon; if it ever goes there, this ruling goes with it.
+
+**What it decides.** The wallet, the licences, the fleet and the market position all belong to **the
+outfit**, not to a person. Any partner may spend from the purse and take any boat out. Progression —
+licences, unlocks, reputation — accrues to the business. What stays personal is only what must:
+where you are, which helm you are standing at, what is in your hands.
+
+**Why it is the cheaper answer, and by how much.** It moves three of the seven player-scoped
+singletons back to world-scope (§4) and deletes the rival-economy problem outright: workstream 2
+drops XL→L, 3 drops L→M, 6 drops L→M, 8 drops M→S–M. The headline "several months" does not
+collapse — workstreams 1, 4, 5, 9, 10, 11 and 12 are untouched — but the **riskiest design ambiguity
+in the whole study is now closed**, and the single most expensive workstream got materially smaller.
+
+**Why it is also the better answer for the fantasy.** It resolves the P2 tension §6.2 flags. A shared
+purse is not two players on one ladder — it is **one dynasty with two people crewing it**. The
+*Dory to Dynasty* arc survives completely intact because it was always the *outfit* that climbs. And
+it lands squarely on **P4**: a friend is not a second protagonist, a friend is *the first crew you
+ever had* — which is precisely the beat P4 says you should have to earn before you automate it.
+
+**On "for now" — this is genuinely low-risk, with one asterisk.** Choosing shared means *not doing*
+the work of splitting the wallet, not doing work you would later tear out; a future reversal defers
+cost rather than wasting it. The asterisk is the **migration**: a shared-purse save has no per-player
+balances to split, so reversing later means inventing them out of one pooled number — "who gets
+what?" is a question with no correct answer. Content and UI built assuming one business (a single
+balance readout, shared licence gating, one progression ladder) is the part that would actually need
+rework. Neither is a reason to hesitate now; both are reasons to make the call deliberately if it is
+ever revisited.
+
+**Three follow-ons it opens** (not blocking — recommended defaults given, all cheap to change):
+
+- **Can either partner spend without asking?** *Recommend yes*, with a visible ledger of who bought
+  what. Anything else needs a permission UI that does not exist, and "partners" is the whole framing.
+- **Can either partner take any boat?** *Recommend yes* — one purse implies one fleet, and per-boat
+  ownership would quietly reintroduce the personal-property split the ruling just removed.
+- **What if a partner plays while you are offline, and spends the purse?** This sharpens §6.1.4 (world
+  persistence) rather than answering it. *Recommend host-owned, play-when-both-on* — the "fishing trip
+  with a friend" shape, which makes the question moot.
 
 ### 6.2 Where multiplayer would genuinely *serve* the pillars
 
@@ -236,9 +293,9 @@ Not an argument to build it — an argument that it is not merely bolted on, sho
   coast.
 - **P4 (Earn It, Then Automate It)** — a friend is the first "crew" you ever had.
 
-And where it fights them: **P2 (Dory to Dynasty)** is a *long, legible ladder of personal
-ownership*. Two players on one ladder is the shared-purse question (§6.1.1) and it is not obvious the
-fantasy survives it.
+And where it *would have* fought them: **P2 (Dory to Dynasty)** is a *long, legible ladder of personal
+ownership*, and two players on one ladder was the open risk. **The shared-purse ruling closes it**
+(§6.1.1): the ladder belongs to the outfit, and both partners climb it together. P2 survives intact.
 
 ---
 
@@ -265,7 +322,10 @@ most of what T2 costs and delivers less. If the answer is "multiplayer", the ans
 4. **If the itch needs scratching: time-box the §5 spike to one week**, after M1's loop is judged
    fun. It answers "is sailing together delightful?" for about 1% of the cost of finding out the
    expensive way — but run it on a throwaway branch, and **do not merge it**.
-5. **Answer §6.1 before any engineering.** Especially the shared-purse question.
+5. **Answer §6.1 before any engineering.** ✅ The shared-purse fork is **decided** (§6.1.1) — the one
+   that mattered most, and it made the scope smaller. The next most valuable answer is **§6.1.2 (can
+   partners be in different regions at once?)**: "no — you sail together" deletes workstream 9
+   outright, and is arguably the cozier game.
 
 ### What it costs to defer
 
