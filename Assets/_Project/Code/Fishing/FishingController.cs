@@ -178,6 +178,17 @@ namespace HiddenHarbours.Fishing
                 Debug.LogWarning("[FishingController] No IHold found on the hold provider.", this);
         }
 
+        private void OnEnable() => InstallSchoolModel();
+
+        private void OnDisable()
+        {
+            // Only clear what we still own — a later producer may already have taken over (the
+            // GameServices.CurrentRegionBounds discipline). Assigning null is what turns the accessor back
+            // into EmptyFishSchools, so a torn-down region leaves an honest empty sea, never a dead model.
+            if (ReferenceEquals(GameServices.FishSchools, _schoolModel)) GameServices.FishSchools = null;
+            _schoolModel = null;
+        }
+
         private void Update() { /* input-driven: DevFishingInput (or the InputService) calls Tick. */ }
 
         /// <summary>Legacy two-arg tick (no pointer). The flick-cast needs a pointer to aim, so a press
@@ -317,6 +328,10 @@ namespace HiddenHarbours.Fishing
             _biteSim = null;
             EndRodFight();
             ResetDepthGame();
+            // Re-point the school model at the newly wired region/pool — but only if one is already
+            // installed (i.e. we are live in a scene). EditMode has no OnEnable, so a Configure there must
+            // not quietly register a model into GameServices behind an unrelated test's back.
+            if (_schoolModel != null) InstallSchoolModel();
         }
 
         /// <summary>Wire the controller including the shared GameConfig (the owner's FlickCast tuning).
@@ -326,6 +341,9 @@ namespace HiddenHarbours.Fishing
         {
             Configure(hold, regionFish, regionId, gear, seed, licenses);
             _config = config;
+            // The config carries the school tuning, and the base Configure above already rebuilt the model
+            // — off the OLD config. Rebuild once more now that the new one is in place.
+            if (_schoolModel != null) InstallSchoolModel();
         }
 
         // ---- phase transitions --------------------------------------------------------------
@@ -941,7 +959,13 @@ namespace HiddenHarbours.Fishing
         /// <summary>How long until the next bite. Broken water emboldens fish, so a rough day simply
         /// FISHES FASTER (owner's ruling 2026-07-25 — the reward half of the weather trade): the whole
         /// window scales by <see cref="SeaFightMath.BiteDelayScale"/>, ×1 in a flat calm. The RNG draw
-        /// itself is untouched, so a seeded rig still replays its own bite sequence.</summary>
+        /// itself is untouched, so a seeded rig still replays its own bite sequence.
+        ///
+        /// <para><b>And by the fish actually under you</b> (ADR 0025 S3): sitting on a school divides the
+        /// wait by <see cref="SchoolInfluence.BiteRateMultiplier"/> — the owner's "one fish, lower bite
+        /// rate; several fish, higher" — read from the SAME schools the fish finder is drawing. ×1 with no
+        /// school under the rod, so an unwired rig and the owner's off switch both fish exactly as
+        /// before.</para></summary>
         private float RandomBiteDelay()
         {
             float lo = Mathf.Min(_minBiteDelay, _maxBiteDelay);
@@ -949,7 +973,8 @@ namespace HiddenHarbours.Fishing
             float delay = lo + (float)(_rng?.NextDouble() ?? 0.0) * (hi - lo);
 
             SeaFishingSettings s = _config != null ? _config.SeaFishing : SeaFishingSettings.Default;
-            return delay * SeaFightMath.BiteDelayScale(SeaState01(), s.SeaBoldness01);
+            return delay * SeaFightMath.BiteDelayScale(SeaState01(), s.SeaBoldness01)
+                         * CurrentSchoolInfluence().BiteDelayScale;
         }
 
         #region Depth drop (Rod Fishing v2 Wave 2 — design §2.1/§2.3; maths in DepthDropMath)
@@ -1109,8 +1134,71 @@ namespace HiddenHarbours.Fishing
             Season season = clock != null ? clock.Season : Season.HighSummer;
             return new CatchContext(EffectiveRegionId, tide, hour, season, _gear,
                                     _depthGame ? _depthM : CatchContext.NoDepth, _floorM,
-                                    TiedOnLure, BaitOnTheHook);
+                                    TiedOnLure, BaitOnTheHook, CurrentSchoolInfluence());
         }
+
+        #region Fish schools (ADR 0025 S3 — the fish the finder draws ARE the fish that bite)
+        // The owner's honesty invariant, wired: this controller PRODUCES the school model (so it exists
+        // whether or not any boat has a fish finder fitted — delete the finder tomorrow and the fishing is
+        // unchanged), and READS the same model twice per cast — once to scale the wait for a bite
+        // (RandomBiteDelay) and once to weight the species roll (BuildContext). The finder's card reads
+        // the very same registered instance through IFishSchools.MarksAt.
+
+        private FishSchoolModel _schoolModel;
+
+        // Read-path scratch, allocated once (rule 7): a cast is resolved without a single allocation.
+        private readonly System.Collections.Generic.List<FishSchool> _schoolScratch =
+            new System.Collections.Generic.List<FishSchool>(FishSchoolMath.SearchCells);
+        private readonly System.Collections.Generic.List<string> _schoolSpeciesScratch =
+            new System.Collections.Generic.List<string>(8);
+
+        /// <summary>The owner's school tuning (<see cref="GameConfig.FishSchools"/>), falling back to the
+        /// shipped defaults on a rig with no config — the module's standing gate-off posture.</summary>
+        private FishSchoolSettings SchoolSettings
+            => _config != null ? _config.FishSchools : FishSchoolSettings.Default;
+
+        /// <summary>
+        /// WHERE THE LINE IS IN THE WATER — the bobber on the cast path, the angler's own feet on the
+        /// weighted/depth path (the rig goes straight down). The schools are queried here rather than at
+        /// the boat, because "am I over the fish" is a question about the hook, not about the helm.
+        /// </summary>
+        private Vector2 FishingSpot
+            => !_depthGame && _lastCast.IsCast ? _lastCast.LandingPoint : AnglerPosition;
+
+        /// <summary>
+        /// The schools under the hook right now, reduced to what they are worth
+        /// (<see cref="SchoolInfluence"/>). Sampled at the moment it is needed rather than cached at the
+        /// cast, so drifting off the fish while you wait genuinely loses you the school — which is the
+        /// same truth the finder's glass is showing at that instant.
+        ///
+        /// <para><see cref="GameServices.FishSchools"/> is never null (it is the empty sea until a model
+        /// registers), so this needs no null check and returns a neutral influence wherever there is no
+        /// model — EditMode, a bare art scene, a region with no fish authored yet.</para>
+        /// </summary>
+        private SchoolInfluence CurrentSchoolInfluence()
+        {
+            double now = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : 0.0;
+            return SchoolInfluence.At(GameServices.FishSchools, FishingSpot, now,
+                                      _depthGame ? _depthM : CatchContext.NoDepth,
+                                      DepthSettings, SchoolSettings,
+                                      _schoolScratch, _schoolSpeciesScratch);
+        }
+
+        /// <summary>
+        /// Build and register the region's school model (<see cref="GameServices.FishSchools"/>).
+        ///
+        /// <para><b>The pool is the very same array the catch resolver rolls from</b>, which is what makes
+        /// "the school holds fish that could actually bite here" structural rather than a thing to
+        /// remember. Called on enable and again from <see cref="Configure"/> whenever a model is already
+        /// installed, so a re-wired region's schools follow its species — and never installed from
+        /// EditMode, where there is no scene lifecycle and tests build the model directly.</para>
+        /// </summary>
+        private void InstallSchoolModel()
+        {
+            _schoolModel = new FishSchoolModel(new LiveFishSchoolWorld(_config, _regionId), _regionFish);
+            GameServices.FishSchools = _schoolModel;
+        }
+        #endregion
 
         // ---- what's on the hook (owner's ruling 2026-07-25) ---------------------------------------
 

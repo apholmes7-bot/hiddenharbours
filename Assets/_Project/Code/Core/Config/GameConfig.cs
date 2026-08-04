@@ -311,6 +311,15 @@ namespace HiddenHarbours.Core
                  "flat calm.")]
         public SeaFishingSettings SeaFishing = SeaFishingSettings.Default;
 
+        [Header("Fish schools (ADR 0025 S3 — WHERE the fish are, the thing the finder draws)")]
+        [Tooltip("The deterministic school sim: how often a patch of water holds fish, how long they " +
+                 "hang about, how big the patch is, how deep they sit, how many show — and how much all " +
+                 "of that speeds the bite and steers WHICH fish takes. One model: the marks on the fish " +
+                 "finder's glass ARE these schools, and these schools are what changes the fishing. " +
+                 "Recomputed from (worldSeed, gameTime, place, weather, season) like the tide — never " +
+                 "saved, so tuning these moves the whole sea at once with no save surgery.")]
+        public FishSchoolSettings FishSchools = FishSchoolSettings.Default;
+
         [Header("Freshness & rot (M1 §7.3 — the clock on every catch)")]
         [Tooltip("How fast each storage mode rots a landed catch, and how far gone a catch can be " +
                  "before no buyer will take it. The per-species base rate lives on each " +
@@ -1370,6 +1379,230 @@ namespace HiddenHarbours.Core
             SeaFightFactor = 0.35f,
             SeaBoldness01 = 0.35f,
             SeaBigFishBias01 = 0.5f,
+        };
+    }
+
+    /// <summary>
+    /// WHERE THE FISH ARE (<see cref="GameConfig.FishSchools"/> — ADR 0025 S3, the owner's ruling of
+    /// 2026-08-03). The dials behind the deterministic school sim: <c>FishSchoolMath</c> /
+    /// <c>FishSchoolModel</c> (Fishing-side) consume them, the same Core-policy / feature-consumer split
+    /// as <see cref="SeaFishingSettings"/> and <see cref="RodFightSettings"/>.
+    ///
+    /// <para><b>One model, two readers — so these numbers move BOTH at once.</b> The fish finder draws
+    /// the schools these dials produce, and the fishing path raises the bite rate and weights the species
+    /// roll from the SAME schools. There is deliberately no second "bite rate" number here: the density
+    /// (<see cref="MinMarks"/>/<see cref="MaxMarks"/>) is both how many fish the glass draws and the
+    /// expected bite rate, mapped by <see cref="BiteRatePerMark"/>. Tune the picture and you have tuned
+    /// the fishing; they cannot drift apart.</para>
+    ///
+    /// <para><b>The owner's shape.</b> Fish are found in AREAS (<see cref="MinRadiusMetres"/>..
+    /// <see cref="MaxRadiusMetres"/>), for a WHILE (<see cref="MinWindowHours"/>..
+    /// <see cref="MaxWindowHours"/>), at a DEPTH (<see cref="MinDepthFraction01"/>..
+    /// <see cref="MaxDepthFraction01"/> of the water column there). Whether a patch holds fish at all is
+    /// decided by LOCATION (<see cref="CellSizeMetres"/> + <see cref="MinWaterColumnMetres"/>), WEATHER
+    /// (<see cref="SeaStateAppearanceBias"/>) and DATE (the four season multipliers) — and those same
+    /// three pick WHICH species are down there, weather by pushing the school deeper in a blow
+    /// (<see cref="SeaStateDepthBias01"/>, which changes the depth band and so the species that live in
+    /// it), date through each species' own authored season window.</para>
+    ///
+    /// <para><b>Recomputed, never saved</b> (rule 5) — schools are a function of
+    /// <c>(worldSeed, gameTime, place, weather, season)</c> exactly as the tide and the wind are. Change
+    /// any dial here and every school in the world changes with it, in an existing save, with no
+    /// migration: there is nothing about a school on <c>SaveData</c> to be stale.</para>
+    ///
+    /// <para><b>The off switch.</b> <see cref="BaseAppearanceChance01"/> = 0 is an empty sea: no schools,
+    /// no marks, and the catch roll is bit-for-bit the one that shipped before this existed (every
+    /// school term is neutral with no school present). That is the A/B baseline.</para>
+    /// </summary>
+    [System.Serializable]
+    public struct FishSchoolSettings
+    {
+        // ---- the lattice (WHERE and WHEN a patch of water is even asked the question) ---------------
+
+        [Tooltip("Grain of the school sim (m): the world is diced into cells this wide, and each cell " +
+                 "independently holds a school or doesn't. Smaller = fish are found in more, smaller " +
+                 "pockets and the sea reads busier; larger = long empty runs between good ground. " +
+                 "⚠ Also the hard cap on MaxRadiusMetres (a school never spills more than one cell), so " +
+                 "raising the radius means raising this first.")]
+        [Min(1f)] public float CellSizeMetres;
+
+        [Tooltip("How often (in-game HOURS) a cell re-rolls — the fish move on and a new lot may show " +
+                 "up. Each school's window lives inside one of these slots, so this is also the longest " +
+                 "a window can be. Shorter = a restless sea you must keep re-reading; longer = ground " +
+                 "that stays good long enough to be worth remembering.")]
+        [Min(0.05f)] public float SlotHours;
+
+        // ---- the appearance gate (location · weather · date — the owner's three) --------------------
+
+        [Tooltip("Base chance (0..1) a cell holds a school in a given slot, BEFORE weather and season " +
+                 "adjust it. This is the master 'how much fish is in the sea' dial. 0 = an empty sea: " +
+                 "no marks and a catch roll bit-for-bit the pre-school one (the A/B off switch).")]
+        [Range(0f, 1f)] public float BaseAppearanceChance01;
+
+        [Tooltip("LOCATION gate: a cell whose water column is shallower than this (m) never holds a " +
+                 "school. Fish are not on the beach — this is what keeps marks off the flats and out " +
+                 "of the drying sandbar as the tide falls.")]
+        [Min(0f)] public float MinWaterColumnMetres;
+
+        [Tooltip("WEATHER gate: how much a full storm adds to (or, negative, takes from) the appearance " +
+                 "chance. Positive by default and for the same reason SeaBoldness01 is — broken water " +
+                 "emboldens fish, so a blow shows MORE of them. 0 = weather-blind schools.")]
+        [Range(-1f, 1f)] public float SeaStateAppearanceBias;
+
+        [Tooltip("DATE gate — Early Spring: multiplier on the appearance chance in this season. 1 = " +
+                 "neutral. Below 1 = a lean season you have to work; above 1 = the run is on.")]
+        [Min(0f)] public float EarlySpringAppearance;
+
+        [Tooltip("DATE gate — High Summer: multiplier on the appearance chance in this season.")]
+        [Min(0f)] public float HighSummerAppearance;
+
+        [Tooltip("DATE gate — The Turn: multiplier on the appearance chance in this season.")]
+        [Min(0f)] public float TheTurnAppearance;
+
+        [Tooltip("DATE gate — Hard Winter: multiplier on the appearance chance in this season. Kept " +
+                 "well below 1 by default: the winter sea is meant to be hard fishing.")]
+        [Min(0f)] public float HardWinterAppearance;
+
+        // ---- the window (the owner: finding one opens a window of time) -----------------------------
+
+        [Tooltip("Shortest a school hangs about (in-game hours) once it shows. Clamped to SlotHours.")]
+        [Min(0.01f)] public float MinWindowHours;
+
+        [Tooltip("Longest a school hangs about (in-game hours). Clamped to SlotHours — a window never " +
+                 "outlives the slot it was rolled in. The average window ÷ SlotHours is roughly the " +
+                 "fraction of 'present' cells that are actually SHOWING at any instant, so this dial and " +
+                 "BaseAppearanceChance01 together set how much of the sea is fishable right now.")]
+        [Min(0.01f)] public float MaxWindowHours;
+
+        // ---- the area (the owner: a tool for locating AREAS where fish are) -------------------------
+
+        [Tooltip("Smallest school area (radius, m). Small = a tight spot you must sit right on top of.")]
+        [Min(0.1f)] public float MinRadiusMetres;
+
+        [Tooltip("Largest school area (radius, m). ⚠ Clamped to CellSizeMetres — the sim only searches " +
+                 "the neighbouring cells, so a school that could spill further than one cell would be " +
+                 "invisible from its own outer ring.")]
+        [Min(0.1f)] public float MaxRadiusMetres;
+
+        // ---- the depth (the owner: bites happen at approximately the depth shown) -------------------
+
+        [Tooltip("Shallowest a school sits, as a FRACTION of the water column there (0 = the surface, " +
+                 "1 = on the bottom). A fraction rather than metres so the same dial works over a 2 m " +
+                 "flat and a 60 m hole, and so the mark always sits above the finder's bottom contour.")]
+        [Range(0f, 1f)] public float MinDepthFraction01;
+
+        [Tooltip("Deepest a school sits, as a fraction of the water column there.")]
+        [Range(0f, 1f)] public float MaxDepthFraction01;
+
+        [Tooltip("WEATHER, the second way: how far down a full storm pushes the school (added to the " +
+                 "depth fraction). Fish go deep when it blows — and because depth picks the band, this " +
+                 "is also how the weather changes WHICH species you find. 0 = weather-blind depth.")]
+        [Range(0f, 1f)] public float SeaStateDepthBias01;
+
+        [Tooltip("The water column (m) assumed where no bathymetry is authored (no tidal terrain — a " +
+                 "bare test rig, an unpainted region). The 'no height map means open water' posture the " +
+                 "rest of the module already takes, given a depth so schools still sit somewhere sane.")]
+        [Min(0.1f)] public float OpenWaterColumnMetres;
+
+        // ---- the density (the owner: one fish = lower bite rate, several = higher) ------------------
+
+        [Tooltip("Fewest fish a school shows. The owner's ruling in one number: this IS the mark count " +
+                 "on the glass AND the expected bite rate. 1 = the lonely single-fish mark.")]
+        [Min(1)] public int MinMarks;
+
+        [Tooltip("Most fish a school shows — the fat, worth-stopping-for return.")]
+        [Min(1)] public int MaxMarks;
+
+        [Tooltip("How much ONE mark speeds the bite: the wait is divided by (1 + marks × this), so 0.35 " +
+                 "means a 3-fish school bites about twice as fast. This is the whole density→bite-rate " +
+                 "map — the one place the picture becomes the fishing. 0 = marks are decoration.")]
+        [Min(0f)] public float BiteRatePerMark;
+
+        [Tooltip("Ceiling on that speed-up, so a freak fat school can't make bites instant (which reads " +
+                 "as a bug and leaves no room for the cast/settle beat). 1 = the density never speeds " +
+                 "anything.")]
+        [Min(1f)] public float MaxBiteRateMultiplier;
+
+        // ---- holding at the depth shown -------------------------------------------------------------
+
+        [Tooltip("What the school is worth when you hold the rig in the WRONG depth band (0..1 of its " +
+                 "full effect). Never 0 — being over fish is worth something even fished badly, the same " +
+                 "promise depth and bait already make. Lower = the depth read on the glass matters more.")]
+        [Range(0f, 1f)] public float OffDepthMatch01;
+
+        [Tooltip("What the school is worth on a cast that plays NO depth game at all (the bobber/legacy " +
+                 "branch, which has no held depth to judge). 1 = a bobber gets the school's full lift, " +
+                 "so this feature never makes the old way of fishing worse. Lower it to make depth " +
+                 "fishing the only way to properly work a school.")]
+        [Range(0f, 1f)] public float DepthlessMatch01;
+
+        // ---- which fish are down there ---------------------------------------------------------------
+
+        [Tooltip("Fewest species one school holds (picked from the region's authored pool that the " +
+                 "season allows and that live at the school's depth band).")]
+        [Min(1)] public int MinSpecies;
+
+        [Tooltip("Most species one school holds. Higher = a mixed shoal and a less targeted catch.")]
+        [Min(1)] public int MaxSpecies;
+
+        [Tooltip("How strongly a species IN the school is favoured in the catch roll. Applied on top of " +
+                 "bait/tackle/depth as one more soft WEIGHT — never a filter, so an odd fish can always " +
+                 "still take. Eased by how well you are sitting on the school, so clipping the rim " +
+                 "barely re-weights anything. 1 = the school says nothing about what bites.")]
+        [Min(1f)] public float SchoolSpeciesBoost;
+
+        [Tooltip("How much a species NOT in the school is damped (0..1) while you are on one. Keep " +
+                 "clearly above 0: fishing a school of mackerel should not make a cod impossible, only " +
+                 "unlikely. 1 = no damp.")]
+        [Range(0f, 1f)] public float OffSchoolSpeciesDamp01;
+
+        /// <summary>
+        /// The reference tuning for the St Peters opening, sized against the region rather than guessed:
+        /// 120 m cells over a 760×520 m region give ~6×4 patches of ground, a little over half of which
+        /// hold fish in a given 2.5 h slot, each showing for roughly half of it — so at any moment
+        /// something like a tenth of the water is fishable and a working morning means reading the glass
+        /// and moving, not parking. Schools run 22–55 m across (a dory covers one in a few seconds of
+        /// steaming), sit a quarter to four-fifths of the way down the column, and hold 1–5 fish: a
+        /// single mark bites ~1.35× as fast, a full five ~2.75× (the ceiling is 3). Winter is deliberately
+        /// lean and high summer generous. Nothing here can zero a fish out: the wrong depth is still worth
+        /// a third of the school, and a species the school does not hold is damped to 0.4, never barred.
+        /// </summary>
+        public static FishSchoolSettings Default => new FishSchoolSettings
+        {
+            CellSizeMetres = 120f,
+            SlotHours = 2.5f,
+
+            BaseAppearanceChance01 = 0.55f,
+            MinWaterColumnMetres = 1.5f,
+            SeaStateAppearanceBias = 0.25f,
+            EarlySpringAppearance = 1f,
+            HighSummerAppearance = 1.2f,
+            TheTurnAppearance = 1f,
+            HardWinterAppearance = 0.55f,
+
+            MinWindowHours = 0.75f,
+            MaxWindowHours = 2f,
+
+            MinRadiusMetres = 22f,
+            MaxRadiusMetres = 55f,
+
+            MinDepthFraction01 = 0.25f,
+            MaxDepthFraction01 = 0.8f,
+            SeaStateDepthBias01 = 0.25f,
+            OpenWaterColumnMetres = 25f,
+
+            MinMarks = 1,
+            MaxMarks = 5,
+            BiteRatePerMark = 0.35f,
+            MaxBiteRateMultiplier = 3f,
+
+            OffDepthMatch01 = 0.35f,
+            DepthlessMatch01 = 1f,
+
+            MinSpecies = 1,
+            MaxSpecies = 3,
+            SchoolSpeciesBoost = 3f,
+            OffSchoolSpeciesDamp01 = 0.4f,
         };
     }
 }

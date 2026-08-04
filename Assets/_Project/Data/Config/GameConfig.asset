@@ -193,6 +193,34 @@ MonoBehaviour:
     SeaFightFactor: 0.35
     SeaBoldness01: 0.35
     SeaBigFishBias01: 0.5
+  FishSchools:
+    CellSizeMetres: 120
+    SlotHours: 2.5
+    BaseAppearanceChance01: 0.55
+    MinWaterColumnMetres: 1.5
+    SeaStateAppearanceBias: 0.25
+    EarlySpringAppearance: 1
+    HighSummerAppearance: 1.2
+    TheTurnAppearance: 1
+    HardWinterAppearance: 0.55
+    MinWindowHours: 0.75
+    MaxWindowHours: 2
+    MinRadiusMetres: 22
+    MaxRadiusMetres: 55
+    MinDepthFraction01: 0.25
+    MaxDepthFraction01: 0.8
+    SeaStateDepthBias01: 0.25
+    OpenWaterColumnMetres: 25
+    MinMarks: 1
+    MaxMarks: 5
+    BiteRatePerMark: 0.35
+    MaxBiteRateMultiplier: 3
+    OffDepthMatch01: 0.35
+    DepthlessMatch01: 1
+    MinSpecies: 1
+    MaxSpecies: 3
+    SchoolSpeciesBoost: 3
+    OffSchoolSpeciesDamp01: 0.4
   Freshness:
     AmbientRateMultiplier: 1
     LiveRateMultiplier: 0
