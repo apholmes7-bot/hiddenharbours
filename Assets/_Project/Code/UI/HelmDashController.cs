@@ -39,6 +39,12 @@ namespace HiddenHarbours.UI
         private HelmWheelRim _shownRim = (HelmWheelRim)(-1);
         private int _shownHeadingKey = int.MinValue;
         private CompassMount _shownCompass = (CompassMount)(-1);
+        private int _shownBrowKey = int.MinValue;           // which brow mounts the chrome drew
+
+        // The rig the surfaces are sized for, and the one interaction hit-tests against. The two
+        // helm families use DIFFERENT canvases (600×510 skiff, 600×548 pilothouse) and different
+        // control positions, so both must follow the live fit.
+        private ConsoleRigKind _rig = ConsoleRigKind.None;
 
         // ---- wheel device state (transient input state — never saved, rule 5) ----------------------
         private WheelRigGeometry.SpinState _spin;
@@ -61,6 +67,7 @@ namespace HiddenHarbours.UI
             _shownWheelKey = int.MinValue;
             _shownHeadingKey = int.MinValue;
             _shownCompass = (CompassMount)(-1);
+            _shownBrowKey = int.MinValue;
         }
 
         /// <summary>End every live interaction (unfocus / Esc / helm lost).</summary>
@@ -82,7 +89,8 @@ namespace HiddenHarbours.UI
         public bool UpdateAndPaint(IHelmControl helm, HelmFit fit, float headingDeg, float dt,
                                    bool focused, ref Texture2D texture, RawImage image)
         {
-            EnsureSurfaces();
+            _rig = fit.Rig;
+            EnsureSurfaces(fit.Rig);
             HelmWheelSettings wheelCfg = GameServices.HelmWheel;
 
             // The key layer may have broken the steer session under us (a real key press wins).
@@ -121,7 +129,13 @@ namespace HiddenHarbours.UI
             HelmLeverFinish finish = helm.LeverFinish;
             HelmWheelRim rim = helm.WheelRim;
 
-            bool chromeDirty = fit.Rig != _shownRig || running != _shownRunning || driveKey != _shownDriveKey;
+            // The pilothouse brow's mounts follow the FIT (which slots are drawn, which are blanked,
+            // and whether the sounder mount is the tall portrait box) — so the chrome tracks it too.
+            int browKey = (((int)fit.Sounder * 3 + (int)fit.Compass) << 2)
+                        | (fit.Radar ? 2 : 0) | (fit.Gps ? 1 : 0);
+
+            bool chromeDirty = fit.Rig != _shownRig || running != _shownRunning || driveKey != _shownDriveKey
+                            || browKey != _shownBrowKey;
             bool leverDirty = chromeDirty || finish != _shownFinish;
             bool wheelDirty = fit.Rig != _shownRig || wheelKey != _shownWheelKey || rim != _shownRim;
             bool compassDirty = fit.Rig != _shownRig || headingKey != _shownHeadingKey
@@ -130,10 +144,13 @@ namespace HiddenHarbours.UI
 
             if (chromeDirty)
             {
-                if (fit.Rig == ConsoleRigKind.Sport)
-                    SportDashRender.Render(_chrome, running, drive, rpm01, fuel01);
-                else
-                    ConsoleDashRender.Render(_chrome, running, drive, rpm01, fuel01);
+                switch (fit.Rig)
+                {
+                    case ConsoleRigKind.Sport: SportDashRender.Render(_chrome, running, drive, rpm01, fuel01); break;
+                    case ConsoleRigKind.Novi: NoviDashRender.Render(_chrome, in fit, running, rpm01, fuel01); break;
+                    case ConsoleRigKind.Cape: CapeDashRender.Render(_chrome, in fit, running, rpm01, fuel01); break;
+                    default: ConsoleDashRender.Render(_chrome, running, drive, rpm01, fuel01); break;
+                }
             }
             if (leverDirty) LeverRigRender.Render(_leverCell, drive, finish);
             if (wheelDirty) WheelRigRender.Render(_wheelCell, _spin.Deg, rim);
@@ -141,19 +158,24 @@ namespace HiddenHarbours.UI
             {
                 _compassCell.Clear();
                 if (fit.Compass != CompassMount.None)
-                    CompassRigRender.PaintInto(_compassCell, 0, 0, HelmDashGeometry.DomeBoxW,
-                                               HelmDashGeometry.DomeBoxH, fit.Compass, headingKey, night: false);
+                {
+                    // Dome and flush are different SIZES in different PLACES; each paints at the cell's
+                    // origin and the composite lands it on its own box. (The flush unit renders for the
+                    // first time here: the two pilothouse hulls are the first that can mount one.)
+                    HelmDashGeometry.CompassBoxOnCard(fit.Rig, fit.Compass, out _, out _, out int cw, out int ch);
+                    CompassRigRender.PaintInto(_compassCell, 0, 0, cw, ch, fit.Compass, headingKey, night: false);
+                }
             }
 
-            // ---- compose: chrome → compass (crown) → wheel (+ painted cap on console) → lever ----
+            // ---- compose: chrome → compass → wheel (+ painted cap on the console) → lever ----
             System.Array.Copy(_chrome.Pixels, _card.Pixels, _chrome.Pixels.Length);
-            HelmDashGeometry.DomeBoxOnCard(out int dbx, out int dby, out _, out _);
+            HelmDashGeometry.CompassBoxOnCard(fit.Rig, fit.Compass, out int dbx, out int dby, out _, out _);
             RigDrawUtil.CompositeAt(_card, _compassCell, dbx, dby);
-            HelmDashGeometry.WheelCellOrigin(out int wx, out int wy);
+            HelmDashGeometry.WheelCellOrigin(fit.Rig, out int wx, out int wy);
             RigDrawUtil.CompositeAt(_card, _wheelCell, wx, wy);
-            if (fit.Rig != ConsoleRigKind.Sport)
+            if (fit.Rig == ConsoleRigKind.Console)
                 ConsoleDashRender.PaintWheelCap(_card);     // the cove-painted cap rides the hub (js:449-454)
-            HelmDashGeometry.LeverCellOrigin(out int lx, out int ly);
+            HelmDashGeometry.LeverCellOrigin(fit.Rig, out int lx, out int ly);
             RigDrawUtil.CompositeAt(_card, _leverCell, lx, ly);
 
             _card.ToTexture(ref texture);
@@ -167,17 +189,30 @@ namespace HiddenHarbours.UI
             _shownRim = rim;
             _shownHeadingKey = headingKey;
             _shownCompass = fit.Compass;
+            _shownBrowKey = browKey;
             return true;
         }
 
-        private void EnsureSurfaces()
+        /// <summary>
+        /// Allocate (or RE-allocate) the layer surfaces for a rig. The two helm families need
+        /// different canvases — 600×510 for the skiffs, 600×548 for the pilothouse — and different
+        /// compass cells, so swapping hulls across the families rebuilds them. That is the only
+        /// allocation on the path, and it happens on a hull change, never in the steady state (rule 7).
+        /// </summary>
+        private void EnsureSurfaces(ConsoleRigKind rig)
         {
-            if (_chrome != null) return;
-            _chrome = new DrawSurface(HelmDashGeometry.W, HelmDashGeometry.H);
-            _card = new DrawSurface(HelmDashGeometry.W, HelmDashGeometry.H);
-            _wheelCell = new DrawSurface(WheelRigRender.W, WheelRigRender.H);
-            _leverCell = new DrawSurface(LeverRigRender.W, LeverRigRender.H);
-            _compassCell = new DrawSurface(HelmDashGeometry.DomeBoxW, HelmDashGeometry.DomeBoxH);
+            int w = HelmDashGeometry.CanvasW(rig), h = HelmDashGeometry.CanvasH(rig);
+            if (_chrome == null || _chrome.Width != w || _chrome.Height != h)
+            {
+                _chrome = new DrawSurface(w, h);
+                _card = new DrawSurface(w, h);
+            }
+            // The compass cell holds whichever unit is fitted; the dome box is the larger of the two.
+            HelmDashGeometry.DomeBoxOnCard(rig, out _, out _, out int cw, out int ch);
+            if (_compassCell == null || _compassCell.Width != cw || _compassCell.Height != ch)
+                _compassCell = new DrawSurface(cw, ch);
+            if (_wheelCell == null) _wheelCell = new DrawSurface(WheelRigRender.W, WheelRigRender.H);
+            if (_leverCell == null) _leverCell = new DrawSurface(LeverRigRender.W, LeverRigRender.H);
         }
 
         // ---- interaction (FOCUSED state; card-space rig px, y down) --------------------------------
@@ -187,18 +222,18 @@ namespace HiddenHarbours.UI
         public void Press(IHelmControl helm, Vector2 cardPx, in HelmOverlaySettings cfg)
         {
             HelmWheelSettings wheelCfg = GameServices.HelmWheel;
-            if (HelmDashGeometry.IsOnWheel(cardPx, wheelCfg.RimGrabPadPx))
+            if (HelmDashGeometry.IsOnWheel(_rig, cardPx, wheelCfg.RimGrabPadPx))
             {
                 _wheelGrabbed = true;
                 _steerSession = true;
-                _lastPointerAngle = HelmDashGeometry.WheelPointerAngleDeg(cardPx);
+                _lastPointerAngle = HelmDashGeometry.WheelPointerAngleDeg(_rig, cardPx);
                 helm.DragSteer(helm.Steer);      // open the session at the current steer (no jump)
                 return;
             }
-            if (HelmDashGeometry.IsInBinnacle(cardPx))
+            if (HelmDashGeometry.IsInBinnacle(_rig, cardPx))
             {
-                float sig = HelmDashGeometry.DashLeverSigAt(cardPx);
-                if (HelmDashGeometry.IsOnDashLeverGrip(cardPx, helm.Drive, cfg.GrabRadiusPx))
+                float sig = HelmDashGeometry.DashLeverSigAt(_rig, cardPx);
+                if (HelmDashGeometry.IsOnDashLeverGrip(_rig, cardPx, helm.Drive, cfg.GrabRadiusPx))
                 {
                     _leverDragging = true;       // continuous drag, live while held
                     helm.DragDrive(sig);
@@ -219,7 +254,7 @@ namespace HiddenHarbours.UI
                 if (held && _steerSession)
                 {
                     HelmWheelSettings wheelCfg = GameServices.HelmWheel;
-                    double ang = HelmDashGeometry.WheelPointerAngleDeg(cardPx);
+                    double ang = HelmDashGeometry.WheelPointerAngleDeg(_rig, cardPx);
                     double delta = ang - _lastPointerAngle;
                     _lastPointerAngle = ang;
                     _spin = WheelRigGeometry.Drag(_spin, delta, dt, wheelCfg.Turns, out _);
@@ -235,7 +270,7 @@ namespace HiddenHarbours.UI
             {
                 if (held)
                 {
-                    helm.DragDrive(HelmDashGeometry.DashLeverSigAt(cardPx));
+                    helm.DragDrive(HelmDashGeometry.DashLeverSigAt(_rig, cardPx));
                 }
                 else
                 {
