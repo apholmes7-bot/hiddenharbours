@@ -54,6 +54,18 @@ namespace HiddenHarbours.UI
             }
         }
 
+        /// <summary>Rounded rect under the canvas <c>'lighter'</c> pass — the pilothouse deck/night
+        /// washes, which follow the dash face's own corner radius (noviRig.js:428-437).</summary>
+        public static void RRectAdd(DrawSurface s, int x, int y, int w, int h, int r, Color32 c, float alpha01)
+        {
+            r = System.Math.Max(0, System.Math.Min(r, System.Math.Min(w, h) / 2));
+            for (int v = 0; v < h; v++)
+            {
+                int i = RowInset(v, h, r);
+                s.AddRect(x + i, y + v, w - 2 * i, 1, c, alpha01);
+            }
+        }
+
         /// <summary>consoleRig.js:117-120 — scanline circle.</summary>
         public static void Circle(DrawSurface s, int cx, int cy, int rad, Color32 c, float alpha01 = 1f)
         {
@@ -173,19 +185,28 @@ namespace HiddenHarbours.UI
         }
 
         // ---- 3×5 bitmap font (consoleRig.js:75-104; the compass subset :31-40 is glyph-identical) --
+        // S4: completed to the sources' FULL A–Z. The earlier table omitted J/Q/X/Z because no ported
+        // label was thought to use them, and an unknown char blanks silently — so BOTH shipped skiff
+        // tachs, ConsoleDashRender:315 and SportDashRender:234 (consoleRig.js:202, sportRig.js:164),
+        // had been rendering their "X100" as " 100" since S2a. Novi's "X1000" (noviRig.js:186) and
+        // Cape's "X100" (capeRig.js:175) need the same glyph, and the four are identical across every
+        // rig source, so they land here rather than in a second font (rule: one shared helper).
         private static readonly string[] Chars =
         {
             "A", ".#.|#.#|###|#.#|#.#", "B", "##.|#.#|##.|#.#|##.",
             "C", ".##|#..|#..|#..|.##", "D", "##.|#.#|#.#|#.#|##.",
             "E", "###|#..|##.|#..|###", "F", "###|#..|##.|#..|#..",
             "G", ".##|#..|#.#|#.#|.##", "H", "#.#|#.#|###|#.#|#.#",
-            "I", "###|.#.|.#.|.#.|###", "K", "#.#|#.#|##.|#.#|#.#",
+            "I", "###|.#.|.#.|.#.|###", "J", "..#|..#|..#|#.#|.#.",
+            "K", "#.#|#.#|##.|#.#|#.#",
             "L", "#..|#..|#..|#..|###", "M", "#.#|###|###|#.#|#.#",
             "N", "#.#|##.|###|.##|#.#", "O", ".#.|#.#|#.#|#.#|.#.",
-            "P", "##.|#.#|##.|#..|#..", "R", "##.|#.#|##.|#.#|#.#",
+            "P", "##.|#.#|##.|#..|#..", "Q", ".#.|#.#|#.#|.#.|..#",
+            "R", "##.|#.#|##.|#.#|#.#",
             "S", ".##|#..|.#.|..#|##.", "T", "###|.#.|.#.|.#.|.#.",
             "U", "#.#|#.#|#.#|#.#|.#.", "V", "#.#|#.#|#.#|.#.|.#.",
-            "W", "#.#|#.#|###|###|#.#", "Y", "#.#|#.#|.#.|.#.|.#.",
+            "W", "#.#|#.#|###|###|#.#", "X", "#.#|#.#|.#.|#.#|#.#",
+            "Y", "#.#|#.#|.#.|.#.|.#.", "Z", "###|..#|.#.|#..|###",
             "0", "###|#.#|#.#|#.#|###", "1", ".#.|##.|.#.|.#.|###",
             "2", "##.|..#|.#.|#..|###", "3", "##.|..#|.#.|..#|##.",
             "4", "#.#|#.#|###|..#|..#", "5", "###|#..|##.|..#|##.",

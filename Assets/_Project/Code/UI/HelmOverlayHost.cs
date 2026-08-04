@@ -145,11 +145,11 @@ namespace HiddenHarbours.UI
 
             HelmOverlaySettings cfg = GameServices.HelmOverlay;
 
-            // S2a: a lever hull whose console is one of the ported skiff dashes (Console/Sport)
-            // shows the COMPOSED DASH; Novi + Cape stay on the lone lever card until their slice.
+            // A lever hull whose console has a ported dash renderer shows the COMPOSED DASH. S2a
+            // brought the two skiffs; S4 brings the two wheelhouses, so that is now every rig the
+            // fleet has — a hull only falls back to the lone lever card if it has no console at all.
             HelmFit fit = helm.Fit;
-            bool dash = style == HelmControlStyle.Lever
-                     && (fit.Rig == ConsoleRigKind.Console || fit.Rig == ConsoleRigKind.Sport);
+            bool dash = style == HelmControlStyle.Lever && fit.Rig != ConsoleRigKind.None;
             if (dash != _dashShown)
             {
                 // Crossing the dash boundary invalidates the other path's change-detection keys.
@@ -165,13 +165,15 @@ namespace HiddenHarbours.UI
             if (dash)
             {
                 CardKind = HelmCardKind.Dash;
-                Rect dashCard = HelmOverlayLayout.DashCardRect(_focused, HelmDashGeometry.W,
-                                                               HelmDashGeometry.H, in cfg,
+                // The pilothouse canvas is taller than the skiffs' (600×548 vs 600×510), so the card
+                // rect and the screen→rig mapping both follow the live rig, never one fixed size.
+                int dashW = HelmDashGeometry.CanvasW(fit.Rig), dashH = HelmDashGeometry.CanvasH(fit.Rig);
+                Rect dashCard = HelmOverlayLayout.DashCardRect(_focused, dashW, dashH, in cfg,
                                                                Screen.width, Screen.height);
-                LayoutCard(HelmControlStyle.Lever, dashCard, HelmDashGeometry.W, HelmDashGeometry.H, 0f);
+                LayoutCard(HelmControlStyle.Lever, dashCard, dashW, dashH, 0f);
                 _dashCtl.UpdateAndPaint(helm, fit, SampleHeadingDegrees(), Time.deltaTime, _focused,
                                         ref _texture, _image);
-                ReadDashPointer(helm, dashCard, in cfg);
+                ReadDashPointer(helm, fit.Rig, dashCard, in cfg);
                 return;
             }
 
@@ -278,8 +280,10 @@ namespace HiddenHarbours.UI
         /// under it — wheel rim grab, lever grip drag, binnacle travel-guide — via
         /// <see cref="HelmDashController"/>. Hit tests run in the dash's own rig pixels, so the
         /// card scale needs no special-casing (the S1 ScreenToRig discipline).</summary>
-        private void ReadDashPointer(IHelmControl helm, Rect card, in HelmOverlaySettings cfg)
+        private void ReadDashPointer(IHelmControl helm, ConsoleRigKind rig, Rect card,
+                                     in HelmOverlaySettings cfg)
         {
+            int rigW = HelmDashGeometry.CanvasW(rig), rigH = HelmDashGeometry.CanvasH(rig);
             var kb = Keyboard.current;
             if (_focused && kb != null && kb.escapeKey.wasPressedThisFrame)
             {
@@ -298,8 +302,7 @@ namespace HiddenHarbours.UI
             if (_dashCtl.Interacting)
             {
                 // Off-card during a drag still tracks (the S1 lever precedent).
-                HelmOverlayLayout.ScreenToRig(pos, card, HelmDashGeometry.W, HelmDashGeometry.H,
-                                              out Vector2 rigPx);
+                HelmOverlayLayout.ScreenToRig(pos, card, rigW, rigH, out Vector2 rigPx);
                 _dashCtl.Track(helm, rigPx, held, Time.deltaTime);
                 return;
             }
@@ -322,8 +325,7 @@ namespace HiddenHarbours.UI
                 return;
             }
 
-            HelmOverlayLayout.ScreenToRig(pos, card, HelmDashGeometry.W, HelmDashGeometry.H,
-                                          out Vector2 pressPx);
+            HelmOverlayLayout.ScreenToRig(pos, card, rigW, rigH, out Vector2 pressPx);
             _dashCtl.Press(helm, pressPx, in cfg);
         }
 

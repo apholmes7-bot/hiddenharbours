@@ -93,7 +93,7 @@ namespace HiddenHarbours.Tests.PlayMode
         // ---- the composed dash appears with the hull, same frame ----------------------------------
 
         [UnityTest]
-        public IEnumerator ConsoleHull_ShowsTheComposedDash_AndNoviStaysOnTheLeverCard()
+        public IEnumerator EveryConsoleRigHull_ShowsTheComposedDash()
         {
             HelmOverlayHost host = Host();
             var (_, boat) = NewBoat();
@@ -113,10 +113,50 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.That(host.CardKind, Is.EqualTo(HelmOverlayHost.HelmCardKind.Dash), "sport too");
             Assert.That(GameServices.HelmControl.WheelRim, Is.EqualTo(HelmWheelRim.Steel));
 
+            // S4: the two wheelhouses were on the lone lever card until their renderers landed. They
+            // cross a CANVAS boundary as well as a rig one (600×548 vs the skiffs' 600×510), so the
+            // swap also exercises the compositor's surface re-allocation.
             boat.SetHull(NewConsoleHull("boat.test_dash_novi", ConsoleRigKind.Novi, HelmWheelRim.Rubber));
             yield return null;
-            Assert.That(host.CardKind, Is.EqualTo(HelmOverlayHost.HelmCardKind.Lever),
-                        "Novi/Cape stay on the lone S1 lever card until their own slice");
+            Assert.That(host.CardKind, Is.EqualTo(HelmOverlayHost.HelmCardKind.Dash),
+                        "the Novi has its own dash now");
+
+            boat.SetHull(NewConsoleHull("boat.test_dash_cape", ConsoleRigKind.Cape, HelmWheelRim.Steel));
+            yield return null;
+            Assert.That(host.CardKind, Is.EqualTo(HelmOverlayHost.HelmCardKind.Dash),
+                        "and so does the Cape Islander");
+
+            // Back to a skiff — the canvas shrinks again without a stale surface or a stale key.
+            boat.SetHull(NewConsoleHull("boat.test_dash_back", ConsoleRigKind.Console, HelmWheelRim.Rubber));
+            yield return null;
+            Assert.That(host.CardKind, Is.EqualTo(HelmOverlayHost.HelmCardKind.Dash));
+        }
+
+        [UnityTest]
+        public IEnumerator AWheelhouseHull_SteersThroughItsOwnWheelMount()
+        {
+            // The pilothouse wheel hub sits 86 px lower on the card than the skiffs' (382 vs 296). If
+            // the compositor hit-tested against the skiff table, a wheel grab on these hulls would miss.
+            HelmOverlayHost host = Host();
+            var (_, boat) = NewBoat();
+            yield return null;
+            boat.SetHull(NewConsoleHull("boat.test_dash_novisteer", ConsoleRigKind.Novi, HelmWheelRim.Rubber));
+            yield return null;
+
+            boat.SetControl(0f, 0.4f);
+            yield return null;
+            double expected = WheelRigGeometry.DegFromSteer(0.4, GameServices.HelmWheel.Turns);
+            Assert.That(host.DashController.WheelDeg, Is.EqualTo(expected).Within(1e-4),
+                        "the wheelhouse wheel mirrors the one steer owner too");
+
+            IHelmControl helm = GameServices.HelmControl;
+            host.DashController.Press(helm, new Vector2(HelmDashGeometry.PilotWheelCx,
+                                                        HelmDashGeometry.PilotWheelCy
+                                                        + HelmDashGeometry.PilotTOPPAD),
+                                      GameServices.HelmOverlay);
+            Assert.That(host.DashController.SteerSession, Is.True,
+                        "a press on the wheelhouse hub opens the steer session");
+            host.DashController.Deactivate(helm);
         }
 
         // ---- the wheel mirrors the one steer owner -------------------------------------------------

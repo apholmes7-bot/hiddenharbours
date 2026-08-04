@@ -127,6 +127,93 @@ namespace HiddenHarbours.UI
             }
         }
 
+        /// <summary>
+        /// ADDITIVE constant wash over a rect — the canvas
+        /// <c>globalCompositeOperation='lighter'</c> + <c>globalAlpha</c> + an opaque fill, which the
+        /// pilothouse dashes use for their deck/spot/night working-light washes (noviRig.js:428-437,
+        /// capeRig.js:427-432). Grown here by S4 rather than copied a third time: CompassRigRender
+        /// has carried a private version since S2a and the two new dashes both need it.
+        ///
+        /// <para>Pixels that are still fully transparent are SKIPPED — 'lighter' over nothing stays
+        /// invisible once the card is composited over an opaque background, and adding into a
+        /// transparent pixel would otherwise bloom the card's own cut-outs.</para>
+        /// </summary>
+        public void AddRect(int x, int y, int w, int h, Color32 c, float alpha01)
+        {
+            if (alpha01 <= 0f) return;
+            int x0 = x < 0 ? 0 : x, y0 = y < 0 ? 0 : y;
+            int x1 = x + w, y1 = y + h;
+            if (x1 > Width) x1 = Width;
+            if (y1 > Height) y1 = Height;
+            double ar = c.r * alpha01, ag = c.g * alpha01, ab = c.b * alpha01;
+            for (int yy = y0; yy < y1; yy++)
+            {
+                int row = yy * Width;
+                for (int xx = x0; xx < x1; xx++) AddPx(row + xx, ar, ag, ab);
+            }
+        }
+
+        /// <summary>
+        /// ADDITIVE multi-stop radial wash — the canvas
+        /// <c>createRadialGradient(cx,cy,r0, cx,cy,r1)</c> under <c>'lighter'</c>. Colour AND alpha
+        /// interpolate between the stops (<paramref name="stopT"/> ascending, 0..1 across r0→r1); the
+        /// wash is restricted to the rect and to a disc of <paramref name="clipRad"/> (the rigs'
+        /// <c>save/arc/clip</c> around a gauge dial — noviRig.js:205). Beyond r1 nothing is drawn:
+        /// the canvas extends the last stop, which these rigs always author fully transparent.
+        /// </summary>
+        public void AddRadial(int x, int y, int w, int h, double cx, double cy, double r0, double r1,
+                              double clipRad, double[] stopT, Color32[] stopCol, float[] stopA,
+                              float globalAlpha01 = 1f)
+        {
+            if (globalAlpha01 <= 0f || r1 <= r0 || stopT.Length == 0) return;
+            int x0 = x < 0 ? 0 : x, y0 = y < 0 ? 0 : y;
+            int x1 = x + w, y1 = y + h;
+            if (x1 > Width) x1 = Width;
+            if (y1 > Height) y1 = Height;
+            double rMax = clipRad < r1 ? clipRad : r1;
+            double span = r1 - r0;
+            for (int yy = y0; yy < y1; yy++)
+            {
+                int row = yy * Width;
+                double dy = yy + 0.5 - cy;
+                for (int xx = x0; xx < x1; xx++)
+                {
+                    double dx = xx + 0.5 - cx;
+                    double d = System.Math.Sqrt(dx * dx + dy * dy);
+                    if (d > rMax) continue;
+                    double t = d <= r0 ? 0.0 : (d - r0) / span;
+                    int i = 0;                                   // the stop pair straddling t
+                    while (i < stopT.Length - 1 && t > stopT[i + 1]) i++;
+                    Color32 ca = stopCol[i];
+                    float aa = stopA[i];
+                    double f = 0.0;
+                    if (i < stopT.Length - 1)
+                    {
+                        double lo = stopT[i], hi = stopT[i + 1];
+                        f = hi > lo ? (t - lo) / (hi - lo) : 0.0;
+                        if (f < 0.0) f = 0.0; else if (f > 1.0) f = 1.0;
+                    }
+                    Color32 cb = i < stopCol.Length - 1 ? stopCol[i + 1] : ca;
+                    float a2 = i < stopA.Length - 1 ? stopA[i + 1] : aa;
+                    double a = (aa + (a2 - aa) * f) * globalAlpha01;
+                    if (a <= 0.0) continue;
+                    AddPx(row + xx, (ca.r + (cb.r - ca.r) * f) * a,
+                                    (ca.g + (cb.g - ca.g) * f) * a,
+                                    (ca.b + (cb.b - ca.b) * f) * a);
+                }
+            }
+        }
+
+        private void AddPx(int i, double rr, double gg, double bb)
+        {
+            Color32 d = Pixels[i];
+            if (d.a == 0) return;
+            int r = d.r + (int)(rr + 0.5); if (r > 255) r = 255;
+            int g = d.g + (int)(gg + 0.5); if (g > 255) g = 255;
+            int b = d.b + (int)(bb + 0.5); if (b > 255) b = 255;
+            Pixels[i] = new Color32((byte)r, (byte)g, (byte)b, d.a);
+        }
+
         /// <summary>Linear colour blend between two opaque stops — the canvas linear gradient's
         /// interpolation, done per span by the caller so a gradient can follow a rounded-rect's row
         /// insets without a path rasteriser (depthRig.js:232-240).</summary>
