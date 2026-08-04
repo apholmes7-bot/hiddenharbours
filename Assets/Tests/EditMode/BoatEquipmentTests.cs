@@ -150,6 +150,25 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void TheShippedFinderOffer_SellsExactlyTheIdTheFitResolverLooksFor()
+        {
+            // The same seam as the sounder's, for the ADR 0025 S3 upgrade. ⚠ Price is a PROPOSAL pending
+            // the owner's veto (Ruling F), so this asserts it is a sane positive number ABOVE the basic
+            // unit's — not a specific figure the owner would then have to fight a test to change.
+            const string path = "Assets/_Project/Data/Instruments/FishFinderOffer.asset";
+            var offer = UnityEditor.AssetDatabase.LoadAssetAtPath<HiddenHarbours.Economy.InstrumentOffer>(path);
+            Assert.IsNotNull(offer, $"the fish-finder offer must ship at {path}");
+            Assert.AreEqual(BoatEquipment.FishFinderId, offer.Id,
+                "the offer sells the id EffectiveFit resolves — a rename on either side is a dead purchase");
+            Assert.IsNotEmpty(offer.DisplayName);
+
+            const string basicPath = "Assets/_Project/Data/Instruments/DepthSounderOffer.asset";
+            var basic = UnityEditor.AssetDatabase.LoadAssetAtPath<HiddenHarbours.Economy.InstrumentOffer>(basicPath);
+            Assert.Greater(offer.Price, basic.Price,
+                "the finder supersedes the sounder in the same cutout — it cannot be the cheaper buy");
+        }
+
+        [Test]
         public void TheInstrumentIds_AreDistinct_AndNamespaced()
         {
             // Append-only ids (rule 2): a collision or a rename would silently re-point saved fitments.

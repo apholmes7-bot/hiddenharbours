@@ -38,25 +38,24 @@ namespace HiddenHarbours.UI
             Pixels = new Color32[width * height];
         }
 
-        /// <summary>Fully transparent black (a fresh canvas).</summary>
-        public void Clear()
-        {
-            var zero = new Color32(0, 0, 0, 0);
-            for (int i = 0; i < Pixels.Length; i++) Pixels[i] = zero;
-        }
+        /// <summary>Fully transparent black (a fresh canvas). <c>Array.Clear</c> rather than a per-element
+        /// loop: a fully transparent <see cref="Color32"/> IS all-zero bytes, so this is a memset, and on
+        /// the fish finder's 480×660 canvas the difference is measurable in the repaint budget (rule 7).</summary>
+        public void Clear() => System.Array.Clear(Pixels, 0, Pixels.Length);
 
-        /// <summary>Opaque axis-aligned fill (the canvas <c>fillRect</c> with a solid colour), clipped.</summary>
+        /// <summary>Opaque axis-aligned fill (the canvas <c>fillRect</c> with a solid colour), clipped.
+        /// Row spans go through <c>Array.Fill</c>, which vectorises where the manual loop did not — the
+        /// rigs' painters are almost entirely made of these, so it is the hottest line in the layer.</summary>
         public void FillRect(int x, int y, int w, int h, Color32 c)
         {
             int x0 = x < 0 ? 0 : x, y0 = y < 0 ? 0 : y;
             int x1 = x + w, y1 = y + h;
             if (x1 > Width) x1 = Width;
             if (y1 > Height) y1 = Height;
+            int span = x1 - x0;
+            if (span <= 0) return;
             for (int yy = y0; yy < y1; yy++)
-            {
-                int row = yy * Width;
-                for (int xx = x0; xx < x1; xx++) Pixels[row + xx] = c;
-            }
+                System.Array.Fill(Pixels, c, yy * Width + x0, span);
         }
 
         /// <summary>Constant-alpha source-over fill (the canvas <c>rgba(...)</c> fillRect), clipped.

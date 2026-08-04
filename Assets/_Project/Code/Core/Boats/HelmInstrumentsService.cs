@@ -49,6 +49,22 @@ namespace HiddenHarbours.Core
         /// </summary>
         bool TryReadDepth(out float metres);
 
+        /// <summary>
+        /// WHERE those instruments are reading — the transducer's world position, which is the piloted
+        /// hull's. Returns <c>false</c>, with <paramref name="worldPos"/> zeroed, when there is no piloted
+        /// hull; a consumer must not read a stale position rather than showing nothing.
+        ///
+        /// <para><b>Why the glass needs a position at all (ADR 0025 S3).</b> The fish finder draws the
+        /// schools in the water it is sitting over, and <see cref="IFishSchools.MarksAt"/> is a query at a
+        /// point. Depth already comes from this seam <em>at</em> that point
+        /// (<see cref="TryReadDepth"/>) — it simply never had to say where. Stating it once here is what
+        /// keeps the UI a pure reader of Core: the finder never reaches into the Boats module for a
+        /// transform (rule 4), and the sounding and the marks are guaranteed to be about the same patch of
+        /// sea rather than two positions that could drift apart.</para>
+        /// FLAG lead-architect: additive member on the ADR 0025 S2 helm-instrument seam.
+        /// </summary>
+        bool TryReadPosition(out UnityEngine.Vector2 worldPos);
+
         /// <summary>This hull's persisted sounder preferences (set-point, armed, units, night). Falls
         /// back to <see cref="SounderPrefs.FromDefaults"/> for a hull that has never been touched.</summary>
         SounderPrefs SounderPrefs { get; }

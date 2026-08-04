@@ -193,6 +193,21 @@ namespace HiddenHarbours.Boats
             return _depthValid;
         }
 
+        /// <summary>
+        /// Where the instruments are reading: the piloted hull's world position (ADR 0025 S3 — the fish
+        /// finder queries <see cref="IFishSchools.MarksAt"/> at a point, and it must be the SAME point the
+        /// sounding is taken at). Not throttled — a transform read is free, and the consumer's own repaint
+        /// cadence decides how often it asks.
+        /// </summary>
+        public bool TryReadPosition(out Vector2 worldPos)
+        {
+            var boat = Boat();
+            if (boat == null || !HasHelm) { worldPos = Vector2.zero; return false; }
+            Vector3 p = boat.transform.position;
+            worldPos = new Vector2(p.x, p.y);
+            return true;
+        }
+
         private bool Sound(out float metres)
         {
             metres = 0f;
@@ -217,8 +232,13 @@ namespace HiddenHarbours.Boats
             get
             {
                 DepthSounderSettings cfg = GameServices.DepthSounder;
+                // ⚠ BOTH settings blocks, not just the sounder's: the one-argument FromDefaults fills the
+                // finder's RANGE from FishFinderSettings.Default (the asset-free code default) rather than
+                // the owner's tuned GameConfig value, so a freshly fitted finder would silently ignore his
+                // dial the moment he moved it off 20 m. ADR 0025 S3.
                 return InstrumentLocker.PrefsFor(GameServices.Save?.Current, HullId,
-                                                 HiddenHarbours.Core.SounderPrefs.FromDefaults(in cfg));
+                                                 HiddenHarbours.Core.SounderPrefs.FromDefaults(
+                                                     in cfg, GameServices.FishFinder));
             }
         }
 

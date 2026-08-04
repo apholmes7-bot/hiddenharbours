@@ -175,3 +175,35 @@ Notes recorded with the acceptance:
   building yet, so the first ports pin **numeric geometry goldens** (values read from the rig source),
   canvas dims + pivots, and an owner eyeball sheet; the pixel diff arrives with the bake pipeline if
   Option B parts are ever adopted.
+
+### Measured: what a live fish-finder repaint actually costs (S3b, 2026-08-03)
+
+This ADR ranked the options against rule 7 but could not price them, and the **fish finder is the rig it
+names as the one that MUST be Option A** ("a scrolling waterfall with marks anywhere"). The port is now
+built, so the number exists. `Hidden Harbours ▸ Dev ▸ Measure Fish Finder Repaint`, 200 iterations, on an
+RTX 4060 desktop:
+
+| surface | raster | upload | total per repaint |
+|---|---|---|---|
+| 480×660 — the shipped card AND focused state (one native surface, blitted) | 4.507 ms | 0.282 ms | **4.790 ms** |
+| 240×330 | 1.003 ms | 0.125 ms | 1.128 ms |
+| 300×120 — a console brow, what S6 would pay | 0.643 ms | 0.054 ms | 0.697 ms |
+
+**The recommendation stands: Option A is affordable here** — but only because the repaint RATE is data,
+not the frame rate. The rig's scan phase free-runs, so a naive port repaints every frame; the host
+quantizes it to `FishFinderSettings.WaterfallHz` (shipped at 4 ⇒ ~19 ms/s, ~1.9% of a 60 fps budget) and
+folds the bucket into its change key. Two things follow for the remaining slices:
+
+- **Cost is ~linear in canvas AREA, not in the contour's width** (4× fewer pixels came out 4.2× cheaper).
+  This rig is fill-bound — it paints the case, then paints over it — so any future rig at this canvas
+  size will land near the same number.
+- **If a smoother 8–12 Hz scroll is ever wanted and the frame budget is tight, the lever is caching the
+  static chrome** (case + bezel + pushers + brand change only on night and mode), roughly a 2× win,
+  *before* reaching for Option B's parts bake. Not done in S3b: it forks further from the rig source for
+  a win nobody has asked for.
+
+Also recorded from the same slice: **`fish-finder/README.md` and `fishRig.js` disagree about the keys**
+(the README calls `buttons[0]` fish-ID; the rig draws MODE / RANGE▲ / RANGE▼), and the finder keeps the
+sounder's shallow alarm, so three keys carry six jobs. Settled by the owner's **Ruling A** (2026-08-03),
+implemented in `FishFinderControls` and cited there: MODE cycles what ▲/▼ adjust, and the three glass
+regions carry fish-ID, night backlight and units. The rig `.js` is untouched, as ADR 0021's rule requires.
