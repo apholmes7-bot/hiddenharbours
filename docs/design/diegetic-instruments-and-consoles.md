@@ -157,6 +157,36 @@ fitted to *that* Novi. This makes the dash a visible, per-boat capability (P2) a
   veto on the mapping — it is implemented, not yet blessed. Note `InstrumentLocker` keys by **hull id**,
   so sharing a console def does *not* share purchases between the two hulls.
 
+### Seeing them without shopping — the dev brow cycle (S3d, 2026-08-04)
+
+**Two keys show the whole grid.** `F` (`DevBoatPicker`) walks the fleet; **`K`** (`DevInstrumentCycle`)
+walks the glass on whatever hull is under you — **bare brow → depth sounder → fish finder → bare**. Four
+consoled hulls × three brow states, no shop, no purchase. Purchasing and shopfronts are a separate,
+deferred piece of work; this is dev *visibility* only.
+
+**Why a cycle and not "dev owns everything".** The brow is ONE cutout and `EffectiveFit` deliberately lets
+the fish finder WIN it over the depth sounder. Granting every instrument id at once would therefore make
+the plain sounder permanently unreachable — it would hide instruments rather than reveal them. A cycle is
+the only shape that can show each unit alone, which also means it must be able to express **fewer**
+instruments than the hull ships: the Novi and Cape consoles carry a sounder in their *authored default*,
+so "show me a bare brow" is unreachable by owning less and the resolved fit is clamped instead.
+
+**Nothing it does is a purchase.** The step widens the relay's per-read *scratch* owned-id list and
+narrows the *resolved* `HelmFit`. It never calls `InstrumentLocker`, so no dev convenience can reach the
+player's save (rule 5, and a PlayMode guard asserts `SaveData.HullInstruments` is untouched across a full
+cycle). It is gated on `HelmControlRelay.DevIgnoreEquipmentGating` — the one dev predicate in the system,
+false outside the editor / a development build — so the key is dead in a shipped build.
+
+**The chosen tier CARRIES across an `F`-swap** (it lives on the relay, which rides the one persistent
+boat): set the finder once, then walk the fleet comparing the same instrument across four dashes. A
+console that cannot take the carried unit shows the nearest one it *can* carry without forgetting the
+request, so `F` back onto a capable hull restores it.
+
+**Landing on the finder logs the sea under the transducer** — how many schools are there and the nearest
+one's bearing/distance/depth, or that there are none. Schools are sparse and deterministic, so an honest
+empty sonar otherwise looks exactly like a broken one. ⚠ The `IFishSchools` seam is *containment* ("at",
+not "near"), so "none in range" means none **under** the boat; there is deliberately no "one 200 m north".
+
 **Still open:** the fish finder, radar, GPS and the second compass tier are not fitted yet — ADR 0030
 records that their *ownership* needs no further schema bump, but a new persisted **preference** field
 (e.g. the finder's range) is a separate question that does.
