@@ -359,11 +359,22 @@ namespace HiddenHarbours.UI
         }
 
         // ---- FLUSH unit (compassRig.js:186-203) ----------------------------------------------------
+
+        /// <summary>The flush unit's derived layout (compassRig.js:188) — pure, so the goldens can pin
+        /// it at more than one box size without a canvas. S4 exposes it for the first time: the two
+        /// pilothouse hulls are the first that can mount a flush compass.</summary>
+        public static void ComputeFlushLayout(double x, double y, double w, double h,
+                                              out int cx, out int cy, out int r)
+        {
+            cx = DrawSurface.JsRound(x + w / 2.0);
+            cy = DrawSurface.JsRound(y + h / 2.0);
+            r = (int)System.Math.Floor(System.Math.Min(w, h) / 2.0) - 2;
+        }
+
         public static void PaintFlush(DrawSurface s, int x, int y, int w, int h, double heading, bool night)
         {
             heading = Norm(heading);
-            int cx = DrawSurface.JsRound(x + w / 2.0), cy = DrawSurface.JsRound(y + h / 2.0);
-            int R = System.Math.Min(w, h) / 2 - 2;
+            ComputeFlushLayout(x, y, w, h, out int cx, out int cy, out int R);
             RigDrawUtil.Circle(s, cx, cy, R + 3, SHADOW);                          // cutout shadow
             RigDrawUtil.Ring(s, cx, cy, R + 2, R - 6, WHT[2]);                     // gelcoat bezel
             RigDrawUtil.Ring(s, cx, cy, R + 2, R - 6, WHT[4],
