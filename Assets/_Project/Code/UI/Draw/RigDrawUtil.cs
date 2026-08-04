@@ -186,10 +186,11 @@ namespace HiddenHarbours.UI
 
         // ---- 3×5 bitmap font (consoleRig.js:75-104; the compass subset :31-40 is glyph-identical) --
         // S4: completed to the sources' FULL A–Z. The earlier table omitted J/Q/X/Z because no ported
-        // label used them, and an unknown char blanks silently — so the console tach's own "X100"
-        // (consoleRig.js:200) had been rendering as " 100". Novi's "X1000" (noviRig.js:186) and Cape's
-        // "X100" (capeRig.js:175) need the same glyph, and the four are identical across every rig
-        // source, so they land here rather than in a second font (rule: one shared helper).
+        // label was thought to use them, and an unknown char blanks silently — so BOTH shipped skiff
+        // tachs, ConsoleDashRender:315 and SportDashRender:234 (consoleRig.js:202, sportRig.js:164),
+        // had been rendering their "X100" as " 100" since S2a. Novi's "X1000" (noviRig.js:186) and
+        // Cape's "X100" (capeRig.js:175) need the same glyph, and the four are identical across every
+        // rig source, so they land here rather than in a second font (rule: one shared helper).
         private static readonly string[] Chars =
         {
             "A", ".#.|#.#|###|#.#|#.#", "B", "##.|#.#|##.|#.#|##.",

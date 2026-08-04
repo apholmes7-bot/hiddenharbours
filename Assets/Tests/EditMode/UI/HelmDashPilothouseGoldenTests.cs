@@ -340,6 +340,59 @@ namespace HiddenHarbours.Tests.UI.EditMode
             Assert.That(novi.r, Is.LessThan(60), "the Novi's blanking screen is black glass, not cork");
         }
 
+        // ---- the standby page is a PARKED instrument, not a scanning one -------------------------------
+
+        [TestCase(ConsoleRigKind.Novi)]
+        [TestCase(ConsoleRigKind.Cape)]
+        public void TheRadarStandbyPage_ParksItsSweepAtTwelveOClock(ConsoleRigKind rig)
+        {
+            // Merge-seat ruling (lead-architect, PR #410): a statically-labelled STANDBY screen is
+            // honest — it announces it is producing no knowledge — but a ROTATING sweep would not be,
+            // because a sweep implies scanning. The distinction is one animation frame wide, so it is
+            // pinned geometrically rather than trusted: the sweep must lie on the mount's vertical
+            // centre line (dir(0) = straight up), and nowhere else.
+            DrawSurface s = RenderPilothouse(rig, Fit(rig, SounderKind.Depth, CompassMount.None,
+                                                      radar: true, gps: false));
+            HelmDashGeometry.SlotBoxOnCard(HelmDashGeometry.PilotRadarSlot, true,
+                                           out int x, out int y, out int w, out int h);
+            int cx = x + w / 2, cy = y + h / 2 + 6;              // the sweep's origin (js: cy + 6)
+
+            // Sample at radius 55: past the middle ring (48) and short of the sweep's tip (h*0.42 = 63),
+            // so ONLY the sweep can brighten a pixel there.
+            const double r = 55.0;
+            int Bright(double deg)
+            {
+                RigDrawUtil.Dir(deg * System.Math.PI / 180.0, out double dx, out double dy);
+                Color32 c = At(s, DrawSurface.JsRound(cx + dx * r), DrawSurface.JsRound(cy + dy * r));
+                return c.r + c.g + c.b;
+            }
+
+            int up = Bright(0), right = Bright(90), diag = Bright(45), down = Bright(180);
+            Assert.That(up, Is.GreaterThan(right + 60),
+                        $"{rig}: the sweep must point UP at 12 o'clock, not to starboard");
+            Assert.That(up, Is.GreaterThan(diag + 60), $"{rig}: nor at 45°");
+            Assert.That(up, Is.GreaterThan(down + 60), $"{rig}: nor astern");
+        }
+
+        [TestCase(ConsoleRigKind.Novi)]
+        [TestCase(ConsoleRigKind.Cape)]
+        public void TheDashChrome_IsPurelyAFunctionOfItsInputs(ConsoleRigKind rig)
+        {
+            // No clock, no frame counter, no hidden randomness anywhere in the chrome (rule 5) — which
+            // is also what says the standby page cannot animate: two renders of one fit are the same
+            // bytes. Covers the Cape's 1250 hash-placed cork motes and 40 grain streaks too.
+            HelmFit fit = Fit(rig, SounderKind.Depth, CompassMount.None, radar: true, gps: true);
+            DrawSurface a = RenderPilothouse(rig, fit);
+            DrawSurface b = RenderPilothouse(rig, fit);
+            for (int i = 0; i < a.Pixels.Length; i++)
+            {
+                Color32 p = a.Pixels[i], q = b.Pixels[i];
+                if (p.r != q.r || p.g != q.g || p.b != q.b || p.a != q.a)
+                    Assert.Fail($"{rig}: repaint differs at pixel {i} ({i % a.Width},{i / a.Width}) — " +
+                                "something in the chrome is reading a clock or a random source");
+            }
+        }
+
         [TestCase(ConsoleRigKind.Novi)]
         [TestCase(ConsoleRigKind.Cape)]
         public void TheSounderMount_GrowsTallForTheColourFinder(ConsoleRigKind rig)
