@@ -187,9 +187,10 @@ one's bearing/distance/depth, or that there are none. Schools are sparse and det
 empty sonar otherwise looks exactly like a broken one. ⚠ The `IFishSchools` seam is *containment* ("at",
 not "near"), so "none in range" means none **under** the boat; there is deliberately no "one 200 m north".
 
-**Still open:** the fish finder, radar, GPS and the second compass tier are not fitted yet — ADR 0030
-records that their *ownership* needs no further schema bump, but a new persisted **preference** field
-(e.g. the finder's range) is a separate question that does.
+**Still open:** radar, GPS and the second compass tier are not fitted yet — ADR 0030 records that their
+*ownership* needs no further schema bump, but a new persisted **preference** field is a separate question
+that does. (The **fish finder** has since landed: its glass shipped with ADR 0025 S3b and its persisted
+`RangeMetres` preference is the schema-v9 amendment on ADR 0030 — this line predates both.)
 
 ---
 
