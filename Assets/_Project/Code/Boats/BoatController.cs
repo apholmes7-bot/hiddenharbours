@@ -129,6 +129,14 @@ namespace HiddenHarbours.Boats
             if (Application.isPlaying && GetComponent<HelmControlRelay>() == null)
                 gameObject.AddComponent<HelmControlRelay>();
 
+            // THE DEV BROW CYCLE (ADR 0025 S3d): one key steps the helm's brow instrument bare → depth
+            // sounder → fish finder → bare, so every instrument that has shipped can be looked at from a
+            // running game. Same runtime-spawn reasoning as the relay above (no builder re-run), and
+            // mounted unconditionally on purpose: the component reads the relay's single dev predicate
+            // rather than re-deriving it, so a shipped build has ONE flag to be false, not two.
+            if (Application.isPlaying && GetComponent<DevInstrumentCycle>() == null)
+                gameObject.AddComponent<DevInstrumentCycle>();
+
             _rb = GetComponent<Rigidbody2D>();
             _rb.gravityScale = 0f;
             _rb.linearDamping = 0.2f;
