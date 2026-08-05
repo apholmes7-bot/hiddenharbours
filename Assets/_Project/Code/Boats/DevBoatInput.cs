@@ -16,8 +16,11 @@ namespace HiddenHarbours.Boats
     ///     2026-08-03: a key can't hold an analog position, so each press bumps a detent and the drive
     ///     STAYS there): W/Up press = +1 detent, S/Down press = −1 detent, the drive HOLDS between
     ///     presses; holding a key auto-repeats after a data-driven delay (GameConfig.HelmThrottle);
-    ///     Z snaps to neutral. A/D = steer (momentary, unchanged). Gamepad rides the SAME actions:
-    ///     D-pad up/down = detents, B (east) = neutral, left stick X = steer.
+    ///     Z snaps to neutral. A/D = steer: still MOMENTARY (release returns to centre), but the keys
+    ///     now set a TARGET the commanded steer EASES toward over GameConfig.HelmWheel
+    ///     .SteerEaseSeconds (S4.5) instead of slamming lock-to-lock in a frame — so the dash wheel,
+    ///     which mirrors the steer, winds round like a wheel. Gamepad rides the SAME actions: D-pad
+    ///     up/down = detents, B (east) = neutral, left stick X = steer (analog, passed through undamped).
     /// The drive value lives in <see cref="BoatController"/> alone (read back through
     /// <see cref="BoatController.Throttle"/> each frame) — this component holds only repeat TIMERS,
     /// so the mouse drag path (HelmControlRelay) and these keys can never fight over a second copy.
@@ -148,15 +151,36 @@ namespace HiddenHarbours.Boats
             if (neutral) drive = 0f;
             else if (steps != 0) drive = HelmThrottleStepMath.StepMany(drive, steps, aheadN, asternN);
 
-            float steer = ((kb != null && (kb.dKey.isPressed || kb.rightArrowKey.isPressed)) ? 1f : 0f)
-                        - ((kb != null && (kb.aKey.isPressed || kb.leftArrowKey.isPressed)) ? 1f : 0f);
-            if (gp != null && steer == 0f) steer = gp.leftStick.x.ReadValue();
+            // Steer keys are a momentary TARGET (−1/0/+1), not the command itself (S4.5).
+            float target = ((kb != null && (kb.dKey.isPressed || kb.rightArrowKey.isPressed)) ? 1f : 0f)
+                         - ((kb != null && (kb.aKey.isPressed || kb.leftArrowKey.isPressed)) ? 1f : 0f);
+            bool analog = false;
+            if (gp != null && target == 0f)
+            {
+                float stick = gp.leftStick.x.ReadValue();
+                // A DEFLECTED stick is already an analog position — easing it would only add lag, so
+                // it goes straight through. At rest it is indistinguishable from "no key", and falls
+                // through to the ease, which winds a partial deflection out in a fraction of a lock.
+                if (stick != 0f) { target = stick; analog = true; }
+            }
 
-            // Wheel steer-session arbitration (S2a, the IHelmControl contract).
+            // Wheel steer-session arbitration (S2a, the IHelmControl contract) runs on the RAW
+            // momentary read, BEFORE the ease: the eased tail after a key release is this component's
+            // own follow-through, not a fresh input, and must never read as one and break a wheel
+            // session it never touched.
             if (_relay == null) _relay = GetComponent<HelmControlRelay>();
             bool sessionActive = _relay != null && _relay.SteerDragActive;
-            steer = ArbitrateSteer(steer, sessionActive, _boat.Steer, out bool endSession);
+            target = ArbitrateSteer(target, sessionActive, _boat.Steer, out bool endSession);
             if (endSession) _relay.EndSteerDrag();
+
+            // Ease the COMMAND toward the target — never the wheel graphic, which mirrors Steer and
+            // would otherwise show less lock than the rudder has (a lying instrument). The ease reads
+            // the live steer back from the ONE owner rather than keeping a copy, so taking the channel
+            // over from a held wheel session starts at the wheel's own angle and cannot snap, and a
+            // live session (whose arbitrated target IS the held steer) is passed through untouched.
+            float steer = analog
+                ? target
+                : HelmSteerEase.Step(_boat.Steer, target, dt, GameServices.HelmWheel.SteerEaseSeconds);
 
             _boat.SetControl(drive, steer);
         }

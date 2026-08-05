@@ -112,6 +112,13 @@ namespace HiddenHarbours.Art
         public static readonly int DarkTex = Shader.PropertyToID("_HHDarkTex");
         public static readonly int KeyTex = Shader.PropertyToID("_HHKeyTex");
         public static readonly int DepthTex = Shader.PropertyToID("_HHDepthTex");
+        /// <summary>The keyline gate (ADR 0031 — the keyline retirement): 1 = the resolve floods the
+        /// legacy 1 px outline (its rule 2), 0 = the flood is retired and empty pixels STAY empty.
+        /// Gates ONLY the flood — the depth-edge darkening (rule 1) never reads it. Written per frame
+        /// by <see cref="IsoFacetKeylineGate.Apply"/> from <c>GameServices.HullKeylineFlood</c>; the
+        /// shader property defaults to 0 so a bypassed write fails to the SHIPPED (outline-free)
+        /// style, never back to outlines.</summary>
+        public static readonly int KeylineFlood = Shader.PropertyToID("_HHKeylineFlood");
 
         public static readonly int RampTex = Shader.PropertyToID("_RampTex");
         public static readonly int DarkRampTex = Shader.PropertyToID("_DarkRampTex");

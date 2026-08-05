@@ -58,6 +58,30 @@ namespace HiddenHarbours.Tests.RigBaking
         /// <summary>Whole-cell backstop, comparability with ADR 0022's 1.3–4.4% band.</summary>
         const double MaxPercent = 5.0;
 
+        GameConfig _keylineConfig;
+        GameConfig _prevConfig;
+
+        /// <summary>ADR 0031: production ships the mesh fleet's keyline OFF, but the truth this
+        /// fixture compares against is her BAKED SHEET — drawn keyline included — so the mesh
+        /// render must carry it too. Forced through the owner's real dial (<c>GameServices.Config</c>,
+        /// the seam GameRoot wires), never a parallel test-only path.</summary>
+        [SetUp]
+        public void ForceTheKeylineOn()
+        {
+            _prevConfig = GameServices.Config;
+            _keylineConfig = ScriptableObject.CreateInstance<GameConfig>();
+            _keylineConfig.HullKeylineFlood = true;
+            GameServices.Config = _keylineConfig;
+        }
+
+        [TearDown]
+        public void RestoreTheConfig()
+        {
+            GameServices.Config = _prevConfig;
+            if (_keylineConfig != null) Object.DestroyImmediate(_keylineConfig);
+            _keylineConfig = null;
+        }
+
         static void RequireAGraphicsDevice()
         {
             if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null)

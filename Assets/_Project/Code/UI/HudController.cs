@@ -75,8 +75,14 @@ namespace HiddenHarbours.UI
         private string _setDriftCache;
         private string _apparentWindCache;
 
-        // Whether the nav cluster is currently shown (at sea). Toggled, so labels flip enabled only on change.
-        private bool _navShown;
+        // Where the nav cluster currently is. Applied only on a CHANGE, so the labels' enabled flags
+        // and anchors are touched on a transition (boarding, taking a helm) and never per frame.
+        private NavClusterPlacement _navPlacement = NavClusterPlacement.Hidden;
+
+        // The nav cluster's two homes, captured at build time so a move can go back exactly.
+        private RectTransform[] _navRects;
+        private Vector2[] _navHomeAnchorMin, _navHomeAnchorMax, _navHomePos;
+        private TextAnchor[] _navHomeAlign;
 
         // Clock change-detection (avoid building the clock string when the displayed minute is unchanged).
         private int _lastMinuteOfDay = -1;
@@ -291,11 +297,24 @@ namespace HiddenHarbours.UI
         {
             // ActiveBoat is OPTIONAL (null on foot / before a boat is aboard, like Wallet) — null-check it.
             var boat = GameServices.ActiveBoat;
-            if (boat == null || !boat.HasActiveBoat) { SetNavShown(false); return; }
+            if (boat == null || !boat.HasActiveBoat) { SetNavPlacement(NavClusterPlacement.Hidden); return; }
 
             BoatKinematics k = boat.Sample();
-            if (!k.HasBoat) { SetNavShown(false); return; }
-            SetNavShown(true);
+            if (!k.HasBoat) { SetNavPlacement(NavClusterPlacement.Hidden); return; }
+
+            // S4.5: the cluster yields to a helm dash — hidden where the dash's own compass already
+            // says it, moved clear where it does not. Keyed on the live FIT through Core, so a bought
+            // or dev-cycled compass moves the HUD with no list of hulls to keep in step. HelmControl
+            // is optional in the same way ActiveBoat is (ashore, EditMode) — a null one is simply "no
+            // dash", which leaves the cluster exactly where VS-19 put it.
+            IHelmControl helm = GameServices.HelmControl;
+            bool atHelm = helm != null && helm.HasHelm;
+            NavClusterPlacement placement = HelmHudSuppression.NavCluster(
+                aboard: true,
+                atHelm ? helm.Style : HelmControlStyle.None,
+                atHelm ? helm.Fit : HelmFit.None);
+            SetNavPlacement(placement);
+            if (placement == NavClusterPlacement.Hidden) return;   // nothing to format into hidden labels
 
             // Compass: arrow SHAPE + degrees NUMBER + cardinal WORD (redundant coding, §8). Cross-checked
             // against WindReadout's bearing so the compass and the wind arrow agree on North (ADR 0007).
@@ -319,17 +338,57 @@ namespace HiddenHarbours.UI
             if (apparent != _apparentWindCache) { _apparentWindCache = apparent; _apparentWindLabel.text = apparent; }
         }
 
-        // Show the nav cluster at sea, hide it ashore. Flips the labels' enabled state only on a change.
-        private void SetNavShown(bool shown)
+        /// <summary>
+        /// Put the nav cluster where <see cref="HelmHudSuppression"/> says it belongs. Only a CHANGE
+        /// does any work, so this costs one enum compare per sample in the steady state (rule 7).
+        ///
+        /// <para>Moved, the five labels swap to a LEFT-anchored, left-aligned column at the screen
+        /// edge — every read intact, out from under the bottom-centre dash card. Their vertical
+        /// stacking (and so the whole cluster's reading order) is untouched: only the horizontal
+        /// anchoring moves, and it moves back to the captured home exactly.</para>
+        /// </summary>
+        private void SetNavPlacement(NavClusterPlacement placement)
         {
-            if (_navShown == shown) return;
-            _navShown = shown;
+            if (_navPlacement == placement) return;
+            _navPlacement = placement;
+
+            bool shown = placement != NavClusterPlacement.Hidden;
             if (_compassLabel != null)       _compassLabel.enabled = shown;
             if (_compassRibbonLabel != null) _compassRibbonLabel.enabled = shown;
             if (_compassNeedleLabel != null) _compassNeedleLabel.enabled = shown;
             if (_setDriftLabel != null)      _setDriftLabel.enabled = shown;
             if (_apparentWindLabel != null)  _apparentWindLabel.enabled = shown;
+            if (!shown || _navRects == null) return;
+
+            bool clear = placement == NavClusterPlacement.ClearOfTheDash;
+            for (int i = 0; i < _navRects.Length; i++)
+            {
+                RectTransform rt = _navRects[i];
+                if (rt == null) continue;
+                if (clear)
+                {
+                    rt.anchorMin = new Vector2(0f, _navHomeAnchorMin[i].y);
+                    rt.anchorMax = new Vector2(NavClearWidth01, _navHomeAnchorMax[i].y);
+                    rt.anchoredPosition = new Vector2(NavClearMarginX, _navHomePos[i].y);
+                }
+                else
+                {
+                    rt.anchorMin = _navHomeAnchorMin[i];
+                    rt.anchorMax = _navHomeAnchorMax[i];
+                    rt.anchoredPosition = _navHomePos[i];
+                }
+                var text = rt.GetComponent<Text>();
+                if (text != null)
+                    text.alignment = clear ? TextAnchor.LowerLeft : _navHomeAlign[i];
+            }
         }
+
+        // The moved cluster's box, in HUD reference units / fractions of the canvas width. 0.42 is
+        // where the SMALL dash card's left edge lands at the shipped scales (a 600-wide rig at
+        // DashSmallScale 0.5, centred), so the cluster's column stops short of it with room to spare;
+        // left-aligned text then grows rightward from the margin only as far as its own length.
+        private const float NavClearWidth01 = 0.34f;
+        private const float NavClearMarginX = 16f;
 
         private void UpdateMoney()
         {
@@ -486,7 +545,7 @@ namespace HiddenHarbours.UI
             SetIfChanged(ref _windCache,  HudStrings.Unknown, _windLabel);
             SetIfChanged(ref _seaCache,   HudStrings.Unknown, _seaLabel);
             SetIfChanged(ref _moneyCache, HudStrings.MoneyPrefix + HudStrings.Unknown, _moneyLabel);
-            SetNavShown(false); // no boat at boot → keep the nav cluster hidden
+            SetNavPlacement(NavClusterPlacement.Hidden); // no boat at boot → keep the cluster hidden
         }
 
         private static void SetIfChanged(ref string cache, string value, Text label)
@@ -517,8 +576,12 @@ namespace HiddenHarbours.UI
             // clock/tide/money/hold read at a glance on a desktop window. This is a minimal scale
             // tweak only — the real HUD pass (sizing, density, layout) is ui-ux's VS-19. Was the
             // portrait 1080×1920 mobile reference (pre-ADR-0005).
-            scaler.referenceResolution = new Vector2(1280f, 720f);
-            scaler.matchWidthOrHeight = 0.5f;
+            //
+            // These four numbers live in HudBandLayout because the helm overlays have to keep clear
+            // of the band they describe (S4.5) — one copy, or the dash's reserve drifts from the
+            // band's actual size and the band goes back to drawing over the wheelhouse.
+            scaler.referenceResolution = new Vector2(HudBandLayout.RefW, HudBandLayout.RefH);
+            scaler.matchWidthOrHeight = HudBandLayout.MatchWidthOrHeight;
 
             // A top band anchored across the top, inset for the safe area at runtime.
             var band = new GameObject("TopBand", typeof(RectTransform));
@@ -528,7 +591,7 @@ namespace HiddenHarbours.UI
             bandRt.anchorMax = new Vector2(1f, 1f);
             bandRt.pivot = new Vector2(0.5f, 1f);
             bandRt.anchoredPosition = new Vector2(0f, -SafeAreaTopInset());
-            bandRt.sizeDelta = new Vector2(-32f, 220f); // 16px side padding, ~220px tall band
+            bandRt.sizeDelta = new Vector2(-HudBandLayout.SidePaddingRef, HudBandLayout.BandHeightRef);
 
             // Left column: clock (top) + tide (highest-stakes — kept visually distinct, larger).
             _clockLabel = MakeLabel(bandRt, "Clock", TextAnchor.UpperLeft,
@@ -573,7 +636,10 @@ namespace HiddenHarbours.UI
 
             // VS-19 nav cluster (heading compass + set-&-drift). A sailing read, so it sits BOTTOM-CENTRE
             // (a natural compass spot, clear of the top conditions band) and is shown only while aboard
-            // (UpdateNavReads toggles it; hidden ashore). Parented to the canvas root, stacked upward:
+            // (UpdateNavReads toggles it; hidden ashore). S4.5: at a helm dash it yields — hidden where
+            // the dash's own compass says the same thing, moved bottom-LEFT where it does not, because
+            // the dash card is anchored bottom-centre too (SetNavPlacement / HelmHudSuppression).
+            // Parented to the canvas root, stacked upward:
             // set-&-drift, the rose ribbon, the fixed needle, then the heading line. Redundant-coded — a
             // degrees number + a cardinal word + the ribbon/arrow SHAPE — never colour alone (§8).
             _apparentWindLabel = MakeLabel(canvasRt, "ApparentWind", TextAnchor.LowerCenter,
@@ -595,8 +661,34 @@ namespace HiddenHarbours.UI
             _compassNeedleLabel.enabled = false;
             _compassLabel.enabled = false;
 
+            // Capture the cluster's authored home so S4.5's move to bottom-left is exactly reversible
+            // (the numbers above stay the single source of where it lives; nothing is duplicated).
+            CaptureNavHome(_apparentWindLabel, _setDriftLabel, _compassRibbonLabel,
+                           _compassNeedleLabel, _compassLabel);
+
             // Start quiet until services are ready.
             ShowPlaceholder();
+        }
+
+        // Remember each nav label's built anchors, position and alignment, so SetNavPlacement can
+        // move the cluster clear of the dash and put it back without a second copy of the numbers.
+        private void CaptureNavHome(params Text[] labels)
+        {
+            _navRects = new RectTransform[labels.Length];
+            _navHomeAnchorMin = new Vector2[labels.Length];
+            _navHomeAnchorMax = new Vector2[labels.Length];
+            _navHomePos = new Vector2[labels.Length];
+            _navHomeAlign = new TextAnchor[labels.Length];
+            for (int i = 0; i < labels.Length; i++)
+            {
+                if (labels[i] == null) continue;
+                var rt = (RectTransform)labels[i].transform;
+                _navRects[i] = rt;
+                _navHomeAnchorMin[i] = rt.anchorMin;
+                _navHomeAnchorMax[i] = rt.anchorMax;
+                _navHomePos[i] = rt.anchoredPosition;
+                _navHomeAlign[i] = labels[i].alignment;
+            }
         }
 
         private static Text MakeLabel(RectTransform parent, string name, TextAnchor align,

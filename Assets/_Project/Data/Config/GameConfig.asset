@@ -132,6 +132,7 @@ MonoBehaviour:
     Friction: 2.4
     SelfCentre: 0
     RimGrabPadPx: 8
+    SteerEaseSeconds: 0.25
   StormRock:
     Enabled: 1
     StormStartSeaState01: 0.4

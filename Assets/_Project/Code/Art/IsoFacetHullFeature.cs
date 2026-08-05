@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using HiddenHarbours.Core;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.Rendering;
@@ -21,9 +22,12 @@ namespace HiddenHarbours.Art
     /// punches holes in every later sprite that z-tests.</item>
     /// <item><b>Keyline resolve pass</b> — the rig's CPU post-pass as a FULLSCREEN shader: darken
     /// the far side of depth discontinuities by two RINDEX ramp steps, flood a 1 px keyline into
-    /// empty pixels touching a hull. Output is a persistent screen-size texture bound globally as
-    /// <c>_HHHullScreenTex</c>; each hull's in-scene overlay quad re-composes its own pixels from
-    /// it, sorted against sprites like any other renderer.</item>
+    /// empty pixels touching a hull. ⚠️ ADR 0031 (the keyline retirement): the FLOOD half is
+    /// production-gated by <see cref="IsoFacetKeylineGate"/> (GameConfig data, ship default OFF —
+    /// the outline is retired from the world style); the depth-edge darkening half always runs —
+    /// it is what keeps overlapping parts of one boat readable. Output is a persistent screen-size
+    /// texture bound globally as <c>_HHHullScreenTex</c>; each hull's in-scene overlay quad
+    /// re-composes its own pixels from it, sorted against sprites like any other renderer.</item>
     /// </list>
     ///
     /// <para><b>Injection point.</b> <see cref="ScriptableRenderPass2D"/> with
@@ -216,6 +220,9 @@ namespace HiddenHarbours.Art
             InteriorMaskEnabled = _interiorMask;
             _pass.renderPassSortingLayerID = LowestSortingLayerId();
             _pass.ResolveMaterial = _resolveMaterial;
+            // ADR 0031: the owner's keyline dial, re-read every camera every frame so flipping it in
+            // the GameConfig inspector during play converts the whole mesh fleet within a frame.
+            _pass.KeylineFlood = IsoFacetKeylineGate.Enabled;
             _pass.DrawHulls = hulls;
             _pass.DrawWater = water;
             _pass.DrawGuard = _interiorMask;
@@ -282,6 +289,10 @@ namespace HiddenHarbours.Art
             public bool DrawGuard;
             /// <summary>Record the hull MRT + keyline resolve this frame (any live mesh hull)?</summary>
             public bool DrawHulls;
+            /// <summary>ADR 0031: flood the legacy 1 px keyline this frame? From the owner's
+            /// GameConfig dial via <see cref="IsoFacetKeylineGate.Enabled"/> — ship default OFF.
+            /// Gates only the resolve shader's flood rule; depth-edge darkening always runs.</summary>
+            public bool KeylineFlood;
             /// <summary>Record the displaced-water pass this frame (any active DisplacedWaterSurface)?</summary>
             public bool DrawWater;
             /// <summary>Record the object-reflection pass this frame (any live ReflectiveObject)?</summary>
@@ -383,6 +394,9 @@ namespace HiddenHarbours.Art
                 public Material Material;
                 public TextureHandle Facet, Dark, Key, Depth;
                 public Vector4 TexSize;
+                /// <summary>ADR 0031: this frame's keyline-gate value, applied to the material in
+                /// the render func through <see cref="IsoFacetKeylineGate.Apply"/>.</summary>
+                public bool KeylineFlood;
             }
 
             public override void RecordRenderGraph(RenderGraph renderGraph, ContextContainer frameData)
@@ -774,6 +788,7 @@ namespace HiddenHarbours.Art
                     passData.Key = key;
                     passData.Depth = depthVal;
                     passData.TexSize = new Vector4(w, h, 0, 0);
+                    passData.KeylineFlood = KeylineFlood;
 
                     builder.UseTexture(facet, AccessFlags.Read);
                     builder.UseTexture(dark, AccessFlags.Read);
@@ -790,6 +805,7 @@ namespace HiddenHarbours.Art
                         data.Material.SetTexture(IsoFacetShaderIds.DarkTex, (RTHandle)data.Dark);
                         data.Material.SetTexture(IsoFacetShaderIds.KeyTex, (RTHandle)data.Key);
                         data.Material.SetTexture(IsoFacetShaderIds.DepthTex, (RTHandle)data.Depth);
+                        IsoFacetKeylineGate.Apply(data.Material, data.KeylineFlood);
                         Blitter.BlitTexture(ctx.cmd, new Vector4(1f, 1f, 0f, 0f), data.Material, 0);
                     });
                 }
@@ -917,5 +933,35 @@ namespace HiddenHarbours.Art
                 _foamStates.Clear();
             }
         }
+    }
+
+    /// <summary>
+    /// ADR 0031 (the keyline retirement): the ONE code path that turns the owner's style decision
+    /// (<see cref="GameServices.HullKeylineFlood"/>, ship default OFF) into the resolve shader's
+    /// <c>_HHKeylineFlood</c> uniform. The production render func calls <see cref="Apply"/> every
+    /// frame; the EditMode gate suite (IsoFacetKeylineGateTests) pins THIS method against a material
+    /// built from the REAL resolve shader, with sabotage arms — so the gate cannot silently fork from
+    /// what ships. That is the guard-rot lesson applied up front: zero a layer's output through the
+    /// mechanism the production path runs (the same shader, the same pass), never a parallel path
+    /// that can drift.
+    ///
+    /// <para>The gate switches ONLY the resolve's rule 2 (the 1 px flood into empty pixels). Rule 1
+    /// — the depth-edge darkening that keeps overlapping parts of one object readable — never reads
+    /// it, and because the flood was the sole consumer of EMPTY facet pixels, the water share and
+    /// every solid pixel are byte-identical whichever way the gate sits. With the gate ON the pass
+    /// is verbatim the rigs' shared post-pass, which is what the GPU oracle fixtures force and pin.</para>
+    /// </summary>
+    public static class IsoFacetKeylineGate
+    {
+        /// <summary>This frame's gate value — the owner's <c>GameConfig.HullKeylineFlood</c> resolved
+        /// through <see cref="GameServices"/> (falls back to the retired-outline default, OFF, when no
+        /// config is wired). Read per camera per AddRenderPasses, never cached.</summary>
+        public static bool Enabled => GameServices.HullKeylineFlood;
+
+        /// <summary>Write <paramref name="floodEnabled"/> onto <paramref name="resolveMaterial"/> as
+        /// <c>_HHKeylineFlood</c> (1 = flood the legacy outline, 0 = retired). The shader property
+        /// defaults to 0, so a material this method never touched fails to the SHIPPED style.</summary>
+        public static void Apply(Material resolveMaterial, bool floodEnabled) =>
+            resolveMaterial.SetFloat(IsoFacetShaderIds.KeylineFlood, floodEnabled ? 1f : 0f);
     }
 }

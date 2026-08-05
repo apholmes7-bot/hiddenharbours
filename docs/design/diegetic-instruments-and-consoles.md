@@ -200,6 +200,30 @@ The console takes screen space, so — per the owner — it's a **window you dra
 per boat**, that you can **minimize** and reopen, clickable to work the controls (turn the key, flip
 switches, swing the lever, tap the sounder to swap depth↔fish).
 
+> **✅ Part of this shipped early, in a simpler shape (S4.5, 2026-08-05)** — on the owner's ask that
+> instruments be "shown on the dash and not blown up by default; this should be selectable, which UI can be
+> expanded". There is **no free-drag window**; there is a two-state presentation per instrument:
+>
+> - **FLUSH (the default):** the instrument's glass draws in the console's own authored cutout — the
+>   skiffs' `SounderCutout`, the pilothouse's brow slot (its TALL portrait box for the colour finder) —
+>   scaled with the dash card. Glance value plus a click target; no controls are live at that size.
+> - **EXPANDED (chosen):** the standalone card S2/S3b already built, where the pushers and the glass
+>   regions work. **One at a time** (`HelmInstrumentExpansion`), collapsed by clicking away or Esc, and
+>   **never persisted** — a narrower answer than §5's per-boat UI-prefs store, deliberately: nothing here
+>   is a preference yet, so nothing needs a store (open question 6 stays open).
+>
+> Both states are the **same texture at two rects** (`HelmInstrumentMountLayout`), so they cannot disagree
+> about the sea, and the shallow alarm flashes in both. Mounting costs no extra raster and does not dirty
+> the dash card. The **coexistence risk below is NOT yet retired**: the flush face and the expanded card
+> hit-test their own rects straight off `Mouse.current`, exactly as S1–S3b did.
+>
+> Shipped alongside it: the always-on HUD **yields the helm** (`HelmHudSuppression`) — the VS-19 nav
+> cluster hides where the dash carries a compass and moves clear where it does not — and the dash and any
+> expanded instrument now size themselves **below the HUD band** instead of under it (`HudBandLayout`).
+> ⚠ Four bottom-centre hint overlays in the **Player** and **World** modules still overlap the dash and
+> could not be fixed from the UI lane (rule 4); see the S4.5 PR for the measurements and the Core seam
+> they would need.
+
 **Design (M2/M3, ui-ux):**
 - **Host:** a screen-space uGUI window with a `RawImage` over a C#-filled `Texture2D` (`FilterMode.Point`),
   following the interactive **`BuyScreen`** recipe (its `EnsureEventSystem`), **not** the read-only
@@ -235,10 +259,13 @@ switches, swing the lever, tap the sounder to swap depth↔fish).
    outstanding on `docs/art/proofs/lever-csharp-strip-9.png`.
 3. **The watch renders:** not yet built. ADR 0025 is **ACCEPTED** (2026-08-03) — proved instead by the
    lever/tiller (S1) and the console dash (S2a).
-4. **One console end-to-end:** ✅ *partly* — the skiff console dash (wheel/compass/mounted lever) and the
-   **depth sounder** are live. The fish-finder renderer is **S3, still ahead**; it is the arc's most
-   expensive *continuous* render (an O(width) per-column repaint on a free-running phase), which is what
-   decides any ADR 0025 Option B baking. The draggable/resizable window (§5) is not built.
+4. ✅ **One console end-to-end — now all four.** The skiff dashes (S2a) and the two wheelhouses (S4,
+   #410) are live, with the **depth sounder** (S2) and the **fish finder** (S3b, #407) in the brow and a
+   dev **K-cycle** (S3d, #409) to step between them. Measured repaint cost is logged by
+   `HelmDashRepaintCostTests` — the number that would have decided any ADR 0025 Option B baking, and it
+   did not ask for one. **S4.5** (2026-08-05) mounted the instruments flush on the dash with
+   click-to-expand and made the HUD yield the helm (§5). The free-drag/resizable window is still **not**
+   built; **S5 radar** and **S6 chartplotter** are still ahead.
 5. ✅ **Equipment + save:** shipped at **v8** (not v5) under ADR 0030 — the instrument shop, the per-hull
    owned-instrument save, and the reader gating the sounder's readout.
 

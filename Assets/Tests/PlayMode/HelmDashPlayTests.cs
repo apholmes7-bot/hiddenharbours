@@ -79,6 +79,28 @@ namespace HiddenHarbours.Tests.PlayMode
             return (go, boat);
         }
 
+        /// <summary>
+        /// Register a <see cref="GameConfig"/> whose key-steer ease winds in the given time (S4.5).
+        ///
+        /// <para>The arbitration tests below want the ease ON — it is the shipped path and they run
+        /// through it — but they assert about OWNERSHIP, not duration, and a quarter-second wind would
+        /// turn every one of them into a frame-count-as-time bet (which is exactly the thing this file
+        /// says at the top it never makes). A wind time far shorter than a frame settles the helm on
+        /// the first Update, so the real eased code runs and the assertions stay about the handover.
+        /// <see cref="KeySteer_WindsToTheTarget_AndSettlesExactly"/> is where the wind itself is
+        /// pinned, and it does so without asserting any duration.</para>
+        /// </summary>
+        private GameConfig ConfigWithSteerWind(float seconds)
+        {
+            var cfg = ScriptableObject.CreateInstance<GameConfig>();
+            HelmWheelSettings wheel = cfg.HelmWheel;
+            wheel.SteerEaseSeconds = seconds;
+            cfg.HelmWheel = wheel;
+            _spawned.Add(cfg);
+            GameServices.Config = cfg;
+            return cfg;
+        }
+
         private static HelmOverlayHost Host()
         {
             HelmOverlayHost host = HelmOverlayHost.Instance;
@@ -182,6 +204,7 @@ namespace HiddenHarbours.Tests.PlayMode
         [UnityTest]
         public IEnumerator DragSteer_Writes_AndHoldsAgainstTheKeyLayersZeroWrites()
         {
+            ConfigWithSteerWind(0.0001f);                // S4.5: ease on, but settling within a frame
             var (go, boat) = NewBoat();
             go.AddComponent<DevBoatInput>();             // the live key layer that stomps steer
             _testKeyboard = InputSystem.AddDevice<Keyboard>();   // headless has no device otherwise
@@ -214,6 +237,7 @@ namespace HiddenHarbours.Tests.PlayMode
         [UnityTest]
         public IEnumerator ARealKeyPress_BreaksTheSteerSession_KeysWin()
         {
+            ConfigWithSteerWind(0.0001f);                // S4.5: ease on, but settling within a frame
             var (go, boat) = NewBoat();
             go.AddComponent<DevBoatInput>();
             _testKeyboard = InputSystem.AddDevice<Keyboard>();
@@ -240,6 +264,48 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
             yield return null;
             Assert.That(boat.Steer, Is.EqualTo(0f).Within(1e-5f), "momentary key semantics untouched");
+        }
+
+        // ---- S4.5: the key steer WINDS to its target instead of slamming there --------------------
+
+        [UnityTest]
+        public IEnumerator KeySteer_WindsToTheTarget_AndSettlesExactly()
+        {
+            // The owner's ask ("the steering wheel needs to follow the turning from the arrow keys —
+            // gradual and smooth"), as an integration pin: the eased COMMAND is what reaches
+            // BoatController, so the dash wheel's mirror is gradual because the rudder is.
+            //
+            // Deliberately asserts NO duration — headless frames are not a clock (a settle test that
+            // counted frames would be a bet on batchmode's deltaTime). It asserts the two things that
+            // are true whatever the frame rate: it does not arrive in one Update, and it arrives
+            // EXACTLY rather than asymptotically.
+            ConfigWithSteerWind(0.25f);                  // the shipped default wind
+            var (go, boat) = NewBoat();
+            go.AddComponent<DevBoatInput>();
+            _testKeyboard = InputSystem.AddDevice<Keyboard>();
+            yield return null;
+            boat.SetHull(NewConsoleHull("boat.test_dash_ease", ConsoleRigKind.Console, HelmWheelRim.Rubber));
+
+            boat.SetControl(0f, 1f);                     // hard over, as if a key had been held
+            yield return null;                           // one DevBoatInput.Update with no key down
+
+            Assert.That(boat.Steer, Is.LessThan(1f), "the key layer began winding it back…");
+            Assert.That(boat.Steer, Is.GreaterThan(0f),
+                        "…but did NOT slam it to centre in a single frame — that was the defect");
+
+            // Pump until it settles. The cap is absurdly generous (10 s at 60 fps against a 0.25 s
+            // wind): it is a hang guard, not a timing assertion.
+            const int Cap = 600;
+            int frames = 0;
+            while (boat.Steer != 0f && frames < Cap) { frames++; yield return null; }
+            Assert.That(boat.Steer, Is.EqualTo(0f),
+                        $"the ease must settle BIT-EXACTLY on centre (still {boat.Steer} after " +
+                        $"{frames} frames) — an asymptotic approach would leave a sliver of rudder " +
+                        "on forever and repaint the wheel every frame");
+
+            // And it holds there: a settled helm is a still picture, not a jitter.
+            for (int i = 0; i < 3; i++) yield return null;
+            Assert.That(boat.Steer, Is.EqualTo(0f));
         }
 
         // ---- the lever still steps detents on the composed dash's hull ----------------------------

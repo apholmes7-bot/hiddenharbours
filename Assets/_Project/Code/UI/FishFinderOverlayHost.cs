@@ -7,11 +7,22 @@ using HiddenHarbours.Core;
 namespace HiddenHarbours.UI
 {
     /// <summary>
-    /// The screen-space FISH FINDER card (ADR 0025 S3b) — the colour-sonar upgrade that supersedes the
-    /// depth sounder in the same brow cutout. While the player pilots a hull whose effective fit resolves
-    /// to <see cref="SounderKind.Fish"/>, a small card paints the live water column; clicking it enlarges
-    /// it to a FOCUSED state where the three side pushers and the three glass regions work. Esc or a click
-    /// outside returns.
+    /// The FISH FINDER's glass (ADR 0025 S3b) — the colour-sonar upgrade that supersedes the depth
+    /// sounder in the same brow cutout. While the player pilots a hull whose effective fit resolves to
+    /// <see cref="SounderKind.Fish"/>, it paints the live water column.
+    ///
+    /// <para><b>Flush on the dash by default; expanded is a choice</b> (S4.5, the owner's ask). The scan
+    /// paints into the console's authored brow mount — the pilothouse's TALL portrait slot, the skiffs'
+    /// cutout — where a sounder actually lives, and clicking it EXPANDS it to the standalone card this
+    /// host has always drawn. Only there are the three side pushers and the three glass regions live.
+    /// The flush face is glance value: at mount size the rig is far below the ~83% its typography
+    /// survives, so the numbers are not readable — but the marks visibly light up, which is the read
+    /// that matters at a glance, and the expanded state is where you actually read it.</para>
+    ///
+    /// <para><b>One raster, two presentations.</b> The flush face and the expanded card are the SAME
+    /// texture at two rects (<see cref="HelmInstrumentMountLayout"/>) — so the two views cannot
+    /// disagree about the sea, the shallow alarm flashes in both (Ruling E), and mounting costs nothing:
+    /// no second render, and the dash card does not repaint when the scan steps.</para>
     ///
     /// <para><b>Its own host, not a branch inside <see cref="SounderOverlayHost"/>.</b> That file's own
     /// reasoning applies again and harder: each instrument's lifetime, hit geometry and repaint rule is its
@@ -53,8 +64,9 @@ namespace HiddenHarbours.UI
     {
         [Header("Canvas")]
         [Tooltip("Sorting order of the finder canvas. The same brow slot as the depth sounder — they are " +
-                 "never on screen together.")]
-        [SerializeField] private int _sortingOrder = 60;
+                 "never on screen together — and, like it, ABOVE the helm dash's own canvas (60): the " +
+                 "chrome draws the bezel, this draws the glass inside it.")]
+        [SerializeField] private int _sortingOrder = 62;
 
         private static FishFinderOverlayHost _instance;
 
@@ -76,7 +88,9 @@ namespace HiddenHarbours.UI
         private FishRigAdjust _adjust = FishRigAdjust.Range;
         private bool _fishId;
         private bool _fishIdInit;
-        private bool _focused;
+
+        /// <summary>Which slot this host owns in the shared expansion arbiter.</summary>
+        private const HelmInstrumentSlot Slot = HelmInstrumentSlot.FishFinder;
 
         // The read path's reusable buffers (rule 7 — the seam fills a caller-owned list).
         private readonly List<FishMark> _seamMarks = new List<FishMark>(16);
@@ -89,8 +103,13 @@ namespace HiddenHarbours.UI
         /// duplicate destroys itself in <c>Awake</c>.</summary>
         public static FishFinderOverlayHost Instance => _instance;
 
-        /// <summary>Focused state (click-to-focus). Exposed for tests.</summary>
-        public bool Focused => _focused;
+        /// <summary>Blown up to its own card (S4.5) rather than flush in the dash's brow. Shared state,
+        /// so only one instrument is ever expanded. Exposed for tests.</summary>
+        public bool Expanded => HelmInstrumentExpansion.IsExpanded(Slot);
+
+        /// <summary>S3b's name for <see cref="Expanded"/> — the enlarged, controls-live state. Kept
+        /// because that is what it still is, and what the shipped tests read it as.</summary>
+        public bool Focused => Expanded;
 
         /// <summary>What the ▲/▼ pushers are currently adjusting (Ruling A). Exposed for tests.</summary>
         public FishRigAdjust Adjust => _adjust;
@@ -98,9 +117,14 @@ namespace HiddenHarbours.UI
         /// <summary>Are the per-mark depth tags drawn? Exposed for tests.</summary>
         public bool FishId => _fishId;
 
-        /// <summary>True while the card is on screen — i.e. this hull's helm actually carries the fish
-        /// finder AND there is a sounding to scale the picture against. Exposed for tests.</summary>
+        /// <summary>True while the instrument is on screen — i.e. this hull's helm actually carries the
+        /// fish finder AND there is a sounding to scale the picture against. Exposed for tests.</summary>
         public bool Showing => _cardGo != null && _cardGo.activeSelf;
+
+        /// <summary>True while the scan is drawing FLUSH in the dash's authored brow mount (the
+        /// default), false while it is expanded or has fallen back to its own card. Exposed for
+        /// tests.</summary>
+        public bool FlushMounted { get; private set; }
 
         /// <summary>How many rasters this host has done. The cadence guard's evidence — exposed so a test
         /// can prove the scan repaints at <c>WaterfallHz</c> and not per frame.</summary>
@@ -156,8 +180,9 @@ namespace HiddenHarbours.UI
             bool fitted = instruments != null && instruments.Fit.Sounder == SounderKind.Fish;
             if (!fitted || !instruments.TryReadDepth(out float depth))
             {
-                _focused = false;
+                if (Expanded) HelmInstrumentExpansion.Collapse();
                 _painted = false;
+                FlushMounted = false;
                 // Drop the marks and the bucket too: coming back (a hull swap, a re-entered region) must
                 // re-ask the seam rather than paint the last boat's fish for a scan step.
                 _scanBucket = long.MinValue;
@@ -192,11 +217,36 @@ namespace HiddenHarbours.UI
                 finder.PlaceholderSens01, finder.PlaceholderLink, finder.PlaceholderBatt01,
                 finder.PlaceholderVolts);
 
-            Rect card = FishFinderOverlayLayout.CardRect(_focused, in finder,
-                                                         Screen.width, Screen.height);
+            bool expanded = Expanded;
+            Rect card = GlassRect(expanded, in finder);
             LayoutCard(card);
             Repaint(in state);
-            ReadPointer(instruments, in prefs, in sounder, in finder, card);
+            ReadPointer(instruments, in prefs, in sounder, in finder, card, expanded);
+        }
+
+        /// <summary>
+        /// Where the scan draws this frame: FLUSH in the dash's authored brow mount by default (S4.5),
+        /// the standalone card when expanded. The standalone rect doubles as the FALLBACK for a frame
+        /// with no dash published — unreachable in shipped play, since the fit resolves through a
+        /// <c>HelmConsoleDef</c> and no console means no finder, but better than vanishing at boot or
+        /// on a test rig. See <see cref="SounderOverlayHost"/> for the same reasoning at length.
+        /// </summary>
+        private Rect GlassRect(bool expanded, in FishFinderSettings finder)
+        {
+            if (!expanded && HelmOverlayHost.TryDashCard(out Rect dash, out HelmFit fit)
+                          && HelmInstrumentMountLayout.TryBrowSounderRect(in fit, dash, out Rect mount))
+            {
+                FlushMounted = true;
+                return mount;
+            }
+            FlushMounted = false;
+            Rect card = FishFinderOverlayLayout.CardRect(expanded, in finder,
+                                                         Screen.width, Screen.height);
+            // Keep the expanded glass out from under the always-on band (S4.5) — see
+            // SounderOverlayHost for the reasoning. Slides down before it shrinks; a portrait rig is
+            // never distorted, only made smaller if there is genuinely no room.
+            return HudBandLayout.FitBelowBand(card, Screen.width, Screen.height,
+                                              HudBandLayout.ReservedTopPx());
         }
 
         // ---- the fish read (a PURE read of the Core seam) -------------------------------------------
@@ -256,28 +306,40 @@ namespace HiddenHarbours.UI
 
         // ---- pointer + keys ---------------------------------------------------------------------------
 
+        /// <summary>
+        /// The selection model (S4.5), identical to the depth sounder's so the brow behaves one way.
+        /// FLUSH: the whole face is one button — click it to EXPAND, and nothing else on it is live, so
+        /// a glance can never be a mis-set RANGE. EXPANDED: the pushers and the glass regions work, and
+        /// a click ANYWHERE outside collapses (click-away, and "click the mount again" wherever the
+        /// owner's dialled card leaves it uncovered). A click inside that lands on no control does
+        /// nothing rather than closing. Esc collapses from anywhere.
+        /// </summary>
         private void ReadPointer(IHelmInstruments instruments, in SounderPrefs prefs,
                                  in DepthSounderSettings sounder, in FishFinderSettings finder,
-                                 Rect card)
+                                 Rect card, bool expanded)
         {
             var kb = Keyboard.current;
-            if (_focused && kb != null && kb.escapeKey.wasPressedThisFrame) { _focused = false; return; }
+            if (expanded && kb != null && kb.escapeKey.wasPressedThisFrame)
+            {
+                HelmInstrumentExpansion.Collapse();
+                return;
+            }
 
             var mouse = Mouse.current;
             if (mouse == null || !mouse.leftButton.wasPressedThisFrame) return;
 
             Vector2 pos = mouse.position.ReadValue();
-            if (!card.Contains(pos))
+            bool inCard = card.Contains(pos);
+
+            if (!expanded)
             {
-                if (_focused) _focused = false;   // click-away leaves the focused state
+                if (inCard) HelmInstrumentExpansion.Click(Slot);
                 return;
             }
 
-            if (!_focused)
+            if (!inCard)
             {
-                // SMALL state: the card is a button — click anywhere on it to FOCUS. The controls are
-                // deliberately not live at dash size (the S1 rule).
-                _focused = true;
+                HelmInstrumentExpansion.Click(HelmInstrumentSlot.None);   // click-away → collapse
                 return;
             }
 

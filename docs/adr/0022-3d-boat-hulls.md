@@ -418,6 +418,10 @@ Suggested phasing, each independently verifiable:
 2. **The keyline** ✅ **CLOSED by phase 3**: a fullscreen resolve shader (darken far side of >0.30 m true-depth
    discontinuities via a precomputed RINDEX-faithful darkened-ramp LUT, flood the 1 px keyline with the
    neighbour's key colour and hull id), written into a persistent screen texture the overlay quads sample.
+   *(Amended by [ADR 0031](0031-keyline-retirement.md): the 1 px flood is production-gated —
+   `_HHKeylineFlood`, default OFF; the keyline is retired from the world style. The depth-edge darkening
+   half of this resolve is untouched, and the GPU oracle fixtures force the gate ON so this phase's
+   verbatim claim stays pinned.)*
    Phase 3 also honours the owner's deck-walking decision (2026-07-21): a second renderer list (LightMode
    `HHHullDeck`) draws **between** the facet pass and the resolve against the **same private z-buffer**, so a
    future character-on-deck billboard is per-pixel occluded by nearer hull geometry — probed in-repo

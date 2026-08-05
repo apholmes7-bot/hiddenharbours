@@ -219,6 +219,40 @@ namespace HiddenHarbours.UI
             y = 56 + TOPPAD;
         }
 
+        /// <summary>
+        /// Where a fit's BROW SOUNDER (the depth sounder or the fish finder — the same cutout, never
+        /// both) mounts on the card, whichever helm family this is (ADR 0025 S4.5). False when the
+        /// hull has no console or nothing is fitted in the brow: a caller must draw nothing rather
+        /// than pick a default box.
+        ///
+        /// <para>Every number comes from the two authored tables above — the skiffs'
+        /// <see cref="SounderCutout"/> (which narrows and slides when a dome compass shares the crown)
+        /// and the pilothouse's <see cref="SlotBoxOnCard"/> at
+        /// <see cref="PilotSounderSlot"/>, taking the TALL portrait box for the colour finder exactly
+        /// as the chrome renderers already do when they draw its bezel. No new geometry is invented
+        /// here: this is the one lookup that says which authored rect a given fit means, so the bezel
+        /// the dash paints and the glass the instrument paints can never land in different places.</para>
+        ///
+        /// <para>The dome compass displaces the CENTRE brow mount only (<see cref="PilotRadarSlot"/>,
+        /// noviRig.js:453), so the sounder's slot 0 is never displaced — asserted rather than assumed,
+        /// via <see cref="SlotIsDisplacedByCompass"/>.</para>
+        /// </summary>
+        public static bool TryBrowSounderBox(in HelmFit fit, out int x, out int y, out int w, out int h)
+        {
+            x = y = w = h = 0;
+            if (fit.Rig == ConsoleRigKind.None || fit.Sounder == SounderKind.None) return false;
+
+            if (IsPilothouse(fit.Rig))
+            {
+                if (SlotIsDisplacedByCompass(PilotSounderSlot, fit.Compass)) return false;
+                SlotBoxOnCard(PilotSounderSlot, fit.Sounder == SounderKind.Fish, out x, out y, out w, out h);
+                return true;
+            }
+
+            SounderCutout(fit.Compass == CompassMount.Dome, out x, out y, out w, out h);
+            return true;
+        }
+
         // ---- hit geometry (card space, y down) — console-helm/README.md:47-56 ---------------------
 
         /// <summary>The wheel grab test: within the wheel's silhouette (knob tips) + the data pad,

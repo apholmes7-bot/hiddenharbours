@@ -81,6 +81,31 @@ namespace HiddenHarbours.Tests.RigBaking
 
         static RigMeshData s_Rig;
 
+        GameConfig _keylineConfig;
+        GameConfig _prevConfig;
+
+        /// <summary>ADR 0031: production ships the mesh fleet's keyline OFF, but this fixture's
+        /// oracle is the CPU reference rasteriser — the rig's own pipeline, keyline included — so
+        /// the GPU renders must carry it too. Forced through the owner's real dial
+        /// (<c>GameServices.Config</c>), never a parallel test-only path. Harmless around the
+        /// headless items (1 and 2), which render nothing.</summary>
+        [SetUp]
+        public void ForceTheKeylineOn()
+        {
+            _prevConfig = GameServices.Config;
+            _keylineConfig = ScriptableObject.CreateInstance<GameConfig>();
+            _keylineConfig.HullKeylineFlood = true;
+            GameServices.Config = _keylineConfig;
+        }
+
+        [TearDown]
+        public void RestoreTheConfig()
+        {
+            GameServices.Config = _prevConfig;
+            if (_keylineConfig != null) Object.DestroyImmediate(_keylineConfig);
+            _keylineConfig = null;
+        }
+
         static void RequireAGraphicsDevice()
         {
             if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null)

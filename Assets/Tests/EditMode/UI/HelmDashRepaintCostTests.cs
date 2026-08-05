@@ -86,5 +86,61 @@ namespace HiddenHarbours.Tests.UI.EditMode
             Assert.That(novi, Is.LessThan(SanityCeilingMs), "novi dash raster");
             Assert.That(cape, Is.LessThan(SanityCeilingMs), "cape dash raster");
         }
+
+        /// <summary>
+        /// The S4.5 flush faces, measured on the same runner in the same run — because the honest
+        /// answer to "what does mounting the instruments on the dash cost?" is <b>nothing</b>, and a
+        /// claim like that should be evidence, not a comment.
+        ///
+        /// <para><b>Why there is no third number to take.</b> Mounting an instrument moves its
+        /// <c>RawImage</c> onto the dash's brow rect; it does not composite a second picture into the
+        /// dash card. So the flush face costs the instrument's OWN raster (below) and nothing else:
+        /// no downscale pass, no re-composite, and — the part that would actually have hurt — no dash
+        /// repaint when the sonar's scan steps. A software composite would have put the finder's
+        /// 4 Hz cadence in charge of the whole 600×548 card.</para>
+        ///
+        /// <para>Both instruments keep their shipped change keys, so these are paid at their own
+        /// rates: the sounder on an LCD string change (still water ⇒ roughly never), the finder at
+        /// <c>WaterfallHz</c>. Neither changed in S4.5.</para>
+        /// </summary>
+        [Test]
+        public void TheFlushBrowInstruments_CostTheirOwnRasterAndNothingMore()
+        {
+            var depthSurf = new DrawSurface(DepthRigRender.W, DepthRigRender.H);
+            var fishSurf = new DrawSurface(FishRigRender.W, FishRigRender.H);
+
+            var depthState = new DepthRigState(6.4f, false, false, true, 3f, 12f, false);
+            var fishState = new FishRigState(6.4f, 12f, 20f, 3f, false, false, true, true, false, false,
+                                             1.0, FishRigAdjust.Range, 0.6f, true, 0.8f, 12.4f);
+            var marks = new System.Collections.Generic.List<SonarMark>();
+
+            double depth = MsPer(() => DepthRigRender.Render(depthSurf, in depthState));
+            double fish = MsPer(() => FishRigRender.Render(fishSurf, in fishState, marks));
+
+            // The mount rect itself: pure float maths per frame, and the only NEW work S4.5 adds on
+            // the paint path. It is here so the claim "mounting is free" has a number under it too.
+            var fit = new HelmFit(ConsoleRigKind.Novi, SounderKind.Fish, CompassMount.None, false, false);
+            var card = new Rect(0f, 0f, HelmDashGeometry.PilotW, HelmDashGeometry.PilotH);
+            double mount = MsPer(() =>
+                HelmInstrumentMountLayout.TryBrowSounderRect(in fit, card, out _));
+
+            string report =
+                $"[HelmDashRepaintCost] brow instruments, avg over {Iterations}, EditMode CPU, no GPU:\n" +
+                $"  depth sounder  {DepthRigRender.W}x{DepthRigRender.H}  {depth:F2} ms   " +
+                "(repaints on an LCD string change)\n" +
+                $"  fish finder    {FishRigRender.W}x{FishRigRender.H}  {fish:F2} ms   " +
+                "(repaints at FishFinder.WaterfallHz)\n" +
+                $"  flush mount maths                {mount:F4} ms   " +
+                "(S4.5's whole added paint cost — the face is the same texture at another rect)\n" +
+                "  NOTE: mounting adds NO raster and does NOT dirty the dash card.";
+            TestContext.WriteLine(report);
+            Debug.Log(report);
+
+            Assert.That(depth, Is.LessThan(SanityCeilingMs), "depth sounder raster");
+            Assert.That(fish, Is.LessThan(SanityCeilingMs), "fish finder raster");
+            Assert.That(mount, Is.LessThan(1.0),
+                        "the per-frame mount maths must stay far below a raster — if this ever " +
+                        "approaches one, someone has started drawing in it");
+        }
     }
 }

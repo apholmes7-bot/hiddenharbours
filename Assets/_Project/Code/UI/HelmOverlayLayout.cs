@@ -37,11 +37,33 @@ namespace HiddenHarbours.UI
         /// </summary>
         public static Rect DashCardRect(bool focused, int rigW, int rigH, in HelmOverlaySettings s,
                                         float screenW, float screenH)
+            => DashCardRect(focused, rigW, rigH, in s, screenW, screenH, 0f);
+
+        /// <summary>
+        /// The dash card, additionally kept clear of <paramref name="reservedTopPx"/> screen pixels at
+        /// the top of the screen — the always-on HUD band (S4.5).
+        ///
+        /// <para><b>Why the dash gives way here and the band does not.</b> The owner's ask is that game
+        /// UI stop obstructing the boat UI, and everything that can move or hide does. The five band
+        /// reads are the one exception: no dash shows the clock, the tide, the wind, the sea state or
+        /// the money, so hiding them at the helm deletes them rather than relocating them. Nothing is
+        /// drawn OVER the dash — the dash simply grows into the space it actually has, which is what
+        /// the existing screen-fit clamp already did, told about one more edge.</para>
+        ///
+        /// <para>At the shipped dials this bites only on the FOCUSED state (the small card is a
+        /// quarter of the screen and nowhere near the band): 1.5× of 600×548 reached screen y 781 at
+        /// 1080p against a band bottom of 750, and covered the band outright at 720p.</para>
+        /// </summary>
+        public static Rect DashCardRect(bool focused, int rigW, int rigH, in HelmOverlaySettings s,
+                                        float screenW, float screenH, float reservedTopPx)
         {
             float scale = focused ? s.DashFocusScale : s.DashSmallScale;
             if (scale <= 0f) scale = 1f;
             if (rigW > 0 && screenW > 0f) scale = Mathf.Min(scale, screenW / rigW);
-            if (rigH > 0 && screenH > 0f) scale = Mathf.Min(scale, (screenH - s.MarginY) / rigH);
+            // A window with no room left below the band collapses the card to nothing rather than
+            // inverting it — the pre-S4.5 clamp could go negative on a screen shorter than MarginY.
+            float availH = screenH - s.MarginY - Mathf.Max(0f, reservedTopPx);
+            if (rigH > 0) scale = Mathf.Min(scale, Mathf.Max(0f, availH) / rigH);
             float w = rigW * scale, h = rigH * scale;
             float cx = screenW * (focused ? s.FocusCenterX01 : s.SmallCenterX01);
             return new Rect(cx - w * 0.5f, s.MarginY, w, h);
