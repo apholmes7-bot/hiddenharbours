@@ -50,7 +50,8 @@ namespace HiddenHarbours.Tests.EditMode
             for (int i = 0; i < a.Count; i++)
             {
                 Assert.Less((a[i].Position - b[i].Position).magnitude, 1e-6f, $"tuft {i} moved");
-                Assert.AreEqual(a[i].Variant, b[i].Variant, $"tuft {i} changed sprite");
+                Assert.AreEqual(a[i].Habitat, b[i].Habitat, $"tuft {i} changed habitat");
+                Assert.AreEqual(a[i].Roll, b[i].Roll, $"tuft {i} changed its variant roll");
                 Assert.AreEqual(a[i].Scale, b[i].Scale, 1e-6f, $"tuft {i} changed size");
                 Assert.AreEqual(a[i].Tint, b[i].Tint, $"tuft {i} changed colour");
             }
@@ -129,7 +130,10 @@ namespace HiddenHarbours.Tests.EditMode
         {
             foreach (var s in StPetersGrass.Scatter(_terrain))
             {
-                Assert.That(s.Variant, Is.InRange(0, 2), "variant must name one of the three tuft sprites");
+                // Site identity is now habitat-tag + roll (the planter resolves art from the grass
+                // library); tag↔library validity is pinned by StPetersGreenOverTests.
+                Assert.That(s.Roll, Is.InRange(0, 2), "the variant roll must stay a stable 0..2 pick");
+                Assert.That(string.IsNullOrEmpty(s.Habitat), Is.False, "a tuft with no habitat tag cannot resolve art");
                 Assert.That(s.Scale, Is.InRange(StPetersGrass.ScaleMin, StPetersGrass.ScaleMax));
                 Assert.That(s.Tint.a, Is.EqualTo(1f), "a translucent tuft is a bug, not a look");
             }
