@@ -95,6 +95,7 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             GameServices.Reset();
             HelmInstrumentExpansion.Collapse();
+            HelmKeyCapture.Reset();          // no test may start with the helm deaf
             _boatGo = null;
             _save = new FakeSaveService(SaveMigration.NewGame());
             _clock = new FakeClock();
@@ -115,6 +116,7 @@ namespace HiddenHarbours.Tests.PlayMode
         public void TearDown()
         {
             HelmInstrumentExpansion.Collapse();
+            HelmKeyCapture.Reset();
             GameServices.Reset();
             foreach (var o in _spawned)
                 if (o != null) Object.Destroy(o);
@@ -263,10 +265,22 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
             Assert.That(Host.Expanded, Is.True);
 
-            // The MAX pusher is the collapse, on the real Apply path.
+            // S6 PR 4: the MAX pusher is no longer the collapse — it opens the rig's MAX FACE and CNSL
+            // brings the console face back, both WITHOUT leaving the expanded card. Collapsing is what
+            // click-away, Esc and the mount itself are for.
             Assert.That(Press(ChartplotterOverlayLayout.KeyMax), Is.True);
             yield return null;
-            Assert.That(Host.Expanded, Is.False, "clicking MAX again puts it back in the brow");
+            Assert.That(Host.Expanded, Is.True, "MAX stays expanded — it changes face, not state");
+            Assert.That(Host.MaxFace, Is.True, "…and the face it changes to is the MAX one");
+
+            Assert.That(Press(ChartplotterOverlayLayout.KeyMax), Is.True, "CNSL goes back");
+            yield return null;
+            Assert.That(Host.MaxFace, Is.False);
+            Assert.That(Host.Expanded, Is.True, "still expanded, still the console face");
+
+            HelmInstrumentExpansion.Collapse();
+            yield return null;
+            Assert.That(Host.Expanded, Is.False);
 
             // And the arbiter is shared, so another instrument opening closes this one.
             HelmInstrumentExpansion.Click(HelmInstrumentSlot.Chartplotter);
@@ -499,6 +513,348 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.That(Host.RepaintCount, Is.GreaterThan(before),
                         "…while a real change still repaints — if this fails, the bound above proves " +
                         "nothing about the change detection");
+        }
+
+        // ---- the MAX face (S6 PR 4) --------------------------------------------------------------------
+
+        /// <summary>Expand and switch to the rig's MAX face, the way the pushers do.</summary>
+        private IEnumerator OnMaxFace()
+        {
+            HelmInstrumentExpansion.Click(HelmInstrumentSlot.Chartplotter);
+            yield return null;
+            Assert.That(Press(ChartplotterOverlayLayout.KeyMax), Is.True);
+            yield return null;
+            yield return null;
+            Assert.That(Host.MaxFace, Is.True, "the MAX pusher put the full kit up");
+            Assert.That(Host.MaxFaceShown, Is.True,
+                        "…and it reached the RASTER, not just the state (the #421 seam)");
+        }
+
+        [UnityTest]
+        public IEnumerator TheRail_SwitchesTheLIVELayers_AndRefusesTheDormantOnes()
+        {
+            yield return Aboard("boat.test_rail", ConsoleRigKind.Novi, buyGps: true);
+            yield return OnMaxFace();
+
+            // LIVE: each of the three has a source in this world, so each press must move the state.
+            for (int slot = 0; slot < NavRigGeometry.RailIds.Length; slot++)
+            {
+                NavChartLayers layer = NavRigGeometry.RailLayer(slot);
+                if (layer == NavChartLayers.None || (layer & NavChartLayers.Live) == 0) continue;
+
+                bool wasOn = (Host.Layers & layer) != 0;
+                Assert.That(Press(ChartplotterOverlayLayout.RailBase + slot), Is.True,
+                            $"{NavRigGeometry.RailIds[slot]} is a live switch");
+                yield return null;
+                Assert.That((Host.Layers & layer) != 0, Is.Not.EqualTo(wasOn),
+                            $"{NavRigGeometry.RailIds[slot]} must actually flip");
+                Assert.That(Press(ChartplotterOverlayLayout.RailBase + slot), Is.True, "…and back");
+                yield return null;
+            }
+
+            // DORMANT: LAND, ROCK, BUOY, TRFC have no source here. The press must REFUSE rather than
+            // toggle a flag no pixel reads — a control that lights and does nothing is exactly the
+            // defect #421 shipped twice.
+            NavChartLayers before = Host.Layers;
+            for (int slot = 0; slot < NavRigGeometry.RailIds.Length; slot++)
+            {
+                NavChartLayers layer = NavRigGeometry.RailLayer(slot);
+                if (layer == NavChartLayers.None || (layer & NavChartLayers.Live) != 0) continue;
+                Assert.That(Press(ChartplotterOverlayLayout.RailBase + slot), Is.False,
+                            $"{NavRigGeometry.RailIds[slot]} has no source — it must say so by refusing");
+            }
+            yield return null;
+            Assert.That(Host.Layers, Is.EqualTo(before), "…and none of them moved the state");
+        }
+
+        [UnityTest]
+        public IEnumerator TheRail_PicksUpAndPutsDownEachTool()
+        {
+            yield return Aboard("boat.test_tools", ConsoleRigKind.Novi, buyGps: true);
+            yield return OnMaxFace();
+            Assert.That(Host.Tool, Is.EqualTo(NavChartTool.Pan),
+                        "PAN is the neutral default — and this host is ONE session-long singleton, so " +
+                        "this also pins that a tool picked up on an earlier hull did not follow us here");
+
+            foreach (int slot in new[] { 9, 10, 11 })
+            {
+                NavChartTool tool = NavRigGeometry.RailTool(slot);
+                Assert.That(Press(ChartplotterOverlayLayout.RailBase + slot), Is.True);
+                yield return null;
+                Assert.That(Host.Tool, Is.EqualTo(tool), $"{NavRigGeometry.RailIds[slot]} selects");
+                Assert.That(Press(ChartplotterOverlayLayout.RailBase + slot), Is.True);
+                yield return null;
+                Assert.That(Host.Tool, Is.EqualTo(NavChartTool.Pan), "…and pressing it again puts it down");
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator LosingTheGlass_ForgetsTheTool_ThoughMerelyClosingTheCardDoesNot()
+        {
+            // The host is a DontDestroyOnLoad singleton for the whole play session, so "transient"
+            // needs saying out loud: closing the card KEEPS your tool (you are the same skipper on the
+            // same chart), but the instrument going away entirely must not leave the route tool in a
+            // hand that no longer holds a plotter.
+            yield return Aboard("boat.test_forget", ConsoleRigKind.Novi, buyGps: true);
+            yield return OnMaxFace();
+
+            Assert.That(Press(ChartplotterOverlayLayout.RailBase + 10), Is.True);   // RTE
+            Assert.That(Press(ChartplotterOverlayLayout.RailBase + 5), Is.True);    // DPTH off
+            yield return null;
+            Assert.That(Host.Tool, Is.EqualTo(NavChartTool.Route));
+            Assert.That(Host.Layers & NavChartLayers.Depth, Is.EqualTo(NavChartLayers.None));
+
+            // Closing the card keeps both — the negative control that makes the assertion below about
+            // LOSING THE GLASS rather than about any collapse.
+            HelmInstrumentExpansion.Collapse();
+            yield return null;
+            yield return null;
+            Assert.That(Host.MaxFace, Is.False);
+            Assert.That(Host.Tool, Is.EqualTo(NavChartTool.Route),
+                        "a glance away does not put your tool down");
+
+            // Now the glass itself goes: the relay's OnDisable unregisters the instrument seam
+            // (HelmControlRelay:100) and the plotter is no longer fitted.
+            Object.Destroy(_boatGo);
+            yield return null;                  // Destroy lands at end of frame → OnDisable runs
+            yield return null;                  // …and the host's Update sees the seam gone
+            yield return null;
+            Assert.That(Host.Showing, Is.False, "no hull, no instrument");
+            Assert.That(Host.Tool, Is.EqualTo(NavChartTool.Pan), "…and it wakes as it left the factory");
+            Assert.That(Host.Layers, Is.EqualTo(NavChartLayers.All));
+        }
+
+        [UnityTest]
+        public IEnumerator TheMarkTool_PlacesAWaypointAtTheTap_AndTheRouteToolAppendsALeg()
+        {
+            yield return Aboard("boat.test_taptoplace", ConsoleRigKind.Novi, buyGps: true);
+            yield return OnMaxFace();
+
+            NavRigGeometry.Layout L = ChartplotterOverlayLayout.NativeLayout(NavRigGeometry.Face.Max);
+            var offCentre = new Vector2(L.Chart.x + L.Chart.width * 0.3f,
+                                        L.Chart.y + L.Chart.height * 0.3f);
+
+            // PAN first: the neutral tool must NOT place anything — the negative control that makes the
+            // assertion below about the TOOL rather than about the tap.
+            Assert.That(Press(ChartplotterOverlayLayout.ChartHit, offCentre), Is.False,
+                        "PAN on open water selects nothing and places nothing");
+            Assert.That(NavLocker.WaypointCount(_save.Current), Is.EqualTo(0));
+
+            Assert.That(Press(ChartplotterOverlayLayout.RailBase + 9), Is.True);   // MRK
+            yield return null;
+            Assert.That(Press(ChartplotterOverlayLayout.ChartHit, offCentre), Is.True);
+            Assert.That(NavLocker.WaypointCount(_save.Current), Is.EqualTo(1),
+                        "tap-to-place — the gesture the console face documented as belonging here");
+            yield return null;
+
+            var read = new List<NavWaypoint>();
+            NavLocker.WaypointsIn(_save.Current, Region, read);
+            Assert.That((read[0].Pos - new Vector2(400f, 300f)).magnitude, Is.GreaterThan(1f),
+                        "…and it landed where the finger was, not at own ship");
+
+            Assert.That(Press(ChartplotterOverlayLayout.RailBase + 10), Is.True);  // RTE
+            yield return null;
+            Assert.That(Press(ChartplotterOverlayLayout.ChartHit, offCentre), Is.True);
+            var route = new List<Vector2>();
+            NavLocker.RouteIn(_save.Current, Region, route);
+            Assert.That(route.Count, Is.EqualTo(1), "the route tool appends, in the order you tap");
+        }
+
+        [UnityTest]
+        public IEnumerator TheManagerColumn_Selects_Renames_AndDeletes_AllThroughTheLocker()
+        {
+            yield return Aboard("boat.test_manager", ConsoleRigKind.Novi, buyGps: true);
+
+            ChartplotterSettings cfg = Cfg;
+            NavLocker.AddWaypoint(_save.Current, new NavWaypoint(Region, "A", new Vector2(380f, 300f),
+                                                                 NavWaypointKind.Mark), in cfg);
+            NavLocker.AddWaypoint(_save.Current, new NavWaypoint(Region, "B", new Vector2(420f, 320f),
+                                                                 NavWaypointKind.Mark), in cfg);
+            yield return OnMaxFace();
+
+            Assert.That(Host.SelectedWaypoint, Is.EqualTo(-1), "nothing picked to start with");
+            Assert.That(Press(ChartplotterOverlayLayout.WaypointRowBase + 1), Is.True);
+            yield return null;
+            Assert.That(Host.SelectedWaypoint, Is.EqualTo(1), "clicking a row picks it");
+
+            // NAME opens the field and takes the keyboard off the helm.
+            Assert.That(Press(ChartplotterOverlayLayout.ActionName), Is.True);
+            yield return null;
+            Assert.That(Host.Editing, Is.True);
+            Assert.That(Host.EditText, Is.EqualTo("B"), "seeded with the name it already had");
+
+            // Commit through the same path the Enter key uses.
+            Host.CommitName();
+            yield return null;
+            Assert.That(Host.Editing, Is.False);
+            Assert.That(Host.SelectedWaypoint, Is.EqualTo(1),
+                        "the row you were naming stays picked — you are still working on it");
+
+            // DEL removes the selected row, through the locker.
+            Assert.That(Press(ChartplotterOverlayLayout.ActionDelete), Is.True);
+            yield return null;
+            var read = new List<NavWaypoint>();
+            NavLocker.WaypointsIn(_save.Current, Region, read);
+            Assert.That(read.Count, Is.EqualTo(1));
+            Assert.That(read[0].Name, Is.EqualTo("A"), "the row the column showed is the row that went");
+            Assert.That(Host.SelectedWaypoint, Is.EqualTo(-1), "…and the selection went with it");
+        }
+
+        [UnityTest]
+        public IEnumerator ATypedName_ReachesTheLocker_AndSurvivesASaveLoadRoundTrip()
+        {
+            yield return Aboard("boat.test_naming", ConsoleRigKind.Novi, buyGps: true);
+            ChartplotterSettings cfg = Cfg;
+            NavLocker.AddWaypoint(_save.Current, new NavWaypoint(Region, "MARK 1",
+                                                                 new Vector2(380f, 300f),
+                                                                 NavWaypointKind.Mark), in cfg);
+            yield return OnMaxFace();
+
+            Assert.That(Press(ChartplotterOverlayLayout.WaypointRowBase + 0), Is.True);
+            yield return null;
+            Assert.That(Press(ChartplotterOverlayLayout.ActionName), Is.True);
+            yield return null;
+
+            // A rename opens as an EDIT, not a retype: the field is seeded with the name the mark
+            // already has (NavNameEditor.Open), which is what makes fixing a typo one keystroke rather
+            // than twelve.
+            Assert.That(Host.EditText, Is.EqualTo("MARK 1"), "seeded with the auto name it was given");
+
+            // Clear it the way Backspace does, and prove the key actually empties the field.
+            for (int i = 0; i < NavNameEditor.MaxLength + 2 && Host.BackspaceName(); i++) { }
+            Assert.That(Host.EditText, Is.Empty);
+
+            Host.TypeName("wreck é7");     // lower case, an undrawable letter, a digit
+            Assert.That(Host.EditText, Is.EqualTo("WRECK 7"),
+                        "sanitised on the way in, so the loud-tofu guard never has to fire for a name");
+            Host.CommitName();
+            yield return null;
+
+            string json = JsonUtility.ToJson(_save.Current);
+            var reloaded = JsonUtility.FromJson<SaveData>(json);
+            var read = new List<NavWaypoint>();
+            NavLocker.WaypointsIn(reloaded, Region, read);
+            Assert.That(read.Count, Is.EqualTo(1));
+            Assert.That(read[0].Name, Is.EqualTo("WRECK 7"),
+                        "a name you typed must still be there tomorrow");
+            Assert.That(read[0].Pos.x, Is.EqualTo(380f).Within(0.5f), "and the mark did not move");
+        }
+
+        // ---- TEXT ENTRY vs THE HELM --------------------------------------------------------------------
+
+        [UnityTest]
+        public IEnumerator TypingAName_TakesTheKeyboardOffTheHelm_AndGivesItBackBothWays()
+        {
+            yield return Aboard("boat.test_typing", ConsoleRigKind.Novi, buyGps: true);
+
+            // The live helm input component, on the same hull the plotter is mounted to.
+            var helm = _boatGo.GetComponent<DevBoatInput>();
+            if (helm == null) helm = _boatGo.AddComponent<DevBoatInput>();
+            yield return null;
+
+            ChartplotterSettings cfg = Cfg;
+            NavLocker.AddWaypoint(_save.Current, new NavWaypoint(Region, "A", new Vector2(380f, 300f),
+                                                                 NavWaypointKind.Mark), in cfg);
+            yield return OnMaxFace();
+
+            // NEGATIVE CONTROL: with no field open, W/A/S/D are the helm's — as they have always been.
+            Assert.That(HelmKeyCapture.IsCapturing, Is.False);
+            Assert.That(helm.HelmKeysLive, Is.True, "the probe can report 'the helm has the keys'");
+
+            Assert.That(Press(ChartplotterOverlayLayout.WaypointRowBase + 0), Is.True);
+            yield return null;
+            Assert.That(Press(ChartplotterOverlayLayout.ActionName), Is.True);
+            yield return null;
+
+            Assert.That(HelmKeyCapture.IsCapturing, Is.True, "the field owns the keyboard…");
+            Assert.That(helm.HelmKeysLive, Is.False,
+                        "…so typing 'WRECK' cannot also put the wheel hard over");
+
+            // COMMIT gives it back.
+            Host.CommitName();
+            yield return null;
+            Assert.That(HelmKeyCapture.IsCapturing, Is.False);
+            Assert.That(helm.HelmKeysLive, Is.True, "closing the editor restores steering");
+
+            // …and so does CANCEL, which is the arm that is easy to forget.
+            Assert.That(Press(ChartplotterOverlayLayout.ActionName), Is.True);
+            yield return null;
+            Assert.That(helm.HelmKeysLive, Is.False);
+            Host.CancelName();
+            yield return null;
+            Assert.That(HelmKeyCapture.IsCapturing, Is.False);
+            Assert.That(helm.HelmKeysLive, Is.True, "cancelling restores it too");
+        }
+
+        [UnityTest]
+        public IEnumerator CollapsingWhileNaming_NeverLeavesTheHelmDeaf()
+        {
+            // The failure this gate could cause is worse than the bug it prevents: a boat you cannot
+            // steer. Every exit must release, including the ones nobody presses on purpose.
+            yield return Aboard("boat.test_deaf", ConsoleRigKind.Novi, buyGps: true);
+            var helm = _boatGo.GetComponent<DevBoatInput>();
+            if (helm == null) helm = _boatGo.AddComponent<DevBoatInput>();
+            ChartplotterSettings cfg = Cfg;
+            NavLocker.AddWaypoint(_save.Current, new NavWaypoint(Region, "A", new Vector2(380f, 300f),
+                                                                 NavWaypointKind.Mark), in cfg);
+            yield return OnMaxFace();
+
+            Assert.That(Press(ChartplotterOverlayLayout.WaypointRowBase + 0), Is.True);
+            yield return null;
+            Assert.That(Press(ChartplotterOverlayLayout.ActionName), Is.True);
+            yield return null;
+            Assert.That(helm.HelmKeysLive, Is.False, "mid-edit…");
+
+            HelmInstrumentExpansion.Collapse();          // click-away, from underneath the editor
+            yield return null;
+            yield return null;
+            Assert.That(HelmKeyCapture.IsCapturing, Is.False,
+                        "…and the card closing under it hands the keyboard straight back");
+            Assert.That(helm.HelmKeysLive, Is.True);
+            Assert.That(Host.MaxFace, Is.False, "collapsed is always the console face");
+        }
+
+        // ---- the repaint budget on the MAX face --------------------------------------------------------
+
+        [UnityTest]
+        public IEnumerator SteadySailing_OnTheMaxFace_StaysBounded_AndTheProfileDoesNotRebakePerFrame()
+        {
+            yield return Aboard("boat.test_maxperf", ConsoleRigKind.Novi, buyGps: true);
+            yield return OnMaxFace();
+
+            int bakes = Host.BaseBakeCount;
+            int repaintsAtStart = Host.RepaintCount;
+            int profileAtStart = Host.ProfileBakeCount;
+
+            // The same realistic step the console face's pin uses: ~0.03 m per frame, well under one
+            // chart pixel, so a per-frame raster would be a real defect rather than honest work.
+            const int frames = 90;
+            Vector2 pos = _boatGo.transform.position;
+            for (int i = 0; i < frames; i++)
+            {
+                pos += new Vector2(0f, 0.03f);
+                _boatGo.transform.position = new Vector3(pos.x, pos.y, 0f);
+                yield return null;
+            }
+
+            Assert.That(Host.BaseBakeCount, Is.EqualTo(bakes),
+                        "the survey still never re-bakes under way, MAX face or not");
+            int repaints = Host.RepaintCount - repaintsAtStart;
+            Assert.That(repaints, Is.LessThan(frames / 3),
+                        $"the MAX face must hold the same bound as the console face ({repaints} of " +
+                        $"{frames}) — the tide, the set and the manager are all quantized to what they print");
+
+            int profiles = Host.ProfileBakeCount - profileAtStart;
+            Assert.That(profiles, Is.LessThanOrEqualTo(repaints),
+                        "the depth-ahead line re-samples at MOST once per raster, never per frame");
+
+            // NEGATIVE CONTROL: the counters are not simply frozen.
+            int before = Host.RepaintCount;
+            Assert.That(Press(ChartplotterOverlayLayout.RailBase + 5), Is.True);   // DPTH
+            yield return null;
+            yield return null;
+            Assert.That(Host.RepaintCount, Is.GreaterThan(before),
+                        "…while a real change still repaints — or the bound above proves nothing");
         }
 
         // ---- the dev cycle ------------------------------------------------------------------------------

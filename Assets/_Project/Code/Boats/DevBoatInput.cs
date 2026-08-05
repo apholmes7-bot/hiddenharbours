@@ -55,11 +55,30 @@ namespace HiddenHarbours.Boats
             _relay = GetComponent<HelmControlRelay>();
         }
 
+        /// <summary>
+        /// True while these helm KEYS may actually reach the hull — false while a text field owns the
+        /// keyboard (<see cref="HiddenHarbours.Core.HelmKeyCapture"/>, ADR 0025 S6 PR 4: naming a
+        /// waypoint on the chartplotter's MAX face types W/A/S/D like any other letters).
+        ///
+        /// <para>Exposed as a property for the reason <c>DevFishingInput.GearKeysLive</c> and
+        /// <c>TrapHaulController.GearKeysLive</c> are: headless batchmode drops key events, so a test
+        /// cannot press W and watch the rudder — but it CAN assert that the gate the read consults says
+        /// the right thing, in both directions, on the live component.</para>
+        /// </summary>
+        public bool HelmKeysLive => !HiddenHarbours.Core.HelmKeyCapture.IsCapturing;
+
         private void Update()
         {
             var kb = Keyboard.current;
             var gp = Gamepad.current;
             if ((kb == null && gp == null) || _boat == null) return;
+
+            // A text field owns the keyboard (naming a waypoint on the plotter) — the helm's KEY reads
+            // go deaf for as long as it does, on the RAW momentary read, before the steer ease and
+            // before the wheel-session arbitration below (HelmKeyCapture's remarks say why that
+            // ordering is the load-bearing part). The GAMEPAD stays live: you cannot type on one.
+            if (!HelmKeysLive) kb = null;
+            if (kb == null && gp == null) return;
 
             // The propulsion branch is the SAME decision the controller's physics uses (one source of
             // truth in BoatController.UsesEngineHelm) so input + physics can never disagree about a hull:

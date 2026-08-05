@@ -86,6 +86,24 @@ namespace HiddenHarbours.Core
 
         public static float DistanceMetres(Vector2 a, Vector2 b) => (b - a).magnitude;
 
+        /// <summary>
+        /// The unit vector a compass bearing points along — the exact inverse of
+        /// <see cref="BoatKinematics.BearingDegrees"/> (0 = N = +Y, 90 = E = +X).
+        ///
+        /// <para>Here rather than at the call site for this class's founding reason: the rig computes
+        /// its own <c>dir(a) = {sin a, −cos a}</c> (navRig.js:121) because a canvas measures Y
+        /// DOWNWARD, and porting that literally would put a second, silently-flipped direction beside
+        /// the one bearing convention the boat, the HUD and the compass already share. The depth-ahead
+        /// profile is the first consumer; the set arrow and any future "run this bearing out" read the
+        /// same one.</para>
+        /// FLAG lead-architect: additive helper on the ADR 0025 S6 nav-maths seam.
+        /// </summary>
+        public static Vector2 DirectionFromBearing(float degrees)
+        {
+            float rad = degrees * Mathf.Deg2Rad;
+            return new Vector2(Mathf.Sin(rad), Mathf.Cos(rad));
+        }
+
         public static float MetresToNM(float metres) => (float)(metres / MetresPerNauticalMile);
 
         public static float NMToMetres(float nm) => (float)(nm * MetresPerNauticalMile);

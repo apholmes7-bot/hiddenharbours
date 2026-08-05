@@ -120,6 +120,195 @@ namespace HiddenHarbours.UI
         /// once the chart is wide enough to carry them.</summary>
         public static int ChartFontScale(int chartWidth) => chartWidth >= 360 ? 2 : 1;
 
+        // ---- the MAX face's rail (navRig.js:258-260) ---------------------------------------------------
+
+        /// <summary>
+        /// The rail's twelve slots, in the rig's order. Slot 7 is the rig's <c>'|'</c> — a SPACER that
+        /// gets no button, which is what divides the seven layer switches from the four tools. It stays
+        /// in the array rather than being compacted out because the rig's own button pitch is
+        /// <c>floor(rail.h / ids.length)</c> over all twelve: drop the separator and every button below
+        /// it moves.
+        /// </summary>
+        public static readonly string[] RailIds =
+            { "LAND", "ROCK", "BUOY", "POI", "TRK", "DPTH", "TRFC", "|", "PAN", "MRK", "RTE", "MSR" };
+
+        /// <summary>The slot index of the rig's spacer — the one slot with no button.</summary>
+        public const int RailSeparatorSlot = 7;
+
+        /// <summary>Slots at and past the separator are TOOLS rather than layer switches
+        /// (navRig.js:260 <c>tool:i&gt;=8</c>).</summary>
+        public static bool RailSlotIsTool(int slot) => slot > RailSeparatorSlot;
+
+        /// <summary>The tool a rail slot selects. Total over the four tool slots; anything else is
+        /// <see cref="NavChartTool.Pan"/>, which is also the rig's fallback (js:509 treats a missing
+        /// tool as PAN).</summary>
+        public static NavChartTool RailTool(int slot) => slot switch
+        {
+            9 => NavChartTool.Mark,
+            10 => NavChartTool.Route,
+            11 => NavChartTool.Measure,
+            _ => NavChartTool.Pan,
+        };
+
+        /// <summary>The layer a rail slot switches (navRig.js:531 <c>layerOn</c>'s map). Layer slots
+        /// only — a tool slot maps to <see cref="NavChartLayers.None"/>.</summary>
+        public static NavChartLayers RailLayer(int slot) => slot switch
+        {
+            0 => NavChartLayers.Land,
+            1 => NavChartLayers.Rocks,
+            2 => NavChartLayers.Buoys,
+            3 => NavChartLayers.Poi,
+            4 => NavChartLayers.Track,
+            5 => NavChartLayers.Depth,
+            6 => NavChartLayers.Traffic,
+            _ => NavChartLayers.None,
+        };
+
+        /// <summary>
+        /// The button rect for one rail slot, or false for the separator / an out-of-range slot / a
+        /// console face (which has no rail at all). navRig.js:259-260 exactly:
+        /// <c>bh = floor(rail.h / 12)</c>, then <c>{x: rail.x+2, y: rail.y + i*bh, w: rail.w-4, h: bh-1}</c>.
+        /// </summary>
+        public static bool TryRailButton(in Layout layout, int slot, out RectInt rect)
+        {
+            rect = default;
+            if (!layout.HasMax || slot < 0 || slot >= RailIds.Length) return false;
+            if (slot == RailSeparatorSlot) return false;
+            RectInt rail = layout.Rail;
+            if (rail.width <= 4 || rail.height <= 0) return false;
+
+            int bh = rail.height / RailIds.Length;
+            if (bh <= 1) return false;
+            rect = new RectInt(rail.x + 2, rail.y + slot * bh, rail.width - 4, bh - 1);
+            return true;
+        }
+
+        // ---- the MAX face's manager column (navRig.js:422-445) -----------------------------------------
+
+        /// <summary>Most waypoint rows the manager column lists (navRig.js:426 <c>slice(0,6)</c>).</summary>
+        public const int ManagerWaypointRows = 6;
+
+        /// <summary>Most route legs it lists (navRig.js:434 <c>i&lt;=5</c>).</summary>
+        public const int ManagerRouteRows = 5;
+
+        /// <summary>Pixel pitch of one row in the column — the rig's <c>y+=9</c> throughout
+        /// <c>rightCol</c>.</summary>
+        public const int ManagerRowH = 9;
+
+        /// <summary>
+        /// Where every element of the manager column lands, for a given amount of content.
+        ///
+        /// <para><b>Computed once and shared by the renderer and the hit map</b>, for the reason
+        /// <see cref="ChartplotterOverlayLayout"/> gives for having one screen→rig mapper: the column's
+        /// geometry is a running cursor, not a grid, so two independent walks of it would agree until
+        /// the day a route got long enough to push the rows apart.</para>
+        /// </summary>
+        public readonly struct Manager
+        {
+            /// <summary>The column box itself.</summary>
+            public readonly RectInt Right;
+
+            /// <summary>Text origin — the rig's <c>x = R.x + 6</c>.</summary>
+            public readonly int TextX;
+
+            /// <summary>Top of the WAYPOINTS header row.</summary>
+            public readonly int WaypointHeaderY;
+
+            /// <summary>Top of the first waypoint row, and how many are actually listed.</summary>
+            public readonly int WaypointRowsY, WaypointRowCount;
+
+            /// <summary>Top of the ROUTE header row, and of its first leg row / how many.</summary>
+            public readonly int RouteHeaderY, RouteRowsY, RouteRowCount;
+
+            /// <summary>Top of the CURSOR header row (the measure readout).</summary>
+            public readonly int CursorHeaderY;
+
+            /// <summary>Top of the TIDE &amp; SET header row.</summary>
+            public readonly int TideHeaderY;
+
+            /// <summary>
+            /// The NAME / DEL action pair, live only while a waypoint row is selected.
+            ///
+            /// <para><b>The one affordance the rig does not author</b>, and it is placed so that stays
+            /// true of everything that does: the rig's column cursor runs out well above the bottom of
+            /// <see cref="Right"/> (about 210 px of content in a 438 px column at native MAX size), so
+            /// these two buttons sit in the space it leaves empty and shift nothing above them. They
+            /// are drawn with the rail's own button primitive and colours, because inventing a second
+            /// button idiom would be the bigger liberty. See the PR body — the acceptance criteria ask
+            /// for rename and delete FROM THE COLUMN, and the rig gives them no home.</para>
+            /// </summary>
+            public readonly RectInt NameButton, DeleteButton;
+
+            public Manager(RectInt right, int textX, int wptHeaderY, int wptRowsY, int wptRowCount,
+                           int routeHeaderY, int routeRowsY, int routeRowCount, int cursorHeaderY,
+                           int tideHeaderY, RectInt nameButton, RectInt deleteButton)
+            {
+                Right = right; TextX = textX;
+                WaypointHeaderY = wptHeaderY; WaypointRowsY = wptRowsY; WaypointRowCount = wptRowCount;
+                RouteHeaderY = routeHeaderY; RouteRowsY = routeRowsY; RouteRowCount = routeRowCount;
+                CursorHeaderY = cursorHeaderY; TideHeaderY = tideHeaderY;
+                NameButton = nameButton; DeleteButton = deleteButton;
+            }
+
+            /// <summary>The full-width band a waypoint row occupies — the rig's own selection highlight
+            /// rect (navRig.js:427 <c>fillRect(R.x+2, y-1, R.w-4, 9)</c>), which is therefore also the
+            /// honest hit box: you click the thing that lights up.</summary>
+            public RectInt WaypointRow(int i)
+                => new RectInt(Right.x + 2, WaypointRowsY + i * ManagerRowH - 1, Right.width - 4,
+                               ManagerRowH);
+        }
+
+        /// <summary>
+        /// Walk the rig's <c>rightCol</c> cursor (navRig.js:424-444) and record where everything lands.
+        /// <paramref name="waypointCount"/> and <paramref name="routeCount"/> are the region's real
+        /// counts; the column lists at most <see cref="ManagerWaypointRows"/> / <see cref="ManagerRouteRows"/>
+        /// of each, exactly as the source does.
+        /// </summary>
+        public static Manager ComputeManager(in Layout layout, int waypointCount, int routeCount,
+                                             bool selected)
+        {
+            RectInt r = layout.Right;
+            int x = r.x + 6;
+            int y = r.y + 6;
+
+            int wptHeader = y; y += ManagerRowH;                             // "WAYPOINTS" + count
+            int wptRows = y;
+            int wptShown = Mathf.Clamp(waypointCount, 0, ManagerWaypointRows);
+            y += wptShown * ManagerRowH;
+
+            y += 4; y += 6;                                                  // rule + gap (js:431)
+            int routeHeader = y; y += ManagerRowH;                           // "ROUTE" + total
+            int routeRows = y;
+            // N points is N−1 legs, and the rig lists at most five of them (js:434 `i<=5`).
+            int legs = Mathf.Clamp(routeCount - 1, 0, ManagerRouteRows);
+            y += legs * ManagerRowH;
+
+            y += 4; y += 6;                                                  // rule + gap (js:436)
+            int cursorHeader = y; y += ManagerRowH;                          // "CURSOR"
+            y += 2 * ManagerRowH;                                            // two rows either way (js:438-440)
+
+            y += 4; y += 6;                                                  // rule + gap (js:441)
+            int tideHeader = y; y += 3 * ManagerRowH;                        // header + HT + SET
+
+            // The action pair, in the space below everything the rig authors. Sized from the column so
+            // it scales with the face rather than from a pixel count that only works at native size.
+            RectInt nameBtn = default, delBtn = default;
+            if (selected)
+            {
+                int bw = (r.width - 12) / 2;
+                int bh = Mathf.Max(9, ManagerRowH + 3);
+                int by = y + 6;
+                if (bw > 8 && by + bh <= r.y + r.height)
+                {
+                    nameBtn = new RectInt(r.x + 4, by, bw, bh);
+                    delBtn = new RectInt(r.x + 8 + bw, by, bw, bh);
+                }
+            }
+
+            return new Manager(r, x, wptHeader, wptRows, wptShown, routeHeader, routeRows, legs,
+                               cursorHeader, tideHeader, nameBtn, delBtn);
+        }
+
         // ---- the view transform (navRig.js:229-235) ---------------------------------------------------
 
         /// <summary>
