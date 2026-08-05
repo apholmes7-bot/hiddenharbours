@@ -28,6 +28,14 @@ namespace HiddenHarbours.Tests.EditMode
     /// <para>Headless, GPU-free, deterministic (rule 5): scripted clock, scripted sea, recording
     /// renderer — the MeshRockSmoothnessTests harness pattern. The real components run their real
     /// tick bodies (<see cref="BoatWaveMotion.Tick"/> / <see cref="MeshHullDriver.Drive"/>).</para>
+    ///
+    /// <para><b>Pinned on the STORM-OFF side (ADR 0018 B2.5).</b> These fixtures sail at sea 0.75,
+    /// where the B2.5 weight filter would put a spring (with a gravity cap — a deliberate
+    /// nonlinearity) between the surface and the ride, breaking the exact-linearity laws below.
+    /// The laws are about the ADR 0023 SHARED RULE itself, so each rig wires a config with the
+    /// storm block disabled — the A/B off side, which B2.5 guarantees is byte-identical to the
+    /// pre-B2.5 behaviour (its negative control pins that). The storm-ON behaviour has its own
+    /// laws in <c>StormSeakeepingReadTests</c>.</para>
     /// </summary>
     public class SharedHeaveTests
     {
@@ -44,6 +52,16 @@ namespace HiddenHarbours.Tests.EditMode
         {
             DisplacedSea.Clear(_seaOwner);      // never leak an active sea into another fixture
             GameServices.Reset();
+        }
+
+        /// <summary>A config with the B2.5 storm block OFF — see the class doc. Caller destroys.</summary>
+        static GameConfig StormOffConfig()
+        {
+            var config = ScriptableObject.CreateInstance<GameConfig>();
+            StormRockSettings storm = config.StormRock;
+            storm.Enabled = false;
+            config.StormRock = storm;
+            return config;
         }
 
         // ------------------------------------------------------------------ doubles
@@ -108,6 +126,7 @@ namespace HiddenHarbours.Tests.EditMode
             public readonly BoatWaveMotion Wave;
             public readonly ScriptedClock Clock = new ScriptedClock();
             readonly HullMeshDef _def;
+            readonly GameConfig _config;
 
             /// <summary>Rock amplitudes ZERO by default so <see cref="RecordingRenderer.HeavePixels"/>
             /// is EXACTLY the displaced term — the law under test, isolated.</summary>
@@ -115,6 +134,7 @@ namespace HiddenHarbours.Tests.EditMode
             {
                 GameServices.Clock = Clock;
                 GameServices.Environment = new ScriptedSea { SeaState01 = seaState01 };
+                GameServices.Config = _config = StormOffConfig();   // pin the ADR 0023 laws (class doc)
 
                 Root = new GameObject("Boat");
                 var visual = new GameObject("Visual");
@@ -148,6 +168,7 @@ namespace HiddenHarbours.Tests.EditMode
             {
                 Object.DestroyImmediate(Root);
                 Object.DestroyImmediate(_def);
+                Object.DestroyImmediate(_config);
             }
         }
 
@@ -341,6 +362,8 @@ namespace HiddenHarbours.Tests.EditMode
         {
             GameServices.Clock = new ScriptedClock();
             GameServices.Environment = new ScriptedSea { SeaState01 = 0.75f };
+            GameConfig config = StormOffConfig();               // pin the ADR 0023 laws (class doc)
+            GameServices.Config = config;
             var clock = (ScriptedClock)GameServices.Clock;
 
             var root = new GameObject("Boat");
@@ -366,6 +389,7 @@ namespace HiddenHarbours.Tests.EditMode
             {
                 DisplacedSea.Clear(_seaOwner);
                 Object.DestroyImmediate(root);
+                Object.DestroyImmediate(config);
                 GameServices.Reset();
             }
         }
