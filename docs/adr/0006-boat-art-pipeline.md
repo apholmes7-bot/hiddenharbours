@@ -42,6 +42,8 @@ pixel-perfect camera zoom tiers**.
    (N headings × the needed state frames), through a locked post-recipe (palette-clamp, outline
    pass, explicit dither, **no AA** — see go/no-go). This is **not** hand-drawn per-direction art,
    and **not** a live-3D model rendered with a pixel-filter at runtime.
+   *(Amended by [ADR 0031](0031-keyline-retirement.md): the outline step is retired from the
+   recipe — the silhouette is carried by the form's own dark side, not by a drawn line.)*
 2. **Discrete pixel-perfect zoom tiers.** Framing steps through a small set of **data-driven,
    pixel-perfect zoom levels** bound to vessel size/context (a 4.5 m dory stays intimate; a 110 m
    tanker pulls back so it fits and its scale *reads*), each an integer/pixel-snapped step so nothing
@@ -115,6 +117,9 @@ per-sprite pivot so no Boats-lane consumer has to change) is deferred; and the p
   the boat crabbing across wind/current. We keep the **world fixed** and turn the boat within it.
 
 ## First M2 art task — the go/no-go
+
+*(Amended by [ADR 0031](0031-keyline-retirement.md): the "post-pass outline" below is retired from
+the recipe; depth-edge darkening — the separate interior rule — stays.)*
 
 Before committing to bake the fleet, **bake exactly ONE boat** with the locked recipe — **palette-
 clamp to the North-Atlantic master ramp (§4.1), post-pass outline, explicit dither, no AA** — and

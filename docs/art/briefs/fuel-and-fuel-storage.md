@@ -82,7 +82,16 @@ older than everything around it.
 Standard fleet contract — same as every prop kit you have shipped:
 
 - **32 px = 1 m.** Fixed ¾ iso, **elev 40°**, 45° steps.
-- Transparent background, **no anti-aliasing**, 1 px keyline, upper-left key light, ordered dither.
+- Transparent background, no anti-aliasing, upper-left key light, ordered dither.
+- No keyline. The silhouette is carried by the form's own dark side, not by a drawn outline. The
+  turning face must go dark enough to separate from any background in the master palette — never
+  let a lit face run to the sprite edge.
+- Pale subjects need this deliberately. A white hull or wall separates on a darkened sheer strake,
+  a shadowed tumblehome, a shaded eave — not on an outline. If a form can't hold its edge without
+  one, the form needs work, not a line around it.
+- Keep depth-edge darkening. That's the separate interior rule (adjacent surfaces >0.30 m apart in
+  depth, far side darkened). It stays — it's what keeps overlapping parts of the same object
+  readable. (ADR 0031.)
 - Pin by **pivot**, never by corners.
 - **Ramps only** (ADR 0015 palette guard-rail).
 
