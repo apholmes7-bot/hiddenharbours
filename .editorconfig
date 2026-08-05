@@ -21,6 +21,13 @@ dotnet_style_readonly_field = true:suggestion
 csharp_style_var_when_type_is_apparent = true:suggestion
 csharp_style_expression_bodied_methods = false:none
 
+# Unity .meta files: Unity serializes empty YAML values with a trailing space
+# ("userData: ") and its importer REJECTS a folder .meta whose final line lost
+# its newline — an editorconfig-aware editor trimming these breaks the import on
+# CI (caught 2026-08-05, PR #422: "YAML Parsing error ... line 8"). Hands off.
+[*.meta]
+trim_trailing_whitespace = false
+
 [*.{json,yml,yaml}]
 indent_size = 2
 
