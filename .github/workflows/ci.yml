@@ -2,6 +2,14 @@
 # Runs the Unity EditMode + PlayMode tests on every push/PR so `main` stays green
 # (CLAUDE.md rule 10, agents/coordination.md §4-§5). Owned by qa-test.
 #
+# TRIAGING A RED X — start from the verdict, not the per-step conclusions. The job's final
+# step ("Red X verdict — environment fault or code failure?") runs only when the job fails
+# and posts a one-line diagnosis as an ::error:: annotation (the box at the top of the run
+# page and the PR checks tab) plus a step-summary heading. It says either ENVIRONMENT FAULT
+# (hub install, license activation, or checkout died before any test ran — not your code;
+# re-run the job) or TESTS RAN AND FAILED (read the "Summarise test failures" output for the
+# failing tests). On green runs the verdict step shows as skipped.
+#
 # WHY BUILDALON (and not GameCI): Unity 6 issues a machine-bound "entitlement" license,
 # and Unity removed manual `.ulf` activation for free Personal licenses back in ~2023.
 # GameCI's Docker test-runner is hard-wired to need a `.ulf` that a Personal seat can no
@@ -70,6 +78,7 @@ jobs:
             Library-
 
       - name: Set up Unity
+        id: setup_unity
         uses: buildalon/unity-setup@30fcbcb56c10ea5d64298e970d952b8d29bc268b # v2
         with:
           version-file: 'ProjectSettings/ProjectVersion.txt'   # resolves to 6000.5.0f1
@@ -78,6 +87,7 @@ jobs:
           hub-version: '3.19.5'                                # see "WHY THE HUB IS PINNED" above
 
       - name: Activate Unity license (Personal)
+        id: activate_license
         uses: buildalon/activate-unity-license@e0d245d0787b7b9931b56ccbde3b508f6b70f1af # v2
         with:
           license: Personal
@@ -85,12 +95,14 @@ jobs:
           password: ${{ secrets.UNITY_PASSWORD }}
 
       - name: EditMode tests
+        id: editmode
         uses: buildalon/unity-action@2d420bea0f47fbe01377601fa3231bcf4de04f3a # v3
         with:
           log-name: editmode-tests
           args: -batchmode -runTests -testPlatform EditMode -testResults ${{ github.workspace }}/artifacts/editmode-results.xml
 
       - name: PlayMode tests
+        id: playmode
         # Run even if EditMode failed, so a single CI run reports both suites.
         if: success() || failure()
         uses: buildalon/unity-action@2d420bea0f47fbe01377601fa3231bcf4de04f3a # v3
@@ -170,3 +182,49 @@ jobs:
           if not any_failed:
               print("\nNo failing test cases in any results file.")
           PY
+
+      # WHY THIS EXISTS: this job has two documented pre-test fault modes — "Set up Unity"
+      # (the hub-pin story above) and "Activate Unity license" (licensing servers / secrets) —
+      # and both used to produce exactly the same red X as a genuine compile/test failure; in
+      # one day three separate sessions each burned time reading per-step conclusions to tell
+      # them apart. This step makes the red X carry the diagnosis: on a failed run it inspects
+      # which step died (via the step ids above) and writes a one-line verdict as an ::error::
+      # annotation — surfaced at the top of the run page and on the PR checks tab — plus a
+      # step-summary heading. It runs only on failure (skipped on green), always exits 0, and
+      # never changes the job's outcome — a reporter, not a gate. Gate semantics are untouched:
+      # an environment fault stays red, and re-running stays a manual human act (an auto-retry
+      # could mask a real break and burns expensive Unity-install minutes).
+      - name: Red X verdict — environment fault or code failure?
+        if: failure()
+        shell: bash
+        env:
+          SETUP: ${{ steps.setup_unity.outcome }}
+          ACTIVATE: ${{ steps.activate_license.outcome }}
+          EDITMODE: ${{ steps.editmode.outcome }}
+          PLAYMODE: ${{ steps.playmode.outcome }}
+        run: |
+          # verdict <headline> <detail> — the headline is the annotation title and the summary
+          # heading. Keep headlines free of ':' and ',': annotation TITLE properties need those
+          # escaped (%3A / %2C); the message part after '::' does not.
+          verdict() {
+            echo "::error title=${1}::${2}"
+            { echo "## ${1}"; echo; echo "${2}"; } >> "$GITHUB_STEP_SUMMARY"
+          }
+          # Order matters: PlayMode's `success() || failure()` means it runs (and fails) even
+          # when setup died, so check the environment steps before reading the test outcomes.
+          if [ "$SETUP" = "failure" ]; then
+            verdict "ENVIRONMENT FAULT at 'Set up Unity' — not a code failure" \
+              "The Unity Hub / editor-install toolchain died before any test ran. Re-run the job; if it recurs, read the hub-pin header in .github/workflows/ci.yml."
+          elif [ "$ACTIVATE" = "failure" ]; then
+            verdict "ENVIRONMENT FAULT at 'Activate Unity license' — not a code failure" \
+              "Unity's licensing servers / the repo credentials failed before any test ran. Re-run the job; see the secrets notes in the header of .github/workflows/ci.yml."
+          elif [ "$SETUP" = "skipped" ] || [ "$ACTIVATE" = "skipped" ]; then
+            verdict "ENVIRONMENT FAULT before Unity setup — not a code failure" \
+              "Checkout / LFS / cache died, so Unity setup never ran and no test ran. Re-run the job; the red step in the step list says which one."
+          elif [ "$EDITMODE" = "failure" ] || [ "$PLAYMODE" = "failure" ]; then
+            verdict "TESTS RAN AND FAILED — read the failure summary" \
+              "The environment came up (setup and licensing green) and a test step failed (EditMode: ${EDITMODE}, PlayMode: ${PLAYMODE}). The 'Summarise test failures' step lists the failing tests — if it reports no results XML, the editor crashed mid-run rather than tests asserting."
+          else
+            verdict "FAILED OUTSIDE SETUP AND TESTS — read the step list" \
+              "Neither the environment steps nor the test steps failed (setup: ${SETUP}, activate: ${ACTIVATE}, EditMode: ${EDITMODE}, PlayMode: ${PLAYMODE}). A later reporting step (upload / summarise) or something unusual did."
+          fi
