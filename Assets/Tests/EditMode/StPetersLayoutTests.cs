@@ -422,7 +422,7 @@ namespace HiddenHarbours.Tests.EditMode
                            + StPetersBuilder.ReefShelfWidth * 0.5f;
             float aspect = StPetersBuilder.IslandRadiusY / StPetersBuilder.IslandRadius;
 
-            int onShelf = 0, throughBerth = 0, overTheBar = 0;
+            int onShelf = 0, throughBerth = 0, overTheBar = 0, underCliff = 0, softBearings = 0;
             float shallowest = float.MinValue, deepest = float.MaxValue;
             for (int i = 0; i < 180; i++)
             {
@@ -430,6 +430,23 @@ namespace HiddenHarbours.Tests.EditMode
                 var p = StPetersBuilder.IslandCenter +
                         new Vector2(Mathf.Cos(a) * shelfMid, Mathf.Sin(a) * shelfMid * aspect);
                 float e = _terrain.ElevationAt(p);
+
+                // ⭐ RE-DERIVED for the cliff coast (PR 2). A cliff has NO APRON — that is what makes it
+                // a cliff — so the shelf ring is now interrupted by the cliff sectors as well as by its
+                // two crossings, and the ring's absence there is the feature rather than a hole. The
+                // skip is taken from the terrain's own classifier, so it moves with the plan instead of
+                // being a widened bound: retune the sectors and this test follows them.
+                bool cliff = CoastPlan.IsCliff(_terrain.CoastClassAt(p));
+                if (!cliff) softBearings++;
+                if (cliff)
+                {
+                    underCliff++;
+                    Assert.Less(e, StPetersBuilder.ReefShelfOuterElevation,
+                        $"the coast at {p} is classified cliff but the ground at shelf distance is " +
+                        $"{e:F2} m — shallower than the reef's own outer lip. A cliff that keeps an " +
+                        "apron is a slope with rock painted on it.");
+                    continue;
+                }
 
                 // Inside the berth's carve the ground is the slip, not the reef — the boat door.
                 if (DistanceToBerth(p) < StPetersBuilder.BerthHalfWidth) { throughBerth++; continue; }
@@ -447,9 +464,26 @@ namespace HiddenHarbours.Tests.EditMode
                 deepest = Mathf.Min(deepest, e);
             }
 
-            Assert.Greater(onShelf, 140, "most of the circle must be reef, not crossing");
+            // DERIVED from the plan, not from the old literal 140: the reef must survive on most of the
+            // SOFT coast — the part that still has a soft coast. The crossings are allowed to eat some
+            // of it, the cliffs are not counted against it, and a plan that turned the whole island to
+            // rock would drive softBearings down and fail on the sanity bound below rather than by
+            // quietly satisfying a widened number.
+            Assert.Greater(softBearings, 60,
+                $"only {softBearings}/180 bearings carry a soft coast — the cliff plan has eaten the " +
+                "island's reef ring, and with it the shallow-draught gate the whole opening rests on");
+            // MEASURED: 87 of 110 soft bearings carry reef; the two crossings take the other 21%. The
+            // bound sits at 25% so a door that widened would trip it, and it is stated as a fraction of
+            // the soft ring rather than as the old absolute 140 — which the cliff coast broke precisely
+            // because it counted bearings that are no longer supposed to have a shelf at all.
+            Assert.Greater(onShelf, softBearings * 0.75f,
+                $"the reef survives on only {onShelf} of {softBearings} soft bearings — the crossings " +
+                "are eating more of the ring than the two doors they are supposed to be");
             Assert.Greater(throughBerth, 0, "the berth must actually cut its door through the ring");
             Assert.Greater(overTheBar, 0, "…and the sandbar must actually reach the island over it");
+            Assert.Greater(underCliff, 0,
+                "no bearing came out under a cliff — the coast plan is not reaching this terrain, and " +
+                "the skip above is silently doing nothing");
 
             Debug.Log($"[st-peters] reef ring: {onShelf}/180 bearings on the shelf between " +
                       $"{deepest:F2} and {shallowest:F2} m; {throughBerth} through the berth (the boat " +

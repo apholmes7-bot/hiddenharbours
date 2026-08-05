@@ -69,6 +69,21 @@ namespace HiddenHarbours.Tests.EditMode
                                  StPetersBuilder.IslandRadiusY * Mathf.Cos(r));
         }
 
+        /// <summary>A point <paramref name="outMetres"/> of ELLIPTICAL distance seaward of the plateau
+        /// edge on a bearing — the frame the profile is actually written in, so <c>outMetres</c> means
+        /// the same thing at the island's ends as along its flanks. (In world metres it does not: a metre
+        /// of northing is 120/70 of a metre of elliptical distance on this island, which is exactly the
+        /// amplification that made an earlier version of the ledge test measure the wrong thing.)</summary>
+        private static Vector2 ShorePointOut(float bearingDegrees, float outMetres)
+        {
+            float r = bearingDegrees * Mathf.Deg2Rad;
+            float d = StPetersBuilder.IslandRadius + outMetres;
+            return StPetersBuilder.IslandCenter
+                   + new Vector2(d * Mathf.Sin(r),
+                                 d * Mathf.Cos(r) * StPetersBuilder.IslandRadiusY
+                                   / StPetersBuilder.IslandRadius);
+        }
+
         /// <summary>Arc length per radian of bearing at a bearing — the ellipse's own speed. Degrees are
         /// NOT metres on a 120 × 70 island: one near due south buys 120 m/rad of coast where one near the
         /// harbour buys 70, which is why every share below is measured in metres.</summary>
@@ -344,10 +359,17 @@ namespace HiddenHarbours.Tests.EditMode
                     "widening leaked into regions that never authored a sector");
 
                 // …and the shipped plan does NOT agree with it, or none of this does anything.
+                //
+                // ⚠ Sampled SEAWARD of the plateau edge, not on it. On the edge itself both coasts
+                // answer the plateau height — IslandProfile returns it before it ever dispatches on
+                // class — so the first version of this check compared the one place on the whole island
+                // where a cliff and a beach are guaranteed to agree, and reported 0 differences on a
+                // coast that had changed completely.
                 int differ = 0;
                 for (float bearing = 100f; bearing < 250f; bearing += 1.7f)
+                for (float outM = 2f; outM <= 10f; outM += 4f)
                 {
-                    Vector2 p = ShorePoint(bearing);
+                    Vector2 p = ShorePointOut(bearing, outM);
                     if (Mathf.Abs(_terrain.ElevationAt(p) - plain.ElevationAt(p)) > 0.5f) differ++;
                 }
                 Assert.Greater(differ, 20,
@@ -523,12 +545,7 @@ namespace HiddenHarbours.Tests.EditMode
             {
                 if (plan[i].Class != want) continue;
                 float mid = plan[i].FromBearing + CoastPlan.SectorWidth(plan, i) * 0.5f;
-                float r = mid * Mathf.Deg2Rad;
-                found.Add(StPetersBuilder.IslandCenter
-                          + new Vector2((StPetersBuilder.IslandRadius + outMetres) * Mathf.Sin(r),
-                                        (StPetersBuilder.IslandRadiusY
-                                         + outMetres * StPetersBuilder.IslandRadiusY
-                                           / StPetersBuilder.IslandRadius) * Mathf.Cos(r)));
+                found.Add(ShorePointOut(mid, outMetres));
             }
             return found;
         }
@@ -579,29 +596,93 @@ namespace HiddenHarbours.Tests.EditMode
                     "trail beside it does not actually connect");
             }
 
-            HashSet<Vector2Int> high = ReachableAt(SpringHigh);
+            // ⚠ The OTHER direction is a DEPTH claim, not a flood-fill one, and getting that wrong cost
+            // a CI round. A fill only ever contains WALKABLE cells, so a drowned bench can never be in
+            // it — asking "was it reached" therefore measures how close the nearest dry ground is, which
+            // on a 3 m-wide plunge is ~3 m, and says nothing whatever about the ledge. What actually
+            // has to be true is that the tide has properly TAKEN the bench: not merely wet, but past the
+            // swim limit into boat-only water. That is the claim a ledge authored too high would fail.
             foreach (Vector2 p in benches)
             {
                 Assert.IsFalse(Walkable(p, SpringHigh),
                     $"the ledge bench at {p} is still walkable at high water ({SpringHigh:F2} m) — then " +
                     "it is a beach, and the tide is not lending the player anything");
-                Assert.IsFalse(Reached(high, p, radius: 1f),
-                    $"the ledge bench at {p} is reachable by land at high water");
+
+                float depth = TidalExposure.WaterDepth(SpringHigh, _terrain.ElevationAt(p));
+                Assert.Greater(depth, _config.SwimLimit,
+                    $"the ledge bench at {p} carries only {depth:F2} m at high water, inside the " +
+                    $"{_config.SwimLimit:F2} m swim band — the tide has not taken it away, it has just " +
+                    "made it awkward, and the ledge stops reading as something the sea lends and reclaims");
             }
         }
 
-        /// <summary>Cliff FACES are unwalkable at every tide, in both directions — you cannot walk down
-        /// one and you cannot walk up one. Pinned because the walk gate is a height comparison and a
-        /// mis-authored plunge would quietly become a ramp.</summary>
+        /// <summary>
+        /// ⭐ WHAT A CLIFF DOES TO A WALKER — stated as what the terrain can actually promise.
+        ///
+        /// <para><b>⚠ An earlier version of this test was named "a cliff face is not a walkable surface"
+        /// and it was overclaiming.</b> The walk gate is a comparison of ground against water
+        /// (<see cref="TidalExposure.IsWalkable"/>) and has <b>no slope term</b>, so to the sim a 3 m
+        /// plunge is a very steep RAMP, not a wall. The old test only ever sampled the cliff's FOOT — it
+        /// passed, and it would have gone on passing on a coast whose faces were freely walkable.
+        /// Enforcing a face properly needs a slope gate in the walk model (gameplay-systems' lane) or
+        /// collision on the cliff geometry, and neither is in this slice.</para>
+        ///
+        /// <para>So this asserts the two things the height field genuinely delivers, and they are the
+        /// two the player feels: a cliff's foot is never standable ground, and past the plateau edge a
+        /// cliff gives you almost no shore where a beach gives you tens of metres of it.</para>
+        /// </summary>
         [Test]
-        public void ACliffFaceIsNotAWalkableSurfaceAtAnyTide()
+        public void ACliffLeavesAlmostNoShoreSeawardOfThePlateau_WhereABeachLeavesTens()
         {
+            // The foot itself: never standable, at any tide. (True, and worth keeping — a cliff that
+            // grew an apron would be a slope with rock painted on it.)
             foreach (var cls in new[] { CoastClass.Cliff, CoastClass.DeepShoreCliff })
             foreach (Vector2 p in SampleClass(cls, StPetersBuilder.CliffPlungeWidth + 1.5f))
             foreach (float water in new[] { SpringLow, StPetersBuilder.TideMean, SpringHigh })
                 Assert.IsFalse(Walkable(p, water),
                     $"the foot of a {cls} at {p} is walkable at water {water:F2} m — a face with a " +
                     "standable apron is a slope, not a wall");
+
+            // …and how far out you can actually get, measured in the profile's own frame.
+            float limit = StPetersBuilder.IslandFalloff + StPetersBuilder.ReefShelfWidth;
+            float Seaward(CoastClass c, float water)
+            {
+                float reach = 0f;
+                for (float outM = 0f; outM <= limit; outM += 0.25f)
+                {
+                    float e = _terrain.IslandProfile(StPetersBuilder.IslandRadius + outM, c);
+                    if (!TidalExposure.IsWalkable(water, e, WadeDepth)) break;
+                    reach = outM;
+                }
+                return reach;
+            }
+
+            float beachLow = Seaward(CoastClass.Beach, SpringLow);
+            Assert.Greater(beachLow, limit * 0.5f,
+                $"a beach only gives {beachLow:F1} m of shore at dead low — the soft coast has stopped " +
+                "being somewhere you can walk out onto, which no part of this change should have done");
+
+            // The two classes whose feet are UNDER the lowest water give you nothing, ever.
+            foreach (var cls in new[] { CoastClass.Cliff, CoastClass.DeepShoreCliff })
+                Assert.Less(Seaward(cls, SpringLow), beachLow * 0.25f,
+                    $"a {cls} gives {Seaward(cls, SpringLow):F1} m of walkable shore at dead low " +
+                    $"against the beach's {beachLow:F1} m — that is not a cliff, it is a brisker beach");
+
+            // ⭐ The LEDGE is deliberately NOT in that list — giving the player ground at low water is
+            // the entire class, and asserting it gives almost none would contradict the feature. Its
+            // contract is the pair below: real shore at dead low, and the beach's own share of nothing
+            // once the tide is up. (It reaches further than its 4 m bench at low because the slope past
+            // the bench is still under half a metre of water for another ~12 m — you wade out. That is
+            // the coast being generous at dead low, which is the point.)
+            float ledgeLow = Seaward(CoastClass.LedgeCliff, SpringLow);
+            Assert.Greater(ledgeLow, StPetersBuilder.LedgeBenchWidth,
+                $"a ledge gives only {ledgeLow:F1} m at dead low — narrower than its own {StPetersBuilder.LedgeBenchWidth} m " +
+                "bench, so the tide is not actually handing the player anything to stand on");
+
+            float beachHigh = Seaward(CoastClass.Beach, SpringHigh);
+            Assert.Less(Seaward(CoastClass.LedgeCliff, SpringHigh), beachHigh * 0.25f,
+                $"at high water a ledge still gives {Seaward(CoastClass.LedgeCliff, SpringHigh):F1} m " +
+                $"against the beach's {beachHigh:F1} m — the sea is supposed to have taken it back");
         }
 
         // =========================================================================================
