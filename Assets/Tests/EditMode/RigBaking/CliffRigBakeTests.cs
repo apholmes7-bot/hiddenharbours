@@ -286,6 +286,79 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         // =====================================================================================
+        //  reproducibility — the condition the "ship the rig, not the sheets" decision rests on
+        // =====================================================================================
+
+        /// <summary>
+        /// 🔴 <b>Same rig plus same config ⇒ same pixels.</b> This is the load-bearing guarantee under
+        /// the decision NOT to commit the baked sheets: if a bake were not reproducible, the
+        /// repository would be carrying a recipe that produces a different cliff on every machine, and
+        /// the only honest fix would be to commit the pixels after all.
+        ///
+        /// <para>Three things make it hold, and this test checks the one that could silently break.
+        /// First, <b>the rig has no RNG and no clock</b> — no <c>Math.random</c>, no <c>Date.now</c>;
+        /// every variation comes from an explicit seed (<see cref="TheRigCarriesNoHiddenRandomness"/>
+        /// guards that at source level). Second, those seeds are derived from
+        /// <c>ROCKS.indexOf(rock) * 1013 + 7703</c>, so the <b>order of the ROCKS array is
+        /// load-bearing</b> — reorder it and sandstone silently bakes as a different wall;
+        /// <see cref="TheCatalogsVocabularyIsTheRigs"/> pins it. Third, the rig memoises expensive
+        /// fields per (seed, slope), and a memo keyed on an INCOMPLETE key is exactly the defect that
+        /// would make bake order matter — which is why the two renders below are separated by
+        /// unrelated bakes of another rock, another batter and another wear step rather than run
+        /// back to back.</para>
+        ///
+        /// <para>Measured in a plain JS host: identical back to back, identical across interleaved
+        /// bakes, and identical across two fresh interpreters (same SHA-256 of the unlit channel).</para>
+        /// </summary>
+        [Test]
+        public void TheSameFaceBakesToTheSameBytesTwice()
+        {
+            _host.Execute($"globalThis.__r1 = {G}.face('sandstone', 'SE', {CliffCatalog.BaseStep}, " +
+                          "{slope: 'wall'});");
+
+            // Unrelated work in between: another rock, another batter, another wear step, another
+            // entry point. If any memo is keyed on less than it depends on, this is what exposes it.
+            _host.Execute($"{G}.face('till', 'W', 2, {{slope: 'bank'}});");
+            _host.Execute($"{G}.profile('basalt', 'S', {{slope: 48}});");
+            _host.Execute($"{G}.brow('E', 0);");
+
+            _host.Execute($"globalThis.__r2 = {G}.face('sandstone', 'SE', {CliffCatalog.BaseStep}, " +
+                          "{slope: 'wall'});");
+
+            foreach (string channel in CliffCatalog.LiveChannels)
+            {
+                string field = channel.TrimStart('_');
+                Assert.IsTrue(_host.EvaluateBool(
+                    $"(function(a, b) {{ if (a.length !== b.length) return false;" +
+                    $"  for (var i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;" +
+                    $"  return true; }})(__r1.{field}, __r2.{field})"),
+                    $"Channel '{channel}' differed between two bakes of the SAME face, separated by " +
+                    "unrelated bakes. The kit's pixels are not committed precisely because they are " +
+                    "reproducible from the rig — if that stops being true, this repository is " +
+                    "carrying a recipe that builds a different cliff on every machine, and the " +
+                    "decision to ship the rig instead of the sheets has to be revisited.");
+            }
+        }
+
+        /// <summary>
+        /// The source-level half of the reproducibility guarantee: a re-drop must not introduce
+        /// randomness or a clock ANYWHERE in the rig — including in a code path this suite never
+        /// renders, which a byte-comparison test could not see.
+        /// </summary>
+        [Test]
+        public void TheRigCarriesNoHiddenRandomness()
+        {
+            string source = System.IO.File.ReadAllText(
+                System.IO.Path.Combine(RigCatalog.RepoRoot, CliffCatalog.RigScriptPath));
+
+            foreach (string forbidden in new[] { "Math.random", "Date.now", "new Date", "performance.now" })
+                Assert.IsFalse(source.Contains(forbidden),
+                    $"cliffRig.js contains '{forbidden}'. The kit ships as a rig rather than as 16 MB " +
+                    "of committed PNGs, and that trade is only honest while the bake is a pure " +
+                    "function of (rig, config). A single unseeded call makes the coast unreproducible.");
+        }
+
+        // =====================================================================================
         //  helpers
         // =====================================================================================
 
