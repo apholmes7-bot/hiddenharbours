@@ -29,12 +29,19 @@ namespace HiddenHarbours.Art
     /// own its order, because a plant sticking out through the surface is decor: leave it under the
     /// Sea plane and the water paints over the half that is in the air.</para>
     ///
+    /// <para><b>⚠ THIS COMPONENT HAS NO Update, AND THAT IS A PERFORMANCE DECISION.</b> St Peters
+    /// places ~700 of these. An empty <c>Update</c> still costs the engine a managed dispatch per
+    /// instance per frame — ~700 × 60/s of doing nothing, which is the exact cost
+    /// <see cref="YSortSprite"/> disables itself in play mode to avoid ("a clearing of ~1300
+    /// tufts/trees costs literally nothing per frame instead of ~1300 empty calls"). So the whole
+    /// shore is driven by ONE <see cref="ShorePlantTideDriver"/> that walks the list on the slow tick.
+    /// A view left with no driver still works — it just holds the state it was built with.</para>
+    ///
     /// <para><b>Rules.</b> Tide state is RECOMPUTED, never saved (rule 5) — the inputs are the
-    /// deterministic water level and the authored seabed. Work runs on the SLOW TICK
-    /// (<see cref="SlowTickSeconds"/>, the <c>SeaweedPresenter</c> cadence), not per frame, and does
-    /// nothing at all when the chosen state has not changed — a shore full of plants costs a float
-    /// compare each, twice a second (rule 7). No per-frame allocations. Everything the plant knows
-    /// comes from its <see cref="ShorePlantDef"/> (rule 6).</para>
+    /// deterministic water level and the authored seabed. <see cref="Refresh"/> does nothing at all
+    /// when the chosen state has not changed, so a shore full of plants costs a float compare each,
+    /// a few times a second (rule 7). No per-frame allocations. Everything the plant knows comes from
+    /// its <see cref="ShorePlantDef"/> (rule 6).</para>
     ///
     /// <para><b>Core seam.</b> Reads <see cref="ITidalTerrain.ElevationAt"/> and
     /// <see cref="IEnvironmentService.WaterLevelAt"/> through <see cref="GameServices"/> — both
@@ -46,10 +53,6 @@ namespace HiddenHarbours.Art
     [DisallowMultipleComponent]
     public sealed class ShorePlantTideView : MonoBehaviour
     {
-        /// <summary>How often the tide is re-read. The water moves in metres per hour; twice a second
-        /// is already far finer than the art can show, and it is the cadence the seaweed bed uses.</summary>
-        public const float SlowTickSeconds = 0.5f;
-
         [Tooltip("The species this plant is. Carries its sprites, its zone base, its true standing " +
                  "height and the ladder its states were baked at.")]
         [SerializeField] private ShorePlantDef _def;
@@ -70,7 +73,6 @@ namespace HiddenHarbours.Art
 
         private SpriteRenderer _sr;
         private YSortSprite _ySort;
-        private float _nextTick;
         private int _state = -1;            // -1 = nothing applied yet
         private bool _submerged;
         private bool _appliedOnce;
@@ -92,15 +94,18 @@ namespace HiddenHarbours.Art
             _sr = GetComponent<SpriteRenderer>();
             _ySort = GetComponent<YSortSprite>();
             _state = -1;
-            _nextTick = 0f;
             Refresh();
+            ShorePlantTideDriver.Register(this);
         }
 
-        private void Update()
+        private void OnDisable() => ShorePlantTideDriver.Unregister(this);
+
+        /// <summary>Edit mode has no clock and no driver, so the preview slider is the tide — scrubbing
+        /// it has to move the plant, or the preview is a field that does nothing.</summary>
+        private void OnValidate()
         {
-            // Unscaled: a paused or slowed game should still settle the art it is showing.
-            if (Time.unscaledTime < _nextTick) return;
-            _nextTick = Time.unscaledTime + SlowTickSeconds;
+            if (Application.isPlaying || _sr == null) return;
+            _state = -1;
             Refresh();
         }
 

@@ -72,6 +72,17 @@ namespace HiddenHarbours.Art.Editor
 
         [SerializeField] private int _sortingOrder = 2;       // pre-Play default; YSortSprite recomputes from Y
 
+        // ---- fill-from-mask (see DrawFillSection) ----
+        [SerializeField] private bool _showFill;
+        [SerializeField] private Vector2 _fillCenter = new Vector2(70f, 0f);   // St Peters' island centre
+        [SerializeField] private Vector2 _fillSize = new Vector2(240f, 140f);
+        [SerializeField] private float _fillStep = 2.2f;
+        [SerializeField] private float _fillJitter = 0.9f;
+        [SerializeField] private int _fillSeed = 1;
+        /// <summary>Ground at or above this elevation counts as grass. 4.2 is St Peters' own grass
+        /// floor — above the highest water of the biggest spring tide.</summary>
+        [SerializeField] private float _fillGrassFloor = 4.2f;
+
         private Material _material;
         private GrassLibraryCatalog.Library _library;
         /// <summary>The library entries whose PNG actually imported — what the brush can draw.</summary>
@@ -160,11 +171,66 @@ namespace HiddenHarbours.Art.Editor
             if (GUILayout.Button("Apply colour to existing painted grass"))
                 RecolourExisting();
 
+            DrawFillSection();
+
             EditorGUILayout.Space();
             using (new EditorGUILayout.HorizontalScope())
             {
                 if (GUILayout.Button("Select PaintedGrass")) SelectRoot();
                 if (GUILayout.Button("Clear ALL painted grass")) ClearAll();
+            }
+        }
+
+        /// <summary>
+        /// <b>Fill from the painted mask</b> — the answer to "cover the island" that is not ten thousand
+        /// hand clicks. It sweeps a seeded grid over a rectangle and plants wherever the GROUND already
+        /// reads as grass, taking the habitat from the same painted splat the builder reads.
+        ///
+        /// <para><b>⭐ SEEDED AND IDEMPOTENT, which the brush is NOT.</b> A brush stroke rolls
+        /// <c>Random</c> and rejects on min-spacing against what is already there, so dragging over the
+        /// same ground twice lays MORE grass — fine for a brush, wrong for a fill the owner will re-run
+        /// after changing the terrain. Every position, variant, scale and tint here is HASHED from the
+        /// grid cell and the seed, and the fill DELETES its own previous output first (it is parented
+        /// under its own object), so re-running with the same seed converges on exactly the same field
+        /// instead of doubling it — the generated-paint lesson, stated as a mechanism.</para>
+        ///
+        /// <para><b>⭐ AND IT LEAVES HAND-PLACED GRASS ALONE.</b> Brush strokes live under
+        /// <c>PaintedGrass</c>; the fill lives under <c>PaintedGrass/<see cref="FillRootName"/></c> and
+        /// only ever clears that. The owner's own tufts survive every Refresh.</para>
+        /// </summary>
+        private void DrawFillSection()
+        {
+            EditorGUILayout.Space();
+            _showFill = EditorGUILayout.Foldout(_showFill, "Fill from the painted mask", true);
+            if (!_showFill) return;
+
+            EditorGUILayout.HelpBox(
+                "Plants over every metre the GROUND already paints as grass, choosing art by habitat — " +
+                "the same rule the St Peters builder uses. Seeded: re-running with the same seed and " +
+                "rectangle reproduces the field exactly and replaces its own last pass, so Refresh " +
+                "never doubles up. Grass you painted by hand is left alone.",
+                MessageType.Info);
+
+            _fillCenter = EditorGUILayout.Vector2Field("Area centre (m)", _fillCenter);
+            _fillSize = EditorGUILayout.Vector2Field("Area size (m)", _fillSize);
+            _fillStep = EditorGUILayout.Slider("Spacing (m)", _fillStep, 0.6f, 6f);
+            _fillJitter = EditorGUILayout.Slider("Position jitter (m)", _fillJitter, 0f, 2f);
+            _fillGrassFloor = EditorGUILayout.FloatField(
+                new GUIContent("Grass floor (m)",
+                               "Ground at or above this elevation counts as grass. St Peters: 4.2."),
+                _fillGrassFloor);
+            _fillSeed = EditorGUILayout.IntField("Seed", _fillSeed);
+
+            int cells = Mathf.Max(0, Mathf.CeilToInt(_fillSize.x / Mathf.Max(0.01f, _fillStep)))
+                      * Mathf.Max(0, Mathf.CeilToInt(_fillSize.y / Mathf.Max(0.01f, _fillStep)));
+            EditorGUILayout.LabelField(
+                $"≈ {cells} candidate sites — every one is gated on the painted ground.",
+                EditorStyles.miniLabel);
+
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                if (GUILayout.Button("Fill / Refresh")) Fill();
+                if (GUILayout.Button("Clear fill only")) ClearFill();
             }
         }
 
@@ -409,6 +475,128 @@ namespace HiddenHarbours.Art.Editor
                 if ((cp - center).sqrMagnitude <= r2) list.Add(cp);
             }
             return list;
+        }
+
+        // ============================ FILL FROM THE PAINTED MASK ============================
+
+        /// <summary>The fill's own child of <c>PaintedGrass</c>. Everything the fill makes lives here and
+        /// nowhere else, which is what makes "clear my last pass" and "leave the owner's strokes alone"
+        /// the same operation.</summary>
+        public const string FillRootName = "MaskFill";
+
+        /// <summary>
+        /// Plant the whole rectangle from the painted ground. Deterministic in the seed: same seed +
+        /// same rectangle + same terrain → the same field, every time.
+        /// </summary>
+        private void Fill()
+        {
+            var terrain = HiddenHarbours.Core.GameServices.TidalTerrain;
+            if (terrain == null)
+            {
+                EditorUtility.DisplayDialog(
+                    "No terrain in this scene",
+                    "The fill reads the painted ground through GameServices.TidalTerrain, and no region " +
+                    "has registered one. Open a built region scene (St Peters) and try again — filling " +
+                    "against no height map would plant grass in the harbour.",
+                    "OK");
+                return;
+            }
+            if (_imported.Count == 0) return;
+
+            Undo.IncrementCurrentGroup();
+            Undo.SetCurrentGroupName("Fill grass from mask");
+            int group = Undo.GetCurrentGroup();
+
+            ClearFill();
+            var root = GetOrCreateRoot();
+            var fillRoot = new GameObject(FillRootName);
+            Undo.RegisterCreatedObjectUndo(fillRoot, "Fill grass from mask");
+            fillRoot.transform.SetParent(root.transform, worldPositionStays: false);
+
+            float step = Mathf.Max(0.05f, _fillStep);
+            int nx = Mathf.Max(1, Mathf.CeilToInt(_fillSize.x / step));
+            int ny = Mathf.Max(1, Mathf.CeilToInt(_fillSize.y / step));
+            Vector2 min = _fillCenter - _fillSize * 0.5f;
+
+            int planted = 0;
+            for (int ix = 0; ix < nx; ix++)
+            for (int iy = 0; iy < ny; iy++)
+            {
+                var p = new Vector2(
+                    min.x + (ix + 0.5f) * step + (Hash01(ix, iy, _fillSeed * 7 + 1) * 2f - 1f) * _fillJitter,
+                    min.y + (iy + 0.5f) * step + (Hash01(ix, iy, _fillSeed * 7 + 2) * 2f - 1f) * _fillJitter);
+
+                string habitat = GrassMaskProbe.HabitatAt(terrain, p, _fillGrassFloor);
+                if (habitat == null) continue;          // this metre is not grass — nothing plants
+
+                var choices = ChoicesFor(habitat);
+                if (choices.Count == 0) continue;
+
+                int roll = (int)(Hash01(ix, iy, _fillSeed * 7 + 3) * 1024f);
+                var entry = choices[roll % choices.Count];
+                var sprite = GrassLibraryCatalog.LoadSprite(entry);
+                if (sprite == null) continue;
+
+                var go = new GameObject(entry.Name);
+                go.transform.SetParent(fillRoot.transform, worldPositionStays: false);
+                go.transform.position = new Vector3(p.x, p.y, 0f);
+                float s = _baseScale * Mathf.Lerp(1f - _scaleJitter, 1f + _scaleJitter,
+                                                  Hash01(ix, iy, _fillSeed * 7 + 4));
+                go.transform.localScale = new Vector3(s, s, 1f);
+
+                var sr = go.AddComponent<SpriteRenderer>();
+                sr.sprite = sprite;
+                sr.sharedMaterial = _material;
+                sr.sortingOrder = _sortingOrder;
+                sr.color = TintFor(p);                  // position-hashed, so it is stable across re-fills
+                go.AddComponent<YSortSprite>();
+                planted++;
+            }
+
+            Undo.CollapseUndoOperations(group);
+            EditorSceneManager.MarkSceneDirty(root.scene);
+            Debug.Log($"[GrassPaintTool] Filled {planted} tuft(s) from the painted mask " +
+                      $"({nx}×{ny} sites at {step} m, seed {_fillSeed}). Re-running with the same seed " +
+                      "replaces this exact set — hand-painted strokes are untouched.");
+        }
+
+        /// <summary>Remove the fill's own output and nothing else.</summary>
+        private void ClearFill()
+        {
+            var root = FindRoot();
+            if (root == null) return;
+            var fill = root.transform.Find(FillRootName);
+            if (fill == null) return;
+            Undo.DestroyObjectImmediate(fill.gameObject);
+            EditorSceneManager.MarkSceneDirty(root.scene);
+        }
+
+        private readonly Dictionary<string, List<GrassLibraryCatalog.Entry>> _choiceCache =
+            new Dictionary<string, List<GrassLibraryCatalog.Entry>>();
+
+        private List<GrassLibraryCatalog.Entry> ChoicesFor(string habitat)
+        {
+            if (_choiceCache.TryGetValue(habitat, out var list)) return list;
+            var narrowed = new GrassLibraryCatalog.Library();
+            narrowed.Entries.AddRange(_imported);
+            list = narrowed.Choose(new[] { habitat }, EnabledClasses());
+            _choiceCache[habitat] = list;
+            return list;
+        }
+
+        /// <summary>The same stable hash the builder's scatter uses, so a hand fill and a builder
+        /// rebuild speak the same language about which cell is which.</summary>
+        private static float Hash01(int x, int y, int salt)
+        {
+            unchecked
+            {
+                uint h = 2166136261u;
+                h = (h ^ (uint)x) * 16777619u;
+                h = (h ^ (uint)y) * 16777619u;
+                h = (h ^ (uint)salt) * 16777619u;
+                h ^= h >> 15; h *= 2246822519u; h ^= h >> 13;
+                return (h & 0xFFFFFF) / (float)0x1000000;
+            }
         }
 
         private GameObject GetOrCreateRoot()
