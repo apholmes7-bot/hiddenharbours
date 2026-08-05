@@ -14,11 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.RegionDef
   Id: region.st_peters
   DisplayName: St Peters Island
-  Description: 'The home island where the game begins: a tiny weathered coast cut off
-    from the mainland except when the big tide bares the sandbar. Dig clams on the
-    flats at low water, walk the bar to Nine Mile Creek, earn your way to the dory.'
+  Description: 'The home island where the game begins: a tiny weathered coast cut
+    off from the mainland except when the big tide bares the sandbar. Dig clams on
+    the flats at low water, walk the bar to Nine Mile Creek, earn your way to the
+    dory.'
   SceneName: StPeters
-  UnlockFlag:
+  UnlockFlag: 
   WorldCenter: {x: 0, y: 0}
   WorldSizeMeters: {x: 760, y: 520}
   SeabedPixelsPerMetre: 2

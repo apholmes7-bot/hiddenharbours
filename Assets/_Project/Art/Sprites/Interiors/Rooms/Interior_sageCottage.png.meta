@@ -1,0 +1,338 @@
+fileFormatVersion: 2
+guid: 131fdc6b748a1384684495a76cc838fc
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 7669243687540485660
+    second: Interior_sageCottage_0
+  - first:
+      213: -4926305193729582383
+    second: Interior_sageCottage_1
+  - first:
+      213: -2381344964245873983
+    second: Interior_sageCottage_2
+  - first:
+      213: -1735800690733336041
+    second: Interior_sageCottage_3
+  - first:
+      213: -2877939822028009508
+    second: Interior_sageCottage_4
+  - first:
+      213: -8656471866192572065
+    second: Interior_sageCottage_5
+  - first:
+      213: 5392203110464746241
+    second: Interior_sageCottage_6
+  - first:
+      213: 8986242941798726561
+    second: Interior_sageCottage_7
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Interior_sageCottage_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 285
+        width: 336
+        height: 285
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38245615}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 64fb12c7a7c0cf24888449c6f71b487d
+      internalID: 292250499
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Interior_sageCottage_d1
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 285
+        width: 336
+        height: 285
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38245615}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4f60496b424be614cb6bb13aec09d086
+      internalID: 615176962
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Interior_sageCottage_d2
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 285
+        width: 336
+        height: 285
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38245615}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5b2430989ac006a4ea43f09069f90e13
+      internalID: 1097303048
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Interior_sageCottage_d3
+      rect:
+        serializedVersion: 2
+        x: 1008
+        y: 285
+        width: 336
+        height: 285
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38245615}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b36f5bdcf58182347be4725c71263aa9
+      internalID: -810290756
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Interior_sageCottage_d4
+      rect:
+        serializedVersion: 2
+        x: 1344
+        y: 285
+        width: 336
+        height: 285
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38245615}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5935b73715e57814abf2a388666645fe
+      internalID: -53249580
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Interior_sageCottage_d5
+      rect:
+        serializedVersion: 2
+        x: 1680
+        y: 285
+        width: 336
+        height: 285
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38245615}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2a766523912d2d949bf5f55cde03be52
+      internalID: 1541483019
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Interior_sageCottage_d6
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 336
+        height: 285
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38245615}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6d40904e7cc88304393b2a5d73f7bbb7
+      internalID: 1968440425
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Interior_sageCottage_d7
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 0
+        width: 336
+        height: 285
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38245615}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 24f9bfc1fa879134b9b359fc9b8401b0
+      internalID: 41317339
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: d16635d967dd2bc4eae4abc2f1f8b58f
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Interior_sageCottage_d0: 292250499
+      Interior_sageCottage_d1: 615176962
+      Interior_sageCottage_d2: 1097303048
+      Interior_sageCottage_d3: -810290756
+      Interior_sageCottage_d4: -53249580
+      Interior_sageCottage_d5: 1541483019
+      Interior_sageCottage_d6: 1968440425
+      Interior_sageCottage_d7: 41317339
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
