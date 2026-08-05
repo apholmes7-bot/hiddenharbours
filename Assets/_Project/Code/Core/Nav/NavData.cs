@@ -90,6 +90,18 @@ namespace HiddenHarbours.Core
 
         public static float NMToMetres(float nm) => (float)(nm * MetresPerNauticalMile);
 
+        /// <summary>
+        /// Speed over ground in metres per second → KNOTS, which is what the plotter's SOG field prints.
+        /// FLAG lead-architect: additive helper on the ADR 0025 S6 nav-maths seam.
+        ///
+        /// <para>Here rather than at the call site for the reason this class exists: the sim measures
+        /// speed in m/s (<see cref="BoatKinematics.SpeedOverGround"/>) and every instrument that shows
+        /// it wants knots, so the factor lives once beside the distance conversion it is derived
+        /// from.</para>
+        /// </summary>
+        public static float MetresPerSecondToKnots(float mps)
+            => (float)(mps * 3600.0 / MetresPerNauticalMile);
+
         /// <summary>Distance between two world points in nautical miles.</summary>
         public static float DistanceNM(Vector2 a, Vector2 b) => MetresToNM(DistanceMetres(a, b));
 

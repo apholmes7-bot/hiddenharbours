@@ -105,5 +105,46 @@ namespace HiddenHarbours.Core
             save.HullSounderPrefs.Add(row);
             return true;
         }
+
+        // ---- chartplotter preferences (per hull, sparse — absent means the owner's defaults) ----------
+        // FLAG lead-architect: additive v10 storage on the ADR 0025 S6 instrument-preferences seam. Same
+        // shape and same contract as the sounder's pair above; see ChartplotterPrefs for why the plotter
+        // keeps its own record rather than joining SounderPrefs.
+
+        /// <summary>This hull's stored chartplotter preferences, or <paramref name="fallback"/> when the
+        /// hull has none (never touched, or a null save).</summary>
+        public static ChartplotterPrefs ChartplotterPrefsFor(SaveData save, string hullId,
+                                                             in ChartplotterPrefs fallback)
+        {
+            if (save?.HullChartplotterPrefs == null || string.IsNullOrEmpty(hullId)) return fallback;
+            for (int i = 0; i < save.HullChartplotterPrefs.Count; i++)
+                if (save.HullChartplotterPrefs[i].HullId == hullId)
+                    return save.HullChartplotterPrefs[i].Prefs;
+            return fallback;
+        }
+
+        /// <summary>Write this hull's chartplotter preferences (upsert). Returns true iff the save
+        /// changed — callers use that to avoid persisting on a no-op button press.</summary>
+        public static bool SetChartplotterPrefs(SaveData save, string hullId,
+                                                in ChartplotterPrefs prefs)
+        {
+            if (save == null || string.IsNullOrEmpty(hullId)) return false;
+            save.HullChartplotterPrefs ??= new List<ChartplotterPrefsDto>();
+            var row = new ChartplotterPrefsDto(hullId, in prefs);
+            for (int i = 0; i < save.HullChartplotterPrefs.Count; i++)
+            {
+                if (save.HullChartplotterPrefs[i].HullId != hullId) continue;
+                ChartplotterPrefsDto existing = save.HullChartplotterPrefs[i];
+                // ⚠ EVERY field, or a preference silently stops persisting — the trap that made the
+                // finder's RANGE pushers move the glass and never the save. Three fields today; a
+                // fourth added above without a clause here would be the same bug again.
+                if (existing.Night == row.Night && existing.HeadUp == row.HeadUp
+                    && existing.RangeStep == row.RangeStep) return false;
+                save.HullChartplotterPrefs[i] = row;   // ChartplotterPrefsDto is a struct — write it back
+                return true;
+            }
+            save.HullChartplotterPrefs.Add(row);
+            return true;
+        }
     }
 }

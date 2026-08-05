@@ -47,7 +47,7 @@ namespace HiddenHarbours.UI.Editor
             }
         }
 
-        [MenuItem("Hidden Harbours/Dev/Bake Chartplotter Proofs (console, day + night) + profile")]
+        [MenuItem("Hidden Harbours/Dev/Bake Chartplotter Proofs (console + brow + expanded, day + night) + profile")]
         public static void Bake()
         {
             var terrain = new HarnessCoast();
@@ -85,6 +85,22 @@ namespace HiddenHarbours.UI.Editor
                 // roughly this.
                 BakeOne($"chartplotter-brow-{slug}-csharp.png", 225, 156, in st, chart,
                         waypoints, route, track);
+
+                // ---- S6 PR 3: the two sheets that show what the HOST actually puts on screen ----
+                //
+                // ⚠ The sheet above RE-RENDERS the rig at 225x156. That is not what the player sees.
+                // The flush-mount mechanism rasters the rig ONCE at native size and hands that one
+                // texture to a RawImage that the mount rect scales (HelmInstrumentMountLayout: "one
+                // raster, two presentations", and DrawSurface uploads FilterMode.Point). Re-rendering
+                // small is a different picture — the rig's own typography breaks below ~83% of native,
+                // which is precisely why the mechanism scales rather than re-renders. So these bake the
+                // native raster and POINT-SAMPLE it to each destination, which is the real pipeline.
+                var native = new DrawSurface(NavRigGeometry.ConsoleW, NavRigGeometry.ConsoleH);
+                NavRigRender.Render(native, 0, 0, NavRigGeometry.ConsoleW, NavRigGeometry.ConsoleH,
+                                    in st, chart, waypoints, route, track);
+                BakeBlit($"chartplotter-brow-{slug}-mounted-csharp.png", native, 225, 156);
+                BakeBlit($"chartplotter-expanded-{slug}-csharp.png", native,
+                         NavRigGeometry.ConsoleW * 2, NavRigGeometry.ConsoleH * 2);
             }
 
             // A head-up sheet, because a rotated chart is the thing most likely to be silently wrong.
@@ -116,6 +132,36 @@ namespace HiddenHarbours.UI.Editor
             File.WriteAllBytes(path, tex.EncodeToPNG());
             Object.DestroyImmediate(tex);
             Debug.Log($"[ChartplotterProof] Wrote {path} ({w}x{h}).");
+        }
+
+        /// <summary>
+        /// Write ONE already-rastered surface at a destination size, point-sampled — the honest model of
+        /// what the hosts do, where a single native raster is blitted into whatever rect it is mounted
+        /// in. Nearest-neighbour on purpose: <see cref="DrawSurface.ToTexture"/> uploads
+        /// <see cref="FilterMode.Point"/>, so anything smoother here would flatter the proof.
+        /// </summary>
+        private static void BakeBlit(string file, DrawSurface src, int destW, int destH)
+        {
+            if (destW <= 0 || destH <= 0) return;
+            var dst = new DrawSurface(destW, destH);
+            for (int y = 0; y < destH; y++)
+            {
+                int sy = Mathf.Clamp((int)((y + 0.5f) * src.Height / destH), 0, src.Height - 1);
+                for (int x = 0; x < destW; x++)
+                {
+                    int sx = Mathf.Clamp((int)((x + 0.5f) * src.Width / destW), 0, src.Width - 1);
+                    dst.Pixels[y * destW + x] = src.Pixels[sy * src.Width + sx];
+                }
+            }
+
+            Texture2D tex = null;
+            dst.ToTexture(ref tex);
+            if (!Directory.Exists(OutDir)) Directory.CreateDirectory(OutDir);
+            string path = Path.Combine(OutDir, file);
+            File.WriteAllBytes(path, tex.EncodeToPNG());
+            Object.DestroyImmediate(tex);
+            Debug.Log($"[ChartplotterProof] Wrote {path} ({destW}x{destH}, blitted from " +
+                      $"{src.Width}x{src.Height} — the real mount pipeline).");
         }
 
         private static void Profile(ITidalTerrain terrain, Rect bounds, Vector2 boat,
