@@ -66,6 +66,38 @@ namespace HiddenHarbours.App.Editor
         /// world Y, so this is only the pre-sort default.</summary>
         public const int FlowerSortingOrder = 3;
 
+        /// <summary>The shared lit-sprite materials (<c>HiddenHarbours/LitSprite</c>). Two of them, not
+        /// one, so the owner can tune the shore apart from the uplands without editing code — they SHIP
+        /// IDENTICAL, and diverging them is a slider, not a change here.</summary>
+        public const string LitShorePlantMaterialPath = "Assets/_Project/Art/Materials/LitShorePlant.mat";
+
+        /// <summary>See <see cref="LitShorePlantMaterialPath"/>.</summary>
+        public const string LitShrubMaterialPath = "Assets/_Project/Art/Materials/LitShrub.mat";
+
+        /// <summary>
+        /// How tall a shoreline plant must STAND (metres, from its own Def) before it is given a
+        /// projected shadow. Every shrub casts; on the shore it is a judgment call, and this is where
+        /// the call is written down rather than left in a reviewer's head. See
+        /// <see cref="SubtidalZone"/> for the other half of it.
+        ///
+        /// <para>0.6 m puts the line above the mats and below the stands: Irish moss (0.53 m), sea
+        /// lettuce, glasswort and beach pea fall out; cattails, rushes, cordgrass and bayberry fall
+        /// in.</para>
+        /// </summary>
+        public const float ShadowCasterMinHeightM = 0.6f;
+
+        /// <summary>
+        /// The one zone whose plants never cast, whatever they measure: the contract's <b>subtidal
+        /// fringe</b> (zone base 0.15 m — under water at all five baked tide states).
+        ///
+        /// <para>⚠️ <b>Algae alone is not the test, and assuming it was is a bug this nearly shipped.</b>
+        /// Eelgrass is a true vascular plant standing 1.44 m, so an algae check passes it straight
+        /// through — and it lives permanently submerged, where a hard ground shadow is both physically
+        /// wrong (the light is refracting through moving water) and drawn into the seabed band the plant
+        /// sorts into. The zone is what actually answers "is this thing ever standing in air".</para>
+        /// </summary>
+        public const string SubtidalZone = "fringe";
+
         public sealed class Result
         {
             public int Trees, Flowers, Shrubs, GrassTufts, ShorePlants;
@@ -231,6 +263,7 @@ namespace HiddenHarbours.App.Editor
 
             var root = new GameObject(ShorePlantRootName);
             var missing = new HashSet<string>();
+            var plantMat = AssetDatabase.LoadAssetAtPath<Material>(LitShorePlantMaterialPath);
 
             foreach (var site in sites)
             {
@@ -245,9 +278,25 @@ namespace HiddenHarbours.App.Editor
                 var sr = go.AddComponent<SpriteRenderer>();
                 sr.sprite = def.SpriteFor(0);          // the view replaces this on its first refresh
                 sr.sortingOrder = def.SubmergedSortingOrder;
+                if (plantMat != null) sr.sharedMaterial = plantMat;
+
+                // The binder goes on BEFORE the view, because setting Def is what publishes the sheets
+                // into it — a binder added afterwards would sit there empty until something else
+                // refreshed the plant.
+                if (def.HasLightChannels) go.AddComponent<SpriteLightBinder>();
 
                 var view = go.AddComponent<ShorePlantTideView>();
                 view.Def = def;                         // setting Def refreshes, so a built scene looks right
+
+                // ⚠️ SHADOWS ONLY WHERE THE SILHOUETTE EARNS ONE. A projected shadow is a sheared copy
+                // of the sprite laid on the ground away from the light, so it reads only where there is
+                // a silhouette to shear AND dry ground to lay it on. Three conditions, each excluding a
+                // real species: not algae (weed and kelp drape, they do not stand), not the subtidal
+                // fringe (permanently under water — this is what catches EELGRASS, which is no alga and
+                // stands 1.44 m), and tall enough to throw something. 8 of the 16 species cast.
+                if (!def.Algae && def.Zone != SubtidalZone &&
+                    def.StandingHeightM >= ShadowCasterMinHeightM)
+                    go.AddComponent<SpriteShadow>();
 
                 result.ShorePlants++;
                 result.PerZone[site.Zone] =
@@ -372,6 +421,25 @@ namespace HiddenHarbours.App.Editor
             var root = new GameObject(ShrubRootName);
             var spriteCache = new Dictionary<(string, int), Sprite>();
 
+            // The shared lit material and this kit's baked light channels. ⚠️ The shrub rig ALREADY bakes
+            // both — `<stem>_light.png` and `<stem>_calendar.png` have been committed since the kit
+            // landed; nothing here needs a re-bake, only a consumer. Loaded once per species, not per
+            // shrub: the sheets are per SPECIES and a thicket is hundreds of instances.
+            var shrubMat = AssetDatabase.LoadAssetAtPath<Material>(LitShrubMaterialPath);
+            var lightCache = new Dictionary<string, (Texture2D light, Texture2D state)>();
+            (Texture2D light, Texture2D state) LightFor(string species)
+            {
+                if (lightCache.TryGetValue(species, out var pair)) return pair;
+                string stem = sheets[species];
+                pair = (
+                    AssetDatabase.LoadAssetAtPath<Texture2D>(
+                        ShrubCatalog.SheetPath(stem, ShrubCatalog.Channel.Light)),
+                    AssetDatabase.LoadAssetAtPath<Texture2D>(
+                        ShrubCatalog.SheetPath(stem, ShrubCatalog.Channel.State)));
+                lightCache[species] = pair;
+                return pair;
+            }
+
             foreach (var site in StPetersShrubs.Scatter(
                          terrain, sheets.Keys.ToList(),
                          s => habitatOf.TryGetValue(s, out string h) ? h : null,
@@ -400,7 +468,26 @@ namespace HiddenHarbours.App.Editor
                 var sr = go.AddComponent<SpriteRenderer>();
                 sr.sprite = sprite;
                 sr.sortingOrder = ShrubSortingOrder;
+                if (shrubMat != null) sr.sharedMaterial = shrubMat;
                 go.AddComponent<YSortSprite>();
+
+                // The shared lit path. ⚠️ RED, not blue: the shrub rig's no-rim flag is the calendar
+                // sheet's R (255 on veil pixels); the shoreline plants use their tide sheet's B. Both
+                // committed contracts say the same sentence about it — "This is the branch. Read it, do
+                // not infer it." No normal sheet: this rig resolves its normals at bake, and every light
+                // term already falls back to the baked mask.
+                var (lightSheet, stateSheet) = LightFor(site.Species);
+                if (lightSheet != null)
+                    go.AddComponent<SpriteLightBinder>().SetSheets(
+                        lightSheet, normalSheet: null, rimGateSheet: stateSheet,
+                        rimGateChannel: SpriteLightBinder.RimGateChannel.Red);
+
+                // A shrub is a metre-ish mass with a real silhouette standing on open ground — the exact
+                // caster this component was written for. Contrast the GRASS below it, which gets none:
+                // thousands of tufts each pushing a sheared quad is a rule-7 violation bought for a
+                // shadow the size of the tuft. Trees are the same call the other way and will want one
+                // when the owner rules on it; shrubs are where the read is highest per caster.
+                go.AddComponent<SpriteShadow>();
 
                 result.Shrubs++;
                 result.PerShrub.TryGetValue(site.Species, out int n);

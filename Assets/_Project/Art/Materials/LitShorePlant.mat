@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Tree
-  m_Shader: {fileID: 4800000, guid: b1c2d3e4f5a6172839405a6b7c8d9e0f, type: 3}
+  m_Name: LitShorePlant
+  m_Shader: {fileID: 4800000, guid: 4fe9773925dd472fa23c3530e0a90746, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -42,10 +42,6 @@ Material:
     m_Ints: []
     m_Floats:
     - _AlphaClip: 0.01
-    - _BendY: 0.2
-    - _GustScale: 0.2
-    - _GustStrength: 0.6
-    - _IdleSway: 0.02
     - _KeyRelight: 0.75
     - _LampElevation: 0.12
     - _LampKeyStrength: 0.18
@@ -53,16 +49,10 @@ Material:
     - _LightChannels: 0
     - _LightDepthBias: 0.45
     - _LightFrontBand: 0.6
-    - _LightResponse: 0
-    - _PhaseScale: 0.12
-    - _PixelsPerUnit: 32
+    - _LightResponse: 1
     - _RimSteerAmount: 0.8
     - _SunKeyStrength: 0.16
     - _SunRimStrength: 0.28
-    - _SwayAmount: 0.12
-    - _SwaySpeed: 1.1
-    - _TrunkAnchor: 0.14
-    - _WindLean: 0.35
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _LightRimGateChannel: {r: 0, g: 0, b: 0, a: 0}

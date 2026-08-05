@@ -73,6 +73,7 @@ namespace HiddenHarbours.Art
 
         private SpriteRenderer _sr;
         private YSortSprite _ySort;
+        private SpriteLightBinder _light;
         private int _state = -1;            // -1 = nothing applied yet
         private bool _submerged;
         private bool _appliedOnce;
@@ -86,16 +87,47 @@ namespace HiddenHarbours.Art
         public ShorePlantDef Def
         {
             get => _def;
-            set { _def = value; _state = -1; Refresh(); }
+            set { _def = value; _state = -1; BindLightSheets(); Refresh(); }
         }
 
         private void OnEnable()
         {
             _sr = GetComponent<SpriteRenderer>();
             _ySort = GetComponent<YSortSprite>();
+            _light = GetComponent<SpriteLightBinder>();
             _state = -1;
+            BindLightSheets();
             Refresh();
             ShorePlantTideDriver.Register(this);
+        }
+
+        /// <summary>
+        /// Hand this species' baked light channels to the shared lit path, ONCE.
+        ///
+        /// <para><b>⭐ Why this is not part of <see cref="Refresh"/>.</b> The sheets do not change with
+        /// the tide — the tide changes which SPRITE is worn, and every tide column lives in the same
+        /// sheet at its own uv. So the light channel follows the state swap for free: pick column 3 and
+        /// the shader samples column 3's key, rim and depth, because it samples at the ALBEDO's uv. The
+        /// light and the tide state cannot disagree, which is the same guarantee the rig gives its own
+        /// five states. Binding per refresh would be hundreds of property-block writes a second buying
+        /// exactly nothing (rule 7).</para>
+        ///
+        /// <para>A plant with no binder, or a Def baked before the light pass existed, simply draws
+        /// unlit — the shore is placed and tide-correct either way.</para>
+        /// </summary>
+        private void BindLightSheets()
+        {
+            if (_light == null || _def == null) return;
+
+            // ⚠️ BLUE. The plant rig puts its no-rim flag in the tide sheet's blue channel (255 on strap
+            // pixels: blades, culms, fronds). The SHRUBS use their calendar sheet's RED. Both contracts
+            // say the same sentence about it — "This is the branch. Read it, do not infer it." — so the
+            // channel is published here rather than guessed by the shared consumer.
+            _light.SetSheets(
+                _def.LightSheet,
+                normalSheet: null,               // the plant rig resolves its normals AT BAKE
+                rimGateSheet: _def.TideStateSheet,
+                rimGateChannel: SpriteLightBinder.RimGateChannel.Blue);
         }
 
         private void OnDisable() => ShorePlantTideDriver.Unregister(this);
@@ -105,7 +137,9 @@ namespace HiddenHarbours.Art
         private void OnValidate()
         {
             if (Application.isPlaying || _sr == null) return;
+            if (_light == null) _light = GetComponent<SpriteLightBinder>();
             _state = -1;
+            BindLightSheets();
             Refresh();
         }
 

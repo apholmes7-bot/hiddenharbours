@@ -19,14 +19,16 @@
 // were all FullRect: worst deviation 0.362 of full sway near mid-canopy. Sprites driven by this shader MUST import
 // with Mesh Type Tight (the grass tufts always did). Pinned by Assets/Tests/EditMode/Art/WindBendTessellationTests.
 //
-// ⚠️ IT ALSO LIGHTS. The fragment stage consumes the rig's baked MASK and NORMAL sheets so a tree CATCHES and
-// RIMS with the colour of a light (docs/design/sprite-light-response.md) — the sun swinging its catch across
-// the crown through the day, and the boat lamp picking a bankside tree out of the dark at night. All of that
-// maths lives in the SHARED Include/SpriteLightResponse.hlsl (shoreline plants and rocks adopt the same mask
-// contract next) with a line-for-line C# twin in HiddenHarbours.Art.SpriteLightMath. Two rules that cost a day
-// if found late: the mask order is OURS (R key, G rim, B depth, A coverage — NOT the reference technique's
-// green/blue), and all three sheets are sampled through the ALBEDO's mesh and uv because the 1 px keyline ring
-// has no normal. Both are documented at length in the include's header; read it before touching frag().
+// ⚠️ IT ALSO LIGHTS, BUT IT NO LONGER OWNS THE LIGHTING. The fragment stage consumes the rig's baked MASK and
+// NORMAL sheets so a tree CATCHES and RIMS with the colour of a light (docs/design/sprite-light-response.md) —
+// the sun swinging its catch across the crown through the day, and the boat lamp picking a bankside tree out of
+// the dark at night. That block used to live HERE, which meant the only way to light a new sprite family was to
+// copy a fragment stage; it now lives in the SHARED Include/SpriteLitDecor.hlsl, which the shoreline plants, the
+// shrubs and (next) the cliffs call too. The tree is the REGRESSION PIN for that move: it binds no rim gate, so
+// the one added operation is a multiply by exactly 1.0 and its output is bit-identical. Two rules that cost a
+// day if found late: the mask order is OURS (R key, G rim, B depth, A coverage — NOT the reference technique's
+// green/blue), and every sheet is sampled through the ALBEDO's mesh and uv because the 1 px keyline ring has no
+// normal. Both are documented at length in the include headers; read them before touching frag().
 //
 // SHADER CAUTIONS honoured: NO operator characters in any [Header(...)] label or Property string (ShaderLab parse
 // error -> magenta); helpers declared BEFORE use; globals OUTSIDE the per-material CBUFFER, tunables INSIDE it;
@@ -77,8 +79,15 @@ Shader "HiddenHarbours/TreeWind"
         [NoScaleOffset] _LightMask ("Light mask sheet", 2D) = "black" {}
         // View space, y UP (the rig writes minus ny into green). No coverage on the 1 px keyline ring.
         [NoScaleOffset] _LightNormal ("Light normal sheet", 2D) = "black" {}
-        // 1 only when a renderer has bound BOTH sheets. The fallback textures are opaque black, which would
-        // read as "coverage everywhere, no normal anywhere" — a flag is honest where sniffing is not.
+        // The shared path's optional no-rim gate. THE TREE BINDS NEITHER: no tree pixel is forbidden a
+        // rim, so the selector stays (0,0,0,0), the dot is 0 and the rim passes through untouched. Both
+        // are declared here only because one UnityPerMaterial layout is shared with the plants and the
+        // shrubs, which do bind them (SpriteLitDecor.hlsl's header says which channel each rig uses).
+        [NoScaleOffset] _LightRimGate ("Rim gate sheet (unused by trees)", 2D) = "black" {}
+        [HideInInspector] _LightRimGateChannel ("Rim gate channel selector", Vector) = (0, 0, 0, 0)
+        // 1 only when a renderer has bound the LIGHT sheet. The fallback texture is opaque black, which
+        // would read as "coverage everywhere" — a flag is honest where sniffing is not. (The normal is
+        // optional on the shared path; the tree binds one and every term uses it.)
         _LightChannels ("Baked channels bound", Range(0, 1)) = 0
         // PUBLISHED, not tuned — hidden because there is nothing here for the owner to set. xy is where
         // this tree stands in world space and w is 1 once a renderer has said so. See the rootWS varying:
@@ -131,10 +140,12 @@ Shader "HiddenHarbours/TreeWind"
             #pragma multi_compile_instancing
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-            // The SHARED sprite light response — the mask contract, the camera transform, the two terms and
-            // the day/night compensation, with a line-for-line C# twin in HiddenHarbours.Art.SpriteLightMath.
-            // Tree.mat is its first adopter; the shoreline plants and rocks consume the same contract next.
-            #include "Assets/_Project/Art/Shaders/Include/SpriteLightResponse.hlsl"
+            // The SHARED lit-decor consumer: the sheet declarations, the sun/lamp globals, the per-material
+            // rows and the assembled response — which is THIS shader's own former fragment block, lifted out
+            // so the shoreline plants, the shrubs and (next) the cliffs light through the same code rather
+            // than each copying a fragment stage. It pulls in SpriteLightResponse.hlsl for the maths, whose
+            // every function has a line-for-line C# twin in HiddenHarbours.Art.SpriteLightMath.
+            #include "Assets/_Project/Art/Shaders/Include/SpriteLitDecor.hlsl"
 
             struct Attributes
             {
@@ -167,35 +178,17 @@ Shader "HiddenHarbours/TreeWind"
 
             TEXTURE2D(_MainTex);
             SAMPLER(sampler_MainTex);
-            // ⚠️ The mask and the normal are sampled at the ALBEDO's uv through the ALBEDO's mesh — they are
-            // texture lookups, never their own sprites. See SpriteLightResponse.hlsl's header: the rig's 1 px
-            // keyline ring exists in the albedo and the mask but has NO normal, so the normal's own Tight mesh
-            // is smaller and sampling through it loses the ring and flattens the outline.
-            TEXTURE2D(_LightMask);
-            SAMPLER(sampler_LightMask);
-            TEXTURE2D(_LightNormal);
-            SAMPLER(sampler_LightNormal);
+            // ⚠️ The light sheets are NOT declared here. SpriteLitDecor.hlsl owns _LightMask, _LightNormal
+            // and _LightRimGate (and the sun / day-night / boat-lamp globals) so that every consumer binds
+            // the same names — a second declaration here would be a redefinition, and a DIFFERENT name here
+            // would be a tree that quietly stopped sharing the path. They are sampled at the ALBEDO's uv
+            // through the ALBEDO's mesh; see that file's header for why the keyline ring makes that
+            // mandatory rather than merely tidy.
 
             // GLOBAL shared wind (Shader.SetGlobalVector from GrassWindBridge; NOT per-material, so OUTSIDE the
             // CBUFFER). _WindWorld = wind dir * normalized strength (0..1). Default (0,0,0,0) = no wind.
+            // Tree-only: the shared include carries the lighting globals, this one is the wind's.
             float4 _WindWorld;
-
-            // GLOBAL day/night + sun state (DayNightController). _SunDir.xy is the ground-plane direction
-            // TOWARD the sun; _SunElevation is 1 at the zenith, 0 at the horizon, negative at night;
-            // _DayNightTint is the whole-frame multiply the overlay applies AFTER this shader (ADR 0013).
-            float4 _SunDir;
-            float  _SunElevation;
-            float4 _DayNightTint;
-
-            // GLOBAL boat spotlight (BoatSpotlight, ADR 0016) — the one LOCAL light this project publishes as
-            // globals, so a sprite can read it with no per-light coupling. Params: x intensity, y range,
-            // z cos(half angle), w cos(inner angle). Params2: x edge softness, y gate threshold, z gate
-            // softness, w gate fallback when the cycle is not running.
-            float4 _BoatLightPos;
-            float4 _BoatLightDir;
-            float4 _BoatLightColor;
-            float4 _BoatLightParams;
-            float4 _BoatLightParams2;
 
             CBUFFER_START(UnityPerMaterial)
                 float4 _Color;
@@ -210,23 +203,13 @@ Shader "HiddenHarbours/TreeWind"
                 float  _GustStrength;
                 float  _PhaseScale;
                 float  _BendY;
-                float  _LightResponse;
-                float  _LightChannels;
-                float  _KeyRelight;
-                float  _RimSteerAmount;
-                float  _LightFrontBand;
-                float  _LightDepthBias;
-                float4 _SunKeyColor;
-                float  _SunKeyStrength;
-                float  _SunRimStrength;
-                float  _LampKeyStrength;
-                float  _LampRimStrength;
-                float  _LampElevation;
-                // xy = where this sprite stands in world space, w = 1 when a renderer published it.
-                // Per-RENDERER via MaterialPropertyBlock (see the rootWS varying for why it cannot be read
-                // from unity_ObjectToWorld); the material-level default (0,0,0,0) means "nobody published
-                // one" and the shader falls back to the fragment's world position.
-                float4 _SpriteRootWS;
+                // Every lighting row, from the SHARED include — the response master, the shape tunables, the
+                // sun and lamp strengths, the rim-gate selector and _SpriteRootWS (xy = where this sprite
+                // stands in world space, w = 1 when a renderer published it; it cannot be read from
+                // unity_ObjectToWorld, which is IDENTITY for every SpriteRenderer). Pasted as a macro because
+                // a CBUFFER must be one contiguous block, and pasted IDENTICALLY into the HHReflect pass
+                // below because the SRP Batcher requires one layout across a shader's passes.
+                SPRITE_LIT_DECOR_MATERIAL_ROWS
                 // ADR 0027 #8 — the reflection pass's per-renderer mirror axis + light flag.
                 // Declared HERE too so both passes share ONE UnityPerMaterial layout (the SRP
                 // Batcher requires it to be identical across a shader's passes); unused by this pass.
@@ -322,49 +305,14 @@ Shader "HiddenHarbours/TreeWind"
                 // default (_LightResponse 0) costs two scalar compares and nothing else.
                 if (_LightResponse > 1e-4 && _LightChannels > 0.5)
                 {
-                    // 🔴 BOTH sampled at the ALBEDO's uv. Same sheet dimensions, same cell layout, so one
-                    // atlas uv addresses the same texel in all three (pinned by SpriteLightResponseTests).
-                    float4 mask = SAMPLE_TEXTURE2D(_LightMask, sampler_LightMask, IN.uv);
-                    float4 nTex = SAMPLE_TEXTURE2D(_LightNormal, sampler_LightNormal, IN.uv);
-                    float3 n = SpriteLightDecodeNormal(nTex);
-
-                    // ---- the sun: PRE grade, so it dims with the world -------------------------------
-                    // Deliberate (ADR 0013 / handoff §2.3): a sunlit tree MUST go dark when the sun goes
-                    // down. Gated on elevation so the catch fades out at dusk rather than switching off.
-                    // At night the MOON reaches these trees through the day/night tint's own moonlight
-                    // lift (DayNightController), not as a third directional term here.
-                    float sunUp;
-                    float3 sunL = SpriteLightSunDirection(_SunDir.xy, _SunElevation, sunUp);
-                    float sunKey = SpriteLightKey(mask, n, sunL, _KeyRelight, _LightFrontBand, _LightDepthBias);
-                    float sunRim = SpriteLightRim(mask, n, sunL, _RimSteerAmount, _LightFrontBand, _LightDepthBias);
-                    float3 sunAdd = _SunKeyColor.rgb * sunUp
-                                  * (sunKey * _SunKeyStrength + sunRim * _SunRimStrength);
-
-                    // ---- the boat lamp: POST grade compensated, so it SURVIVES the night ----------------
-                    // The opposite call, and the whole point of the technique: a lamp rimming a tree in the
-                    // dark. An uncompensated add would survive the overlay's multiply at ~3 to 6 percent
-                    // (the owner's "the spotlight vanishes in complete dark"). Dividing by the tint cancels
-                    // it — the same pattern the water's moon glitter rides. HDR must stay ON.
-                    float lampShape = SpriteLightLampShape(
-                        _BoatLightPos.xy, _BoatLightDir.xy, IN.rootWS,
-                        _BoatLightParams.y, _BoatLightParams.z, _BoatLightParams.w, _BoatLightParams2.x);
-                    float lampGate = SpriteLightNightGate(
-                        _DayNightTint.rgb, _BoatLightParams2.y, _BoatLightParams2.z, _BoatLightParams2.w);
-                    float lampPower = max(0.0, _BoatLightParams.x) * lampShape * lampGate;
-
-                    float3 lampAdd = float3(0.0, 0.0, 0.0);
-                    if (lampPower > 1e-4)
-                    {
-                        float3 lampL = SpriteLightViewDirection(
-                            _BoatLightPos.xy - IN.rootWS, _LampElevation);
-                        float lampKey = SpriteLightKey(mask, n, lampL, _KeyRelight, _LightFrontBand, _LightDepthBias);
-                        float lampRim = SpriteLightRim(mask, n, lampL, _RimSteerAmount, _LightFrontBand, _LightDepthBias);
-                        lampAdd = _BoatLightColor.rgb * lampPower
-                                * (lampKey * _LampKeyStrength + lampRim * _LampRimStrength);
-                        lampAdd = SpriteLightCompensateForDayNight(lampAdd, _DayNightTint.rgb);
-                    }
-
-                    col.rgb += _LightResponse * (sunAdd + lampAdd);
+                    // 🔴 THE SHARED PATH. Every line this used to hold now lives in SpriteLitDecor.hlsl and
+                    // is run, unchanged, by the shoreline plants and the shrubs as well. The tree binds no
+                    // rim gate, so its selector is (0,0,0,0), the gate resolves to exactly 1.0 and the only
+                    // difference from the inline version is a multiply by the IEEE 754 multiplicative
+                    // identity — the tree's output is BIT-identical, which is the point of doing it this way
+                    // rather than leaving the original behind as a special case.
+                    SPRITE_LIT_DECOR_PARAMS(litParams)
+                    col.rgb += _LightResponse * SpriteLitDecorResponse(IN.uv, IN.rootWS, litParams);
                 }
 
                 return col;
@@ -406,6 +354,11 @@ Shader "HiddenHarbours/TreeWind"
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Assets/_Project/Art/Shaders/Include/ReflectMirror.hlsl"
+            // Included for SPRITE_LIT_DECOR_MATERIAL_ROWS alone — this pass lights nothing. Taking the rows
+            // from the SAME macro as the pass above is what makes the two UnityPerMaterial layouts identical
+            // by construction rather than by two lists someone has to keep in step (the SRP Batcher silently
+            // drops the shader when they drift). It also supplies _DayNightTint, which this pass DOES read.
+            #include "Assets/_Project/Art/Shaders/Include/SpriteLitDecor.hlsl"
 
             struct ReflectAttributes
             {
@@ -425,8 +378,8 @@ Shader "HiddenHarbours/TreeWind"
 
             TEXTURE2D(_MainTex);
             SAMPLER(sampler_MainTex);
-
-            float4 _DayNightTint;   // GLOBAL (DayNightController) — the overlay this pass compensates for
+            // _DayNightTint — the overlay this pass compensates for — comes from the shared include above,
+            // along with the rest of the lighting globals this pass does not read.
 
             CBUFFER_START(UnityPerMaterial)
                 float4 _Color;
@@ -441,26 +394,10 @@ Shader "HiddenHarbours/TreeWind"
                 float  _GustStrength;
                 float  _PhaseScale;
                 float  _BendY;
-                float  _LightResponse;
-                float  _LightChannels;
-                float  _KeyRelight;
-                float  _RimSteerAmount;
-                float  _LightFrontBand;
-                float  _LightDepthBias;
-                float4 _SunKeyColor;
-                float  _SunKeyStrength;
-                float  _SunRimStrength;
-                float  _LampKeyStrength;
-                float  _LampRimStrength;
-                float  _LampElevation;
-                // xy = where this sprite stands in world space, w = 1 when a renderer published it.
-                // Per-RENDERER via MaterialPropertyBlock (see the rootWS varying for why it cannot be read
-                // from unity_ObjectToWorld); the material-level default (0,0,0,0) means "nobody published
-                // one" and the shader falls back to the fragment's world position.
-                float4 _SpriteRootWS;
-                // ADR 0027 #8 — the reflection pass's per-renderer mirror axis + light flag.
-                // Declared HERE too so both passes share ONE UnityPerMaterial layout (the SRP
-                // Batcher requires it to be identical across a shader's passes); unused by this pass.
+                // The SAME macro the lit pass uses. Unused here — but the layouts must match exactly.
+                SPRITE_LIT_DECOR_MATERIAL_ROWS
+                // ADR 0027 #8 — this pass's per-renderer mirror axis + light flag, the two rows it
+                // actually reads.
                 float4 _HHReflectOrigin;
                 float  _HHReflectLit;
             CBUFFER_END

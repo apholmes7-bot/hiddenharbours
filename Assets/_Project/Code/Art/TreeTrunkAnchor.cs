@@ -52,19 +52,25 @@ namespace HiddenHarbours.Art
         /// <summary>The mask sheet property: R key light · G back rim · B depth · A coverage.
         /// <b>That order is OURS</b> — the reference technique this serves says green = front and
         /// blue = rim, and a snippet ported from it looks subtly wrong rather than broken. Pinned at
-        /// the bake by <c>TreeRigBakeTests</c> and at consumption by <c>SpriteLightMath</c>.</summary>
-        public const string MaskProperty = "_LightMask";
+        /// the bake by <c>TreeRigBakeTests</c> and at consumption by <c>SpriteLightMath</c>.
+        /// <para>Forwards to <see cref="SpriteLightBinding.MaskProperty"/> — the trees now share the
+        /// lit-sprite path with the shoreline plants and the shrubs, and a second copy of the property
+        /// NAME is exactly how a shared path quietly stops being shared.</para></summary>
+        public const string MaskProperty = SpriteLightBinding.MaskProperty;
 
         /// <summary>The view-space normal sheet property. Smaller in coverage than the mask: the rig's
         /// 1 px keyline ring is opaque in the albedo but has no surface normal, which is why the
         /// shader samples both through the ALBEDO's mesh and falls back to the mask where the normal
         /// is absent.</summary>
-        public const string NormalProperty = "_LightNormal";
+        public const string NormalProperty = SpriteLightBinding.NormalProperty;
 
-        /// <summary>Set to 1 only when BOTH sheets are bound. The shader's fallback textures are opaque
-        /// black, which would read as "coverage everywhere, no normal anywhere" — so the response is
-        /// gated on an explicit flag rather than on sniffing a texture that is never null.</summary>
-        public const string ChannelsProperty = "_LightChannels";
+        /// <summary>Set to 1 when the light sheet is bound. The shader's fallback textures are opaque
+        /// black, which would read as "coverage everywhere" — so the response is gated on an explicit
+        /// flag rather than on sniffing a texture that is never null.
+        /// <para>⚠️ The SHARED path requires only the light sheet; the normal is optional, because the
+        /// plant and shrub rigs bake none. <b>A tree still binds both</b> — see
+        /// <see cref="HasLightSheets"/> for why that stays a TREE rule rather than becoming everyone's.</para></summary>
+        public const string ChannelsProperty = SpriteLightBinding.ChannelsProperty;
 
         /// <summary>
         /// Where this tree STANDS, in world space (<c>xy</c>), with <c>w</c> = 1 meaning "published".
@@ -77,7 +83,7 @@ namespace HiddenHarbours.Art
         /// of them evaluated the lamp from the world origin. The renderer has to publish its own stand
         /// position — the same lesson the facet renderer learned with <c>_HullOrigin</c>.</para>
         /// </summary>
-        public const string RootProperty = "_SpriteRootWS";
+        public const string RootProperty = SpriteLightBinding.RootProperty;
 
         /// <summary>Upper bound of the shader property's own <c>Range(0, 0.8)</c>. A value past it
         /// would be silently clamped by the material inspector but NOT by a property block, so clamp
@@ -85,10 +91,6 @@ namespace HiddenHarbours.Art
         public const float MaxAnchor = 0.8f;
 
         private static readonly int AnchorId = Shader.PropertyToID(ShaderProperty);
-        private static readonly int MaskId = Shader.PropertyToID(MaskProperty);
-        private static readonly int NormalId = Shader.PropertyToID(NormalProperty);
-        private static readonly int ChannelsId = Shader.PropertyToID(ChannelsProperty);
-        private static readonly int RootId = Shader.PropertyToID(RootProperty);
 
         [Tooltip("uv.y below which this tree stays planted (its near-root flare pad / cell height). " +
                  "Comes from Trees.json via the Acadian tree builder or the Tree Paint Tool — do not " +
@@ -129,8 +131,13 @@ namespace HiddenHarbours.Art
             Apply();
         }
 
-        /// <summary>True when this tree has both baked sheets and the shader's light response can
-        /// run. Used by the tests and by tools reporting what a placed tree will actually do.</summary>
+        /// <summary>True when this tree has BOTH baked sheets. Used by the tests and by tools reporting
+        /// what a placed tree will actually do.
+        /// <para>⚠️ The shared path would light a tree off the mask alone, and deliberately does so for
+        /// the plants and shrubs whose rigs bake no normal. <b>A TREE is still held to both</b>: its rig
+        /// DOES bake a normal, every one of its tuned strengths was measured with that normal present,
+        /// and a tree that lost half its pair is a bake that went wrong — not a rig family that ships
+        /// without one. Reporting that as "lit" would hide the very thing worth catching.</para></summary>
         public bool HasLightSheets => _lightMask != null && _lightNormal != null;
 
         private void Awake() => _sr = GetComponent<SpriteRenderer>();
@@ -161,36 +168,36 @@ namespace HiddenHarbours.Art
             if (_sr == null) return;
             _block ??= new MaterialPropertyBlock();
 
-            // GET first, then modify, then SET. A SpriteRenderer keeps its own per-renderer
-            // overrides (the sprite texture among them) in this same block — handing it a FRESH
-            // block drops them, and Tree.mat's _MainTex is empty, so the tree would draw as a white
-            // rectangle. This is the difference between a working tree and a very confusing one.
+            // The LIGHT half goes through the shared writer — the same call the shoreline plants and the
+            // shrubs make, so there is exactly one piece of code that knows how to bind these properties
+            // (and one place the two MaterialPropertyBlock traps are paid for). A tree binds no rim gate:
+            // no tree pixel is forbidden a rim, so the selector stays zero and the shader's gate resolves
+            // to exactly 1.0 — the multiply is the IEEE 754 identity and the tree renders bit-identically
+            // to how it did before the path was shared.
+            //
+            // ⚠️ Both sheets or neither, for a TREE (see HasLightSheets). The shared writer would happily
+            // light off the mask alone; passing a half pair here would silently accept a broken bake.
+            // GET once, write both halves, SET once — Fill (rather than Apply) exists precisely so a
+            // caller with its own property to add does not pay for a second SetPropertyBlock.
             _sr.GetPropertyBlock(_block);
+
+            bool both = _lightMask != null && _lightNormal != null;
+            SpriteLightBinding.Fill(
+                _block,
+                both ? _lightMask : null,
+                both ? _lightNormal : null,
+                rimGate: null,
+                rimGateChannel: SpriteLightBinding.RimGateNone,
+                root: transform.position);
+
+            // The ANCHOR is the tree's own property and no part of the shared lighting contract.
             _block.SetFloat(AnchorId, Mathf.Clamp(_trunkAnchor, 0f, MaxAnchor));
 
-            // ⚠️ MaterialPropertyBlock.SetTexture throws on a null texture — it does not quietly clear
-            // the override. So bind only when both sheets are really here, and let the CHANNELS flag
-            // (which is always written) be what turns the response off. That also means clearing the
-            // sheets on a tree that had them leaves stale textures bound but inert, which is the safe
-            // direction: an inert texture costs a sampler slot, a wrong one costs a wrong look.
-            bool both = _lightMask != null && _lightNormal != null;
-            if (both)
-            {
-                _block.SetTexture(MaskId, _lightMask);
-                _block.SetTexture(NormalId, _lightNormal);
-            }
-            _block.SetFloat(ChannelsId, both ? 1f : 0f);
-
-            // Where this tree stands. w = 1 says "published", which is what lets the shader tell a real
-            // stand position from the (0,0,0,0) a material default would hand it. See RootProperty for
-            // why the shader cannot work this out for itself.
-            Vector3 root = transform.position;
-            _block.SetVector(RootId, new Vector4(root.x, root.y, 0f, 1f));
-#if UNITY_EDITOR
-            _publishedRoot = root;
-#endif
-
             _sr.SetPropertyBlock(_block);
+
+#if UNITY_EDITOR
+            _publishedRoot = transform.position;
+#endif
         }
 
         /// <summary>
@@ -213,13 +220,8 @@ namespace HiddenHarbours.Art
         /// <see cref="AnchorOn"/> — asserted against the RENDERER rather than the fields that were
         /// written to it, because "the value reached the block" is the thing that can break.
         /// </summary>
-        public static float LightChannelsOn(SpriteRenderer renderer, float fallback = -1f)
-        {
-            if (renderer == null || !renderer.HasPropertyBlock()) return fallback;
-            var block = new MaterialPropertyBlock();
-            renderer.GetPropertyBlock(block);
-            return block.HasFloat(ChannelsId) ? block.GetFloat(ChannelsId) : fallback;
-        }
+        public static float LightChannelsOn(SpriteRenderer renderer, float fallback = -1f) =>
+            SpriteLightBinding.ChannelsOn(renderer, fallback);
 
         /// <summary>
         /// Read back the stand position this renderer will hand the shader, or a <c>w</c> of 0 when
@@ -227,31 +229,13 @@ namespace HiddenHarbours.Art
         /// because "the position reached the block" is exactly what silently did not happen when the
         /// shader tried to read it from <c>unity_ObjectToWorld</c>.
         /// </summary>
-        public static Vector4 RootOn(SpriteRenderer renderer)
-        {
-            if (renderer == null || !renderer.HasPropertyBlock()) return Vector4.zero;
-            var block = new MaterialPropertyBlock();
-            renderer.GetPropertyBlock(block);
-            return block.HasVector(RootId) ? block.GetVector(RootId) : Vector4.zero;
-        }
+        public static Vector4 RootOn(SpriteRenderer renderer) => SpriteLightBinding.RootOn(renderer);
 
         /// <summary>The texture this renderer will hand <see cref="MaskProperty"/>, or null.</summary>
-        public static Texture MaskOn(SpriteRenderer renderer)
-        {
-            if (renderer == null || !renderer.HasPropertyBlock()) return null;
-            var block = new MaterialPropertyBlock();
-            renderer.GetPropertyBlock(block);
-            return block.HasTexture(MaskId) ? block.GetTexture(MaskId) : null;
-        }
+        public static Texture MaskOn(SpriteRenderer renderer) => SpriteLightBinding.MaskOn(renderer);
 
         /// <summary>The texture this renderer will hand <see cref="NormalProperty"/>, or null.</summary>
-        public static Texture NormalOn(SpriteRenderer renderer)
-        {
-            if (renderer == null || !renderer.HasPropertyBlock()) return null;
-            var block = new MaterialPropertyBlock();
-            renderer.GetPropertyBlock(block);
-            return block.HasTexture(NormalId) ? block.GetTexture(NormalId) : null;
-        }
+        public static Texture NormalOn(SpriteRenderer renderer) => SpriteLightBinding.NormalOn(renderer);
 
         /// <summary>
         /// The shader's own canopy weight at a height <paramref name="uvY"/> up the cell:

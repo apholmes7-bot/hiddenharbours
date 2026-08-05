@@ -26,6 +26,9 @@ namespace HiddenHarbours.Tests.Art.EditMode
         private const string TreeShaderPath = "Assets/_Project/Art/Shaders/HiddenHarboursTreeWind.shader";
         private const string TreeMaterialPath = "Assets/_Project/Art/Materials/Tree.mat";
         private const string LightIncludePath = "Assets/_Project/Art/Shaders/Include/SpriteLightResponse.hlsl";
+        /// <summary>The SHARED consumer the tree now goes through — the assembled response, which used to
+        /// live inside this shader's own fragment stage. It pulls in <see cref="LightIncludePath"/>.</summary>
+        private const string DecorIncludePath = "Assets/_Project/Art/Shaders/Include/SpriteLitDecor.hlsl";
 
         [Test]
         public void TreeShader_CompilesItsShippedVariant_NoShaderErrors()
@@ -132,12 +135,25 @@ namespace HiddenHarbours.Tests.Art.EditMode
         {
             Assert.IsTrue(System.IO.File.Exists(LightIncludePath),
                 $"The shared sprite-light include is missing from '{LightIncludePath}'.");
+            Assert.IsTrue(System.IO.File.Exists(DecorIncludePath),
+                $"The shared lit-decor include is missing from '{DecorIncludePath}'.");
 
             string shader = System.IO.File.ReadAllText(TreeShaderPath);
-            StringAssert.Contains(LightIncludePath, shader,
-                "HiddenHarboursTreeWind must include the SHARED response, not carry a private copy — " +
-                "a second copy is exactly the duplicated-maths problem the design doc's HLSL-twin " +
+            // ⚠️ The tree reaches the maths through the SHARED CONSUMER now, not directly. That is the
+            // generalization: the assembled response used to live in this shader's fragment stage, which
+            // meant lighting a second rig family required copying a fragment stage. Asserting the tree
+            // includes SpriteLightResponse directly would now fail — and would be asking for the very
+            // arrangement this work removed.
+            StringAssert.Contains(DecorIncludePath, shader,
+                "HiddenHarboursTreeWind must include the SHARED lit-decor response, not carry a private " +
+                "copy — a second copy is exactly the duplicated-maths problem the design doc's HLSL-twin " +
                 "discipline exists to prevent.");
+
+            string decor = System.IO.File.ReadAllText(DecorIncludePath);
+            StringAssert.Contains(LightIncludePath, decor,
+                "The shared lit-decor consumer no longer includes the shared MATHS. The two files are a " +
+                "pair: SpriteLightResponse holds the curves (each with a C# twin), SpriteLitDecor holds " +
+                "the sampling and the assembly.");
 
             // 🔴 The channel order is the one thing a reader of this file must not have to guess: every
             // public description of the technique says green = front, blue = rim, and ours is not that.

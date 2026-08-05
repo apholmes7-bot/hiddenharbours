@@ -67,6 +67,19 @@ namespace HiddenHarbours.Art
                  "that disagrees with the pixels makes plants wear the wrong tide.")]
         public float[] TideLadderOverM = new float[ShorePlantTideMath.TideStates];
 
+        [Header("Baked light channels (the shared lit-sprite path)")]
+        [Tooltip("This species' _light sheet: R key · G back rim · B depth · A coverage. The SAME " +
+                 "dimensions and cell layout as the albedo sheet, so the tide column the view picks " +
+                 "addresses its own light data — the channel follows the state swap instead of " +
+                 "fighting it. Written by the Def builder; the rig bakes no normal sheet (it resolves " +
+                 "them at bake), and the shared path treats that as a supported case, not a gap.")]
+        public Texture2D LightSheet;
+
+        [Tooltip("This species' _tide state sheet. Only ONE channel of it is read at runtime: BLUE is " +
+                 "255 on STRAP pixels (blades, culms, fronds, sheets) and forbids a back rim there. " +
+                 "The rig's own contract calls that 'the branch — read it, do not infer it'.")]
+        public Texture2D TideStateSheet;
+
         [Header("Rendering")]
         [Tooltip("Sorting order while SUBMERGED. Must sit BELOW the Sea plane (−5) and ABOVE the " +
                  "painted seabed (−21…−18): that gap is where the water's own shallow transparency " +
@@ -81,7 +94,11 @@ namespace HiddenHarbours.Art
         public Sprite SpriteFor(int state) =>
             TideSprites != null && state >= 0 && state < TideSprites.Length ? TideSprites[state] : null;
 
-        /// <summary>True when this Def carries everything the runtime view needs.</summary>
+        /// <summary>True when this Def carries everything the runtime view needs.
+        /// <para>⚠️ The light sheets are deliberately NOT required here. A plant with no light channel
+        /// draws exactly as it did before this path existed — unlit, but placed, tide-correct and
+        /// visible. Making them mandatory would turn a missing bake into an EMPTY SHORE, which is a far
+        /// worse failure than a flat one; <see cref="HasLightChannels"/> is how a caller asks.</para></summary>
         public bool IsComplete()
         {
             if (TideSprites == null || TideSprites.Length != ShorePlantTideMath.TideStates) return false;
@@ -89,5 +106,10 @@ namespace HiddenHarbours.Art
             for (int i = 0; i < TideSprites.Length; i++) if (TideSprites[i] == null) return false;
             return true;
         }
+
+        /// <summary>True when this Def can light through the shared path. The tide state sheet is
+        /// optional even here: without it the plant lights but every pixel may rim, which is a look
+        /// decision the bake already guards (mask G is 0 on strap pixels) rather than a broken one.</summary>
+        public bool HasLightChannels => LightSheet != null;
     }
 }
