@@ -1016,12 +1016,28 @@ namespace HiddenHarbours.Core
                  "(the pre-retune look).")]
         [Range(0f, 1f)] public float EnvelopeBandStrength;
 
+        [Tooltip("Is the DISPLACED sea the one the player sees? ON (the default since 2026-08-05) " +
+                 "makes the vertex-displaced surface the game's water and hides the flat sprite face; " +
+                 "OFF restores the flat face exactly, which is what shipped through ADR 0023 phase 3. " +
+                 "The dev O key still flips it live either way — this only decides which side a scene " +
+                 "STARTS on, so the owner can compare without a rebuild. Edit mode is unaffected and " +
+                 "always shows the flat face: the displaced path is a Play instrument, and the coast " +
+                 "is designed against the flat water (ADR 0014).")]
+        public bool DefaultOn;
+
         /// <summary>
         /// The ADR-cited defaults: ×1.5 exaggeration (the readability sweet spot, shear-free at the
         /// coast), the proven tear-safe band coefficient (<see cref="ShoreFadeMath.RecommendedBandCoefficient"/>),
         /// full envelope salience with the spike-tuned 0.62 threshold, and the production 0.35 band
         /// blend. Pinned equal to the shader property defaults and the Art twin constants by
         /// <c>DisplacedWaterConfigTests</c>.
+        ///
+        /// <para><b><see cref="DefaultOn"/> is true</b> as of 2026-08-05 — the displaced sea becomes
+        /// the game's water. ⚠️ That default reaches a SCENE only if the config asset actually
+        /// serializes the key: a struct field absent from the YAML deserializes to <c>false</c>, not
+        /// to this property, so <c>GameConfig.asset</c> carries <c>DefaultOn: 1</c> explicitly and
+        /// <c>DisplacedDefaultTests</c> asserts that it does. This is the standing "the asset lags the
+        /// code" trap in its most dangerous shape — a silent revert that looks like nothing changed.</para>
         /// </summary>
         public static DisplacedWaterSettings Default => new DisplacedWaterSettings
         {
@@ -1030,6 +1046,7 @@ namespace HiddenHarbours.Core
             CapSalienceStrength = 1f,
             CapEnvelopeThreshold = 0.62f,
             EnvelopeBandStrength = 0.35f,
+            DefaultOn = true,
         };
     }
 
