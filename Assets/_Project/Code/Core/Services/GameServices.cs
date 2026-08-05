@@ -299,6 +299,18 @@ namespace HiddenHarbours.Core
         public static TelltaleSettings Telltale =>
             Config != null ? Config.Telltale : TelltaleSettings.Default;
 
+        /// <summary>The mesh fleet's keyline gate (ADR 0031 — the keyline retirement): does the
+        /// fullscreen resolve still flood the legacy 1 px outline around every mesh hull? Same contract
+        /// as <see cref="WaveField"/>, including the <c>Config != null</c> discipline (never
+        /// <c>?.</c>/<c>??</c> on a <c>UnityEngine.Object</c>). Falls back to
+        /// <see cref="GameConfig.DefaultHullKeylineFlood"/> — <b>OFF, the retired-outline style</b> — so
+        /// an unwired scene ships the new look, never the legacy one. Read per camera per frame by
+        /// <c>IsoFacetHullFeature</c>; the GPU oracle fixtures force it ON through this same dial so the
+        /// resolve's rig-verbatim claim stays pinned (ADR 0022 phase 3 / ADR 0031).
+        /// FLAG lead-architect: new Core contract (the ADR 0031 world-art style seam).</summary>
+        public static bool HullKeylineFlood =>
+            Config != null ? Config.HullKeylineFlood : GameConfig.DefaultHullKeylineFlood;
+
         /// <summary>
         /// Rebuilds a <see cref="CatchItem"/> from a stable species id — the save-restore's species
         /// resolver (M1 §7.3: the save carries the reference, the Def's stats re-cache at load).

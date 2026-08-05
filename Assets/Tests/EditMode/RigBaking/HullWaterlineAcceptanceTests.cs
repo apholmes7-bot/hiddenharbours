@@ -95,6 +95,33 @@ namespace HiddenHarbours.Tests.RigBaking
         const int DailySeaMinCrestP90RunPx = 2;
         const int DailySeaMinSubmergedPx = 300;
 
+        GameConfig _keylineConfig;
+        GameConfig _prevConfig;
+
+        /// <summary>ADR 0031: production ships the mesh fleet's keyline OFF, but every pinned
+        /// number in this fixture was measured WITH it — the silhouette's inked extent includes
+        /// the 1 px ring, and <see cref="Measure"/>'s waterline accounting explicitly counts the
+        /// emergent keyline at a run's top as covered planking. Forcing the legacy look through
+        /// the owner's real dial keeps the #263 pins bit-stable rather than re-baselining them;
+        /// the waterline claim itself is gate-independent (the z-test happens in the facet MRT,
+        /// before the resolve ever runs).</summary>
+        [SetUp]
+        public void ForceTheKeylineOn()
+        {
+            _prevConfig = GameServices.Config;
+            _keylineConfig = ScriptableObject.CreateInstance<GameConfig>();
+            _keylineConfig.HullKeylineFlood = true;
+            GameServices.Config = _keylineConfig;
+        }
+
+        [TearDown]
+        public void RestoreTheConfig()
+        {
+            GameServices.Config = _prevConfig;
+            if (_keylineConfig != null) Object.DestroyImmediate(_keylineConfig);
+            _keylineConfig = null;
+        }
+
         static RigMeshData s_Lobster;
         static Mesh s_LobsterMesh;
         static RigMeshData s_Dragger;

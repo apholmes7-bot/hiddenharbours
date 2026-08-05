@@ -6,6 +6,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 using HiddenHarbours.Art;
+using HiddenHarbours.Core;
 using HiddenHarbours.Tools.RigBaking;
 using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
@@ -41,9 +42,39 @@ namespace HiddenHarbours.Tests.RigBaking
     /// phase-3-shaped defect classes (a convention flipped end to end), each proven to land far
     /// above that floor — a single interior facet's winding is phase 2's catch, at exact
     /// arithmetic, not this fixture's.</para>
+    ///
+    /// <para><b>ADR 0031 — every oracle render here FORCES the keyline gate ON.</b> Production
+    /// ships the 1 px keyline OFF (the outline is retired from the world style), but the oracle
+    /// this fixture compares against — <see cref="RigMeshReferenceRasterizer"/> — draws it, and
+    /// the claim being pinned is that the pass stays VERBATIM-CAPABLE of the rig look. So
+    /// <see cref="ForceTheKeylineOn"/> flips the real dial (<c>GameServices.Config</c>, the same
+    /// seam GameRoot wires) before every test and restores it after. The gate's own pixel
+    /// acceptance is <see cref="KeylineGate_Off_RemovesTheFloodAndOnlyTheFlood"/>.</para>
     /// </summary>
     public class IsoFacetUrpPassTests
     {
+        GameConfig _keylineConfig;
+        GameConfig _prevConfig;
+
+        /// <summary>ADR 0031: the oracle draws the keyline, so these renders must too — forced
+        /// through the owner's real dial, never a parallel test-only path (the guard-rot lesson:
+        /// a probe that bypasses the production mechanism proves nothing about it).</summary>
+        [SetUp]
+        public void ForceTheKeylineOn()
+        {
+            _prevConfig = GameServices.Config;
+            _keylineConfig = ScriptableObject.CreateInstance<GameConfig>();
+            _keylineConfig.HullKeylineFlood = true;
+            GameServices.Config = _keylineConfig;
+        }
+
+        [TearDown]
+        public void RestoreTheConfig()
+        {
+            GameServices.Config = _prevConfig;
+            if (_keylineConfig != null) Object.DestroyImmediate(_keylineConfig);
+            _keylineConfig = null;
+        }
         /// <summary>Everything renders on this otherwise-unused layer — EditMode fixtures share a
         /// scene, and other tests' leftovers must not photobomb the readback (learned by the
         /// sprite-matrix guard).</summary>
@@ -228,6 +259,60 @@ namespace HiddenHarbours.Tests.RigBaking
                 $"Translating hull+camera together changed {diff} — the dither (or something " +
                 "else) is pinned to the SCREEN, not the hull frame. This is the 13–16% crawl " +
                 "class ADR 0022 measured; in motion it shimmers on every moving boat.");
+        }
+
+        // ------------------------------------------------------------------ the ADR 0031 gate
+
+        /// <summary>
+        /// ADR 0031's pixel acceptance: turning the keyline gate OFF must remove EXACTLY rule 2 —
+        /// the flooded outline pixels — and nothing else. Every pixel inked in both renders must be
+        /// BYTE-IDENTICAL (the hull's colour and rule 1's depth-edge darkening are outside the
+        /// gate), no pixel may appear that ON didn't draw, and the outline must genuinely vanish —
+        /// a gate that stops gating renders the same cell twice and fails the removed-count here.
+        /// The dial is flipped mid-scene through the owner's real config, proving the per-frame
+        /// read end to end. CI has no GPU and skips this loudly; the headless halves of the gate
+        /// (dial → material, shader branch, sabotage arms) live in IsoFacetKeylineGateTests.
+        /// </summary>
+        [Test]
+        public void KeylineGate_Off_RemovesTheFloodAndOnlyTheFlood()
+        {
+            RequireAGraphicsDevice();
+            EnsureLobster();
+
+            var view = new RigViewOptions(0, s_Lobster.DefaultElev);
+            using var scene = new HullScene(s_Lobster, s_LobsterMesh);
+            scene.SetPose(view);
+            byte[] on = scene.Render();               // [SetUp] forced the gate ON
+
+            _keylineConfig.HullKeylineFlood = false;  // the owner's dial, mid-play — re-read per frame
+            byte[] off = scene.Render();
+            _keylineConfig.HullKeylineFlood = true;
+
+            int removed = 0, appeared = 0, changedSolid = 0;
+            for (int i = 0; i < on.Length; i += 4)
+            {
+                bool inkedOn = on[i + 3] > 0, inkedOff = off[i + 3] > 0;
+                if (inkedOff && !inkedOn) appeared++;
+                else if (inkedOn && !inkedOff) removed++;
+                else if (inkedOn &&
+                         (on[i] != off[i] || on[i + 1] != off[i + 1] ||
+                          on[i + 2] != off[i + 2] || on[i + 3] != off[i + 3]))
+                    changedSolid++;
+            }
+            Debug.Log($"[iso-facet-urp] keyline gate off: removed {removed} px, " +
+                      $"solid changed {changedSolid} px, appeared {appeared} px");
+
+            Assert.AreEqual(0, changedSolid,
+                $"{changedSolid} px inked in BOTH renders changed when the gate closed — the gate " +
+                "must not touch one solid pixel: the hull's own colour and rule 1's depth-edge " +
+                "darkening are outside it (ADR 0031's whole promise).");
+            Assert.AreEqual(0, appeared,
+                $"{appeared} px were drawn with the gate OFF that ON never drew — the gate can " +
+                "only remove the flood, never add anything.");
+            Assert.Greater(removed, 0,
+                "The gate did NOTHING: ON and OFF rendered the same cell, so the owner's dial is " +
+                "not reaching the shader. (This is the gate-stopped-gating direction; its headless " +
+                "twin is IsoFacetKeylineGateTests.AGateThatStopsGating_IsCaught.)");
         }
 
         // ------------------------------------------------------------------ sorting

@@ -280,6 +280,23 @@ namespace HiddenHarbours.Core
                  "and boat and sea stay on the same water, never retuned apart.")]
         public DisplacedWaterSettings DisplacedWater = DisplacedWaterSettings.Default;
 
+        /// <summary>The keyline gate's ship default — <b>OFF</b> (ADR 0031: the 1 px outline is retired
+        /// from the world-art style, and the mesh fleet is the first family to go without it). A const so
+        /// consumers with no config wired (EditMode, a bare test rig) resolve the SAME style the shipped
+        /// game does — and because <c>GameConfig.asset</c> lags the code, the code default here is what
+        /// actually ships.</summary>
+        public const bool DefaultHullKeylineFlood = false;
+
+        [Header("World-art style (ADR 0031 — the keyline retirement)")]
+        [Tooltip("Draw the legacy 1 px keyline around every MESH hull (the fullscreen flood ported from " +
+                 "the rigs — ADR 0022 phase 3, rule 2)? OFF is the shipped style since ADR 0031: the " +
+                 "outline is retired, and a hull's edge is carried by its own shaded turning faces. ON " +
+                 "restores yesterday's look byte-for-byte for an A/B. This gates ONLY the flood — the " +
+                 "depth-edge darkening that keeps overlapping parts of one boat readable always runs. " +
+                 "Baked SPRITE sheets (buildings, trees, props) still carry drawn keylines until their " +
+                 "families are naturally redone; that mixed period is accepted (ADR 0031, Half B skipped).")]
+        public bool HullKeylineFlood = DefaultHullKeylineFlood;
+
         [Header("Depth drop (Rod Fishing v2 — the weighted rig's fall + the slack bottom tell)")]
         [Tooltip("The depth-fishing game's tunables (drop a weighted rig, count the fall, feel the floor): " +
                  "how fast a rig sinks per kilogram (heavier = faster — the whole 'count the fall' read), " +
