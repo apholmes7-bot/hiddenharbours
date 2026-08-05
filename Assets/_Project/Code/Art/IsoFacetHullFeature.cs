@@ -169,9 +169,15 @@ namespace HiddenHarbours.Art
             // it is NOT a description of the shipped state, and must not be rewritten into one. The
             // reflections comment above was corrected for exactly that drift (#380): it claimed
             // "nothing in the shipped scenes carries a ReflectiveObject", which was true the day it
-            // was written and false the day §26.10 opted the fleet in. AS OF THIS COMMIT no scene
-            // carries a FoamInjector and Water.mat ships _WakeFoamStrength 0 — but that is a fact
-            // about today's content, not about this gate, and the owner's dial-in will end it.
+            // was written and false the day §26.10 opted the fleet in.
+            //
+            // ⚠️ AND THE SAME CORRECTION IS NOW DUE HERE. Until 2026-08-05 this said no scene carried
+            // a FoamInjector and Water.mat shipped _WakeFoamStrength 0 — true when written, and both
+            // halves ended together in the foam realness pass: IsoFacetHullPresentationService.Install
+            // now fits an injector to every mesh hull it makes (beside MakeReflective, same argument),
+            // and all nine water materials carry a live _WakeFoamStrength. So a live harbour DOES
+            // record this pass, deliberately. The idle branch below still exists for scenes with no
+            // hull on the water — which is a statement about this gate, not about the content.
             bool foam = FoamInjectionRegistry.ShouldRun;
             if (!foam)
                 FoamInjectionRegistry.BindIdle();   // never leave a frozen wake bound on the sea

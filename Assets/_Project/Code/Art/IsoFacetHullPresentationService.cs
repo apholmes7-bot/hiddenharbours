@@ -45,7 +45,44 @@ namespace HiddenHarbours.Art
             if (renderer == null) renderer = host.AddComponent<IsoFacetHullRenderer>();
             renderer.Configure(ToSetup(def));
             MakeReflective(renderer);
+            MakeChurn(host, def);
             return renderer;
+        }
+
+        /// <summary>
+        /// (ADR 0027 #6) Make this hull CHURN the advected foam buffer.
+        ///
+        /// <para><b>Why it lives here, beside <see cref="MakeReflective"/>.</b> Same argument, same
+        /// place: the fleet is constructed at runtime from Defs rather than authored into a scene, so
+        /// "wire it where the thing is made" lands in this service — and #383 shipped the buffer, the
+        /// injector, the advect pass and the shader read with <b>nothing attached to anything</b>. No
+        /// prefab and no scene carried a <see cref="FoamInjector"/>, so the buffer had no source at
+        /// all; it was not merely dialled down, it was unsourced. That is half of why the owner still
+        /// could not see foam that behaves like foam (2026-08-05). The other half was
+        /// <c>_WakeFoamStrength</c> 0, now dialled in on all nine water materials.</para>
+        ///
+        /// <para><b>On the HOST, not the overlay</b> (the opposite of the reflector): the injector reads
+        /// <c>transform.position</c> as the hull's position on the water and derives speed through the
+        /// water from it. The host is the physics root that actually moves; the overlay quad
+        /// counter-rotates and is the wrong transform to ask.</para>
+        ///
+        /// <para><b>The churned band is DATA, not a constant</b> (rule 6): its half-width comes from the
+        /// def's <c>WatertightHalfBeamMeters</c> — the hull's own half-beam, already authored per hull
+        /// and already the number the injector's tooltip describes ("roughly the hull's beam — a dory
+        /// wants ~0.9"; the dory's def says 0.85). So a dory lays a narrow ribbon and a tanker a broad
+        /// one, with no per-hull tuning table to keep in sync. A def that never had a half-beam
+        /// authored (0) keeps the injector's own serialized default rather than collapsing the band to
+        /// nothing.</para>
+        ///
+        /// <para>Zero-cost-when-idle survives: the injector unregisters the moment the hull is off the
+        /// water, and <see cref="IsoFacetHullFeature"/> records no pass when nothing is registered.</para>
+        /// </summary>
+        static void MakeChurn(GameObject host, HullMeshDef def)
+        {
+            var injector = host.GetComponent<FoamInjector>();
+            if (injector == null) injector = host.AddComponent<FoamInjector>();
+            if (def != null && def.WatertightHalfBeamMeters > 0f)
+                injector.ConfigureRadius(def.WatertightHalfBeamMeters);
         }
 
         /// <summary>
