@@ -30,5 +30,7 @@ MonoBehaviour:
   - 0.65
   - 1.65
   - 2.45
+  LightSheet: {fileID: 2800000, guid: d23caa478fdb3ec096eed49f9a112de6, type: 3}
+  TideStateSheet: {fileID: 2800000, guid: 4078212079bf850477c8d15704debe00, type: 3}
   SubmergedSortingOrder: -8
   EmergentSortingOrder: 3

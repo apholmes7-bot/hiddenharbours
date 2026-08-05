@@ -96,11 +96,26 @@ namespace HiddenHarbours.Art.Editor
                 var sprites = LoadTideRow(sheetPath, stem, out string why);
                 if (sprites == null) { problems.Add($"{key}: {why}"); continue; }
 
-                if (BuildOne(key, entry, contract, sprites)) built++;
+                if (BuildOne(key, entry, contract, sprites, stem)) built++;
             }
 
             AssetDatabase.SaveAssets();
             return built;
+        }
+
+        /// <summary>
+        /// One baked DATA sheet as a whole texture, or null when it was never baked.
+        ///
+        /// <para>⚠️ <b>A Texture2D, not a Sprite, and that is the contract.</b> The shared lit path
+        /// samples every sheet at the ALBEDO's uv through the ALBEDO's mesh — so these are texture
+        /// lookups, never their own sprites. A sliced sheet imported Tight has a SMALLER mesh than the
+        /// albedo (the keyline ring has coverage but no relief), and sampling through it drops the
+        /// outline. Loading the texture asset side-steps the whole question.</para>
+        /// </summary>
+        public static Texture2D LoadSheet(string stem, ShorePlantCatalog.Channel channel)
+        {
+            string path = ShorePlantCatalog.SheetPath(stem, channel);
+            return File.Exists(path) ? AssetDatabase.LoadAssetAtPath<Texture2D>(path) : null;
         }
 
         /// <summary>
@@ -136,7 +151,7 @@ namespace HiddenHarbours.Art.Editor
         }
 
         static bool BuildOne(string key, ShorePlantCatalog.SpeciesEntry entry,
-                             ShorePlantCatalog.Contract contract, Sprite[] sprites)
+                             ShorePlantCatalog.Contract contract, Sprite[] sprites, string stem)
         {
             string assetPath = $"{DefFolder}/{key}.asset";
             var def = AssetDatabase.LoadAssetAtPath<ShorePlantDef>(assetPath);
@@ -165,6 +180,21 @@ namespace HiddenHarbours.Art.Editor
             def.Algae = entry.Algae;
             def.TideSprites = sprites;
             def.TideLadderOverM = Ladder(contract, def.ZoneBaseM);
+
+            // The baked light channels, as whole TEXTURES rather than sprites. That is not a shortcut:
+            // the shared lit path samples every sheet at the ALBEDO's uv through the ALBEDO's mesh, so
+            // giving these their own sprites would give them their own (Tight, and therefore SMALLER)
+            // meshes and lose the outline. See SpriteLitDecor.hlsl's header.
+            //
+            // A species whose sheets were baked before the light pass existed simply has none, and the
+            // plant draws flat — LoadSheet returns null and the Def stays valid (see IsComplete).
+            def.LightSheet = LoadSheet(stem, ShorePlantCatalog.Channel.Light);
+            def.TideStateSheet = LoadSheet(stem, ShorePlantCatalog.Channel.State);
+            if (def.LightSheet == null)
+                Debug.LogWarning(
+                    $"[ShorePlantDefBuilder] {key}: no '{ShorePlantCatalog.SheetPath(stem, ShorePlantCatalog.Channel.Light)}' " +
+                    "on disk, so this species will draw UNLIT. Re-bake the kit (Hidden Harbours ▸ Dev ▸ " +
+                    "Bake Shore Plant Sheets) to emit the light channel.");
 
             if (created) AssetDatabase.CreateAsset(def, assetPath);
             else EditorUtility.SetDirty(def);

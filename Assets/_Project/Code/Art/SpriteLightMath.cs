@@ -330,5 +330,34 @@ namespace HiddenHarbours.Art
                    * DepthAttenuation(maskDepth, depthBias)
                    * Mathf.Clamp01(maskCoverage);
         }
+
+        /// <summary>
+        /// How much a texel is FORBIDDEN to rim, 0..1 — the twin of <c>SpriteLitDecorNoRim</c> in
+        /// <c>Include/SpriteLitDecor.hlsl</c>, and the one piece of the shared path that did not exist
+        /// when only the trees consumed it.
+        ///
+        /// <para><b>Why it exists.</b> A tree is all body and wood: every pixel of it may catch a back
+        /// rim. The rig families that came after are not. The shoreline plants bake blades, culms and
+        /// fronds as <i>strap</i> material and the shrubs bake a <i>veil</i>, and both committed
+        /// contracts say the same thing in the same words about their state sheet — <i>"This is the
+        /// branch. Read it, do not infer it."</i> A blade of eelgrass given a tree trunk's silhouette
+        /// rim reads as a mistake, because it is one.</para>
+        ///
+        /// <para><b>Why a selector and not a channel index.</b> The two rigs put the flag in DIFFERENT
+        /// channels — plants in their tide sheet's blue, shrubs in their calendar sheet's red — so the
+        /// consumer must be told, not left to guess. A one-hot selector dotted against the texel is that
+        /// instruction in the form the shader can act on without a per-pixel branch, and it is exact
+        /// for a single channel.</para>
+        ///
+        /// <para><b>Belt and braces, deliberately.</b> Both contracts ALSO state that the rim channel is
+        /// already identically 0 on those pixels, so an honest bake needs no gate at all. The gate costs
+        /// one dot and one multiply, and it makes a bake that regressed — a channel swapped, a re-bake
+        /// that forgot — fail safe instead of shipping a wrong rim.</para>
+        /// </summary>
+        /// <param name="gateTexel">The state-sheet texel, channels in 0..1.</param>
+        /// <param name="selector">The one-hot channel selector. <see cref="Vector4.zero"/> means no gate
+        /// is bound, which is the tree and which returns 0 (every pixel may rim) for any texel.</param>
+        public static float RimGateFlag(Vector4 gateTexel, Vector4 selector) =>
+            Mathf.Clamp01(Vector4.Dot(gateTexel, selector));
     }
 }
