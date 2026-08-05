@@ -35,6 +35,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
         readonly object _seaOwner = new object();
         GameObject _root;
+        GameConfig _config;
 
         sealed class ScriptedClock : IGameClock
         {
@@ -72,6 +73,8 @@ namespace HiddenHarbours.Tests.PlayMode
             GameServices.Reset();
             if (_root != null) Object.DestroyImmediate(_root);
             _root = null;
+            if (_config != null) Object.DestroyImmediate(_config);
+            _config = null;
         }
 
         [UnityTest]
@@ -97,6 +100,17 @@ namespace HiddenHarbours.Tests.PlayMode
             var clock = new ScriptedClock();
             GameServices.Clock = clock;
             GameServices.Environment = new ScriptedSea();
+
+            // Pin the ADR 0023 laws on the STORM-OFF side (ADR 0018 B2.5): at sea 0.75 the weight
+            // filter would sit a gravity-capped spring between the surface and the ride, and this
+            // fixture's frozen-clock differencing needs the ride surface-exact. B2.5's own negative
+            // control guarantees OFF is byte-identical to pre-B2.5; the storm-ON laws live in
+            // StormSeakeepingReadTests.
+            _config = ScriptableObject.CreateInstance<GameConfig>();
+            StormRockSettings storm = _config.StormRock;
+            storm.Enabled = false;
+            _config.StormRock = storm;
+            GameServices.Config = _config;
 
             _root = new GameObject("LobsterBoat");
             var rig = BoatHullSkinner.Apply(_root, visual, boat: null);

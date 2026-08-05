@@ -178,6 +178,14 @@ namespace HiddenHarbours.Core
         public static WaveFieldAnimatorSettings WaveFieldAnimator =>
             Config != null ? Config.WaveFieldAnimator : WaveFieldAnimatorSettings.Default;
 
+        /// <summary>The storm seakeeping-read policy (ADR 0018 B2.5), same contract as
+        /// <see cref="WaveField"/> including the <c>Config != null</c> discipline and the
+        /// resolved-per-read liveness (the owner drags the storm sliders in play and the hull answers
+        /// on the next frame). LOOK-side only: it scales the visual rock and weights the visual ride;
+        /// the B3 FORCE path (<see cref="GameConfig.Seakeeping"/>) is a separate, untouched policy.</summary>
+        public static StormRockSettings StormRock =>
+            Config != null ? Config.StormRock : StormRockSettings.Default;
+
         /// <summary>The wind-fetch model's tunables (ADR 0027 #1), same contract as
         /// <see cref="WaveField"/> including the <c>Config != null</c> discipline. Read by BOTH the
         /// shader bridge (which publishes them as globals) and every sim consumer that samples the

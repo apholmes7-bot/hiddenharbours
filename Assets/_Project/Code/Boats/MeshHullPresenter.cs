@@ -100,6 +100,12 @@ namespace HiddenHarbours.Boats
         }
 
         /// <inheritdoc/>
+        public void SetStormRock(float amplitudeScale, float extraRollDegrees, float extraPitchDegrees)
+        {
+            if (_driver != null) _driver.SetStormRock(amplitudeScale, extraRollDegrees, extraPitchDegrees);
+        }
+
+        /// <inheritdoc/>
         public Transform Visual => _driver != null ? _driver.Visual : null;
 
         /// <inheritdoc/>

@@ -106,6 +106,18 @@ namespace HiddenHarbours.Core
                  "off to restore today's flat-water handling. Per-hull response lives on each BoatHullDef.")]
         public SeakeepingSettings Seakeeping = SeakeepingSettings.Default;
 
+        [Header("Storm seakeeping read (ADR 0018 B2.5 — the hull answers the storm)")]
+        [Tooltip("World-wide STORM policy for the VISUAL rock (the owner's 'the boat seemed to not be " +
+                 "responsive to the waves'): above a storm-start sea state the rock's gains, caps and a " +
+                 "mesh hull's rock amplitudes GROW with the sea, a mesh hull gains real front-to-back " +
+                 "pitch from the wave slope, output smoothing tightens, and the vertical ride carries " +
+                 "WEIGHT (a gravity-capped spring chase — the hull unweights over a steep crest and " +
+                 "lands, never bolted to the surface). Calm/moderate water is byte-identical by " +
+                 "construction (the blend is exactly 0 below the storm start); Enabled off restores " +
+                 "today's read at every sea state. Per-hull character rides each BoatHullDef's " +
+                 "existing seakeeping data.")]
+        public StormRockSettings StormRock = StormRockSettings.Default;
+
         [Header("The shared wave field (ADR 0018 — ONE sea, every consumer)")]
         [Tooltip("The wind + sea-state → wave-train derivation: how many trains, their wavelengths and " +
                  "amplitudes, the crest sharpening, and the ADR 0027 JONSWAP spectrum (SpectrumBlend 0 = " +

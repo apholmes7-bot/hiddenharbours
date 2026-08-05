@@ -105,6 +105,15 @@ namespace HiddenHarbours.Boats
         }
 
         /// <inheritdoc/>
+        public void SetStormRock(float amplitudeScale, float extraRollDegrees, float extraPitchDegrees)
+        {
+            // Deliberately a no-op, exactly like SetRockPhaseDegrees: a sprite hull's rock is a
+            // baked frame grid drawn at ONE baked amplitude — there is no attitude channel to grow.
+            // Its storm read is the offset/squash BoatWaveMotion layers under the frames; a steeper
+            // drawn attitude is an art re-bake (the interface member's contract).
+        }
+
+        /// <inheritdoc/>
         public Transform Visual => _anchors.Visual;
 
         /// <inheritdoc/>

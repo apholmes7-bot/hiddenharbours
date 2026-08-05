@@ -132,6 +132,21 @@ namespace HiddenHarbours.Boats
         /// </summary>
         void SetDisplacedHeaveMeters(float heaveMeters);
 
+        /// <summary>
+        /// The STORM ROCK channel (ADR 0018 B2.5), written by <see cref="BoatWaveMotion"/> every tick:
+        /// <paramref name="amplitudeScale"/> multiplies the hull's own canned rock amplitudes (1 =
+        /// the tuned calm cycle, exactly), and the extras are REAL additional attitude degrees from
+        /// the decomposed wave slope under the hull — a head sea pitches the bow, a beam sea rolls
+        /// the deck, growing with the sea state where the fixed def amplitudes cannot. Only
+        /// meaningful for a presenter with <see cref="SupportsContinuousRock"/> (attitude is a free
+        /// transform there); a SPRITE presenter ignores it (deliberately, like
+        /// <see cref="SetRockPhaseDegrees"/>): its rock IS the baked frame grid, drawn at one baked
+        /// amplitude — a storm read for sprite hulls arrives as the offset/squash
+        /// <see cref="BoatWaveMotion"/> layers under the frames, and a steeper BAKE is an
+        /// art-director call, not a runtime rescale. (1, 0, 0) is the exact neutral.
+        /// </summary>
+        void SetStormRock(float amplitudeScale, float extraRollDegrees, float extraPitchDegrees);
+
         /// <summary>The visual child the hull is drawn into. Overlays parent here; nothing may re-parent it.</summary>
         Transform Visual { get; }
 

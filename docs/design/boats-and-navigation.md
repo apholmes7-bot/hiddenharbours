@@ -191,6 +191,54 @@ field's amplitudes are exactly 0 at sea state 0 — glass is sacred).
   the hull rocks on the waves the player sees. B3/GameConfig will unify the two settings instances
   into one owner-tunable source; until then tune the field's *shape* identically in both places.
 
+### 2.7.1 The hull answers the storm (ADR 0018 — B2.5 shipped, visual-only)
+
+**Built** (owner ask 2026-08-05: *"is there steep enough front-to-back rocking to represent the
+storm waves? … It must stay smooth and obey gravity though"*). B2's read had a fixed ceiling the
+sea could not grow past: the rock-grid/mesh rock was **phase-only** (the baked/def amplitudes drew
+the same attitude in a chop and a gale — and a gale's longer swell cycled *slower*, so it read
+calmer), and the transform path pinned against caps sized on the calm feel pass while the field's
+slope itself **saturates by construction** (dominant wavelength grows with wind, so amplitude ×
+wave number flattens above mid-sea). B2.5 makes the response grow off the same deterministic
+`SeaState01` axis everything else scales with (`StormRockMath`, policy in **`GameConfig.StormRock`**
+— the owner-tunable home):
+
+- **Sea-state-proportional response:** above a **storm-start** sea state (default 0.4, just above
+  Chop) a blend curve grows every transform gain AND cap (default ×2.2 at full storm), and a mesh
+  hull's def rock amplitudes with them — a gale visibly outranks a chop; at or below the start the
+  blend is **exactly 0** and the owner's tuned calm read is **byte-identical** (EditMode-pinned
+  negative control).
+- **Real storm pitch on the mesh fleet:** continuous hulls additionally take heading-decomposed
+  attitude through the presenter seam (`IBoatHullPresenter.SetStormRock`) — the dominant swell's
+  slope, split against the heading, **pitches** the bow (up to +10° at defaults) and **rolls**
+  the deck (+8°), retargeting as the player turns. The extras are **phase-locked to the same
+  dominant-train phase the rock cycle rides** (amplitude from the eased envelope, waveform =
+  cos of the posed phase): the drawn channels stay one cycle's sine/cosine pair, so the
+  pre-existing mesh-rock smoothness pins hold by algebra — the first cut drove them from the
+  multi-train smoothed slope and the smoothness guard caught it on CI (accel ratio 3.68,
+  phase reversals). Sprite-frame hulls cannot grow their baked attitude (an art re-bake call);
+  they gain the honest **surge** instead — the pitch offset + squash layered *under* the frames,
+  which also carries continuity between the 45° frame steps. The frame *selection* (crest → 2,
+  trough → 6, forward-phase walk) is untouched and pinned.
+- **Weight — the ride obeys gravity:** the displaced-sea ride now passes through a spring-damper
+  chase (`StormRockMath.StepHeaveWeight`) whose **downward acceleration is capped at g** (the wave
+  field's own `Gravity`): crossing a sharpened storm crest the surface can drop faster than
+  gravity, and the hull now unweights, falls at g, and lands (P5's tooth) instead of being bolted
+  to the surface. Upward is uncapped (buoyancy). The honesty bounds are **asymmetric by
+  necessity**: the submarine side is a hard band (a risen surface yanks the hull up into it), but
+  the hover side is closed by the g-capped chase itself — when a surface sustains a
+  faster-than-g descent no trajectory can both hug it and obey the cap, and gravity is the
+  owner's constraint (a hard hover clamp shipped in the first cut and its own free-fall test
+  measured the clamp biting at 149 m/s²). It settles exactly (epsilon snap), engages only with
+  the storm blend (calm = exact passthrough), and is per-hull: the chase stiffness bends with the
+  hull's existing `BoatHullDef` seakeeping response — a dory re-finds the water fast, a laden
+  trader wallows. A permanent sabotage-armed EditMode test proves the g-cap is load-bearing.
+- **Smoothing tightens with the storm** (default ×0.4 on the output damping at full blend) —
+  velvet is for calm; the storm's snap is not laundered away, and continuity (the
+  `WaveFieldAnimator` fix) is untouched.
+- **Boundaries:** all visual-only — B3's seakeeping *forces* keep their own pure sim path and
+  their own `GameConfig.Seakeeping` policy; nothing here feeds physics or the save (rule 5).
+
 ---
 
 ## 3. Danger (P5) — "cozy, but with teeth"

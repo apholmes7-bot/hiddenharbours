@@ -133,6 +133,24 @@ MonoBehaviour:
     SelfCentre: 0
     RimGrabPadPx: 8
     SteerEaseSeconds: 0.25
+  StormRock:
+    Enabled: 1
+    StormStartSeaState01: 0.4
+    ResponseExponent: 1.6
+    MaxResponseMultiplier: 2.2
+    MeshStormPitchDegreesPerSlope: 14
+    MeshStormMaxPitchDegrees: 10
+    MeshStormRollDegreesPerSlope: 9
+    MeshStormMaxRollDegrees: 8
+    StormSmoothingFactor: 0.4
+    HeaveWeight01: 1
+    HeaveChaseStiffnessRadPerSec: 7
+    HeaveDampingRatio: 1
+    HullStiffnessResponseExponent: 0.5
+    MaxHullResponseScale: 2
+    MaxDownwardAccelInGs: 1
+    SurfaceBandMeters: 0.8
+    SettleEpsilonMeters: 0.004
   RodFight:
     TensionRisePerSec: 0.55
     TensionFallPerSec: 0.7

@@ -47,6 +47,13 @@ namespace HiddenHarbours.Boats
         private int _rockFrame = MountedRockPoseMath.LevelRockFrame;
         private float _displacedHeaveMeters;
 
+        // The storm rock channel (ADR 0018 B2.5) — written by BoatWaveMotion through the presenter
+        // seam each tick. Scale 1 / extras 0 is the exact neutral (the calm byte-identity), so a
+        // driver nothing writes to draws precisely the pre-B2.5 pose.
+        private float _stormAmplitudeScale = 1f;
+        private float _stormExtraRollDegrees;
+        private float _stormExtraPitchDegrees;
+
         /// <summary>The visual child the renderer draws under (kept screen-identity). Null = idle.</summary>
         public Transform Visual => _visual;
 
@@ -100,6 +107,21 @@ namespace HiddenHarbours.Boats
         /// </summary>
         public void SetDisplacedHeaveMeters(float heaveMeters) => _displacedHeaveMeters = heaveMeters;
 
+        /// <summary>
+        /// The storm rock channel (ADR 0018 B2.5 —
+        /// <see cref="IBoatHullPresenter.SetStormRock"/>): <paramref name="amplitudeScale"/>
+        /// multiplies the def's canned rock amplitudes (roll, pitch AND the canned heave — the whole
+        /// tuned cycle grows coherently), and the extras are real additional attitude degrees
+        /// composed onto the posed rock. (1, 0, 0) — and everything a skinner
+        /// <see cref="Configure"/> resets to — is the exact pre-B2.5 pose.
+        /// </summary>
+        public void SetStormRock(float amplitudeScale, float extraRollDegrees, float extraPitchDegrees)
+        {
+            _stormAmplitudeScale = amplitudeScale;
+            _stormExtraRollDegrees = extraRollDegrees;
+            _stormExtraPitchDegrees = extraPitchDegrees;
+        }
+
         /// <summary>The rig dir units currently being presented — the live turntable angle the
         /// anchors project through. Derived from the transform, so it is correct before the first
         /// LateUpdate, same as <see cref="DirectionalBoatSprite.CurrentFacingIndex"/>.</summary>
@@ -135,6 +157,9 @@ namespace HiddenHarbours.Boats
             _rockFrame = MountedRockPoseMath.LevelRockFrame;
             VisualTiltDegrees = 0f;
             _displacedHeaveMeters = 0f;
+            _stormAmplitudeScale = 1f;
+            _stormExtraRollDegrees = 0f;
+            _stormExtraPitchDegrees = 0f;
         }
 
         private void LateUpdate() => Drive();
@@ -154,11 +179,18 @@ namespace HiddenHarbours.Boats
             // (2) Continuous heading, mapped through the measured convention.
             _renderer.HeadingDirUnits = CurrentDirUnits;
 
-            // (3) The rock pose (level when calm), plus the tilt hook as extra roll.
+            // (3) The rock pose (level when calm), plus the tilt hook as extra roll. The storm
+            // channel (ADR 0018 B2.5) scales the def's canned amplitudes — the whole tuned cycle
+            // grows with the sea instead of drawing a gale at the chop's fixed attitude — and its
+            // extras add the REAL slope-decomposed attitude on top. Scale 1 / extras 0 (the neutral
+            // every Configure resets to, and the calm band's exact value) is the pre-B2.5 pose.
             float roll = 0f, pitch = 0f, heave = 0f;
             if (!_rockLevel)
-                HullMeshMath.RockPose(_rockPhaseDegrees, _rockRollDegrees, _rockPitchDegrees,
-                                      _rockHeavePixels, out roll, out pitch, out heave);
+                HullMeshMath.RockPose(_rockPhaseDegrees,
+                                      _rockRollDegrees * _stormAmplitudeScale,
+                                      _rockPitchDegrees * _stormAmplitudeScale,
+                                      _rockHeavePixels * _stormAmplitudeScale,
+                                      out roll, out pitch, out heave);
 
             // (4) The SHARED HEAVE (ADR 0023 phase 3 step 2): while the displaced sea is live,
             // the hull rides it — the metre-scale displaced lift BoatWaveMotion sampled under the
@@ -180,8 +212,8 @@ namespace HiddenHarbours.Boats
                 heave += ride;
             }
 
-            _renderer.RollDegrees = roll + VisualTiltDegrees;
-            _renderer.PitchDegrees = pitch;
+            _renderer.RollDegrees = roll + VisualTiltDegrees + _stormExtraRollDegrees;
+            _renderer.PitchDegrees = pitch + _stormExtraPitchDegrees;
             _renderer.HeavePixels = heave;
             _renderer.RidePixels = ride;
         }
