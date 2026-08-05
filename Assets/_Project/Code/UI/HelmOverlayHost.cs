@@ -31,7 +31,9 @@ namespace HiddenHarbours.UI
     /// reused <see cref="DrawSurface"/> + <see cref="Texture2D"/> per style; zero per-frame
     /// allocation in the steady state.</para>
     /// </summary>
-    [DefaultExecutionOrder(-40)]
+    // -45: BEFORE the brow instrument hosts (-40), which flush-mount against the dash card rect this
+    // publishes each frame (S4.5) — an ordering, not a race.
+    [DefaultExecutionOrder(-45)]
     public sealed class HelmOverlayHost : MonoBehaviour
     {
         [Header("Canvas")]
@@ -68,6 +70,13 @@ namespace HiddenHarbours.UI
         private readonly HelmDashController _dashCtl = new HelmDashController();
         private bool _dashShown;
 
+        // The live dash card, published for the brow instruments that flush-mount into it (S4.5).
+        // Recomputed every frame a dash draws and cleared the moment one does not, so a stale rect can
+        // never leave an instrument floating over a helm that is no longer on screen.
+        private static bool _dashLive;
+        private static Rect _dashCard;
+        private static HelmFit _dashFit;
+
         /// <summary>Which card the overlay shows right now (test seam).</summary>
         public enum HelmCardKind { None, Tiller, Lever, Dash }
 
@@ -82,6 +91,21 @@ namespace HiddenHarbours.UI
 
         /// <summary>Focused state (click-to-focus, owner addition 2026-08-03). Exposed for tests.</summary>
         public bool Focused => _focused;
+
+        /// <summary>
+        /// The dash card currently on screen and the fit it is drawing — the seam the brow instruments
+        /// flush-mount against (S4.5). False whenever no dash is up (on foot, rowing, a tiller hull, or
+        /// a helm with no console), in which case an instrument has no mount and falls back to its own
+        /// card. Static because the hosts are independent self-installing singletons; published from
+        /// <see cref="Update"/>, which runs FIRST by execution order, so a reader never sees a stale
+        /// rect.
+        /// </summary>
+        public static bool TryDashCard(out Rect card, out HelmFit fit)
+        {
+            card = _dashCard;
+            fit = _dashFit;
+            return _dashLive;
+        }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void Bootstrap()
@@ -121,7 +145,15 @@ namespace HiddenHarbours.UI
 
         private void OnDestroy()
         {
-            if (_instance == this) _instance = null;
+            if (_instance == this)
+            {
+                _instance = null;
+                // The publication is only refreshed by Update, so a host that stops updating would
+                // otherwise leave its last rect standing and hang the brow instruments over a helm
+                // that is no longer drawn.
+                _dashLive = false;
+                HelmInstrumentExpansion.Collapse();
+            }
             if (_texture != null) Destroy(_texture);
         }
 
@@ -129,6 +161,7 @@ namespace HiddenHarbours.UI
         {
             IHelmControl helm = GameServices.HelmControl;
             HelmControlStyle style = helm != null && helm.HasHelm ? helm.Style : HelmControlStyle.None;
+            _dashLive = false;     // republished below only if a dash actually draws this frame
 
             if (style == HelmControlStyle.None)
             {
@@ -136,6 +169,7 @@ namespace HiddenHarbours.UI
                 _dragging = false;
                 _dashCtl.Deactivate(helm);
                 _focused = false;
+                HelmInstrumentExpansion.Collapse();   // losing the helm closes any expanded instrument
                 _shownStyle = HelmControlStyle.None;
                 CardKind = HelmCardKind.None;
                 if (_cardGo.activeSelf) _cardGo.SetActive(false);
@@ -169,11 +203,19 @@ namespace HiddenHarbours.UI
                 // rect and the screen→rig mapping both follow the live rig, never one fixed size.
                 int dashW = HelmDashGeometry.CanvasW(fit.Rig), dashH = HelmDashGeometry.CanvasH(fit.Rig);
                 Rect dashCard = HelmOverlayLayout.DashCardRect(_focused, dashW, dashH, in cfg,
-                                                               Screen.width, Screen.height);
+                                                               Screen.width, Screen.height,
+                                                               HudBandLayout.ReservedTopPx());
                 LayoutCard(HelmControlStyle.Lever, dashCard, dashW, dashH, 0f);
                 _dashCtl.UpdateAndPaint(helm, fit, SampleHeadingDegrees(), Time.deltaTime, _focused,
                                         ref _texture, _image);
-                ReadDashPointer(helm, fit.Rig, dashCard, in cfg);
+
+                // Publish BEFORE reading the pointer: the brow instruments hang off this rect, and the
+                // press routing below has to know where they are to leave their clicks alone.
+                _dashCard = dashCard;
+                _dashFit = fit;
+                _dashLive = true;
+
+                ReadDashPointer(helm, fit, dashCard, in cfg);
                 return;
             }
 
@@ -279,11 +321,36 @@ namespace HiddenHarbours.UI
         /// S1's (click-to-focus, Esc/click-away out); WITHIN focus the press lands on the instrument
         /// under it — wheel rim grab, lever grip drag, binnacle travel-guide — via
         /// <see cref="HelmDashController"/>. Hit tests run in the dash's own rig pixels, so the
-        /// card scale needs no special-casing (the S1 ScreenToRig discipline).</summary>
-        private void ReadDashPointer(IHelmControl helm, ConsoleRigKind rig, Rect card,
+        /// card scale needs no special-casing (the S1 ScreenToRig discipline).
+        ///
+        /// <para>S4.5 gives the dash two things to YIELD: an expanded instrument owns the pointer and
+        /// Esc outright, and a press inside a flush brow mount belongs to that instrument. Both are
+        /// checked against the same shared state the instrument hosts use, never a second copy.</para></summary>
+        private void ReadDashPointer(IHelmControl helm, in HelmFit fit, Rect card,
                                      in HelmOverlaySettings cfg)
         {
+            ConsoleRigKind rig = fit.Rig;
             int rigW = HelmDashGeometry.CanvasW(rig), rigH = HelmDashGeometry.CanvasH(rig);
+            var mouse = Mouse.current;
+            bool held = mouse != null && mouse.leftButton.isPressed;
+
+            if (_dashCtl.Interacting)
+            {
+                // A live drag finishes on its own terms — it started before anything expanded, and
+                // dropping the wheel mid-turn would be worse than a moment of divided attention.
+                // Off-card during a drag still tracks (the S1 lever precedent).
+                if (mouse == null) return;
+                HelmOverlayLayout.ScreenToRig(mouse.position.ReadValue(), card, rigW, rigH,
+                                              out Vector2 rigPx);
+                _dashCtl.Track(helm, rigPx, held, Time.deltaTime);
+                return;
+            }
+
+            // An EXPANDED instrument owns the pointer and Esc (S4.5). Its card sits over the dash, so
+            // without this a click meant for a MODE pusher would also toggle the dash's focus under
+            // it, and Esc would close both at once. The instrument's own host handles the collapse.
+            if (HelmInstrumentExpansion.AnyExpanded) return;
+
             var kb = Keyboard.current;
             if (_focused && kb != null && kb.escapeKey.wasPressedThisFrame)
             {
@@ -292,20 +359,18 @@ namespace HiddenHarbours.UI
                 return;
             }
 
-            var mouse = Mouse.current;
             if (mouse == null) return;
             Vector2 pos = mouse.position.ReadValue();
             bool down = mouse.leftButton.wasPressedThisFrame;
-            bool held = mouse.leftButton.isPressed;
             bool inCard = card.Contains(pos);
 
-            if (_dashCtl.Interacting)
-            {
-                // Off-card during a drag still tracks (the S1 lever precedent).
-                HelmOverlayLayout.ScreenToRig(pos, card, rigW, rigH, out Vector2 rigPx);
-                _dashCtl.Track(helm, rigPx, held, Time.deltaTime);
+            // A press on a flush-mounted instrument belongs to that instrument, not to the dash
+            // underneath it: at SMALL size the whole card is the focus button, so without this the
+            // one click would both expand the sounder and enlarge the dash. Same pure mount rect the
+            // instrument hosts hit-test against, so the two can never disagree about the boundary.
+            if (down && HelmInstrumentMountLayout.TryBrowSounderRect(in fit, card, out Rect browMount)
+                     && browMount.Contains(pos))
                 return;
-            }
 
             if (!down) return;
 
