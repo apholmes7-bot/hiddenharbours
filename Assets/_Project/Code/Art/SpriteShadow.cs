@@ -26,6 +26,16 @@ namespace HiddenHarbours.Art
     /// it (the editor menu "Hidden Harbours ▸ Lighting ▸ Add Sprite Shadow to Selection" batch-adds it; the
     /// "Build Shadow Test" demo shows it off). World-content / the menu add it to real casters later.</para>
     ///
+    /// <para><b>It is anchored at the caster's PIVOT.</b> A projected shadow is pinned where its caster meets
+    /// the ground, and that point is the pivot — the feet by contract across every rig family (ADR 0026: a
+    /// tree's pivot is its TRUNK FOOT, a character's is <c>(0.5, GroundInsetPx/cellH)</c>, a shrub's and a
+    /// shore plant's is the root crown). So the shear is proportional to height ABOVE THE PIVOT, which
+    /// <see cref="PivotShearMap(Sprite)"/> derives from the sprite's own rect / pivot / sheet height / PPU and
+    /// publishes for the vertex stage. It is NOT proportional to raw <c>uv.y</c>: uv is TEXTURE space, and every
+    /// caster in production is a sliced sheet, so raw uv.y both misses the pivot and barely varies across a cell
+    /// on a multi-row sheet. A caster whose pivot IS its cell-bottom-centre and whose sprite fills its texture
+    /// gets <see cref="IdentityShearMap"/> and draws exactly as it always did.</para>
+    ///
     /// <para><b>Determinism (rule 5).</b> The shadow is a pure function of <c>(hour, weather, profile, caster
     /// height)</c> — nothing is saved or randomised. <b>Performance (rule 7):</b> the child shadow renderer is
     /// created ONCE and POOLED (reused every frame), updated on a throttled tick with NO per-frame allocation;
@@ -45,6 +55,7 @@ namespace HiddenHarbours.Art
         private static readonly int IdShadowColor  = Shader.PropertyToID("_ShadowColor");
         private static readonly int IdShadowDir    = Shader.PropertyToID("_ShadowDir");
         private static readonly int IdShadowLen    = Shader.PropertyToID("_ShadowLen");
+        private static readonly int IdShadowUV     = Shader.PropertyToID("_ShadowUV");
         private static readonly int IdEdgeSoftness = Shader.PropertyToID("_EdgeSoftness");
         private static readonly int IdSunDir        = Shader.PropertyToID("_SunDir");
         private static readonly int IdSunElevation  = Shader.PropertyToID("_SunElevation");
@@ -117,6 +128,68 @@ namespace HiddenHarbours.Art
         private float _timer;
         private Sprite _lastSprite;
         private Texture _lastTexture;    // the caster's current SHEET — rewriting the block is gated on it
+        // The affine map uv.y -> height above the PIVOT, in caster heights (see PivotShearMap). Cached because
+        // it is pure sprite geometry: it only moves when the caster's sprite moves to a different CELL, and it
+        // is IDENTICAL across the frames of one animation row, so a walking fisher recomputes it once per
+        // turn rather than once per step. Identity until a sprite arrives.
+        private Vector2 _shearMap = IdentityShearMap;
+
+        /// <summary>
+        /// The map for a caster whose pivot IS its cell-bottom-centre and whose sprite fills its whole texture:
+        /// <c>upFrac == uv.y</c>. This is exactly what the shader did for every caster before the pivot anchor
+        /// was fixed, so such a caster renders byte-for-byte as it did — the negative control.
+        /// </summary>
+        public static readonly Vector2 IdentityShearMap = new Vector2(1f, 0f);
+
+        /// <summary>
+        /// <b>The pivot anchor, as a pure function.</b> Returns <c>(x, y)</c> such that
+        /// <c>upFrac = uv.y * x + y</c> is the vertex's height above the caster's PIVOT measured in CASTER
+        /// HEIGHTS — so <c>upFrac == 0</c> exactly at the pivot (the feet, where the caster meets the ground)
+        /// and <c>1</c> one caster-height above it. That is what the shear must be proportional to: a projected
+        /// shadow's length is set by height ABOVE THE GROUND, and the ground is the pivot (ADR 0026).
+        ///
+        /// <para>It is the inverse of the sprite's own texture mapping, which is
+        /// <c>uv.y = (rectBottomPx + pivotPx + localY * ppu) / sheetHeightPx</c>. Inverting and dividing by the
+        /// caster height gives the two coefficients below. Because it inverts only the texture mapping — which
+        /// FullRect and Tight meshes share — it is exact for both, and the trees are Tight.</para>
+        ///
+        /// <para><b>Why it cannot just be <c>uv.y</c>.</b> uv is TEXTURE space. Every caster in production is a
+        /// sliced sheet, so a cell on the top row of a 4-row shrub sheet has uv.y in [0.75, 1.0]: raw uv.y both
+        /// misses the pivot and barely varies across the sprite. Deriving the map from the sheet's own geometry
+        /// is what makes one component correct for a 1-row tree sheet, a 4-row shrub sheet and an 8-row
+        /// character sheet alike.</para>
+        ///
+        /// <para>Degenerate input (no sheet, no height, a nonsense PPU) returns
+        /// <see cref="IdentityShearMap"/> — the old behaviour — rather than a divide-by-zero that would blow
+        /// the silhouette to infinity. Pure / deterministic / allocation-free.</para>
+        /// </summary>
+        /// <param name="sheetHeightPx">Height of the whole TEXTURE the sprite is sliced from, in pixels.</param>
+        /// <param name="rectBottomPx">The sprite cell's bottom edge within that texture, in pixels.</param>
+        /// <param name="pivotPx">The pivot's height above the cell's bottom edge, in pixels.</param>
+        /// <param name="pixelsPerUnit">The sprite's own PPU.</param>
+        /// <param name="casterLocalHeight">The caster's height in local units — the sprite's bounds height, the
+        /// same quantity the shear length is scaled by.</param>
+        public static Vector2 PivotShearMap(float sheetHeightPx, float rectBottomPx, float pivotPx,
+                                            float pixelsPerUnit, float casterLocalHeight)
+        {
+            float denom = pixelsPerUnit * casterLocalHeight;
+            if (!(sheetHeightPx > 0f) || !(denom > 1e-6f)) return IdentityShearMap;
+            return new Vector2(sheetHeightPx / denom, -(rectBottomPx + pivotPx) / denom);
+        }
+
+        /// <summary>
+        /// <see cref="PivotShearMap(float,float,float,float,float)"/> read off a live sprite. A null sprite (or
+        /// one with no readable sheet) maps to <see cref="IdentityShearMap"/>.
+        /// </summary>
+        public static Vector2 PivotShearMap(Sprite sprite)
+        {
+            if (sprite == null || sprite.texture == null) return IdentityShearMap;
+            // sprite.rect is the CELL within the source texture and sprite.pivot is in pixels from that cell's
+            // bottom-left — the pair Unity's own slicing writes. (A packed SpriteAtlas would need textureRect /
+            // textureRectOffset instead; this project ships none, and adding one is an ADR-level change.)
+            return PivotShearMap(sprite.texture.height, sprite.rect.y, sprite.pivot.y,
+                                 sprite.pixelsPerUnit, sprite.bounds.size.y);
+        }
 
         private void Reset() => _caster = GetComponent<SpriteRenderer>();
 
@@ -174,13 +247,25 @@ namespace HiddenHarbours.Art
             _lastSprite = sprite;
             _shadow.sprite = sprite;
 
-            // Only when the SHEET changes (a walk skin handing over to a fight skin) is the block worth
+            // The PIVOT ANCHOR travels with the cell, so it is re-derived here and not on the throttled tick:
+            // a different cell sits on a different row of the sheet, and the shadow would otherwise stay
+            // anchored to the row the last light tick happened to see. It is IDENTICAL across the frames of one
+            // animation row, so the compare below means a walking fisher rewrites the block when they TURN, not
+            // on every step — and static decor never gets here at all.
+            Vector2 map = PivotShearMap(sprite);
+            bool mapMoved = map != _shearMap;
+            _shearMap = map;
+
+            // Only when the SHEET changes (a walk skin handing over to a fight skin) is the texture worth
             // rewriting — frames from one sheet all share a texture, and the block already points at it.
             Texture tex = sprite != null ? sprite.texture : null;
-            if (tex == null || tex == _lastTexture) return;
-            _lastTexture = tex;
+            bool texMoved = tex != null && tex != _lastTexture;
+            if (texMoved) _lastTexture = tex;
+
+            if (!mapMoved && !texMoved) return;
             _shadow.GetPropertyBlock(_mpb);
-            _mpb.SetTexture(IdMainTex, tex);
+            if (texMoved) _mpb.SetTexture(IdMainTex, tex);
+            if (mapMoved) _mpb.SetVector(IdShadowUV, _shearMap);
             _shadow.SetPropertyBlock(_mpb);
         }
 
@@ -278,6 +363,10 @@ namespace HiddenHarbours.Art
             _mpb.SetColor(IdShadowColor, color);
             _mpb.SetVector(IdShadowDir, new Vector4(shadowDir.x, shadowDir.y, 0f, 0f));
             _mpb.SetFloat(IdShadowLen, localLen);
+            // Republished on every tick as well as on the sprite change above: this is the block write that
+            // seeds a caster which never changes sprite (all of the decor), so the anchor is right from the
+            // first frame without depending on a silhouette swap ever happening.
+            _mpb.SetVector(IdShadowUV, _shearMap);
             _mpb.SetFloat(IdEdgeSoftness, _edgeSoftness);
             _shadow.SetPropertyBlock(_mpb);
 

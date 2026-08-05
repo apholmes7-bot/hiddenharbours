@@ -367,6 +367,31 @@ namespace HiddenHarbours.Tests.PlayMode
             }
         }
 
+        /// <summary>
+        /// 🔴 <b>THE NEGATIVE CONTROL for the test above.</b> A caster whose pivot IS its cell-bottom-centre
+        /// and whose sprite fills its whole texture is the one shape the old shear had right, so the anchor fix
+        /// must leave it EXACTLY where it was: the identity map, <c>upFrac == uv.y</c>.
+        ///
+        /// <para>That shape is not hypothetical — it is what every other fixture in this file is, which is why
+        /// none of their numbers move. If this ever reads anything but the identity, the suites around it have
+        /// stopped being a before/after comparison.</para>
+        /// </summary>
+        [UnityTest]
+        public IEnumerator ACasterPivotedAtItsCellBottom_IsLeftExactlyWhereItWas()
+        {
+            var caster = NewCaster("coincident-pivot-caster");   // NewSprite: full-rect, pivot (0.5, 0)
+            yield return null;
+
+            PublishAndConsume(Dawn, caster);
+            Vector2 map = ShadowUvOf(caster);
+
+            Assert.AreEqual(SpriteShadow.IdentityShearMap.x, map.x, 0f,
+                $"The negative control moved: {map}. This caster was already anchored correctly, so the pivot " +
+                "fix must be a no-op on it — otherwise the fix changed the look rather than correcting it.");
+            Assert.AreEqual(SpriteShadow.IdentityShearMap.y, map.y, 0f,
+                $"The negative control moved: {map}.");
+        }
+
         // =====================================================================================
         //  the player
         // =====================================================================================
