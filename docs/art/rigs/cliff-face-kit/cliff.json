@@ -1,0 +1,74 @@
+{
+  "kit": "Hidden Harbours — Cliff Face & Terrain Ledge Kit",
+  "version": "v10",
+  "source": "bake/cliffRig.js",
+  "pxPerMetre": 32,
+  "note": "Parametric kit. The PNGs are output, not source — open bake/bake.html to write the full set into a folder.",
+
+  "axes": {
+    "rocks": ["sandstone", "till", "basalt"],
+    "aspects": ["W", "SW", "S", "SE", "E"],
+    "batters": { "wall": 90, "steep": 76, "ramp": 62, "bank": 48 },
+    "steps": ["Lo", "base", "Hi"],
+    "channels": ["", "_unlit", "_normal", "_mask"]
+  },
+  "fullSet": { "faceSets": 180, "facePngs": 720, "browPngs": 15, "toePngs": 45, "ledgeSheets": 9, "profilePngs": 12 },
+
+  "faces": {
+    "path": "tex/",
+    "name": "<Rock>_<Aspect>{|_S76|_S62|_S48}{_Lo|\"\"|_Hi}{|_unlit|_normal|_mask}.png",
+    "size": [384, 288],
+    "metres": [12, 9],
+    "metresAre": "surface, not height — a battered face covers 9 m DOWN THE SLOPE",
+    "uv": "s along the cliff, t down it",
+    "wrap": "Repeat",
+    "filter": "Point",
+    "chunkOffset": false,
+    "srgb": { "": true, "_unlit": true, "_normal": false, "_mask": false }
+  },
+  "channelMeaning": {
+    "": "pre-lit albedo at the aspect's fixed key, including the form pass cast shadow. The cheap path.",
+    "_unlit": "albedo + non-directional cavity and macro AO only. No directional light. Grade- and sun-safe.",
+    "_normal": "tangent space. R = s, G = t-up, B = out of face, A = cavity+macro AO. Import with sRGB off.",
+    "_mask": "R = key light N·L including the form cast shadow, G = sky occlusion, B = depth (height field), A = coverage. Same packing as TreeRig2.packMask."
+  },
+
+  "brow": { "path": "brow/", "name": "<Aspect>{_Lo|\"\"|_Hi}.png", "size": [384, 128], "metres": [12, 4], "wrap": "Repeat S, Clamp T", "alpha": "straight", "browLineAt": 0.42 },
+  "toe":  { "path": "toe/",  "name": "<Aspect>{_Lo|\"\"|_Hi}{|_cave|_slump}.png", "size": [384, 128], "metres": [12, 4], "wrap": "Repeat S, Clamp T", "alpha": "straight",
+            "pairing": { "90": "notch", "76": "notch", "62": "slump", "48": "slump" } },
+  "ledges": { "path": "ledges/", "name": "<Rock>{_Lo|\"\"|_Hi}.png", "size": [384, 96], "cell": 32,
+              "pieces": ["faceS","cornSW","cornSE","innSW","innSE","sideW","sideE","diagSW","diagSE","roundSW","roundSE","notch"],
+              "bands": ["brow","mid","toe"], "contact": { "name": "Contact.png", "size": [160, 32], "pieces": ["faceS","cornSW","cornSE","sideW","sideE"] },
+              "batter": "not authored — a sloped 32 px riser is a different silhouette, not a different shade" },
+
+  "profile": {
+    "path": "profile/",
+    "name": "<Rock>{|_S76|_S62|_S48}.png",
+    "size": [384, 288],
+    "encoding": "grey, 128 = zero, full 0–255 range maps to ±1.15 m of PLAN displacement",
+    "metres": 1.15,
+    "aspectIndependent": true,
+    "use": "subdivide the wall along s at 0.25 m and push each vertex out along the segment normal",
+    "srgb": false
+  },
+
+  "batterEffects": {
+    "topSetBackPerMetre": "1 / tan(batter)",
+    "light": "L rotated into the tipped frame; N·L answers honestly",
+    "sky": "widens with the tip-back",
+    "bedSpacing": "× sin(batter) — beds are horizontal in the world, so fewer per texture metre",
+    "weathering": "colluvium and plants in the hollows and on the benches; seep runs on the face",
+    "overhang": "undercut bed lip scales with sin(batter); ground bounce falls away",
+    "form": "ribs weaken, benches deepen"
+  },
+
+  "api": {
+    "face": "face(rock, aspect, step, {slope}) -> {data, unlit, normal, mask, W, H, slope}",
+    "profile": "profile(rock, aspect, {slope}) -> {disp, W, H, metres, pxm}",
+    "brow": "brow(aspect, step)",
+    "toe": "toe(aspect, step, {feature})",
+    "ledge": "ledge(rock, piece, {band, gx, gy, step})",
+    "contact": "contact(piece)"
+  },
+  "slopeIsContinuous": "any angle 30–90 is legal in face() and profile(); ship the four named batters and snap"
+}

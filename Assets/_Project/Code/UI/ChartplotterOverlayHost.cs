@@ -18,10 +18,23 @@ namespace HiddenHarbours.UI
     /// only the Novi and the Cape have. Clicking it EXPANDS it to a centred card, and only there are the
     /// controls live. Clicking away, clicking the mount again, or Esc collapses it.</para>
     ///
-    /// <para><b>The expanded face is the SAME console face, larger</b> — not the rig's MAX face. The
-    /// rig's second face is advanced kit (a layer/tool rail, a waypoint and route manager, a measure
-    /// line, a depth-profile strip) and is its own slice; nothing here forecloses it. See
-    /// <see cref="NavRigRender"/>'s remarks, which say the same thing from the renderer's side.</para>
+    /// <para><b>Expanded shows the console face larger; the MAX/CNSL pusher shows the rig's full
+    /// kit</b> (S6 PR 4). Click-to-expand keeps exactly the meaning it had — the same face, bigger,
+    /// the sounder/finder consistency ruling — and the MAX face is a SEPARATE, deliberate press of
+    /// <c>keys[0]</c>, which is the key the rig labels MAX/CNSL for precisely that (navRig.js:518).
+    /// The MAX face carries the layer/tool rail, the waypoint and route manager, the range/bearing
+    /// measure line and the depth-profile strip.</para>
+    ///
+    /// <para><b>The face is transient and only means anything while expanded.</b> The brow's GPS
+    /// mount is a landscape slot sized for the console view (the rig's README says so), and the MAX
+    /// face's 3×5 rail would be unreadable there — so flush is always console, and collapsing drops
+    /// back to it. Which view you are looking through is where your eyes are, not a preference
+    /// (<see cref="HelmInstrumentExpansion"/>'s standing rule).</para>
+    ///
+    /// <para><b>Typing a waypoint name takes the keyboard off the helm</b> — W/A/S/D are live helm
+    /// keys and also four letters. The editor holds <see cref="HelmKeyCapture"/> for as long as it is
+    /// open and releases it on commit AND on cancel; the gamepad is untouched, since you cannot type
+    /// on one. See that class for why the suppression is on the raw key read.</para>
     ///
     /// <para><b>One raster, two presentations.</b> The flush face and the expanded card are the same
     /// texture at two rects, so they cannot disagree about where the boat is — the honesty invariant
@@ -67,14 +80,29 @@ namespace HiddenHarbours.UI
         private RawImage _image;
         private RectTransform _imageRect;
 
-        private DrawSurface _surface;
-        private Texture2D _texture;
+        // One surface + texture PER FACE. The two faces are different native sizes (760×480 against
+        // 980×648), and DrawSurface.ToTexture allocates a fresh Texture2D whenever the size changes —
+        // sharing one would churn a texture on every MAX/CNSL press for no gain.
+        private DrawSurface _surface, _maxSurface;
+        private Texture2D _texture, _maxTexture;
         private readonly NavChartSource _chart = new NavChartSource();
+        private readonly NavDepthProfile _profile = new NavDepthProfile();
 
         // Caller-owned read buffers — NavLocker fills these, so a repaint allocates nothing (rule 7).
         private readonly List<NavWaypoint> _waypoints = new();
         private readonly List<Vector2> _route = new();
         private readonly List<Vector2> _track = new();
+
+        // ---- the MAX face's own state (transient — a tool is where your hand is, not a preference) --
+        private bool _maxFace;
+        private NavChartTool _tool = NavChartTool.Pan;
+        private NavChartLayers _layers = NavChartLayers.All;
+        private int _selWpt = -1;
+        private NavMeasureState _measure;
+        private Vector2 _measureFrom, _measureTo;
+        private bool _measureDragging;
+        private readonly NavNameEditor _editor = new NavNameEditor();
+        private bool _holdingKeyboard;
 
         // Change-detection state — the quantized picture the current texture actually shows.
         private bool _painted;
@@ -85,6 +113,16 @@ namespace HiddenHarbours.UI
         private float _shownRange;
         private bool _shownHeadUp, _shownNight, _shownHasBoat;
         private string _shownRegion;
+
+        // …and the MAX face's terms, quantized to what each pane actually prints. Every one of these
+        // is a control that can silently do nothing, so every one is in the key AND in a differential
+        // test (the #421 lesson).
+        private bool _shownMaxFace, _shownEditing;
+        private int _shownTool, _shownLayers, _shownSel, _shownMeasureState;
+        private long _shownMeasureFrom, _shownMeasureTo;
+        private string _shownEditText = "";
+        private int _shownTideTenths, _shownSetDeg, _shownDriftTenths;
+        private bool _shownTideRising;
 
         // Bumped by every mutation THIS host makes. Together with the three list counts and the newest
         // crumb it is the whole "has the nav data changed" question, answered in O(1).
@@ -113,6 +151,40 @@ namespace HiddenHarbours.UI
         /// <summary>How many rasters this host has done — the repaint-cost guard's evidence, so a test
         /// can prove steady sailing costs a BOUNDED number of repaints rather than one per frame.</summary>
         public int RepaintCount { get; private set; }
+
+        /// <summary>Showing the rig's MAXIMIZED face (rail + manager + profile) rather than the console
+        /// face. Only ever true while <see cref="Expanded"/> is. Exposed for tests.</summary>
+        public bool MaxFace => _maxFace && Expanded;
+
+        /// <summary>
+        /// Whether the texture ON SCREEN RIGHT NOW is the MAX face — the same differential seam as
+        /// <see cref="NightShown"/>, for the flag this whole slice turns on. Reading what the last
+        /// raster used, rather than what the state says, is the only thing that can catch a face that
+        /// is selected and never drawn.
+        /// </summary>
+        public bool MaxFaceShown => _painted && _shownMaxFace;
+
+        /// <summary>How many times the depth-ahead profile has been re-sampled. Must stay far below
+        /// <see cref="RepaintCount"/> while sailing and must not move at all for a repaint the line did
+        /// not move (rule 7 — <see cref="NavDepthProfile"/>).</summary>
+        public int ProfileBakeCount => _profile.BakeCount;
+
+        /// <summary>The waypoint the manager has selected, or −1. Exposed so a test can drive the
+        /// column without synthesising a mouse.</summary>
+        public int SelectedWaypoint => _selWpt;
+
+        /// <summary>The rail's selected tool. Exposed for tests.</summary>
+        public NavChartTool Tool => _tool;
+
+        /// <summary>Which layers the rail has switched on. Exposed for tests.</summary>
+        public NavChartLayers Layers => _layers;
+
+        /// <summary>True while the waypoint-name editor is taking characters — and therefore while the
+        /// helm's keys are deaf (<see cref="HelmKeyCapture"/>). Exposed for tests.</summary>
+        public bool Editing => _editor.IsOpen;
+
+        /// <summary>The name being typed. Exposed for tests.</summary>
+        public string EditText => _editor.Text;
 
         /// <summary>How many times the chart BASE has been re-baked. The stronger half of the same guard:
         /// this must not move at all while sailing, however far the boat goes.</summary>
@@ -178,7 +250,11 @@ namespace HiddenHarbours.UI
         private void OnDestroy()
         {
             if (_instance == this) _instance = null;
+            // A host torn down mid-edit must never leave the helm deaf — that is a boat you cannot
+            // steer, which is worse than the bug the gate prevents (HelmKeyCapture's remarks).
+            ReleaseKeyboard();
             if (_texture != null) Destroy(_texture);
+            if (_maxTexture != null) Destroy(_maxTexture);
         }
 
         private void Update()
@@ -188,6 +264,7 @@ namespace HiddenHarbours.UI
             if (!fitted)
             {
                 if (Expanded) HelmInstrumentExpansion.Collapse();
+                ForgetMaxFace();                // losing the glass must not strand the keyboard
                 _painted = false;
                 FlushMounted = false;
                 if (_cardGo.activeSelf) _cardGo.SetActive(false);
@@ -209,14 +286,79 @@ namespace HiddenHarbours.UI
             if (_chart.EnsureBaked(GameServices.CurrentRegionBounds, night, GameServices.TidalTerrain))
                 BaseBakeCount++;
 
-            NavRigState state = BuildState(instruments, in prefs, in cfg, night);
-            ReadNav(save, regionId);
-
             bool expanded = Expanded;
-            Rect card = GlassRect(expanded);
+            if (!expanded) CloseMaxFace();      // collapsed is always the console face (class remarks)
+            bool max = _maxFace;
+
+            NavRigState state = BuildState(instruments, in prefs, in cfg, night, max);
+            ReadNav(save, regionId);
+            ClampSelection();
+
+            Rect card = GlassRect(expanded, max);
             LayoutCard(card);
-            Repaint(in state, regionId);
-            ReadPointer(instruments, save, regionId, in prefs, in cfg, in state, card, expanded);
+            Repaint(in state, regionId, max);
+            ReadPointer(instruments, save, regionId, in prefs, in cfg, in state, card, expanded, max);
+        }
+
+        /// <summary>
+        /// Drop the MAX face and everything that only exists on it. Called whenever the instrument
+        /// stops being expanded, by any route — the pusher, Esc, a click away, or losing the GPS with
+        /// the boat.
+        ///
+        /// <para>The measure line goes with it because it is transient by contract (nothing about it
+        /// is saved); the SELECTION goes because a manager row means nothing without a manager. The
+        /// tool and the layer switches are kept: they are how this skipper works the chart, and having
+        /// them reset every time the card closed would be a small, constant annoyance.</para>
+        /// </summary>
+        private void CloseMaxFace()
+        {
+            if (_editor.IsOpen) _editor.Close();
+            ReleaseKeyboard();
+            _maxFace = false;
+            _selWpt = -1;
+            _measure = NavMeasureState.Off;
+            _measureDragging = false;
+        }
+
+        /// <summary>
+        /// Close the MAX face AND forget the tool and the layer switches — what happens when the GLASS
+        /// goes away, rather than when the card merely closes.
+        ///
+        /// <para><b>The distinction is the point.</b> Collapsing the card keeps your tool and your
+        /// layers, because you are still the same skipper working the same chart and having them reset
+        /// every time you glanced away would be a constant small annoyance. But this host is one
+        /// <c>DontDestroyOnLoad</c> singleton for the whole play session, so without this an instrument
+        /// you no longer own — sold the boat, boarded a hull with no GPS — would come back later still
+        /// holding the route tool you put down on a different vessel. A plotter that is not fitted has
+        /// no tool; when one is fitted again it wakes as it left the factory, which is also what
+        /// "transient, never persisted" has to mean for a session-long singleton.</para>
+        /// </summary>
+        private void ForgetMaxFace()
+        {
+            CloseMaxFace();
+            _tool = NavChartTool.Pan;
+            _layers = NavChartLayers.All;
+        }
+
+        /// <summary>A selection can only ever point at a row that exists: waypoints are deleted from
+        /// the column and marked from the chart, and a stale index would rename the wrong one.</summary>
+        private void ClampSelection()
+        {
+            if (_selWpt >= _waypoints.Count) _selWpt = -1;
+            if (_editor.IsOpen && (_editor.Target < 0 || _editor.Target >= _waypoints.Count))
+            {
+                _editor.Close();
+                ReleaseKeyboard();
+            }
+        }
+
+        /// <summary>The MAX face's pure state for this frame, composed from the persistent bits this
+        /// host holds and the tide the environment publishes.</summary>
+        private NavMaxState BuildMax(bool max, float setDeg, float driftKnots)
+        {
+            if (!max) return NavMaxState.Default;
+            return new NavMaxState(_tool, _layers, _selWpt, _measure, _measureFrom, _measureTo,
+                                   setDeg, driftKnots, _editor.IsOpen, _editor.Text);
         }
 
         /// <summary>This hull's stored plotter preferences, or the owner's defaults for a hull that has
@@ -242,14 +384,16 @@ namespace HiddenHarbours.UI
         /// once underway; doing that here would snap the chart at the threshold, so it is deliberately
         /// not done in this slice.</para>
         ///
-        /// <para><b>Tide is passed as nothing on purpose.</b> <see cref="NavRigState"/> carries a tide
-        /// height and set because the rig's own top bar has an optional TIDE field (navRig.js:399), but
-        /// PR 2's console <c>TopBar</c> does not port it — no shipped pixel reads either value. Feeding
-        /// them a live tide would put a continuously-moving number into the repaint key to draw
-        /// precisely nothing, so they stay zero until the field itself is ported.</para>
+        /// <para><b>Tide is now REAL, and only on the MAX face.</b> PR 2 fed
+        /// <see cref="NavRigState.TideMetres"/> zero because no shipped pixel read it, and said the
+        /// field would stay that way "until the field itself is ported". This is that slice: the MAX
+        /// top bar's TIDE field (navRig.js:399) and the manager's TIDE pane (js:443) both print it. It
+        /// is still passed as <see cref="float.NaN"/> on the CONSOLE face — feeding a continuously
+        /// moving number into the repaint key to draw nothing is precisely the trade PR 2 refused, and
+        /// refusing it is what keeps the console face's repaint pin green.</para>
         /// </summary>
         private NavRigState BuildState(IHelmInstruments instruments, in ChartplotterPrefs prefs,
-                                       in ChartplotterSettings cfg, bool night)
+                                       in ChartplotterSettings cfg, bool night, bool max)
         {
             bool hasBoat = instruments.TryReadPosition(out Vector2 pos) && NavMath.IsFinite(pos);
 
@@ -265,10 +409,67 @@ namespace HiddenHarbours.UI
                 }
             }
 
+            float tide = float.NaN;
+            bool rising = false;
+            if (max) ReadTide(out tide, out rising, out _lastSetDeg, out _lastDriftKnots);
+            else { _lastSetDeg = float.NaN; _lastDriftKnots = float.NaN; }
+
             return new NavRigState(
                 pos, hasBoat, heading, sogKnots, prefs.RangeNM(in cfg),
                 prefs.HeadUp ? NavRigGeometry.Orient.Head : NavRigGeometry.Orient.North,
-                night, showTrack: true, tideMetres: 0f, tideRising: false);
+                night, showTrack: true, tideMetres: tide, tideRising: rising);
+        }
+
+        // The set as last read — held so BuildState can fill it in the same pass that reads the tide
+        // (they come from ONE EnvironmentSample) without the state struct having to carry it.
+        private float _lastSetDeg = float.NaN, _lastDriftKnots = float.NaN;
+
+        /// <summary>
+        /// The tide height and the tidal SET, both from the environment service, in one sample.
+        ///
+        /// <para><b>The set is real sim data, not a placeholder.</b>
+        /// <see cref="EnvironmentSample.CurrentVector"/> is the deterministic tidal current the whole
+        /// game already runs on — <c>BoatController</c> sails on <c>vel − CurrentVector</c>, the water
+        /// surface flows along it, the wake and the weed ride it. The plotter reads that same vector,
+        /// so its SET/DRIFT is the current the hull is actually in rather than a number invented for
+        /// the glass. (The S6 handoff expected no current source to exist and budgeted a config
+        /// placeholder on the <c>PlaceholderWaterTempC</c> precedent; it does exist, so none is used.)</para>
+        ///
+        /// <para><b>Rising is a forward difference</b>, the same test <c>TideReadout</c> and
+        /// <c>TideModel</c> use, at the same step: five per cent of an in-game hour. The plotter does
+        /// not print a time-to-turn, so it does not scan for one.</para>
+        ///
+        /// <para>Everything is <see cref="float.NaN"/> with no service registered — the honest "--"
+        /// the depth field already prints off-survey, never a confident zero.</para>
+        /// </summary>
+        private static void ReadTide(out float heightMetres, out bool rising, out float setDeg,
+                                     out float driftKnots)
+        {
+            heightMetres = float.NaN;
+            rising = false;
+            setDeg = float.NaN;
+            driftKnots = float.NaN;
+
+            IEnvironmentService env = GameServices.Environment;
+            if (env == null) return;
+
+            EnvironmentSample sample = env.Sample();
+            heightMetres = sample.TideHeight;
+
+            IGameClock clock = GameServices.Clock;
+            if (clock != null)
+            {
+                GameConfig config = GameServices.Config;
+                double dt = config != null && config.SecondsPerHour > 0f
+                    ? config.SecondsPerHour * 0.05 : 1.0;
+                double now = clock.TotalSeconds;
+                rising = env.TideHeightAt(now + dt) > env.TideHeightAt(now);
+            }
+
+            Vector2 current = sample.CurrentVector;
+            // Slack water is a real reading, not a missing one: 000°/0.0KN is the truth there.
+            setDeg = BoatKinematics.BearingDegrees(current);
+            driftKnots = NavMath.MetresPerSecondToKnots(current.magnitude);
         }
 
         /// <summary>Refill the three draw buffers from the save. Each clears and refills a caller-owned
@@ -289,7 +490,7 @@ namespace HiddenHarbours.UI
         /// no GPS, but better than vanishing at boot or on a test rig. See
         /// <see cref="SounderOverlayHost"/> for the same reasoning at length.</para>
         /// </summary>
-        private Rect GlassRect(bool expanded)
+        private Rect GlassRect(bool expanded, bool max)
         {
             if (!expanded && HelmOverlayHost.TryDashCard(out Rect dash, out HelmFit fit)
                           && HelmInstrumentMountLayout.TryBrowGpsRect(in fit, dash, out Rect mount))
@@ -298,7 +499,9 @@ namespace HiddenHarbours.UI
                 return mount;
             }
             FlushMounted = false;
-            Rect card = ChartplotterOverlayLayout.ExpandedCardRect(Screen.width, Screen.height);
+            Rect card = ChartplotterOverlayLayout.ExpandedCardRect(
+                Screen.width, Screen.height,
+                max ? NavRigGeometry.Face.Max : NavRigGeometry.Face.Console);
             // Keep the expanded glass out from under the always-on band (S4.5) — it slides down before
             // it shrinks, because this is the state the instrument is READ in.
             return HudBandLayout.FitBelowBand(card, Screen.width, Screen.height,
@@ -332,7 +535,7 @@ namespace HiddenHarbours.UI
         /// through <c>ValueType.Equals</c> — reflection, and a box, every frame (rule 7). Explicit
         /// fields also make the quantization visible, which is the point of the guard.</para>
         /// </summary>
-        private void Repaint(in NavRigState st, string regionId)
+        private void Repaint(in NavRigState st, string regionId, bool max)
         {
             long pos = ChartplotterOverlayLayout.QuantizePosition(st.Boat, st.RangeNM);
             int heading = Mathf.RoundToInt(NavMath.Norm360(st.HeadingDeg));
@@ -342,19 +545,65 @@ namespace HiddenHarbours.UI
             int navRev = NavRevision();
             bool headUp = st.Orient == NavRigGeometry.Orient.Head;
 
+            // The MAX face's terms, each quantized to what its pane prints. They are ALL folded to a
+            // constant on the console face, which is what lets the tide — a number that moves every
+            // frame — be live on one face without costing the other a single extra raster.
+            int tool = max ? (int)_tool : -1;
+            int layers = max ? (int)_layers : -1;
+            int sel = max ? _selWpt : -1;
+            int measureState = max ? (int)_measure : -1;
+            long measureFrom = max && _measure != NavMeasureState.Off
+                ? ChartplotterOverlayLayout.QuantizePosition(_measureFrom, st.RangeNM) : 0L;
+            long measureTo = max && _measure == NavMeasureState.Complete
+                ? ChartplotterOverlayLayout.QuantizePosition(_measureTo, st.RangeNM) : 0L;
+            bool editing = max && _editor.IsOpen;
+            string editText = editing ? _editor.Text : "";
+            int tideTenths = max && !float.IsNaN(st.TideMetres)
+                ? Mathf.RoundToInt(st.TideMetres * 10f) : int.MinValue;
+            bool tideRising = max && st.TideRising;
+            int setDeg = max && !float.IsNaN(_lastSetDeg)
+                ? Mathf.RoundToInt(NavMath.Norm360(_lastSetDeg)) : int.MinValue;
+            int driftTenths = max && !float.IsNaN(_lastDriftKnots)
+                ? Mathf.RoundToInt(_lastDriftKnots * 10f) : int.MinValue;
+
             if (_painted && pos == _shownPos && heading == _shownHeading && sogTenths == _shownSogTenths
                 && depthTenths == _shownDepthTenths && st.RangeNM == _shownRange
                 && navRev == _shownNavRev && headUp == _shownHeadUp && st.Night == _shownNight
-                && st.HasBoat == _shownHasBoat && regionId == _shownRegion)
+                && st.HasBoat == _shownHasBoat && regionId == _shownRegion
+                && max == _shownMaxFace && tool == _shownTool && layers == _shownLayers
+                && sel == _shownSel && measureState == _shownMeasureState
+                && measureFrom == _shownMeasureFrom && measureTo == _shownMeasureTo
+                && editing == _shownEditing && editText == _shownEditText
+                && tideTenths == _shownTideTenths && tideRising == _shownTideRising
+                && setDeg == _shownSetDeg && driftTenths == _shownDriftTenths)
                 return;
 
             // Always the rig's NATIVE size — the card is a scaled blit of it, never a smaller drawing
             // (the mount layout's letterbox contract).
-            _surface ??= new DrawSurface(NavRigGeometry.ConsoleW, NavRigGeometry.ConsoleH);
-            NavRigRender.Render(_surface, 0, 0, NavRigGeometry.ConsoleW, NavRigGeometry.ConsoleH, in st,
-                                _chart, _waypoints, _route, _track);
-            _surface.ToTexture(ref _texture);
-            _image.texture = _texture;
+            if (max)
+            {
+                _maxSurface ??= new DrawSurface(NavRigGeometry.MaxW, NavRigGeometry.MaxH);
+                NavMaxState mx = BuildMax(true, _lastSetDeg, _lastDriftKnots);
+
+                // The profile is sampled BEFORE the raster and only when its line has moved, so a
+                // repaint the line did not cause costs nothing here (rule 7 — NavDepthProfile).
+                NavRigGeometry.Layout L = ChartplotterOverlayLayout.NativeLayout(NavRigGeometry.Face.Max);
+                _profile.EnsureBaked(_chart, st.Boat, st.HasBoat, st.HeadingDeg, st.RangeNM,
+                                     Mathf.Min(NavDepthProfile.MaxSamples, Mathf.Max(0, L.Profile.width)));
+
+                NavRigRender.RenderMax(_maxSurface, 0, 0, NavRigGeometry.MaxW, NavRigGeometry.MaxH,
+                                       in st, in mx, _chart, _waypoints, _route, _track, _profile);
+                _maxSurface.ToTexture(ref _maxTexture);
+                _image.texture = _maxTexture;
+            }
+            else
+            {
+                _surface ??= new DrawSurface(NavRigGeometry.ConsoleW, NavRigGeometry.ConsoleH);
+                NavRigRender.Render(_surface, 0, 0, NavRigGeometry.ConsoleW, NavRigGeometry.ConsoleH,
+                                    in st, _chart, _waypoints, _route, _track);
+                _surface.ToTexture(ref _texture);
+                _image.texture = _texture;
+            }
             RepaintCount++;
 
             _painted = true;
@@ -362,6 +611,11 @@ namespace HiddenHarbours.UI
             _shownDepthTenths = depthTenths; _shownRange = st.RangeNM; _shownNavRev = navRev;
             _shownHeadUp = headUp; _shownNight = st.Night; _shownHasBoat = st.HasBoat;
             _shownRegion = regionId;
+            _shownMaxFace = max; _shownTool = tool; _shownLayers = layers; _shownSel = sel;
+            _shownMeasureState = measureState; _shownMeasureFrom = measureFrom;
+            _shownMeasureTo = measureTo; _shownEditing = editing; _shownEditText = editText;
+            _shownTideTenths = tideTenths; _shownTideRising = tideRising;
+            _shownSetDeg = setDeg; _shownDriftTenths = driftTenths;
         }
 
         /// <summary>
@@ -399,20 +653,48 @@ namespace HiddenHarbours.UI
         /// </summary>
         private void ReadPointer(IHelmInstruments instruments, SaveData save, string regionId,
                                  in ChartplotterPrefs prefs, in ChartplotterSettings cfg,
-                                 in NavRigState st, Rect card, bool expanded)
+                                 in NavRigState st, Rect card, bool expanded, bool max)
         {
             var kb = Keyboard.current;
+
+            // While the name editor is open it owns the keyboard entirely: Esc cancels the EDIT (not
+            // the card — you would lose the mark you were naming), Enter commits, and every other key
+            // is a character. Nothing else on the instrument is live, so a stray press cannot drop a
+            // waypoint halfway through typing one's name.
+            if (max && _editor.IsOpen)
+            {
+                ReadNameKeys(kb, save, regionId);
+                if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
+                    CommitName(save, regionId);       // one click anywhere finishes the edit
+                return;
+            }
+
             if (expanded && kb != null && kb.escapeKey.wasPressedThisFrame)
             {
-                HelmInstrumentExpansion.Collapse();
+                // Esc steps back one level: out of the MAX face first, then out of the card. Closing
+                // the whole instrument from the face you were working in would lose the tool, the
+                // selection and the measure line in one keystroke.
+                if (max) CloseMaxFace();
+                else HelmInstrumentExpansion.Collapse();
                 return;
             }
 
             var mouse = Mouse.current;
-            if (mouse == null || !mouse.leftButton.wasPressedThisFrame) return;
+            if (mouse == null) return;
 
             Vector2 pos = mouse.position.ReadValue();
             bool inCard = card.Contains(pos);
+            int faceW = max ? NavRigGeometry.MaxW : NavRigGeometry.ConsoleW;
+            int faceH = max ? NavRigGeometry.MaxH : NavRigGeometry.ConsoleH;
+            HelmOverlayLayout.ScreenToRig(pos, card, faceW, faceH, out Vector2 rigPx);
+
+            // The measure DRAG runs before everything else and swallows the whole gesture, so a drag
+            // that wanders off the chart mid-pull cannot also read as a click-away collapse.
+            if (max && _tool == NavChartTool.Measure
+                && ReadMeasureDrag(mouse, in st, rigPx, inCard))
+                return;
+
+            if (!mouse.leftButton.wasPressedThisFrame) return;
 
             if (!expanded)
             {
@@ -426,32 +708,211 @@ namespace HiddenHarbours.UI
                 return;
             }
 
-            HelmOverlayLayout.ScreenToRig(pos, card, NavRigGeometry.ConsoleW, NavRigGeometry.ConsoleH,
-                                          out Vector2 rigPx);
-            Apply(instruments, save, regionId, in prefs, in cfg, in st, rigPx,
-                  ChartplotterOverlayLayout.HitTest(rigPx));
+            // The three numbers the hit map gets are EXACTLY the three the renderer got (RenderFace) —
+            // the column is a running cursor, so a different answer to "is a row selected" would put
+            // the buttons in one place and the hit boxes in another.
+            int hit = max
+                ? ChartplotterOverlayLayout.HitTestMax(rigPx, _waypoints.Count, _route.Count,
+                                                       _editor.IsOpen || _selWpt >= 0)
+                : ChartplotterOverlayLayout.HitTest(rigPx);
+            Apply(instruments, save, regionId, in prefs, in cfg, in st, rigPx, hit);
+        }
+
+        // ---- the measure line (transient — never saved, by contract) --------------------------------
+
+        /// <summary>
+        /// Press, pull, release: the range/bearing line. Returns true while the gesture owns the
+        /// pointer, so the caller stops there.
+        ///
+        /// <para><b>Dragged rather than the rig's two taps</b> (js:440 "TAP TWO POINTS"). The source is
+        /// written for a touch plotter; this ships on a desktop with a held button, where a drag is
+        /// both the natural gesture and the one that lets you SEE the bearing swing as you pull.</para>
+        ///
+        /// <para><b>Quantized to whole chart pixels while dragging</b> — the own-ship precedent. A
+        /// mouse reports sub-pixel motion every frame; repainting the whole face for a move the glass
+        /// cannot show would put a per-frame raster right back into the steady state (rule 7).</para>
+        ///
+        /// <para>A press that never moves clears the line rather than leaving a zero-length one: a
+        /// click is how you put the tool away.</para>
+        /// </summary>
+        private bool ReadMeasureDrag(Mouse mouse, in NavRigState st, Vector2 rigPx, bool inCard)
+        {
+            if (mouse.leftButton.wasPressedThisFrame && inCard
+                && ChartplotterOverlayLayout.TryChartTapToWorld(rigPx, in st, NavRigGeometry.Face.Max,
+                                                                out Vector2 from, out _))
+            {
+                _measureDragging = true;
+                _measureFrom = from;
+                _measureTo = from;
+                _measure = NavMeasureState.Anchored;
+                return true;
+            }
+
+            if (!_measureDragging) return false;
+
+            if (mouse.leftButton.isPressed)
+            {
+                if (ChartplotterOverlayLayout.TryChartTapToWorld(rigPx, in st, NavRigGeometry.Face.Max,
+                                                                 out Vector2 to, out _))
+                {
+                    long had = ChartplotterOverlayLayout.QuantizePosition(_measureTo, st.RangeNM);
+                    long now = ChartplotterOverlayLayout.QuantizePosition(to, st.RangeNM);
+                    if (had != now) _measureTo = to;      // a sub-pixel wiggle is not a change
+                }
+                return true;
+            }
+
+            // Released.
+            _measureDragging = false;
+            float span = NavMath.DistanceMetres(_measureFrom, _measureTo);
+            float quantum = ChartplotterOverlayLayout.MetresPerChartPixel(st.RangeNM);
+            _measure = span > quantum * MinMeasureDragPx
+                ? NavMeasureState.Complete
+                : NavMeasureState.Off;
+            return true;
+        }
+
+        /// <summary>How far (in chart pixels) a drag must run before it is a measurement rather than a
+        /// click. Three: enough that a shaky click still puts the tool away, small enough that a
+        /// deliberate short measurement is never swallowed.</summary>
+        private const float MinMeasureDragPx = 3f;
+
+        // ---- the name editor (and the helm it takes the keyboard from) ------------------------------
+
+        /// <summary>Open the editor on a waypoint and take the keyboard off the helm.</summary>
+        private void BeginName(int index)
+        {
+            if (index < 0 || index >= _waypoints.Count) return;
+            _editor.Open(index, _waypoints[index].Name);
+            if (_holdingKeyboard) return;
+            HelmKeyCapture.Begin();
+            _holdingKeyboard = true;
+
+            // Subscribe to the DEVICE we will unsubscribe from — Keyboard.current can be replaced
+            // while the editor is open (a keyboard unplugged mid-edit), and unsubscribing from a
+            // different device would leave this handler attached to the old one forever.
+            _typingOn = Keyboard.current;
+            if (_typingOn != null) _typingOn.onTextInput += OnTextInput;
+        }
+
+        /// <summary>Give the keyboard back. Idempotent, and called from every exit — commit, cancel,
+        /// collapse, losing the GPS, teardown — because the one bug this must not have is a helm left
+        /// deaf.</summary>
+        private void ReleaseKeyboard()
+        {
+            if (_typingOn != null) { _typingOn.onTextInput -= OnTextInput; _typingOn = null; }
+            if (!_holdingKeyboard) return;
+            HelmKeyCapture.End();
+            _holdingKeyboard = false;
+        }
+
+        private Keyboard _typingOn;
+
+        private void ReadNameKeys(Keyboard kb, SaveData save, string regionId)
+        {
+            // No keyboard is NO INPUT, not a cancel. Discarding a half-typed name because a device went
+            // away for a frame would be the worst possible reading of "nothing happened" — and headless
+            // batchmode has no keyboard at all, so it is also the difference between this field being
+            // testable and not.
+            if (kb == null) return;
+
+            if (kb.escapeKey.wasPressedThisFrame) { CancelName(); return; }
+            if (kb.enterKey.wasPressedThisFrame || kb.numpadEnterKey.wasPressedThisFrame)
+            {
+                CommitName(save, regionId);
+                return;
+            }
+            if (kb.backspaceKey.wasPressedThisFrame) _editor.Backspace();
+        }
+
+        /// <summary>
+        /// One typed character, from the Input System's text event rather than from key codes — which
+        /// is what makes the field work on a keyboard layout that is not the developer's.
+        /// Subscribed for the editor's lifetime only.
+        /// </summary>
+        private void OnTextInput(char ch)
+        {
+            if (!_editor.IsOpen) return;
+            _editor.Type(ch);          // NavNameEditor owns the charset rule; a rejected key is a no-op
+        }
+
+        private bool CommitName(SaveData save, string regionId)
+        {
+            int target = _editor.Target;
+            bool ok = _editor.TryCommit(out string name);
+            ReleaseKeyboard();
+            if (!ok || save == null) return false;
+            if (!NavLocker.RenameWaypoint(save, regionId, target, name)) return false;
+            Committed();
+            return true;
+        }
+
+        /// <summary>
+        /// Type into the open name field, exactly as the keyboard's text event does — the same
+        /// <see cref="NavNameEditor"/> call, the same charset rule, no shortcut past either.
+        ///
+        /// <para>Public for the reason <see cref="Apply"/> is: headless batchmode drops key events (the
+        /// limit <c>DevBoatInput</c> documents for its own arbitration table), so a PlayMode test cannot
+        /// press W and watch the buffer. Driving the production path from here is what keeps the
+        /// assertion about the real code rather than about a test double.</para>
+        /// </summary>
+        public void TypeName(string text)
+        {
+            if (text == null) return;
+            foreach (char ch in text) OnTextInput(ch);
+        }
+
+        /// <summary>Rub out the last character, as Backspace does. Returns true iff there was one — so
+        /// a caller clearing the field can loop until it says no. Same footing, and same reason, as
+        /// <see cref="TypeName"/>.</summary>
+        public bool BackspaceName() => _editor.Backspace();
+
+        /// <summary>Finish the edit and store the name, as Enter does. Returns true iff a row changed.</summary>
+        public bool CommitName() => CommitName(GameServices.Save?.Current, GameServices.CurrentRegionId);
+
+        /// <summary>Abandon the edit and give the keyboard back, as Esc does.</summary>
+        public void CancelName()
+        {
+            _editor.Close();
+            ReleaseKeyboard();
         }
 
         /// <summary>
         /// Turn a hit into an action. Public so a PlayMode test can drive the controls without
         /// synthesising a mouse — the sounder's <c>Apply</c> precedent.
         ///
-        /// <para><b>The interaction scope is exactly this and no more</b> (S6 PR 3): mark a waypoint,
-        /// remove one, build or clear the single route, step the range, toggle the orientation, and the
-        /// night backlight tap. No measure tool, no route editing beyond append-and-clear, no autopilot —
-        /// those live with the MAX face, in its own slice.</para>
+        /// <para><b>The MAX/CNSL pusher no longer collapses.</b> On the console face it opens the MAX
+        /// face (the label the rig prints on it — navRig.js:518); on the MAX face it goes back. Closing
+        /// the card is what click-away and Esc are for, and they are unchanged. This is the one
+        /// behaviour S6 PR 3 deliberately mapped to the wrong thing while the MAX face did not exist,
+        /// and it is the reason this key was left alone then.</para>
+        ///
+        /// <para><b>What the CHART tap means is now the rail's business.</b> With a tool selected the
+        /// tap places a mark or a route point (the rig's own instruction, js:415); with the neutral
+        /// PAN tool it SELECTS the waypoint under it for the manager. The console face keeps the only
+        /// gesture it ever had — remove-under-the-fingertip — because it has no rail to mean anything
+        /// else.</para>
         /// </summary>
         public bool Apply(IHelmInstruments instruments, SaveData save, string regionId,
                           in ChartplotterPrefs prefs, in ChartplotterSettings cfg,
                           in NavRigState st, Vector2 rigPx, int hit)
         {
+            int railSlot = ChartplotterOverlayLayout.RailSlotOf(hit);
+            if (railSlot >= 0) return ApplyRail(railSlot);
+
+            int row = ChartplotterOverlayLayout.WaypointRowOf(hit);
+            if (row >= 0) return SelectWaypoint(row);
+
             switch (hit)
             {
                 case ChartplotterOverlayLayout.KeyMax:
-                    HelmInstrumentExpansion.Click(Slot);       // toggles: expanded → collapsed
-                    return true;
+                    return ToggleMaxFace();
 
                 case ChartplotterOverlayLayout.KeyMark:
+                    // On the MAX face this pusher IS the rail's MRK tool — the rig lights it from the
+                    // tool, not from an action (js:519), so pressing it must pick the tool up and put
+                    // it down again rather than drop a mark and leave the rail lying.
+                    if (_maxFace) return ApplyTool(NavChartTool.Mark);
                     return MarkHere(save, regionId, in st, in cfg);
 
                 case ChartplotterOverlayLayout.KeyIn:
@@ -469,12 +930,144 @@ namespace HiddenHarbours.UI
                 case ChartplotterOverlayLayout.RouteHit:
                     return ToggleRoute(save, regionId, in cfg);
 
+                case ChartplotterOverlayLayout.ActionName:
+                    if (_selWpt < 0) return false;
+                    BeginName(_selWpt);
+                    return true;
+
+                case ChartplotterOverlayLayout.ActionDelete:
+                    return DeleteSelected(save, regionId);
+
                 case ChartplotterOverlayLayout.ChartHit:
-                    return RemoveAt(save, regionId, in st, rigPx);
+                    return _maxFace ? ChartToolTap(save, regionId, in st, in cfg, rigPx)
+                                    : RemoveAt(save, regionId, in st, rigPx);
 
                 default:
-                    return false;
+                    return false;                 // ProfileHit / ManagerHit / NoHit are inert by design
             }
+        }
+
+        // ---- the MAX face's actions ------------------------------------------------------------------
+
+        /// <summary>MAX/CNSL. Only meaningful while expanded — the flush mount is always the console
+        /// face, and the pusher is not live there anyway (the whole flush face is one click target).</summary>
+        private bool ToggleMaxFace()
+        {
+            if (!Expanded) return false;
+            if (_maxFace) { CloseMaxFace(); return true; }
+            _maxFace = true;
+            return true;
+        }
+
+        /// <summary>
+        /// A rail press: pick a tool, or switch a layer.
+        ///
+        /// <para>The four DORMANT layers (LAND, ROCK, BUOY, TRFC) refuse the press rather than toggling
+        /// a flag that no pixel reads. That is the #421 lesson applied to a switch instead of a
+        /// setting: a control that lights up and changes nothing is indistinguishable from one that is
+        /// broken, and the honest version simply does not move. <see cref="NavChartLayers"/> says which
+        /// is which and why.</para>
+        /// </summary>
+        private bool ApplyRail(int slot)
+        {
+            if (!_maxFace) return false;
+            if (NavRigGeometry.RailSlotIsTool(slot))
+                return ApplyTool(NavRigGeometry.RailTool(slot));
+
+            NavChartLayers layer = NavRigGeometry.RailLayer(slot);
+            if ((layer & NavChartLayers.Live) == 0) return false;
+            _layers ^= layer;
+            return true;
+        }
+
+        /// <summary>Pick a tool, or put the selected one down (press it again → back to PAN). Dropping
+        /// the measure line with the measure tool means the transient line never outlives the tool that
+        /// drew it.</summary>
+        private bool ApplyTool(NavChartTool tool)
+        {
+            if (!_maxFace) return false;
+            NavChartTool next = _tool == tool ? NavChartTool.Pan : tool;
+            if (next == _tool) return false;
+            _tool = next;
+            if (_tool != NavChartTool.Measure)
+            {
+                _measure = NavMeasureState.Off;
+                _measureDragging = false;
+            }
+            return true;
+        }
+
+        private bool SelectWaypoint(int row)
+        {
+            if (!_maxFace || row >= _waypoints.Count) return false;
+            _selWpt = _selWpt == row ? -1 : row;      // press the lit row again to deselect
+            return true;
+        }
+
+        private bool DeleteSelected(SaveData save, string regionId)
+        {
+            if (_selWpt < 0 || _selWpt >= _waypoints.Count) return false;
+            if (!NavLocker.RemoveWaypointAt(save, regionId, _selWpt)) return false;
+            _selWpt = -1;
+            Committed();
+            return true;
+        }
+
+        /// <summary>
+        /// A chart tap on the MAX face, read through the rail's selected tool. MEASURE never arrives
+        /// here — its whole gesture is consumed by the drag handler upstream.
+        /// </summary>
+        private bool ChartToolTap(SaveData save, string regionId, in NavRigState st,
+                                  in ChartplotterSettings cfg, Vector2 rigPx)
+        {
+            if (!ChartplotterOverlayLayout.TryChartTapToWorld(rigPx, in st, NavRigGeometry.Face.Max,
+                                                              out Vector2 world, out float radius))
+                return false;
+
+            switch (_tool)
+            {
+                case NavChartTool.Mark:
+                {
+                    // Tap-to-place at last — the gesture the console face documented as belonging to
+                    // this face (MarkHere's remarks). Named on the same auto scheme a MARK press uses,
+                    // and renameable from the column the moment it lands.
+                    var wpt = new NavWaypoint(regionId, NextMarkName(), world, NavWaypointKind.Mark);
+                    if (!NavLocker.AddWaypoint(save, in wpt, in cfg)) return false;
+                    Committed();
+                    return true;
+                }
+
+                case NavChartTool.Route:
+                    if (!NavLocker.AddRoutePoint(save, regionId, world, in cfg)) return false;
+                    Committed();
+                    return true;
+
+                default:
+                {
+                    // PAN: select the mark under the fingertip, or clear the selection on open water.
+                    int found = NearestWaypoint(world, radius);
+                    if (found == _selWpt) return false;
+                    _selWpt = found;
+                    return true;
+                }
+            }
+        }
+
+        /// <summary>The waypoint nearest a tap within the fingertip's radius, or −1 — the same
+        /// nearest-within-radius rule <see cref="NavLocker.RemoveWaypointNear"/> uses, run over the
+        /// list already in hand so a selection costs no extra walk of the save.</summary>
+        private int NearestWaypoint(Vector2 world, float radiusMetres)
+        {
+            int best = -1;
+            float bestSq = radiusMetres * radiusMetres;
+            for (int i = 0; i < _waypoints.Count; i++)
+            {
+                float sq = (_waypoints[i].Pos - world).sqrMagnitude;
+                if (sq > bestSq) continue;
+                bestSq = sq;
+                best = i;
+            }
+            return best;
         }
 
         // ---- the six actions (every one of them through NavLocker / InstrumentLocker) ---------------

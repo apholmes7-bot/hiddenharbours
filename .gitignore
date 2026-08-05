@@ -114,3 +114,15 @@ InitTestScene*.unity*
 # Stray hooks folder created when a `git lfs install` gets redirected to a literal `dev/null`
 # path on Windows (Git Bash makes it a real directory). Harmless duplicate of .git/hooks.
 /dev/
+
+# The CLIFF FACE KIT's baked pixels (Hidden Harbours ▸ Dev ▸ Bake Cliff Face Kit).
+#
+# ⭐ DELIBERATELY NOT COMMITTED, unlike every sibling kit's sheets. The kit is parametric — 3 rocks
+# × 5 aspects × 4 batters × 3 wear steps, four co-registered channels each — and its own README puts
+# the full bake at ~90 MB. MEASURED: even the narrow St Peters subset the baker ships by default is
+# 16.0 MB across 63 PNGs, every byte of it regenerable in seconds and stale the moment a rig
+# coefficient moves. So docs/art/rigs/cliff-face-kit/ is the committed source, CliffBaker is the
+# tool, CliffRigBakeTests guards the contract against the rig on every CI run, and the pixels live
+# here locally. A fresh clone renders cliff geometry untextured until the bake is run once.
+/[Aa]ssets/_Project/Art/Terrain/Cliffs/
+/[Aa]ssets/_Project/Art/Terrain/Cliffs.meta

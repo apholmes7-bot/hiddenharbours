@@ -36,15 +36,38 @@ namespace HiddenHarbours.UI
         /// read.</para>
         /// </summary>
         public static Rect ExpandedCardRect(float screenW, float screenH)
+            => ExpandedCardRect(screenW, screenH, NavRigGeometry.Face.Console);
+
+        /// <summary>
+        /// The expanded card for a given FACE. The MAX face is a different size natively
+        /// (980 × 648 against the console's 760 × 480 — navRig.js:15), so it gets its own budget rather
+        /// than being letterboxed into the console's rect and losing the rail's legibility.
+        ///
+        /// <para><b>The budget is wider for MAX, and deliberately so.</b> The MAX face IS the read —
+        /// it is the state you open to work the waypoint list — so it is allowed more of the screen
+        /// than the console face, which is a glance you expand for a moment. The integer-scale rule
+        /// is unchanged and is the whole point of both (see the remarks above).</para>
+        /// </summary>
+        public static Rect ExpandedCardRect(float screenW, float screenH, NavRigGeometry.Face face)
         {
+            bool max = face == NavRigGeometry.Face.Max;
+            int nativeW = max ? NavRigGeometry.MaxW : NavRigGeometry.ConsoleW;
+            int nativeH = max ? NavRigGeometry.MaxH : NavRigGeometry.ConsoleH;
+            float wFrac = max ? MaxFaceWidthFrac : MaxWidthFrac;
+            float hFrac = max ? MaxFaceHeightFrac : MaxHeightFrac;
+
             int scale = 1;
-            while ((scale + 1) * NavRigGeometry.ConsoleW <= screenW * MaxWidthFrac
-                   && (scale + 1) * NavRigGeometry.ConsoleH <= screenH * MaxHeightFrac)
+            while ((scale + 1) * nativeW <= screenW * wFrac && (scale + 1) * nativeH <= screenH * hFrac)
                 scale++;
 
-            float w = NavRigGeometry.ConsoleW * scale, h = NavRigGeometry.ConsoleH * scale;
+            float w = nativeW * scale, h = nativeH * scale;
             return new Rect((screenW - w) * 0.5f, (screenH - h) * 0.5f, w, h);
         }
+
+        /// <summary>The MAX face's share of the screen. Larger than the console face's because this is
+        /// the state the instrument is WORKED in rather than glanced at, and its rail and manager
+        /// column are 3×5 text that has to stay readable.</summary>
+        private const float MaxFaceWidthFrac = 0.78f, MaxFaceHeightFrac = 0.84f;
 
         // ---- the hit map ------------------------------------------------------------------------------
 
@@ -79,14 +102,59 @@ namespace HiddenHarbours.UI
         /// it if one is already laid.</summary>
         public const int RouteHit = 7;
 
+        // ---- the MAX face's additions (S6 PR 4) --------------------------------------------------------
+
+        /// <summary>A tap on the depth-profile strip. INERT: the strip is a read, and there is nothing
+        /// the rig authors for a press on it to mean. Distinguished from <see cref="NoHit"/> so a miss
+        /// there is knowably "on the instrument, on nothing" rather than off it.</summary>
+        public const int ProfileHit = 8;
+
+        /// <summary>A tap on the manager column that landed on no row and no button — inert, by the
+        /// same near-miss rule the chart follows.</summary>
+        public const int ManagerHit = 9;
+
+        /// <summary>Base of the rail's hit ids: <c>RailBase + slot</c>, with slot indexing
+        /// <see cref="NavRigGeometry.RailIds"/>. The separator slot is never returned.</summary>
+        public const int RailBase = 100;
+
+        /// <summary>Base of the manager's waypoint rows: <c>WaypointRowBase + row</c>.</summary>
+        public const int WaypointRowBase = 200;
+
+        /// <summary>The manager's NAME button — open the name editor on the selected waypoint.</summary>
+        public const int ActionName = 300;
+
+        /// <summary>The manager's DEL button — remove the selected waypoint.</summary>
+        public const int ActionDelete = 301;
+
+        /// <summary>The rail slot a hit id names, or −1 if it is not a rail hit.</summary>
+        public static int RailSlotOf(int hit)
+        {
+            int slot = hit - RailBase;
+            return slot >= 0 && slot < NavRigGeometry.RailIds.Length ? slot : -1;
+        }
+
+        /// <summary>The manager row a hit id names, or −1 if it is not a row hit.</summary>
+        public static int WaypointRowOf(int hit)
+        {
+            int row = hit - WaypointRowBase;
+            return row >= 0 && row < NavRigGeometry.ManagerWaypointRows ? row : -1;
+        }
+
         /// <summary>
         /// The console face's layout at native size — the frame every hit box below is measured in.
         /// Recomputed rather than cached: <see cref="NavRigGeometry.ComputeLayout"/> is arithmetic on six
         /// integers, and a cached copy is one more thing that can go stale against the renderer.
         /// </summary>
-        public static NavRigGeometry.Layout NativeLayout()
-            => NavRigGeometry.ComputeLayout(0, 0, NavRigGeometry.ConsoleW, NavRigGeometry.ConsoleH,
-                                            NavRigGeometry.Face.Console);
+        public static NavRigGeometry.Layout NativeLayout() => NativeLayout(NavRigGeometry.Face.Console);
+
+        /// <summary>The native-size layout of either face — the frame that face's hit boxes are
+        /// measured in. Same reasoning as above: arithmetic on six integers, never cached.</summary>
+        public static NavRigGeometry.Layout NativeLayout(NavRigGeometry.Face face)
+            => face == NavRigGeometry.Face.Max
+                ? NavRigGeometry.ComputeLayout(0, 0, NavRigGeometry.MaxW, NavRigGeometry.MaxH,
+                                               NavRigGeometry.Face.Max)
+                : NavRigGeometry.ComputeLayout(0, 0, NavRigGeometry.ConsoleW, NavRigGeometry.ConsoleH,
+                                               NavRigGeometry.Face.Console);
 
         /// <summary>
         /// The orientation legend's hit box: the right end of the data strip, sized from the WIDEST label
@@ -123,6 +191,51 @@ namespace HiddenHarbours.UI
             return NoHit;
         }
 
+        /// <summary>
+        /// What a click at <paramref name="rigPx"/> lands on, on the MAX FACE.
+        ///
+        /// <para><paramref name="waypointCount"/> / <paramref name="routeCount"/> / <paramref name="selected"/>
+        /// are passed in because the manager column is a running CURSOR, not a grid: how far down the
+        /// route section starts depends on how many waypoints are listed above it, and the action
+        /// buttons exist only while a row is selected. Feeding the hit map the same three numbers the
+        /// renderer was given is what makes the box you press the box you saw
+        /// (<see cref="NavRigGeometry.ComputeManager"/>'s remarks).</para>
+        ///
+        /// <para><b>Order matters, same rule as the console face:</b> the pushers first (their own
+        /// column, outside the glass), then the rail, then the manager's buttons before its rows before
+        /// its empty space, then the legend inside the data strip before the strip, and the chart last
+        /// so a miss inside the glass is inert rather than a collapse.</para>
+        /// </summary>
+        public static int HitTestMax(Vector2 rigPx, int waypointCount, int routeCount, bool selected)
+        {
+            NavRigGeometry.Layout L = NativeLayout(NavRigGeometry.Face.Max);
+
+            for (int i = 0; i < 4; i++)
+                if (Contains(L.Key(i), rigPx)) return i;
+
+            for (int slot = 0; slot < NavRigGeometry.RailIds.Length; slot++)
+                if (NavRigGeometry.TryRailButton(in L, slot, out RectInt btn) && Contains(btn, rigPx))
+                    return RailBase + slot;
+
+            if (Contains(L.Right, rigPx))
+            {
+                NavRigGeometry.Manager m = NavRigGeometry.ComputeManager(in L, waypointCount, routeCount,
+                                                                         selected);
+                if (m.NameButton.width > 0 && Contains(m.NameButton, rigPx)) return ActionName;
+                if (m.DeleteButton.width > 0 && Contains(m.DeleteButton, rigPx)) return ActionDelete;
+                for (int i = 0; i < m.WaypointRowCount; i++)
+                    if (Contains(m.WaypointRow(i), rigPx)) return WaypointRowBase + i;
+                return ManagerHit;
+            }
+
+            if (Contains(OrientBox(in L), rigPx)) return OrientHit;
+            if (Contains(L.TopBar, rigPx)) return NightHit;
+            if (Contains(L.BotBar, rigPx)) return RouteHit;
+            if (Contains(L.Profile, rigPx)) return ProfileHit;
+            if (Contains(L.Chart, rigPx)) return ChartHit;
+            return NoHit;
+        }
+
         /// <summary>Float-precision containment for a <see cref="RectInt"/> hit box. <c>RectInt</c>'s own
         /// <c>Contains</c> takes a <c>Vector2Int</c>, and rounding a rig-space pointer to integers before
         /// the test would move it by up to half a pixel — which at the brow mount's scale is several
@@ -144,10 +257,20 @@ namespace HiddenHarbours.UI
         /// </summary>
         public static bool TryChartTapToWorld(Vector2 rigPx, in NavRigState st, out Vector2 world,
                                               out float radiusMetres)
+            => TryChartTapToWorld(rigPx, in st, NavRigGeometry.Face.Console, out world, out radiusMetres);
+
+        /// <summary>
+        /// The same conversion for either face. The MAX face's chart box is a different size and sits
+        /// in a different place (the rail takes the left of the glass, the manager column the right), so
+        /// a tap converted through the console's box would land in the wrong water by hundreds of
+        /// metres — which is exactly the class of bug one shared mapper exists to prevent.
+        /// </summary>
+        public static bool TryChartTapToWorld(Vector2 rigPx, in NavRigState st, NavRigGeometry.Face face,
+                                              out Vector2 world, out float radiusMetres)
         {
             world = default;
             radiusMetres = 0f;
-            NavRigGeometry.Layout L = NativeLayout();
+            NavRigGeometry.Layout L = NativeLayout(face);
             if (!Contains(L.Chart, rigPx)) return false;
 
             Vector2 centre = st.HasBoat ? st.Boat : Vector2.zero;
@@ -166,6 +289,13 @@ namespace HiddenHarbours.UI
         /// How many world METRES one chart pixel covers at a range — the quantum the own-ship layer's
         /// repaint key is measured in (§ rule 7). A boat that has not moved a whole chart pixel cannot
         /// have moved the picture, so it must not cost a raster.
+        ///
+        /// <para><b>Measured on the CONSOLE face for both faces, on purpose.</b> The MAX face's chart
+        /// box is NARROWER (the rail and the manager column take a third of the glass), so a console
+        /// pixel covers less water than a MAX one. Using the finer of the two quanta everywhere can
+        /// only ever cost an extra repaint the MAX face did not strictly owe; using the coarser one
+        /// could hold a stale picture on the console face, which is a lying instrument. One quantum,
+        /// and it errs in the safe direction.</para>
         /// </summary>
         public static float MetresPerChartPixel(float rangeNM)
         {
