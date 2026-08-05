@@ -825,9 +825,12 @@ Shader "HiddenHarbours/Water"
         // cell belongs to a place on the water and stays there under any pan. There is no screen-space
         // step anywhere in this read -- see the crawl law in the ADR's Pixelation section.
         //
-        // _WakeFoamStrength = 0 is an EXACT passthrough (the whole block is skipped) and is the
-        // SHIPPED value -- the owner dials it in, the discipline every ADR-0010 addendum has kept.
-        _WakeFoamStrength  ("Wake foam strength (0 = OFF / today exactly)", Range(0,2)) = 0.0
+        // ⚠️ 0 is an EXACT passthrough (the whole block is skipped). It SHIPPED at 0 through #383 --
+        // step one of a deliberate two-step dial-in -- and 2026-08-05 is step two: the owner asked for
+        // "another pass" on the foam, and step one had left the persistent foam invisible AND
+        // unsourced (no prefab carried a FoamInjector either). Both ends are now live, so the sea
+        // actually keeps a mark. This is the ONE value in this PR the owner may simply want lower.
+        _WakeFoamStrength  ("Wake foam strength (0 = OFF)", Range(0,2)) = 0.85
         // Coverage below this is bare water: a trail's fringe holds a lot of very faint foam, and
         // drawing all of it reads as a grey wash rather than as churn.
         _WakeFoamThreshold ("Wake foam threshold (buffer value where foam begins)", Range(0,1)) = 0.12
@@ -836,6 +839,23 @@ Shader "HiddenHarbours/Water"
         // already 4 screen px, so this posterizes VALUE rather than position: churn reads as a few
         // solid tones instead of an airbrushed gradient.
         _WakeFoamBands     ("Wake foam posterize steps (below 2 = smooth)", Float) = 3
+        // ---- LACE: the "like real foam" half of the 2026-08-05 pass -------------------------------
+        // The buffer stores COVERAGE — how much churn is on this patch of sea — which is the right
+        // QUANTITY and the wrong SHAPE. Thresholding a smooth accumulation yields a rounded, solid
+        // patch with a clean outline, and that is what reads as a decal rather than as foam. Real
+        // foam is a torn mat: dense hearts, holes through it, and a fringe drawn out downwind.
+        //
+        // So the stored coverage is TORN by the same evolving foam field the whitecaps ride, on the
+        // same wind-stretched basis (_FoamStreakStretch, reused) — the tearing therefore boils and
+        // streaks with the rest of the sea's foam instead of being a second, unrelated texture. It
+        // multiplies the STORED value (before the threshold), so it removes foam and never invents
+        // any: the dense heart of a wake survives, its fringe breaks into lace and dies sooner.
+        // 0 = the #383 read, EXACTLY.
+        _WakeFoamLace      ("Wake foam lace (0 = solid patch, 1 = fully torn)", Range(0,1)) = 0.7
+        // The tear's own blob scale, as a multiple of the whitecap field's. ABOVE 1 = finer holes
+        // than the caps carry, which is what keeps churn reading as churn next to a whitecap rather
+        // than as another whitecap.
+        _WakeFoamLaceScale ("Wake foam lace scale (x the whitecap blob scale)", Float) = 1.8
     }
 
     SubShader
@@ -1286,6 +1306,8 @@ Shader "HiddenHarbours/Water"
                 float  _WakeFoamThreshold;
                 float  _WakeFoamSoftness;
                 float  _WakeFoamBands;
+                float  _WakeFoamLace;
+                float  _WakeFoamLaceScale;
                 // ADR 0027 #10 — the capillary ripple band (default OFF: _RippleStrength 0).
                 float  _RippleStrength;
                 float  _RippleWavelength;
@@ -2503,6 +2525,37 @@ Shader "HiddenHarbours/Water"
                 if (any(uv < 0.0) || any(uv > 1.0)) return 0.0;
 
                 float stored = SAMPLE_TEXTURE2D(_HHFoamBufferTex, sampler_HHFoamBufferTex, uv).r;
+
+                // ---- LACE (2026-08-05, the owner's "it needs another pass") -------------------------
+                // TEAR the stored coverage before it is thresholded. The buffer records how much churn
+                // is on this patch of sea, which is the right quantity; a smooth accumulation
+                // thresholded is a solid patch with a clean outline, which is the wrong shape — a
+                // decal, not foam. Real foam is a torn mat with holes through it and a fringe drawn
+                // out downwind.
+                //
+                // The tear comes from the SAME EvolvingField the whitecaps ride, on the same
+                // wind-stretched basis (_FoamStreakStretch, reused — no second stretch knob), so it
+                // BOILS and STREAKS with the rest of the sea's foam rather than reading as an
+                // unrelated overlay. It is a MULTIPLY on the stored value, so it can only remove foam,
+                // never invent it: a wake's dense heart survives, its fringe breaks up and dies
+                // sooner — which is also what makes an old wake fade into lace instead of shrinking
+                // as a disc. Its frequency rides BandFreq like every other band, so the tear coarsens
+                // with the growing sea (ADR 0027 #4). _WakeFoamLace = 0 is a BIT-EXACT passthrough.
+                // col.rgb dressing only, and it reads no sim state (rule 5).
+                if (_WakeFoamLace > 0.001)
+                {
+                    float2 lwdir  = normalize(_WindDir.xy + float2(0, 1e-4));
+                    float2 lwperp = float2(-lwdir.y, lwdir.x);
+                    float2 lace   = float2(dot(worldXY, lwdir),
+                                           dot(worldXY, lwperp) * max(_FoamStreakStretch, 1.0));
+                    float torn = EvolvingField(lace, float2(0, 0),
+                                               BandFreq(_NoiseScale) * 3.0 * _FoamBlobScale
+                                               * max(_WakeFoamLaceScale, 1e-3),
+                                               _FoamEvolveSpeed, _Time.y);
+                    // The field centres near 0.5, so 2x lands it about 1: hearts keep their value,
+                    // the low half of the field is what tears through. Dialed by the master.
+                    stored *= lerp(1.0, saturate(torn * 2.0), saturate(_WakeFoamLace));
+                }
 
                 // A trail's fringe holds a lot of very faint foam; drawn in full it reads as a grey wash
                 // over the sea rather than as churn. Threshold it, then soften the edge.

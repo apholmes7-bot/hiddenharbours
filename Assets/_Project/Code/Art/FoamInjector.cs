@@ -107,6 +107,18 @@ namespace HiddenHarbours.Art
         /// <summary>The churned band's half-width (m) — read by the feature when it packs the slot.</summary>
         public float RadiusMeters => Mathf.Max(0.05f, _radiusMeters);
 
+        /// <summary>
+        /// Set the churned band's half-width from the hull that carries it.
+        /// <see cref="IsoFacetHullPresentationService"/> calls this with the def's
+        /// <c>WatertightHalfBeamMeters</c> when it fits an injector to a mesh hull, so the band is the
+        /// hull's own beam rather than a constant repeated per boat (rule 6). Floored, so a bad number
+        /// degrades to a thin ribbon rather than to a divide.
+        /// </summary>
+        public void ConfigureRadius(float halfBeamMeters)
+        {
+            _radiusMeters = Mathf.Max(0.05f, halfBeamMeters);
+        }
+
         private void OnEnable()
         {
             _primed = false;
