@@ -131,6 +131,92 @@ namespace HiddenHarbours.Core
         /// <para>⚠ <b>Preferences, never sim inputs</b> — and emphatically not a cached depth: the
         /// reading itself is recomputed from the one height map every tick (rule 5). Added in v8.</para></summary>
         public List<SounderPrefsDto> HullSounderPrefs = new();
+
+        // ---- navigation (the chartplotter's data — ADR 0025 S6, added in v10) ----------------------
+        // PER SAVE, not per hull, and that is a deliberate departure from the instrument records above.
+        // A waypoint is the SKIPPER's knowledge of the water, not a fitting in one boat's dash: buying a
+        // bigger hull does not make you forget where the wreck is, and the track is a record of where
+        // YOU have been. The instrument that DISPLAYS them is still owned per hull (HullInstruments) —
+        // the glass is equipment, the knowledge is not.
+        //
+        // ⚠ Every row is REGION-STAMPED because a world position only means anything inside its own
+        // region's frame. Flat region-stamped lists, not a per-region map, so the caps in
+        // ChartplotterSettings bound the whole thing absolutely rather than per place visited.
+
+        /// <summary>Positions the player has marked on the chart, across all regions. Capped at
+        /// <see cref="ChartplotterSettings.MaxWaypoints"/>; read and written only through
+        /// <see cref="NavLocker"/>. Added in v10.</summary>
+        public List<NavWaypointDto> NavWaypoints = new();
+
+        /// <summary>The single planned route, in order, as world positions. Capped at
+        /// <see cref="ChartplotterSettings.MaxRouteLegs"/> legs. One route, not a library: a route is a
+        /// working plan for the passage you are on. Added in v10.</summary>
+        public List<NavRoutePointDto> NavRoute = new();
+
+        /// <summary>The track breadcrumb — a RING BUFFER of where the boat has been, oldest first.
+        /// Capped at <see cref="ChartplotterSettings.MaxTrackPoints"/>; the oldest crumb is dropped when
+        /// it fills, which is the right thing to lose. Added in v10.</summary>
+        public List<NavTrackPointDto> NavTrack = new();
+    }
+
+    /// <summary>One marked waypoint, flattened for JsonUtility (the <see cref="HullInstrument"/>
+    /// flat-scalar precedent). <see cref="Kind"/> is the integer of <see cref="NavWaypointKind"/>.</summary>
+    [Serializable]
+    public struct NavWaypointDto
+    {
+        public string RegionId;
+        public string Name;
+        public float X;
+        public float Y;
+        public int Kind;
+
+        public NavWaypointDto(in NavWaypoint w)
+        {
+            RegionId = w.RegionId;
+            Name = w.Name;
+            X = w.Pos.x;
+            Y = w.Pos.y;
+            Kind = (int)w.Kind;
+        }
+
+        public NavWaypoint ToWaypoint() => new NavWaypoint(
+            RegionId, Name, new UnityEngine.Vector2(X, Y), (NavWaypointKind)Kind);
+    }
+
+    /// <summary>One point on the planned route.</summary>
+    [Serializable]
+    public struct NavRoutePointDto
+    {
+        public string RegionId;
+        public float X;
+        public float Y;
+
+        public NavRoutePointDto(string regionId, UnityEngine.Vector2 pos)
+        {
+            RegionId = regionId;
+            X = pos.x;
+            Y = pos.y;
+        }
+
+        public UnityEngine.Vector2 Pos => new UnityEngine.Vector2(X, Y);
+    }
+
+    /// <summary>One track breadcrumb.</summary>
+    [Serializable]
+    public struct NavTrackPointDto
+    {
+        public string RegionId;
+        public float X;
+        public float Y;
+
+        public NavTrackPointDto(string regionId, UnityEngine.Vector2 pos)
+        {
+            RegionId = regionId;
+            X = pos.x;
+            Y = pos.y;
+        }
+
+        public NavTrackPoint ToPoint() => new NavTrackPoint(RegionId, new UnityEngine.Vector2(X, Y));
     }
 
     /// <summary>

@@ -294,6 +294,13 @@ namespace HiddenHarbours.Core
         public static FishFinderSettings FishFinder =>
             Config != null ? Config.FishFinder : FishFinderSettings.Default;
 
+        /// <summary>The chartplotter's tunables (ADR 0025 S6 — nav-data caps, track spacing, the range
+        /// ladder). Same contract as <see cref="WaveField"/>, including the <c>Config != null</c>
+        /// discipline. Read by the track recorder AND by the glass, so what the save is allowed to hold
+        /// and what the chart is allowed to show can never disagree.</summary>
+        public static ChartplotterSettings Chartplotter =>
+            Config != null ? Config.Chartplotter : ChartplotterSettings.Default;
+
         /// <summary>The grabbable steering wheel's spin-feel tunables (ADR 0025 S2a — lock-to-lock
         /// turns, coast friction, self-centre, rim-grab pad). Same contract as
         /// <see cref="WaveField"/>, including the <c>Config != null</c> discipline.</summary>

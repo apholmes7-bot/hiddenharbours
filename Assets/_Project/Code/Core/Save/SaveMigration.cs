@@ -13,7 +13,7 @@ namespace HiddenHarbours.Core
     public static class SaveMigration
     {
         /// <summary>The schema version this build writes. Bump when you add a field + a migration step.</summary>
-        public const int CurrentVersion = 9;
+        public const int CurrentVersion = 10;
 
         /// <summary>
         /// The region id Port Greywick was saved under before it was renamed Nine Mile Creek, and the id
@@ -191,6 +191,31 @@ namespace HiddenHarbours.Core
                 data.SchemaVersion = 9;
             }
 
+            // ---- v9 → v10: the chartplotter's NAVIGATION — marked waypoints, the planned route and the
+            // track breadcrumb (ADR 0025 S6). This is the step ADR 0030 named in advance when it said the
+            // per-hull instrument shape needed no further bump "for S3–S5" but that "the chartplotter's
+            // waypoints/routes are a genuinely different shape and still need their own step". Three new
+            // lists; nothing existing is reinterpreted.
+            //
+            // A v9 save simply had no navigation, so it gets three empty lists — a loaded v9 game shows an
+            // unmarked chart, which is exactly what that player had. Nothing is invented for them.
+            //
+            // ⚠ PER SAVE, NOT PER HULL, and region-stamped — see SaveData.NavWaypoints for why the
+            // skipper's knowledge is not the boat's equipment.
+            //
+            // ⚠ Deliberately NOT here: the chart itself. Depth shading is recomputed from the one height
+            // map (seabed elevation vs water level) exactly as the sounder's reading is; a saved chart is
+            // the precise bug rule 5 exists to prevent, and it would go stale the moment the seabed was
+            // re-painted.
+            if (data.SchemaVersion < 10)
+            {
+                data.NavWaypoints ??= new System.Collections.Generic.List<NavWaypointDto>();
+                data.NavRoute ??= new System.Collections.Generic.List<NavRoutePointDto>();
+                data.NavTrack ??= new System.Collections.Generic.List<NavTrackPointDto>();
+                HealNavData(data);
+                data.SchemaVersion = 10;
+            }
+
             // ---- future steps go here, each guarded by `if (data.SchemaVersion < N)` and bumping to N.
 
             // Defensive null-repair (a hand-edited or partial JSON can omit reference-typed fields).
@@ -208,12 +233,19 @@ namespace HiddenHarbours.Core
             data.SupplyStock ??= new System.Collections.Generic.List<SupplyStock>();
             data.HullInstruments ??= new System.Collections.Generic.List<HullInstrument>();
             data.HullSounderPrefs ??= new System.Collections.Generic.List<SounderPrefsDto>();
+            data.NavWaypoints ??= new System.Collections.Generic.List<NavWaypointDto>();
+            data.NavRoute ??= new System.Collections.Generic.List<NavRoutePointDto>();
+            data.NavTrack ??= new System.Collections.Generic.List<NavTrackPointDto>();
             data.ActiveHullId ??= "";
             // Same defensive spirit as the null-repair above, for the one field where a zero is not a
             // value but a crash: a hand-edited JSON, or a row written by a build between the field landing
             // and this heal, would otherwise divide by it. Idempotent — after the v9 step there is nothing
             // left to fix.
             HealSounderRange(data);
+            // Same defensive spirit, for the rows where a bad value is unrenderable rather than merely
+            // wrong: a NaN waypoint has no honest position to fall back to, so it is dropped. Idempotent
+            // — after the v10 step there is nothing left to fix.
+            HealNavData(data);
 
             // Clamp to the version we actually understand (never claim to be newer than this build).
             if (data.SchemaVersion > CurrentVersion)
@@ -241,6 +273,70 @@ namespace HiddenHarbours.Core
                 if (dto.RangeMetres > 0f) continue;         // a dialled range is never overwritten
                 dto.RangeMetres = defaultRange;
                 data.HullSounderPrefs[i] = dto;             // SounderPrefsDto is a struct — write it back
+            }
+        }
+
+        /// <summary>
+        /// DROP every unusable navigation row and trim each list back inside its cap. Called from the
+        /// v9→v10 step and once more unconditionally, the <see cref="HealSounderRange"/> shape.
+        ///
+        /// <para><b>Drop, never repair.</b> A sounder range has an obviously right replacement (the
+        /// shipped default), so that heal substitutes. A waypoint at NaN does not — there is no correct
+        /// position to invent for it, and putting it at the origin would silently plant a mark on water
+        /// the player never marked. So a row that cannot be drawn honestly is removed. That is also why
+        /// this never throws: a hand-edited save loses the bad rows and still loads.</para>
+        ///
+        /// <para><b>Asset-free on purpose</b> (the v3→v4 precedent): the caps come from
+        /// <see cref="ChartplotterSettings.Default"/>, not from <c>GameServices.Config</c>, so loading a
+        /// save never depends on a <c>ScriptableObject</c> being wired first — and so this is testable
+        /// with no scene.</para>
+        /// </summary>
+        private static void HealNavData(SaveData data)
+        {
+            if (data == null) return;
+            ChartplotterSettings cfg = ChartplotterSettings.Default;
+
+            if (data.NavWaypoints != null)
+            {
+                for (int i = data.NavWaypoints.Count - 1; i >= 0; i--)
+                {
+                    NavWaypointDto d = data.NavWaypoints[i];
+                    if (!d.ToWaypoint().IsValid) { data.NavWaypoints.RemoveAt(i); continue; }
+                    // An out-of-range kind is a symbol we cannot draw; the row's POSITION is still good,
+                    // so it survives as a plain mark rather than being thrown away.
+                    if (d.Kind < 0 || d.Kind > (int)NavWaypointKind.Dest)
+                    {
+                        d.Kind = (int)NavWaypointKind.Mark;
+                        data.NavWaypoints[i] = d;
+                    }
+                }
+                // Over the cap (a cap lowered between builds, or a hand-edited file): keep the OLDEST,
+                // because those are the marks the player has had longest.
+                while (data.NavWaypoints.Count > cfg.MaxWaypoints)
+                    data.NavWaypoints.RemoveAt(data.NavWaypoints.Count - 1);
+            }
+
+            if (data.NavRoute != null)
+            {
+                for (int i = data.NavRoute.Count - 1; i >= 0; i--)
+                {
+                    NavRoutePointDto d = data.NavRoute[i];
+                    if (string.IsNullOrEmpty(d.RegionId) || !NavMath.IsFinite(d.Pos))
+                        data.NavRoute.RemoveAt(i);
+                }
+                // A route is an ORDERED plan: dropping a point mid-way would silently re-route the
+                // passage through a leg the player never drew. Past the cap the tail goes, which only
+                // shortens the plan.
+                while (data.NavRoute.Count > cfg.MaxRouteLegs + 1)
+                    data.NavRoute.RemoveAt(data.NavRoute.Count - 1);
+            }
+
+            if (data.NavTrack != null)
+            {
+                for (int i = data.NavTrack.Count - 1; i >= 0; i--)
+                    if (!data.NavTrack[i].ToPoint().IsValid) data.NavTrack.RemoveAt(i);
+                // The ring's own rule: the oldest crumb is the one to lose.
+                while (data.NavTrack.Count > cfg.MaxTrackPoints) data.NavTrack.RemoveAt(0);
             }
         }
     }

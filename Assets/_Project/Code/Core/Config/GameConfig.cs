@@ -241,6 +241,13 @@ namespace HiddenHarbours.Core
                  "alarm and reads its settings, so there is only ever one alarm rule.")]
         public FishFinderSettings FishFinder = FishFinderSettings.Default;
 
+        [Header("Chartplotter (the GPS chart — ADR 0025 S6)")]
+        [Tooltip("How much navigation the player may keep (waypoints, route legs, track breadcrumbs), " +
+                 "how far the boat must move before the track takes another crumb, and the chart's " +
+                 "RANGE ladder in nautical miles. The caps are what keep nav data bounded in the save; " +
+                 "the range ladder is what makes a chart of a few-hundred-metre harbour readable.")]
+        public ChartplotterSettings Chartplotter = ChartplotterSettings.Default;
+
         [Header("Helm wheel (the grabbable steering wheel — ADR 0025 S2a)")]
         [Tooltip("Mouse-spin feel of the console/sport steering wheel: lock-to-lock turns, coast " +
                  "friction, and the optional self-centre spring (0 = a real cable helm that HOLDS " +
@@ -880,6 +887,101 @@ namespace HiddenHarbours.Core
             PlaceholderLink = true,
             PlaceholderBatt01 = 0.8f,
             PlaceholderVolts = 4f,
+        };
+    }
+
+    /// <summary>
+    /// The chartplotter's tunables (<see cref="GameConfig.Chartplotter"/> — ADR 0025 S6): the caps that
+    /// bound nav data in the save, and the RANGE ladder the chart zooms through.
+    ///
+    /// <para><b>⚠ The range ladder is NOT the rig's.</b> <c>navRig.js:540</c> ships
+    /// <c>RANGE_STEPS=[1,2,4,6,10,16]</c> nautical miles, drawn against a fictional 22 × 17 NM chart.
+    /// The real world is a few hundred metres across — St Peters is
+    /// <c>WorldSizeMeters {760, 520}</c> = <b>0.41 × 0.28 NM</b> — so the rig's SMALLEST range already
+    /// shows the entire region at under half the chart's width, and every step above it is mostly
+    /// empty sea. The unit (NM) is kept because that is what the rig draws and what a plotter reads
+    /// in; only the ladder is re-scaled, to even doublings from a harbour range. Nothing about the
+    /// chart's depths or distances changes — this is the zoom control, not the survey.</para>
+    /// </summary>
+    [System.Serializable]
+    public struct ChartplotterSettings
+    {
+        [Tooltip("Most waypoints the player may keep across the whole save (all regions together). The " +
+                 "chart refuses to mark another once this is reached rather than silently dropping the " +
+                 "oldest — a waypoint is a deliberate act and losing one quietly would be worse.")]
+        [Min(1)] public int MaxWaypoints;
+
+        [Tooltip("Most legs one planned route may have. A route is a working plan, not an archive.")]
+        [Min(1)] public int MaxRouteLegs;
+
+        [Tooltip("Most track breadcrumbs kept. This one IS a ring buffer — the track is a record of " +
+                 "where you have been and the OLDEST crumb is the right thing to lose when it fills.")]
+        [Min(2)] public int MaxTrackPoints;
+
+        [Tooltip("How far (metres) the boat must move before the track takes another crumb. Together " +
+                 "with MaxTrackPoints this decides how much water the breadcrumb remembers: 8 m × 512 " +
+                 "≈ 4 km of sailing, several times across a region. Too small and the track is a dense " +
+                 "smear that fills with one harbour manoeuvre.")]
+        [Min(0.5f)] public float TrackMinSpacingMetres;
+
+        [Tooltip("The CLOSEST chart range, in nautical miles — the first rung of the ladder. 0.05 NM " +
+                 "≈ 93 m across the glass, about a wharf and its approach.")]
+        [Min(0.001f)] public float MinRangeNM;
+
+        [Tooltip("How many rungs the range ladder has. Each is DOUBLE the one below, so the default " +
+                 "6 rungs from 0.05 NM reach 1.6 NM (≈ 93 m … 3 km) — from a berth to well outside " +
+                 "any region the game has.")]
+        [Min(1)] public int RangeStepCount;
+
+        [Tooltip("Which rung a freshly fitted plotter starts on (0 = closest). 2 = 0.2 NM ≈ 370 m, " +
+                 "which frames a whole small region.")]
+        [Min(0)] public int DefaultRangeStep;
+
+        /// <summary>
+        /// The range in NM at a rung, healed against a config block that never got written.
+        ///
+        /// <para><b>Why this heals rather than trusting the field.</b> A struct member absent from the
+        /// wired <c>GameConfig.asset</c> block deserializes to ZERO, not to <see cref="Default"/> — the
+        /// trap that shipped three features inert on 2026-08-05. A zero <see cref="MinRangeNM"/> would
+        /// make the chart's world-to-screen scale divide by zero and draw nothing at all, so it is
+        /// caught here, at the one place the ladder is read.</para>
+        /// </summary>
+        public float RangeNMAt(int step)
+        {
+            float min = MinRangeNM > 0f ? MinRangeNM : Default.MinRangeNM;
+            int count = RangeStepCount > 0 ? RangeStepCount : Default.RangeStepCount;
+            if (step < 0) step = 0;
+            else if (step > count - 1) step = count - 1;
+            return min * (1 << step);
+        }
+
+        /// <summary>Number of rungs, healed the same way <see cref="RangeNMAt"/> heals.</summary>
+        public int SafeRangeStepCount => RangeStepCount > 0 ? RangeStepCount : Default.RangeStepCount;
+
+        /// <summary>The rung a fresh unit starts on, clamped into the healed ladder.</summary>
+        public int SafeDefaultRangeStep
+        {
+            get
+            {
+                int c = SafeRangeStepCount;
+                int s = DefaultRangeStep;
+                if (s < 0) s = 0;
+                else if (s > c - 1) s = c - 1;
+                return s;
+            }
+        }
+
+        /// <summary>Shipped defaults: bounded nav data, and a range ladder sized for a harbour rather
+        /// than for the rig's fictional ocean chart.</summary>
+        public static ChartplotterSettings Default => new ChartplotterSettings
+        {
+            MaxWaypoints = 64,
+            MaxRouteLegs = 24,
+            MaxTrackPoints = 512,
+            TrackMinSpacingMetres = 8f,
+            MinRangeNM = 0.05f,
+            RangeStepCount = 6,
+            DefaultRangeStep = 2,
         };
     }
 
