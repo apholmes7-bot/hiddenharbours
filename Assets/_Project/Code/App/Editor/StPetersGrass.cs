@@ -126,8 +126,8 @@ namespace HiddenHarbours.App.Editor
             // On an EDGE? Then which edge — the beach, or bare ground.
             if (!AllGrassWithin(terrain, worldPos, FringeBandMetres))
                 return NearMaterial(terrain, worldPos, DuneBandMetres,
-                                    StPetersShoreMap.ShoreMaterial.Sand,
-                                    StPetersShoreMap.ShoreMaterial.Marram)
+                                    ShoreMaterial.Sand,
+                                    ShoreMaterial.Marram)
                     ? HabitatDune
                     : HabitatFringe;
 
@@ -145,12 +145,12 @@ namespace HiddenHarbours.App.Editor
         /// enough to catch a boundary at this grain, and cheap enough to run per site (rule 7).</summary>
         public static bool AllGrassWithin(ITidalTerrain terrain, Vector2 p, float radius)
         {
-            if (StPetersShoreMap.MaterialAt(terrain, p) != StPetersShoreMap.ShoreMaterial.Grass)
+            if (StPetersShoreMap.MaterialAt(terrain, p) != ShoreMaterial.Grass)
                 return false;
             for (int i = 0; i < 4; i++)
             {
                 Vector2 q = p + Probe(i) * radius;
-                if (StPetersShoreMap.MaterialAt(terrain, q) != StPetersShoreMap.ShoreMaterial.Grass)
+                if (StPetersShoreMap.MaterialAt(terrain, q) != ShoreMaterial.Grass)
                     return false;
             }
             return true;
@@ -159,7 +159,7 @@ namespace HiddenHarbours.App.Editor
         /// <summary>True when any probe within <paramref name="radius"/> lands on one of
         /// <paramref name="wanted"/>.</summary>
         public static bool NearMaterial(ITidalTerrain terrain, Vector2 p, float radius,
-                                        params StPetersShoreMap.ShoreMaterial[] wanted)
+                                        params ShoreMaterial[] wanted)
         {
             for (int i = 0; i < 4; i++)
             {
