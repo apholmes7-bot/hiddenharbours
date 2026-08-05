@@ -264,7 +264,7 @@ namespace HiddenHarbours.UI
             if (!fitted)
             {
                 if (Expanded) HelmInstrumentExpansion.Collapse();
-                CloseMaxFace();                 // losing the glass must not strand the keyboard
+                ForgetMaxFace();                // losing the glass must not strand the keyboard
                 _painted = false;
                 FlushMounted = false;
                 if (_cardGo.activeSelf) _cardGo.SetActive(false);
@@ -318,6 +318,26 @@ namespace HiddenHarbours.UI
             _selWpt = -1;
             _measure = NavMeasureState.Off;
             _measureDragging = false;
+        }
+
+        /// <summary>
+        /// Close the MAX face AND forget the tool and the layer switches — what happens when the GLASS
+        /// goes away, rather than when the card merely closes.
+        ///
+        /// <para><b>The distinction is the point.</b> Collapsing the card keeps your tool and your
+        /// layers, because you are still the same skipper working the same chart and having them reset
+        /// every time you glanced away would be a constant small annoyance. But this host is one
+        /// <c>DontDestroyOnLoad</c> singleton for the whole play session, so without this an instrument
+        /// you no longer own — sold the boat, boarded a hull with no GPS — would come back later still
+        /// holding the route tool you put down on a different vessel. A plotter that is not fitted has
+        /// no tool; when one is fitted again it wakes as it left the factory, which is also what
+        /// "transient, never persisted" has to mean for a session-long singleton.</para>
+        /// </summary>
+        private void ForgetMaxFace()
+        {
+            CloseMaxFace();
+            _tool = NavChartTool.Pan;
+            _layers = NavChartLayers.All;
         }
 
         /// <summary>A selection can only ever point at a row that exists: waypoints are deleted from
@@ -841,6 +861,11 @@ namespace HiddenHarbours.UI
             if (text == null) return;
             foreach (char ch in text) OnTextInput(ch);
         }
+
+        /// <summary>Rub out the last character, as Backspace does. Returns true iff there was one — so
+        /// a caller clearing the field can loop until it says no. Same footing, and same reason, as
+        /// <see cref="TypeName"/>.</summary>
+        public bool BackspaceName() => _editor.Backspace();
 
         /// <summary>Finish the edit and store the name, as Enter does. Returns true iff a row changed.</summary>
         public bool CommitName() => CommitName(GameServices.Save?.Current, GameServices.CurrentRegionId);

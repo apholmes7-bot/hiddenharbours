@@ -572,7 +572,9 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             yield return Aboard("boat.test_tools", ConsoleRigKind.Novi, buyGps: true);
             yield return OnMaxFace();
-            Assert.That(Host.Tool, Is.EqualTo(NavChartTool.Pan), "PAN is the neutral default");
+            Assert.That(Host.Tool, Is.EqualTo(NavChartTool.Pan),
+                        "PAN is the neutral default — and this host is ONE session-long singleton, so " +
+                        "this also pins that a tool picked up on an earlier hull did not follow us here");
 
             foreach (int slot in new[] { 9, 10, 11 })
             {
@@ -584,6 +586,42 @@ namespace HiddenHarbours.Tests.PlayMode
                 yield return null;
                 Assert.That(Host.Tool, Is.EqualTo(NavChartTool.Pan), "…and pressing it again puts it down");
             }
+        }
+
+        [UnityTest]
+        public IEnumerator LosingTheGlass_ForgetsTheTool_ThoughMerelyClosingTheCardDoesNot()
+        {
+            // The host is a DontDestroyOnLoad singleton for the whole play session, so "transient"
+            // needs saying out loud: closing the card KEEPS your tool (you are the same skipper on the
+            // same chart), but the instrument going away entirely must not leave the route tool in a
+            // hand that no longer holds a plotter.
+            yield return Aboard("boat.test_forget", ConsoleRigKind.Novi, buyGps: true);
+            yield return OnMaxFace();
+
+            Assert.That(Press(ChartplotterOverlayLayout.RailBase + 10), Is.True);   // RTE
+            Assert.That(Press(ChartplotterOverlayLayout.RailBase + 5), Is.True);    // DPTH off
+            yield return null;
+            Assert.That(Host.Tool, Is.EqualTo(NavChartTool.Route));
+            Assert.That(Host.Layers & NavChartLayers.Depth, Is.EqualTo(NavChartLayers.None));
+
+            // Closing the card keeps both — the negative control that makes the assertion below about
+            // LOSING THE GLASS rather than about any collapse.
+            HelmInstrumentExpansion.Collapse();
+            yield return null;
+            yield return null;
+            Assert.That(Host.MaxFace, Is.False);
+            Assert.That(Host.Tool, Is.EqualTo(NavChartTool.Route),
+                        "a glance away does not put your tool down");
+
+            // Now the glass itself goes: the relay's OnDisable unregisters the instrument seam
+            // (HelmControlRelay:100) and the plotter is no longer fitted.
+            Object.Destroy(_boatGo);
+            yield return null;                  // Destroy lands at end of frame → OnDisable runs
+            yield return null;                  // …and the host's Update sees the seam gone
+            yield return null;
+            Assert.That(Host.Showing, Is.False, "no hull, no instrument");
+            Assert.That(Host.Tool, Is.EqualTo(NavChartTool.Pan), "…and it wakes as it left the factory");
+            Assert.That(Host.Layers, Is.EqualTo(NavChartLayers.All));
         }
 
         [UnityTest]
@@ -676,6 +714,15 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
             Assert.That(Press(ChartplotterOverlayLayout.ActionName), Is.True);
             yield return null;
+
+            // A rename opens as an EDIT, not a retype: the field is seeded with the name the mark
+            // already has (NavNameEditor.Open), which is what makes fixing a typo one keystroke rather
+            // than twelve.
+            Assert.That(Host.EditText, Is.EqualTo("MARK 1"), "seeded with the auto name it was given");
+
+            // Clear it the way Backspace does, and prove the key actually empties the field.
+            for (int i = 0; i < NavNameEditor.MaxLength + 2 && Host.BackspaceName(); i++) { }
+            Assert.That(Host.EditText, Is.Empty);
 
             Host.TypeName("wreck é7");     // lower case, an undrawable letter, a digit
             Assert.That(Host.EditText, Is.EqualTo("WRECK 7"),
