@@ -190,6 +190,7 @@ Material:
     - _WhitecapFormSharpness: 0.4
     - _WhitecapOnsetAmp: 0.5
     - _WhitecapPeakDensity: 0.5
+    - _WhitecapTexScale: 0.0625
     - _WhitecapTexStrength: 0.55
     - _WindChop: 0.07
     - _WindChopScale: 0.7
