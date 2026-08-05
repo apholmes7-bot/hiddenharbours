@@ -16,8 +16,10 @@ namespace HiddenHarbours.Boats
     ///     2026-08-03: a key can't hold an analog position, so each press bumps a detent and the drive
     ///     STAYS there): W/Up press = +1 detent, S/Down press = −1 detent, the drive HOLDS between
     ///     presses; holding a key auto-repeats after a data-driven delay (GameConfig.HelmThrottle);
-    ///     Z snaps to neutral. A/D = steer (momentary, unchanged). Gamepad rides the SAME actions:
-    ///     D-pad up/down = detents, B (east) = neutral, left stick X = steer.
+    ///     Z snaps to neutral. A/D = steer — momentary, but the COMMAND is eased toward full lock
+    ///     over GameConfig.HelmWheel.KeySteerSecondsToLock (S4.5: the mirrored wheel turns gradually
+    ///     and the rudder follows the same curve). Gamepad rides the SAME actions: D-pad up/down =
+    ///     detents, B (east) = neutral, left stick X = steer (analog, un-eased).
     /// The drive value lives in <see cref="BoatController"/> alone (read back through
     /// <see cref="BoatController.Throttle"/> each frame) — this component holds only repeat TIMERS,
     /// so the mouse drag path (HelmControlRelay) and these keys can never fight over a second copy.
@@ -45,6 +47,11 @@ namespace HiddenHarbours.Boats
         // Auto-repeat timers for the held throttle keys (transient input state — never saved, rule 5).
         private HeldRepeatState _aheadRepeat;
         private HeldRepeatState _asternRepeat;
+
+        // The eased key-steer command (S4.5) — where the walk toward the keys' target has reached.
+        // Transient input state, never saved (rule 5); synced to the boat's held steer whenever the
+        // keys are not the channel's owner, so a takeover never snaps.
+        private float _steerEase;
 
         private void Awake()
         {
@@ -88,6 +95,75 @@ namespace HiddenHarbours.Boats
         }
 
         /// <summary>
+        /// The eased steer walk (S4.5, owner ask 3: "the steering wheel needs to follow the turning
+        /// from the arrow keys — gradual and smooth"). The COMMAND is eased, not the wheel graphic —
+        /// if only the picture eased, the wheel would transiently show less lock than the rudder has
+        /// (a lying instrument); easing the command keeps the existing mirror exact and gives the
+        /// boat a progressive key-steer feel. Linear walk at 1/<paramref name="secondsToFullLock"/>
+        /// per second (centre→lock in that time; a full reversal sweeps through centre in ≈2×), and
+        /// it SETTLES EXACTLY — within one step of the target it returns the target, so the mirrored
+        /// wheel's change key stops moving and the dash stops repainting. <c>secondsToFullLock ≤ 0</c>
+        /// = instant (the pre-S4.5 momentary snap, and what a stale GameConfig.asset row degrades
+        /// to). Pure + injected dt: PlayMode frame count is NOT time, so the maths never reads a
+        /// clock of its own.
+        /// </summary>
+        public static float EaseSteer(float current, float target, float dt, float secondsToFullLock)
+        {
+            if (secondsToFullLock <= 0f) return target;
+            if (dt < 0f) dt = 0f;
+            float maxStep = dt / secondsToFullLock;
+            float delta = target - current;
+            if (delta > maxStep) return current + maxStep;
+            if (delta < -maxStep) return current - maxStep;
+            return target;
+        }
+
+        /// <summary>
+        /// The whole per-frame steer decision (S4.5) — arbitration + ease as ONE pure function so the
+        /// truth table pins in EditMode. <see cref="ArbitrateSteer"/> runs on the RAW momentary read
+        /// (keys, else stick), so the eased tail after a key release can never read as "real input"
+        /// and break a wheel session it should not:
+        /// <list type="bullet">
+        /// <item><b>Session live, raw zero</b> → the wheel's held steer stands, and the ease state is
+        /// SYNCED to it — any eased tail dies, and a later key press starts from the wheel's lock
+        /// (taking over must not snap).</item>
+        /// <item><b>Keys down</b> → the command eases toward ±1 (from the held steer on the frame a
+        /// key breaks a session; from the running ease otherwise). Keys win over the stick, as
+        /// before.</item>
+        /// <item><b>Stick deflected</b> → analog passes through UN-eased (easing a stick only adds
+        /// lag) and the ease state tracks it.</item>
+        /// <item><b>Nothing</b> → the command eases back to centre (keys stay momentary — the return
+        /// is just as gradual as the turn).</item>
+        /// </list>
+        /// </summary>
+        public static float ComposeSteer(float keySteer, float stickSteer, bool sessionActive,
+                                         float heldSteer, float easeFrom, float dt,
+                                         float secondsToFullLock,
+                                         out float easeNext, out bool endSession)
+        {
+            float momentary = keySteer != 0f ? keySteer : stickSteer;
+            float arbitrated = ArbitrateSteer(momentary, sessionActive, heldSteer, out endSession);
+            if (sessionActive && !endSession)
+            {
+                easeNext = arbitrated;              // the wheel holds; the ease tracks its steer
+                return arbitrated;
+            }
+            if (keySteer != 0f)
+            {
+                float from = endSession ? heldSteer : easeFrom;   // wheel→keys handover: no snap
+                easeNext = EaseSteer(from, keySteer, dt, secondsToFullLock);
+                return easeNext;
+            }
+            if (stickSteer != 0f)
+            {
+                easeNext = stickSteer;              // analog stick: straight through
+                return stickSteer;
+            }
+            easeNext = EaseSteer(easeFrom, 0f, dt, secondsToFullLock);
+            return easeNext;
+        }
+
+        /// <summary>
         /// Map the keyboard combo to each oar's stroke state (forward +1 / backward -1 / idle 0), per the
         /// owner's rowing table. W/S drive both oars ahead/astern; A engages the PORT (left) oar, D the
         /// STARBOARD (right). A one-sided key rows just that oar in the W/S direction; with no W/S it rows
@@ -119,7 +195,7 @@ namespace HiddenHarbours.Boats
         // Engine helm — the STEPPED-AND-HELD notched throttle (owner directive 2026-08-03). Presses
         // step a detent; the drive HOLDS between presses (read back from the controller — the ONE
         // owner); held keys walk on after a data-driven delay; X (or gamepad B) chops to neutral.
-        // Steer stays momentary: keys full-lock, gamepad stick analog.
+        // Steer stays momentary, but the key COMMAND is eased toward lock (S4.5); the stick is analog.
         private void ReadEngine(Keyboard kb, Gamepad gp)
         {
             HelmThrottleSettings cfg = GameServices.HelmThrottle;
@@ -148,14 +224,18 @@ namespace HiddenHarbours.Boats
             if (neutral) drive = 0f;
             else if (steps != 0) drive = HelmThrottleStepMath.StepMany(drive, steps, aheadN, asternN);
 
-            float steer = ((kb != null && (kb.dKey.isPressed || kb.rightArrowKey.isPressed)) ? 1f : 0f)
-                        - ((kb != null && (kb.aKey.isPressed || kb.leftArrowKey.isPressed)) ? 1f : 0f);
-            if (gp != null && steer == 0f) steer = gp.leftStick.x.ReadValue();
+            float keySteer = ((kb != null && (kb.dKey.isPressed || kb.rightArrowKey.isPressed)) ? 1f : 0f)
+                           - ((kb != null && (kb.aKey.isPressed || kb.leftArrowKey.isPressed)) ? 1f : 0f);
+            float stickSteer = gp != null ? gp.leftStick.x.ReadValue() : 0f;
 
-            // Wheel steer-session arbitration (S2a, the IHelmControl contract).
+            // Wheel steer-session arbitration (S2a) + the eased key steer (S4.5) — one pure step.
+            // Arbitration sees the RAW keys; the eased command is what reaches the controller, so
+            // the mirrored wheel turns gradually and stays an exact mirror of the rudder.
             if (_relay == null) _relay = GetComponent<HelmControlRelay>();
             bool sessionActive = _relay != null && _relay.SteerDragActive;
-            steer = ArbitrateSteer(steer, sessionActive, _boat.Steer, out bool endSession);
+            float steer = ComposeSteer(keySteer, stickSteer, sessionActive, _boat.Steer, _steerEase,
+                                       dt, GameServices.HelmWheel.KeySteerSecondsToLock,
+                                       out _steerEase, out bool endSession);
             if (endSession) _relay.EndSteerDrag();
 
             _boat.SetControl(drive, steer);

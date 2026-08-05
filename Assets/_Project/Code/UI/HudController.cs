@@ -78,6 +78,16 @@ namespace HiddenHarbours.UI
         // Whether the nav cluster is currently shown (at sea). Toggled, so labels flip enabled only on change.
         private bool _navShown;
 
+        // S4.5 — what the HUD yields while a helm card is up (HudHelmSuppressionRule). Derived every
+        // frame (cheap bools), applied only on change; on foot it is all-false and nothing moves.
+        private HudHelmSuppression _suppression;
+        private bool _suppressionInit;
+
+        // The nav cluster's two anchor homes: bottom-centre (its VS-19 spot) and the bottom-left
+        // band it moves to while a helm card holds the bottom-centre (S4.5 overlap rule).
+        private const float NavAnchorMinX = 0.2f, NavAnchorMaxX = 0.8f;
+        private const float NavHelmAnchorMinX = 0f, NavHelmAnchorMaxX = 0.3f;
+
         // Clock change-detection (avoid building the clock string when the displayed minute is unchanged).
         private int _lastMinuteOfDay = -1;
         private int _lastDay = -1;
@@ -172,6 +182,7 @@ namespace HiddenHarbours.UI
             UpdateClock();
             UpdateEnvironmentThrottled();
             UpdateMoney();            // event-driven, but reconcile once services exist (boot balance)
+            UpdateHelmSuppression();  // S4.5: the HUD yields the helm (moves/hides on change only)
             TickPayoutFlash();
             TickCatchCard();
         }
@@ -324,11 +335,80 @@ namespace HiddenHarbours.UI
         {
             if (_navShown == shown) return;
             _navShown = shown;
-            if (_compassLabel != null)       _compassLabel.enabled = shown;
-            if (_compassRibbonLabel != null) _compassRibbonLabel.enabled = shown;
-            if (_compassNeedleLabel != null) _compassNeedleLabel.enabled = shown;
-            if (_setDriftLabel != null)      _setDriftLabel.enabled = shown;
-            if (_apparentWindLabel != null)  _apparentWindLabel.enabled = shown;
+            ApplyNavCluster();
+        }
+
+        // ---- S4.5: the HUD yields the helm (ask 1 — HudHelmSuppressionRule holds the rule) ----------
+
+        private void UpdateHelmSuppression()
+        {
+            IHelmControl helm = GameServices.HelmControl;
+            bool helmCard = helm != null && helm.HasHelm && helm.Style != HelmControlStyle.None;
+            bool dashShowing = false;
+            CompassMount dashCompass = CompassMount.None;
+            if (helmCard)
+            {
+                HelmFit fit = helm.Fit;
+                dashShowing = HelmInstrumentExpansion.DashCarriesBrow(helm.Style, fit.Rig);
+                dashCompass = fit.Compass;
+            }
+            // Focus/expansion are UI-transient (never Core state) — read from the sibling hosts.
+            // ⚠ explicit null test, never ?. on a UnityEngine.Object (fake-null).
+            HelmOverlayHost host = HelmOverlayHost.Instance;
+            bool helmFocused = host != null && host.Focused;
+            bool expanded = HelmInstrumentExpansion.Current != DashInstrument.None;
+
+            HudHelmSuppression s = HudHelmSuppressionRule.Derive(helmCard, dashShowing, dashCompass,
+                                                                 helmFocused, expanded);
+            if (_suppressionInit && s.Equals(_suppression)) return;
+            _suppression = s;
+            _suppressionInit = true;
+            ApplyNavCluster();
+
+            // A big panel takes the centre of the screen — the catch celebration stands down rather
+            // than flashing over the panel the player is working (it is a 1.5 s transient; the payout
+            // flash top-right still fires on a sale, so a sold catch is never silent).
+            if (s.HideForBigPanel && _catchCardTimer > 0f)
+            {
+                _catchCardTimer = 0f;
+                if (_catchCardLabel != null) _catchCardLabel.enabled = false;
+                if (_catchCardIcon != null)  _catchCardIcon.enabled = false;
+            }
+        }
+
+        /// <summary>One writer for the nav cluster's enabled + anchors, from (_navShown, _suppression):
+        /// the heading trio hides when the dash carries a compass (duplication rule); everything hides
+        /// under a big panel; the whole cluster parks bottom-left while any helm card is up (overlap
+        /// rule). Called only on a state change — never per frame.</summary>
+        private void ApplyNavCluster()
+        {
+            bool baseShown = _navShown && !_suppression.HideForBigPanel;
+            bool trioShown = baseShown && !_suppression.HideCompassCluster;
+            if (_compassLabel != null)       _compassLabel.enabled = trioShown;
+            if (_compassRibbonLabel != null) _compassRibbonLabel.enabled = trioShown;
+            if (_compassNeedleLabel != null) _compassNeedleLabel.enabled = trioShown;
+            if (_setDriftLabel != null)      _setDriftLabel.enabled = baseShown;
+            if (_apparentWindLabel != null)  _apparentWindLabel.enabled = baseShown;
+
+            float minX = _suppression.MoveNavCluster ? NavHelmAnchorMinX : NavAnchorMinX;
+            float maxX = _suppression.MoveNavCluster ? NavHelmAnchorMaxX : NavAnchorMaxX;
+            SetNavAnchorX(_compassLabel, minX, maxX);
+            SetNavAnchorX(_compassRibbonLabel, minX, maxX);
+            SetNavAnchorX(_compassNeedleLabel, minX, maxX);
+            SetNavAnchorX(_setDriftLabel, minX, maxX);
+            SetNavAnchorX(_apparentWindLabel, minX, maxX);
+        }
+
+        private static void SetNavAnchorX(Text label, float minX, float maxX)
+        {
+            if (label == null) return;
+            var rt = (RectTransform)label.transform;
+            Vector2 min = rt.anchorMin, max = rt.anchorMax;
+            if (min.x == minX && max.x == maxX) return;
+            min.x = minX;
+            max.x = maxX;
+            rt.anchorMin = min;
+            rt.anchorMax = max;
         }
 
         private void UpdateMoney()
@@ -405,6 +485,9 @@ namespace HiddenHarbours.UI
         private void ShowCatchCard(in CatchItem item)
         {
             if (_catchCardLabel == null) return;
+            // S4.5: a big panel (focused helm / expanded instrument) owns the screen centre — skip
+            // the centre-screen flourish rather than flash over it. The payout flash still fires.
+            if (_suppression.HideForBigPanel) return;
             _catchCardLabel.text = HudFormat.CatchCard(item.DisplayName, item.WeightKg, item.BaseValue);
 
             // Show the caught species' icon beside the card text, resolved by id through the Core

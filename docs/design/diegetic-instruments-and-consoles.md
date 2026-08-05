@@ -192,6 +192,42 @@ not "near"), so "none in range" means none **under** the boat; there is delibera
 that does. (The **fish finder** has since landed: its glass shipped with ADR 0025 S3b and its persisted
 `RangeMetres` preference is the schema-v9 amendment on ADR 0030 — this line predates both.)
 
+### Instruments mount ON the dash; the big card is opt-in (S4.5, SHIPPED 2026-08-05)
+
+The owner's brow-squash ruling: *"the depth finder / fish finder and any navigation tool should be shown
+on the dash and not blown up by default; this should be selectable — which UI can be expanded."*
+
+- **Flush by default.** On a consoled hull the fitted brow instrument paints INTO its authored mount on
+  the composed dash — the rig sources' own flush-mount idiom (`consoleRig.js:389-401` /
+  `noviRig.js:445-451` both `paintInto` the mount box, which is `DepthRigRender.DrawUnit` /
+  `FishRigRender.DrawUnit` in C#). The skiff fish cutout (148×172, rising into the headroom) landed with
+  this slice as `HelmDashGeometry.FinderCutout`. The flush face draws from the SAME seam objects as the
+  big card (live sounding, hull prefs, `IFishSchools.MarksAt` at the transducer) — the two views cannot
+  disagree — and the shallow alarm's flash renders in both (same trigger, same `AlarmBlinkHz`).
+- **Selectable expansion.** On the FOCUSED dash, clicking the mounted instrument's glass expands it — the
+  S2/S3b standalone cards ARE the expanded state, straight at their big controls-live size (no second big
+  view was built). One expanded at a time (`HelmInstrumentExpansion` — a single enum, so it's type-level);
+  Esc / click-again / click-away collapses; the state is transient UI, never persisted (rule 5). The dash
+  host owns every transition; the instrument hosts only read it. Interactive controls (MODE/RANGE/ALARM,
+  units, set-point, night) live in the expanded state only — the flush face is glance + click target.
+  Radar/chartplotter (S5/S6) inherit this mount+expand pattern when they exist. A helm with no console
+  (tiller) keeps the pre-S4.5 standalone cards. The dev `K`-cycle drives the flush faces and, when
+  expanded, which big card is up — it never resurrects standalone-by-default.
+- **The HUD yields the helm** (owner ask 1), as one pure mapping (`HudHelmSuppressionRule`): the VS-19
+  nav cluster moves bottom-left while any helm card is up (every helm card anchors bottom-centre, where
+  the cluster lived); the HUD heading trio (compass/ribbon/needle) hides exactly while the dash carries a
+  mounted compass — keyed on the resolved `HelmFit`, never a hull name (the skiff consoles author a dome,
+  the pilothouses author NONE, so a Novi/Cape keeps its only heading read); a focused card or expanded
+  instrument hides the whole cluster + the centre-screen catch flourish. Clock/tide/wind/sea/money never
+  suppress. The helm overlays also moved ABOVE the HUD canvas (120 vs 100) — they had shipped at 60,
+  under it, which is how the cluster ended up drawn across the dash.
+- **Eased key steer** (owner ask 3): A/D now ease the steer COMMAND toward lock over
+  `GameConfig.HelmWheel.KeySteerSecondsToLock` (0.28 s default; 0 = the old snap) — the mirrored wheel
+  turns gradually AND the rudder follows the same curve (easing only the graphic would show less lock
+  than the boat has). Release eases back; reversals sweep through centre; the gamepad stick stays analog
+  and un-eased; the S2a wheel-session arbitration runs on the RAW keys, so the eased tail can never break
+  a session. ⚠ gameplay-systems: full key lock now arrives ~0.28 s later — a real feel change, owner-tunable.
+
 ---
 
 ## 5. Resizable / free-drag / minimizable console windows

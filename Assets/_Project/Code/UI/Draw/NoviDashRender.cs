@@ -279,6 +279,20 @@ namespace HiddenHarbours.UI
             }
         }
 
+        /// <summary>
+        /// The Novi's sounder-glass dressing — the glare strip and the standby LED the rig draws
+        /// AFTER <c>paintInto</c> lands the instrument (noviRig.js:450-451), so they read over the
+        /// glass. Public for the dash compositor (S4.5): the flush-mounted DepthRig/FishRig cell
+        /// composites over the chrome's copy of these two, and this re-applies them in the source's
+        /// own order. Cape draws no dressing over its sounder glass (capeRig.js:440-441 — gasket +
+        /// bezel only), which is why this is Novi's and not shared.
+        /// </summary>
+        public static void BrowGlassOver(DrawSurface s, int x, int y, int w, int h, bool night)
+        {
+            s.BlendRect(x + 3, y + 3, w - 6, 2, WHITE, 0.05f);
+            RigDrawUtil.Circle(s, x + w - 8, y + 7, 2, night ? ICE[3] : ICE[4]);
+        }
+
         /// <summary>The glossy black glass frame that IS the reserved space (js:321-326) — always
         /// drawn, fitted or not.</summary>
         private static void GlassBezel(DrawSurface s, int x, int y, int w, int h)

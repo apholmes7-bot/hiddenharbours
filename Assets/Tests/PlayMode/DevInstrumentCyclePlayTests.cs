@@ -114,6 +114,7 @@ namespace HiddenHarbours.Tests.PlayMode
         public void TearDown()
         {
             GameServices.Reset();
+            HelmInstrumentExpansion.Collapse();   // the S4.5 expansion state is a static — never leak it
             foreach (var o in _spawned)
                 if (o != null) Object.Destroy(o);
             _spawned.Clear();
@@ -324,7 +325,9 @@ namespace HiddenHarbours.Tests.PlayMode
         public IEnumerator TheTwoHosts_HandTheCutoutOver_AndAreNeverBothOnScreen()
         {
             // The cycle exercises the handover on EVERY press, in both directions — which the purchase
-            // path (sounder → finder, one way, once) never did.
+            // path (sounder → finder, one way, once) never did. S4.5: on this CONSOLED hull the
+            // standalone cards are the EXPANDED state, so the walk runs expanded — proving K drives
+            // the ONE resolved cutout that both the flush face and the expanded card render from.
             SounderOverlayHost sounder = TheSounderHost();
             FishFinderOverlayHost finder = TheFinderHost();
 
@@ -334,12 +337,29 @@ namespace HiddenHarbours.Tests.PlayMode
             boat.SetHull(NewConsoleHull("boat.test_hosts"));
             yield return null;
 
+            // Flush-by-default control: fitted but NOT expanded → neither standalone card is up
+            // (the K-cycle must never resurrect the standalone-by-default cards).
+            Assert.That(GameServices.HelmInstruments.Fit.Sounder, Is.EqualTo(SounderKind.Depth));
+            yield return null;
+            yield return null;
+            Assert.That(sounder.Showing, Is.False,
+                        "flush by default: a fitted sounder alone puts no standalone card on screen");
+            Assert.That(finder.Showing, Is.False);
+
+            HelmInstrumentExpansion.Toggle(DashInstrument.Sounder);   // select the cutout's big view
+
             var expected = new[] { SounderKind.Depth, SounderKind.Fish, SounderKind.None };
             for (int i = 0; i < expected.Length * 2 + 1; i++)
             {
                 SounderKind want = expected[i % expected.Length];
                 Assert.That(GameServices.HelmInstruments.Fit.Sounder, Is.EqualTo(want),
                             $"press {i}: the brow says {want}");
+
+                // The dash host is not in this rig, so re-select after a step to a bare brow (in the
+                // live game HelmOverlayHost collapses the expansion when the mount empties).
+                if (want != SounderKind.None
+                    && HelmInstrumentExpansion.Current != DashInstrument.Sounder)
+                    HelmInstrumentExpansion.Toggle(DashInstrument.Sounder);
 
                 // Both hosts must SEE this frame before either is judged — each decides in its own Update.
                 yield return null;

@@ -9,9 +9,15 @@ namespace HiddenHarbours.UI
     /// <summary>
     /// The screen-space FISH FINDER card (ADR 0025 S3b) — the colour-sonar upgrade that supersedes the
     /// depth sounder in the same brow cutout. While the player pilots a hull whose effective fit resolves
-    /// to <see cref="SounderKind.Fish"/>, a small card paints the live water column; clicking it enlarges
-    /// it to a FOCUSED state where the three side pushers and the three glass regions work. Esc or a click
-    /// outside returns.
+    /// to <see cref="SounderKind.Fish"/>, this card paints the live water column, with the three side
+    /// pushers and the three glass regions live at the big size.
+    ///
+    /// <para><b>S4.5 — on a consoled hull this card is the EXPANDED state, not the default.</b> The
+    /// owner's brow-squash ruling: the glance read is the FLUSH face the dash compositor paints into the
+    /// brow mount (<see cref="HelmDashController"/> — the rig's own <c>paintInto</c> idiom at the mount
+    /// box); this card appears only when the player selects the instrument on the focused dash
+    /// (<see cref="HelmInstrumentExpansion"/>), and then straight at its big, controls-live size. On a
+    /// helm with no console the pre-S4.5 small/focus card behaviour still stands.</para>
     ///
     /// <para><b>Its own host, not a branch inside <see cref="SounderOverlayHost"/>.</b> That file's own
     /// reasoning applies again and harder: each instrument's lifetime, hit geometry and repaint rule is its
@@ -62,9 +68,14 @@ namespace HiddenHarbours.UI
         private RectTransform _cardRect;
         private RawImage _image;
         private RectTransform _imageRect;
+        private Canvas _canvas;
 
         private DrawSurface _surface;
         private Texture2D _texture;
+
+        // S4.5: true while this card is up as the dash's EXPANDED instrument (the standalone card is
+        // no longer a default presentation on a consoled hull — the flush face on the dash is).
+        private bool _expandedMode;
 
         // Change detection — the whole painted frame as one comparable value plus the marks' revision.
         private bool _painted;
@@ -122,9 +133,9 @@ namespace HiddenHarbours.UI
 
             var canvasGo = new GameObject("FishFinderOverlayCanvas");
             canvasGo.transform.SetParent(transform, false);
-            var canvas = canvasGo.AddComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvas.sortingOrder = _sortingOrder;
+            _canvas = canvasGo.AddComponent<Canvas>();
+            _canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            _canvas.sortingOrder = _sortingOrder;
             canvasGo.AddComponent<CanvasScaler>();   // constant pixel size — the rigs are pixel art
 
             _cardGo = new GameObject("FishFinderCard");
@@ -165,7 +176,26 @@ namespace HiddenHarbours.UI
                 if (_cardGo.activeSelf) _cardGo.SetActive(false);
                 return;
             }
+
+            // S4.5 — the owner's brow-squash ruling: while the helm's instruments are DASH-MOUNTED,
+            // the glance read is the FLUSH face on the dash and this standalone card is the EXPANDED
+            // state only. Expansion transitions belong to the dash host (HelmOverlayHost); this host
+            // only reads the state. A helm with no console keeps the S3b behaviour below, untouched.
+            bool dashMounted = HelmInstrumentExpansion.DashCarriesBrow(GameServices.HelmControl);
+            _expandedMode = dashMounted;
+            if (dashMounted && HelmInstrumentExpansion.Current != DashInstrument.Sounder)
+            {
+                _focused = false;
+                _painted = false;
+                _scanBucket = long.MinValue;
+                _drawMarks.Clear();
+                if (_cardGo.activeSelf) _cardGo.SetActive(false);
+                return;
+            }
             if (!_cardGo.activeSelf) _cardGo.SetActive(true);
+            // The expanded card reads OVER the dash card (120); the small legacy card keeps its
+            // authored order beside the helm.
+            _canvas.sortingOrder = _expandedMode ? _sortingOrder + 70 : _sortingOrder;
 
             FishFinderSettings finder = GameServices.FishFinder;
             DepthSounderSettings sounder = GameServices.DepthSounder;
@@ -192,7 +222,8 @@ namespace HiddenHarbours.UI
                 finder.PlaceholderSens01, finder.PlaceholderLink, finder.PlaceholderBatt01,
                 finder.PlaceholderVolts);
 
-            Rect card = FishFinderOverlayLayout.CardRect(_focused, in finder,
+            bool big = _focused || _expandedMode;   // expansion IS the focused presentation
+            Rect card = FishFinderOverlayLayout.CardRect(big, in finder,
                                                          Screen.width, Screen.height);
             LayoutCard(card);
             Repaint(in state);
@@ -260,6 +291,21 @@ namespace HiddenHarbours.UI
                                  in DepthSounderSettings sounder, in FishFinderSettings finder,
                                  Rect card)
         {
+            if (_expandedMode)
+            {
+                // S4.5: as the dash's EXPANDED instrument, Esc and click-away belong to the dash host
+                // (the one owner of expansion transitions — see HelmOverlayHost.ReadDashPointer).
+                // This host answers only clicks INSIDE its card: pushers + the three glass regions.
+                var m = Mouse.current;
+                if (m == null || !m.leftButton.wasPressedThisFrame) return;
+                Vector2 p = m.position.ReadValue();
+                if (!card.Contains(p)) return;
+                HelmOverlayLayout.ScreenToRig(p, card, FishRigRender.W, FishRigRender.H,
+                                              out Vector2 px);
+                Apply(instruments, in prefs, in sounder, in finder, FishFinderOverlayLayout.HitTest(px));
+                return;
+            }
+
             var kb = Keyboard.current;
             if (_focused && kb != null && kb.escapeKey.wasPressedThisFrame) { _focused = false; return; }
 

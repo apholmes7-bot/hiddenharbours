@@ -35,9 +35,11 @@ namespace HiddenHarbours.UI
     public sealed class HelmOverlayHost : MonoBehaviour
     {
         [Header("Canvas")]
-        [Tooltip("Sorting order of the overlay canvas. Above the HUD band so the focused instrument " +
-                 "reads over it; below modal shells.")]
-        [SerializeField] private int _sortingOrder = 60;
+        [Tooltip("Sorting order of the overlay canvas. Above the HUD band (100) so the helm reads " +
+                 "over it — S4.5 fixed the value to match this long-stated intent (it shipped at 60, " +
+                 "UNDER the HUD, which is how the nav cluster ended up drawn across the dash). Below " +
+                 "the market screens (200) and the tide almanac (210).")]
+        [SerializeField] private int _sortingOrder = 120;
 
         private static HelmOverlayHost _instance;
 
@@ -136,6 +138,7 @@ namespace HiddenHarbours.UI
                 _dragging = false;
                 _dashCtl.Deactivate(helm);
                 _focused = false;
+                HelmInstrumentExpansion.Collapse();   // helm lost — nothing left to expand over
                 _shownStyle = HelmControlStyle.None;
                 CardKind = HelmCardKind.None;
                 if (_cardGo.activeSelf) _cardGo.SetActive(false);
@@ -149,13 +152,14 @@ namespace HiddenHarbours.UI
             // brought the two skiffs; S4 brings the two wheelhouses, so that is now every rig the
             // fleet has — a hull only falls back to the lone lever card if it has no console at all.
             HelmFit fit = helm.Fit;
-            bool dash = style == HelmControlStyle.Lever && fit.Rig != ConsoleRigKind.None;
+            bool dash = HelmInstrumentExpansion.DashCarriesBrow(style, fit.Rig);
             if (dash != _dashShown)
             {
                 // Crossing the dash boundary invalidates the other path's change-detection keys.
                 _dashCtl.Invalidate();
                 if (!dash) _dashCtl.Deactivate(helm);
                 if (_dragging) { helm.EndDrag(); _dragging = false; }
+                HelmInstrumentExpansion.Collapse();
                 _shownStyle = HelmControlStyle.None;
                 _shownLeverKey = int.MinValue;
                 _shownBandLit = -1;
@@ -165,15 +169,20 @@ namespace HiddenHarbours.UI
             if (dash)
             {
                 CardKind = HelmCardKind.Dash;
+                // An expanded instrument needs a mount to be expanded FROM — if the brow empties
+                // under it (the dev K-cycle stepping to bare, an equipment change), collapse.
+                if (HelmInstrumentExpansion.Current == DashInstrument.Sounder
+                    && fit.Sounder == SounderKind.None)
+                    HelmInstrumentExpansion.Collapse();
                 // The pilothouse canvas is taller than the skiffs' (600×548 vs 600×510), so the card
                 // rect and the screen→rig mapping both follow the live rig, never one fixed size.
                 int dashW = HelmDashGeometry.CanvasW(fit.Rig), dashH = HelmDashGeometry.CanvasH(fit.Rig);
                 Rect dashCard = HelmOverlayLayout.DashCardRect(_focused, dashW, dashH, in cfg,
                                                                Screen.width, Screen.height);
                 LayoutCard(HelmControlStyle.Lever, dashCard, dashW, dashH, 0f);
-                _dashCtl.UpdateAndPaint(helm, fit, SampleHeadingDegrees(), Time.deltaTime, _focused,
-                                        ref _texture, _image);
-                ReadDashPointer(helm, fit.Rig, dashCard, in cfg);
+                _dashCtl.UpdateAndPaint(helm, GameServices.HelmInstruments, fit, SampleHeadingDegrees(),
+                                        Time.time, Time.deltaTime, _focused, ref _texture, _image);
+                ReadDashPointer(helm, in fit, dashCard, in cfg);
                 return;
             }
 
@@ -279,12 +288,38 @@ namespace HiddenHarbours.UI
         /// S1's (click-to-focus, Esc/click-away out); WITHIN focus the press lands on the instrument
         /// under it — wheel rim grab, lever grip drag, binnacle travel-guide — via
         /// <see cref="HelmDashController"/>. Hit tests run in the dash's own rig pixels, so the
-        /// card scale needs no special-casing (the S1 ScreenToRig discipline).</summary>
-        private void ReadDashPointer(IHelmControl helm, ConsoleRigKind rig, Rect card,
+        /// card scale needs no special-casing (the S1 ScreenToRig discipline).
+        ///
+        /// <para><b>S4.5 — instrument expansion.</b> On the FOCUSED dash a press on the mounted brow
+        /// instrument's glass EXPANDS it (the standalone card becomes the big view); while one is
+        /// expanded it is modal over the dash: Esc or any click outside the expanded card collapses
+        /// it (click-again on the flush face is just a click outside — it collapses too), and clicks
+        /// INSIDE the expanded card belong to that instrument host's controls. This host owns EVERY
+        /// expansion transition — the instrument hosts only read the state — so one click can never
+        /// be answered twice (a host-side collapse plus a dash-side re-expand would re-open what the
+        /// player just closed).</para></summary>
+        private void ReadDashPointer(IHelmControl helm, in HelmFit fit, Rect card,
                                      in HelmOverlaySettings cfg)
         {
+            ConsoleRigKind rig = fit.Rig;
             int rigW = HelmDashGeometry.CanvasW(rig), rigH = HelmDashGeometry.CanvasH(rig);
             var kb = Keyboard.current;
+
+            if (HelmInstrumentExpansion.Current != DashInstrument.None)
+            {
+                // Modal over the dash: Esc backs out ONE level (the expansion, not the dash focus).
+                if (kb != null && kb.escapeKey.wasPressedThisFrame)
+                {
+                    HelmInstrumentExpansion.Collapse();
+                    return;
+                }
+                var m = Mouse.current;
+                if (m == null || !m.leftButton.wasPressedThisFrame) return;
+                if (!ExpandedInstrumentRect(in fit).Contains(m.position.ReadValue()))
+                    HelmInstrumentExpansion.Collapse();
+                return;   // clicks inside the expanded card are the instrument host's
+            }
+
             if (_focused && kb != null && kb.escapeKey.wasPressedThisFrame)
             {
                 _dashCtl.Deactivate(helm);
@@ -326,7 +361,29 @@ namespace HiddenHarbours.UI
             }
 
             HelmOverlayLayout.ScreenToRig(pos, card, rigW, rigH, out Vector2 pressPx);
+            // The mounted brow instrument's glass is the EXPAND click target, checked before the
+            // wheel because the tall fish glass and the wheel's grab pad share a few rows of card.
+            if (HelmDashGeometry.IsOnSounderMount(fit.Rig, fit.Sounder, fit.Compass, pressPx))
+            {
+                HelmInstrumentExpansion.Toggle(DashInstrument.Sounder);
+                return;
+            }
             _dashCtl.Press(helm, pressPx, in cfg);
+        }
+
+        /// <summary>The EXPANDED instrument's on-screen rect — computed with the SAME pure layout +
+        /// settings its host uses (one mapper, so the dash's click-away judgement and the host's card
+        /// can never disagree about where the card is).</summary>
+        private static Rect ExpandedInstrumentRect(in HelmFit fit)
+        {
+            if (fit.Sounder == SounderKind.Fish)
+            {
+                FishFinderSettings finder = GameServices.FishFinder;
+                return FishFinderOverlayLayout.CardRect(true, in finder, Screen.width, Screen.height);
+            }
+            DepthSounderSettings sounder = GameServices.DepthSounder;
+            return SounderOverlayLayout.CardRect(true, DepthRigRender.W, DepthRigRender.H,
+                                                 in sounder, Screen.width, Screen.height);
         }
 
         private void ReadPointer(HelmControlStyle style, IHelmControl helm, Rect card,

@@ -219,6 +219,57 @@ namespace HiddenHarbours.UI
             y = 56 + TOPPAD;
         }
 
+        /// <summary>The skiff brow's FISH FINDER cutout on the card (consoleRig.js:392-395:
+        /// <c>bw=shift?126:148, bh=shift?150:172, bx=shift?170:226, by=142-bh</c>, TOPPAD applied).
+        /// The colour sonar is the SAME cutout as the depth sounder but taller — its glass rises into
+        /// the headroom above the console (which is what the canvas's TOPPAD exists for), and like
+        /// the depth box it slides to port and narrows when the dome compass shares the crown.</summary>
+        public static void FinderCutout(bool domeFitted, out int x, out int y, out int w, out int h)
+        {
+            w = domeFitted ? 126 : 148;
+            h = domeFitted ? 150 : 172;
+            x = domeFitted ? 170 : 226;
+            y = 142 - h + TOPPAD;
+        }
+
+        /// <summary>
+        /// Where THIS fit's brow sounder glass lands on the card — the ONE mount resolver the
+        /// compositor, the hit test and the tests all share (S4.5), so the flush face can never be
+        /// painted in one box and clicked in another. Skiffs use the authored cutout
+        /// (<see cref="SounderCutout"/> for the depth unit, <see cref="FinderCutout"/> for the taller
+        /// colour sonar — consoleRig.js:389-401); the pilothouse uses its sounder brow slot, portrait
+        /// when the finder wants the tall glass (noviRig.js:454 <c>slotBox(i, fish)</c>). The
+        /// pilothouse sounder slot is never displaced by the dome (that is the CENTRE slot,
+        /// <see cref="SlotIsDisplacedByCompass"/>). False = nothing mounts (no console, bare brow).
+        /// </summary>
+        public static bool SounderMountOnCard(ConsoleRigKind rig, SounderKind sounder, CompassMount compass,
+                                              out int x, out int y, out int w, out int h)
+        {
+            if (rig == ConsoleRigKind.None || sounder == SounderKind.None)
+            {
+                x = y = w = h = 0;
+                return false;
+            }
+            if (IsPilothouse(rig))
+            {
+                SlotBoxOnCard(PilotSounderSlot, sounder == SounderKind.Fish, out x, out y, out w, out h);
+                return true;
+            }
+            if (sounder == SounderKind.Fish) FinderCutout(compass == CompassMount.Dome, out x, out y, out w, out h);
+            else SounderCutout(compass == CompassMount.Dome, out x, out y, out w, out h);
+            return true;
+        }
+
+        /// <summary>True when a card-space press lands on the mounted brow sounder's glass — the
+        /// S4.5 expansion click target. Always false on a bare brow (nothing to expand).</summary>
+        public static bool IsOnSounderMount(ConsoleRigKind rig, SounderKind sounder, CompassMount compass,
+                                            UnityEngine.Vector2 cardPx)
+        {
+            if (!SounderMountOnCard(rig, sounder, compass, out int x, out int y, out int w, out int h))
+                return false;
+            return cardPx.x >= x && cardPx.x <= x + w && cardPx.y >= y && cardPx.y <= y + h;
+        }
+
         // ---- hit geometry (card space, y down) — console-helm/README.md:47-56 ---------------------
 
         /// <summary>The wheel grab test: within the wheel's silhouette (knob tips) + the data pad,

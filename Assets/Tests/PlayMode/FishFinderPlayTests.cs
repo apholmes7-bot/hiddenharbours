@@ -107,6 +107,7 @@ namespace HiddenHarbours.Tests.PlayMode
         public void TearDown()
         {
             GameServices.Reset();
+            HelmInstrumentExpansion.Collapse();   // the S4.5 expansion state is a static — never leak it
             foreach (var o in _spawned)
                 if (o != null) Object.Destroy(o);
             _spawned.Clear();
@@ -187,18 +188,32 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
             Assert.That(finder.Showing, Is.False, "no instrument, no card");
 
+            // S4.5: on a CONSOLED hull the instruments mount FLUSH on the dash by default — the
+            // standalone cards are the EXPANDED state, so nothing pops up on a purchase alone.
             InstrumentLocker.Add(_save.Current, "boat.test_finder", BoatEquipment.DepthSounderId);
             yield return null;
-            Assert.That(sounder.Showing, Is.True, "the basic unit lights the brow first");
+            Assert.That(sounder.Showing, Is.False,
+                        "flush by default: the bought sounder lives on the dash, not a floating card");
+            Assert.That(finder.Showing, Is.False);
+
+            // EXPANDED, the cutout's card comes up — and the cutout still resolves to ONE unit.
+            HelmInstrumentExpansion.Toggle(DashInstrument.Sounder);
+            yield return null;
+            Assert.That(sounder.Showing, Is.True, "expanded: the basic unit's big card is on screen");
             Assert.That(finder.Showing, Is.False);
 
             InstrumentLocker.Add(_save.Current, "boat.test_finder", BoatEquipment.FishFinderId);
             yield return null;
             Assert.That(GameServices.HelmInstruments.Fit.Sounder, Is.EqualTo(SounderKind.Fish),
                         "the upgrade wins the shared cutout");
-            Assert.That(finder.Showing, Is.True, "…and the sonar card is on screen");
+            Assert.That(finder.Showing, Is.True, "…and the EXPANDED card follows the cutout to the sonar");
             Assert.That(sounder.Showing, Is.False, "…with the depth card stood down, never both");
-            Assert.That(finder.Focused, Is.False, "the finder starts as the small dash card");
+
+            // Collapse: both cards leave; the glance read is the dash's flush face.
+            HelmInstrumentExpansion.Collapse();
+            yield return null;
+            Assert.That(finder.Showing, Is.False, "collapsed: the big card yields to the flush face");
+            Assert.That(sounder.Showing, Is.False);
         }
 
         [UnityTest]
@@ -210,6 +225,7 @@ namespace HiddenHarbours.Tests.PlayMode
             relay.DevIgnoreEquipmentGating = false;
             boat.SetHull(NewConsoleHull("boat.test_nosound"));
             InstrumentLocker.Add(_save.Current, "boat.test_nosound", BoatEquipment.FishFinderId);
+            HelmInstrumentExpansion.Toggle(DashInstrument.Sounder);   // S4.5: the card is the expanded state
             yield return null;
             Assert.That(host.Showing, Is.True);
 
@@ -234,6 +250,7 @@ namespace HiddenHarbours.Tests.PlayMode
             relay.DevIgnoreEquipmentGating = false;
             boat.SetHull(NewConsoleHull("boat.test_empty"));
             InstrumentLocker.Add(_save.Current, "boat.test_empty", BoatEquipment.FishFinderId);
+            HelmInstrumentExpansion.Toggle(DashInstrument.Sounder);   // S4.5: the card is the expanded state
             yield return null;
             yield return null;
             Assert.That(host.Showing, Is.True, "an empty sonar is a picture, not an exception");
@@ -253,6 +270,7 @@ namespace HiddenHarbours.Tests.PlayMode
             relay.DevIgnoreEquipmentGating = false;
             boat.SetHull(NewConsoleHull("boat.test_fish"));
             InstrumentLocker.Add(_save.Current, "boat.test_fish", BoatEquipment.FishFinderId);
+            HelmInstrumentExpansion.Toggle(DashInstrument.Sounder);   // S4.5: the card is the expanded state
             yield return WaitSeconds(0.3f);
 
             Assert.That(model.Calls, Is.GreaterThan(0), "the finder asked the seam where the fish are");
@@ -278,6 +296,7 @@ namespace HiddenHarbours.Tests.PlayMode
             relay.DevIgnoreEquipmentGating = false;
             boat.SetHull(NewConsoleHull("boat.test_cadence"));
             InstrumentLocker.Add(_save.Current, "boat.test_cadence", BoatEquipment.FishFinderId);
+            HelmInstrumentExpansion.Toggle(DashInstrument.Sounder);   // S4.5: the card is the expanded state
             yield return null;
             yield return null;
 

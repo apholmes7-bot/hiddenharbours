@@ -87,6 +87,7 @@ namespace HiddenHarbours.Tests.PlayMode
         public void TearDown()
         {
             GameServices.Reset();
+            HelmInstrumentExpansion.Collapse();   // the S4.5 expansion state is a static — never leak it
             foreach (var o in _spawned)
                 if (o != null) Object.Destroy(o);
             _spawned.Clear();
@@ -299,7 +300,7 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         [UnityTest]
-        public IEnumerator TheCard_ShowsWithTheFit_AndStandsDownWithout()
+        public IEnumerator TheCard_ShowsWithTheFitWhenExpanded_AndStandsDownWithout()
         {
             SounderOverlayHost host = TheHost();
 
@@ -311,10 +312,16 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
             Assert.That(host.Showing, Is.False, "no instrument, no card");
 
+            // S4.5: on a consoled hull the bought sounder mounts FLUSH on the dash — the standalone
+            // card is the EXPANDED state, so a purchase alone puts no card on screen.
             InstrumentLocker.Add(_save.Current, "boat.test_card", BoatEquipment.DepthSounderId);
             yield return null;
-            Assert.That(host.Showing, Is.True, "the bought sounder puts a card on screen");
-            Assert.That(host.Focused, Is.False, "and starts as the small dash card");
+            Assert.That(host.Showing, Is.False,
+                        "flush by default: the bought sounder lives on the dash, not a floating card");
+
+            HelmInstrumentExpansion.Toggle(DashInstrument.Sounder);
+            yield return null;
+            Assert.That(host.Showing, Is.True, "expanded, the big card comes up");
 
             // Pull the height map (leaving the region) — there is no sounding, so nothing to draw. Wait
             // past the throttle interval: the last sounding is legitimately still current until then.

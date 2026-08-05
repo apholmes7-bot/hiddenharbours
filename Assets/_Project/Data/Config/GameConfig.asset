@@ -132,6 +132,7 @@ MonoBehaviour:
     Friction: 2.4
     SelfCentre: 0
     RimGrabPadPx: 8
+    KeySteerSecondsToLock: 0.28
   RodFight:
     TensionRisePerSec: 0.55
     TensionFallPerSec: 0.7

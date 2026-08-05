@@ -568,14 +568,25 @@ namespace HiddenHarbours.Core
                  "kind of forgiveness as the lever's GrabRadiusPx.")]
         [Min(0f)] public float RimGrabPadPx;
 
+        [Tooltip("S4.5 (owner ask): how long held steer KEYS take to wind the helm from centre to " +
+                 "FULL LOCK (real seconds) — the command is eased, so the mirrored wheel turns " +
+                 "gradually and the rudder follows the same curve (never a wheel showing less lock " +
+                 "than the boat has). A reversal sweeps the full span smoothly (≈2× this); releasing " +
+                 "the keys eases back to centre at the same rate. 0 = instant, the pre-S4.5 snap. " +
+                 "Gamepad stick steer is analog and passes through UN-eased. " +
+                 "⚠ gameplay-systems: full key lock now arrives this much later.")]
+        [Min(0f)] public float KeySteerSecondsToLock;
+
         /// <summary>The wheel rig's own stock feel (wheelRig.js:183-191): 1.5 turns, friction 2.4,
-        /// no self-centre (cable steer holds), an 8 px rim-grab pad.</summary>
+        /// no self-centre (cable steer holds), an 8 px rim-grab pad — plus the S4.5 eased key steer
+        /// at 0.28 s to full lock (inside the owner's 0.2–0.35 s wheel-spin band, his to tune).</summary>
         public static HelmWheelSettings Default => new HelmWheelSettings
         {
             Turns = 1.5f,
             Friction = 2.4f,
             SelfCentre = 0f,
             RimGrabPadPx = 8f,
+            KeySteerSecondsToLock = 0.28f,
         };
     }
 

@@ -86,5 +86,54 @@ namespace HiddenHarbours.Tests.UI.EditMode
             Assert.That(novi, Is.LessThan(SanityCeilingMs), "novi dash raster");
             Assert.That(cape, Is.LessThan(SanityCeilingMs), "cape dash raster");
         }
+
+        /// <summary>
+        /// S4.5: the flush brow faces' cell rasters, measured at every mount box the fleet has. The
+        /// depth face repaints only when an LCD string moves (still water ⇒ roughly never); the fish
+        /// face repaints on the finder's WaterfallHz bucket (4/s shipped), so its number here is a
+        /// per-scan-step cost, not a per-frame one — and at these mount sizes it is a fraction of the
+        /// standalone card's measured ~4.8 ms at 480×660.
+        /// </summary>
+        [Test]
+        public void FlushBrowFaces_RasterCost_IsMeasuredAndLogged()
+        {
+            var depthState = new DepthRigState(depth: 12.3f, feet: false, night: false, armed: true,
+                                               alarm: 3f, tempC: 12f, blink: false);
+            var fishState = new FishRigState(
+                12.3f, 12f, 20f, 3f, false, false, true, true, false, false,
+                0.25, FishRigAdjust.Range, 0.75f, true, 0.8f, 4f);
+            var noMarks = new System.Collections.Generic.List<SonarMark>();
+
+            HelmDashGeometry.SounderCutout(false, out _, out _, out int dw, out int dh);
+            HelmDashGeometry.FinderCutout(false, out _, out _, out int fw, out int fh);
+            HelmDashGeometry.SlotBoxOnCard(HelmDashGeometry.PilotSounderSlot, false,
+                                           out _, out _, out int sw, out int sh);
+            HelmDashGeometry.SlotBoxOnCard(HelmDashGeometry.PilotSounderSlot, true,
+                                           out _, out _, out int pw, out int ph);
+
+            var skiffDepth = new DrawSurface(dw, dh);
+            var skiffFish = new DrawSurface(fw, fh);
+            var pilotDepth = new DrawSurface(sw, sh);
+            var pilotFish = new DrawSurface(pw, ph);
+
+            double a = MsPer(() => DepthRigRender.DrawUnit(skiffDepth, 0, 0, dw, dh, in depthState));
+            double b = MsPer(() => FishRigRender.DrawUnit(skiffFish, 0, 0, fw, fh, in fishState, noMarks));
+            double c = MsPer(() => DepthRigRender.DrawUnit(pilotDepth, 0, 0, sw, sh, in depthState));
+            double d = MsPer(() => FishRigRender.DrawUnit(pilotFish, 0, 0, pw, ph, in fishState, noMarks));
+
+            string report =
+                $"[HelmDashRepaintCost] S4.5 flush brow faces, raster ms/repaint, avg over {Iterations}:\n" +
+                $"  skiff depth {dw}x{dh}  {a:F3} ms   (repaints on LCD-string change only)\n" +
+                $"  skiff fish  {fw}x{fh}  {b:F3} ms   (repaints on the WaterfallHz bucket)\n" +
+                $"  pilot depth {sw}x{sh}  {c:F3} ms\n" +
+                $"  pilot fish  {pw}x{ph}  {d:F3} ms";
+            TestContext.WriteLine(report);
+            Debug.Log(report);
+
+            Assert.That(a, Is.LessThan(SanityCeilingMs), "skiff depth flush face");
+            Assert.That(b, Is.LessThan(SanityCeilingMs), "skiff fish flush face");
+            Assert.That(c, Is.LessThan(SanityCeilingMs), "pilothouse depth flush face");
+            Assert.That(d, Is.LessThan(SanityCeilingMs), "pilothouse fish flush face");
+        }
     }
 }

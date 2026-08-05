@@ -32,6 +32,7 @@ namespace HiddenHarbours.Tests.PlayMode
         public void TearDown()
         {
             GameServices.Reset();
+            HelmInstrumentExpansion.Collapse();   // the S4.5 expansion state is a static — never leak it
             if (_testKeyboard != null)
             {
                 InputSystem.RemoveDevice(_testKeyboard);
@@ -204,11 +205,15 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.That(boat.Steer, Is.EqualTo(-0.6f).Within(1e-5f),
                         "the session held across real frames of the key layer running");
 
-            // Session over → the momentary layer resumes and centres it again.
+            // Session over → the momentary layer resumes ownership and EASES the helm back to centre
+            // (S4.5: the return is gradual — a takeover from a held wheel never snaps). Wait on real
+            // elapsed time, never a frame count (headless frames are not time).
             helm.EndSteerDrag();
-            yield return null;
-            yield return null;
-            Assert.That(boat.Steer, Is.EqualTo(0f).Within(1e-5f), "keys resume ownership after the session");
+            float deadline = Time.realtimeSinceStartup + 3f;
+            while (Mathf.Abs(boat.Steer) > 1e-3f && Time.realtimeSinceStartup < deadline)
+                yield return null;
+            Assert.That(boat.Steer, Is.EqualTo(0f).Within(1e-3f),
+                        "keys resume ownership after the session and ease the helm home");
         }
 
         [UnityTest]
@@ -234,12 +239,22 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
             Assert.That(helm.SteerDragActive, Is.False,
                         "a real key press ends the wheel session — one decisive handover");
-            Assert.That(boat.Steer, Is.EqualTo(-1f).Within(1e-5f), "and the key owns the channel");
+            // S4.5: the key owns the channel but the COMMAND is eased — it walks from the wheel's
+            // held +0.7 toward the key's −1 rather than teleporting. Assert the direction now, the
+            // destination on elapsed time (never a frame count).
+            Assert.That(boat.Steer, Is.LessThan(0.7f), "the eased command left the wheel's held steer");
+            float deadline = Time.realtimeSinceStartup + 3f;
+            while (Mathf.Abs(boat.Steer + 1f) > 1e-3f && Time.realtimeSinceStartup < deadline)
+                yield return null;
+            Assert.That(boat.Steer, Is.EqualTo(-1f).Within(1e-3f),
+                        "…and the held key winds the helm to full lock");
 
             InputState.Change(_testKeyboard, new KeyboardState());                  // release
-            yield return null;
-            yield return null;
-            Assert.That(boat.Steer, Is.EqualTo(0f).Within(1e-5f), "momentary key semantics untouched");
+            deadline = Time.realtimeSinceStartup + 3f;
+            while (Mathf.Abs(boat.Steer) > 1e-3f && Time.realtimeSinceStartup < deadline)
+                yield return null;
+            Assert.That(boat.Steer, Is.EqualTo(0f).Within(1e-3f),
+                        "momentary key semantics stand: released keys ease the helm back to centre");
         }
 
         // ---- the lever still steps detents on the composed dash's hull ----------------------------
