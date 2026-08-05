@@ -391,7 +391,10 @@ namespace HiddenHarbours.Tests.EditMode
             so.FindProperty("_tideAmplitude").floatValue = StPetersBuilder.TideAmplitude * 2f;
             so.ApplyModifiedPropertiesWithoutUndo();
 
-            Assert.AreNotEqual(benchAt2_2, _terrain.LedgeBenchElevation, 0.05f,
+            // "Moved by more than a tolerance" is Greater-on-the-magnitude, NOT AreNotEqual-with-a-delta:
+            // NUnit gives AreEqual a tolerance overload and AreNotEqual none, so the third argument there
+            // is a MESSAGE and the delta form does not compile.
+            Assert.Greater(Mathf.Abs(_terrain.LedgeBenchElevation - benchAt2_2), 0.05f,
                 "the ledge bench did not move when the amplitude doubled — it is authored as an " +
                 "ABSOLUTE elevation, which the tide-pacing ruling forbids");
             Assert.Greater(_terrain.LedgeBenchElevation, _terrain.SpringLowWater,
@@ -399,7 +402,8 @@ namespace HiddenHarbours.Tests.EditMode
                 "point of stating it as a fraction");
             Assert.Less(_terrain.CliffToeElevation, _terrain.SpringLowWater,
                 "a plain cliff's foot must stay BELOW the lowest water at any amplitude");
-            Assert.AreNotEqual(toeAt2_2, _terrain.CliffToeElevation, 0.05f);
+            Assert.Greater(Mathf.Abs(_terrain.CliffToeElevation - toeAt2_2), 0.05f,
+                "the cliff toe did not move with the amplitude either");
         }
 
         /// <summary>
@@ -562,7 +566,7 @@ namespace HiddenHarbours.Tests.EditMode
         {
             List<Vector2> benches = SampleClass(CoastClass.LedgeCliff,
                 StPetersBuilder.CliffPlungeWidth + StPetersBuilder.LedgeBenchWidth * 0.5f);
-            Assert.IsNotEmpty(benches, "the plan authors no ledge runs at all");
+            Assert.Greater(benches.Count, 0, "the plan authors no ledge runs at all");
 
             HashSet<Vector2Int> low = ReachableAt(SpringLow);
             foreach (Vector2 p in benches)
