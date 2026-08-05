@@ -117,6 +117,9 @@ namespace HiddenHarbours.Art
         /// </summary>
         private void BindLightSheets()
         {
+            // Resolve lazily: the builder sets Def in the same breath as adding the components, so this
+            // can legitimately be reached before OnEnable has run.
+            if (_light == null) _light = GetComponent<SpriteLightBinder>();
             if (_light == null || _def == null) return;
 
             // ⚠️ BLUE. The plant rig puts its no-rim flag in the tide sheet's blue channel (255 on strap
