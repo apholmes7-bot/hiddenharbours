@@ -239,20 +239,24 @@ namespace HiddenHarbours.Tests.RigBaking
         public void AMisspelledKeyChangesNothing_WhichIsWhyEveryKeyIsGrepVerified()
         {
             // The worked example on record: winD is the rig's internal field name, winDensity is the
-            // option it actually reads. Both strings appear in the rig source; only one does anything.
-            // The REAL probe uses the extremes (1 vs 0), not a nudge off the default: density maps to a
-            // whole window COUNT per drawn wall, and a small nudge can quantise to the same count as
-            // the default — byte-identical renders and a false "option is dead" (caught on CI). The
-            // extremes differ under any density→count mapping unless the option is truly inert, which
-            // is exactly what this control exists to catch.
+            // option it actually reads. Both strings appear in the rig source; only one does anything —
+            // that HALF of the demonstration (the typo is silent) probes winD and stands unchanged.
+            //
+            // The CONTROL half ("a correctly-spelled option applies") deliberately does NOT use
+            // winDensity: on CI both a nudge (0.1) and the extremes (1 vs 0) rendered byte-identical
+            // at facing 0 — the density→count mapping (max(1, round((Ln/2.6)·(0.5+winD)))), the
+            // default footprint and the facing's visible-wall set conspire so the drawn window count
+            // never moved. A control must be UNMISSABLE, so it probes the floor MATERIAL instead:
+            // 'stoneFlag' vs the default 'plank' swaps the whole floor field between two different
+            // palettes at every facing. winDensity's facing-0 inertness is flagged to the
+            // art-director as a rig finding, not silently absorbed here.
             using IRigScriptHost host = Host("interior");
 
-            byte[] dense = host.EvaluateBytes($"{Interior}.render(0,{{winDensity:1}})");
-            byte[] sparse = host.EvaluateBytes($"{Interior}.render(0,{{winDensity:0}})");
+            byte[] stone = host.EvaluateBytes($"{Interior}.render(0,{{floor:'stoneFlag'}})");
             byte[] typo = host.EvaluateBytes($"{Interior}.render(0,{{winD:1}})");
             byte[] plain = host.EvaluateBytes($"{Interior}.render(0,{{}})");
 
-            CollectionAssert.AreNotEqual(dense, sparse, "winDensity is the option and it applies");
+            CollectionAssert.AreNotEqual(stone, plain, "floor is a real option and it applies");
             CollectionAssert.AreEqual(typo, plain,
                                       "winD is ignored in total silence — this is the trap, demonstrated");
         }
