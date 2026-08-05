@@ -186,8 +186,9 @@ namespace HiddenHarbours.UI
 
         // ---- 3×5 bitmap font (consoleRig.js:75-104; the compass subset :31-40 is glyph-identical) --
         // S4: completed to the sources' FULL A–Z. The earlier table omitted J/Q/X/Z because no ported
-        // label was thought to use them, and an unknown char blanks silently — so BOTH shipped skiff
-        // tachs, ConsoleDashRender:315 and SportDashRender:234 (consoleRig.js:202, sportRig.js:164),
+        // label was thought to use them, and the sources' own fallback — `F[ch] || F[' ']`,
+        // consoleRig.js:99 — blanked an unknown char silently, so BOTH shipped skiff tachs,
+        // ConsoleDashRender:315 and SportDashRender:234 (consoleRig.js:202, sportRig.js:164),
         // had been rendering their "X100" as " 100" since S2a. Novi's "X1000" (noviRig.js:186) and
         // Cape's "X100" (capeRig.js:175) need the same glyph, and the four are identical across every
         // rig source, so they land here rather than in a second font (rule: one shared helper).
@@ -214,9 +215,30 @@ namespace HiddenHarbours.UI
             "8", ".#.|#.#|.#.|#.#|.#.", "9", ".#.|#.#|.##|..#|##.",
             "/", "..#|..#|.#.|#..|#..", "-", "...|...|###|...|...",
             ".", "...|...|...|...|.#.", " ", "...|...|...|...|...",
+            // U+00B7: both wheelhouse standby plates author a '·' separator (noviRig.js:359,
+            // capeRig.js:348) that the sources' own font tables do not carry, so every preview
+            // RENDERS it as a gap — that gap is the approved look, pinned here as an authored blank
+            // rather than left to the unknown-character fallback. If the art call is ever that the
+            // dot should actually print, it gets its pixels on this row.
+            "·", "...|...|...|...|...",
         };
 
         private static System.Collections.Generic.Dictionary<char, string[]> _font;
+
+        // The unknown-character fallback — the ONE deliberate deviation from the rig sources. The
+        // rigs resolve a glyph as `F[ch] || F[' ']` (consoleRig.js:99), and porting that faithfully
+        // is exactly what shipped the " 100" tachs: a missing glyph drew nothing and nothing failed.
+        // An unknown character instead rasterises as this solid 3×5 block — no table glyph is a full
+        // block, so it cannot be read as an authored label — and is reported once per distinct
+        // character (Text). A bad label therefore stays on screen, obviously wrong, without ever
+        // throwing out of the draw path mid-repaint. The table itself stays the sources' character
+        // set: a glyph is added when a rig label needs it, never to quiet the report.
+        private static readonly string[] Tofu = { "###", "###", "###", "###", "###" };
+
+        // Characters already reported. The draw path runs per repaint, so the console gets ONE error
+        // per offending character, not one per glyph per frame; steady-state cost for a tofu'd label
+        // is a failed HashSet.Add, no allocation (rule 7).
+        private static System.Collections.Generic.HashSet<char> _reportedUnknown;
 
         private static string[] Glyph(char ch)
         {
@@ -226,8 +248,24 @@ namespace HiddenHarbours.UI
                 for (int i = 0; i < Chars.Length; i += 2)
                     _font[Chars[i][0]] = Chars[i + 1].Split('|');
             }
-            return _font.TryGetValue(ch, out string[] g) ? g : _font[' '];
+            return _font.TryGetValue(ch, out string[] g) ? g : Tofu;
         }
+
+        private static void ReportUnknownGlyph(char ch, string label)
+        {
+            if (_reportedUnknown == null)
+                _reportedUnknown = new System.Collections.Generic.HashSet<char>();
+            if (!_reportedUnknown.Add(ch)) return;
+            Debug.LogError($"RigDrawUtil: no 3×5 glyph for U+{(int)ch:X4} '{ch}' (label \"{label}\") — " +
+                           "drawn as a solid tofu block. Add the glyph to the font table if the " +
+                           "character is intended; reported once per character.");
+        }
+
+        /// <summary>Forget which unknown characters have been reported, re-arming the once-per-character
+        /// error. The dedup set is plain static state and survives consecutive EditMode test runs in one
+        /// editor session (no domain reload between runs), so the tests that pin the loud path reset it
+        /// rather than depend on being a character's first sighting.</summary>
+        public static void ResetUnknownGlyphReports() => _reportedUnknown?.Clear();
 
         /// <summary>consoleRig.js:95 — pixel width of a string at scale s.</summary>
         public static int TextW(string str, int s) => str.Length * (3 * s + s) - s;
@@ -240,6 +278,7 @@ namespace HiddenHarbours.UI
             foreach (char ch in str)
             {
                 string[] g = Glyph(ch);
+                if (ReferenceEquals(g, Tofu)) ReportUnknownGlyph(ch, str);
                 for (int r = 0; r < 5; r++)
                     for (int c = 0; c < 3; c++)
                         if (g[r][c] == '#')
