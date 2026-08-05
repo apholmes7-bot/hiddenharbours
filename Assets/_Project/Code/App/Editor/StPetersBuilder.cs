@@ -251,6 +251,118 @@ namespace HiddenHarbours.App.Editor
         // ruling actually cares about — is intact; what is gone is a neap-week drying nobody specified.
         // The full before/after table is in the PR body; the invariants are pinned by TidePacingInvariantTests.
 
+        // =================================================================================================
+        //  THE COAST PLAN — which stretch of shoreline stands up (owner-tunable; the builder pushes it)
+        // =================================================================================================
+        // Bearings are COMPASS degrees (N = 0, clockwise) in the island's ellipse-normalised frame, the
+        // same frame TidalTerrain.IslandDistance and StPetersShoreMap.IsWeatherCoast measure in. Each
+        // entry starts a sector that runs clockwise to the next, so the ring cannot be authored with a
+        // gap or an overlap. To retune the coast, move these numbers and re-run the builder — nothing
+        // else needs touching, and StPetersCoastTests re-derives every claim from this table.
+        //
+        // ⭐ WHY THE PLAN LOOKS LIKE THIS — the three constraints, in the order they bind:
+        //
+        // 1. THE ASPECT LAW. The cliff kit authors five outward facings (W·SW·S·SE·E) and no north,
+        //    because a north-facing wall shows its shadowed back to a ¾ top-down camera. With the kit's
+        //    22.5° snap a cliff may stand only where its seaward NORMAL bears 67.5°…292.5°. On this
+        //    120 × 70 m ellipse that is bearings 76.4°…283.6° — MEASURED 55.6% of the shoreline, not the
+        //    62% the compass suggests, because a wide island's outward normal swings toward the short
+        //    axis faster than its radial bearing does. The whole north coast is therefore beach and dune
+        //    by law, which is also exactly what the region docs already asked for (§5.1: "beaches,
+        //    sandbar, clam flats → the intertidal west/north").
+        //
+        // 2. THE TWO CROSSINGS. The sandbar leaves the WEST end (bearing 270) and bares to ±17.7 m of its
+        //    centre-line at spring low; the berth is the ONE door in the reef and lands at the EAST end
+        //    (bearing 90) with a ±8 m channel. Both must be walkable/floatable shore, so both are beach
+        //    inside the legal arc — 5.78% and 2.65% of the shoreline respectively. They are, fortunately,
+        //    at the two CHEAPEST points on the ellipse: a degree near the short axis buys 70 m/rad of
+        //    coast where a degree near due south buys 120.
+        //
+        // 3. NO CLIFF RUN SHORTER THAN ONE FACE TILE (12 m of surface). A shorter run cannot show the
+        //    kit's periodic wall even once, so it reads as a texture accident rather than as rock. That
+        //    rule alone costs 1.45%: the 9 m of legal arc between 76.4° and the harbour cove is too short
+        //    to stand up, so the north coast's beach simply wraps on into the harbour.
+        //
+        // WHAT THAT ADDS UP TO — and it is a correction to the handoff, which asked for ~50%:
+        //    55.56% legal − 5.78% bar landing − 2.65% berth cove              = 47.13% CEILING
+        //    − 4.73% access trails (§3.4 requires them) − 1.45% min-run
+        //    − 0.74% landing margin (see the 252° note below)                 = 40.20% AUTHORED
+        // 50% is not expressible on this island: it exceeds even the ceiling, which is reachable only by
+        // a coast with no way down to the shore anywhere. Every point of the shortfall is named above and
+        // re-derived by TheCliffShareIsAboutHalfTheLegalCoast rather than written down as a literal.
+        public static readonly CoastSector[] CoastSectors =
+        {
+            // The sheltered north — the intertidal coast §5.1 asks for. Illegal for cliff by the aspect
+            // law, so nothing here is a choice; it is the law wearing the docs' clothes.
+            new CoastSector(  0.00f, CoastClass.Beach),
+            new CoastSector( 30.00f, CoastClass.Dune),
+
+            // The harbour cove. Wraps out of the north coast and holds the berth (bearing 90).
+            new CoastSector( 76.42f, CoastClass.Beach),
+
+            // The east weather face — deep-shore, so the dory can lie close alongside under the rock.
+            new CoastSector( 96.60f, CoastClass.DeepShoreCliff),
+
+            // The east trail: a gully down to the foreshore, and the way onto the ledge run below.
+            new CoastSector(128.00f, CoastClass.Access),
+            new CoastSector(136.00f, CoastClass.LedgeCliff),
+
+            // Due south — the tallest, plainest wall, with its foot below the lowest water.
+            new CoastSector(172.00f, CoastClass.Cliff),
+
+            // The west trail, and the second ledge run it opens.
+            new CoastSector(205.00f, CoastClass.Access),
+            new CoastSector(213.00f, CoastClass.LedgeCliff),
+
+            // The west face falls straight to the harbour floor, then the ground opens out for the bar.
+            new CoastSector(240.00f, CoastClass.DeepShoreCliff),
+
+            // The bar landing — the crossing to Nine Mile Creek leaves here (bearing 270). It starts at
+            // 252° and not at the 255.4° where the bar's BARED width strictly ends, because the bar's
+            // south edge lands within a whisker of that bearing and a landing with no margin is a
+            // landing that a later nudge silently walls off. 252° covers the crossing out to 21.6 m
+            // either side of its centre-line against the 17.7 m it actually bares.
+            new CoastSector(252.00f, CoastClass.Beach),
+            new CoastSector(283.58f, CoastClass.Dune),
+        };
+
+        /// <summary>Degrees of bearing the sector joins are feathered over. Butted hard, a cliff meeting
+        /// a beach is a 6.5 m step ACROSS the shore — a wall running out to sea. Every sector must be at
+        /// least twice this wide, which <c>StPetersCoastTests</c> asserts against the table above.</summary>
+        public const float CoastBlendDegrees = 3f;
+
+        /// <summary>How far (m of elliptical distance) a cliff takes to fall its full height. This is
+        /// the wall: the beach next door spends 20 m on a seventh of the same drop.</summary>
+        public const float CliffPlungeWidth = 3f;
+
+        /// <summary>A plain cliff's foot, as a fraction of the tide's amplitude BELOW the lowest spring
+        /// water: −3.19 m today. Below the water at every tide, so no part of a plain face ever bares,
+        /// but shoal enough that lying alongside one is not the same offer the deep-shore faces make.
+        ///
+        /// <para>⚠ Not merely "below the lowest water" — below it by more than a WADE. At 0.25 the foot
+        /// sat at −2.75 m and spring low water is −2.2 m, which put 0.55 m of water over it against a
+        /// 0.5 m wade depth: a 5 cm margin between "a wall" and "a wall you can paddle round the bottom
+        /// of at dead low". The margin is now 0.5 m, and the test that measures it says so.</para></summary>
+        public const float CliffToeTideFraction = 0.45f;
+
+        /// <summary>The low-tide ledge's bench, as a fraction of the amplitude ABOVE the lowest spring
+        /// water: −1.65 m today.
+        ///
+        /// <para>⚠ A TIDE FRACTION, NEVER A METRE — the 2026-08-01 pacing ruling. When the amplitude fell
+        /// 3.5 → 2.2 m every absolute elevation in this file had to be re-audited by hand and one of them
+        /// (the paint floor) had actually broken. A fraction moves with the water instead.</para>
+        ///
+        /// <para>⚠ AND IT IS A SPRING-TIDE BENCH. At 0.25 the bench bares for ~23% of a SPRING cycle —
+        /// about 1.4 h either side of dead low — and never during a neap week at all, because neap low
+        /// water (−0.99 m) does not reach it. That is a deliberate P1/P5 statement (the sea has moods;
+        /// the tide lends you the ledge on the big tides only) but it IS a design call, and the owner
+        /// should rule on it: raising this above 0.55 would make the ledges bare every day and lose the
+        /// distinction.</para></summary>
+        public const float LedgeBenchTideFraction = 0.25f;
+
+        /// <summary>Width (m) of the ledge bench — a shelf the tide lends you, not a beach.</summary>
+        public const float LedgeBenchWidth = 4f;
+
         // --- CLAM-HOLE scatter (deterministic; single source of truth shared with the EditMode test) ------
         // Holes scatter over the bar's footprint on a jittered grid, kept only where the authored ground is
         // INTERTIDAL — between the lowest and highest water of the swing (mean ∓ amplitude), so a hole bares
@@ -829,6 +941,23 @@ namespace HiddenHarbours.App.Editor
             var terrain = terrainGo.AddComponent<TidalTerrain>();
             ConfigureTidalTerrain(terrain);
 
+            // --- THE CLIFF KIT: BAKE ON MISSING ---------------------------------------------------------
+            // The kit ships as the rig, not as sheets (PR #427) — the PNGs are gitignored and regenerate
+            // in seconds. The coordinator made the consequence binding: a fresh clone must SELF-HEAL, so
+            // the menu item is a dev convenience and this is the requirement. Warn-and-continue rather
+            // than throw: a bake that fails should leave the region built and untextured with an error
+            // saying why, not take the whole scene down with it (rule 10, leave a working build).
+            try
+            {
+                HiddenHarbours.Tools.RigBaking.CliffBakeMenu.EnsureBaked();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"[StPetersBuilder] the cliff kit could not bake — the coast will build " +
+                               $"but its faces will render untextured. Run " +
+                               $"'Hidden Harbours ▸ Dev ▸ Bake Cliff Face Kit' and check the rig. {e.Message}");
+            }
+
             // --- SPLAT GROUND (ADR 0028) ----------------------------------------------------------------
             // The ground as a FIELD, not a grid: one full-region quad carrying the TerrainSplat shader,
             // fed the painted height map, replaces the ground/fringe tile layers (the flag below makes the
@@ -1401,7 +1530,42 @@ namespace HiddenHarbours.App.Editor
             SetF(so, "_channelAlong", ChannelAlong);
             SetF(so, "_channelHalfWidth", ChannelHalfWidth);
             SetF(so, "_channelBedElevation", ChannelBedElevation);
+
+            // The coast plan, and the cliff tunables it switches on.
+            SetF(so, "_coastBlendDegrees", CoastBlendDegrees);
+            SetF(so, "_cliffPlungeWidth", CliffPlungeWidth);
+            SetF(so, "_cliffToeTideFraction", CliffToeTideFraction);
+            SetF(so, "_ledgeBenchTideFraction", LedgeBenchTideFraction);
+            SetF(so, "_ledgeBenchWidth", LedgeBenchWidth);
+
+            // ⚠ The tide REFERENCE the fraction elevations are measured against — the region's own
+            // authored tide, pushed from the same constants the environment gets, so a retune moves the
+            // ledges with the water instead of stranding them. Not a tide the sim reads: the sim still
+            // recomputes water level from (worldSeed, gameTime). StPetersCoastTests holds the two equal.
+            SetF(so, "_tideMean", TideMean);
+            SetF(so, "_tideAmplitude", TideAmplitude);
+
+            SetCoastSectors(so, "_coastSectors", CoastSectors);
             so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        /// <summary>Write the sector ring onto a serialized array field. Element-wise rather than by
+        /// assigning the property, so the plan persists through the builder's SerializedObject
+        /// convention like every other authored number on the component.</summary>
+        static void SetCoastSectors(SerializedObject so, string field, CoastSector[] sectors)
+        {
+            var prop = so.FindProperty(field);
+            if (prop == null) return;
+            prop.arraySize = sectors.Length;
+            for (int i = 0; i < sectors.Length; i++)
+            {
+                var element = prop.GetArrayElementAtIndex(i);
+                element.FindPropertyRelative("FromBearing").floatValue = sectors[i].FromBearing;
+                // intValue, not enumValueIndex: it writes the enum's VALUE rather than its position in
+                // the inspector popup. The two agree only while CoastClass stays contiguous from zero,
+                // and a member inserted mid-enum would silently reclassify the whole coast.
+                element.FindPropertyRelative("Class").intValue = (int)sectors[i].Class;
+            }
         }
 
         // ---- helpers (self-contained; mirror NineMileCreekBuilder's) ------------------------------------

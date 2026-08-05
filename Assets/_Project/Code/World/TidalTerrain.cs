@@ -93,6 +93,47 @@ namespace HiddenHarbours.World
                  "widest walkable flat at low water.")]
         [SerializeField] private float _sandbarCrestElevation = 1.6f;
 
+        [Header("Coast plan (which stretch of shoreline is cliff, beach, dune, trail)")]
+        [Tooltip("The shoreline as a closed ring of sectors, clockwise by bearing (N = 0) in the " +
+                 "island's ELLIPSE-NORMALISED frame. EMPTY = the original radial coast everywhere, " +
+                 "byte-identical to the profile that predates cliffs — so a region that authors no plan " +
+                 "cannot be moved by this feature.")]
+        [SerializeField] private CoastSector[] _coastSectors = new CoastSector[0];
+
+        [Tooltip("Degrees of bearing over which two neighbouring sectors' profiles are blended. Without " +
+                 "it a cliff meeting a beach is a 6.5 m STEP across the shore — a wall running out to " +
+                 "sea. With it a cliff run tapers into the beach at each end, the way a headland does. " +
+                 "Every sector must be at least twice this wide or it never reaches its own class.")]
+        [SerializeField] private float _coastBlendDegrees = 3f;
+
+        [Header("Cliff profile (the plunge; see CoastClass for what each class means)")]
+        [Tooltip("How far (m, in elliptical distance) the plateau takes to fall from its full height to " +
+                 "the cliff's foot. This is the WALL: small is vertical. The beach next door spends 20 m " +
+                 "on a seventh of the same drop.")]
+        [SerializeField] private float _cliffPlungeWidth = 3f;
+
+        [Tooltip("How far BELOW the lowest spring water a plain cliff's foot sits, as a fraction of the " +
+                 "tide's amplitude. Authored as a tide FRACTION, never as metres: an amplitude retune " +
+                 "then moves the foot with the water instead of silently stranding it above the tide.")]
+        [SerializeField] private float _cliffToeTideFraction = 0.25f;
+
+        [Tooltip("How far ABOVE the lowest spring water the low-tide ledge's bench sits, as a fraction " +
+                 "of the tide's amplitude. Small = bares only on the big tides. Also a tide FRACTION, " +
+                 "and for the same reason — an absolute metre here drowns or strands every ledge in the " +
+                 "region on the owner's next tide-pacing pass.")]
+        [SerializeField] private float _ledgeBenchTideFraction = 0.25f;
+
+        [Tooltip("Width (m, elliptical distance) of the ledge bench — the walkable foreshore at the " +
+                 "cliff's foot. Narrow on purpose: it is a shelf the tide lends you, not a beach.")]
+        [SerializeField] private float _ledgeBenchWidth = 4f;
+
+        [Header("Tide REFERENCE for authoring (not the sim's tide — see the note on SpringLowWater)")]
+        [Tooltip("Mean water level (m above datum) the tide-fraction elevations above are measured from.")]
+        [SerializeField] private float _tideMean = 0f;
+        [Tooltip("Spring amplitude (m) the tide-fraction elevations above are measured in. Must match " +
+                 "the region's authored tide; a test asserts it does.")]
+        [SerializeField] private float _tideAmplitude = 2.2f;
+
         [Header("Channel (the boat passage cut through the sandbar)")]
         [Tooltip("Where the channel crosses the sandbar, as a fraction (0..1) along the From→To centre-line.")]
         [Range(0f, 1f)]
@@ -130,7 +171,7 @@ namespace HiddenHarbours.World
 
             // Island: plateau → beach → (reef shelf → drop-off, if a shelf is authored) → deep floor.
             float dIsland = IslandDistance(worldPos, _islandCenter, _islandRadius, _islandRadiusY);
-            float island = IslandProfile(dIsland);
+            float island = IslandProfileAt(dIsland, worldPos);
             if (island > e) e = island;
 
             // Sandbar: a ridge along the From→To segment. Raise toward the crest near the centre-line,
@@ -170,7 +211,160 @@ namespace HiddenHarbours.World
         }
 
         /// <summary>
-        /// The island's cross-section as one explicit chain of bands, by elliptical distance from the
+        /// The island's cross-section by elliptical distance alone — <b>the radial signature, kept</b>.
+        ///
+        /// <para><b>⭐ THE ADDITIVE GUARANTEE.</b> The coast became bearing-dependent when cliffs landed,
+        /// and this overload is how that stayed a widening rather than a rewrite: it delegates to
+        /// <see cref="IslandProfile(float, CoastClass)"/> with <see cref="CoastClass.Beach"/>, which
+        /// falls through to <see cref="ShoreProfile"/> — the pre-cliff method, moved down one level and
+        /// not otherwise edited. Every existing caller compiles unchanged and every unchanged sector
+        /// answers bit-for-bit what it answered before. Callers that want the coast the region actually
+        /// authored want <see cref="IslandProfileAt"/>, which knows where it is.</para>
+        /// </summary>
+        public float IslandProfile(float dIsland) => IslandProfile(dIsland, CoastClass.Beach);
+
+        // =============================================================================================
+        //  THE COAST PLAN — where the island stands up
+        // =============================================================================================
+
+        /// <summary>The authored sectors, for the builder's push and for a test that reads the plan the
+        /// scene actually carries rather than the one the builder meant to write.</summary>
+        public CoastSector[] CoastSectors
+        {
+            get => _coastSectors;
+            set => _coastSectors = value ?? new CoastSector[0];
+        }
+
+        /// <summary>Degrees of bearing the sector joins are feathered over (see the field's tooltip and
+        /// <see cref="CoastPlan.BlendAt"/> for why a hard join is a bug rather than a cliff).</summary>
+        public float CoastBlendDegrees => _coastBlendDegrees;
+
+        /// <summary>
+        /// The lowest water of the biggest spring tide, in metres above datum — the datum the cliff
+        /// classes' tide-FRACTION elevations are measured from.
+        ///
+        /// <para><b>⚠ This is an AUTHORING reference, not a tide.</b> Nothing here samples the clock or
+        /// the environment service; the sim's water level is still recomputed from
+        /// <c>(worldSeed, gameTime)</c> through <see cref="IEnvironmentService.WaterLevelAt"/> and
+        /// nothing about the tide is saved (rule 5). These two numbers only say what the region's tide
+        /// was DESIGNED as, so a ledge authored "a quarter of the amplitude above the lowest water"
+        /// still means that after the owner retunes the amplitude — which is precisely what the
+        /// 2026-08-01 pacing pass proved absolute metres cannot survive.</para>
+        /// </summary>
+        public float SpringLowWater => _tideMean - _tideAmplitude;
+
+        /// <summary>The reference tide these elevations were authored against — read by the test that
+        /// holds it equal to the region's own authored tide, so the two cannot drift apart.</summary>
+        public float TideMean => _tideMean;
+        /// <inheritdoc cref="TideMean"/>
+        public float TideAmplitude => _tideAmplitude;
+
+        /// <summary>The plain cliff's foot: below the lowest spring water by a fraction of the amplitude,
+        /// so no part of it ever bares, at any tide, in any week.</summary>
+        public float CliffToeElevation => SpringLowWater - _cliffToeTideFraction * _tideAmplitude;
+
+        /// <summary>The low-tide ledge's bench: just ABOVE the lowest spring water, so the tide covers it
+        /// for most of the cycle and hands it back near dead low.</summary>
+        public float LedgeBenchElevation => SpringLowWater + _ledgeBenchTideFraction * _tideAmplitude;
+
+        /// <summary>The deep-shore face's foot — the harbour floor itself, so a hull lies close alongside
+        /// at any state of tide and the sounder reads the base as deep water rather than as shoal.</summary>
+        public float DeepShoreToeElevation => _deepHarbourElevation;
+
+        /// <summary>Which class of coast stands at a world position, unfeathered — what the plan SAYS.
+        /// The decider the cliff-share measure, the ground paint and the decor all read, so a dead
+        /// classifier moves every one of them together instead of quietly moving none.</summary>
+        public CoastClass CoastClassAt(Vector2 worldPos) =>
+            CoastPlan.ClassAt(_coastSectors, Bearing(worldPos));
+
+        /// <summary>This position's bearing in the island's normalised frame — hoisted so the profile,
+        /// the classifier and the tests all measure the coast in exactly one way.</summary>
+        public float Bearing(Vector2 worldPos) =>
+            CoastPlan.BearingAt(worldPos, _islandCenter, _islandRadius, _islandRadiusY);
+
+        /// <summary>
+        /// The island's cross-section at a WORLD POSITION — the radial profile of whichever coast class
+        /// stands there, blended with its neighbour across the sector joins.
+        ///
+        /// <para>With no plan authored this is exactly <see cref="IslandProfile(float)"/>, which is
+        /// exactly the profile that predates cliffs. That is the additive guarantee: an unchanged sector
+        /// — and an entire unchanged region — comes out bit-for-bit as it did before.</para>
+        /// </summary>
+        public float IslandProfileAt(float dIsland, Vector2 worldPos)
+        {
+            if (_coastSectors == null || _coastSectors.Length == 0) return IslandProfile(dIsland);
+
+            CoastPlan.BlendAt(_coastSectors, Bearing(worldPos), _coastBlendDegrees,
+                              out CoastClass primary, out CoastClass secondary, out float weight);
+            if (weight >= 1f || primary == secondary) return IslandProfile(dIsland, primary);
+            return Mathf.Lerp(IslandProfile(dIsland, secondary), IslandProfile(dIsland, primary), weight);
+        }
+
+        /// <summary>
+        /// The island's cross-section for one coast CLASS, by elliptical distance from the centre.
+        ///
+        /// <para><b>The soft classes are the original chain, untouched.</b> <see cref="CoastClass.Beach"/>,
+        /// <see cref="CoastClass.Dune"/> and <see cref="CoastClass.Access"/> all fall through to
+        /// <see cref="ShoreProfile"/>, which is the pre-cliff method moved down a level and not otherwise
+        /// edited — so the widening cannot move ground it was not asked to move.</para>
+        /// </summary>
+        public float IslandProfile(float dIsland, CoastClass coast)
+        {
+            if (dIsland <= _islandRadius) return _islandElevation;
+
+            switch (coast)
+            {
+                case CoastClass.Cliff:          return CliffProfile(dIsland, CliffToeElevation);
+                case CoastClass.DeepShoreCliff: return CliffProfile(dIsland, DeepShoreToeElevation);
+                case CoastClass.LedgeCliff:     return LedgeProfile(dIsland);
+                default:                        return ShoreProfile(dIsland);
+            }
+        }
+
+        /// <summary>
+        /// A standing wall: the plateau holds its full height to the very edge, then falls to
+        /// <paramref name="toeElevation"/> in <c>_cliffPlungeWidth</c> metres, and the ground carries on
+        /// away to the deep floor beyond. No beach, no shelf — that is the difference the owner asked
+        /// for, stated as geometry rather than as decoration.
+        /// </summary>
+        private float CliffProfile(float dIsland, float toeElevation)
+        {
+            float plungeEnd = _islandRadius + Mathf.Max(0.01f, _cliffPlungeWidth);
+            if (dIsland <= plungeEnd)
+                return Lerped(dIsland, _islandRadius, Mathf.Max(0.01f, _cliffPlungeWidth),
+                              _islandElevation, toeElevation);
+
+            // Past the foot the seabed falls away to the harbour floor over the beach's own width, so a
+            // cliff base shoals no faster than the coast it interrupts. (A toe already AT the floor —
+            // the deep-shore class — makes this band flat, which is what "lie close alongside" means.)
+            return Lerped(dIsland, plungeEnd, Mathf.Max(1f, _islandFalloff),
+                          toeElevation, _deepHarbourElevation);
+        }
+
+        /// <summary>
+        /// The low-tide ledge: the same wall, stopped on a narrow flat bench a little above the lowest
+        /// water, which then drops away to the floor. The bench is the whole point — it is under water
+        /// for most of the cycle and walkable near dead low, so the coast hands the player a strip of
+        /// ground twice a month and takes it back.
+        /// </summary>
+        private float LedgeProfile(float dIsland)
+        {
+            float plunge = Mathf.Max(0.01f, _cliffPlungeWidth);
+            float plungeEnd = _islandRadius + plunge;
+            float bench = LedgeBenchElevation;
+
+            if (dIsland <= plungeEnd)
+                return Lerped(dIsland, _islandRadius, plunge, _islandElevation, bench);
+
+            float benchEnd = plungeEnd + Mathf.Max(0f, _ledgeBenchWidth);
+            if (dIsland <= benchEnd) return bench;          // the flat the tide works
+
+            return Lerped(dIsland, benchEnd, Mathf.Max(1f, _islandFalloff),
+                          bench, _deepHarbourElevation);
+        }
+
+        /// <summary>
+        /// The SOFT coast's cross-section as one explicit chain of bands, by elliptical distance from the
         /// centre: <b>plateau → beach → reef shelf → drop-off → deep floor</b>. With no shelf authored
         /// (<c>_reefShelfWidth</c> = 0) the chain collapses to plateau → beach → floor, byte-identical to
         /// the original greybox profile.
@@ -183,10 +377,8 @@ namespace HiddenHarbours.World
         /// fails the mirror-image way, flattening the apron. The bands are disjoint, so the composition
         /// has to be too.</para>
         /// </summary>
-        public float IslandProfile(float dIsland)
+        private float ShoreProfile(float dIsland)
         {
-            if (dIsland <= _islandRadius) return _islandElevation;
-
             float beachEnd = _islandRadius + _islandFalloff;
             bool hasShelf = _reefShelfWidth > 0f;
             float beachOuter = hasShelf ? _reefShelfInnerElevation : _deepHarbourElevation;

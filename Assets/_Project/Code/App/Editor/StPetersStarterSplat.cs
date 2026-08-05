@@ -391,7 +391,17 @@ namespace HiddenHarbours.App.Editor
         /// Steepness is the other half of the ledge split, so the two never both claim a texel.
         ///
         /// <para>The kit is explicit that a plan view at a cliff foot gets Talus, never the cliff
-        /// FACE materials (Sandstone/Bank) — those stay unwired until cliff geometry exists.</para>
+        /// FACE materials (Sandstone/Bank) — a face material's UVs run along and down a wall, so the
+        /// plan-projected ground quad cannot address them (the same reason the four edge strips are
+        /// imported but not sampled here).</para>
+        ///
+        /// <para><b>⭐ THIS RULE IS WHY THE COAST RESHAPE NEEDED NO SHADER CHANGE.</b> Coverage is
+        /// <see cref="Steepness"/> off the LIVE terrain gradient, so when the cliff sectors landed and
+        /// the plateau began falling ~3 m/m instead of the beach's ~0.23, scree appeared under every new
+        /// face on its own — and the ledge benches, being flat rock low in the tide, were picked up by
+        /// <see cref="LedgeCoverage"/> the same way. The classification reaches the ground through the
+        /// height field, which is exactly the seam ADR 0028 exists to provide. Nothing here was retuned
+        /// for cliffs; it was already right.</para>
         /// </summary>
         public static float TalusCoverage(in GroundSample g)
         {
