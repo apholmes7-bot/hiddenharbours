@@ -245,10 +245,9 @@ namespace HiddenHarbours.Tests.EditMode
             // The same storm sailed twice — weight ON vs weight OFF (HeaveWeight01 0 = the exact
             // passthrough, so the OFF run IS the raw surface ride). The weighted ride must:
             // genuinely differ (weight is engaging); NEVER submarine below the surface by more
-            // than the hard band (that side is a clamp); stay attached on the hover side — the
-            // hover bound is the g-capped catch-up, not a clamp (the CI lesson: a hard hover clamp
-            // was the 149 m/s² slam), so it is bounded loosely and by its MEAN, and the hull must
-            // keep re-finding the surface.
+            // than the hard band (that side is a clamp); and stay attached on the hover side
+            // within a bound DERIVED from the field itself (CI round 4 ruling: derive, never fit
+            // — a copied measurement rots, a derived bound tracks the sea).
             const float draft = 0.5f;
             const float exaggeration = 2f;
 
@@ -257,7 +256,74 @@ namespace HiddenHarbours.Tests.EditMode
             DisplacedSea.Clear(_seaOwner);
             float[] bolted = SailRides(heaveWeight01: 0f, draft, exaggeration);
 
-            float band = StormRockSettings.Default.SurfaceBandMeters;
+            // THE DERIVED HOVER BOUND — the physics floor, computed against the very samples this
+            // run produced (CI round 4: the 2.0 m constant was fantasy — the field's true demanded
+            // unweighting on this reference sea is ~7.4 m). The IDEAL g-capped follower (infinite
+            // stiffness, zero waste) rides the surface exactly, except where the surface's own
+            // descent outruns the free-fall budget: there it departs with the surface's velocity,
+            // falls at exactly the cap, and re-lands on contact. No follower obeying the downward
+            // cap can hug this surface tighter, so its max gap is the FIELD'S OWN demanded
+            // unweighting — deterministic, recomputed here every run, so a wave-field re-tune moves
+            // the bound with the sea instead of rotting a constant. (The mechanism, measured: the
+            // rogue combined crest departs the rider UPWARD at ~+9 m/s — the surface's own rate —
+            // before plunging ~6 m, so the unweighting starts from a ballistic apex.)
+            //
+            // The REAL component may trail the ideal only by its finite-stiffness overhead, all of
+            // it derived from the law's own constants:
+            //   (1) g/ω² — the spring-vs-cap POSITION crossover: the largest gap at which the
+            //       spring's command (ω²·gap) is still below the cap — the sub-cap regime where
+            //       chasing gently is the DESIGN (the soft landing), not waste.
+            //   (2) (g/ω) × riseTime — the LAUNCH overshoot: a finite-stiffness chaser carries a
+            //       velocity lag of scale g/ω (its correction authority is g over its 1/ω response
+            //       window), so at a crest departure it is flung with up to that much extra upward
+            //       velocity vs the ideal (which matches the surface rate exactly); through the
+            //       shared free-fall the velocity offset integrates over the event's growth time.
+            //       Verified against this field: past the launch the component's gap runs PARALLEL
+            //       to the ideal's — both descend at exactly the cap; the excess is launch state,
+            //       not descent-budget waste.
+            // Bound = idealMax × 1.1 + (g/ω)·riseTime + g/ω², every term derived, margins stated.
+            // If the component exceeds it, the law is wasting budget beyond its stated overhead —
+            // investigate the law, never re-margin this line.
+            StormRockSettings storm = StormRockSettings.Default;
+            float capAccel = WaveFieldSettings.Default.Gravity * storm.MaxDownwardAccelInGs;
+            // ω_eff for this rig: no BoatController sibling ⇒ neutral hull response 1 ⇒ the base
+            // stiffness exactly (the same resolution BoatWaveMotion.ResolveHullCharacter makes).
+            float omega = storm.HeaveChaseStiffnessRadPerSec;
+            float springCrossover = capAccel / (omega * omega);
+
+            float idealX = bolted[0];
+            float idealV = (bolted[1] - bolted[0]) / Dt;   // seeded riding the surface at its own rate
+            float idealMax = 0f, idealMean = 0f;
+            int eventStart = 0, riseFrames = 0;
+            for (int f = 1; f < bolted.Length; f++)
+            {
+                float vFloor = idealV - capAccel * Dt;      // the fastest legal descent this frame
+                float xFree = idealX + vFloor * Dt;
+                if (xFree <= bolted[f])
+                {
+                    idealV = (bolted[f] - idealX) / Dt;     // ride the surface (up-moves uncapped)
+                    idealX = bolted[f];
+                }
+                else
+                {
+                    idealV = vFloor;                        // unweight: free fall at exactly the cap
+                    idealX = xFree;
+                }
+                float idealGap = idealX - bolted[f];
+                if (idealGap <= springCrossover) eventStart = f;   // attached: the next event starts after here
+                if (idealGap > idealMax)
+                {
+                    idealMax = idealGap;
+                    riseFrames = f - eventStart;            // growth time of the worst unweighting event
+                }
+                idealMean += idealGap;
+            }
+            idealMean /= (bolted.Length - 1);
+
+            float launchAllowance = (capAccel / omega) * (riseFrames * Dt);
+            float hoverBound = idealMax * 1.1f + launchAllowance + springCrossover;
+
+            float band = storm.SurfaceBandMeters;
             float maxGap = 0f, meanGap = 0f;
             int nearContact = 0;
             for (int f = 0; f < weighted.Length; f++)
@@ -270,19 +336,39 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.GreaterOrEqual(signedGap, -(band + 1e-3f),
                     $"frame {f}: the weighted ride SUBMARINED {-signedGap:F3} m under the surface " +
                     $"against a hard band of {band:F2} m");
-                Assert.LessOrEqual(gap, 2f,
-                    $"frame {f}: the weighted ride is {gap:F3} m off the surface — detached, not " +
-                    "weighted (the g-capped catch-up never opens gaps this wide on the real field)");
+                Assert.LessOrEqual(gap, hoverBound,
+                    $"frame {f}: the weighted ride is {gap:F3} m off the surface against the " +
+                    $"DERIVED bound {hoverBound:F3} m (ideal g-capped follower max {idealMax:F3} m " +
+                    $"× 1.1 + launch allowance {launchAllowance:F3} m + spring crossover " +
+                    $"{springCrossover:F3} m) — the law is wasting g-budget beyond its stated " +
+                    "finite-stiffness overhead");
             }
             meanGap /= weighted.Length;
             Debug.Log($"[storm-read] weighted-vs-bolted ride: max gap {maxGap:F3} m, mean " +
-                      $"{meanGap:F3} m, near-contact {nearContact}/{weighted.Length} frames");
+                      $"{meanGap:F3} m, near-contact {nearContact}/{weighted.Length} frames; " +
+                      $"ideal follower max {idealMax:F3} m (rise {riseFrames * Dt:F2} s), mean " +
+                      $"{idealMean:F3} m; derived hover bound {hoverBound:F3} m (launch " +
+                      $"{launchAllowance:F3}, crossover {springCrossover:F3})");
+
+            Assert.Greater(idealMax, springCrossover,
+                "the reference field never demanded unweighting beyond the spring crossover — the " +
+                "derived bound is degenerate and this test has gone vacuous (did the storm sea get " +
+                "re-tuned tame, or the exaggeration drop?)");
             Assert.Greater(maxGap, 0.02f,
                 "the weighted ride never left the surface — the weight filter is not engaging in a " +
                 "full storm, and 'obey gravity' shipped as a no-op");
-            Assert.Less(meanGap, 0.5f,
-                "the weighted ride is off the surface on AVERAGE — it should track with a modest " +
-                "lag and unweight only over the sharp crests");
+            // The mean, on the same derivation: capped regimes match the ideal frame for frame
+            // (the launch offset contributes its allowance over the event's fraction of the run);
+            // sub-cap regimes (the tracking on either side of the surface) contribute at most the
+            // crossover scale each on average. Every term computed above, none copied from a run.
+            float meanBound = idealMean + 2f * springCrossover
+                            + launchAllowance * (riseFrames * Dt) / (weighted.Length * Dt);
+            Assert.Less(meanGap, meanBound,
+                $"the weighted ride is off the surface on AVERAGE ({meanGap:F3} m vs the derived " +
+                $"{meanBound:F3}) — sub-cap tracking should hug the surface within the crossover " +
+                "scale, and capped falls should match the ideal follower");
+            // A liveness floor, not a physics bound: the ideal re-lands after every event, so a
+            // healthy chase touches near-contact (< 0.1 m) at least ~5% of a 10 s storm sail.
             Assert.Greater(nearContact, 30,
                 "the hull almost never re-finds the surface — the chase is not landing between crests");
         }
