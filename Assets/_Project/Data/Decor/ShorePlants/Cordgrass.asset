@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e2271b6bbca1cab9561983932c91e43, type: 3}
+  m_Name: Cordgrass
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.ShorePlantDef
+  Id: shoreplant.cordgrass
+  SpeciesKey: Cordgrass
+  Zone: low
+  ZoneBaseM: 2.55
+  StandingHeightM: 1.81
+  Algae: 0
+  TideSprites:
+  - {fileID: -561798183, guid: f3b87702a1669cf770bb4c752620ab6e, type: 3}
+  - {fileID: -104097562, guid: f3b87702a1669cf770bb4c752620ab6e, type: 3}
+  - {fileID: -1842449760, guid: f3b87702a1669cf770bb4c752620ab6e, type: 3}
+  - {fileID: -1454291352, guid: f3b87702a1669cf770bb4c752620ab6e, type: 3}
+  - {fileID: -319189969, guid: f3b87702a1669cf770bb4c752620ab6e, type: 3}
+  TideLadderOverM:
+  - -2.55
+  - -1.35
+  - -0.35
+  - 0.65
+  - 1.45
+  SubmergedSortingOrder: -8
+  EmergentSortingOrder: 3

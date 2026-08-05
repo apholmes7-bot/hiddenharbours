@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e2271b6bbca1cab9561983932c91e43, type: 3}
+  m_Name: SeaLettuce
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.ShorePlantDef
+  Id: shoreplant.sea_lettuce
+  SpeciesKey: SeaLettuce
+  Zone: mid
+  ZoneBaseM: 1.55
+  StandingHeightM: 0.47
+  Algae: 1
+  TideSprites:
+  - {fileID: -1042407119, guid: 1286f85ac51202f96ca44f7556c63820, type: 3}
+  - {fileID: -462075193, guid: 1286f85ac51202f96ca44f7556c63820, type: 3}
+  - {fileID: -1949550374, guid: 1286f85ac51202f96ca44f7556c63820, type: 3}
+  - {fileID: -1802641723, guid: 1286f85ac51202f96ca44f7556c63820, type: 3}
+  - {fileID: -1669557223, guid: 1286f85ac51202f96ca44f7556c63820, type: 3}
+  TideLadderOverM:
+  - -1.55
+  - -0.35
+  - 0.65
+  - 1.65
+  - 2.45
+  SubmergedSortingOrder: -8
+  EmergentSortingOrder: 3

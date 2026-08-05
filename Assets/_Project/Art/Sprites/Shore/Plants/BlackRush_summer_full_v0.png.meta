@@ -1,0 +1,557 @@
+fileFormatVersion: 2
+guid: bd8e5fc49ce49c57fe979bd4c9411ef2
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.475, y: 0.292682927}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: BlackRush_summer_full_v0_c0_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 123
+        width: 40
+        height: 41
+      alignment: 9
+      pivot: {x: 0.475, y: 0.292682927}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ae4f60a44c397be4790bd3bd77eeb99a
+      internalID: -16523241
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackRush_summer_full_v0_c1_f0
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 123
+        width: 40
+        height: 41
+      alignment: 9
+      pivot: {x: 0.475, y: 0.292682927}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8c0c0fe597c3561a3b072e7e568651b9
+      internalID: -678210389
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackRush_summer_full_v0_c2_f0
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 123
+        width: 40
+        height: 41
+      alignment: 9
+      pivot: {x: 0.475, y: 0.292682927}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 90f220119e5b1b79ec05e8bb556a35da
+      internalID: -71955195
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackRush_summer_full_v0_c3_f0
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 123
+        width: 40
+        height: 41
+      alignment: 9
+      pivot: {x: 0.475, y: 0.292682927}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d8cb5642d6b10b30fefc1c0bfdcde7cd
+      internalID: -569847576
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackRush_summer_full_v0_c4_f0
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 123
+        width: 40
+        height: 41
+      alignment: 9
+      pivot: {x: 0.475, y: 0.292682927}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0623ddd441a5febee0595fde1a3253b7
+      internalID: -1740821608
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackRush_summer_full_v0_c0_f1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 82
+        width: 40
+        height: 41
+      alignment: 9
+      pivot: {x: 0.475, y: 0.292682927}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4e03510d6628bab97266e948a2bcd1d7
+      internalID: -1493588365
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackRush_summer_full_v0_c1_f1
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 82
+        width: 40
+        height: 41
+      alignment: 9
+      pivot: {x: 0.475, y: 0.292682927}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 94ae1e4f0723ccfa13f215425688acdb
+      internalID: -1614211451
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackRush_summer_full_v0_c2_f1
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 82
+        width: 40
+        height: 41
+      alignment: 9
+      pivot: {x: 0.475, y: 0.292682927}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e286e14c36b81cc5b5abcfb162959cdf
+      internalID: -1801563652
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackRush_summer_full_v0_c3_f1
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 82
+        width: 40
+        height: 41
+      alignment: 9
+      pivot: {x: 0.475, y: 0.292682927}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5293387c672ac6a33ca4b14b66adb4ec
+      internalID: -209882793
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackRush_summer_full_v0_c4_f1
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 82
+        width: 40
+        height: 41
+      alignment: 9
+      pivot: {x: 0.475, y: 0.292682927}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 255719022c3c1d0b341a305bcd3cab8c
+      internalID: -1086252714
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackRush_summer_full_v0_c0_f2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 41
+        width: 40
+        height: 41
+      alignment: 9
+      pivot: {x: 0.475, y: 0.292682927}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b3f12a5fddc1a3fba6141c86a6914f63
+      internalID: -394972644
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackRush_summer_full_v0_c1_f2
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 41
+        width: 40
+        height: 41
+      alignment: 9
+      pivot: {x: 0.475, y: 0.292682927}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fede994dc4b24dacc867ba9bf015fc83
+      internalID: -983909061
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackRush_summer_full_v0_c2_f2
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 41
+        width: 40
+        height: 41
+      alignment: 9
+      pivot: {x: 0.475, y: 0.292682927}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 195bc57b36688e0911a3c1b549db6a58
+      internalID: -527244254
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackRush_summer_full_v0_c3_f2
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 41
+        width: 40
+        height: 41
+      alignment: 9
+      pivot: {x: 0.475, y: 0.292682927}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7c6bf645954ec35991f9807dbc2c1c17
+      internalID: -1818343341
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackRush_summer_full_v0_c4_f2
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 41
+        width: 40
+        height: 41
+      alignment: 9
+      pivot: {x: 0.475, y: 0.292682927}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 65883b079117cc2ce5ce940da8ec777c
+      internalID: -476393824
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackRush_summer_full_v0_c0_f3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 40
+        height: 41
+      alignment: 9
+      pivot: {x: 0.475, y: 0.292682927}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 546e671977496b0c148f80f3503d6e66
+      internalID: -230417472
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackRush_summer_full_v0_c1_f3
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 0
+        width: 40
+        height: 41
+      alignment: 9
+      pivot: {x: 0.475, y: 0.292682927}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 16110b89e99f33498cd5d55819b65e27
+      internalID: -1803599871
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackRush_summer_full_v0_c2_f3
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 0
+        width: 40
+        height: 41
+      alignment: 9
+      pivot: {x: 0.475, y: 0.292682927}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cb3f286f95d2616fbba944c8bc39f106
+      internalID: -1227792976
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackRush_summer_full_v0_c3_f3
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 0
+        width: 40
+        height: 41
+      alignment: 9
+      pivot: {x: 0.475, y: 0.292682927}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c4ccbf7b8284820e2fa4a62e9afd0eb9
+      internalID: -214124505
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BlackRush_summer_full_v0_c4_f3
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 0
+        width: 40
+        height: 41
+      alignment: 9
+      pivot: {x: 0.475, y: 0.292682927}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b80a388eb3e18a9f16ddd6cd6bc1f961
+      internalID: -1286839339
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    outline: []
+    customData:
+    physicsShape: []
+    bones: []
+    spriteID:
+    internalID: 0
+    vertices: []
+    indices:
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      BlackRush_summer_full_v0_c0_f0: -16523241
+      BlackRush_summer_full_v0_c1_f0: -678210389
+      BlackRush_summer_full_v0_c2_f0: -71955195
+      BlackRush_summer_full_v0_c3_f0: -569847576
+      BlackRush_summer_full_v0_c4_f0: -1740821608
+      BlackRush_summer_full_v0_c0_f1: -1493588365
+      BlackRush_summer_full_v0_c1_f1: -1614211451
+      BlackRush_summer_full_v0_c2_f1: -1801563652
+      BlackRush_summer_full_v0_c3_f1: -209882793
+      BlackRush_summer_full_v0_c4_f1: -1086252714
+      BlackRush_summer_full_v0_c0_f2: -394972644
+      BlackRush_summer_full_v0_c1_f2: -983909061
+      BlackRush_summer_full_v0_c2_f2: -527244254
+      BlackRush_summer_full_v0_c3_f2: -1818343341
+      BlackRush_summer_full_v0_c4_f2: -476393824
+      BlackRush_summer_full_v0_c0_f3: -230417472
+      BlackRush_summer_full_v0_c1_f3: -1803599871
+      BlackRush_summer_full_v0_c2_f3: -1227792976
+      BlackRush_summer_full_v0_c3_f3: -214124505
+      BlackRush_summer_full_v0_c4_f3: -1286839339
+  mipmapLimitGroupName:
+  pSDRemoveMatte: 0
+  userData:
+  assetBundleName:
+  assetBundleVariant:

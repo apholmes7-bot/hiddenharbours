@@ -1,0 +1,557 @@
+fileFormatVersion: 2
+guid: a196f19f997aa7ea9d6c98a5fcdbbf48
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.489795918, y: 0.319148936}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: KnottedWrack_summer_full_v0_tide_c0_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 282
+        width: 98
+        height: 94
+      alignment: 9
+      pivot: {x: 0.489795918, y: 0.319148936}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ccf13f2c06aefa128401c6d80db9e933
+      internalID: -819640772
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_summer_full_v0_tide_c1_f0
+      rect:
+        serializedVersion: 2
+        x: 98
+        y: 282
+        width: 98
+        height: 94
+      alignment: 9
+      pivot: {x: 0.489795918, y: 0.319148936}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 905b1c6a28f96c851c5afcdab3acc8b2
+      internalID: -318637089
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_summer_full_v0_tide_c2_f0
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 282
+        width: 98
+        height: 94
+      alignment: 9
+      pivot: {x: 0.489795918, y: 0.319148936}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a6717589f7564e23ddef7f1d210f38a0
+      internalID: -829618047
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_summer_full_v0_tide_c3_f0
+      rect:
+        serializedVersion: 2
+        x: 294
+        y: 282
+        width: 98
+        height: 94
+      alignment: 9
+      pivot: {x: 0.489795918, y: 0.319148936}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 553e4e358320f9c1d469eb63e3d29af4
+      internalID: -1788181884
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_summer_full_v0_tide_c4_f0
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 282
+        width: 98
+        height: 94
+      alignment: 9
+      pivot: {x: 0.489795918, y: 0.319148936}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 592e8a0d69c7d5fc2c3efcb13a4bb959
+      internalID: -1980754898
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_summer_full_v0_tide_c0_f1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 188
+        width: 98
+        height: 94
+      alignment: 9
+      pivot: {x: 0.489795918, y: 0.319148936}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 685051a6821f44536f64c6275c99abb7
+      internalID: -858132484
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_summer_full_v0_tide_c1_f1
+      rect:
+        serializedVersion: 2
+        x: 98
+        y: 188
+        width: 98
+        height: 94
+      alignment: 9
+      pivot: {x: 0.489795918, y: 0.319148936}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8128b7351c83c63b943570ba4e06f653
+      internalID: -1688331583
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_summer_full_v0_tide_c2_f1
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 188
+        width: 98
+        height: 94
+      alignment: 9
+      pivot: {x: 0.489795918, y: 0.319148936}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 11427f62642fdb22d15015a0cb2d099e
+      internalID: -299438704
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_summer_full_v0_tide_c3_f1
+      rect:
+        serializedVersion: 2
+        x: 294
+        y: 188
+        width: 98
+        height: 94
+      alignment: 9
+      pivot: {x: 0.489795918, y: 0.319148936}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0f28eb45443c7bfd5665ab177ce7e9e8
+      internalID: -1502115422
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_summer_full_v0_tide_c4_f1
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 188
+        width: 98
+        height: 94
+      alignment: 9
+      pivot: {x: 0.489795918, y: 0.319148936}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6e602e572c9e2a4bb57b2f53914c2386
+      internalID: -1023412516
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_summer_full_v0_tide_c0_f2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 94
+        width: 98
+        height: 94
+      alignment: 9
+      pivot: {x: 0.489795918, y: 0.319148936}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ff9a5f77f087fb7251e46f18626955d6
+      internalID: -229213896
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_summer_full_v0_tide_c1_f2
+      rect:
+        serializedVersion: 2
+        x: 98
+        y: 94
+        width: 98
+        height: 94
+      alignment: 9
+      pivot: {x: 0.489795918, y: 0.319148936}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f1a822c504ca7c8e22ccd8c69bef3ba6
+      internalID: -75258139
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_summer_full_v0_tide_c2_f2
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 94
+        width: 98
+        height: 94
+      alignment: 9
+      pivot: {x: 0.489795918, y: 0.319148936}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8975c603d1c5212d73e7a9a0ecf89b80
+      internalID: -435033271
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_summer_full_v0_tide_c3_f2
+      rect:
+        serializedVersion: 2
+        x: 294
+        y: 94
+        width: 98
+        height: 94
+      alignment: 9
+      pivot: {x: 0.489795918, y: 0.319148936}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bf594dc7f85055ab6843c68d01ef8c4e
+      internalID: -1300972452
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_summer_full_v0_tide_c4_f2
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 94
+        width: 98
+        height: 94
+      alignment: 9
+      pivot: {x: 0.489795918, y: 0.319148936}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 41df47d76f9726f7a4403ea68c8b5b0a
+      internalID: -1689873628
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_summer_full_v0_tide_c0_f3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 98
+        height: 94
+      alignment: 9
+      pivot: {x: 0.489795918, y: 0.319148936}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e6657242de967f1d25c7b734e2db103b
+      internalID: -1610870430
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_summer_full_v0_tide_c1_f3
+      rect:
+        serializedVersion: 2
+        x: 98
+        y: 0
+        width: 98
+        height: 94
+      alignment: 9
+      pivot: {x: 0.489795918, y: 0.319148936}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: efb7698c584604035cf40867c533c093
+      internalID: -1147658542
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_summer_full_v0_tide_c2_f3
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 0
+        width: 98
+        height: 94
+      alignment: 9
+      pivot: {x: 0.489795918, y: 0.319148936}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6f7cb8ff48b410c0f5d35baa3bfa2a6a
+      internalID: -1750435568
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_summer_full_v0_tide_c3_f3
+      rect:
+        serializedVersion: 2
+        x: 294
+        y: 0
+        width: 98
+        height: 94
+      alignment: 9
+      pivot: {x: 0.489795918, y: 0.319148936}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ab2a3bd7a12d25f440d0e1e6061a191f
+      internalID: -1132298286
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KnottedWrack_summer_full_v0_tide_c4_f3
+      rect:
+        serializedVersion: 2
+        x: 392
+        y: 0
+        width: 98
+        height: 94
+      alignment: 9
+      pivot: {x: 0.489795918, y: 0.319148936}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5872d03cf98fa24a2664fbe483a7cd15
+      internalID: -1183950658
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    outline: []
+    customData:
+    physicsShape: []
+    bones: []
+    spriteID:
+    internalID: 0
+    vertices: []
+    indices:
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      KnottedWrack_summer_full_v0_tide_c0_f0: -819640772
+      KnottedWrack_summer_full_v0_tide_c1_f0: -318637089
+      KnottedWrack_summer_full_v0_tide_c2_f0: -829618047
+      KnottedWrack_summer_full_v0_tide_c3_f0: -1788181884
+      KnottedWrack_summer_full_v0_tide_c4_f0: -1980754898
+      KnottedWrack_summer_full_v0_tide_c0_f1: -858132484
+      KnottedWrack_summer_full_v0_tide_c1_f1: -1688331583
+      KnottedWrack_summer_full_v0_tide_c2_f1: -299438704
+      KnottedWrack_summer_full_v0_tide_c3_f1: -1502115422
+      KnottedWrack_summer_full_v0_tide_c4_f1: -1023412516
+      KnottedWrack_summer_full_v0_tide_c0_f2: -229213896
+      KnottedWrack_summer_full_v0_tide_c1_f2: -75258139
+      KnottedWrack_summer_full_v0_tide_c2_f2: -435033271
+      KnottedWrack_summer_full_v0_tide_c3_f2: -1300972452
+      KnottedWrack_summer_full_v0_tide_c4_f2: -1689873628
+      KnottedWrack_summer_full_v0_tide_c0_f3: -1610870430
+      KnottedWrack_summer_full_v0_tide_c1_f3: -1147658542
+      KnottedWrack_summer_full_v0_tide_c2_f3: -1750435568
+      KnottedWrack_summer_full_v0_tide_c3_f3: -1132298286
+      KnottedWrack_summer_full_v0_tide_c4_f3: -1183950658
+  mipmapLimitGroupName:
+  pSDRemoveMatte: 0
+  userData:
+  assetBundleName:
+  assetBundleVariant:

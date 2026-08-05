@@ -1,0 +1,557 @@
+fileFormatVersion: 2
+guid: 05cfc0a5a4e9bd913fcf13974974ec11
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.487804878, y: 0.4}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Glasswort_summer_full_v0_c0_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 120
+        width: 41
+        height: 40
+      alignment: 9
+      pivot: {x: 0.487804878, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7b99fa7b370c465b540bb6f2e02de3bc
+      internalID: -976684130
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_summer_full_v0_c1_f0
+      rect:
+        serializedVersion: 2
+        x: 41
+        y: 120
+        width: 41
+        height: 40
+      alignment: 9
+      pivot: {x: 0.487804878, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 410d2670de21b66dba33d64cb25479f8
+      internalID: -422433186
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_summer_full_v0_c2_f0
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 120
+        width: 41
+        height: 40
+      alignment: 9
+      pivot: {x: 0.487804878, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 19c1365f97b447b451fa560df9cd87f5
+      internalID: -1155055545
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_summer_full_v0_c3_f0
+      rect:
+        serializedVersion: 2
+        x: 123
+        y: 120
+        width: 41
+        height: 40
+      alignment: 9
+      pivot: {x: 0.487804878, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dd88e8e2d62f718e8b5a4f9f43a21c7f
+      internalID: -1718620634
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_summer_full_v0_c4_f0
+      rect:
+        serializedVersion: 2
+        x: 164
+        y: 120
+        width: 41
+        height: 40
+      alignment: 9
+      pivot: {x: 0.487804878, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f33e2198b0929cdfc17438230317e0d1
+      internalID: -1087310456
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_summer_full_v0_c0_f1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 80
+        width: 41
+        height: 40
+      alignment: 9
+      pivot: {x: 0.487804878, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7d49600e71432fd617c53816113b86cf
+      internalID: -470588313
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_summer_full_v0_c1_f1
+      rect:
+        serializedVersion: 2
+        x: 41
+        y: 80
+        width: 41
+        height: 40
+      alignment: 9
+      pivot: {x: 0.487804878, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 82358b431d1bf6c40d8b69e6da415436
+      internalID: -1987660765
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_summer_full_v0_c2_f1
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 80
+        width: 41
+        height: 40
+      alignment: 9
+      pivot: {x: 0.487804878, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2e3b62bb9cc59fd458a80314b1459ff4
+      internalID: -1024001825
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_summer_full_v0_c3_f1
+      rect:
+        serializedVersion: 2
+        x: 123
+        y: 80
+        width: 41
+        height: 40
+      alignment: 9
+      pivot: {x: 0.487804878, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 19e5522b172cd04d5b4ffe9b06039bae
+      internalID: -811957988
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_summer_full_v0_c4_f1
+      rect:
+        serializedVersion: 2
+        x: 164
+        y: 80
+        width: 41
+        height: 40
+      alignment: 9
+      pivot: {x: 0.487804878, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 734f7dcefd7bc9e7235f48c5aa2edcc8
+      internalID: -1205141831
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_summer_full_v0_c0_f2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 40
+        width: 41
+        height: 40
+      alignment: 9
+      pivot: {x: 0.487804878, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4e8fd777bb74755c9dd5f2fe08ee69a3
+      internalID: -1430282354
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_summer_full_v0_c1_f2
+      rect:
+        serializedVersion: 2
+        x: 41
+        y: 40
+        width: 41
+        height: 40
+      alignment: 9
+      pivot: {x: 0.487804878, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 39b47021c8ccb1854821186388194685
+      internalID: -1052248060
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_summer_full_v0_c2_f2
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 40
+        width: 41
+        height: 40
+      alignment: 9
+      pivot: {x: 0.487804878, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: be3ce9bd28292917b0ada86664b96999
+      internalID: -1465931234
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_summer_full_v0_c3_f2
+      rect:
+        serializedVersion: 2
+        x: 123
+        y: 40
+        width: 41
+        height: 40
+      alignment: 9
+      pivot: {x: 0.487804878, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1ed257657a750d71cb6449342b4a8ea8
+      internalID: -1057477409
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_summer_full_v0_c4_f2
+      rect:
+        serializedVersion: 2
+        x: 164
+        y: 40
+        width: 41
+        height: 40
+      alignment: 9
+      pivot: {x: 0.487804878, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6125c20478b1ed5a727a61d328a22213
+      internalID: -1241767263
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_summer_full_v0_c0_f3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 41
+        height: 40
+      alignment: 9
+      pivot: {x: 0.487804878, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 86f07083e614326f360234f40abd0128
+      internalID: -1154853544
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_summer_full_v0_c1_f3
+      rect:
+        serializedVersion: 2
+        x: 41
+        y: 0
+        width: 41
+        height: 40
+      alignment: 9
+      pivot: {x: 0.487804878, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d4e900eb2531b5cd1183f51ccd7db0a4
+      internalID: -1457513093
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_summer_full_v0_c2_f3
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 0
+        width: 41
+        height: 40
+      alignment: 9
+      pivot: {x: 0.487804878, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e586ec712cc6286b5cdf98699408431a
+      internalID: -663316200
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_summer_full_v0_c3_f3
+      rect:
+        serializedVersion: 2
+        x: 123
+        y: 0
+        width: 41
+        height: 40
+      alignment: 9
+      pivot: {x: 0.487804878, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e58c8cbeee87f9b50c541cd37a77fe3d
+      internalID: -1778235944
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Glasswort_summer_full_v0_c4_f3
+      rect:
+        serializedVersion: 2
+        x: 164
+        y: 0
+        width: 41
+        height: 40
+      alignment: 9
+      pivot: {x: 0.487804878, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 86e6d535de9490f8e060e1a2b5ce9dfd
+      internalID: -981137020
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    outline: []
+    customData:
+    physicsShape: []
+    bones: []
+    spriteID:
+    internalID: 0
+    vertices: []
+    indices:
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Glasswort_summer_full_v0_c0_f0: -976684130
+      Glasswort_summer_full_v0_c1_f0: -422433186
+      Glasswort_summer_full_v0_c2_f0: -1155055545
+      Glasswort_summer_full_v0_c3_f0: -1718620634
+      Glasswort_summer_full_v0_c4_f0: -1087310456
+      Glasswort_summer_full_v0_c0_f1: -470588313
+      Glasswort_summer_full_v0_c1_f1: -1987660765
+      Glasswort_summer_full_v0_c2_f1: -1024001825
+      Glasswort_summer_full_v0_c3_f1: -811957988
+      Glasswort_summer_full_v0_c4_f1: -1205141831
+      Glasswort_summer_full_v0_c0_f2: -1430282354
+      Glasswort_summer_full_v0_c1_f2: -1052248060
+      Glasswort_summer_full_v0_c2_f2: -1465931234
+      Glasswort_summer_full_v0_c3_f2: -1057477409
+      Glasswort_summer_full_v0_c4_f2: -1241767263
+      Glasswort_summer_full_v0_c0_f3: -1154853544
+      Glasswort_summer_full_v0_c1_f3: -1457513093
+      Glasswort_summer_full_v0_c2_f3: -663316200
+      Glasswort_summer_full_v0_c3_f3: -1778235944
+      Glasswort_summer_full_v0_c4_f3: -981137020
+  mipmapLimitGroupName:
+  pSDRemoveMatte: 0
+  userData:
+  assetBundleName:
+  assetBundleVariant:

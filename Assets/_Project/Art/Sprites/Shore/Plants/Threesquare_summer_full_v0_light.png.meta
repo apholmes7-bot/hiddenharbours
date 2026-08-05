@@ -1,0 +1,557 @@
+fileFormatVersion: 2
+guid: 722dcfebf17d914693587150e3b85bc5
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.473684211, y: 0.230769231}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Threesquare_summer_full_v0_light_c0_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 156
+        width: 38
+        height: 52
+      alignment: 9
+      pivot: {x: 0.473684211, y: 0.230769231}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 945cc84f52e8ee1b0d4453d078ed0924
+      internalID: -1218026043
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_summer_full_v0_light_c1_f0
+      rect:
+        serializedVersion: 2
+        x: 38
+        y: 156
+        width: 38
+        height: 52
+      alignment: 9
+      pivot: {x: 0.473684211, y: 0.230769231}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1356014da607cee9f195e7cc9b1fde36
+      internalID: -1850975624
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_summer_full_v0_light_c2_f0
+      rect:
+        serializedVersion: 2
+        x: 76
+        y: 156
+        width: 38
+        height: 52
+      alignment: 9
+      pivot: {x: 0.473684211, y: 0.230769231}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8929fb74d55c585fc61365739c5ff953
+      internalID: -1314539827
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_summer_full_v0_light_c3_f0
+      rect:
+        serializedVersion: 2
+        x: 114
+        y: 156
+        width: 38
+        height: 52
+      alignment: 9
+      pivot: {x: 0.473684211, y: 0.230769231}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d0c1928be00e2b0e27e2f390b0005f17
+      internalID: -981650084
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_summer_full_v0_light_c4_f0
+      rect:
+        serializedVersion: 2
+        x: 152
+        y: 156
+        width: 38
+        height: 52
+      alignment: 9
+      pivot: {x: 0.473684211, y: 0.230769231}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 441e974492d58527678282765d75aa0a
+      internalID: -1943493050
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_summer_full_v0_light_c0_f1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 104
+        width: 38
+        height: 52
+      alignment: 9
+      pivot: {x: 0.473684211, y: 0.230769231}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8a89630c6ac5976376c8f7740a0fac9b
+      internalID: -1450478456
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_summer_full_v0_light_c1_f1
+      rect:
+        serializedVersion: 2
+        x: 38
+        y: 104
+        width: 38
+        height: 52
+      alignment: 9
+      pivot: {x: 0.473684211, y: 0.230769231}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e2d09f509829b3fb240cfa288a9c869e
+      internalID: -738636502
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_summer_full_v0_light_c2_f1
+      rect:
+        serializedVersion: 2
+        x: 76
+        y: 104
+        width: 38
+        height: 52
+      alignment: 9
+      pivot: {x: 0.473684211, y: 0.230769231}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 34ac78f243966dcde84b806c1d64acd1
+      internalID: -970001481
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_summer_full_v0_light_c3_f1
+      rect:
+        serializedVersion: 2
+        x: 114
+        y: 104
+        width: 38
+        height: 52
+      alignment: 9
+      pivot: {x: 0.473684211, y: 0.230769231}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 79163446445c10c957d25535d8aa4560
+      internalID: -1957185311
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_summer_full_v0_light_c4_f1
+      rect:
+        serializedVersion: 2
+        x: 152
+        y: 104
+        width: 38
+        height: 52
+      alignment: 9
+      pivot: {x: 0.473684211, y: 0.230769231}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3d04dadc5bc33871a1a32389fedf1665
+      internalID: -1384331811
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_summer_full_v0_light_c0_f2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 52
+        width: 38
+        height: 52
+      alignment: 9
+      pivot: {x: 0.473684211, y: 0.230769231}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 397161851c51525e3881815789643fee
+      internalID: -1682209727
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_summer_full_v0_light_c1_f2
+      rect:
+        serializedVersion: 2
+        x: 38
+        y: 52
+        width: 38
+        height: 52
+      alignment: 9
+      pivot: {x: 0.473684211, y: 0.230769231}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 807bc6419cab41113d65e17fc274d9c7
+      internalID: -546181607
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_summer_full_v0_light_c2_f2
+      rect:
+        serializedVersion: 2
+        x: 76
+        y: 52
+        width: 38
+        height: 52
+      alignment: 9
+      pivot: {x: 0.473684211, y: 0.230769231}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 975e8a72800941f5ba77544720c93ea8
+      internalID: -707006235
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_summer_full_v0_light_c3_f2
+      rect:
+        serializedVersion: 2
+        x: 114
+        y: 52
+        width: 38
+        height: 52
+      alignment: 9
+      pivot: {x: 0.473684211, y: 0.230769231}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 16370d92390d45726179d1479c83f86a
+      internalID: -246207255
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_summer_full_v0_light_c4_f2
+      rect:
+        serializedVersion: 2
+        x: 152
+        y: 52
+        width: 38
+        height: 52
+      alignment: 9
+      pivot: {x: 0.473684211, y: 0.230769231}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a25d074d52bd37d85ee04bee5775efc6
+      internalID: -1921108904
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_summer_full_v0_light_c0_f3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 38
+        height: 52
+      alignment: 9
+      pivot: {x: 0.473684211, y: 0.230769231}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 481ce84b3b7b800a1d3cf55b617115f7
+      internalID: -692275886
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_summer_full_v0_light_c1_f3
+      rect:
+        serializedVersion: 2
+        x: 38
+        y: 0
+        width: 38
+        height: 52
+      alignment: 9
+      pivot: {x: 0.473684211, y: 0.230769231}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9f5d10582ec8487fb34e4e53d99ff9a8
+      internalID: -891605935
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_summer_full_v0_light_c2_f3
+      rect:
+        serializedVersion: 2
+        x: 76
+        y: 0
+        width: 38
+        height: 52
+      alignment: 9
+      pivot: {x: 0.473684211, y: 0.230769231}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4518a9f3a80344fa93128a8c61f13153
+      internalID: -950332263
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_summer_full_v0_light_c3_f3
+      rect:
+        serializedVersion: 2
+        x: 114
+        y: 0
+        width: 38
+        height: 52
+      alignment: 9
+      pivot: {x: 0.473684211, y: 0.230769231}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b4acf0aef745f53552ee256880524cce
+      internalID: -827547773
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Threesquare_summer_full_v0_light_c4_f3
+      rect:
+        serializedVersion: 2
+        x: 152
+        y: 0
+        width: 38
+        height: 52
+      alignment: 9
+      pivot: {x: 0.473684211, y: 0.230769231}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dd223d8811e6761a1da233b051ffe6db
+      internalID: -349174115
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    outline: []
+    customData:
+    physicsShape: []
+    bones: []
+    spriteID:
+    internalID: 0
+    vertices: []
+    indices:
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Threesquare_summer_full_v0_light_c0_f0: -1218026043
+      Threesquare_summer_full_v0_light_c1_f0: -1850975624
+      Threesquare_summer_full_v0_light_c2_f0: -1314539827
+      Threesquare_summer_full_v0_light_c3_f0: -981650084
+      Threesquare_summer_full_v0_light_c4_f0: -1943493050
+      Threesquare_summer_full_v0_light_c0_f1: -1450478456
+      Threesquare_summer_full_v0_light_c1_f1: -738636502
+      Threesquare_summer_full_v0_light_c2_f1: -970001481
+      Threesquare_summer_full_v0_light_c3_f1: -1957185311
+      Threesquare_summer_full_v0_light_c4_f1: -1384331811
+      Threesquare_summer_full_v0_light_c0_f2: -1682209727
+      Threesquare_summer_full_v0_light_c1_f2: -546181607
+      Threesquare_summer_full_v0_light_c2_f2: -707006235
+      Threesquare_summer_full_v0_light_c3_f2: -246207255
+      Threesquare_summer_full_v0_light_c4_f2: -1921108904
+      Threesquare_summer_full_v0_light_c0_f3: -692275886
+      Threesquare_summer_full_v0_light_c1_f3: -891605935
+      Threesquare_summer_full_v0_light_c2_f3: -950332263
+      Threesquare_summer_full_v0_light_c3_f3: -827547773
+      Threesquare_summer_full_v0_light_c4_f3: -349174115
+  mipmapLimitGroupName:
+  pSDRemoveMatte: 0
+  userData:
+  assetBundleName:
+  assetBundleVariant:

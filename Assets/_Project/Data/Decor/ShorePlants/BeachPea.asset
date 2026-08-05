@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e2271b6bbca1cab9561983932c91e43, type: 3}
+  m_Name: BeachPea
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.ShorePlantDef
+  Id: shoreplant.beach_pea
+  SpeciesKey: BeachPea
+  Zone: upland
+  ZoneBaseM: 4.65
+  StandingHeightM: 0.5
+  Algae: 0
+  TideSprites:
+  - {fileID: -330862311, guid: 0726679cb8d1fa61f3c087b57bfd8288, type: 3}
+  - {fileID: -449812477, guid: 0726679cb8d1fa61f3c087b57bfd8288, type: 3}
+  - {fileID: -671237118, guid: 0726679cb8d1fa61f3c087b57bfd8288, type: 3}
+  - {fileID: -1193975223, guid: 0726679cb8d1fa61f3c087b57bfd8288, type: 3}
+  - {fileID: -795882752, guid: 0726679cb8d1fa61f3c087b57bfd8288, type: 3}
+  TideLadderOverM:
+  - -4.65
+  - -3.45
+  - -2.45
+  - -1.45
+  - -0.65
+  SubmergedSortingOrder: -8
+  EmergentSortingOrder: 3

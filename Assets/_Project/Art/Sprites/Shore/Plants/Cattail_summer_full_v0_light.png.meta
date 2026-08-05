@@ -1,0 +1,557 @@
+fileFormatVersion: 2
+guid: 9562071c6bcef2d28ec53f1d268b10c9
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.488888889, y: 0.178082192}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Cattail_summer_full_v0_light_c0_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 219
+        width: 90
+        height: 73
+      alignment: 9
+      pivot: {x: 0.488888889, y: 0.178082192}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5804ec017978a8b847842c463c78fb35
+      internalID: -1699983895
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_summer_full_v0_light_c1_f0
+      rect:
+        serializedVersion: 2
+        x: 90
+        y: 219
+        width: 90
+        height: 73
+      alignment: 9
+      pivot: {x: 0.488888889, y: 0.178082192}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 92403cd60dadaaece9ea0c9f104637ea
+      internalID: -734452948
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_summer_full_v0_light_c2_f0
+      rect:
+        serializedVersion: 2
+        x: 180
+        y: 219
+        width: 90
+        height: 73
+      alignment: 9
+      pivot: {x: 0.488888889, y: 0.178082192}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 097a7514b0917fb8dd5534df95f4fef1
+      internalID: -1193270332
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_summer_full_v0_light_c3_f0
+      rect:
+        serializedVersion: 2
+        x: 270
+        y: 219
+        width: 90
+        height: 73
+      alignment: 9
+      pivot: {x: 0.488888889, y: 0.178082192}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fbfc3d486f28297e78091ad4272a9d8b
+      internalID: -587440479
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_summer_full_v0_light_c4_f0
+      rect:
+        serializedVersion: 2
+        x: 360
+        y: 219
+        width: 90
+        height: 73
+      alignment: 9
+      pivot: {x: 0.488888889, y: 0.178082192}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c6cf89db9b498e501a5a86a2149a66da
+      internalID: -857868587
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_summer_full_v0_light_c0_f1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 146
+        width: 90
+        height: 73
+      alignment: 9
+      pivot: {x: 0.488888889, y: 0.178082192}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fafd902645a8bef08c67f2c7cbbd606e
+      internalID: -848474091
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_summer_full_v0_light_c1_f1
+      rect:
+        serializedVersion: 2
+        x: 90
+        y: 146
+        width: 90
+        height: 73
+      alignment: 9
+      pivot: {x: 0.488888889, y: 0.178082192}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1a23d68a09212a12b7fa666a857850b1
+      internalID: -1970764269
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_summer_full_v0_light_c2_f1
+      rect:
+        serializedVersion: 2
+        x: 180
+        y: 146
+        width: 90
+        height: 73
+      alignment: 9
+      pivot: {x: 0.488888889, y: 0.178082192}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 967df5fd6d4c236af2d276423b3e7dc3
+      internalID: -629937342
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_summer_full_v0_light_c3_f1
+      rect:
+        serializedVersion: 2
+        x: 270
+        y: 146
+        width: 90
+        height: 73
+      alignment: 9
+      pivot: {x: 0.488888889, y: 0.178082192}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b853fc870bfead5a1bda8b63f17bc18c
+      internalID: -1220624251
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_summer_full_v0_light_c4_f1
+      rect:
+        serializedVersion: 2
+        x: 360
+        y: 146
+        width: 90
+        height: 73
+      alignment: 9
+      pivot: {x: 0.488888889, y: 0.178082192}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b4b93a3e6565861072956874f4197990
+      internalID: -362758226
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_summer_full_v0_light_c0_f2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 73
+        width: 90
+        height: 73
+      alignment: 9
+      pivot: {x: 0.488888889, y: 0.178082192}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c023bef4ce0b25d608132f9aeaad8d02
+      internalID: -1066914543
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_summer_full_v0_light_c1_f2
+      rect:
+        serializedVersion: 2
+        x: 90
+        y: 73
+        width: 90
+        height: 73
+      alignment: 9
+      pivot: {x: 0.488888889, y: 0.178082192}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a8f7e70f444d87f1e8d78400f20f5b2b
+      internalID: -781945890
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_summer_full_v0_light_c2_f2
+      rect:
+        serializedVersion: 2
+        x: 180
+        y: 73
+        width: 90
+        height: 73
+      alignment: 9
+      pivot: {x: 0.488888889, y: 0.178082192}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 34d5a4cf8cf64d2faab4ded5d0b9193c
+      internalID: -1782195644
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_summer_full_v0_light_c3_f2
+      rect:
+        serializedVersion: 2
+        x: 270
+        y: 73
+        width: 90
+        height: 73
+      alignment: 9
+      pivot: {x: 0.488888889, y: 0.178082192}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 52fb44e9766943124c370adbb848d040
+      internalID: -638692727
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_summer_full_v0_light_c4_f2
+      rect:
+        serializedVersion: 2
+        x: 360
+        y: 73
+        width: 90
+        height: 73
+      alignment: 9
+      pivot: {x: 0.488888889, y: 0.178082192}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 40c7b254ecfce7b6a52cee279762cfc4
+      internalID: -1339430654
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_summer_full_v0_light_c0_f3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 90
+        height: 73
+      alignment: 9
+      pivot: {x: 0.488888889, y: 0.178082192}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 39f748c672bb7402f8cf45fa78598a74
+      internalID: -101611798
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_summer_full_v0_light_c1_f3
+      rect:
+        serializedVersion: 2
+        x: 90
+        y: 0
+        width: 90
+        height: 73
+      alignment: 9
+      pivot: {x: 0.488888889, y: 0.178082192}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cff0f4e9e4d172d2240a8794a12579b1
+      internalID: -1850666140
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_summer_full_v0_light_c2_f3
+      rect:
+        serializedVersion: 2
+        x: 180
+        y: 0
+        width: 90
+        height: 73
+      alignment: 9
+      pivot: {x: 0.488888889, y: 0.178082192}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ff0fbf6143dea37eb2c7f017a0cfeba8
+      internalID: -289240631
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_summer_full_v0_light_c3_f3
+      rect:
+        serializedVersion: 2
+        x: 270
+        y: 0
+        width: 90
+        height: 73
+      alignment: 9
+      pivot: {x: 0.488888889, y: 0.178082192}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8aabfff7ac2b31d212feab8d9d33397b
+      internalID: -15277572
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cattail_summer_full_v0_light_c4_f3
+      rect:
+        serializedVersion: 2
+        x: 360
+        y: 0
+        width: 90
+        height: 73
+      alignment: 9
+      pivot: {x: 0.488888889, y: 0.178082192}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 582a405764a1c70154d74027aa3e29a7
+      internalID: -1185168743
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    outline: []
+    customData:
+    physicsShape: []
+    bones: []
+    spriteID:
+    internalID: 0
+    vertices: []
+    indices:
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Cattail_summer_full_v0_light_c0_f0: -1699983895
+      Cattail_summer_full_v0_light_c1_f0: -734452948
+      Cattail_summer_full_v0_light_c2_f0: -1193270332
+      Cattail_summer_full_v0_light_c3_f0: -587440479
+      Cattail_summer_full_v0_light_c4_f0: -857868587
+      Cattail_summer_full_v0_light_c0_f1: -848474091
+      Cattail_summer_full_v0_light_c1_f1: -1970764269
+      Cattail_summer_full_v0_light_c2_f1: -629937342
+      Cattail_summer_full_v0_light_c3_f1: -1220624251
+      Cattail_summer_full_v0_light_c4_f1: -362758226
+      Cattail_summer_full_v0_light_c0_f2: -1066914543
+      Cattail_summer_full_v0_light_c1_f2: -781945890
+      Cattail_summer_full_v0_light_c2_f2: -1782195644
+      Cattail_summer_full_v0_light_c3_f2: -638692727
+      Cattail_summer_full_v0_light_c4_f2: -1339430654
+      Cattail_summer_full_v0_light_c0_f3: -101611798
+      Cattail_summer_full_v0_light_c1_f3: -1850666140
+      Cattail_summer_full_v0_light_c2_f3: -289240631
+      Cattail_summer_full_v0_light_c3_f3: -15277572
+      Cattail_summer_full_v0_light_c4_f3: -1185168743
+  mipmapLimitGroupName:
+  pSDRemoveMatte: 0
+  userData:
+  assetBundleName:
+  assetBundleVariant:

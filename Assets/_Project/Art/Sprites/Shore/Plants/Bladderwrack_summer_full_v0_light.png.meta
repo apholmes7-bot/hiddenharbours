@@ -1,0 +1,557 @@
+fileFormatVersion: 2
+guid: d23caa478fdb3ec096eed49f9a112de6
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.492957746, y: 0.31884058}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Bladderwrack_summer_full_v0_light_c0_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 207
+        width: 71
+        height: 69
+      alignment: 9
+      pivot: {x: 0.492957746, y: 0.31884058}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6c6e06a792d3b5b22fb7c2ea62e49059
+      internalID: -1142573972
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_summer_full_v0_light_c1_f0
+      rect:
+        serializedVersion: 2
+        x: 71
+        y: 207
+        width: 71
+        height: 69
+      alignment: 9
+      pivot: {x: 0.492957746, y: 0.31884058}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b5de3975c94e4dd63658c9cbe9a5096a
+      internalID: -240935362
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_summer_full_v0_light_c2_f0
+      rect:
+        serializedVersion: 2
+        x: 142
+        y: 207
+        width: 71
+        height: 69
+      alignment: 9
+      pivot: {x: 0.492957746, y: 0.31884058}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 14caecc3d5f2240ee0955c1340e2a338
+      internalID: -846466993
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_summer_full_v0_light_c3_f0
+      rect:
+        serializedVersion: 2
+        x: 213
+        y: 207
+        width: 71
+        height: 69
+      alignment: 9
+      pivot: {x: 0.492957746, y: 0.31884058}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8bb97169e485dc19e77a453a47aa0fa7
+      internalID: -1095984092
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_summer_full_v0_light_c4_f0
+      rect:
+        serializedVersion: 2
+        x: 284
+        y: 207
+        width: 71
+        height: 69
+      alignment: 9
+      pivot: {x: 0.492957746, y: 0.31884058}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e93cc35cf8ce172d5c53034acfefe133
+      internalID: -1821044123
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_summer_full_v0_light_c0_f1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 138
+        width: 71
+        height: 69
+      alignment: 9
+      pivot: {x: 0.492957746, y: 0.31884058}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9d1994e952673a7318fb6d08cc83ce22
+      internalID: -1460537330
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_summer_full_v0_light_c1_f1
+      rect:
+        serializedVersion: 2
+        x: 71
+        y: 138
+        width: 71
+        height: 69
+      alignment: 9
+      pivot: {x: 0.492957746, y: 0.31884058}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 73d8fb65ec2993eeadb48cc256fec2be
+      internalID: -1144395243
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_summer_full_v0_light_c2_f1
+      rect:
+        serializedVersion: 2
+        x: 142
+        y: 138
+        width: 71
+        height: 69
+      alignment: 9
+      pivot: {x: 0.492957746, y: 0.31884058}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f5b2c6f4a1c9d2550b763af00ee781fa
+      internalID: -1652767454
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_summer_full_v0_light_c3_f1
+      rect:
+        serializedVersion: 2
+        x: 213
+        y: 138
+        width: 71
+        height: 69
+      alignment: 9
+      pivot: {x: 0.492957746, y: 0.31884058}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 01224f26befb6bc27527d075eb36827f
+      internalID: -402639197
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_summer_full_v0_light_c4_f1
+      rect:
+        serializedVersion: 2
+        x: 284
+        y: 138
+        width: 71
+        height: 69
+      alignment: 9
+      pivot: {x: 0.492957746, y: 0.31884058}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5ec9c6ff60071bce5c1df42e3b64c093
+      internalID: -1058199002
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_summer_full_v0_light_c0_f2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 69
+        width: 71
+        height: 69
+      alignment: 9
+      pivot: {x: 0.492957746, y: 0.31884058}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7cd65ddd29546b7ebc53708c01e5d2f8
+      internalID: -1163892408
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_summer_full_v0_light_c1_f2
+      rect:
+        serializedVersion: 2
+        x: 71
+        y: 69
+        width: 71
+        height: 69
+      alignment: 9
+      pivot: {x: 0.492957746, y: 0.31884058}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 93774ad6ca41d75920ac1e7bd4df9f08
+      internalID: -24768868
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_summer_full_v0_light_c2_f2
+      rect:
+        serializedVersion: 2
+        x: 142
+        y: 69
+        width: 71
+        height: 69
+      alignment: 9
+      pivot: {x: 0.492957746, y: 0.31884058}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2db99cd73826e802477a2e436a7be824
+      internalID: -1107124918
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_summer_full_v0_light_c3_f2
+      rect:
+        serializedVersion: 2
+        x: 213
+        y: 69
+        width: 71
+        height: 69
+      alignment: 9
+      pivot: {x: 0.492957746, y: 0.31884058}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 427507739e20893b00129616650147a3
+      internalID: -1468548910
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_summer_full_v0_light_c4_f2
+      rect:
+        serializedVersion: 2
+        x: 284
+        y: 69
+        width: 71
+        height: 69
+      alignment: 9
+      pivot: {x: 0.492957746, y: 0.31884058}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0eb848ff1fe2af4bf062b1c65281ff4a
+      internalID: -550569488
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_summer_full_v0_light_c0_f3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 71
+        height: 69
+      alignment: 9
+      pivot: {x: 0.492957746, y: 0.31884058}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7dfb4919b900a8ef487e7fdd3f780a78
+      internalID: -1476326427
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_summer_full_v0_light_c1_f3
+      rect:
+        serializedVersion: 2
+        x: 71
+        y: 0
+        width: 71
+        height: 69
+      alignment: 9
+      pivot: {x: 0.492957746, y: 0.31884058}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 302bd87fdac8c779ab34c688730dc91b
+      internalID: -1209848397
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_summer_full_v0_light_c2_f3
+      rect:
+        serializedVersion: 2
+        x: 142
+        y: 0
+        width: 71
+        height: 69
+      alignment: 9
+      pivot: {x: 0.492957746, y: 0.31884058}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 30e898691ec959e6e55b151756437ba3
+      internalID: -1278048367
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_summer_full_v0_light_c3_f3
+      rect:
+        serializedVersion: 2
+        x: 213
+        y: 0
+        width: 71
+        height: 69
+      alignment: 9
+      pivot: {x: 0.492957746, y: 0.31884058}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 61b5842c7d1278de4b43789bbe30fc05
+      internalID: -1397757962
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bladderwrack_summer_full_v0_light_c4_f3
+      rect:
+        serializedVersion: 2
+        x: 284
+        y: 0
+        width: 71
+        height: 69
+      alignment: 9
+      pivot: {x: 0.492957746, y: 0.31884058}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d30b9d5eb0f8cdd4b5199d605141fc09
+      internalID: -306042961
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    outline: []
+    customData:
+    physicsShape: []
+    bones: []
+    spriteID:
+    internalID: 0
+    vertices: []
+    indices:
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Bladderwrack_summer_full_v0_light_c0_f0: -1142573972
+      Bladderwrack_summer_full_v0_light_c1_f0: -240935362
+      Bladderwrack_summer_full_v0_light_c2_f0: -846466993
+      Bladderwrack_summer_full_v0_light_c3_f0: -1095984092
+      Bladderwrack_summer_full_v0_light_c4_f0: -1821044123
+      Bladderwrack_summer_full_v0_light_c0_f1: -1460537330
+      Bladderwrack_summer_full_v0_light_c1_f1: -1144395243
+      Bladderwrack_summer_full_v0_light_c2_f1: -1652767454
+      Bladderwrack_summer_full_v0_light_c3_f1: -402639197
+      Bladderwrack_summer_full_v0_light_c4_f1: -1058199002
+      Bladderwrack_summer_full_v0_light_c0_f2: -1163892408
+      Bladderwrack_summer_full_v0_light_c1_f2: -24768868
+      Bladderwrack_summer_full_v0_light_c2_f2: -1107124918
+      Bladderwrack_summer_full_v0_light_c3_f2: -1468548910
+      Bladderwrack_summer_full_v0_light_c4_f2: -550569488
+      Bladderwrack_summer_full_v0_light_c0_f3: -1476326427
+      Bladderwrack_summer_full_v0_light_c1_f3: -1209848397
+      Bladderwrack_summer_full_v0_light_c2_f3: -1278048367
+      Bladderwrack_summer_full_v0_light_c3_f3: -1397757962
+      Bladderwrack_summer_full_v0_light_c4_f3: -306042961
+  mipmapLimitGroupName:
+  pSDRemoveMatte: 0
+  userData:
+  assetBundleName:
+  assetBundleVariant:

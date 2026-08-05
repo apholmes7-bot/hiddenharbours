@@ -1,0 +1,557 @@
+fileFormatVersion: 2
+guid: a2df6eb8266be01c03e6b1d0649e9857
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.493506494, y: 0.260869565}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Eelgrass_summer_full_v0_light_c0_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 207
+        width: 77
+        height: 69
+      alignment: 9
+      pivot: {x: 0.493506494, y: 0.260869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8ac5c43c59a4b2ec868438c2223d99ab
+      internalID: -1811460
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eelgrass_summer_full_v0_light_c1_f0
+      rect:
+        serializedVersion: 2
+        x: 77
+        y: 207
+        width: 77
+        height: 69
+      alignment: 9
+      pivot: {x: 0.493506494, y: 0.260869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fba419cc32f8d4192a321877a16b03e6
+      internalID: -973109241
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eelgrass_summer_full_v0_light_c2_f0
+      rect:
+        serializedVersion: 2
+        x: 154
+        y: 207
+        width: 77
+        height: 69
+      alignment: 9
+      pivot: {x: 0.493506494, y: 0.260869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a6469a1e6b11e504768c907de07824d3
+      internalID: -657991515
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eelgrass_summer_full_v0_light_c3_f0
+      rect:
+        serializedVersion: 2
+        x: 231
+        y: 207
+        width: 77
+        height: 69
+      alignment: 9
+      pivot: {x: 0.493506494, y: 0.260869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1837fd7b5447c817139646d032a0a5d3
+      internalID: -1271973170
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eelgrass_summer_full_v0_light_c4_f0
+      rect:
+        serializedVersion: 2
+        x: 308
+        y: 207
+        width: 77
+        height: 69
+      alignment: 9
+      pivot: {x: 0.493506494, y: 0.260869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 55e9efb721bd947d0e7352d30a4a5ff2
+      internalID: -1982067894
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eelgrass_summer_full_v0_light_c0_f1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 138
+        width: 77
+        height: 69
+      alignment: 9
+      pivot: {x: 0.493506494, y: 0.260869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 414f4ea87af4e422ba42d13aa444b87c
+      internalID: -355258402
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eelgrass_summer_full_v0_light_c1_f1
+      rect:
+        serializedVersion: 2
+        x: 77
+        y: 138
+        width: 77
+        height: 69
+      alignment: 9
+      pivot: {x: 0.493506494, y: 0.260869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: adea3869aba545e61cf9ff696405fc9c
+      internalID: -1865657989
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eelgrass_summer_full_v0_light_c2_f1
+      rect:
+        serializedVersion: 2
+        x: 154
+        y: 138
+        width: 77
+        height: 69
+      alignment: 9
+      pivot: {x: 0.493506494, y: 0.260869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e409679119d4dfe78113e0fea0af9251
+      internalID: -1353182392
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eelgrass_summer_full_v0_light_c3_f1
+      rect:
+        serializedVersion: 2
+        x: 231
+        y: 138
+        width: 77
+        height: 69
+      alignment: 9
+      pivot: {x: 0.493506494, y: 0.260869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 46d7bba70ab8c7304c3213c43f3b2e6c
+      internalID: -1770714798
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eelgrass_summer_full_v0_light_c4_f1
+      rect:
+        serializedVersion: 2
+        x: 308
+        y: 138
+        width: 77
+        height: 69
+      alignment: 9
+      pivot: {x: 0.493506494, y: 0.260869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fa4034186f091b49029074ef6e762ee7
+      internalID: -626854583
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eelgrass_summer_full_v0_light_c0_f2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 69
+        width: 77
+        height: 69
+      alignment: 9
+      pivot: {x: 0.493506494, y: 0.260869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4b0f0e30d8521f6d628b7f0d8572feed
+      internalID: -317219128
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eelgrass_summer_full_v0_light_c1_f2
+      rect:
+        serializedVersion: 2
+        x: 77
+        y: 69
+        width: 77
+        height: 69
+      alignment: 9
+      pivot: {x: 0.493506494, y: 0.260869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a74b71526d2958508d3c58494ac46f8a
+      internalID: -141842795
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eelgrass_summer_full_v0_light_c2_f2
+      rect:
+        serializedVersion: 2
+        x: 154
+        y: 69
+        width: 77
+        height: 69
+      alignment: 9
+      pivot: {x: 0.493506494, y: 0.260869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9047de436e68cc5404ffa4bf845de7aa
+      internalID: -622099578
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eelgrass_summer_full_v0_light_c3_f2
+      rect:
+        serializedVersion: 2
+        x: 231
+        y: 69
+        width: 77
+        height: 69
+      alignment: 9
+      pivot: {x: 0.493506494, y: 0.260869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c4487a618615dbd1017f2f8ea9b449b1
+      internalID: -57732191
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eelgrass_summer_full_v0_light_c4_f2
+      rect:
+        serializedVersion: 2
+        x: 308
+        y: 69
+        width: 77
+        height: 69
+      alignment: 9
+      pivot: {x: 0.493506494, y: 0.260869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 465c4893b8eae43577f5fd300b26c2be
+      internalID: -1782805677
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eelgrass_summer_full_v0_light_c0_f3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 77
+        height: 69
+      alignment: 9
+      pivot: {x: 0.493506494, y: 0.260869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4e7da6b51cd558bfefc2ce7530eaadc6
+      internalID: -1058111713
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eelgrass_summer_full_v0_light_c1_f3
+      rect:
+        serializedVersion: 2
+        x: 77
+        y: 0
+        width: 77
+        height: 69
+      alignment: 9
+      pivot: {x: 0.493506494, y: 0.260869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0dbab15c1d8e303ec2aa1fc8f2d05a55
+      internalID: -1498746666
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eelgrass_summer_full_v0_light_c2_f3
+      rect:
+        serializedVersion: 2
+        x: 154
+        y: 0
+        width: 77
+        height: 69
+      alignment: 9
+      pivot: {x: 0.493506494, y: 0.260869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c36d93cd4bf8a230631a44b66020ea5a
+      internalID: -687816961
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eelgrass_summer_full_v0_light_c3_f3
+      rect:
+        serializedVersion: 2
+        x: 231
+        y: 0
+        width: 77
+        height: 69
+      alignment: 9
+      pivot: {x: 0.493506494, y: 0.260869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b064e3998e70e3190eaf6986bd0ef770
+      internalID: -1337984143
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Eelgrass_summer_full_v0_light_c4_f3
+      rect:
+        serializedVersion: 2
+        x: 308
+        y: 0
+        width: 77
+        height: 69
+      alignment: 9
+      pivot: {x: 0.493506494, y: 0.260869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6d02c3fb50cebfe20e5303d845463ff0
+      internalID: -159632378
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    outline: []
+    customData:
+    physicsShape: []
+    bones: []
+    spriteID:
+    internalID: 0
+    vertices: []
+    indices:
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Eelgrass_summer_full_v0_light_c0_f0: -1811460
+      Eelgrass_summer_full_v0_light_c1_f0: -973109241
+      Eelgrass_summer_full_v0_light_c2_f0: -657991515
+      Eelgrass_summer_full_v0_light_c3_f0: -1271973170
+      Eelgrass_summer_full_v0_light_c4_f0: -1982067894
+      Eelgrass_summer_full_v0_light_c0_f1: -355258402
+      Eelgrass_summer_full_v0_light_c1_f1: -1865657989
+      Eelgrass_summer_full_v0_light_c2_f1: -1353182392
+      Eelgrass_summer_full_v0_light_c3_f1: -1770714798
+      Eelgrass_summer_full_v0_light_c4_f1: -626854583
+      Eelgrass_summer_full_v0_light_c0_f2: -317219128
+      Eelgrass_summer_full_v0_light_c1_f2: -141842795
+      Eelgrass_summer_full_v0_light_c2_f2: -622099578
+      Eelgrass_summer_full_v0_light_c3_f2: -57732191
+      Eelgrass_summer_full_v0_light_c4_f2: -1782805677
+      Eelgrass_summer_full_v0_light_c0_f3: -1058111713
+      Eelgrass_summer_full_v0_light_c1_f3: -1498746666
+      Eelgrass_summer_full_v0_light_c2_f3: -687816961
+      Eelgrass_summer_full_v0_light_c3_f3: -1337984143
+      Eelgrass_summer_full_v0_light_c4_f3: -159632378
+  mipmapLimitGroupName:
+  pSDRemoveMatte: 0
+  userData:
+  assetBundleName:
+  assetBundleVariant:
