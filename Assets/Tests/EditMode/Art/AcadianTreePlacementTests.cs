@@ -83,10 +83,10 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         /// <summary>
-        /// The canonical tree is exactly five components: Transform, SpriteRenderer, YSortSprite,
-        /// TreeTrunkAnchor and ReflectiveObject. No Animator — the sway is the shader reading the
-        /// shared sim wind, and an Animator per tree would be deaf to it AND batch-break (rule 7). If
-        /// one ever appears here, that is the design being quietly reversed.
+        /// The canonical tree is exactly six components: Transform, SpriteRenderer, YSortSprite,
+        /// TreeTrunkAnchor, ReflectiveObject and SpriteShadow. No Animator — the sway is the shader
+        /// reading the shared sim wind, and an Animator per tree would be deaf to it AND batch-break
+        /// (rule 7). If one ever appears here, that is the design being quietly reversed.
         ///
         /// <para><b>ReflectiveObject joined the shape in the ADR 0027 activation pass</b>, and the list
         /// is deliberately EXACT so that is a decision somebody makes rather than a drift somebody
@@ -94,14 +94,20 @@ namespace HiddenHarbours.Tests.Art.EditMode
         /// material this species already uses is the one carrying the HHReflect pass, and the
         /// component's own distance gate keeps an inland forest out of the reflective set — so every
         /// tree may carry it while only the bankside ones cost anything.</para>
+        ///
+        /// <para><b>SpriteShadow joined it on the owner's 2026-08-05 casting ruling</b>, by the same
+        /// argument in the same place: <see cref="AcadianTreeCatalog.Configure"/> is the one method a
+        /// tree is built through, so a PREFAB dragged into a scene rakes at dawn exactly like a tree
+        /// the planter placed. The EXACT list is what makes that a decision rather than a drift —
+        /// which is also why it costs an edit here, and should.</para>
         /// </summary>
         [Test]
         public void EveryTreePrefab_IsTheCanonicalDecorShape_AndCarriesNoAnimator()
         {
             AcadianTreePrefabBuilder.BuildAll(Scratch);
 
-            var wanted = new[] { "ReflectiveObject", "SpriteRenderer", "Transform", "TreeTrunkAnchor",
-                                 "YSortSprite" }
+            var wanted = new[] { "ReflectiveObject", "SpriteRenderer", "SpriteShadow", "Transform",
+                                 "TreeTrunkAnchor", "YSortSprite" }
                          .OrderBy(n => n).ToArray();
             var problems = new List<string>();
 
