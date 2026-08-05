@@ -43,6 +43,18 @@ namespace HiddenHarbours.UI
         private static readonly Color32 BINTX_R = RigDrawUtil.Hex("7c2a20");
         private static readonly Color32 WHITE = new Color32(255, 255, 255, 255);
 
+        // The gauge backlight's two gradients (sportRig.js:188-194) — static so the wash allocates
+        // nothing. Warmer and far heavier at the rim than the console's: it has to carry an amber
+        // reading over WHITE enamel, where the console's only has to light black glass.
+        private static readonly double[] NightCoreT = { 0.0, 0.65, 1.0 };
+        private static readonly Color32[] NightCoreC =
+            { RigDrawUtil.Hex("ffb648"), RigDrawUtil.Hex("f09e36"), RigDrawUtil.Hex("d6842e") };
+        private static readonly float[] NightCoreA = { 0.52f, 0.40f, 0.30f };
+        private static readonly double[] NightBloomT = { 0.0, 1.0 };
+        private static readonly Color32[] NightBloomC =
+            { RigDrawUtil.Hex("ffb84a"), RigDrawUtil.Hex("ffb84a") };
+        private static readonly float[] NightBloomA = { 0.20f, 0f };
+
         // ---- the baked chrome-shaft ignition key (sportRig.js:263-275), built once ----------------
         private static DrawSurface _key;
         private static int _keyPx, _keyPy;
@@ -66,7 +78,13 @@ namespace HiddenHarbours.UI
         }
 
         /// <summary>Paint the sport dash chrome (minus the composited instruments) into
-        /// <paramref name="s"/> (<see cref="HelmDashGeometry.W"/>×<see cref="HelmDashGeometry.H"/>).</summary>
+        /// <paramref name="s"/> (<see cref="HelmDashGeometry.W"/>×<see cref="HelmDashGeometry.H"/>).
+        ///
+        /// <para><paramref name="night"/> lights the dials and NOTHING else — the whole of what
+        /// sportRig.js authors for night on the chrome (js:360). Her sister drops the entire panel a
+        /// palette step (consoleRig.js:58); this hull's gelcoat and stainless are given no night ramp
+        /// at all, so none is invented here. What sells her night face is the composited instruments,
+        /// which take their own.</para></summary>
         public static void Render(DrawSurface s, bool running, float drive, float rpm01, float fuel01,
                                   bool night = false, bool blink = false)
         {
@@ -110,6 +128,11 @@ namespace HiddenHarbours.UI
             GaugeRpm(s, HelmDashGeometry.RpmCx, HelmDashGeometry.RpmCy + PAD, HelmDashGeometry.GaugeR, rpm01);
             GaugeFuel(s, HelmDashGeometry.FuelCx, HelmDashGeometry.FuelCy + PAD, HelmDashGeometry.GaugeR,
                       fuel01, lowFuel, blink);
+            if (night)   // js:360 — over the finished dials, never under them
+            {
+                GaugeNight(s, HelmDashGeometry.RpmCx, HelmDashGeometry.RpmCy + PAD, HelmDashGeometry.GaugeR);
+                GaugeNight(s, HelmDashGeometry.FuelCx, HelmDashGeometry.FuelCy + PAD, HelmDashGeometry.GaugeR);
+            }
 
             // ---- switch panel: dark so the chrome bats pop (sportRig.js:363-371) ----
             int swx = HelmDashGeometry.SwX, swy = HelmDashGeometry.SwY + PAD;
@@ -271,7 +294,26 @@ namespace HiddenHarbours.UI
             Needle(s, r, gx, py, gx + fdx * rimR, gy + fdy * rimR);
         }
 
+        /// <summary>
+        /// The dial's amber backlight (sportRig.js:185-197). The core pass is SOURCE-OVER, not
+        /// additive — the one real divergence from her sister's identical-looking helper, and a
+        /// deliberate one: adding light to a white enamel dial only bleaches it, so the amber has to
+        /// composite normally to read as a backlight at all (consoleRig.js:227 lights BLACK glass and
+        /// does use <c>lighter</c>). The outer bloom, spilling onto the surrounding chrome, is
+        /// additive in both.
+        /// </summary>
+        private static void GaugeNight(DrawSurface s, int gx, int gy, int r)
+        {
+            s.OverRadial(gx - r, gy - r, r * 2, r * 2, gx, gy, 2, r, r - 1,
+                         NightCoreT, NightCoreC, NightCoreA);
+            int br = r + 18;                       // the source's fill rect; the gradient dies at r+16
+            s.AddRadial(gx - br, gy - br, br * 2, br * 2, gx, gy, r * 0.5, r + 16, r + 16,
+                        NightBloomT, NightBloomC, NightBloomA);
+        }
+
         // ---- switches: chrome bats on dark housings (sportRig.js:249-291) -------------------------
+        // sportRig.js:368-369 calls toggle() with NO night argument — this hull's switchgear has no
+        // authored halo, unlike the console's. Nothing invented here.
         private static void Toggle(DrawSurface s, int x, int y, int w, int h, int lampCx, int lampY,
                                    bool on, Color32 lampCol)
         {

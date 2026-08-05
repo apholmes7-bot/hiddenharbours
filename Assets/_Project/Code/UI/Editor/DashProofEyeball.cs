@@ -8,8 +8,8 @@ namespace HiddenHarbours.UI.Editor
     /// <summary>
     /// Bakes the OWNER EYEBALL PROOFS for the S2a composed skiff dashes: the console and sport
     /// dash chrome with the grabbable wheel, dome compass and binnacle lever composited exactly as
-    /// the runtime compositor mounts them (day state, running, half ahead, a third of port lock,
-    /// heading 235° — a state where every instrument visibly reads). Written to
+    /// the runtime compositor mounts them (running, half ahead, a third of port lock, heading 235° —
+    /// a state where every instrument visibly reads), DAY and BACKLIT. Written to
     /// <c>docs/art/proofs/</c> (outside Assets/ on purpose — a proof for the PR/owner, not game
     /// content). Compare against the rigs' own previews at the same signals.
     ///
@@ -21,6 +21,8 @@ namespace HiddenHarbours.UI.Editor
     {
         private const string ConsoleOut = "docs/art/proofs/console-dash-csharp.png";
         private const string SportOut = "docs/art/proofs/sport-dash-csharp.png";
+        private const string ConsoleNightOut = "docs/art/proofs/console-dash-night-csharp.png";
+        private const string SportNightOut = "docs/art/proofs/sport-dash-night-csharp.png";
 
         // The proof state: every instrument off its rest pose.
         private const float Drive = 0.5f;
@@ -28,15 +30,20 @@ namespace HiddenHarbours.UI.Editor
         private const float Heading = 235f;
         private const float Fuel = 1f;
 
-        [MenuItem("Hidden Harbours/Dev/Bake Skiff Dash Proofs (console + sport, day) + profile")]
+        [MenuItem("Hidden Harbours/Dev/Bake Skiff Dash Proofs (console + sport, day + night) + profile")]
         public static void Bake()
         {
-            BakeOne(sport: false, ConsoleOut, HelmLeverFinish.Graphite, HelmWheelRim.Rubber);
-            BakeOne(sport: true, SportOut, HelmLeverFinish.Chrome, HelmWheelRim.Steel);
+            BakeOne(sport: false, ConsoleOut, HelmLeverFinish.Graphite, HelmWheelRim.Rubber, night: false);
+            BakeOne(sport: true, SportOut, HelmLeverFinish.Chrome, HelmWheelRim.Steel, night: false);
+            // The backlit pair — the two sheets the pilothouse hulls have had since S4 and these two
+            // never did, because the skiff ports carried no night face to bake.
+            BakeOne(sport: false, ConsoleNightOut, HelmLeverFinish.Graphite, HelmWheelRim.Rubber, night: true);
+            BakeOne(sport: true, SportNightOut, HelmLeverFinish.Chrome, HelmWheelRim.Steel, night: true);
             Profile();
         }
 
-        private static void BakeOne(bool sport, string outPath, HelmLeverFinish finish, HelmWheelRim rim)
+        private static void BakeOne(bool sport, string outPath, HelmLeverFinish finish, HelmWheelRim rim,
+                                    bool night)
         {
             var chrome = new DrawSurface(HelmDashGeometry.W, HelmDashGeometry.H);
             var card = new DrawSurface(HelmDashGeometry.W, HelmDashGeometry.H);
@@ -45,11 +52,11 @@ namespace HiddenHarbours.UI.Editor
             var compass = new DrawSurface(HelmDashGeometry.DomeBoxW, HelmDashGeometry.DomeBoxH);
 
             float rpm = Mathf.Clamp01(0.11f + 0.89f * Mathf.Abs(Drive));
-            if (sport) SportDashRender.Render(chrome, running: true, Drive, rpm, Fuel);
-            else ConsoleDashRender.Render(chrome, running: true, Drive, rpm, Fuel);
+            if (sport) SportDashRender.Render(chrome, running: true, Drive, rpm, Fuel, night);
+            else ConsoleDashRender.Render(chrome, running: true, Drive, rpm, Fuel, night);
             WheelRigRender.Render(wheel, WheelRigGeometry.DegFromSteer(Steer, WheelRigGeometry.DefaultTurns), rim);
             CompassRigRender.PaintDome(compass, 0, 0, HelmDashGeometry.DomeBoxW, HelmDashGeometry.DomeBoxH,
-                                       Heading, night: false);
+                                       Heading, night);
             LeverRigRender.Render(lever, Drive, finish);
 
             System.Array.Copy(chrome.Pixels, card.Pixels, chrome.Pixels.Length);
@@ -57,7 +64,7 @@ namespace HiddenHarbours.UI.Editor
             RigDrawUtil.CompositeAt(card, compass, dbx, dby);
             HelmDashGeometry.WheelCellOrigin(out int wx, out int wy);
             RigDrawUtil.CompositeAt(card, wheel, wx, wy);
-            if (!sport) ConsoleDashRender.PaintWheelCap(card);
+            if (!sport) ConsoleDashRender.PaintWheelCap(card, night);
             HelmDashGeometry.LeverCellOrigin(out int lx, out int ly);
             RigDrawUtil.CompositeAt(card, lever, lx, ly);
 

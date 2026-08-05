@@ -63,7 +63,11 @@ namespace HiddenHarbours.Tests.UI.EditMode
             double novi = MsPer(() => NoviDashRender.Render(pilot, in noviFit, true, Rpm, Fuel));
             double cape = MsPer(() => CapeDashRender.Render(pilot, in capeFit, true, Rpm, Fuel));
 
-            // Night costs extra on the wheelhouses only (the gauge backlights + the ice ambient wash).
+            // Night costs extra on all four now that the skiffs have their backlights too. It is paid
+            // at DUSK and at DAWN and at no other moment — the compositor keys on the night BOOLEAN,
+            // never on the hour (HelmNightPanelPlayTests pins that), so these are twice-a-day figures.
+            double consoleNight = MsPer(() => ConsoleDashRender.Render(skiff, true, Drive, Rpm, Fuel, true));
+            double sportNight = MsPer(() => SportDashRender.Render(skiff, true, Drive, Rpm, Fuel, true));
             double noviNight = MsPer(() => NoviDashRender.Render(pilot, in noviFit, true, Rpm, Fuel, true));
             double capeNight = MsPer(() => CapeDashRender.Render(pilot, in capeFit, true, Rpm, Fuel, true));
 
@@ -71,8 +75,8 @@ namespace HiddenHarbours.Tests.UI.EditMode
             double pilotAvg = (novi + cape) / 2.0;
             string report =
                 $"[HelmDashRepaintCost] raster ms/repaint, avg over {Iterations}, EditMode CPU, no GPU:\n" +
-                $"  console  600x510  {console:F2} ms\n" +
-                $"  sport    600x510  {sport:F2} ms\n" +
+                $"  console  600x510  {console:F2} ms   (night {consoleNight:F2} ms)\n" +
+                $"  sport    600x510  {sport:F2} ms   (night {sportNight:F2} ms)\n" +
                 $"  novi     600x548  {novi:F2} ms   (night {noviNight:F2} ms)\n" +
                 $"  cape     600x548  {cape:F2} ms   (night {capeNight:F2} ms)\n" +
                 $"  pilothouse / skiff ratio = {pilotAvg / skiffAvg:F2}x  " +

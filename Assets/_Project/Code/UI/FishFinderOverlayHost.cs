@@ -210,9 +210,13 @@ namespace HiddenHarbours.UI
             }
 
             float range = FishRigGeometry.SafeRange(prefs.RangeMetres, finder.DefaultRangeMetres);
+            // ONE backlight rule: the sounder's, unchanged — a lit panel lights what is mounted in it,
+            // and the status-strip tap stays the early-on override. See SounderOverlayHost for the
+            // rig citations and the known limit.
+            bool night = prefs.Night || HelmPanelLight.IsNight();
             var state = new FishRigState(
                 depth, sounder.PlaceholderWaterTempC, range, prefs.AlarmMetres,
-                prefs.Feet, prefs.Night, _fishId, prefs.Armed, triggered, blink,
+                prefs.Feet, night, _fishId, prefs.Armed, triggered, blink,
                 FishFinderOverlayLayout.PhaseSeconds(bucket, finder.WaterfallHz), _adjust,
                 finder.PlaceholderSens01, finder.PlaceholderLink, finder.PlaceholderBatt01,
                 finder.PlaceholderVolts);

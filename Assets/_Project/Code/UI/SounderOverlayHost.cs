@@ -159,10 +159,21 @@ namespace HiddenHarbours.UI
             // Blink only advances while the alarm is sounding; a quiet sounder is a still picture.
             bool blink = triggered && DepthSounder.BlinkPhase(Time.time, cfg.AlarmBlinkHz);
 
-            // The signals the glass draws are a function of the SEA and the player's prefs ONLY — never
-            // of which presentation is up. That is what makes the flush face and the expanded card
-            // incapable of disagreeing, and it is why the shallow alarm flashes in both (Ruling E).
-            var state = new DepthRigState(depth, prefs.Feet, prefs.Night, prefs.Armed, prefs.AlarmMetres,
+            // The signals the glass draws are a function of the SEA, the player's prefs and the boat's
+            // panel lights ONLY — never of which presentation is up. That is what makes the flush face
+            // and the expanded card incapable of disagreeing, and it is why the shallow alarm flashes
+            // in both (Ruling E).
+            //
+            // The backlight is the OR of the two, and that is the rigs' own contract, not a taste:
+            // every helm hands its dash's night straight to the mounted instrument
+            // (consoleRig.js:400, sportRig.js:353, noviRig.js:449, capeRig.js:444), so a lit panel
+            // lights what is mounted in it. The glass tap survives untouched as the EARLY-ON override
+            // — the skipper who wants the amber face before dusk — and, as ever, persists per hull.
+            // (Known limit: once the panel is lit the tap has nothing left to turn on, so it reads as
+            // inert until morning. Making it a true override wants a THIRD state — auto/day/night —
+            // and that is save data, so it is not smuggled in here.)
+            bool night = prefs.Night || HelmPanelLight.IsNight();
+            var state = new DepthRigState(depth, prefs.Feet, night, prefs.Armed, prefs.AlarmMetres,
                                           cfg.PlaceholderWaterTempC, blink);
 
             bool expanded = Expanded;
