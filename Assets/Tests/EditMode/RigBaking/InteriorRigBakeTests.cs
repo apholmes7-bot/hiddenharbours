@@ -240,13 +240,19 @@ namespace HiddenHarbours.Tests.RigBaking
         {
             // The worked example on record: winD is the rig's internal field name, winDensity is the
             // option it actually reads. Both strings appear in the rig source; only one does anything.
+            // The REAL probe uses the extremes (1 vs 0), not a nudge off the default: density maps to a
+            // whole window COUNT per drawn wall, and a small nudge can quantise to the same count as
+            // the default — byte-identical renders and a false "option is dead" (caught on CI). The
+            // extremes differ under any density→count mapping unless the option is truly inert, which
+            // is exactly what this control exists to catch.
             using IRigScriptHost host = Host("interior");
 
-            byte[] real = host.EvaluateBytes($"{Interior}.render(0,{{winDensity:0.1}})");
-            byte[] typo = host.EvaluateBytes($"{Interior}.render(0,{{winD:0.1}})");
+            byte[] dense = host.EvaluateBytes($"{Interior}.render(0,{{winDensity:1}})");
+            byte[] sparse = host.EvaluateBytes($"{Interior}.render(0,{{winDensity:0}})");
+            byte[] typo = host.EvaluateBytes($"{Interior}.render(0,{{winD:1}})");
             byte[] plain = host.EvaluateBytes($"{Interior}.render(0,{{}})");
 
-            CollectionAssert.AreNotEqual(real, plain, "winDensity is the option and it applies");
+            CollectionAssert.AreNotEqual(dense, sparse, "winDensity is the option and it applies");
             CollectionAssert.AreEqual(typo, plain,
                                       "winD is ignored in total silence — this is the trap, demonstrated");
         }

@@ -288,9 +288,15 @@ namespace HiddenHarbours.Tests.EditMode
 
         /// <summary>Drive one frame of the component. EditMode runs no game loop, so <c>Update</c> is
         /// invoked directly — the whole point of deciding "inside" with a pure function is that this
-        /// works at all.</summary>
+        /// works at all. Via reflection, NOT <c>SendMessage</c>: in edit mode the engine gates magic
+        /// methods behind its internal <c>ShouldRunBehaviour()</c> check, and SendMessage("Update") on
+        /// a plain MonoBehaviour trips that assert as an [Assert] log the test framework then fails —
+        /// which is what turned every Tick-driven test red on CI while the logic itself was correct.</summary>
         static void Tick(BuildingInterior interior) =>
-            interior.SendMessage("Update", SendMessageOptions.DontRequireReceiver);
+            typeof(BuildingInterior)
+                .GetMethod("Update", System.Reflection.BindingFlags.Instance |
+                                     System.Reflection.BindingFlags.NonPublic)
+                .Invoke(interior, null);
 
         static int CountChildren(GameObject go, string name)
         {
