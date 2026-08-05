@@ -135,9 +135,12 @@ namespace HiddenHarbours.Tests.EditMode
                 if (f > 60) worst = Mathf.Max(worst, Mathf.Abs(output - target));
             }
 
-            Assert.Less(worst, 0.12f,
-                "a gentle swell must be tracked closely — the weight filter adds mass, it does not " +
-                "detach the hull from an easy sea");
+            // The analytic tracking error of the shipped constants (ω 7, ζ 1) on this swell
+            // (ω_wave 1.2, A 0.5) is ≈ 0.17 m — the ~19° phase lag IS the felt weight, by design.
+            // The bound catches gross detachment (band-scale failures), not the designed lag.
+            Assert.Less(worst, 0.25f,
+                "a gentle swell must be tracked closely — the weight filter adds mass and a small " +
+                "phase lag, it does not detach the hull from an easy sea");
         }
 
         /// <summary>
@@ -229,8 +232,14 @@ namespace HiddenHarbours.Tests.EditMode
             StormRockSettings s = StormRockSettings.Default;
             var state = new HeaveWeightState();
 
-            // Start well off the surface (inside the band), then hold the sea still.
-            StormRockMath.StepHeaveWeight(ref state, 0.5f, Dt, G, 1f, in Neutral, in s);
+            // Prime ON the water at 0 (the first engaged step seeds from the surface), THEN move
+            // the sea to a new still level inside the band — the chase must genuinely happen and
+            // then LAND exactly, not asymptote forever.
+            StormRockMath.StepHeaveWeight(ref state, 0f, Dt, G, 1f, in Neutral, in s);
+            Assert.AreNotEqual(0.5f, StormRockMath.StepHeaveWeight(ref state, 0.5f, Dt, G, 1f, in Neutral, in s),
+                "harness: the first chase step must NOT already be at the new level, or this " +
+                "test never exercises the settle at all");
+
             int settledAt = -1;
             for (int f = 0; f < 600; f++)
             {
