@@ -47,11 +47,12 @@ namespace HiddenHarbours.UI
     /// <c>FishSchools</c> null-object precedent, where the UI runs against an empty set today and one
     /// assignment swaps in the real thing later.</para>
     ///
-    /// <para><b>The MAX face is not here.</b> The rig's second face is not a bigger console — it is
-    /// ADVANCED KIT (layer/tool rail, waypoint and route manager, measure line, depth-profile strip).
-    /// Expanding this instrument shows the same face larger, exactly as the sounder and finder do, and
-    /// the manager surface is its own slice. Nothing here forecloses it: the layout function already
-    /// computes every MAX box (<see cref="NavRigGeometry.Layout.Rail"/> and friends).</para>
+    /// <para><b>Both faces are here now</b> (S6 PR 4). <see cref="Render"/> draws the compact CONSOLE
+    /// face; <see cref="RenderMax"/> draws the MAXIMIZED one, which adds the layer/tool rail, the
+    /// waypoint and route manager column and the depth-profile strip (<see cref="NavRigMaxRender"/>).
+    /// Everything the two share — case, glass, chart body, both data strips, pushers, wordmark — is
+    /// drawn by the SAME code below at both sizes, which is what keeps them from disagreeing about
+    /// where the boat is.</para>
     /// </summary>
     public static class NavRigRender
     {
@@ -80,8 +81,41 @@ namespace HiddenHarbours.UI
                                   IReadOnlyList<Vector2> route,
                                   IReadOnlyList<Vector2> track)
         {
+            NavMaxState console = NavMaxState.Default;
+            RenderFace(s, x, y, w, h, in st, in console, chart, waypoints, route, track,
+                       NavRigGeometry.Face.Console, null);
+        }
+
+        /// <summary>
+        /// Paint the MAXIMIZED face — the same instrument with its full kit out: the layer/tool rail
+        /// down the left of the glass, the waypoint and route manager column down the right, and the
+        /// depth-profile strip under the chart (navRig.js:508-513).
+        ///
+        /// <para><paramref name="profile"/> is the caller's cached sampling of the depth-ahead line.
+        /// It is passed in rather than taken here because re-sampling it is the expensive part and its
+        /// cache key is the host's business (rule 7 — <see cref="NavDepthProfile"/>'s remarks). A null
+        /// profile draws the strip's honest "no survey" state, which is also what a caller that has not
+        /// baked one yet should see.</para>
+        /// </summary>
+        public static void RenderMax(DrawSurface s, int x, int y, int w, int h, in NavRigState st,
+                                     in NavMaxState mx, NavChartSource chart,
+                                     IReadOnlyList<NavWaypoint> waypoints,
+                                     IReadOnlyList<Vector2> route,
+                                     IReadOnlyList<Vector2> track,
+                                     NavDepthProfile profile)
+            => RenderFace(s, x, y, w, h, in st, in mx, chart, waypoints, route, track,
+                          NavRigGeometry.Face.Max, profile);
+
+        private static void RenderFace(DrawSurface s, int x, int y, int w, int h, in NavRigState st,
+                                       in NavMaxState mx, NavChartSource chart,
+                                       IReadOnlyList<NavWaypoint> waypoints,
+                                       IReadOnlyList<Vector2> route,
+                                       IReadOnlyList<Vector2> track,
+                                       NavRigGeometry.Face face, NavDepthProfile profile)
+        {
+            bool max = face == NavRigGeometry.Face.Max;
             NavPalette p = NavPalette.For(st.Night);
-            NavRigGeometry.Layout L = NavRigGeometry.ComputeLayout(x, y, w, h, NavRigGeometry.Face.Console);
+            NavRigGeometry.Layout L = NavRigGeometry.ComputeLayout(x, y, w, h, face);
 
             // ---- case body (navRig.js:491-495) ----
             int cr = Mathf.Max(4, DrawSurface.JsRound(h * 0.06));
@@ -101,15 +135,28 @@ namespace HiddenHarbours.UI
             RigDrawUtil.RRect(s, L.Lcd.x - 2, L.Lcd.y - 2, L.Lcd.width + 4, L.Lcd.height + 4, lr + 1, RESIN[2]);
             RigDrawUtil.RRect(s, L.Lcd.x, L.Lcd.y, L.Lcd.width, L.Lcd.height, lr, p.Frame);
 
-            DrawChart(s, in L, in st, p, chart, waypoints, route, track);
-            TopBar(s, L.TopBar, in st, p, chart);
+            DrawChart(s, in L, in st, in mx, p, chart, waypoints, route, track);
+            TopBar(s, L.TopBar, in st, in mx, p, chart, max);
             BotBar(s, L.BotBar, in st, p, route);
+
+            if (max)
+            {
+                NavRigMaxRender.Rail(s, in L, in mx, in p);
+                NavRigGeometry.Manager m = NavRigGeometry.ComputeManager(
+                    in L, waypoints?.Count ?? 0, route?.Count ?? 0,
+                    mx.Editing || mx.SelectedWaypoint >= 0);
+                NavRigMaxRender.Manager(s, in m, in st, in mx, in p, waypoints, route);
+                NavRigMaxRender.Profile(s, L.Profile, profile, in p);
+            }
 
             s.BlendRect(L.Lcd.x + 3, L.Lcd.y + 2, L.Lcd.width - 6, 1, WHITE, 0.05f);
 
             // ---- side keys + rotary (navRig.js:518-522) ----
-            Key(s, L.Key(0), "MAX", KeyGlyph.Square, p, false);
-            Key(s, L.Key(1), "MARK", KeyGlyph.Dot, p, false);
+            // Key 0 reads MAX from the console face and CNSL from the MAX one, and lights while the
+            // MAX face is up — the source's own label swap (js:518). Key 1 lights with the MRK TOOL
+            // (js:519), so the pusher and the rail's MRK button are visibly the same switch.
+            Key(s, L.Key(0), max ? "CNSL" : "MAX", KeyGlyph.Square, p, max);
+            Key(s, L.Key(1), "MARK", KeyGlyph.Dot, p, max && mx.Tool == NavChartTool.Mark);
             Key(s, L.Key(2), "IN", KeyGlyph.Up, p, false);
             Key(s, L.Key(3), "OUT", KeyGlyph.Down, p, false);
             Knob(s, L.KnobBox);
@@ -125,7 +172,7 @@ namespace HiddenHarbours.UI
         // ---- the chart body (navRig.js:305-379) -------------------------------------------------------
 
         private static void DrawChart(DrawSurface s, in NavRigGeometry.Layout L, in NavRigState st,
-                                      in NavPalette p, NavChartSource chart,
+                                      in NavMaxState mx, in NavPalette p, NavChartSource chart,
                                       IReadOnlyList<NavWaypoint> waypoints,
                                       IReadOnlyList<Vector2> route,
                                       IReadOnlyList<Vector2> track)
@@ -140,6 +187,12 @@ namespace HiddenHarbours.UI
             // The survey, resampled per destination pixel. The rig blits its baked base under a canvas
             // transform; with a Color32[] the honest equivalent is the INVERSE transform per pixel,
             // point-sampled — which is also what imageSmoothingEnabled=false means there.
+            //
+            // DPTH off is the source's own second branch (js:314-319): the depth SHADING goes, the
+            // land stays. Here that is one read of the same survey rather than a second bake — the
+            // banded colour becomes flat deep water everywhere the ground is under datum, and ground
+            // at or above it keeps the colour the chart already gives it.
+            bool shading = mx.LayerOn(NavChartLayers.Depth);
             Color32 offChart = p.Water[4];
             for (int py = ch.y; py < ch.y + ch.height; py++)
             {
@@ -147,12 +200,14 @@ namespace HiddenHarbours.UI
                 for (int px = ch.x; px < ch.x + ch.width; px++)
                 {
                     Vector2 world = NavRigGeometry.ScreenToWorld(in v, new Vector2(px + 0.5f, py + 0.5f));
-                    s.Pixels[row + px] = chart != null ? chart.ColourAt(world, offChart) : offChart;
+                    s.Pixels[row + px] = chart == null ? offChart
+                                       : shading ? chart.ColourAt(world, offChart)
+                                       : FlatWater(chart, world, in p, offChart);
                 }
             }
 
             // ---- the track breadcrumb (navRig.js:328) ----
-            if (st.ShowTrack && track != null && track.Count > 1)
+            if (st.ShowTrack && mx.LayerOn(NavChartLayers.Track) && track != null && track.Count > 1)
             {
                 for (int i = 1; i < track.Count; i++)
                 {
@@ -182,19 +237,46 @@ namespace HiddenHarbours.UI
             }
 
             // ---- marked waypoints (navRig.js:359) ----
-            if (waypoints != null)
+            if (mx.LayerOn(NavChartLayers.Poi) && waypoints != null)
             {
                 for (int i = 0; i < waypoints.Count; i++)
                 {
                     NavWaypoint wpt = waypoints[i];
                     Vector2 sp = NavRigGeometry.WorldToScreen(in v, wpt.Pos);
                     if (!Inside(ch, sp, 18)) continue;
-                    WaypointGlyph(s, sp, in wpt, in p, fs, ch);
+                    WaypointGlyph(s, sp, in wpt, in p, fs, ch, mx.SelectedWaypoint == i);
                 }
             }
 
-            // (traffic: the layer exists in the rig, its source does not exist in the sim — nothing
-            //  is drawn rather than invented. See the class remarks.)
+            // (traffic, rocks, buoys: those layers exist in the rig, their sources do not exist in this
+            //  world — nothing is drawn rather than invented. See NavChartLayers' remarks.)
+
+            // ---- the measure line, range & bearing (navRig.js:362-367) ----
+            if (mx.Measure != NavMeasureState.Off)
+            {
+                Vector2 a = NavRigGeometry.WorldToScreen(in v, mx.MeasureFrom);
+                Vector2 b = mx.Measure == NavMeasureState.Complete
+                    ? NavRigGeometry.WorldToScreen(in v, mx.MeasureTo)
+                    : a;
+                DashLine(s, a, b, 1, p.StripHi, 4, 3, ch);
+                if (Inside(ch, a, 0)) RingOutline(s, a, 3, p.StripHi);
+                if (Inside(ch, b, 0)) RingOutline(s, b, 3, p.StripHi);
+
+                if (mx.Measure == NavMeasureState.Complete && fs >= 2)
+                {
+                    string lbl = NavRigGeometry.FmtDeg(NavMath.BearingDegrees(mx.MeasureFrom, mx.MeasureTo))
+                               + "° " + NavRigGeometry.FmtNM(NavMath.DistanceNM(mx.MeasureFrom, mx.MeasureTo))
+                               + "NM";
+                    var mid = new Vector2((a.x + b.x) * 0.5f, (a.y + b.y) * 0.5f);
+                    if (Inside(ch, mid, 0))
+                    {
+                        int tw = RigDrawUtil.TextW(lbl, 1);
+                        s.BlendRect(Mathf.RoundToInt(mid.x - tw / 2f) - 2, Mathf.RoundToInt(mid.y) - 4,
+                                    tw + 4, 8, p.Plate, p.PlateAlpha);
+                        RigDrawUtil.TextC(s, lbl, mid.x, Mathf.RoundToInt(mid.y) - 3, 1, p.StripHi);
+                    }
+                }
+            }
 
             // ---- own ship (navRig.js:370-372) ----
             if (st.HasBoat)
@@ -244,8 +326,23 @@ namespace HiddenHarbours.UI
             ClippedThickLine(s, c, Pt(0f, -r * 1.4f), 1, p.Head, clip);
         }
 
+        /// <summary>
+        /// The chart colour with the DPTH layer switched off (navRig.js:314-319): flat water, land
+        /// still drawn. Read from the SAME survey the shaded pass reads — the depth is already in the
+        /// array, this only stops using it to pick a band.
+        /// </summary>
+        private static Color32 FlatWater(NavChartSource chart, Vector2 world, in NavPalette p,
+                                         Color32 offChart)
+        {
+            float d = chart.DepthAt(world);
+            if (float.IsNaN(d)) return offChart;
+            if (d <= 0f) return p.Land;
+            if (d < NavChartSource.DryingDepthMetres) return p.Dry;
+            return p.Water[4];
+        }
+
         private static void WaypointGlyph(DrawSurface s, Vector2 c, in NavWaypoint w, in NavPalette p,
-                                          int fs, RectInt clip)
+                                          int fs, RectInt clip, bool selected)
         {
             Color32 col = p.WaypointColour(w.Kind);
             int cx = Mathf.RoundToInt(c.x), cy = Mathf.RoundToInt(c.y);
@@ -268,6 +365,10 @@ namespace HiddenHarbours.UI
                     RigDrawUtil.Circle(s, cx, cy, 2, col);
                     break;
             }
+            // The manager's selection ring (navRig.js:293) — the same teal the wordmark uses, so the
+            // mark you picked in the column is unmistakable on the water.
+            if (selected) RingOutline(s, c, 8, TEAL);
+
             if (fs >= 2 && !string.IsNullOrEmpty(w.Name))
             {
                 int tw = RigDrawUtil.TextW(w.Name, 1);
@@ -299,8 +400,8 @@ namespace HiddenHarbours.UI
 
         // ---- the two data strips (navRig.js:388-416) --------------------------------------------------
 
-        private static void TopBar(DrawSurface s, RectInt b, in NavRigState st, in NavPalette p,
-                                   NavChartSource chart)
+        private static void TopBar(DrawSurface s, RectInt b, in NavRigState st, in NavMaxState mx,
+                                   in NavPalette p, NavChartSource chart, bool max)
         {
             if (b.width <= 0 || b.height <= 0) return;
             s.FillRect(b.x, b.y, b.width, b.height, p.Strip);
@@ -322,7 +423,31 @@ namespace HiddenHarbours.UI
             float d = chart != null && st.HasBoat ? chart.DepthAt(st.Boat) : float.NaN;
             string dTxt = float.IsNaN(d) ? "--" : Mathf.Max(0f, d).ToString("F1", System.Globalization.CultureInfo.InvariantCulture) + "M";
             Color32 dCol = !float.IsNaN(d) && d < 3f ? p.BuoyPort : p.StripFg;
-            Field(s, x, y, "DPTH", dTxt, in p, 2, dCol);
+            x = Field(s, x, y, "DPTH", dTxt, in p, 2, dCol) + 12;
+
+            // The three fields the MAX face adds (navRig.js:398-400). They are drawn ONLY here, which
+            // is why the console face may keep passing a NaN tide without printing anything wrong.
+            if (max)
+            {
+                x = Field(s, x, y, "HDG",
+                          NavRigGeometry.FmtDeg(st.HeadingDeg) + "° " + NavRigGeometry.Cardinal8(st.HeadingDeg),
+                          in p, 2, p.StripFg) + 14;
+
+                // js:399 prints the tide's trend as an up/down arrow (U+2191/U+2193). Neither the
+                // source's font nor the shared one carries those, so the source draws a gap; the rig's
+                // OWN words for the same fact are RIS / FALL (js:443), which is what goes here.
+                string tide = float.IsNaN(st.TideMetres)
+                    ? "--"
+                    : st.TideMetres.ToString("F1", System.Globalization.CultureInfo.InvariantCulture)
+                      + "M " + (st.TideRising ? "RIS" : "FALL");
+                x = Field(s, x, y, "TIDE", tide, in p, 2, p.StripFg) + 12;
+
+                string set = mx.HasSet
+                    ? NavRigGeometry.FmtDeg(mx.SetDeg) + "°/"
+                      + mx.DriftKnots.ToString("F1", System.Globalization.CultureInfo.InvariantCulture)
+                    : "--";
+                Field(s, x, y, "SET", set, in p, 2, p.StripFg);
+            }
 
             string ori = st.Orient == NavRigGeometry.Orient.Head ? "HEAD-UP" : "NORTH-UP";
             TextR(s, ori, b.x + b.width - 6, y, 1, p.StripHi);
@@ -492,8 +617,11 @@ namespace HiddenHarbours.UI
         private static void RingOutline(DrawSurface s, Vector2 c, int rad, Color32 col)
             => RigDrawUtil.Ring(s, Mathf.RoundToInt(c.x), Mathf.RoundToInt(c.y), rad, rad - 1, col);
 
-        /// <summary>Right-aligned text (the rig's <c>textR</c>; RigDrawUtil has left and centred only).</summary>
-        private static void TextR(DrawSurface s, string str, int xRight, int y, int scale, Color32 col)
+        /// <summary>Right-aligned text (the rig's <c>textR</c>; RigDrawUtil has left and centred only).
+        /// Internal rather than private because the MAX face's manager column is built almost entirely
+        /// out of right-aligned values — a second copy of this one-liner over there is exactly the sort
+        /// of duplicate that drifts.</summary>
+        internal static void TextR(DrawSurface s, string str, int xRight, int y, int scale, Color32 col)
             => RigDrawUtil.Text(s, str, xRight - RigDrawUtil.TextW(str, scale), y, scale, col);
     }
 }

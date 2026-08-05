@@ -71,6 +71,16 @@ namespace HiddenHarbours.UI
         /// <summary>True once there is a usable survey to draw.</summary>
         public bool HasChart => _pixels != null && _w > 0 && _h > 0;
 
+        /// <summary>
+        /// Bumped by every bake — the cheap identity of the depth array as it stands right now.
+        ///
+        /// <para>Exists so a DERIVED cache (the MAX face's depth-ahead profile) can tell "the same
+        /// survey I sampled last time" from "a survey that has been rebuilt underneath me" in one int
+        /// compare. Holding a reference to this object is not enough: the object is reused across
+        /// bakes, so the array it exposes can change without its identity doing so.</para>
+        /// </summary>
+        public int Generation { get; private set; }
+
         /// <summary>The banded chart colours, row-major from the rect's BOTTOM-LEFT (world +Y up).</summary>
         public Color32[] Pixels => _pixels;
 
@@ -85,7 +95,7 @@ namespace HiddenHarbours.UI
             {
                 // No survey to be had. Drop what we have rather than draw another region's seabed
                 // under this one's boat — an honestly blank chart beats a confidently wrong one.
-                if (_pixels != null) { _pixels = null; _depth = null; _w = _h = 0; }
+                if (_pixels != null) { _pixels = null; _depth = null; _w = _h = 0; Generation++; }
                 return false;
             }
             if (HasChart && _night == night && _bounds == bounds && ReferenceEquals(_terrainKey, terrain))
@@ -100,6 +110,7 @@ namespace HiddenHarbours.UI
             _bounds = bounds;
             _night = night;
             _terrainKey = terrain;
+            Generation++;
             _w = Mathf.Max(1, Mathf.RoundToInt(bounds.width / MetresPerTexel));
             _h = Mathf.Max(1, Mathf.RoundToInt(bounds.height / MetresPerTexel));
 

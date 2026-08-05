@@ -7,8 +7,9 @@ using HiddenHarbours.Core;
 namespace HiddenHarbours.UI.Editor
 {
     /// <summary>
-    /// Bakes the OWNER EYEBALL PROOFS for the S6 chartplotter's console face — day and night, at the
-    /// brow-mount size and at native — plus the rule-7 profile. Written to <c>docs/art/proofs/</c>
+    /// Bakes the OWNER EYEBALL PROOFS for the S6 chartplotter — the console face day and night, at the
+    /// brow-mount size and at native; the MAXIMIZED face with its rail, populated manager, measure line
+    /// and depth-profile strip (S6 PR 4); plus the rule-7 profile. Written to <c>docs/art/proofs/</c>
     /// (outside Assets/ on purpose: a proof for the PR and the owner, not game content).
     ///
     /// <para><b>⚠ The terrain here is a HARNESS, not St Peters.</b> The acceptance criteria ask for a
@@ -47,7 +48,7 @@ namespace HiddenHarbours.UI.Editor
             }
         }
 
-        [MenuItem("Hidden Harbours/Dev/Bake Chartplotter Proofs (console + brow + expanded, day + night) + profile")]
+        [MenuItem("Hidden Harbours/Dev/Bake Chartplotter Proofs (console + brow + expanded + MAX, day + night) + profile")]
         public static void Bake()
         {
             var terrain = new HarnessCoast();
@@ -114,7 +115,94 @@ namespace HiddenHarbours.UI.Editor
                         waypoints, route, track);
             }
 
+            MaxFace(terrain, bounds, boat, waypoints, route, track);
             Profile(terrain, bounds, boat, waypoints, route, track);
+        }
+
+        /// <summary>
+        /// The S6 PR 4 sheets: the MAXIMIZED face with its full kit out, day and night, plus the two
+        /// states the owner most needs to eyeball — a populated manager with a mark selected, and a live
+        /// measure line across the chart.
+        ///
+        /// <para>Baked at NATIVE MAX size (980 × 648) and, for the day sheet, blitted to the 2× card the
+        /// expanded state actually shows — the same "one raster, two presentations" pipeline the console
+        /// sheets use, for the same reason.</para>
+        /// </summary>
+        private static void MaxFace(ITidalTerrain terrain, Rect bounds, Vector2 boat,
+                                    List<NavWaypoint> waypoints, List<Vector2> route,
+                                    List<Vector2> track)
+        {
+            // The set and drift are the sim's own (EnvironmentSample.CurrentVector); the proof stands in
+            // for it with a plausible flood so the TIDE / SET pane has something to show.
+            const float setDeg = 68f, driftKn = 1.4f;
+
+            foreach (bool night in new[] { false, true })
+            {
+                var chart = new NavChartSource();
+                chart.EnsureBaked(bounds, night, terrain);
+
+                var st = new NavRigState(boat, hasBoat: true, headingDeg: 62f, speedKnots: 6.4f,
+                                         rangeNM: GameServices.Chartplotter.RangeNMAt(2),
+                                         orient: NavRigGeometry.Orient.North, night: night,
+                                         showTrack: true, tideMetres: 2.1f, tideRising: true);
+                string slug = night ? "night" : "day";
+
+                // 1. The manager populated, with the shoal picked — the state the column is FOR.
+                var picked = new NavMaxState(NavChartTool.Pan, NavChartLayers.All, 1,
+                                             NavMeasureState.Off, Vector2.zero, Vector2.zero,
+                                             setDeg, driftKn, false, "");
+                DrawSurface s = BakeMax($"chartplotter-max-{slug}-csharp.png", in st, in picked, chart,
+                                        waypoints, route, track);
+
+                // 2. …and at the card size the expanded state really shows, from that one raster.
+                if (!night) BakeBlit("chartplotter-max-expanded-day-csharp.png", s,
+                                     NavRigGeometry.MaxW * 2, NavRigGeometry.MaxH * 2);
+
+                // 3. A measure line pulled across the chart, with its range and bearing in the CURSOR
+                //    pane — the other half of the kit this slice adds.
+                var measuring = new NavMaxState(NavChartTool.Measure, NavChartLayers.All, -1,
+                                                NavMeasureState.Complete,
+                                                new Vector2(300f, 260f), new Vector2(470f, 380f),
+                                                setDeg, driftKn, false, "");
+                BakeMax($"chartplotter-max-measure-{slug}-csharp.png", in st, in measuring, chart,
+                        waypoints, route, track);
+            }
+
+            // 4. The name editor open and taking characters — the sheet that shows the field, its
+            //    cursor, and that the helm's keys are elsewhere while it is up.
+            {
+                var chart = new NavChartSource();
+                chart.EnsureBaked(bounds, false, terrain);
+                var st = new NavRigState(boat, true, 62f, 6.4f, GameServices.Chartplotter.RangeNMAt(2),
+                                         NavRigGeometry.Orient.North, false, true, 2.1f, true);
+                var typing = new NavMaxState(NavChartTool.Pan, NavChartLayers.All, 1,
+                                             NavMeasureState.Off, Vector2.zero, Vector2.zero,
+                                             setDeg, driftKn, true, "WRECK 12");
+                BakeMax("chartplotter-max-naming-day-csharp.png", in st, in typing, chart,
+                        waypoints, route, track);
+            }
+        }
+
+        private static DrawSurface BakeMax(string file, in NavRigState st, in NavMaxState mx,
+                                           NavChartSource chart, List<NavWaypoint> waypoints,
+                                           List<Vector2> route, List<Vector2> track)
+        {
+            var s = new DrawSurface(NavRigGeometry.MaxW, NavRigGeometry.MaxH);
+            var profile = new NavDepthProfile();
+            NavRigGeometry.Layout L = ChartplotterOverlayLayout.NativeLayout(NavRigGeometry.Face.Max);
+            profile.EnsureBaked(chart, st.Boat, st.HasBoat, st.HeadingDeg, st.RangeNM,
+                                Mathf.Min(NavDepthProfile.MaxSamples, L.Profile.width));
+            NavRigRender.RenderMax(s, 0, 0, NavRigGeometry.MaxW, NavRigGeometry.MaxH, in st, in mx,
+                                   chart, waypoints, route, track, profile);
+
+            Texture2D tex = null;
+            s.ToTexture(ref tex);
+            if (!Directory.Exists(OutDir)) Directory.CreateDirectory(OutDir);
+            string path = Path.Combine(OutDir, file);
+            File.WriteAllBytes(path, tex.EncodeToPNG());
+            Object.DestroyImmediate(tex);
+            Debug.Log($"[ChartplotterProof] Wrote {path} ({NavRigGeometry.MaxW}x{NavRigGeometry.MaxH}).");
+            return s;
         }
 
         private const string Region = "region.st_peters";

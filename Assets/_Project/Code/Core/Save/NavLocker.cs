@@ -90,6 +90,84 @@ namespace HiddenHarbours.Core
             return true;
         }
 
+        /// <summary>
+        /// Remove the waypoint at <paramref name="indexInRegion"/> — the index into the list
+        /// <see cref="WaypointsIn"/> just filled, NOT into the save's flat row list.
+        ///
+        /// <para><b>Why by index and not by position</b> (which <see cref="RemoveWaypointNear"/>
+        /// already does). The caller here is the MAX face's waypoint MANAGER, and a manager row IS an
+        /// index — the player picked a line in a list, not a patch of water. Going through a position
+        /// would re-find by proximity a row we already know, and would pick the wrong one whenever two
+        /// marks sit on top of each other, which is exactly when you reach for the list instead of the
+        /// chart.</para>
+        ///
+        /// <para>Healed: an index outside the region's list is a refusal, never an exception and never
+        /// a neighbouring row deleted by accident.</para>
+        /// FLAG lead-architect: additive on the ADR 0025 S6 nav seam. No DTO or schema change —
+        /// this only removes a row the existing v10 list already holds.
+        /// </summary>
+        public static bool RemoveWaypointAt(SaveData save, string regionId, int indexInRegion)
+        {
+            int row = RowOf(save, regionId, indexInRegion);
+            if (row < 0) return false;
+            save.NavWaypoints.RemoveAt(row);
+            return true;
+        }
+
+        /// <summary>
+        /// Rename the waypoint at <paramref name="indexInRegion"/> (same index space as
+        /// <see cref="RemoveWaypointAt"/>). Returns true iff a row actually changed, so an unchanged
+        /// commit never dirties the save.
+        ///
+        /// <para><b>No schema change.</b> <c>NavWaypointDto</c> has carried <c>Name</c> since the nav
+        /// lists landed (v10); nothing had ever WRITTEN a name other than the auto "MARK n" until the
+        /// manager did. This is the writer, not a new field.</para>
+        ///
+        /// <para><b>The name is stored as the caller hands it over.</b> Sanitising to the glass's 3×5
+        /// font charset is a PRESENTATION rule and belongs with the editor that types it
+        /// (<c>NavNameEditor</c>, UI) — the locker would otherwise quietly own a font's opinion, and a
+        /// second instrument with a different font would have no way to disagree. What the locker does
+        /// own is the invariant it always has: a row that would become unusable is refused rather than
+        /// written, so a name can never blank out a waypoint's region or move it.</para>
+        /// FLAG lead-architect: additive on the ADR 0025 S6 nav seam, as above.
+        /// </summary>
+        public static bool RenameWaypoint(SaveData save, string regionId, int indexInRegion, string name)
+        {
+            int row = RowOf(save, regionId, indexInRegion);
+            if (row < 0) return false;
+
+            NavWaypoint had = save.NavWaypoints[row].ToWaypoint();
+            string next = name ?? "";
+            if (had.Name == next) return false;                 // an unchanged commit costs no I/O
+
+            var moved = new NavWaypoint(had.RegionId, next, had.Pos, had.Kind);
+            if (!moved.IsValid) return false;                   // never write a row that cannot be drawn
+            save.NavWaypoints[row] = new NavWaypointDto(in moved);
+            return true;
+        }
+
+        /// <summary>
+        /// The row in the save's flat list that is the <paramref name="indexInRegion"/>-th VALID
+        /// waypoint of this region, or −1. The one place the manager's index space is translated, so
+        /// <see cref="RemoveWaypointAt"/> and <see cref="RenameWaypoint"/> cannot disagree about which
+        /// row a list line means — and it walks the list in the same order and with the same validity
+        /// test <see cref="WaypointsIn"/> does, which is what makes the two index spaces the same one.
+        /// </summary>
+        private static int RowOf(SaveData save, string regionId, int indexInRegion)
+        {
+            if (save?.NavWaypoints == null || string.IsNullOrEmpty(regionId)) return -1;
+            if (indexInRegion < 0) return -1;
+            int seen = 0;
+            for (int i = 0; i < save.NavWaypoints.Count; i++)
+            {
+                NavWaypoint w = save.NavWaypoints[i].ToWaypoint();
+                if (!w.IsValid || w.RegionId != regionId) continue;
+                if (seen == indexInRegion) return i;
+                seen++;
+            }
+            return -1;
+        }
+
         // ---- the planned route ----------------------------------------------------------------------
 
         /// <summary>Fill <paramref name="into"/> (cleared first) with the route's points in this region,

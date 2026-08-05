@@ -348,6 +348,110 @@ namespace HiddenHarbours.Tests.EditMode
             public void Save() => SaveCalls++;
         }
 
+        // ---- the manager column's two writers (S6 PR 4) -----------------------------------------------
+
+        /// <summary>Lay one region's marks with another region's in between, so every index assertion
+        /// below is actually about the REGION's list rather than the save's flat one.</summary>
+        private static SaveData SaveWithInterleavedRegions()
+        {
+            SaveData s = FreshSave();
+            NavLocker.AddWaypoint(s, new NavWaypoint(StP, "A", new Vector2(1f, 1f),
+                                                     NavWaypointKind.Mark), Cfg);
+            NavLocker.AddWaypoint(s, new NavWaypoint(Coddle, "OTHER", new Vector2(9f, 9f),
+                                                     NavWaypointKind.Hazard), Cfg);
+            NavLocker.AddWaypoint(s, new NavWaypoint(StP, "B", new Vector2(2f, 2f),
+                                                     NavWaypointKind.Anchor), Cfg);
+            return s;
+        }
+
+        [Test]
+        public void RenameWaypoint_WritesTheNameAtTheREGIONSIndex_AndMovesNothingElse()
+        {
+            SaveData s = SaveWithInterleavedRegions();
+
+            Assert.IsTrue(NavLocker.RenameWaypoint(s, StP, 1, "WRECK"),
+                "index 1 of ST PETERS is 'B' — the row between them belongs to another region and " +
+                "must not be counted");
+
+            var into = new List<NavWaypoint>();
+            NavLocker.WaypointsIn(s, StP, into);
+            Assert.AreEqual("A", into[0].Name);
+            Assert.AreEqual("WRECK", into[1].Name);
+            Assert.AreEqual(new Vector2(2f, 2f), into[1].Pos, "a rename moves no mark");
+            Assert.AreEqual(NavWaypointKind.Anchor, into[1].Kind, "…and changes no symbol");
+
+            NavLocker.WaypointsIn(s, Coddle, into);
+            Assert.AreEqual(1, into.Count);
+            Assert.AreEqual("OTHER", into[0].Name, "the other region's row is untouched");
+        }
+
+        [Test]
+        public void RenameWaypoint_ReportsNoChangeForTheSameName_SoACommitCostsNoIO()
+        {
+            SaveData s = SaveWithInterleavedRegions();
+            Assert.IsTrue(NavLocker.RenameWaypoint(s, StP, 0, "HOME"));
+            Assert.IsFalse(NavLocker.RenameWaypoint(s, StP, 0, "HOME"),
+                "re-committing an unchanged name must report no change — the InstrumentLocker rule");
+        }
+
+        [Test]
+        public void RenameWaypoint_RefusesAnIndexTheRegionDoesNotHave()
+        {
+            SaveData s = SaveWithInterleavedRegions();
+            Assert.IsFalse(NavLocker.RenameWaypoint(s, StP, 2, "X"), "St Peters has two, not three");
+            Assert.IsFalse(NavLocker.RenameWaypoint(s, StP, -1, "X"));
+            Assert.IsFalse(NavLocker.RenameWaypoint(s, "region.nowhere", 0, "X"));
+            Assert.IsFalse(NavLocker.RenameWaypoint(null, StP, 0, "X"), "a null save is 'no navigation'");
+
+            var into = new List<NavWaypoint>();
+            NavLocker.WaypointsIn(s, StP, into);
+            Assert.AreEqual("A", into[0].Name, "…and a refusal writes nothing at all");
+            Assert.AreEqual("B", into[1].Name);
+        }
+
+        [Test]
+        public void RemoveWaypointAt_TakesTheROWTheColumnShowed_NotTheNearestOne()
+        {
+            SaveData s = SaveWithInterleavedRegions();
+            Assert.IsTrue(NavLocker.RemoveWaypointAt(s, StP, 0));
+
+            var into = new List<NavWaypoint>();
+            NavLocker.WaypointsIn(s, StP, into);
+            Assert.AreEqual(1, into.Count);
+            Assert.AreEqual("B", into[0].Name, "the row above it went, and only that one");
+
+            NavLocker.WaypointsIn(s, Coddle, into);
+            Assert.AreEqual(1, into.Count, "another region's mark is not collateral");
+            Assert.AreEqual(2, NavLocker.WaypointCount(s), "…and the flat list lost exactly one row");
+        }
+
+        [Test]
+        public void RemoveWaypointAt_RefusesAnIndexTheRegionDoesNotHave()
+        {
+            SaveData s = SaveWithInterleavedRegions();
+            Assert.IsFalse(NavLocker.RemoveWaypointAt(s, StP, 2));
+            Assert.IsFalse(NavLocker.RemoveWaypointAt(s, StP, -1));
+            Assert.IsFalse(NavLocker.RemoveWaypointAt(null, StP, 0));
+            Assert.AreEqual(3, NavLocker.WaypointCount(s), "nothing was removed by a refusal");
+        }
+
+        [Test]
+        public void BothWritersShareOneIndexSpace_TheOneWaypointsInProduces()
+        {
+            // The manager renames a row and then deletes it. If the two writers walked the list
+            // differently, the second call would take a DIFFERENT mark than the one just renamed —
+            // a silent, data-losing off-by-one that no single-writer test can see.
+            SaveData s = SaveWithInterleavedRegions();
+            const int row = 1;
+            Assert.IsTrue(NavLocker.RenameWaypoint(s, StP, row, "DOOMED"));
+            Assert.IsTrue(NavLocker.RemoveWaypointAt(s, StP, row));
+
+            var into = new List<NavWaypoint>();
+            NavLocker.WaypointsIn(s, StP, into);
+            Assert.AreEqual(1, into.Count);
+            Assert.AreEqual("A", into[0].Name, "the row that went is the row that was named");
+        }
+
         // ---- NEGATIVE CONTROL ------------------------------------------------------------------------
 
         [Test]
