@@ -115,6 +115,7 @@ Material:
     - _WakeFoamStrength: 0
     - _WakeFoamThreshold: 0.12
     - _WaterLevel: 0
+    - _WhitecapTexScale: 0.0625
     - _WhitecapTexStrength: 0.95
     - _WindChop: 0.07
     - _WindChopScale: 0.7

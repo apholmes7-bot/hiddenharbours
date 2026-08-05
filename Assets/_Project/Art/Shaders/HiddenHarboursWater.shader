@@ -517,8 +517,22 @@ Shader "HiddenHarbours/Water"
         [NoScaleOffset] _DepthRamp ("Depth ramp (1D, shallow u=0 -> deep u=1)", 2D) = "white" {}
 
         [Toggle(_USE_WHITECAPTEX)] _UseWhitecapTex ("Use whitecap texture", Float) = 0
-        [NoScaleOffset] _WhitecapTex ("Whitecap pattern (white-on-transparent, seamless ~64)", 2D) = "white" {}
+        [NoScaleOffset] _WhitecapTex ("Whitecap STAMP SHEET (white-on-transparent, seamless 256)", 2D) = "white" {}
         _WhitecapTexStrength ("Whitecap tex blend (0=proc, 1=painted)", Range(0,1)) = 1.0
+        // ⚠️ The whitecap slot has its OWN scale, and it is not a mood — it is what stops the caps
+        // being a GRID (owner, 2026-08-05: "some of the whitecaps have a square pattern I recognize
+        // from earlier builds"). At _WhitecapTexStrength 0.865 this slot, not the procedural evolving
+        // field, is what PLACES open-water caps; the art in it used to be ONE mark in a 64 px tile on
+        // the shared _PaintScale 0.25 grid, i.e. one identical whitecap every 4 m, in rows. Untiling
+        // cannot fix that — UntileSampleW hides a repeat by TRANSLATING whole cells, which moves a
+        // lattice rather than breaking it (it works on _FoamTex because that tile is busy and varied;
+        // a tile whose whole content is one dot has nothing to hide behind). The slot now samples a
+        // 256 px SHEET of 16 scattered stamps, and this scale is the value that keeps the owner's
+        // mark exactly the size it already was: 256 x 0.0625 = 64 x 0.25 = 16 texels per metre, the
+        // SAME pixel grid and the same coverage — only the placement stops being periodic.
+        // Twin: WhitecapStampSheetMath.SheetScale / .TexelsPerMetre (WhitecapStampSheetTests pins the
+        // equality, so changing _PaintScale or the sheet size without the other fails headless).
+        _WhitecapTexScale ("Whitecap sheet scale (tiles/unit; 0.0625 = one 16 m sheet)", Float) = 0.0625
 
         [Header(Palette guard rail (final soft grade   col.rgb only   ADR 0015))]
         // THE LAST STAGE before return: a SOFT guard-rail that keeps the composited water colour inside an
@@ -1198,6 +1212,7 @@ Shader "HiddenHarbours/Water"
                 float  _SparkleTexStrength;
                 float  _SparkleTexScale;
                 float  _WhitecapTexStrength;
+                float  _WhitecapTexScale;
                 // Palette guard-rail (the final soft grade; col.rgb-only — ADR 0015).
                 float  _PaletteGradeStrength;
                 float  _PaletteValueFloor;
@@ -4053,12 +4068,17 @@ Shader "HiddenHarbours/Water"
                     // light/dissipating end. The SOLID core (below) lifts it to dense white on the breaking crest.
                     float capMilky = smoothstep(capThr - capSoft, capThr + capSoft, cap);
                 #if defined(_USE_WHITECAPTEX)
-                    // Painted whitecap pattern (white-on-transparent) drifted WITH the body (the foam drift
-                    // blend, not a fixed current scroll). Routed through UntileSampleW (like the other painted
-                    // slots) so the small seamless tile's REPEAT GRID stops reading — dialed by _UntileStrength,
-                    // kept pixel-snapped (PaintUV inside). Sampled ONCE here; each path below folds it in.
+                    // Painted whitecap STAMP SHEET (white-on-transparent) drifted WITH the body (the foam
+                    // drift blend, not a fixed current scroll). Routed through UntileSampleW (like the other
+                    // painted slots) so what remains of the sheet's repeat stops reading — dialed by
+                    // _UntileStrength, kept pixel-snapped (PaintUV inside). Sampled ONCE here; each path
+                    // below folds it in.
+                    // ⚠️ _WhitecapTexScale, NOT _PaintScale: this slot PLACES the caps, so its repeat period
+                    // IS the whitecap lattice the owner saw. See the property's note — the sheet is 4x the
+                    // old tile in each axis at 1/4 the scale, so the mark's size, coverage and pixel grid are
+                    // unchanged and only the periodicity is gone. Untiling never fixed this and never could.
                     half4 capSample = UntileSampleW(TEXTURE2D_ARGS(_WhitecapTex, sampler_WhitecapTex),
-                                          worldXY, _PaintScale, capDrift, _UntileStrength);
+                                          worldXY, _WhitecapTexScale, capDrift, _UntileStrength);
                     float capPat = max(capSample.a, dot(capSample.rgb, float3(0.299, 0.587, 0.114)));
                 #endif
                     // SWELL-CREST GATE: lift the caps toward the swell crests so the foam rides the swell
