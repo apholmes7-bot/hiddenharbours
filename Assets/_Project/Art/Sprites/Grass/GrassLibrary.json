@@ -1,0 +1,550 @@
+{
+  "rig": "grassRig",
+  "composes": "grassSpeciesRig",
+  "note": "STATIC sprites. Rooted on the bottom row; climb = how far blades rise, which is also how much of the shader bend the sprite takes (HiddenHarboursGrass.shader bends by UV.y²). One shared material; the runtime lush→straw knob multiplies a tint over the ramp, so every entry here stays ON its species ramp.",
+  "ppu": 32,
+  "pivot": "bottom-centre",
+  "outputFolder": "Assets/_Project/Art/Sprites/Grass",
+  "baseRamp": [
+    "#283a22",
+    "#3a542a",
+    "#567834",
+    "#7ca248",
+    "#aac660"
+  ],
+  "spikeRamp": [
+    "#392f23",
+    "#533c2b",
+    "#764936",
+    "#a05d4a",
+    "#c36a63"
+  ],
+  "classBands": {
+    "short": [
+      0,
+      20
+    ],
+    "medium": [
+      21,
+      34
+    ],
+    "tall": [
+      35,
+      999
+    ]
+  },
+  "habitats": {
+    "meadow": "lush inland field — the default sward",
+    "sward": "close-cropped turf; the short mix that carpets between the tall stuff",
+    "fringe": "where grass gives out onto bare ground, rock or sand — thin, low, spread wide",
+    "dune": "loose sand near the beach — marram, wispy and tall",
+    "headland": "exposed, wind-raked and dry; reads right with the straw knob up",
+    "verge": "path and track edges — wide low clumps",
+    "marsh": "freshwater marsh and wet ground — cattail, rush, sedge",
+    "wet": "standing or seeping water at the root",
+    "saltmarsh": "salt-flooded flats behind the beach — saltmeadow hay",
+    "hay": "mown / hay meadow — timothy and seed heads"
+  },
+  "species": {
+    "cattail": {
+      "label": "Cattail",
+      "latin": "Typha latifolia",
+      "biome": "freshwater marsh",
+      "ramp": [
+        "#25372a",
+        "#304e33",
+        "#3e6e3e",
+        "#5a9555",
+        "#7fb86e"
+      ]
+    },
+    "rush": {
+      "label": "Soft rush",
+      "latin": "Juncus effusus",
+      "biome": "wet edge, ditch",
+      "ramp": [
+        "#23392c",
+        "#2d5136",
+        "#387440",
+        "#4d9d52",
+        "#6ec066"
+      ]
+    },
+    "sedge": {
+      "label": "Tussock sedge",
+      "latin": "Carex stricta",
+      "biome": "wet meadow",
+      "ramp": [
+        "#2b3b21",
+        "#405529",
+        "#617a32",
+        "#8ba446",
+        "#bbc95d"
+      ]
+    },
+    "saltmeadow": {
+      "label": "Saltmeadow hay",
+      "latin": "Spartina patens",
+      "biome": "salt marsh",
+      "ramp": [
+        "#313725",
+        "#474e30",
+        "#6a6e3e",
+        "#949555",
+        "#b8af6e"
+      ]
+    },
+    "timothy": {
+      "label": "Timothy",
+      "latin": "Phleum pratense",
+      "biome": "hay meadow",
+      "ramp": [
+        "#283527",
+        "#384c32",
+        "#506a42",
+        "#71905a",
+        "#98b274"
+      ]
+    },
+    "grass": {
+      "label": "Meadow grass",
+      "latin": "—",
+      "biome": "everywhere",
+      "ramp": [
+        "#283a22",
+        "#3a542a",
+        "#567834",
+        "#7ca248",
+        "#aac660"
+      ]
+    }
+  },
+  "variants": {
+    "GrassTuft": {
+      "path": "Assets/_Project/Art/Sprites/GrassTuft.png",
+      "w": 32,
+      "h": 32,
+      "species": "grass",
+      "source": "shipped",
+      "heightClass": "medium",
+      "habitat": [
+        "meadow"
+      ],
+      "climb": 28,
+      "stiffness": 1,
+      "note": "the original medium tuft"
+    },
+    "GrassTuft_Short": {
+      "path": "Assets/_Project/Art/Sprites/GrassTuft_Short.png",
+      "w": 32,
+      "h": 32,
+      "species": "grass",
+      "source": "shipped",
+      "heightClass": "short",
+      "habitat": [
+        "meadow",
+        "sward"
+      ],
+      "climb": 15,
+      "stiffness": 1,
+      "note": "the original short tuft"
+    },
+    "GrassTuft_Tall": {
+      "path": "Assets/_Project/Art/Sprites/GrassTuft_Tall.png",
+      "w": 32,
+      "h": 32,
+      "species": "grass",
+      "source": "shipped",
+      "heightClass": "medium",
+      "habitat": [
+        "meadow"
+      ],
+      "climb": 31,
+      "stiffness": 1,
+      "note": "the original tall tuft"
+    },
+    "GrassTuft_MeadowShortA": {
+      "path": "Assets/_Project/Art/Sprites/Grass/GrassTuft_MeadowShortA.png",
+      "w": 32,
+      "h": 32,
+      "species": "grass",
+      "source": "habitat",
+      "heightClass": "short",
+      "habitat": [
+        "meadow",
+        "sward"
+      ],
+      "climb": 18,
+      "stiffness": 1,
+      "note": "even fan, upright"
+    },
+    "GrassTuft_MeadowShortB": {
+      "path": "Assets/_Project/Art/Sprites/Grass/GrassTuft_MeadowShortB.png",
+      "w": 32,
+      "h": 32,
+      "species": "grass",
+      "source": "habitat",
+      "heightClass": "short",
+      "habitat": [
+        "meadow",
+        "sward"
+      ],
+      "climb": 16,
+      "stiffness": 1,
+      "note": "off-centre, leans left"
+    },
+    "GrassTuft_MeadowShortC": {
+      "path": "Assets/_Project/Art/Sprites/Grass/GrassTuft_MeadowShortC.png",
+      "w": 32,
+      "h": 32,
+      "species": "grass",
+      "source": "habitat",
+      "heightClass": "short",
+      "habitat": [
+        "meadow",
+        "sward"
+      ],
+      "climb": 13,
+      "stiffness": 1,
+      "note": "sparse, splayed wide"
+    },
+    "GrassTuft_MeadowMidA": {
+      "path": "Assets/_Project/Art/Sprites/Grass/GrassTuft_MeadowMidA.png",
+      "w": 32,
+      "h": 32,
+      "species": "grass",
+      "source": "habitat",
+      "heightClass": "medium",
+      "habitat": [
+        "meadow"
+      ],
+      "climb": 27,
+      "stiffness": 1,
+      "note": "full fan, tips just nodding"
+    },
+    "GrassTuft_MeadowMidB": {
+      "path": "Assets/_Project/Art/Sprites/Grass/GrassTuft_MeadowMidB.png",
+      "w": 32,
+      "h": 32,
+      "species": "grass",
+      "source": "habitat",
+      "heightClass": "medium",
+      "habitat": [
+        "meadow"
+      ],
+      "climb": 26,
+      "stiffness": 1,
+      "note": "two crowns, one taller"
+    },
+    "GrassTuft_MeadowMidC": {
+      "path": "Assets/_Project/Art/Sprites/Grass/GrassTuft_MeadowMidC.png",
+      "w": 32,
+      "h": 32,
+      "species": "grass",
+      "source": "habitat",
+      "heightClass": "medium",
+      "habitat": [
+        "meadow"
+      ],
+      "climb": 24,
+      "stiffness": 1,
+      "note": "raked right by a steady wind"
+    },
+    "GrassTuft_MeadowTallA": {
+      "path": "Assets/_Project/Art/Sprites/Grass/GrassTuft_MeadowTallA.png",
+      "w": 32,
+      "h": 48,
+      "species": "grass",
+      "source": "habitat",
+      "heightClass": "tall",
+      "habitat": [
+        "meadow"
+      ],
+      "climb": 41,
+      "stiffness": 1,
+      "note": "deep fan, whole blades"
+    },
+    "GrassTuft_MeadowTallB": {
+      "path": "Assets/_Project/Art/Sprites/Grass/GrassTuft_MeadowTallB.png",
+      "w": 32,
+      "h": 48,
+      "species": "grass",
+      "source": "habitat",
+      "heightClass": "tall",
+      "habitat": [
+        "meadow"
+      ],
+      "climb": 39,
+      "stiffness": 1,
+      "note": "tall spray over a short skirt"
+    },
+    "GrassTuft_ClumpWideA": {
+      "path": "Assets/_Project/Art/Sprites/Grass/GrassTuft_ClumpWideA.png",
+      "w": 64,
+      "h": 32,
+      "species": "grass",
+      "source": "habitat",
+      "heightClass": "short",
+      "habitat": [
+        "meadow",
+        "verge"
+      ],
+      "climb": 19,
+      "stiffness": 0.9,
+      "note": "64×32 — two crowns, low"
+    },
+    "GrassTuft_ClumpWideB": {
+      "path": "Assets/_Project/Art/Sprites/Grass/GrassTuft_ClumpWideB.png",
+      "w": 64,
+      "h": 32,
+      "species": "grass",
+      "source": "habitat",
+      "heightClass": "short",
+      "habitat": [
+        "meadow",
+        "verge"
+      ],
+      "climb": 16,
+      "stiffness": 0.9,
+      "note": "64×32 — one broad sweep"
+    },
+    "GrassTuft_FringeA": {
+      "path": "Assets/_Project/Art/Sprites/Grass/GrassTuft_FringeA.png",
+      "w": 32,
+      "h": 32,
+      "species": "grass",
+      "source": "habitat",
+      "heightClass": "short",
+      "habitat": [
+        "fringe"
+      ],
+      "climb": 10,
+      "stiffness": 0.7,
+      "note": "flat spread, both ways"
+    },
+    "GrassTuft_FringeB": {
+      "path": "Assets/_Project/Art/Sprites/Grass/GrassTuft_FringeB.png",
+      "w": 64,
+      "h": 32,
+      "species": "grass",
+      "source": "habitat",
+      "heightClass": "short",
+      "habitat": [
+        "fringe"
+      ],
+      "climb": 9,
+      "stiffness": 0.7,
+      "note": "64×32 — a long thin edge"
+    },
+    "GrassTuft_MarramA": {
+      "path": "Assets/_Project/Art/Sprites/Grass/GrassTuft_MarramA.png",
+      "w": 32,
+      "h": 48,
+      "species": "grass",
+      "source": "habitat",
+      "heightClass": "tall",
+      "habitat": [
+        "dune"
+      ],
+      "climb": 36,
+      "stiffness": 0.8,
+      "note": "tight tussock, long arching blades"
+    },
+    "GrassTuft_MarramB": {
+      "path": "Assets/_Project/Art/Sprites/Grass/GrassTuft_MarramB.png",
+      "w": 32,
+      "h": 48,
+      "species": "grass",
+      "source": "habitat",
+      "heightClass": "tall",
+      "habitat": [
+        "dune"
+      ],
+      "climb": 38,
+      "stiffness": 0.8,
+      "note": "wispier, combed downwind"
+    },
+    "GrassTuft_HeadlandA": {
+      "path": "Assets/_Project/Art/Sprites/Grass/GrassTuft_HeadlandA.png",
+      "w": 32,
+      "h": 32,
+      "species": "grass",
+      "source": "habitat",
+      "heightClass": "short",
+      "habitat": [
+        "headland"
+      ],
+      "climb": 15,
+      "stiffness": 0.9,
+      "note": "wind-cropped, all one way"
+    },
+    "GrassTuft_HeadlandB": {
+      "path": "Assets/_Project/Art/Sprites/Grass/GrassTuft_HeadlandB.png",
+      "w": 32,
+      "h": 32,
+      "species": "grass",
+      "source": "habitat",
+      "heightClass": "short",
+      "habitat": [
+        "headland"
+      ],
+      "climb": 16,
+      "stiffness": 0.9,
+      "note": "gappy, half of it laid over"
+    },
+    "GrassTuft_Cattail": {
+      "path": "Assets/_Project/Art/Sprites/Grass/GrassTuft_Cattail.png",
+      "w": 32,
+      "h": 64,
+      "species": "cattail",
+      "source": "species",
+      "heightClass": "tall",
+      "habitat": [
+        "marsh",
+        "wet"
+      ],
+      "climb": 58,
+      "stiffness": 0.35,
+      "note": "four sword leaves, one spike"
+    },
+    "GrassTuft_CattailPair": {
+      "path": "Assets/_Project/Art/Sprites/Grass/GrassTuft_CattailPair.png",
+      "w": 32,
+      "h": 64,
+      "species": "cattail",
+      "source": "species",
+      "heightClass": "tall",
+      "habitat": [
+        "marsh",
+        "wet"
+      ],
+      "climb": 57,
+      "stiffness": 0.35,
+      "note": "two spikes, leaves raked right"
+    },
+    "GrassTuft_Rush": {
+      "path": "Assets/_Project/Art/Sprites/Grass/GrassTuft_Rush.png",
+      "w": 32,
+      "h": 48,
+      "species": "rush",
+      "source": "species",
+      "heightClass": "tall",
+      "habitat": [
+        "marsh",
+        "wet",
+        "fringe"
+      ],
+      "climb": 42,
+      "stiffness": 0.5,
+      "note": "stiff leafless spray"
+    },
+    "GrassTuft_RushLean": {
+      "path": "Assets/_Project/Art/Sprites/Grass/GrassTuft_RushLean.png",
+      "w": 32,
+      "h": 48,
+      "species": "rush",
+      "source": "species",
+      "heightClass": "tall",
+      "habitat": [
+        "marsh",
+        "wet",
+        "fringe"
+      ],
+      "climb": 35,
+      "stiffness": 0.5,
+      "note": "whole spray raked, shorter"
+    },
+    "GrassTuft_Sedge": {
+      "path": "Assets/_Project/Art/Sprites/Grass/GrassTuft_Sedge.png",
+      "w": 32,
+      "h": 48,
+      "species": "sedge",
+      "source": "species",
+      "heightClass": "tall",
+      "habitat": [
+        "marsh",
+        "wet",
+        "meadow"
+      ],
+      "climb": 38,
+      "stiffness": 0.85,
+      "note": "fountain, blades arch over"
+    },
+    "GrassTuft_SedgeLow": {
+      "path": "Assets/_Project/Art/Sprites/Grass/GrassTuft_SedgeLow.png",
+      "w": 32,
+      "h": 32,
+      "species": "sedge",
+      "source": "species",
+      "heightClass": "medium",
+      "habitat": [
+        "marsh",
+        "wet",
+        "meadow"
+      ],
+      "climb": 21,
+      "stiffness": 0.85,
+      "note": "32×32 — same fountain, half height"
+    },
+    "GrassTuft_Saltmeadow": {
+      "path": "Assets/_Project/Art/Sprites/Grass/GrassTuft_Saltmeadow.png",
+      "w": 64,
+      "h": 32,
+      "species": "saltmeadow",
+      "source": "species",
+      "heightClass": "short",
+      "habitat": [
+        "saltmarsh",
+        "dune"
+      ],
+      "climb": 18,
+      "stiffness": 0.3,
+      "note": "64×32 — the cowlick, two whorls"
+    },
+    "GrassTuft_SaltmeadowSwirl": {
+      "path": "Assets/_Project/Art/Sprites/Grass/GrassTuft_SaltmeadowSwirl.png",
+      "w": 64,
+      "h": 32,
+      "species": "saltmeadow",
+      "source": "species",
+      "heightClass": "short",
+      "habitat": [
+        "saltmarsh",
+        "dune"
+      ],
+      "climb": 19,
+      "stiffness": 0.3,
+      "note": "64×32 — one whorl, all combed left"
+    },
+    "GrassTuft_Timothy": {
+      "path": "Assets/_Project/Art/Sprites/Grass/GrassTuft_Timothy.png",
+      "w": 32,
+      "h": 48,
+      "species": "timothy",
+      "source": "species",
+      "heightClass": "tall",
+      "habitat": [
+        "meadow",
+        "hay"
+      ],
+      "climb": 45,
+      "stiffness": 0.6,
+      "note": "bare culms, cylindrical heads"
+    },
+    "GrassTuft_TimothyLean": {
+      "path": "Assets/_Project/Art/Sprites/Grass/GrassTuft_TimothyLean.png",
+      "w": 32,
+      "h": 48,
+      "species": "timothy",
+      "source": "species",
+      "heightClass": "tall",
+      "habitat": [
+        "meadow",
+        "hay"
+      ],
+      "climb": 40,
+      "stiffness": 0.6,
+      "note": "three culms nodding downwind"
+    }
+  }
+}

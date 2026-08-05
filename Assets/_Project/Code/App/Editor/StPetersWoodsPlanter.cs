@@ -31,20 +31,21 @@ namespace HiddenHarbours.App.Editor
         public const string ShrubRootName = "IslandShrubs";
         public const string GrassRootName = "IslandGrass";
 
+        /// <summary>Where the tidal coast's planting hangs — its own root, separate from the meadow's,
+        /// so the owner can hide one and look at the other.</summary>
+        public const string ShorePlantRootName = "ShorePlants";
+
         /// <summary>Grass is the lowest decor layer — the same pre-sort default the decor prefabs use
         /// (<c>DecorPrefabBuilder.GrassSortingOrder</c>); <see cref="YSortSprite"/> owns the final order,
         /// and its floor of 2 is what keeps a tuft above the sea plane.</summary>
         public const int GrassSortingOrder = 2;
 
-        /// <summary>The three tuft sprites, in <see cref="StPetersGrass.GrassTuftSite.Variant"/> order.</summary>
-        public static readonly string[] GrassTuftPaths =
-        {
-            "Assets/_Project/Art/Sprites/GrassTuft.png",
-            "Assets/_Project/Art/Sprites/GrassTuft_Short.png",
-            "Assets/_Project/Art/Sprites/GrassTuft_Tall.png",
-        };
-
-        public const string GrassMaterialPath = "Assets/_Project/Art/Materials/Grass.mat";
+        /// <summary>⚠ The three literal tuft paths that used to live here are GONE. They were the same
+        /// three <c>GrassPaintTool</c> carried, index-aligned to a variant int, and keeping two copies
+        /// of one list in lockstep is exactly what <see cref="GrassLibraryCatalog"/> exists to stop.
+        /// The shipped three are still in the library, at their own paths, and still get planted —
+        /// they are simply no longer named here.</summary>
+        public const string GrassMaterialPath = GrassLibraryCatalog.GrassMaterialPath;
 
         /// <summary>Shrubs sit between the ground cover and the trees. Like both, this is only the
         /// pre-sort default — <see cref="YSortSprite"/> owns the order at runtime.</summary>
@@ -67,14 +68,21 @@ namespace HiddenHarbours.App.Editor
 
         public sealed class Result
         {
-            public int Trees, Flowers, Shrubs, GrassTufts;
+            public int Trees, Flowers, Shrubs, GrassTufts, ShorePlants;
             public readonly Dictionary<string, int> PerSpecies = new Dictionary<string, int>();
             public readonly Dictionary<string, int> PerFlower = new Dictionary<string, int>();
             public readonly Dictionary<string, int> PerShrub = new Dictionary<string, int>();
+            /// <summary>Grass tufts per habitat tag — the number worth reading when the island stops
+            /// looking right, because it says WHICH ground got which art.</summary>
+            public readonly Dictionary<string, int> PerHabitat = new Dictionary<string, int>();
+            /// <summary>Shore plants per tidal zone.</summary>
+            public readonly Dictionary<string, int> PerZone = new Dictionary<string, int>();
 
             public string TreeSummary() => Summarise(PerSpecies);
             public string FlowerSummary() => Summarise(PerFlower);
             public string ShrubSummary() => Summarise(PerShrub);
+            public string HabitatSummary() => Summarise(PerHabitat);
+            public string ZoneSummary() => Summarise(PerZone);
 
             static string Summarise(Dictionary<string, int> d)
             {
@@ -97,12 +105,15 @@ namespace HiddenHarbours.App.Editor
             PlantShrubs(terrain, result);
             PlantFlowers(terrain, result);
             PlantGrass(terrain, result);
+            PlantShorePlants(terrain, result);
 
             Debug.Log($"[StPetersWoodsPlanter] Planted {result.Trees} trees ({result.TreeSummary()}), " +
                       $"{result.Shrubs} shrubs ({result.ShrubSummary()}), " +
-                      $"{result.Flowers} wildflowers ({result.FlowerSummary()}) and " +
-                      $"{result.GrassTufts} grass tufts — stands, heath, meadow and sward by habitat, " +
-                      "with the village, the spawn, the crossing's approach and the dock left clear.");
+                      $"{result.Flowers} wildflowers ({result.FlowerSummary()}), " +
+                      $"{result.GrassTufts} grass tufts ({result.HabitatSummary()}) and " +
+                      $"{result.ShorePlants} shore plants ({result.ZoneSummary()}) — stands, heath, " +
+                      "meadow and sward by habitat and the tidal coast by zone, with the village, the " +
+                      "spawn, the crossing's approach and the dock left clear.");
             return result;
         }
 
@@ -116,30 +127,26 @@ namespace HiddenHarbours.App.Editor
         /// YSortSprite) so painted and planted grass are the same thing — but every scale, variant and
         /// tint here is HASHED, never rolled: the builder's grass must reproduce exactly (rule 5),
         /// where the paint tool's jitter is the owner's live brush.
+        ///
+        /// <para><b>⭐ THE ART COMES FROM THE LIBRARY, BY HABITAT TAG.</b> This method used to carry
+        /// three literal sprite paths index-aligned to a variant int, the same three
+        /// <c>GrassPaintTool</c> carried — so a new tuft meant editing both in lockstep. It now reads
+        /// <see cref="GrassLibraryCatalog"/> and asks for whatever is baked carrying the habitat the
+        /// scatter decided (dune by the sand, fringe at the splat boundary, wind-cropped headland,
+        /// lush sward inland). The scatter knows the GROUND and the library knows the ART, and neither
+        /// holds the other's list.</para>
         /// </summary>
         static void PlantGrass(ITidalTerrain terrain, Result result)
         {
-            var tufts = new Sprite[GrassTuftPaths.Length];
-            for (int i = 0; i < GrassTuftPaths.Length; i++)
+            var library = GrassLibraryCatalog.Load();
+            var imported = GrassLibraryCatalog.Imported(library);
+            if (imported.Count == 0)
             {
-                // Robust to either sprite mode, DETERMINISTICALLY: prefer the sprite named for its
-                // file (a Single-mode sheet's one sprite carries the file name), and only fall back
-                // to First — because on a Multiple-mode re-import, sub-sprite enumeration order is
-                // unstable (the sprite-refs trap) and "first" would quietly change the meadow.
-                string stem = System.IO.Path.GetFileNameWithoutExtension(GrassTuftPaths[i]);
-                var all = AssetDatabase.LoadAllAssetsAtPath(GrassTuftPaths[i])
-                                       .OfType<Sprite>().ToArray();
-                // == / != on purpose, never ?? — coalescing skips UnityEngine.Object's overload and
-                // resurrects fake-null (the standing trap), even though a LINQ miss happens to be a
-                // true null today.
-                Sprite named = all.FirstOrDefault(s => s.name == stem);
-                tufts[i] = named != null ? named : (all.Length > 0 ? all[0] : null);
-                if (tufts[i] == null)
-                {
-                    Debug.LogWarning($"[StPetersWoodsPlanter] no tuft sprite at {GrassTuftPaths[i]} — " +
-                                     "the meadow ships unmoving (splat ground only). Import the grass art.");
-                    return;
-                }
+                Debug.LogWarning(
+                    "[StPetersWoodsPlanter] the grass library resolved no imported sprites — the " +
+                    "meadow ships unmoving (splat ground only). Bake it (Hidden Harbours ▸ Dev ▸ Bake " +
+                    "Grass Library), and `git lfs pull` if the PNGs are still pointers.");
+                return;
             }
 
             var material = AssetDatabase.LoadAssetAtPath<Material>(GrassMaterialPath);
@@ -147,16 +154,38 @@ namespace HiddenHarbours.App.Editor
                 Debug.LogWarning($"[StPetersWoodsPlanter] {GrassMaterialPath} missing — the tufts will " +
                                  "stand still instead of swaying on the shared wind.");
 
+            // One list per habitat, built once. Choose() falls back to the whole library rather than
+            // returning nothing, so a habitat with no matching bake still plants — sparser art beats a
+            // bald patch the owner has to diagnose.
+            var byHabitat = new Dictionary<string, List<GrassLibraryCatalog.Entry>>();
+            List<GrassLibraryCatalog.Entry> For(string habitat)
+            {
+                if (byHabitat.TryGetValue(habitat, out var list)) return list;
+                var narrowed = new GrassLibraryCatalog.Library();
+                narrowed.Entries.AddRange(imported);
+                list = narrowed.Choose(new[] { habitat }, null);
+                byHabitat[habitat] = list;
+                return list;
+            }
+
             var root = new GameObject(GrassRootName);
             foreach (var site in StPetersGrass.Scatter(terrain))
             {
-                var go = new GameObject("Tuft");
+                var choices = For(site.Habitat);
+                if (choices.Count == 0) continue;
+                // The site's own stable roll picks between the matching variants, so the same metre of
+                // ground always grows the same blade across rebuilds (rule 5).
+                var entry = choices[site.Roll % choices.Count];
+                var sprite = GrassLibraryCatalog.LoadSprite(entry);
+                if (sprite == null) continue;
+
+                var go = new GameObject(entry.Name);
                 go.transform.SetParent(root.transform, worldPositionStays: false);
                 go.transform.position = new Vector3(site.Position.x, site.Position.y, 0f);
                 go.transform.localScale = new Vector3(site.Scale, site.Scale, 1f);
 
                 var sr = go.AddComponent<SpriteRenderer>();
-                sr.sprite = tufts[Mathf.Clamp(site.Variant, 0, tufts.Length - 1)];
+                sr.sprite = sprite;
                 if (material != null) sr.sharedMaterial = material;
                 sr.sortingOrder = GrassSortingOrder;
                 // Multiplied over the sprite's own gradient by the grass shader, so shading survives.
@@ -164,7 +193,72 @@ namespace HiddenHarbours.App.Editor
                 go.AddComponent<YSortSprite>();
 
                 result.GrassTufts++;
+                result.PerHabitat[site.Habitat] =
+                    result.PerHabitat.TryGetValue(site.Habitat, out int n) ? n + 1 : 1;
             }
+        }
+
+        // =====================================================================================
+        //  SHORE PLANTS
+        // =====================================================================================
+
+        /// <summary>
+        /// The tidal coast's planting — rockweed on the band the tide bares, marsh above it, and beds
+        /// on the shallow shelf below. <see cref="StPetersShorePlants"/> decides where and what;
+        /// this hangs the objects and gives each one a <see cref="ShorePlantTideView"/> so it follows
+        /// the water from then on.
+        ///
+        /// <para><b>⚠ NO <see cref="YSortSprite"/> on a shore plant, and that is deliberate.</b> A
+        /// submerged plant draws BELOW the Sea plane (−5) and YSortSprite's band is 2…40 — the two
+        /// disagree by construction, and the view stands YSortSprite down whenever it is under water.
+        /// Since almost every plant this scatter places is submerged for most of the tide, the
+        /// component would spend its life disabled. The view sets the order directly instead.</para>
+        /// </summary>
+        static void PlantShorePlants(ITidalTerrain terrain, Result result)
+        {
+            var defs = new Dictionary<string, ShorePlantDef>();
+            ShorePlantDef Def(string key)
+            {
+                if (defs.TryGetValue(key, out var d)) return d;
+                d = AssetDatabase.LoadAssetAtPath<ShorePlantDef>(
+                    $"{ShorePlantDefBuilder.DefFolder}/{key}.asset");
+                defs[key] = d;
+                return d;
+            }
+
+            var sites = StPetersShorePlants.Scatter(terrain);
+            if (sites.Count == 0) return;
+
+            var root = new GameObject(ShorePlantRootName);
+            var missing = new HashSet<string>();
+
+            foreach (var site in sites)
+            {
+                var def = Def(site.SpeciesKey);
+                if (def == null || !def.IsComplete()) { missing.Add(site.SpeciesKey); continue; }
+
+                var go = new GameObject(site.SpeciesKey);
+                go.transform.SetParent(root.transform, worldPositionStays: false);
+                go.transform.position = new Vector3(site.Position.x, site.Position.y, 0f);
+                go.transform.localScale = new Vector3(site.Scale, site.Scale, 1f);
+
+                var sr = go.AddComponent<SpriteRenderer>();
+                sr.sprite = def.SpriteFor(0);          // the view replaces this on its first refresh
+                sr.sortingOrder = def.SubmergedSortingOrder;
+
+                var view = go.AddComponent<ShorePlantTideView>();
+                view.Def = def;                         // setting Def refreshes, so a built scene looks right
+
+                result.ShorePlants++;
+                result.PerZone[site.Zone] =
+                    result.PerZone.TryGetValue(site.Zone, out int n) ? n + 1 : 1;
+            }
+
+            if (missing.Count > 0)
+                Debug.LogWarning(
+                    $"[StPetersWoodsPlanter] {missing.Count} shore plant species have no complete Def " +
+                    $"and were skipped: {string.Join(", ", missing)}. Bake the sheets and build the " +
+                    "Defs (Hidden Harbours ▸ Dev ▸ Bake Shore Plant Sheets, then Build Shore Plant Defs).");
         }
 
         // =====================================================================================

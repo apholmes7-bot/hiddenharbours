@@ -1,0 +1,557 @@
+fileFormatVersion: 2
+guid: 218f79277bdc267bb67aadda4985f1b8
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.513157895, y: 0.488888889}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: BeachPea_summer_full_v0_light_c0_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 135
+        width: 76
+        height: 45
+      alignment: 9
+      pivot: {x: 0.513157895, y: 0.488888889}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 263ab78b29fd48fa10d583f3994cb1c2
+      internalID: -1436573880
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachPea_summer_full_v0_light_c1_f0
+      rect:
+        serializedVersion: 2
+        x: 76
+        y: 135
+        width: 76
+        height: 45
+      alignment: 9
+      pivot: {x: 0.513157895, y: 0.488888889}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7628fd6b6bc5b33c35d0e09b3561d1e0
+      internalID: -1520877082
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachPea_summer_full_v0_light_c2_f0
+      rect:
+        serializedVersion: 2
+        x: 152
+        y: 135
+        width: 76
+        height: 45
+      alignment: 9
+      pivot: {x: 0.513157895, y: 0.488888889}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f0cd68e6936f5bf5a449908ca75a4276
+      internalID: -873374798
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachPea_summer_full_v0_light_c3_f0
+      rect:
+        serializedVersion: 2
+        x: 228
+        y: 135
+        width: 76
+        height: 45
+      alignment: 9
+      pivot: {x: 0.513157895, y: 0.488888889}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 60ee13588c48a589e3d9c74771480d42
+      internalID: -111638721
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachPea_summer_full_v0_light_c4_f0
+      rect:
+        serializedVersion: 2
+        x: 304
+        y: 135
+        width: 76
+        height: 45
+      alignment: 9
+      pivot: {x: 0.513157895, y: 0.488888889}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6aa67bede8ce79b0758bb0ea47cc1a9a
+      internalID: -1069560561
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachPea_summer_full_v0_light_c0_f1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 90
+        width: 76
+        height: 45
+      alignment: 9
+      pivot: {x: 0.513157895, y: 0.488888889}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6c436b630622ad12eaa3cab5d5b10436
+      internalID: -1232973832
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachPea_summer_full_v0_light_c1_f1
+      rect:
+        serializedVersion: 2
+        x: 76
+        y: 90
+        width: 76
+        height: 45
+      alignment: 9
+      pivot: {x: 0.513157895, y: 0.488888889}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 95a1c4e8611d74a19add9a1d26cd0adb
+      internalID: -1855311668
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachPea_summer_full_v0_light_c2_f1
+      rect:
+        serializedVersion: 2
+        x: 152
+        y: 90
+        width: 76
+        height: 45
+      alignment: 9
+      pivot: {x: 0.513157895, y: 0.488888889}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5d2edf6f76f24128f06ecd33174d616f
+      internalID: -954125406
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachPea_summer_full_v0_light_c3_f1
+      rect:
+        serializedVersion: 2
+        x: 228
+        y: 90
+        width: 76
+        height: 45
+      alignment: 9
+      pivot: {x: 0.513157895, y: 0.488888889}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: db9945edeb87659629eebea24aea601d
+      internalID: -713277034
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachPea_summer_full_v0_light_c4_f1
+      rect:
+        serializedVersion: 2
+        x: 304
+        y: 90
+        width: 76
+        height: 45
+      alignment: 9
+      pivot: {x: 0.513157895, y: 0.488888889}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1341cda55bcb7a4704217c2d24b4d866
+      internalID: -726448328
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachPea_summer_full_v0_light_c0_f2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 45
+        width: 76
+        height: 45
+      alignment: 9
+      pivot: {x: 0.513157895, y: 0.488888889}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1702ce6f4b2b94bc4806d0a6ea8c1314
+      internalID: -1914261968
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachPea_summer_full_v0_light_c1_f2
+      rect:
+        serializedVersion: 2
+        x: 76
+        y: 45
+        width: 76
+        height: 45
+      alignment: 9
+      pivot: {x: 0.513157895, y: 0.488888889}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b8f9cc8462170a91e8f6e9c3db14c595
+      internalID: -1146684316
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachPea_summer_full_v0_light_c2_f2
+      rect:
+        serializedVersion: 2
+        x: 152
+        y: 45
+        width: 76
+        height: 45
+      alignment: 9
+      pivot: {x: 0.513157895, y: 0.488888889}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 89d04da0f300c3043defa3276e83aa6b
+      internalID: -312869027
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachPea_summer_full_v0_light_c3_f2
+      rect:
+        serializedVersion: 2
+        x: 228
+        y: 45
+        width: 76
+        height: 45
+      alignment: 9
+      pivot: {x: 0.513157895, y: 0.488888889}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8b20c355164bdd1dcc6b9a5b7e09c7af
+      internalID: -803599593
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachPea_summer_full_v0_light_c4_f2
+      rect:
+        serializedVersion: 2
+        x: 304
+        y: 45
+        width: 76
+        height: 45
+      alignment: 9
+      pivot: {x: 0.513157895, y: 0.488888889}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6c39c73cd9658c1cb7af5724967f9d9b
+      internalID: -1600151471
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachPea_summer_full_v0_light_c0_f3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 76
+        height: 45
+      alignment: 9
+      pivot: {x: 0.513157895, y: 0.488888889}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2826988c66760b9c18777897cfacbdea
+      internalID: -1415722266
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachPea_summer_full_v0_light_c1_f3
+      rect:
+        serializedVersion: 2
+        x: 76
+        y: 0
+        width: 76
+        height: 45
+      alignment: 9
+      pivot: {x: 0.513157895, y: 0.488888889}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eca6e078da790201a362706b94e17b4b
+      internalID: -1335104733
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachPea_summer_full_v0_light_c2_f3
+      rect:
+        serializedVersion: 2
+        x: 152
+        y: 0
+        width: 76
+        height: 45
+      alignment: 9
+      pivot: {x: 0.513157895, y: 0.488888889}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e00c8606c2283a520368fbb5549207fa
+      internalID: -1045695256
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachPea_summer_full_v0_light_c3_f3
+      rect:
+        serializedVersion: 2
+        x: 228
+        y: 0
+        width: 76
+        height: 45
+      alignment: 9
+      pivot: {x: 0.513157895, y: 0.488888889}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c248e520fc4f03017d3fbde54490c33d
+      internalID: -1546568877
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BeachPea_summer_full_v0_light_c4_f3
+      rect:
+        serializedVersion: 2
+        x: 304
+        y: 0
+        width: 76
+        height: 45
+      alignment: 9
+      pivot: {x: 0.513157895, y: 0.488888889}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c2eaf9e812da7a95a8ab537c9fc7c39b
+      internalID: -101794740
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    outline: []
+    customData:
+    physicsShape: []
+    bones: []
+    spriteID:
+    internalID: 0
+    vertices: []
+    indices:
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      BeachPea_summer_full_v0_light_c0_f0: -1436573880
+      BeachPea_summer_full_v0_light_c1_f0: -1520877082
+      BeachPea_summer_full_v0_light_c2_f0: -873374798
+      BeachPea_summer_full_v0_light_c3_f0: -111638721
+      BeachPea_summer_full_v0_light_c4_f0: -1069560561
+      BeachPea_summer_full_v0_light_c0_f1: -1232973832
+      BeachPea_summer_full_v0_light_c1_f1: -1855311668
+      BeachPea_summer_full_v0_light_c2_f1: -954125406
+      BeachPea_summer_full_v0_light_c3_f1: -713277034
+      BeachPea_summer_full_v0_light_c4_f1: -726448328
+      BeachPea_summer_full_v0_light_c0_f2: -1914261968
+      BeachPea_summer_full_v0_light_c1_f2: -1146684316
+      BeachPea_summer_full_v0_light_c2_f2: -312869027
+      BeachPea_summer_full_v0_light_c3_f2: -803599593
+      BeachPea_summer_full_v0_light_c4_f2: -1600151471
+      BeachPea_summer_full_v0_light_c0_f3: -1415722266
+      BeachPea_summer_full_v0_light_c1_f3: -1335104733
+      BeachPea_summer_full_v0_light_c2_f3: -1045695256
+      BeachPea_summer_full_v0_light_c3_f3: -1546568877
+      BeachPea_summer_full_v0_light_c4_f3: -101794740
+  mipmapLimitGroupName:
+  pSDRemoveMatte: 0
+  userData:
+  assetBundleName:
+  assetBundleVariant:

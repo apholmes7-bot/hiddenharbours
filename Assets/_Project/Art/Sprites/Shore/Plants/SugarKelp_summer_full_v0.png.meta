@@ -1,0 +1,557 @@
+fileFormatVersion: 2
+guid: 96f953a53ff26a08d100f007a700ec8d
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.492957746, y: 0.328244275}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: SugarKelp_summer_full_v0_c0_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 393
+        width: 142
+        height: 131
+      alignment: 9
+      pivot: {x: 0.492957746, y: 0.328244275}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e9eaca9b75b22f6f9810aa5fce66711d
+      internalID: -816629262
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_summer_full_v0_c1_f0
+      rect:
+        serializedVersion: 2
+        x: 142
+        y: 393
+        width: 142
+        height: 131
+      alignment: 9
+      pivot: {x: 0.492957746, y: 0.328244275}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1be661f4b83030a8afe50686547665d5
+      internalID: -1716212739
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_summer_full_v0_c2_f0
+      rect:
+        serializedVersion: 2
+        x: 284
+        y: 393
+        width: 142
+        height: 131
+      alignment: 9
+      pivot: {x: 0.492957746, y: 0.328244275}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a719b825422a0e766c292c6d03585d5e
+      internalID: -611276008
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_summer_full_v0_c3_f0
+      rect:
+        serializedVersion: 2
+        x: 426
+        y: 393
+        width: 142
+        height: 131
+      alignment: 9
+      pivot: {x: 0.492957746, y: 0.328244275}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d5cf45bbb96aa3f9ab80ea23236408e8
+      internalID: -796550712
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_summer_full_v0_c4_f0
+      rect:
+        serializedVersion: 2
+        x: 568
+        y: 393
+        width: 142
+        height: 131
+      alignment: 9
+      pivot: {x: 0.492957746, y: 0.328244275}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5fb78feedc50f9225310c2e27332a2d6
+      internalID: -178630112
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_summer_full_v0_c0_f1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 262
+        width: 142
+        height: 131
+      alignment: 9
+      pivot: {x: 0.492957746, y: 0.328244275}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aa3b12d9320813a4ef68bad9b6ed34c1
+      internalID: -1503964222
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_summer_full_v0_c1_f1
+      rect:
+        serializedVersion: 2
+        x: 142
+        y: 262
+        width: 142
+        height: 131
+      alignment: 9
+      pivot: {x: 0.492957746, y: 0.328244275}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cf82684af3b2ab8db3ced4a65ae858a1
+      internalID: -798541761
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_summer_full_v0_c2_f1
+      rect:
+        serializedVersion: 2
+        x: 284
+        y: 262
+        width: 142
+        height: 131
+      alignment: 9
+      pivot: {x: 0.492957746, y: 0.328244275}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 552e10ec49d99b15b820987285796bb3
+      internalID: -1372910444
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_summer_full_v0_c3_f1
+      rect:
+        serializedVersion: 2
+        x: 426
+        y: 262
+        width: 142
+        height: 131
+      alignment: 9
+      pivot: {x: 0.492957746, y: 0.328244275}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: afcf5c2a475dd84df8958dc5759c0a1e
+      internalID: -1623492980
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_summer_full_v0_c4_f1
+      rect:
+        serializedVersion: 2
+        x: 568
+        y: 262
+        width: 142
+        height: 131
+      alignment: 9
+      pivot: {x: 0.492957746, y: 0.328244275}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 600198362d6c44259987d91b6b1894d9
+      internalID: -662063898
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_summer_full_v0_c0_f2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 131
+        width: 142
+        height: 131
+      alignment: 9
+      pivot: {x: 0.492957746, y: 0.328244275}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c3e8e5079c5a622c1b086634413dc5ce
+      internalID: -1441631214
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_summer_full_v0_c1_f2
+      rect:
+        serializedVersion: 2
+        x: 142
+        y: 131
+        width: 142
+        height: 131
+      alignment: 9
+      pivot: {x: 0.492957746, y: 0.328244275}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 395aa8247b59ea0d1bec3d62c1496af1
+      internalID: -36558756
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_summer_full_v0_c2_f2
+      rect:
+        serializedVersion: 2
+        x: 284
+        y: 131
+        width: 142
+        height: 131
+      alignment: 9
+      pivot: {x: 0.492957746, y: 0.328244275}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f76c46355522acd2fa6a5c92d350b056
+      internalID: -1655865543
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_summer_full_v0_c3_f2
+      rect:
+        serializedVersion: 2
+        x: 426
+        y: 131
+        width: 142
+        height: 131
+      alignment: 9
+      pivot: {x: 0.492957746, y: 0.328244275}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1c24d3bfbf9ee7746c85703876b063c0
+      internalID: -1560217873
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_summer_full_v0_c4_f2
+      rect:
+        serializedVersion: 2
+        x: 568
+        y: 131
+        width: 142
+        height: 131
+      alignment: 9
+      pivot: {x: 0.492957746, y: 0.328244275}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 350023e0d5b874ffa4af21547a2376e0
+      internalID: -1175700637
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_summer_full_v0_c0_f3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 142
+        height: 131
+      alignment: 9
+      pivot: {x: 0.492957746, y: 0.328244275}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 03a0d32ecef076d24fbdf65fffc66d18
+      internalID: -841908150
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_summer_full_v0_c1_f3
+      rect:
+        serializedVersion: 2
+        x: 142
+        y: 0
+        width: 142
+        height: 131
+      alignment: 9
+      pivot: {x: 0.492957746, y: 0.328244275}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ef58bb61bb4b8ad39d3c30f438f79a96
+      internalID: -419352995
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_summer_full_v0_c2_f3
+      rect:
+        serializedVersion: 2
+        x: 284
+        y: 0
+        width: 142
+        height: 131
+      alignment: 9
+      pivot: {x: 0.492957746, y: 0.328244275}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3cd77b9801d7f4a530a7bb74a854ea12
+      internalID: -75006635
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_summer_full_v0_c3_f3
+      rect:
+        serializedVersion: 2
+        x: 426
+        y: 0
+        width: 142
+        height: 131
+      alignment: 9
+      pivot: {x: 0.492957746, y: 0.328244275}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 62aa398435c3a39089960a067e09f80f
+      internalID: -363918301
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SugarKelp_summer_full_v0_c4_f3
+      rect:
+        serializedVersion: 2
+        x: 568
+        y: 0
+        width: 142
+        height: 131
+      alignment: 9
+      pivot: {x: 0.492957746, y: 0.328244275}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c0585c5054bb31f0a03fc236008062bf
+      internalID: -1020801031
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    outline: []
+    customData:
+    physicsShape: []
+    bones: []
+    spriteID:
+    internalID: 0
+    vertices: []
+    indices:
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      SugarKelp_summer_full_v0_c0_f0: -816629262
+      SugarKelp_summer_full_v0_c1_f0: -1716212739
+      SugarKelp_summer_full_v0_c2_f0: -611276008
+      SugarKelp_summer_full_v0_c3_f0: -796550712
+      SugarKelp_summer_full_v0_c4_f0: -178630112
+      SugarKelp_summer_full_v0_c0_f1: -1503964222
+      SugarKelp_summer_full_v0_c1_f1: -798541761
+      SugarKelp_summer_full_v0_c2_f1: -1372910444
+      SugarKelp_summer_full_v0_c3_f1: -1623492980
+      SugarKelp_summer_full_v0_c4_f1: -662063898
+      SugarKelp_summer_full_v0_c0_f2: -1441631214
+      SugarKelp_summer_full_v0_c1_f2: -36558756
+      SugarKelp_summer_full_v0_c2_f2: -1655865543
+      SugarKelp_summer_full_v0_c3_f2: -1560217873
+      SugarKelp_summer_full_v0_c4_f2: -1175700637
+      SugarKelp_summer_full_v0_c0_f3: -841908150
+      SugarKelp_summer_full_v0_c1_f3: -419352995
+      SugarKelp_summer_full_v0_c2_f3: -75006635
+      SugarKelp_summer_full_v0_c3_f3: -363918301
+      SugarKelp_summer_full_v0_c4_f3: -1020801031
+  mipmapLimitGroupName:
+  pSDRemoveMatte: 0
+  userData:
+  assetBundleName:
+  assetBundleVariant:

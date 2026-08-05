@@ -1,0 +1,557 @@
+fileFormatVersion: 2
+guid: 26accc9cce306b60a592c99612867d99
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.491803279, y: 0.436363636}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: SeaLettuce_summer_full_v0_tide_c0_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 165
+        width: 61
+        height: 55
+      alignment: 9
+      pivot: {x: 0.491803279, y: 0.436363636}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dc022a2a7081c6380aafd4988525bc3e
+      internalID: -1911747364
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_summer_full_v0_tide_c1_f0
+      rect:
+        serializedVersion: 2
+        x: 61
+        y: 165
+        width: 61
+        height: 55
+      alignment: 9
+      pivot: {x: 0.491803279, y: 0.436363636}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6574a5b2e733be618702ee29fa8e53d8
+      internalID: -1444826211
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_summer_full_v0_tide_c2_f0
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 165
+        width: 61
+        height: 55
+      alignment: 9
+      pivot: {x: 0.491803279, y: 0.436363636}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6aa5ff26d9193f6130f1f1501b8fc0b2
+      internalID: -950061909
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_summer_full_v0_tide_c3_f0
+      rect:
+        serializedVersion: 2
+        x: 183
+        y: 165
+        width: 61
+        height: 55
+      alignment: 9
+      pivot: {x: 0.491803279, y: 0.436363636}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e72ab5c79df036c71bdb15847c507a92
+      internalID: -653388318
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_summer_full_v0_tide_c4_f0
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 165
+        width: 61
+        height: 55
+      alignment: 9
+      pivot: {x: 0.491803279, y: 0.436363636}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9aefc7722ac6bbeed4c893cc0da9f5a5
+      internalID: -349155937
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_summer_full_v0_tide_c0_f1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 110
+        width: 61
+        height: 55
+      alignment: 9
+      pivot: {x: 0.491803279, y: 0.436363636}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 11d63f2621d92d7357b799eedfa5e3de
+      internalID: -513070262
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_summer_full_v0_tide_c1_f1
+      rect:
+        serializedVersion: 2
+        x: 61
+        y: 110
+        width: 61
+        height: 55
+      alignment: 9
+      pivot: {x: 0.491803279, y: 0.436363636}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9d92431dd85b3948e7849a9ff48683ac
+      internalID: -872504861
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_summer_full_v0_tide_c2_f1
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 110
+        width: 61
+        height: 55
+      alignment: 9
+      pivot: {x: 0.491803279, y: 0.436363636}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 675d49ef43bd3b4ea82f7e1cb6b23181
+      internalID: -1670341714
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_summer_full_v0_tide_c3_f1
+      rect:
+        serializedVersion: 2
+        x: 183
+        y: 110
+        width: 61
+        height: 55
+      alignment: 9
+      pivot: {x: 0.491803279, y: 0.436363636}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fecfd44c29aab7ba4728958ce434870f
+      internalID: -864251110
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_summer_full_v0_tide_c4_f1
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 110
+        width: 61
+        height: 55
+      alignment: 9
+      pivot: {x: 0.491803279, y: 0.436363636}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a8f9ed201e25784d3ceaf99e27f9f809
+      internalID: -1052456746
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_summer_full_v0_tide_c0_f2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 55
+        width: 61
+        height: 55
+      alignment: 9
+      pivot: {x: 0.491803279, y: 0.436363636}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cc8ac79bbc71969a4fcd2d7ee7807dff
+      internalID: -866971583
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_summer_full_v0_tide_c1_f2
+      rect:
+        serializedVersion: 2
+        x: 61
+        y: 55
+        width: 61
+        height: 55
+      alignment: 9
+      pivot: {x: 0.491803279, y: 0.436363636}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e899891b3e2e6dc136e45338c86e8ff5
+      internalID: -116357866
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_summer_full_v0_tide_c2_f2
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 55
+        width: 61
+        height: 55
+      alignment: 9
+      pivot: {x: 0.491803279, y: 0.436363636}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fc14640596d070e61f32fe1b3cac412c
+      internalID: -1054295530
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_summer_full_v0_tide_c3_f2
+      rect:
+        serializedVersion: 2
+        x: 183
+        y: 55
+        width: 61
+        height: 55
+      alignment: 9
+      pivot: {x: 0.491803279, y: 0.436363636}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: add94af7c7691f49ade2292e2c3f07d9
+      internalID: -83261569
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_summer_full_v0_tide_c4_f2
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 55
+        width: 61
+        height: 55
+      alignment: 9
+      pivot: {x: 0.491803279, y: 0.436363636}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d1e78322a722e7dfc46c0fdc1eaaf6ad
+      internalID: -820991502
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_summer_full_v0_tide_c0_f3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 61
+        height: 55
+      alignment: 9
+      pivot: {x: 0.491803279, y: 0.436363636}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ef257a6df86d37ebc8b8ed137be45665
+      internalID: -386005107
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_summer_full_v0_tide_c1_f3
+      rect:
+        serializedVersion: 2
+        x: 61
+        y: 0
+        width: 61
+        height: 55
+      alignment: 9
+      pivot: {x: 0.491803279, y: 0.436363636}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2d9b0aa71a5cd63402ce998620e78170
+      internalID: -943559046
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_summer_full_v0_tide_c2_f3
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 0
+        width: 61
+        height: 55
+      alignment: 9
+      pivot: {x: 0.491803279, y: 0.436363636}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 12425f172267601c9740dce71e088864
+      internalID: -130775390
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_summer_full_v0_tide_c3_f3
+      rect:
+        serializedVersion: 2
+        x: 183
+        y: 0
+        width: 61
+        height: 55
+      alignment: 9
+      pivot: {x: 0.491803279, y: 0.436363636}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c3e463d7f47b314055728321ece89280
+      internalID: -1214868544
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaLettuce_summer_full_v0_tide_c4_f3
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 0
+        width: 61
+        height: 55
+      alignment: 9
+      pivot: {x: 0.491803279, y: 0.436363636}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2fa2810624664c0d45e05fec2098fd74
+      internalID: -1047808602
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    outline: []
+    customData:
+    physicsShape: []
+    bones: []
+    spriteID:
+    internalID: 0
+    vertices: []
+    indices:
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      SeaLettuce_summer_full_v0_tide_c0_f0: -1911747364
+      SeaLettuce_summer_full_v0_tide_c1_f0: -1444826211
+      SeaLettuce_summer_full_v0_tide_c2_f0: -950061909
+      SeaLettuce_summer_full_v0_tide_c3_f0: -653388318
+      SeaLettuce_summer_full_v0_tide_c4_f0: -349155937
+      SeaLettuce_summer_full_v0_tide_c0_f1: -513070262
+      SeaLettuce_summer_full_v0_tide_c1_f1: -872504861
+      SeaLettuce_summer_full_v0_tide_c2_f1: -1670341714
+      SeaLettuce_summer_full_v0_tide_c3_f1: -864251110
+      SeaLettuce_summer_full_v0_tide_c4_f1: -1052456746
+      SeaLettuce_summer_full_v0_tide_c0_f2: -866971583
+      SeaLettuce_summer_full_v0_tide_c1_f2: -116357866
+      SeaLettuce_summer_full_v0_tide_c2_f2: -1054295530
+      SeaLettuce_summer_full_v0_tide_c3_f2: -83261569
+      SeaLettuce_summer_full_v0_tide_c4_f2: -820991502
+      SeaLettuce_summer_full_v0_tide_c0_f3: -386005107
+      SeaLettuce_summer_full_v0_tide_c1_f3: -943559046
+      SeaLettuce_summer_full_v0_tide_c2_f3: -130775390
+      SeaLettuce_summer_full_v0_tide_c3_f3: -1214868544
+      SeaLettuce_summer_full_v0_tide_c4_f3: -1047808602
+  mipmapLimitGroupName:
+  pSDRemoveMatte: 0
+  userData:
+  assetBundleName:
+  assetBundleVariant:

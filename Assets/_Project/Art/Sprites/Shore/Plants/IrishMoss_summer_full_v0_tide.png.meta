@@ -1,0 +1,557 @@
+fileFormatVersion: 2
+guid: 901c49600054005773b09cc645e31b4e
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.340425532}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: IrishMoss_summer_full_v0_tide_c0_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 141
+        width: 56
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5, y: 0.340425532}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9c5112c46f81cf99d8d9dd4a1f2d391f
+      internalID: -265251480
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: IrishMoss_summer_full_v0_tide_c1_f0
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 141
+        width: 56
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5, y: 0.340425532}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 546e27a90105c0896be5b66f69bc314a
+      internalID: -450064977
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: IrishMoss_summer_full_v0_tide_c2_f0
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 141
+        width: 56
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5, y: 0.340425532}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 11c7749798c7b1cd0e87a850da900d0e
+      internalID: -735324578
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: IrishMoss_summer_full_v0_tide_c3_f0
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 141
+        width: 56
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5, y: 0.340425532}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8b223463da87a1a61598d1a88b48cc86
+      internalID: -152239439
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: IrishMoss_summer_full_v0_tide_c4_f0
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 141
+        width: 56
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5, y: 0.340425532}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 130565734b0a8bd8c17d537e6a9705c2
+      internalID: -1578628394
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: IrishMoss_summer_full_v0_tide_c0_f1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 94
+        width: 56
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5, y: 0.340425532}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a94b33e3e3fae24cd41a4793958fe76b
+      internalID: -1873718392
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: IrishMoss_summer_full_v0_tide_c1_f1
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 94
+        width: 56
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5, y: 0.340425532}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e7f431251ce1c2640aae0aa9065c8f54
+      internalID: -381143697
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: IrishMoss_summer_full_v0_tide_c2_f1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 94
+        width: 56
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5, y: 0.340425532}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7e6eb0af00a7b929c957e70950d32ba8
+      internalID: -503495912
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: IrishMoss_summer_full_v0_tide_c3_f1
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 94
+        width: 56
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5, y: 0.340425532}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3ccf654064b7155c933136cf20142809
+      internalID: -1064275853
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: IrishMoss_summer_full_v0_tide_c4_f1
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 94
+        width: 56
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5, y: 0.340425532}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: edf100ec5ed93a2815f67eaa76da3fba
+      internalID: -1740721714
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: IrishMoss_summer_full_v0_tide_c0_f2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 47
+        width: 56
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5, y: 0.340425532}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fb5b7817d077c29eee29a331322c6665
+      internalID: -743879604
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: IrishMoss_summer_full_v0_tide_c1_f2
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 47
+        width: 56
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5, y: 0.340425532}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d9fd41d8776ad9e2b83eebabc7602855
+      internalID: -1899284471
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: IrishMoss_summer_full_v0_tide_c2_f2
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 47
+        width: 56
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5, y: 0.340425532}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a6c24fcb39ae02435db63cab11d5c5d1
+      internalID: -476663123
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: IrishMoss_summer_full_v0_tide_c3_f2
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 47
+        width: 56
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5, y: 0.340425532}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b216547b62cab262cf8d844b2cc8d25e
+      internalID: -307145092
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: IrishMoss_summer_full_v0_tide_c4_f2
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 47
+        width: 56
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5, y: 0.340425532}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 779c2e91333c5b6c5dba00af8245ec77
+      internalID: -1754084866
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: IrishMoss_summer_full_v0_tide_c0_f3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 56
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5, y: 0.340425532}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 36c2610ba61959849477766d5fb158b0
+      internalID: -1379936681
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: IrishMoss_summer_full_v0_tide_c1_f3
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 0
+        width: 56
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5, y: 0.340425532}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b460abdb19c7a570d431aebe1960d3c5
+      internalID: -1606541770
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: IrishMoss_summer_full_v0_tide_c2_f3
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 0
+        width: 56
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5, y: 0.340425532}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bd26922ab221d8824c3bf7f66a71015d
+      internalID: -536346020
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: IrishMoss_summer_full_v0_tide_c3_f3
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 0
+        width: 56
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5, y: 0.340425532}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3c19617958bf994549b5f1fb3180a58b
+      internalID: -1752621756
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: IrishMoss_summer_full_v0_tide_c4_f3
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 0
+        width: 56
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5, y: 0.340425532}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7b1a73d408bc13f7b9e02f1fcdaf397e
+      internalID: -157624404
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    outline: []
+    customData:
+    physicsShape: []
+    bones: []
+    spriteID:
+    internalID: 0
+    vertices: []
+    indices:
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      IrishMoss_summer_full_v0_tide_c0_f0: -265251480
+      IrishMoss_summer_full_v0_tide_c1_f0: -450064977
+      IrishMoss_summer_full_v0_tide_c2_f0: -735324578
+      IrishMoss_summer_full_v0_tide_c3_f0: -152239439
+      IrishMoss_summer_full_v0_tide_c4_f0: -1578628394
+      IrishMoss_summer_full_v0_tide_c0_f1: -1873718392
+      IrishMoss_summer_full_v0_tide_c1_f1: -381143697
+      IrishMoss_summer_full_v0_tide_c2_f1: -503495912
+      IrishMoss_summer_full_v0_tide_c3_f1: -1064275853
+      IrishMoss_summer_full_v0_tide_c4_f1: -1740721714
+      IrishMoss_summer_full_v0_tide_c0_f2: -743879604
+      IrishMoss_summer_full_v0_tide_c1_f2: -1899284471
+      IrishMoss_summer_full_v0_tide_c2_f2: -476663123
+      IrishMoss_summer_full_v0_tide_c3_f2: -307145092
+      IrishMoss_summer_full_v0_tide_c4_f2: -1754084866
+      IrishMoss_summer_full_v0_tide_c0_f3: -1379936681
+      IrishMoss_summer_full_v0_tide_c1_f3: -1606541770
+      IrishMoss_summer_full_v0_tide_c2_f3: -536346020
+      IrishMoss_summer_full_v0_tide_c3_f3: -1752621756
+      IrishMoss_summer_full_v0_tide_c4_f3: -157624404
+  mipmapLimitGroupName:
+  pSDRemoveMatte: 0
+  userData:
+  assetBundleName:
+  assetBundleVariant:

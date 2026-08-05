@@ -50,22 +50,92 @@ namespace HiddenHarbours.Tests.EditMode
             for (int i = 0; i < a.Count; i++)
             {
                 Assert.Less((a[i].Position - b[i].Position).magnitude, 1e-6f, $"tuft {i} moved");
-                Assert.AreEqual(a[i].Variant, b[i].Variant, $"tuft {i} changed sprite");
+                Assert.AreEqual(a[i].Habitat, b[i].Habitat, $"tuft {i} changed habitat");
+                Assert.AreEqual(a[i].Roll, b[i].Roll, $"tuft {i} changed its variant roll");
                 Assert.AreEqual(a[i].Scale, b[i].Scale, 1e-6f, $"tuft {i} changed size");
                 Assert.AreEqual(a[i].Tint, b[i].Tint, $"tuft {i} changed colour");
             }
         }
 
+        /// <summary>
+        /// The tuft count, <b>DERIVED from the planter's own knobs rather than re-pinned as a
+        /// literal</b> (house law: bounds are derived, never widened).
+        ///
+        /// <para><b>Why the old literal band had to go, and why a wider one would be no better.</b>
+        /// It read <c>400 &lt; n &lt; 1800</c>, measured at 593 on the pre-green-over island. The
+        /// green-over took <see cref="StPetersGrass.GrassStep"/> 4.0 → 2.2 m and
+        /// <see cref="StPetersGrass.SwatheThreshold"/> −0.15 → −0.62, and the count went to ~3,780 —
+        /// so the pin failed for the one reason a pin must not: the island changed on purpose. Simply
+        /// writing 3,780 in would buy exactly one re-tune before the same thing happened again.</para>
+        ///
+        /// <para><b>So it predicts instead.</b> Walk the same grid the planter walks, with the same
+        /// pure deciders, and sum the EXPECTED tufts per cell:
+        /// <c>Σ P(accept) × TuftsAt(cell)</c>. The count goes as the inverse square of
+        /// <c>GrassStep</c> and linearly in the gates, and all of that falls out of the walk rather
+        /// than being restated. Re-tune any knob and prediction and reality move together; break a
+        /// GATE and only one of them moves, which is the failure this exists to catch.</para>
+        ///
+        /// <para>Verified against the offline port of the decider that reproduces
+        /// <see cref="StPetersBuilder"/>'s own quoted beach elevations (radius+6 → 4.49 m, +10 → 2.50,
+        /// +14 → 0.51, +16 → −0.27): predicted 3,800 against an actual 3,778, a <b>0.6%</b> error, so
+        /// the tolerance below carries ~25× headroom. The residual is the sub-tuft re-gate — offsets
+        /// of ±0.7 m that spill across a clearing edge and are dropped per BLADE.</para>
+        /// </summary>
         [Test]
         public void TheSward_IsAMeadowsWorthOfTufts_NotACarpetAndNotAMange()
         {
-            // The renderer budget (rule 7) from above and "the island visibly has grass" from below.
-            // Measured 593 at the shipped knobs (review-verified by an offline port of the decider);
-            // the band is wide enough to survive tuning, tight enough that a broken gate (everything
-            // rejected, or every cell at 3 tufts) fails.
-            var sites = StPetersGrass.Scatter(_terrain);
-            Assert.Greater(sites.Count, 400, "the meadow is nearly bare — a gate is rejecting everything");
-            Assert.Less(sites.Count, 1800, "the meadow is a solid carpet — the swathe/chance gates are dead");
+            // Tolerance on the prediction. Covers the sub-tuft re-gate (measured 0.6%) with room for
+            // the hash's discreteness after a re-tune; tight enough that a dead gate — which moves
+            // the count by a factor, not a percent — still fails.
+            const float tolerance = 0.15f;
+
+            float expected = 0f;
+            int cells = 0;
+
+            float minX = StPetersBuilder.IslandCenter.x - StPetersBuilder.IslandRadius;
+            float maxX = StPetersBuilder.IslandCenter.x + StPetersBuilder.IslandRadius;
+            float minY = StPetersBuilder.IslandCenter.y - StPetersBuilder.IslandRadiusY;
+            float maxY = StPetersBuilder.IslandCenter.y + StPetersBuilder.IslandRadiusY;
+            int nx = Mathf.Max(1, Mathf.CeilToInt((maxX - minX) / StPetersGrass.GrassStep));
+            int ny = Mathf.Max(1, Mathf.CeilToInt((maxY - minY) / StPetersGrass.GrassStep));
+
+            for (int ix = 0; ix < nx; ix++)
+            for (int iy = 0; iy < ny; iy++)
+            {
+                var p = new Vector2(
+                    minX + (ix + 0.5f) * StPetersGrass.GrassStep
+                         + (StPetersShoreMap.Hash01(ix, iy, 163) * 2f - 1f) * StPetersGrass.GrassJitter,
+                    minY + (iy + 0.5f) * StPetersGrass.GrassStep
+                         + (StPetersShoreMap.Hash01(ix, iy, 167) * 2f - 1f) * StPetersGrass.GrassJitter);
+
+                if (!StPetersWoods.IsPlantable(_terrain, p, StPetersShoreMap.GrassFloorElevation))
+                    continue;
+                cells++;
+                if (!StPetersGrass.InSwathe(p)) continue;
+
+                float chance = StPetersWoods.InStand(p, _terrain.ElevationAt(p))
+                    ? StPetersGrass.ChanceWoods
+                    : StPetersGrass.ChanceOpen;
+                expected += chance * StPetersGrass.TuftsAt(p, StPetersShoreMap.Hash01(ix, iy, 179));
+            }
+
+            Assert.Greater(cells, 0, "sanity: the grid found no plantable ground at all");
+            Assert.Greater(expected, 0f, "sanity: every cell was gated out before the count was predicted");
+
+            int actual = StPetersGrass.Scatter(_terrain).Count;
+            float ratio = actual / expected;
+
+            Assert.That(ratio, Is.EqualTo(1f).Within(tolerance),
+                $"the meadow planted {actual} tufts where its own knobs predict {expected:F0} " +
+                $"({ratio:P0} of prediction). Prediction and reality move together when a knob is " +
+                "TUNED, so a divergence this size means a GATE changed behaviour — check the swathe " +
+                "gate, the stand/open chance split, and the per-blade re-gate on the sub-tuft offsets.");
+
+            // The structural ceiling, also derived: TuftsAt is capped at 3, so nothing can plant more
+            // than three per candidate cell however the knobs move. A count above this is not a
+            // tuning result, it is the grid walk itself being wrong.
+            Assert.LessOrEqual(actual, cells * 3,
+                $"{actual} tufts from {cells} candidate cells is more than the 3-per-cell cap allows.");
         }
 
         [Test]
@@ -90,27 +160,69 @@ namespace HiddenHarbours.Tests.EditMode
             }
         }
 
+        /// <summary>
+        /// The worn ground, <b>tied to <see cref="StPetersGrass.SwatheThreshold"/> rather than to a
+        /// literal coverage band</b>.
+        ///
+        /// <para><b>Why the literal failed.</b> It pinned <c>0.30 &lt; f &lt; 0.85</c>. The
+        /// green-over moved the threshold −0.15 → −0.62 and coverage went to 0.887 — again, the
+        /// island changing on purpose rather than a regression. And the band was never really about
+        /// the number: it was two claims, "the gate is consulted on the meadow" and "the gate rejects
+        /// something". Both can be stated so they survive a re-tune.</para>
+        ///
+        /// <para><b>The derivation.</b> Sample the gate over the meadow, and over an UNCONSTRAINED
+        /// grid across the same region. The meadow's pass rate must match the field's own — that is
+        /// what "the meadow sees the same gate as everywhere else" means, and it holds at any
+        /// threshold. Then require the field to reject something at all, which is what stops the gate
+        /// being switched off by sliding the threshold to −1.</para>
+        ///
+        /// <para>Measured with the offline port at BOTH thresholds, which is the point: at −0.62 the
+        /// meadow passes 88.7% against the field's 87.9% (Δ 0.007); at the old −0.15, 52.4% against
+        /// 51.2% (Δ 0.012). The same assertion holds either side of the re-tune.</para>
+        /// </summary>
         [Test]
         public void TheSwardHasWornGround_TheSwatheFieldActuallyGates()
         {
-            // Sample open meadow points (plantable at the grass floor, outside stands) and require the
-            // swathe field to say "no grass" on a real fraction of them — the mosaic must exist, at a
-            // smaller grain than the stands.
-            int meadow = 0, sward = 0;
+            // How far the meadow's pass rate may sit from the field's. The two measured 0.007 apart
+            // at the shipped threshold and 0.012 at the previous one; 0.10 absorbs the meadow being
+            // a biased sub-sample of the region without absorbing a bypassed gate.
+            const float agreement = 0.10f;
+
+            // The field must reject at least this much for the gate to be doing anything. A
+            // threshold at the bottom of the field's own [−1, 1] range rejects nothing, which is a
+            // gate in name only.
+            const float minRejected = 0.02f;
+
+            int meadow = 0, meadowPass = 0, field = 0, fieldPass = 0;
             for (float x = -50f; x <= 190f; x += 3f)
             for (float y = -68f; y <= 68f; y += 3f)
             {
                 var p = new Vector2(x, y);
+
+                field++;
+                if (StPetersGrass.InSwathe(p)) fieldPass++;
+
                 if (!StPetersWoods.IsPlantable(_terrain, p, StPetersShoreMap.GrassFloorElevation))
                     continue;
                 if (StPetersWoods.InStand(p, _terrain.ElevationAt(p))) continue;
                 meadow++;
-                if (StPetersGrass.InSwathe(p)) sward++;
+                if (StPetersGrass.InSwathe(p)) meadowPass++;
             }
+
             Assert.Greater(meadow, 200, "sanity: the sweep found a meadow to measure");
-            float f = (float)sward / meadow;
-            Assert.Greater(f, 0.3f, $"only {f:P0} of the meadow carries grass — the sward broke");
-            Assert.Less(f, 0.85f, $"{f:P0} of the meadow carries grass — the worn ground is gone");
+
+            float fMeadow = (float)meadowPass / meadow;
+            float fField = (float)fieldPass / field;
+
+            Assert.That(fMeadow, Is.EqualTo(fField).Within(agreement),
+                $"the meadow carries grass on {fMeadow:P1} of its ground but the swathe field passes " +
+                $"{fField:P1} of the region — the meadow is not seeing the same gate everywhere else " +
+                "sees, so something is bypassing or double-applying it.");
+
+            Assert.Greater(1f - fField, minRejected,
+                $"the swathe gate rejects only {1f - fField:P1} of the region at " +
+                $"SwatheThreshold {StPetersGrass.SwatheThreshold} — there is no worn ground left, and " +
+                "a gate that refuses nothing is not a gate.");
         }
 
         [Test]
@@ -129,7 +241,20 @@ namespace HiddenHarbours.Tests.EditMode
         {
             foreach (var s in StPetersGrass.Scatter(_terrain))
             {
-                Assert.That(s.Variant, Is.InRange(0, 2), "variant must name one of the three tuft sprites");
+                // Site identity is now habitat-tag + roll (the planter resolves art from the grass
+                // library); tag↔library validity is pinned by StPetersGreenOverTests.
+                //
+                // ⚠ Roll is NOT the old 0..2 sprite index. That index existed because there were
+                // exactly three tuft sprites and the site named one of them; the library now holds 29
+                // and the site does not know how many. Roll is a stable hash pick the planter reduces
+                // with `Roll % choices.Count`, so its contract is only that it is NON-NEGATIVE — a
+                // negative roll would make that modulo negative and index out of range. Pinning an
+                // upper bound here would re-couple the site to a variant count it deliberately no
+                // longer knows.
+                Assert.GreaterOrEqual(s.Roll, 0,
+                    "the variant roll is reduced with % against the library's size — a negative roll " +
+                    "indexes out of range");
+                Assert.That(string.IsNullOrEmpty(s.Habitat), Is.False, "a tuft with no habitat tag cannot resolve art");
                 Assert.That(s.Scale, Is.InRange(StPetersGrass.ScaleMin, StPetersGrass.ScaleMax));
                 Assert.That(s.Tint.a, Is.EqualTo(1f), "a translucent tuft is a bug, not a look");
             }

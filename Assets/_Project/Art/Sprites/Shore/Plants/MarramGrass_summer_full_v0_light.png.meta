@@ -1,0 +1,557 @@
+fileFormatVersion: 2
+guid: 9857b0e523a5e129af5f29260ed42e5d
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.484375, y: 0.333333333}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: MarramGrass_summer_full_v0_light_c0_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 198
+        width: 64
+        height: 66
+      alignment: 9
+      pivot: {x: 0.484375, y: 0.333333333}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4040995df1ce41b45bd8022f7a994a7d
+      internalID: -689150596
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_summer_full_v0_light_c1_f0
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 198
+        width: 64
+        height: 66
+      alignment: 9
+      pivot: {x: 0.484375, y: 0.333333333}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7a3063846af3317440123b30a8a769e4
+      internalID: -1200541244
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_summer_full_v0_light_c2_f0
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 198
+        width: 64
+        height: 66
+      alignment: 9
+      pivot: {x: 0.484375, y: 0.333333333}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 419e16082ecbbca09d1762f2489caf75
+      internalID: -1124921224
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_summer_full_v0_light_c3_f0
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 198
+        width: 64
+        height: 66
+      alignment: 9
+      pivot: {x: 0.484375, y: 0.333333333}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4eb3c5331f197fe9a7525ae52b12771a
+      internalID: -535353489
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_summer_full_v0_light_c4_f0
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 198
+        width: 64
+        height: 66
+      alignment: 9
+      pivot: {x: 0.484375, y: 0.333333333}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c5c08de4bce700a182eb78c5977aeda8
+      internalID: -1670226915
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_summer_full_v0_light_c0_f1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 132
+        width: 64
+        height: 66
+      alignment: 9
+      pivot: {x: 0.484375, y: 0.333333333}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f0d9d24f1306c478d82e7fddf2b610c9
+      internalID: -739380580
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_summer_full_v0_light_c1_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 132
+        width: 64
+        height: 66
+      alignment: 9
+      pivot: {x: 0.484375, y: 0.333333333}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9e77d606afd39f94d8e22852ff6190c9
+      internalID: -1842062650
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_summer_full_v0_light_c2_f1
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 132
+        width: 64
+        height: 66
+      alignment: 9
+      pivot: {x: 0.484375, y: 0.333333333}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 66373911601da07d498fdaa8abf88793
+      internalID: -1569014414
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_summer_full_v0_light_c3_f1
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 132
+        width: 64
+        height: 66
+      alignment: 9
+      pivot: {x: 0.484375, y: 0.333333333}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bd66a3115933dc9e5f400948fbdb1690
+      internalID: -1969898458
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_summer_full_v0_light_c4_f1
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 132
+        width: 64
+        height: 66
+      alignment: 9
+      pivot: {x: 0.484375, y: 0.333333333}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cba63c35f705cd6eca5ff5eb1adc9002
+      internalID: -1328806884
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_summer_full_v0_light_c0_f2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 66
+        width: 64
+        height: 66
+      alignment: 9
+      pivot: {x: 0.484375, y: 0.333333333}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a67733cee9defc319b6f203ad76c0e96
+      internalID: -678099088
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_summer_full_v0_light_c1_f2
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 66
+        width: 64
+        height: 66
+      alignment: 9
+      pivot: {x: 0.484375, y: 0.333333333}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 627e16c03458b27c3b520ce564591086
+      internalID: -1150777481
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_summer_full_v0_light_c2_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 66
+        width: 64
+        height: 66
+      alignment: 9
+      pivot: {x: 0.484375, y: 0.333333333}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cf61a22344c53dcd546f81479a5ad426
+      internalID: -899776669
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_summer_full_v0_light_c3_f2
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 66
+        width: 64
+        height: 66
+      alignment: 9
+      pivot: {x: 0.484375, y: 0.333333333}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aab54ccebe57d4fc9cb3320e03ffdfd5
+      internalID: -512454792
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_summer_full_v0_light_c4_f2
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 66
+        width: 64
+        height: 66
+      alignment: 9
+      pivot: {x: 0.484375, y: 0.333333333}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 66e5ebe87dc9dc1e344c1b1912f184d4
+      internalID: -242063768
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_summer_full_v0_light_c0_f3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 64
+        height: 66
+      alignment: 9
+      pivot: {x: 0.484375, y: 0.333333333}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2f487f608288901f70abff7c222d0718
+      internalID: -1760521355
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_summer_full_v0_light_c1_f3
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 64
+        height: 66
+      alignment: 9
+      pivot: {x: 0.484375, y: 0.333333333}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d3a8fa4e0dcb26685742c2301ff7286e
+      internalID: -465565164
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_summer_full_v0_light_c2_f3
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 64
+        height: 66
+      alignment: 9
+      pivot: {x: 0.484375, y: 0.333333333}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6ff8b139f3e364a4807e7db510e0658d
+      internalID: -1096359842
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_summer_full_v0_light_c3_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 64
+        height: 66
+      alignment: 9
+      pivot: {x: 0.484375, y: 0.333333333}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 41a669a8d7cf7f83317bb772901014b6
+      internalID: -1327540195
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MarramGrass_summer_full_v0_light_c4_f3
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 64
+        height: 66
+      alignment: 9
+      pivot: {x: 0.484375, y: 0.333333333}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 97b930a8c7a6bf156ecbc56a120f58dd
+      internalID: -1650252330
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    outline: []
+    customData:
+    physicsShape: []
+    bones: []
+    spriteID:
+    internalID: 0
+    vertices: []
+    indices:
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      MarramGrass_summer_full_v0_light_c0_f0: -689150596
+      MarramGrass_summer_full_v0_light_c1_f0: -1200541244
+      MarramGrass_summer_full_v0_light_c2_f0: -1124921224
+      MarramGrass_summer_full_v0_light_c3_f0: -535353489
+      MarramGrass_summer_full_v0_light_c4_f0: -1670226915
+      MarramGrass_summer_full_v0_light_c0_f1: -739380580
+      MarramGrass_summer_full_v0_light_c1_f1: -1842062650
+      MarramGrass_summer_full_v0_light_c2_f1: -1569014414
+      MarramGrass_summer_full_v0_light_c3_f1: -1969898458
+      MarramGrass_summer_full_v0_light_c4_f1: -1328806884
+      MarramGrass_summer_full_v0_light_c0_f2: -678099088
+      MarramGrass_summer_full_v0_light_c1_f2: -1150777481
+      MarramGrass_summer_full_v0_light_c2_f2: -899776669
+      MarramGrass_summer_full_v0_light_c3_f2: -512454792
+      MarramGrass_summer_full_v0_light_c4_f2: -242063768
+      MarramGrass_summer_full_v0_light_c0_f3: -1760521355
+      MarramGrass_summer_full_v0_light_c1_f3: -465565164
+      MarramGrass_summer_full_v0_light_c2_f3: -1096359842
+      MarramGrass_summer_full_v0_light_c3_f3: -1327540195
+      MarramGrass_summer_full_v0_light_c4_f3: -1650252330
+  mipmapLimitGroupName:
+  pSDRemoveMatte: 0
+  userData:
+  assetBundleName:
+  assetBundleVariant:

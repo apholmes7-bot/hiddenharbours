@@ -1,0 +1,557 @@
+fileFormatVersion: 2
+guid: 6c631b01f07b2cb47d937a2ed8f321b8
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 0
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.472727273}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 0
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: SaltmeadowHay_summer_full_v0_light_c0_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 165
+        width: 82
+        height: 55
+      alignment: 9
+      pivot: {x: 0.5, y: 0.472727273}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 69c6726cb0d8806b940fcc3b65ea8fb1
+      internalID: -878519061
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SaltmeadowHay_summer_full_v0_light_c1_f0
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 165
+        width: 82
+        height: 55
+      alignment: 9
+      pivot: {x: 0.5, y: 0.472727273}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e57ee96460d0e027dbb1157b707fd977
+      internalID: -123249219
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SaltmeadowHay_summer_full_v0_light_c2_f0
+      rect:
+        serializedVersion: 2
+        x: 164
+        y: 165
+        width: 82
+        height: 55
+      alignment: 9
+      pivot: {x: 0.5, y: 0.472727273}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9fe08a2099afce3cc988defa6e70d9c8
+      internalID: -348469209
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SaltmeadowHay_summer_full_v0_light_c3_f0
+      rect:
+        serializedVersion: 2
+        x: 246
+        y: 165
+        width: 82
+        height: 55
+      alignment: 9
+      pivot: {x: 0.5, y: 0.472727273}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 29411a4c37cb938488771138ae2da6ae
+      internalID: -1325362582
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SaltmeadowHay_summer_full_v0_light_c4_f0
+      rect:
+        serializedVersion: 2
+        x: 328
+        y: 165
+        width: 82
+        height: 55
+      alignment: 9
+      pivot: {x: 0.5, y: 0.472727273}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 05ff5c9f642ca109873c93e3012937e6
+      internalID: -1164662341
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SaltmeadowHay_summer_full_v0_light_c0_f1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 110
+        width: 82
+        height: 55
+      alignment: 9
+      pivot: {x: 0.5, y: 0.472727273}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 55595350586f6a20f02920b09efa2a0f
+      internalID: -1994871834
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SaltmeadowHay_summer_full_v0_light_c1_f1
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 110
+        width: 82
+        height: 55
+      alignment: 9
+      pivot: {x: 0.5, y: 0.472727273}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 21914d00eb19565f266a6ad280064425
+      internalID: -206845870
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SaltmeadowHay_summer_full_v0_light_c2_f1
+      rect:
+        serializedVersion: 2
+        x: 164
+        y: 110
+        width: 82
+        height: 55
+      alignment: 9
+      pivot: {x: 0.5, y: 0.472727273}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1309efcff0bd62406a56e37c379c825f
+      internalID: -1101969310
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SaltmeadowHay_summer_full_v0_light_c3_f1
+      rect:
+        serializedVersion: 2
+        x: 246
+        y: 110
+        width: 82
+        height: 55
+      alignment: 9
+      pivot: {x: 0.5, y: 0.472727273}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 44dbf9cad59b34b6f59405bde88d925e
+      internalID: -1135100228
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SaltmeadowHay_summer_full_v0_light_c4_f1
+      rect:
+        serializedVersion: 2
+        x: 328
+        y: 110
+        width: 82
+        height: 55
+      alignment: 9
+      pivot: {x: 0.5, y: 0.472727273}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e6bbe3a6056b59eb237ee3c8e3ff7f53
+      internalID: -1651293517
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SaltmeadowHay_summer_full_v0_light_c0_f2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 55
+        width: 82
+        height: 55
+      alignment: 9
+      pivot: {x: 0.5, y: 0.472727273}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e75610889d54facf8ede14dc38d4955e
+      internalID: -1456985053
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SaltmeadowHay_summer_full_v0_light_c1_f2
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 55
+        width: 82
+        height: 55
+      alignment: 9
+      pivot: {x: 0.5, y: 0.472727273}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a26c22e2841ced108f76a81d03831b7b
+      internalID: -1682871918
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SaltmeadowHay_summer_full_v0_light_c2_f2
+      rect:
+        serializedVersion: 2
+        x: 164
+        y: 55
+        width: 82
+        height: 55
+      alignment: 9
+      pivot: {x: 0.5, y: 0.472727273}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e735b5b2835f655543a99e9e0d7e5e0f
+      internalID: -1488813506
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SaltmeadowHay_summer_full_v0_light_c3_f2
+      rect:
+        serializedVersion: 2
+        x: 246
+        y: 55
+        width: 82
+        height: 55
+      alignment: 9
+      pivot: {x: 0.5, y: 0.472727273}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 518c7a1e72e6b6065e330182ff30ab99
+      internalID: -1297469446
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SaltmeadowHay_summer_full_v0_light_c4_f2
+      rect:
+        serializedVersion: 2
+        x: 328
+        y: 55
+        width: 82
+        height: 55
+      alignment: 9
+      pivot: {x: 0.5, y: 0.472727273}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 05573403a071cfeedfac638149b1f319
+      internalID: -1577800707
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SaltmeadowHay_summer_full_v0_light_c0_f3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 82
+        height: 55
+      alignment: 9
+      pivot: {x: 0.5, y: 0.472727273}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2d4ddbde99e10e8b2ff5f378bf8e0a99
+      internalID: -694801731
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SaltmeadowHay_summer_full_v0_light_c1_f3
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 0
+        width: 82
+        height: 55
+      alignment: 9
+      pivot: {x: 0.5, y: 0.472727273}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a992fc6bed4a386b3a7ca22b9633ffea
+      internalID: -1169765245
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SaltmeadowHay_summer_full_v0_light_c2_f3
+      rect:
+        serializedVersion: 2
+        x: 164
+        y: 0
+        width: 82
+        height: 55
+      alignment: 9
+      pivot: {x: 0.5, y: 0.472727273}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 62087074cf868ac7a80c9d178a452bde
+      internalID: -175237127
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SaltmeadowHay_summer_full_v0_light_c3_f3
+      rect:
+        serializedVersion: 2
+        x: 246
+        y: 0
+        width: 82
+        height: 55
+      alignment: 9
+      pivot: {x: 0.5, y: 0.472727273}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 48b4ddd05b1fdfbc7df6b10f6b43d64f
+      internalID: -1087875887
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SaltmeadowHay_summer_full_v0_light_c4_f3
+      rect:
+        serializedVersion: 2
+        x: 328
+        y: 0
+        width: 82
+        height: 55
+      alignment: 9
+      pivot: {x: 0.5, y: 0.472727273}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 98f735d0388aef942c457e6d5620b89e
+      internalID: -783030023
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    outline: []
+    customData:
+    physicsShape: []
+    bones: []
+    spriteID:
+    internalID: 0
+    vertices: []
+    indices:
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      SaltmeadowHay_summer_full_v0_light_c0_f0: -878519061
+      SaltmeadowHay_summer_full_v0_light_c1_f0: -123249219
+      SaltmeadowHay_summer_full_v0_light_c2_f0: -348469209
+      SaltmeadowHay_summer_full_v0_light_c3_f0: -1325362582
+      SaltmeadowHay_summer_full_v0_light_c4_f0: -1164662341
+      SaltmeadowHay_summer_full_v0_light_c0_f1: -1994871834
+      SaltmeadowHay_summer_full_v0_light_c1_f1: -206845870
+      SaltmeadowHay_summer_full_v0_light_c2_f1: -1101969310
+      SaltmeadowHay_summer_full_v0_light_c3_f1: -1135100228
+      SaltmeadowHay_summer_full_v0_light_c4_f1: -1651293517
+      SaltmeadowHay_summer_full_v0_light_c0_f2: -1456985053
+      SaltmeadowHay_summer_full_v0_light_c1_f2: -1682871918
+      SaltmeadowHay_summer_full_v0_light_c2_f2: -1488813506
+      SaltmeadowHay_summer_full_v0_light_c3_f2: -1297469446
+      SaltmeadowHay_summer_full_v0_light_c4_f2: -1577800707
+      SaltmeadowHay_summer_full_v0_light_c0_f3: -694801731
+      SaltmeadowHay_summer_full_v0_light_c1_f3: -1169765245
+      SaltmeadowHay_summer_full_v0_light_c2_f3: -175237127
+      SaltmeadowHay_summer_full_v0_light_c3_f3: -1087875887
+      SaltmeadowHay_summer_full_v0_light_c4_f3: -783030023
+  mipmapLimitGroupName:
+  pSDRemoveMatte: 0
+  userData:
+  assetBundleName:
+  assetBundleVariant:

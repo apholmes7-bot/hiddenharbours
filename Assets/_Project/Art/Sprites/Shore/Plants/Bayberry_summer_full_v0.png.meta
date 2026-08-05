@@ -1,0 +1,557 @@
+fileFormatVersion: 2
+guid: d1cbcedff56a6a78d69d16e3d4399880
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.487179487, y: 0.135135135}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Bayberry_summer_full_v0_c0_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 222
+        width: 78
+        height: 74
+      alignment: 9
+      pivot: {x: 0.487179487, y: 0.135135135}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2ddd66ce2e76b790ecf703066cce3c62
+      internalID: -926796847
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_summer_full_v0_c1_f0
+      rect:
+        serializedVersion: 2
+        x: 78
+        y: 222
+        width: 78
+        height: 74
+      alignment: 9
+      pivot: {x: 0.487179487, y: 0.135135135}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c22433a322f01d98b2e7d5eec8ede98e
+      internalID: -805177690
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_summer_full_v0_c2_f0
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 222
+        width: 78
+        height: 74
+      alignment: 9
+      pivot: {x: 0.487179487, y: 0.135135135}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ac755a9e8f3a432f2a32ee500b5c5de2
+      internalID: -1532386107
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_summer_full_v0_c3_f0
+      rect:
+        serializedVersion: 2
+        x: 234
+        y: 222
+        width: 78
+        height: 74
+      alignment: 9
+      pivot: {x: 0.487179487, y: 0.135135135}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bf6aac70d414498ba7b62d3acb24064c
+      internalID: -803287725
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_summer_full_v0_c4_f0
+      rect:
+        serializedVersion: 2
+        x: 312
+        y: 222
+        width: 78
+        height: 74
+      alignment: 9
+      pivot: {x: 0.487179487, y: 0.135135135}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e58f1715603ecdb8b7afdaea81a57988
+      internalID: -1706244670
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_summer_full_v0_c0_f1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 148
+        width: 78
+        height: 74
+      alignment: 9
+      pivot: {x: 0.487179487, y: 0.135135135}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fbd2b07a1530adac459328042c1db55b
+      internalID: -416629483
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_summer_full_v0_c1_f1
+      rect:
+        serializedVersion: 2
+        x: 78
+        y: 148
+        width: 78
+        height: 74
+      alignment: 9
+      pivot: {x: 0.487179487, y: 0.135135135}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1c5ec4165549e76db642d889071fc335
+      internalID: -168659760
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_summer_full_v0_c2_f1
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 148
+        width: 78
+        height: 74
+      alignment: 9
+      pivot: {x: 0.487179487, y: 0.135135135}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e6c0ffa88e3a2b1d933f63c7cee5d4c9
+      internalID: -953949531
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_summer_full_v0_c3_f1
+      rect:
+        serializedVersion: 2
+        x: 234
+        y: 148
+        width: 78
+        height: 74
+      alignment: 9
+      pivot: {x: 0.487179487, y: 0.135135135}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: acb7f5a0bc375b431a09a4d1cf9b52d9
+      internalID: -114853842
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_summer_full_v0_c4_f1
+      rect:
+        serializedVersion: 2
+        x: 312
+        y: 148
+        width: 78
+        height: 74
+      alignment: 9
+      pivot: {x: 0.487179487, y: 0.135135135}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1d0e97c2e589e34e56c16f72887b8e2e
+      internalID: -1333719659
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_summer_full_v0_c0_f2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 74
+        width: 78
+        height: 74
+      alignment: 9
+      pivot: {x: 0.487179487, y: 0.135135135}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 41d271998fcbd5bfae92aacc25927812
+      internalID: -320908221
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_summer_full_v0_c1_f2
+      rect:
+        serializedVersion: 2
+        x: 78
+        y: 74
+        width: 78
+        height: 74
+      alignment: 9
+      pivot: {x: 0.487179487, y: 0.135135135}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0bba51e4def61b26df1b66d921c7d64d
+      internalID: -1277463860
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_summer_full_v0_c2_f2
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 74
+        width: 78
+        height: 74
+      alignment: 9
+      pivot: {x: 0.487179487, y: 0.135135135}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 43f6f87c7885dbab3b999ad7f1949fdb
+      internalID: -1505148674
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_summer_full_v0_c3_f2
+      rect:
+        serializedVersion: 2
+        x: 234
+        y: 74
+        width: 78
+        height: 74
+      alignment: 9
+      pivot: {x: 0.487179487, y: 0.135135135}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e7de17c10ab38cef1e812f87de143dcf
+      internalID: -90129187
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_summer_full_v0_c4_f2
+      rect:
+        serializedVersion: 2
+        x: 312
+        y: 74
+        width: 78
+        height: 74
+      alignment: 9
+      pivot: {x: 0.487179487, y: 0.135135135}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f37471ee4337752bd70fbebb0aeb09d3
+      internalID: -38323084
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_summer_full_v0_c0_f3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 78
+        height: 74
+      alignment: 9
+      pivot: {x: 0.487179487, y: 0.135135135}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fcc92eec20373031f93cb71d6c6e792b
+      internalID: -669737689
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_summer_full_v0_c1_f3
+      rect:
+        serializedVersion: 2
+        x: 78
+        y: 0
+        width: 78
+        height: 74
+      alignment: 9
+      pivot: {x: 0.487179487, y: 0.135135135}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dde653712d9bd595fef0182f889211e9
+      internalID: -1545346615
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_summer_full_v0_c2_f3
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 0
+        width: 78
+        height: 74
+      alignment: 9
+      pivot: {x: 0.487179487, y: 0.135135135}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 23b0ca5d92d17f7b745a71d9606cbab7
+      internalID: -1731436104
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_summer_full_v0_c3_f3
+      rect:
+        serializedVersion: 2
+        x: 234
+        y: 0
+        width: 78
+        height: 74
+      alignment: 9
+      pivot: {x: 0.487179487, y: 0.135135135}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f04ae81a835306efc18bf67608cfc498
+      internalID: -77378019
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Bayberry_summer_full_v0_c4_f3
+      rect:
+        serializedVersion: 2
+        x: 312
+        y: 0
+        width: 78
+        height: 74
+      alignment: 9
+      pivot: {x: 0.487179487, y: 0.135135135}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4e6acc234ba8d4a11a2ef655c938dfe6
+      internalID: -572473093
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    outline: []
+    customData:
+    physicsShape: []
+    bones: []
+    spriteID:
+    internalID: 0
+    vertices: []
+    indices:
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Bayberry_summer_full_v0_c0_f0: -926796847
+      Bayberry_summer_full_v0_c1_f0: -805177690
+      Bayberry_summer_full_v0_c2_f0: -1532386107
+      Bayberry_summer_full_v0_c3_f0: -803287725
+      Bayberry_summer_full_v0_c4_f0: -1706244670
+      Bayberry_summer_full_v0_c0_f1: -416629483
+      Bayberry_summer_full_v0_c1_f1: -168659760
+      Bayberry_summer_full_v0_c2_f1: -953949531
+      Bayberry_summer_full_v0_c3_f1: -114853842
+      Bayberry_summer_full_v0_c4_f1: -1333719659
+      Bayberry_summer_full_v0_c0_f2: -320908221
+      Bayberry_summer_full_v0_c1_f2: -1277463860
+      Bayberry_summer_full_v0_c2_f2: -1505148674
+      Bayberry_summer_full_v0_c3_f2: -90129187
+      Bayberry_summer_full_v0_c4_f2: -38323084
+      Bayberry_summer_full_v0_c0_f3: -669737689
+      Bayberry_summer_full_v0_c1_f3: -1545346615
+      Bayberry_summer_full_v0_c2_f3: -1731436104
+      Bayberry_summer_full_v0_c3_f3: -77378019
+      Bayberry_summer_full_v0_c4_f3: -572473093
+  mipmapLimitGroupName:
+  pSDRemoveMatte: 0
+  userData:
+  assetBundleName:
+  assetBundleVariant:

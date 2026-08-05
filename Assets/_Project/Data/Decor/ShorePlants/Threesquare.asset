@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e2271b6bbca1cab9561983932c91e43, type: 3}
+  m_Name: Threesquare
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.ShorePlantDef
+  Id: shoreplant.threesquare
+  SpeciesKey: Threesquare
+  Zone: high
+  ZoneBaseM: 3.35
+  StandingHeightM: 1.13
+  Algae: 0
+  TideSprites:
+  - {fileID: -1824063734, guid: a6f9c26314c9d59a39d9310a7db71a6d, type: 3}
+  - {fileID: -1584995270, guid: a6f9c26314c9d59a39d9310a7db71a6d, type: 3}
+  - {fileID: -1573552877, guid: a6f9c26314c9d59a39d9310a7db71a6d, type: 3}
+  - {fileID: -1371150525, guid: a6f9c26314c9d59a39d9310a7db71a6d, type: 3}
+  - {fileID: -1246591374, guid: a6f9c26314c9d59a39d9310a7db71a6d, type: 3}
+  TideLadderOverM:
+  - -3.35
+  - -2.15
+  - -1.15
+  - -0.15
+  - 0.65
+  SubmergedSortingOrder: -8
+  EmergentSortingOrder: 3

@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e2271b6bbca1cab9561983932c91e43, type: 3}
+  m_Name: Eelgrass
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.ShorePlantDef
+  Id: shoreplant.eelgrass
+  SpeciesKey: Eelgrass
+  Zone: fringe
+  ZoneBaseM: 0.15
+  StandingHeightM: 1.44
+  Algae: 0
+  TideSprites:
+  - {fileID: -895294550, guid: 2f484c11eef4a8a5a24ac09312051107, type: 3}
+  - {fileID: -948930676, guid: 2f484c11eef4a8a5a24ac09312051107, type: 3}
+  - {fileID: -1729047849, guid: 2f484c11eef4a8a5a24ac09312051107, type: 3}
+  - {fileID: -320631597, guid: 2f484c11eef4a8a5a24ac09312051107, type: 3}
+  - {fileID: -91565378, guid: 2f484c11eef4a8a5a24ac09312051107, type: 3}
+  TideLadderOverM:
+  - -0.15
+  - 1.05
+  - 2.05
+  - 3.05
+  - 3.85
+  SubmergedSortingOrder: -8
+  EmergentSortingOrder: 3
