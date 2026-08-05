@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Cliff Face Kit — bake</title>
+<style>
+  body{margin:0;background:#0b1216;color:#aeb9bb;font:13px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace;padding:28px;}
+  h1{font-size:17px;color:#eef3f1;margin:0 0 4px;letter-spacing:0.04em;font-weight:500;}
+  .sub{color:#5f6f74;font-size:11px;letter-spacing:0.1em;margin-bottom:22px;}
+  .card{background:#111a1f;border:1px solid #23323a;padding:16px;margin-bottom:14px;max-width:900px;}
+  .lab{color:#8a979b;font-size:11px;letter-spacing:0.08em;margin-bottom:10px;}
+  button{font:inherit;background:#1b2830;color:#eef3f1;border:1px solid #33454e;padding:7px 14px;cursor:pointer;}
+  button:hover{background:#24343e;border-color:#4a6070;}
+  button:disabled{color:#4b5a60;cursor:default;background:#141d23;}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+  #log{white-space:pre-wrap;color:#6f7e83;font-size:11px;max-height:260px;overflow:auto;margin-top:12px;}
+  #bar{height:3px;background:#1b2830;margin-top:12px;}#bar>i{display:block;height:3px;background:#e0a06e;width:0;}
+  canvas{image-rendering:pixelated;border:1px solid #23323a;max-width:100%;}
+  code{color:#c8d2d0;}
+  b{color:#c8d2d0;font-weight:600;}
+</style>
+</head>
+<body>
+<h1>Cliff Face &amp; Terrain Ledge Kit — bake</h1>
+<div class="sub">3 ROCKS &times; 5 ASPECTS &times; 4 BATTERS &times; 3 STEPS &middot; 4 CHANNELS &middot; cliffRig.js</div>
+
+<div class="card">
+  <div class="lab">FULL SET &mdash; 180 face sets (720 PNGs) + brow, toe, ledges, contact, profiles</div>
+  <div class="row">
+    <button id="all">Bake everything to a folder</button>
+    <button id="faces">Faces only</button>
+    <button id="strips">Brow / toe / ledges / profiles only</button>
+  </div>
+  <div style="font-size:11px;color:#6f7e83;margin-top:10px;">
+    Writes straight into a folder you pick (Chrome or Edge &mdash; File System Access API). Takes about
+    three minutes for the full set; the tab must stay in the foreground. Nothing is uploaded anywhere.
+  </div>
+  <div id="bar"><i></i></div>
+  <div id="log"></div>
+</div>
+
+<div class="card">
+  <div class="lab">PREVIEW &mdash; pick a set and see it before committing to three minutes</div>
+  <div class="row" style="margin-bottom:10px;">
+    <select id="rock"><option>sandstone</option><option>till</option><option>basalt</option></select>
+    <select id="asp"><option>W</option><option>SW</option><option selected>S</option><option>SE</option><option>E</option></select>
+    <select id="bat"><option value="90">90&deg; wall</option><option value="76">76&deg; steep</option><option value="62">62&deg; ramp</option><option value="48">48&deg; bank</option></select>
+    <select id="step"><option value="0">Lo</option><option value="1" selected>base</option><option value="2">Hi</option></select>
+    <select id="chan"><option value="data">pre-lit</option><option value="unlit">unlit</option><option value="normal">normal</option><option value="mask">mask</option></select>
+    <button id="prev">Bake preview</button>
+  </div>
+  <canvas id="cv" width="384" height="288"></canvas>
+</div>
+
+<div class="card">
+  <div class="lab">WHAT COMES OUT</div>
+  <div style="font-size:11px;color:#6f7e83;">
+    <code>tex/&lt;Rock&gt;_&lt;Aspect&gt;{|_S76|_S62|_S48}{_Lo|""|_Hi}{|_unlit|_normal|_mask}.png</code> &mdash; 384&times;288, 12&times;9&nbsp;m of surface<br>
+    <code>brow/&lt;Aspect&gt;{_Lo|""|_Hi}.png</code> &middot; <code>toe/&lt;Aspect&gt;{_Lo|""|_Hi}{|_cave|_slump}.png</code> &mdash; RGBA 384&times;128<br>
+    <code>ledges/&lt;Rock&gt;{_Lo|""|_Hi}.png</code> 384&times;96 &middot; <code>ledges/Contact.png</code> 160&times;32<br>
+    <code>profile/&lt;Rock&gt;{|_S76|_S62|_S48}.png</code> &mdash; grey = plan displacement, 128 is zero, full range &plusmn;1.15&nbsp;m
+  </div>
+</div>
+
+<script src="cliffRig.js"></script>
+<script>
+const CR = globalThis.CliffRig;
+const ROCKS = ['sandstone','till','basalt'], STEP = ['_Lo','','_Hi'];
+const BATTERS = [[90,''],[76,'_S76'],[62,'_S62'],[48,'_S48']];
+const FEAT = [['notch',''],['cave','_cave'],['slump','_slump']];
+const cap = s => s[0].toUpperCase() + s.slice(1);
+const logEl = document.getElementById('log'), bar = document.querySelector('#bar>i');
+let lines = [];
+function say(s){ lines.push(s); if(lines.length>400) lines.shift(); logEl.textContent = lines.join('\n'); logEl.scrollTop = logEl.scrollHeight; }
+const idle = () => new Promise(r => setTimeout(r, 0));
+
+function toCanvas(buf, W, H){
+  const c = document.createElement('canvas'); c.width = W; c.height = H;
+  c.getContext('2d').putImageData(new ImageData(new Uint8ClampedArray(buf), W, H), 0, 0);
+  return c;
+}
+function blobOf(canvas){ return new Promise(r => canvas.toBlob(r, 'image/png')); }
+
+async function dirFor(root, name){
+  let d = root;
+  for (const part of name.split('/').slice(0,-1)) d = await d.getDirectoryHandle(part, {create:true});
+  return d;
+}
+async function write(root, name, canvas){
+  const d = await dirFor(root, name);
+  const fh = await d.getFileHandle(name.split('/').pop(), {create:true});
+  const w = await fh.createWritable();
+  await w.write(await blobOf(canvas));
+  await w.close();
+}
+
+function faceJobs(){
+  const out = [];
+  for (const r of ROCKS) for (const b of BATTERS) for (const a of CR.ASPECTS) for (let s=0;s<3;s++)
+    out.push({rock:r, slope:b[0], bsuf:b[1], asp:a, step:s});
+  return out;
+}
+
+async function bakeFaces(root, prog){
+  const jobs = faceJobs();
+  for (let i=0;i<jobs.length;i++){
+    const j = jobs[i];
+    const f = CR.face(j.rock, j.asp, j.step, {slope:j.slope});
+    const base = 'tex/' + cap(j.rock) + '_' + j.asp + j.bsuf + STEP[j.step];
+    await write(root, base + '.png', toCanvas(f.data, f.W, f.H));
+    await write(root, base + '_unlit.png', toCanvas(f.unlit, f.W, f.H));
+    await write(root, base + '_normal.png', toCanvas(f.normal, f.W, f.H));
+    await write(root, base + '_mask.png', toCanvas(f.mask, f.W, f.H));
+    say(base + '  (4 channels)');
+    prog((i+1)/jobs.length);
+    await idle();
+  }
+}
+
+async function bakeStrips(root, prog){
+  let n = 0, total = 5*3 + 5*3*3 + 3*3 + 1 + 3*4;
+  for (const a of CR.ASPECTS) for (let s=0;s<3;s++){
+    const b = CR.brow(a, s);
+    await write(root, 'brow/' + a + STEP[s] + '.png', toCanvas(b.data, b.W, b.H));
+    say('brow/' + a + STEP[s]); prog(++n/total); await idle();
+  }
+  for (const a of CR.ASPECTS) for (let s=0;s<3;s++) for (const ft of FEAT){
+    const t = CR.toe(a, s, {feature:ft[0]});
+    await write(root, 'toe/' + a + STEP[s] + ft[1] + '.png', toCanvas(t.data, t.W, t.H));
+    say('toe/' + a + STEP[s] + ft[1]); prog(++n/total); await idle();
+  }
+  for (const r of ROCKS) for (let s=0;s<3;s++){
+    const sheet = document.createElement('canvas'); sheet.width = 384; sheet.height = 96;
+    const cx = sheet.getContext('2d');
+    CR.PIECES.forEach((p,i) => {
+      CR.BANDS.forEach((band,bi) => {
+        const t = CR.ledge(r, p, {band, gx:i, gy:bi, step:s});
+        cx.drawImage(toCanvas(t.data, t.w||32, t.h||32), (i%12)*32, bi*32);
+      });
+    });
+    await write(root, 'ledges/' + cap(r) + STEP[s] + '.png', sheet);
+    say('ledges/' + cap(r) + STEP[s]); prog(++n/total); await idle();
+  }
+  const con = document.createElement('canvas'); con.width = 160; con.height = 32;
+  const ccx = con.getContext('2d');
+  CR.CPIECES.forEach((p,i) => { const t = CR.contact(p); ccx.drawImage(toCanvas(t.data, t.w, t.h), i*32, 0); });
+  await write(root, 'ledges/Contact.png', con);
+  say('ledges/Contact'); prog(++n/total); await idle();
+  for (const r of ROCKS) for (const b of BATTERS){
+    const p = CR.profile(r, 'S', {slope:b[0]});
+    const buf = new Uint8ClampedArray(p.W*p.H*4);
+    for (let i=0;i<p.W*p.H;i++){
+      const v = Math.max(0, Math.min(255, Math.round(128 + p.disp[i]/p.metres*255)));
+      buf[i*4] = v; buf[i*4+1] = v; buf[i*4+2] = v; buf[i*4+3] = 255;
+    }
+    await write(root, 'profile/' + cap(r) + b[1] + '.png', toCanvas(buf, p.W, p.H));
+    say('profile/' + cap(r) + b[1]); prog(++n/total); await idle();
+  }
+}
+
+async function run(what){
+  if (!window.showDirectoryPicker){ say('This browser has no File System Access API — use Chrome or Edge.'); return; }
+  let root;
+  try { root = await window.showDirectoryPicker({mode:'readwrite'}); } catch(e){ return; }
+  for (const b of document.querySelectorAll('button')) b.disabled = true;
+  lines = []; const t0 = Date.now();
+  const prog = f => { bar.style.width = (f*100).toFixed(1) + '%'; };
+  try {
+    if (what !== 'strips') await bakeFaces(root, f => prog(what === 'all' ? f*0.9 : f));
+    if (what !== 'faces') await bakeStrips(root, f => prog(what === 'all' ? 0.9 + f*0.1 : f));
+    say('\ndone in ' + ((Date.now()-t0)/1000).toFixed(0) + ' s');
+  } catch(e){ say('\nstopped: ' + e.message); }
+  for (const b of document.querySelectorAll('button')) b.disabled = false;
+}
+
+document.getElementById('all').onclick = () => run('all');
+document.getElementById('faces').onclick = () => run('faces');
+document.getElementById('strips').onclick = () => run('strips');
+document.getElementById('prev').onclick = () => {
+  const f = CR.face(document.getElementById('rock').value, document.getElementById('asp').value,
+                    +document.getElementById('step').value, {slope:+document.getElementById('bat').value});
+  const key = document.getElementById('chan').value;
+  const cv = document.getElementById('cv');
+  cv.getContext('2d').putImageData(new ImageData(new Uint8ClampedArray(f[key]), f.W, f.H), 0, 0);
+};
+document.getElementById('prev').click();
+</script>
+</body>
+</html>
