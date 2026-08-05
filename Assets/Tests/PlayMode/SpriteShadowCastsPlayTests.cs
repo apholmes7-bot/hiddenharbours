@@ -36,6 +36,7 @@ namespace HiddenHarbours.Tests.PlayMode
         private static readonly int IdShadowColor = Shader.PropertyToID("_ShadowColor");
         private static readonly int IdShadowDir   = Shader.PropertyToID("_ShadowDir");
         private static readonly int IdShadowLen   = Shader.PropertyToID("_ShadowLen");
+        private static readonly int IdShadowUV    = Shader.PropertyToID("_ShadowUV");
 
         private static readonly int IdSunDir         = Shader.PropertyToID("_SunDir");
         private static readonly int IdSunElevation   = Shader.PropertyToID("_SunElevation");
@@ -114,6 +115,24 @@ namespace HiddenHarbours.Tests.PlayMode
             return sprite;
         }
 
+        /// <summary>
+        /// One cell out of a MULTI-ROW SHEET, with its pivot wherever we ask — i.e. the shape every caster in
+        /// production actually is. The shipped families are all <c>spriteMode 2</c> slices: one row of tree
+        /// variants, four sway rows of shrubs and shore plants, eight facing rows of the fisher, each with the
+        /// feet some rows up inside the cell (ADR 0026). <c>NewSprite</c> above is the opposite — one sprite
+        /// filling its texture, pivoted at the cell bottom — which is exactly the case the shear always had
+        /// right, and why it took a fixture like this one to see the anchor was wrong.
+        /// </summary>
+        private Sprite NewSlicedSprite(int cellW, int cellH, int rows, int row, float pivotNormY)
+        {
+            var tex = new Texture2D(cellW, cellH * rows);
+            _spawned.Add(tex);
+            var sprite = Sprite.Create(tex, new Rect(0, row * cellH, cellW, cellH),
+                                       new Vector2(0.5f, pivotNormY), 32f);
+            _spawned.Add(sprite);
+            return sprite;
+        }
+
         /// <summary>Publish the sun for an hour through the REAL controller, then let the REAL caster
         /// consume it — both synchronously, in that order, so the read cannot race an Update.</summary>
         private void PublishAndConsume(float hour, SpriteShadow caster)
@@ -155,6 +174,19 @@ namespace HiddenHarbours.Tests.PlayMode
             sr.GetPropertyBlock(mpb);
             Vector4 dir = mpb.GetVector(IdShadowDir);
             return (new Vector2(dir.x, dir.y), mpb.GetFloat(IdShadowLen), mpb.GetColor(IdShadowColor).a);
+        }
+
+        /// <summary>
+        /// The PIVOT MAP the caster published for the vertex stage: <c>upFrac = uv.y * x + y</c>, the height
+        /// above the caster's feet in caster heights. Read off the same property block the shader samples, so
+        /// an unpublished map reads back as it would on the GPU — <c>(0,0)</c>, not a helpful default.
+        /// </summary>
+        private static Vector2 ShadowUvOf(SpriteShadow caster)
+        {
+            var mpb = new MaterialPropertyBlock();
+            ShadowOf(caster).GetPropertyBlock(mpb);
+            Vector4 uv = mpb.GetVector(IdShadowUV);
+            return new Vector2(uv.x, uv.y);
         }
 
         // =====================================================================================
@@ -259,6 +291,80 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.Greater(Mathf.Abs(published.len - seen[2].len), 1e-3f,
                 $"Dusk read {published.len:F3} published and {seen[2].len:F3} unpublished — the same " +
                 "answer either way, which means the caster is not consuming what the controller pushes.");
+        }
+
+        // =====================================================================================
+        //  the shadow stands at its caster's feet
+        // =====================================================================================
+
+        /// <summary>
+        /// 🔴 <b>The shadow's ROOT is its caster's PIVOT — at a raking sun, at both ends of the day.</b> This
+        /// is the geometric claim the whole feature rests on: a shadow is pinned where its caster meets the
+        /// ground, and across every rig family that point is the sprite's pivot, not the bottom of the cell it
+        /// was sliced into and not the bottom of the SHEET (ADR 0026).
+        ///
+        /// <para>The fixture is the case the shipped casters are and the old shadow-suite fixtures are not: a
+        /// cell on a multi-row sheet with the feet a quarter of the way up it. It is measured at DAWN and at
+        /// DUSK because the two rake opposite ways — a root that is riding along the shear rather than pinned
+        /// at the feet lands on the wrong side of the caster when the sun crosses over, so the two together
+        /// cannot be satisfied by a constant fudge.</para>
+        ///
+        /// <para>🔴 <b>The non-degeneracy assert is what carries this on the pre-fix path.</b> Before the fix
+        /// the component published no pivot map at all, so it reads back as <c>(0,0,0,0)</c> — which sends
+        /// every vertex to zero shear and would satisfy "the root is at the feet" with a flat unsheared blob.
+        /// So each hour also asserts that one caster-height up still lands one full shear length down the
+        /// ground. Run against the pre-fix component this test fails on that assert at dawn.</para>
+        /// </summary>
+        [UnityTest]
+        public IEnumerator TheShadowRootsAtTheCastersPivot_AtBothEndsOfTheDay()
+        {
+            // 32×96 cell, top row of four (a 384 px sheet), feet a quarter of the way up with empty headroom.
+            Sprite sprite = NewSlicedSprite(32, 96, rows: 4, row: 3, pivotNormY: 0.25f);
+            var caster = NewCaster("off-centre-pivot-caster", sprite);
+            caster.transform.position = Vector3.zero;   // on the pixel grid, so the snap cannot blur the read
+            yield return null;
+
+            foreach (float hour in new[] { Dawn, Dusk })
+            {
+                // Publish, consume and POSE in one synchronous block — the pattern this file is built on. A
+                // frame boundary here would let the previous hour's controller (still alive until TearDown)
+                // run its own Update and re-publish its sun over the one under test.
+                PublishAndConsume(hour, caster);
+                Invoke(caster, "PoseShadow");
+
+                var (dir, len, _) = Projection(caster);
+                Vector2 map = ShadowUvOf(caster);
+
+                // Where the caster's PIVOT sits in texture uv — derived here from the sprite itself, not from
+                // the component, so this is a cross-check and not a restatement.
+                float pivotUv = (sprite.rect.y + sprite.pivot.y) / sprite.texture.height;
+                float atPivot = pivotUv * map.x + map.y;          // the vertex stage's one line
+                float oneUp = (sprite.rect.y + sprite.pivot.y + sprite.bounds.size.y * sprite.pixelsPerUnit)
+                              / sprite.texture.height;
+
+                Vector3 shadowAt = ShadowOf(caster).transform.position;
+                Vector3 root = shadowAt + (Vector3)(dir * (len * atPivot));
+
+                Debug.Log($"[SpriteShadowCasts] h{hour} pivot uv.y {pivotUv:F4} map {map} len {len:F2} " +
+                          $"dir {dir} · root {root} vs feet {caster.transform.position}");
+
+                Assert.Greater(len, 0f, $"sanity: {hour}:00 is meant to be a raking sun, not a sun that is down");
+
+                // Half a pixel at PPU 32 — the same "underfoot" tolerance the walk test uses.
+                Assert.AreEqual(caster.transform.position.x, root.x, 1f / 64f,
+                    $"At {hour}:00 the shadow's root is at {root} and the caster stands at " +
+                    $"{caster.transform.position} — {Mathf.Abs(atPivot) * len:F2} m of daylight between a " +
+                    "caster and its own shadow, at exactly the raking sun that makes shadows worth having.");
+                Assert.AreEqual(caster.transform.position.y, root.y, 1f / 64f,
+                    $"At {hour}:00 the shadow's root is at {root} and the caster stands at " +
+                    $"{caster.transform.position}.");
+
+                // …and it is still a SHADOW while it is anchored: one caster-height up rakes one full length.
+                Assert.AreEqual(1f, oneUp * map.x + map.y, 1e-3f,
+                    $"At {hour}:00 the silhouette is anchored but no longer shears by its caster's height — " +
+                    "a shadow pinned correctly to the feet and drawn as a flat blob is not a shadow. (This " +
+                    "is the assert that fails on the pre-fix component, which published no pivot map.)");
+            }
         }
 
         // =====================================================================================
