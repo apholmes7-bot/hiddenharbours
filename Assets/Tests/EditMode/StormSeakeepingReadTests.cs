@@ -240,11 +240,15 @@ namespace HiddenHarbours.Tests.EditMode
         // ------------------------------------------------------------------ the weighted ride
 
         [Test]
-        public void MeshHull_TheWeightedRide_IsReal_AndStaysInsideTheHonestyBand()
+        public void MeshHull_TheWeightedRide_IsReal_Honest_AndAttached()
         {
             // The same storm sailed twice — weight ON vs weight OFF (HeaveWeight01 0 = the exact
-            // passthrough) — must genuinely differ (the hull is no longer bolted to the surface)
-            // while never straying beyond the honesty band of it (never hovers, never submarines).
+            // passthrough, so the OFF run IS the raw surface ride). The weighted ride must:
+            // genuinely differ (weight is engaging); NEVER submarine below the surface by more
+            // than the hard band (that side is a clamp); stay attached on the hover side — the
+            // hover bound is the g-capped catch-up, not a clamp (the CI lesson: a hard hover clamp
+            // was the 149 m/s² slam), so it is bounded loosely and by its MEAN, and the hull must
+            // keep re-finding the surface.
             const float draft = 0.5f;
             const float exaggeration = 2f;
 
@@ -254,19 +258,33 @@ namespace HiddenHarbours.Tests.EditMode
             float[] bolted = SailRides(heaveWeight01: 0f, draft, exaggeration);
 
             float band = StormRockSettings.Default.SurfaceBandMeters;
-            float maxGap = 0f;
+            float maxGap = 0f, meanGap = 0f;
+            int nearContact = 0;
             for (int f = 0; f < weighted.Length; f++)
             {
-                float gap = Mathf.Abs(weighted[f] - bolted[f]);
+                float signedGap = weighted[f] - bolted[f];        // + = riding above the surface
+                float gap = Mathf.Abs(signedGap);
                 maxGap = Mathf.Max(maxGap, gap);
-                Assert.LessOrEqual(gap, band + 1e-3f,
-                    $"frame {f}: the weighted ride strayed {gap:F3} m from the surface-bolted one " +
-                    $"against an honesty band of {band:F2} m");
+                meanGap += gap;
+                if (gap < 0.1f) nearContact++;
+                Assert.GreaterOrEqual(signedGap, -(band + 1e-3f),
+                    $"frame {f}: the weighted ride SUBMARINED {-signedGap:F3} m under the surface " +
+                    $"against a hard band of {band:F2} m");
+                Assert.LessOrEqual(gap, 2f,
+                    $"frame {f}: the weighted ride is {gap:F3} m off the surface — detached, not " +
+                    "weighted (the g-capped catch-up never opens gaps this wide on the real field)");
             }
-            Debug.Log($"[storm-read] weighted-vs-bolted ride: max gap {maxGap:F3} m (band {band:F2})");
+            meanGap /= weighted.Length;
+            Debug.Log($"[storm-read] weighted-vs-bolted ride: max gap {maxGap:F3} m, mean " +
+                      $"{meanGap:F3} m, near-contact {nearContact}/{weighted.Length} frames");
             Assert.Greater(maxGap, 0.02f,
                 "the weighted ride never left the surface — the weight filter is not engaging in a " +
                 "full storm, and 'obey gravity' shipped as a no-op");
+            Assert.Less(meanGap, 0.5f,
+                "the weighted ride is off the surface on AVERAGE — it should track with a modest " +
+                "lag and unweight only over the sharp crests");
+            Assert.Greater(nearContact, 30,
+                "the hull almost never re-finds the surface — the chase is not landing between crests");
         }
 
         float[] SailRides(float heaveWeight01, float draft, float exaggeration)

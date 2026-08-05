@@ -207,23 +207,56 @@ namespace HiddenHarbours.Tests.EditMode
             return minAccel;
         }
 
+        /// <summary>
+        /// The honesty bounds are ASYMMETRIC by design (the CI catch on run 30968839931: a hard
+        /// hover-side clamp teleported the hull down 4 cm in one frame — 149 m/s², the very slam
+        /// the free-fall cap forbids). SUBMARINE side: hard — a risen surface yanks the hull up
+        /// into the band instantly (buoyancy is uncapped). HOVER side: the hull closes on a fallen
+        /// surface at no more than the free-fall cap, monotonically, and lands back inside the
+        /// band — never a downward teleport.
+        /// </summary>
         [Test]
-        public void HeaveWeight_NeverStraysBeyondTheHonestyBand()
+        public void HeaveWeight_NeverSubmarines_AndFallsAtMostAtGravityOntoAFallenSurface()
         {
             StormRockSettings s = StormRockSettings.Default;
             var state = new HeaveWeightState();
 
-            // An adversarial square sea teleporting ±3 m — far beyond anything the field produces.
-            // Whatever the spring wants, the ride must stay within the band of the surface: never
-            // hovering over a vanished crest, never submarining under a risen one.
-            for (int f = 0; f < 240; f++)
+            // Phase A — SUBMARINE side: the surface teleports UP 3 m over the hull. The hull must
+            // be inside the band of it the very same frame, every frame.
+            StormRockMath.StepHeaveWeight(ref state, 0f, Dt, G, 1f, in Neutral, in s);   // prime at 0
+            for (int f = 0; f < 30; f++)
             {
-                float target = ((f / 30) % 2 == 0) ? 3f : -3f;
-                float output = StormRockMath.StepHeaveWeight(ref state, target, Dt, G, 1f, in Neutral, in s);
-                Assert.LessOrEqual(Mathf.Abs(output - target), s.SurfaceBandMeters + 1e-4f,
-                    $"frame {f}: the ride strayed {Mathf.Abs(output - target):F3} m from the " +
-                    $"surface against a band of {s.SurfaceBandMeters:F2}");
+                float output = StormRockMath.StepHeaveWeight(ref state, 3f, Dt, G, 1f, in Neutral, in s);
+                Assert.GreaterOrEqual(output - 3f, -(s.SurfaceBandMeters + 1e-4f),
+                    $"frame {f}: the hull sat {3f - output:F3} m UNDER the risen surface against " +
+                    $"a hard submarine band of {s.SurfaceBandMeters:F2} m");
             }
+
+            // Phase B — HOVER side: the surface teleports DOWN to −3 m. The hull may not teleport
+            // after it: it sheds its upward way and falls at no more than the cap (measured on the
+            // realized trajectory — a brief ballistic apex first is exactly the physics), and is
+            // back inside the band within a free-fall time (√(2·gap/g) ≈ 1.1 s for ~6 m) plus a
+            // landing beat. Upward braking on arrival is unbounded (buoyancy) and not asserted.
+            var outputs = new float[150];                                 // 2.5 s at 60 fps
+            for (int f = 0; f < outputs.Length; f++)
+                outputs[f] = StormRockMath.StepHeaveWeight(ref state, -3f, Dt, G, 1f, in Neutral, in s);
+
+            int insideBandAt = -1;
+            for (int f = 2; f < outputs.Length; f++)
+            {
+                float accel = (outputs[f] - 2f * outputs[f - 1] + outputs[f - 2]) / (Dt * Dt);
+                Assert.GreaterOrEqual(accel, -G * 1.02f,
+                    $"frame {f}: closing on the fallen surface at {-accel:F1} m/s² — the hover " +
+                    "side must never outrun the free-fall cap (that teleport was the CI defect)");
+                if (insideBandAt < 0 && outputs[f] - (-3f) <= s.SurfaceBandMeters + 1e-4f)
+                    insideBandAt = f;
+            }
+            Assert.GreaterOrEqual(insideBandAt, 0,
+                "the hull never got back inside the band of the fallen surface — it is hovering, " +
+                "which the g-capped chase exists to close");
+            Assert.LessOrEqual(insideBandAt * Dt, 1.6f,
+                $"re-entering the band took {insideBandAt * Dt:F2} s — far slower than free fall " +
+                "over this gap; the chase is not actually falling at the cap");
         }
 
         [Test]
@@ -287,15 +320,18 @@ namespace HiddenHarbours.Tests.EditMode
             var state = new HeaveWeightState();
 
             // 10 fps — far below anything playable. The sub-stepped integrator must stay stable
-            // (bounded by the band, no NaN), not explode the way raw Euler at ω·dt ≈ 0.7 could.
+            // (bounded, no NaN), not explode the way raw Euler at ω·dt ≈ 0.7 could. Amplitude 1 m:
+            // the analytic tracking error at these constants is ~0.45 m, so staying inside the
+            // 0.8 m bound is a real dynamics property, not the submarine clamp doing the work.
             for (int f = 0; f < 100; f++)
             {
                 float t = f * 0.1f;
-                float target = 2f * Mathf.Sin(1.5f * t);
+                float target = 1f * Mathf.Sin(1.5f * t);
                 float output = StormRockMath.StepHeaveWeight(ref state, target, 0.1f, G, 1f, in Neutral, in s);
                 Assert.IsFalse(float.IsNaN(output) || float.IsInfinity(output), $"frame {f}: not finite");
                 Assert.LessOrEqual(Mathf.Abs(output - target), s.SurfaceBandMeters + 1e-4f,
-                    $"frame {f}: out of band at a coarse dt — the sub-step ceiling is not holding");
+                    $"frame {f}: strayed {Mathf.Abs(output - target):F3} m at a coarse dt — the " +
+                    "sub-step ceiling is not holding the chase together");
             }
         }
 

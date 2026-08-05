@@ -209,9 +209,14 @@ wave number flattens above mid-sea). B2.5 makes the response grow off the same d
   blend is **exactly 0** and the owner's tuned calm read is **byte-identical** (EditMode-pinned
   negative control).
 - **Real storm pitch on the mesh fleet:** continuous hulls additionally take heading-decomposed
-  attitude through the presenter seam (`IBoatHullPresenter.SetStormRock`) — the smoothed bow-axis
-  slope **pitches** (up to +10° at defaults), the beam-axis slope **rolls** (+8°), retargeting as
-  the player turns. Sprite-frame hulls cannot grow their baked attitude (an art re-bake call);
+  attitude through the presenter seam (`IBoatHullPresenter.SetStormRock`) — the dominant swell's
+  slope, split against the heading, **pitches** the bow (up to +10° at defaults) and **rolls**
+  the deck (+8°), retargeting as the player turns. The extras are **phase-locked to the same
+  dominant-train phase the rock cycle rides** (amplitude from the eased envelope, waveform =
+  cos of the posed phase): the drawn channels stay one cycle's sine/cosine pair, so the
+  pre-existing mesh-rock smoothness pins hold by algebra — the first cut drove them from the
+  multi-train smoothed slope and the smoothness guard caught it on CI (accel ratio 3.68,
+  phase reversals). Sprite-frame hulls cannot grow their baked attitude (an art re-bake call);
   they gain the honest **surge** instead — the pitch offset + squash layered *under* the frames,
   which also carries continuity between the 45° frame steps. The frame *selection* (crest → 2,
   trough → 6, forward-phase walk) is untouched and pinned.
@@ -219,11 +224,15 @@ wave number flattens above mid-sea). B2.5 makes the response grow off the same d
   chase (`StormRockMath.StepHeaveWeight`) whose **downward acceleration is capped at g** (the wave
   field's own `Gravity`): crossing a sharpened storm crest the surface can drop faster than
   gravity, and the hull now unweights, falls at g, and lands (P5's tooth) instead of being bolted
-  to the surface. Upward is uncapped (buoyancy). It settles exactly (epsilon snap), never strays
-  beyond a hard honesty band of the surface, engages only with the storm blend (calm = exact
-  passthrough), and is per-hull: the chase stiffness bends with the hull's existing
-  `BoatHullDef` seakeeping response — a dory re-finds the water fast, a laden trader wallows.
-  A permanent sabotage-armed EditMode test proves the g-cap is load-bearing.
+  to the surface. Upward is uncapped (buoyancy). The honesty bounds are **asymmetric by
+  necessity**: the submarine side is a hard band (a risen surface yanks the hull up into it), but
+  the hover side is closed by the g-capped chase itself — when a surface sustains a
+  faster-than-g descent no trajectory can both hug it and obey the cap, and gravity is the
+  owner's constraint (a hard hover clamp shipped in the first cut and its own free-fall test
+  measured the clamp biting at 149 m/s²). It settles exactly (epsilon snap), engages only with
+  the storm blend (calm = exact passthrough), and is per-hull: the chase stiffness bends with the
+  hull's existing `BoatHullDef` seakeeping response — a dory re-finds the water fast, a laden
+  trader wallows. A permanent sabotage-armed EditMode test proves the g-cap is load-bearing.
 - **Smoothing tightens with the storm** (default ×0.4 on the output damping at full blend) —
   velvet is for calm; the storm's snap is not laundered away, and continuity (the
   `WaveFieldAnimator` fix) is untouched.

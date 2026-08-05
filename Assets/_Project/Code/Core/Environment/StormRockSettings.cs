@@ -106,9 +106,11 @@ namespace HiddenHarbours.Core
                  "P5's tooth); bigger permits harder slams; the wave field's own Gravity constant supplies g.")]
         public float MaxDownwardAccelInGs;
 
-        [Tooltip("Hard band (metres) the weighted ride may stray from the surface — the honesty bound: the " +
-                 "hull never hovers above the sea nor submarines below it by more than this, whatever the " +
-                 "spring does.")]
+        [Tooltip("The SUBMARINE-side honesty band (metres): the weighted ride never sinks below the surface " +
+                 "by more than this — a risen surface yanks the hull straight up into the band (buoyancy is " +
+                 "uncapped). The HOVER side is deliberately NOT a hard band: over a surface falling faster " +
+                 "than gravity the hull closes at the free-fall cap and lands — clamping it down faster " +
+                 "would be exactly the faster-than-g slam the cap forbids.")]
         public float SurfaceBandMeters;
 
         [Tooltip("Settle snap (metres): when the weighted ride is within this of the surface and nearly at " +

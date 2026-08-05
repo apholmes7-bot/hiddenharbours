@@ -40,13 +40,20 @@ namespace HiddenHarbours.Boats
     /// so the owner's tuned calm feel is byte-identical (a ×1f multiply is the identity).</para>
     ///
     /// <para><b>The weight filter (obey gravity).</b> <see cref="StepHeaveWeight"/> runs a
-    /// spring-damper chase of the displaced ride with ONE physical guarantee: the chase's downward
-    /// acceleration never exceeds g × the settings cap — crossing a sharpened crest the surface can
-    /// plummet faster than gravity, and the hull must NOT be bolted to it; it unweights, falls at g,
-    /// and lands. Upward is uncapped (buoyancy carries it). A hard band keeps it honest (never
-    /// hovers, never submarines) and an epsilon snap settles it exactly (no eternal micro-motion).
-    /// Stateful but presentation-only, deterministic per tick sequence, fps-independent by sub-step —
-    /// the <see cref="WaveFieldAnimator"/> honesty contract exactly; nothing here feeds the sim, and
+    /// spring-damper chase of the displaced ride with ONE physical guarantee: the realized downward
+    /// acceleration of the returned trajectory never exceeds g × the settings cap — crossing a
+    /// sharpened crest the surface can plummet faster than gravity, and the hull must NOT be bolted
+    /// to it; it unweights, falls at g, and lands. Upward is uncapped (buoyancy carries it). The
+    /// honesty bounds are deliberately ASYMMETRIC (the CI-measured lesson of run 30968839931): the
+    /// SUBMARINE side is a hard band (a risen surface yanks the hull straight up into it — that is
+    /// buoyancy), but the HOVER side is closed by the g-capped chase itself, never by a clamp — when
+    /// a surface sustains a faster-than-g descent, no trajectory can both stay inside a hard band of
+    /// it AND obey the cap, and the owner's constraint is gravity ("it must obey gravity"): a
+    /// downward teleport to the band edge IS the &gt;g slam the cap exists to forbid (the shipped
+    /// first cut had one, and its own free-fall pin measured the clamp's bite at 149 m/s²). An
+    /// epsilon snap settles it exactly (no eternal micro-motion). Stateful but presentation-only,
+    /// deterministic per tick sequence, fps-independent by sub-step — the
+    /// <see cref="WaveFieldAnimator"/> honesty contract exactly; nothing here feeds the sim, and
     /// B3's <see cref="SeakeepingForcesMath"/> keeps its own pure path untouched.</para>
     ///
     /// <para>Static, allocation-free, engine-light (Mathf only) — same discipline (and EditMode
@@ -189,12 +196,17 @@ namespace HiddenHarbours.Boats
                 x += v * h;
             }
 
-            // The honesty band: whatever the spring did, the hull is never further from the surface
-            // than this — no hovering, no submarining. Velocity INTO the clamp is zeroed so the
-            // state does not wind up against the wall.
+            // THE HONESTY BOUNDS — asymmetric on purpose (the free-fall pin's own CI catch, run
+            // 30968839931). SUBMARINE side is HARD: the hull never rides below the surface band;
+            // a risen surface yanks it straight up into it (buoyancy is uncapped), and velocity
+            // INTO the clamp is zeroed so the state does not wind up against the wall. The HOVER
+            // side has NO clamp: when the surface falls away faster than gravity the capped spring
+            // above is ALREADY descending at the maximum legal rate, and a downward teleport to
+            // the band edge would be exactly the faster-than-g slam the cap forbids — the shipped
+            // first cut had one, and its first bite measured 149 m/s² (a ~4 cm yank in one frame).
+            // The hull instead closes on a fallen surface at up to the cap, and LANDS.
             float band = Mathf.Max(0.01f, settings.SurfaceBandMeters);
-            if (x > targetRideMeters + band) { x = targetRideMeters + band; if (v > 0f) v = 0f; }
-            else if (x < targetRideMeters - band) { x = targetRideMeters - band; if (v < 0f) v = 0f; }
+            if (x < targetRideMeters - band) { x = targetRideMeters - band; if (v < 0f) v = 0f; }
 
             // The settle snap: close and slow lands EXACTLY on the surface — a flattening sea ends
             // in true stillness, never an asymptotic shiver. The velocity threshold is ε·ω (the

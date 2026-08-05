@@ -293,6 +293,7 @@ namespace HiddenHarbours.Boats
             // phase is baked into the trains, so the surface is sampled at time 0.
             WaveSample wave;
             float seaState01 = 0f;                            // no sim = glass = no storm (blend 0)
+            float fetchEnvelope = 1f;                         // resolved ONCE per tick (rule 7)
             WaveFieldSettings field = GameServices.WaveField; // also supplies g to the weight filter
             var env = GameServices.Environment;
             if (env != null)
@@ -301,7 +302,11 @@ namespace HiddenHarbours.Boats
                 seaState01 = sample.SeaState01;
                 WaveFieldAnimatorSettings smoothing = GameServices.WaveFieldAnimator;
                 _animator.Tick(dt, sample.WindVector, sample.SeaState01, in field, in smoothing);
-                wave = SampleTheDrawnSea((Vector2)transform.position);
+                // The WIND-FETCH envelope (ADR 0027 #1), resolved once at the hull's centre and
+                // shared by the surface sample below AND the storm-attitude envelope — the march is
+                // real terrain reads, and the two consumers must see the same lee.
+                fetchEnvelope = GameServices.FetchEnvelopeAt((Vector2)transform.position);
+                wave = SampleTheDrawnSea((Vector2)transform.position, fetchEnvelope);
             }
             else
             {
@@ -361,7 +366,8 @@ namespace HiddenHarbours.Boats
             // hull path reads its phase forward rather than the sampled surface.
             if (DrivingRockFrames)
             {
-                DriveRockFrame(rideMeters, stormBlend, response, in hullCharacter, in storm);
+                DriveRockFrame(rideMeters, stormBlend, response, in hullCharacter, in storm,
+                               fetchEnvelope);
                 return;
             }
 
@@ -415,17 +421,18 @@ namespace HiddenHarbours.Boats
         ///
         /// <para>Displaced sea off ⇒ scale 1 ⇒ byte-identical to before (the A/B contract).</para>
         /// </summary>
-        private WaveSample SampleTheDrawnSea(Vector2 worldPos)
+        private WaveSample SampleTheDrawnSea(Vector2 worldPos, float fetchEnvelope01)
         {
             float s = DisplacedSea.TryGet(out DisplacedSeaState sea) ? sea.FreqScale : 1f;
-            // The WIND-FETCH envelope (ADR 0027 #1) — read at the TRUE world position, never the
-            // freqScale-scaled one: freqScale is a wavelength trick, fetch is a real distance over real
-            // water, and marching the scaled position would shelter the hull behind a headland that is
-            // not there. Exactly 1 (and no terrain reads at all) while the model is off.
-            float fetch = GameServices.FetchEnvelopeAt(worldPos);
-            if (s == 1f) return _animator.Sample(worldPos, fetch);
+            // The WIND-FETCH envelope (ADR 0027 #1) — resolved by the CALLER at the TRUE world
+            // position, never the freqScale-scaled one: freqScale is a wavelength trick, fetch is a
+            // real distance over real water, and marching the scaled position would shelter the hull
+            // behind a headland that is not there. Exactly 1 (and no terrain reads at all) while the
+            // model is off. Hoisted to Tick so the storm-attitude envelope shares the same resolve
+            // (one march per tick — rule 7).
+            if (s == 1f) return _animator.Sample(worldPos, fetchEnvelope01);
 
-            WaveSample raw = _animator.Sample(worldPos * s, fetch);
+            WaveSample raw = _animator.Sample(worldPos * s, fetchEnvelope01);
             return new WaveSample(raw.Height, raw.Slope * s, raw.CrestFactor);
         }
 
@@ -489,12 +496,17 @@ namespace HiddenHarbours.Boats
         /// sea" holds.</para>
         /// </summary>
         private void DriveRockFrame(float rideMeters, float stormBlend, float responseMultiplier,
-                                    in SeakeepingResponse hullCharacter, in StormRockSettings storm)
+                                    in SeakeepingResponse hullCharacter, in StormRockSettings storm,
+                                    float fetchEnvelope01)
         {
             var hull = Hull;
 
             // The hull owns the rock: keep the additive roll hook neutral.
             hull.VisualTiltDegrees = 0f;
+
+            WaveTrains field = _animator.Current;
+            bool calm = field.Count <= 0 ||
+                        field.TotalAmplitude <= Mathf.Max(0f, _calmAmplitudeThreshold);
 
             // The shared displaced ride (ADR 0023 phase 3 step 2; 0 with the sea off — and now
             // WEIGHTED by the caller in a storm). A continuous-rock hull (the mesh) takes it
@@ -505,61 +517,105 @@ namespace HiddenHarbours.Boats
             // applied here, so the fleet never splits into two seas.
             if (hull.SupportsContinuousRock)
             {
-                // THE MESH STORM ATTITUDE (B2.5): the canned def cycle grows with the sea
-                // (amplitudeScale), and REAL heading-decomposed attitude rides on top — the
-                // smoothed bow-axis slope pitches the bow, the beam-axis slope rolls the deck,
-                // retargeting live as the player turns (the read the fixed cycle is blind to: its
-                // canned pitch is a quarter-cycle of the dominant phase whatever the heading).
-                // Per-hull character scales inside the clamp (the caps are the storm ceiling);
-                // the blend fades the whole thing — exactly 0 below the storm start.
-                float hullScale = StormRockMath.HullAttitudeScale(in hullCharacter, in storm);
-                float extraRoll = Mathf.Clamp(
-                    _smoothedRoll * storm.MeshStormRollDegreesPerSlope * hullScale,
-                    -storm.MeshStormMaxRollDegrees, storm.MeshStormMaxRollDegrees) * stormBlend;
-                float extraPitch = Mathf.Clamp(
-                    _smoothedPitch * storm.MeshStormPitchDegreesPerSlope * hullScale,
-                    -storm.MeshStormMaxPitchDegrees, storm.MeshStormMaxPitchDegrees) * stormBlend;
+                // THE MESH STORM ATTITUDE (B2.5), PHASE-LOCKED — the MeshRockSmoothness lesson
+                // (CI run 30968839931). The first cut drove these extras from the smoothed
+                // MULTI-TRAIN slope, which is a different frequency mix from the canned cycle: the
+                // renderer's roll/pitch stopped being one cycle's sine/cosine pair, and the
+                // pre-existing smoothness pin caught it (phase reversals 0.3%, accel ratio 3.68 at
+                // sea 0.7). The storm attitude therefore takes its AMPLITUDE from slowly-varying
+                // envelopes only — the EASED dominant train's pure-sine slope envelope A·k (at the
+                // drawn frequency scale, through the shared fetch envelope), split by heading (a
+                // head sea pitches, a beam sea rolls — the honesty the canned cycle is blind to) —
+                // and its WAVEFORM from cos(the SAME phase the canned rock is posed at) (a train's
+                // slope is A·k·cosθ of its own height phase — WaveMath's convention, crest at 90°).
+                // The summed channels stay a single-cycle pair at any amplitude: the recovered
+                // phase atan2(a·sinθ + b·cosθ, c·cosθ) has dψ/dθ = a·c/(u²+v²), strictly one-signed
+                // — smooth BY ALGEBRA, not by tuning. Amplitudes are clamped, never the
+                // instantaneous value (clipping the wave would flat-top it and the smoothness
+                // metrics would read the harmonics as a pop); the blend fades the whole thing —
+                // exactly 0 below the storm start.
+                float extraRoll = 0f, extraPitch = 0f;
+                float phaseDegrees = 0f;
+                if (!calm)
+                {
+                    phaseDegrees = _animator.DominantPhaseDegrees((Vector2)transform.position)
+                                 + _crestFrameCalibrationDegrees;
+                    if (stormBlend > 0f)
+                    {
+                        WaveTrain dominant = field.Dominant;
+                        float freqScale = DisplacedSea.TryGet(out DisplacedSeaState sea)
+                            ? sea.FreqScale : 1f;
+                        float slopeEnvelope = dominant.Amplitude
+                                            * ((2f * Mathf.PI) / dominant.Wavelength)
+                                            * freqScale * Mathf.Clamp01(fetchEnvelope01);
+
+                        Vector2 up = (Vector2)transform.up;
+                        float sqr = up.x * up.x + up.y * up.y;
+                        Vector2 bow = sqr < BoatWaveMotionMath.MinHeadingSqrMagnitude
+                            ? Vector2.up
+                            : up * (1f / Mathf.Sqrt(sqr));
+                        Vector2 starboard = BoatWaveMotionMath.Starboard(bow);
+                        float bowShare = dominant.Direction.x * bow.x + dominant.Direction.y * bow.y;
+                        float beamShare = dominant.Direction.x * starboard.x
+                                        + dominant.Direction.y * starboard.y;
+
+                        float hullScale = StormRockMath.HullAttitudeScale(in hullCharacter, in storm);
+                        float rollAmp = Mathf.Clamp(
+                            slopeEnvelope * beamShare * storm.MeshStormRollDegreesPerSlope * hullScale,
+                            -storm.MeshStormMaxRollDegrees, storm.MeshStormMaxRollDegrees);
+                        float pitchAmp = Mathf.Clamp(
+                            slopeEnvelope * bowShare * storm.MeshStormPitchDegreesPerSlope * hullScale,
+                            -storm.MeshStormMaxPitchDegrees, storm.MeshStormMaxPitchDegrees);
+
+                        float slopeWave = Mathf.Cos(phaseDegrees * Mathf.Deg2Rad);
+                        extraRoll = rollAmp * slopeWave * stormBlend;
+                        extraPitch = pitchAmp * slopeWave * stormBlend;
+                    }
+                }
+
                 hull.SetStormRock(responseMultiplier, extraRoll, extraPitch);
                 hull.SetDisplacedHeaveMeters(rideMeters);
                 RestoreVisual();
-            }
-            else
-            {
-                // THE SPRITE STORM SURGE (B2.5): the baked frames draw ONE attitude — that cannot
-                // scale (a steeper bake is an art-director call, flagged in the PR) — but the hull
-                // can honestly SURGE: a screen-vertical offset from the bow-axis slope (riding up
-                // the face, dipping into the trough) plus the foreshortening squash, layered UNDER
-                // the frames. Continuous between the 45° frame steps, so the storm also stops
-                // reading notchy. Gains and caps are the transform path's own tuned language × the
-                // same storm multiplier; the blend zeroes it exactly in the calm band.
-                hull.SetStormRock(1f, 0f, 0f);   // sprite presenters ignore it; keep the channel defined
-                hull.SetDisplacedHeaveMeters(0f);
-                float surge = Mathf.Clamp(
-                    _smoothedPitch * _pitchOffsetPerSlope * responseMultiplier,
-                    -_maxPitchOffset * responseMultiplier, _maxPitchOffset * responseMultiplier) * stormBlend;
-                float squash = Mathf.Min(
-                    Mathf.Abs(_smoothedPitch) * Mathf.Max(0f, _pitchSquashPerSlope) * responseMultiplier,
-                    Mathf.Max(0f, _maxPitchSquash) * responseMultiplier) * stormBlend;
-                ApplyRide(rideMeters + surge, squash);
-            }
 
-            WaveTrains field = _animator.Current;
-            if (field.Count <= 0 || field.TotalAmplitude <= Mathf.Max(0f, _calmAmplitudeThreshold))
-            {
-                _currentRockFrame = -1;           // glass / near-calm → static level hull, no phantom rock
-                hull.RockFrame = -1;
-                return;
-            }
+                if (calm)
+                {
+                    _currentRockFrame = -1;       // glass / near-calm → static level hull, no phantom rock
+                    hull.RockFrame = -1;
+                    return;
+                }
 
-            if (hull.SupportsContinuousRock)
-            {
                 // Continuous: the dominant swell's own phase — no frame rounding and no hysteresis
                 // (hysteresis exists to stop frame FLIP-FLOP, and there are no frames to flip
                 // between). The calibration nudge still applies: it is the art's crest alignment,
-                // and both paths share it.
-                hull.SetRockPhaseDegrees(
-                    _animator.DominantPhaseDegrees((Vector2)transform.position) + _crestFrameCalibrationDegrees);
+                // and both paths share it — the storm extras above ride cos() of this same number.
+                hull.SetRockPhaseDegrees(phaseDegrees);
                 _currentRockFrame = -1;
+                return;
+            }
+
+            // THE SPRITE STORM SURGE (B2.5): the baked frames draw ONE attitude — that cannot
+            // scale (a steeper bake is an art-director call, flagged in the PR) — but the hull
+            // can honestly SURGE: a screen-vertical offset from the bow-axis slope (riding up
+            // the face, dipping into the trough) plus the foreshortening squash, layered UNDER
+            // the frames. Continuous between the 45° frame steps, so the storm also stops
+            // reading notchy. Gains and caps are the transform path's own tuned language × the
+            // same storm multiplier; the blend zeroes it exactly in the calm band. (This path
+            // keeps the smoothed FULL-field slope: an offset has no sine/cosine pair to keep
+            // pure, and the multi-train read is the honest one for translation.)
+            hull.SetStormRock(1f, 0f, 0f);   // sprite presenters ignore it; keep the channel defined
+            hull.SetDisplacedHeaveMeters(0f);
+            float surge = Mathf.Clamp(
+                _smoothedPitch * _pitchOffsetPerSlope * responseMultiplier,
+                -_maxPitchOffset * responseMultiplier, _maxPitchOffset * responseMultiplier) * stormBlend;
+            float squash = Mathf.Min(
+                Mathf.Abs(_smoothedPitch) * Mathf.Max(0f, _pitchSquashPerSlope) * responseMultiplier,
+                Mathf.Max(0f, _maxPitchSquash) * responseMultiplier) * stormBlend;
+            ApplyRide(rideMeters + surge, squash);
+
+            if (calm)
+            {
+                _currentRockFrame = -1;           // glass / near-calm → static level hull, no phantom rock
+                hull.RockFrame = -1;
                 return;
             }
 
