@@ -513,3 +513,71 @@ anything. Diff it before believing it.
 
 The kit's `harness.html` (standalone viewer + sheet baker) is **not** imported: previews live in the
 art director's design workspace, and in this repo the baker is an editor operation under ADR 0021.
+
+---
+
+## The grass library (2026-08-05) — one drop, one authored rig, one manifest
+
+Two files, and they are **not the same kind of file**:
+
+| file | who owns it | edit? |
+| --- | --- | --- |
+| `grassSpeciesRig.js` | the art director — imported **verbatim** | ❌ never |
+| `grassRig.js` | **art-pipeline, authored in-repo by PR** | ✅ yes |
+
+`grassRig.js` is the exception this README's opening warning does not cover: the tree / shrub /
+flower precedent, an in-repo rig that **composes on** a drop instead of copying it. It requires
+`grassSpeciesRig.js` to be loaded FIRST and throws if it isn't, so the load order is enforced at the
+far end rather than trusted. Everything it draws goes through the drop's renderer on the drop's
+`grass` species — hue +0°, saturation ×1.00, i.e. the base ramp verbatim — which is what makes
+"every variant stays on the ramp" true by construction instead of by review.
+
+    grassSpeciesRig.js   10 sprites, 5 species   cattail · soft rush · tussock sedge ·
+                                                 saltmeadow hay · timothy
+    grassRig.js          16 sprites, 6 habitats  meadow short/mid/tall · wide clump · fringe ·
+                                                 dune marram · dry headland
+
+**Neither rig has an azimuth term.** Grass has no heading, no facings and no sway frames — the
+sprites are STATIC and `HiddenHarboursGrass.shader` does all the animation in the vertex stage. So
+none of the compass machinery above applies, and there is no probe to run.
+
+### ⚠️ The contract these sprites live under is the SHADER's, and it is unusual
+
+The grass shader bends blade tips weighted by the sprite's own **`UV.y²`** — 0 at the canvas bottom
+edge, 1 at the top. Four consequences, all asserted at bake time (`GrassLibraryBaker`) and again on
+the committed pixels (`GrassLibraryContractTests`):
+
+1. **Root on the bottom edge.** A tuft that starts a row up shears off the ground in wind.
+2. **`climb` is the sway dial.** How far a variant's blades rise up its canvas *is* how much bend it
+   takes — so a "tall" sprite that only climbs 12 px would stand dead still in a gale. Climb is
+   therefore **measured off the bake**, never declared, and it is what files a variant into the
+   paint tool's Short / Medium / Tall mix.
+3. **Nothing detached.** Every lit pixel 8-connects down to the bottom edge, or it flies away alone.
+4. **The exact ramp** — `#283a22 #3a542a #567834 #7ca248 #aac660`, and each species ramp is that one
+   with the hue rotated and the saturation scaled at *identical lightness*. The runtime lush→straw
+   knob MULTIPLIES a tint over it, so an off-ramp pixel reads fine until the owner tints a field and
+   then becomes a colour island. This is the failure a human reviewer cannot catch, which is why it
+   is a test.
+
+Hard alpha, PPU 32, bottom-centre pivot (alignment 7 — a centre pivot buries every tuft half its own
+height), widths in multiples of 32.
+
+### One PNG per variant — deliberately not a sheet
+
+Every sibling kit here bakes an atlas and then slices it, and every one has been bitten by the same
+trap: a fresh Multiple-mode import has EMPTY rects, so a sheet committed before its slicer ran looks
+imported and yields no sprites. Grass has **no axis to put on a sheet** — no facings, no sway frames,
+no tide states — so an atlas buys nothing here except that trap. Single-mode PNGs also match what the
+three shipped #102 tufts already are. Batching is not lost: every tuft draws on the one shared
+`Grass.mat`, and a Sprite Atlas can be laid over the folder later.
+
+### The manifest is the product
+
+`Assets/_Project/Art/Sprites/Grass/GrassLibrary.json` is emitted by the **same rig call** that
+renders the pixels (`GrassRig.manifest()`), so a variant's size, climb, height class and habitat tags
+cannot drift from its own art. It covers all three sources in one list — the three shipped tufts
+(declared, never re-baked, still at their original paths), the habitat set, and the species drop —
+which is what let `GrassPaintTool` drop its three hard-coded sprite paths.
+
+Bake: **Hidden Harbours ▸ Dev ▸ Bake Grass Library** (or `GrassLibraryBakeMenu.BakeFromCommandLine`).
+Kit README: [`../grass-species-kit/README.md`](../grass-species-kit/README.md).

@@ -1,5 +1,6 @@
 #if UNITY_EDITOR
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -25,22 +26,21 @@ namespace HiddenHarbours.Art.Editor
     /// (the self-installing GrassWindBridge + the player's GrassFootstep — no per-tuft wiring). Density is capped
     /// by a min-spacing reject so dragging back over an area never piles tufts up infinitely.</para>
     ///
+    /// <para><b>⭐ WHAT IT PAINTS WITH IS DATA NOW.</b> This tool used to carry three literal sprite paths
+    /// index-aligned to its three height toggles; adding a variant meant editing the list and getting the
+    /// index right. It now reads <see cref="GrassLibraryCatalog"/> — the manifest the grass rigs bake — so
+    /// the brush offers whatever has been baked, filed into the same Short / Medium / Tall mix by MEASURED
+    /// climb, and filtered by HABITAT (meadow, sward, fringe, dune, headland, verge, marsh…). The three
+    /// shipped tufts are in that library alongside the rest, unchanged and still first in it.</para>
+    ///
     /// <para><b>Lane &amp; rules.</b> art-pipeline authoring aid (Art.Editor); writes only scene decor, nothing
     /// saved at runtime (rule 5); every knob is a field (rule 6); tufts share one material so hundreds batch
     /// (rule 7). Menu: <c>Hidden Harbours ▸ Tools ▸ Grass Paint Tool</c>.</para>
     /// </summary>
     public sealed class GrassPaintTool : EditorWindow
     {
-        private const string GrassMaterialPath = "Assets/_Project/Art/Materials/Grass.mat";
+        private const string GrassMaterialPath = GrassLibraryCatalog.GrassMaterialPath;
         private const string RootName = "PaintedGrass";
-
-        // The three tuft variants, index-aligned to the height toggles (medium / short / tall).
-        private static readonly string[] TuftPaths =
-        {
-            "Assets/_Project/Art/Sprites/GrassTuft.png",
-            "Assets/_Project/Art/Sprites/GrassTuft_Short.png",
-            "Assets/_Project/Art/Sprites/GrassTuft_Tall.png",
-        };
         // The straw multiply-target. The tuft texture is yellow-GREEN (green dominant), and a multiply can only
         // scale channels DOWN — so to actually read as dry straw the tint must drop green and (especially) blue
         // hard, leaving red dominant → a golden/khaki hue. A timid tint (e.g. 1,0.92,0.55) barely shifts and is
@@ -55,11 +55,16 @@ namespace HiddenHarbours.Art.Editor
         [SerializeField] private float _density = 8f;         // target tufts per square metre
         [SerializeField] private float _flow = 0.3f;          // fraction of the target laid per dab (stroke build-up)
 
-        [SerializeField] private bool _useMedium = true;      // height variants to mix (index-aligned to TuftPaths)
+        [SerializeField] private bool _useMedium = true;      // height classes to mix (GrassLibraryCatalog.HeightClasses)
         [SerializeField] private bool _useShort = true;
         [SerializeField] private bool _useTall = true;
         [SerializeField] private float _baseScale = 1f;       // height multiplier
         [SerializeField] private float _scaleJitter = 0.2f;   // randomize height by +/- this fraction
+
+        /// <summary>Habitat tags the brush draws from. Empty = the whole library, which is the
+        /// shipped default so the tool behaves as it always has until the owner narrows it.</summary>
+        [SerializeField] private List<string> _habitats = new List<string>();
+        [SerializeField] private bool _showHabitats;
 
         [SerializeField] private float _straw = 0f;           // 0 = lush green (shipped), 1 = dry straw
         [SerializeField] private float _valueJitter = 0.12f;  // per-tuft brightness variety
@@ -68,7 +73,9 @@ namespace HiddenHarbours.Art.Editor
         [SerializeField] private int _sortingOrder = 2;       // pre-Play default; YSortSprite recomputes from Y
 
         private Material _material;
-        private Sprite[] _tufts;
+        private GrassLibraryCatalog.Library _library;
+        /// <summary>The library entries whose PNG actually imported — what the brush can draw.</summary>
+        private List<GrassLibraryCatalog.Entry> _imported = new List<GrassLibraryCatalog.Entry>();
         private bool _strokeActive;
         private int _undoGroup;
 
@@ -107,8 +114,13 @@ namespace HiddenHarbours.Art.Editor
             }
             if (!HasAnyTuft())
             {
-                EditorGUILayout.HelpBox("No grass tuft sprites found in Assets/_Project/Art/Sprites/ " +
-                                        "(GrassTuft*.png). Open Unity so they import, then Retry.", MessageType.Warning);
+                EditorGUILayout.HelpBox(
+                    _library == null
+                        ? $"No grass library at {GrassLibraryCatalog.ManifestPath}. Bake it: " +
+                          "Hidden Harbours ▸ Dev ▸ Bake Grass Library."
+                        : "The grass library has no imported sprites. Open Unity so they import " +
+                          "(and `git lfs pull` if the PNGs are still pointers), then Retry.",
+                    MessageType.Warning);
                 if (GUILayout.Button("Retry loading assets")) ResolveAssets();
                 return;
             }
@@ -132,6 +144,8 @@ namespace HiddenHarbours.Art.Editor
             }
             _baseScale = EditorGUILayout.Slider("Height scale", _baseScale, 0.4f, 2f);
             _scaleJitter = EditorGUILayout.Slider("Randomize height (±)", _scaleJitter, 0f, 0.8f);
+
+            DrawHabitatSection();
 
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Colour (keeps each tuft's gradient)", EditorStyles.boldLabel);
@@ -212,14 +226,14 @@ namespace HiddenHarbours.Art.Editor
             // Gather existing tuft positions near the brush so density is capped (no infinite pile-up on re-drag).
             var nearby = GatherTuftPositions(root, center, _radius + minSpacing);
 
-            int[] variants = EnabledVariants();
-            if (variants.Length == 0) return;   // no imported tuft to paint with
+            var brush = BrushEntries();
+            if (brush.Count == 0) return;   // no imported tuft to paint with
             int attempts = Mathf.CeilToInt(_density * Mathf.PI * _radius * _radius * Mathf.Clamp01(_flow));
             for (int i = 0; i < attempts; i++)
             {
                 Vector2 p = center + Random.insideUnitCircle * _radius;
                 if (TooClose(p, nearby, minSpacing)) continue;
-                CreateTuft(root, p, variants);
+                CreateTuft(root, p, brush);
                 nearby.Add(p);
             }
             EditorSceneManager.MarkSceneDirty(root.scene);
@@ -239,9 +253,13 @@ namespace HiddenHarbours.Art.Editor
             if (doomed.Count > 0) EditorSceneManager.MarkSceneDirty(root.scene);
         }
 
-        private void CreateTuft(GameObject root, Vector2 p, int[] variants)
+        private void CreateTuft(GameObject root, Vector2 p, List<GrassLibraryCatalog.Entry> brush)
         {
-            var go = new GameObject("Tuft");
+            var entry = brush[Random.Range(0, brush.Count)];
+            var sprite = GrassLibraryCatalog.LoadSprite(entry);
+            if (sprite == null) return;       // dropped between resolve and dab — skip, never null-render
+
+            var go = new GameObject(entry.Name);
             Undo.RegisterCreatedObjectUndo(go, "Paint grass");
             go.transform.SetParent(root.transform, false);
             go.transform.position = new Vector3(p.x, p.y, 0f);
@@ -249,7 +267,7 @@ namespace HiddenHarbours.Art.Editor
             go.transform.localScale = new Vector3(s, s, 1f);
 
             var sr = go.AddComponent<SpriteRenderer>();
-            sr.sprite = _tufts[variants[Random.Range(0, variants.Length)]];
+            sr.sprite = sprite;
             sr.sharedMaterial = _material;
             sr.sortingOrder = _sortingOrder;
             sr.color = TintFor(p);
@@ -298,36 +316,76 @@ namespace HiddenHarbours.Art.Editor
 
         // ============================ HELPERS ============================
 
+        /// <summary>
+        /// The habitat filter, folded away by default. Tags come from the manifest, so this list grows
+        /// with the library and never needs editing here. Nothing selected = the whole library, which is
+        /// what the brush has always done.
+        /// </summary>
+        private void DrawHabitatSection()
+        {
+            if (_library == null || _library.Habitats.Count == 0) return;
+
+            EditorGUILayout.Space();
+            string summary = _habitats.Count == 0 ? "all habitats" : string.Join(", ", _habitats);
+            _showHabitats = EditorGUILayout.Foldout(
+                _showHabitats, $"Habitat — {summary} ({BrushEntries().Count} sprite(s))", true);
+            if (!_showHabitats) return;
+
+            EditorGUILayout.HelpBox(
+                "Which ground these blades belong on. Nothing ticked paints from the whole library. " +
+                "Habitat is a tag on each baked variant, not a name — the scatter pass reads the same tags.",
+                MessageType.None);
+
+            foreach (var tag in _library.Habitats.Keys.OrderBy(k => k))
+            {
+                int have = _imported.Count(e => e.HasHabitat(tag));
+                using (new EditorGUI.DisabledScope(have == 0))
+                {
+                    bool on = _habitats.Contains(tag);
+                    bool now = EditorGUILayout.ToggleLeft(
+                        new GUIContent($"{tag} ({have})", _library.Habitats[tag]), on);
+                    if (now == on) continue;
+                    if (now) _habitats.Add(tag); else _habitats.Remove(tag);
+                }
+            }
+
+            if (GUILayout.Button("Clear habitat filter")) _habitats.Clear();
+        }
+
         private void ResolveAssets()
         {
             _material = AssetDatabase.LoadAssetAtPath<Material>(GrassMaterialPath);
-            // INDEX-ALIGNED to TuftPaths (0 = medium, 1 = short, 2 = tall): keep a null slot for any variant that
-            // didn't import, so the height toggles can never map to the wrong sprite if one PNG is missing.
-            _tufts = new Sprite[TuftPaths.Length];
-            for (int i = 0; i < TuftPaths.Length; i++)
-                _tufts[i] = TileAssetBuilder.LoadSpriteAny(TuftPaths[i]);
+            _library = GrassLibraryCatalog.Load();
+            _imported = GrassLibraryCatalog.Imported(_library);
+            // Drop any habitat the current library doesn't declare, so a stale serialized filter from an
+            // older bake can never narrow the brush down to nothing the owner can't see or clear.
+            if (_library != null) _habitats.RemoveAll(t => !_library.Habitats.ContainsKey(t));
         }
 
-        private bool HasAnyTuft()
+        private bool HasAnyTuft() => _imported.Count > 0;
+
+        /// <summary>The enabled height classes, in the library's own naming.</summary>
+        private List<string> EnabledClasses()
         {
-            if (_tufts == null) return false;
-            for (int i = 0; i < _tufts.Length; i++) if (_tufts[i] != null) return true;
-            return false;
+            var classes = new List<string>();
+            if (_useShort) classes.Add("short");
+            if (_useMedium) classes.Add("medium");
+            if (_useTall) classes.Add("tall");
+            return classes;
         }
 
-        private bool Variant(int i) => _tufts != null && i < _tufts.Length && _tufts[i] != null;
-
-        /// <summary>Indices into <see cref="_tufts"/> for the enabled, IMPORTED height variants (never empty so
-        /// long as any tuft imported — falls back to all imported variants if the owner disabled every one).</summary>
-        private int[] EnabledVariants()
+        /// <summary>
+        /// What the brush draws from: the imported library narrowed by the height toggles and the habitat
+        /// filter. <see cref="GrassLibraryCatalog.Library.Choose"/> falls back to the whole library rather
+        /// than returning nothing, so an over-narrow filter (or every toggle off) still paints — silently
+        /// painting NOTHING is the failure mode worth avoiding, because it reads as a broken tool.
+        /// </summary>
+        private List<GrassLibraryCatalog.Entry> BrushEntries()
         {
-            var idx = new List<int>();
-            if (_useMedium && Variant(0)) idx.Add(0);
-            if (_useShort  && Variant(1)) idx.Add(1);
-            if (_useTall   && Variant(2)) idx.Add(2);
-            if (idx.Count == 0)
-                for (int i = 0; i < _tufts.Length; i++) if (_tufts[i] != null) idx.Add(i);
-            return idx.ToArray();
+            if (_imported.Count == 0) return _imported;
+            var narrowed = new GrassLibraryCatalog.Library();
+            narrowed.Entries.AddRange(_imported);
+            return narrowed.Choose(_habitats, EnabledClasses());
         }
 
         /// <summary>Target spacing (m) between tufts for the chosen density — caps the per-area count.</summary>
