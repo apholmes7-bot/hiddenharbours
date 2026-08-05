@@ -1060,7 +1060,13 @@ namespace HiddenHarbours.App.Editor
             // school, the store and the three clapboard houses can finally stand where the docs put them.
             // AUTHORED sites, one facing derived per building so every door turns toward the green — see
             // StPetersVillage for why the arc is the only shape the site allows.
-            int villageBuildings = StPetersVillage.Place(terrain);
+            //
+            // ⭐ THE DOORS OPEN NOW. Any building the interior kit has baked a room for gets that room
+            // standing under it, walled and furnished, and a BuildingInterior that swaps shell for room
+            // when the player crosses the threshold — seamless, no scene load, no camera cut (the
+            // owner's 2026-07-30 ruling). The player transform is what makes it a door rather than a
+            // diorama, which is why it is handed in here rather than searched for at runtime.
+            int villageBuildings = StPetersVillage.Place(terrain, core.PlayerGo.transform);
 
             // --- THE STORE'S COUNTER (§7.5's other half: the placement) -----------------------------------
             // #356 built the island general store's ECONOMY — the StPetersStore market channel that pays a

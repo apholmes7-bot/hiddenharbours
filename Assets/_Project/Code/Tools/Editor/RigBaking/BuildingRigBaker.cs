@@ -495,8 +495,16 @@ namespace HiddenHarbours.Tools.RigBaking
                 "facings than one texture of this cell size can carry.");
         }
 
-        static void BlitCropped(byte[] src, int srcW, int srcH, int cropX, int cropY, int cw, int ch,
-                                Color32[] dst, int pw, int ph, int col, int rowFromTop)
+        /// <summary>
+        /// Copy one cropped native cell into a packed sheet, flipping the rig's TOP-LEFT-origin rows to
+        /// Unity's bottom-origin ones.
+        ///
+        /// <para><c>public</c> so <c>InteriorRigBaker</c> packs through the SAME flip rather than
+        /// carrying a second copy of it. A duplicated row flip is the kind of thing that stays right
+        /// until one of the two is touched, and then the two kits disagree by a mirror.</para>
+        /// </summary>
+        public static void BlitCropped(byte[] src, int srcW, int srcH, int cropX, int cropY, int cw, int ch,
+                                       Color32[] dst, int pw, int ph, int col, int rowFromTop)
         {
             int x0 = col * cw;
             int yTop = rowFromTop * ch;

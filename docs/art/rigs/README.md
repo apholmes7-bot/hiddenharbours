@@ -97,6 +97,24 @@ byte-identical golden master was.
 - **`wharfBuildingRig` — still UNMEASURED.** Its listing above stays a prior until *Dev ▸ Bake Buildings
   (houses + wharf)* runs and the bake either passes or refuses. Nothing consumes it yet (the shed/barn/
   cannery family is M2).
+- **🔴 `interiorIsoRig` / `interiorPropRig` — counter-clockwise, but `BuildingRigAzimuthProbe` MUST NOT
+  be used on them (measured 2026-08-05).** The probe above reads which side the **door** lands on at a
+  quarter turn, and the step it does not state is that it assumes the door is on the **`+Y`** gable —
+  true of both exterior rigs. **`interiorIsoRig` puts its doorway on `−Y`** (`anchors → pj(0,−Ln/2,fZ)`;
+  the hearth takes `+Y`), because a room is entered over the near wall the open-dollhouse cutaway drops.
+  Fed to that probe the room measures **Clockwise** — a wrong answer with a confident report — and the
+  bake would then apply the opposite correction to all eight cells, silently.
+  `InteriorRigAzimuthProbe` measures instead in three layers, none of them a declaration: both rigs'
+  `project()` output compared per facing (one camera, one turntable), then each rig's door **gable**
+  from `door.y` at dir 0 vs dir 4 (the door's height above the floor cancels out of that difference,
+  which is the only reason one measurement works on a rig with a 0.55 m foundation and one whose floor
+  is `z = 0`), then the single facing offset that lines the two door anchors up at **all eight**
+  facings — which is the handedness proof and the registration number at once.
+- **⭐ Consequence for anyone placing a room under a shell: `interior facing = exterior facing + 4`.**
+  Same model, opposite gable, so the same cell index shows the two 180° apart. The offset is measured at
+  bake time and written into `Interiors.json` as `exteriorFacingOffset`; `InteriorKit.InteriorFacingFor`
+  is the one place it is applied. At any other offset the doorway lands against the back wall — you walk
+  in the front door and appear at the back of the room, and it reads as an art bug.
 
 ⇒ **The baker MUST carry a per-rig convention flag. A blanket correction is wrong** — it would re-mirror
 the two already-correct rigs. And the flag must be *machine-verified against the rendered pixels*, not
