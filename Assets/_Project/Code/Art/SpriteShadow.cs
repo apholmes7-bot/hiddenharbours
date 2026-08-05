@@ -29,8 +29,10 @@ namespace HiddenHarbours.Art
     /// <para><b>Determinism (rule 5).</b> The shadow is a pure function of <c>(hour, weather, profile, caster
     /// height)</c> — nothing is saved or randomised. <b>Performance (rule 7):</b> the child shadow renderer is
     /// created ONCE and POOLED (reused every frame), updated on a throttled tick with NO per-frame allocation;
-    /// the heavy shear is on the GPU. <b>Pixel-art faithful:</b> the shadow position is pixel-snapped to the
-    /// project's PPU grid (toggleable).</para>
+    /// the heavy shear is on the GPU. Per frame a caster costs only the pose and one sprite-reference compare
+    /// — static decor never gets past that compare, and only an ANIMATED caster (the walking player) pays for
+    /// the silhouette swap. <b>Pixel-art faithful:</b> the shadow position is pixel-snapped to the project's
+    /// PPU grid (toggleable).</para>
     /// </summary>
     [DisallowMultipleComponent]
     [RequireComponent(typeof(SpriteRenderer))]
@@ -114,6 +116,7 @@ namespace HiddenHarbours.Art
         private DayNightProfile _resolvedProfile;
         private float _timer;
         private Sprite _lastSprite;
+        private Texture _lastTexture;    // the caster's current SHEET — rewriting the block is gated on it
 
         private void Reset() => _caster = GetComponent<SpriteRenderer>();
 
@@ -146,9 +149,40 @@ namespace HiddenHarbours.Art
             Tick();
         }
 
-        // The pose must follow the caster every frame (it can move/animate faster than the throttle); the
-        // POSE is cheap, the heavier light recompute stays throttled in Update.
-        private void LateUpdate() => PoseShadow();
+        // The pose AND the silhouette must follow the caster every frame (it can move/animate faster than
+        // the throttle); both are cheap, and the heavier light recompute stays throttled in Update.
+        private void LateUpdate()
+        {
+            SyncSilhouette();
+            PoseShadow();
+        }
+
+        /// <summary>
+        /// Keep the shadow's shape on the caster's CURRENT sprite. <b>Every frame, not on the throttled
+        /// tick</b>: an ANIMATED caster — the walking player, the first one in production — changes sprite
+        /// several times a second, and at the 10 Hz recompute the silhouette could lag the body by up to a
+        /// whole walk frame, so the shadow's legs stepped out of time with the fisher's. Static decor (every
+        /// tree, shrub and shore plant) never trips the reference compare below, so this costs them one
+        /// comparison per frame and nothing else.
+        /// </summary>
+        private void SyncSilhouette()
+        {
+            if (_shadow == null || _caster == null) return;
+
+            Sprite sprite = _caster.sprite;
+            if (sprite == _lastSprite) return;      // the overwhelmingly common case — one compare, no work
+            _lastSprite = sprite;
+            _shadow.sprite = sprite;
+
+            // Only when the SHEET changes (a walk skin handing over to a fight skin) is the block worth
+            // rewriting — frames from one sheet all share a texture, and the block already points at it.
+            Texture tex = sprite != null ? sprite.texture : null;
+            if (tex == null || tex == _lastTexture) return;
+            _lastTexture = tex;
+            _shadow.GetPropertyBlock(_mpb);
+            _mpb.SetTexture(IdMainTex, tex);
+            _shadow.SetPropertyBlock(_mpb);
+        }
 
         private void EnsureShadow()
         {
@@ -182,12 +216,9 @@ namespace HiddenHarbours.Art
         {
             if (_shadow == null || _caster == null) return;
 
-            // Keep the silhouette in sync with the caster's current sprite (it may animate).
-            if (_caster.sprite != _lastSprite)
-            {
-                _shadow.sprite = _caster.sprite;
-                _lastSprite = _caster.sprite;
-            }
+            // The silhouette itself is synced in LateUpdate (see SyncSilhouette) so an animating caster
+            // cannot lag it; this call still seeds it, which is what makes OnEnable's first tick correct.
+            SyncSilhouette();
 
             DayNightProfile p = _resolvedProfile;
             float sunrise = p != null ? p.SunriseHour : 6f;

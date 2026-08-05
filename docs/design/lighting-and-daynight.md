@@ -107,8 +107,36 @@ from the same `DayNightProfile` the controller uses.
   (each already carrying `SpriteShadow`) into the current scene. Press Play, scrub the clock, watch the
   shadows swing + lengthen.
 - **`Hidden Harbours ▸ Lighting ▸ Add Sprite Shadow to Selection`** — batch-adds the component to selected
-  `SpriteRenderer`s (the player, the boat, trees, buildings). World-content wires real casters this way (or
-  later in the scene builders) — the demo/menu never edits the scene builders.
+  `SpriteRenderer`s. This is for **trying** a caster, not for shipping one: a shadow added to a scene by hand
+  is undone by the next builder run. Production casters are attached in code (see below).
+
+### 5.1 Who actually casts
+
+**Never hand-wired into a scene — always attached on the path the object is BUILT through**, so a rebuild
+reproduces it and the owner's paint tools get it for free. The counts are pinned by
+`LitDecorCasterBudgetTests` (which logs them, so CI reports the numbers without opening Unity) and the
+dawn/noon/dusk/night behaviour by `SpriteShadowCastsPlayTests`.
+
+| Caster | Attached in | Rule |
+|---|---|---|
+| **Trees** | `AcadianTreeCatalog.Configure` | **All of them.** The kit's smallest mature cell is 4.8 m; there is no short tree. Planter, Tree Paint Tool and prefab builder all come through this one method. |
+| **Shrubs** | `StPetersWoodsPlanter.PlantShrubs` | All of them — a metre-ish mass with a real silhouette on open ground. |
+| **Shore plants** | `StPetersWoodsPlanter.PlantShorePlants` | The **emergent stands only**: not algae, not the subtidal fringe, standing ≥ `ShadowCasterMinHeightM` (0.6 m). 8 of 16 species. |
+| **The player** | `PlayerShadowInstaller` (self-installing host) | Exactly one, covering every state — walk, iso skin, haul and rod-fight all swap the sprite on the *same* renderer. Attached from the Art lane by name, so no `Code/Player` edit (rule 4). |
+| **Grass** | — | 🔴 **Never.** Thousands of tufts each pushing a sheared quad and a per-frame `LateUpdate`, bought for a shadow the size of a blade, is the rule-7 violation the caster rules exist to prevent. Asserted, not merely intended. |
+| **Boats** | — | Not yet: the hull is a mesh (`IsoFacetHullRenderer`) and its shadow lands on moving displaced water — its own design slice. |
+
+Two things worth knowing before adding the next caster:
+
+- **The shear is scale-invariant, so cell padding costs nothing.** The silhouette is sheared by `uv.y ×
+  (length × the sprite's full cell height)`, so a figure occupying only part of its cell still lands its
+  crown at `length × its own height`. No per-caster length tuning is needed or wanted.
+- **⚠ The shear anchors at the cell's BOTTOM EDGE, not at the pivot.** A caster whose pivot sits a fraction
+  `f` up its cell has its whole silhouette pushed `f × length × cellHeight` along the shadow direction — so
+  at a raking dawn the shadow's feet stand slightly away from the caster's. This is pre-existing and affects
+  every caster in proportion to `f` (shrubs 0.09–0.39, the player 0.11, trees 0.05–0.09 — the shrubs
+  shipped in #428 have the largest offset). Fixing it means changing the projection for everything at once,
+  which is a lead-architect call, not something to work around per caster.
 
 **Alternative noted (not chosen):** URP `ShadowCaster2D` + a `Light2D` — needs the Sprite-Lit migration ADR
 0013 rejects for now, and gives less control over the stylized skew. We ship the projected sprite.

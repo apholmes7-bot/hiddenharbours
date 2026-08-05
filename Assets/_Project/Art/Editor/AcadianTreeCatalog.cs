@@ -219,10 +219,11 @@ namespace HiddenHarbours.Art.Editor
         /// <summary>
         /// Turn <paramref name="go"/> into the canonical Acadian tree: a
         /// <see cref="SpriteRenderer"/> on the shared wind material, a <see cref="YSortSprite"/> so
-        /// it layers around the player by world Y, and a <see cref="TreeTrunkAnchor"/> carrying THIS
-        /// species' planted fraction. Nothing else — no Animator (the sway is the shader reading the
-        /// shared sim wind; an Animator would be deaf to it) and no rescaling (the bake is already
-        /// at honest metric size).
+        /// it layers around the player by world Y, a <see cref="TreeTrunkAnchor"/> carrying THIS
+        /// species' planted fraction, a <see cref="HiddenHarbours.Art.ReflectiveObject"/> and a
+        /// <see cref="HiddenHarbours.Art.SpriteShadow"/>. Nothing else — no Animator (the sway is the
+        /// shader reading the shared sim wind; an Animator would be deaf to it) and no rescaling (the
+        /// bake is already at honest metric size).
         ///
         /// <para>Both the prefab builder and the paint tool go through here, so a tree the owner
         /// paints and a tree they drag in are the same object. Returns the renderer for callers that
@@ -275,6 +276,21 @@ namespace HiddenHarbours.Art.Editor
             // carry this, only the ones standing near the water join the pass.
             if (go.GetComponent<HiddenHarbours.Art.ReflectiveObject>() == null)
                 go.AddComponent<HiddenHarbours.Art.ReflectiveObject>();
+
+            // (Owner's ruling 2026-08-05) A TREE CASTS. Added here for the same reason as the
+            // reflection above — this is the ONE place an Acadian tree is configured, so the woods the
+            // builder plants, the trees the owner paints and the prefabs all throw the same shadow, and
+            // a rebuild cannot undo it. The rig's pivot IS the trunk foot (ADR 0026), which is exactly
+            // the ground-contact point the shadow anchors at, so no foot offset and no per-species
+            // tuning: the shear is proportional to the sprite's own height, so a 6.9 m white pine
+            // rakes further than a 4.8 m cedar for free.
+            //
+            // ⚠️ The whole population casts, unlike the shore's height rule — because there is no
+            // short tree. The kit's smallest mature cell is 4.8 m, every one of them has the silhouette
+            // the component was written for, and the count is the woods' own (a few hundred), not the
+            // grass layer's thousands. LitDecorCasterBudgetTests pins that against the planter's grid.
+            if (go.GetComponent<HiddenHarbours.Art.SpriteShadow>() == null)
+                go.AddComponent<HiddenHarbours.Art.SpriteShadow>();
 
             return sr;
         }
