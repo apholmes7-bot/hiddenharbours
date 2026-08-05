@@ -75,8 +75,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
         /// 0.05759 (the trunk foot, 11 px up over the near-root flare). Tight mesh.</item>
         /// <item><c>Art/Foliage/Shrubs/Meadowsweet_full_atGreen.png.meta</c> — 55×59 cell, FOUR sway rows in a
         /// 236 px sheet, pivot 0.16949 (root crown, 10 px up).</item>
-        /// <item><c>Art/Sprites/Shore/Plants/Cattail_summer_full_v0.png.meta</c> — 78×73 cell, FOUR rows in a
-        /// 292 px sheet, pivot 0.17808.</item>
+        /// <item><c>Art/Sprites/Shore/Plants/Cattail_summer_full_v0.png.meta</c> — 90×73 cell, FOUR rows in a
+        /// 292 px sheet, pivot 0.17808 (root crown, 13 px up).</item>
         /// <item><c>Art/Characters/Iso/Fisher_bite.png.meta</c> — 64×92 cell, EIGHT facing rows in a 736 px
         /// sheet, pivot 0.10870 (= GroundInsetPx 10 / 92, CharacterSheetSlicer's ground contact).</item>
         /// </list>
