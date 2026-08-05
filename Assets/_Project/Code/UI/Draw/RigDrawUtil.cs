@@ -215,6 +215,11 @@ namespace HiddenHarbours.UI
             "8", ".#.|#.#|.#.|#.#|.#.", "9", ".#.|#.#|.##|..#|##.",
             "/", "..#|..#|.#.|#..|#..", "-", "...|...|###|...|...",
             ".", "...|...|...|...|.#.", " ", "...|...|...|...|...",
+            // U+00B0 DEGREE — authored by the chartplotter's own font table (navRig.js:71) and used on
+            // every bearing it prints (COG, NEXT, the measure label). Unlike the '·' below this one has
+            // real pixels in the source, so it is transcribed rather than blanked. Added by S6; the
+            // compass and wind readouts may take it too rather than spelling out "DEG".
+            "°", "##.|##.|...|...|...",
             // U+00B7: both wheelhouse standby plates author a '·' separator (noviRig.js:359,
             // capeRig.js:348) that the sources' own font tables do not carry, so every preview
             // RENDERS it as a gap — that gap is the approved look, pinned here as an authored blank

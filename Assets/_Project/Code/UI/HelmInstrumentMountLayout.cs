@@ -49,8 +49,32 @@ namespace HiddenHarbours.UI
             return mount.width > 0f && mount.height > 0f;
         }
 
+        /// <summary>
+        /// The screen rect a fitted CHARTPLOTTER occupies flush in the brow's GPS slot (S6). False when
+        /// no GPS is fitted, when the hull has no pilothouse brow, or when there is no dash.
+        ///
+        /// <para>Unlike the sounder's, this mount never moves: the dome compass displaces the CENTRE
+        /// slot only (<see cref="HelmDashGeometry.SlotIsDisplacedByCompass"/>) and the plotter lives in
+        /// the third. The slot is landscape (150 × 104) and so is the rig's console face, which is why
+        /// the rig's own README points a helm's GPS mount at that face rather than the tall one.</para>
+        /// </summary>
+        public static bool TryBrowGpsRect(in HelmFit fit, Rect dashCard, out Rect mount)
+        {
+            mount = default;
+            if (dashCard.width <= 0f || dashCard.height <= 0f) return false;
+            if (!fit.Gps) return false;
+            if (!HelmDashGeometry.IsPilothouse(fit.Rig)) return false;   // only these hulls carry a brow
+
+            HelmDashGeometry.SlotBoxOnCard(HelmDashGeometry.PilotGpsSlot, portrait: false,
+                                           out int bx, out int by, out int bw, out int bh);
+            int rigW = HelmDashGeometry.CanvasW(fit.Rig), rigH = HelmDashGeometry.CanvasH(fit.Rig);
+            mount = Letterbox(dashCard, rigW, rigH, bx, by, bw, bh,
+                              NavRigGeometry.ConsoleW, NavRigGeometry.ConsoleH);
+            return mount.width > 0f && mount.height > 0f;
+        }
+
         /// <summary>The rig resolution an instrument rasters at — the size the letterbox preserves the
-        /// aspect of. Zero for a slot with no renderer (S5/S6): a caller then mounts nothing rather
+        /// aspect of. Zero for a slot with no renderer (S5): a caller then mounts nothing rather
         /// than guessing a shape for an instrument that does not exist.</summary>
         public static void InstrumentNativeSize(SounderKind sounder, out int w, out int h)
         {
