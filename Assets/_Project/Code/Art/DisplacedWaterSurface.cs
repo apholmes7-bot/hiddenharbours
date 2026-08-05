@@ -26,11 +26,26 @@ namespace HiddenHarbours.Art
     /// <c>_HHWaterScreenTex</c> and sorts through a SortingGroup at the flat sprite's exact
     /// sorting slot ("sort as 2D" — mesh renderers do not sort against sprites on their own).</item>
     /// <item><b>The A/B toggle</b> — the owner's readability verdict instrument (the ADR 0022 dev
-    /// A/B pattern: DevBoatPicker's V key, here <see cref="ToggleKey"/>). OFF is the contract:
-    /// the flat water renders EXACTLY as today (this component registers nothing, the feature
-    /// records nothing, zero cost). ON hides the flat sprite renderer and shows the displaced
-    /// surface — same material values, same sim uniforms, same waterline.</item>
+    /// A/B pattern: DevBoatPicker's V key, here <see cref="ToggleKey"/>). ON hides the flat sprite
+    /// renderer and shows the displaced surface; OFF restores the flat water EXACTLY (this
+    /// component registers nothing, the feature records nothing, zero cost) — same material
+    /// values, same sim uniforms, same waterline either way.</item>
     /// </list>
+    ///
+    /// <para><b>⚠️ 2026-08-05 — the displaced sea is now the DEFAULT, and this doc used to say the
+    /// opposite.</b> The owner asked to retire the flat face ("look at our 2d ocean sprite and see
+    /// what's missing in the 3d ocean, so that we can retire the 2d"). Which side a scene STARTS on
+    /// is now <see cref="GameConfig"/> data — <c>DisplacedWater.DefaultOn</c>, true — rather than a
+    /// serialized bool per scene, so the owner can flip the whole game back with one field and no
+    /// rebuild. See <see cref="DefaultOn"/> for exactly how the fallback resolves.</para>
+    ///
+    /// <para><b>The flat face is NOT retired, and two of its jobs are not replaceable yet.</b>
+    /// (1) <b>Edit mode</b>: everything here is inert outside Play, so the flat sprite is what the
+    /// owner sees while painting coasts — which is the ADR 0014 contract, not an oversight. (2)
+    /// <b>Any camera the off-screen feature skips</b> — a Null graphics device, a Preview or
+    /// Reflection camera — draws no displaced sea at all, and the flat face is the only water those
+    /// paths have. Physical removal of the flat face is therefore a LATER decision, after the
+    /// owner's verdict, and it can never be a simple deletion.</para>
     ///
     /// <para><b>Uniform plumbing (the ONE-SEA rule).</b> Every sim-driven uniform reaches the
     /// displaced chunks by COPYING the flat renderer's MaterialPropertyBlock each throttled tick —
@@ -54,8 +69,11 @@ namespace HiddenHarbours.Art
     public sealed class DisplacedWaterSurface : MonoBehaviour
     {
         [Header("A/B toggle (the owner's readability verdict instrument)")]
-        [Tooltip("Start with the DISPLACED surface showing? OFF (the default) = the flat water " +
-                 "renders exactly as today — the safe A side. The dev key below flips at runtime.")]
+        [Tooltip("FALLBACK ONLY. With a GameConfig wired below, GameConfig.DisplacedWater.DefaultOn " +
+                 "decides which side Play starts on (ON since 2026-08-05 — the displaced sea is the " +
+                 "game's water) and this field is ignored. It still applies to scenes with no config: " +
+                 "EditMode fixtures and hand-built test scenes, which stay flat exactly as before. " +
+                 "The dev key below flips either way at runtime.")]
         [SerializeField] private bool _displaced = false;
         [Tooltip("DEV A/B (ADR 0023): flip flat vs displaced water in place, same sim, same " +
                  "material. O for Ocean — free of every other binding (WASD/arrows helm, Space " +
@@ -164,6 +182,24 @@ namespace HiddenHarbours.Art
         public float BandCoefficient => _config != null ? _config.DisplacedWater.ShoreBandCoefficient : _bandCoefficient;
 
         /// <summary>
+        /// Which side of the A/B this surface STARTS on when Play begins (2026-08-05: the retirement
+        /// flip). The wired <see cref="GameConfig"/>'s <c>DisplacedWater.DefaultOn</c> is the live
+        /// source — <b>data, not code</b>, so the owner reverts the whole game with one field and no
+        /// rebuild — and the serialized <c>_displaced</c> is the fallback for scenes with no config
+        /// (EditMode fixtures, hand-built test scenes), which therefore behave exactly as before.
+        ///
+        /// <para><b>Deliberately NOT a scene-serialized value.</b> Baking the flip into the built
+        /// scenes would need every builder re-run to take effect and again to revert it, and a scene
+        /// hand-edited to disagree with the config is the "scene-wired is not builder-wired" defect
+        /// this repo keeps re-learning. One config field decides for every region at once.</para>
+        ///
+        /// <para>This decides the STARTING side only. <see cref="ToggleKey"/> still flips it live, so
+        /// the A/B comparison the owner needs for his verdict costs one keypress in either
+        /// direction.</para>
+        /// </summary>
+        public bool DefaultOn => _config != null ? _config.DisplacedWater.DefaultOn : _displaced;
+
+        /// <summary>
         /// Wire the surface in one call — the builder's path (mirrors WaterSurface's Configure
         /// convention, so a scene re-build gives a working A/B with no Inspector work). Unity-
         /// generic args only (rule 4).
@@ -195,7 +231,15 @@ namespace HiddenHarbours.Art
 
         private void OnEnable()
         {
-            if (!Application.isPlaying) return;   // the A/B is a Play instrument; edit mode is inert
+            // ⚠️ Edit mode is INERT, and that is the ADR 0014 contract rather than an omission: the
+            // owner paints coasts against water he can see in the scene view, the off-screen water
+            // pass needs a live camera and render graph, and nothing here runs outside Play. So the
+            // FLAT face is the edit-mode sea and stays that way whatever the flip says.
+            if (!Application.isPlaying) return;
+            // The retirement flip (2026-08-05): which side Play STARTS on is config data, re-read on
+            // every enable, so a region reload and a domain reload both honour the owner's current
+            // answer rather than whatever a scene happened to serialize.
+            _displaced = DefaultOn;
             if (_displaced) Activate();
         }
 

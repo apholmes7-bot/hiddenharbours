@@ -156,6 +156,7 @@ MonoBehaviour:
     CapSalienceStrength: 1
     CapEnvelopeThreshold: 0.62
     EnvelopeBandStrength: 0.35
+    DefaultOn: 1
   DepthDrop:
     SinkSpeedPerKgMps: 2
     MinSinkSpeedMps: 0.5
