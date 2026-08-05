@@ -50,6 +50,27 @@ namespace HiddenHarbours.Tests.PlayMode
             public BoatKinematics Sample() => Next;
         }
 
+        /// <summary>A helm that is only ever asked three things by the HUD (S4.5): am I manned, which
+        /// control, what is fitted. Everything else on the seam is the overlay's business.</summary>
+        private sealed class FakeHelm : IHelmControl
+        {
+            public bool HasHelm { get; set; }
+            public HelmControlStyle Style { get; set; } = HelmControlStyle.None;
+            public HelmFit Fit { get; set; } = HelmFit.None;
+            public HelmLeverFinish LeverFinish => HelmLeverFinish.Graphite;
+            public HelmWheelRim WheelRim => HelmWheelRim.Rubber;
+            public float Drive => 0f;
+            public float Steer => 0f;
+            public bool SteerDragActive => false;
+            public void StepAhead() { }
+            public void StepAstern() { }
+            public void SetNeutral() { }
+            public void DragDrive(float sig) { }
+            public void EndDrag() { }
+            public void DragSteer(float steer) { }
+            public void EndSteerDrag() { }
+        }
+
         private GameObject _hudGo;
 
         [SetUp]
@@ -151,5 +172,64 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsFalse(Label(hud, "_compassLabel").enabled, "disembarking hides the compass");
             Assert.IsFalse(Label(hud, "_setDriftLabel").enabled, "disembarking hides the set-&-drift read");
         }
+
+        // ---- S4.5: the cluster yields to a helm dash ---------------------------------------------
+
+        [UnityTest]
+        public IEnumerator NavCluster_YieldsToAHelmDash_HidingOnlyWhereTheDashDuplicatesIt()
+        {
+            // The WIRING, not the rule (HelmHudSuppressionTests owns the rule exhaustively): that
+            // HudController actually consults the live fit, and that the two answers reach the labels.
+            var boat = new FakeActiveBoat
+            {
+                HasActiveBoat = true,
+                Next = BoatKinematics.FromBow(Vector2.up, Vector2.zero),
+            };
+            GameServices.ActiveBoat = boat;
+            var helm = new FakeHelm();
+            GameServices.HelmControl = helm;
+
+            var hud = MakeHud();
+            yield return NextNavTick();
+            Assert.IsTrue(Label(hud, "_compassLabel").enabled,
+                          "precondition: aboard with no helm at all, the cluster is up");
+            RectTransform home = RectOf(hud, "_compassLabel");
+
+            // A dash WITH a compass: the dash says the heading better, so the HUD stops saying it.
+            helm.HasHelm = true;
+            helm.Style = HelmControlStyle.Lever;
+            helm.Fit = new HelmFit(ConsoleRigKind.Console, SounderKind.Depth, CompassMount.Dome,
+                                   false, false);
+            yield return NextNavTick();
+            Assert.IsFalse(Label(hud, "_compassLabel").enabled, "a dash compass hides the HUD one");
+            Assert.IsFalse(Label(hud, "_setDriftLabel").enabled);
+
+            // The SHIPPED wheelhouse fit — a dash and NO compass. The cluster must come back, moved:
+            // this boat has no other heading read, and the dash card sits where the cluster was.
+            helm.Fit = new HelmFit(ConsoleRigKind.Novi, SounderKind.Depth, CompassMount.None,
+                                   false, false);
+            yield return NextNavTick();
+            Assert.IsTrue(Label(hud, "_compassLabel").enabled,
+                          "no dash compass → the read survives");
+            Assert.IsTrue(Label(hud, "_setDriftLabel").enabled);
+            RectTransform moved = RectOf(hud, "_compassLabel");
+            Assert.AreNotEqual(home.anchorMax.x, moved.anchorMax.x, "…and it moved off the dash");
+            Assert.AreEqual(0f, moved.anchorMin.x, 1e-4f, "to the left edge");
+            Assert.AreEqual(TextAnchor.LowerLeft, Label(hud, "_compassLabel").alignment);
+
+            // Leaving the helm puts it back exactly where VS-19 authored it.
+            helm.HasHelm = false;
+            helm.Style = HelmControlStyle.None;
+            helm.Fit = HelmFit.None;
+            yield return NextNavTick();
+            RectTransform back = RectOf(hud, "_compassLabel");
+            Assert.AreEqual(home.anchorMin.x, back.anchorMin.x, 1e-4f, "the move is exactly reversible");
+            Assert.AreEqual(home.anchorMax.x, back.anchorMax.x, 1e-4f);
+            Assert.AreEqual(home.anchoredPosition.x, back.anchoredPosition.x, 1e-4f);
+            Assert.AreEqual(TextAnchor.LowerCenter, Label(hud, "_compassLabel").alignment);
+        }
+
+        private static RectTransform RectOf(HudController hud, string field)
+            => (RectTransform)Label(hud, field).transform;
     }
 }

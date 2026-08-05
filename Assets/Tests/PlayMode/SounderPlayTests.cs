@@ -358,6 +358,70 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.That(glass.SounderPrefs.Night, Is.EqualTo(!night));
         }
 
+        // ---- S4.5: flush on the dash by default, expanded on request ---------------------------------
+
+        [UnityTest]
+        public IEnumerator TheGlass_MountsFlushOnTheDash_AndExpandsOnlyWhenAsked()
+        {
+            // The owner's ask, end to end and in a live scene: nothing is blown up until it is chosen.
+            // Worth a PlayMode test rather than another pure one because the thing that could break is
+            // the AGREEMENT between two self-installing hosts that cannot see each other — the helm
+            // publishing its card rect and the sounder reading it, in execution order.
+            HelmInstrumentExpansion.Collapse();
+            SounderOverlayHost host = TheHost();
+            HelmOverlayHost helm = HelmOverlayHost.Instance;
+            if (helm == null)
+            {
+                var hgo = new GameObject("HelmOverlayHost(test)");
+                _spawned.Add(hgo);
+                helm = hgo.AddComponent<HelmOverlayHost>();
+            }
+
+            var (_, boat, relay) = NewBoat();
+            yield return null;
+            relay.DevIgnoreEquipmentGating = false;
+            boat.SetHull(NewConsoleHull("boat.test_flush", SounderKind.Depth));
+            yield return null;   // helm publishes its card
+            yield return null;   // …and the sounder mounts into it
+
+            Assert.That(helm.CardKind, Is.EqualTo(HelmOverlayHost.HelmCardKind.Dash),
+                        "the premise: a console hull is showing its dash");
+            Assert.That(HelmOverlayHost.TryDashCard(out Rect card, out HelmFit fit), Is.True);
+            Assert.That(fit.Sounder, Is.EqualTo(SounderKind.Depth));
+
+            Assert.That(host.Showing, Is.True);
+            Assert.That(host.Expanded, Is.False, "DEFAULT: not blown up");
+            Assert.That(host.FlushMounted, Is.True, "DEFAULT: drawing in the console's own brow cutout");
+
+            // …and it is drawing exactly where the chrome puts the bezel — the shared pure mount, so
+            // the glass can never end up beside its own hole.
+            Assert.That(HelmInstrumentMountLayout.TryBrowSounderRect(in fit, card, out Rect mount),
+                        Is.True);
+            Assert.That(mount.width, Is.GreaterThan(0f));
+
+            // Selecting it expands it; the flush mount is given up for the readable card.
+            HelmInstrumentExpansion.Click(HelmInstrumentSlot.Sounder);
+            yield return null;
+            Assert.That(host.Expanded, Is.True);
+            Assert.That(host.FlushMounted, Is.False);
+            Assert.That(host.Showing, Is.True, "the same instrument, a different presentation");
+
+            // Collapsing puts it back on the dash.
+            HelmInstrumentExpansion.Collapse();
+            yield return null;
+            Assert.That(host.Expanded, Is.False);
+            Assert.That(host.FlushMounted, Is.True);
+
+            // Losing the instrument closes any expansion rather than stranding it open.
+            HelmInstrumentExpansion.Click(HelmInstrumentSlot.Sounder);
+            yield return null;
+            GameServices.TidalTerrain = null;
+            yield return WaitSeconds(GameServices.DepthSounder.ReadIntervalSec * 1.5f);
+            Assert.That(host.Showing, Is.False);
+            Assert.That(HelmInstrumentExpansion.AnyExpanded, Is.False,
+                        "a glass that goes dark must not leave the expansion latched on");
+        }
+
         // Wait REAL elapsed seconds — headless frames are not time
         // ([[playmode-frame-count-is-not-time]]).
         private static IEnumerator WaitSeconds(float seconds)

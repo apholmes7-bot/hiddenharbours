@@ -568,14 +568,26 @@ namespace HiddenHarbours.Core
                  "kind of forgiveness as the lever's GrabRadiusPx.")]
         [Min(0f)] public float RimGrabPadPx;
 
+        [Tooltip("KEY STEER EASE (S4.5, the owner's 'the wheel needs to follow the arrow keys — " +
+                 "gradual and smooth'): how long (real seconds) a held steer key takes to wind the " +
+                 "helm from CENTRE to FULL LOCK. A full reversal takes twice this — a wheel does not " +
+                 "spin faster because you asked for more of it. Releasing winds back to centre at the " +
+                 "same rate. ⚠ This eases the commanded STEER, not just the wheel picture, so it is a " +
+                 "handling change as well as a look: full lock arrives this much later than it used " +
+                 "to. 0 = OFF (the pre-S4.5 instant lock-to-lock step). The gamepad stick is already " +
+                 "analog and is passed through undamped.")]
+        [Min(0f)] public float SteerEaseSeconds;
+
         /// <summary>The wheel rig's own stock feel (wheelRig.js:183-191): 1.5 turns, friction 2.4,
-        /// no self-centre (cable steer holds), an 8 px rim-grab pad.</summary>
+        /// no self-centre (cable steer holds), an 8 px rim-grab pad — plus a quarter-second wind to
+        /// full lock on the keys (S4.5; the owner tunes it, code default ships).</summary>
         public static HelmWheelSettings Default => new HelmWheelSettings
         {
             Turns = 1.5f,
             Friction = 2.4f,
             SelfCentre = 0f,
             RimGrabPadPx = 8f,
+            SteerEaseSeconds = 0.25f,
         };
     }
 
@@ -633,24 +645,30 @@ namespace HiddenHarbours.Core
                  "the PR that shipped it.")]
         public float PlaceholderWaterTempC;
 
-        [Tooltip("Scale of the small dash-card state (screen pixels per rig pixel). 1 = native rig size.")]
+        [Tooltip("⚠ FALLBACK ONLY since S4.5. Scale of the loose small card (screen px per rig px, " +
+                 "1 = native). The sounder now draws FLUSH in the dash's own brow mount by default, " +
+                 "sized by that authored cutout, so this is only reached when there is no dash on " +
+                 "screen to mount into.")]
         [Min(0.1f)] public float CardScale;
 
-        [Tooltip("Scale of the FOCUSED state (click the sounder to enlarge; Esc/click-away returns). " +
-                 "Bigger = the three pushers are easier to hit; the rig's hit geometry scales with it.")]
+        [Tooltip("Scale of the EXPANDED state (click the flush sounder to blow it up; Esc/click-away " +
+                 "returns it to the dash). Bigger = the three pushers are easier to hit; the rig's hit " +
+                 "geometry scales with it. This one is very much live — it is the state you read the " +
+                 "instrument in.")]
         [Min(0.1f)] public float FocusScale;
 
-        [Tooltip("Margin (px) from the screen's RIGHT edge to the small card. The sounder is a BROW " +
-                 "instrument, so it parks high-right — clear of the piloting control's card.")]
+        [Tooltip("⚠ FALLBACK ONLY since S4.5 (see CardScale). Margin (px) from the screen's RIGHT edge " +
+                 "to the loose small card.")]
         [Min(0f)] public float MarginX;
 
-        [Tooltip("Margin (px) from the screen's TOP edge to the small card.")]
+        [Tooltip("⚠ FALLBACK ONLY since S4.5 (see CardScale). Margin (px) from the screen's TOP edge " +
+                 "to the loose small card.")]
         [Min(0f)] public float MarginY;
 
-        [Tooltip("Where the FOCUSED card centres on screen, as a 0..1 fraction of screen width.")]
+        [Tooltip("Where the EXPANDED card centres on screen, as a 0..1 fraction of screen width.")]
         [Range(0f, 1f)] public float FocusCenterX01;
 
-        [Tooltip("Where the FOCUSED card centres on screen, as a 0..1 fraction of screen height.")]
+        [Tooltip("Where the EXPANDED card centres on screen, as a 0..1 fraction of screen height.")]
         [Range(0f, 1f)] public float FocusCenterY01;
 
         /// <summary>A 4 Hz sounding, armed at 3 m with ±0.5 m pushers (the rig's own defaults), a 2 Hz
@@ -733,28 +751,31 @@ namespace HiddenHarbours.Core
                  "tomorrow.")]
         public bool DefaultFishId;
 
-        [Tooltip("Scale of the small dash card — applied to the RENDERED RIG RESOLUTION, not to a texture " +
-                 "blit. The finder is PORTRAIT (480x660) and point-filtered pixel art does not survive a " +
-                 "fractional downscale, so the card draws a smaller instrument (which is also cheaper) " +
-                 "rather than shrinking a big one. 1 = the rig's native 480x660.")]
+        [Tooltip("⚠ FALLBACK ONLY since S4.5. Scale of the loose small card, as a fraction of the rig's " +
+                 "native 480x660 (the surface is always native and the card is a scaled blit of it). " +
+                 "The finder now draws FLUSH in the dash's authored brow mount by default, sized by " +
+                 "that cutout, so this is only reached when there is no dash on screen to mount into.")]
         [Range(0.2f, 2f)] public float CardScale;
 
-        [Tooltip("Scale of the FOCUSED state (click the finder to enlarge; Esc/click-away returns). Same " +
-                 "rendered-resolution meaning as CardScale. Bigger = the three pushers are easier to hit; " +
-                 "the rig's hit geometry scales with it.")]
+        [Tooltip("Scale of the EXPANDED state (click the flush finder to blow it up; Esc/click-away " +
+                 "returns it to the dash), as a fraction of the rig's native 480x660. Bigger = the " +
+                 "pushers are easier to hit; the rig's hit geometry scales with it. This is the state " +
+                 "the instrument is actually READ in — below ~83% of native its typography breaks " +
+                 "down, so keep it at or above 1.")]
         [Range(0.2f, 2f)] public float FocusScale;
 
-        [Tooltip("Margin (px) from the screen's RIGHT edge to the small card. The finder is a BROW " +
-                 "instrument in the same cutout as the sounder, so it parks in the same corner.")]
+        [Tooltip("⚠ FALLBACK ONLY since S4.5 (see CardScale). Margin (px) from the screen's RIGHT edge " +
+                 "to the loose small card.")]
         [Min(0f)] public float MarginX;
 
-        [Tooltip("Margin (px) from the screen's TOP edge to the small card.")]
+        [Tooltip("⚠ FALLBACK ONLY since S4.5 (see CardScale). Margin (px) from the screen's TOP edge " +
+                 "to the loose small card.")]
         [Min(0f)] public float MarginY;
 
-        [Tooltip("Where the FOCUSED card centres on screen, as a 0..1 fraction of screen width.")]
+        [Tooltip("Where the EXPANDED card centres on screen, as a 0..1 fraction of screen width.")]
         [Range(0f, 1f)] public float FocusCenterX01;
 
-        [Tooltip("Where the FOCUSED card centres on screen, as a 0..1 fraction of screen height.")]
+        [Tooltip("Where the EXPANDED card centres on screen, as a 0..1 fraction of screen height.")]
         [Range(0f, 1f)] public float FocusCenterY01;
 
         [Tooltip("Fish-mark size (the rig's own 'size' multiplier, ~0.5-2.5) for a school you are only " +
