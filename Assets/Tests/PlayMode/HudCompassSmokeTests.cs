@@ -193,7 +193,14 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return NextNavTick();
             Assert.IsTrue(Label(hud, "_compassLabel").enabled,
                           "precondition: aboard with no helm at all, the cluster is up");
-            RectTransform home = RectOf(hud, "_compassLabel");
+            // Snapshot the VALUES, not the RectTransform: the label is one persistent object whose
+            // anchors the controller rewrites in place, so a live reference read at assert time sees
+            // the MOVED state on both sides (caught on CI — both sides of "moved off the dash" read
+            // NavClearWidth01) and makes the reversibility checks vacuous too.
+            RectTransform homeRt = RectOf(hud, "_compassLabel");
+            Vector2 homeAnchorMin = homeRt.anchorMin;
+            Vector2 homeAnchorMax = homeRt.anchorMax;
+            Vector2 homeAnchoredPos = homeRt.anchoredPosition;
 
             // A dash WITH a compass: the dash says the heading better, so the HUD stops saying it.
             helm.HasHelm = true;
@@ -213,7 +220,7 @@ namespace HiddenHarbours.Tests.PlayMode
                           "no dash compass → the read survives");
             Assert.IsTrue(Label(hud, "_setDriftLabel").enabled);
             RectTransform moved = RectOf(hud, "_compassLabel");
-            Assert.AreNotEqual(home.anchorMax.x, moved.anchorMax.x, "…and it moved off the dash");
+            Assert.AreNotEqual(homeAnchorMax.x, moved.anchorMax.x, "…and it moved off the dash");
             Assert.AreEqual(0f, moved.anchorMin.x, 1e-4f, "to the left edge");
             Assert.AreEqual(TextAnchor.LowerLeft, Label(hud, "_compassLabel").alignment);
 
@@ -223,9 +230,9 @@ namespace HiddenHarbours.Tests.PlayMode
             helm.Fit = HelmFit.None;
             yield return NextNavTick();
             RectTransform back = RectOf(hud, "_compassLabel");
-            Assert.AreEqual(home.anchorMin.x, back.anchorMin.x, 1e-4f, "the move is exactly reversible");
-            Assert.AreEqual(home.anchorMax.x, back.anchorMax.x, 1e-4f);
-            Assert.AreEqual(home.anchoredPosition.x, back.anchoredPosition.x, 1e-4f);
+            Assert.AreEqual(homeAnchorMin.x, back.anchorMin.x, 1e-4f, "the move is exactly reversible");
+            Assert.AreEqual(homeAnchorMax.x, back.anchorMax.x, 1e-4f);
+            Assert.AreEqual(homeAnchoredPos.x, back.anchoredPosition.x, 1e-4f);
             Assert.AreEqual(TextAnchor.LowerCenter, Label(hud, "_compassLabel").alignment);
         }
 
