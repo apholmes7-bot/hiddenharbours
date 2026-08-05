@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64274d8d2751ce0409e579861ce2e63a, type: 3}
+  m_Name: ChartplotterOffer
+  m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.InstrumentOffer
+  Id: instrument.gps
+  DisplayName: Chartplotter
+  Flavor: 'A chart of your own water, lit from behind, with your boat on it. It shades
+    the shoal ground the way the paper chart does, remembers where you have been, and
+    holds the marks you put on it - the wreck, the fuel float, the spot that fished.
+    Wants a wheelhouse: the skiffs have nowhere to mount it.'
+  Price: 650

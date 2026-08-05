@@ -127,6 +127,14 @@ MonoBehaviour:
     PlaceholderLink: 1
     PlaceholderBatt01: 0.8
     PlaceholderVolts: 4
+  Chartplotter:
+    MaxWaypoints: 64
+    MaxRouteLegs: 24
+    MaxTrackPoints: 512
+    TrackMinSpacingMetres: 8
+    MinRangeNM: 0.05
+    RangeStepCount: 6
+    DefaultRangeStep: 2
   HelmWheel:
     Turns: 1.5
     Friction: 2.4
