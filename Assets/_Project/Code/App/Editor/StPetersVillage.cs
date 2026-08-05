@@ -191,8 +191,15 @@ namespace HiddenHarbours.App.Editor
         /// than throwing halfway through a region build, because "declared in the contract" and "has
         /// pixels on disk" are different questions and a partial art state should still place what it
         /// can.</para>
+        ///
+        /// <para><b><paramref name="occupant"/> makes the doors work.</b> Any building the interior kit
+        /// has baked a room for becomes ENTERABLE — <see cref="StPetersInteriors.Stand"/> puts the room
+        /// under the shell, walls it, furnishes it, and hands the on-foot player to the
+        /// <c>BuildingInterior</c> that swaps the two at the threshold. Optional, and null-safe: pass
+        /// nothing and the rooms still stand (walls and all), they simply never open — which is what a
+        /// test wants and what a scene with no player would get anyway.</para>
         /// </summary>
-        public static int Place(ITidalTerrain terrain)
+        public static int Place(ITidalTerrain terrain, Transform occupant = null)
         {
             var placements = VillageBuildingCatalog.Scan();
             if (placements.Count == 0)
@@ -254,12 +261,17 @@ namespace HiddenHarbours.App.Editor
                 // Configure owns the renderer, the scale, the pinned rotation and the YSortSprite. It also
                 // owns the sorting order — #352 measured a seeded 4 coming back as 10 once YSortSprite
                 // recomputes from world Y — so nothing here re-derives it.
-                VillageBuildingCatalog.Configure(go, placement, sprite);
+                SpriteRenderer shell = VillageBuildingCatalog.Configure(go, placement, sprite);
+
+                // THE INSIDE. Does nothing at all unless the interior kit has baked a room under this
+                // building's own key, so four of the five stay solid shells and the pilot cottage opens.
+                bool enterable = StPetersInteriors.Stand(go, shell, site.Key, facing, occupant);
 
                 placed++;
                 report.Add($"{site.Key} d{facing} at ({site.Position.x:0.#},{site.Position.y:0.#}) " +
                            $"{placement.Entry.footprintWidthMetres:0.#}×" +
-                           $"{placement.Entry.footprintLengthMetres:0.#} m");
+                           $"{placement.Entry.footprintLengthMetres:0.#} m" +
+                           (enterable ? " (enterable)" : ""));
             }
 
             float need = RequiredClearingRadius();
