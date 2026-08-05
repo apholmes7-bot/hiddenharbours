@@ -13,8 +13,14 @@ namespace HiddenHarbours.Boats
         /// <summary>The weighted ride (metres) — where the hull actually is.</summary>
         public float RideMeters;
 
-        /// <summary>Its vertical rate (m/s).</summary>
+        /// <summary>Its vertical rate (m/s). Kept consistent with the REALIZED motion whenever the
+        /// realized-step cap binds, so the next step's cap law composes off the truth.</summary>
         public float VelocityMetersPerSec;
+
+        /// <summary>The previous step's surface target (metres) — the finite-difference source of
+        /// the surface's own vertical rate, which the damping acts RELATIVE to (see
+        /// <see cref="StormRockMath.StepHeaveWeight"/>).</summary>
+        public float PrevTargetMeters;
 
         /// <summary>False until the first step seeds the state from the live surface. A default
         /// (unprimed) state never eases in from zero — it wakes ON the water.</summary>
@@ -40,10 +46,15 @@ namespace HiddenHarbours.Boats
     /// so the owner's tuned calm feel is byte-identical (a ×1f multiply is the identity).</para>
     ///
     /// <para><b>The weight filter (obey gravity).</b> <see cref="StepHeaveWeight"/> runs a
-    /// spring-damper chase of the displaced ride with ONE physical guarantee: the realized downward
-    /// acceleration of the returned trajectory never exceeds g × the settings cap — crossing a
-    /// sharpened crest the surface can plummet faster than gravity, and the hull must NOT be bolted
-    /// to it; it unweights, falls at g, and lands. Upward is uncapped (buoyancy carries it). The
+    /// spring-damper chase of the displaced ride — damping on the hull's velocity <b>relative to
+    /// the surface's own rate</b> (the water damps relative motion; absolute damping fought the
+    /// catch-up against the water's own fall — CI round 2) — with ONE physical guarantee: the
+    /// realized downward acceleration of the returned trajectory never exceeds g × the settings
+    /// cap, enforced BOTH at the acceleration input and, as the final word, on the realized step
+    /// itself (so no position write — settle snap included — can smuggle a faster-than-g drop
+    /// past it). Crossing a sharpened crest the surface can plummet faster than gravity, and the
+    /// hull must NOT be bolted to it; it unweights, falls at g, and lands. Upward is uncapped
+    /// (buoyancy carries it). The
     /// honesty bounds are deliberately ASYMMETRIC (the CI-measured lesson of run 30968839931): the
     /// SUBMARINE side is a hard band (a risen surface yanks the hull straight up into it — that is
     /// buoyancy), but the HOVER side is closed by the g-capped chase itself, never by a clamp — when
@@ -73,6 +84,13 @@ namespace HiddenHarbours.Boats
         /// <summary>Ceiling on sub-steps per call so a huge dt (a sleep skip, a hitch) costs bounded
         /// work; the band clamp keeps the result sane regardless. A guard.</summary>
         public const int MaxSubSteps = 64;
+
+        /// <summary>Ceiling on the finite-difference surface rate the relative damping reads
+        /// (m/s). The real drawn sea's vertical rate tops out around ~8 m/s (envelope ×
+        /// exaggeration × the trains' temporal frequencies) — anything beyond is teleport garbage
+        /// (a republish, a test's square wave), and an unguarded 180 m/s "rate" would kick the
+        /// hull skyward through the damping term. A guard, not a tunable.</summary>
+        public const float MaxSurfaceRateMetersPerSec = 10f;
 
         /// <summary>
         /// The storm blend (0..1): exactly 0 at/below the settings' storm start (and whenever the
@@ -157,9 +175,11 @@ namespace HiddenHarbours.Boats
             if (engage <= 0f)
             {
                 // The exact passthrough: output IS the surface, and the state rides pinned to it so
-                // the moment the blend rises the chase begins from the truth.
+                // the moment the blend rises the chase begins from the truth (rate included — a
+                // stale PrevTarget would spike the relative-damping rate on re-engagement).
                 state.RideMeters = targetRideMeters;
                 state.VelocityMetersPerSec = 0f;
+                state.PrevTargetMeters = targetRideMeters;
                 state.Primed = true;
                 return targetRideMeters;
             }
@@ -168,6 +188,7 @@ namespace HiddenHarbours.Boats
             {
                 state.RideMeters = targetRideMeters;   // wake ON the water, never ease in from zero
                 state.VelocityMetersPerSec = 0f;
+                state.PrevTargetMeters = targetRideMeters;
                 state.Primed = true;
             }
 
@@ -178,19 +199,38 @@ namespace HiddenHarbours.Boats
             float zeta = Mathf.Max(0f, settings.HeaveDampingRatio);
             float capAccel = Mathf.Max(0f, gravity) * Mathf.Max(0f, settings.MaxDownwardAccelInGs);
 
-            float x = state.RideMeters;
-            float v = state.VelocityMetersPerSec;
+            // The surface's own vertical rate (finite difference over the REAL dt), guarded against
+            // teleport garbage — see MaxSurfaceRateMetersPerSec. The damping below acts on the
+            // hull's velocity RELATIVE to this, which is the physically-right boat-in-water model
+            // (the water damps relative motion) and the CI round-2 lesson: damping against ABSOLUTE
+            // velocity let the surface's own growing fall-rate keep forcing the lag — the error
+            // equation carried a 2ζω·T′ term — so the chase brake fought the catch-up and the
+            // uncapped chase approached the surface's acceleration only asymptotically.
+            float surfaceRate = 0f;
+            if (dt > 0f)
+                surfaceRate = Mathf.Clamp((targetRideMeters - state.PrevTargetMeters) / dt,
+                                          -MaxSurfaceRateMetersPerSec, MaxSurfaceRateMetersPerSec);
+            state.PrevTargetMeters = targetRideMeters;
 
-            // Semi-implicit Euler with the free-fall cap on the DOWNWARD acceleration only: the
-            // spring may snatch the hull up as hard as it likes (buoyancy), but it can never drag
-            // it down faster than gravity — crossing a steep crest the hull unweights and FALLS,
-            // it is not bolted to the plummeting surface.
-            float remaining = Mathf.Max(0f, dt);
-            for (int i = 0; i < MaxSubSteps && remaining > 0f; i++)
+            float xEntry = state.RideMeters;
+            float vEntry = state.VelocityMetersPerSec;
+            float x = xEntry;
+            float v = vEntry;
+
+            // Semi-implicit Euler with the free-fall cap on the DOWNWARD acceleration: the spring
+            // may snatch the hull up as hard as it likes (buoyancy), but it can never drag it down
+            // faster than gravity — crossing a steep crest the hull unweights and FALLS, it is not
+            // bolted to the plummeting surface. With RELATIVE damping the error dynamics are the
+            // clean critically-damped e″ + 2ζωe′ + ω²e = T″: the lag is bounded by |T″|/ω² instead
+            // of growing with the surface's speed, so the g-budget all goes into the catch-up.
+            float tIntegrated = Mathf.Min(Mathf.Max(0f, dt), MaxSubSteps * MaxSubStepSeconds);
+            float remaining = tIntegrated;
+            while (remaining > 0f)
             {
                 float h = Mathf.Min(remaining, MaxSubStepSeconds);
                 remaining -= h;
-                float accel = omega * omega * (targetRideMeters - x) - 2f * zeta * omega * v;
+                float accel = omega * omega * (targetRideMeters - x)
+                            - 2f * zeta * omega * (v - surfaceRate);
                 if (accel < -capAccel) accel = -capAccel;
                 v += accel * h;
                 x += v * h;
@@ -210,12 +250,32 @@ namespace HiddenHarbours.Boats
 
             // The settle snap: close and slow lands EXACTLY on the surface — a flattening sea ends
             // in true stillness, never an asymptotic shiver. The velocity threshold is ε·ω (the
-            // spring's own velocity scale), not a second tunable.
+            // spring's own velocity scale), not a second tunable. (Its downward glue is bounded by
+            // the realized-step cap below — 4 mm in one 60 fps frame would read as 14 m/s².)
             float eps = Mathf.Max(0f, settings.SettleEpsilonMeters);
             if (Mathf.Abs(x - targetRideMeters) <= eps && Mathf.Abs(v) <= eps * omega)
             {
                 x = targetRideMeters;
                 v = 0f;
+            }
+
+            // THE REALIZED-STEP CAP — the final word on downward motion (CI round 2, run
+            // 30970585696). The measured law is the second difference of the RETURNED positions,
+            // so it is enforced on exactly that quantity: whatever moved x this call — spring,
+            // snap — the realized step may not fall below the previous velocity minus the cap's
+            // allowance. An accel-input clamp cannot see position writes (the settle snap's 3.7 mm
+            // downward glue realized −13.24 m/s²); this floor can, by construction. Lower bound
+            // only: upward yanks (the submarine clamp, buoyant slams) stay instant — their
+            // aftermath is the one documented exception to the smooth-motion contract. Never binds
+            // while capAccel is infinite (the sabotage arm's disabled-cap run stays honest).
+            if (tIntegrated > 0f)
+            {
+                float floorStep = (vEntry - capAccel * tIntegrated) * tIntegrated;
+                if (x - xEntry < floorStep)
+                {
+                    x = xEntry + floorStep;
+                    v = vEntry - capAccel * tIntegrated;   // the realized velocity at the floor
+                }
             }
 
             state.RideMeters = x;

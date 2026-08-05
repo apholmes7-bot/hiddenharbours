@@ -86,8 +86,10 @@ namespace HiddenHarbours.Core
         public float HeaveChaseStiffnessRadPerSec;
 
         [Tooltip("Damping ratio of the chase (1 = critically damped: settles with no bounce; <1 rings, " +
-                 ">1 wallows). The hull's own SeakeepingDamping is a FORCE-model drag and deliberately " +
-                 "does not alias onto this.")]
+                 ">1 wallows). Acts on the hull's velocity RELATIVE to the surface's own rate — the water " +
+                 "damps relative motion, so the brake never fights the catch-up onto a falling sea. The " +
+                 "hull's own SeakeepingDamping is a FORCE-model drag and deliberately does not alias onto " +
+                 "this.")]
         public float HeaveDampingRatio;
 
         [Tooltip("How the hull's seakeeping RESPONSE (BoatHullDef liveliness / mass factor) bends the chase " +

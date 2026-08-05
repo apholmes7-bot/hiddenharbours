@@ -135,22 +135,23 @@ namespace HiddenHarbours.Tests.EditMode
                 if (f > 60) worst = Mathf.Max(worst, Mathf.Abs(output - target));
             }
 
-            // The analytic tracking error of the shipped constants (ω 7, ζ 1) on this swell
-            // (ω_wave 1.2, A 0.5) is ≈ 0.17 m — the ~19° phase lag IS the felt weight, by design.
-            // The bound catches gross detachment (band-scale failures), not the designed lag.
-            Assert.Less(worst, 0.25f,
-                "a gentle swell must be tracked closely — the weight filter adds mass and a small " +
-                "phase lag, it does not detach the hull from an easy sea");
+            // With RELATIVE damping the error transfer is |T″|/√((ω²−w²)² + (2ζωw)²): at these
+            // constants (ω 7, ζ 1) and this swell (w 1.2, A 0.5) that is ≈ 0.015 m — the water
+            // carries the hull with it and the felt weight lives in the crest unweighting, not in
+            // a mushy lag. The bound is 6× the analytic: it catches a regression to absolute
+            // damping (~0.17 m) or worse, without pinning integrator noise.
+            Assert.Less(worst, 0.1f,
+                "a gentle swell must be tracked closely — the weight filter adds mass and crest " +
+                "unweighting, it does not detach the hull from an easy sea");
         }
 
         /// <summary>
-        /// THE FREE-FALL CAP ("it must obey gravity"). The surface descends at 2 g — steeper than
+        /// THE FREE-FALL CAP ("it must obey gravity"). The surface descends at 3 g — steeper than
         /// anything a hull could stay glued to — and the weighted ride's own downward acceleration
-        /// (measured as the second difference of the output, which for the semi-implicit integrator
-        /// IS the applied acceleration) must never exceed g. The first frames are skipped: inside
-        /// the settle epsilon (4 mm) the ride is glued to the surface by design, and a 4 mm glue is
-        /// not a slam. The window is sized so the gap stays inside the honesty band (the band clamp
-        /// is a separate, documented guarantee with its own test).
+        /// (measured as the second difference of the RETURNED positions — the realized trajectory,
+        /// which is exactly the quantity the realized-step cap enforces) must never exceed g. The
+        /// first frames are skipped: inside the settle epsilon (4 mm) the ride is glued to the
+        /// surface by design, and a 4 mm glue is not a slam.
         /// </summary>
         [Test]
         public void HeaveWeight_ChasingAPlummetingSurface_NeverExceedsFreeFall()
@@ -166,6 +167,15 @@ namespace HiddenHarbours.Tests.EditMode
         /// <summary>
         /// The permanent SABOTAGE arm (the fish-school style, PR #406): the same plummet with the
         /// cap DISABLED must exceed gravity, or the cap above is decoration and its test is vacuous.
+        ///
+        /// <para><b>The analytic peak (why this scenario discriminates cleanly).</b> With damping
+        /// on the surface-RELATIVE velocity the error dynamics are e″ + 2ζωe′ + ω²e = T″, so the
+        /// uncapped chase realizes x″ = a·(1 − e^{−ωt}(1 − ωt)) against a constant surface
+        /// acceleration a — peaking at <b>1.135·a at ωt = 2</b> (t ≈ 0.29 s, frame ~16 of 21).
+        /// At a = 3 g that is ≈ −33.4 m/s², 2.3× the arm's −14.7 bar; the capped run pins at
+        /// exactly −g. (CI round 2's lesson: with ABSOLUTE damping the error equation carries a
+        /// 2ζω·T′ forcing, x″ only creeps toward a asymptotically, and the arm measured −13.9 —
+        /// under the bar. The margin lives in the relative damping, not in a tuned bound.)</para>
         /// </summary>
         [Test]
         public void Sabotage_UncappedChase_ExceedsFreeFall()
@@ -182,18 +192,19 @@ namespace HiddenHarbours.Tests.EditMode
                 "proves nothing.");
         }
 
-        /// <summary>Chase a surface descending at 2 g for 0.35 s (gap stays inside the band).
-        /// Returns the most negative second-difference acceleration after the settle-epsilon
-        /// frames; outputs go to <paramref name="outputs"/> for reuse.</summary>
+        /// <summary>Chase a surface descending at 3 g for 0.35 s. Returns the most negative
+        /// second-difference acceleration of the realized trajectory after the settle-epsilon
+        /// frames; outputs go to <paramref name="outputs"/> for reuse. (See the sabotage arm's
+        /// doc for the analytic peak this scenario produces uncapped.)</summary>
         static float MeasureCliffChase(in StormRockSettings settings, out float[] outputs)
         {
-            const int frames = 21;                       // 0.35 s at 60 fps
+            const int frames = 21;                       // 0.35 s at 60 fps; ωt = 2 sits at ~f16
             var state = new HeaveWeightState();
             outputs = new float[frames];
             for (int f = 0; f < frames; f++)
             {
                 float t = (f + 1) * Dt;
-                float target = -0.5f * (2f * G) * t * t; // the surface plummets at 2 g
+                float target = -0.5f * (3f * G) * t * t; // the surface plummets at 3 g
                 outputs[f] = StormRockMath.StepHeaveWeight(ref state, target, Dt, G, 1f,
                                                           in Neutral, in settings);
             }
