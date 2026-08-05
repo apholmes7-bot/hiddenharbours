@@ -608,6 +608,42 @@ namespace HiddenHarbours.Tests.UI.EditMode
         }
 
         [Test]
+        public void TheNameEditor_RejectsEveryControlCharacter_AndEverythingElseOffTheWhitelist()
+        {
+            // The charset rule is a WHITELIST — TryFold returns true only for A-Z, 0-9, space and the
+            // three punctuation marks — so nothing below 0x20 can reach the buffer by construction.
+            // Pinned exhaustively rather than argued: headless key synthesis can deliver characters a
+            // physical keyboard rarely does, and a control character reaching RigDrawUtil would fire
+            // the one-shot loud-tofu LogError, which poisons every other test on the same frame.
+            var ed = new NavNameEditor();
+            ed.Open(0, "");
+
+            for (int c = 0; c <= 0x20; c++)
+            {
+                if (c == ' ') continue;                     // space is on the whitelist (and wanted)
+                char ch = (char)c;
+                Assert.That(NavNameEditor.TryFold(ch, out _), Is.False,
+                            $"U+{c:X4} is a control character and must never fold to a glyph");
+                Assert.That(ed.Type(ch), Is.False, $"U+{c:X4} must not reach the buffer");
+            }
+            Assert.That(ed.Text, Is.Empty, "…and none of the 32 of them did");
+
+            // DEL, and a spread of the other things a keyboard or an importer can produce.
+            // Written as escapes on purpose: a raw control byte in a source file is unreadable in
+            // a diff and one careless re-save away from becoming a different character.
+            foreach (char ch in new[] { '\u007F', '\u0080', '\u00A0', '\u2014', '\uFFFD', '\u20AC' })
+                Assert.That(ed.Type(ch), Is.False, $"U+{(int)ch:X4} is off the whitelist");
+            Assert.That(ed.Text, Is.Empty);
+
+            // The seed path is the same rule — a name from an older build cannot smuggle one in.
+            Assert.That(NavNameEditor.Sanitize("\u0001A\u0002B\u001FC"), Is.EqualTo("ABC"));
+
+            // NEGATIVE CONTROL: the probe can say yes, or the sweep above proves nothing.
+            Assert.That(NavNameEditor.TryFold('q', out char folded), Is.True);
+            Assert.That(folded, Is.EqualTo('Q'));
+        }
+
+        [Test]
         public void TheNameEditor_RefusesALeadingSpace_ACapAndAnEmptyCommit()
         {
             var ed = new NavNameEditor();
