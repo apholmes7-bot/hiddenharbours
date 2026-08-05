@@ -19,6 +19,11 @@ namespace HiddenHarbours.UI
     /// at the rig's own half-degree, the compass at whole degrees — and ONE 600×510 card composite +
     /// texture upload only when some layer actually changed. Zero steady-state allocation.</para>
     ///
+    /// <para><b>The panel lights</b> are <see cref="HelmPanelLight"/>'s single clock-derived boolean,
+    /// keyed like any other layer state: at dusk the chrome and the compass rebake ONCE and then cost
+    /// nothing again until dawn. Never keyed on the continuous hour — that would repaint every
+    /// frame.</para>
+    ///
     /// <para><b>One steer owner:</b> the wheel MIRRORS <see cref="IHelmControl.Steer"/> whenever no
     /// steer session is live; a focused rim grab opens the session (<see cref="IHelmControl.DragSteer"/>)
     /// and the {deg, vel} spin state here is only the input DEVICE's transient state. The key layer
@@ -40,6 +45,7 @@ namespace HiddenHarbours.UI
         private int _shownHeadingKey = int.MinValue;
         private CompassMount _shownCompass = (CompassMount)(-1);
         private int _shownBrowKey = int.MinValue;           // which brow mounts the chrome drew
+        private bool _shownNight;                           // are the panel lights on in what is drawn
 
         // The rig the surfaces are sized for, and the one interaction hit-tests against. The two
         // helm families use DIFFERENT canvases (600×510 skiff, 600×548 pilothouse) and different
@@ -58,6 +64,11 @@ namespace HiddenHarbours.UI
 
         /// <summary>True while this controller holds the steer session (test seam).</summary>
         public bool SteerSession => _steerSession;
+
+        /// <summary>Are the panel lights on in what is currently DRAWN (test seam)? Not "is it night"
+        /// — that is <see cref="HelmPanelLight"/>; this is what the card actually shows, which is the
+        /// thing a wiring regression would silently get wrong.</summary>
+        public bool NightShown => _shownNight;
 
         /// <summary>Forget everything shown (hull swap / style change) so the next paint is full.</summary>
         public void Invalidate()
@@ -128,6 +139,10 @@ namespace HiddenHarbours.UI
             int headingKey = DrawSurface.JsRound(CompassRigRender.Norm(headingDeg));   // whole degrees
             HelmLeverFinish finish = helm.LeverFinish;
             HelmWheelRim rim = helm.WheelRim;
+            // The panel lights: one boolean off the shared clock, sampled once per paint and keyed as
+            // a BOOLEAN (rule 7). Dusk therefore costs exactly one rebake of the chrome and the
+            // compass, and the steady state either side of it costs nothing at all.
+            bool night = HelmPanelLight.IsNight();
 
             // The pilothouse brow's mounts follow the FIT (which slots are drawn, which are blanked,
             // and whether the sounder mount is the tall portrait box) — so the chrome tracks it too.
@@ -135,21 +150,21 @@ namespace HiddenHarbours.UI
                         | (fit.Radar ? 2 : 0) | (fit.Gps ? 1 : 0);
 
             bool chromeDirty = fit.Rig != _shownRig || running != _shownRunning || driveKey != _shownDriveKey
-                            || browKey != _shownBrowKey;
+                            || browKey != _shownBrowKey || night != _shownNight;
             bool leverDirty = chromeDirty || finish != _shownFinish;
             bool wheelDirty = fit.Rig != _shownRig || wheelKey != _shownWheelKey || rim != _shownRim;
             bool compassDirty = fit.Rig != _shownRig || headingKey != _shownHeadingKey
-                             || fit.Compass != _shownCompass;
+                             || fit.Compass != _shownCompass || night != _shownNight;
             if (!chromeDirty && !leverDirty && !wheelDirty && !compassDirty) return false;
 
             if (chromeDirty)
             {
                 switch (fit.Rig)
                 {
-                    case ConsoleRigKind.Sport: SportDashRender.Render(_chrome, running, drive, rpm01, fuel01); break;
-                    case ConsoleRigKind.Novi: NoviDashRender.Render(_chrome, in fit, running, rpm01, fuel01); break;
-                    case ConsoleRigKind.Cape: CapeDashRender.Render(_chrome, in fit, running, rpm01, fuel01); break;
-                    default: ConsoleDashRender.Render(_chrome, running, drive, rpm01, fuel01); break;
+                    case ConsoleRigKind.Sport: SportDashRender.Render(_chrome, running, drive, rpm01, fuel01, night); break;
+                    case ConsoleRigKind.Novi: NoviDashRender.Render(_chrome, in fit, running, rpm01, fuel01, night); break;
+                    case ConsoleRigKind.Cape: CapeDashRender.Render(_chrome, in fit, running, rpm01, fuel01, night); break;
+                    default: ConsoleDashRender.Render(_chrome, running, drive, rpm01, fuel01, night); break;
                 }
             }
             if (leverDirty) LeverRigRender.Render(_leverCell, drive, finish);
@@ -163,7 +178,7 @@ namespace HiddenHarbours.UI
                     // origin and the composite lands it on its own box. (The flush unit renders for the
                     // first time here: the two pilothouse hulls are the first that can mount one.)
                     HelmDashGeometry.CompassBoxOnCard(fit.Rig, fit.Compass, out _, out _, out int cw, out int ch);
-                    CompassRigRender.PaintInto(_compassCell, 0, 0, cw, ch, fit.Compass, headingKey, night: false);
+                    CompassRigRender.PaintInto(_compassCell, 0, 0, cw, ch, fit.Compass, headingKey, night);
                 }
             }
 
@@ -174,7 +189,7 @@ namespace HiddenHarbours.UI
             HelmDashGeometry.WheelCellOrigin(fit.Rig, out int wx, out int wy);
             RigDrawUtil.CompositeAt(_card, _wheelCell, wx, wy);
             if (fit.Rig == ConsoleRigKind.Console)
-                ConsoleDashRender.PaintWheelCap(_card);     // the cove-painted cap rides the hub (js:449-454)
+                ConsoleDashRender.PaintWheelCap(_card, night);   // cove-painted cap rides the hub (js:449-454)
             HelmDashGeometry.LeverCellOrigin(fit.Rig, out int lx, out int ly);
             RigDrawUtil.CompositeAt(_card, _leverCell, lx, ly);
 
@@ -190,6 +205,7 @@ namespace HiddenHarbours.UI
             _shownHeadingKey = headingKey;
             _shownCompass = fit.Compass;
             _shownBrowKey = browKey;
+            _shownNight = night;
             return true;
         }
 

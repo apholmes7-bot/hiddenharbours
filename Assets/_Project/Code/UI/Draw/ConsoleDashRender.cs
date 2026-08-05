@@ -48,6 +48,17 @@ namespace HiddenHarbours.UI
         private static readonly Color32 SPOT_OFF = RigDrawUtil.Hex("20323a");
         private static readonly Color32 WHITE = new Color32(255, 255, 255, 255);
 
+        // The gauge backlight's two gradients (consoleRig.js:228-235) — static so the wash allocates
+        // nothing. Amber instrument lighting: a bright core inside the glass, then a soft spill.
+        private static readonly double[] NightCoreT = { 0.0, 0.6, 1.0 };
+        private static readonly Color32[] NightCoreC =
+            { RigDrawUtil.Hex("ffac3c"), RigDrawUtil.Hex("e4922e"), RigDrawUtil.Hex("be7426") };
+        private static readonly float[] NightCoreA = { 0.46f, 0.24f, 0.08f };
+        private static readonly double[] NightBloomT = { 0.0, 1.0 };
+        private static readonly Color32[] NightBloomC =
+            { RigDrawUtil.Hex("ffac3c"), RigDrawUtil.Hex("ffac3c") };
+        private static readonly float[] NightBloomA = { 0.18f, 0f };
+
         // chips where boots and buckets rub — console-local, deterministic (consoleRig.js:72)
         private static readonly int[,] SCUFFS =
         {
@@ -117,7 +128,9 @@ namespace HiddenHarbours.UI
         /// <summary>
         /// Paint the console dash chrome (everything but the four composited instruments) into
         /// <paramref name="s"/> (must be <see cref="HelmDashGeometry.W"/>×<see cref="HelmDashGeometry.H"/>).
-        /// Day state; night/deck/spot are plumbed but default off (the night panel is a later slice).
+        /// <paramref name="night"/> paints the backlit face (the whole-panel palette drop, the amber
+        /// wash, the gauge backlights and the lamp haloes); deck/spot are the rig's working lights and
+        /// stay off until a slice wires them.
         /// </summary>
         public static void Render(DrawSurface s, bool running, float drive, float rpm01, float fuel01,
                                   bool night = false, bool blink = false)
@@ -179,6 +192,11 @@ namespace HiddenHarbours.UI
             GaugeRpm(s, HelmDashGeometry.RpmCx, HelmDashGeometry.RpmCy + PAD, HelmDashGeometry.GaugeR, rpm01);
             GaugeFuel(s, HelmDashGeometry.FuelCx, HelmDashGeometry.FuelCy + PAD, HelmDashGeometry.GaugeR,
                       fuel01, lowFuel, blink);
+            if (night)   // js:407 — the backlight goes on OVER the finished dials, never under them
+            {
+                GaugeNight(s, HelmDashGeometry.RpmCx, HelmDashGeometry.RpmCy + PAD, HelmDashGeometry.GaugeR);
+                GaugeNight(s, HelmDashGeometry.FuelCx, HelmDashGeometry.FuelCy + PAD, HelmDashGeometry.GaugeR);
+            }
 
             // ---- switch panel, left (consoleRig.js:410-419) ----
             int swx = HelmDashGeometry.SwX, swy = HelmDashGeometry.SwY + PAD;
@@ -191,9 +209,11 @@ namespace HiddenHarbours.UI
             RigDrawUtil.Screw(s, swx + sww - 8, swy + 8, 2, GRAPH);
             DrawIgnition(s, HelmDashGeometry.StartCx, HelmDashGeometry.StartCy + PAD, HelmDashGeometry.StartR, running);
             Toggle(s, HelmDashGeometry.DeckX, HelmDashGeometry.DeckY + PAD, HelmDashGeometry.DeckW,
-                   HelmDashGeometry.DeckH, HelmDashGeometry.DeckCx, HelmDashGeometry.DeckLampY + PAD, false, TEAL);
+                   HelmDashGeometry.DeckH, HelmDashGeometry.DeckCx, HelmDashGeometry.DeckLampY + PAD,
+                   false, TEAL, night);
             Toggle(s, HelmDashGeometry.SpotX, HelmDashGeometry.SpotY + PAD, HelmDashGeometry.SpotW,
-                   HelmDashGeometry.SpotH, HelmDashGeometry.SpotCx, HelmDashGeometry.SpotLampY + PAD, false, SPOT_ON);
+                   HelmDashGeometry.SpotH, HelmDashGeometry.SpotCx, HelmDashGeometry.SpotLampY + PAD,
+                   false, SPOT_ON, night);
             RigDrawUtil.TextC(s, "DECK", HelmDashGeometry.DeckCx, HelmDashGeometry.DeckLampY + PAD + 7, 1, TICKDIM);
             RigDrawUtil.TextC(s, "SPOT", HelmDashGeometry.SpotCx, HelmDashGeometry.SpotLampY + PAD + 7, 1, TICKDIM);
 
@@ -215,7 +235,10 @@ namespace HiddenHarbours.UI
                 {
                     RigDrawUtil.Circle(s, 559, y + 2 + PAD, 3, GRAPH[0]);
                     RigDrawUtil.Circle(s, 559, y + 2 + PAD, 2, on ? col : LAMPOFF);
-                    if (on) s.BlendRect(558, y + 1 + PAD, 1, 1, WHITE, 0.5f);
+                    if (!on) return;
+                    s.BlendRect(558, y + 1 + PAD, 1, 1, WHITE, 0.5f);
+                    // the lit detent haloes in the dark (js:433) — only the ONE that is on
+                    if (night) RigDrawUtil.Circle(s, 559, y + 2 + PAD, 6, col, 0.18f);
                 }
                 Lamp(300, gz == 'F', TEAL);
                 Lamp(318, gz == 'N', GREEN[2]);
@@ -353,9 +376,24 @@ namespace HiddenHarbours.UI
             Needle(s, r, gx, py, gx + fdx * rimR, gy + fdy * rimR);   // tip rides gy, pivot rides py (js:220)
         }
 
-        // ---- switches (consoleRig.js:281-323), day (no night glow) --------------------------------
+        /// <summary>The dial's amber backlight (consoleRig.js:223-237). TWO passes, as authored: a core
+        /// clipped inside the glass, then an unclipped bloom that spills onto the panel around the
+        /// bezel. Both additive — these dials are black glass, so light ADDS to them.</summary>
+        private static void GaugeNight(DrawSurface s, int gx, int gy, int r)
+        {
+            s.AddRadial(gx - r, gy - r, r * 2, r * 2, gx, gy, 2, r, r - 1,
+                        NightCoreT, NightCoreC, NightCoreA);
+            int br = r + 18;                       // the source's fill rect; the gradient dies at r+16
+            s.AddRadial(gx - br, gy - br, br * 2, br * 2, gx, gy, r * 0.55, r + 16, r + 16,
+                        NightBloomT, NightBloomC, NightBloomA);
+        }
+
+        // ---- switches (consoleRig.js:281-323) ------------------------------------------------------
+        // The night halo is authored per-lamp and only fires for a lamp that is ON (js:294-295). Deck
+        // and spot are hard-off until a slice wires the working lights, so today it never draws — it
+        // is here so wiring them is a one-line change and not a rediscovery of the rig source.
         private static void Toggle(DrawSurface s, int x, int y, int w, int h, int lampCx, int lampY,
-                                   bool on, Color32 lampCol)
+                                   bool on, Color32 lampCol, bool night = false)
         {
             RigDrawUtil.RRect(s, x - 3, y - 3, w + 6, h + 6, 5, GRAPH[0]);
             RigDrawUtil.RRect(s, x - 3, y - 3, w + 6, 2, 2, GRAPH[3]);
@@ -369,7 +407,13 @@ namespace HiddenHarbours.UI
             s.FillRect(cx - 2, on ? ty + 1 : by - 4, 3, 2, STEEL[4]);
             RigDrawUtil.Circle(s, cx, midY, 3, GRAPH[5]);
             RigDrawUtil.Circle(s, lampCx, lampY, 3, on ? lampCol : LAMPOFF);
-            if (on) s.BlendRect(lampCx - 1, lampY - 1, 2, 2, WHITE, 0.55f);
+            if (!on) return;
+            s.BlendRect(lampCx - 1, lampY - 1, 2, 2, WHITE, 0.55f);
+            if (night)
+            {
+                RigDrawUtil.Circle(s, lampCx, lampY, 6, lampCol, 0.20f);
+                RigDrawUtil.Circle(s, lampCx, lampY, 10, lampCol, 0.09f);
+            }
         }
 
         private static void DrawIgnition(DrawSurface s, int cx, int cy, int r, bool running)

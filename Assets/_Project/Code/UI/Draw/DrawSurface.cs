@@ -128,6 +128,61 @@ namespace HiddenHarbours.UI
         }
 
         /// <summary>
+        /// SOURCE-OVER multi-stop radial wash — the canvas
+        /// <c>createRadialGradient(cx,cy,r0, cx,cy,r1)</c> WITHOUT <c>'lighter'</c>. The additive twin
+        /// of this is <see cref="AddRadial"/>, and the difference is not a detail: additive over a
+        /// near-white face only drives it to white, so a rig that wants to TINT a pale dial has to
+        /// composite normally. That is exactly why sportRig.js:186-191 drops the <c>lighter</c> its
+        /// sister rigs use — its dials are white enamel, not black glass (consoleRig.js:225-231).
+        ///
+        /// <para>Same contract as <see cref="AddRadial"/> otherwise: colour AND alpha interpolate
+        /// between the stops (<paramref name="stopT"/> ascending, 0..1 across r0→r1), the wash is
+        /// restricted to the rect and to a disc of <paramref name="clipRad"/> (the rigs'
+        /// <c>save/arc/clip</c> around a dial), and beyond r1 nothing is drawn.</para>
+        /// </summary>
+        public void OverRadial(int x, int y, int w, int h, double cx, double cy, double r0, double r1,
+                               double clipRad, double[] stopT, Color32[] stopCol, float[] stopA,
+                               float globalAlpha01 = 1f)
+        {
+            if (globalAlpha01 <= 0f || r1 <= r0 || stopT.Length == 0) return;
+            int x0 = x < 0 ? 0 : x, y0 = y < 0 ? 0 : y;
+            int x1 = x + w, y1 = y + h;
+            if (x1 > Width) x1 = Width;
+            if (y1 > Height) y1 = Height;
+            double rMax = clipRad < r1 ? clipRad : r1;
+            double span = r1 - r0;
+            for (int yy = y0; yy < y1; yy++)
+            {
+                int row = yy * Width;
+                double dy = yy + 0.5 - cy;
+                for (int xx = x0; xx < x1; xx++)
+                {
+                    double dx = xx + 0.5 - cx;
+                    double d = System.Math.Sqrt(dx * dx + dy * dy);
+                    if (d > rMax) continue;
+                    double t = d <= r0 ? 0.0 : (d - r0) / span;
+                    int i = 0;                                   // the stop pair straddling t
+                    while (i < stopT.Length - 1 && t > stopT[i + 1]) i++;
+                    Color32 ca = stopCol[i];
+                    float aa = stopA[i];
+                    double f = 0.0;
+                    if (i < stopT.Length - 1)
+                    {
+                        double lo = stopT[i], hi = stopT[i + 1];
+                        f = hi > lo ? (t - lo) / (hi - lo) : 0.0;
+                        if (f < 0.0) f = 0.0; else if (f > 1.0) f = 1.0;
+                    }
+                    Color32 cb = i < stopCol.Length - 1 ? stopCol[i + 1] : ca;
+                    float a2 = i < stopA.Length - 1 ? stopA[i + 1] : aa;
+                    int a = (int)((aa + (a2 - aa) * f) * globalAlpha01 * 255.0 + 0.5);
+                    if (a <= 0) continue;
+                    Color32 src = Lerp(ca, cb, f);
+                    Pixels[row + xx] = Over(Pixels[row + xx], src, a);
+                }
+            }
+        }
+
+        /// <summary>
         /// ADDITIVE constant wash over a rect — the canvas
         /// <c>globalCompositeOperation='lighter'</c> + <c>globalAlpha</c> + an opaque fill, which the
         /// pilothouse dashes use for their deck/spot/night working-light washes (noviRig.js:428-437,
