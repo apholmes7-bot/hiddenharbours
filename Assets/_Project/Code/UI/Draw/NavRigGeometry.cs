@@ -211,23 +211,22 @@ namespace HiddenHarbours.UI
             => Cardinals[Mathf.RoundToInt(NavMath.Norm360(deg) / 45f) % 8];
 
         /// <summary>
-        /// Minutes as HH.MM, or "--.--" when there is no answer (navRig.js:545). A stopped boat has no
+        /// Minutes as HH:MM, or "--:--" when there is no answer (navRig.js:545). A stopped boat has no
         /// ETA and the rig says so rather than printing a number.
         ///
-        /// <para><b>⚠ The separator is a DOT, not the rig's colon</b> — and deliberately so. The shared
-        /// 3×5 font has no <c>:</c>, and an existing guard
-        /// (<c>ThePlausibleFutureCharacter_Colon_IsLoudUntilAGlyphIsActuallyAdded</c>) pins that it must
-        /// stay a loud unknown until someone adds it on purpose, which is a call for whoever owns that
-        /// font rather than a side effect of this port. A dot reads the same at a glance and has real
-        /// pixels today. If the colon is later added, this becomes a one-character change.</para>
+        /// <para><b>The separator is the rig's COLON.</b> PR 2 shipped a dot here because the shared
+        /// 3×5 font carried no <c>:</c> and a standing guard pinned that character as a loud unknown
+        /// until a slice added it on purpose. This is that slice: the glyph is now transcribed from the
+        /// rig's own table (navRig.js:71) into <see cref="RigDrawUtil"/>, so the clock prints the form
+        /// the rig actually authors and the placeholder is <c>--:--</c> rather than <c>--.--</c>.</para>
         /// </summary>
         public static string FmtHM(float minutes)
         {
-            if (float.IsNaN(minutes) || float.IsInfinity(minutes)) return "--.--";
+            if (float.IsNaN(minutes) || float.IsInfinity(minutes)) return "--:--";
             int m = Mathf.Max(0, Mathf.RoundToInt(minutes));
             int h = m / 60;
             m %= 60;
-            return (h < 10 ? "0" + h : h.ToString()) + "." + (m < 10 ? "0" + m : m.ToString());
+            return (h < 10 ? "0" + h : h.ToString()) + ":" + (m < 10 ? "0" + m : m.ToString());
         }
 
         /// <summary>

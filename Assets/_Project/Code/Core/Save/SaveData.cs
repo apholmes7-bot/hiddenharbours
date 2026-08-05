@@ -157,6 +157,60 @@ namespace HiddenHarbours.Core
         /// Capped at <see cref="ChartplotterSettings.MaxTrackPoints"/>; the oldest crumb is dropped when
         /// it fills, which is the right thing to lose. Added in v10.</summary>
         public List<NavTrackPointDto> NavTrack = new();
+
+        /// <summary>
+        /// Per-hull chartplotter PREFERENCES — night backlight, orientation and range rung. Sparse like
+        /// <see cref="HullSounderPrefs"/> (absent hull = the owner's configured defaults) and
+        /// read/written only through <see cref="InstrumentLocker"/>.
+        ///
+        /// <para>Per HULL while the three lists above are per SAVE, and deliberately: those hold the
+        /// skipper's knowledge of the water, this holds the setup of one boat's glass. See
+        /// <see cref="Core.ChartplotterPrefs"/> for why it is its own record rather than more fields on
+        /// the sounder's.</para>
+        ///
+        /// <para>Added in v10 — the SAME version the nav lists landed at, as an additive member. A v10
+        /// save written before it existed simply has no rows, which reads as "never touched", so there
+        /// is no migration step and no version bump.</para></summary>
+        public List<ChartplotterPrefsDto> HullChartplotterPrefs = new();
+    }
+
+    /// <summary>
+    /// One hull's persisted chartplotter preferences — the flat, JsonUtility-friendly record of
+    /// <see cref="Core.ChartplotterPrefs"/> keyed by hull id, on the <see cref="SounderPrefsDto"/>
+    /// pattern.
+    /// </summary>
+    [Serializable]
+    public struct ChartplotterPrefsDto
+    {
+        /// <summary>Stable hull id these preferences belong to.</summary>
+        public string HullId;
+
+        /// <summary>Amber night backlight rather than the day palette.</summary>
+        public bool Night;
+
+        /// <summary>Chart turned course-up rather than north-up.</summary>
+        public bool HeadUp;
+
+        /// <summary>
+        /// Which rung of the range ladder the glass is on (0 = closest).
+        ///
+        /// <para><b>Zero is a LEGAL value here</b>, unlike <see cref="SounderPrefsDto.RangeMetres"/> —
+        /// it is the closest range, not a divide-by-zero — so a row is never "healed" away from it. The
+        /// absent-row case is what yields the owner's default rung, and that distinction is the whole
+        /// reason the rung is stored rather than the resulting nautical miles.</para>
+        /// </summary>
+        public int RangeStep;
+
+        public ChartplotterPrefsDto(string hullId, in ChartplotterPrefs prefs)
+        {
+            HullId = hullId;
+            Night = prefs.Night;
+            HeadUp = prefs.HeadUp;
+            RangeStep = prefs.RangeStep;
+        }
+
+        /// <summary>This record as the runtime value.</summary>
+        public ChartplotterPrefs Prefs => new ChartplotterPrefs(Night, HeadUp, RangeStep);
     }
 
     /// <summary>One marked waypoint, flattened for JsonUtility (the <see cref="HullInstrument"/>

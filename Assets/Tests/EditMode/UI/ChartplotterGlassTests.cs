@@ -241,8 +241,11 @@ namespace HiddenHarbours.Tests.UI.EditMode
             Assert.AreEqual("000", NavRigGeometry.FmtDeg(359.7f), "a compass has no 360");
             Assert.AreEqual("N", NavRigGeometry.Cardinal8(2f));
             Assert.AreEqual("SE", NavRigGeometry.Cardinal8(135f));
-            Assert.AreEqual("01.30", NavRigGeometry.FmtHM(90f));
-            Assert.AreEqual("--.--", NavRigGeometry.FmtHM(float.PositiveInfinity),
+            // S6 PR 3: the separator is the rig's COLON (navRig.js:545), not PR 2's stand-in dot —
+            // the glyph now exists in the shared font, so the clock prints the authored form.
+            Assert.AreEqual("01:30", NavRigGeometry.FmtHM(90f));
+            Assert.AreEqual("00:02", NavRigGeometry.FmtHM(2f), "the TTG form the brow actually prints");
+            Assert.AreEqual("--:--", NavRigGeometry.FmtHM(float.PositiveInfinity),
                             "a stopped boat has no ETA and the glass says so");
         }
 

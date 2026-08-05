@@ -28,9 +28,10 @@ namespace HiddenHarbours.Tests.UI.EditMode
     ///
     /// <para><b>Probe characters.</b> The arms probe U+0001/U+0002 — control characters that can
     /// never earn a glyph, so no future table addition can quietly turn these tests vacuous. The one
-    /// plausible-future character (':') gets its own case; the day a slice adds ':' to the table,
-    /// that case goes red on purpose — re-point its probe at a character still outside the table (or
-    /// drop the case; the control-character arms carry the invariant).</para>
+    /// plausible-future character (':') had its own tofu case, which S6 duly turned red by adding the
+    /// glyph the chartplotter's clock needs; that case is now
+    /// <see cref="TheColon_DrawsTheRigsAuthoredPixels_AndIsNoLongerLoud"/>, pinning the rig's pixels
+    /// instead. The control-character arms carry the loud-font invariant either way.</para>
     /// </summary>
     public class RigFontUnknownGlyphTests
     {
@@ -81,13 +82,39 @@ namespace HiddenHarbours.Tests.UI.EditMode
             AssertTheCellIsSolidTofu(Draw("\u0001"));
         }
 
+        /// <summary>
+        /// ':' HAS ITS PIXELS NOW — the successor to
+        /// <c>ThePlausibleFutureCharacter_Colon_IsLoudUntilAGlyphIsActuallyAdded</c>, which this
+        /// fixture's own remarks predicted would go red the day a slice added the glyph. S6's
+        /// chartplotter is that slice: its TTG clock prints <c>00:02</c> (navRig.js:545), so the
+        /// character is now authored from the rig's own table (navRig.js:71).
+        ///
+        /// <para>The retired case asserted tofu + error. Deleting it outright would leave the table
+        /// addition unpinned, so it is REPLACED rather than dropped: the colon must draw the rig's
+        /// exact pixels and raise NO error. That catches the two ways this could rot — a silent
+        /// revert to the unknown-character path, and a typo'd row that draws some other mark.</para>
+        /// </summary>
         [Test]
-        public void ThePlausibleFutureCharacter_Colon_IsLoudUntilAGlyphIsActuallyAdded()
+        public void TheColon_DrawsTheRigsAuthoredPixels_AndIsNoLongerLoud()
         {
-            // S6's waypoint labels will plausibly want ':'; until the slice that needs it ADDS it,
-            // the character must be tofu + error, never a quiet gap.
-            LogAssert.Expect(LogType.Error, new Regex(@"U\+003A"));
-            AssertTheCellIsSolidTofu(Draw(":"));
+            // navRig.js:71 — ':' is ['...','.#.','...','.#.','...']: ink in the middle column of
+            // rows 1 and 3 only. No LogAssert.Expect here on purpose: an error would now be an
+            // unhandled log message and fail this test by itself, which is the regression guard.
+            DrawSurface s = Draw(":");
+            for (int gy = 0; gy < 5; gy++)
+            for (int gx = 0; gx < 3; gx++)
+            {
+                bool wantInk = gx == 1 && (gy == 1 || gy == 3);
+                for (int sy = 0; sy < Scale; sy++)
+                for (int sx = 0; sx < Scale; sx++)
+                {
+                    Color32 got = s.Pixels[(Y + gy * Scale + sy) * s.Width + (X + gx * Scale + sx)];
+                    bool isInk = got.r == Ink.r && got.g == Ink.g && got.b == Ink.b && got.a == Ink.a;
+                    Assert.AreEqual(wantInk, isInk,
+                        $"glyph cell ({gx},{gy}) of ':' should be {(wantInk ? "ink" : "clear")} — " +
+                        "the colon must match navRig.js:71 exactly, not tofu and not a substitute");
+                }
+            }
         }
 
         [Test]

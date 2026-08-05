@@ -9,7 +9,7 @@ namespace HiddenHarbours.UI
         Sounder = 1,        // DepthRig — the plain depth sounder (ADR 0025 S2)
         FishFinder = 2,     // FishRig  — the colour sonar in the same cutout (S3b)
         Radar = 3,          // S5 — not built
-        Chartplotter = 4,   // S6 — not built
+        Chartplotter = 4,   // NavRig  — the chart in the brow's GPS slot (S6)
     }
 
     /// <summary>

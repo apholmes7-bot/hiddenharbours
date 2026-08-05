@@ -220,6 +220,12 @@ namespace HiddenHarbours.UI
             // real pixels in the source, so it is transcribed rather than blanked. Added by S6; the
             // compass and wind readouts may take it too rather than spelling out "DEG".
             "°", "##.|##.|...|...|...",
+            // U+003A COLON — authored by the chartplotter's own font table (navRig.js:71) with real
+            // pixels, and used by its TTG/ETA clock (navRig.js:545 `fmtHM`). Transcribed rather than
+            // blanked, for the same reason '°' was. Until S6 this character was deliberately held OUT
+            // of the table so it would render as loud tofu (RigFontUnknownGlyphTests) — this is the
+            // slice that needs it, so it gets its pixels on purpose rather than by accident.
+            ":", "...|.#.|...|.#.|...",
             // U+00B7: both wheelhouse standby plates author a '·' separator (noviRig.js:359,
             // capeRig.js:348) that the sources' own font tables do not carry, so every preview
             // RENDERS it as a gap — that gap is the approved look, pinned here as an authored blank
