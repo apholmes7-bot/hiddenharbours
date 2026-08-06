@@ -24,6 +24,15 @@ namespace HiddenHarbours.Boats
         /// player is free to walk away; the boat still drifts on wind + tide but stays within rope-length of
         /// the rooted spot.</summary>
         RootedToGround,
+
+        /// <summary>
+        /// <b>MADE FAST between two cleats</b> (M2-38) — the seamanlike moor, as opposed to dropping the
+        /// painter on the ground. The line runs from one of this hull's own rig cleats to a shore cleat,
+        /// and the player chose its SCOPE. Unlike the two states above, this one is <b>tidal</b>: the
+        /// shore end holds still while the boat's end rides the water, so a falling tide steadily eats the
+        /// line's reach across the water and a line paid out too short will hang her and slip.
+        /// </summary>
+        MadeFastToCleat,
     }
 
     /// <summary>
@@ -55,10 +64,27 @@ namespace HiddenHarbours.Boats
     /// loop. <b>No magic numbers</b>: rope length, the firm-limit give/stiffness/damping, and the slack-sag
     /// amount are serialized owner-editable fields.</para>
     ///
-    /// <para><b>Future work (structured, NOT built).</b> The tie target is an <see cref="IMooringAnchor"/>
-    /// (today: the player's hand, or a rooted ground point) so a dedicated <b>cleat / post / placed tie
-    /// item</b> can later be a target, and a <b>second line</b> (bow + stern) can attach, without reworking
-    /// the rope physics. See <c>MooringAnchor.cs</c> and design/boats-and-navigation.md §9.6.</para>
+    /// <para><b>The third state: MADE FAST between two cleats</b> (M2-38, 2026-08-06 — the seam below
+    /// predicted it and it landed exactly there). The line runs from one of this hull's own rig
+    /// <c>CLEATS</c> to a shore cleat, with a SCOPE the player pays out or hauls in. Two things make it
+    /// different in kind from the painter states above:
+    /// <list type="bullet">
+    ///   <item><b>It is tidal.</b> The shore end holds still; the boat's end floats. The vertical gap
+    ///   between them grows as the water leaves, and every metre of that gap is a metre the line no longer
+    ///   has to reach ACROSS the water (<see cref="MooringLineMath.HorizontalReach"/>). Leave her tight on
+    ///   a falling tide and the reach collapses to nothing.</item>
+    ///   <item><b>It can be lost.</b> Once the drop alone out-runs the whole scope she is hanging on the
+    ///   rope, and past the working load the loop SLIPS — she goes quietly adrift, undamaged. No parted
+    ///   rope, no damage: the cozy fail the backlog names, and the reason scope is a decision.</item>
+    /// </list>
+    /// The constraint itself is the very same firm tether + inextensible clamp below, handed a
+    /// tide-derived effective length instead of a fixed one — the sim keeps computing and the rope
+    /// restrains the result (rule 5), never freezing her.</para>
+    ///
+    /// <para><b>Still future work (structured, NOT built).</b> A <b>second line</b> (bow + stern) is a
+    /// matter of holding two <see cref="BoatMooring"/>/anchor pairs rather than a new mechanic; a
+    /// <b>winch</b> that pays out scope on the tide for you is P4 and much later. See
+    /// <c>MooringAnchor.cs</c> and design/boats-and-navigation.md §9.6.</para>
     /// </summary>
     [RequireComponent(typeof(Rigidbody2D))]
     public class BoatMooring : MonoBehaviour
@@ -109,8 +135,24 @@ namespace HiddenHarbours.Boats
         private BoatController _boat;
         private LineRenderer _rope;
 
-        // The tie target. While Held this tracks the player transform; while Rooted it's a fixed spot.
+        // The tie target. While Held this tracks the player transform; while Rooted it's a fixed spot;
+        // while MadeFastToCleat it is the SHORE cleat (the end that holds still).
         private IMooringAnchor _anchor;
+
+        // ---- made-fast-to-cleat state (M2-38) --------------------------------------------------------
+        // The two ends of the line. The shore cleat is also what _anchor points at; the boat cleat is kept
+        // separately because the constraint acts between the two FITTINGS, not between the wharf and the
+        // hull's origin — a 13 m Cape Islander tied by the stern is held quite differently from one tied
+        // by the bow, and that difference is the whole reason the rig exports named cleats.
+        private IMooringCleat _boatCleat;
+        private IMooringCleat _shoreCleat;
+        // How much line is paid out. The player's choice, and the thing the tide tests.
+        private float _scopeMetres;
+        // How long the line has been over its working load — the slip grace (a single snatching wave must
+        // not cast her off; a tide that has out-run the scope must).
+        private float _overloadSeconds;
+        // Last computed load, published on the slip beat and read by the taut/slack visual.
+        private float _load01;
 
         public MooringState State { get; private set; } = MooringState.Stowed;
 
@@ -119,10 +161,57 @@ namespace HiddenHarbours.Boats
         public Vector2 TiePoint => _anchor != null ? _anchor.Position : Vector2.zero;
         public bool IsHeld   => State == MooringState.HeldByPlayer;
         public bool IsRooted => State == MooringState.RootedToGround;
-        /// <summary>True while a rope should be drawn / a hold-root prompt is relevant (moored, either state).</summary>
-        public bool IsMoored => State != MooringState.Stowed;
+        /// <summary>
+        /// True while the PAINTER is out — held in hand or rooted to the ground — i.e. while the
+        /// hold/root prompt is relevant. <b>Deliberately false for a line made fast to a cleat</b>: the
+        /// root key has nothing to offer a properly moored boat (you work her at the cleat, with the rope
+        /// verb), and reporting otherwise would put a prompt on screen that does nothing when pressed.
+        /// Use <see cref="IsMadeFast"/> for the cleat moor and <see cref="HasLineOut"/> for "is there a
+        /// rope to draw at all".
+        /// </summary>
+        public bool IsMoored => State == MooringState.HeldByPlayer || State == MooringState.RootedToGround;
+
+        /// <summary>True whenever a rope of any kind should be drawn — painter or made-fast line.</summary>
+        public bool HasLineOut => State != MooringState.Stowed;
 
         public float RopeLength => _ropeLength;
+
+        // ---- made-fast reads (M2-38) ----------------------------------------------------------------
+
+        /// <summary>True when a line is made fast between two cleats (the seamanlike moor).</summary>
+        public bool IsMadeFast => State == MooringState.MadeFastToCleat;
+
+        /// <summary>This hull's end of the line; null unless made fast.</summary>
+        public IMooringCleat BoatCleat => _boatCleat;
+
+        /// <summary>The shore end of the line; null unless made fast.</summary>
+        public IMooringCleat ShoreCleat => _shoreCleat;
+
+        /// <summary>How much line is paid out (m) — the player's scope choice.</summary>
+        public float ScopeMetres => _scopeMetres;
+
+        /// <summary>How hard the line is working right now: 0 slack, 1 bar-taut, &gt;1 overloaded. The live
+        /// read the rope visual grades its taut/slack look off, and the creak-audio hook.</summary>
+        public float Load01 => _load01;
+
+        /// <summary>
+        /// How much of the scope is still available to reach ACROSS the water, after the tide-driven
+        /// vertical drop between the two cleats has taken its share. <b>The tide law's live value</b>
+        /// (<see cref="MooringLineMath.HorizontalReach"/>): this shrinks as the water falls away from a
+        /// wharf-height cleat, and it is what the constraint actually holds her inside of. 0 when the drop
+        /// alone has eaten the whole line — she is hanging, and the loop is about to go.
+        /// </summary>
+        public float HorizontalReachMetres
+            => IsMadeFast
+                ? MooringLineMath.HorizontalReach(_scopeMetres, VerticalDropMetres)
+                : 0f;
+
+        /// <summary>The tide-driven vertical gap between the two cleats (m) — fixed shore end, floating
+        /// boat end. 0 when no line is made fast.</summary>
+        public float VerticalDropMetres
+            => _boatCleat != null && _shoreCleat != null
+                ? MooringLineMath.VerticalDrop(_boatCleat.ElevationMeters, _shoreCleat.ElevationMeters)
+                : 0f;
 
         private void Awake()
         {
@@ -149,6 +238,9 @@ namespace HiddenHarbours.Boats
         /// </summary>
         public void Hold(Transform player)
         {
+            // Already properly moored to a cleat? Then stepping ashore does not put the painter in your
+            // hand — she is tied, and taking the line back is CastOff at the cleat (M2-38).
+            if (State == MooringState.MadeFastToCleat) return;
             EnsureRefs();
             _anchor = new TransformAnchor(player);
             State = MooringState.HeldByPlayer;
@@ -163,6 +255,7 @@ namespace HiddenHarbours.Boats
         /// </summary>
         public void Root(Vector2 groundPoint)
         {
+            if (State == MooringState.MadeFastToCleat) return;   // she is on a cleat, not on the ground
             EnsureRefs();
             _anchor = new FixedAnchor(groundPoint);
             State = MooringState.RootedToGround;
@@ -170,15 +263,147 @@ namespace HiddenHarbours.Boats
         }
 
         /// <summary>
-        /// Stow the rope — the player has re-boarded (the helm takes over). The mooring goes dormant and the
-        /// piloted <see cref="BoatController"/> drives again. Safe to call in any state.
+        /// Stow the PAINTER — the player has re-boarded (the helm takes over). The held/rooted rope goes
+        /// dormant and the piloted <see cref="BoatController"/> drives again. Safe to call in any state.
+        ///
+        /// <para><b>A line MADE FAST between cleats survives this, on purpose</b> (M2-38). Stowing is what
+        /// happens to the painter in your hand when you step aboard; it is not untying. A boat properly
+        /// moored to a wharf stays moored while you climb aboard and stow your gear — and casting off is
+        /// then a deliberate act at the cleat (<see cref="CastOff"/>), which is the entire point of the
+        /// verb. Handling it here rather than at the call sites means the control switcher needs no
+        /// knowledge of the difference.</para>
         /// </summary>
         public void Stow()
         {
+            if (State == MooringState.MadeFastToCleat) return;   // she is properly moored; leave her tied
             State = MooringState.Stowed;
             _anchor = null;
+            ClearLine();
             UpdateRopeVisual();
         }
+
+        // ---- made fast between two cleats (M2-38) ----------------------------------------------------
+
+        /// <summary>
+        /// <b>Make the line fast</b> between one of this hull's cleats and a shore cleat, with
+        /// <paramref name="scopeMetres"/> of line paid out. The thrown loop caught; from here the sea keeps
+        /// working her and the rope restrains her, within whatever reach the tide leaves that scope.
+        ///
+        /// <para>Returns false (and changes nothing) unless both ends are present and on OPPOSING sides —
+        /// a line runs boat-to-shore, never boat-to-boat (rafting is out of scope) and never
+        /// shore-to-shore.</para>
+        /// </summary>
+        public bool MakeFast(IMooringCleat boatCleat, IMooringCleat shoreCleat, float scopeMetres)
+        {
+            if (boatCleat == null || shoreCleat == null) return false;
+            if (boatCleat.Side != CleatSide.Boat || shoreCleat.Side != CleatSide.Shore) return false;
+
+            EnsureRefs();
+            _boatCleat = boatCleat;
+            _shoreCleat = shoreCleat;
+            _scopeMetres = ClampScope(scopeMetres);
+            _overloadSeconds = 0f;
+            _anchor = new CleatAnchor(shoreCleat);        // the end that holds still
+            State = MooringState.MadeFastToCleat;
+
+            _load01 = ComputeLoad01();
+            Publish(MooringLineEvent.MadeFast);
+            UpdateRopeVisual();
+            return true;
+        }
+
+        /// <summary>
+        /// <b>Cast off</b> — the player lets the line go deliberately. She is free, and the sea has her.
+        /// A no-op unless a line is actually made fast (so a stray key press near a cleat can't "untie" a
+        /// boat that was never tied).
+        /// </summary>
+        public bool CastOff()
+        {
+            if (State != MooringState.MadeFastToCleat) return false;
+            Publish(MooringLineEvent.CastOff);
+            State = MooringState.Stowed;
+            _anchor = null;
+            ClearLine();
+            UpdateRopeVisual();
+            return true;
+        }
+
+        /// <summary>
+        /// Tighten (negative <paramref name="steps"/>) or slacken (positive) the made-fast line by whole
+        /// config steps. Returns the new scope. A no-op unless made fast.
+        ///
+        /// <para><b>This is the player's whole lever on the tide.</b> Slacken before an ebb and she rides
+        /// it out; leave her tight and the falling water hangs her. Stepped so the choice is countable.</para>
+        /// </summary>
+        public float AdjustScope(int steps)
+        {
+            if (State != MooringState.MadeFastToCleat) return _scopeMetres;
+            MooringLineSettings s = Settings;
+            float next = MooringLineMath.StepScope(_scopeMetres, steps, s.ScopeStepMetres,
+                                                   s.MinScopeMetres, s.MaxScopeMetres);
+            if (Mathf.Approximately(next, _scopeMetres)) return _scopeMetres;   // already at a stop
+
+            _scopeMetres = next;
+            _overloadSeconds = 0f;      // a fresh judgement deserves a fresh grace period
+            _load01 = ComputeLoad01();
+            Publish(MooringLineEvent.ScopeChanged);
+            UpdateRopeVisual();
+            return _scopeMetres;
+        }
+
+        /// <summary>Set the scope directly (builders / tests / a future winch), clamped to the config's
+        /// limits. A no-op unless made fast.</summary>
+        public float SetScope(float scopeMetres)
+        {
+            if (State != MooringState.MadeFastToCleat) return _scopeMetres;
+            _scopeMetres = ClampScope(scopeMetres);
+            _overloadSeconds = 0f;
+            _load01 = ComputeLoad01();
+            Publish(MooringLineEvent.ScopeChanged);
+            UpdateRopeVisual();
+            return _scopeMetres;
+        }
+
+        /// <summary>The shared owner tuning, falling back to the reference values when no config is wired
+        /// (EditMode / pre-bootstrap) — the established gate-off shape, never zeros (⚠ a YAML-omitted
+        /// struct deserialises to C# defaults, which is why the fallback is <c>Default</c> and not
+        /// <c>default</c>).</summary>
+        private static MooringLineSettings Settings
+            => GameServices.Config != null ? GameServices.Config.MooringLine : MooringLineSettings.Default;
+
+        private static float ClampScope(float scope)
+        {
+            MooringLineSettings s = Settings;
+            return Mathf.Clamp(float.IsNaN(scope) ? s.DefaultScopeMetres : scope,
+                               Mathf.Max(0f, s.MinScopeMetres),
+                               Mathf.Max(s.MinScopeMetres, s.MaxScopeMetres));
+        }
+
+        private void ClearLine()
+        {
+            _boatCleat = null;
+            _shoreCleat = null;
+            _scopeMetres = 0f;
+            _overloadSeconds = 0f;
+            _load01 = 0f;
+        }
+
+        /// <summary>The line's live load: the 3D span between the two cleats against the scope. 0 when no
+        /// line is made fast.</summary>
+        private float ComputeLoad01()
+        {
+            if (_boatCleat == null || _shoreCleat == null) return 0f;
+            float span = MooringLineMath.Span(_boatCleat.WorldPosition, _boatCleat.ElevationMeters,
+                                              _shoreCleat.WorldPosition, _shoreCleat.ElevationMeters);
+            return MooringLineMath.Load01(span, _scopeMetres);
+        }
+
+        private void Publish(MooringLineEvent evt)
+            => EventBus.Publish(new MooringLineChanged(
+                   evt,
+                   _boatCleat != null ? _boatCleat.Id : "",
+                   _shoreCleat != null ? _shoreCleat.Id : "",
+                   _scopeMetres, _load01));
 
         /// <summary>
         /// Toggle HOLD ⇄ ROOT for the on-foot interaction (the root key). From Held → Root the line at
@@ -304,33 +529,106 @@ namespace HiddenHarbours.Boats
 
             Vector2 tie = _anchor.Position;
 
-            // --- The sea works on the idle hull: wind + tide drift (deterministic), held or rooted alike. ---
+            // --- The sea works on the idle hull: wind + tide drift (deterministic), in every moored state. ---
             // Reads the hull's own drag/windage stats (data, not code) — the same model the helm uses.
+            // NOTE the ordering that matters for M2-38: the drift is applied FIRST and unconditionally.
+            // The sim keeps computing and the rope is a RESTRAINT on the result, never a freeze (rule 5).
             Vector2 drift = DriftForce(_rb.linearVelocity, transform.up, env.WindVector, env.CurrentVector,
                                        hull.ForwardDrag, hull.LateralDrag, hull.WindExposure);
             _rb.AddForce(drift * _driftFeelScale, ForceMode2D.Force);
 
+            // --- What the rope can actually reach, and from where. ------------------------------------
+            // HELD/ROOTED: the painter runs from the hull's origin to the player's hand or a ground spot,
+            // and its whole length lies flat on the water — reach IS rope length.
+            //
+            // MADE FAST: the line runs between two FITTINGS, and it has to climb the gap between them
+            // first. So (a) the effective reach is what the tide leaves of the scope
+            // (MooringLineMath.HorizontalReach — the one place that law is written), and (b) the circle is
+            // centred so that the BOAT'S CLEAT, not her origin, is the end being held. Shifting the tie
+            // by the cleat's own offset is exactly equivalent to constraining the cleat point, and it
+            // lets the tested tether/clamp helpers below stay untouched.
+            float reach = _ropeLength;
+            bool hanging = false;
+            if (State == MooringState.MadeFastToCleat)
+            {
+                if (_boatCleat == null || _shoreCleat == null) { CastOff(); return; }
+                reach = HorizontalReachMetres;
+                tie -= _boatCleat.WorldPosition - _rb.position;   // centre on the hull, hold the cleat
+                // The drop alone has eaten the whole line: there is no horizontal reach left and she is
+                // HANGING on the rope rather than swinging on it.
+                hanging = reach <= 0f;
+            }
+
             // --- The rope: a one-sided FIRM tether checks her at the end of the rope (near-rigid, not springy). ---
-            Vector2 tether = TetherForce(_rb.position, tie, _ropeLength,
+            Vector2 tether = TetherForce(_rb.position, tie, reach,
                                          _limitStiffness, _rb.linearVelocity, _limitDamping, _ropeGive);
             if (tether != Vector2.zero) _rb.AddForce(tether * _driftFeelScale, ForceMode2D.Force);
 
-            // --- Hard positional clamp (inextensible): she can NEVER sit past rope-length + give. ---
-            Vector2 clamped = ConstrainToRope(_rb.position, tie, _ropeLength, _ropeGive);
-            if (clamped != _rb.position)
+            // --- Hard positional clamp (inextensible): she can NEVER sit past rope-length + give. -------
+            // SKIPPED while hanging, and that exception is the whole difference between a mooring that
+            // reads and one that snaps. The clamp expresses "this rope does not stretch", which is only
+            // meaningful while the rope can still REACH: with a reach of zero the clamp would teleport a
+            // 13 m hull onto the bollard the instant a falling tide crossed the threshold. What actually
+            // happens to a hung boat is that the line comes up hard and HAULS her in — which is exactly
+            // the firm tether force above, finite and visible — until the loop lets go a moment later.
+            if (!hanging)
             {
-                _rb.position = clamped;
-                // Kill the outward radial velocity so the clamp doesn't fight the integrator next tick.
-                Vector2 outward = clamped - tie;
-                if (outward.sqrMagnitude > 1e-6f)
+                Vector2 clamped = ConstrainToRope(_rb.position, tie, reach, _ropeGive);
+                if (clamped != _rb.position)
                 {
-                    outward.Normalize();
-                    float outwardSpeed = Vector2.Dot(_rb.linearVelocity, outward);
-                    if (outwardSpeed > 0f) _rb.linearVelocity -= outward * outwardSpeed;
+                    _rb.position = clamped;
+                    // Kill the outward radial velocity so the clamp doesn't fight the integrator next tick.
+                    Vector2 outward = clamped - tie;
+                    if (outward.sqrMagnitude > 1e-6f)
+                    {
+                        outward.Normalize();
+                        float outwardSpeed = Vector2.Dot(_rb.linearVelocity, outward);
+                        if (outwardSpeed > 0f) _rb.linearVelocity -= outward * outwardSpeed;
+                    }
                 }
             }
 
+            // --- THE COZY FAIL: a line worked past its working load long enough loses the loop. --------
+            if (State == MooringState.MadeFastToCleat && TickSlip(Time.fixedDeltaTime)) return;
+
             UpdateRopeVisual();
+        }
+
+        /// <summary>
+        /// Grade the made-fast line's load and, if it has been over its working load for longer than the
+        /// grace period, <b>slip the loop</b>: she goes quietly adrift, undamaged, and the player coils the
+        /// line and tries again. Returns true when she slipped (the caller stops touching the line).
+        ///
+        /// <para><b>When this actually fires.</b> While the drop between the two cleats is smaller than the
+        /// scope, the clamp above holds her inside the reach circle and the 3D span can never exceed the
+        /// scope — the line simply restrains her, which is the whole point. It is when the TIDE has opened
+        /// the two cleats further apart VERTICALLY than the whole line is long that the span overruns the
+        /// scope no matter where she sits: she is hanging on the rope, and the loop gives up. That is
+        /// exactly the seamanship P1 is teaching — too short a line for the tide you left her in.</para>
+        ///
+        /// <para>The grace period is why a single snatching wave is not a lost boat: the overload has to
+        /// be SUSTAINED, and a tide that has out-run the scope sustains it.</para>
+        /// </summary>
+        private bool TickSlip(float dt)
+        {
+            MooringLineSettings s = Settings;
+            _load01 = ComputeLoad01();
+
+            if (_load01 <= Mathf.Max(1f, s.WorkingLoadFactor))
+            {
+                _overloadSeconds = 0f;
+                return false;
+            }
+
+            _overloadSeconds += Mathf.Max(0f, dt);
+            if (_overloadSeconds < Mathf.Max(0f, s.SlipGraceSeconds)) return false;
+
+            Publish(MooringLineEvent.Slipped);
+            State = MooringState.Stowed;
+            _anchor = null;
+            ClearLine();
+            UpdateRopeVisual();
+            return true;
         }
 
         // ---- greybox rope visual (placeholder LineRenderer; slack = drooping catenary, taut = straight) ----
@@ -374,14 +672,24 @@ namespace HiddenHarbours.Boats
         /// </summary>
         public static void SampleRopeCurve(Vector2 tiePoint, Vector2 boatPos, float ropeLength,
                                            float maxSag, Vector2[] buffer)
+            => SampleRopeCurveBySlack(tiePoint, boatPos, Slack01((boatPos - tiePoint).magnitude, ropeLength),
+                                      maxSag, buffer);
+
+        /// <summary>
+        /// The same drooping curve, but told HOW SLACK the rope is rather than re-deriving it from a
+        /// distance. The made-fast line needs this: its slackness is <c>1 − Load01</c> against a scope the
+        /// tide is eating, which a flat screen-distance cannot see. One belly function, two ways of
+        /// knowing the slack — never two bellies. Pure + static; writes a caller-owned buffer (no alloc).
+        /// </summary>
+        /// <param name="slack01">0 = bar-taut (draw it straight), 1 = fully slack (full belly).</param>
+        public static void SampleRopeCurveBySlack(Vector2 tiePoint, Vector2 boatPos, float slack01,
+                                                  float maxSag, Vector2[] buffer)
         {
             int n = buffer.Length;
             if (n == 0) return;
             if (n == 1) { buffer[0] = boatPos; return; }
 
-            float dist = (boatPos - tiePoint).magnitude;
-            float slack = Slack01(dist, ropeLength);
-            float sag = slack * Mathf.Max(0f, maxSag);
+            float sag = Mathf.Clamp01(float.IsNaN(slack01) ? 0f : slack01) * Mathf.Max(0f, maxSag);
 
             for (int i = 0; i < n; i++)
             {
@@ -399,16 +707,33 @@ namespace HiddenHarbours.Boats
         private void UpdateRopeVisual()
         {
             if (_rope == null) return;
-            bool show = IsMoored && _anchor != null;
+            bool show = HasLineOut && _anchor != null;
             if (_rope.enabled != show) _rope.enabled = show;
             if (!show) { _rope.positionCount = 0; return; }
 
             Vector2 tie = _anchor.Position;
             Vector2 boat = transform.position;
 
+            // A MADE-FAST line is drawn between the two FITTINGS — from the hull's own cleat to the
+            // bollard, not from the middle of the boat to the middle of the wharf. And its sag is graded
+            // by the SAME load the physics is grading (MooringLineMath.Load01, via _load01) rather than by
+            // a second distance measurement, so a rope that LOOKS bar-taut is a rope that IS: the
+            // never-compute-one-quantity-two-ways rule the flick-cast preview already lives under.
+            float slack;
+            if (State == MooringState.MadeFastToCleat && _boatCleat != null && _shoreCleat != null)
+            {
+                boat = _boatCleat.WorldPosition;
+                tie = _shoreCleat.WorldPosition;
+                slack = Mathf.Clamp01(1f - _load01);
+            }
+            else
+            {
+                slack = Slack01((boat - tie).magnitude, _ropeLength);
+            }
+
             int n = Mathf.Max(2, _ropeSegments);
             if (_curveBuffer == null || _curveBuffer.Length != n) _curveBuffer = new Vector2[n];
-            SampleRopeCurve(tie, boat, _ropeLength, _slackSagAmount, _curveBuffer);
+            SampleRopeCurveBySlack(tie, boat, slack, _slackSagAmount, _curveBuffer);
 
             _rope.startWidth = _ropeWidth; _rope.endWidth = _ropeWidth;
             _rope.startColor = _ropeColor; _rope.endColor = _ropeColor;

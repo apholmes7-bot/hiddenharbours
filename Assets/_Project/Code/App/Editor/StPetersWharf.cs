@@ -296,12 +296,50 @@ namespace HiddenHarbours.App.Editor
                                  "the deck is bare (no bollards, ladder or fenders).");
             }
 
+            // WHERE A ROPE MAY BE MADE FAST (M2-38). Placed from the SAME fittings table that positions
+            // the sprites, so the bollard you tie to is the bollard you can see — never a second copy of
+            // the geometry to drift out of step. Deliberately OUTSIDE the sprite branch above: the kit's
+            // overlay sheet is art, and whether a wharf can be moored to must not depend on whether that
+            // art has been imported.
+            int cleats = PlaceMooringCleats(root, deckElevation);
+
             Debug.Log($"[StPetersWharf] Built the one dock: {placed} '{DeckMaterial}' deck tiles over " +
                       $"{LengthCells} x {WidthCells} m at the ratified berth, drawn back to front, plus " +
-                      $"{Fittings().Count} fittings. The deck is FLOOR: registered as standable surface " +
-                      $"'{SurfaceId}' with its deck measured at {deckElevation:0.00} m above datum, so the " +
-                      "on-foot sim stands on the planks and not in the -1.0 m slip beneath them.");
+                      $"{Fittings().Count} fittings ({cleats} of them mooring cleats). The deck is FLOOR: " +
+                      $"registered as standable surface '{SurfaceId}' with its deck measured at " +
+                      $"{deckElevation:0.00} m above datum, so the on-foot sim stands on the planks and " +
+                      "not in the -1.0 m slip beneath them.");
             return placed;
+        }
+
+        /// <summary>
+        /// Give every mooring fitting on the pier a <see cref="ShoreCleat"/> — the Core-side tie-off point
+        /// M2-38's ropes are made fast to. Derived from <see cref="Fittings"/> so placement has exactly one
+        /// source, and filtered by <see cref="WharfKitCatalog.IsMooringFitting"/> so the kit decides what
+        /// counts as a tie-off (a tyre is a fender, not a cleat).
+        ///
+        /// <para>The elevation is the pier's own MEASURED deck height, passed in rather than re-derived:
+        /// a bollard is bolted to the planks, and this is the fixed end every mooring line is worked
+        /// against as the tide moves the other one.</para>
+        /// </summary>
+        static int PlaceMooringCleats(GameObject root, float deckElevation)
+        {
+            var cleatRoot = new GameObject("MooringCleats");
+            cleatRoot.transform.SetParent(root.transform, worldPositionStays: false);
+
+            int n = 0;
+            foreach (var f in Fittings())
+            {
+                if (!WharfKitCatalog.IsMooringFitting(f.Name)) continue;
+
+                var go = new GameObject($"Cleat_{f.Name}_{n}");
+                go.transform.SetParent(cleatRoot.transform, worldPositionStays: false);
+                go.transform.position = new Vector3(f.Position.x, f.Position.y, 0f);
+                go.AddComponent<HiddenHarbours.World.ShoreCleat>()
+                  .Configure($"{SurfaceId}.{f.Name}_{n}", deckElevation);
+                n++;
+            }
+            return n;
         }
 
         /// <summary>A sliced sheet's sub-sprites keyed by their trailing slice INDEX (the slicer names them

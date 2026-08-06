@@ -306,6 +306,15 @@ namespace HiddenHarbours.Core
                  "cast — reel in and go again, no penalty. Every feel dial lives here.")]
         public FlickCastSettings FlickCast = FlickCastSettings.Default;
 
+        [Header("Mooring lines (M2-38 — throw a rope to a cleat, mind the tide)")]
+        [Tooltip("The rope you throw to a cleat and make fast: how near you must stand to work a cleat, " +
+                 "how close the toss must land to catch, and — the part that carries the seamanship — how " +
+                 "much SCOPE (line length) you can pay out, in what steps, and how hard the loop will be " +
+                 "worked before it slips. Scope is the player's choice and the tide is the test: too short " +
+                 "a line on a falling tide hangs the boat and the loop surrenders (no damage — coil and " +
+                 "try again). Every dial is here so the feel is tuned without code.")]
+        public MooringLineSettings MooringLine = MooringLineSettings.Default;
+
         [Header("Displaced water (ADR 0023 — the sea's readable drama)")]
         [Tooltip("Owner tuning for the displaced water surface (ADR 0023, phase 2): how much taller " +
                  "the sea DRAWS than it simulates, how wide the tear-safe calm band along every shore " +
@@ -1234,6 +1243,96 @@ namespace HiddenHarbours.Core
             MinCastMetres = 1.5f,
             MaxCastDistanceMetres = 12f,
             LineFlightMetresPerSec = 18f,
+        };
+    }
+
+    /// <summary>
+    /// The owner-tunable feel of a <b>mooring line</b> (<see cref="GameConfig.MooringLine"/> — M2-38,
+    /// design/deck-boarding-cleats-and-interact-capture.md §3). Lives in Core beside the config it rides
+    /// on, the same Core-policy / feature-consumer split as <see cref="FlickCastSettings"/>: the pure
+    /// maths that consumes it (<see cref="MooringLineMath"/>) is fed these numbers, and the Boats/Player
+    /// consumers read them off the shared config each time they work a line.
+    ///
+    /// <para><b>The dial that matters is the scope range against a region's real DROP</b> — which is the
+    /// tidal range PLUS how high the wharf stands, not the tidal range alone. St Peters is the worked
+    /// example and it is a taller pier than it looks: its deck is measured at <b>+5.35 m</b> above datum
+    /// and the tide swings <b>±2.2 m</b> (the 2026-08-01 pacing ruling), so the gap from a bollard down to
+    /// a small hull's cleat runs from ~2.6 m at high water to <b>~7.0 m at low</b>. A line has to cover
+    /// that vertically before it reaches across the water at all. Hence the defaults below:
+    /// <list type="bullet">
+    ///   <item><b>9 m</b> to start — she rides the whole ebb, swinging ~8.6 m at high water and ~5.7 m at
+    ///   low. The boat is visibly drawn in as the water goes, which is the tell, but she is never hung.</item>
+    ///   <item><b>Snug her to ~4 m</b> at high water and it looks perfect — and the ebb collects on it.
+    ///   That is the lesson, and it is the player's own choice that sets it up.</item>
+    ///   <item><b>16 m</b> at the top so a big hull on a spring tide still has an answer.</item>
+    /// </list>
+    /// Re-tune these when a region's wharf height or tide amplitude changes, or the gradient flattens and
+    /// "mind the tide" becomes scenery. <c>MooringLineMathTests</c> pins that gradient against St Peters'
+    /// actual numbers.</para>
+    ///
+    /// <para><b>Not here on purpose:</b> rope damage, breaking strain and multi-line rafting. V1's failure
+    /// is the loop SLIPPING (<see cref="WorkingLoadFactor"/>) and the boat going quietly adrift — the
+    /// cozy fail the backlog names. A parting rope is a different, harsher feature and a separate call.</para>
+    /// </summary>
+    [System.Serializable]
+    public struct MooringLineSettings
+    {
+        [Tooltip("How close (m) you must stand to a cleat to work it — start a toss from it, or tighten, " +
+                 "slacken and cast off a line already made fast to it. Roughly arm's reach: you are " +
+                 "handling the fitting, not gesturing at it from across the deck.")]
+        [Min(0f)] public float CleatReachMetres;
+
+        [Tooltip("How near the far cleat the toss must LAND (m) for the loop to catch. This is the whole " +
+                 "skill of the throw — the flick-cast decides where the line lands, and this decides " +
+                 "whether that was good enough. Larger = kinder. Miss and the line simply falls in the " +
+                 "water: coil it and try again, no penalty (cozy fail).")]
+        [Min(0f)] public float TossCatchRadiusMetres;
+
+        [Tooltip("SCOPE the line starts at (m) when it first catches — a sensible working length before " +
+                 "the player has tightened or slackened anything.")]
+        [Min(0f)] public float DefaultScopeMetres;
+
+        [Tooltip("Shortest scope (m) you can haul a line in to. Above zero: a line hauled to nothing " +
+                 "would pin the boat rigidly against the wharf, which is neither seamanlike nor a thing " +
+                 "the constraint should have to express.")]
+        [Min(0f)] public float MinScopeMetres;
+
+        [Tooltip("Longest scope (m) you can pay out. THE tide dial — see the struct doc: this must be " +
+                 "comfortably larger than the region's tidal range or a short line is never a mistake, " +
+                 "and never so large that scope stops being a decision.")]
+        [Min(0f)] public float MaxScopeMetres;
+
+        [Tooltip("How much line (m) one press of tighten/slacken pays out or hauls in. Stepped rather " +
+                 "than continuous so the player can COUNT the scope they are giving the tide, and so a " +
+                 "keypress is a decision rather than a drag.")]
+        [Min(0.01f)] public float ScopeStepMetres;
+
+        [Tooltip("How far past bar-taut (×) the loop will be worked before it SLIPS off the cleat and the " +
+                 "boat goes adrift. 1.0 = it surrenders the instant the line comes taut; 1.25 = it will " +
+                 "take a quarter again its length of strain first. Keep above 1 — teeth should be earned " +
+                 "by misjudging the tide, not by touching the water.")]
+        [Min(1f)] public float WorkingLoadFactor;
+
+        [Tooltip("How long (real seconds) the line must stay over its working load before the loop lets " +
+                 "go. A grace period so a single wave that snatches the rope does not cast you off — it " +
+                 "is a SUSTAINED overload (a tide that has run away from your scope) that loses the boat.")]
+        [Min(0f)] public float SlipGraceSeconds;
+
+        /// <summary>The St Peters reference tuning: arm's reach to a fitting, a forgiving 1.5 m catch on
+        /// the throw, 9 m of scope to start, stepped by the metre between 2 m and 16 m, and a loop that
+        /// takes a quarter again its length of strain for a couple of seconds before it surrenders. Sized
+        /// against that pier's REAL drop (~2.6 m at high water, ~7.0 m at low — see the struct doc), so
+        /// the starting line rides an ordinary ebb out and a deliberately snugged one does not.</summary>
+        public static MooringLineSettings Default => new MooringLineSettings
+        {
+            CleatReachMetres = 1.5f,
+            TossCatchRadiusMetres = 1.5f,
+            DefaultScopeMetres = 9f,
+            MinScopeMetres = 2f,
+            MaxScopeMetres = 16f,
+            ScopeStepMetres = 1f,
+            WorkingLoadFactor = 1.25f,
+            SlipGraceSeconds = 2f,
         };
     }
 

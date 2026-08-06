@@ -186,6 +186,9 @@ namespace HiddenHarbours.Boats
                 // rectangle. Cleared rather than left stale, so a swap DOWN from a measured hull does
                 // not leave the player clamped to the boat they just sold.
                 BoatDeckAreas.Write(root, null);
+                // …and nothing to tie to either (M2-38). Same clear-rather-than-stale reason: a rope must
+                // never stay made fast to the cleats of a hull that is no longer worn.
+                BoatCleats.Write(root, hull, null);
                 if (baseRenderer != null)
                 {
                     baseRenderer.enabled = true;
@@ -219,6 +222,11 @@ namespace HiddenHarbours.Boats
             // hull geometry and belong to the hull whichever way she is DRAWN (M2-37's data half). Null
             // for an unmeasured hull, which is how the deck-walk knows to keep its greybox rectangle.
             BoatDeckAreas.Write(root, visual.Deck);
+
+            // WHERE A ROPE MAY BE MADE FAST (M2-38), from the same imported sidecar and written at the
+            // same moment, so the walkable area and the cleats can never come from different hulls. The
+            // hull is needed for her draught — how far a fitting stands above the water she floats in.
+            BoatCleats.Write(root, boat != null ? boat.Hull : null, visual.Deck);
 
             // THE VARIANT BRANCH (ADR 0022 phase 4). Mesh when the data says so AND the mesh is
             // actually presentable here (usable def + a registered presentation service); otherwise

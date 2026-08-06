@@ -769,28 +769,79 @@ The on-foot ⇄ aboard control loop is the `ControlSwitcher` (Player lane); seve
   (`RegionPassage.ShouldFire`), owner-tunable (`_reentryCooldownSeconds`), nothing saved. So the helm stays
   live crossing the boundary repeatedly, for both the rowed Dory and the engine Punt.
 
-### 9.6 Mooring — future work (cleats / posts / placed tie items, and a second line) *(NOT built)*
+### 9.6 Mooring — the painter, and the line made fast to a cleat
 
-The current rope makes fast to one of two **tie targets**: the **player's hand** (held) or a **fixed ground
-spot** (rooted). Both are an `IMooringAnchor` (`MooringAnchor.cs`) — an interface the tether reads a live
-`Position` from each tick — so the mechanic is already structured to grow **without reworking the rope
-physics**:
+The rope makes fast to one of **three** tie targets. All are an `IMooringAnchor` (`MooringAnchor.cs`) — an
+interface the tether reads a live `Position` from each tick:
 
-- **Dedicated cleats / posts / user-placeable tie items.** A cleat on the wharf, a piling, or a tie-post the
-  player **places** is just another `IMooringAnchor` (a `FixedAnchor` at its position, or a component that
-  supplies its own). Rooting to one instead of the bare ground becomes a target-selection choice (snap to the
-  nearest in-reach cleat); the firm/slack tether and the LineRenderer are unchanged. A placed tie-item would
-  be **content/data** (a small `Def` + a world prop), keeping it in-lane with ADR-0003. This pairs with the
-  shipwright/harbour build-out and the lobster-buoy work (§6.3).
+| State | Tie target | Tidal? |
+|---|---|---|
+| `HeldByPlayer` | the player's hand (`TransformAnchor`) | no |
+| `RootedToGround` | a fixed ground spot (`FixedAnchor`) | no |
+| `MadeFastToCleat` | a shore cleat, with the other end on one of the hull's own cleats (`CleatAnchor`) | **yes** |
+
+#### The cleat moor (M2-38, built 2026-08-06)
+
+Stand by a cleat, **throw a line with the fishing-cast verb** to a cleat on the other side of the water
+(boat→shore or shore→boat), make fast, then tighten or slacken at will. Cleats come from data on both sides:
+a hull's from her rig sidecar's `CLEATS` (`BoatDeckDef.Cleats`, published by `BoatCleats`), the shore's from
+the wharf builders' own fittings table (`ShoreCleat`). Both register into the Core `MooringCleats` registry;
+neither side references the other.
+
+**The tide law — the one thing to understand.** A line has a fixed LENGTH (its *scope*). Its two ends do
+not stay the same distance apart: the shore cleat is bolted to the planks and stands still, while the boat's
+cleat floats and rides the water. So the line must span a **three-dimensional** gap whose vertical component
+the tide drives, and whatever the drop spends is no longer available to reach *across* the water:
+
+```
+horizontal reach = √(scope² − verticalDrop²)          MooringLineMath.HorizontalReach
+verticalDrop     = |boatCleatElevation − shoreCleatElevation|
+boatCleatElevation = waterLevel + (cleatHeightAboveKeel − draught)
+```
+
+That single function covers both hazards, because the drop is an absolute value and so grows in *either*
+direction from level:
+
+- **Falling tide, short line** (tied bar-taut at high water to a wharf): she drops away, the reach collapses,
+  the line hauls her in against her own sheer — and past the working load the loop **slips**. The classic
+  way to hang a boat off a wharf.
+- **Rising tide, short line** (tied bar-taut at low water to something *low* — a float, a ring at the
+  waterline): she now rises *past* her cleat, the drop opens again from the other side, and the line pins
+  her down as the water lifts her.
+- **Tied short at low water to a HIGH wharf**, though, gets *slacker* as the tide makes — which is what real
+  seamanship says, and is the reward P1 is teaching.
+
+**The cozy fail is a slipped loop, not a parted rope.** Past `WorkingLoadFactor` × scope, sustained for
+`SlipGraceSeconds` (so one snatching wave never costs the boat), the loop surrenders and she goes quietly
+adrift, undamaged. Coil it and try again. No damage model, no breaking strain in v1.
+
+**Sizing it is about the DROP, not the tidal range.** St Peters is the worked example and is a taller pier
+than it looks: deck measured at **+5.35 m** above datum, tide swinging **±2.2 m**, so the gap from a bollard
+down to a small hull's cleat runs ~2.6 m at high water to **~7.0 m at low**. Hence the shipped defaults
+(`GameConfig.MooringLine`): **9 m** of scope to start — she rides the whole ebb, swinging ~8.6 m at high and
+~5.7 m at low, visibly drawn in but never hung — against a **2–16 m** range stepped by the metre. Snug her
+to ~4 m at high water and it looks perfectly seamanlike; the ebb collects on it. `MooringLineMathTests` pins
+that gradient against these numbers, so if a region's wharf height or tide amplitude changes the tuning is
+re-checked rather than silently flattened.
+
+**The constraint is a restraint, never a freeze** (rule 5). The drift force is applied every fixed step and
+the rope restrains the *result*: the same firm tether + inextensible clamp the painter uses, handed the
+tide-derived effective length instead of a fixed one, and centred so the *cleat* is the end being held
+rather than the hull's origin. The one exception is while she is **hanging** (reach has gone to zero): the
+positional clamp is skipped there, because a clamp with no reach would teleport a 13 m hull onto the
+bollard. A hung boat is *hauled* by the (finite, visible) tether force until the loop lets go.
+
+#### Still future work *(NOT built)*
+
 - **Two lines (a bow line + a stern line).** A larger or more exposed berth wants the boat held at **two
   points** so she lies alongside instead of swinging on a single leash. That is two `BoatMooring`/anchor
-  pairs (a bow anchor + a stern anchor, each its own rope), with the per-line firm/slack physics applied at
-  the bow and stern attach points rather than the hull centre — a natural extension of the single-line model,
-  not a new mechanic. It also unlocks **springs/breast-lines** flavour and a real "make her fast fore-and-aft"
-  docking beat (P1 seamanship).
-
-Both are deliberately deferred (out of the current greybox phase); the single rope-to-player/ground is the
-working mechanic. Captured here so the structure stays honest and the later pass is a fill-in, not a rewrite.
+  pairs, with the per-line physics applied at the bow and stern attach points rather than the hull centre —
+  an extension of the single-line model, not a new mechanic. It also unlocks **springs/breast-lines** flavour
+  and a real "make her fast fore-and-aft" docking beat (P1 seamanship).
+- **A winch that pays out scope on the tide for you.** P4, and much later — this is precisely the
+  earn-it-then-automate-it shape, and it only means anything *because* doing it by hand can lose you a boat.
+- **Rope damage / breaking strain, and rafting (boat-to-boat).** Deliberately out of scope; the slip is the
+  whole failure model for now.
 
 ### 9.7 Boat wake (the foam trail) — visual-only, reads the sim
 

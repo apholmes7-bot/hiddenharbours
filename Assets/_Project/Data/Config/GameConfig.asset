@@ -196,6 +196,15 @@ MonoBehaviour:
     MinCastMetres: 1.5
     MaxCastDistanceMetres: 12
     LineFlightMetresPerSec: 18
+  MooringLine:
+    CleatReachMetres: 1.5
+    TossCatchRadiusMetres: 1.5
+    DefaultScopeMetres: 9
+    MinScopeMetres: 2
+    MaxScopeMetres: 16
+    ScopeStepMetres: 1
+    WorkingLoadFactor: 1.25
+    SlipGraceSeconds: 2
   DisplacedWater:
     WaveExaggeration: 1.6
     ShoreBandCoefficient: 2
