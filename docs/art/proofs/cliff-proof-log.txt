@@ -1,0 +1,9 @@
+coast: 79 chunks resolved from the authored plan
+subject: a 24-station run near bearing 180.1°, drop 9.19 m, batter 79.2°, surface 9.36 m
+profile: Sandstone_S76 384x288, readable
+form-vs-plane: cliff-form-vs-plane-csharp.png 220x587px at 24 px/m. Shading spread across the face — plane 0.1037, displaced 0.8171. The displaced wall shades over a WIDER range than the plane — the form pass reaches the silhouette and the light answers it.
+daycycle: 02h e=-0.78 shade 0.559..0.770 (mean 0.598)  06h e=+0.00 shade 0.559..0.770 (mean 0.598)  09h e=+0.62 shade 0.737..1.182 (mean 1.038)  13h e=+1.00 shade 0.614..1.524 (mean 0.828)  17h e=+0.62 shade 0.559..1.083 (mean 0.882)  20h e=+0.00 shade 0.559..0.770 (mean 0.598)  23h e=-0.62 shade 0.559..0.770 (mean 0.598)  
+  cliff-daycycle-csharp.png 1532x292px, 7 hours.
+  ⭐ the darkest texel all night is 0.5586, ABOVE zero — the night wall still has something for ADR 0013's moonlight lift to act on (CliffLightMath.SkyFloor).
+  brightest 1.5240; noon-to-midnight ratio 2.7x — a wall that did not change through the day would read 1.0x.
+

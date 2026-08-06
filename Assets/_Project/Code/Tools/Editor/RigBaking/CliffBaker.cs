@@ -504,6 +504,13 @@ namespace HiddenHarbours.Tools.RigBaking
 
             if (importer.sRGBTexture != srgb) { importer.sRGBTexture = srgb; changed = true; }
 
+            // The profile is the one asset the CPU reads: the wall mesh samples it per vertex to displace
+            // the silhouette. Without this the sample throws rather than returning something wrong, which
+            // is the good failure — but it throws at BUILD time on a fresh checkout, so set it here where
+            // the rest of the contract lives rather than leaving it to whoever notices.
+            bool readable = CliffCatalog.IsCpuReadable(kind);
+            if (importer.isReadable != readable) { importer.isReadable = readable; changed = true; }
+
             FilterMode filter = CliffCatalog.Filter(kind);
             if (importer.filterMode != filter) { importer.filterMode = filter; changed = true; }
 

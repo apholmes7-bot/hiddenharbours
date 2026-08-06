@@ -82,6 +82,30 @@ namespace HiddenHarbours.Art.Editor
         /// kits).</summary>
         public static readonly float[] AspectAzimuths = { 270f, 225f, 180f, 135f, 90f };
 
+        /// <summary>
+        /// The TANGENT-SPACE key light each <see cref="Aspects"/> entry was BAKED at — the rig's own
+        /// <c>ASPECT[a].L</c>, verbatim, index-aligned.
+        ///
+        /// <para><b>What it is for, and why it cannot be guessed.</b> <c>mask.R</c> holds
+        /// <c>N·Lbake × castShadow</c>, so the shader recovers the cast shadow by DIVIDING by the bake's
+        /// own <c>N·Lbake</c> (<c>HiddenHarboursCliffFace.shader</c>, <c>_BakeL</c>). Feed it the wrong
+        /// aspect's key and the division leaves a residue of the wrong bake's shading — a face that is
+        /// subtly, uniformly mis-lit, which reads as "the rock looks a bit flat" rather than as an error.
+        /// The shader's PROPERTY DEFAULT is the S row below, which is the standing proof that the rig's
+        /// frame and the shader's tangent frame are the same one and no flip is owed.</para>
+        ///
+        /// <para><c>CliffRigBakeTests</c> reads <c>CliffRig.ASPECT</c> through V8 and holds these equal,
+        /// because a table copied out of a rig by eye is a table that drifts on the next drop.</para>
+        /// </summary>
+        public static readonly Vector3[] AspectBakeLights =
+        {
+            new Vector3(-0.24f, -0.52f, 0.82f),   // W
+            new Vector3(-0.44f, -0.56f, 0.70f),   // SW
+            new Vector3(-0.60f, -0.55f, 0.58f),   // S  — the shader's own _BakeL default
+            new Vector3(-0.22f, -0.74f, 0.64f),   // SE
+            new Vector3(-0.10f, -0.82f, 0.56f),   // E
+        };
+
         /// <summary>The four named batters and their angles from horizontal. 90° is the wall the owner
         /// asked for; the shallower three exist so a coast can transition instead of stepping.</summary>
         public static readonly string[] Batters = { "wall", "steep", "ramp", "bank" };
@@ -224,6 +248,18 @@ namespace HiddenHarbours.Art.Editor
         /// faces and profiles are plain textures sampled by the wall shader.</summary>
         public static bool IsSpriteAsset(CliffAssetKind kind) =>
             kind == CliffAssetKind.Strip || kind == CliffAssetKind.Ledge;
+
+        /// <summary>
+        /// <b>The profile alone imports CPU-READABLE</b>, because it alone is read by the CPU: the wall
+        /// mesh is displaced by sampling it per vertex (<c>CliffWallSurface</c>), and a texture without
+        /// <c>isReadable</c> throws the moment <c>GetPixelBilinear</c> touches it.
+        ///
+        /// <para>This is the same split the README already draws for filtering — <i>"Bilinear (it is
+        /// geometry, not pixels)"</i>. A face, a strip and a ledge are only ever sampled by a shader and
+        /// stay GPU-only, so the readable copy costs nothing on the assets that would actually be
+        /// expensive: the three shipped profiles are 384 × 288 each.</para>
+        /// </summary>
+        public static bool IsCpuReadable(CliffAssetKind kind) => kind == CliffAssetKind.Profile;
 
         // =====================================================================================
         //  NAMES

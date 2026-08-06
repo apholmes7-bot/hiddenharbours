@@ -1,5 +1,6 @@
 using System;
 using NUnit.Framework;
+using UnityEngine;
 using HiddenHarbours.Art.Editor;
 using HiddenHarbours.Tools.RigBaking;
 
@@ -105,6 +106,41 @@ namespace HiddenHarbours.Tests.RigBaking
                 "The rig has grown a north aspect. That is good news, but the coast planner's cliff " +
                 "arc is derived from 'only the southern half is authored' — re-derive it before " +
                 "relaxing this.");
+        }
+
+        /// <summary>
+        /// ⭐ THE BAKE KEYS ARE THE RIG'S. <c>mask.R</c> holds <c>N·Lbake × castShadow</c>, and the
+        /// shader recovers the cast shadow by DIVIDING by that same <c>N·Lbake</c>. Hand it the wrong
+        /// aspect's key and the division leaves a residue of the wrong bake's shading — a face that is
+        /// subtly and uniformly mis-lit, which reads as "the rock looks flat" and not as an error.
+        ///
+        /// <para>The S row is also the shader's own <c>_BakeL</c> property default, so this doubles as
+        /// the standing proof that the rig's light frame and the shader's tangent frame are the same one
+        /// and no sign flip is owed — the mistake that once made the tree rig light from below.</para>
+        /// </summary>
+        [Test]
+        public void TheAspectBakeLightsAreTheRigs()
+        {
+            Assert.AreEqual(CliffCatalog.Aspects.Length, CliffCatalog.AspectBakeLights.Length,
+                "every authored aspect needs the key its channels were baked at");
+
+            for (int i = 0; i < CliffCatalog.Aspects.Length; i++)
+            {
+                string a = Js(CliffCatalog.Aspects[i]);
+                var rig = new Vector3(
+                    (float)_host.EvaluateNumber($"{G}.ASPECT[{a}].L[0]"),
+                    (float)_host.EvaluateNumber($"{G}.ASPECT[{a}].L[1]"),
+                    (float)_host.EvaluateNumber($"{G}.ASPECT[{a}].L[2]"));
+                Vector3 catalog = CliffCatalog.AspectBakeLights[i];
+
+                Assert.AreEqual(rig.x, catalog.x, 1e-4f, $"aspect {CliffCatalog.Aspects[i]} L.x");
+                Assert.AreEqual(rig.y, catalog.y, 1e-4f, $"aspect {CliffCatalog.Aspects[i]} L.y");
+                Assert.AreEqual(rig.z, catalog.z, 1e-4f, $"aspect {CliffCatalog.Aspects[i]} L.z");
+
+                // A key pointing INTO the wall would make the cast-shadow division meaningless.
+                Assert.Greater(catalog.z, 0f,
+                    $"aspect {CliffCatalog.Aspects[i]}'s bake key points into the face, not out of it");
+            }
         }
 
         // =====================================================================================
