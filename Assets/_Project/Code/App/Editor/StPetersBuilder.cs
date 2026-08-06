@@ -289,7 +289,8 @@ namespace HiddenHarbours.App.Editor
         //    − 0.74% landing margin (see the 252° note below)                 = 40.20% AUTHORED
         // 50% is not expressible on this island: it exceeds even the ceiling, which is reachable only by
         // a coast with no way down to the shore anywhere. Every point of the shortfall is named above and
-        // re-derived by TheCliffShareIsAboutHalfTheLegalCoast rather than written down as a literal.
+        // re-derived by StPetersCoastTests.TheCliffShareIsAboutHalfTheCoast_AndSitsUnderTheAspectLawsOwnCeiling
+        // rather than written down as a literal.
         public static readonly CoastSector[] CoastSectors =
         {
             // The sheltered north — the intertidal coast §5.1 asks for. Illegal for cliff by the aspect
@@ -972,6 +973,13 @@ namespace HiddenHarbours.App.Editor
                                $"but its faces will render untextured. Run " +
                                $"'Hidden Harbours ▸ Dev ▸ Bake Cliff Face Kit' and check the rig. {e.Message}");
             }
+
+            // --- THE CLIFF WALLS: THE COAST STANDS UP ---------------------------------------------------
+            // Face quads generated from the plan above and sampled off the SAME TidalTerrain the walk gate
+            // reads, so the wall and the walkability cannot disagree. Runs to the terrain component that
+            // was just configured, never to this file's constants, which is what makes a coast retune move
+            // the geometry with it. Visual only (rule 5) — walkability is the terrain's slope, not this.
+            StPetersCliffWalls.Build(terrain);
 
             // --- SPLAT GROUND (ADR 0028) ----------------------------------------------------------------
             // The ground as a FIELD, not a grid: one full-region quad carrying the TerrainSplat shader,
