@@ -401,6 +401,100 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         // =====================================================================================
+        // 3b. ADR 0031, live — the keyline is retired, and retiring it touches nothing else
+        // =====================================================================================
+
+        /// <summary>
+        /// ⭐ The outline retirement (ADR 0031), pinned on rendered pixels — and pinned as the
+        /// STRUCTURAL claim, not as a colour match.
+        ///
+        /// <para><b>The definition used here is exact.</b> A keyline pixel is one the shade pass
+        /// made opaque where the rig has <i>no geometry</i> — <c>rgba.a != 0</c> while
+        /// <c>res.alpha == 0</c>. That is what the ring pass does and the only thing it does, so it
+        /// cannot be confused with a plant pixel that happens to be dark, and it stays true if the
+        /// keyline colour is ever re-tuned for the A/B arm.</para>
+        ///
+        /// <para><b>Why the second half matters more than the first.</b> "No keyline" alone would
+        /// also pass if the ring pass were broken, or the renderer returned nothing. So the test
+        /// carries its own control: <c>{outline:true}</c> must bring the ring BACK, and — the real
+        /// assertion — <b>every pixel that differs between the two arms must be a ring pixel</b>.
+        /// That is what makes the retirement provably a pure ring deletion: no painted pixel of any
+        /// plant changes value, so no colour, band, rim or tide state can have moved with it.
+        /// Measured across all sixteen species before the switch was flipped: 4,072 ring px against
+        /// 10,482 painted px (0.39×), 0.94× on glasswort — and 0 violations.</para>
+        ///
+        /// <para><b>⚠ Do not "simplify" the strap's dark margin away chasing the same goal.</b> It
+        /// is an interior shading term (the form's own dark side, ADR 0031 §1) and it is what holds
+        /// a 2 px blade's edge now the ring is gone — it is the replacement, not the offender.</para>
+        /// </summary>
+        [Test]
+        public void TheKeylineIsRetired_AndTurningItBackOn_ChangesOnlyTheRing()
+        {
+            var report = new StringBuilder("[plant-bake] ADR 0031 — keyline retirement, live:\n");
+            int totalRing = 0, totalPainted = 0;
+
+            foreach (string key in ZoneProbes.Concat(new[] { WoodyProbe }))
+            {
+                var shipped = RenderWithOpts(key, variant: 0, tide: "half", frame: 0, opts: null);
+                byte[] shippedGeom = _host.EvaluateBytes($"{Res}.alpha");
+                var restored = RenderWithOpts(key, variant: 0, tide: "half", frame: 0,
+                                              opts: "outline:true");
+                byte[] restoredGeom = _host.EvaluateBytes($"{Res}.alpha");
+
+                // The geometry itself must be untouched by the flag — otherwise "only the ring
+                // changed" would be comparing two different plants.
+                CollectionAssert.AreEqual(shippedGeom, restoredGeom,
+                    $"{key}: the outline flag moved the GEOMETRY. The ring pass writes only where " +
+                    "there is no geometry; if this fired it is doing something else as well.");
+
+                int ringDefault = 0, ringRestored = 0, painted = 0, violations = 0;
+                for (int i = 0, p = 0; i < shipped.Rgba.Length; i += 4, p++)
+                {
+                    bool hasGeometry = shippedGeom[p] != 0;
+                    if (hasGeometry) painted++;
+                    if (!hasGeometry && shipped.Rgba[i + 3] != 0) ringDefault++;
+                    if (!hasGeometry && restored.Rgba[i + 3] != 0) ringRestored++;
+
+                    bool differs = shipped.Rgba[i] != restored.Rgba[i] ||
+                                   shipped.Rgba[i + 1] != restored.Rgba[i + 1] ||
+                                   shipped.Rgba[i + 2] != restored.Rgba[i + 2] ||
+                                   shipped.Rgba[i + 3] != restored.Rgba[i + 3];
+                    if (differs && hasGeometry) violations++;
+                }
+
+                Assert.AreEqual(0, ringDefault,
+                    $"{key}: {ringDefault} pixel(s) are opaque where the rig has no geometry, on a " +
+                    "DEFAULT render. The keyline is retired (ADR 0031) — a default bake must draw " +
+                    "no ring at all.");
+
+                // The control. Without this, "0 ring pixels" would also be satisfied by a ring pass
+                // that no longer works, or a species that renders nothing.
+                Assert.Greater(ringRestored, 0,
+                    $"{key}: {{outline:true}} produced no ring either — the A/B arm is broken, so " +
+                    "the zero above proves nothing about the default.");
+
+                Assert.AreEqual(0, violations,
+                    $"{key}: {violations} PAINTED pixel(s) differ between the retired and restored " +
+                    "arms. Retiring the keyline must be a pure ring deletion — if a plant's own " +
+                    "pixels move with the flag, the ring pass is writing inside the silhouette.");
+
+                totalRing += ringRestored;
+                totalPainted += painted;
+                report.AppendLine(
+                    $"  {key,-16} {painted,6} painted px · ring {ringRestored,5} px " +
+                    $"({ringRestored / (float)Math.Max(1, painted):F2}× painted) · " +
+                    $"default ring {ringDefault} · painted-pixel diffs {violations}");
+            }
+
+            report.AppendLine(
+                $"  ── {totalRing} ring px against {totalPainted} painted px across " +
+                $"{ZoneProbes.Length + 1} probes ({totalRing / (float)totalPainted:F2}×), " +
+                "0 painted pixels touched. The ring was a PERIMETER cost, which is why this " +
+                "strap-heavy kit paid the most for it.");
+            Debug.Log(report.ToString());
+        }
+
+        // =====================================================================================
         // 4. RULING THREE, live — submerged cells bake NO caustic
         // =====================================================================================
 
@@ -730,11 +824,29 @@ namespace HiddenHarbours.Tests.RigBaking
         /// the difference between a fast fixture and a slow one.
         /// </summary>
         Cell Render(string species, int variant, string tide, int frame)
+            => RenderWithOpts(species, variant, tide, frame, opts: null);
+
+        /// <summary>
+        /// <see cref="Render"/> with extra render options spliced into the SAME expression the
+        /// baker builds, so an A/B arm cannot drift from the production call in any other respect.
+        /// The splice targets the trailing <c>}</c> of the baker's own options object rather than
+        /// restating it — <c>opts</c> is a bare JS fragment, e.g. <c>"outline:true"</c>.
+        /// </summary>
+        Cell RenderWithOpts(string species, int variant, string tide, int frame, string opts)
         {
             string g = ShorePlantCatalog.RigGlobalName;
-            _host.Execute($"globalThis.{Res} = " +
-                          ShorePlantBaker.RenderExpr(species, variant, Season, Stage, tide, frame) +
-                          ";");
+            string expr = ShorePlantBaker.RenderExpr(species, variant, Season, Stage, tide, frame);
+
+            if (!string.IsNullOrEmpty(opts))
+            {
+                int close = expr.LastIndexOf("})", StringComparison.Ordinal);
+                Assert.Greater(close, 0,
+                    $"ShorePlantBaker.RenderExpr no longer ends in an options object — this splice " +
+                    $"is built on that shape. Got: {expr}");
+                expr = expr.Substring(0, close) + "," + opts + expr.Substring(close);
+            }
+
+            _host.Execute($"globalThis.{Res} = {expr};");
             return new Cell
             {
                 Rgba = _host.EvaluateBytes($"{Res}.rgba"),

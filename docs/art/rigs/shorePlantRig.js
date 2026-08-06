@@ -32,6 +32,12 @@
      4. SUB-PIXEL DETAIL IS A DECISION.  At 32 px/m an Ascophyllum bladder is 0.6 px and a bayberry
         berry is 0.1 px. Nothing sub-pixel gets promoted to a mass: a bladder is a WIDTH BULGE on its
         strap, wax berries are single FLECK pixels. `report.promoted` says what was.
+     5. NO KEYLINE (ADR 0031).  The 1 px near-black ring is retired: the silhouette is carried by the
+        form's own dark side — for a strap that is the dark margin rule 1 already gives it. This kit
+        paid more for the ring than any other family in the repo, because the ring is a PERIMETER
+        cost and a strap is nearly all perimeter (0.39 ring px per painted px across the kit; 0.94x
+        on glasswort, where the outline nearly outweighed the plant). `{outline:true}` restores it
+        for an A/B — see KEYLINE_DEFAULT.
 
    SPEC: PPU 32 (32 px = 1 m) · ¾ from S at 40° (ADR-0006/0022, same camera as boats/rock/trees) ·
    bottom-centre HOLDFAST pivot · no AA · binary alpha · sheets ≤ 2048 px/axis.
@@ -53,6 +59,11 @@
 
   const ELEV = 40, CE = Math.cos(ELEV * Math.PI / 180), SE = Math.sin(ELEV * Math.PI / 180);
   const KEYLINE = '#101d21';
+  // ADR 0031 — the outline is retired from world art; the silhouette is carried by the form's own
+  // dark side. This family is the first to migrate (the ADR's §4 "as each family is redone"). The
+  // ring is not deleted: it is gated OFF by default and reachable with `{outline:true}`, mirroring
+  // the engine's own `GameConfig.HullKeylineFlood` so the owner keeps a one-flag A/B.
+  const KEYLINE_DEFAULT = false;
   const COLD = '#1d3b4a', WARM = '#e8b06a', WATER = '#27535e', FOAM = '#cfe2e0';
 
   // ---- tide -----------------------------------------------------------------
@@ -962,7 +973,14 @@
       }
     }
 
-    if (o.outline !== false) {
+    // KEYLINE — RETIRED BY DEFAULT (ADR 0031). Measured before it was switched off: the ring is a
+    // PERIMETER cost, and a strap is nearly all perimeter, so this family paid the most for it of
+    // any in the repo — 0.39 ring px per painted px across the kit, 0.94x on glasswort, 28.5% of
+    // every visible pixel on the shipped sheets. Switching it off is a PURE RING DELETION: every
+    // pixel it touches is empty geometry, so no painted pixel of any plant changes value (proven
+    // per species, 0 violations). What holds the edge instead is the strap's own dark margin below
+    // — do not "simplify" that away chasing the same goal; it is the replacement, not the offender.
+    if (o.outline === undefined ? KEYLINE_DEFAULT : o.outline !== false) {
       const kl = h2r(KEYLINE), add = [];
       for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
         const i = y * w + x; if (v.a[i]) continue;
@@ -1229,12 +1247,15 @@
       rig: 'shorePlantRig', version: 1, generated: new Date().toISOString(),
       projection: { ppu: PPU, elev: ELEV, heightScale: +CE.toFixed(4), depthScale: +SE.toFixed(4),
         pivot: 'ground contact (holdfast / root crown), bottom-centre of the union cell',
-        antialias: false, alpha: 'binary', keyline: KEYLINE },
+        antialias: false, alpha: 'binary',
+        // ADR 0031: retired. The colour is kept so the A/B arm (`{outline:true}`) and any archived
+        // sheet remain describable — `keylineDefault:false` is what production bakes.
+        keyline: KEYLINE, keylineDefault: KEYLINE_DEFAULT },
       materials: {
         body:  { id: M.BODY,  linear: false, massFloorPx: MIN_R, carriesRim: true,
           note: 'obeys the mass floor: no radius under MIN_R in any axis, clamped at the emitter' },
         strap: { id: M.STRAP, linear: true,  massFloorPx: null, carriesRim: false,
-          note: 'blades, culms, fronds, sheets. Exempt from the mass floor by declaration; forbidden a rim.' },
+          note: 'blades, culms, fronds, sheets. Exempt from the mass floor by declaration; forbidden a rim. Its DARK MARGIN (an interior shading term, not an outline) is what carries the blade edge now the keyline is retired — ADR 0031’s "the form’s own dark side" for a 2 px form.' },
         wood:  { id: M.WOOD,  linear: true,  massFloorPx: null, carriesRim: 'thickness-gated',
           note: 'stems and holdfasts. Linear, so not policed by the floor; the rim gate decides per pixel.' },
         fleck: { id: M.FLECK, linear: true,  massFloorPx: null, carriesRim: false,
@@ -1291,7 +1312,8 @@
   }
 
   root.ShorePlants = {
-    PPU, RIM_PX, MIN_BODY, MIN_R, SWAY, VARIANTS, SEASONS, SPECIES, byKey, LIGHT, KEYLINE, COLD, WARM,
+    PPU, RIM_PX, MIN_BODY, MIN_R, SWAY, VARIANTS, SEASONS, SPECIES, byKey, LIGHT, KEYLINE,
+    KEYLINE_DEFAULT, COLD, WARM,
     WATER, FOAM, ELEV, CE, SE, TIDE_M, DRY_M, TIDES, TIDE_KEYS, ZONES, zoneOf, STAGES, STAGE_KEYS,
     M, MAT_NAME, sizeOf, stageName, tideOf,
     render, packMask, packState, grey, massView, tideView, normalView, sheetSpec, cellOf, plantColour,

@@ -10,7 +10,8 @@
     "pivot": "ground contact (holdfast / root crown), bottom-centre of the union cell",
     "antialias": false,
     "alpha": "binary",
-    "keyline": "#101d21"
+    "keyline": "#101d21",
+    "keylineDefault": false
   },
   "materials": {
     "body": {
@@ -25,7 +26,7 @@
       "linear": true,
       "massFloorPx": null,
       "carriesRim": false,
-      "note": "blades, culms, fronds, sheets. Exempt from the mass floor by declaration; forbidden a rim."
+      "note": "blades, culms, fronds, sheets. Exempt from the mass floor by declaration; forbidden a rim. Its DARK MARGIN (an interior shading term, not an outline) is what carries the blade edge now the keyline is retired — ADR 0031's \"the form's own dark side\" for a 2 px form."
     },
     "wood": {
       "id": 3,
