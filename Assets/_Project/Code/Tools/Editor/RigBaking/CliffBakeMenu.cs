@@ -40,17 +40,38 @@ namespace HiddenHarbours.Tools.RigBaking
         /// existence check because an EMPTY <c>Faces/</c> folder is exactly what a half-finished bake
         /// leaves behind, and because this is the first face the default bake writes.
         /// </summary>
-        public static string SentinelFacePath =>
+        public static string SentinelFacePath => SentinelFacePathFor(CliffBaker.DefaultRock);
+
+        /// <summary>The same sentinel, for any rock — because a wall is built from more than one and a
+        /// checkout carrying only the first is exactly as unbuildable as one carrying none.</summary>
+        public static string SentinelFacePathFor(string rock) =>
             $"{CliffBaker.SubFolder(CliffCatalog.BakeRoot, CliffAssetKind.Face)}/" +
-            $"{CliffCatalog.FaceName(CliffBaker.DefaultRock, "S", 0, CliffCatalog.BaseStep, CliffChannel)}.png";
+            $"{CliffCatalog.FaceName(rock, "S", 0, CliffCatalog.BaseStep, CliffChannel)}.png";
 
         /// <summary>The channel the sentinel is checked on — the one the wall shader cannot render
         /// without.</summary>
         const string CliffChannel = "_unlit";
 
-        /// <summary>True when this checkout already carries baked cliff faces.</summary>
-        public static bool IsBaked =>
-            AssetDatabase.LoadAssetAtPath<Texture2D>(SentinelFacePath) != null;
+        /// <summary>
+        /// True when this checkout carries a baked face for <b>every rock the wall is built from</b>.
+        ///
+        /// <para><b>⚠ Every rock, not just the first — and that matters for an EXISTING checkout, not
+        /// only a fresh one.</b> A face is now stratified: sandstone below, till above. A machine that
+        /// was baked before the strata landed has sandstone and no till, and a sentinel that asked only
+        /// about sandstone would call it baked, skip the bake, and leave every wall to fall back to bare
+        /// rock — the owner's stratified-cliff direction quietly not applied, with nothing on screen
+        /// saying so.</para>
+        /// </summary>
+        public static bool IsBaked
+        {
+            get
+            {
+                foreach (string rock in CliffBaker.DefaultRocks)
+                    if (AssetDatabase.LoadAssetAtPath<Texture2D>(SentinelFacePathFor(rock)) == null)
+                        return false;
+                return true;
+            }
+        }
 
         /// <summary>
         /// <b>Bake the kit if — and only if — this checkout has none.</b> The self-heal the fresh-clone
@@ -64,9 +85,23 @@ namespace HiddenHarbours.Tools.RigBaking
         public static bool EnsureBaked(string rock = null)
         {
             if (IsBaked) return false;
-            Debug.Log($"[cliff-bake] no baked faces at {CliffCatalog.BakeRoot} — baking now " +
-                      "(the kit ships as the rig; the PNGs are gitignored and regenerate in seconds).");
-            Bake(rock ?? CliffBaker.DefaultRock);
+
+            // Named rock: the caller wants that one and only that one.
+            if (rock != null)
+            {
+                Debug.Log($"[cliff-bake] baking {rock} into {CliffCatalog.BakeRoot} on request.");
+                Bake(rock);
+                return true;
+            }
+
+            // ⭐ Bake only the rocks that are actually MISSING. A checkout baked before the strata
+            // landed has sandstone already, and re-baking it would spend ~30 s overwriting good pixels
+            // just to reach the till it genuinely lacks.
+            Debug.Log($"[cliff-bake] {CliffCatalog.BakeRoot} is missing a rock the wall needs — baking " +
+                      "now (the kit ships as the rig; the PNGs are gitignored and regenerate in seconds).");
+            foreach (string needed in CliffBaker.DefaultRocks)
+                if (AssetDatabase.LoadAssetAtPath<Texture2D>(SentinelFacePathFor(needed)) == null)
+                    Bake(needed);
             return true;
         }
 

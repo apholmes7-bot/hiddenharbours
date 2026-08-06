@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -172,6 +173,137 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.AreEqual(1, _wall.GetComponentsInChildren<MeshRenderer>().Length,
                 "a second Configure stacked a second wall on the first");
             Assert.AreEqual(1, _wall.GetComponentsInChildren<SortingGroup>().Length);
+        }
+
+        // =========================================================================================
+        //  ⭐ THE STRATA AND THE DECALS — the finishing pass, as renderers that actually exist
+        // =========================================================================================
+
+        /// <summary>
+        /// ⭐⭐ <b>A FINISHED CHUNK IS FOUR RENDERERS, AND THE DECALS COMPOSITE OVER THE ROCK.</b>
+        ///
+        /// <para>EditMode can prove the geometry law and the coast can prove the plan, but neither can
+        /// prove that <c>Configure</c> then BUILDS the bands and the strips — a band whose texture failed
+        /// to reach it silently draws nothing, and a decal at the wrong order silently draws behind the
+        /// wall it is supposed to seat. Both look like "the art did not land" rather than like an error,
+        /// which is exactly the class of thing that ships.</para>
+        ///
+        /// <para><b>And the +1 must stay INSIDE the group.</b> The decals draw over the face; the group
+        /// is what keeps that private, so the chunk still meets the region on ONE position-derived order
+        /// and ADR 0032's rule against fixed orders in the decor band is not bent.</para>
+        /// </summary>
+        [UnityTest]
+        public IEnumerator AStratifiedChunkBuildsABandPerRock_AndSeatsADecalAtEachEnd()
+        {
+            CliffWallSurface surface = MakeStratifiedWall();
+            yield return null;
+
+            Assert.AreEqual(4, surface.RendererCount,
+                "a stratified chunk with both decals must build four renderers: the soil band, the rock " +
+                "band, the brow strip and the toe strip");
+
+            var byName = new Dictionary<string, MeshRenderer>();
+            foreach (MeshRenderer r in _wall.GetComponentsInChildren<MeshRenderer>())
+                byName[r.gameObject.name] = r;
+
+            foreach (string expected in new[]
+            {
+                CliffWallSurface.BandChildPrefix + "Overburden",
+                CliffWallSurface.BandChildPrefix + "Rock",
+                CliffWallSurface.BrowChildName,
+                CliffWallSurface.ToeChildName,
+            })
+                Assert.IsTrue(byName.ContainsKey(expected),
+                    $"no '{expected}' renderer — built: {string.Join(", ", byName.Keys)}");
+
+            var group = _wall.GetComponent<SortingGroup>();
+            Assert.IsNotNull(group,
+                "the CHUNK carries no SortingGroup — a MeshRenderer does not compete with sprites by " +
+                "sortingOrder on its own (ADR 0023), and RegionValidatorWindow looks for one in the " +
+                "PARENTS of every mesh");
+            Assert.AreEqual(surface.SortingOrder, group.sortingOrder,
+                "the group must meet the region at the chunk's own position-derived order");
+
+            // The faces sit at the chunk's order; the decals one above it — and that +1 is INSIDE the
+            // group, so it never spends an order of the decor band.
+            Assert.AreEqual(surface.SortingOrder,
+                            byName[CliffWallSurface.BandChildPrefix + "Rock"].sortingOrder);
+            Assert.Greater(byName[CliffWallSurface.BrowChildName].sortingOrder, surface.SortingOrder,
+                "the brow strip would draw BEHIND the rock it is seating into the clifftop");
+            Assert.Greater(byName[CliffWallSurface.ToeChildName].sortingOrder, surface.SortingOrder,
+                "the toe strip would draw BEHIND the foot it is finishing");
+        }
+
+        /// <summary>A four-renderer chunk converges on a rebuild exactly as a one-renderer one does —
+        /// which is what keeps a builder Refresh from growing a second coast each time, now that a chunk
+        /// is a stack rather than a single mesh.</summary>
+        [UnityTest]
+        public IEnumerator AStratifiedChunkAlsoConverges_RatherThanStackingEightRenderers()
+        {
+            CliffWallSurface surface = MakeStratifiedWall();
+            yield return null;
+            Assert.AreEqual(4, _wall.GetComponentsInChildren<MeshRenderer>().Length);
+
+            ConfigureStratified(surface);
+            yield return null;
+
+            Assert.AreEqual(4, _wall.GetComponentsInChildren<MeshRenderer>().Length,
+                "a second Configure stacked a second set of bands and decals on the first");
+            Assert.AreEqual(1, _wall.GetComponentsInChildren<SortingGroup>().Length,
+                "a rebuild added a second SortingGroup");
+        }
+
+        private CliffWallSurface MakeStratifiedWall()
+        {
+            var shader = Shader.Find("HiddenHarbours/CliffFace");
+            Assert.IsNotNull(shader, "HiddenHarbours/CliffFace is missing — the wall cannot render.");
+            _material = new Material(shader);
+            _channel = new Texture2D(4, 4);
+
+            _wall = new GameObject("cliff-wall-stratified-test");
+            _wall.transform.position = new Vector3(0f, 0f, 0f);
+            var surface = _wall.AddComponent<CliffWallSurface>();
+            ConfigureStratified(surface);
+            return surface;
+        }
+
+        private void ConfigureStratified(CliffWallSurface surface)
+        {
+            var brow = new Vector2[Stations];
+            var toe = new Vector2[Stations];
+            var drop = new float[Stations];
+            for (int i = 0; i < Stations; i++)
+            {
+                float s = RunMetres * i / (Stations - 1);
+                brow[i] = new Vector2(s, 0f);
+                toe[i] = new Vector2(s, -PlungeNorthing);
+                drop[i] = Drop;
+            }
+
+            // A 1.8 m soil horizon on a 6 m face: the top band is soil, the rest rock.
+            const float Horizon = 1.8f;
+            var bands = new[]
+            {
+                new CliffFaceBand
+                {
+                    Unlit = _channel, Normal = _channel, Mask = _channel,
+                    StartSurfaceMetres = 0f, EndSurfaceMetres = Horizon, Label = "Overburden",
+                },
+                new CliffFaceBand
+                {
+                    Unlit = _channel, Normal = _channel, Mask = _channel,
+                    StartSurfaceMetres = Horizon, EndSurfaceMetres = 0f, Label = "Rock",
+                },
+            };
+
+            surface.Configure(brow, toe, drop, _material, bands, profile: null,
+                              browDecal: _channel, toeDecal: _channel,
+                              alongOffsetMetres: 17f, rowsBasisSurfaceMetres: 8f,
+                              wallAzimuth: 180f, batter: 76f,
+                              bakeLight: new Vector3(-0.60f, -0.55f, 0.58f),
+                              faceMetresS: 12f, faceMetresT: 9f,
+                              subdivideMetres: 0.25f, profileMetres: 1.15f,
+                              stripMetresT: 4f, browLineAt: 0.42f);
         }
     }
 }
