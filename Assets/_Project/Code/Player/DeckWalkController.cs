@@ -276,6 +276,59 @@ namespace HiddenHarbours.Player
             transform.position = boatPos + clamped;
         }
 
+        /// <summary>
+        /// <b>Where a boat-relative WORLD-axis spot actually LANDS on this hull</b> — the world position
+        /// <see cref="SnapTo"/> would put the player at, worked out without moving anybody and without
+        /// touching a field. The boarding move's whole geometry comes from here: the RAIL is this query
+        /// asked from where the fisher is standing (outside the deck, so the clamp returns the nearest
+        /// point on the outline), and the SEAT is the same query asked at the switcher's board offset
+        /// (inside the deck, so the clamp returns it unchanged).
+        ///
+        /// <para><b>Why it is asked every frame rather than captured once.</b> The answer is a boat-frame
+        /// fact projected through the hull's LIVE drawn heading and position, so a hull that rocks, turns
+        /// and drifts under an in-flight arc keeps moving the arc's endpoint with her. Capturing a world
+        /// point at the key-press would land the fisher where the boat USED to be.</para>
+        ///
+        /// <para><paramref name="includeWashboards"/> opens the side decks to the clamp. The walk itself
+        /// never does (a washboard is somewhere you climb onto, not somewhere you stroll); the boarding
+        /// move does, on the hulls whose data carries them, because the strip you actually step over on
+        /// the way aboard IS the washboard. An open boat has none and the deck outline answers instead —
+        /// absence is data.</para>
+        /// </summary>
+        /// <returns>False on an unbound walk (no boat to be relative to), with <paramref name="world"/>
+        /// left at <see cref="Vector3.zero"/> — the caller falls back to its own placement.</returns>
+        public bool TryDeckPointWorld(Vector2 boatRelative, bool includeWashboards, out Vector3 world)
+        {
+            world = Vector3.zero;
+            if (_boatRoot == null) return false;
+
+            Vector3 boatPos = _boatRoot.position;
+            float heading = DrawnHeadingDegrees();
+            BoatDeckDef deck = LiveDeck();
+
+            if (deck != null && deck.HasWalkableDeck())
+            {
+                float elevation = BakeElevationDegrees();
+                int hint = -1;
+                Vector2 local = SeedDeckLocalPure(boatRelative, heading, elevation, deck,
+                                                  includeWashboards, ref hint, out float height);
+                world = boatPos + (Vector3)DeckAreaMath.DeckToWorld(local, height, heading, elevation);
+                return true;
+            }
+
+            world = boatPos + (Vector3)ClampToDeckHeading(boatRelative, heading, _deckCenter, _deckHalfExtents);
+            return true;
+        }
+
+        /// <summary>True when the hull under this walk offers washboards to step over on the way aboard.
+        /// Live-read (the dev hull picker swaps hulls under the player), null-safe, and false on every
+        /// open boat — which is the DATA saying so, not a missing import.</summary>
+        public bool HullHasWashboards()
+        {
+            BoatDeckDef deck = LiveDeck();
+            return deck != null && deck.HasWashboards();
+        }
+
         private void OnEnable() => SeedDeckLocalFromTransform();
 
         private void Update()
@@ -372,14 +425,28 @@ namespace HiddenHarbours.Player
         /// never per tick, so the extra passes cost nothing that matters.</para>
         /// </summary>
         private void SeedDeckLocal(Vector2 worldRelative, float heading, float elevation, BoatDeckDef deck)
+            // false = no washboards: the WALK never stands on a side deck (that is somewhere you climb
+            // onto). Only the boarding move opens them, and it asks through TryDeckPointWorld.
+            => _deckLocal = SeedDeckLocalPure(worldRelative, heading, elevation, deck, false,
+                                              ref _deckArea, out _deckHeight);
+
+        /// <summary>The seeding iteration itself, with nothing of this component's state in it — so the
+        /// walk's own seating (<see cref="SeedDeckLocal"/>) and the boarding move's read-only question
+        /// (<see cref="TryDeckPointWorld"/>) are the SAME maths and cannot drift into disagreeing about
+        /// where the deck is. Pure + static + allocation-free.</summary>
+        private static Vector2 SeedDeckLocalPure(Vector2 worldRelative, float heading, float elevation,
+                                                 BoatDeckDef deck, bool includeWashboards,
+                                                 ref int areaHint, out float heightMeters)
         {
             float height = 0f;
+            Vector2 seated = Vector2.zero;
             for (int pass = 0; pass < SeedPasses; pass++)
             {
                 Vector2 local = DeckAreaMath.WorldToDeck(worldRelative, height, heading, elevation);
-                _deckLocal = deck.ClampToWalkable(local, ref _deckArea, out height);
+                seated = deck.ClampToWalkable(local, ref areaHint, out height, includeWashboards);
             }
-            _deckHeight = height;
+            heightMeters = height;
+            return seated;
         }
 
         private static Vector2 ReadInput()
