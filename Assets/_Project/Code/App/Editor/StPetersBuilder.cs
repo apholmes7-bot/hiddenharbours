@@ -603,7 +603,8 @@ namespace HiddenHarbours.App.Editor
             // sit ABOVE the authored tidal-ground sprites it reveals/covers: the Sandbar (-9), the
             // BoatChannelMarker (-8), the island beach/grass (-8/-7) and the slip (-6). At -5 it sits just
             // above that ground stack and still below the clam holes (clamped -4..4) and the on-foot
-            // characters (the player Y-sorts within +2..+40, #110) — so holes and the player draw on the
+            // characters (the player Y-sorts in the decor band, floored at SortingBands.DecorFloor = 2 and
+            // climbing to DecorCeiling — #110, re-based by ADR 0032) — so holes and the player draw on the
             // bared flat IN FRONT of the water. (Before this change a 2 m TidalFlatVisual colour grid sat at
             // -5 and masked BOTH the sand and the shader; retiring that grid is what lets the smooth shader
             // show, and the Sea takes the vacated -5 slot. The always-dry island stays visible because the
@@ -856,7 +857,16 @@ namespace HiddenHarbours.App.Editor
             var cottageGo = new GameObject("IslandCottage");
             cottageGo.transform.position = CottagePos;
             var cottageSr = cottageGo.AddComponent<SpriteRenderer>();
-            cottageSr.sortingOrder = 2;
+            cottageSr.sortingOrder = 2;   // pre-Play default only; the YSortSprite below OWNS the order
+            // The hearth is something you walk AROUND, so it layers by world Y like the rest of the world —
+            // the same treatment VillageBuildingCatalog gives the kit's houses (this one predates that path,
+            // being a greybox marker). Without it the cottage held a fixed 2, which is the decor band's
+            // FLOOR, so once the band was re-based to fit the island (ADR 0032) every tuft of the meadow it
+            // stands in would have drawn over it. The window glow is a CHILD and rides along; the chimney
+            // smoke now takes its order RELATIVE to this renderer (ChimneySmoke._sortingOrder became an
+            // offset in the same change) so the plume follows the roof up the band instead of sinking
+            // under it at the old fixed 5.
+            cottageGo.AddComponent<YSortSprite>();
             var cottageSprite = LoadSpriteAny(ArtCottage);
             if (cottageSprite != null) { cottageSr.sprite = cottageSprite; cottageGo.transform.localScale = Vector3.one; }
             else { cottageSr.sprite = waterSprite; cottageSr.color = new Color(0.70f, 0.50f, 0.40f); cottageGo.transform.localScale = new Vector3(6f, 6f, 1f); }
@@ -872,18 +882,23 @@ namespace HiddenHarbours.App.Editor
             var freezerSr = freezerGo.AddComponent<SpriteRenderer>();
             freezerSr.sprite = waterSprite;
             freezerSr.color = new Color(0.85f, 0.92f, 0.95f);   // chest-freezer white, reads icy
-            freezerSr.sortingOrder = 3;
+            freezerSr.sortingOrder = 3;   // pre-Play default only; the YSortSprite below OWNS the order
             freezerGo.transform.localScale = new Vector3(1.2f, 1.0f, 1f);
             freezerGo.AddComponent<GinnyFreezer>();
+            // A thing you walk up to layers by world Y like everything else you can stand in front of.
+            // Its fixed 3 sat one above the decor band's FLOOR, which only read right while the meadow
+            // round it saturated there too — re-basing the band (ADR 0032) would otherwise bury it.
+            freezerGo.AddComponent<YSortSprite>();
 
             var wetGo = new GameObject("WetBucketSpot");
             wetGo.transform.position = WetBucketPos;   // the head of the flats — the last dry ground
             var wetSr = wetGo.AddComponent<SpriteRenderer>();
             wetSr.sprite = waterSprite;
             wetSr.color = new Color(0.25f, 0.45f, 0.60f);   // a seawater barrel, reads wet
-            wetSr.sortingOrder = 3;
+            wetSr.sortingOrder = 3;   // pre-Play default only; the YSortSprite below OWNS the order
             wetGo.transform.localScale = new Vector3(0.9f, 0.9f, 1f);
             wetGo.AddComponent<WetBucketPoint>();
+            wetGo.AddComponent<YSortSprite>();   // walk-up prop: layers by world Y (see the freezer above)
 
             // NIGHT WINDOWS — the cottage's lit-window SPRITE SWAP (CottageDayNight): swap to the lit-window
             // night sprite after dusk (through the Core clock only). Complements the window GLOW below: the swap
@@ -1219,8 +1234,9 @@ namespace HiddenHarbours.App.Editor
             var counterSr = storeCounter.AddComponent<SpriteRenderer>();
             counterSr.sprite = waterSprite;
             counterSr.color = new Color(0.55f, 0.42f, 0.28f);   // a shop counter in oiled wood, until art lands
-            counterSr.sortingOrder = 3;
+            counterSr.sortingOrder = 3;   // pre-Play default only; the YSortSprite below OWNS the order
             storeCounter.transform.localScale = new Vector3(1.6f, 0.9f, 1f);
+            storeCounter.AddComponent<YSortSprite>();   // walk-up prop: layers by world Y (see the freezer)
 
             // The wallet is the persistent services root's (St Peters IS the start scene, so it is in this
             // scene rather than behind a proxy — the cove's pattern, not the creek's).
@@ -1706,7 +1722,14 @@ namespace HiddenHarbours.App.Editor
             var go = new GameObject(name);
             go.transform.position = pos;
             var sr = go.AddComponent<SpriteRenderer>();
-            sr.sortingOrder = 9;
+            sr.sortingOrder = 9;   // pre-Play default only; the YSortSprite below OWNS the order
+
+            // Layer with the player by world Y like every other thing you can walk past. Added BEFORE the
+            // dress branches so both the baked-body and the flat-sprite path get it. Without this they held
+            // a FIXED order 9 — which read correctly only while the player's own Y-sort resolved (the old
+            // band covered −7.5…+2.0 m, and the village stands at Y +8…+33), so up in the village the
+            // player drew BEHIND every NPC, even face to face. Static: routines are M2, nobody walks.
+            go.AddComponent<YSortSprite>();
 
             if (npc != null && npc.HasBakedBody)
             {
@@ -1816,9 +1839,15 @@ namespace HiddenHarbours.App.Editor
             var sr = go.AddComponent<SpriteRenderer>();
             // Sit ON the bared flat: above the Sandbar ground (-9) AND the water shader plane (Sea, -5) so a
             // hole on dry ground draws in front of the (clipped-transparent) water, and below the on-foot
-            // characters (the player Y-sorts within +2..+40, #110). A small base-Y term sorts holes among
-            // themselves (lower on screen = higher Y-negated = draws in front) without ever crossing the
-            // character band — clamped to -4..4 so a far-south hole can't pop in front of the player.
+            // characters. A small base-Y term sorts holes among themselves (lower on screen = higher
+            // Y-negated = draws in front) — clamped to -4..4 so the term stays a hole-vs-hole tiebreak.
+            //
+            // ⚠ The clamp's top (4) is INSIDE the decor band, whose floor is 2 — so "can't pop in front of
+            // the player" was never what the clamp guaranteed. What actually keeps a hole under the player
+            // is that the player's own Y-sort resolves: on the bar they sort near SortingBands.DecorBase
+            // (~1202), far above any hole. Before ADR 0032 that was only true south of Y = +2, and north of
+            // it the player saturated to order 2 and holes at 3-4 drew OVER their feet. Re-basing the band
+            // fixed that; the clamp is left alone because it is only ever a tiebreak between flat holes.
             sr.sortingOrder = Mathf.Clamp(-Mathf.RoundToInt(pos.y), -4, 4);
             if (holeSprite != null) { sr.sprite = holeSprite; go.transform.localScale = Vector3.one; }
             else { sr.sprite = fallback; sr.color = new Color(0.30f, 0.24f, 0.16f, 0.65f); go.transform.localScale = new Vector3(0.5f, 0.5f, 1f); }

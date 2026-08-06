@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
+using HiddenHarbours.Core;
 using HiddenHarbours.App.Editor;
 using HiddenHarbours.Art;
 using HiddenHarbours.Art.Editor;
@@ -127,8 +128,11 @@ namespace HiddenHarbours.Tests.EditMode
 
                     var entry = chooser.Choose(s);
                     if (entry == null) continue;
-                    // The planter's own defaults for a static tuft (YSortSprite's serialized values).
-                    int order = YSortSprite.OrderFor(s.Position.y, 10f, 4f, 2, 40);
+                    // The planter's own defaults for a static tuft — asked of SortingBands rather than
+                    // copied, so this counts the batches the grass ACTUALLY gets (ADR 0032 re-based them).
+                    int order = YSortSprite.OrderFor(s.Position.y, SortingBands.DecorBase,
+                                                     SortingBands.OrdersPerMetre,
+                                                     SortingBands.DecorFloor, SortingBands.DecorCeiling);
                     pairs.Add((entry.Path, order));
                 }
 
@@ -165,36 +169,41 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void TheSortingBandResolvesOneGrassStep()
         {
-            int a = YSortSprite.OrderFor(0f, 10f, 4f, 2, 40);
-            int b = YSortSprite.OrderFor(StPetersGrass.GrassStep, 10f, 4f, 2, 40);
+            int a = Order(0f);
+            int b = Order(StPetersGrass.GrassStep);
 
             Assert.AreNotEqual(a, b,
                 $"two tufts one GrassStep ({StPetersGrass.GrassStep} m) apart both sort to order {a}. " +
-                "The grid has outrun YSortSprite's 4 orders per metre, so rows of grass now sort in " +
-                "slabs and the player cannot walk between them. Coarsen the step, or give the grass a " +
-                "finer orderPerUnit.");
+                $"The grid has outrun YSortSprite's {SortingBands.OrdersPerMetre} orders per metre, so " +
+                "rows of grass now sort in slabs and the player cannot walk between them. Coarsen the " +
+                "step, or raise SortingBands.OrdersPerMetre.");
         }
 
+        /// <summary>The grass's order as it actually ships — never a copy of the band's numbers.</summary>
+        static int Order(float worldY) =>
+            YSortSprite.OrderFor(worldY, SortingBands.DecorBase, SortingBands.OrdersPerMetre,
+                                 SortingBands.DecorFloor, SortingBands.DecorCeiling);
+
         /// <summary>
-        /// 🔴🔴 <b>A PRE-EXISTING DEFECT, MEASURED — not introduced by the ground cover and not fixed
-        /// by it.</b>
+        /// ✅ <b>The defect this test was written to MEASURE is now FIXED — so it asserts instead.</b>
         ///
-        /// <para><see cref="YSortSprite"/> clamps its order into 2…40 around a base of 10 at 4 per
-        /// metre, so it only RESOLVES world Y from −7.5 m to +2.0 m — a 9.5 m window. St Peters is
-        /// 140 m tall. Every sprite outside that window saturates on the same order (2 up-island, 40
-        /// down-island) and ties with its neighbours, and the PLAYER carries the same component with
-        /// the same defaults, so up at the village the walker and the grass around them are all on
-        /// order 2 and interleave by draw order rather than by position. The clamp is deliberate and
-        /// tested (<c>YSortSpriteTests.OrderFor_ClampsToSafeBand</c>) — it exists so decor can never
-        /// slip behind the water or above the HUD — but nothing sized the band against a region.</para>
+        /// <para>It was written against <see cref="YSortSprite"/>'s old defaults, which clamped into
+        /// 2…40 around a base of 10 and so RESOLVED world Y only from −7.5 m to +2.0 m — a 9.5 m window
+        /// on a 520 m region. It reported 34,422 of 35,026 tufts (98%) saturated: up at the village the
+        /// walker and the grass around them all sat on order 2 and interleaved by draw order rather
+        /// than by position. It only reported, because re-basing the band was a lead-architect call.</para>
         ///
-        /// <para><b>Why this test only reports.</b> Fixing it is not an art-pipeline change: the band's
-        /// ends are load-bearing for every fixed sorting order in the game (<c>StPetersWharf</c> solves
-        /// its deck orders against "YSortSprite's band starts at 2"; the shore plants' submerged −8 sits
-        /// below it by design), so re-basing the sort — camera-relative Y, or a wider band with every
-        /// fixed order re-derived — is a lead-architect call. Asserting the island were correct would
-        /// simply ship a red test. So this measures the cost and puts the number in the log, which is
-        /// what a decision needs.</para>
+        /// <para>That call was made (ADR 0032): the band was re-based to span
+        /// ±<see cref="SortingBands.DecorHalfExtentMetres"/> m with its FLOOR held at 2, so nothing
+        /// below it — the wharf decks, the sea, the seabed, the shore plants' submerged −8 — had to be
+        /// re-derived at all. So the honest form of this test is no longer a log line: <b>zero tufts may
+        /// saturate.</b></para>
+        ///
+        /// <para>⚠ It now asks <see cref="SortingBands"/> for the mapping rather than restating
+        /// <c>10f, 4f, 2, 40</c>. Left hard-coded it would have gone on passing, and gone on logging
+        /// "98% saturated", against a band the game had stopped using — which is the same way the
+        /// original defect hid. Band-vs-region reach in general is guarded by <c>SortingBandsTests</c>;
+        /// this one is the ground cover's own witness, measured against real scattered positions.</para>
         /// </summary>
         [Test]
         public void TheSortingBandsReach_IsMeasuredAgainstTheIsland()
@@ -203,24 +212,26 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.Greater(sites.Count, 0, "sanity: the meadow scattered nothing");
 
             int saturated = 0;
+            float worstY = 0f;
             foreach (var s in sites)
             {
-                int order = YSortSprite.OrderFor(s.Position.y, 10f, 4f, 2, 40);
-                if (order == 2 || order == 40) saturated++;
+                int order = Order(s.Position.y);
+                if (order != SortingBands.DecorFloor && order != SortingBands.DecorCeiling) continue;
+                saturated++;
+                if (Mathf.Abs(s.Position.y) > Mathf.Abs(worstY)) worstY = s.Position.y;
             }
 
-            float lowY = (10f - 40f) / 4f, highY = (10f - 2f) / 4f;
-            Debug.Log($"[GroundCoverBudget] YSortSprite resolves world Y {lowY:F1} … {highY:F1} m " +
-                      $"({highY - lowY:F1} m of a {StPetersBuilder.IslandRadiusY * 2f:F0} m island). " +
-                      $"{saturated} of {sites.Count} tufts ({saturated * 100f / sites.Count:F0}%) sit " +
-                      "on a saturated order and tie with their neighbours. PRE-EXISTING — see this " +
-                      "test's remarks before treating it as a ground-cover regression.");
+            Debug.Log($"[GroundCoverBudget] the decor band resolves world Y " +
+                      $"±{SortingBands.DecorHalfExtentMetres} m (orders {SortingBands.DecorFloor}…" +
+                      $"{SortingBands.DecorCeiling}); {sites.Count} tufts scattered, {saturated} saturated.");
 
-            // The only claim safe to ASSERT: the band still resolves SOMETHING, i.e. the component has
-            // not been reconfigured into a single flat order for everything.
-            Assert.Less(saturated, sites.Count,
-                "every tuft on the island is on a saturated sorting order — YSortSprite is no longer " +
-                "resolving anything at all, which is a different and much worse bug than the reach.");
+            Assert.AreEqual(0, saturated,
+                $"{saturated} of {sites.Count} tufts sit on a saturated sorting order, so they tie with " +
+                $"their neighbours and interleave by draw order rather than by position — the furthest " +
+                $"is at Y = {worstY:F1} m, outside the ±{SortingBands.DecorHalfExtentMetres} m the band " +
+                $"resolves. Raise SortingBands.DecorHalfExtentMetres to at least " +
+                $"{Mathf.CeilToInt(Mathf.Abs(worstY))}. (This is the defect ADR 0032 fixed; it reported " +
+                "98% before the band was re-based.)");
         }
 
         /// <summary>

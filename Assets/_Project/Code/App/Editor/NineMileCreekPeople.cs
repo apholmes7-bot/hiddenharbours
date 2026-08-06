@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using HiddenHarbours.World;               // NpcDef, Interactable
+using HiddenHarbours.Art;                 // YSortSprite — the creek's two layer with the player by world Y
 
 namespace HiddenHarbours.App.Editor
 {
@@ -176,10 +177,15 @@ namespace HiddenHarbours.App.Editor
             go.transform.position = new Vector3(person.Position.x, person.Position.y, 0f);
 
             var sr = go.AddComponent<SpriteRenderer>();
-            sr.sortingOrder = 9;
+            sr.sortingOrder = 9;   // pre-Play default only; the YSortSprite below OWNS the order
 
             NpcBodyDresser.Dress(go, sr, npc, person.ArtStem, greyboxSquare, person.GreyboxTint,
                                  person.HeadingDegrees);
+
+            // Layer with the player by world Y like every other thing you can walk past — the island's cast
+            // gets the same treatment from the same ladder, so the two coasts cannot drift apart. Static:
+            // routines are M2, nobody here walks, so it sorts once on enable and stands its dispatch down.
+            go.AddComponent<YSortSprite>();
             return go;
         }
 

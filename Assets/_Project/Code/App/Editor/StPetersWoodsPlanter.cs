@@ -304,7 +304,7 @@ namespace HiddenHarbours.App.Editor
         /// the water from then on.
         ///
         /// <para><b>⚠ NO <see cref="YSortSprite"/> on a shore plant, and that is deliberate.</b> A
-        /// submerged plant draws BELOW the Sea plane (−5) and YSortSprite's band is 2…40 — the two
+        /// submerged plant draws BELOW the Sea plane (−5) and YSortSprite's band starts at 2 — the two
         /// disagree by construction, and the view stands YSortSprite down whenever it is under water.
         /// Since almost every plant this scatter places is submerged for most of the tide, the
         /// component would spend its life disabled. The view sets the order directly instead.</para>

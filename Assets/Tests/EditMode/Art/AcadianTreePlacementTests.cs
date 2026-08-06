@@ -4,6 +4,7 @@ using System.Text;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
+using HiddenHarbours.Core;
 using HiddenHarbours.Art;
 using HiddenHarbours.Art.Editor;
 
@@ -493,9 +494,9 @@ namespace HiddenHarbours.Tests.Art.EditMode
                     "A tree lower on screen (smaller Y) must draw IN FRONT of one higher up, or the " +
                     "player walks through trunks instead of past them.");
                 foreach (int order in new[] { nearOrder, farOrder })
-                    Assert.That(order, Is.InRange(2, 40),
-                        "A tree's order left the decor safe band — it could sink behind the ground " +
-                        "tiles or rise above the HUD.");
+                    Assert.That(order, Is.InRange(SortingBands.DecorFloor, SortingBands.DecorCeiling),
+                        "A tree's order left the decor band — it could sink below the wharf deck / sea / " +
+                        "seabed, or rise over the ropes and rain that must clear all decor.");
             }
             finally
             {
@@ -531,7 +532,11 @@ namespace HiddenHarbours.Tests.Art.EditMode
             {
                 var e = _trees[rng.Next(_trees.Count)].Entry;
                 float y = (float)(rng.NextDouble() * DepthMetres - DepthMetres * 0.8);
-                int order = YSortSprite.OrderFor(y, 10f, 4f, 2, 40);
+                // The SHIPPED band, not a copy of its numbers — this measures real batch keys, so it has to
+                // ask the same mapping the trees will actually get (ADR 0032 re-based it; a hard-coded
+                // 10/4/2/40 here would have gone on quietly measuring a band that no longer exists).
+                int order = YSortSprite.OrderFor(y, SortingBands.DecorBase, SortingBands.OrdersPerMetre,
+                                                 SortingBands.DecorFloor, SortingBands.DecorCeiling);
                 keys.Add((e.species, order));
             }
 

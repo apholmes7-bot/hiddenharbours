@@ -27,8 +27,12 @@ namespace HiddenHarbours.Art
         [Tooltip("Local offset (m) from this transform to the actual flue mouth the smoke leaves from.")]
         [SerializeField] private Vector2 _chimneyOffset = new Vector2(0f, 0.5f);
 
-        [Tooltip("Sorting order — smoke should read above the cottage roof.")]
-        [SerializeField] private int _sortingOrder = 5;
+        [Tooltip("Sorting order for the plume RELATIVE to the building it rises from — the SpriteRenderer on " +
+                 "this object, else the nearest one up the parent chain. +1 reads just above the roof. " +
+                 "⚠ Relative, not absolute: the building Y-SORTS, so a fixed number would sink underneath " +
+                 "it (ADR 0032 re-based the decor band from 2…40 to 2…2402). With no renderer anywhere " +
+                 "above, it is used as an absolute order.")]
+        [SerializeField] private int _sortingOrder = 1;
 
         [Tooltip("How often (Hz) the smoke ticks. A slow plume reads fine at a handful of Hz.")]
         [Min(2f)] [SerializeField] private float _tickHz = 20f;
@@ -46,6 +50,8 @@ namespace HiddenHarbours.Art
         private Puff[] _pool;
         private SpriteRenderer[] _renderers;
         private Sprite _sprite;
+        private SpriteRenderer _reference;   // the building the plume rises from (may be null)
+        private int _appliedOrder = int.MinValue;
         private float _tickTimer;
         private float _emitCarry;
         private int _emitCursor;
@@ -53,8 +59,28 @@ namespace HiddenHarbours.Art
 
         private void Awake()
         {
+            // The building this plume belongs to. Searched from THIS object upward, so the atmosphere
+            // test's chimney block (which carries its own renderer) resolves to itself and the island
+            // cottage's bare chimney pivot resolves to the cottage. The pooled puffs are CHILDREN, so
+            // they can never be picked up as our own reference.
+            _reference = GetComponentInParent<SpriteRenderer>();
             _sprite = AmbientGlobals.BuildSoftPuff("ChimneySmoke.Puff", 24, 32, softness: 0.7f);
             BuildPool();
+        }
+
+        /// <summary>
+        /// Keep the plume sitting just above the building it rises from. Re-checked on the tick rather
+        /// than resolved once, because the building's order is written by a <c>YSortSprite</c> in its own
+        /// <c>OnEnable</c> — and nothing orders that against this component's <c>Awake</c>. One int compare
+        /// per tick when nothing has moved, which at a handful of Hz is free (rule 7).
+        /// </summary>
+        private void SyncSortingOrder()
+        {
+            int want = (_reference != null ? _reference.sortingOrder : 0) + _sortingOrder;
+            if (want == _appliedOrder) return;
+            _appliedOrder = want;
+            for (int i = 0; i < _renderers.Length; i++)
+                if (_renderers[i] != null) _renderers[i].sortingOrder = want;
         }
 
         private void OnEnable() => _tickTimer = 0f;
@@ -70,10 +96,10 @@ namespace HiddenHarbours.Art
                 go.transform.SetParent(transform, false);
                 var sr = go.AddComponent<SpriteRenderer>();
                 sr.sprite = _sprite;
-                sr.sortingOrder = _sortingOrder;
                 go.SetActive(false);
                 _renderers[i] = sr;
             }
+            SyncSortingOrder();   // seed it now; the tick keeps it right if the building sorts later
         }
 
         private void Update()
@@ -87,6 +113,7 @@ namespace HiddenHarbours.Art
 
         private void Tick(float dt)
         {
+            SyncSortingOrder();
             Vector2 flue = (Vector2)transform.position + _chimneyOffset;
             Vector2 wind = AmbientGlobals.Wind;
             Color tint = AmbientGlobals.DayNightTint;

@@ -592,7 +592,10 @@ namespace HiddenHarbours.Fishing
             _rope.endWidth = _ropeWidth;
             var shader = Shader.Find("Sprites/Default");
             if (shader != null) _rope.material = new Material(shader);   // null in a headless test → skip (no error)
-            _rope.sortingOrder = 50;   // above the water, under any HUD
+            // Above ALL decor whatever its Y — a hauling line reads as running OVER whatever it crosses.
+            // Was a literal 50, which cleared the decor band's old ceiling of 40; the band now reaches 2402
+            // (it used to resolve 9.5 m of a 520 m region — ADR 0032), so this follows the band by name.
+            _rope.sortingOrder = SortingBands.AboveDecor;
             _rope.positionCount = 0;
             _rope.enabled = false;
         }

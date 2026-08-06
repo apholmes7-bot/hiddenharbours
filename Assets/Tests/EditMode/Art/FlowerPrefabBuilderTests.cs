@@ -3,6 +3,7 @@ using System.Linq;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
+using HiddenHarbours.Core;
 using HiddenHarbours.Art;
 using HiddenHarbours.Art.Editor;
 
@@ -149,9 +150,9 @@ namespace HiddenHarbours.Tests.Art.EditMode
                     "A flower lower on screen (smaller Y) must draw IN FRONT of one higher up, or the meadow " +
                     "reads flat and the player walks through blooms instead of past them.");
                 foreach (int order in new[] { nearOrder, farOrder })
-                    Assert.That(order, Is.InRange(2, 40),
-                        "A flower's order left the decor safe band — it could sink behind the ground tiles or " +
-                        "rise above the HUD.");
+                    Assert.That(order, Is.InRange(SortingBands.DecorFloor, SortingBands.DecorCeiling),
+                        "A flower's order left the decor band — it could sink below the wharf deck / sea / " +
+                        "seabed, or rise over the ropes and rain that must clear all decor.");
             }
             finally
             {

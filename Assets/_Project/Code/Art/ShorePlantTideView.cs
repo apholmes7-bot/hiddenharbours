@@ -222,7 +222,7 @@ namespace HiddenHarbours.Art
             _sr.sortingOrder = ShorePlantTideMath.SortingOrderFor(
                 submerged, _def.SubmergedSortingOrder, _def.EmergentSortingOrder, out bool ySorted);
 
-            // ⚠ YSortSprite would immediately overwrite sortingOrder back into its own 2…40 band and
+            // ⚠ YSortSprite would immediately overwrite sortingOrder back into its own decor band and
             // float a submerged bed up through the sea. Standing it down while under water is what
             // makes the submerged order stick; re-arming it on emergence hands the order back so the
             // plant sorts against the player like the decor it now is.

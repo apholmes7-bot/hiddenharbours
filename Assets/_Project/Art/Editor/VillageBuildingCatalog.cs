@@ -54,7 +54,7 @@ namespace HiddenHarbours.Art.Editor
         /// Pre-YSort sorting order. <see cref="YSortSprite"/> OWNS the final value (it recomputes from
         /// world Y on enable); this is only what a building shows before that runs. Matches
         /// <see cref="DecorPrefabBuilder"/>'s building default so the two sets read alike — and sits
-        /// inside YSortSprite's 2..40 safe band, above the wharf deck's −4..1 band so a building on a
+        /// inside YSortSprite's decor band (SortingBands.DecorFloor upward), above the wharf deck's −4..1 so a building on a
         /// wharf never sinks into the planking.
         /// </summary>
         public const int SortingOrder = 4;

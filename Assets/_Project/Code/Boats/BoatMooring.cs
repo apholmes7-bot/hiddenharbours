@@ -347,7 +347,10 @@ namespace HiddenHarbours.Boats
             _rope.material = new Material(Shader.Find("Sprites/Default"));
             _rope.startColor = _ropeColor;
             _rope.endColor = _ropeColor;
-            _rope.sortingOrder = 50;   // above the water, under the HUD
+            // Above ALL decor whatever its Y — a mooring line reads as tied ON TOP of the wharf it crosses.
+            // Was a literal 50, which cleared the decor band's old ceiling of 40; the band now reaches 2402
+            // (it used to resolve 9.5 m of a 520 m region — ADR 0032), so this follows the band by name.
+            _rope.sortingOrder = SortingBands.AboveDecor;
             _rope.positionCount = 0;
             _rope.enabled = false;
         }

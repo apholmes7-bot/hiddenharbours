@@ -4,6 +4,7 @@ using UnityEditor;
 using UnityEngine;
 using HiddenHarbours.Core;                // ITidalTerrain
 using HiddenHarbours.World;               // NpcDef, Interactable
+using HiddenHarbours.Art;                 // YSortSprite — islanders layer with the player by world Y
 
 namespace HiddenHarbours.App.Editor
 {
@@ -281,10 +282,17 @@ namespace HiddenHarbours.App.Editor
             go.transform.position = new Vector3(person.Position.x, person.Position.y, 0f);
 
             var sr = go.AddComponent<SpriteRenderer>();
-            sr.sortingOrder = 9;
+            sr.sortingOrder = 9;   // pre-Play default only; the YSortSprite below OWNS the order
 
             NpcBodyDresser.Dress(go, sr, npc, person.ArtStem, greyboxSquare, person.GreyboxTint,
                                  person.HeadingDegrees);
+
+            // An islander layers with the player by world Y like every other thing you can walk past.
+            // Without this they held a FIXED order 9 — which read correctly only while the player's own
+            // Y-sort resolved (the old band covered −7.5…+2.0 m, and the village stands at Y +8…+33), so
+            // up in the village the player drew BEHIND every islander, even face to face. Static: routines
+            // are M2, nobody here walks, so it sorts once on enable and stands its dispatch down.
+            go.AddComponent<YSortSprite>();
             return go;
         }
 

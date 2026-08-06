@@ -4,6 +4,7 @@ using System.Linq;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
+using HiddenHarbours.Core;
 using HiddenHarbours.Art;
 using HiddenHarbours.Art.Editor;
 
@@ -355,10 +356,13 @@ namespace HiddenHarbours.Tests.Art.EditMode
 
                 // ⚠️ NOT `sortingOrder == SortingOrder`. YSortSprite OWNS the final value and recomputes
                 // it from world Y the moment it is enabled, so the seeded 4 is already gone by the time
-                // Configure returns (it came back 10, the band's value at Y = 0). What is worth pinning
-                // is that the result lands inside YSortSprite's safe band — above the wharf deck's −4..1
-                // so a building on a wharf never sinks into the planking, and below the HUD.
-                Assert.That(sr.sortingOrder, Is.InRange(2, 40),
+                // Configure returns (it comes back SortingBands.DecorBase, the band's value at Y = 0).
+                // What is worth pinning is that the result lands inside the decor band — above the wharf
+                // deck's −4..1 so a building on a wharf never sinks into the planking, and below the
+                // ropes and rain. ⚠ Asks SortingBands rather than restating its numbers: this assertion
+                // read `InRange(2, 40)` until ADR 0032 re-based the band, and a hard-coded range is
+                // exactly how a guard outlives the thing it guards.
+                Assert.That(sr.sortingOrder, Is.InRange(SortingBands.DecorFloor, SortingBands.DecorCeiling),
                             "the Y-sorted order must stay inside the world-decor band");
 
                 // Honest metric size — never scale a real sprite (the charter's first guardrail).

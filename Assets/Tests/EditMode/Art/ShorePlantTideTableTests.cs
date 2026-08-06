@@ -151,7 +151,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 "(−21), or the seabed is drawn over the bed growing on it.");
 
             Assert.IsFalse(ySortedUnder,
-                "YSortSprite must stand DOWN while a plant is under water: its band is 2…40, so left " +
+                "YSortSprite must stand DOWN while a plant is under water: its band floors at " +
+                "SortingBands.DecorFloor (2) and climbs from there, so left " +
                 "armed it would immediately float the bed up through the sea.");
             Assert.IsTrue(ySortedAbove,
                 "Above water the plant is decor and must sort against the player like grass.");

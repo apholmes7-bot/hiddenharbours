@@ -1,4 +1,5 @@
 using UnityEngine;
+using HiddenHarbours.Core;   // SortingBands — the one place the sorting-order axis is partitioned
 
 namespace HiddenHarbours.Art
 {
@@ -9,11 +10,22 @@ namespace HiddenHarbours.Art
     /// never hand-tunes a sorting order per piece.
     ///
     /// <para><b>How it sorts.</b> <c>sortingOrder = clamp(round(baseOrder − worldY · orderPerUnit), min, max)</c>.
-    /// The clamp keeps the result inside a SAFE band so a Y-sorted sprite can never slip behind the ground
-    /// tiles / water (which sit at large negative orders) or above the HUD (large positive) — it only
-    /// re-orders within the world-decor band. Every term is a tunable field (no magic numbers, rule 6); the
-    /// defaults put a sprite at Y≈0 near the on-foot player's old fixed order, so existing scenes read the
-    /// same until something actually moves past something else.</para>
+    /// The clamp keeps the result inside the DECOR BAND (<see cref="SortingBands.DecorFloor"/> …
+    /// <see cref="SortingBands.DecorCeiling"/>) so a Y-sorted sprite can never slip below the wharf deck,
+    /// the sea or the painted seabed, nor above the handful of world sprites that must draw over all decor
+    /// (<see cref="SortingBands.AboveDecor"/>). Every term is a tunable field (no magic numbers, rule 6),
+    /// defaulted from <see cref="SortingBands"/> so the band is described in ONE place rather than
+    /// restated per prefab.</para>
+    ///
+    /// <para><b>⚠ The clamp is a guard rail, not the mapping — the band must be wider than the region.</b>
+    /// Where the clamp bites, sorting STOPS: every sprite past the end saturates on the same order and
+    /// interleaves by draw order rather than by position, silently, with no error. Until 2026-08-05 the
+    /// defaults were <c>10 / 4 / 2 / 40</c>, which resolved world Y only from −7.5 m to +2.0 m; St Peters
+    /// is 520 m tall, so 98% of the island's decor — and the player standing in it — sat on a saturated
+    /// order and did not layer at all. It went unseen for so long because the start spawn is at Y = 0, dead
+    /// centre of the surviving 9.5 m window. The band now spans
+    /// ±<see cref="SortingBands.DecorHalfExtentMetres"/> m and <c>SortingBandsTests</c> fails with the
+    /// number to raise it to if a region outgrows it. (ADR 0032.)</para>
     ///
     /// <para><b>Static vs dynamic (perf, rule 7).</b> Decor doesn't move, so a STATIC sprite computes its order
     /// ONCE on enable and then DISABLES itself in play mode — <c>enabled = false</c> stops the engine
@@ -40,18 +52,20 @@ namespace HiddenHarbours.Art
                  "they cost nothing per frame. Flip at runtime via the Dynamic property, not this field.")]
         [SerializeField] private bool _dynamic;
 
-        [Tooltip("Sorting order for a sprite sitting at world Y = 0. The default sits near the on-foot player's " +
-                 "old fixed order so the scene reads the same until things actually pass each other.")]
-        [SerializeField] private float _baseOrder = 10f;
+        [Tooltip("Sorting order for a sprite sitting at world Y = 0 — the MIDDLE of the band, so the region " +
+                 "resolves equally far north and south of the origin.")]
+        [SerializeField] private float _baseOrder = SortingBands.DecorBase;
 
         [Tooltip("How many sorting-order steps per world-metre of Y. Higher = finer depth steps (smoother " +
                  "front/back flips) but a wider order swing. 4 ≈ a step every 0.25 m.")]
-        [SerializeField] private float _orderPerUnit = 4f;
+        [SerializeField] private float _orderPerUnit = SortingBands.OrdersPerMetre;
 
-        [Tooltip("Lowest order this may emit — keeps a far-'up' sprite from sinking behind water/ground.")]
-        [SerializeField] private int _minOrder = 2;
-        [Tooltip("Highest order this may emit — keeps a far-'down' sprite from rising above the HUD.")]
-        [SerializeField] private int _maxOrder = 40;
+        [Tooltip("Lowest order this may emit — keeps a far-'up' sprite from sinking below the wharf deck, " +
+                 "the sea or the seabed. Sorting STOPS here: everything further up ties on this order.")]
+        [SerializeField] private int _minOrder = SortingBands.DecorFloor;
+        [Tooltip("Highest order this may emit — keeps a far-'down' sprite from rising over the ropes and " +
+                 "rain. Sorting STOPS here: everything further down ties on this order.")]
+        [SerializeField] private int _maxOrder = SortingBands.DecorCeiling;
 
         [Tooltip("Sort by a point offset from the transform along Y (metres). 0 sorts by the object's own " +
                  "position (the base, since our decor/player pivot at the feet). Rarely needs changing.")]

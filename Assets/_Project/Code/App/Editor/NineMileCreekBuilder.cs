@@ -12,6 +12,7 @@ using HiddenHarbours.Environment;        // GameClock/EnvironmentService (the de
 using HiddenHarbours.Player;             // PlayerWalkController/ClamBucket/PlayerWallet/DevToast (dev core)
 using HiddenHarbours.Fishing;            // FishingController/DevFishingInput (dev core)
 using HiddenHarbours.UI;                 // HudController (dev core — mirrors the persistent core's HUD)
+using HiddenHarbours.Art;                // YSortSprite — buildings layer with the player by world Y
 using HiddenHarbours.Art.Editor;        // VS-23 locked Pixel-Perfect camera convention
 using UnityEngine.Rendering.Universal;   // PixelPerfectCamera
 
@@ -1046,7 +1047,12 @@ namespace HiddenHarbours.App.Editor
             var go = new GameObject(name);
             go.transform.position = new Vector3(pos.x, pos.y, 0f);
             var sr = go.AddComponent<SpriteRenderer>();
-            sr.sortingOrder = 2;
+            sr.sortingOrder = 2;   // pre-Play default only; the YSortSprite below OWNS the order
+            // A building is something you walk AROUND, so it layers by world Y like the rest of the world —
+            // the same treatment VillageBuildingCatalog gives the kit's houses. Without it the creek's
+            // buildings held a fixed 2, which is the decor band's FLOOR, so once the band was re-based to
+            // fit the region (ADR 0032) every tuft of grass would have drawn over them.
+            go.AddComponent<YSortSprite>();
             if (sprite != null) { sr.sprite = sprite; go.transform.localScale = Vector3.one; }
             else { sr.sprite = fallback; sr.color = fallbackColor; go.transform.localScale = new Vector3(5f, 5f, 1f); }
             // Solid building so the boat / on-foot player can't pass through Nine Mile Creek's geometry. Non-trigger
