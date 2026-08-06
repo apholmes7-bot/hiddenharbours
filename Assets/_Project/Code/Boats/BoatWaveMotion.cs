@@ -189,6 +189,32 @@ namespace HiddenHarbours.Boats
         // The rock frame currently drawn (frame-driven path). −1 = static/level hull (calm or off).
         private int _currentRockFrame = -1;
 
+        // The rock PHASE the hull is drawing this tick — the read anything standing ON this deck needs.
+        // DeckRideMath.LevelPhaseDegrees while calm / off / disabled.
+        private float _rockPhaseDegrees = DeckRideMath.LevelPhaseDegrees;
+
+        /// <summary>
+        /// <b>The rock this hull is DRAWING right now, as a wave phase</b> (degrees; crest 90°, trough
+        /// 270°) — or <see cref="DeckRideMath.LevelPhaseDegrees"/> when she is level: glass calm, the
+        /// master strength off, or this component disabled.
+        ///
+        /// <para><b>Why the phase and not the pose.</b> This component is the one place that knows which of
+        /// the rock paths is live (baked frames or continuous mesh), but the visible AMPLITUDE is an art
+        /// fact of whatever is being drawn — the dory's sheet bakes 5° of roll and 1.6 px of heave, a mesh
+        /// hull's is a transform. So the PHASE is what travels, and every rider owns its own tuned
+        /// amplitudes against it, exactly as <see cref="DoryOarLayer"/> already does for the oars. One
+        /// clock, many hands.</para>
+        ///
+        /// <para>Read-only and presentation-only: nothing here feeds the sim (rule 5). It is published from
+        /// the same tick that poses the hull, so a reader ordered AFTER this component (−120) sees a
+        /// settled pose rather than last frame's — the same discipline the oar layers keep.</para>
+        /// </summary>
+        public float RockPhaseDegrees => _rockPhaseDegrees;
+
+        /// <summary>True when this hull is actually rocking — i.e. <see cref="RockPhaseDegrees"/> names a
+        /// live point in the cycle rather than the level pose.</summary>
+        public bool IsRocking => DeckRideMath.IsRocking(_rockPhaseDegrees);
+
         /// <summary>Master strength, settable at runtime (dev rigs / feel sessions). 0 = off.</summary>
         public float MasterStrength
         {
@@ -233,12 +259,14 @@ namespace HiddenHarbours.Boats
             _smoothedBob = 0f;
             _heaveWeight = default;   // the weight chase wakes ON the live water, never a stale sea
             _currentRockFrame = -1;   // wake on the static/level hull; the first tick picks the wave frame
+            _rockPhaseDegrees = DeckRideMath.LevelPhaseDegrees;   // …and so does anyone standing on her
         }
 
         private void OnDisable()
         {
             SetRockFrame(-1);         // disabled → static level hull, never a frozen rock frame
             _currentRockFrame = -1;
+            _rockPhaseDegrees = DeckRideMath.LevelPhaseDegrees;   // never a frozen LEAN on her passengers either
             var hull = Hull;
             if (hull != null)
             {
@@ -269,6 +297,7 @@ namespace HiddenHarbours.Boats
 
             if (_masterStrength <= 0f)
             {
+                _rockPhaseDegrees = DeckRideMath.LevelPhaseDegrees;   // off = a level deck to stand on, too
                 if (DrivingRockFrames) SetRockFrame(-1);   // off → static/level hull, not a frozen frame
                 var offHull = Hull;
                 if (offHull != null)
@@ -370,6 +399,13 @@ namespace HiddenHarbours.Boats
                                fetchEnvelope);
                 return;
             }
+
+            // The LEGACY TRANSFORM path draws no rock CYCLE — it maps the smoothed slope straight onto the
+            // visual — so there is no phase to publish and none is invented. (Reconstructing one from the
+            // sampled surface is the atan2 inversion ADR 0022 phase 5 measured as non-monotone; a rider
+            // fed that would judder.) A deck rider on such a hull reads the applied tilt off the presenter
+            // instead — see DeckRiderVisual.
+            _rockPhaseDegrees = DeckRideMath.LevelPhaseDegrees;
 
             Apply(new BoatWaveMotionSample(_smoothedPitch, _smoothedRoll, _smoothedBob),
                   rideMeters, rideActive, response);
@@ -580,9 +616,14 @@ namespace HiddenHarbours.Boats
                 if (calm)
                 {
                     _currentRockFrame = -1;       // glass / near-calm → static level hull, no phantom rock
+                    _rockPhaseDegrees = DeckRideMath.LevelPhaseDegrees;
                     hull.RockFrame = -1;
                     return;
                 }
+
+                // A mesh hull poses CONTINUOUSLY, so her passengers ride the continuous phase — the very
+                // number the hull is posed at (calibration included).
+                _rockPhaseDegrees = phaseDegrees;
 
                 // Continuous: the dominant swell's own phase — no frame rounding and no hysteresis
                 // (hysteresis exists to stop frame FLIP-FLOP, and there are no frames to flip
@@ -615,6 +656,7 @@ namespace HiddenHarbours.Boats
             if (calm)
             {
                 _currentRockFrame = -1;           // glass / near-calm → static level hull, no phantom rock
+                _rockPhaseDegrees = DeckRideMath.LevelPhaseDegrees;
                 hull.RockFrame = -1;
                 return;
             }
@@ -626,6 +668,11 @@ namespace HiddenHarbours.Boats
             _currentRockFrame = DoryRockMath.AdvanceFrame(
                 _currentRockFrame, phaseDeg, _rockFrameCount, _crestFrameCalibrationDegrees, _frameHysteresisDegrees);
             hull.RockFrame = _currentRockFrame;
+
+            // A passenger rides the FRAME ACTUALLY DRAWN, not the continuous phase behind it — the picture
+            // steps in 45° jumps with hysteresis, and a rider on the smooth phase would slide off the hull
+            // between steps. Same choice, for the same reason, as DoryOarLayer reading hull.RockFrame.
+            _rockPhaseDegrees = DeckRideMath.PhaseForRockFrame(_currentRockFrame, _rockFrameCount);
         }
 
         private void SetRockFrame(int frame)

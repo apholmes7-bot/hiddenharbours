@@ -71,6 +71,25 @@ namespace HiddenHarbours.App.Editor
         const float WalkFps = 10f;
         const float RunFps = 12f;
 
+        // ---- the STANCE sheets (the body doing something besides travelling) -----------------------
+        // Frame counts and rates come from the rig's OWN ANIMS table (characterIsoRig6.js) rather than
+        // from a README — ADR 0021 §4, the same rule CharacterRigBaker follows when it reads
+        // ANIMS[anim].frames/.ms to decide what to bake. The three constants below ARE that table:
+        //     idle:{frames:6, ms:170}   walk:{frames:8, ms:110}   balance:{frames:8, ms:150}
+        // The carry stances ride the idle and walk anims (the rig's CARRIES declares
+        // anims:['idle','walk'] for both helm and oars), so they inherit those counts exactly.
+        //
+        // ⚠️ These do NOT match the base sheets' 6 / 10 fps above, and must not be "unified" with them.
+        // Those two are a deliberate owner-facing rounding that predates this; these are the rig's
+        // declared timing for clips the owner has never tuned. Rounding a 150 ms clip to the 170 ms
+        // one's rate would slow the deck brace by 13% for tidiness alone.
+        const int BalanceFrames = 8;
+        const float BalanceFps = 1000f / 150f;    // 6.67
+        const int CarryIdleFrames = 6;
+        const float CarryIdleFps = 1000f / 170f;  // 5.88
+        const int CarryWalkFrames = 8;
+        const float CarryWalkFps = 1000f / 110f;  // 9.09
+
         /// <summary>One character's worth of sheets on disk → one <see cref="CharacterVisualDef"/> asset.</summary>
         struct Kit
         {
@@ -185,6 +204,21 @@ namespace HiddenHarbours.App.Editor
             def.WalkSheet = TakeExactly($"{folder}/{kit.Stem}_walk.png", Directions * kit.WalkFrames);
             def.RunSheet = TakeExactly($"{folder}/{kit.Stem}_run.png", Directions * kit.RunFrames);
 
+            // The STANCES are attempted for EVERY kit and simply come back empty where the art doesn't
+            // exist — which is the whole cast today (they bake idle + walk only). No flag says who has
+            // them: an absent file yields an empty set, the def's all-or-nothing gate drops it whole, and
+            // the presenter falls back to the free body. So the day a cast preset gains a deck bake, it
+            // wires itself with no edit here.
+            def.BalanceStance = TakeStance(folder, kit.Stem,
+                                           idleSuffix: "_balance", idleFrames: BalanceFrames, idleFps: BalanceFps,
+                                           walkSuffix: null, walkFrames: 0, walkFps: 0f);
+            def.HelmStance = TakeStance(folder, kit.Stem,
+                                        idleSuffix: "_idle_helm", idleFrames: CarryIdleFrames, idleFps: CarryIdleFps,
+                                        walkSuffix: "_walk_helm", walkFrames: CarryWalkFrames, walkFps: CarryWalkFps);
+            def.OarsStance = TakeStance(folder, kit.Stem,
+                                        idleSuffix: "_idle_oars", idleFrames: CarryIdleFrames, idleFps: CarryIdleFps,
+                                        walkSuffix: "_walk_oars", walkFrames: CarryWalkFrames, walkFps: CarryWalkFps);
+
             if (created) AssetDatabase.CreateAsset(def, path);
             else EditorUtility.SetDirty(def);
 
@@ -203,8 +237,46 @@ namespace HiddenHarbours.App.Editor
                       $"{(def.HasGait(CharacterGait.Idle) ? "WIRED" : "none")}, walk " +
                       $"{(def.HasGait(CharacterGait.Walk) ? "WIRED" : "none")}, run " +
                       $"{(def.HasGait(CharacterGait.Run) ? "WIRED" : "none")}" +
+                      $"; stances balance {StanceState(def, CharacterStance.Balance)}, " +
+                      $"helm {StanceState(def, CharacterStance.Helm)}, " +
+                      $"oars {StanceState(def, CharacterStance.Oars)}" +
                       $"{(def.FacingsAreCounterClockwise ? ", rows UN-MIRRORED (art bakes CCW)" : ", rows as labelled (art bakes CW)")}.");
             return true;
+        }
+
+        /// <summary>One stance's sheets, or an EMPTY (never null) block where the art isn't baked. Each
+        /// sheet goes through the same all-or-nothing <see cref="TakeExactly"/> gate as the free body, so a
+        /// half-sliced stance is dropped whole rather than half-bound. A null suffix means the stance has
+        /// no such clip at all (the deck brace bakes no walk — you cross a deck at an ordinary walk).</summary>
+        static CharacterStanceSheets TakeStance(string folder, string stem,
+                                                string idleSuffix, int idleFrames, float idleFps,
+                                                string walkSuffix, int walkFrames, float walkFps)
+        {
+            var s = new CharacterStanceSheets();
+            if (!string.IsNullOrEmpty(idleSuffix) && idleFrames > 0)
+            {
+                s.IdleSheet = TakeExactly($"{folder}/{stem}{idleSuffix}.png", Directions * idleFrames);
+                s.IdleFrameCount = idleFrames;
+                s.IdleFramesPerSecond = idleFps;
+            }
+            if (!string.IsNullOrEmpty(walkSuffix) && walkFrames > 0)
+            {
+                s.WalkSheet = TakeExactly($"{folder}/{stem}{walkSuffix}.png", Directions * walkFrames);
+                s.WalkFrameCount = walkFrames;
+                s.WalkFramesPerSecond = walkFps;
+            }
+            return s;
+        }
+
+        /// <summary>A stance's wiring state for the build log — which gaits of it actually came through.</summary>
+        static string StanceState(CharacterVisualDef def, CharacterStance stance)
+        {
+            bool idle = def.HasStanceGait(stance, CharacterGait.Idle);
+            bool walk = def.HasStanceGait(stance, CharacterGait.Walk);
+            if (idle && walk) return "idle+walk";
+            if (idle) return "idle";
+            if (walk) return "walk";
+            return "none";
         }
 
         /// <summary>

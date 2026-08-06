@@ -139,3 +139,24 @@ MonoBehaviour:
   RunFramesPerSecond: 12
   WalkSpeedThreshold: 0.35
   RunSpeedThreshold: 4.5
+  BalanceStance:
+    IdleSheet: []
+    IdleFrameCount: 8
+    IdleFramesPerSecond: 6.6666667
+    WalkSheet: []
+    WalkFrameCount: 8
+    WalkFramesPerSecond: 10
+  HelmStance:
+    IdleSheet: []
+    IdleFrameCount: 6
+    IdleFramesPerSecond: 5.8823529
+    WalkSheet: []
+    WalkFrameCount: 8
+    WalkFramesPerSecond: 9.0909091
+  OarsStance:
+    IdleSheet: []
+    IdleFrameCount: 6
+    IdleFramesPerSecond: 5.8823529
+    WalkSheet: []
+    WalkFrameCount: 8
+    WalkFramesPerSecond: 9.0909091

@@ -43,7 +43,8 @@ namespace HiddenHarbours.App.Editor
         const string ArtDory     = "Assets/_Project/Art/Boats/Dory.png";          // legacy single-sprite hull (fallback)
         const string ArtDoryHull = "Assets/_Project/Art/Boats/DoryHull.png";      // oar-less hull base (64×144, centre)
         const string ArtOar      = "Assets/_Project/Art/Boats/Oar.png";           // one oar (used ×2, mirrored)
-        const string ArtDoryRower= "Assets/_Project/Art/Boats/DoryRower.png";     // rower figure
+        // (DoryRower.png is no longer loaded — the rower is the PLAYER, drawn by DeckRiderVisual in the
+        //  hull's own piloting stance. The art stays on disk; nothing wires it.)
         const string ArtFisher   = "Assets/_Project/Art/Characters/FisherSheet.png"; // on-foot player (sliced 3×4)
         const string ArtPlayerHaul = "Assets/_Project/Art/Characters/PlayerHaul.png"; // deck-haul sheet (sliced 3×4; frames 0..7 used)
 
@@ -236,16 +237,19 @@ namespace HiddenHarbours.App.Editor
             var hold = doryGo.AddComponent<ShipHold>();
             var devBoat = doryGo.AddComponent<DevBoatInput>();
 
-            // Oar-rework rig: rower + two independently-rotating oars, children of the dory.
+            // Legacy transform oar rig: two independently-rotating oars, children of the dory. Retired the
+            // moment she wears an iso skin (ApplyHullSkin severs and deactivates the whole thing), so this
+            // is the UNSKINNED greybox fallback and nothing more.
+            //
+            // THE ROWER FIGURE THAT USED TO HANG HERE IS GONE. It was a third, half-alive way to draw a
+            // person on a boat: built here, deactivated with the rig by every skinned hull, and never
+            // reached on any shipping path — so the dory's answer to "who is rowing?" lived in a
+            // GameObject that was always switched off. The question is now answered once, by the character
+            // the player actually IS: ControlSwitcher draws them at the helm in the hull's own piloting
+            // stance (DeckRiderVisual → BoatVisualDef.PilotStanceFor → the oars stance on a pulled hull).
+            // A rowing dory shows the fisher at the looms because the fisher is at the looms.
             var oarRig = new GameObject("OarRig");
             oarRig.transform.SetParent(doryGo.transform, false);
-            var rower = new GameObject("DoryRower");
-            rower.transform.SetParent(oarRig.transform, false);
-            var rowerSr = rower.AddComponent<SpriteRenderer>();
-            rowerSr.sortingOrder = 2;
-            var rowerSprite = LoadSpriteAny(ArtDoryRower);
-            if (rowerSprite != null) rowerSr.sprite = rowerSprite;
-            else { rowerSr.sprite = p.Square; rowerSr.color = new Color(0.25f, 0.20f, 0.15f); rower.transform.localScale = new Vector3(1.6f, 1.8f, 1f); }
 
             var oarSprite = LoadSpriteAny(ArtOar);
             var leftOarPivot  = MakeOar(oarRig.transform, "LeftOar",  new Vector2(-0.9f, -0.1f), true,  oarSprite, p.Square);
@@ -447,6 +451,21 @@ namespace HiddenHarbours.App.Editor
             var deckWalk = playerGo.AddComponent<DeckWalkController>();
             deckWalk.enabled = false;
 
+            // THE CHARACTER RIDES THE BOAT (and is visible at the helm). The player's own transform is held
+            // world-upright every frame by DeckWalkController — deliberately, so the fisher never spins with
+            // the hull — so the ROCK cannot reach them by parenting. The boat solves the identical problem by
+            // putting its rock on a counter-rotated VISUAL CHILD; this is the character's copy of that. The
+            // child owns nothing but the picture: DeckRiderVisual mirrors whatever the root renderer is
+            // showing (iso skin, haul cycle, rod fight — one authority for the cell) onto a transform it may
+            // lean and lift. Built DISABLED and empty; the ControlSwitcher hands it the mode.
+            var riderGo = new GameObject("DeckRider");
+            riderGo.transform.SetParent(playerGo.transform, false);
+            var riderSr = riderGo.AddComponent<SpriteRenderer>();
+            riderSr.sortingOrder = playerSr.sortingOrder;   // re-mirrored per frame off the Y-sorted body
+            riderSr.enabled = false;
+            var deckRider = playerGo.AddComponent<DeckRiderVisual>();
+            deckRider.Configure(riderSr, playerSr, isoSkin);
+
             // THE HAUL ANIMATION (owner's PlayerHaul sheet): while a trap haul is live the deck-walking
             // fisher plays the hand-over-hand cycle as line comes in, the STRAIN frame while the rope
             // fights back, the EASE frame while the pawl holds — all read off the Core TrapHaulStateChanged
@@ -527,6 +546,7 @@ namespace HiddenHarbours.App.Editor
             SetRef(switcher, "_boatController", boat);
             SetRef(switcher, "_boatInput", devBoat);
             SetRef(switcher, "_deckWalk", deckWalk);   // Build 5: board → deck; walk to the helm to drive
+            SetRef(switcher, "_deckRider", deckRider); // …and the figure that rides her rock / mans the helm
             // _dockZone / _disembarkPoint are left for the scene to wire via its RegionAnchor (SetDock on
             // arrival) — a start scene that wants an immediate cove-style dock can SetRef them after Build.
 
