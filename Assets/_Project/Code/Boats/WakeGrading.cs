@@ -274,9 +274,11 @@ namespace HiddenHarbours.Boats
         [Tooltip("Magnitude at/above which the wake steps from Large (2) to Huge (3).")]
         public float Threshold3;
 
-        [Header("Graded plume render (the authored stern-trailing wake sprite)")]
-        [Tooltip("Draw the authored graded plume sprite behind the boat (the primary size read). Off = keep " +
-                 "only the procedural foam/crest wake (still grown by FoamMagnitudeInfluence).")]
+        [Header("Graded plume render (the RETIRED authored stern-trailing wake sprite)")]
+        [Tooltip("Draw the authored graded plume sprite behind the boat. RETIRED 2026-08-06: the deposited " +
+                 "WAKE WAVE (WakeWaveConfig) replaced it, so this ships OFF and is kept only as the A/B the " +
+                 "owner judges the replacement against. On = the old painted Kelvin V decal returns ON TOP " +
+                 "of the wave; turn the wave off too for the pre-2026-08-06 look.")]
         public bool PlumeEnabled;
         [Tooltip("Continuous plume size multiplier at magnitude 0 (the smallest wake). <1 shrinks the Small " +
                  "sprite a touch so a dawdling dory's plume is modest.")]
@@ -328,7 +330,14 @@ namespace HiddenHarbours.Boats
             Threshold2   = 0.40f,    // Medium → Large (needs real size/weight, or a big hull at speed)
             Threshold3   = 0.66f,    // Large → Huge  (a heavy hull driven hard)
 
-            PlumeEnabled         = true,
+            // ⚠️ RETIRED 2026-08-06 (owner: "a real WAKE WAVE should replace the old wake sprite").
+            // The authored plume IS the decal the wake wave took over from: one painted Kelvin V pinned
+            // to the transom, unable to bend (the only reason WakeTrailMath.TurnFade01 exists), unable
+            // to persist where it was laid, and made of foam-white paint at a place where the sea is
+            // not white but LIFTED. WakeWaveConfig now deposits real crests in world space instead.
+            // Kept as a toggle rather than deleted: it is the A/B the owner judges the replacement
+            // against, and the graded art and its orientation pins still ship and are still tested.
+            PlumeEnabled         = false,
             PlumeMinScale        = 0.6f,
             PlumeMaxScale        = 1.15f,
             PlumeAsternOffset    = 0.3f,

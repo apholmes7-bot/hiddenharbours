@@ -108,6 +108,14 @@ namespace HiddenHarbours.Boats
                  "SPRAY config above — this only animates it.")]
         [SerializeField] private BowWaveConfig _bowWave = BowWaveConfig.Default;
 
+        [Header("THE WAKE WAVE (owner ask 2026-08-06: a real wave, not the old wake sprite)")]
+        [Tooltip("The deposited WAKE WAVE that replaces the authored plume decal: crest segments laid " +
+                 "in world space along the emergent V arms and across the transom, each carrying an " +
+                 "AMPLITUDE in metres that lifts it up-screen (through the displaced sea's own shared " +
+                 "exaggeration), sizes it, and collapses over its life. Every knob is tunable; " +
+                 "Enabled = false falls back to the flat white crest LINES for an A/B.")]
+        [SerializeField] private WakeWaveConfig _wave = WakeWaveConfig.Default;
+
         // Displaced sea (ADR 0023 — the wake rides the same sea the boat rides): the wave field comes
         // from GameConfig.WaveField via GameServices (ADR 0018 §(5)), so the foam rides the same swell
         // as the hull and the drawn surface BY CONSTRUCTION, not by a parity comment. The exaggeration
@@ -122,6 +130,10 @@ namespace HiddenHarbours.Boats
         [Tooltip("Max live BOW-WAVE droplets PER BOAT (a third fixed, recycled pool). Small — spray is flecks " +
                  "with a sub-second life, not foam.")]
         [Min(0)] [SerializeField] private int _dropletPoolPerBoat = 24;
+        [Tooltip("Max live STERN-ROLL crests PER BOAT (a fourth fixed, recycled pool — the wake wave's " +
+                 "transom segment). Its own pool rather than a share of the crest pool so the arms' " +
+                 "overlap law and the roll's much shorter life never compete for slots.")]
+        [Min(0)] [SerializeField] private int _transomPoolPerBoat = 24;
         [Tooltip("How many boats to drive at once (each gets its own pool). One active player boat dominates; " +
                  "spare slots cover NPC traffic when it arrives.")]
         [Min(1)] [SerializeField] private int _maxBoats = 4;
@@ -130,6 +142,11 @@ namespace HiddenHarbours.Boats
         [Tooltip("Crest-LINE tint. A lighter, cooler-than-foam wave-crest colour so the lines read as the small " +
                  "waves peeling off the hull rather than white churn. Alpha is driven per-streak by the fade.")]
         [SerializeField] private Color _lineColor = new Color(0.78f, 0.90f, 0.98f, 1f);
+        [Tooltip("WAKE-WAVE tint — a near-white multiplier, because the wave sprite already carries its own " +
+                 "crest/trough shading in its RGB (a lit crest ABOVE the waterline, a darker hollow below). " +
+                 "Tinting it hard would flatten the profile back into a painted line, which is the thing it " +
+                 "replaced. Alpha is driven per-crest by the fade and the wave's own Opacity.")]
+        [SerializeField] private Color _waveColor = new Color(1f, 1f, 1f, 1f);
         [Tooltip("Bow-spray tint. Bright white droplets off the cutwater; the alpha is driven by the spray's " +
                  "speed-onset ramp (the dory only ever sees a faint fraction of it).")]
         [SerializeField] private Color _sprayColor = new Color(0.95f, 0.98f, 1f, 1f);
@@ -156,8 +173,13 @@ namespace HiddenHarbours.Boats
 
         // ---- runtime ----------------------------------------------------------------------------------------
         private readonly List<WakeRig> _rigs = new();
-        private Sprite _foamSprite;
+        // The AERATED BUBBLE RAFTS (owner 2026-08-06: "it should BUBBLE, not paint a solid line"). A small
+        // fixed set built once at boot and shared by every particle of every boat; a pool slot keeps the
+        // raft (and mirror) it was built with, so nothing is assigned per frame and the wake still batches.
+        private Sprite[] _foamSprites;
         private Sprite _lineSprite;
+        // The WAKE WAVE's crest sprite — one shared sprite carrying the crest/trough profile in its RGB.
+        private Sprite _waveSprite;
         // The four GRADED plume sprites [Small, Medium, Large, Huge], built once from the authored textures.
         // Any slot may be null if the library/texture failed to load — the rig falls back to the foam puff so a
         // bad load never leaves an invisible plume.
@@ -187,8 +209,9 @@ namespace HiddenHarbours.Boats
 
         private void Awake()
         {
-            _foamSprite = BuildFoamSprite();
+            _foamSprites = BuildFoamSprites(_trail.FoamAeration);
             _lineSprite = BuildLineSprite();
+            _waveSprite = BuildWaveSprite(_wave.CrestUndulation);
 
             // ONE library load feeds both graded sprite sets. The pivot must sit on the art's BOAT end
             // whichever way the art is authored: the serialized pivot when un-flipped, mirrored when the owner
@@ -322,7 +345,7 @@ namespace HiddenHarbours.Boats
 
             for (int r = 0; r < _rigs.Count; r++)
                 _rigs[r].Tick(current, roughness, time, dt, _config, _foamColor, _lineConfig, _lineColor, _grade,
-                              _spray, _sprayColor, _trail, _bowWave, in lift);
+                              _spray, _sprayColor, _trail, _bowWave, _wave, _waveColor, in lift);
         }
 
         /// <summary>
@@ -343,6 +366,15 @@ namespace HiddenHarbours.Boats
             private readonly float _bandMeters;
             private readonly float _exaggeration;
             public readonly bool Active;
+
+            /// <summary>
+            /// The displaced sea's SHARED exaggeration, or <b>1</b> when there is no displaced sea (the
+            /// flat plane). The wake WAVE lifts its crests through this, so hull wave and sea swell are
+            /// the same size of thing and retuning the sea carries the wake with it — never a cached
+            /// copy (the overlay-pose lesson: a stale copy of a shared scale once breathed a 1.6 m gap
+            /// into this very wake).
+            /// </summary>
+            public float Exaggeration => Active ? Mathf.Max(0f, _exaggeration) : 1f;
 
             public SeaLift(WaveFieldAnimator animator, ITidalTerrain terrain, IEnvironmentService environment,
                            double totalSeconds, float bandMeters, float exaggeration)
@@ -393,8 +425,12 @@ namespace HiddenHarbours.Boats
                 if (boat == null) continue;
                 if (_rigs.Count >= _maxBoats) break;
                 if (HasRigFor(boat)) continue;
-                _rigs.Add(new WakeRig(boat, _poolPerBoat, _linePoolPerBoat, _dropletPoolPerBoat, _foamSprite,
-                                      _lineSprite, _tierSprites, _spraySprites, transform, _sortingLayer,
+                // The crest stream draws the WAKE WAVE when it is enabled and the flat white crest LINES
+                // when it is not — chosen ONCE here, so a rig never writes a sprite reference per frame.
+                Sprite crest = _wave.Enabled && _waveSprite != null ? _waveSprite : _lineSprite;
+                _rigs.Add(new WakeRig(boat, _poolPerBoat, _linePoolPerBoat, _dropletPoolPerBoat,
+                                      _wave.TransomCrest ? _transomPoolPerBoat : 0, _foamSprites,
+                                      crest, _tierSprites, _spraySprites, transform, _sortingLayer,
                                       _sortingOrder, _lineSortingOrder, _plumeSortingOrder, _spraySortingOrder));
             }
         }
@@ -525,38 +561,113 @@ namespace HiddenHarbours.Boats
         }
 
         /// <summary>
-        /// Build a small, round foam puff sprite in code — point-filtered, alpha BANDED + DITHERED (the KTC
-        /// pixel-foam law) so it reads as crisp pixel foam over the water, not an airbrush blob. Generating
-        /// it avoids depending on the multiple-sprite-mode BoatWake.png (which
-        /// <c>LoadAssetAtPath&lt;Sprite&gt;</c> can't return) and keeps the whole effect self-contained: one
-        /// shared sprite + one material for every puff (batched, rule 7).
+        /// Build the shared set of AERATED BUBBLE RAFTS — point-filtered, alpha BANDED + DITHERED (the KTC
+        /// pixel-foam law) so each reads as crisp pixel foam over the water, not an airbrush blob.
+        /// Generating them in code avoids depending on the multiple-sprite-mode BoatWake.png (which
+        /// <c>LoadAssetAtPath&lt;Sprite&gt;</c> can't return) and keeps the whole effect self-contained.
+        ///
+        /// <para><b>Why a SET, and why bubbles (owner playtest 2026-08-06: "the wake foam should BUBBLE,
+        /// not paint a solid line").</b> The trail's placement laws are deliberately dense — deposits every
+        /// 0.55 m, churn puffs sized to overlap, arm streaks long enough to fuse by construction — because
+        /// the previous playtest called the wake dotted. Dense placement of SOLID discs can only ever be a
+        /// painted stripe, so the fix is the unit of foam, not the spacing: a raft of bubble films with real
+        /// holes through it (<see cref="WakeFoamTexture"/>). Several rafts, mirrored per pool slot, stop a
+        /// long trail from stamping one shape. <c>WakeTrailConfig.FoamAeration = 0</c> returns the shipped
+        /// solid disc bit-for-bit, so the whole change reverts from one number.</para>
+        ///
+        /// <para>Built once at boot and shared by every particle of every boat — a handful of tiny textures,
+        /// all batched (rule 7).</para>
         /// </summary>
-        private static Sprite BuildFoamSprite()
+        private static Sprite[] BuildFoamSprites(float aeration01)
         {
-            const int size = 16;       // tiny — pixel-art foam
             const int ppu = 32;        // matches the project PPU (1 world unit = 1 m at 32px)
-            var tex = new Texture2D(size, size, TextureFormat.RGBA32, false, true)
+            int size = WakeFoamTexture.PuffPixels;
+            var sprites = new Sprite[WakeFoamTexture.VariantCount];
+            for (int v = 0; v < sprites.Length; v++)
             {
-                name = "BoatWake.FoamPuff",
-                filterMode = FilterMode.Point,        // pixel-crisp
+                float[] coverage = WakeFoamTexture.BuildRaftCoverage(v, size, aeration01);
+                var tex = new Texture2D(size, size, TextureFormat.RGBA32, false, true)
+                {
+                    name = $"BoatWake.FoamRaft[{v}]",
+                    filterMode = FilterMode.Point,        // pixel-crisp
+                    wrapMode = TextureWrapMode.Clamp,
+                };
+                var px = new Color32[size * size];
+                for (int y = 0; y < size; y++)
+                for (int x = 0; x < size; x++)
+                {
+                    int i = y * size + x;
+                    px[i] = new Color32(255, 255, 255, BandDitherAlpha(coverage[i], x, y));
+                }
+                tex.SetPixels32(px);
+                tex.Apply(false, false);
+                sprites[v] = Sprite.Create(tex, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), ppu);
+                sprites[v].name = $"BoatWake.FoamRaft[{v}]";
+            }
+            return sprites;
+        }
+
+        /// <summary>
+        /// Build the WAKE WAVE's crest sprite — the thing that replaces the authored plume decal.
+        ///
+        /// <para><b>The profile lives in the sprite's RGB, not in its tint.</b> A SpriteRenderer carries one
+        /// colour, and displaced water needs two: a LIT crest above the waterline and a DARKER hollow below
+        /// it. So <see cref="WakeFoamTexture.WaveProfile"/>'s shade is baked per row into the texture —
+        /// bright white at the crest, a cool dark at the trough — and the renderer's tint stays near-white.
+        /// Alpha-blended, that lightens the sea where the crest stands and darkens it where the hollow is,
+        /// which is a wave; a single white bar is foam.</para>
+        ///
+        /// <para>The pivot sits at the undisturbed waterline (<see cref="WakeFoamTexture.WaveWaterlineV"/>),
+        /// so placing a crest at a deposit puts flat water at the deposit and lets the crest stand out of it.
+        /// The crest height wanders a little along the length so long overlapping crests fuse into a wave
+        /// rather than a ruled line. One shared sprite for every crest of every boat (rule 7).</para>
+        /// </summary>
+        private static Sprite BuildWaveSprite(float undulation)
+        {
+            int w = WakeFoamTexture.WavePixelsX;
+            int h = WakeFoamTexture.WavePixelsY;
+            const int ppu = 32;
+            var tex = new Texture2D(w, h, TextureFormat.RGBA32, false, true)
+            {
+                name = "BoatWake.Crest",
+                filterMode = FilterMode.Point,
                 wrapMode = TextureWrapMode.Clamp,
             };
-            float c = (size - 1) * 0.5f;
-            float r = size * 0.5f;
-            var px = new Color32[size * size];
-            for (int y = 0; y < size; y++)
-            for (int x = 0; x < size; x++)
+            // The two ends of the shade axis. Deliberately not pure black/white: the trough is a COOL
+            // shadow on water and the crest is spray-lit water, not paint.
+            var trough = new Color(0.24f, 0.34f, 0.44f);
+            var flat = new Color(0.62f, 0.76f, 0.86f);
+            var crest = new Color(1f, 1f, 1f);
+
+            var px = new Color32[w * h];
+            for (int x = 0; x < w; x++)
             {
-                float dx = (x - c) / r, dy = (y - c) / r;
-                float d = Mathf.Sqrt(dx * dx + dy * dy);     // 0 centre .. 1 edge
-                // Round falloff: solid core out to a dithered banded rim (KTC pixel foam, not airbrush).
-                float a = Mathf.Clamp01(1f - d);
-                a = a * a;                                    // tighten the core
-                px[y * size + x] = new Color32(255, 255, 255, BandDitherAlpha(a, x, y));
+                float u = (x + 0.5f) / w;
+                float taper = WakeFoamTexture.LengthTaper(u);
+                float wander = WakeFoamTexture.CrestUndulation(u, undulation);
+                for (int y = 0; y < h; y++)
+                {
+                    float v = (y + 0.5f) / h;
+                    // The undulation moves the WATERLINE crossing up and down the sprite, which is what
+                    // makes the crest's height wander instead of its opacity flickering.
+                    float vAdj = Mathf.Clamp01(WakeFoamTexture.WaveWaterlineV
+                                               + (v - WakeFoamTexture.WaveWaterlineV) / Mathf.Max(wander, 0.2f));
+                    WakeFoamTexture.WaveProfile(vAdj, out float opacity, out float shade);
+                    float a = Mathf.Clamp01(opacity * taper);
+                    Color rgb = shade >= 0f ? Color.Lerp(flat, crest, shade)
+                                            : Color.Lerp(flat, trough, -shade);
+                    px[y * w + x] = new Color32((byte)Mathf.RoundToInt(Mathf.Clamp01(rgb.r) * 255f),
+                                                (byte)Mathf.RoundToInt(Mathf.Clamp01(rgb.g) * 255f),
+                                                (byte)Mathf.RoundToInt(Mathf.Clamp01(rgb.b) * 255f),
+                                                BandDitherAlpha(a, x, y));
+                }
             }
             tex.SetPixels32(px);
             tex.Apply(false, false);
-            return Sprite.Create(tex, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), ppu);
+            var sprite = Sprite.Create(tex, new Rect(0, 0, w, h),
+                                       new Vector2(0.5f, WakeFoamTexture.WaveWaterlineV), ppu);
+            sprite.name = "BoatWake.Crest";
+            return sprite;
         }
 
         /// <summary>
@@ -575,6 +686,12 @@ namespace HiddenHarbours.Boats
         // World-space native size = pixels / PPU. Used to convert a desired world length/thickness into scale.
         private const float LineNativeLength = LineSpritePx / (float)LineSpritePpu;   // 1.0 m long
         private const float LineNativeWidth = LineSpritePy / (float)LineSpritePpu;    // 0.15625 m thin
+
+        // The WAKE WAVE crest sprite's native world size (same PPU), used to turn a desired world
+        // length / crest height into local scale. Kept here beside the line's for the same reason:
+        // the conversion must not drift if either sprite is retuned.
+        private const float WaveNativeLength = WakeFoamTexture.WavePixelsX / (float)LineSpritePpu;  // 1.0 m
+        private const float WaveNativeHeight = WakeFoamTexture.WavePixelsY / (float)LineSpritePpu;  // 0.375 m
 
         private static Sprite BuildLineSprite()
         {
@@ -637,6 +754,12 @@ namespace HiddenHarbours.Boats
             // left behind in world space). Same infra as the foam; its own tiny pool.
             private readonly WakeParticleSystem _dropletSys;
             private readonly SpriteRenderer[] _dropletRenderers;
+            // The STERN ROLL: the wake wave's transom segment — a fourth pooled stream. Its own pool
+            // rather than a share of the crest pool because it lives a fraction as long and is drawn to a
+            // different length rule; sharing would let a fast hull's rolls evict live arm crests and
+            // re-open the very gaps the overlap law closes.
+            private readonly WakeParticleSystem _transomSys;
+            private readonly SpriteRenderer[] _transomRenderers;
             private float _emitCarry;
             private float _lineEmitCarry;
             // --- TRAIL DEPOSITION state (metres-of-track carries + the previous frame anchors) -------------
@@ -658,7 +781,8 @@ namespace HiddenHarbours.Boats
             /// boat with no directional skin reads.</summary>
             private const float PlanViewElevationDegrees = 90f;
 
-            public WakeRig(BoatController boat, int pool, int linePool, int dropletPool, Sprite foam, Sprite line,
+            public WakeRig(BoatController boat, int pool, int linePool, int dropletPool, int transomPool,
+                           Sprite[] foamRafts, Sprite crest,
                            Sprite[] tierSprites, Sprite[] spraySprites, Transform parent, string sortingLayer,
                            int sortingOrder, int lineSortingOrder, int plumeSortingOrder, int spraySortingOrder)
             {
@@ -666,7 +790,9 @@ namespace HiddenHarbours.Boats
                 _sys = new WakeParticleSystem(pool);
                 _tierSprites = tierSprites;
                 _spraySprites = spraySprites;
-                _fallbackSprite = foam;
+                // Raft 0 is also the fallback for anything that has no art of its own (a failed tier load,
+                // a bow droplet) — a droplet IS a fleck, so a round unit is right for it.
+                _fallbackSprite = foamRafts != null && foamRafts.Length > 0 ? foamRafts[0] : null;
                 // A stable per-boat phase for the churn pulses so two boats never boil in lockstep. Hashed
                 // from the boat's name — presentation phase only, never a sim input.
                 _pulseSeed = WakeParticleSystem.Hash01((uint)(boat.name != null ? boat.name.GetHashCode() : 0));
@@ -691,26 +817,69 @@ namespace HiddenHarbours.Boats
                 _sprayRenderer.sortingOrder = spraySortingOrder;
                 sprayGo.SetActive(false);
 
-                _renderers = BuildRenderers(pool, "foam", foam, sortingLayer, sortingOrder);
+                _renderers = BuildFoamRenderers(pool, foamRafts, sortingLayer, sortingOrder);
 
-                // The crest LINES: a SECOND pooled system + renderer slice under the same root, sharing all the
+                // The CRESTS: a SECOND pooled system + renderer slice under the same root, sharing all the
                 // emit/advect/fade/lifetime machinery of the foam — only the sprite, config, colour, sorting and
-                // per-streak orientation differ. Guarded so a 0 line-pool cleanly disables the lines.
+                // per-streak orientation differ. Its sprite is the WAKE WAVE's crest profile (or the legacy
+                // flat line when the wave is switched off). Guarded so a 0 pool cleanly disables it.
                 int lp = Mathf.Max(0, linePool);
-                if (lp > 0 && line != null)
+                if (lp > 0 && crest != null)
                 {
                     _lineSys = new WakeParticleSystem(lp);
-                    _lineRenderers = BuildRenderers(lp, "crest", line, sortingLayer, lineSortingOrder);
+                    _lineRenderers = BuildRenderers(lp, "crest", crest, sortingLayer, lineSortingOrder);
                 }
 
                 // The BOW-WAVE droplets: a third pooled slice (foam sprite, spray sorting band). Guarded so
                 // a 0 pool cleanly disables the droplets.
                 int dp = Mathf.Max(0, dropletPool);
-                if (dp > 0 && foam != null)
+                if (dp > 0 && _fallbackSprite != null)
                 {
                     _dropletSys = new WakeParticleSystem(dp);
-                    _dropletRenderers = BuildRenderers(dp, "bowDroplet", foam, sortingLayer, spraySortingOrder);
+                    _dropletRenderers = BuildRenderers(dp, "bowDroplet", _fallbackSprite, sortingLayer,
+                                                       spraySortingOrder);
                 }
+
+                // The STERN ROLL: a fourth pooled slice, same crest sprite, same sorting band as the arms.
+                int tp = Mathf.Max(0, transomPool);
+                if (tp > 0 && crest != null)
+                {
+                    _transomSys = new WakeParticleSystem(tp);
+                    _transomRenderers = BuildRenderers(tp, "sternRoll", crest, sortingLayer, lineSortingOrder);
+                }
+            }
+
+            /// <summary>
+            /// The FOAM pool's renderers. Unlike every other stream these do not all share one sprite: each
+            /// slot is given one of the shared bubble rafts and a mirror, both hashed from the slot index
+            /// (<see cref="WakeFoamTexture.VariantForSlot"/>). Particles recycle round-robin through the
+            /// slots, so consecutive deposits land on different rafts and a long trail never stamps one
+            /// shape — for the cost of nothing per frame, because the sprite is written once, here.
+            /// </summary>
+            private SpriteRenderer[] BuildFoamRenderers(int count, Sprite[] rafts, string sortingLayer,
+                                                        int sortingOrder)
+            {
+                var arr = new SpriteRenderer[count];
+                bool haveRafts = rafts != null && rafts.Length > 0;
+                for (int i = 0; i < count; i++)
+                {
+                    var go = new GameObject("foam");
+                    go.transform.SetParent(_root, worldPositionStays: false);
+                    var sr = go.AddComponent<SpriteRenderer>();
+                    if (haveRafts)
+                    {
+                        Sprite raft = rafts[WakeFoamTexture.VariantForSlot(i) % rafts.Length];
+                        sr.sprite = raft != null ? raft : _fallbackSprite;
+                        WakeFoamTexture.MirrorForSlot(i, out bool flipX, out bool flipY);
+                        sr.flipX = flipX;
+                        sr.flipY = flipY;
+                    }
+                    if (!string.IsNullOrEmpty(sortingLayer)) sr.sortingLayerName = sortingLayer;
+                    sr.sortingOrder = sortingOrder;
+                    go.SetActive(false);
+                    arr[i] = sr;
+                }
+                return arr;
             }
 
             /// <summary>The tier sprite for an index from a graded set (plume or spray), or the foam-puff fallback
@@ -744,7 +913,8 @@ namespace HiddenHarbours.Boats
             public void Tick(Vector2 current, float roughness, float time, float dt,
                              in WakeConfig cfg, Color foamColor, in WakeLineConfig lineCfg, Color lineColor,
                              in WakeGradeConfig grade, in BowSprayGradeConfig spray, Color sprayColor,
-                             in WakeTrailConfig trail, in BowWaveConfig bowWave, in SeaLift lift)
+                             in WakeTrailConfig trail, in BowWaveConfig bowWave,
+                             in WakeWaveConfig wave, Color waveColor, in SeaLift lift)
             {
                 if (Boat == null) return;
 
@@ -790,7 +960,7 @@ namespace HiddenHarbours.Boats
                 if (trail.Enabled)
                 {
                     DepositTrail(pos, bow, speed, aground, magnitude, length, bakeElev, fcfg, lineCfg, arm2,
-                                 in trail);
+                                 in trail, in wave);
                 }
                 else
                 {
@@ -815,7 +985,19 @@ namespace HiddenHarbours.Boats
                 if (_lineSys != null)
                 {
                     _lineSys.Step(current, arm2.VelocityDecay, dt);
-                    RenderLines(roughness, time, lineCfg, arm2, lineColor, in trail, in lift);
+                    RenderCrests(_lineSys, _lineRenderers, ArmLengthMeters(in trail), roughness, time,
+                                 lineCfg, arm2, lineColor, in trail, in wave, waveColor, in lift);
+                }
+
+                if (_transomSys != null)
+                {
+                    _transomSys.Step(current, arm2.VelocityDecay, dt);
+                    // The stern roll spans the transom, not the trail: its drawn length is the churn
+                    // band's full width scaled by the wave's own fraction, so it grows with the hull.
+                    float rollLength = Mathf.Max(0.05f, WakeTrailMath.ChurnHalfWidth(length, in trail)
+                                                        * Mathf.Max(0f, wave.TransomLengthFraction));
+                    RenderCrests(_transomSys, _transomRenderers, rollLength, roughness, time,
+                                 lineCfg, arm2, lineColor, in trail, in wave, waveColor, in lift);
                 }
 
                 if (_dropletSys != null)
@@ -824,6 +1006,15 @@ namespace HiddenHarbours.Boats
                     RenderDroplets(time, bowWave, sprayColor, in lift);
                 }
             }
+
+            /// <summary>The arm crests' ONE rendered length — the OVERLAP LAW
+            /// (<see cref="WakeTrailMath.ArmStreakLength"/>), or 0 under the legacy boat-locked stamp,
+            /// where each streak sizes itself from its own age instead.</summary>
+            private static float ArmLengthMeters(in WakeTrailConfig trail)
+                => trail.Enabled
+                    ? WakeTrailMath.ArmStreakLength(trail.DepositSpacingMeters, trail.KelvinHalfAngleDeg,
+                                                    trail.ArmOverlapFactor)
+                    : 0f;
 
             /// <summary>
             /// Lay this tick's TRAIL DEPOSITS along the stern's swept track: per metre of travel (the
@@ -837,7 +1028,8 @@ namespace HiddenHarbours.Boats
             /// </summary>
             private void DepositTrail(Vector2 pos, Vector2 bow, float speed, bool aground, float magnitude,
                                       float hullLength, float bakeElevationDegrees, in WakeConfig fcfg,
-                                      in WakeLineConfig lineCfg, in WakeConfig armCfg, in WakeTrailConfig trail)
+                                      in WakeLineConfig lineCfg, in WakeConfig armCfg, in WakeTrailConfig trail,
+                                      in WakeWaveConfig wave)
             {
                 // The trail is laid at the drawn transom: the same projected stern anchor the plume pins to
                 // (hull half-length + nudge, foreshortened per artwork) — never the boat's centre.
@@ -893,6 +1085,15 @@ namespace HiddenHarbours.Boats
                 int churnPuffs = WakeTrailMath.ChurnPuffCount(in trail);
                 float churnHalf = WakeTrailMath.ChurnHalfWidth(hullLength, in trail);
 
+                // The WAKE WAVE's birth amplitude, in METRES of displaced water — baked into each crest at
+                // emit for the same reason the birth strength is: a wave laid at speed must keep the height
+                // it was laid with after she comes off the throttle, or the whole trail would flatten at
+                // once. 0 when the wave is switched off, which is what makes the crest stream fall back to
+                // the flat line rendering byte-for-byte (the A/B).
+                float waveAmplitude = wave.Enabled
+                    ? WakeWaveMath.BirthAmplitudeMeters(magnitude, speed, in wave)
+                    : 0f;
+
                 for (int i = 0; i < deposits; i++)
                 {
                     float t = WakeTrailMath.DepositT(i, deposits);
@@ -907,9 +1108,30 @@ namespace HiddenHarbours.Boats
                         {
                             Vector2 p = WakeTrailMath.ShoulderPoint(basePos, trackDir, side, halfWidth);
                             Vector2 v = WakeTrailMath.ShoulderVelocity(trackDir, side, spread, speed, in trail);
-                            float orient = WakeTrailMath.ArmOrientDeg(trackDir, side, trail.KelvinHalfAngleDeg);
-                            _lineSys.EmitAt(p, v, in armCfg, lifeScale, sizeScale, lineBirth, orient);
+                            // Both modes lay the ribbon down the arm's analytic locus. The WAVE additionally
+                            // needs its cross axis pointing OUTWARD (that is the way this arm's water is
+                            // travelling, and the side its lit crest belongs on); the flat crest LINE is
+                            // symmetric and takes the locus as-is, unchanged from before.
+                            float orient = wave.Enabled
+                                ? WakeWaveMath.ArmCrestOrientDeg(trackDir, side, trail.KelvinHalfAngleDeg)
+                                : WakeTrailMath.ArmOrientDeg(trackDir, side, trail.KelvinHalfAngleDeg);
+                            _lineSys.EmitAt(p, v, in armCfg, lifeScale, sizeScale, lineBirth, orient,
+                                            waveAmplitude);
                         }
+                    }
+
+                    // The STERN ROLL — the raised water the transom drags behind it, laid ACROSS the track.
+                    // It is the piece the retired plume decal was really drawing, and the one thing the two
+                    // diverging arms cannot express. Short-lived on purpose: it belongs to the transom and
+                    // collapses just astern of it, handing the read to the arms.
+                    if (_transomSys != null && wave.Enabled && wave.TransomCrest)
+                    {
+                        Vector2 v = -trackDir * (speed * Mathf.Clamp01(trail.AsternDriftFraction));
+                        _transomSys.EmitAt(basePos, v, in armCfg,
+                                           lifeScale * Mathf.Max(0.01f, wave.TransomLifetimeScale),
+                                           sizeScale, lineBirth,
+                                           WakeWaveMath.TransomOrientDeg(trackDir),
+                                           waveAmplitude * Mathf.Max(0f, wave.TransomAmplitudeScale));
                     }
 
                     // The centre lane (foam pool) for a deterministic fraction of deposits — the long white
@@ -1214,23 +1436,42 @@ namespace HiddenHarbours.Boats
                 }
             }
 
-            private void RenderLines(float roughness, float time,
-                                     in WakeLineConfig lineCfg, in WakeConfig arm, Color lineColor,
-                                     in WakeTrailConfig trail, in SeaLift lift)
+            /// <summary>
+            /// Draw one CREST stream — the emergent V arms, or the stern roll (same machinery, its own pool
+            /// and its own drawn length). Two modes share this loop:
+            ///
+            /// <list type="bullet">
+            /// <item><b>THE WAKE WAVE</b> (<c>wave.Enabled</c>, the owner's 2026-08-06 ask): each crest
+            /// carries the AMPLITUDE of displaced water it was laid with. That amplitude collapses over its
+            /// life (<see cref="WakeWaveMath.AmplitudeAt"/>), SIZES the crest across its short axis, and
+            /// LIFTS it up-screen through the displaced sea's own shared exaggeration — so the wave stands
+            /// out of the water instead of lying on it, and dies as a ripple rather than as a fading decal.
+            /// The sprite carries a lit crest above the waterline and a darker hollow below in its RGB, so
+            /// what reads is water displaced, not paint applied.</item>
+            /// <item><b>The legacy flat crest LINES</b> (wave off): unchanged — the streak keeps its
+            /// thin cross-width from <c>BaseSize</c> and sits flat on the plane. The A/B.</item>
+            /// </list>
+            ///
+            /// <para>Arm crests all share ONE rendered length — the OVERLAP LAW: at least
+            /// <c>ArmOverlapFactor</c> × the along-arm deposit spacing, so consecutive crests fuse into a
+            /// continuous arm by construction (cause 2 of the dotted 2026-07-23 read). Constant for life:
+            /// the alpha fade dissolves the arm; shrinking the crests re-opened the gaps.</para>
+            /// </summary>
+            private void RenderCrests(WakeParticleSystem system, SpriteRenderer[] renderers, float lengthMeters,
+                                      float roughness, float time,
+                                      in WakeLineConfig lineCfg, in WakeConfig arm, Color lineColor,
+                                      in WakeTrailConfig trail, in WakeWaveConfig wave, Color waveColor,
+                                      in SeaLift lift)
             {
-                // The trail's arm streaks all share ONE rendered length — the OVERLAP LAW: at least
-                // ArmOverlapFactor × the along-arm deposit spacing, so consecutive streaks fuse into a
-                // continuous arm by construction (cause 2 of the dotted playtest read). Constant for life:
-                // the alpha fade dissolves the arm; shrinking the streaks re-opened the gaps.
-                float trailLengthM = trail.Enabled
-                    ? WakeTrailMath.ArmStreakLength(trail.DepositSpacingMeters, trail.KelvinHalfAngleDeg,
-                                                    trail.ArmOverlapFactor)
-                    : 0f;
+                bool asWave = wave.Enabled;
+                Color tint = asWave ? waveColor : lineColor;
+                float opacity = asWave ? Mathf.Clamp01(wave.Opacity) : Mathf.Clamp01(lineCfg.LineOpacity);
+                float exaggeration = lift.Exaggeration;
 
-                var pool = _lineSys.Pool;
+                var pool = system.Pool;
                 for (int i = 0; i < pool.Length; i++)
                 {
-                    var sr = _lineRenderers[i];
+                    var sr = renderers[i];
                     ref readonly var p = ref pool[i];
                     if (!p.Alive)
                     {
@@ -1239,32 +1480,45 @@ namespace HiddenHarbours.Boats
                     }
 
                     float life = WakeParticleSystem.Life01(p.Age, p.Lifetime);
-                    // The crest lines fade + advect + distort exactly like the foam (shared arm config), but read
-                    // subtler: their own StartAlpha (via LifeFade) is already the streak alpha, scaled by the
-                    // BIRTH-BAKED onset (p.BirthStrength) — a streak laid at speed keeps its strength where it was
-                    // laid instead of dimming with the boat's LIVE speed (the trail must survive the boat).
-                    float alpha = WakeParticleSystem.LifeFade(life, arm) * Mathf.Clamp01(lineCfg.LineOpacity)
-                                  * p.BirthStrength;
+                    // Crests fade + advect + distort exactly like the foam (shared arm config), scaled by the
+                    // BIRTH-BAKED onset (p.BirthStrength) — a crest laid at speed keeps its strength where it
+                    // was laid instead of dimming with the boat's LIVE speed (the trail must survive the boat).
+                    float alpha = WakeParticleSystem.LifeFade(life, arm) * opacity * p.BirthStrength;
                     Vector2 renderPos = WakeParticleSystem.RenderPosition(in p, time, roughness, arm);
                     float ride = lift.LiftAt(p.Pos);
 
-                    // Orient along the BAKED arm direction (p.OrientDeg, laid at emit down the emergent V's
-                    // analytic locus — world-locked, so it never drifts as the velocity decays into the
-                    // current; the velocity-following orientation was cause 1 of the "horizontal dashes"
-                    // playtest read). The sprite's long axis is +X: stretch X to the streak length and Y to
-                    // a thin cross-width, both WORLD-space targets converted to local scale by the sprite's
-                    // native world size. The particle's BaseSize carries the cross-width seed.
+                    // Orient along the BAKED direction (p.OrientDeg — the emergent V's analytic locus for an
+                    // arm, across the track for the stern roll). World-locked, so it never drifts as the
+                    // velocity decays into the current; orienting by live velocity was cause 1 of the
+                    // "horizontal dashes" playtest read. The sprite's long axis is +X.
                     float lengthM = trail.Enabled
-                        ? trailLengthM
+                        ? lengthMeters
                         : WakeLineGeometry.StreakLength(p.BirthStrength, life, in lineCfg);
-                    float widthM = Mathf.Max(0.001f, p.BaseSize * lineCfg.LineWidthScale);
-                    float angleDeg = p.OrientDeg;
+
+                    float crossM;
+                    float standM;
+                    float nativeCross;
+                    if (asWave)
+                    {
+                        float amplitude = WakeWaveMath.AmplitudeAt(p.BirthAmplitude, life, in wave);
+                        crossM = WakeWaveMath.CrestHeightMeters(amplitude, in wave);
+                        standM = WakeWaveMath.ScreenLiftMeters(amplitude, exaggeration);
+                        nativeCross = WaveNativeHeight;
+                    }
+                    else
+                    {
+                        crossM = Mathf.Max(0.001f, p.BaseSize * lineCfg.LineWidthScale);
+                        standM = 0f;
+                        nativeCross = LineNativeWidth;
+                    }
 
                     var t = sr.transform;
-                    t.position = new Vector3(renderPos.x, renderPos.y + ride, 0f);
-                    t.localRotation = Quaternion.Euler(0f, 0f, angleDeg);
-                    t.localScale = new Vector3(lengthM / LineNativeLength, widthM / LineNativeWidth, 1f);
-                    var col = lineColor; col.a = Mathf.Clamp01(alpha);
+                    // ride = the swell passing under the crest; standM = the crest's OWN displaced water.
+                    t.position = new Vector3(renderPos.x, renderPos.y + ride + standM, 0f);
+                    t.localRotation = Quaternion.Euler(0f, 0f, p.OrientDeg);
+                    t.localScale = new Vector3(lengthM / (asWave ? WaveNativeLength : LineNativeLength),
+                                               crossM / nativeCross, 1f);
+                    var col = tint; col.a = Mathf.Clamp01(alpha);
                     sr.color = col;
                     if (!sr.gameObject.activeSelf) sr.gameObject.SetActive(true);
                 }

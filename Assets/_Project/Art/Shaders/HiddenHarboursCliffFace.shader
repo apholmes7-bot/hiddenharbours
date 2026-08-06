@@ -38,8 +38,11 @@
 //
 // SHADER CAUTIONS honoured (this project lost hours to a magenta shader): NO plus or other operator
 // characters in ANY [Header(...)] label or property display string (ShaderLab parse error, magenta);
-// NO [unroll] over a runtime loop bound (this shader has no loops). The shipped CliffFace.mat variant
-// is force compiled headless by Assets/Tests/EditMode/Art/CliffShaderCompileGuardTests.cs.
+// NO [unroll] over a runtime loop bound — the one loop here (CliffWaveHeight, added 2026 08 06 for the
+// waterline) runs to the COMPILE TIME constant CLIFF_WAVE_MAX_TRAINS with the live train count masking
+// inside it, which is the exact shape HiddenHarboursWater.shader's WaveFieldSample uses. The shipped
+// CliffFace.mat variant is force compiled headless by
+// Assets/Tests/EditMode/Art/CliffShaderCompileGuardTests.cs.
 Shader "HiddenHarbours/CliffFace"
 {
     Properties
@@ -79,6 +82,31 @@ Shader "HiddenHarbours/CliffFace"
         _SkyColour ("Sky dome colour", Color) = (0.72, 0.80, 0.95, 1)
         _BounceColour ("Ground bounce colour", Color) = (0.85, 0.74, 0.62, 1)
 
+        [Header(The WATERLINE. The sea rises against the rock. Owner ask 2026 08 06)]
+        // #439 stood the coast up and the sea knew nothing about it: a cliff plunging into deep water
+        // was drawn dry rock all the way down, with the water plane passing behind it. Deep shore
+        // cliffs are tide worked BY DESIGN, so the rock carries the mark: seen through water below the
+        // line, damp at it, dry above it, and the line itself riding the tide and the waves.
+        //
+        // THE CLIFF DOES NOT GET ITS OWN SEA. The tide is not re read from the sim and the swell is not
+        // re modelled. Both arrive on the one global WaterSurface publishes, _HHSeaLevelWorld, and the
+        // surge is the SAME shared wave field the water shader samples, at the DRAWN sea's own
+        // frequency scale. Two consumers, one sea, closed at the globals. Mirrored term for term by
+        // Assets/_Project/Code/Art/CliffWaterlineMath.cs.
+        //
+        // Presentation only: colour on rock. It moves no walkability, no clip contour, no water level.
+        // _WaterlineStrength 0 is an EXACT passthrough, and so is a scene with no water surface at all.
+        _WaterlineStrength ("Waterline strength. 0 is off", Range(0, 1)) = 1
+        _SubmergedTint ("Rock seen through water", Color) = (0.30, 0.46, 0.52, 1)
+        _SubmergedDepth ("Depth over which the rock drowns, metres", Float) = 2.2
+        _SubmergedFloor ("How much rock survives at full depth", Range(0, 1)) = 0.18
+        _DampBandMetres ("Damp band half width, metres", Float) = 0.55
+        _DampDarken ("How much the damp band darkens the rock", Range(0, 1)) = 0.45
+        _FoamCollarMetres ("Foam collar half width, metres", Float) = 0.16
+        _FoamCollarBias ("How far the collar sits into the water", Range(0, 1)) = 0.45
+        _FoamColour ("Collar colour where sea meets rock", Color) = (0.92, 0.96, 0.98, 1)
+        _SurgeGain ("How much of the swell the waterline rides", Range(0, 2)) = 1
+
         [Header(Sprite common)]
         _Color ("Tint", Color) = (1, 1, 1, 1)
         _AlphaClip ("Alpha clip threshold", Range(0, 1)) = 0.01
@@ -106,6 +134,16 @@ Shader "HiddenHarbours/CliffFace"
                 float3 positionOS : POSITION;
                 float4 color      : COLOR;
                 float2 uv         : TEXCOORD0;
+                // x is this vertex's ELEVATION in metres (brow elevation minus the drop it has fallen).
+                // y is 1 when that elevation is REAL and 0 when the wall has none authored, which is a
+                // scene saved before the waterline existed. The flag is not decoration: elevation 0 with
+                // no flag would read as metres under water at any flood tide and draw the whole cliff
+                // drowned, so a missing elevation has to be able to say so rather than look like datum.
+                float2 uv1        : TEXCOORD1;
+                // The station's TOE position IN PLAN, world XY. This, not the drawn vertex position, is
+                // where the sea actually is: the drawn toe has already been pushed down screen by the
+                // drop, so sampling the wave field at it would read the swell at the wrong place.
+                float2 uv2        : TEXCOORD2;
                 UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
@@ -114,6 +152,12 @@ Shader "HiddenHarbours/CliffFace"
                 float4 positionCS : SV_POSITION;
                 float4 color      : COLOR;
                 float2 uv         : TEXCOORD0;
+                // x is the vertex ELEVATION, y is the DRAWN SEA's elevation at this stretch of wall
+                // (tide plus surge), z is 1 when this wall has a real elevation to compare them with.
+                // x and y are metres, and both are resolved in the vertex stage: the sea only varies
+                // along the shore, so a per column value interpolated down the face is exact, and the
+                // eight train evaluation is paid once per vertex instead of per pixel.
+                float3 waterline  : TEXCOORD1;
                 UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
@@ -130,12 +174,39 @@ Shader "HiddenHarbours/CliffFace"
             float4 _SunDir;
             float  _SunElevation;
 
+            // THE PUBLISHED WATERLINE, set by WaterSurface.PublishSeaLevel (Shader.SetGlobalVector, so
+            // OUTSIDE the per material CBUFFER like _SunDir).
+            //   x  the DRAWN sea level in metres. The same eased number the water material is handed as
+            //      _WaterLevel, never a second read of the tide.
+            //   y  the frequency scale the DRAWN sea runs its wave field at. The water's vertex stage
+            //      samples at _OceanSwellScale over its shipped default, and a consumer that assumed 1
+            //      while the sea drew at 2.8 is this repo's most expensive art defect. Borrowed, never
+            //      re declared.
+            //   z  the displaced sea's exaggeration, for the same reason.
+            //   w  1 when a water surface has published at all. ZERO is the unset state and MUST read as
+            //      there is no sea here: an art scene or a stopped play session would otherwise draw
+            //      every cliff drowned to its brow.
+            float4 _HHSeaLevelWorld;
+
+            // The ONE shared deterministic wave field, published by WaveFieldBridge. Same globals, same
+            // packing and the same evaluation the water shader's WaveFieldSample uses, so the surge on
+            // the rock is the swell on the sea. Count 0 (a bare scene, edit mode) means silence.
+            float4 _WaveTrain0; float4 _WaveTrain1; float4 _WaveTrain2; float4 _WaveTrain3;
+            float4 _WaveTrain4; float4 _WaveTrain5; float4 _WaveTrain6; float4 _WaveTrain7;
+            float4 _WavePhases;        // trains 0 to 3
+            float4 _WavePhases2;       // trains 4 to 7
+            float4 _WaveFieldParams;   // x count, y crest sharpening, z total amplitude, w dominant slot
+
+            #define CLIFF_WAVE_MAX_TRAINS 8
+
             CBUFFER_START(UnityPerMaterial)
                 float4 _Color;
                 float4 _SunColour;
                 float4 _SkyColour;
                 float4 _BounceColour;
                 float4 _BakeL;
+                float4 _SubmergedTint;
+                float4 _FoamColour;
                 float  _AlphaClip;
                 float  _WallAzimuth;
                 float  _Batter;
@@ -146,7 +217,48 @@ Shader "HiddenHarbours/CliffFace"
                 float  _Bounce;
                 float  _CastStrength;
                 float  _SunStrength;
+                float  _WaterlineStrength;
+                float  _SubmergedDepth;
+                float  _SubmergedFloor;
+                float  _DampBandMetres;
+                float  _DampDarken;
+                float  _FoamCollarMetres;
+                float  _FoamCollarBias;
+                float  _SurgeGain;
             CBUFFER_END
+
+            // The shared field's HEIGHT at a plan position, transcribed from the water shader's
+            // WaveFieldSample: same trains, same published phases, same k times freqScale, same crest
+            // pinch. Height only, because a waterline needs where the surface IS and not which way it
+            // leans. The loop bound is the COMPILE TIME constant with the live count masking inside it,
+            // which is the shape the water shader uses and the one that keeps unroll legal.
+            // Twin: CliffWaterlineMath.SurgeMetres, which delegates to WaveFieldBridge.ShaderTwinSample.
+            float CliffWaveHeight(float2 planXY, float freqScale)
+            {
+                float4 trains[CLIFF_WAVE_MAX_TRAINS] = { _WaveTrain0, _WaveTrain1, _WaveTrain2, _WaveTrain3,
+                                                         _WaveTrain4, _WaveTrain5, _WaveTrain6, _WaveTrain7 };
+                float phis[CLIFF_WAVE_MAX_TRAINS] = { _WavePhases.x,  _WavePhases.y,  _WavePhases.z,  _WavePhases.w,
+                                                      _WavePhases2.x, _WavePhases2.y, _WavePhases2.z, _WavePhases2.w };
+                int count = (int)(_WaveFieldParams.x + 0.5);
+                float p = max(_WaveFieldParams.y, 1.0);
+                float fs = max(freqScale, 1e-3);
+                float height = 0.0;
+
+                [unroll]
+                for (int i = 0; i < CLIFF_WAVE_MAX_TRAINS; i++)   // FIXED bound; the count masks inside
+                {
+                    float amplitude = trains[i].w;
+                    if (i < count && amplitude > 0.0)
+                    {
+                        float k = trains[i].z * fs;
+                        float theta = k * dot(trains[i].xy, planXY) + phis[i];
+                        float s = (sin(theta) + 1.0) * 0.5;
+                        float shaped = pow(max(s, 1e-6), p);
+                        height += amplitude * (2.0 * shaped - 1.0);
+                    }
+                }
+                return height;
+            }
 
             // The wall's tangent basis from its plan azimuth and batter. World Z is up.
             // Mirrors CliffLightMath.WallBasis.
@@ -175,6 +287,14 @@ Shader "HiddenHarbours/CliffFace"
                 OUT.positionCS = TransformObjectToHClip(IN.positionOS);
                 OUT.color = IN.color * _Color;
                 OUT.uv = IN.uv;
+
+                // Resolve the sea ONCE per vertex. It varies along the shore and not down the face, so
+                // interpolating a per column value down the column is exact rather than approximate, and
+                // the eight train evaluation is paid per vertex instead of per pixel.
+                float surge = CliffWaveHeight(IN.uv2, _HHSeaLevelWorld.y);
+                float seaElevation = _HHSeaLevelWorld.x
+                                   + surge * max(_HHSeaLevelWorld.z, 0.0) * max(_SurgeGain, 0.0);
+                OUT.waterline = float3(IN.uv1.x, seaElevation, IN.uv1.y);
                 return OUT;
             }
 
@@ -233,6 +353,56 @@ Shader "HiddenHarbours/CliffFace"
                 float3 lit = unlit.rgb * (sky * _SkyColour.rgb
                                         + bnc * _BounceColour.rgb
                                         + sun * _SunColour.rgb);
+
+                // ---- THE WATERLINE (owner ask 2026 08 06) --------------------------------------------
+                // Gated THREE times over, and every gate is an exact passthrough: the material's own
+                // strength; _HHSeaLevelWorld.w, which is 0 whenever no water surface has published; and
+                // the mesh's own elevation flag, which is 0 on a wall built before the waterline
+                // existed. An art scene, a rig fixture, a stopped play session or an un rebuilt region
+                // therefore renders the wall exactly as it did before, instead of drowning it to the
+                // brow off a number that only looks like chart datum.
+                // Mirrored by CliffWaterlineMath: ElevationAt, SubmergenceMetres, Submerged01,
+                // DampBand01, FoamCollar01, HasPublishedSea.
+                if (_WaterlineStrength > 0.001 && _HHSeaLevelWorld.w > 0.5 && IN.waterline.z > 0.5)
+                {
+                    float submergence = IN.waterline.y - IN.waterline.x;   // metres under the sea
+                    float strength = saturate(_WaterlineStrength);
+
+                    // SEEN THROUGH WATER below the line, in two honest steps: the column ABSORBS, so
+                    // the rock keeps its shape and takes the water's colour; and detail is then LOST
+                    // into that colour with depth, floored by _SubmergedFloor so a plunging foot never
+                    // flattens into a painted silhouette.
+                    float drown = submergence > 0.0
+                                ? saturate(submergence / max(_SubmergedDepth, 1e-3)) : 0.0;
+                    float3 wet = lit * _SubmergedTint.rgb;
+                    lit = lerp(lit, wet, drown * strength);
+                    float lost = drown * (1.0 - saturate(_SubmergedFloor));
+                    lit = lerp(lit, _SubmergedTint.rgb * 0.6, lost * strength);
+
+                    // THE DAMP BAND: the strip the tide keeps wet, centred ON the line and reaching
+                    // either side of it. Rock just above is wet from the last wave; rock just below is
+                    // still being worked. Symmetric, smoothstepped, so neither edge is ruled.
+                    float band = max(_DampBandMetres, 0.0);
+                    if (band > 0.0)
+                    {
+                        float d = abs(submergence);
+                        float t = saturate(1.0 - d / band);
+                        float damp = t * t * (3.0 - 2.0 * t);
+                        lit *= lerp(1.0, 1.0 - saturate(_DampDarken), damp * strength);
+                    }
+
+                    // THE FOAM COLLAR: the bright edge where sea meets rock. Tighter than the damp band
+                    // and biased DOWN into the water, because foam gathers on the water side; the two
+                    // together read as a wet strip with a lit edge instead of one fat glow.
+                    float collar = max(_FoamCollarMetres, 0.0);
+                    if (collar > 0.0)
+                    {
+                        float c = abs(submergence - collar * saturate(_FoamCollarBias));
+                        float ct = saturate(1.0 - c / collar);
+                        float foam = ct * ct * (3.0 - 2.0 * ct);
+                        lit = lerp(lit, _FoamColour.rgb, foam * strength * _FoamColour.a);
+                    }
+                }
 
                 // Coverage rides in mask.A — full on a face, meaningful on the brow and toe decals.
                 half4 col = half4(lit, unlit.a * msk.a) * IN.color;
