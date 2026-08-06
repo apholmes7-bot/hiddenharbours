@@ -37,6 +37,14 @@ MonoBehaviour:
     BeamSeaWeight: 1.3
     FollowingSeaWeight: 0.7
     YawFromSlew: 0.9
+  Anchor:
+    DefaultRodeMeters: 6
+    MinSwingMeters: 0.75
+    RodeGiveMeters: 0.15
+    LimitStiffness: 1200
+    LimitDamping: 120
+    DragCreepMetersPerSec: 0.35
+    DragBrakeStrength: 900
   WaveField:
     Gravity: 9.81
     SecondaryTrainCount: 3
@@ -188,6 +196,15 @@ MonoBehaviour:
     MinCastMetres: 1.5
     MaxCastDistanceMetres: 12
     LineFlightMetresPerSec: 18
+  MooringLine:
+    CleatReachMetres: 1.5
+    TossCatchRadiusMetres: 1.5
+    DefaultScopeMetres: 9
+    MinScopeMetres: 2
+    MaxScopeMetres: 16
+    ScopeStepMetres: 1
+    WorkingLoadFactor: 1.25
+    SlipGraceSeconds: 2
   DisplacedWater:
     WaveExaggeration: 1.6
     ShoreBandCoefficient: 2

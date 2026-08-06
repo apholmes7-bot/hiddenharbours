@@ -103,7 +103,8 @@ Note this ruling is about *locomotion*, not about the symbols: the dory still ex
 `CLEATS` and the rest as data. A station is a place you occupy; the polygon is still what contains
 you while you occupy it.
 
-### M2-38 — Cleats, ropes, and the toss-a-line moor
+### M2-38 — Cleats, ropes, and the toss-a-line moor — **BUILT 2026-08-06**
+
 - Each hull exposes its named `CLEATS`; shore furniture (wharves, floats) has counterpart cleat/bollard
   points (world-content authors those in-scene — shore is hand-authored, boats are rig data).
 - Player at a cleat grabs a line; the **toss reuses the fishing-cast verb** (same input feel, same
@@ -112,6 +113,27 @@ you while you occupy it.
   the rope constrains). Cast quality can affect whether the loop catches (cozy fail: the line slips
   into the water, coil and try again).
 - Un-tying is the same interaction in reverse. No menu.
+
+**How it landed.** Canon home is now `boats-and-navigation.md` §9.6, which carries the full tide law, the
+tuning, and the worked St Peters numbers. In brief:
+
+- **Both sides are data.** Hull cleats ride the rig sidecar (`BoatDeckDef.Cleats` → `BoatCleats`, projected
+  onto the drawn hull through `DeckAreaMath.DeckToWorld` so a bow cleat is where the bow is *drawn*). Shore
+  cleats are placed by the wharf builders from **the same fittings table that positions the bollard
+  sprites** — so the bollard you tie to is the bollard you can see, with no second copy of the geometry.
+  Both register into a Core `MooringCleats` registry, mirroring `StandableSurfaces`.
+- **One verb, and literally one function.** The pure `FlickCastMath` moved from Fishing up into **Core** so
+  the rope toss resolves through the very function the rod uses (and previews through the very preview the
+  rod shows) rather than growing a second copy — rule 4 plus the never-compute-one-quantity-two-ways rule.
+  The shared cast flick is arbitrated between rod and rope by `CastActionClaim`, claimed by *proximity* to
+  a cleat so the outcome can never depend on component execution order.
+- **The tide is the mechanic.** A line's scope must cover the 3-D gap between two cleats, and only the
+  shore end holds still. `MooringLineMath.HorizontalReach` is the one place that law is written; it covers
+  the falling-tide and rising-tide hazards from a single absolute value. Failure is a **slipped loop** — no
+  damage, no parted rope.
+- **Not built, on purpose:** a second line (bow + stern), a winch (P4), rope damage/breaking strain, rafting
+  boat-to-boat, and the wharf rig's own mount-symbol export (art-director — when it lands, only the shore
+  cleats' PLACEMENT changes, not `ShoreCleat` and not a single consumer).
 
 ### M2-39 — Diegetic interact highlight (shader, no UI)
 - An `IInteractable` seam in Core; a facing-aware detector on the player picks **exactly one**
@@ -129,7 +151,7 @@ you while you occupy it.
 |---|---|
 | ~~**Now (rides ADR 0022)**~~ **LANDED** | Add `DECK`/`WASHBOARD`/`CLEATS` to the art-director export ask; extractor pass-through to Def data. Additive, small. — **done**: the eleven sidecars import to `BoatDeckDef` assets (`DeckSidecarImporter`) and the on-deck player is clamped to each hull's own polygons instead of the one-size rectangle. `CLEATS` and `WASHBOARD` ride along as data; no rope gameplay and no Space climb yet. |
 | ~~**The boarding MOVE**~~ **LANDED** (owner ask, 2026-08-06) | *"You push E and get teleported; the character should jump/climb/whatever to get onto the boat."* E now plays a MOVE: the fisher walks to the nearest point on that hull's own rail — her `DECK` outline, with `WASHBOARD` strips opened to the clamp on the hulls whose data carries them — vaults it, and lands where boarding always seated them. Stepping ashore is the same move mirrored. `ControlSwitcher` only; the state machine, the E-verb, the reach and the repair gate are all untouched — the move changes WHEN the same transition lands (at the far end of the arc, when the feet meet the deck), never WHETHER it may. **No new art**: the arc is built from the shipped walk frames, which the character's sprite driver selects from measured speed. A bespoke `board`/climb clip from the art-director is the open follow-up, and the owner's call. |
-| **M2, in order** | M2-39 (the interact verb — the other two consume it) → M2-37 (boarding) → M2-38 (ropes). Alongside M2-33, which shares the leave-the-helm/moving-deck substrate. **M2-37's own `Space` deck↔washboard climb is still to build** — the boarding move above consumes the same polygons but is a different verb (E, boat↔shore) and does not promote you onto a washboard to stand there. |
+| **M2, in order** | M2-39 (the interact verb — the other two consume it) → M2-37 (boarding) → M2-38 (ropes). Alongside M2-33, which shares the leave-the-helm/moving-deck substrate. **M2-37's own `Space` deck↔washboard climb is still to build** — the boarding move above consumes the same polygons but is a different verb (E, boat↔shore) and does not promote you onto a washboard to stand there. — **M2-38 done** (2026-08-06): it did not in fact need M2-39 first, because the rope rides the CAST flick rather than the interact verb. When M2-39 lands, the "grab a rope" beat becomes an `IInteractable` candidate and `MooringController`'s proximity read is what it replaces. |
 | **Owner's call** | M2-39 is a strong candidate to pull forward earlier (it improves the existing bucket/rod/trap interactions on its own). Raise, don't sneak. |
 
 ## 5. What these symbols do NOT do — occlusion (owner follow-up, 2026-07-21)

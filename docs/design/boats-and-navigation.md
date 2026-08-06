@@ -769,28 +769,79 @@ The on-foot ⇄ aboard control loop is the `ControlSwitcher` (Player lane); seve
   (`RegionPassage.ShouldFire`), owner-tunable (`_reentryCooldownSeconds`), nothing saved. So the helm stays
   live crossing the boundary repeatedly, for both the rowed Dory and the engine Punt.
 
-### 9.6 Mooring — future work (cleats / posts / placed tie items, and a second line) *(NOT built)*
+### 9.6 Mooring — the painter, and the line made fast to a cleat
 
-The current rope makes fast to one of two **tie targets**: the **player's hand** (held) or a **fixed ground
-spot** (rooted). Both are an `IMooringAnchor` (`MooringAnchor.cs`) — an interface the tether reads a live
-`Position` from each tick — so the mechanic is already structured to grow **without reworking the rope
-physics**:
+The rope makes fast to one of **three** tie targets. All are an `IMooringAnchor` (`MooringAnchor.cs`) — an
+interface the tether reads a live `Position` from each tick:
 
-- **Dedicated cleats / posts / user-placeable tie items.** A cleat on the wharf, a piling, or a tie-post the
-  player **places** is just another `IMooringAnchor` (a `FixedAnchor` at its position, or a component that
-  supplies its own). Rooting to one instead of the bare ground becomes a target-selection choice (snap to the
-  nearest in-reach cleat); the firm/slack tether and the LineRenderer are unchanged. A placed tie-item would
-  be **content/data** (a small `Def` + a world prop), keeping it in-lane with ADR-0003. This pairs with the
-  shipwright/harbour build-out and the lobster-buoy work (§6.3).
+| State | Tie target | Tidal? |
+|---|---|---|
+| `HeldByPlayer` | the player's hand (`TransformAnchor`) | no |
+| `RootedToGround` | a fixed ground spot (`FixedAnchor`) | no |
+| `MadeFastToCleat` | a shore cleat, with the other end on one of the hull's own cleats (`CleatAnchor`) | **yes** |
+
+#### The cleat moor (M2-38, built 2026-08-06)
+
+Stand by a cleat, **throw a line with the fishing-cast verb** to a cleat on the other side of the water
+(boat→shore or shore→boat), make fast, then tighten or slacken at will. Cleats come from data on both sides:
+a hull's from her rig sidecar's `CLEATS` (`BoatDeckDef.Cleats`, published by `BoatCleats`), the shore's from
+the wharf builders' own fittings table (`ShoreCleat`). Both register into the Core `MooringCleats` registry;
+neither side references the other.
+
+**The tide law — the one thing to understand.** A line has a fixed LENGTH (its *scope*). Its two ends do
+not stay the same distance apart: the shore cleat is bolted to the planks and stands still, while the boat's
+cleat floats and rides the water. So the line must span a **three-dimensional** gap whose vertical component
+the tide drives, and whatever the drop spends is no longer available to reach *across* the water:
+
+```
+horizontal reach = √(scope² − verticalDrop²)          MooringLineMath.HorizontalReach
+verticalDrop     = |boatCleatElevation − shoreCleatElevation|
+boatCleatElevation = waterLevel + (cleatHeightAboveKeel − draught)
+```
+
+That single function covers both hazards, because the drop is an absolute value and so grows in *either*
+direction from level:
+
+- **Falling tide, short line** (tied bar-taut at high water to a wharf): she drops away, the reach collapses,
+  the line hauls her in against her own sheer — and past the working load the loop **slips**. The classic
+  way to hang a boat off a wharf.
+- **Rising tide, short line** (tied bar-taut at low water to something *low* — a float, a ring at the
+  waterline): she now rises *past* her cleat, the drop opens again from the other side, and the line pins
+  her down as the water lifts her.
+- **Tied short at low water to a HIGH wharf**, though, gets *slacker* as the tide makes — which is what real
+  seamanship says, and is the reward P1 is teaching.
+
+**The cozy fail is a slipped loop, not a parted rope.** Past `WorkingLoadFactor` × scope, sustained for
+`SlipGraceSeconds` (so one snatching wave never costs the boat), the loop surrenders and she goes quietly
+adrift, undamaged. Coil it and try again. No damage model, no breaking strain in v1.
+
+**Sizing it is about the DROP, not the tidal range.** St Peters is the worked example and is a taller pier
+than it looks: deck measured at **+5.35 m** above datum, tide swinging **±2.2 m**, so the gap from a bollard
+down to a small hull's cleat runs ~2.6 m at high water to **~7.0 m at low**. Hence the shipped defaults
+(`GameConfig.MooringLine`): **9 m** of scope to start — she rides the whole ebb, swinging ~8.6 m at high and
+~5.7 m at low, visibly drawn in but never hung — against a **2–16 m** range stepped by the metre. Snug her
+to ~4 m at high water and it looks perfectly seamanlike; the ebb collects on it. `MooringLineMathTests` pins
+that gradient against these numbers, so if a region's wharf height or tide amplitude changes the tuning is
+re-checked rather than silently flattened.
+
+**The constraint is a restraint, never a freeze** (rule 5). The drift force is applied every fixed step and
+the rope restrains the *result*: the same firm tether + inextensible clamp the painter uses, handed the
+tide-derived effective length instead of a fixed one, and centred so the *cleat* is the end being held
+rather than the hull's origin. The one exception is while she is **hanging** (reach has gone to zero): the
+positional clamp is skipped there, because a clamp with no reach would teleport a 13 m hull onto the
+bollard. A hung boat is *hauled* by the (finite, visible) tether force until the loop lets go.
+
+#### Still future work *(NOT built)*
+
 - **Two lines (a bow line + a stern line).** A larger or more exposed berth wants the boat held at **two
   points** so she lies alongside instead of swinging on a single leash. That is two `BoatMooring`/anchor
-  pairs (a bow anchor + a stern anchor, each its own rope), with the per-line firm/slack physics applied at
-  the bow and stern attach points rather than the hull centre — a natural extension of the single-line model,
-  not a new mechanic. It also unlocks **springs/breast-lines** flavour and a real "make her fast fore-and-aft"
-  docking beat (P1 seamanship).
-
-Both are deliberately deferred (out of the current greybox phase); the single rope-to-player/ground is the
-working mechanic. Captured here so the structure stays honest and the later pass is a fill-in, not a rewrite.
+  pairs, with the per-line physics applied at the bow and stern attach points rather than the hull centre —
+  an extension of the single-line model, not a new mechanic. It also unlocks **springs/breast-lines** flavour
+  and a real "make her fast fore-and-aft" docking beat (P1 seamanship).
+- **A winch that pays out scope on the tide for you.** P4, and much later — this is precisely the
+  earn-it-then-automate-it shape, and it only means anything *because* doing it by hand can lose you a boat.
+- **Rope damage / breaking strain, and rafting (boat-to-boat).** Deliberately out of scope; the slip is the
+  whole failure model for now.
 
 ### 9.7 Boat wake (the foam trail) — visual-only, reads the sim
 
@@ -946,6 +997,70 @@ are important — you read roughly how full a tray/tote is by looking at it*).
   the same frame as the §9.5 deck-walk clamp (an EditMode parity test keeps the two maths in lockstep) —
   so the tray snaps with the picture and stays on the same spot of the *pictured* deck; the sprite itself
   stays screen-upright and never anchors to the counter-rotated visual child.
+
+### 9.11 Anchoring — drop the hook where the rode reaches the bottom
+
+*"An anchor option on the boat: it drops only if there is enough depth for the anchor to reach the
+bottom. Larger vessels carry longer rodes. An anchored boat holds against wind/tide drift."* (owner
+ask, 2026-08-06.) Built as **one rule the player can read off the water**, not a place-flagged
+"anchorage zone": she anchors where her line reaches, and nowhere else.
+
+- **The gate is DEPTH, and the depth is the one the game already has.** `depth = waterLevel −
+  seabedElevation` via `BoatCrossing.DepthAt` → `TidalExposure.WaterDepth` — the *same* single number
+  the water render, the walkability sim, the crossing gate and the sounder read (ADR 0014: paint =
+  sail). No second copy of the arithmetic, nothing cached: it is recomputed every tick from
+  `(worldSeed, gameTime)` and never saved (rule 5). She anchors iff she is genuinely **afloat**
+  (`depth > 0` *and* `depth ≥ draught` — the existing float rule) **and** `depth ≤ rode`. Too deep →
+  the hook *"finds no bottom"*: a refusal with no state change. On the flats you do not anchor, you
+  are **aground**, which the existing grounding sim already owns. Where a region paints **no seabed
+  at all**, the depth is infinite and the tackle refuses — the mirror of the crossing gate's "a
+  missing height map never falsely *blocks* a boat" (here: never falsely *claims to hold* one).
+- **The rode is DATA** (rule 2): `BoatHullDef.RodeMeters` — how much anchor line the hull carries, and
+  therefore the deepest water she can anchor in. It grows up the ladder (dory 6 m → punt 8 → console
+  skiff 12 → lobster boat 30 → dragger 60 → trawler 90 → packet 130 → tanker 180), so **deeper
+  anchorages are a thing you buy** (P2). `0` means "she authors none" and takes the shared
+  dinghy-class `GameConfig.Anchor.DefaultRodeMeters` — which is also what every hull asset written
+  before the field existed deserializes to, so an untouched hull carries a *short* rode, never none.
+- **Holding is a swing circle, not a freeze.** She lies within `√(rode² − depth²)` of the drop point —
+  the plain geometry of a taut rode, where the vertical leg takes the depth and whatever is left is
+  horizontal. **Spare rode is swing**: a short scope in deep water pins her almost over her anchor, the
+  same rode in shallow water lets her range nearly its full length. Inside the circle she is
+  completely free — wind, tide and sea work her exactly as the unanchored sim says; at the edge the
+  rode goes taut and checks her firmly.
+- **ONE restraint mechanism, two consumers.** The rode is checked with the *mooring line's* own maths
+  (`BoatMooring.TetherForce` + the inextensible `BoatMooring.ConstrainToRope`, §9.5), with the swing
+  circle standing in for the rope's length. A boat brought up on her anchor is held exactly the way a
+  boat made fast to a cleat is, because it is the same code and the same tuning. No second
+  "near-rigid tether" implementation exists.
+- **The tide keeps moving — this is where the teeth are (P1/P5).** On the **ebb** the depth shrinks,
+  the swing circle *widens*, and if her draught meets the bottom the existing grounding sim takes her:
+  the anchor never prevented that; a badly-chosen anchorage did. On the **flood** the depth grows and
+  the circle *shrinks* — to nothing at `depth == rode`, the last moment she holds — and the instant the
+  water is past her rode the hook **loses the bottom and she DRAGS**: no longer held, creeping off
+  downwind/downtide at about `GameConfig.Anchor.DragCreepMetersPerSec` while the tackle skips along
+  the seabed. Come the ebb she **brings up again where she has fetched to**, not at the berth she
+  lost: dragging costs you your spot, not your anchor.
+- **Owner-tunable, no magic numbers** (rule 6): the whole policy is `GameConfig.Anchor` — the
+  dinghy-class rode, the swing floor, the firm-limit trio, and the drag creep + brake. ⚠️ The **drag
+  rate** is flagged `_confirm` — it is the number that decides how nasty losing your bottom feels.
+- **Input is a dev key for now** (`R`, for *rode* — audited free across code *and*
+  `InputSystem_Actions`, where `C` turns out to be taken by Crouch). It lives only from the boat (helm
+  or deck, never ashore), only on the hull you are on, and stands down under a dialogue or a text
+  field. The real control is a **diegetic windlass** on the helm console — `ui-ux`/`art-director`
+  later work, not this slice.
+- **Visual v1 is minimal**: a greybox `LineRenderer` rode from the hull to the hook, dull galvanised
+  while holding and red while dragging, on the `SortingBands.AboveDecor` rope tier the mooring line and
+  the trap-haul line already share (ADR 0032). No bespoke animation — a windlass clip is routed to the
+  art-director.
+- **Nothing is saved.** The drop point is live runtime state, like the mooring's tie point; reload and
+  the hook is catted. *Persisting an anchored boat across a save is a follow-up, not this slice.*
+- Code: `Code/Boats/AnchorMath.cs` (the pure rules — gate, swing, drag brake, rode resolution),
+  `Code/Boats/BoatAnchor.cs` (state + the per-tick restraint, runtime-spawned by `BoatController` so
+  no builder re-run is needed), `Code/Boats/DevAnchorInput.cs` (the key),
+  `Code/Core/Boats/AnchorSettings.cs` (the owner's policy). Tests: `AnchorMathTests` (EditMode — the
+  whole decision half, plus the `GameConfig.asset` YAML-key guard) and `AnchorPlayTests` (PlayMode —
+  the gate on a live tide, the hold under a stiff wind against an un-anchored control, and the
+  rising-tide drag).
 
 ---
 

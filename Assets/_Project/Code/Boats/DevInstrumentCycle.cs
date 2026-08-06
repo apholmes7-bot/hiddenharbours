@@ -47,9 +47,10 @@ namespace HiddenHarbours.Boats
         [Tooltip("Step the brow instrument: bare → depth sounder → fish finder → bare. Hold SHIFT and " +
                  "the same key steps the PILOT DECK instead: as-owned → gps → gps+radar → radar → as-owned. " +
                  "K for Kit — free of every other binding in the project (F fleet/interact, V variant, " +
-                 "Z neutral, X dump, N tide, T rotation/trap, Y auto-yaw, G grant, H haul, L " +
-                 "spotlight/lid, O displaced water, I ice box, J/U character spike, P buy, B sell, " +
-                 "E interact, Q mooring, Space work/pull, WASD+arrows helm, Esc close).")]
+                 "Z neutral, X dump, N tide, R anchor/rode, T rotation/trap, Y auto-yaw, G grant, H " +
+                 "haul, L spotlight/lid, O displaced water, I ice box, J/U character spike, P buy, " +
+                 "B sell, E interact, Q mooring, Space work/pull, WASD+arrows helm, C/1/2/Enter/" +
+                 "LeftShift from InputSystem_Actions, Esc close).")]
         [SerializeField] private Key _cycleKey = Key.K;
 
         private BoatController _boat;

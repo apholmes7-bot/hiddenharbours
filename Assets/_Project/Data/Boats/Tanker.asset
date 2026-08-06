@@ -31,6 +31,7 @@ MonoBehaviour:
   LateralDrag: 290400
   WindExposure: 0.7
   MaxSafeSeaState: 7
+  RodeMeters: 180
   SeakeepingMassFactor: 12
   SeakeepingLiveliness: 0.1
   SeakeepingDamping: 0.9
