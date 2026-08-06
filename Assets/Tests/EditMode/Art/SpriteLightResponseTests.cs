@@ -223,33 +223,72 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         // =================================================================================
-        // 🔴 THE KEYLINE — coverage without a normal
+        // 🔴 COVERAGE WITHOUT A NORMAL — the fallback that outlived the keyline
         // =================================================================================
 
+        /// <summary>
+        /// ⭐ <b>THIS TEST'S SOURCE CHANGED WITH ADR 0031 wave 2, and its guard did not.</b>
+        ///
+        /// <para>It used to be sourced entirely from the shipped tree sheets, because the rig's 1 px
+        /// keyline ring was opaque in the albedo (and so in the mask's A) while carrying no surface
+        /// normal — 2,564 such texels on the Red Spruce sheet. The ring is retired, so there are now
+        /// <b>zero</b> of them in this kit, and the old <c>Assert.Greater(ring, 0)</c> fired exactly
+        /// as its own message predicted: <i>"the rig stopped drawing the keyline … this guard is now
+        /// testing nothing."</i></para>
+        ///
+        /// <para><b>The behaviour it guards is NOT retired, which is why this is rewritten rather
+        /// than deleted.</b> A decoded <c>(0,0,0,0)</c> normal must never be normalised into a
+        /// fabricated direction that lights a texel from wherever it happens to point. That fallback
+        /// still ships, and it is still reachable: <c>SpriteLightResponse.hlsl</c> is shared (#428)
+        /// with rigs and with sheets baked before the retirement, both of which can still present
+        /// coverage without a normal.</para>
+        ///
+        /// <para>So the guard is driven by a <b>synthetic</b> texel — a texel of exactly the shape
+        /// the ring used to have — and the shipped sheets are then scanned as a REGRESSION check:
+        /// however many such texels exist (zero today), not one of them may light. That is strictly
+        /// stronger than the old form, because it cannot be silently disarmed by a bake again.</para>
+        /// </summary>
         [Test]
-        public void TheKeylineRing_HasCoverageButNoNormal_AndTheResponseNeverInventsLightThere()
+        public void CoverageWithoutANormal_NeverInventsLight_EvenThoughTheKeylineIsRetired()
         {
-            // The measured asymmetry from the bake (§8.3): the rig's 1 px keyline ring is opaque in the
-            // albedo and so in the mask's A, but has NO surface normal. Two things must hold, and the
-            // second is the one a naive consumer gets wrong: the ring exists in the mask, and a
-            // decoded (0,0,0,0) normal must NOT be normalised into a fabricated direction that lights
-            // the outline from wherever it happens to point.
+            // ---- the guard proper: a synthetic texel of the shape the ring used to have ----------
+            // Full coverage, no normal, and mask R/G at 0 — the ring carried no key-light or rim
+            // value by construction, which is precisely why it must stay dark.
+            Assert.AreEqual(Vector3.zero, SpriteLightMath.DecodeNormal(new Color32(0, 0, 0, 0)),
+                "A texel with no normal coverage must decode to zero, never to a normalised " +
+                "(-1,-1,-1) that points somewhere plausible.");
+
+            float worstSynthetic = 0f;
+            Vector3 worstDir = Vector3.zero;
+            foreach (float depth in new[] { 0f, 0.5f, 1f })
+            for (int deg = 0; deg < 360; deg += 30)
+            {
+                float rad = deg * Mathf.Deg2Rad;
+                Vector3 l = SpriteLightMath.LightViewDirection(
+                    new Vector2(Mathf.Cos(rad), Mathf.Sin(rad)), 0.3f);
+                float lit = SpriteLightMath.KeyResponse(0f, depth, 1f, Vector3.zero, l, 1f,
+                                                        SpriteLightMath.DefaultFrontBand, 0.3f)
+                          + SpriteLightMath.RimResponse(0f, depth, 1f, Vector3.zero, l, 0.8f,
+                                                        SpriteLightMath.DefaultFrontBand, 0.3f);
+                if (lit > worstSynthetic) { worstSynthetic = lit; worstDir = l; }
+            }
+
+            Assert.LessOrEqual(worstSynthetic, 1e-4f,
+                $"A covered texel with NO normal and a zero baked mask lit up ({worstSynthetic:E2} " +
+                $"at {worstDir}). It has coverage but no surface, so every term must collapse to the " +
+                "baked mask — which is zero. Light such a texel from the MASK, never from a " +
+                "reconstructed normal.");
+
+            // ---- regression over the COMMITTED pixels: zero today, and still must not light ------
             var (mask, normal, _, _) = LoadSheets();
-
-            int ring = 0, litRing = 0;
-            Vector3 sweepWorst = Vector3.zero;
-            float worstLit = 0f;
-
+            int covered = 0, ringLike = 0, lit2 = 0;
             for (int i = 0; i < mask.Length; i++)
             {
-                if (mask[i].a == 0 || normal[i].a != 0) continue;
-                ring++;
+                if (mask[i].a == 0) continue;
+                covered++;
+                if (normal[i].a != 0) continue;
+                ringLike++;
 
-                Assert.AreEqual(Vector3.zero, SpriteLightMath.DecodeNormal(normal[i]),
-                    "A texel with no normal coverage must decode to zero, never to a normalised " +
-                    "(-1,-1,-1) that points somewhere plausible.");
-
-                // Sweep the light all the way round: no direction may light this texel.
                 for (int deg = 0; deg < 360; deg += 30)
                 {
                     float rad = deg * Mathf.Deg2Rad;
@@ -258,22 +297,19 @@ namespace HiddenHarbours.Tests.Art.EditMode
                     float m = mask[i].r / 255f, g = mask[i].g / 255f, b = mask[i].b / 255f, a = mask[i].a / 255f;
                     float lit = SpriteLightMath.KeyResponse(m, b, a, Vector3.zero, l, 1f, SpriteLightMath.DefaultFrontBand, 0.3f)
                               + SpriteLightMath.RimResponse(g, b, a, Vector3.zero, l, 0.8f, SpriteLightMath.DefaultFrontBand, 0.3f);
-                    if (lit > worstLit) { worstLit = lit; sweepWorst = l; }
-                    if (lit > 1e-4f) litRing++;
+                    if (lit > 1e-4f) lit2++;
                 }
             }
 
-            Assert.Greater(ring, 0,
-                "No mask-covered texel lacks a normal — the rig stopped drawing the keyline. That is " +
-                "a look change, not a bake bug, but this guard is now testing nothing.");
-            Debug.Log($"[sprite-light] keyline ring: {ring} px with coverage and no normal; brightest " +
-                      $"response over a full 360° light sweep = {worstLit:E2} (dir {sweepWorst}). " +
-                      "Measured 2026-07-29: 2564 ring px over the 4-variant sheet, brightest 0. " +
-                      "(The bake measured 611 px on ONE cell.)");
-            Assert.AreEqual(0, litRing,
-                "The keyline lit up. It carries coverage but no surface, so its mask R and G are 0 " +
-                "and it must stay the deliberate dark outline the rig drew — light the keyline from " +
-                "the MASK, never from a reconstructed normal.");
+            Assert.AreEqual(0, lit2,
+                $"{lit2} light-sweep sample(s) lit a committed texel that has coverage but no " +
+                "normal. Whatever produced such a texel, it must never be lit from a reconstructed " +
+                "normal — see SpriteLightResponse.hlsl's header.");
+
+            Debug.Log($"[sprite-light] coverage-without-normal on the committed {Species} sheet: " +
+                      $"{ringLike} of {covered} covered texels (ADR 0031 wave 2 retired the keyline " +
+                      "ring, so this is now 0; it was 2564 before). Synthetic guard: brightest " +
+                      $"response over a 360° sweep x 3 depths = {worstSynthetic:E2}.");
         }
 
         [Test]
