@@ -6,10 +6,19 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/_Project/Scenes/StPeters.unity
+    guid: 4d1dc4aec745b8a4fa019e0c0d7e5d55
+  - enabled: 1
     path: Assets/_Project/Scenes/Greybox.unity
     guid: 4e1ac6dfa872c504c97c83c442d076e0
   - enabled: 1
     path: Assets/Scenes/SampleScene.unity
     guid: 8c9cfa26abfee488c85f1582747f6a02
+  - enabled: 1
+    path: Assets/_Project/Scenes/Greywick.unity
+    guid: efa76b1a94eb8914388097b4180467de
+  - enabled: 1
+    path: Assets/_Project/Scenes/NineMileCreek.unity
+    guid: 0a46cd90f01cf754eb77122b12796cf3
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
