@@ -22,7 +22,8 @@
 //        R = KEY LIGHT   (the rig's max(0, N.K)^1.35 against its own fixed key)
 //        G = BACK RIM    (the silhouette fringe, already gated on local mass thickness)
 //        B = DEPTH       (view-axis depth, normalised per sprite — 1 = NEAR the camera, 0 = FAR)
-//        A = COVERAGE    (the albedo's alpha, the 1 px keyline ring INCLUDED)
+//        A = COVERAGE    (the albedo's alpha — which since ADR 0031 wave 2 is the geometry itself;
+//                         it used to include the 1 px keyline ring, see below)
 //
 // A ported snippet swaps two channels and looks SUBTLY wrong rather than broken. The order is pinned
 // at the bake (TreeRigBakeTests.MaskChannels_AreKeyRimDepthCoverage_NotTheReferenceTechniquesOrder)
@@ -35,11 +36,18 @@
 // ================================================================================================
 // 🔴 SAMPLE ALL THREE SHEETS THROUGH THE ALBEDO'S MESH AND UV
 // ================================================================================================
-// The rig composites a 1 px keyline ring OUTSIDE the volume. Those pixels are opaque in the albedo
-// (and so in the mask's A) but have NO surface normal to write: measured 611 px of Red Spruce's 7601
-// (TreeRigBakeTests.ChannelCoverage_AlbedoAndMaskAgree_ButTheNormalOmitsTheKeyline). Under a Tight
-// import the normal sheet's own MESH is smaller too, so giving the normal its own sprite loses the
-// ring and the outline goes flat.
+// The rig USED TO composite a 1 px keyline ring OUTSIDE the volume. Those pixels were opaque in the
+// albedo (and so in the mask's A) but had NO surface normal to write: measured 611 px of Red Spruce's
+// 7601 on pass 1, 722 of 6570 on pass 2. ADR 0031 wave 2 retired that ring at the rig
+// (treeIsoRig2.js KEYLINE_DEFAULT), so a freshly baked sheet has all three channels covering exactly
+// the geometry — pinned by
+// TreeRigBakeTests.ChannelCoverage_AlbedoMaskAndNormal_AllAgree_NowTheKeylineIsRetired.
+//
+// ⚠️ THE RULE BELOW DOES NOT RELAX. Coverage-without-a-normal is no longer produced by the TREE ring,
+// but this include is shared (#428) and the fallback below is what keeps any such texel — from any
+// rig, or from sheets baked before the retirement — from consuming a fabricated normal. Under a
+// Tight import the normal sheet's own MESH can still differ from the albedo's, so giving the normal
+// its own sprite remains wrong.
 //
 // Therefore: the ALBEDO's sprite is the mesh; the mask and the normal are TEXTURE LOOKUPS at the
 // albedo's uv (secondary-texture style), never their own sprites. The sheets are baked at identical

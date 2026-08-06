@@ -166,6 +166,28 @@ namespace HiddenHarbours.Tests.RigBaking
             Assert.AreNotEqual(a1, a2,
                 "Pass 1 and pass 2 rendered the SAME Red Spruce. Either RigScriptPath is still " +
                 "pointing at pass 1, or the drop was not the revised rig.");
+
+            // ---- ADR 0031: BOTH passes are retired, and pass 1 is the reason it matters --------
+            // Pass 1 is not dead code. TreeKitCatalog.HeldBackSpecies keeps Tamarack on it, so
+            // Tamarack's shipped sheets come off THIS rig — gating only pass 2 would have left one
+            // species inked forever, and no pass-2 test could ever have caught it.
+            foreach (string g in new[] { p1, p2 })
+            {
+                Assert.IsTrue(host.EvaluateBool($"{g}.KEYLINE_DEFAULT === false"),
+                    $"{g}.KEYLINE_DEFAULT is not false. The outline is retired from world art " +
+                    "(ADR 0031) and BOTH passes bake shipped sheets — pass 2 for the kit, pass 1 " +
+                    $"for {string.Join("/", TreeKitCatalog.HeldBackSpecies)}.");
+
+                // The control: the flag must still be reachable, or "retired" would be
+                // indistinguishable from "the ring pass was deleted". Probed on the held-back
+                // species where there is one, since that is the one pass 1 still bakes.
+                string probe = TreeKitCatalog.HeldBackSpecies.FirstOrDefault() ?? "RedSpruce";
+                string plain = $"{g}.render('{probe}',{{variant:0,season:'{Season}',frame:0,stage:'{Stage}'}})";
+                string inked = $"{g}.render('{probe}',{{variant:0,season:'{Season}',frame:0,stage:'{Stage}',outline:true}})";
+                Assert.AreNotEqual(host.EvaluateBytes($"{plain}.rgba"), host.EvaluateBytes($"{inked}.rgba"),
+                    $"{g}: {{outline:true}} rendered {probe} identically to the default, so the A/B " +
+                    "arm is gone. Keep the ring code — ADR 0031 gates it, it does not delete it.");
+            }
         }
 
         [Test]
@@ -296,13 +318,27 @@ namespace HiddenHarbours.Tests.RigBaking
                 "and rim channels would be nearly interchangeable and the order would not matter.");
         }
 
+        /// <summary>
+        /// ⭐ THIS TEST'S CLAIM INVERTED WITH ADR 0031 (wave 2) — and the old version said so itself.
+        ///
+        /// <para>It used to assert <c>inMaskNotNormal &gt; 0</c>: the rig composited a 1 px keyline
+        /// ring OUTSIDE the volume, so those pixels were opaque in rgba (and therefore in the mask's
+        /// A) but carried no surface normal — the albedo/mask footprint was 11% larger than the
+        /// normal's. Its failure message named this exact outcome: <i>"if this is 0 the rig stopped
+        /// drawing the keyline — a look change, not a bake bug, but the contract's coverageNote is
+        /// now wrong."</i> The rig has now stopped drawing it, so the assertion flips and the
+        /// contract's <c>coverageNote</c> is corrected in the same change.</para>
+        ///
+        /// <para><b>Why the equality is worth pinning rather than deleting.</b> Three co-registered
+        /// sheets agreeing on coverage is the property a shader author actually relies on, and it is
+        /// only true because the ring is gone — if the ring ever came back by default, this fires
+        /// immediately, which is the same tripwire pointed the other way. The advice it replaces
+        /// ("light the keyline from the mask, never from the normal") is now advice about art that
+        /// no longer exists.</para>
+        /// </summary>
         [Test]
-        public void ChannelCoverage_AlbedoAndMaskAgree_ButTheNormalOmitsTheKeyline()
+        public void ChannelCoverage_AlbedoMaskAndNormal_AllAgree_NowTheKeylineIsRetired()
         {
-            // A genuine asymmetry the kit README does not mention and a shader author would trip
-            // over: the rig composites a 1 px keyline ring OUTSIDE the volume, so those pixels are
-            // opaque in rgba (and therefore in the mask's A) but carry no surface normal. Light the
-            // keyline from the mask; never from the normal.
             using var host = CreateTreeHost();
             const string Species = "RedSpruce";
             string res = TreeRigBaker.ResultExpr(Species, Stage, Season, variant: 0, frame: 0);
@@ -335,21 +371,141 @@ namespace HiddenHarbours.Tests.RigBaking
                 "The mask's A channel IS the albedo's coverage — they cannot disagree.");
             Assert.AreEqual(0, inNormalNotMask,
                 "A pixel with a normal but no coverage would be shaded geometry outside the sprite.");
-            Assert.Greater(inMaskNotNormal, 0,
-                "The keyline ring should leave the normal map smaller than the mask. If this is 0 " +
-                "the rig stopped drawing the keyline — a look change, not a bake bug, but the " +
-                "contract's coverageNote is now wrong.");
+            Assert.AreEqual(0, inMaskNotNormal,
+                $"{inMaskNotNormal} pixel(s) are covered by the albedo/mask but carry no normal. " +
+                "With the keyline retired (ADR 0031) the only thing that ever produced such a " +
+                "pixel is gone, so all three sheets must now cover exactly the geometry. A " +
+                "non-zero here means the ring is being drawn again by default — check " +
+                "KEYLINE_DEFAULT in treeIsoRig2.js.");
 
             // Unit normals, within 8-bit quantisation.
             Assert.That(minLen, Is.GreaterThan(0.97), "a decoded normal shorter than 0.97 is not a normal");
             Assert.That(maxLen, Is.LessThan(1.03));
 
             Debug.Log($"[tree-coverage] {Species}: albedo/mask {albedoCov} px, normal {normalCov} px, " +
-                      $"keyline-only {inMaskNotNormal} px ({100.0 * inMaskNotNormal / maskCov:F1}% of " +
-                      $"coverage). Decoded |n| ∈ [{minLen:F4}, {maxLen:F4}]. " +
-                      "Measured 2026-07-29 (pass-2 rig): 6570 / 5848 / 722 px = 11.0%; pass 1 was " +
-                      "7601 / 6990 / 611 px = 8.0%. The serrated pass-2 outline has more perimeter " +
-                      "per unit area, so the 1 px keyline ring is a larger share of coverage.");
+                      $"keyline-only {inMaskNotNormal} px. Decoded |n| ∈ [{minLen:F4}, {maxLen:F4}]. " +
+                      "Before ADR 0031 wave 2 this read 6570 / 5848 / 722 px = 11.0% (pass-2 rig; " +
+                      "pass 1 was 7601 / 6990 / 611 px = 8.0%, the serrated pass-2 outline having " +
+                      "more perimeter per unit area). Retiring the ring removed exactly those 722 " +
+                      "px, which is why the three sheets now agree.");
+        }
+
+        /// <summary>
+        /// ⭐ The outline retirement (ADR 0031, wave 2), pinned on rendered pixels — and pinned as
+        /// the STRUCTURAL claim, not as a colour match. Follows the shore-plant pilot's shape
+        /// (<c>ShorePlantRigBakeTests.TheKeylineIsRetired_AndTurningItBackOn_ChangesOnlyTheRing</c>).
+        ///
+        /// <para><b>The definition used here is exact.</b> A keyline pixel is one the shade pass
+        /// made opaque where the rig has <i>no geometry</i> — <c>rgba.a != 0</c> while
+        /// <c>res.alpha == 0</c>. That is what the ring pass does and the only thing it does, so it
+        /// cannot be confused with a bark or shadow pixel that happens to be dark, and it stays
+        /// true if the keyline colour is ever re-tuned for the A/B arm.</para>
+        ///
+        /// <para><b>Why the second half matters more than the first.</b> "No keyline" alone would
+        /// also pass if the ring pass were broken, or the renderer returned nothing. So the test
+        /// carries its own control: <c>{outline:true}</c> must bring the ring BACK, and — the real
+        /// assertion — <b>every pixel that differs between the two arms must be a ring pixel</b>.
+        /// That is what makes the retirement provably a pure ring deletion: no painted pixel of any
+        /// tree changes value, so no colour, band, rim or leaf cell can have moved with it.</para>
+        ///
+        /// <para><b>Measured across all ten species</b> (variant 0, mature/summer): 6,821 ring px
+        /// against 59,450 painted px = <b>0.11×</b>, 0 violations. Trees are the AREA end of the
+        /// perimeter law — the shore plants paid 0.39× and glasswort 0.94× — so this family loses
+        /// the least by dropping the ring, and rule 2's authored silhouette plus rule 3's rim were
+        /// carrying the edge all along.</para>
+        /// </summary>
+        [Test]
+        public void TheKeylineIsRetired_AndTurningItBackOn_ChangesOnlyTheRing()
+        {
+            using var host = CreateTreeHost();
+            var report = new System.Text.StringBuilder("[tree-bake] ADR 0031 — keyline retirement, live:\n");
+            int totalRing = 0, totalPainted = 0;
+
+            foreach (string key in TreeRigBaker.ReadSpeciesKeys(host))
+            {
+                var shipped = RenderArm(host, key, opts: null);
+                var restored = RenderArm(host, key, opts: "outline:true");
+
+                // The geometry itself must be untouched by the flag — otherwise "only the ring
+                // changed" would be comparing two different trees.
+                CollectionAssert.AreEqual(shipped.Geometry, restored.Geometry,
+                    $"{key}: the outline flag moved the GEOMETRY. The ring pass writes only where " +
+                    "there is no geometry; if this fired it is doing something else as well.");
+
+                int ringDefault = 0, ringRestored = 0, painted = 0, violations = 0;
+                for (int i = 0, p = 0; i < shipped.Rgba.Length; i += 4, p++)
+                {
+                    bool hasGeometry = shipped.Geometry[p] != 0;
+                    if (hasGeometry) painted++;
+                    if (!hasGeometry && shipped.Rgba[i + 3] != 0) ringDefault++;
+                    if (!hasGeometry && restored.Rgba[i + 3] != 0) ringRestored++;
+
+                    bool differs = shipped.Rgba[i] != restored.Rgba[i] ||
+                                   shipped.Rgba[i + 1] != restored.Rgba[i + 1] ||
+                                   shipped.Rgba[i + 2] != restored.Rgba[i + 2] ||
+                                   shipped.Rgba[i + 3] != restored.Rgba[i + 3];
+                    if (differs && hasGeometry) violations++;
+                }
+
+                Assert.AreEqual(0, ringDefault,
+                    $"{key}: {ringDefault} pixel(s) are opaque where the rig has no geometry, on a " +
+                    "DEFAULT render. The keyline is retired (ADR 0031) — a default bake must draw " +
+                    "no ring at all.");
+
+                // The control. Without this, "0 ring pixels" would also be satisfied by a ring pass
+                // that no longer works, or a species that renders nothing.
+                Assert.Greater(ringRestored, 0,
+                    $"{key}: {{outline:true}} produced no ring either — the A/B arm is broken, so " +
+                    "the zero above proves nothing about the default.");
+
+                Assert.AreEqual(0, violations,
+                    $"{key}: {violations} PAINTED pixel(s) differ between the retired and restored " +
+                    "arms. Retiring the keyline must be a pure ring deletion — if a tree's own " +
+                    "pixels move with the flag, the ring pass is writing inside the silhouette.");
+
+                totalRing += ringRestored;
+                totalPainted += painted;
+                report.AppendLine(
+                    $"  {key,-16} {painted,6} painted px · ring {ringRestored,5} px " +
+                    $"({ringRestored / (float)Math.Max(1, painted):F2}× painted) · " +
+                    $"default ring {ringDefault} · painted-pixel diffs {violations}");
+            }
+
+            report.AppendLine(
+                $"  ── {totalRing} ring px against {totalPainted} painted px " +
+                $"({totalRing / (float)totalPainted:F2}×), 0 painted pixels touched. A tree is the " +
+                "AREA end of the perimeter law, so it paid least for the ring (shore plants 0.39×).");
+            Debug.Log(report.ToString());
+        }
+
+        readonly struct Arm
+        {
+            public readonly byte[] Rgba, Geometry;
+            public Arm(byte[] rgba, byte[] geometry) { Rgba = rgba; Geometry = geometry; }
+        }
+
+        /// <summary>
+        /// One render of <paramref name="species"/> with extra options spliced into the SAME
+        /// expression the baker builds, so an A/B arm cannot drift from the production call in any
+        /// other respect. The splice targets the trailing <c>})</c> of the baker's own options
+        /// object rather than restating it — <paramref name="opts"/> is a bare JS fragment, e.g.
+        /// <c>"outline:true"</c>.
+        /// </summary>
+        static Arm RenderArm(IRigScriptHost host, string species, string opts)
+        {
+            string expr = TreeRigBaker.ResultExpr(species, Stage, Season, variant: 0, frame: 0);
+            if (!string.IsNullOrEmpty(opts))
+            {
+                int close = expr.LastIndexOf("})", StringComparison.Ordinal);
+                Assert.Greater(close, 0,
+                    "TreeRigBaker.ResultExpr no longer ends in an options object — this splice is " +
+                    $"built on that shape. Got: {expr}");
+                expr = expr.Substring(0, close) + "," + opts + expr.Substring(close);
+            }
+
+            const string Res = "__hhTreeArm";
+            host.Execute($"globalThis.{Res} = {expr};");
+            return new Arm(host.EvaluateBytes($"{Res}.rgba"), host.EvaluateBytes($"{Res}.alpha"));
         }
 
         // =================================================================================

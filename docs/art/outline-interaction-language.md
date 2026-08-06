@@ -1,7 +1,8 @@
 # The outline becomes a language — survey, pilot, and a proposal for the owner
 
-**Status: PROPOSAL. Nothing in §4 is built.** The owner rules on §4 before any implementation
-slice is written. §1–§3 record what was measured and what shipped in the pilot.
+**Status: §4.1–§4.5 are still a PROPOSAL and nothing in them is built** — the owner rules on those
+before any interaction-language slice is written. **§4.6 item 7 (the bulk background retirement) is
+RULED and in flight**: §1–§2b record what was measured and what has shipped, family by family.
 
 **Owner's ruling this responds to (2026-08-05 playtest, and the same night's refinement):**
 > reduce the near-black outline on a lot of art, if not everything — but a light one on the
@@ -24,13 +25,25 @@ mechanisms**, and a sweep that treats them alike will break shading while chasin
 
 | # | Mechanism | What it does | Rigs | Retiring it means |
 |---|-----------|--------------|------|-------------------|
-| **1** | **RING (dilation post-pass)** | paints near-black into *empty* pixels adjacent to geometry — expands the opaque footprint by 1 px | `shorePlantRig` *(pilot — now retired)*, `shrubIsoRig`, `treeIsoRig`, `treeIsoRig2`, `characterIsoRig`/`6`, `houseIsoRig`, `wharfBuildingRig`, `fisherRig` | delete/gate the pass |
-| **2** | **RAMP SLOT (`out:` / `'__out'`)** | the outline is a *palette entry* selected per pixel and drawn **inside** the sprite | `driftWeedRig`, `flowerRig`, `shorelineRig`, `wharfKitRig` (`index 0 = key/outline`) | re-point the ramp slot — there is no pass to delete |
+| **1** | **RING (dilation post-pass)** | paints near-black into *empty* pixels adjacent to geometry — expands the opaque footprint by 1 px | `shorePlantRig` *(pilot — retired)*, `shrubIsoRig` *(wave 2 — retired)*, `treeIsoRig`/`treeIsoRig2` *(wave 2 — retired)*, `driftWeedRig` *(see §1.1a)*, `characterIsoRig`/`6`, `houseIsoRig`, `wharfBuildingRig`, `fisherRig` | delete/gate the pass |
+| **2** | **RAMP SLOT (`out:` / `'__out'`)** | the outline is a *palette entry* selected per pixel and drawn **inside** the sprite | `flowerRig`, `shorelineRig`, `wharfKitRig` (`index 0 = key/outline`) | re-point the ramp slot — there is no pass to delete |
 | **3** | **MIX TARGET** | `KEYLINE` is just the palette's darkest value, used as a `mix()` anchor for wet/dark shading | `rockIsoRig` (`mix(c, KEYLINE, 0.30)` = wet rock), `_rockBake` | **nothing to retire — touching it destroys the shading** |
 
 ⚠ **`rockIsoRig` is the booby trap.** It has ten `KEYLINE` hits and draws no outline at all: the
 constant is the wet-rock darkening anchor. A naive "remove the keyline everywhere" sweep would
 flatten every wet rock on the shore.
+
+### ⚠ 1.1a Correction (wave 2): `driftWeedRig` was filed under the wrong mechanism
+
+The table above originally listed `driftWeedRig` as a **ramp slot**, on the strength of its
+`out: KEYLINE` palette entry, and concluded "there is no pass to delete". **That is wrong, and it
+matters because it makes the family look harder than it is.** The rig has a real dilation pass —
+`shade()` walks every *empty* pixel, tests its eight neighbours and sets `outl[i]`, exactly the
+mechanism-1 loop — and `toRGBA` then *colours* those pixels from the `out:` slot. The ramp entry is
+the ring's **palette**, not its selection rule. `out:` is used for nothing else.
+
+So the mechanism is a clean gate, the same shape as the shore plants'. What actually blocks the
+family is not the rig — see §2b.
 
 ⚠ **Rim light is a fourth vocabulary and is NOT outline machinery.** The back rim (mask G) is
 derived from the alpha silhouette's distance transform and gated per-rig; ADR 0031 already
@@ -166,6 +179,63 @@ Noted in the rig and in the contract so the next pass does not re-open it.
 
 ---
 
+## 2b. Wave 2 — trees and shrubs retired; drift weed reported and held
+
+The owner's running order for §4.6 item 7 put the pure-background foliage cluster first. Wave 2
+gates **trees** (`treeIsoRig2.js` *and* `treeIsoRig.js`) and **shrubs** (`shrubIsoRig.js`) on the
+pilot's pattern — `KEYLINE_DEFAULT = false`, ring code kept, `{outline:true}` restores it.
+
+**Both tree passes, not just the current one.** `TreeKitCatalog.HeldBackSpecies` keeps **Tamarack**
+on the pass-1 rig, so its shipped sheets come off `treeIsoRig.js`. Gating only the pass-2 rig would
+have left one species inked forever, and no pass-2 test could have caught it. Verified against the
+committed pixels: the pass-1 rig reproduces `Tamarack_mature_summer.png` byte-for-byte, the pass-2
+rig does not even match its dimensions (364×144 vs the shipped 416×149).
+
+**Measured, per family** (variant 0; ring px against painted px):
+
+| family | ring | painted | ratio | reading |
+|---|---|---|---|---|
+| trees (10 species) | 6,821 | 59,450 | **0.11×** | the AREA end of the perimeter law |
+| shrubs (20 species) | 8,399 | 28,813 | **0.29×** | between trees and the shore plants |
+| *(shore plants, pilot)* | *4,072* | *10,482* | *0.39×* | *— for scale* |
+
+0 painted-pixel violations and 0 geometry movement in every case, so it is a pure ring deletion in
+both families. On the **shipped sheets** the ring was 8.8% of every visible tree pixel and 21.0% of
+every visible shrub pixel.
+
+**The shrub rig carries the same trap `rockIsoRig` does, one level down.** `KEYLINE` names two
+different things in `shrubIsoRig.js`: the ring pass, and the **fruit seat** — one dark pixel mixed
+*under* a berry so a 2 px fruit reads as sitting in front of the canopy rather than as a hole
+punched in it. The seat lands on a **painted** pixel, so it is an interior shading term and §5's
+"do not soften the interior dark edge" applies to it directly. It is not gated, and the shrub test
+renders the `fruit` phase specifically so that sweeping it up with the ring fails loudly.
+
+The shrubs' `VEIL`/`FLECK` keyline exemption is **kept, not replaced** — with the flag ON it is
+still what keeps a filament field from collapsing into a grey solid.
+
+### ⚠ 2b.1 Drift weed is held back — and the blocker is not the mechanism
+
+Drift weed is the **worst offender of the three** (32.0% of every visible pixel is ring, against
+21.0% for shrubs and 8.8% for trees), and per §1.1a its ring is a clean, gateable dilation pass. It
+is held back anyway, because **the family has no bake path in this repo**:
+
+1. **There is no `DriftWeedBaker`.** Every other family here has one under
+   `Assets/_Project/Code/Tools/Editor/RigBaking/`; drift weed has only a *slicer* and a *kit
+   builder*. The sheets arrived as an owner drop (2026-07-23, landed in #391) and
+   `driftWeedRig.render()` returns **one cell** — nothing in the repo assembles the shipped
+   variants × 3 ramp-row sheet.
+2. **The rig source is hash-pinned to the shipped art.** `DriftWeed.json` carries
+   `derivedFromRigSha256`, and `DriftWeedSheetSliceTests.Sidecar_RigHash_MatchesTheLandedRigSource`
+   fails on any edit to the rig with: *"the rig source changed after the bake; re-bake the sheets +
+   sidecar together (the rig is art-director source: never edit it in-repo)."*
+
+So gating the rig would turn a test red and assert a provenance that is not true, in exchange for
+zero pixels — the sheets would keep their ring either way. **Retiring drift weed's ring is a slice
+that must write the baker first**, and it should regenerate the sidecar in the same bake. Two
+things that make it cheaper than it looks: the buoy pivots are computed from the geometry mask, not
+from `outl`, so **retiring the ring cannot move a buoy**; and the cell dimensions are fixed by
+`S.cell`, so the ring's removal cannot re-slice the sheet.
+
 ## 3. What the pilot does *not* settle
 
 The pilot proves the **background** half of the owner's ruling on one family. It says nothing
@@ -299,7 +369,15 @@ Practically:
 6. **Character/boat light outline** — proceed with the `keyTint` value + a flood *strength*?
 7. **Bulk background retirement** — §1.2's flat-ring families (trees, buildings, fish, drift
    weed, shore finds, gear, shrubs, flowers), family by family as ADR 0031 §4 intends. This is a
-   prerequisite for the language, so it wants a running order.
+   prerequisite for the language, so it wants a running order. **Ruled: continue the removal
+   (2026-08-06).** The running order in flight:
+
+   | wave | families | status |
+   |---|---|---|
+   | pilot | shore plants | shipped (#433) |
+   | **2** | **trees · shrubs · drift weed** | **trees + shrubs retired at the rig; drift weed held — §2b.1** |
+   | 3 | flowers · buildings | not started |
+   | 4 | fish · shore finds · gear | blocked on rulings 1–6 above — these entangle with the interaction language |
 
 ---
 
@@ -312,7 +390,16 @@ Practically:
 - **`ring %` and `darkness` measure different harms** — a small, very dark ring (buildings) and a
   large, milder one (plants) are both worth fixing, for different reasons.
 - **Check whether a family's ring is a pass or a ramp slot before estimating cost** — §1.1
-  mechanism 2 has no pass to delete.
+  mechanism 2 has no pass to delete. **And check it in the rig, not from the palette:** a `out:`
+  ramp entry does not prove mechanism 2. Drift weed has both — a dilation pass that *selects* the
+  pixels and a ramp slot that *colours* them — and was filed wrong on the palette alone (§1.1a).
+- **Ask where a family's sheets come from before promising pixels.** A gate in the rig ships
+  nothing on its own; the family needs a baker in `Tools/Editor/RigBaking/` to re-bake. Drift weed
+  has none, and its sidecar hash-pins the rig source to the shipped art (§2b.1). Check for the
+  baker *first* — it is the difference between a one-line slice and a tooling slice.
+- **`KEYLINE` can name two mechanisms inside a single rig.** `rockIsoRig` is the famous case, but
+  `shrubIsoRig` has a ring pass *and* a fruit-seat mix target on the same constant. Gate the pass,
+  never the constant.
 - **A ring pass expands the opaque footprint**, so retiring it *tightens* coverage by 1 px. That
   is correct (it matches the geometry), but any consumer keyed off sprite alpha — including the
   lit-sprite path's coverage channel — sees a slightly smaller sprite.
