@@ -1,0 +1,2492 @@
+{
+ "rig": "Art/wharfIsoRig.js",
+ "exposes": "globalThis.WharfIso",
+ "contract": {
+  "unit": "32 px = 1 m",
+  "camera": "3/4, 45deg steps, elev 40deg (shared with the fleet, houses, characters)",
+  "origin": "ground-centre of the footprint at CHART DATUM (z = 0 = lowest water)",
+  "axes": "+X along the wharf run, +Y toward open water (the working face), +Z up",
+  "cell": "sized from the projected bbox per call; render() returns {data,w,h,px,py,wet} where px,py is the projection of the origin",
+  "water": "ZERO water pixels are baked. render().wet is a per-pixel mask of structure currently below the waterline; the shader owns the sea. opts.clipBelowWater drops those pixels.",
+  "tide": "opts.tide = metres above datum, continuous. opts.tideRange = metres datum to HHW (0.3 - 14). Growth bands are pinned to the tidal FRAME, not to the water level.",
+  "modularity": "bays x bayLen along X, width across Y. gameplay().snap gives -X / +X sockets at deck height for chaining modules.",
+  "gangway": "run 3-14 m, height free. A float with gangway:true solves the ramp from ITS OWN rocked deck height each frame: the hinge and abutment are fixed, the landing rides the float. Guide piles, chain, anchor block and the solved ramp are tagged fixed and skipped by the rock transform."
+ },
+ "fittings": {
+  "ladder": {
+   "w": 0.45,
+   "rung": 0.3,
+   "railT": 0.05,
+   "below": 1
+  },
+  "tyre": {
+   "od": 1,
+   "sec": 0.28
+  },
+  "foam": {
+   "od": 0.55,
+   "len": 1.1
+  },
+  "cleat": {
+   "len": 0.5,
+   "h": 0.22
+  },
+  "bollard": {
+   "h": 0.75,
+   "rBase": 0.16,
+   "rTop": 0.11,
+   "flange": 0.24
+  },
+  "ring": {
+   "od": 0.3,
+   "plate": 0.42
+  },
+  "rail": {
+   "h": 1.05,
+   "mid": 0.55,
+   "post": 0.1,
+   "span": 1.8,
+   "pipeR": 0.024
+  },
+  "dolphin": {
+   "r": 0.175,
+   "spread": 0.55,
+   "above": 1.2
+  }
+ },
+ "deck": {
+  "plank": 0.055,
+  "stringer": [
+   0.1,
+   0.3
+  ],
+  "cap": [
+   0.3,
+   0.25
+  ],
+  "curb": [
+   0.16,
+   0.2
+  ]
+ },
+ "families": {
+  "quay": {
+   "label": "concrete quay",
+   "note": "solid mass-concrete face, no piles — the deep-water berth",
+   "dims": {
+    "bays": [
+     2,
+     6,
+     4
+    ],
+    "bayLen": [
+     2.4,
+     4,
+     3
+    ],
+    "width": [
+     4,
+     12,
+     7
+    ],
+    "deckZ": [
+     1.2,
+     4.5,
+     2.6
+    ]
+   }
+  },
+  "pier": {
+   "label": "timber pile pier",
+   "note": "pile-driven timber wharf — piles, caps, stringers, bracing",
+   "dims": {
+    "bays": [
+     2,
+     9,
+     4
+    ],
+    "bayLen": [
+     2.2,
+     3.6,
+     2.8
+    ],
+    "width": [
+     2.4,
+     8,
+     4.2
+    ],
+    "deckZ": [
+     1.2,
+     6,
+     2.8
+    ]
+   }
+  },
+  "crib": {
+   "label": "stone-filled crib wharf",
+   "note": "drift-pinned log crib, stone ballast — Atlantic Canada vernacular",
+   "dims": {
+    "bays": [
+     2,
+     6,
+     3
+    ],
+    "bayLen": [
+     2.6,
+     4.2,
+     3.2
+    ],
+    "width": [
+     3.5,
+     9,
+     5
+    ],
+    "deckZ": [
+     1.2,
+     4.5,
+     2.4
+    ]
+   }
+  },
+  "float": {
+   "label": "floating dock",
+   "note": "rides the tide on guide piles — deck z tracks water level",
+   "dims": {
+    "bays": [
+     1,
+     5,
+     2
+    ],
+    "bayLen": [
+     2.4,
+     3.6,
+     3
+    ],
+    "width": [
+     1.8,
+     3.6,
+     2.4
+    ],
+    "deckZ": [
+     0.3,
+     0.6,
+     0.4
+    ]
+   }
+  },
+  "gangway": {
+   "label": "gangway ramp",
+   "note": "aluminium ramp, slope re-solved from deck height and tide",
+   "dims": {
+    "bays": [
+     1,
+     1,
+     1
+    ],
+    "bayLen": [
+     4,
+     10,
+     6
+    ],
+    "width": [
+     0.8,
+     1.2,
+     0.95
+    ],
+    "deckZ": [
+     1.2,
+     6,
+     2.8
+    ]
+   }
+  },
+  "slipway": {
+   "label": "slipway",
+   "note": "ramp into the water — the tide decides how much is usable",
+   "dims": {
+    "bays": [
+     1,
+     1,
+     1
+    ],
+    "bayLen": [
+     6,
+     16,
+     10
+    ],
+    "width": [
+     2.5,
+     6,
+     3.6
+    ],
+    "deckZ": [
+     0.8,
+     3,
+     1.6
+    ]
+   }
+  },
+  "riprap": {
+   "label": "armour-stone edge",
+   "note": "graded rock revetment on a 1:1.5 face — the shore-armour arm",
+   "dims": {
+    "bays": [
+     2,
+     8,
+     4
+    ],
+    "bayLen": [
+     2,
+     4,
+     3
+    ],
+    "width": [
+     2.5,
+     7,
+     4
+    ],
+    "deckZ": [
+     0.8,
+     4,
+     2.2
+    ]
+   }
+  }
+ },
+ "fittingDefaults": {
+  "quay": {
+   "ladder": 2,
+   "tyre": 3,
+   "foam": 0,
+   "cleat": 2,
+   "bollard": 2,
+   "ring": 2,
+   "dolphin": false
+  },
+  "pier": {
+   "ladder": 1,
+   "tyre": 3,
+   "foam": 1,
+   "cleat": 3,
+   "bollard": 1,
+   "ring": 2,
+   "dolphin": false
+  },
+  "crib": {
+   "ladder": 1,
+   "tyre": 2,
+   "foam": 1,
+   "cleat": 2,
+   "bollard": 1,
+   "ring": 1,
+   "dolphin": false
+  },
+  "float": {
+   "ladder": 1,
+   "tyre": 2,
+   "foam": 1,
+   "cleat": 4,
+   "bollard": 0,
+   "ring": 0,
+   "dolphin": false
+  },
+  "gangway": {
+   "ladder": 0,
+   "tyre": 0,
+   "foam": 0,
+   "cleat": 0,
+   "bollard": 0,
+   "ring": 0,
+   "dolphin": false
+  },
+  "slipway": {
+   "ladder": 0,
+   "tyre": 0,
+   "foam": 0,
+   "cleat": 1,
+   "bollard": 0,
+   "ring": 1,
+   "dolphin": false
+  },
+  "riprap": {
+   "ladder": 0,
+   "tyre": 0,
+   "foam": 0,
+   "cleat": 0,
+   "bollard": 0,
+   "ring": 0,
+   "dolphin": false
+  }
+ },
+ "samples": {
+  "quay": {
+   "family": "quay",
+   "label": "concrete quay",
+   "footprint": {
+    "w": 16,
+    "d": 8
+   },
+   "deckZ": 2.8,
+   "waterZ": 0.9,
+   "tideRange": 1.8,
+   "freeboard": 1.9,
+   "mudZ": -1.4,
+   "zones": {
+    "stainTop": 1.9,
+    "barn": [
+     0.72,
+     1.44
+    ],
+    "weed": [
+     0.11,
+     0.72
+    ],
+    "ice": [
+     1.62,
+     1.94
+    ]
+   },
+   "walk": [
+    {
+     "poly": [
+      [
+       -8,
+       -4
+      ],
+      [
+       8,
+       -4
+      ],
+      [
+       8,
+       4
+      ],
+      [
+       -8,
+       4
+      ]
+     ],
+     "z": 2.8,
+     "surface": "concrete",
+     "slope": 0,
+     "wet": "spray only",
+     "rides": false
+    }
+   ],
+   "blockers": [
+    {
+     "shape": "circle",
+     "x": -7.4,
+     "y": 3.48,
+     "r": 0.2,
+     "h": 0.75,
+     "kind": "bollard"
+    },
+    {
+     "shape": "circle",
+     "x": 7.4,
+     "y": 3.48,
+     "r": 0.2,
+     "h": 0.75,
+     "kind": "bollard"
+    }
+   ],
+   "mooring": [
+    {
+     "id": "cleat0",
+     "type": "cleat",
+     "x": -6.05,
+     "y": 3.58,
+     "z": 2.8,
+     "side": "water",
+     "maxLine": "22 mm",
+     "holds": "skiff–lobster boat"
+    },
+    {
+     "id": "cleat1",
+     "type": "cleat",
+     "x": -2.02,
+     "y": 3.58,
+     "z": 2.8,
+     "side": "water",
+     "maxLine": "22 mm",
+     "holds": "skiff–lobster boat"
+    },
+    {
+     "id": "bollard0",
+     "type": "bollard",
+     "x": -7.4,
+     "y": 3.48,
+     "z": 2.8,
+     "side": "water",
+     "maxLine": "32 mm",
+     "holds": "packet–dragger"
+    },
+    {
+     "id": "bollard1",
+     "type": "bollard",
+     "x": 7.4,
+     "y": 3.48,
+     "z": 2.8,
+     "side": "water",
+     "maxLine": "32 mm",
+     "holds": "packet–dragger"
+    },
+    {
+     "id": "ring0",
+     "type": "ring",
+     "x": -3.36,
+     "y": 3.7,
+     "z": 2.8,
+     "side": "water",
+     "maxLine": "16 mm",
+     "holds": "dory–punt",
+     "flush": true
+    },
+    {
+     "id": "ring1",
+     "type": "ring",
+     "x": 2.02,
+     "y": 3.7,
+     "z": 2.8,
+     "side": "water",
+     "maxLine": "16 mm",
+     "holds": "dory–punt",
+     "flush": true
+    }
+   ],
+   "board": [
+    {
+     "id": "board0",
+     "berth": "berth0",
+     "cls": "packet",
+     "x": 0,
+     "y": 4,
+     "z": 2.8,
+     "side": "water",
+     "drop": 1.9,
+     "gunwale": 0.3,
+     "needsLadder": false,
+     "ladderInReach": true
+    }
+   ],
+   "ladders": [
+    {
+     "id": "ladder0",
+     "x": 0,
+     "y": 4,
+     "side": "water",
+     "topZ": 2.8,
+     "botZ": -1,
+     "rung": 0.3,
+     "rungsDry": 6,
+     "bottomSubmerged": true,
+     "reachesWater": true
+    }
+   ],
+   "fenders": [
+    {
+     "id": "tyre0",
+     "type": "tyre",
+     "x": -4.64,
+     "y": 4.14,
+     "z": 2.02,
+     "r": 0.5,
+     "contacts": false
+    },
+    {
+     "id": "tyre1",
+     "type": "tyre",
+     "x": 4.64,
+     "y": 4.14,
+     "z": 2.02,
+     "r": 0.5,
+     "contacts": false
+    }
+   ],
+   "piles": [],
+   "ends": null,
+   "styles": {
+    "face": "concrete",
+    "struct": "open",
+    "cap": "plank",
+    "hull": "timber",
+    "stone": "granite",
+    "mound": "revetment",
+    "curb": "wood"
+   },
+   "berths": [
+    {
+     "id": "berth0",
+     "cls": "packet",
+     "label": "coastal packet",
+     "loa": 14.5,
+     "beam": 4.6,
+     "freeboard": 1.6,
+     "x": 0,
+     "x0": -7.25,
+     "x1": 7.25,
+     "ladderX": 0,
+     "fenderX": [
+      -4.64,
+      4.64
+     ],
+     "edgeX": [
+      -7.95,
+      7.95
+     ],
+     "drop": 1.9,
+     "clear": 0.3,
+     "ladder": true
+    }
+   ],
+   "berthClass": "packet",
+   "berthClearance": 1.4,
+   "berthUtilisation": 0.99,
+   "gangway": null,
+   "snap": {
+    "px": {
+     "x": 8,
+     "y": 0,
+     "z": 2.8,
+     "face": "+x"
+    },
+    "nx": {
+     "x": -8,
+     "y": 0,
+     "z": 2.8,
+     "face": "-x"
+    }
+   },
+   "exposure": {
+    "pileExposed": 1.9,
+    "barnacleShowing": true,
+    "weedShowing": false,
+    "iceScarShowing": true
+   }
+  },
+  "pier": {
+   "family": "pier",
+   "label": "timber pile pier",
+   "footprint": {
+    "w": 11.2,
+    "d": 4.2
+   },
+   "deckZ": 2.8,
+   "waterZ": 0.9,
+   "tideRange": 1.8,
+   "freeboard": 1.9,
+   "mudZ": -1.4,
+   "zones": {
+    "stainTop": 1.9,
+    "barn": [
+     0.72,
+     1.44
+    ],
+    "weed": [
+     0.11,
+     0.72
+    ],
+    "ice": [
+     1.62,
+     1.94
+    ]
+   },
+   "walk": [
+    {
+     "poly": [
+      [
+       -5.6,
+       -2.1
+      ],
+      [
+       5.6,
+       -2.1
+      ],
+      [
+       5.6,
+       2.1
+      ],
+      [
+       -5.6,
+       2.1
+      ]
+     ],
+     "z": 2.8,
+     "surface": "plank",
+     "slope": 0,
+     "wet": "spray only",
+     "rides": false
+    }
+   ],
+   "blockers": [
+    {
+     "shape": "circle",
+     "x": -5,
+     "y": 1.58,
+     "r": 0.2,
+     "h": 0.75,
+     "kind": "bollard"
+    }
+   ],
+   "mooring": [
+    {
+     "id": "cleat0",
+     "type": "cleat",
+     "x": -3.75,
+     "y": 1.68,
+     "z": 2.8,
+     "side": "water",
+     "maxLine": "22 mm",
+     "holds": "skiff–lobster boat"
+    },
+    {
+     "id": "cleat1",
+     "type": "cleat",
+     "x": -1.25,
+     "y": 1.68,
+     "z": 2.8,
+     "side": "water",
+     "maxLine": "22 mm",
+     "holds": "skiff–lobster boat"
+    },
+    {
+     "id": "bollard0",
+     "type": "bollard",
+     "x": -5,
+     "y": 1.58,
+     "z": 2.8,
+     "side": "water",
+     "maxLine": "32 mm",
+     "holds": "packet–dragger"
+    },
+    {
+     "id": "ring0",
+     "type": "ring",
+     "x": -2.5,
+     "y": 1.8,
+     "z": 2.8,
+     "side": "water",
+     "maxLine": "16 mm",
+     "holds": "dory–punt",
+     "flush": true
+    },
+    {
+     "id": "ring1",
+     "type": "ring",
+     "x": 1.25,
+     "y": 1.8,
+     "z": 2.8,
+     "side": "water",
+     "maxLine": "16 mm",
+     "holds": "dory–punt",
+     "flush": true
+    }
+   ],
+   "board": [
+    {
+     "id": "board0",
+     "berth": "berth0",
+     "cls": "skiff",
+     "x": 0,
+     "y": 2.1,
+     "z": 2.8,
+     "side": "water",
+     "drop": 1.9,
+     "gunwale": 1.15,
+     "needsLadder": false,
+     "ladderInReach": true
+    }
+   ],
+   "ladders": [
+    {
+     "id": "ladder0",
+     "x": 0,
+     "y": 2.1,
+     "side": "water",
+     "topZ": 2.8,
+     "botZ": -1,
+     "rung": 0.3,
+     "rungsDry": 6,
+     "bottomSubmerged": true,
+     "reachesWater": true
+    }
+   ],
+   "fenders": [
+    {
+     "id": "tyre0",
+     "type": "tyre",
+     "x": -2.08,
+     "y": 2.24,
+     "z": 2.02,
+     "r": 0.5,
+     "contacts": false
+    },
+    {
+     "id": "tyre1",
+     "type": "tyre",
+     "x": 2.08,
+     "y": 2.24,
+     "z": 2.02,
+     "r": 0.5,
+     "contacts": false
+    },
+    {
+     "id": "foam0",
+     "type": "foam",
+     "x": 2.08,
+     "y": 2.38,
+     "z": 2.05,
+     "r": 0.275,
+     "contacts": false
+    }
+   ],
+   "piles": [
+    {
+     "x": -5.6,
+     "y": -1.68,
+     "r": 0.16,
+     "topZ": 2.19
+    },
+    {
+     "x": -5.6,
+     "y": 1.68,
+     "r": 0.16,
+     "topZ": 2.19
+    },
+    {
+     "x": -2.8,
+     "y": -1.68,
+     "r": 0.16,
+     "topZ": 2.19
+    },
+    {
+     "x": -2.8,
+     "y": 1.68,
+     "r": 0.16,
+     "topZ": 2.19
+    },
+    {
+     "x": 0,
+     "y": -1.68,
+     "r": 0.16,
+     "topZ": 2.19
+    },
+    {
+     "x": 0,
+     "y": 1.68,
+     "r": 0.16,
+     "topZ": 2.19
+    },
+    {
+     "x": 2.8,
+     "y": -1.68,
+     "r": 0.16,
+     "topZ": 2.19
+    },
+    {
+     "x": 2.8,
+     "y": 1.68,
+     "r": 0.16,
+     "topZ": 2.19
+    },
+    {
+     "x": 5.6,
+     "y": -1.68,
+     "r": 0.16,
+     "topZ": 2.19
+    },
+    {
+     "x": 5.6,
+     "y": 1.68,
+     "r": 0.16,
+     "topZ": 2.19
+    }
+   ],
+   "ends": null,
+   "styles": {
+    "face": "concrete",
+    "struct": "open",
+    "cap": "plank",
+    "hull": "timber",
+    "stone": "granite",
+    "mound": "revetment",
+    "curb": "wood"
+   },
+   "berths": [
+    {
+     "id": "berth0",
+     "cls": "skiff",
+     "label": "console skiff",
+     "loa": 6.5,
+     "beam": 2.2,
+     "freeboard": 0.75,
+     "x": 0,
+     "x0": -3.25,
+     "x1": 3.25,
+     "ladderX": 0,
+     "fenderX": [
+      -2.08,
+      2.08
+     ],
+     "edgeX": [
+      -3.95,
+      3.95
+     ],
+     "drop": 1.9,
+     "clear": 1.15,
+     "ladder": true
+    }
+   ],
+   "berthClass": "skiff",
+   "berthClearance": 1.4,
+   "berthUtilisation": 0.71,
+   "gangway": null,
+   "snap": {
+    "px": {
+     "x": 5.6,
+     "y": 0,
+     "z": 2.8,
+     "face": "+x"
+    },
+    "nx": {
+     "x": -5.6,
+     "y": 0,
+     "z": 2.8,
+     "face": "-x"
+    }
+   },
+   "exposure": {
+    "pileExposed": 1.9,
+    "barnacleShowing": true,
+    "weedShowing": false,
+    "iceScarShowing": true
+   }
+  },
+  "crib": {
+   "family": "crib",
+   "label": "stone-filled crib wharf",
+   "footprint": {
+    "w": 9.6,
+    "d": 5
+   },
+   "deckZ": 2.8,
+   "waterZ": 0.9,
+   "tideRange": 1.8,
+   "freeboard": 1.9,
+   "mudZ": -1.4,
+   "zones": {
+    "stainTop": 1.9,
+    "barn": [
+     0.72,
+     1.44
+    ],
+    "weed": [
+     0.11,
+     0.72
+    ],
+    "ice": [
+     1.62,
+     1.94
+    ]
+   },
+   "walk": [
+    {
+     "poly": [
+      [
+       -4.8,
+       -2.5
+      ],
+      [
+       4.8,
+       -2.5
+      ],
+      [
+       4.8,
+       2.5
+      ],
+      [
+       -4.8,
+       2.5
+      ]
+     ],
+     "z": 2.8,
+     "surface": "plank",
+     "slope": 0,
+     "wet": "spray only",
+     "rides": false
+    }
+   ],
+   "blockers": [
+    {
+     "shape": "circle",
+     "x": -4.2,
+     "y": 1.98,
+     "r": 0.2,
+     "h": 0.75,
+     "kind": "bollard"
+    }
+   ],
+   "mooring": [
+    {
+     "id": "cleat0",
+     "type": "cleat",
+     "x": -2.8,
+     "y": 2.08,
+     "z": 2.8,
+     "side": "water",
+     "maxLine": "22 mm",
+     "holds": "skiff–lobster boat"
+    },
+    {
+     "id": "cleat1",
+     "type": "cleat",
+     "x": -1.4,
+     "y": 2.08,
+     "z": 2.8,
+     "side": "water",
+     "maxLine": "22 mm",
+     "holds": "skiff–lobster boat"
+    },
+    {
+     "id": "bollard0",
+     "type": "bollard",
+     "x": -4.2,
+     "y": 1.98,
+     "z": 2.8,
+     "side": "water",
+     "maxLine": "32 mm",
+     "holds": "packet–dragger"
+    },
+    {
+     "id": "ring0",
+     "type": "ring",
+     "x": 1.4,
+     "y": 2.2,
+     "z": 2.8,
+     "side": "water",
+     "maxLine": "16 mm",
+     "holds": "dory–punt",
+     "flush": true
+    }
+   ],
+   "board": [
+    {
+     "id": "board0",
+     "berth": "berth0",
+     "cls": "skiff",
+     "x": 0,
+     "y": 2.5,
+     "z": 2.8,
+     "side": "water",
+     "drop": 1.9,
+     "gunwale": 1.15,
+     "needsLadder": false,
+     "ladderInReach": true
+    }
+   ],
+   "ladders": [
+    {
+     "id": "ladder0",
+     "x": 0,
+     "y": 2.5,
+     "side": "water",
+     "topZ": 2.8,
+     "botZ": -1,
+     "rung": 0.3,
+     "rungsDry": 6,
+     "bottomSubmerged": true,
+     "reachesWater": true
+    }
+   ],
+   "fenders": [
+    {
+     "id": "tyre0",
+     "type": "tyre",
+     "x": -2.08,
+     "y": 2.64,
+     "z": 2.02,
+     "r": 0.5,
+     "contacts": false
+    },
+    {
+     "id": "tyre1",
+     "type": "tyre",
+     "x": 2.08,
+     "y": 2.64,
+     "z": 2.02,
+     "r": 0.5,
+     "contacts": false
+    },
+    {
+     "id": "foam0",
+     "type": "foam",
+     "x": 2.08,
+     "y": 2.77,
+     "z": 2.05,
+     "r": 0.275,
+     "contacts": false
+    }
+   ],
+   "piles": [],
+   "ends": null,
+   "styles": {
+    "face": "concrete",
+    "struct": "open",
+    "cap": "plank",
+    "hull": "timber",
+    "stone": "granite",
+    "mound": "revetment",
+    "curb": "wood"
+   },
+   "berths": [
+    {
+     "id": "berth0",
+     "cls": "skiff",
+     "label": "console skiff",
+     "loa": 6.5,
+     "beam": 2.2,
+     "freeboard": 0.75,
+     "x": 0,
+     "x0": -3.25,
+     "x1": 3.25,
+     "ladderX": 0,
+     "fenderX": [
+      -2.08,
+      2.08
+     ],
+     "edgeX": [
+      -3.95,
+      3.95
+     ],
+     "drop": 1.9,
+     "clear": 1.15,
+     "ladder": true
+    }
+   ],
+   "berthClass": "skiff",
+   "berthClearance": 1.4,
+   "berthUtilisation": 0.82,
+   "gangway": null,
+   "snap": {
+    "px": {
+     "x": 4.8,
+     "y": 0,
+     "z": 2.8,
+     "face": "+x"
+    },
+    "nx": {
+     "x": -4.8,
+     "y": 0,
+     "z": 2.8,
+     "face": "-x"
+    }
+   },
+   "exposure": {
+    "pileExposed": 1.9,
+    "barnacleShowing": true,
+    "weedShowing": false,
+    "iceScarShowing": true
+   }
+  },
+  "float": {
+   "family": "float",
+   "label": "floating dock",
+   "footprint": {
+    "w": 6,
+    "d": 2.4
+   },
+   "deckZ": 1.3,
+   "waterZ": 0.9,
+   "tideRange": 1.8,
+   "freeboard": 0.4,
+   "mudZ": -1.4,
+   "zones": {
+    "stainTop": 1.9,
+    "barn": [
+     0.72,
+     1.44
+    ],
+    "weed": [
+     0.11,
+     0.72
+    ],
+    "ice": [
+     1.62,
+     1.94
+    ]
+   },
+   "walk": [
+    {
+     "poly": [
+      [
+       -3,
+       -1.2
+      ],
+      [
+       3,
+       -1.2
+      ],
+      [
+       3,
+       1.2
+      ],
+      [
+       -3,
+       1.2
+      ]
+     ],
+     "z": 1.3,
+     "surface": "plank",
+     "slope": 0,
+     "wet": "spray only",
+     "rides": true,
+     "rock": {
+      "rollDeg": 0.85,
+      "pitchDeg": 0.55,
+      "heaveM": 0.022,
+      "frames": 8,
+      "locked": true
+     }
+    }
+   ],
+   "blockers": [
+    {
+     "shape": "circle",
+     "x": -2.6,
+     "y": 1.54,
+     "r": 0.26,
+     "h": 1.6,
+     "kind": "guidePile"
+    },
+    {
+     "shape": "circle",
+     "x": 2.6,
+     "y": 1.54,
+     "r": 0.26,
+     "h": 1.6,
+     "kind": "guidePile"
+    }
+   ],
+   "mooring": [
+    {
+     "id": "cleat0",
+     "type": "cleat",
+     "x": -2.4,
+     "y": 0.78,
+     "z": 1.3,
+     "side": "water",
+     "maxLine": "22 mm",
+     "holds": "skiff–lobster boat"
+    },
+    {
+     "id": "cleat1",
+     "type": "cleat",
+     "x": -1.2,
+     "y": 0.78,
+     "z": 1.3,
+     "side": "water",
+     "maxLine": "22 mm",
+     "holds": "skiff–lobster boat"
+    },
+    {
+     "id": "cleat2",
+     "type": "cleat",
+     "x": 1.2,
+     "y": 0.78,
+     "z": 1.3,
+     "side": "water",
+     "maxLine": "22 mm",
+     "holds": "skiff–lobster boat"
+    },
+    {
+     "id": "cleat3",
+     "type": "cleat",
+     "x": 2.4,
+     "y": 0.78,
+     "z": 1.3,
+     "side": "water",
+     "maxLine": "22 mm",
+     "holds": "skiff–lobster boat"
+    }
+   ],
+   "board": [
+    {
+     "id": "board0",
+     "berth": "berth0",
+     "cls": "dory",
+     "x": 0,
+     "y": 1.2,
+     "z": 1.3,
+     "side": "water",
+     "drop": 0.4,
+     "gunwale": -0.15,
+     "needsLadder": false,
+     "ladderInReach": true
+    }
+   ],
+   "ladders": [
+    {
+     "id": "ladder0",
+     "x": 0,
+     "y": 1.2,
+     "side": "water",
+     "topZ": 1.3,
+     "botZ": -1,
+     "rung": 0.3,
+     "rungsDry": 1,
+     "bottomSubmerged": true,
+     "reachesWater": true
+    }
+   ],
+   "fenders": [
+    {
+     "id": "tyre0",
+     "type": "tyre",
+     "x": -1.57,
+     "y": 1.34,
+     "z": 0.52,
+     "r": 0.5,
+     "contacts": true
+    },
+    {
+     "id": "tyre1",
+     "type": "tyre",
+     "x": 1.57,
+     "y": 1.34,
+     "z": 0.52,
+     "r": 0.5,
+     "contacts": true
+    },
+    {
+     "id": "foam0",
+     "type": "foam",
+     "x": 1.57,
+     "y": 1.48,
+     "z": 0.55,
+     "r": 0.275,
+     "contacts": true
+    }
+   ],
+   "piles": [
+    {
+     "x": -2.6,
+     "y": 1.54,
+     "r": 0.16,
+     "topZ": 3.4,
+     "guide": true
+    },
+    {
+     "x": 2.6,
+     "y": 1.54,
+     "r": 0.16,
+     "topZ": 3.4,
+     "guide": true
+    }
+   ],
+   "ends": null,
+   "styles": {
+    "face": "concrete",
+    "struct": "open",
+    "cap": "plank",
+    "hull": "timber",
+    "stone": "granite",
+    "mound": "revetment",
+    "curb": "wood"
+   },
+   "berths": [
+    {
+     "id": "berth0",
+     "cls": "dory",
+     "label": "dory",
+     "loa": 4.9,
+     "beam": 1.6,
+     "freeboard": 0.55,
+     "x": 0,
+     "x0": -2.45,
+     "x1": 2.45,
+     "ladderX": 0,
+     "fenderX": [
+      -1.57,
+      1.57
+     ],
+     "edgeX": [
+      -3,
+      3
+     ],
+     "drop": 0.4,
+     "clear": -0.15,
+     "ladder": true
+    }
+   ],
+   "berthClass": "dory",
+   "berthClearance": 1.4,
+   "berthUtilisation": 1.05,
+   "gangway": null,
+   "snap": {
+    "px": {
+     "x": 3,
+     "y": 0,
+     "z": 1.3,
+     "face": "+x"
+    },
+    "nx": {
+     "x": -3,
+     "y": 0,
+     "z": 1.3,
+     "face": "-x"
+    }
+   },
+   "exposure": {
+    "pileExposed": 0.4,
+    "barnacleShowing": true,
+    "weedShowing": false,
+    "iceScarShowing": true
+   }
+  },
+  "gangway": {
+   "family": "gangway",
+   "label": "gangway ramp",
+   "footprint": {
+    "w": 6,
+    "d": 0.95
+   },
+   "deckZ": 2.8,
+   "waterZ": 0.9,
+   "tideRange": 1.8,
+   "freeboard": 1.9,
+   "mudZ": -1.4,
+   "zones": {
+    "stainTop": 1.9,
+    "barn": [
+     0.72,
+     1.44
+    ],
+    "weed": [
+     0.11,
+     0.72
+    ],
+    "ice": [
+     1.62,
+     1.94
+    ]
+   },
+   "walk": [
+    {
+     "poly": [
+      [
+       -3,
+       -0.47
+      ],
+      [
+       3,
+       -0.47
+      ],
+      [
+       3,
+       0.47
+      ],
+      [
+       -3,
+       0.47
+      ]
+     ],
+     "z": 2.08,
+     "surface": "alloy-tread",
+     "slope": 0.24,
+     "wet": "spray only",
+     "rides": false,
+     "axis": "x",
+     "z0": 2.8,
+     "z1": 1.36,
+     "angleDeg": 13.5,
+     "zAtX": "z0 + (z1 - z0) * ((x + L/2) / L)",
+     "submergedFrom": null
+    }
+   ],
+   "blockers": [],
+   "mooring": [],
+   "board": [],
+   "ladders": [],
+   "fenders": [],
+   "piles": [],
+   "ends": {
+    "hinge": {
+     "x": -3,
+     "z": 2.8,
+     "fixedTo": "deck"
+    },
+    "landing": {
+     "x": 3,
+     "z": 1.36,
+     "fixedTo": "float",
+     "rollers": true
+    }
+   },
+   "styles": {
+    "face": "concrete",
+    "struct": "open",
+    "cap": "plank",
+    "hull": "timber",
+    "stone": "granite",
+    "mound": "revetment",
+    "curb": "wood"
+   },
+   "berths": [],
+   "berthClass": null,
+   "berthClearance": 1.4,
+   "berthUtilisation": null,
+   "gangway": null,
+   "snap": {
+    "px": {
+     "x": 3,
+     "y": 0,
+     "z": 2.8,
+     "face": "+x"
+    },
+    "nx": {
+     "x": -3,
+     "y": 0,
+     "z": 2.8,
+     "face": "-x"
+    }
+   },
+   "exposure": {
+    "pileExposed": 1.9,
+    "barnacleShowing": true,
+    "weedShowing": false,
+    "iceScarShowing": true
+   }
+  },
+  "slipway": {
+   "family": "slipway",
+   "label": "slipway",
+   "footprint": {
+    "w": 10,
+    "d": 3.6
+   },
+   "deckZ": 2.8,
+   "waterZ": 0.9,
+   "tideRange": 1.8,
+   "freeboard": 1.9,
+   "mudZ": -1.4,
+   "zones": {
+    "stainTop": 1.9,
+    "barn": [
+     0.72,
+     1.44
+    ],
+    "weed": [
+     0.11,
+     0.72
+    ],
+    "ice": [
+     1.62,
+     1.94
+    ]
+   },
+   "walk": [
+    {
+     "poly": [
+      [
+       -5,
+       -1.8
+      ],
+      [
+       5,
+       -1.8
+      ],
+      [
+       5,
+       1.8
+      ],
+      [
+       -5,
+       1.8
+      ]
+     ],
+     "z": 1.1,
+     "surface": "concrete-ribbed",
+     "slope": 0.34,
+     "wet": "below mid tide",
+     "rides": false,
+     "axis": "x",
+     "z0": 2.8,
+     "z1": -0.6,
+     "angleDeg": 18.8,
+     "zAtX": "z0 + (z1 - z0) * ((x + L/2) / L)",
+     "submergedFrom": 0.59
+    }
+   ],
+   "blockers": [],
+   "mooring": [
+    {
+     "id": "cleat0",
+     "type": "cleat",
+     "x": -0.63,
+     "y": 1.38,
+     "z": 2.8,
+     "side": "water",
+     "maxLine": "22 mm",
+     "holds": "skiff–lobster boat"
+    },
+    {
+     "id": "ring0",
+     "type": "ring",
+     "x": 0.63,
+     "y": 1.5,
+     "z": 2.8,
+     "side": "water",
+     "maxLine": "16 mm",
+     "holds": "dory–punt",
+     "flush": true
+    }
+   ],
+   "board": [],
+   "ladders": [],
+   "fenders": [],
+   "piles": [],
+   "ends": {
+    "crest": {
+     "x": -5,
+     "z": 2.8
+    },
+    "waterEdge": 0.59,
+    "toe": {
+     "x": 5,
+     "z": -0.6
+    },
+    "launchable": true
+   },
+   "styles": {
+    "face": "concrete",
+    "struct": "open",
+    "cap": "plank",
+    "hull": "timber",
+    "stone": "granite",
+    "mound": "revetment",
+    "curb": "wood"
+   },
+   "berths": [],
+   "berthClass": null,
+   "berthClearance": 1.4,
+   "berthUtilisation": null,
+   "gangway": null,
+   "snap": {
+    "px": {
+     "x": 5,
+     "y": 0,
+     "z": 2.8,
+     "face": "+x"
+    },
+    "nx": {
+     "x": -5,
+     "y": 0,
+     "z": 2.8,
+     "face": "-x"
+    }
+   },
+   "exposure": {
+    "pileExposed": 1.9,
+    "barnacleShowing": true,
+    "weedShowing": false,
+    "iceScarShowing": true
+   }
+  },
+  "riprap": {
+   "family": "riprap",
+   "label": "armour-stone edge",
+   "footprint": {
+    "w": 12,
+    "d": 4
+   },
+   "deckZ": 2.8,
+   "waterZ": 0.9,
+   "tideRange": 1.8,
+   "freeboard": 1.9,
+   "mudZ": -1.4,
+   "zones": {
+    "stainTop": 1.9,
+    "barn": [
+     0.72,
+     1.44
+    ],
+    "weed": [
+     0.11,
+     0.72
+    ],
+    "ice": [
+     1.62,
+     1.94
+    ]
+   },
+   "walk": [
+    {
+     "poly": [
+      [
+       -6,
+       -2
+      ],
+      [
+       6,
+       -2
+      ],
+      [
+       6,
+       2
+      ],
+      [
+       -6,
+       2
+      ]
+     ],
+     "z": 2.8,
+     "surface": "loose-stone",
+     "slope": 0,
+     "wet": "spray only",
+     "rides": false
+    }
+   ],
+   "blockers": [],
+   "mooring": [],
+   "board": [],
+   "ladders": [],
+   "fenders": [],
+   "piles": [],
+   "ends": null,
+   "styles": {
+    "face": "concrete",
+    "struct": "open",
+    "cap": "plank",
+    "hull": "timber",
+    "stone": "granite",
+    "mound": "revetment",
+    "curb": "wood"
+   },
+   "berths": [],
+   "berthClass": null,
+   "berthClearance": 1.4,
+   "berthUtilisation": null,
+   "gangway": null,
+   "snap": {
+    "px": {
+     "x": 6,
+     "y": 0,
+     "z": 2.8,
+     "face": "+x"
+    },
+    "nx": {
+     "x": -6,
+     "y": 0,
+     "z": 2.8,
+     "face": "-x"
+    }
+   },
+   "exposure": {
+    "pileExposed": 1.9,
+    "barnacleShowing": true,
+    "weedShowing": false,
+    "iceScarShowing": true
+   }
+  },
+  "floatSet": {
+   "family": "float",
+   "label": "floating dock",
+   "footprint": {
+    "w": 6,
+    "d": 2.4
+   },
+   "deckZ": 1.3,
+   "waterZ": 0.9,
+   "tideRange": 1.8,
+   "freeboard": 0.4,
+   "mudZ": -1.4,
+   "zones": {
+    "stainTop": 1.9,
+    "barn": [
+     0.72,
+     1.44
+    ],
+    "weed": [
+     0.11,
+     0.72
+    ],
+    "ice": [
+     1.62,
+     1.94
+    ]
+   },
+   "walk": [
+    {
+     "poly": [
+      [
+       -3,
+       -1.2
+      ],
+      [
+       3,
+       -1.2
+      ],
+      [
+       3,
+       1.2
+      ],
+      [
+       -3,
+       1.2
+      ]
+     ],
+     "z": 1.3,
+     "surface": "plank",
+     "slope": 0,
+     "wet": "spray only",
+     "rides": true,
+     "rock": {
+      "rollDeg": 0.85,
+      "pitchDeg": 0.55,
+      "heaveM": 0.022,
+      "frames": 8,
+      "locked": true
+     }
+    }
+   ],
+   "blockers": [
+    {
+     "shape": "circle",
+     "x": -2.6,
+     "y": 1.54,
+     "r": 0.26,
+     "h": 1.6,
+     "kind": "guidePile"
+    },
+    {
+     "shape": "circle",
+     "x": 2.6,
+     "y": 1.54,
+     "r": 0.26,
+     "h": 1.6,
+     "kind": "guidePile"
+    }
+   ],
+   "mooring": [
+    {
+     "id": "cleat0",
+     "type": "cleat",
+     "x": -2.4,
+     "y": 0.78,
+     "z": 1.3,
+     "side": "water",
+     "maxLine": "22 mm",
+     "holds": "skiff–lobster boat"
+    },
+    {
+     "id": "cleat1",
+     "type": "cleat",
+     "x": -1.2,
+     "y": 0.78,
+     "z": 1.3,
+     "side": "water",
+     "maxLine": "22 mm",
+     "holds": "skiff–lobster boat"
+    },
+    {
+     "id": "cleat2",
+     "type": "cleat",
+     "x": 1.2,
+     "y": 0.78,
+     "z": 1.3,
+     "side": "water",
+     "maxLine": "22 mm",
+     "holds": "skiff–lobster boat"
+    },
+    {
+     "id": "cleat3",
+     "type": "cleat",
+     "x": 2.4,
+     "y": 0.78,
+     "z": 1.3,
+     "side": "water",
+     "maxLine": "22 mm",
+     "holds": "skiff–lobster boat"
+    }
+   ],
+   "board": [
+    {
+     "id": "board0",
+     "berth": "berth0",
+     "cls": "dory",
+     "x": 0,
+     "y": 1.2,
+     "z": 1.3,
+     "side": "water",
+     "drop": 0.4,
+     "gunwale": -0.15,
+     "needsLadder": false,
+     "ladderInReach": true
+    }
+   ],
+   "ladders": [
+    {
+     "id": "ladder0",
+     "x": 0,
+     "y": 1.2,
+     "side": "water",
+     "topZ": 1.3,
+     "botZ": -1,
+     "rung": 0.3,
+     "rungsDry": 1,
+     "bottomSubmerged": true,
+     "reachesWater": true
+    }
+   ],
+   "fenders": [
+    {
+     "id": "tyre0",
+     "type": "tyre",
+     "x": -1.57,
+     "y": 1.34,
+     "z": 0.52,
+     "r": 0.5,
+     "contacts": true
+    },
+    {
+     "id": "tyre1",
+     "type": "tyre",
+     "x": 1.57,
+     "y": 1.34,
+     "z": 0.52,
+     "r": 0.5,
+     "contacts": true
+    },
+    {
+     "id": "foam0",
+     "type": "foam",
+     "x": 1.57,
+     "y": 1.48,
+     "z": 0.55,
+     "r": 0.275,
+     "contacts": true
+    }
+   ],
+   "piles": [
+    {
+     "x": -2.6,
+     "y": 1.54,
+     "r": 0.16,
+     "topZ": 3.4,
+     "guide": true
+    },
+    {
+     "x": 2.6,
+     "y": 1.54,
+     "r": 0.16,
+     "topZ": 3.4,
+     "guide": true
+    }
+   ],
+   "ends": null,
+   "styles": {
+    "face": "concrete",
+    "struct": "open",
+    "cap": "plank",
+    "hull": "timber",
+    "stone": "granite",
+    "mound": "revetment",
+    "curb": "wood"
+   },
+   "berths": [
+    {
+     "id": "berth0",
+     "cls": "dory",
+     "label": "dory",
+     "loa": 4.9,
+     "beam": 1.6,
+     "freeboard": 0.55,
+     "x": 0,
+     "x0": -2.45,
+     "x1": 2.45,
+     "ladderX": 0,
+     "fenderX": [
+      -1.57,
+      1.57
+     ],
+     "edgeX": [
+      -3,
+      3
+     ],
+     "drop": 0.4,
+     "clear": -0.15,
+     "ladder": true
+    }
+   ],
+   "berthClass": "dory",
+   "berthClearance": 1.4,
+   "berthUtilisation": 1.05,
+   "gangway": {
+    "run": 7.44,
+    "width": 0.95,
+    "abutZ": 2.8,
+    "landZ": 1.3,
+    "ridesFloat": true,
+    "hingeFixed": true,
+    "angleDeg": 11.4
+   },
+   "snap": {
+    "px": {
+     "x": 3,
+     "y": 0,
+     "z": 1.3,
+     "face": "+x"
+    },
+    "nx": {
+     "x": -3,
+     "y": 0,
+     "z": 1.3,
+     "face": "-x"
+    }
+   },
+   "exposure": {
+    "pileExposed": 0.4,
+    "barnacleShowing": true,
+    "weedShowing": false,
+    "iceScarShowing": true
+   }
+  },
+  "torbayQuay": {
+   "family": "quay",
+   "label": "concrete quay",
+   "footprint": {
+    "w": 16,
+    "d": 7
+   },
+   "deckZ": 2.8,
+   "waterZ": 0.9,
+   "tideRange": 1.8,
+   "freeboard": 1.9,
+   "mudZ": -1.4,
+   "zones": {
+    "stainTop": 1.9,
+    "barn": [
+     0.72,
+     1.44
+    ],
+    "weed": [
+     0.11,
+     0.72
+    ],
+    "ice": [
+     1.62,
+     1.94
+    ]
+   },
+   "walk": [
+    {
+     "poly": [
+      [
+       -8,
+       -3.5
+      ],
+      [
+       8,
+       -3.5
+      ],
+      [
+       8,
+       3.5
+      ],
+      [
+       -8,
+       3.5
+      ]
+     ],
+     "z": 2.8,
+     "surface": "concrete",
+     "slope": 0,
+     "wet": "spray only",
+     "rides": false
+    }
+   ],
+   "blockers": [
+    {
+     "shape": "circle",
+     "x": -7.4,
+     "y": 2.98,
+     "r": 0.2,
+     "h": 0.75,
+     "kind": "bollard"
+    },
+    {
+     "shape": "circle",
+     "x": 7.4,
+     "y": 2.98,
+     "r": 0.2,
+     "h": 0.75,
+     "kind": "bollard"
+    }
+   ],
+   "mooring": [
+    {
+     "id": "cleat0",
+     "type": "cleat",
+     "x": -6.05,
+     "y": 3.08,
+     "z": 2.8,
+     "side": "water",
+     "maxLine": "22 mm",
+     "holds": "skiff–lobster boat"
+    },
+    {
+     "id": "cleat1",
+     "type": "cleat",
+     "x": -2.02,
+     "y": 3.08,
+     "z": 2.8,
+     "side": "water",
+     "maxLine": "22 mm",
+     "holds": "skiff–lobster boat"
+    },
+    {
+     "id": "bollard0",
+     "type": "bollard",
+     "x": -7.4,
+     "y": 2.98,
+     "z": 2.8,
+     "side": "water",
+     "maxLine": "32 mm",
+     "holds": "packet–dragger"
+    },
+    {
+     "id": "bollard1",
+     "type": "bollard",
+     "x": 7.4,
+     "y": 2.98,
+     "z": 2.8,
+     "side": "water",
+     "maxLine": "32 mm",
+     "holds": "packet–dragger"
+    },
+    {
+     "id": "ring0",
+     "type": "ring",
+     "x": -3.36,
+     "y": 3.2,
+     "z": 2.8,
+     "side": "water",
+     "maxLine": "16 mm",
+     "holds": "dory–punt",
+     "flush": true
+    },
+    {
+     "id": "ring1",
+     "type": "ring",
+     "x": 2.02,
+     "y": 3.2,
+     "z": 2.8,
+     "side": "water",
+     "maxLine": "16 mm",
+     "holds": "dory–punt",
+     "flush": true
+    }
+   ],
+   "board": [
+    {
+     "id": "board0",
+     "berth": "berth0",
+     "cls": "packet",
+     "x": 0,
+     "y": 3.5,
+     "z": 2.8,
+     "side": "water",
+     "drop": 1.9,
+     "gunwale": 0.3,
+     "needsLadder": false,
+     "ladderInReach": true
+    }
+   ],
+   "ladders": [
+    {
+     "id": "ladder0",
+     "x": 0,
+     "y": 3.5,
+     "side": "water",
+     "topZ": 2.8,
+     "botZ": -1,
+     "rung": 0.3,
+     "rungsDry": 6,
+     "bottomSubmerged": true,
+     "reachesWater": true
+    }
+   ],
+   "fenders": [
+    {
+     "id": "tyre0",
+     "type": "tyre",
+     "x": -4.64,
+     "y": 3.64,
+     "z": 2.02,
+     "r": 0.5,
+     "contacts": false
+    },
+    {
+     "id": "tyre1",
+     "type": "tyre",
+     "x": 4.64,
+     "y": 3.64,
+     "z": 2.02,
+     "r": 0.5,
+     "contacts": false
+    }
+   ],
+   "piles": [],
+   "ends": null,
+   "styles": {
+    "face": "steelSheet",
+    "struct": "open",
+    "cap": "plank",
+    "hull": "timber",
+    "stone": "granite",
+    "mound": "revetment",
+    "curb": "yellow"
+   },
+   "berths": [
+    {
+     "id": "berth0",
+     "cls": "packet",
+     "label": "coastal packet",
+     "loa": 14.5,
+     "beam": 4.6,
+     "freeboard": 1.6,
+     "x": 0,
+     "x0": -7.25,
+     "x1": 7.25,
+     "ladderX": 0,
+     "fenderX": [
+      -4.64,
+      4.64
+     ],
+     "edgeX": [
+      -7.95,
+      7.95
+     ],
+     "drop": 1.9,
+     "clear": 0.3,
+     "ladder": true
+    }
+   ],
+   "berthClass": "packet",
+   "berthClearance": 1.4,
+   "berthUtilisation": 0.99,
+   "gangway": null,
+   "snap": {
+    "px": {
+     "x": 8,
+     "y": 0,
+     "z": 2.8,
+     "face": "+x"
+    },
+    "nx": {
+     "x": -8,
+     "y": 0,
+     "z": 2.8,
+     "face": "-x"
+    }
+   },
+   "exposure": {
+    "pileExposed": 1.9,
+    "barnacleShowing": true,
+    "weedShowing": false,
+    "iceScarShowing": true
+   }
+  }
+ },
+ "tideResponse": {
+  "of": "pier 11.2 x 4.2 m, deck 2.80 m, range 1.80 m",
+  "rows": [
+   {
+    "tide": 0,
+    "freeboard": 2.8,
+    "needsLadder": true,
+    "rungsDry": 9,
+    "footSubmerged": true,
+    "barnacleShowing": true,
+    "weedShowing": true,
+    "iceScarShowing": true
+   },
+   {
+    "tide": 0.45,
+    "freeboard": 2.35,
+    "needsLadder": true,
+    "rungsDry": 7,
+    "footSubmerged": true,
+    "barnacleShowing": true,
+    "weedShowing": true,
+    "iceScarShowing": true
+   },
+   {
+    "tide": 0.9,
+    "freeboard": 1.9,
+    "needsLadder": true,
+    "rungsDry": 6,
+    "footSubmerged": true,
+    "barnacleShowing": true,
+    "weedShowing": false,
+    "iceScarShowing": true
+   },
+   {
+    "tide": 1.35,
+    "freeboard": 1.45,
+    "needsLadder": true,
+    "rungsDry": 4,
+    "footSubmerged": true,
+    "barnacleShowing": true,
+    "weedShowing": false,
+    "iceScarShowing": true
+   },
+   {
+    "tide": 1.8,
+    "freeboard": 1,
+    "needsLadder": false,
+    "rungsDry": 3,
+    "footSubmerged": true,
+    "barnacleShowing": false,
+    "weedShowing": false,
+    "iceScarShowing": false
+   }
+  ]
+ },
+ "supersedes": {
+  "kit": "Art/wharfKitRig.js + Art/Tilesets/Wharf/WharfAtlas.png / WharfOverlays.png",
+  "reason": "near-plan tiles were never projected through the shared camera, so fittings did not scale with the player or the fleet",
+  "audit": [
+   {
+    "fitting": "ladder",
+    "baked": "9 x 20 px = 0.28 x 0.63 m",
+    "trueSize": "0.45 x 3.40 m",
+    "shortBy": "5.4x"
+   },
+   {
+    "fitting": "tyre",
+    "baked": "11 x 14 px = 0.34 x 0.44 m",
+    "trueSize": "1.00 x 1.00 m",
+    "shortBy": "2.3x"
+   },
+   {
+    "fitting": "bollard",
+    "baked": "11 x 12 px = 0.34 x 0.37 m",
+    "trueSize": "0.32 x 0.75 m",
+    "shortBy": "2.0x"
+   },
+   {
+    "fitting": "gangway",
+    "baked": "16 x 40 px = 0.50 x 1.25 m",
+    "trueSize": "0.95 x 6.00 m",
+    "shortBy": "4.8x"
+   },
+   {
+    "fitting": "tallpier face",
+    "baked": "19 px = 0.59 m of drop",
+    "trueSize": "1.6 m stated, 39 px projected",
+    "shortBy": "2.7x"
+   }
+  ],
+  "status": "the baked kit is left in place and untouched; this rig sits beside it"
+ },
+ "styles": {
+  "face": [
+   "concrete",
+   "steelSheet",
+   "timberSheet"
+  ],
+  "struct": [
+   "open",
+   "sheeted",
+   "steelPile"
+  ],
+  "cap": [
+   "plank",
+   "concrete"
+  ],
+  "hull": [
+   "timber",
+   "plastic"
+  ],
+  "stone": [
+   "granite",
+   "sandstone"
+  ],
+  "mound": [
+   "revetment",
+   "breakwater",
+   "sheetCell"
+  ],
+  "curb": [
+   "wood",
+   "yellow",
+   "none"
+  ]
+ },
+ "presets": {
+  "lowPier": {
+   "family": "pier",
+   "deckZ": 1.3,
+   "bays": 4,
+   "bayLen": 2.6,
+   "width": 3,
+   "struct": "open",
+   "brace": false,
+   "capIron": false
+  },
+  "tallPier": {
+   "family": "pier",
+   "deckZ": 2.8,
+   "bays": 5,
+   "bayLen": 2.8,
+   "width": 4.2,
+   "struct": "open",
+   "brace": true
+  },
+  "sheetedPier": {
+   "family": "pier",
+   "struct": "sheeted",
+   "bays": 5,
+   "width": 4.6,
+   "curb": "wood"
+  },
+  "steelPier": {
+   "family": "pier",
+   "struct": "steelPile",
+   "bays": 5,
+   "width": 4.6,
+   "capIron": true
+  },
+  "concreteQuay": {
+   "family": "quay",
+   "face": "concrete",
+   "bays": 5,
+   "bayLen": 3.2,
+   "width": 8
+  },
+  "torbayQuay": {
+   "family": "quay",
+   "face": "steelSheet",
+   "curb": "yellow",
+   "bays": 5,
+   "bayLen": 3.2,
+   "width": 7,
+   "rail": "none"
+  },
+  "timberQuay": {
+   "family": "quay",
+   "face": "timberSheet",
+   "curb": "wood",
+   "bays": 5,
+   "bayLen": 3,
+   "width": 6.5
+  },
+  "logCrib": {
+   "family": "crib",
+   "cap": "plank"
+  },
+  "cappedCrib": {
+   "family": "crib",
+   "cap": "concrete",
+   "curb": "yellow"
+  },
+  "timberFloat": {
+   "family": "float",
+   "hull": "timber"
+  },
+  "plasticFloat": {
+   "family": "float",
+   "hull": "plastic",
+   "curb": "yellow"
+  },
+  "floatSet": {
+   "family": "float",
+   "hull": "timber",
+   "gangway": true,
+   "bays": 2
+  },
+  "plasticSet": {
+   "family": "float",
+   "hull": "plastic",
+   "gangway": true,
+   "bays": 2,
+   "curb": "yellow"
+  },
+  "graniteEdge": {
+   "family": "riprap",
+   "stone": "granite",
+   "mound": "revetment"
+  },
+  "redEdge": {
+   "family": "riprap",
+   "stone": "sandstone",
+   "mound": "revetment"
+  },
+  "breakwater": {
+   "family": "riprap",
+   "stone": "granite",
+   "mound": "breakwater",
+   "width": 6,
+   "bays": 6
+  },
+  "sheetCell": {
+   "family": "riprap",
+   "stone": "granite",
+   "mound": "sheetCell",
+   "width": 5,
+   "bays": 5,
+   "deckZ": 2.6
+  }
+ },
+ "boats": [
+  {
+   "id": "dory",
+   "label": "dory",
+   "loa": 4.9,
+   "beam": 1.6,
+   "freeboard": 0.55
+  },
+  {
+   "id": "punt",
+   "label": "punt",
+   "loa": 5.5,
+   "beam": 1.8,
+   "freeboard": 0.6
+  },
+  {
+   "id": "skiff",
+   "label": "console skiff",
+   "loa": 6.5,
+   "beam": 2.2,
+   "freeboard": 0.75
+  },
+  {
+   "id": "lobster",
+   "label": "lobster boat",
+   "loa": 10.7,
+   "beam": 4.3,
+   "freeboard": 1.15
+  },
+  {
+   "id": "packet",
+   "label": "coastal packet",
+   "loa": 14.5,
+   "beam": 4.6,
+   "freeboard": 1.6
+  },
+  {
+   "id": "dragger",
+   "label": "side dragger",
+   "loa": 18,
+   "beam": 5.6,
+   "freeboard": 1.9
+  }
+ ],
+ "berthing": {
+  "clearance": 1.4,
+  "rule": "the working face is packed with the best MIX of hulls (utilisation first, then largest hull served); every berth gets its own ladder at mid-berth and its fenders out at the quarters, which is what keeps a fender off a ladder head",
+  "ladders": "fittings.ladder:'auto' = one per berth"
+ }
+}
