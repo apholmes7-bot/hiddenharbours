@@ -46,13 +46,16 @@ namespace HiddenHarbours.UI
     /// (4×28-day seasons, Mon-first week, market day, the 06:00/19:00 night rule). This class only
     /// formats what that state already decided — there is deliberately no second time read.</para>
     ///
-    /// <para><b>Season labels hold the repo's canon, not the drop's.</b> The 2026-08-06 drop reverted its
-    /// <c>SEASON_ABBR</c>/<c>SEASON_FULL</c> tables from the canon names a previous import had corrected
-    /// them to (<c>SPR/SUM/TRN/WIN</c>, "Early Spring/High Summer/The Turn/Hard Winter") back to generic
-    /// <c>SPR/SUM/FAL/WIN</c> — "Fall" is not a season this game has (<see cref="Season.TheTurn"/>,
-    /// <c>docs/vision-and-pillars.md</c> §5.8, and CLAUDE.md's "canon wins"). The rig source is imported
-    /// verbatim so the art stays the owner's file; <see cref="SeasonAbbr"/> is the ONE deliberate
-    /// deviation the port makes from it, and it is pinned by test. Raised for the owner in the PR.</para>
+    /// <para><b>The season tag reads FAL, by owner ruling</b> (2026-08-06, relayed by the coordinator on
+    /// PR #447: "fall instead of turn please"). The 2026-08-06 drop's <c>SEASON_ABBR</c> table is
+    /// <c>SPR/SUM/FAL/WIN</c>, and the port follows it: <see cref="Season.TheTurn"/> prints <b>FAL</b> on
+    /// the glass. This was raised as a <c>_confirm</c> item — the enum and the canon call that season "The
+    /// Turn" (<c>docs/vision-and-pillars.md</c> §5.8) — and the owner ruled for the rig's word.</para>
+    ///
+    /// <para><b>The ruling is scoped to this display.</b> It renames nothing: <see cref="Season.TheTurn"/>
+    /// keeps its name everywhere else, and <c>HudStrings.Season</c> still says "The Turn" in prose. This
+    /// method is the ONLY place the watch's four-season vocabulary is decided, so if the broader naming
+    /// ever follows, it is a separate owner call and does not start here.</para>
     /// </summary>
     public static class WatchRigGeometry
     {
@@ -175,14 +178,15 @@ namespace HiddenHarbours.UI
         public static string AmPm(int hour24) => hour24 < 12 ? "AM" : "PM";
 
         /// <summary>
-        /// The season tag on the glass. Holds the repo's CANON names against the 2026-08-06 drop's
-        /// generic table (see the class remarks): <see cref="Season.TheTurn"/> prints "TRN", never "FAL".
+        /// The season tag on the glass — the rig's own <c>SEASON_ABBR</c> table (watchRig.js:139), which
+        /// the owner ruled for on 2026-08-06: <see cref="Season.TheTurn"/> shows <b>FAL</b> here. See the
+        /// class remarks — the ruling is about this readout only and renames nothing.
         /// </summary>
         public static string SeasonAbbr(Season season) => season switch
         {
             Season.EarlySpring => "SPR",
             Season.HighSummer  => "SUM",
-            Season.TheTurn     => "TRN",
+            Season.TheTurn     => "FAL",
             Season.HardWinter  => "WIN",
             _                  => "---",
         };

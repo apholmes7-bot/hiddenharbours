@@ -17,10 +17,11 @@ namespace HiddenHarbours.Tests.UI.EditMode
     /// C# under test, and never by re-deriving its formulas by hand. So a bug in the port cannot leak
     /// into its own expected values.</para>
     ///
-    /// <para><b>The one deliberate content deviation is pinned on purpose.</b> The 2026-08-06 drop
-    /// reverted its season table to <c>SPR/SUM/FAL/WIN</c>; the port holds the repo's canon and prints
-    /// <c>TRN</c> for <see cref="Season.TheTurn"/> (CLAUDE.md — canon wins). If the owner rules the
-    /// other way, THIS test is what has to change, which is the point of writing it down.</para>
+    /// <para><b>The season tag is an OWNER RULING, pinned on purpose.</b> The face shows the rig's own
+    /// table, so <see cref="Season.TheTurn"/> reads <c>FAL</c> — ruled 2026-08-06 on PR #447 after it was
+    /// raised as a <c>_confirm</c> against the canon name. Two tests hold it: one pins the ruled display,
+    /// the other pins that the ruling stopped at the glass and renamed nothing. Neither is a cleanup
+    /// target; changing either needs the owner.</para>
     /// </summary>
     public class WatchRigGoldenTests
     {
@@ -166,17 +167,34 @@ namespace HiddenHarbours.Tests.UI.EditMode
             Assert.AreEqual("59", WatchRigGeometry.Pad2(59));
         }
 
-        /// <summary>THE DELIBERATE DEVIATION. The drop's table says "FAL"; the game has no Fall — it has
-        /// <see cref="Season.TheTurn"/>. Canon wins (CLAUDE.md), and this is where that is written down.</summary>
+        /// <summary>
+        /// THE RULED DISPLAY. The watch shows the rig's own <c>SEASON_ABBR</c> table — so
+        /// <see cref="Season.TheTurn"/> reads <b>FAL</b> on the glass, by the owner's 2026-08-06 ruling
+        /// ("fall instead of turn please", relayed on PR #447). It was raised as a <c>_confirm</c> because
+        /// the canon calls that season "The Turn"; the owner ruled for the rig's word, and this is where
+        /// that is written down. Changing it back is an owner call, not a cleanup.
+        /// </summary>
         [Test]
-        public void SeasonTag_HoldsTheRepoCanon_NotTheDropsGenericTable()
+        public void SeasonTag_ShowsTheRigsTable_PerTheOwnersRuling()
         {
             Assert.AreEqual("SPR", WatchRigGeometry.SeasonAbbr(Season.EarlySpring));
             Assert.AreEqual("SUM", WatchRigGeometry.SeasonAbbr(Season.HighSummer));
-            Assert.AreEqual("TRN", WatchRigGeometry.SeasonAbbr(Season.TheTurn));
+            Assert.AreEqual("FAL", WatchRigGeometry.SeasonAbbr(Season.TheTurn));
             Assert.AreEqual("WIN", WatchRigGeometry.SeasonAbbr(Season.HardWinter));
-            Assert.AreNotEqual("FAL", WatchRigGeometry.SeasonAbbr(Season.TheTurn),
-                               "the 2026-08-06 drop's SEASON_ABBR regressed a canon correction");
+        }
+
+        /// <summary>
+        /// The ruling was scoped to the WATCH, and this pins that scope: the enum's own name is untouched
+        /// and the HUD's prose season word still reads "The Turn". If someone later renames the season
+        /// across the codebase, this is the test that should make them come back and get that ruling.
+        /// </summary>
+        [Test]
+        public void TheRuling_IsTheWatchDisplayOnly_NotARenameOfTheSeason()
+        {
+            Assert.AreEqual("TheTurn", Season.TheTurn.ToString(),
+                            "the enum keeps its canon name — the ruling was about the watch's glass");
+            Assert.AreEqual("The Turn", HudStrings.Season(Season.TheTurn),
+                            "the HUD's prose season word is unchanged by the watch ruling");
         }
 
         /// <summary>The rig's <c>WEEKDAYS</c> table is Mon-first, which is exactly the
