@@ -146,5 +146,44 @@ namespace HiddenHarbours.Core
             save.HullChartplotterPrefs.Add(row);
             return true;
         }
+
+        // ---- radar preferences (per hull, sparse — absent means the owner's defaults) -----------------
+        // FLAG lead-architect: additive v10 storage on the ADR 0025 instrument-preferences seam. Same
+        // shape and same contract as the two pairs above; see RadarPrefs for why the radar keeps its own
+        // record rather than joining either of them.
+
+        /// <summary>This hull's stored radar preferences, or <paramref name="fallback"/> when the hull
+        /// has none (never touched, or a null save).</summary>
+        public static RadarPrefs RadarPrefsFor(SaveData save, string hullId, in RadarPrefs fallback)
+        {
+            if (save?.HullRadarPrefs == null || string.IsNullOrEmpty(hullId)) return fallback;
+            for (int i = 0; i < save.HullRadarPrefs.Count; i++)
+                if (save.HullRadarPrefs[i].HullId == hullId)
+                    return save.HullRadarPrefs[i].Prefs;
+            return fallback;
+        }
+
+        /// <summary>Write this hull's radar preferences (upsert). Returns true iff the save changed —
+        /// callers use that to avoid persisting on a no-op button press.</summary>
+        public static bool SetRadarPrefs(SaveData save, string hullId, in RadarPrefs prefs)
+        {
+            if (save == null || string.IsNullOrEmpty(hullId)) return false;
+            save.HullRadarPrefs ??= new List<RadarPrefsDto>();
+            var row = new RadarPrefsDto(hullId, in prefs);
+            for (int i = 0; i < save.HullRadarPrefs.Count; i++)
+            {
+                if (save.HullRadarPrefs[i].HullId != hullId) continue;
+                RadarPrefsDto existing = save.HullRadarPrefs[i];
+                // ⚠ EVERY field, or a preference silently stops persisting — the trap that made the
+                // finder's RANGE pushers move the glass and never the save. Three fields today; a
+                // fourth added above without a clause here would be the same bug again.
+                if (existing.Night == row.Night && existing.Mode == row.Mode
+                    && existing.RangeStep == row.RangeStep) return false;
+                save.HullRadarPrefs[i] = row;          // RadarPrefsDto is a struct — write it back
+                return true;
+            }
+            save.HullRadarPrefs.Add(row);
+            return true;
+        }
     }
 }

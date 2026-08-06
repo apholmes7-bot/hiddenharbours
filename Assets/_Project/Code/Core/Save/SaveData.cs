@@ -172,6 +172,21 @@ namespace HiddenHarbours.Core
         /// save written before it existed simply has no rows, which reads as "never touched", so there
         /// is no migration step and no version bump.</para></summary>
         public List<ChartplotterPrefsDto> HullChartplotterPrefs = new();
+
+        /// <summary>
+        /// Per-hull RADAR preferences — standby/transmit + orientation, range rung and night backlight.
+        /// Sparse like <see cref="HullChartplotterPrefs"/> (absent hull = the owner's configured
+        /// defaults) and read/written only through <see cref="InstrumentLocker"/>.
+        ///
+        /// <para>Its own record rather than more fields on the plotter's, for the reason
+        /// <see cref="Core.RadarPrefs"/> gives: the radar and the plotter are two separate instruments
+        /// fitted in two separate brow stations at the same time, so one record would mean a press on
+        /// one re-lighting the other.</para>
+        ///
+        /// <para>Added in v10 as an additive member, the plotter's row's own precedent (ADR 0030). A v10
+        /// save written before it existed simply has no rows, which reads as "never touched", so there
+        /// is no migration step and no version bump.</para></summary>
+        public List<RadarPrefsDto> HullRadarPrefs = new();
     }
 
     /// <summary>
@@ -211,6 +226,51 @@ namespace HiddenHarbours.Core
 
         /// <summary>This record as the runtime value.</summary>
         public ChartplotterPrefs Prefs => new ChartplotterPrefs(Night, HeadUp, RangeStep);
+    }
+
+    /// <summary>
+    /// One hull's persisted RADAR preferences — the flat, JsonUtility-friendly record of
+    /// <see cref="Core.RadarPrefs"/> keyed by hull id, on the <see cref="ChartplotterPrefsDto"/> pattern.
+    /// </summary>
+    [Serializable]
+    public struct RadarPrefsDto
+    {
+        /// <summary>Stable hull id these preferences belong to.</summary>
+        public string HullId;
+
+        /// <summary>Amber night phosphor rather than the green day palette.</summary>
+        public bool Night;
+
+        /// <summary>
+        /// The <see cref="RadarMode"/> as an integer — standby (0), head-up (1), north-up (2).
+        ///
+        /// <para>Stored flat rather than as the enum for the <see cref="NavWaypointDto.Kind"/> reason:
+        /// JsonUtility round-trips an enum as its integer anyway, and naming that here means an unknown
+        /// future value is visible as a number rather than silently deserialized to the first member.
+        /// Out-of-range values heal to <see cref="RadarMode.Standby"/> on read, which is the safe
+        /// answer — a set that is not radiating is never a lie about what is out there.</para>
+        /// </summary>
+        public int Mode;
+
+        /// <summary>Which rung of the range ladder the scope is on (0 = closest). Zero is a LEGAL
+        /// value — the closest range — so a row is never healed away from it; the ABSENT row is what
+        /// yields the owner's default rung (<see cref="ChartplotterPrefsDto.RangeStep"/>'s note).</summary>
+        public int RangeStep;
+
+        public RadarPrefsDto(string hullId, in RadarPrefs prefs)
+        {
+            HullId = hullId;
+            Night = prefs.Night;
+            Mode = (int)prefs.Mode;
+            RangeStep = prefs.RangeStep;
+        }
+
+        /// <summary>This record as the runtime value, with an out-of-range mode healed to standby.</summary>
+        public RadarPrefs Prefs => new RadarPrefs(
+            Night,
+            Mode >= (int)RadarMode.Standby && Mode <= (int)RadarMode.NorthUp
+                ? (RadarMode)Mode : RadarMode.Standby,
+            RangeStep);
     }
 
     /// <summary>One marked waypoint, flattened for JsonUtility (the <see cref="HullInstrument"/>

@@ -57,10 +57,12 @@ namespace HiddenHarbours.Boats
                  "project (WASD/arrows helm, Space brace/haul, E interact, Q mooring, P buy, B sell, " +
                  "T trap-drop, G grant, H haul, Y auto-yaw, Z neutral, X catch-dump, N tide panel, " +
                  "L spotlight/ice lid, O displaced water, I ice box, J/U character spike, " +
-                 "K brow instrument (DevInstrumentCycle), Esc close). " +
+                 "K brow instrument, SHIFT+K pilot deck — gps/radar (both DevInstrumentCycle), " +
+                 "Esc close). " +
                  "⚠ THE KEY LEDGER LIVES HERE — a new dev binding is recorded in this list, and a " +
                  "candidate key is swept against it AND against the scenes/prefabs (a serialized " +
-                 "instance value silently overrides a [SerializeField] default) before it is claimed.")]
+                 "instance value silently overrides a [SerializeField] default) before it is claimed. " +
+                 "MODIFIED bindings count: SHIFT+K is a claim on shift+K, not on K.")]
         [SerializeField] private Key _nextHullKey = Key.F;
 
         [Tooltip("DEV A/B (ADR 0022 phase 4): flip the CURRENT hull between its real-time MESH and its " +

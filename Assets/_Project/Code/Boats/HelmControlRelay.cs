@@ -79,6 +79,25 @@ namespace HiddenHarbours.Boats
         /// </summary>
         public SounderKind DevBrowStep { get; set; } = SounderKind.Depth;
 
+        /// <summary>
+        /// DEV-ONLY (ADR 0025 S5): which instruments the PILOT DECK's two stations are showing, as
+        /// stepped by <see cref="DevInstrumentCycle.StepPilot"/> (SHIFT+K). Read only while
+        /// <see cref="DevIgnoreEquipmentGating"/> is on; in a shipped build nothing consults it.
+        ///
+        /// <para><b>Starts at <see cref="DevInstrumentCycle.DevPilotFit.Owned"/> — today's picture,
+        /// exactly.</b> That state does not state the deck at all: it hands the question back to real
+        /// ownership, so a plotter the player BOUGHT stays on the brow and the owner's existing F-cycle
+        /// is unchanged until he presses SHIFT+K. Same "must not regress what already worked" bar
+        /// <see cref="DevBrowStep"/> was held to — and the reason this ring, unlike the brow's, never
+        /// narrows.</para>
+        ///
+        /// <para>It lives here for the same reason the brow's step does: the picker re-skins the ONE
+        /// persistent boat in place, so the chosen deck rides through every hull change and the owner can
+        /// walk the fleet comparing the same instrument across two wheelhouses.</para>
+        /// </summary>
+        public DevInstrumentCycle.DevPilotFit DevPilotStep { get; set; }
+            = DevInstrumentCycle.DevPilotFit.Owned;
+
         private void Awake()
         {
             _boat = GetComponent<BoatController>();
@@ -199,7 +218,7 @@ namespace HiddenHarbours.Boats
 
                 InstrumentLocker.OwnedFor(GameServices.Save?.Current, HullId, _ownedScratch);
                 return DevIgnoreEquipmentGating
-                    ? DevInstrumentCycle.DevFit(console, _ownedScratch, DevBrowStep)
+                    ? DevInstrumentCycle.DevFit(console, _ownedScratch, DevBrowStep, DevPilotStep)
                     : BoatEquipment.EffectiveFit(console, _ownedScratch);
             }
         }

@@ -135,6 +135,18 @@ MonoBehaviour:
     MinRangeNM: 0.05
     RangeStepCount: 6
     DefaultRangeStep: 2
+  Radar:
+    MinRangeNM: 0.05
+    RangeStepCount: 6
+    DefaultRangeStep: 2
+    Rings: 4
+    Gain: 0.72
+    SeaClutterAtFullSeaState: 0.45
+    SweepRpm: 24
+    SweepRepaintHz: 8
+    LandScanAzimuths: 72
+    MaxLandEchoes: 96
+    LandRescanTideMetres: 0.05
   HelmWheel:
     Turns: 1.5
     Friction: 2.4

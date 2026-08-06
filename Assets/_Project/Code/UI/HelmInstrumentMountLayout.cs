@@ -73,8 +73,45 @@ namespace HiddenHarbours.UI
             return mount.width > 0f && mount.height > 0f;
         }
 
+        /// <summary>
+        /// The screen rect a fitted RADAR occupies flush in the brow's CENTRE slot (S5). False when no
+        /// radar is fitted, when the hull has no pilothouse brow, when there is no dash — or when a DOME
+        /// compass has taken the crown.
+        ///
+        /// <para><b>⚠ The dome compass DISPLACES this mount, and only this one.</b>
+        /// <c>noviRig.js:453</c> skips the centre brow slot when a dome is fitted, which
+        /// <see cref="HelmDashGeometry.SlotIsDisplacedByCompass"/> states as a fact about
+        /// <see cref="HelmDashGeometry.PilotRadarSlot"/> — the radar's slot IS the displaced one. So a
+        /// hull carrying both a dome compass and a radar has nowhere to mount the scope and this
+        /// correctly reports false: the dash draws no bezel there either, and an instrument painted over
+        /// the binnacle would be the two disagreeing. Asserted through the shared helper rather than
+        /// re-derived, exactly as <see cref="HelmDashGeometry.TryBrowSounderBox"/> asserts the
+        /// converse for slot 0.</para>
+        ///
+        /// <para>The box is the TALL PORTRAIT one — the same choice the dash renderers already make when
+        /// they draw the radar bezel (<c>NoviDashRender:271</c>, <c>CapeDashRender</c>), and what the
+        /// rigs mean by authoring the radar portrait. The instrument is 480×660, so the letterbox fits it
+        /// to the 150×150 slot's height and centres it.</para>
+        /// </summary>
+        public static bool TryBrowRadarRect(in HelmFit fit, Rect dashCard, out Rect mount)
+        {
+            mount = default;
+            if (dashCard.width <= 0f || dashCard.height <= 0f) return false;
+            if (!fit.Radar) return false;
+            if (!HelmDashGeometry.IsPilothouse(fit.Rig)) return false;   // only these hulls carry a brow
+            if (HelmDashGeometry.SlotIsDisplacedByCompass(HelmDashGeometry.PilotRadarSlot, fit.Compass))
+                return false;
+
+            HelmDashGeometry.SlotBoxOnCard(HelmDashGeometry.PilotRadarSlot, portrait: true,
+                                           out int bx, out int by, out int bw, out int bh);
+            int rigW = HelmDashGeometry.CanvasW(fit.Rig), rigH = HelmDashGeometry.CanvasH(fit.Rig);
+            mount = Letterbox(dashCard, rigW, rigH, bx, by, bw, bh,
+                              RadarRigRender.W, RadarRigRender.H);
+            return mount.width > 0f && mount.height > 0f;
+        }
+
         /// <summary>The rig resolution an instrument rasters at — the size the letterbox preserves the
-        /// aspect of. Zero for a slot with no renderer (S5): a caller then mounts nothing rather
+        /// aspect of. Zero for a slot with no renderer: a caller then mounts nothing rather
         /// than guessing a shape for an instrument that does not exist.</summary>
         public static void InstrumentNativeSize(SounderKind sounder, out int w, out int h)
         {

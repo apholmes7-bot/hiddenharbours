@@ -44,11 +44,12 @@ namespace HiddenHarbours.Boats
     public sealed class DevInstrumentCycle : MonoBehaviour
     {
         [Header("Keys (owner-editable)")]
-        [Tooltip("Step the brow instrument: bare → depth sounder → fish finder → bare. K for Kit — free " +
-                 "of every other binding in the project (F fleet/interact, V variant, Z neutral, X dump, " +
-                 "N tide, T rotation/trap, Y auto-yaw, G grant, H haul, L spotlight/lid, O displaced " +
-                 "water, I ice box, J/U character spike, P buy, B sell, E interact, Q mooring, Space " +
-                 "work/pull, WASD+arrows helm, Esc close).")]
+        [Tooltip("Step the brow instrument: bare → depth sounder → fish finder → bare. Hold SHIFT and " +
+                 "the same key steps the PILOT DECK instead: as-owned → gps → gps+radar → radar → as-owned. " +
+                 "K for Kit — free of every other binding in the project (F fleet/interact, V variant, " +
+                 "Z neutral, X dump, N tide, T rotation/trap, Y auto-yaw, G grant, H haul, L " +
+                 "spotlight/lid, O displaced water, I ice box, J/U character spike, P buy, B sell, " +
+                 "E interact, Q mooring, Space work/pull, WASD+arrows helm, Esc close).")]
         [SerializeField] private Key _cycleKey = Key.K;
 
         private BoatController _boat;
@@ -85,7 +86,15 @@ namespace HiddenHarbours.Boats
 
             var kb = Keyboard.current;
             if (kb == null) return;
-            if (kb[_cycleKey].wasPressedThisFrame) Step();
+            if (!kb[_cycleKey].wasPressedThisFrame) return;
+
+            // ⚠ A text field on the chartplotter owns the keyboard while it is open (HelmKeyCapture), and
+            // K is a letter. Without this gate, naming a waypoint "KELP ROCK" would silently re-fit the
+            // dash under the editor — the same trap W/A/S/D posed for the helm.
+            if (HelmKeyCapture.IsCapturing) return;
+
+            bool shift = kb.leftShiftKey.isPressed || kb.rightShiftKey.isPressed;
+            if (shift) StepPilot(); else Step();
         }
 
         /// <summary>
@@ -115,6 +124,59 @@ namespace HiddenHarbours.Boats
                       $"Press {_cycleKey} again for the next.");
 
             if (shown == SounderKind.Fish) ReportSchools();
+        }
+
+        /// <summary>
+        /// Advance the PILOT DECK one step and report what landed — SHIFT+K (ADR 0025 S5, the owner's
+        /// "add the gps to the k cycle button for testing").
+        ///
+        /// <para><b>Why it exists at all.</b> Nothing in the game SELLS a chartplotter or a radar: the
+        /// <c>ChartplotterOffer</c> asset is referenced by no scene or builder, and no purchasable hull
+        /// supports either slot — the Novi and the Cape are dev-picker rungs. So the dev path is the ONLY
+        /// path to looking at these two instruments, which is exactly the gap this key closes. Wiring a
+        /// vendor is an economy slice and deliberately not this one.</para>
+        ///
+        /// <para><b>Why a SECOND ring rather than a longer one.</b> The brow carries ONE cutout and the
+        /// pilot deck carries TWO independent stations, so a single ring over both would be
+        /// three-by-four — twelve presses to walk, and eight of them redundant. Two rings on one key,
+        /// separated by a modifier, keeps each axis three or four presses from anywhere and leaves the
+        /// brow cycle's behaviour bit-identical to what it was.</para>
+        ///
+        /// <para><b>Same guarantees as the brow ring.</b> Scratch-only (nothing reaches
+        /// <see cref="InstrumentLocker"/> or the save), inert in a shipped build (the relay's one dev
+        /// predicate), and the requested step CARRIES across an <c>F</c> hull swap — landing on a console
+        /// that refuses the carried unit shows what it CAN take without forgetting the request
+        /// (<see cref="ReachablePilot"/>).</para>
+        /// </summary>
+        public void StepPilot()
+        {
+            if (_relay == null) _relay = GetComponent<HelmControlRelay>();
+            if (_relay == null) return;
+
+            HelmConsoleDef console = Console();
+            if (console == null)
+            {
+                EventBus.Publish(new DevNotice("This hull has no helm console — no pilot deck to cycle."));
+                return;
+            }
+
+            DevPilotFit next = NextPilot(_relay.DevPilotStep);
+            _relay.DevPilotStep = next;
+
+            DevPilotFit shown = ReachablePilot(next, console);
+            EventBus.Publish(new DevNotice($"Pilot deck → {LabelPilot(shown)}"));
+            Debug.Log($"[DevInstrumentCycle] {_relay.HullId} pilot deck → {shown} " +
+                      $"(console {console.Id}, radar slot {(console.SupportsRadar ? "yes" : "no")}, " +
+                      $"gps slot {(console.SupportsGps ? "yes" : "no")}). " +
+                      $"Press SHIFT+{_cycleKey} again for the next.");
+
+            // ⚠ A DOME compass takes the CENTRE brow station, which is the radar's mount
+            // (HelmDashGeometry.SlotIsDisplacedByCompass). Say so rather than letting the owner press
+            // SHIFT+K and conclude the radar is broken.
+            if (HasRadar(shown) && console.DefaultCompass == CompassMount.Dome)
+                Debug.LogWarning("[DevInstrumentCycle] this console mounts a DOME compass, which " +
+                                 "displaces the centre brow station — the radar has no flush mount " +
+                                 "here and draws only on its expanded card.");
         }
 
         // ---- the sonar's legibility (a pure READ of the Core fish seam) --------------------------------
@@ -198,6 +260,71 @@ namespace HiddenHarbours.Boats
         }
 
         /// <summary>
+        /// The PILOT DECK's four states — the two stations either side of the brow's centre, as a ring
+        /// rather than two independent bools so one key can walk them (ADR 0025 S5).
+        ///
+        /// <para><see cref="Radar"/> alone earns its place for the reason the whole cycle exists: with
+        /// both fitted the two instruments compete for the eye, and "show me just the scope" is
+        /// unreachable by owning MORE. That is the same argument that made the brow a cycle rather than a
+        /// blanket grant.</para>
+        ///
+        /// <para><b>⚠ <see cref="Owned"/> means NOT STATED, not "both blank" — and unlike the brow, this
+        /// ring never NARROWS.</b> The brow's narrowing is earned by a structural fact: the Novi and Cape
+        /// ship a depth sounder in their AUTHORED default, so "show me a bare brow" is unreachable by
+        /// owning less. No authored helm sets <c>DefaultRadar</c> or <c>DefaultGps</c>, so a bare pilot
+        /// deck is ALREADY what owning nothing gives — narrowing would buy nothing and would cost
+        /// something real: it would HIDE an instrument the player genuinely bought the moment dev gating
+        /// was on, which is the editor's default. So the rest of this ring only ever widens, and this
+        /// state hands the question back to ownership.</para>
+        /// </summary>
+        public enum DevPilotFit
+        {
+            Owned = 0,      // not stated — show whatever is actually owned (today's behaviour)
+            Gps = 1,        // chartplotter forced on
+            GpsRadar = 2,   // both forced on
+            Radar = 3,      // scope forced on
+        }
+
+        /// <summary>The pilot ring: <b>none → gps → gps+radar → radar → none</b>. Unlike the brow's, no
+        /// step is ever SKIPPED here — the two stations are independent, so an unsupported one is simply
+        /// dropped from the resolved fit by <see cref="ReachablePilot"/> rather than making the key look
+        /// dead. Walking a four-state ring on a console that supports neither still moves the STORED
+        /// step, which is what lets the request carry across an F-swap onto a hull that can take it.</summary>
+        public static DevPilotFit NextPilot(DevPilotFit current) => current switch
+        {
+            DevPilotFit.Owned => DevPilotFit.Gps,
+            DevPilotFit.Gps => DevPilotFit.GpsRadar,
+            DevPilotFit.GpsRadar => DevPilotFit.Radar,
+            _ => DevPilotFit.Owned,
+        };
+
+        /// <summary>Does this step ask for a radar?</summary>
+        public static bool HasRadar(DevPilotFit step)
+            => step == DevPilotFit.Radar || step == DevPilotFit.GpsRadar;
+
+        /// <summary>Does this step ask for a chartplotter?</summary>
+        public static bool HasGps(DevPilotFit step)
+            => step == DevPilotFit.Gps || step == DevPilotFit.GpsRadar;
+
+        /// <summary>
+        /// The pilot deck this console can ACTUALLY show for a requested step — the brow's
+        /// <see cref="Reachable"/>, one axis wider. A station the console has no slot for is dropped and
+        /// the other is kept, so a step of <see cref="DevPilotFit.GpsRadar"/> onto a hull with no radar
+        /// slot shows the plotter rather than nothing. The STORED step is left alone, so F back onto a
+        /// capable hull restores both.
+        /// </summary>
+        public static DevPilotFit ReachablePilot(DevPilotFit requested, HelmConsoleDef console)
+        {
+            if (console == null) return DevPilotFit.Owned;      // no dash, nothing to mount in
+            bool radar = HasRadar(requested) && console.SupportsRadar;
+            bool gps = HasGps(requested) && console.SupportsGps;
+            return radar && gps ? DevPilotFit.GpsRadar
+                 : radar ? DevPilotFit.Radar
+                 : gps ? DevPilotFit.Gps
+                 : DevPilotFit.Owned;
+        }
+
+        /// <summary>
         /// The brow this console can ACTUALLY show for a requested step. The cycle ring never asks for an
         /// unsupported unit, but the requested step CARRIES across an F-swap, so it can land on a hull that
         /// refuses it: fall back to the nearest unit below rather than drawing an instrument the hull could
@@ -223,9 +350,31 @@ namespace HiddenHarbours.Boats
         /// than the hull carries, and the reason the owner can still see an empty cutout at all.</para>
         ///
         /// <para>Everything else in the fit (rig, compass, radar, gps) reads through untouched: this is a
-        /// BROW cycle, not a dev mode that re-fits the whole dash.</para>
+        /// BROW cycle, not a dev mode that re-fits the whole dash. The
+        /// <see cref="DevFit(HelmConsoleDef, List{string}, SounderKind, DevPilotFit)"/> overload is the
+        /// one that also STATES the pilot deck (S5).</para>
         /// </summary>
         public static HelmFit DevFit(HelmConsoleDef console, List<string> ownedScratch, SounderKind step)
+            => DevFit(console, ownedScratch, step, DevPilotFit.Owned);
+
+        /// <summary>
+        /// The dev cycle's effective fit for one console, stating BOTH rings (ADR 0025 S5).
+        ///
+        /// <para>Same WIDEN-then-NARROW shape as the brow's, applied to the two pilot stations: each
+        /// station's instrument id joins the caller's SCRATCH owned list (so
+        /// <see cref="BoatEquipment.EffectiveFit"/>'s own slot gating still has the final say), and the
+        /// resolved fit is then clamped DOWN to the step — the half a grant structurally cannot do, and
+        /// the only way "show me a bare pilot deck" is expressible on a console that ships one fitted.
+        /// Neither half touches <see cref="InstrumentLocker"/>, so no dev convenience can reach the
+        /// player's save.</para>
+        ///
+        /// <para><b>Identical to today's behaviour for every SHIPPED console</b>, which is the
+        /// must-not-regress bar: none of the four authored helms sets <c>DefaultRadar</c> or
+        /// <c>DefaultGps</c>, so <see cref="DevPilotFit.Owned"/> widens nothing — and nothing here ever
+        /// narrows, so a bought instrument is never hidden by a dev key.</para>
+        /// </summary>
+        public static HelmFit DevFit(HelmConsoleDef console, List<string> ownedScratch,
+                                     SounderKind step, DevPilotFit pilotStep)
         {
             if (console == null) return HelmFit.None;
 
@@ -234,6 +383,18 @@ namespace HiddenHarbours.Boats
                       : brow == SounderKind.Depth ? BoatEquipment.DepthSounderId
                       : null;
             if (id != null && ownedScratch != null && !ownedScratch.Contains(id)) ownedScratch.Add(id);
+
+            // The pilot deck only ever WIDENS (see DevPilotFit.Owned): the resolved fit keeps whatever
+            // EffectiveFit made of the console default plus real ownership, so a bought plotter is never
+            // hidden by a dev key.
+            DevPilotFit deck = ReachablePilot(pilotStep, console);
+            if (ownedScratch != null)
+            {
+                if (HasRadar(deck) && !ownedScratch.Contains(BoatEquipment.RadarId))
+                    ownedScratch.Add(BoatEquipment.RadarId);
+                if (HasGps(deck) && !ownedScratch.Contains(BoatEquipment.GpsId))
+                    ownedScratch.Add(BoatEquipment.GpsId);
+            }
 
             HelmFit fit = BoatEquipment.EffectiveFit(console, ownedScratch);
             if (fit.Sounder == brow) return fit;
@@ -257,6 +418,14 @@ namespace HiddenHarbours.Boats
             SounderKind.Depth => "depth sounder",
             SounderKind.Fish  => "fish finder",
             _                 => "bare (no sounder)",
+        };
+
+        private static string LabelPilot(DevPilotFit deck) => deck switch
+        {
+            DevPilotFit.Gps      => "chartplotter",
+            DevPilotFit.GpsRadar => "chartplotter + radar",
+            DevPilotFit.Radar    => "radar",
+            _                    => "as owned (no dev override)",
         };
     }
 }

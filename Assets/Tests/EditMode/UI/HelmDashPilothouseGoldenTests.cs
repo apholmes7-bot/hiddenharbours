@@ -340,38 +340,69 @@ namespace HiddenHarbours.Tests.UI.EditMode
             Assert.That(novi.r, Is.LessThan(60), "the Novi's blanking screen is black glass, not cork");
         }
 
-        // ---- the standby page is a PARKED instrument, not a scanning one -------------------------------
+        // ---- the radar mount: reserved when empty, bare glass when the instrument fills it -------------
 
+        /// <summary>
+        /// ⚠ <b>This test REPLACES <c>TheRadarStandbyPage_ParksItsSweepAtTwelveOClock</c> (PR #410), and
+        /// the ruling it pinned is retired with its own premise.</b>
+        ///
+        /// <para>That ruling — a statically-labelled STANDBY screen is honest, a rotating one would not
+        /// be — was decided while <c>NoviDashRender</c>'s own comment read <i>"Fitted (nothing can fit
+        /// one yet) is the rig's standby page"</i>. ADR 0025 S5 is what removes that premise: a fitted
+        /// radar is now hosted by <c>RadarOverlayHost</c>, which composites the real PPI into this very
+        /// box. The sweep therefore still exists and still cannot lie — it is on the live instrument,
+        /// where it genuinely IS scanning — and the dash no longer draws a second, parked one underneath
+        /// it.</para>
+        ///
+        /// <para><b>Why the page could not simply stay.</b> The radar rig is PORTRAIT (480×660) in a
+        /// square 150×150 slot, so the letterboxed glass is 109 px wide and leaves ~20 px of the mount
+        /// showing either side. The standby page's outer ring reaches 72 px from centre — well past
+        /// that — so its arcs would poke out from behind the live scope: the dash contradicting the
+        /// instrument, which is the exact failure the honesty invariant exists to prevent. (The GPS slot
+        /// is landscape and its glass covers its mount, which is why S6 left that one alone.)</para>
+        /// </summary>
         [TestCase(ConsoleRigKind.Novi)]
         [TestCase(ConsoleRigKind.Cape)]
-        public void TheRadarStandbyPage_ParksItsSweepAtTwelveOClock(ConsoleRigKind rig)
+        public void AFittedRadarMount_IsBareGlass_SoTheLiveScopeHasNothingUnderIt(ConsoleRigKind rig)
         {
-            // Merge-seat ruling (lead-architect, PR #410): a statically-labelled STANDBY screen is
-            // honest — it announces it is producing no knowledge — but a ROTATING sweep would not be,
-            // because a sweep implies scanning. The distinction is one animation frame wide, so it is
-            // pinned geometrically rather than trusted: the sweep must lie on the mount's vertical
-            // centre line (dir(0) = straight up), and nowhere else.
-            DrawSurface s = RenderPilothouse(rig, Fit(rig, SounderKind.Depth, CompassMount.None,
-                                                      radar: true, gps: false));
             HelmDashGeometry.SlotBoxOnCard(HelmDashGeometry.PilotRadarSlot, true,
                                            out int x, out int y, out int w, out int h);
-            int cx = x + w / 2, cy = y + h / 2 + 6;              // the sweep's origin (js: cy + 6)
+            int cx = x + w / 2, cy = y + h / 2 + 6;              // the old standby page's scope centre
 
-            // Sample at radius 55: past the middle ring (48) and short of the sweep's tip (h*0.42 = 63),
-            // so ONLY the sweep can brighten a pixel there.
-            const double r = 55.0;
-            int Bright(double deg)
+            DrawSurface fitted = RenderPilothouse(rig, Fit(rig, SounderKind.Depth, CompassMount.None,
+                                                           radar: true, gps: false));
+            DrawSurface empty = RenderPilothouse(rig, ShippedFit(rig));
+
+            // Sample the ring the standby page drew at radius 55 — past the middle ring (48), short of
+            // the old sweep's tip (h*0.42 = 63). On a fitted mount NOTHING may brighten out there now.
+            int Spread(DrawSurface s)
             {
-                RigDrawUtil.Dir(deg * System.Math.PI / 180.0, out double dx, out double dy);
-                Color32 c = At(s, DrawSurface.JsRound(cx + dx * r), DrawSurface.JsRound(cy + dy * r));
-                return c.r + c.g + c.b;
+                int lo = int.MaxValue, hi = int.MinValue;
+                for (int deg = 0; deg < 360; deg += 15)
+                {
+                    RigDrawUtil.Dir(deg * System.Math.PI / 180.0, out double dx, out double dy);
+                    Color32 c = At(s, DrawSurface.JsRound(cx + dx * 55.0), DrawSurface.JsRound(cy + dy * 55.0));
+                    int v = c.r + c.g + c.b;
+                    if (v < lo) lo = v;
+                    if (v > hi) hi = v;
+                }
+                return hi - lo;
             }
 
-            int up = Bright(0), right = Bright(90), diag = Bright(45), down = Bright(180);
-            Assert.That(up, Is.GreaterThan(right + 60),
-                        $"{rig}: the sweep must point UP at 12 o'clock, not to starboard");
-            Assert.That(up, Is.GreaterThan(diag + 60), $"{rig}: nor at 45°");
-            Assert.That(up, Is.GreaterThan(down + 60), $"{rig}: nor astern");
+            Assert.That(Spread(fitted), Is.LessThan(40),
+                        $"{rig}: a fitted radar mount is flat glass — no rings, no parked sweep, nothing " +
+                        "for the live instrument's letterbox margins to expose");
+
+            // …and the negative control: the mount really is DIFFERENT from an unfitted one, so this is
+            // not passing because both are blank.
+            bool differs = false;
+            for (int i = 0; i < fitted.Pixels.Length && !differs; i++)
+            {
+                Color32 a = fitted.Pixels[i], b = empty.Pixels[i];
+                differs = a.r != b.r || a.g != b.g || a.b != b.b;
+            }
+            Assert.That(differs, Is.True,
+                        $"{rig}: an unfitted mount still says NO DISPLAY FITTED — reserved, not bare");
         }
 
         [TestCase(ConsoleRigKind.Novi)]

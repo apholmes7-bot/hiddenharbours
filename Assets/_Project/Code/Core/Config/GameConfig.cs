@@ -248,6 +248,14 @@ namespace HiddenHarbours.Core
                  "the range ladder is what makes a chart of a few-hundred-metre harbour readable.")]
         public ChartplotterSettings Chartplotter = ChartplotterSettings.Default;
 
+        [Header("Radar (the PPI scope — ADR 0025 S5)")]
+        [Tooltip("What the radar can see and how it draws it: the RANGE ladder in nautical miles, how " +
+                 "hard the set is turned up (gain), how much sea clutter a full gale throws, and how " +
+                 "finely the coastline is scanned. The range ladder is what makes a scope of a " +
+                 "few-hundred-metre harbour readable; the scan settings are the rule-7 budget for the " +
+                 "land echo.")]
+        public RadarSettings Radar = RadarSettings.Default;
+
         [Header("Helm wheel (the grabbable steering wheel — ADR 0025 S2a)")]
         [Tooltip("Mouse-spin feel of the console/sport steering wheel: lock-to-lock turns, coast " +
                  "friction, and the optional self-centre spring (0 = a real cable helm that HOLDS " +
@@ -982,6 +990,164 @@ namespace HiddenHarbours.Core
             MinRangeNM = 0.05f,
             RangeStepCount = 6,
             DefaultRangeStep = 2,
+        };
+    }
+
+    /// <summary>
+    /// The radar's tunables (<see cref="GameConfig.Radar"/> — ADR 0025 S5): the RANGE ladder the scope
+    /// zooms through, how hard the set is turned up, how much clutter the sea throws back, and the
+    /// budget the coastline scan runs to.
+    ///
+    /// <para><b>⚠ The range ladder is NOT the rig's</b> — the same correction
+    /// <see cref="ChartplotterSettings"/> makes, for the same reason. <c>radarRig.js:129</c> ships
+    /// <c>RANGE_STEPS=[0.5,1,2,3,6,12,24]</c> nautical miles, drawn against a fictional ocean. St Peters
+    /// is <c>WorldSizeMeters {760, 520}</c> = <b>0.41 × 0.28 NM</b>, so the rig's SMALLEST range already
+    /// puts the whole region inside a quarter of the scope and every rung above it is empty water with
+    /// the coast pinned at the centre. The unit (NM) is kept, because that is what the rig draws and
+    /// what a radar reads in; only the ladder is re-scaled, to even doublings from a harbour range.
+    /// Deliberately the SAME ladder shape as the plotter's, with its own fields: the two instruments
+    /// sit side by side on one brow and a skipper comparing them should not have to translate.</para>
+    ///
+    /// <para><b>Gain is here and clutter is not.</b> The rig draws GAIN, SEA and RAIN dials but authors
+    /// no pusher for any of them, so none can be a player preference (rule 6 — a knob that never moves).
+    /// Gain is factory tuning and lives here. SEA clutter is read live from the sea state instead, which
+    /// is the honest source and is what makes the instrument answer to the weather (P1) — this block
+    /// only says how much clutter a FULL gale is worth. RAIN has no source at all in this slice and is
+    /// drawn at zero: precipitation returns are the Smother's payoff (canon M4), and mapping the
+    /// existing <c>Visibility</c> (fog) onto the rain dial would invert the instrument's whole meaning,
+    /// since seeing THROUGH fog is exactly what a radar is for.</para>
+    /// </summary>
+    [System.Serializable]
+    public struct RadarSettings
+    {
+        [Tooltip("The CLOSEST radar range, in nautical miles — the first rung of the ladder. 0.05 NM " +
+                 "≈ 93 m to the scope's rim, about a wharf and its approach.")]
+        [Min(0.001f)] public float MinRangeNM;
+
+        [Tooltip("How many rungs the range ladder has. Each is DOUBLE the one below, so the default " +
+                 "6 rungs from 0.05 NM reach 1.6 NM (≈ 93 m … 3 km) — from a berth to well outside " +
+                 "any region the game has.")]
+        [Min(1)] public int RangeStepCount;
+
+        [Tooltip("Which rung a freshly fitted set starts on (0 = closest). 2 = 0.2 NM ≈ 370 m to the " +
+                 "rim, which puts a whole small region on the scope.")]
+        [Min(0)] public int DefaultRangeStep;
+
+        [Tooltip("How many range RINGS the scope draws between the centre and the rim (radarRig.js " +
+                 "`rings`). Four is the marine convention and makes each ring a quarter of the range.")]
+        [Min(1)] public int Rings;
+
+        [Tooltip("How hard the set is turned up, 0..1 (the rig's GAIN dial). Scales every echo's " +
+                 "brightness. Factory tuning: no pusher exposes it, so it is not a player preference.")]
+        [Range(0f, 1f)] public float Gain;
+
+        [Tooltip("How much sea clutter a FULL gale throws back, 0..1 (the rig's SEA dial). Scaled by " +
+                 "the live sea state, so flat calm is clean and a blow speckles the middle of the " +
+                 "scope — the instrument answering to the weather rather than to a constant.")]
+        [Range(0f, 1f)] public float SeaClutterAtFullSeaState;
+
+        [Tooltip("How fast the aerial turns, in revolutions per minute. A real small-craft set runs 24 " +
+                 "to 48; 24 is one sweep every two and a half seconds, which reads as deliberate " +
+                 "rather than frantic on a scope this size.")]
+        [Min(1f)] public float SweepRpm;
+
+        [Tooltip("How many times a SECOND the scope may repaint while the set is transmitting. This is " +
+                 "the rule-7 budget: a turning sweep changes the picture every frame, so the glass is " +
+                 "capped here rather than repainting per frame. In STANDBY nothing turns and the scope " +
+                 "falls back to pure change-detection, costing nothing at all. ONE repaint of this " +
+                 "480x660 canvas measures 4.79 ms (ADR 0025), so 8 Hz is about 38 ms/s — roughly 3.8% " +
+                 "of a 60 fps budget. Raising this is a real cost: 12 Hz is 5.7%.")]
+        [Min(1f)] public float SweepRepaintHz;
+
+        [Tooltip("How many AZIMUTHS the coastline scan takes per sweep. The land echo is a polar scan " +
+                 "outward from the boat, so this times MaxLandEchoes bounds the whole cost. 72 = every " +
+                 "5°, which is finer than the rig's own 5° bearing ticks.")]
+        [Min(8)] public int LandScanAzimuths;
+
+        [Tooltip("Most land echoes the scan may publish in one bake. A hard ceiling so a boat sitting " +
+                 "in a cove full of rock cannot cost more than a boat in open water (rule 7).")]
+        [Min(1)] public int MaxLandEchoes;
+
+        [Tooltip("Metres of tide movement that force the coastline scan to re-run. A radar sees the " +
+                 "waterline of the MOMENT, so the coast really does move with the tide — but it moves " +
+                 "in minutes, and re-scanning for a centimetre would be a rule-7 disaster.")]
+        [Min(0.001f)] public float LandRescanTideMetres;
+
+        /// <summary>
+        /// The range in NM at a rung, healed against a config block that never got written.
+        ///
+        /// <para><b>Why this heals rather than trusting the field.</b> A struct member absent from the
+        /// wired <c>GameConfig.asset</c> block deserializes to ZERO, not to <see cref="Default"/> — the
+        /// trap that shipped three features inert on 2026-08-05. A zero <see cref="MinRangeNM"/> would
+        /// make the scope's world-to-glass scale divide by zero and draw every contact on top of the
+        /// boat, so it is caught here, at the one place the ladder is read.</para>
+        /// </summary>
+        public float RangeNMAt(int step)
+        {
+            float min = MinRangeNM > 0f ? MinRangeNM : Default.MinRangeNM;
+            int count = RangeStepCount > 0 ? RangeStepCount : Default.RangeStepCount;
+            if (step < 0) step = 0;
+            else if (step > count - 1) step = count - 1;
+            return min * (1 << step);
+        }
+
+        /// <summary>Number of rungs, healed the same way <see cref="RangeNMAt"/> heals.</summary>
+        public int SafeRangeStepCount => RangeStepCount > 0 ? RangeStepCount : Default.RangeStepCount;
+
+        /// <summary>The rung a fresh unit starts on, clamped into the healed ladder.</summary>
+        public int SafeDefaultRangeStep
+        {
+            get
+            {
+                int c = SafeRangeStepCount;
+                int s = DefaultRangeStep;
+                if (s < 0) s = 0;
+                else if (s > c - 1) s = c - 1;
+                return s;
+            }
+        }
+
+        /// <summary>Range rings, healed — a zero would draw none and make the scope unreadable.</summary>
+        public int SafeRings => Rings > 0 ? Rings : Default.Rings;
+
+        /// <summary>Aerial speed, healed — a zero would leave the sweep parked and make a transmitting
+        /// set look exactly like a broken one.</summary>
+        public float SafeSweepRpm => SweepRpm > 0f ? SweepRpm : Default.SweepRpm;
+
+        /// <summary>Repaint ceiling, healed — a zero would freeze the picture entirely.</summary>
+        public float SafeSweepRepaintHz => SweepRepaintHz > 0f ? SweepRepaintHz : Default.SweepRepaintHz;
+
+        /// <summary>Degrees the aerial turns in a second, from <see cref="SafeSweepRpm"/>.</summary>
+        public float SweepDegreesPerSecond => SafeSweepRpm * 360f / 60f;
+
+        /// <summary>Azimuths per land scan, healed — a zero would silently drop the coast entirely,
+        /// which is the failure mode hardest to tell from "there is no land here".</summary>
+        public int SafeLandScanAzimuths => LandScanAzimuths >= 8 ? LandScanAzimuths : Default.LandScanAzimuths;
+
+        /// <summary>Land-echo ceiling, healed — a zero would draw no coast at all.</summary>
+        public int SafeMaxLandEchoes => MaxLandEchoes > 0 ? MaxLandEchoes : Default.MaxLandEchoes;
+
+        /// <summary>Tide step that re-runs the coastline scan, healed — a zero would re-scan every
+        /// single frame the tide moved a float's worth, which is every frame.</summary>
+        public float SafeLandRescanTideMetres
+            => LandRescanTideMetres > 0f ? LandRescanTideMetres : Default.LandRescanTideMetres;
+
+        /// <summary>Shipped defaults: a range ladder sized for a harbour rather than for the rig's
+        /// fictional ocean, a set turned up about three-quarters, and a coastline scan whose worst case
+        /// is a few hundred terrain samples on a slow tick.</summary>
+        public static RadarSettings Default => new RadarSettings
+        {
+            MinRangeNM = 0.05f,
+            RangeStepCount = 6,
+            DefaultRangeStep = 2,
+            Rings = 4,
+            Gain = 0.72f,                       // radarRig.js:396 — the rig's own authored default
+            SeaClutterAtFullSeaState = 0.45f,
+            SweepRpm = 24f,
+            SweepRepaintHz = 8f,
+            LandScanAzimuths = 72,              // every 5°
+            MaxLandEchoes = 96,
+            LandRescanTideMetres = 0.05f,
         };
     }
 

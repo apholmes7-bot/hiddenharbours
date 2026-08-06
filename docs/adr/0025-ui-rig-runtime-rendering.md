@@ -207,3 +207,47 @@ Also recorded from the same slice: **`fish-finder/README.md` and `fishRig.js` di
 sounder's shallow alarm, so three keys carry six jobs. Settled by the owner's **Ruling A** (2026-08-03),
 implemented in `FishFinderControls` and cited there: MODE cycles what ▲/▼ adjust, and the three glass
 regions carry fish-ID, night backlight and units. The rig `.js` is untouched, as ADR 0021's rule requires.
+
+### Recorded: the radar's two divergences from the rig, and what a swept scope costs (S5, 2026-08-05)
+
+`RadarRig` is the third rig this ADR names as one that must be Option A ("radar reads REAL gameplay"),
+and the port raised two questions the earlier instruments did not.
+
+**1. Where do the echoes come from?** The rig ships a hand-authored demo scene (`radarRig.js:136-146`)
+and a target contract — `{brgTrue, rngNM, size, kind, crs, spd}` — but no source. The slice answers it
+in two halves, deliberately not one:
+
+- **Vessels and buoys** cross a new Core seam, `IRadarContacts`, shaped on the validated `IFishSchools`
+  (caller-owned list, null object, never saved). Producers publish **world metres**, not bearings: a
+  bearing is only meaningful relative to a particular own ship, so a producer that computed one would
+  bake a second bearing convention beside `NavMath`/`BoatKinematics`. The instrument converts once, at
+  paint time.
+- **Land is NOT on that seam.** The coast is a function of the terrain height map every lane already
+  reads, so `RadarLandEcho` samples it directly, as `NavChartSource` does for the chart. Routing it
+  through the seam would mean a producer re-deriving the coastline and publishing thousands of point
+  echoes per sweep.
+
+**2. Where is the waterline?** `NavChartSource` bands **chart datum** and never breathes, and that ADR
+note argues the case well. The radar takes the **opposite** answer — the water level of the moment — and
+the opposition is the point: a chart is a survey you plan a passage against, a radar is a sensor
+reporting now. A bar that dries at low water paints as solid coast and is simply gone on the flood,
+because the sea really has covered it. The two instruments disagreeing in exactly this way is correct
+for both, and reading one against the other is the tide skill P1 is about.
+
+**What it costs.** The measured 480×660 figure above applies unchanged (the radar shares the finder's
+canvas exactly, and both are fill-bound): **4.79 ms per repaint, 4.507 ms of it raster against 0.282 ms
+upload — the fill dominates sixteen to one.** A turning sweep would otherwise repaint every frame, so
+the host caps the RATE the way the finder's does, at `RadarSettings.SweepRepaintHz`, shipped at **8**
+⇒ ~38 ms/s, ~3.8% of a 60 fps budget. In STANDBY nothing turns and the scope falls back to pure
+change-detection at no cost. **The chrome cache this ADR names as the next lever is still not built**
+and is now the right one to reach for: it is ~2× and 8 Hz is the low end of the band this note
+anticipated. It is deferred for the ADR's own reason — it forks further from the rig source — and
+nothing has measured 8 Hz as too slow to look at.
+
+Also recorded: the rig's `RANGE_STEPS` (`[0.5,1,2,3,6,12,24]` NM) are an ocean chart's and are re-scaled
+for a few-hundred-metre region exactly as the chartplotter's were; and the rig draws GAIN/SEA/RAIN dials
+but authors no pusher for any of them, so **none is a player preference** — gain is factory tuning,
+sea clutter is read live from the sea state (the instrument answering to the weather, P1), and rain is
+drawn at zero because there is no precipitation model. Mapping the existing `Visibility` (fog) onto the
+rain dial would invert the instrument's meaning: seeing through fog is what a radar is FOR, and the
+Smother (canon M4) is the slice that gives it a real source.
