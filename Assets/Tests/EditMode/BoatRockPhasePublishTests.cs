@@ -180,18 +180,11 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(DeckRideMath.LevelPhaseDegrees, wave.RockPhaseDegrees, 1e-4f);
         }
 
-        [Test]
-        public void DisablingTheWaveMotion_LeavesNoFrozenLeanOnHerPassengers()
-        {
-            var (wave, _, clock) = Rig(RoughSea);
-            for (int t = 0; t < 30; t++) { clock.Advance(Dt); wave.Tick(); }
-            Assert.IsTrue(wave.IsRocking, "harness: rocking before teardown");
-
-            wave.enabled = false;      // fires OnDisable, the same path a region hop takes
-
-            Assert.IsFalse(wave.IsRocking, "a disabled hull reports a level deck, never its last frame");
-            Assert.AreEqual(DeckRideMath.LevelPhaseDegrees, wave.RockPhaseDegrees, 1e-4f);
-        }
+        // NOTE: "a DISABLED hull reports a level deck" is deliberately NOT tested here. It is an OnDisable
+        // claim, and the editor does not run the enable/disable callbacks for runtime scripts outside play
+        // mode — an EditMode test of it passes or fails on the harness, not on the code. It lives in
+        // DeckRiderPlayTests.DisablingTheHullsWaveMotion_PutsHerPassengerBackSquare, where the callback
+        // genuinely fires and the claim is end-to-end (the FISHER goes level, not just a field).
 
         [Test]
         public void AHullWithNoRockGrid_ReportsLevel_RatherThanInventingACycleFromTheSurface()

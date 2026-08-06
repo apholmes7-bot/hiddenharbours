@@ -65,6 +65,7 @@ namespace HiddenHarbours.Tests.PlayMode
             public Transform PlayerTransform;
             public IsoCharacterSprite Character;
             public DirectionalBoatSprite Hull;  // the tilt hook a transform-rock hull writes
+            public Transform HullVisual;        // the counter-rotated child the hull is drawn into
             public BoatController Boat;
             public BoatHullDef HullDef;
         }
@@ -157,7 +158,7 @@ namespace HiddenHarbours.Tests.PlayMode
             {
                 Switcher = sw, Rider = rider, Body = body, RiderSr = riderSr,
                 PlayerTransform = playerGo.transform, Character = character,
-                Hull = directional, Boat = boat, HullDef = hullDef,
+                Hull = directional, HullVisual = visualChild.transform, Boat = boat, HullDef = hullDef,
             };
         }
 
@@ -322,6 +323,56 @@ namespace HiddenHarbours.Tests.PlayMode
                             "no lean left frozen on the child");
             Assert.AreEqual(CharacterStance.Free, r.Character.Stance, "no stance left held either");
             Assert.IsFalse(r.Character.IsHeadingHeld, "and the facing is back on motion");
+        }
+
+        /// <summary>A scripted sea, so the hull genuinely rocks rather than waiting on the weather.</summary>
+        private sealed class RoughSea : IEnvironmentService
+        {
+            public int WorldSeed => 0;
+            public TideProfile ActiveTideProfile { get; set; }
+            public EnvironmentSample Sample() => new EnvironmentSample(
+                new Vector2(6f, 3f), Vector2.zero, tideHeight: 0f,
+                HiddenHarbours.Core.SeaState.Moderate, visibility: 1f, seaState01: 0.4f);
+            public float TideHeightAt(double totalSeconds) => 0f;
+            public float WaterLevelAt(double totalSeconds) => 0f;
+        }
+
+        [UnityTest]
+        public IEnumerator DisablingTheHullsWaveMotion_PutsHerPassengerBackSquare()
+        {
+            // The OnDisable claim, live — a region hop disables the hull's wave motion, and the fisher must
+            // not be left frozen mid-lean. EditMode cannot make this claim: the editor does not run the
+            // enable/disable callbacks for runtime scripts outside play mode. Here the callback really
+            // fires, and the assertion is end-to-end: the RIDER goes level, not merely a published field.
+            GameServices.Environment = new RoughSea();
+
+            var r = NewRig(rowed: true);
+            // Give her a real rock grid so BoatWaveMotion drives the frame path (the shipping dory's).
+            r.Hull.ConfigureRock(new Sprite[8 * 8], 8);
+            Assert.IsTrue(r.Hull.HasRockGrid, "harness: the rock grid must gate ON");
+            var wave = r.Boat.gameObject.AddComponent<BoatWaveMotion>();
+            wave.Configure(r.HullVisual, new SpriteHullPresenter(r.Hull));
+            yield return null;
+
+            Assert.IsTrue(r.Switcher.TryInteract(), "board");
+
+            // Let the animator settle onto the live sea and start cycling. Bounded, and it says so if the
+            // harness never rocks rather than silently proving nothing.
+            bool rocked = false;
+            for (int f = 0; f < 120 && !rocked; f++)
+            {
+                yield return null;
+                rocked = wave.IsRocking && Mathf.Abs(r.Rider.Pose.RollDegrees) > 1e-4f;
+            }
+            Assert.IsTrue(rocked, "harness: a sea state of 0.4 must actually rock her and lean the fisher");
+
+            wave.enabled = false;      // OnDisable — the same path a region hop takes
+            yield return null;
+
+            Assert.IsFalse(wave.IsRocking, "a disabled hull reports a level deck, never its last frame");
+            Assert.AreEqual(0f, r.Rider.Pose.RollDegrees, 1e-4f, "and her passenger stands square again");
+            Assert.AreEqual(0f, Quaternion.Angle(r.RiderSr.transform.localRotation, Quaternion.identity),
+                            1e-3f, "with nothing frozen on the child transform");
         }
 
         [UnityTest]

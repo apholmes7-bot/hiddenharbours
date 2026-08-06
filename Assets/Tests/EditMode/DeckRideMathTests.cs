@@ -151,24 +151,73 @@ namespace HiddenHarbours.Tests.EditMode
 
         // ---- the shape of the cycle ------------------------------------------------------------------
 
-        [Test]
-        public void TheRide_IsOneCleanCycle_RisingToTheCrestAndFallingToTheTrough()
+        /// <summary>Where the LIFT actually peaks, in degrees of wave phase. The lift is
+        /// <c>heave·sin θ + pitch·cos θ</c> — one sinusoid of amplitude <c>√(heave² + pitch²)</c> shifted
+        /// by <c>φ = atan2(pitch, heave)</c> — so its maximum is at <c>90° − φ</c>, NOT at the crest.</summary>
+        static float LiftPeakPhaseDegrees()
         {
-            // Sampled finely rather than per frame: the ride must be monotone up to the crest and down to
-            // the trough, which is what stops the figure "hunting" on a hull that is smoothly rocking.
+            float heaveMeters = HeavePixels / Ppu;
+            float phi = Mathf.Atan2(PitchLift, heaveMeters) * Mathf.Rad2Deg;
+            return 90f - phi;
+        }
+
+        [Test]
+        public void TheRide_IsONECleanCycle_WithExactlyOnePeakAndOneTrough()
+        {
+            // What must be true for the figure not to "hunt" on a smoothly rocking hull: the lift turns
+            // round exactly TWICE per cycle. Stated as turning points rather than as "monotone up to 90°",
+            // because the peak is NOT at 90° — see the test below.
+            const float step = 0.5f;
+            int turns = 0;
             float previous = RideAt(0f).LiftMeters;
-            for (float phase = 1f; phase <= 90f; phase += 1f)
+            float next = RideAt(step).LiftMeters;
+            int direction = System.Math.Sign(next - previous);
+
+            for (float phase = step; phase < 360f; phase += step)
             {
                 float lift = RideAt(phase).LiftMeters;
-                Assert.GreaterOrEqual(lift, previous - 1e-5f, $"still rising at {phase}°");
+                int d = System.Math.Sign(lift - previous);
+                // Ignore flat samples at the turning point itself — float noise there is not a wiggle.
+                if (d != 0 && d != direction) { turns++; direction = d; }
                 previous = lift;
             }
-            for (float phase = 91f; phase <= 270f; phase += 1f)
-            {
-                float lift = RideAt(phase).LiftMeters;
-                Assert.LessOrEqual(lift, previous + 1e-5f, $"still falling at {phase}°");
-                previous = lift;
-            }
+
+            Assert.AreEqual(2, turns,
+                "one rise and one fall per cycle — any more is the fisher bobbing where the sea is not");
+        }
+
+        [Test]
+        public void TheLiftPEAKSJustBEFORETheCrest_BecausePitchLeadsHeave()
+        {
+            // A finding worth pinning rather than a rule being restated. Heave peaks AT the crest (90°) and
+            // the pitch term a quarter-cycle earlier, so their sum tops out ~22° ahead of it at the shipped
+            // amplitudes — the hull riding UP the face before she tops it. This is not a quirk of the rider:
+            // DoryOarMath.RockPose sums the same two terms the same way, so the oars have always led the
+            // crest by the same margin and the owner's approved rowing feel already contains it. If it ever
+            // reads wrong, the fix is the amplitudes, not the phase.
+            float peak = LiftPeakPhaseDegrees();
+            Assert.Less(peak, 90f, "the lift tops out before the crest");
+            Assert.Greater(peak, 60f, "…but only just — this is a lead, not a different wave");
+
+            float atPeak = RideAt(peak).LiftMeters;
+            for (float phase = 0f; phase < 360f; phase += 1f)
+                Assert.LessOrEqual(RideAt(phase).LiftMeters, atPeak + 1e-6f,
+                                   $"nothing in the cycle rises above the algebraic peak (at {phase}°)");
+
+            // And the peak is the closed form the algebra predicts, so the amplitude is bounded exactly.
+            float heaveMeters = HeavePixels / Ppu;
+            Assert.AreEqual(Mathf.Sqrt(heaveMeters * heaveMeters + PitchLift * PitchLift), atPeak, 1e-5f);
+        }
+
+        [Test]
+        public void TheROLLPeaksExactlyAtTheCrest_BecauseItIsAPureSine()
+        {
+            // The roll channel has no second term, so unlike the lift it is not shifted at all: peak lean at
+            // the crest, peak counter-lean in the trough, level at both zero-crossings.
+            Assert.AreEqual(DeckRoll, RideAt(90f).RollDegrees, 1e-4f, "crest");
+            Assert.AreEqual(-DeckRoll, RideAt(270f).RollDegrees, 1e-4f, "trough");
+            Assert.AreEqual(0f, RideAt(0f).RollDegrees, 1e-4f, "rising zero-crossing");
+            Assert.AreEqual(0f, RideAt(180f).RollDegrees, 1e-4f, "falling zero-crossing");
         }
 
         [Test]
