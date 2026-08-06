@@ -59,6 +59,12 @@ namespace HiddenHarbours.Boats
                                        // orientation it was laid with (the V-arm direction) — orienting by
                                        // live velocity painted the trail as screen-horizontal dashes as the
                                        // spread+drift decayed (owner playtest 2026-07-23).
+            public float   BirthAmplitude; // metres of DISPLACED WATER this element was laid with (the
+                                       // wake wave, 2026-08-06). Baked at emit for the same reason
+                                       // BirthStrength is: a crest laid at speed must keep the height it
+                                       // was laid with after the boat slows, or the whole trail would
+                                       // flatten the moment she came off the throttle. 0 for every stream
+                                       // that carries foam rather than water (WakeWaveMath owns the curve).
         }
 
         private readonly Particle[] _pool;
@@ -246,12 +252,14 @@ namespace HiddenHarbours.Boats
         /// <paramref name="orientDeg"/> BAKES the render orientation (an elongated element must keep the
         /// V-ARM direction it was laid along, world-locked — orienting by live velocity was cause 1 of the
         /// "horizontal dashes" playtest read; NaN derives it from the emit velocity, the round-sprite
-        /// don't-care). Recycles the oldest slot when the pool is full: emission can never exceed the pool
+        /// don't-care). <paramref name="birthAmplitudeMeters"/> bakes the DISPLACED-WATER height a wake-wave
+        /// crest was laid with (0 for the foam streams — see <see cref="Particle.BirthAmplitude"/>).
+        /// Recycles the oldest slot when the pool is full: emission can never exceed the pool
         /// (rule 7). Deterministic (rule 5), zero allocation.
         /// </summary>
         public void EmitAt(Vector2 pos, Vector2 vel, in WakeConfig cfg,
                            float lifetimeScale, float sizeScale, float birthStrength,
-                           float orientDeg = float.NaN)
+                           float orientDeg = float.NaN, float birthAmplitudeMeters = 0f)
         {
             float seed    = Hash01(_emitCounter);
             float lifeJit = 1f + (Hash01(_emitCounter * 2654435761u) - 0.5f) * 2f * cfg.LifetimeJitter;
@@ -270,6 +278,7 @@ namespace HiddenHarbours.Boats
                 BaseSize = Mathf.Max(0.01f, cfg.FoamSize * sizeJit * Mathf.Max(0.01f, sizeScale)),
                 BirthStrength = Mathf.Clamp01(birthStrength),
                 OrientDeg = float.IsNaN(orientDeg) ? OrientFromVelocity(vel) : orientDeg,
+                BirthAmplitude = Mathf.Max(0f, birthAmplitudeMeters),
             };
             _emitCounter++;
         }

@@ -22,11 +22,26 @@ namespace HiddenHarbours.Art
         /// <summary>Brow elevation minus toe elevation, in metres. Always positive on a real face.</summary>
         public float DropMetres;
 
-        public CliffWallSample(Vector2 browPlan, Vector2 toePlan, float dropMetres)
+        /// <summary>
+        /// The toe's ABSOLUTE elevation, metres above chart datum — the height the drop falls TO.
+        ///
+        /// <para><b>Why a difference was not enough (2026-08-06).</b> Everything the geometry needs is
+        /// relative: a drop projects to a screen offset, a surface length tiles a texture. The WATERLINE
+        /// is the first thing that has to compare the face against something outside it — the sea's own
+        /// level — and a difference cannot say where that crossing falls. The builder already reads this
+        /// off the same analytic profile it takes the drop from, so it is carried rather than re-derived.
+        /// Defaults to 0 on the three-argument constructor, which every geometry call and every geometry
+        /// test uses and none of them read.</para>
+        /// </summary>
+        public float ToeElevation;
+
+        public CliffWallSample(Vector2 browPlan, Vector2 toePlan, float dropMetres,
+                               float toeElevation = 0f)
         {
             BrowPlan = browPlan;
             ToePlan = toePlan;
             DropMetres = dropMetres;
+            ToeElevation = toeElevation;
         }
     }
 

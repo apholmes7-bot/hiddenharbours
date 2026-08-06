@@ -91,9 +91,22 @@ namespace HiddenHarbours.Art
     /// <see cref="TerrainSplatSurface"/> already follows. A builder re-run rewrites the floats and the
     /// mesh follows, so a Refresh CONVERGES instead of accumulating geometry.</para>
     ///
+    /// <para><b>⭐ THE SEA RISES AGAINST IT (owner ask 2026-08-06).</b> A cliff that plunges into deep
+    /// water used to be drawn dry rock all the way down, with the water plane passing behind it —
+    /// deep-shore cliffs are tide-worked BY DESIGN, and that was the ask that opened this whole arc. Every
+    /// band and both decals now carry two extra channels for it: <c>uv1</c> = (the vertex's ELEVATION in
+    /// metres, 1 if that elevation is real) and <c>uv2</c> = the station's TOE PLAN, which is where the
+    /// sea actually is — the DRAWN toe has already been pushed down-screen by the drop and would read the
+    /// swell metres from the wall it belongs to. <c>HiddenHarboursCliffFace.shader</c> does the rest from
+    /// the ONE waterline <c>WaterSurface</c> publishes; <see cref="CliffWaterlineMath"/> is the testable
+    /// twin. A chunk with no authored toe elevations (a scene saved before this existed) flags the channel
+    /// invalid and the shader skips the band entirely, so it draws exactly the wall that shipped until the
+    /// region builder is re-run.</para>
+    ///
     /// <para><b>Pure look.</b> Drives no sim and saves nothing (rule 5). Walkability at a cliff belongs to
     /// the terrain's own slope, not to this component — a wall is a picture OF the height field, and the
-    /// height field remains the single source of truth for where a player may stand.</para>
+    /// height field remains the single source of truth for where a player may stand. The waterline is
+    /// colour on rock and changes nothing about that.</para>
     /// </summary>
     [ExecuteAlways]
     [DisallowMultipleComponent]
@@ -107,6 +120,13 @@ namespace HiddenHarbours.Art
         [SerializeField] private Vector2[] _toePlan = new Vector2[0];
         [Tooltip("Brow elevation minus toe elevation, metres, per station.")]
         [SerializeField] private float[] _dropMetres = new float[0];
+        [Tooltip("Toe ELEVATION, metres above chart datum, per station — the absolute height the drop " +
+                 "falls TO, and what the WATERLINE is measured against (2026-08-06). The drop alone is a " +
+                 "difference and cannot say where the sea meets the rock. Builder-pushed off the same " +
+                 "analytic profile the brow and toe plans come from. An array shorter than the stations " +
+                 "(a scene saved before the waterline existed) leaves the waterline INERT for that chunk, " +
+                 "which draws exactly the wall that shipped — a region builder re-run turns it on.")]
+        [SerializeField] private float[] _toeElevations = new float[0];
 
         [Header("⭐ Run continuity — a chunk is a SLICE, and slicing must not show (B3)")]
         [Tooltip("Metres of shore already spent by earlier chunks of this RUN. Restart it at zero and " +
@@ -217,11 +237,13 @@ namespace HiddenHarbours.Art
                               float alongOffsetMetres, float rowsBasisSurfaceMetres,
                               float wallAzimuth, float batter, Vector3 bakeLight,
                               float faceMetresS, float faceMetresT, float subdivideMetres,
-                              float profileMetres, float stripMetresT, float browLineAt)
+                              float profileMetres, float stripMetresT, float browLineAt,
+                              float[] toeElevations = null)
         {
             _browPlan = browPlan ?? new Vector2[0];
             _toePlan = toePlan ?? new Vector2[0];
             _dropMetres = dropMetres ?? new float[0];
+            _toeElevations = toeElevations ?? new float[0];
             _material = material;
             _bands = bands ?? new CliffFaceBand[0];
             _profile = profile;
@@ -327,7 +349,7 @@ namespace HiddenHarbours.Art
                 return;
             }
 
-            CliffWallSample[] samples = BuildSamples(_browPlan, _toePlan, _dropMetres);
+            CliffWallSample[] samples = BuildSamples(_browPlan, _toePlan, _dropMetres, _toeElevations);
             ResolveSorting(samples);
 
             // ⭐ THE SORTING GROUP SITS ON THE CHUNK, NOT ON A MESH.
@@ -360,14 +382,28 @@ namespace HiddenHarbours.Art
             if (_toeDecal != null) BuildDecal(samples, _toeDecal, brow: false, ToeChildName);
         }
 
-        private static CliffWallSample[] BuildSamples(Vector2[] brow, Vector2[] toe, float[] drop)
+        private static CliffWallSample[] BuildSamples(Vector2[] brow, Vector2[] toe, float[] drop,
+                                                      float[] toeElevation = null)
         {
             int n = brow == null ? 0 : brow.Length;
             if (toe == null || drop == null || toe.Length < n || drop.Length < n) n = 0;
+            // ⚠️ NO authored toe elevations = a scene saved before the waterline existed. Every sample
+            // then carries elevation 0, which the VALID FLAG below is what stops the shader believing:
+            // an unflagged 0 would read as metres under water at any flood tide and draw the whole cliff
+            // drowned. A missing elevation has to be able to SAY so rather than look like chart datum.
+            bool haveElevation = toeElevation != null && toeElevation.Length >= n;
             var samples = new CliffWallSample[n];
-            for (int i = 0; i < n; i++) samples[i] = new CliffWallSample(brow[i], toe[i], drop[i]);
+            for (int i = 0; i < n; i++)
+                samples[i] = new CliffWallSample(brow[i], toe[i], drop[i],
+                                                 haveElevation ? toeElevation[i] : 0f);
             return samples;
         }
+
+        /// <summary>Whether this chunk knows where the sea meets it — i.e. whether the builder pushed
+        /// absolute toe elevations. 0 in the mesh's elevation-valid channel when it does not, which is
+        /// the shader's own gate. See <see cref="CliffWaterlineMath"/>.</summary>
+        private bool HasToeElevations =>
+            _toeElevations != null && _toeElevations.Length >= StationCount;
 
         private void ResolveSorting(CliffWallSample[] samples)
         {
@@ -403,7 +439,10 @@ namespace HiddenHarbours.Art
             int stations = samples.Length;
             var verts = new Vector3[stations * (rows + 1)];
             var uvs = new Vector2[verts.Length];
+            var elevationUv = new Vector2[verts.Length];
+            var seaPlanUv = new Vector2[verts.Length];
             var tris = new int[(stations - 1) * rows * 6];
+            float elevationValid = HasToeElevations ? 1f : 0f;
 
             Vector3 origin = transform.position;
             float along = 0f;                       // plan arc length down the shore, metres
@@ -441,11 +480,19 @@ namespace HiddenHarbours.Art
                     // not asked of the shader.
                     uvs[idx] = new Vector2(
                         u, CliffWallGeometry.TileV(surface * t - band.StartSurfaceMetres, _faceMetresT));
+                    // The elevation walks the SURFACE parameter, brow → toe, which is the row parameter
+                    // the geometry is laid on — so the waterline crossing lands on the rows the mesh
+                    // already has instead of between them.
+                    elevationUv[idx] = new Vector2(
+                        CliffWaterlineMath.ElevationAt(s.ToeElevation + s.DropMetres, s.DropMetres, t),
+                        elevationValid);
+                    seaPlanUv[idx] = s.ToePlan;
                 }
             }
 
             Triangulate(tris, stations, rows);
-            Emit(childName, verts, uvs, tris, band.Unlit, band.Normal, band.Mask, localOrder);
+            Emit(childName, verts, uvs, tris, band.Unlit, band.Normal, band.Mask, localOrder,
+                 elevationUv, seaPlanUv);
         }
 
         /// <summary>
@@ -472,7 +519,10 @@ namespace HiddenHarbours.Art
 
             var verts = new Vector3[stations * (rows + 1)];
             var uvs = new Vector2[verts.Length];
+            var elevationUv = new Vector2[verts.Length];
+            var seaPlanUv = new Vector2[verts.Length];
             var tris = new int[(stations - 1) * rows * 6];
+            float elevationValid = HasToeElevations ? 1f : 0f;
 
             Vector3 origin = transform.position;
             float along = 0f;
@@ -493,6 +543,9 @@ namespace HiddenHarbours.Art
                 {
                     float v = (float)r / rows;              // 0 at the strip's top, 1 at its bottom
                     Vector2 p;
+                    // The strip's own depth down the face, for the waterline. Above the brow line the
+                    // brow strip is drawing PLAN GROUND, which is at the brow's own elevation — so t 0.
+                    float faceT = 0f;
 
                     if (brow && v <= line)
                     {
@@ -504,8 +557,8 @@ namespace HiddenHarbours.Art
                         float depth = brow
                             ? (v - line) / (1f - line) * browFace          // metres below the brow
                             : surface - (1f - v) * toeFace;                // ...up from the toe
-                        float t = Mathf.Clamp01(depth / surface);
-                        p = Vector2.Lerp(browP, toeP, t) + outward * DisplacementAt(u, t);
+                        faceT = Mathf.Clamp01(depth / surface);
+                        p = Vector2.Lerp(browP, toeP, faceT) + outward * DisplacementAt(u, faceT);
                     }
 
                     int idx = c * (rows + 1) + r;
@@ -513,13 +566,21 @@ namespace HiddenHarbours.Art
                     // The strip clamps in V (CliffCatalog.WrapV) — one strip covers the height exactly,
                     // and it tiles along the shore on the same continuous u the face uses.
                     uvs[idx] = new Vector2(u, v);
+                    // The TOE strip is the piece the sea actually reaches, so the waterline has to reach
+                    // it too — a decal drawn dry across a wet foot is the seam this whole item exists to
+                    // close. Same channels, same rule, same gate as the rock above it.
+                    elevationUv[idx] = new Vector2(
+                        CliffWaterlineMath.ElevationAt(s.ToeElevation + s.DropMetres, s.DropMetres, faceT),
+                        elevationValid);
+                    seaPlanUv[idx] = s.ToePlan;
                 }
             }
 
             Triangulate(tris, stations, rows);
             // ⭐ localOrder 1: INSIDE the sorting group, so a decal composites over the rock it finishes
             // without spending an order of the region's decor band.
-            Emit(childName, verts, uvs, tris, strip, null, null, localOrder: 1);
+            Emit(childName, verts, uvs, tris, strip, null, null, localOrder: 1,
+                 elevationUv, seaPlanUv);
         }
 
         private static void Triangulate(int[] tris, int stations, int rows)
@@ -542,11 +603,18 @@ namespace HiddenHarbours.Art
         }
 
         private void Emit(string childName, Vector3[] verts, Vector2[] uvs, int[] tris,
-                          Texture2D unlit, Texture2D normal, Texture2D mask, int localOrder)
+                          Texture2D unlit, Texture2D normal, Texture2D mask, int localOrder,
+                          Vector2[] elevationUv = null, Vector2[] seaPlanUv = null)
         {
             var mesh = new Mesh { name = "HH" + childName, hideFlags = HideFlags.HideAndDontSave };
             mesh.SetVertices(verts);
             mesh.SetUVs(0, uvs);
+            // ⭐ THE WATERLINE CHANNELS (2026-08-06). uv1 = (this vertex's ELEVATION in metres, 1 if that
+            // elevation is REAL); uv2 = the station's TOE PLAN, which is where the sea actually is — the
+            // DRAWN toe has already been pushed down-screen by the drop, so sampling the wave field at it
+            // would read the swell several metres from the wall it belongs to.
+            if (elevationUv != null) mesh.SetUVs(1, elevationUv);
+            if (seaPlanUv != null) mesh.SetUVs(2, seaPlanUv);
             mesh.SetTriangles(tris, 0);
             mesh.RecalculateBounds();
             _meshes.Add(mesh);

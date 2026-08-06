@@ -321,6 +321,9 @@ namespace HiddenHarbours.Art
         // (ADR 0027 #10) The camera FRAMING the ripple band's density fade reads — a GLOBAL, not an MPB
         // property, because it belongs to the camera rather than to this renderer.
         private static readonly int IdSeaFramingHeight = Shader.PropertyToID("_SeaFramingHeight");
+        /// <summary>The DRAWN WATERLINE, published for every surface that meets the sea without being it
+        /// (the cliff faces of ADR 0032 first). See <see cref="PublishSeaLevel"/> for the packing.</summary>
+        private static readonly int IdSeaLevelWorld = Shader.PropertyToID("_HHSeaLevelWorld");
         // (ADR 0027 #6) The advected foam buffer's two drives, READ from the live material rather than
         // pushed to it: the owner's look dial (which gates whether the buffer pass runs at all) and the
         // wind/current blend the buffer advects along.
@@ -478,9 +481,51 @@ namespace HiddenHarbours.Art
         {
             // Clear the per-renderer overrides so the shared material reads as authored if this is removed.
             if (_renderer != null) _renderer.SetPropertyBlock(null);
+            // Leave the published waterline UNSET rather than frozen on the last tide — a stopped play
+            // session must not haunt the editor's globals, and a scene with no water must not leave a
+            // cliff standing in a sea that is not there (the _DayNightTint / _MoonDir "unset" convention,
+            // and the WaveFieldBridge.PublishEmpty discipline).
+            PublishSeaLevelUnset();
             // (WS-2) Free the baked fallback height texture (the painted path never allocates _heightTex).
             DestroyBakedHeightTexture();
         }
+
+        /// <summary>
+        /// Publish THE DRAWN WATERLINE as one global, for everything that is not water but MEETS it.
+        ///
+        /// <para><b>Packing</b> (<c>_HHSeaLevelWorld</c>):
+        /// <c>x</c> = the drawn sea level in metres — the SAME eased number this component is about to
+        /// push as <c>_WaterLevel</c>, never a second read of the tide;
+        /// <c>y</c> = the frequency scale the DRAWN sea runs its wave field at, and
+        /// <c>z</c> = the displaced-sea exaggeration, both read live from the Core
+        /// <see cref="DisplacedSea"/> seam (1 and 1 when there is no displaced sea — the flat plane);
+        /// <c>w</c> = 1, the "published at all" flag. All-zero (w = 0) is the unset state and every
+        /// consumer must treat it as "there is no sea here", exactly as the water shader treats
+        /// <c>_HHFoamBufferWorld.z &lt;= 0</c>.</para>
+        ///
+        /// <para>⚠️ <b>y and z are borrowed, not re-declared.</b> <c>_OceanSwellScale</c> becoming
+        /// geometry is this repo's most expensive art defect (it let the real crests board every hull for
+        /// weeks), and the fix was to publish the LIVE value instead of letting a second consumer assume
+        /// 1. A cliff waterline that surged at the sim's wavelengths while the sea drew at 2.8× would be
+        /// the same defect wearing a different hat, so both terms come off the one seam that already
+        /// carries them. Twin: <see cref="CliffWaterlineMath"/>.</para>
+        /// </summary>
+        private void PublishSeaLevel(float waterLevelMeters)
+        {
+            float freqScale = 1f;
+            float exaggeration = 1f;
+            if (DisplacedSea.TryGet(out DisplacedSeaState sea))
+            {
+                freqScale = sea.FreqScale;
+                exaggeration = sea.Exaggeration;
+            }
+            Shader.SetGlobalVector(IdSeaLevelWorld,
+                                   new Vector4(waterLevelMeters, freqScale, exaggeration, 1f));
+        }
+
+        /// <summary>The waterline SILENT — the unset convention (see <see cref="PublishSeaLevel"/>).</summary>
+        private static void PublishSeaLevelUnset()
+            => Shader.SetGlobalVector(IdSeaLevelWorld, Vector4.zero);
 
         private void OnDestroy()
         {
@@ -618,6 +663,10 @@ namespace HiddenHarbours.Art
                 {
                     _renderer.GetPropertyBlock(_mpb);
                     _mpb.SetFloat(IdWaterLevel, _previewTideLevel);
+                    // Edit mode gets the same PUBLISHED waterline, from the same preview tide — so a
+                    // cliff face drawn in the Scene view stands in the sea the owner is scrubbing rather
+                    // than in a stale one (the ADR 0014 preview contract, extended to the new consumer).
+                    PublishSeaLevel(_previewTideLevel);
                     // The owner's salience knobs show in the Scene view too, so edit-mode design
                     // reads the same sea Play will (a no-op while no config is wired).
                     PushSalienceKnobs(_mpb);
@@ -671,6 +720,14 @@ namespace HiddenHarbours.Art
                 FoamInjectionRegistry.PublishDriftVelocity(
                     FoamDriftDirection(_smoothedWind, _smoothedCurrent, windVsCurrent) * flow);
             }
+
+            // ⭐ THE WATERLINE, PUBLISHED (2026-08-06). Everything that is NOT water but MEETS the water
+            // needs the same drawn sea this material is about to be handed — the cliff faces that stand
+            // in it (ADR 0032) are the first consumer, and any quay wall or piling after them is the
+            // next. A GLOBAL rather than a per-renderer push, because the sea level belongs to the region
+            // and not to any one renderer (the _SeaFramingHeight idiom), and ONE publisher, so no
+            // consumer can ever draw a waterline the sea does not have.
+            PublishSeaLevel(waterLevel);
 
             _renderer.GetPropertyBlock(_mpb);
             _mpb.SetFloat(IdWaterLevel, waterLevel);

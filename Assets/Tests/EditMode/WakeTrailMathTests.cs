@@ -376,10 +376,14 @@ namespace HiddenHarbours.Tests.EditMode
         {
             WakeTrailConfig c = Cfg();
             int budget = WakeTrailMath.MaxParticlesPerTick(in c);
-            Assert.AreEqual(c.MaxDepositsPerTick * (2 + 1 + WakeTrailMath.ChurnPuffCount(in c)), budget,
-                "budget = deposits × (2 shoulder streaks + 1 centre + churn puffs)");
+            // The STERN ROLL (WakeWaveConfig.TransomCrest, 2026-08-06) draws from its own small pool, and
+            // is counted here whether or not it is switched on — a budget that only holds while a toggle
+            // is off is not a budget.
+            Assert.AreEqual(c.MaxDepositsPerTick * (2 + 1 + 1 + WakeTrailMath.ChurnPuffCount(in c)), budget,
+                "budget = deposits × (2 shoulder crests + 1 stern roll + 1 centre + churn puffs)");
             Assert.LessOrEqual(budget, 48,
-                "the default per-tick worst case stays well inside the 96-foam + 48-line pools (rule 7)");
+                "the default per-tick worst case stays well inside the 96-foam + 48-crest + 24-roll " +
+                "pools (rule 7)");
             c.MaxDepositsPerTick = -3;
             Assert.AreEqual(0, WakeTrailMath.MaxParticlesPerTick(in c), "a negative cap is guarded to 0");
         }

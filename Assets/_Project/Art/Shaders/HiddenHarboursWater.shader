@@ -2279,10 +2279,32 @@ Shader "HiddenHarbours/Water"
             // dialed by _UntileStrength (0 = raw tiling, 1 = full break-up):
             //   1) DOMAIN WARP — nudge the sample UV by the low-freq surface ValueNoise so straight tile seams
             //      bend before they're sampled (cheap, smooth).
-            //   2) HASH-UNTILE — per repeat-cell, offset the lookup by a cell hash, then blend two neighbouring
-            //      offset variants by a smooth weight so adjacent cells differ yet never seam.
+            //   2) HASH-UNTILE — per repeat-cell, offset the lookup by a cell hash, then blend the FOUR
+            //      cell-corner variants by bilinear weights so adjacent cells differ yet never seam.
             // PIXEL-ART faithful: the offset is added to the WORLD coord BEFORE PaintUV pixelizes, so the
             // untiled lookup still snaps to the PPU grid and stays point-sampled. Pass scroll for the drift.
+            //
+            // 🔴 THE SEAM THIS BLEND EXISTS TO NOT DRAW (owner playtest 2026-08-06: "thin, non-organic
+            // straight lines" in otherwise-good shore foam). The blend used to pick TWO variants — this
+            // cell's hashed translation and the DIAGONAL neighbour's — and mix them by
+            // w = smoothstep(0.2,0.8,fx)*0.5 + smoothstep(0.2,0.8,fy)*0.5. Cross a cell boundary and the
+            // cell index steps, so BOTH variants are replaced by two unrelated ones, while w jumps by 0.5:
+            // the two sides of that edge share no variant and no weight, so the value simply JUMPS. At the
+            // shipped _PaintScale 0.25 that is a hard seam every 4 m, in both axes, on every painted slot —
+            // bent (not straightened) by the domain warp above, which is exactly why it read as wandering
+            // thin lines rather than as a tile grid, and why no amount of foam noise hid it.
+            //
+            // The fix is the standard four-corner blend: weights that VANISH on the two edges they do not
+            // touch, so at fx -> 1 only the (i+1,.) corners survive and those are precisely the corners the
+            // next cell reads at fx -> 0. Continuity is then structural, not tuned. smoothstep's zero
+            // end-derivative makes the join C1, so no gradient edge is left behind either.
+            //
+            // ⚠️ COST, stated rather than hidden (rule 7): 4 corner taps instead of 2, i.e. 5 fetches per
+            // painted slot while _UntileStrength > 0 (the raw tap is unchanged and is still the ONLY tap at
+            // strength 0). Two variants cannot cover the four corners a 2-D lattice joins at, so the
+            // correctness is not available more cheaply here.
+            // Twin: HiddenHarbours.Art.WaterUntile (CornerWeights / Blend, and the deliberately wrong
+            // LegacyTwoVariantWeight the tests measure the old jump against).
             half4 UntileSampleW(TEXTURE2D_PARAM(tex, smp), float2 worldXY, float scale, float2 scroll, float strength)
             {
                 float s = saturate(strength);
@@ -2306,15 +2328,23 @@ Shader "HiddenHarbours/Water"
                 float2 uv  = Pixelize(warped + scroll) * max(scale, 1e-4);
                 float2 iuv = floor(uv);
                 float2 fuv = frac(uv);
-                // two candidate cell offsets (this cell + the diagonally-adjacent cell) so the blend never
-                // shows a seam: each is hashed to a per-cell translation; world-space so PaintUV still snaps.
-                float2 offA = Hash22(iuv)            * 64.0;          // a few tiles of world translation
-                float2 offB = Hash22(iuv + 1.0)      * 64.0;
-                half4 a = SAMPLE_TEXTURE2D(tex, smp, PaintUV(warped + offA, scale, scroll));
-                half4 b = SAMPLE_TEXTURE2D(tex, smp, PaintUV(warped + offB, scale, scroll));
-                // smooth blend weight across the cell so neighbours cross-fade (no hard tile edge).
-                float w = smoothstep(0.2, 0.8, fuv.x) * 0.5 + smoothstep(0.2, 0.8, fuv.y) * 0.5;
-                half4 untiled = lerp(a, b, w);
+                // The FOUR cell-corner offsets, each hashed to a per-cell world translation (world-space,
+                // so PaintUV still snaps every lookup to the PPU grid). Corner (i+1,j) is the SAME corner
+                // the next cell along x calls its own (i,j) — that shared identity is what closes the seam.
+                float2 off00 = Hash22(iuv + float2(0.0, 0.0)) * 64.0;   // a few tiles of world translation
+                float2 off10 = Hash22(iuv + float2(1.0, 0.0)) * 64.0;
+                float2 off01 = Hash22(iuv + float2(0.0, 1.0)) * 64.0;
+                float2 off11 = Hash22(iuv + float2(1.0, 1.0)) * 64.0;
+                half4 v00 = SAMPLE_TEXTURE2D(tex, smp, PaintUV(warped + off00, scale, scroll));
+                half4 v10 = SAMPLE_TEXTURE2D(tex, smp, PaintUV(warped + off10, scale, scroll));
+                half4 v01 = SAMPLE_TEXTURE2D(tex, smp, PaintUV(warped + off01, scale, scroll));
+                half4 v11 = SAMPLE_TEXTURE2D(tex, smp, PaintUV(warped + off11, scale, scroll));
+                // Bilinear corner weights on a smoothstep ramp: a partition of unity (so the blend can
+                // never brighten or darken the slot) whose members are each 0 on the two edges they do not
+                // touch. Twin: WaterUntile.CornerWeights.
+                float bx = smoothstep(0.0, 1.0, fuv.x);
+                float by = smoothstep(0.0, 1.0, fuv.y);
+                half4 untiled = lerp(lerp(v00, v10, bx), lerp(v01, v11, bx), by);
                 // dial raw(+warp) <-> untiled by strength.
                 return lerp(raw, untiled, s);
             }

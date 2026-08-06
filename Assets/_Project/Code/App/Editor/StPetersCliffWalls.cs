@@ -390,7 +390,10 @@ namespace HiddenHarbours.App.Editor
             float drop = browElevation - toeElevation;
             if (drop < MinFaceDropMetres) return false;
 
-            sample = new CliffWallSample(brow, toe, drop);
+            // The toe's ABSOLUTE elevation travels with the sample: the waterline (2026-08-06) has to
+            // compare the face against the sea's own level, and a drop is only a difference. Same
+            // analytic profile, same call — nothing is re-derived downstream.
+            sample = new CliffWallSample(brow, toe, drop, toeElevation);
             // The batter law (see MinBatterDegrees): a face the kit cannot draw honestly is not drawn.
             if (CliffWallGeometry.BatterDegrees(in sample) < MinBatterDegrees) return false;
             return true;
@@ -531,11 +534,14 @@ namespace HiddenHarbours.App.Editor
                 var brow = new Vector2[n];
                 var toe = new Vector2[n];
                 var drop = new float[n];
+                // The absolute toe elevations — what the WATERLINE is measured against (2026-08-06).
+                var toeElevation = new float[n];
                 for (int i = 0; i < n; i++)
                 {
                     brow[i] = chunk.Samples[i].BrowPlan;
                     toe[i] = chunk.Samples[i].ToePlan;
                     drop[i] = chunk.Samples[i].DropMetres;
+                    toeElevation[i] = chunk.Samples[i].ToeElevation;
                 }
 
                 var go = new GameObject($"CliffWall_{chunk.Class}_" +
@@ -556,7 +562,8 @@ namespace HiddenHarbours.App.Editor
                                   CliffCatalog.AspectBakeLights[chunk.AspectIndex],
                                   CliffCatalog.FaceMetresS, CliffCatalog.FaceMetresT,
                                   CliffCatalog.ProfileSubdivideMetres, CliffCatalog.ProfileMetres,
-                                  CliffCatalog.StripMetresT, CliffCatalog.BrowLineAt);
+                                  CliffCatalog.StripMetresT, CliffCatalog.BrowLineAt,
+                                  toeElevation);
                 built++;
             }
 

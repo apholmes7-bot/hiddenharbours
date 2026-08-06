@@ -206,11 +206,15 @@ namespace HiddenHarbours.Boats
 
         /// <summary>
         /// The WORST-CASE particles one tick can emit into the pools under a config — the explicit per-boat
-        /// budget (rule 7): <c>MaxDepositsPerTick · (2 shoulder streaks + 1 centre puff + churn puffs)</c>.
-        /// The emitter's pools (96 foam + 48 lines by default) must comfortably exceed this. Pure + static.
+        /// budget (rule 7), counted ACROSS the pools: <c>MaxDepositsPerTick · (2 shoulder crests +
+        /// 1 stern-roll crest + 1 centre puff + churn puffs)</c>. The stern roll
+        /// (<see cref="WakeWaveConfig.TransomCrest"/>) draws from its own small pool, and is counted here
+        /// whether or not it is currently switched on — a budget that only holds while a toggle is off is
+        /// not a budget. The emitter's pools (96 foam + 48 crests + 24 stern rolls by default) must
+        /// comfortably exceed this. Pure + static.
         /// </summary>
         public static int MaxParticlesPerTick(in WakeTrailConfig c)
-            => Mathf.Max(0, c.MaxDepositsPerTick) * (2 + 1 + ChurnPuffCount(in c));
+            => Mathf.Max(0, c.MaxDepositsPerTick) * (2 + 1 + 1 + ChurnPuffCount(in c));
 
         /// <summary>
         /// The half-width (m) of the near-stern CHURN BAND — the lateral strip right behind the transom the
@@ -408,6 +412,12 @@ namespace HiddenHarbours.Boats
         [Tooltip("± bubbling amount of a FRESH foam puff (0 = calm). Ages to 0 by end of life, so only the " +
                  "near-stern band churns.")]
         public float FoamPulseAmount;
+        [Tooltip("How AERATED the unit of foam is (owner playtest 2026-08-06: \"it should BUBBLE, not " +
+                 "paint a solid line\"). 0 = the old solid disc, bit-for-bit — and a dense trail of solid " +
+                 "discs is a painted stripe however it is spaced, which is why this is a change to the " +
+                 "MATTER and not to the spacing above. 1 = bubble films with real holes through them, so " +
+                 "the same dense overlap reads as white water. See WakeFoamTexture.")]
+        public float FoamAeration;
 
         [Header("The live plume (the boat-attached churn sprite — allowed to be attached, must be alive)")]
         [Tooltip("Churn-pulse frequency (Hz) of the authored plume sprite — the boil at the transom.")]
@@ -428,8 +438,9 @@ namespace HiddenHarbours.Boats
             Enabled                    = true,
             DepositSpacingMeters       = 0.55f,
             DepositAsternOffset        = 0.15f,
-            // ≤ (2 streaks + 1 centre + 2 churn) per deposit → MaxParticlesPerTick = 30 (18 foam + 12
-            // lines) of the 96-foam + 48-line pools per tick — the explicit budget (rule 7).
+            // ≤ (2 crests + 1 stern roll + 1 centre + 2 churn) per deposit → MaxParticlesPerTick = 36
+            // (18 foam + 12 crests + 6 stern rolls) of the 96-foam + 48-crest + 24-roll pools per tick —
+            // the explicit budget (rule 7).
             MaxDepositsPerTick         = 6,
             TeleportResetMeters        = 20f,
 
@@ -453,6 +464,7 @@ namespace HiddenHarbours.Boats
             ChurnHalfWidthFraction     = 0.10f,  // dory 4.5 m → a 0.45 m half-width churn strip
             FoamPulseHz                = 2.8f,   // a lively boil, faster than the plume's 1.7 Hz wash
             FoamPulseAmount            = 0.22f,  // fresh foam visibly bubbles; calm by end of life
+            FoamAeration               = 0.85f,  // bubble films with holes — the 2026-08-06 "not a stripe"
 
             PlumePulseHz               = 1.7f,
             PlumePulseScaleAmount      = 0.05f,
