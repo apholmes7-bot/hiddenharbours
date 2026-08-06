@@ -5,7 +5,7 @@
 // day-night state draws from parameters. No sprite bakes.
 //
 // Calendar is canon (repo: Core/Time/Calendar.cs, Environment/GameClock.cs):
-//   4 seasons  EarlySpring/HighSummer/TheTurn/HardWinter, 28 days each
+//   4 seasons  Spring/Summer/Fall/Winter, 28 days each
 //   7-day week Monday..Sunday, one tunable Market Day
 //   day/night  night = hour < dawn(6) || hour >= dusk(19), wraps midnight
 // Brand wordmark is original (not the reference's) — same layout, no trademark.
@@ -83,6 +83,11 @@
     circle(ctx, cx, cy, 5, STEEL[0]); circle(ctx, cx, cy, 4, STEEL[2]); circle(ctx, cx - 1, cy - 1, 3, STEEL[3]);
     ctx.fillStyle = STEEL[0]; ctx.fillRect(cx - 3, cy - 1, 6, 2);   // slot
   }
+  function btnChevron(ctx, x, y, dir, col) {   // pusher legend mark — 2px chevron, tip at x, points outward
+    ctx.fillStyle = col;
+    const p = (dx, dy) => ctx.fillRect(x + (dir < 0 ? dx : -dx) * 2, y + dy * 2, 2, 2);
+    p(0, 2); p(1, 1); p(1, 3); p(2, 0); p(2, 4);
+  }
   function pusher(ctx, x, y, side) {                 // side: -1 left, +1 right
     rrect(ctx, x, y, 14 * side > 0 ? 14 : 14, 22, 4, RESIN[1]);
     const bx = side < 0 ? x - 8 : x + 14;
@@ -131,8 +136,8 @@
 
   // ---- day/night + label helpers (mirror the C# canon) ----------------------
   const WD = ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU'];
-  const SEASON_ABBR = ['SPR', 'SUM', 'TRN', 'WIN'];
-  const SEASON_FULL = ['Early Spring', 'High Summer', 'The Turn', 'Hard Winter'];
+  const SEASON_ABBR = ['SPR', 'SUM', 'FAL', 'WIN'];
+  const SEASON_FULL = ['Spring', 'Summer', 'Fall', 'Winter'];
   function isNight(hour, dawn, dusk) { dawn = dawn == null ? 6 : dawn; dusk = dusk == null ? 19 : dusk; return hour < dawn || hour >= dusk; }
   function pad2(n) { n = Math.floor(n); return (n < 10 ? '0' : '') + n; }
 
@@ -207,15 +212,16 @@
     // grey bezel face
     rrectGrad(ctx, 40, 60, 260, 236, 24, BEZEL[3], BEZEL[1]);
     rrect(ctx, 44, 64, 252, 228, 20, BEZEL[2]);
-    screw(ctx, 58, 80); screw(ctx, 282, 80); screw(ctx, 58, 276); screw(ctx, 282, 276);
+    screw(ctx, 58, 80); screw(ctx, 282, 80); screw(ctx, 58, 278); screw(ctx, 282, 278);
     // brand wordmark (original) + model no.
-    { const s = 4, str = 'HARBOUR', tw = textW(str, s); text(ctx, str, Math.round((W - tw) / 2), 74, s, INK); }
-    text(ctx, 'H-108', 232, 78, 2, BEZEL[0]);
-    // pusher function labels
-    text(ctx, 'START/STOP', 54, 100, 2, INK);
-    { const str = 'ALARM CHRONO'; text(ctx, str, 288 - textW(str, 2), 100, 2, INK); }
-    text(ctx, 'MODE', 54, 268, 2, INK);
-    { const str = 'LIGHT'; text(ctx, str, 288 - textW(str, 2), 268, 2, INK); }
+    { const s = 4, str = 'HARBOUR', tw = textW(str, s); text(ctx, str, Math.round((W - tw) / 2), 70, s, INK); }
+    text(ctx, 'H-108', 224, 78, 2, BEZEL[0]);
+    // pusher function labels — inset clear of the bezel screws, each flagged with a chevron notch
+    { const s = 2, yT = 98, yB = 274, xL = 80, xR = 260;
+      text(ctx, 'START/STOP', xL, yT, s, INK);        btnChevron(ctx, 68, yT, -1, INK);
+      text(ctx, 'MODE', xL, yB, s, INK);              btnChevron(ctx, 68, yB, -1, INK);
+      let str = 'ALARM CHRONO'; text(ctx, str, xR - textW(str, s), yT, s, INK); btnChevron(ctx, 272, yT, 1, INK);
+      str = 'LIGHT';            text(ctx, str, xR - textW(str, s), yB, s, INK); btnChevron(ctx, 272, yB, 1, INK); }
     text(ctx, 'WATER RESIST', Math.round((W - textW('WATER RESIST', 2)) / 2), 300, 2, '#aeb6ba');
 
     // LCD window (recessed)
@@ -236,6 +242,6 @@
   window.WatchRig = {
     W, H, paint, render, isNight, pad2,
     WEEKDAYS: WD, SEASON_ABBR, SEASON_FULL,
-    hit: { light: { x: 226, y: 260, w: 96, h: 26 }, mode: { x: 44, y: 260, w: 96, h: 26 } },
+    hit: { light: { x: 218, y: 270, w: 66, h: 20 }, mode: { x: 62, y: 270, w: 56, h: 20 } },
   };
 })();

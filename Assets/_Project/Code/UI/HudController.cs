@@ -21,6 +21,15 @@ namespace HiddenHarbours.UI
     /// cached and only rebuilt when their displayed value actually changes; environment is sampled
     /// at ~4 Hz (matches VS-05); money is event-driven, not polled.
     ///
+    /// <para><b>The clock is a WATCH, not a line of text</b> (the owner's 2026-08-06 rig drop). The
+    /// upper-left readout is the art director's digital watch face, drawn live in C# by
+    /// <see cref="WatchRigRender"/> (ADR 0025 Option A — nothing is baked, because the face's state
+    /// space is the whole calendar). It carries everything the old label did, and more besides: hours
+    /// and minutes, the weekday, the day of season, the season tag, the year, a market-day flag, and a
+    /// green backlight after dark. It obeys the same law the label did — it repaints ONLY when the
+    /// displayed minute, day or season changes, never per frame. The text path is kept behind
+    /// <c>_useTextClock</c> for debugging.</para>
+    ///
     /// <para>It also carries the tide table's opener (<see cref="TidePanelInput"/>, VS-06) — the deeper
     /// read the glanceable tide line here can't give you. The band stays a band; the table is paper you
     /// take out.</para>
@@ -44,9 +53,35 @@ namespace HiddenHarbours.UI
         [Tooltip("Persist across scene loads like the services. The HUD is always-on.")]
         [SerializeField] private bool _persistAcrossScenes = true;
 
+        [Header("Watch face (the upper-left clock)")]
+        [Tooltip("Height of the watch in HUD REFERENCE units (HudBandLayout.RefH = 720). Width follows " +
+                 "the rig's own 340×356 aspect, so the face is never distorted. 190 fits inside the " +
+                 "220-unit band with air above and below.")]
+        [SerializeField] private float _watchHeightRef = 190f;
+        [Tooltip("Gap in reference units between the watch's right edge and the tide line beside it.")]
+        [SerializeField] private float _watchGapRef = 16f;
+        [Tooltip("24-hour face. Off shows a 12-hour face with the rig's AM/PM tag and a blank leading " +
+                 "cell for hours 1-9. Display-only: it is not clock-derived.")]
+        [SerializeField] private bool _watchUse24 = true;
+        [Tooltip("Light the LCD's seconds cells. OFF by default and deliberately so: one in-game second " +
+                 "is ~21 real ms at the shipped SecondsPerDay, so a live seconds field would repaint the " +
+                 "face ~48×/second and blow rule 7. Off, the cells sit dark (an unlit LCD field) rather " +
+                 "than frozen on a stale number. Turn on only with a slower clock.")]
+        [SerializeField] private bool _watchShowSeconds;
+        [Tooltip("DEBUG: go back to the plain-text clock label the watch replaced. The formatting path " +
+                 "(HudFormat.ClockHHMM + HudStrings.Season) is kept intact behind this toggle so the " +
+                 "old readout is one checkbox away, not a revert.")]
+        [SerializeField] private bool _useTextClock;
+
         // ---- runtime labels (built in Awake) ------------------------------------------------
         private GameObject _canvasGo;       // the whole band, hidden while the shell's title page is up
-        private Text _clockLabel;
+        private Text _clockLabel;           // the pre-watch text readout — built, but off unless _useTextClock
+
+        // The watch face that replaced the text clock (ADR 0025 Option A: a live C# rig renderer, no
+        // bake). One reused surface + texture, repainted only when UpdateClock's change-detection fires.
+        private RawImage _watchImage;
+        private DrawSurface _watchSurface;
+        private Texture2D _watchTexture;
         private Text _tideLabel;
         private Text _windLabel;
         private Text _seaLabel;
@@ -132,7 +167,14 @@ namespace HiddenHarbours.UI
 
         private void OnEnable()  => Subscribe();
         private void OnDisable() => Unsubscribe();
-        private void OnDestroy() => Unsubscribe();
+
+        private void OnDestroy()
+        {
+            Unsubscribe();
+            // The watch's texture is created by us (DrawSurface.ToTexture), so it is ours to release —
+            // the HUD is DontDestroyOnLoad, but a torn-down rig/test still has to not leak it.
+            if (_watchTexture != null) Destroy(_watchTexture);
+        }
 
         private void Subscribe()
         {
@@ -200,11 +242,42 @@ namespace HiddenHarbours.UI
             _lastDay = day;
             _lastSeason = season;
 
+            // The watch is the clock now. It repaints HERE — behind the same minute/day/season
+            // change-detection the text label used — so the face costs one struct compare per frame in
+            // the steady state and a repaint only when a shown quantum actually moved (rule 7). At the
+            // shipped SecondsPerDay that is ~0.8 Hz.
+            if (!_useTextClock)
+            {
+                PaintWatch(clock);
+                return;
+            }
+
             string text = HudFormat.ClockHHMM(clock.HourOfDay)
                         + "  " + HudStrings.Season(season)
                         + " d" + day;
             _clockCache = text;
             _clockLabel.text = text;
+        }
+
+        /// <summary>
+        /// Repaint the watch face from the live clock. The clock is read through
+        /// <see cref="WatchFaceState.FromClock"/> — Core's one mapper, which already carries the calendar
+        /// canon and the 06:00/19:00 night rule — so nothing here re-derives a date or a second time.
+        /// </summary>
+        private void PaintWatch(IGameClock clock)
+        {
+            if (_watchImage == null) return;
+
+            var state = new WatchRigState(WatchFaceState.FromClock(clock),
+                                          _watchUse24, light: false, showSeconds: _watchShowSeconds);
+
+            if (_watchSurface == null)
+                _watchSurface = new DrawSurface(WatchRigRender.W, WatchRigRender.H);
+
+            WatchRigRender.Render(_watchSurface, in state);
+            _watchSurface.ToTexture(ref _watchTexture);
+            _watchImage.texture = _watchTexture;
+            if (!_watchImage.enabled) _watchImage.enabled = true;   // hidden until it has a time to show
         }
 
         private void UpdateEnvironmentThrottled()
@@ -540,6 +613,9 @@ namespace HiddenHarbours.UI
         private void ShowPlaceholder()
         {
             // Before services exist, keep the HUD quiet rather than showing wrong numbers (P1 truth).
+            // The watch says this by staying DARK — it is built disabled and only PaintWatch switches it
+            // on — which is the same "no wrong numbers" answer as the label's "--", in the watch's own
+            // language. A blank-faced watch is honest; a watch reading 00:00 would not be.
             SetIfChanged(ref _clockCache, HudStrings.Unknown, _clockLabel);
             SetIfChanged(ref _tideCache,  HudStrings.Unknown, _tideLabel);
             SetIfChanged(ref _windCache,  HudStrings.Unknown, _windLabel);
@@ -593,11 +669,31 @@ namespace HiddenHarbours.UI
             bandRt.anchoredPosition = new Vector2(0f, -SafeAreaTopInset());
             bandRt.sizeDelta = new Vector2(-HudBandLayout.SidePaddingRef, HudBandLayout.BandHeightRef);
 
-            // Left column: clock (top) + tide (highest-stakes — kept visually distinct, larger).
+            // Left column: the watch (top-left) + tide (highest-stakes — kept visually distinct, larger).
+            //
+            // The watch REPLACED the text clock here. The old label is still built — same anchor, same
+            // size — but stays disabled unless _useTextClock is set, so the formatting path is a
+            // checkbox away for debugging rather than a revert (and there are never two clocks).
             _clockLabel = MakeLabel(bandRt, "Clock", TextAnchor.UpperLeft,
                 new Vector2(0f, 1f), new Vector2(0.6f, 1f), 0f, -4f, 40);
+            _clockLabel.enabled = _useTextClock;
+
+            float watchW = 0f;
+            if (!_useTextClock)
+            {
+                // Sized off the rig's own 340×356 so the face is never distorted, and pivoted top-left
+                // like every other band element (MakeLabel's convention).
+                watchW = _watchHeightRef * WatchRigRender.W / WatchRigRender.H;
+                _watchImage = MakeWatch(bandRt, 0f, -4f, watchW, _watchHeightRef);
+            }
+
+            // The tide line clears the watch horizontally: the face is a block where a single text line
+            // used to be, so the read beside it is indented by the face's width rather than moved down
+            // the band (its vertical order — and so the band's reading order — is unchanged). With the
+            // text clock on, the indent is zero and the band is exactly as it shipped.
+            float tideIndent = _useTextClock ? 0f : watchW + _watchGapRef;
             _tideLabel  = MakeLabel(bandRt, "Tide", TextAnchor.UpperLeft,
-                new Vector2(0f, 1f), new Vector2(0.7f, 1f), 0f, -56f, 52); // bigger: most important read
+                new Vector2(0f, 1f), new Vector2(0.7f, 1f), tideIndent, -56f, 52); // bigger: most important read
 
             // Right column: money (top), payout flash (under it), wind, sea.
             _moneyLabel  = MakeLabel(bandRt, "Money", TextAnchor.UpperRight,
@@ -720,6 +816,35 @@ namespace HiddenHarbours.UI
             outline.effectDistance = new Vector2(2f, -2f);
 
             return text;
+        }
+
+        /// <summary>
+        /// The watch face's <see cref="RawImage"/>, anchored top-left of the band exactly where the
+        /// clock label was. Built DISABLED — <see cref="PaintWatch"/> switches it on once it has a real
+        /// time to show, so the band never flashes an empty frame at boot.
+        ///
+        /// <para>Pixel discipline: the texture is point-filtered (<see cref="DrawSurface.ToTexture"/>
+        /// sets that) and the rect is a whole multiple of nothing in particular — the HUD canvas is
+        /// ScaleWithScreenSize, so the band's own scaler decides the final size, and this element scales
+        /// with it like every other one. That is the same treatment the helm rigs get; no second
+        /// pixel-snapping scheme is introduced here.</para>
+        /// </summary>
+        private static RawImage MakeWatch(RectTransform parent, float x, float y, float w, float h)
+        {
+            var go = new GameObject("Watch", typeof(RectTransform), typeof(RawImage));
+            go.transform.SetParent(parent, false);
+
+            var rt = go.GetComponent<RectTransform>();
+            rt.anchorMin = new Vector2(0f, 1f);
+            rt.anchorMax = new Vector2(0f, 1f);
+            rt.pivot = new Vector2(0f, 1f);
+            rt.anchoredPosition = new Vector2(x, y);
+            rt.sizeDelta = new Vector2(w, h);
+
+            var img = go.GetComponent<RawImage>();
+            img.raycastTarget = false;   // the HUD is read-only; never eat clicks meant for gameplay
+            img.enabled = false;         // shown on the first paint
+            return img;
         }
 
         // A square HUD icon Image. If <paramref name="iconId"/> is non-null it resolves the sprite from
