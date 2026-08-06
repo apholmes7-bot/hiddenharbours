@@ -1,0 +1,257 @@
+{
+  "rig": "wharfIsoRig",
+  "version": 1,
+  "generated": "measured from docs/art/rigs/iso-rig-pack/wharf-kit-iso/wharfIsoRig.js in a standalone V8 host at rig-default dimensions and tide",
+  "projection": {
+    "ppu": 32,
+    "elev": 40,
+    "depthScale": 0.6427876096865393,
+    "antialias": false,
+    "alpha": "binary",
+    "pivot": "projection of the model origin (footprint centre at chart datum) — the rig reports px,py per bake",
+    "keyline": "#1a1c22",
+    "keylineDefault": true
+  },
+  "azimuth": {
+    "convention": "counterClockwise",
+    "measured": "-46.75 deg of screen rotation per dir step, identical to houseIsoRig / wharfBuildingRig / interiorIsoRig (all registered CounterClockwise)",
+    "order": "[\"N\",\"NE\",\"E\",\"SE\",\"S\",\"SW\",\"W\",\"NW\"]"
+  },
+  "facings": 8,
+  "importSizeCap": 4096,
+  "tide": {
+    "baked": 0.9900000000000001,
+    "tideRange": 1.8,
+    "note": "tide is continuous in the rig and NOT a baked state axis; one water level is baked and the wet mask carries the rest"
+  },
+  "families": "[\"quay\",\"pier\",\"crib\",\"float\",\"gangway\",\"slipway\",\"riprap\"]",
+  "worstSheet": {
+    "key": "floatSet",
+    "w": 3028,
+    "h": 1184
+  },
+  "count": 17,
+  "cells": [
+    {
+      "key": "lowPier",
+      "cellW": 352,
+      "cellH": 301,
+      "pivotX": 175,
+      "pivotY": 151,
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 2816,
+        "sheetH": 301
+      }
+    },
+    {
+      "key": "tallPier",
+      "cellW": 472,
+      "cellH": 411,
+      "pivotX": 235,
+      "pivotY": 225,
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 3776,
+        "sheetH": 411
+      }
+    },
+    {
+      "key": "sheetedPier",
+      "cellW": 473,
+      "cellH": 411,
+      "pivotX": 236,
+      "pivotY": 225,
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 3784,
+        "sheetH": 411
+      }
+    },
+    {
+      "key": "steelPier",
+      "cellW": 470,
+      "cellH": 411,
+      "pivotX": 234,
+      "pivotY": 225,
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 3760,
+        "sheetH": 411
+      }
+    },
+    {
+      "key": "concreteQuay",
+      "cellW": 571,
+      "cellH": 465,
+      "pivotX": 285,
+      "pivotY": 251,
+      "sheet": {
+        "cols": 4,
+        "rows": 2,
+        "sheetW": 2284,
+        "sheetH": 930
+      }
+    },
+    {
+      "key": "torbayQuay",
+      "cellW": 533,
+      "cellH": 453,
+      "pivotX": 266,
+      "pivotY": 246,
+      "sheet": {
+        "cols": 4,
+        "rows": 2,
+        "sheetW": 2132,
+        "sheetH": 906
+      }
+    },
+    {
+      "key": "timberQuay",
+      "cellW": 506,
+      "cellH": 431,
+      "pivotX": 252,
+      "pivotY": 235,
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 4048,
+        "sheetH": 431
+      }
+    },
+    {
+      "key": "logCrib",
+      "cellW": 350,
+      "cellH": 327,
+      "pivotX": 174,
+      "pivotY": 183,
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 2800,
+        "sheetH": 327
+      }
+    },
+    {
+      "key": "cappedCrib",
+      "cellW": 350,
+      "cellH": 327,
+      "pivotX": 174,
+      "pivotY": 183,
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 2800,
+        "sheetH": 327
+      }
+    },
+    {
+      "key": "timberFloat",
+      "cellW": 300,
+      "cellH": 285,
+      "pivotX": 149,
+      "pivotY": 152,
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 2400,
+        "sheetH": 285
+      }
+    },
+    {
+      "key": "plasticFloat",
+      "cellW": 300,
+      "cellH": 285,
+      "pivotX": 149,
+      "pivotY": 152,
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 2400,
+        "sheetH": 285
+      }
+    },
+    {
+      "key": "floatSet",
+      "cellW": 757,
+      "cellH": 592,
+      "pivotX": 378,
+      "pivotY": 313,
+      "sheet": {
+        "cols": 4,
+        "rows": 2,
+        "sheetW": 3028,
+        "sheetH": 1184
+      }
+    },
+    {
+      "key": "plasticSet",
+      "cellW": 757,
+      "cellH": 592,
+      "pivotX": 378,
+      "pivotY": 313,
+      "sheet": {
+        "cols": 4,
+        "rows": 2,
+        "sheetW": 3028,
+        "sheetH": 1184
+      }
+    },
+    {
+      "key": "graniteEdge",
+      "cellW": 416,
+      "cellH": 358,
+      "pivotX": 207,
+      "pivotY": 196,
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 3328,
+        "sheetH": 358
+      }
+    },
+    {
+      "key": "redEdge",
+      "cellW": 416,
+      "cellH": 358,
+      "pivotX": 207,
+      "pivotY": 196,
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 3328,
+        "sheetH": 358
+      }
+    },
+    {
+      "key": "breakwater",
+      "cellW": 616,
+      "cellH": 478,
+      "pivotX": 307,
+      "pivotY": 262,
+      "sheet": {
+        "cols": 4,
+        "rows": 2,
+        "sheetW": 2464,
+        "sheetH": 956
+      }
+    },
+    {
+      "key": "sheetCell",
+      "cellW": 515,
+      "cellH": 424,
+      "pivotX": 257,
+      "pivotY": 230,
+      "sheet": {
+        "cols": 4,
+        "rows": 2,
+        "sheetW": 2060,
+        "sheetH": 848
+      }
+    }
+  ]
+}

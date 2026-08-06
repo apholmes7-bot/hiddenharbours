@@ -1,0 +1,1000 @@
+{
+  "rig": "utilityIsoRig",
+  "version": 1,
+  "generated": "measured from docs/art/rigs/iso-rig-pack/utility-iso/utilityIsoRig.js in a standalone V8 host at rig defaults",
+  "projection": {
+    "ppu": 32,
+    "elev": 40,
+    "depthScale": 0.6427876096865393,
+    "antialias": false,
+    "alpha": "binary",
+    "nativeSheetW": 440,
+    "nativeSheetH": 620,
+    "nativePivotX": 220,
+    "nativePivotY": 520,
+    "pivot": "ground centre of the footprint",
+    "keyline": "#1a1c22",
+    "keylineDefault": true
+  },
+  "azimuth": {
+    "convention": "counterClockwise",
+    "measured": "-46.75 deg of screen rotation per dir step, identical to houseIsoRig / wharfBuildingRig / interiorIsoRig (all registered CounterClockwise)",
+    "order": "[\"N\",\"NE\",\"E\",\"SE\",\"S\",\"SW\",\"W\",\"NW\"]"
+  },
+  "facings": 8,
+  "importSizeCap": 2048,
+  "worstSheet": {
+    "key": "hFrame",
+    "w": 1520,
+    "h": 291
+  },
+  "count": 42,
+  "cells": [
+    {
+      "key": "powerPole",
+      "cellW": 168,
+      "cellH": 293,
+      "pivotX": 84,
+      "pivotY": 239,
+      "footprintW": 0.54,
+      "footprintD": 0.54,
+      "heightM": 9.08,
+      "pivotInsideInk": true,
+      "pointKinds": [
+        "wires",
+        "secondary",
+        "lamp",
+        "drop"
+      ],
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 1344,
+        "sheetH": 293
+      }
+    },
+    {
+      "key": "hFrame",
+      "cellW": 190,
+      "cellH": 291,
+      "pivotX": 95,
+      "pivotY": 230,
+      "footprintW": 3.132,
+      "footprintD": 0.648,
+      "heightM": 8.59,
+      "pivotInsideInk": true,
+      "pointKinds": [
+        "wires",
+        "secondary",
+        "lamp",
+        "drop"
+      ],
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 1520,
+        "sheetH": 291
+      }
+    },
+    {
+      "key": "padTransformer",
+      "cellW": 102,
+      "cellH": 80,
+      "pivotX": 51,
+      "pivotY": 47,
+      "footprintW": 2.052,
+      "footprintD": 1.674,
+      "heightM": 1.3,
+      "pivotInsideInk": true,
+      "pointKinds": [
+        "wires",
+        "secondary",
+        "lamp",
+        "drop"
+      ],
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 816,
+        "sheetH": 80
+      }
+    },
+    {
+      "key": "switchgear",
+      "cellW": 114,
+      "cellH": 94,
+      "pivotX": 57,
+      "pivotY": 57,
+      "footprintW": 2.376,
+      "footprintD": 1.836,
+      "heightM": 1.7,
+      "pivotInsideInk": true,
+      "pointKinds": [
+        "wires",
+        "secondary",
+        "lamp",
+        "drop"
+      ],
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 912,
+        "sheetH": 94
+      }
+    },
+    {
+      "key": "pedestal",
+      "cellW": 52,
+      "cellH": 47,
+      "pivotX": 26,
+      "pivotY": 30,
+      "footprintW": 0.78,
+      "footprintD": 0.62,
+      "heightM": 1,
+      "pivotInsideInk": true,
+      "pointKinds": [
+        "wires",
+        "secondary",
+        "lamp",
+        "drop"
+      ],
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 416,
+        "sheetH": 47
+      }
+    },
+    {
+      "key": "genset",
+      "cellW": 90,
+      "cellH": 79,
+      "pivotX": 45,
+      "pivotY": 50,
+      "footprintW": 1.944,
+      "footprintD": 1.134,
+      "heightM": 1.34,
+      "pivotInsideInk": true,
+      "pointKinds": [
+        "wires",
+        "secondary",
+        "lamp",
+        "drop"
+      ],
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 720,
+        "sheetH": 79
+      }
+    },
+    {
+      "key": "serviceMast",
+      "cellW": 40,
+      "cellH": 132,
+      "pivotX": 20,
+      "pivotY": 119,
+      "footprintW": 0.972,
+      "footprintD": 0.54,
+      "heightM": 4.56,
+      "pivotInsideInk": true,
+      "pointKinds": [
+        "wires",
+        "secondary",
+        "lamp",
+        "drop"
+      ],
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 320,
+        "sheetH": 132
+      }
+    },
+    {
+      "key": "meterBank",
+      "cellW": 60,
+      "cellH": 82,
+      "pivotX": 30,
+      "pivotY": 62,
+      "footprintW": 1.64,
+      "footprintD": 0.5,
+      "heightM": 1.94,
+      "pivotInsideInk": true,
+      "pointKinds": [
+        "wires",
+        "secondary",
+        "lamp",
+        "drop"
+      ],
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 480,
+        "sheetH": 82
+      }
+    },
+    {
+      "key": "guyAnchor",
+      "cellW": 86,
+      "cellH": 105,
+      "pivotX": 43,
+      "pivotY": 97,
+      "footprintW": 1.68,
+      "footprintD": 1.56,
+      "heightM": 2.84,
+      "pivotInsideInk": true,
+      "pointKinds": [
+        "wires",
+        "secondary",
+        "lamp",
+        "drop"
+      ],
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 688,
+        "sheetH": 105
+      }
+    },
+    {
+      "key": "yardLight",
+      "cellW": 124,
+      "cellH": 229,
+      "pivotX": 62,
+      "pivotY": 218,
+      "footprintW": 0.54,
+      "footprintD": 0.54,
+      "heightM": 7.26,
+      "pivotInsideInk": true,
+      "pointKinds": [
+        "wires",
+        "secondary",
+        "lamp",
+        "drop"
+      ],
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 992,
+        "sheetH": 229
+      }
+    },
+    {
+      "key": "streetLamp",
+      "cellW": 66,
+      "cellH": 139,
+      "pivotX": 33,
+      "pivotY": 129,
+      "footprintW": 1.08,
+      "footprintD": 0.54,
+      "heightM": 4.48,
+      "pivotInsideInk": true,
+      "pointKinds": [
+        "wires",
+        "secondary",
+        "lamp",
+        "drop"
+      ],
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 528,
+        "sheetH": 139
+      }
+    },
+    {
+      "key": "floodMast",
+      "cellW": 60,
+      "cellH": 221,
+      "pivotX": 30,
+      "pivotY": 209,
+      "footprintW": 2.052,
+      "footprintD": 0.756,
+      "heightM": 7.8,
+      "pivotInsideInk": true,
+      "pointKinds": [
+        "wires",
+        "secondary",
+        "lamp",
+        "drop"
+      ],
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 480,
+        "sheetH": 221
+      }
+    },
+    {
+      "key": "beacon",
+      "cellW": 52,
+      "cellH": 125,
+      "pivotX": 26,
+      "pivotY": 108,
+      "footprintW": 1.512,
+      "footprintD": 1.512,
+      "heightM": 4.34,
+      "pivotInsideInk": true,
+      "pointKinds": [
+        "wires",
+        "secondary",
+        "lamp",
+        "drop"
+      ],
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 416,
+        "sheetH": 125
+      }
+    },
+    {
+      "key": "hydrant",
+      "cellW": 32,
+      "cellH": 35,
+      "pivotX": 16,
+      "pivotY": 25,
+      "footprintW": 0.62,
+      "footprintD": 0.62,
+      "heightM": 0.96,
+      "pivotInsideInk": true,
+      "pointKinds": [
+        "wires",
+        "secondary",
+        "lamp",
+        "drop"
+      ],
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 256,
+        "sheetH": 35
+      }
+    },
+    {
+      "key": "yardHydrant",
+      "cellW": 26,
+      "cellH": 51,
+      "pivotX": 13,
+      "pivotY": 43,
+      "footprintW": 0.4536,
+      "footprintD": 0.4536,
+      "heightM": 1.39,
+      "pivotInsideInk": true,
+      "pointKinds": [
+        "wires",
+        "secondary",
+        "lamp",
+        "drop"
+      ],
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 208,
+        "sheetH": 51
+      }
+    },
+    {
+      "key": "standpipe",
+      "cellW": 68,
+      "cellH": 58,
+      "pivotX": 34,
+      "pivotY": 36,
+      "footprintW": 1.2,
+      "footprintD": 1.7,
+      "heightM": 1.24,
+      "pivotInsideInk": true,
+      "pointKinds": [
+        "wires",
+        "secondary",
+        "lamp",
+        "drop"
+      ],
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 544,
+        "sheetH": 58
+      }
+    },
+    {
+      "key": "handPump",
+      "cellW": 40,
+      "cellH": 56,
+      "pivotX": 20,
+      "pivotY": 43,
+      "footprintW": 0.88,
+      "footprintD": 0.8,
+      "heightM": 1.28,
+      "pivotInsideInk": true,
+      "pointKinds": [
+        "wires",
+        "secondary",
+        "lamp",
+        "drop"
+      ],
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 320,
+        "sheetH": 56
+      }
+    },
+    {
+      "key": "wellCap",
+      "cellW": 58,
+      "cellH": 41,
+      "pivotX": 29,
+      "pivotY": 22,
+      "footprintW": 0.86,
+      "footprintD": 0.86,
+      "heightM": 0.72,
+      "pivotInsideInk": true,
+      "pointKinds": [
+        "wires",
+        "secondary",
+        "lamp",
+        "drop"
+      ],
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 464,
+        "sheetH": 41
+      }
+    },
+    {
+      "key": "curbStop",
+      "cellW": 16,
+      "cellH": 13,
+      "pivotX": 8,
+      "pivotY": 7,
+      "footprintW": 0.46,
+      "footprintD": 0.46,
+      "heightM": 0.12,
+      "pivotInsideInk": true,
+      "pointKinds": [
+        "wires",
+        "secondary",
+        "lamp",
+        "drop"
+      ],
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 128,
+        "sheetH": 13
+      }
+    },
+    {
+      "key": "valveVault",
+      "cellW": 56,
+      "cellH": 56,
+      "pivotX": 28,
+      "pivotY": 39,
+      "footprintW": 1.3,
+      "footprintD": 1.1,
+      "heightM": 0.9,
+      "pivotInsideInk": true,
+      "pointKinds": [
+        "wires",
+        "secondary",
+        "lamp",
+        "drop"
+      ],
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 448,
+        "sheetH": 56
+      }
+    },
+    {
+      "key": "waterTank",
+      "cellW": 120,
+      "cellH": 161,
+      "pivotX": 60,
+      "pivotY": 123,
+      "footprintW": 2.288,
+      "footprintD": 2.288,
+      "heightM": 4.28,
+      "pivotInsideInk": true,
+      "pointKinds": [
+        "wires",
+        "secondary",
+        "lamp",
+        "drop"
+      ],
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 960,
+        "sheetH": 161
+      }
+    },
+    {
+      "key": "cistern",
+      "cellW": 100,
+      "cellH": 101,
+      "pivotX": 50,
+      "pivotY": 69,
+      "footprintW": 2.592,
+      "footprintD": 2.052,
+      "heightM": 1.94,
+      "pivotInsideInk": true,
+      "pointKinds": [
+        "wires",
+        "secondary",
+        "lamp",
+        "drop"
+      ],
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 800,
+        "sheetH": 101
+      }
+    },
+    {
+      "key": "manhole",
+      "cellW": 48,
+      "cellH": 33,
+      "pivotX": 24,
+      "pivotY": 17,
+      "footprintW": 1.44,
+      "footprintD": 1.44,
+      "heightM": 0.14,
+      "pivotInsideInk": true,
+      "pointKinds": [
+        "wires",
+        "secondary",
+        "lamp",
+        "drop"
+      ],
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 384,
+        "sheetH": 33
+      }
+    },
+    {
+      "key": "cleanout",
+      "cellW": 28,
+      "cellH": 23,
+      "pivotX": 14,
+      "pivotY": 14,
+      "footprintW": 0.44,
+      "footprintD": 0.5,
+      "heightM": 0.5,
+      "pivotInsideInk": true,
+      "pointKinds": [
+        "wires",
+        "secondary",
+        "lamp",
+        "drop"
+      ],
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 224,
+        "sheetH": 23
+      }
+    },
+    {
+      "key": "ventStack",
+      "cellW": 38,
+      "cellH": 84,
+      "pivotX": 19,
+      "pivotY": 76,
+      "footprintW": 0.648,
+      "footprintD": 0.3672,
+      "heightM": 2.72,
+      "pivotInsideInk": true,
+      "pointKinds": [
+        "wires",
+        "secondary",
+        "lamp",
+        "drop"
+      ],
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 304,
+        "sheetH": 84
+      }
+    },
+    {
+      "key": "septicLids",
+      "cellW": 102,
+      "cellH": 76,
+      "pivotX": 51,
+      "pivotY": 43,
+      "footprintW": 3.0368,
+      "footprintD": 1.4483,
+      "heightM": 0.47,
+      "pivotInsideInk": true,
+      "pointKinds": [
+        "wires",
+        "secondary",
+        "lamp",
+        "drop"
+      ],
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 816,
+        "sheetH": 76
+      }
+    },
+    {
+      "key": "catchBasin",
+      "cellW": 58,
+      "cellH": 46,
+      "pivotX": 29,
+      "pivotY": 27,
+      "footprintW": 1.24,
+      "footprintD": 1.24,
+      "heightM": 0.34,
+      "pivotInsideInk": true,
+      "pointKinds": [
+        "wires",
+        "secondary",
+        "lamp",
+        "drop"
+      ],
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 464,
+        "sheetH": 46
+      }
+    },
+    {
+      "key": "trenchDrain",
+      "cellW": 82,
+      "cellH": 57,
+      "pivotX": 41,
+      "pivotY": 30,
+      "footprintW": 0.868,
+      "footprintD": 4.712,
+      "heightM": 0.16,
+      "pivotInsideInk": true,
+      "pointKinds": [
+        "wires",
+        "secondary",
+        "lamp",
+        "drop"
+      ],
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 656,
+        "sheetH": 57
+      }
+    },
+    {
+      "key": "liftStation",
+      "cellW": 120,
+      "cellH": 101,
+      "pivotX": 60,
+      "pivotY": 62,
+      "footprintW": 2.7,
+      "footprintD": 1.7,
+      "heightM": 1.62,
+      "pivotInsideInk": true,
+      "pointKinds": [
+        "wires",
+        "secondary",
+        "lamp",
+        "drop"
+      ],
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 960,
+        "sheetH": 101
+      }
+    },
+    {
+      "key": "outfall",
+      "cellW": 102,
+      "cellH": 77,
+      "pivotX": 51,
+      "pivotY": 44,
+      "footprintW": 1.9,
+      "footprintD": 1.7,
+      "heightM": 1,
+      "pivotInsideInk": true,
+      "pointKinds": [
+        "wires",
+        "secondary",
+        "lamp",
+        "drop"
+      ],
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 816,
+        "sheetH": 77
+      }
+    },
+    {
+      "key": "culvert",
+      "cellW": 140,
+      "cellH": 94,
+      "pivotX": 70,
+      "pivotY": 49,
+      "footprintW": 3.66,
+      "footprintD": 5.246,
+      "heightM": 0.75,
+      "pivotInsideInk": true,
+      "pointKinds": [
+        "wires",
+        "secondary",
+        "lamp",
+        "drop"
+      ],
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 1120,
+        "sheetH": 94
+      }
+    },
+    {
+      "key": "oilTank",
+      "cellW": 74,
+      "cellH": 81,
+      "pivotX": 37,
+      "pivotY": 57,
+      "footprintW": 1.12,
+      "footprintD": 0.66,
+      "heightM": 2,
+      "pivotInsideInk": true,
+      "pointKinds": [
+        "wires",
+        "secondary",
+        "lamp",
+        "drop"
+      ],
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 592,
+        "sheetH": 81
+      }
+    },
+    {
+      "key": "fillPipes",
+      "cellW": 34,
+      "cellH": 43,
+      "pivotX": 17,
+      "pivotY": 32,
+      "footprintW": 0.7,
+      "footprintD": 0.42,
+      "heightM": 0.98,
+      "pivotInsideInk": true,
+      "pointKinds": [
+        "wires",
+        "secondary",
+        "lamp",
+        "drop"
+      ],
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 272,
+        "sheetH": 43
+      }
+    },
+    {
+      "key": "propaneTank",
+      "cellW": 122,
+      "cellH": 98,
+      "pivotX": 61,
+      "pivotY": 59,
+      "footprintW": 2.9328,
+      "footprintD": 1.0152,
+      "heightM": 1.2,
+      "pivotInsideInk": true,
+      "pointKinds": [
+        "wires",
+        "secondary",
+        "lamp",
+        "drop"
+      ],
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 976,
+        "sheetH": 98
+      }
+    },
+    {
+      "key": "bulkTank",
+      "cellW": 140,
+      "cellH": 149,
+      "pivotX": 70,
+      "pivotY": 104,
+      "footprintW": 3.472,
+      "footprintD": 3.248,
+      "heightM": 3.64,
+      "pivotInsideInk": true,
+      "pointKinds": [
+        "wires",
+        "secondary",
+        "lamp",
+        "drop"
+      ],
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 1120,
+        "sheetH": 149
+      }
+    },
+    {
+      "key": "fuelPump",
+      "cellW": 40,
+      "cellH": 60,
+      "pivotX": 20,
+      "pivotY": 49,
+      "footprintW": 0.68,
+      "footprintD": 0.58,
+      "heightM": 1.94,
+      "pivotInsideInk": true,
+      "pointKinds": [
+        "wires",
+        "secondary",
+        "lamp",
+        "drop"
+      ],
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 320,
+        "sheetH": 60
+      }
+    },
+    {
+      "key": "drumRack",
+      "cellW": 80,
+      "cellH": 68,
+      "pivotX": 40,
+      "pivotY": 42,
+      "footprintW": 1.9,
+      "footprintD": 1.5,
+      "heightM": 1.24,
+      "pivotInsideInk": true,
+      "pointKinds": [
+        "wires",
+        "secondary",
+        "lamp",
+        "drop"
+      ],
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 640,
+        "sheetH": 68
+      }
+    },
+    {
+      "key": "coalBin",
+      "cellW": 108,
+      "cellH": 88,
+      "pivotX": 54,
+      "pivotY": 53,
+      "footprintW": 2.352,
+      "footprintD": 2.24,
+      "heightM": 1.2,
+      "pivotInsideInk": true,
+      "pointKinds": [
+        "wires",
+        "secondary",
+        "lamp",
+        "drop"
+      ],
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 864,
+        "sheetH": 88
+      }
+    },
+    {
+      "key": "telecomPed",
+      "cellW": 28,
+      "cellH": 39,
+      "pivotX": 14,
+      "pivotY": 30,
+      "footprintW": 0.56,
+      "footprintD": 0.44,
+      "heightM": 1,
+      "pivotInsideInk": true,
+      "pointKinds": [
+        "wires",
+        "secondary",
+        "lamp",
+        "drop"
+      ],
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 224,
+        "sheetH": 39
+      }
+    },
+    {
+      "key": "crossBox",
+      "cellW": 68,
+      "cellH": 69,
+      "pivotX": 34,
+      "pivotY": 47,
+      "footprintW": 1.404,
+      "footprintD": 0.864,
+      "heightM": 1.38,
+      "pivotInsideInk": true,
+      "pointKinds": [
+        "wires",
+        "secondary",
+        "lamp",
+        "drop"
+      ],
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 544,
+        "sheetH": 69
+      }
+    },
+    {
+      "key": "alarmBox",
+      "cellW": 22,
+      "cellH": 55,
+      "pivotX": 11,
+      "pivotY": 47,
+      "footprintW": 0.4536,
+      "footprintD": 0.4536,
+      "heightM": 1.69,
+      "pivotInsideInk": true,
+      "pointKinds": [
+        "wires",
+        "secondary",
+        "lamp",
+        "drop"
+      ],
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 176,
+        "sheetH": 55
+      }
+    },
+    {
+      "key": "radioMast",
+      "cellW": 178,
+      "cellH": 306,
+      "pivotX": 89,
+      "pivotY": 249,
+      "footprintW": 5.9184,
+      "footprintD": 5.9184,
+      "heightM": 10.1,
+      "pivotInsideInk": true,
+      "pointKinds": [
+        "wires",
+        "secondary",
+        "lamp",
+        "drop"
+      ],
+      "sheet": {
+        "cols": 8,
+        "rows": 1,
+        "sheetW": 1424,
+        "sheetH": 306
+      }
+    }
+  ]
+}

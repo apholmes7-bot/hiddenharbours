@@ -38,10 +38,10 @@
         "swayNote": "ONE sway row is baked, on purpose: HiddenHarboursTreeWind.shader sways the canopy off the shared deterministic wind (_WindWorld) that the grass and water also read, so one gust moves all three together — and because the shader passes uv through untouched, albedo/mask/normal stay co-registered by construction. Baked frames would loop on a timer that knows nothing about the wind, at 4x the sheet area."
     },
     "channels": {
-        "albedo": "RGBA, binary alpha, no AA, keyline included",
+        "albedo": "RGBA, binary alpha, no AA, NO keyline (ADR 0031)",
         "mask": "R=key light, G=back rim, B=depth, A=coverage",
         "normal": "view-space normal, R=x, G=y-up, B=toward camera",
-        "coverageNote": "albedo and mask cover the same pixels; the NORMAL is 11% smaller because the rig's 1 px keyline ring is composited into rgba (and so into the mask's A) but carries no surface normal. Measured on Red Spruce mature (pass-2 rig): albedo/mask 6570 px, normal 5848 px, difference 722 px = exactly the keyline (pass 1: 7601 / 6990 / 611 px = 8%; the serrated pass-2 outline has more perimeter per unit area, so the ring is a larger share). Light the keyline from the mask, never from the normal — and note the three sheets import Tight, so the NORMAL's own mesh is slightly smaller too: sample all three through the ALBEDO's mesh and uv, do not give each channel its own renderer."
+        "coverageNote": "all THREE sheets cover exactly the same pixels — the rig's geometry. That is new: ADR 0031 wave 2 retired the 1 px keyline ring, which used to be composited into rgba (and so into the mask's A) while carrying no surface normal, leaving the NORMAL 11% smaller. Measured on Red Spruce mature: albedo/mask 6570 px against normal 5848 px, a difference of 722 px = exactly the ring; retiring it took albedo/mask to 5848 (pass 1 was 7601 / 6990 / 611 px = 8%). Sample all three through the ALBEDO's mesh and uv anyway, and keep the no-normal fallback: the sheets import Tight, so the meshes can still differ, and the lighting include is shared with rigs and older sheets that do carry a ring."
     },
     "trees": [
         {

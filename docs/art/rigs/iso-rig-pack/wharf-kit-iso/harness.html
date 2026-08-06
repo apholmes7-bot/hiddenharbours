@@ -1,0 +1,65 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Wharf ISO rig — bake harness</title>
+<style>
+  body { margin:0; background:#0a1014; color:#cfd8d6; font:12px ui-monospace,Menlo,monospace; padding:18px 22px 40px; }
+  h1 { font:15px ui-monospace,monospace; letter-spacing:0.12em; color:#eef3f2; margin:0 0 4px; }
+  p  { color:#5f7c82; margin:0 0 16px; }
+  canvas { image-rendering:pixelated; display:block; border:1px solid #1e2f36; background:#0f1b21; }
+  label { color:#8fa8ad; margin-right:14px; }
+  input { background:#101c22; color:#cfd8d6; border:1px solid #24383f; padding:3px 5px; width:56px; font:inherit; }
+  button { background:#7fd0c0; color:#0b1216; border:0; padding:6px 14px; font:inherit; letter-spacing:0.08em; cursor:pointer; }
+</style>
+<script src="wharfIsoRig.js"></script></head>
+<body>
+<h1>WHARF ISO RIG &mdash; BAKE HARNESS</h1>
+<p>Every family across a tide sweep, one contact sheet. 32 px = 1 m. No water pixels are baked.</p>
+<div style="display:flex;align-items:center;gap:4px;margin-bottom:14px;">
+  <label>range <input id="range" value="1.8"></label>
+  <label>bays <input id="bays" value="4"></label>
+  <label>width <input id="width" value="4.2"></label>
+  <label>dir <input id="dir" value="3"></label>
+  <button id="go">BAKE</button>
+  <span id="stat" style="color:#5f7c82;margin-left:12px;"></span>
+</div>
+<canvas id="sheet" width="1200" height="600"></canvas>
+<script>
+  const cv = document.getElementById('sheet'), ctx = cv.getContext('2d');
+  function bake(){
+    const R = +document.getElementById('range').value || 1.8;
+    const bays = +document.getElementById('bays').value || 4;
+    const width = +document.getElementById('width').value || 4.2;
+    const dir = (+document.getElementById('dir').value || 0) & 7;
+    const fams = WharfIso.list(), steps = [0, 0.25, 0.5, 0.75, 1];
+    const t0 = performance.now(), cells = [];
+    let cw = 0, chh = 0;
+    for(const fam of fams){
+      const row = [];
+      for(const t of steps){
+        const c = WharfIso.render(fam, dir, { tide:+(t*R).toFixed(3), tideRange:R, bays, width, variant:2 });
+        cw = Math.max(cw, c.w); chh = Math.max(chh, c.h); row.push(c);
+      }
+      cells.push({ fam, row });
+    }
+    const colW = cw + 12, rowH = chh + 26;
+    cv.width = colW * steps.length + 130; cv.height = rowH * fams.length + 10;
+    ctx.fillStyle = '#0f1b21'; ctx.fillRect(0, 0, cv.width, cv.height);
+    ctx.font = '10px ui-monospace,monospace';
+    cells.forEach((r, i)=>{
+      ctx.fillStyle = '#cfd8d6';
+      ctx.fillText(WharfIso.FAMILIES[r.fam].label.toUpperCase(), 8, i * rowH + 16);
+      r.row.forEach((c, j)=>{
+        const tmp = document.createElement('canvas'); tmp.width = c.w; tmp.height = c.h;
+        tmp.getContext('2d').putImageData(new ImageData(c.data, c.w, c.h), 0, 0);
+        ctx.drawImage(tmp, 130 + j * colW + ((cw - c.w) >> 1), i * rowH + 6 + (chh - c.h));
+        ctx.fillStyle = '#4e6a70';
+        ctx.fillText((steps[j] * R).toFixed(2) + ' m', 130 + j * colW + 2, i * rowH + rowH - 4);
+      });
+    });
+    document.getElementById('stat').textContent =
+      fams.length * steps.length + ' cells in ' + Math.round(performance.now() - t0) + ' ms  \u00b7  '
+      + cv.width + '\u00d7' + cv.height;
+  }
+  document.getElementById('go').onclick = bake;
+  bake();
+</script>
+</body></html>
