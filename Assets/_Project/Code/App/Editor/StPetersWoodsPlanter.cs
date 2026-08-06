@@ -179,10 +179,22 @@ namespace HiddenHarbours.App.Editor
         /// Tagging the ClumpWide pair <c>sward</c> in <c>grassSpeciesRig.js</c> — a manifest retag, no
         /// new pixels — would cut the sward's renderer count by about a quarter. Flagged for the
         /// art-director lane rather than fudged here.</para>
+        ///
+        /// <para><b>⭐ AND A POOL TOO THIN TO READ AS A FIELD BORROWS FROM AN ALLY (2026-08-06).</b> The
+        /// owner's "the saggy clumps are all the same sprite" was the library talking: five of 29 baked
+        /// variants are two cells wide, so the island's cores ran on the two that carry <c>meadow</c>,
+        /// and the whole path VERGE ran on those same two and nothing else. Where a pool is below
+        /// <see cref="StPetersGrass.MinHabitatVariety"/> it now takes art from
+        /// <see cref="StPetersGrass.AlliesFor"/> — same height class only, so the ground still reads as
+        /// itself. This is the catalog's own empty-pool fallback caught earlier and far more narrowly
+        /// (an ordered ally list, not the whole library); it buys variety out of art that is ALREADY
+        /// baked, and it is NOT a substitute for the retag above.</para>
         /// </summary>
         public sealed class GrassArtChooser
         {
             readonly List<GrassLibraryCatalog.Entry> _imported;
+            readonly Dictionary<string, List<GrassLibraryCatalog.Entry>> _bakedByHabitat =
+                new Dictionary<string, List<GrassLibraryCatalog.Entry>>();
             readonly Dictionary<string, List<GrassLibraryCatalog.Entry>> _byHabitat =
                 new Dictionary<string, List<GrassLibraryCatalog.Entry>>();
             readonly Dictionary<string, List<GrassLibraryCatalog.Entry>> _broadByHabitat =
@@ -191,28 +203,92 @@ namespace HiddenHarbours.App.Editor
             public GrassArtChooser(List<GrassLibraryCatalog.Entry> imported) =>
                 _imported = imported ?? new List<GrassLibraryCatalog.Entry>();
 
-            /// <summary>Everything baked for a habitat. <c>Library.Choose</c> falls back to the whole
-            /// library rather than returning nothing, which is what keeps an untagged habitat planted
-            /// instead of bald.</summary>
-            public List<GrassLibraryCatalog.Entry> For(string habitat)
+            /// <summary>Exactly what the manifest tagged for this habitat — no borrowing.
+            /// <c>Library.Choose</c> falls back to the whole library rather than returning nothing,
+            /// which is what keeps an untagged habitat planted instead of bald.</summary>
+            public List<GrassLibraryCatalog.Entry> BakedFor(string habitat)
             {
-                if (_byHabitat.TryGetValue(habitat, out var list)) return list;
+                if (_bakedByHabitat.TryGetValue(habitat, out var list)) return list;
                 var narrowed = new GrassLibraryCatalog.Library();
                 narrowed.Entries.AddRange(_imported);
                 list = narrowed.Choose(new[] { habitat }, null);
+                _bakedByHabitat[habitat] = list;
+                return list;
+            }
+
+            /// <summary>Everything a habitat may wear — what was baked for it, widened from its
+            /// documented allies when that is too thin to read as a field
+            /// (<see cref="StPetersGrass.MinHabitatVariety"/>).</summary>
+            public List<GrassLibraryCatalog.Entry> For(string habitat)
+            {
+                if (_byHabitat.TryGetValue(habitat, out var list)) return list;
+                list = Widen(habitat, BakedFor(habitat), BakedFor);
                 _byHabitat[habitat] = list;
                 return list;
             }
 
-            /// <summary>The broad art of a habitat — at least two cells wide — or its normal list when
-            /// nothing baked for that ground is broad.</summary>
+            /// <summary>The broad art of a habitat — at least two cells wide — widened from its allies'
+            /// BROAD art on the same rule, or its normal list when nothing baked for that ground is
+            /// broad at all.
+            ///
+            /// <para>⚠ Widened from the BAKED pool, never from <see cref="For"/>: taking the wide
+            /// entries of an already-widened list would let an ally in twice and quietly re-weight the
+            /// roll toward whatever the ally lent.</para></summary>
             public List<GrassLibraryCatalog.Entry> BroadFor(string habitat)
             {
                 if (_broadByHabitat.TryGetValue(habitat, out var list)) return list;
-                list = For(habitat).Where(e => e.Width >= GrassLibraryCatalog.Ppu * 2).ToList();
-                if (list.Count == 0) list = For(habitat);
+                var seed = BroadOf(BakedFor(habitat));
+                list = seed.Count == 0
+                    ? For(habitat)                                   // nothing wide here; sparser art beats bald
+                    : Widen(habitat, seed, h => BroadOf(BakedFor(h)));
                 _broadByHabitat[habitat] = list;
                 return list;
+            }
+
+            static List<GrassLibraryCatalog.Entry> BroadOf(List<GrassLibraryCatalog.Entry> entries) =>
+                entries.Where(e => e.Width >= GrassLibraryCatalog.Ppu * 2).ToList();
+
+            /// <summary>
+            /// Borrow from <see cref="StPetersGrass.AlliesFor"/>, in order, until the pool clears
+            /// <see cref="StPetersGrass.MinHabitatVariety"/> or the allies run out.
+            ///
+            /// <para><b>An ally lends only art of a height class the pool ALREADY has.</b> That is what
+            /// keeps a borrow from changing the ground's read rather than just its variety — the verge's
+            /// two baked variants are both short, so it borrows the meadow's short blades and never its
+            /// tall timothy. A pool that somehow declares no height class borrows nothing rather than
+            /// everything.</para>
+            ///
+            /// <para>Order is manifest order then ally order, and entries dedupe by NAME (a variant
+            /// carries several habitat tags — ClumpWide is both meadow and verge), so the widened list
+            /// is the same list every build and the site's roll keeps landing on the same blade
+            /// (rule 5).</para>
+            /// </summary>
+            static List<GrassLibraryCatalog.Entry> Widen(
+                string habitat, List<GrassLibraryCatalog.Entry> seed,
+                System.Func<string, List<GrassLibraryCatalog.Entry>> poolFor)
+            {
+                if (seed.Count >= StPetersGrass.MinHabitatVariety) return seed;
+
+                var classes = new HashSet<string>(
+                    seed.Select(e => e.HeightClass).Where(c => !string.IsNullOrEmpty(c)),
+                    System.StringComparer.OrdinalIgnoreCase);
+                if (classes.Count == 0) return seed;
+
+                var widened = new List<GrassLibraryCatalog.Entry>(seed);
+                var seen = new HashSet<string>(seed.Select(e => e.Name), System.StringComparer.Ordinal);
+
+                foreach (string ally in StPetersGrass.AlliesFor(habitat))
+                {
+                    foreach (var e in poolFor(ally))
+                    {
+                        if (widened.Count >= StPetersGrass.MinHabitatVariety) break;
+                        if (e.HeightClass == null || !classes.Contains(e.HeightClass)) continue;
+                        if (!seen.Add(e.Name)) continue;
+                        widened.Add(e);
+                    }
+                    if (widened.Count >= StPetersGrass.MinHabitatVariety) break;
+                }
+                return widened;
             }
 
             /// <summary>The entry a site grows, or null when the library has nothing at all. The site's

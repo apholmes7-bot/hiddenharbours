@@ -82,7 +82,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
 
         /// <summary>
         /// THE SHADER'S LOAD-BEARING PRECONDITION, measured off the art. HiddenHarboursFlower.shader shifts poses
-        /// with <c>frac(uv.x + k / _Cols)</c>. That lands on the next pose only if a cell is EXACTLY 1/_Cols of the
+        /// with <c>uv.x + k / _Cols</c>. That lands on the next pose only if a cell is EXACTLY 1/_Cols of the
         /// sheet's width — i.e. the sway columns tile the sheet with no remainder. If a re-export ever adds
         /// padding or a fifth column, the shader silently samples a neighbouring pose's pixels and this catches it.
         /// </summary>
@@ -134,7 +134,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 }
             }
             Assert.IsEmpty(offenders,
-                "A SpriteAtlas is packing the flower sheets. HiddenHarboursFlower.shader's frac(uv.x + k/_Cols) " +
+                "A SpriteAtlas is packing the flower sheets. HiddenHarboursFlower.shader's uv.x + k/_Cols " +
                 "pose select assumes sprite UVs map straight onto the SOURCE texture — atlas-packed, it will " +
                 "sample other flowers' pixels. Exclude Art/Foliage/Flowers from the atlas, or replace the pose " +
                 "select with a per-sprite rect uniform:\n  " + string.Join("\n  ", offenders));
