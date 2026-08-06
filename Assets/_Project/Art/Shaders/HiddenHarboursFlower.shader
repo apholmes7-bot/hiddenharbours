@@ -17,7 +17,8 @@
 //      col 2 PIXEL-IDENTICAL to col 0, col 3 leaned left. So we SELECT THE COLUMN in-shader rather than throw 75%
 //      of the art away (or introduce an Animator per flower, which would batch-break and, worse, could not react
 //      to the wind at all). Because every tier is exactly 4 columns, a cell is exactly 1/_Cols wide in UV, so
-//      `frac(uv.x + k / _Cols)` picks pose (c+k) mod 4 OF THE SAME ROW with ZERO per-instance data. It batches.
+//      `uv.x + k / _Cols` picks pose c+k OF THE SAME ROW with ZERO per-instance data. It batches. It must NOT be
+//      wrapped with frac() — see the ⚠ at the pose select for the bug that cost, and what makes the bare add safe.
 //
 // THE TWO MOTIONS COMPOSE. The drawn poses give the flower's own hand-articulated sway (a fixed few pixels); the
 // vertex bend adds the wind's FORCE on top (amplitude grows with wind, and a steady wind holds a lean). Both are
@@ -48,11 +49,12 @@
 // material property (rule 6). The three shipped Flower_*.mat variants are force-compiled headless by
 // Assets/Tests/EditMode/Art/FlowerShaderCompileGuardTests.cs so a broken flower shader fails CI red.
 //
-// ONE STANDING HAZARD, CALLED OUT LOUDLY: the `frac(uv.x + k / _Cols)` column select holds because a sprite's UVs
-// map DIRECTLY onto its source texture — there is NO SpriteAtlas in this project today. If a SpriteAtlas is ever
+// ONE STANDING HAZARD, CALLED OUT LOUDLY: the `uv.x + k / _Cols` column select holds because a sprite's UVs map
+// DIRECTLY onto its source texture, on the SLICER'S EXACT GRID — there is NO SpriteAtlas in this project today,
+// and the sheets are grid-sliced (measured: rects at x = 0/32/64/96, never alpha-tight). If a SpriteAtlas is ever
 // introduced and it packs these sheets, sprite UVs are remapped into the atlas page, cells stop being 1/_Cols
 // apart, and the column select will sample NEIGHBOURING FLOWERS' pixels. Exclude Art/Foliage/Flowers from any
-// atlas, or replace this with a per-sprite rect uniform.
+// atlas, or replace this with a per-sprite rect uniform. The same is true if the sheets are ever re-sliced tight.
 Shader "HiddenHarbours/FlowerWind"
 {
     Properties
@@ -287,9 +289,26 @@ Shader "HiddenHarbours/FlowerWind"
                 float poseRate  = _PoseIdleSpeed + windStr * _PoseWindSpeed;
                 float posePhase = _Time.y * poseRate - travel + phase;
                 float k = floor(frac(posePhase / TAU) * max(_Cols, 1.0));
-                // Cells are exactly 1/_Cols apart in UV, so adding k/_Cols and wrapping with frac lands on pose
-                // (c + k) mod _Cols OF THE SAME ROW. uv.y is untouched, so the bloom stage never changes.
-                OUT.uv = float2(frac(IN.uv.x + k / max(_Cols, 1.0)), IN.uv.y);
+                // Cells are exactly 1/_Cols apart in UV, so adding k/_Cols lands on pose c+k OF THE SAME ROW.
+                // uv.y is untouched, so the bloom stage never changes.
+                //
+                // ⚠ DO NOT WRAP THIS WITH frac(). That is a VERTEX shader value that the rasteriser INTERPOLATES
+                // across the quad, so a wrap has to be the same for every vertex or the interpolator sweeps
+                // between two unrelated columns. `frac(IN.uv.x + k/_Cols)` was the shipped bug (fixed 2026-08-06):
+                // an authored column-0 flower spans uv.x EXACTLY 0.00..0.25, so at k=3 the left vertex got
+                // frac(0.75) = 0.75 while the right vertex got frac(1.00) = 0.00 — the quad then interpolated
+                // BACKWARDS across the whole texture and rendered a squeezed, reversed strip of all four poses
+                // inside one flower. A single bud became a "multi-bloom" for a QUARTER of every cycle (~1.4 s in
+                // every 5.7 s at idle), which is precisely the "flowers swap sprites every few seconds" defect.
+                // k = 0,1,2 never wrapped, so three poses looked right and only the fourth was garbage.
+                //
+                // The bare add is exact because AUTHORING ONLY EVER PLACES COLUMN 0 (FlowerCatalog.LoadNeutral —
+                // the prefab builder, the planter and the Flower Paint Tool all go through it), so the shifted u
+                // reaches at most 0.25 + 0.75 = 1.0, the texture's right edge, and never leaves the sheet. That
+                // precondition and this line are pinned together by FlowerPoseSelectTests — if a future placement
+                // ever authors a non-zero column, the pose select needs the sprite's own column as per-quad data,
+                // NOT a frac() put back here.
+                OUT.uv = float2(IN.uv.x + k / max(_Cols, 1.0), IN.uv.y);
 
                 OUT.positionCS = TransformWorldToHClip(wp);
                 OUT.color = IN.color * _Color;
