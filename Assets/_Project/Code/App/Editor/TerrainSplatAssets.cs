@@ -8,8 +8,8 @@ using Object = UnityEngine.Object;
 namespace HiddenHarbours.App.Editor
 {
     /// <summary>
-    /// Asset plumbing for the four painted splat maps (ADR 0028 PR 2 addendum; the fourth arrived
-    /// with terrain kit v2) — the paths the
+    /// Asset plumbing for the five painted splat maps (ADR 0028 PR 2 addendum; the fourth arrived
+    /// with terrain kit v2, the fifth with v3's reef beds) — the paths the
     /// builder wires, blank minting, the DATA-texture importer, and the commit that mirrors the
     /// height brush's <c>CommitTexture()</c> flow (encode → write → reimport → RELOAD from disk
     /// before anything re-wires a reference, because a reimport invalidates the in-memory object).
@@ -24,12 +24,12 @@ namespace HiddenHarbours.App.Editor
     {
         public const string Dir = "Assets/_Project/Data/Terrain";
 
-        /// <summary>The St Peters splat stem — <c>StPetersSplatA/B/C/D.png</c>, the EXACT paths
+        /// <summary>The St Peters splat stem — <c>StPetersSplatA/B/C/D/E.png</c>, the EXACT paths
         /// <c>StPetersBuilder</c> loads when it wires <c>TerrainSplatSurface.ConfigureSplat</c>
         /// (a pin test holds the two spellings together).</summary>
         public const string StPetersBaseName = "StPetersSplat";
 
-        /// <summary>The i-th splat texture's asset path (0=A 1=B 2=C 3=D).</summary>
+        /// <summary>The i-th splat texture's asset path (0=A 1=B 2=C 3=D 4=E).</summary>
         public static string PathOf(int textureIndex) =>
             Dir + "/" + StPetersBaseName + TerrainSplatBrush.TextureSuffixes[textureIndex] + ".png";
 

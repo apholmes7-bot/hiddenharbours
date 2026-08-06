@@ -17,10 +17,18 @@ namespace HiddenHarbours.App.Editor
     /// <para><b>What it paints (with restraint — a starting point, not a finished ground):</b>
     /// first the kit-v2 SHORE BANDS — FORESHORE across the wave-worked sand the tide crosses,
     /// ROCKWEED on intertidal rock up to the neap-high drying line, and above that the weather
-    /// coast's LEDGE pavement and TALUS scree, split by slope — then the v1 features over the top:
-    /// a worn DIRT path from the village green to the slip, a second from the village to the bar
-    /// head, SILT patches hugging the boat channel's edges on the flats, and a MARSH pocket in a
-    /// sheltered NW hollow with a thin SEDGE fringe grading into the meadow.</para>
+    /// coast's LEDGE pavement and TALUS scree, split by slope — then the kit-v3 REEF BEDS as
+    /// patches low in the tide (EELGRASS on the lowest ground and into the channel, OYSTERREEF and
+    /// MUSSELBED on the sheltered mud above it, IRISHMOSS on the exposed rock below the weed) —
+    /// then the v1 features over the top: a worn DIRT path from the village green to the slip, a
+    /// second from the village to the bar head, SILT patches hugging the boat channel's edges on
+    /// the flats, and a MARSH pocket in a sheltered NW hollow with a thin SEDGE fringe grading into
+    /// the meadow.</para>
+    ///
+    /// <para><b>The beds are what the tide hides.</b> Painting them low in the tide is the entire
+    /// mechanism — the sea plane covers ground below the live waterline (ADR 0012), so a bed bares
+    /// and drowns on its own twice a day with no bed-specific code anywhere. Their windows are
+    /// authored as tide FRACTIONS for the same reason the bands are.</para>
     ///
     /// <para><b>Bands are placed by TIDE STATE, never by elevation literals</b> — spring low, neap
     /// high and spring high all derive from <see cref="StPetersBuilder.TideAmplitude"/> and
@@ -45,6 +53,10 @@ namespace HiddenHarbours.App.Editor
         public const int Talus = 11;
         public const int Ledge = 12;
         public const int Rockweed = 13;
+        public const int Musselbed = 14;
+        public const int Oysterreef = 15;
+        public const int Eelgrass = 16;
+        public const int Irishmoss = 17;
 
         // =========================================================================================
         //  THE TIDE, AS THE SHORE SEES IT (kit v2 families — all derived, never authored)
@@ -67,6 +79,19 @@ namespace HiddenHarbours.App.Editor
         public static float NeapHighWater =>
             StPetersBuilder.TideMean
             + StPetersBuilder.TideAmplitude * GameConfig.DefaultNeapAmplitudeFraction;
+
+        /// <summary>
+        /// An elevation stated as a TIDE FRACTION: −1 = spring low, −<see cref="GameConfig.DefaultNeapAmplitudeFraction"/>
+        /// = neap low, 0 = mean water, +neap = neap high, +1 = spring high.
+        ///
+        /// <para>⭐ This is the unit every v3 bed window is authored in, and it is the whole reason
+        /// they survive a tide ruling. The owner's 2026-08-01 amplitude change (3.5 → 2.2 m) moved
+        /// mean water not at all and spring low by 1.3 m; a bed authored at "−1.4 m" would have gone
+        /// from bare-most-days to bare-almost-never without a line of code changing. Authored as a
+        /// fraction, the whole zonation rescales with the sea.</para>
+        /// </summary>
+        public static float TideElevation(float fraction) =>
+            StPetersBuilder.TideMean + StPetersBuilder.TideAmplitude * fraction;
 
         /// <summary>
         /// The island's own characteristic beach gradient: the plateau falls to the reef shelf over
@@ -112,6 +137,68 @@ namespace HiddenHarbours.App.Editor
         public const float RockweedIntensity = 0.55f;    // "a closed olive canopy"
         public const float LedgeIntensity = 0.45f;       // between intact pavement and dissected
         public const float TalusIntensity = 0.5f;        // "a closed apron"
+
+        // =========================================================================================
+        //  THE KIT V3 REEF BEDS — the ground the tide hides (owner, 2026-08-06)
+        // =========================================================================================
+        // Each bed is a TIDE WINDOW (lo → peak → hi, all as fractions of the tide) crossed with a
+        // substrate gate and a patchiness field. Nothing here is an elevation literal, for the reason
+        // TideElevation spells out.
+        //
+        // ⭐ WHAT MAKES THEM "HIDDEN BY TIDES" IS THE WINDOW, AND NOTHING ELSE. There is no bed-tide
+        // component, no reveal script, no per-bed submerged sorting. Ground below the live waterline
+        // is already covered by the Sea plane (ADR 0012's reveal; the splat quad sorts under the sea
+        // at −5), so a bed painted low in the tide bares and drowns twice a day for free. That is
+        // also why the four windows below ARE the feature: move one and you change what the player
+        // can walk to, on which tides.
+        //
+        // The zonation, from the bottom up (kit README §6 + the PEI shore it is drawn from):
+        //   eelgrass   the lowest paintable ground — bares only on a big spring low
+        //   oysterreef sheltered mud a little above it
+        //   irishmoss  the same depth band but on the EXPOSED rock, below the weed
+        //   musselbed  low-to-mid on the sheltered mud — the one a player meets on an ordinary tide
+        //
+        // ⚠ The paint floor (−1.95 m) sits ABOVE spring low (−2.2 m), so "subtidal" cannot mean
+        // "below spring low" — there is no painted ground down there to put a meadow on. It means
+        // the lowest strip the painting actually reaches, which is why every peak below is kept
+        // above the paint floor; a peak underneath it would cap that bed's coverage at a fraction of
+        // its own intensity everywhere, and it would read as a permanently sparse bed.
+        public const float EelgrassLoFraction = -1.00f, EelgrassPeakFraction = -0.80f, EelgrassHiFraction = -0.35f;
+        public const float OysterLoFraction = -0.95f, OysterPeakFraction = -0.60f, OysterHiFraction = -0.20f;
+        public const float IrishmossLoFraction = -0.95f, IrishmossPeakFraction = -0.55f, IrishmossHiFraction = -0.10f;
+        public const float MusselLoFraction = -0.80f, MusselPeakFraction = -0.40f, MusselHiFraction = 0.05f;
+
+        /// <summary>
+        /// How big a bed is, in metres — the lattice cell of the patchiness field. A bed is a PLACE,
+        /// not an elevation: without this term every metre of sheltered mud in the window would be
+        /// mussels, which is a carpet, not a bed. 48 m gives features a boat crosses in a few
+        /// seconds and a walker meets one of on a low-tide flat.
+        /// </summary>
+        public const float BedPatchCellMetres = 48f;
+
+        /// <summary>Where a bed starts, on the patch field's −1..1 range. Above 0 so beds are the
+        /// minority of eligible ground; the field is bilinear-smoothed hash noise, which concentrates
+        /// toward the middle, so this is a stronger filter than the number looks.</summary>
+        public const float BedPatchThreshold = 0.12f;
+
+        /// <summary>How far past the threshold the patch reaches full strength — the bed's MARGIN,
+        /// and the width of the ground the kit's Reefedge strip is drawn for.</summary>
+        public const float BedPatchSoftness = 0.30f;
+
+        // Ladder positions. All four kit base steps are already the look wanted here — "a closed
+        // bed", "a working reef, channels open", "a closed meadow", "a closed turf" — so all four sit
+        // at base and leave _Hi (thick and hummocked, channels choked, epiphyte crusted) for the
+        // owner's own emphasis pockets, the same restraint the v2 families were painted with.
+        public const float MusselIntensity = 0.5f;
+        public const float OysterIntensity = 0.5f;
+        public const float EelgrassIntensity = 0.5f;
+        public const float IrishmossIntensity = 0.5f;
+
+        // One hash lane per bed, so retuning one never re-rolls where the others sit.
+        private const int SaltEelgrass = 71;
+        private const int SaltOyster = 72;
+        private const int SaltIrishmoss = 73;
+        private const int SaltMussel = 74;
 
         // --- Stroke tunables (the owner's ask: subtle, low intensity) ---------------------------
         /// <summary>
@@ -427,6 +514,100 @@ namespace HiddenHarbours.App.Editor
                    * Steepness(g);
         }
 
+        // =========================================================================================
+        //  THE V3 BEDS — habitat (pure, testable) and placement (patchy, deterministic), kept apart
+        // =========================================================================================
+        // Two different questions, so two different functions:
+        //   *Coverage   "is this the right GROUND for this bed?"  — tide window x substrate
+        //   PatchGateOf "is there a bed HERE?"                    — a coherent field, thresholded
+        // Keeping them apart is what lets the habitat rules stay pure functions of a GroundSample
+        // (no world position, no noise) while placement still gets to be patchy. Multiplying them in
+        // one function would mean no test could ever ask "is the mussel window right?" without also
+        // landing on a texel the patch field happened to like.
+
+        /// <summary>A bed's tide window, in fractions of the tide — see <see cref="TideElevation"/>.</summary>
+        public static float BedWindow(float elevation, float loFraction, float peakFraction, float hiFraction) =>
+            Hump(elevation, TideElevation(loFraction), TideElevation(peakFraction), TideElevation(hiFraction));
+
+        /// <summary>
+        /// <b>Musselbed</b> — "a closed bed" on soft anoxic mud, low-to-mid tide on the SHELTERED
+        /// side. This is the bed an ordinary low tide bares, so it is the one the player actually
+        /// meets on the flats.
+        ///
+        /// <para>The sand gate is also what keeps the kit's own prohibition (README §6: "Musselbed
+        /// and Rockweed do not belong on the same rock") true by construction rather than by a
+        /// second rule that could drift: rockweed needs <c>IsRock</c>, a bed needs <c>IsSand</c>,
+        /// and no texel is both. It doubles as the shelter test — the weather coast's band ladder
+        /// only ever yields shingle, shelf or grass, so sand underfoot means the sheltered side.</para>
+        /// </summary>
+        public static float MusselbedCoverage(in GroundSample g) =>
+            !g.IsSand ? 0f : BedWindow(g.Elevation, MusselLoFraction, MusselPeakFraction, MusselHiFraction);
+
+        /// <summary>
+        /// <b>Oysterreef</b> — "a working reef, channels open" on the same sheltered mud as the
+        /// mussels but lower, so it bares on the bigger tides rather than every day.
+        /// </summary>
+        public static float OysterreefCoverage(in GroundSample g) =>
+            !g.IsSand ? 0f : BedWindow(g.Elevation, OysterLoFraction, OysterPeakFraction, OysterHiFraction);
+
+        /// <summary>
+        /// <b>Eelgrass</b> — "a closed meadow" on muddy sand, the lowest paintable ground and into
+        /// the boat channel. Effectively subtidal: it spends nearly all its life under water and
+        /// shows through it, which is the point of putting it here rather than higher.
+        /// </summary>
+        public static float EelgrassCoverage(in GroundSample g) =>
+            !g.IsSand ? 0f : BedWindow(g.Elevation, EelgrassLoFraction, EelgrassPeakFraction, EelgrassHiFraction);
+
+        /// <summary>
+        /// <b>Irishmoss</b> — "a closed turf" on red cobble, low on the EXPOSED rock, below the
+        /// rockweed belt. The weather coast is explicit here because <see cref="GroundSample.IsRock"/>
+        /// is true on the sheltered side too (its band ladder ends in shelf) — and a moss turf is a
+        /// thing of the open, scoured shore.
+        /// </summary>
+        public static float IrishmossCoverage(in GroundSample g) =>
+            !g.WeatherCoast || !g.IsRock
+                ? 0f
+                : BedWindow(g.Elevation, IrishmossLoFraction, IrishmossPeakFraction, IrishmossHiFraction);
+
+        /// <summary>
+        /// Is there a bed at this spot? A coherent field over world position, thresholded — the kit's
+        /// rule 13 shape ("coverage moves the threshold; it never fades the objects") applied at
+        /// region scale. Reuses <see cref="StPetersShoreMap.Wiggle"/> rather than growing a second
+        /// noise: the position is pre-scaled so the same tested primitive yields a
+        /// <see cref="BedPatchCellMetres"/> lattice instead of its native band-wiggle one.
+        ///
+        /// <para>Deterministic and seed-free — a pure function of position and salt (rule 5), so
+        /// re-running the pass puts every bed back exactly where it was.</para>
+        /// </summary>
+        public static float BedPatch(Vector2 worldPos, int salt)
+        {
+            float field = StPetersShoreMap.Wiggle(
+                worldPos * (StPetersShoreMap.BandWiggleScale / BedPatchCellMetres), salt);
+            return Ramp(BedPatchThreshold, BedPatchThreshold + BedPatchSoftness, field);
+        }
+
+        /// <summary>The patch gate for one material — 1 for everything that is not a bed, because
+        /// the v2 families are continuous BANDS (a foreshore really is the whole wave-worked zone)
+        /// and gating them would punch holes in the shore. Uniform so the paint loop needs no
+        /// special case for beds.</summary>
+        public static float PatchGateOf(int material, Vector2 worldPos)
+        {
+            switch (material)
+            {
+                case Musselbed:  return BedPatch(worldPos, SaltMussel);
+                case Oysterreef: return BedPatch(worldPos, SaltOyster);
+                case Eelgrass:   return BedPatch(worldPos, SaltEelgrass);
+                case Irishmoss:  return BedPatch(worldPos, SaltIrishmoss);
+                default:         return 1f;
+            }
+        }
+
+        /// <summary>True for the four kit-v3 reef beds — the materials that are PLACES rather than
+        /// bands, and so the ones <see cref="PatchGateOf"/> actually gates.</summary>
+        public static bool IsBed(int material) =>
+            material == Musselbed || material == Oysterreef ||
+            material == Eelgrass || material == Irishmoss;
+
         /// <summary>The four v2 families in canonical splat order, with their ladder intensities —
         /// the one list the paint pass and the tests both read.</summary>
         /// <para>ORDER IS THE LAYERING. Each is painted exclusively, so a later family takes the
@@ -441,16 +622,56 @@ namespace HiddenHarbours.App.Editor
             (Rockweed,  RockweedIntensity,  "Rockweed"),
         };
 
-        /// <summary>Coverage for one family at one sample — dispatch shared by the pass and tests.</summary>
+        /// <summary>
+        /// The four v3 reef beds, LOWEST FIRST — and that order is the zonation. Each is painted
+        /// exclusively, so a higher bed takes the overlap from the one below it, which is how a real
+        /// shore stacks: eelgrass gives way to the oyster ground, the oyster ground to the mussels.
+        /// Irish moss is last and conflicts with none of them — it is the only one on rock.
+        ///
+        /// <para>They go down AFTER the v2 families, so a bed reads as sitting ON the foreshore
+        /// rather than the foreshore closing over it — and after rockweed in particular, so the moss
+        /// claims the low rock the weed belt would otherwise drape all the way down.</para>
+        /// </summary>
+        public static readonly (int Material, float Intensity, string Name)[] KitV3Beds =
+        {
+            (Eelgrass,   EelgrassIntensity,  "Eelgrass"),
+            (Oysterreef, OysterIntensity,    "Oysterreef"),
+            (Musselbed,  MusselIntensity,    "Musselbed"),
+            (Irishmoss,  IrishmossIntensity, "Irishmoss"),
+        };
+
+        /// <summary>Every rule-placed family in PAINT ORDER — v2 bands first, then the v3 beds over
+        /// them. <see cref="BuildCoverage"/> returns one map per entry, in this order.</summary>
+        public static readonly (int Material, float Intensity, string Name)[] ShoreFamilies =
+            BuildShoreFamilies();
+
+        private static (int, float, string)[] BuildShoreFamilies()
+        {
+            var all = new (int, float, string)[KitV2Families.Length + KitV3Beds.Length];
+            KitV2Families.CopyTo(all, 0);
+            KitV3Beds.CopyTo(all, KitV2Families.Length);
+            return all;
+        }
+
+        /// <summary>
+        /// HABITAT coverage for one family at one sample — "is this the right ground?" — shared by
+        /// the pass and the tests. For the v2 bands this is the whole placement rule. For a v3 bed it
+        /// is only half of it: the bed still has to be gated by <see cref="PatchGateOf"/>, or the
+        /// window would carpet every eligible metre of the island.
+        /// </summary>
         public static float CoverageOf(int material, in GroundSample g)
         {
             switch (material)
             {
-                case Foreshore: return ForeshoreCoverage(g);
-                case Talus:     return TalusCoverage(g);
-                case Ledge:     return LedgeCoverage(g);
-                case Rockweed:  return RockweedCoverage(g);
-                default:        return 0f;
+                case Foreshore:  return ForeshoreCoverage(g);
+                case Talus:      return TalusCoverage(g);
+                case Ledge:      return LedgeCoverage(g);
+                case Rockweed:   return RockweedCoverage(g);
+                case Musselbed:  return MusselbedCoverage(g);
+                case Oysterreef: return OysterreefCoverage(g);
+                case Eelgrass:   return EelgrassCoverage(g);
+                case Irishmoss:  return IrishmossCoverage(g);
+                default:         return 0f;
             }
         }
 
@@ -484,15 +705,16 @@ namespace HiddenHarbours.App.Editor
             StPetersShoreMap.IsBarSpine(pos, elevation);
 
         /// <summary>
-        /// Build one coverage map per v2 family over the splat texel grid, in
-        /// <see cref="KitV2Families"/> order. One sweep of the terrain feeds all four (the classifier
-        /// is the expensive part and none of the rules disagree about the ground), and the result is
-        /// a plain float array per family — no Unity types, so a test can assert on it directly.
+        /// Build one coverage map per rule-placed family over the splat texel grid, in
+        /// <see cref="ShoreFamilies"/> order (v2 bands, then v3 beds). One sweep of the terrain feeds
+        /// them all (the classifier is the expensive part and none of the rules disagree about the
+        /// ground), and the result is a plain float array per family — no Unity types, so a test can
+        /// assert on it directly.
         /// </summary>
         public static float[][] BuildCoverage(ITidalTerrain terrain, int width, int height,
             Vector2 worldMin, Vector2 worldSize)
         {
-            var maps = new float[KitV2Families.Length][];
+            var maps = new float[ShoreFamilies.Length][];
             for (int f = 0; f < maps.Length; f++) maps[f] = new float[width * height];
             if (terrain == null) return maps;
 
@@ -519,8 +741,13 @@ namespace HiddenHarbours.App.Editor
                 if (g.OnBarSpine) continue;
 
                 int idx = y * width + x;
-                for (int f = 0; f < KitV2Families.Length; f++)
-                    maps[f][idx] = CoverageOf(KitV2Families[f].Material, g);
+                for (int f = 0; f < ShoreFamilies.Length; f++)
+                {
+                    int material = ShoreFamilies[f].Material;
+                    // Habitat x placement. PatchGateOf is 1 for the v2 bands, so this multiply is
+                    // free for them and is the whole difference between a band and a bed.
+                    maps[f][idx] = CoverageOf(material, g) * PatchGateOf(material, pos);
+                }
             }
             return maps;
         }
@@ -541,7 +768,7 @@ namespace HiddenHarbours.App.Editor
             // there is something to lose — a first run on blank maps needs no ceremony.
             if (TerrainSplatAssets.AllExist() &&
                 !EditorUtility.DisplayDialog("Regenerate St Peters Starter Splat",
-                    "This re-derives all four splat maps from the terrain and REPLACES what is in " +
+                    "This re-derives all five splat maps from the terrain and REPLACES what is in " +
                     "them — including any hand-painting you have done with the Material brush.\n\n" +
                     "Re-run it after re-baking the seabed. Otherwise, cancel and paint by hand.",
                     "Replace the splat maps", "Cancel"))
@@ -593,18 +820,22 @@ namespace HiddenHarbours.App.Editor
 
             float pathRadius = PathWidthMetres * 0.5f;
 
-            // 0) THE KIT V2 SHORE FAMILIES — foreshore, ledge, talus, rockweed as BANDS, from the
-            //    tide and the band classifier (see the placement rules above).
+            // 0) THE RULE-PLACED SHORE — the kit v2 families (foreshore, ledge, talus, rockweed) as
+            //    BANDS, then the kit v3 reef beds (eelgrass, oysterreef, musselbed, irishmoss) as
+            //    PLACES over them, all from the tide and the band classifier (see the rules above).
             //
             //    ⭐ These go down FIRST, before the v1 features. A dirt path crossing a foreshore
             //    should read as a path, so the features must win — and because an exclusive stroke
             //    only ever lerps its own channel from what is beneath, painting the bands first
             //    leaves the v1 channels' arithmetic untouched: dirt/silt/marsh/sedge still lerp
             //    from 0 and land on exactly the values they did before this pass existed.
+            //
+            //    The beds sit inside this same loop rather than in a pass of their own, so the
+            //    exclusive layering runs in one order: ShoreFamilies IS the stacking, bottom to top.
             float[][] coverage = BuildCoverage(terrain, w, h, worldMin, worldSize);
-            for (int f = 0; f < KitV2Families.Length; f++)
+            for (int f = 0; f < ShoreFamilies.Length; f++)
             {
-                var fam = KitV2Families[f];
+                var fam = ShoreFamilies[f];
                 TerrainSplatBrush.PaintField(layers, w, h,
                     fam.Material, fam.Intensity, coverage[f], exclusive: true);
             }
@@ -684,15 +915,24 @@ namespace HiddenHarbours.App.Editor
             // the old in-memory references are invalid; wire only the fresh loads).
             foreach (var s in Object.FindObjectsByType<HiddenHarbours.Art.TerrainSplatSurface>())
             {
-                s.ConfigureSplat(textures[0], textures[1], textures[2], textures[3]);
+                s.ConfigureSplat(textures[0], textures[1], textures[2], textures[3], textures[4]);
                 if (s.isActiveAndEnabled) { s.enabled = false; s.enabled = true; }   // OnEnable → MPB push
             }
 
             Debug.Log($"[StPetersStarterSplat] painted the starter pass into {TerrainSplatAssets.PathOf(0)} " +
-                      $"/B/C/D at {w} × {h} texels. Kit-v2 shore bands: foreshore on sand " +
+                      $"/B/C/D/E at {w} × {h} texels. Kit-v2 shore bands: foreshore on sand " +
                       $"{SpringLowWater:0.##}..{SpringHighWater:0.##} m, rockweed on rock to neap high " +
                       $"({NeapHighWater:0.##} m), ledge + talus on the weather coast above it (split at " +
                       $"{TalusSlopeThreshold:0.##} m/m, {BeachGradient:0.##} × {TalusSlopeFactor:0.##}). " +
+                      $"Kit-v3 reef beds in {BedPatchCellMetres:0.#} m patches: eelgrass " +
+                      $"{TideElevation(EelgrassLoFraction):0.##}..{TideElevation(EelgrassHiFraction):0.##} m, " +
+                      $"oysterreef {TideElevation(OysterLoFraction):0.##}..{TideElevation(OysterHiFraction):0.##} m " +
+                      $"and musselbed {TideElevation(MusselLoFraction):0.##}..{TideElevation(MusselHiFraction):0.##} m " +
+                      $"on the sheltered mud, irishmoss " +
+                      $"{TideElevation(IrishmossLoFraction):0.##}..{TideElevation(IrishmossHiFraction):0.##} m on the " +
+                      $"exposed rock (truncated below by the paint floor at " +
+                      $"{StPetersShoreMap.PaintFloorElevation:0.##} m). Every window tops out under high " +
+                      "water, so the tide bares and drowns them. " +
                       $"Features over the top: dirt green→slip ({SlipPathIntensity:0.##}) and green→bar " +
                       $"head ({BarPathIntensity:0.##}), {SiltBlobs().Length} silt blobs at the channel, a " +
                       "marsh pocket + sedge fringe NW. Subtle by design — repaint it with the Material brush.");

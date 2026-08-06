@@ -1,6 +1,6 @@
 {
   "kit": "Hidden Harbours edge strips",
-  "version": 1,
+  "version": 2,
   "pxPerMetre": 32,
   "colorSpace": "sRGB",
   "alpha": "straight, 0 at both t ends — these are decals, not tiles",
@@ -23,6 +23,10 @@
       "steps": ["a faint scatter of flecks", "one continuous rope", "a storm line — three berms, driftwood"] },
     { "key": "weedline", "name": "Weed line", "anchor": 0.34, "usualNeighbours": ["ledge", "rockweed"],
       "alsoWorksOver": ["shelf|rockweed", "talus|rockweed"],
-      "steps": ["high, thin and hard — an exposed headland", "the normal zonation", "broad and ragged — a sheltered cove"] }
+      "steps": ["high, thin and hard — an exposed headland", "the normal zonation", "broad and ragged — a sheltered cove"] },
+    { "key": "reefedge", "name": "Reef margin", "anchor": 0.38, "usualNeighbours": ["musselbed", "silt"],
+      "alsoWorksOver": ["oysterreef|silt", "musselbed|foreshore", "irishmoss|ledge", "eelgrass|sand"],
+      "note": "t = 0 is ON the bed and is left almost entirely transparent — the painted bed shows through. t = 1 is the open flat.",
+      "steps": ["a soft margin, the bed just thinning out", "a rim, a moat, an apron of loose shell", "an eroding margin — undercut rim, deep moat, outliers well out"] }
   ]
 }

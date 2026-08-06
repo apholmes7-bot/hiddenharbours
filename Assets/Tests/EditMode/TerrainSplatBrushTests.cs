@@ -19,12 +19,13 @@ namespace HiddenHarbours.Tests.EditMode
         public void MaterialOrder_IsTheCanonicalSplatOrder()
         {
             // The one order everything shares: the shader's channel unpack (A.rgba B.rgba C.rgba
-            // D.rg), the pin tests, and every committed splat PNG. Append-only, never reorder.
+            // D.rgba E.rg), the pin tests, and every committed splat PNG. Append-only, never reorder.
             CollectionAssert.AreEqual(
                 new[]
                 {
                     "Grass", "Marram", "Sand", "Shingle", "Ripple", "Shelf", "Silt",
                     "Dirt", "Marsh", "Sedge", "Foreshore", "Talus", "Ledge", "Rockweed",
+                    "Musselbed", "Oysterreef", "Eelgrass", "Irishmoss",
                 },
                 TerrainSplatBrush.MaterialNames,
                 "The brush's material order drifted from the canonical splat channel order.");
@@ -53,8 +54,9 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.AreEqual(m, TerrainSplatBrush.MaterialOf(tex, ch),
                     $"material {m} does not round-trip through (texture, channel).");
             }
-            // Texture D carries only two channels (ledge, rockweed) — the last valid material is 13.
-            Assert.AreEqual(3, TerrainSplatBrush.TextureOf(TerrainSplatBrush.MaterialCount - 1));
+            // Texture E carries only two channels (eelgrass, irishmoss) — the last valid material
+            // is 17, so E.b and E.a are the two slots free.
+            Assert.AreEqual(4, TerrainSplatBrush.TextureOf(TerrainSplatBrush.MaterialCount - 1));
             Assert.AreEqual(1, TerrainSplatBrush.ChannelOf(TerrainSplatBrush.MaterialCount - 1));
         }
 
@@ -75,6 +77,34 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void KitV3Beds_LandOnTheChannelsTheHandoffPromised()
+        {
+            // The reef beds took D's two free slots and opened E. Stated as the PR body states it:
+            // if this append order ever shifts, every committed splat PNG changes meaning per
+            // channel and St Peters repaints itself silently.
+            Assert.AreEqual("SplatD.b", TerrainSplatBrush.ChannelLabel(14), "Musselbed");
+            Assert.AreEqual("SplatD.a", TerrainSplatBrush.ChannelLabel(15), "Oysterreef");
+            Assert.AreEqual("SplatE.r", TerrainSplatBrush.ChannelLabel(16), "Eelgrass");
+            Assert.AreEqual("SplatE.g", TerrainSplatBrush.ChannelLabel(17), "Irishmoss");
+
+            Assert.AreEqual("Musselbed", TerrainSplatBrush.MaterialNames[14]);
+            Assert.AreEqual("Oysterreef", TerrainSplatBrush.MaterialNames[15]);
+            Assert.AreEqual("Eelgrass", TerrainSplatBrush.MaterialNames[16]);
+            Assert.AreEqual("Irishmoss", TerrainSplatBrush.MaterialNames[17]);
+        }
+
+        [Test]
+        public void TheTwoFreeSlots_AreAtTheEnd_SoTheNextAppendCannotCollide()
+        {
+            // 18 materials in 20 channels. MaterialOf() is only meaningful below MaterialCount, so
+            // spell out WHICH two are spare — a future kit appending at 18 must land on E.b.
+            Assert.AreEqual(18, TerrainSplatBrush.MaterialOf(4, 2), "E.b should be the next slot (18).");
+            Assert.AreEqual(19, TerrainSplatBrush.MaterialOf(4, 3), "E.a should be the last slot (19).");
+            Assert.AreEqual(TerrainSplatBrush.TextureCount * 4 - 2, TerrainSplatBrush.MaterialCount,
+                "Exactly two channels should be free — if that changed, say so deliberately.");
+        }
+
+        [Test]
         public void ChannelLabels_NameTheTextureAndChannel()
         {
             Assert.AreEqual("SplatA.r", TerrainSplatBrush.ChannelLabel(0));   // grass
@@ -92,6 +122,7 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual("Assets/_Project/Data/Terrain/StPetersSplatB.png", TerrainSplatAssets.PathOf(1));
             Assert.AreEqual("Assets/_Project/Data/Terrain/StPetersSplatC.png", TerrainSplatAssets.PathOf(2));
             Assert.AreEqual("Assets/_Project/Data/Terrain/StPetersSplatD.png", TerrainSplatAssets.PathOf(3));
+            Assert.AreEqual("Assets/_Project/Data/Terrain/StPetersSplatE.png", TerrainSplatAssets.PathOf(4));
         }
 
         // ============================ FALLOFF + FLOW ============================

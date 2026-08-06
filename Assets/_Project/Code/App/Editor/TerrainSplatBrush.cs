@@ -10,15 +10,16 @@ namespace HiddenHarbours.App.Editor
     /// brush enforces is testable headless (the same split the height brush's
     /// <c>PaintedHeightField</c> encode/decode enjoys).
     ///
-    /// <para><b>The data model (fixed — the shader already consumes it).</b> Fourteen materials, one
-    /// 0..1 channel each, packed across four RGBA splat maps in the CANONICAL order the shader,
+    /// <para><b>The data model (fixed — the shader already consumes it).</b> Eighteen materials, one
+    /// 0..1 channel each, packed across five RGBA splat maps in the CANONICAL order the shader,
     /// <see cref="HiddenHarbours.Art.Editor.TerrainTexArrayBuilder"/> and
     /// <c>TerrainSplatBandPinTests</c> all pin: A.rgba = Grass/Marram/Sand/Shingle,
     /// B.rgba = Ripple/Shelf/Silt/Dirt, C.rgba = Marsh/Sedge/Foreshore/Talus,
-    /// D.rg = Ledge/Rockweed. A channel's value is BOTH the blend
-    /// weight against the height bands AND the position on that material's intensity ladder
-    /// (0 = _Lo sparse · 0.5 = base · 1 = _Hi rank — the kit README §2), which is why one channel
-    /// per material is enough: a footpath is a brush stroke on intensity, not a new slot.</para>
+    /// D.rgba = Ledge/Rockweed/Musselbed/Oysterreef, E.rg = Eelgrass/Irishmoss. A channel's value
+    /// is BOTH the blend weight against the height bands AND the position on that material's
+    /// intensity ladder (0 = _Lo sparse · 0.5 = base · 1 = _Hi rank — the kit README §2), which is
+    /// why one channel per material is enough: a footpath is a brush stroke on intensity, not a new
+    /// slot — and so is a raked-over oyster bottom.</para>
     ///
     /// <para><b>Exclusive painting.</b> The shader renormalises when channels sum past 1, but a
     /// PAINTER expects a stroke of dirt over silt to REPLACE the silt, not stack under it — so an
@@ -27,33 +28,46 @@ namespace HiddenHarbours.App.Editor
     /// </summary>
     public static class TerrainSplatBrush
     {
-        /// <summary>Fourteen paintable materials — the canonical splat order 0..13 (APPEND ONLY,
+        /// <summary>Eighteen paintable materials — the canonical splat order 0..17 (APPEND ONLY,
         /// never reorder: the shader's channel unpack, the pin tests and every committed splat PNG
-        /// depend on it). 10..13 arrived with kit v2; the kit's cliff FACE materials (Sandstone,
-        /// Bank) are deliberately absent — they are not painted on the ground.</summary>
+        /// depend on it). 10..13 arrived with kit v2, 14..17 with kit v3's REEF BEDS; the kit's
+        /// cliff FACE materials (Sandstone, Bank) are deliberately absent — they are not painted on
+        /// the ground.
+        ///
+        /// <para>The four beds are ground MATERIALS, not props or scatter, and that is the kit's
+        /// own ruling (README §6): at 32 px/m a mussel is two texels long, so what reads is the
+        /// grain, the clumping and the gaps — the animals ARE the substrate. Each bed's floor is
+        /// baked into its own tile (Musselbed's anoxic mud, Eelgrass's silted sand, Irishmoss's
+        /// held-down cobble), which is why a SPARSE bed is a low rung on the ladder and never a
+        /// half-weight wash of shell colour over clean sand.</para></summary>
         public static readonly string[] MaterialNames =
         {
             "Grass", "Marram", "Sand", "Shingle", "Ripple", "Shelf", "Silt",
             "Dirt", "Marsh", "Sedge", "Foreshore", "Talus", "Ledge", "Rockweed",
+            "Musselbed", "Oysterreef", "Eelgrass", "Irishmoss",
         };
 
-        public const int MaterialCount = 14;
-        public const int TextureCount = 4;
+        public const int MaterialCount = 18;
+
+        /// <summary>Five RGBA splat maps = 20 channels for 18 materials. The fifth (E) arrived with
+        /// kit v3: the two slots D.b/D.a left free at v2 took Musselbed and Oysterreef, and the
+        /// remaining two beds needed a new map. E.b and E.a are the two slots now free.</summary>
+        public const int TextureCount = 5;
 
         /// <summary>The splat texture file suffixes, index-aligned with <see cref="TextureOf"/>.</summary>
-        public static readonly string[] TextureSuffixes = { "A", "B", "C", "D" };
+        public static readonly string[] TextureSuffixes = { "A", "B", "C", "D", "E" };
 
         private static readonly string[] ChannelNames = { "r", "g", "b", "a" };
 
-        /// <summary>Which of the four splat textures carries this material's channel (0=A .. 3=D).</summary>
+        /// <summary>Which of the five splat textures carries this material's channel (0=A .. 4=E).</summary>
         public static int TextureOf(int material) => material / 4;
 
         /// <summary>Which RGBA channel within that texture (0=r 1=g 2=b 3=a).</summary>
         public static int ChannelOf(int material) => material % 4;
 
         /// <summary>Inverse of <see cref="TextureOf"/>/<see cref="ChannelOf"/> — valid while the
-        /// result is &lt; <see cref="MaterialCount"/> (D.b / D.a are the two channels still
-        /// unused: 16 slots exist, 14 are spoken for).</summary>
+        /// result is &lt; <see cref="MaterialCount"/> (E.b / E.a are the two channels still
+        /// unused: 20 slots exist, 18 are spoken for).</summary>
         public static int MaterialOf(int texture, int channel) => texture * 4 + channel;
 
         /// <summary>Human label for the picker/tooltip, e.g. material 7 → "SplatB.a".</summary>

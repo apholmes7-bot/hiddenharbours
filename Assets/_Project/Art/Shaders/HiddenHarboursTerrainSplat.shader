@@ -4,11 +4,11 @@
 // painted height data the water shader and the walk gate read (the _HeightTex vocabulary of
 // HiddenHarboursWater.shader, verbatim), classifies elevation into the StPetersShoreMap band
 // ladder with SOFT metre-scale edges, and shades each material from the terrain material kit
-// (docs/art/rigs/terrain — 14 plan-projection materials x 3 intensity steps, packed into two
+// (docs/art/rigs/terrain — 18 plan-projection materials x 3 intensity steps, packed into two
 // Texture2DArrays by TerrainTexArrayBuilder). World-space sampling with per-cell hashed offsets
 // on the kit's offset-allowed materials means repetition cannot align by construction.
 //
-// PAINTED OVERRIDES (PR 2): four splat maps carry fourteen 0..1 channels, one per material. A
+// PAINTED OVERRIDES (PR 2): five splat maps carry eighteen 0..1 channels, one per material. A
 // channel's value is BOTH the blend weight against the height-derived bands AND the position on
 // that material's intensity ladder (_Lo -> base -> _Hi; the kit designs low intensity to READ
 // sparse — README §2 — so one number does both jobs honestly). Unpainted ground renders the
@@ -16,10 +16,18 @@
 // Bank — cliff faces) are imported but deliberately not wired here; they await cliff geometry.
 //
 // KIT V2 added four shoreline materials (Foreshore, Talus, Ledge, Rockweed) at indices 10..13.
-// Ten channels no longer fit three RGBA maps, so _SplatD joined A/B/C; D.b and D.a are the two
-// slots still free. The kit's four EDGE STRIPS (the sod lip, scarp, wrack line, weed line) are
-// imported under Terrain/Edges but not sampled here — they are decals laid along the shoreline
-// spline by signed distance, which is a different addressing scheme than this world-XZ tiling
+// Ten channels no longer fit three RGBA maps, so _SplatD joined A/B/C.
+//
+// KIT V3 added the four REEF BEDS (Musselbed, Oysterreef, Eelgrass, Irishmoss) at 14..17. They
+// took D's two free slots and needed _SplatE for the rest; E.b and E.a are the two slots now free.
+// A bed is a ground MATERIAL, not scatter, and that is the kit's ruling (README §6): at 32 px/m a
+// mussel is two texels long, so the animals ARE the substrate and what reads is grain, clumping
+// and gaps. Nothing here is bed-specific — they sample through the same ladder as every other
+// material, which is exactly why four new materials cost this shader four table entries.
+//
+// The kit's five EDGE STRIPS (the sod lip, scarp, wrack line, weed line, reef margin) are imported
+// under Terrain/Edges but not sampled here — they are decals laid along a spline by signed
+// distance, which is a different addressing scheme than this world-XZ tiling
 // (docs/design/terrain-edge-strips.md).
 //
 // The band constants are NOT owned here: the builder pushes StPetersShoreMap's numbers through
@@ -50,11 +58,12 @@ Shader "HiddenHarbours/TerrainSplat"
         _DetailLoaded ("Detail arrays loaded", Float) = 0.0
         _DetailOffsetCellMetres ("Hashed offset cell in metres", Float) = 32.0
 
-        [Header(Painted splat maps. Fourteen channels across four textures)]
+        [Header(Painted splat maps. Eighteen channels across five textures)]
         [NoScaleOffset] _SplatA ("Splat A. Grass Marram Sand Shingle", 2D) = "black" {}
         [NoScaleOffset] _SplatB ("Splat B. Ripple Shelf Silt Dirt", 2D) = "black" {}
         [NoScaleOffset] _SplatC ("Splat C. Marsh Sedge Foreshore Talus", 2D) = "black" {}
-        [NoScaleOffset] _SplatD ("Splat D. Ledge Rockweed. b and a free", 2D) = "black" {}
+        [NoScaleOffset] _SplatD ("Splat D. Ledge Rockweed Musselbed Oysterreef", 2D) = "black" {}
+        [NoScaleOffset] _SplatE ("Splat E. Eelgrass Irishmoss. b and a free", 2D) = "black" {}
 
         [Header(Band floors in metres. Builder pushes StPetersShoreMap)]
         _FloorPaint   ("Paint floor", Float) = -1.95
@@ -139,6 +148,7 @@ Shader "HiddenHarbours/TerrainSplat"
             TEXTURE2D(_SplatB); SAMPLER(sampler_SplatB);
             TEXTURE2D(_SplatC); SAMPLER(sampler_SplatC);
             TEXTURE2D(_SplatD); SAMPLER(sampler_SplatD);
+            TEXTURE2D(_SplatE); SAMPLER(sampler_SplatE);
             TEXTURE2D_ARRAY(_DetailArr256); SAMPLER(sampler_DetailArr256);
             TEXTURE2D_ARRAY(_DetailArr512); SAMPLER(sampler_DetailArr512);
 
@@ -169,22 +179,33 @@ Shader "HiddenHarbours/TerrainSplat"
             CBUFFER_END
 
             // =========================================================================================
-            //  THE MATERIAL TABLE — canonical order 0..13. Mirrored by TerrainTexArrayBuilder (C#) and
-            //  by the splat channel packing (A.rgba, B.rgba, C.rgba, D.rg). A pin test holds all three
-            //  together. APPEND ONLY: committed splat PNGs and this unpack agree on index meaning.
-            //    0 grass   1 marram   2 sand       3 shingle   4 ripple    5 shelf   6 silt
-            //    7 dirt    8 marsh    9 sedge     10 foreshore 11 talus   12 ledge  13 rockweed
+            //  THE MATERIAL TABLE — canonical order 0..17. Mirrored by TerrainTexArrayBuilder (C#) and
+            //  by the splat channel packing (A.rgba, B.rgba, C.rgba, D.rgba, E.rg). A pin test holds
+            //  all three together. APPEND ONLY: committed splat PNGs and this unpack agree on index
+            //  meaning.
+            //    0 grass   1 marram   2 sand       3 shingle   4 ripple     5 shelf      6 silt
+            //    7 dirt    8 marsh    9 sedge     10 foreshore 11 talus    12 ledge     13 rockweed
+            //   14 musselbed  15 oysterreef  16 eelgrass  17 irishmoss          (kit v3 reef beds)
             //  MAT_ARRAY: 0 = the 256 array (8 m tiles), 1 = the 512 array (16 m tiles).
             //  MAT_SLICE: base slice (the _Lo step; +1 base, +2 _Hi — the kit ladder, README §2).
             //  MAT_OFFSET: hashed per-cell UV offset allowed (README §4: NEVER on a directional
-            //  material — an offset slices a ripple train, a wind-combed stand, a bedding plane or a
-            //  lie of fronds apart at the cell border. That list is ripple, marram, foreshore, ledge
-            //  and rockweed; all five carry enough low-frequency variation to hide the repeat alone).
+            //  material — an offset slices a ripple train, a wind-combed stand, a bedding plane, a
+            //  lie of fronds, a MUSSEL LIE or an EELGRASS RIBBON apart at the cell border. That list
+            //  is ripple, marram, foreshore, ledge, rockweed, musselbed and eelgrass; all seven carry
+            //  enough low-frequency variation to hide the repeat alone. Oysterreef and Irishmoss DO
+            //  take an offset — oyster clusters are near-isotropic and moss cushions scatter — which
+            //  is why the four beds do not share one flag.)
             // =========================================================================================
-            static const float MAT_ARRAY[14]  = { 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 0, 0 };
-            static const float MAT_SLICE[14]  = { 0, 3, 6, 0, 3, 9, 6, 12, 15, 18, 9, 12, 21, 24 };
-            static const float MAT_METRES[14] = { 8, 8, 8, 16, 16, 8, 16, 8, 8, 8, 16, 16, 8, 8 };
-            static const float MAT_OFFSET[14] = { 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0 };
+            static const float MAT_ARRAY[18]  = { 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0 };
+            static const float MAT_SLICE[18]  = { 0, 3, 6, 0, 3, 9, 6, 12, 15, 18, 9, 12, 21, 24, 15, 18, 27, 30 };
+            static const float MAT_METRES[18] = { 8, 8, 8, 16, 16, 8, 16, 8, 8, 8, 16, 16, 8, 8, 16, 16, 8, 8 };
+            static const float MAT_OFFSET[18] = { 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 1 };
+
+            // The one place the material count lives for the fragment's local arrays and loops. The
+            // four tables above must stay LITERAL-sized (the pin test parses their declared length
+            // out of this source), but an array declared 18 and walked to 14 renders nothing for the
+            // beds and says nothing about it — so the loops read this instead of a repeated digit.
+            #define HH_MAT_COUNT 18
 
             struct Attributes
             {
@@ -362,7 +383,7 @@ Shader "HiddenHarbours/TerrainSplat"
                     * barW;
 
                 // Base weights in canonical material order (only the six band materials are nonzero).
-                float w[14];
+                float w[HH_MAT_COUNT];
                 w[0] = sGrass;                                   // grass — same cap both coasts
                 w[1] = sMarram * (1.0 - ws);
                 w[2] = sSand   * (1.0 - ws);
@@ -371,25 +392,42 @@ Shader "HiddenHarbours/TerrainSplat"
                 w[5] = lerp(sShelf, wShelf, ws);
                 w[6] = 0.0; w[7] = 0.0; w[8] = 0.0; w[9] = 0.0;
                 w[10] = 0.0; w[11] = 0.0; w[12] = 0.0; w[13] = 0.0;   // paint-only, like 6..9
+                // The four v3 beds are paint-only too — and MUST be. A bed is a place, not an
+                // elevation: the height ladder can say "this is low, wet, sheltered ground", but only
+                // the painter knows a bed grew there. Deriving one from the bands would carpet every
+                // metre of the same elevation on the island in mussels.
+                w[14] = 0.0; w[15] = 0.0; w[16] = 0.0; w[17] = 0.0;
                 {
                     float keep = 1.0 - spineW;
-                    for (int bi = 0; bi < 14; bi++) w[bi] *= keep;
+                    for (int bi = 0; bi < HH_MAT_COUNT; bi++) w[bi] *= keep;
                     w[3] += spineW;
                 }
 
-                // --- PAINTED OVERRIDES: fourteen channels, value = weight AND ladder intensity ------
+                // --- PAINTED OVERRIDES: eighteen channels, value = weight AND ladder intensity ------
                 float4 pA = SAMPLE_TEXTURE2D(_SplatA, sampler_SplatA, uv);
                 float4 pB = SAMPLE_TEXTURE2D(_SplatB, sampler_SplatB, uv);
                 float4 pC = SAMPLE_TEXTURE2D(_SplatC, sampler_SplatC, uv);
                 float4 pD = SAMPLE_TEXTURE2D(_SplatD, sampler_SplatD, uv);
-                float p[14];
+                float4 pE = SAMPLE_TEXTURE2D(_SplatE, sampler_SplatE, uv);
+                float p[HH_MAT_COUNT];
                 p[0]  = pA.r; p[1]  = pA.g; p[2]  = pA.b; p[3]  = pA.a;
                 p[4]  = pB.r; p[5]  = pB.g; p[6]  = pB.b; p[7]  = pB.a;
                 p[8]  = pC.r; p[9]  = pC.g; p[10] = pC.b; p[11] = pC.a;
-                p[12] = pD.r; p[13] = pD.g;   // D.b / D.a: the two slots still free
+                p[12] = pD.r; p[13] = pD.g; p[14] = pD.b; p[15] = pD.a;
+                p[16] = pE.r; p[17] = pE.g;   // E.b / E.a: the two slots still free
 
-                float paintSum = p[0] + p[1] + p[2]  + p[3]  + p[4]  + p[5]  + p[6]
-                               + p[7] + p[8] + p[9]  + p[10] + p[11] + p[12] + p[13];
+                // ⚠ D.a IS NOW READ. It was a free slot until v3, which means the Properties default
+                // of "black" — opaque, ALPHA 1 — used to be harmless here and no longer is: a
+                // material rendered without the surface's MPB push would read a full-weight oyster
+                // reef over the entire region. TerrainSplatSurface binds a transparent 1x1
+                // (ClearSplat) for every map precisely so the default is never what samples, and a
+                // test pins that it binds all FIVE. The committed StPetersSplatD.png was verified
+                // zero in .b/.a before these two slots were adopted — taking over a channel that
+                // already has bytes in it is how a kit upgrade repaints a region silently.
+
+                float paintSum = p[0]  + p[1]  + p[2]  + p[3]  + p[4]  + p[5]  + p[6]
+                               + p[7]  + p[8]  + p[9]  + p[10] + p[11] + p[12] + p[13]
+                               + p[14] + p[15] + p[16] + p[17];
                 float paintTotal = saturate(paintSum);
                 // The painted share (paintTotal) is distributed by each channel's fraction of the
                 // whole (p / paintSum) — in BOTH regimes, so the weights below always sum to 1.
@@ -398,10 +436,10 @@ Shader "HiddenHarbours/TerrainSplat"
                 // either source material.
                 float norm = 1.0 / max(paintSum, 1e-4);
 
-                float intensity[14];
+                float intensity[HH_MAT_COUNT];
                 {
                     float baseKeep = 1.0 - paintTotal;
-                    for (int mi = 0; mi < 14; mi++)
+                    for (int mi = 0; mi < HH_MAT_COUNT; mi++)
                     {
                         float basePart  = w[mi] * baseKeep;          // band ground, ladder base (0.5)
                         float paintPart = p[mi] * norm * paintTotal; // painted, ladder = channel value
@@ -421,7 +459,7 @@ Shader "HiddenHarbours/TerrainSplat"
                     // Derivatives once, outside all flow control (see SampleMat).
                     float2 dwx = ddx(wp);
                     float2 dwy = ddy(wp);
-                    for (int si = 0; si < 14; si++)
+                    for (int si = 0; si < HH_MAT_COUNT; si++)
                     {
                         [branch]
                         if (w[si] > 0.004)
@@ -440,9 +478,12 @@ Shader "HiddenHarbours/TerrainSplat"
                     col += w[3] * lerp(_ShingleColA.rgb, _ShingleColB.rgb, grain);
                     col += w[4] * lerp(_RippleColA.rgb,  _RippleColB.rgb,  grain);
                     col += w[5] * lerp(_ShelfColA.rgb,   _ShelfColB.rgb,   grain);
-                    // The eight paint-only materials borrow their nearest band cousin's colours —
+                    // The twelve paint-only materials borrow their nearest band cousin's colours —
                     // the kit's own substrate pairings (README §5): foreshore is on the Island sand
-                    // ramp, talus/ledge/rockweed on the red-bed rock ramps.
+                    // ramp, talus/ledge/rockweed on the red-bed rock ramps, and the four beds sit on
+                    // the anoxic bed mud (mussel/oyster), the silted sand ramp (eelgrass) and the red
+                    // cobble (irish moss). Approximate by construction — this path only renders on a
+                    // fresh checkout, before the first array build.
                     col += w[6]  * lerp(_RippleColA.rgb,  _RippleColB.rgb,  grain);   // silt
                     col += w[7]  * lerp(_ShelfColA.rgb,   _SandColB.rgb,    grain);   // dirt
                     col += w[8]  * lerp(_GrassColA.rgb,   _MarramColB.rgb,  grain);   // marsh
@@ -451,6 +492,10 @@ Shader "HiddenHarbours/TerrainSplat"
                     col += w[11] * lerp(_ShingleColA.rgb, _ShelfColB.rgb,   grain);   // talus
                     col += w[12] * lerp(_ShelfColA.rgb,   _ShingleColB.rgb, grain);   // ledge
                     col += w[13] * lerp(_ShelfColA.rgb,   _GrassColB.rgb,   grain);   // rockweed
+                    col += w[14] * lerp(_ShelfColA.rgb,   _ShelfColB.rgb,   grain);   // musselbed
+                    col += w[15] * lerp(_ShelfColA.rgb,   _ShingleColB.rgb, grain);   // oysterreef
+                    col += w[16] * lerp(_MarramColA.rgb,  _GrassColB.rgb,   grain);   // eelgrass
+                    col += w[17] * lerp(_RippleColA.rgb,  _ShelfColB.rgb,   grain);   // irishmoss
                 }
 
                 // Macro variation: tens-of-metres tint drift that kills any large-scale flatness.

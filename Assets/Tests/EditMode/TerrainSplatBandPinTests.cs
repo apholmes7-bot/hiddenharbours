@@ -71,26 +71,34 @@ namespace HiddenHarbours.Tests.EditMode
         //  pins parse the shader source (batch-safe, no compile needed) and hold all three together.
         // =========================================================================================
 
-        /// <summary>Canonical material order 0..13 — the shader header's list and the splat channel
-        /// packing (A.rgba, B.rgba, C.rgba, D.rg) both follow it. Written out as a LITERAL on
+        /// <summary>Canonical material order 0..17 — the shader header's list and the splat channel
+        /// packing (A.rgba, B.rgba, C.rgba, D.rgba, E.rg) both follow it. Written out as a LITERAL on
         /// purpose: deriving it from the code under test would pin nothing.</summary>
         private static readonly string[] CanonicalOrder =
         {
             "Grass", "Marram", "Sand", "Shingle", "Ripple", "Shelf", "Silt",
             "Dirt", "Marsh", "Sedge", "Foreshore", "Talus", "Ledge", "Rockweed",
+            "Musselbed", "Oysterreef", "Eelgrass", "Irishmoss",
         };
 
-        /// <summary>The order as SHIPPED before kit v2 — indices 0..9 can never move, because
+        /// <summary>The order as SHIPPED before kit v3 — indices 0..13 can never move, because
         /// committed splat PNGs and the shader's unpack agree on what each index means. A reorder
-        /// would repaint the ground silently rather than fail.</summary>
-        private static readonly string[] FrozenPrefixV1 =
-            { "Grass", "Marram", "Sand", "Shingle", "Ripple", "Shelf", "Silt", "Dirt", "Marsh", "Sedge" };
+        /// would repaint the ground silently rather than fail.
+        ///
+        /// <para>Grown from 10 to 14 when the v3 beds appended: the v2 families are shipped now too,
+        /// with paint in StPetersSplatC/D behind them, so freezing only the v1 prefix would have let
+        /// foreshore..rockweed be reordered under committed pixels.</para></summary>
+        private static readonly string[] FrozenPrefixShipped =
+        {
+            "Grass", "Marram", "Sand", "Shingle", "Ripple", "Shelf", "Silt", "Dirt", "Marsh", "Sedge",
+            "Foreshore", "Talus", "Ledge", "Rockweed",
+        };
 
-        /// <summary>MAT_ARRAY/MAT_SLICE/MAT_METRES/MAT_OFFSET at indices 0..9, as shipped in v1.</summary>
-        private static readonly float[] FrozenArrayV1  = { 0, 0, 0, 1, 1, 0, 1, 0, 0, 0 };
-        private static readonly float[] FrozenSliceV1  = { 0, 3, 6, 0, 3, 9, 6, 12, 15, 18 };
-        private static readonly float[] FrozenMetresV1 = { 8, 8, 8, 16, 16, 8, 16, 8, 8, 8 };
-        private static readonly float[] FrozenOffsetV1 = { 1, 0, 1, 1, 0, 1, 1, 1, 1, 1 };
+        /// <summary>MAT_ARRAY/MAT_SLICE/MAT_METRES/MAT_OFFSET at indices 0..13, as shipped before v3.</summary>
+        private static readonly float[] FrozenArrayShipped  = { 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 0, 0 };
+        private static readonly float[] FrozenSliceShipped  = { 0, 3, 6, 0, 3, 9, 6, 12, 15, 18, 9, 12, 21, 24 };
+        private static readonly float[] FrozenMetresShipped = { 8, 8, 8, 16, 16, 8, 16, 8, 8, 8, 16, 16, 8, 8 };
+        private static readonly float[] FrozenOffsetShipped = { 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0 };
 
         private const string SplatShaderPath = "Assets/_Project/Art/Shaders/HiddenHarboursTerrainSplat.shader";
 
@@ -115,23 +123,32 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void CanonicalOrder_IsAppendOnly_TheV1PrefixNeverMoves()
+        public void CanonicalOrder_IsAppendOnly_TheShippedPrefixNeverMoves()
         {
-            // The handoff's hard rule, asserted rather than eyeballed: kit v2 APPENDS.
-            CollectionAssert.AreEqual(FrozenPrefixV1, CanonicalOrder.Take(FrozenPrefixV1.Length).ToArray(),
-                "Canonical material indices 0..9 changed. Every committed splat PNG encodes the old " +
-                "meaning per channel — a reorder repaints St Peters silently. APPEND instead.");
+            // The handoff's hard rule, asserted rather than eyeballed: kit v3 APPENDS.
+            int n = FrozenPrefixShipped.Length;
+            CollectionAssert.AreEqual(FrozenPrefixShipped, CanonicalOrder.Take(n).ToArray(),
+                $"Canonical material indices 0..{n - 1} changed. Every committed splat PNG encodes the " +
+                "old meaning per channel — a reorder repaints St Peters silently. APPEND instead.");
 
             string src = File.ReadAllText(SplatShaderPath);
-            CollectionAssert.AreEqual(FrozenArrayV1,
-                ParseShaderTable(src, "MAT_ARRAY").Take(10).ToArray(), "MAT_ARRAY[0..9] moved.");
-            CollectionAssert.AreEqual(FrozenSliceV1,
-                ParseShaderTable(src, "MAT_SLICE").Take(10).ToArray(), "MAT_SLICE[0..9] moved.");
-            CollectionAssert.AreEqual(FrozenMetresV1,
-                ParseShaderTable(src, "MAT_METRES").Take(10).ToArray(), "MAT_METRES[0..9] moved.");
-            CollectionAssert.AreEqual(FrozenOffsetV1,
-                ParseShaderTable(src, "MAT_OFFSET").Take(10).ToArray(), "MAT_OFFSET[0..9] moved.");
+            CollectionAssert.AreEqual(FrozenArrayShipped,
+                ParseShaderTable(src, "MAT_ARRAY").Take(n).ToArray(), $"MAT_ARRAY[0..{n - 1}] moved.");
+            CollectionAssert.AreEqual(FrozenSliceShipped,
+                ParseShaderTable(src, "MAT_SLICE").Take(n).ToArray(), $"MAT_SLICE[0..{n - 1}] moved.");
+            CollectionAssert.AreEqual(FrozenMetresShipped,
+                ParseShaderTable(src, "MAT_METRES").Take(n).ToArray(), $"MAT_METRES[0..{n - 1}] moved.");
+            CollectionAssert.AreEqual(FrozenOffsetShipped,
+                ParseShaderTable(src, "MAT_OFFSET").Take(n).ToArray(), $"MAT_OFFSET[0..{n - 1}] moved.");
         }
+
+        // ⭐ The four v3 beds need no pin of their own here. Every table test below is generic over
+        // CanonicalOrder: ShaderMaterialTables_MatchTheArrayBuilderPackOrder derives their array,
+        // slice and tile metres from the pack order; ShaderOffsetFlags_MatchTheKitManifest reads
+        // their chunkOffset straight out of materials.json (so the mussel/eelgrass "never offset"
+        // ruling is checked against the kit's own word, not a copy of it); and
+        // KitTextures_ExistAtTheSizesThePackOrderExpects proves the twelve new PNGs imported at the
+        // sizes claimed. Adding bed-specific literals here would restate all three less well.
 
         [Test]
         public void BrushMaterialNames_MatchTheCanonicalOrder()
@@ -147,8 +164,10 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void SplatMapCount_CoversEveryMaterialChannel()
         {
-            // Four RGBA maps = 16 channels for 14 materials. The moment a 17th material is wanted
-            // this fails, which is the point: a fifth map is a deliberate decision, not a surprise.
+            // Five RGBA maps = 20 channels for 18 materials. The moment a 21st material is wanted
+            // this fails, which is the point: a sixth map is a deliberate decision, not a surprise.
+            // (It fired for real on kit v3 — 14 + 4 beds did not fit four maps, and this is where
+            // that was found rather than in a silently-unpainted eelgrass meadow.)
             Assert.LessOrEqual(TerrainSplatBrush.MaterialCount, TerrainSplatBrush.TextureCount * 4,
                 $"{TerrainSplatBrush.MaterialCount} materials do not fit " +
                 $"{TerrainSplatBrush.TextureCount} RGBA splat maps — add a map (and its shader " +

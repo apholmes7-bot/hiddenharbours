@@ -33,8 +33,8 @@ namespace HiddenHarbours.App.Editor
     /// also update LIVE.</para>
     ///
     /// <para><b>The MATERIAL brush (ADR 0028 PR 2 addendum).</b> A sixth brush paints the splat-ground
-    /// MATERIALS (the owner's "layers"): pick one of the fourteen kit materials and brush its channel in the
-    /// four splat maps — the value is both blend weight and intensity-ladder position (0 sparse ·
+    /// MATERIALS (the owner's "layers"): pick one of the eighteen kit materials and brush its channel in the
+    /// five splat maps — the value is both blend weight and intensity-ladder position (0 sparse ·
     /// 0.5 base · 1 rank), with flow/falloff/exclusive controls, an eraser, and a live Scene-view
     /// preview through the open scene's <see cref="TerrainSplatSurface"/> at the current preview tide.
     /// Commit mirrors the height flow: PNGs re-encoded, reimported LINEAR (weights are data, not
@@ -371,11 +371,11 @@ namespace HiddenHarbours.App.Editor
         // ============================ THE MATERIAL BRUSH (ADR 0028 PR 2 addendum) ============================
 
         /// <summary>
-        /// The owner's splat-material brush: pick one of the fourteen kit materials (his "layers") and
-        /// paint its channel in the four splat maps — the value is BOTH blend weight and intensity-
-        /// ladder position (0 = _Lo sparse · 0.5 = base · 1 = _Hi rank), so a footpath or a grazed
-        /// headland is a stroke, not a new material. Live in the Scene view through the open scene's
-        /// <see cref="TerrainSplatSurface"/> at the current preview tide.
+        /// The owner's splat-material brush: pick one of the eighteen kit materials (his "layers") and
+        /// paint its channel in the five splat maps — the value is BOTH blend weight and intensity-
+        /// ladder position (0 = _Lo sparse · 0.5 = base · 1 = _Hi rank), so a footpath, a grazed
+        /// headland or a raked-over oyster bottom is a stroke, not a new material. Live in the Scene
+        /// view through the open scene's <see cref="TerrainSplatSurface"/> at the current preview tide.
         /// </summary>
         private void DrawMaterialBrush()
         {
@@ -387,7 +387,7 @@ namespace HiddenHarbours.App.Editor
                 names[i] = $"{TerrainSplatBrush.MaterialNames[i]}  ({TerrainSplatBrush.ChannelLabel(i)})";
             _materialIndex = Mathf.Clamp(_materialIndex, 0, TerrainSplatBrush.MaterialCount - 1);
             _materialIndex = EditorGUILayout.Popup(
-                new GUIContent("Material", "The fourteen kit materials — each is ONE channel in the four " +
+                new GUIContent("Material", "The eighteen kit materials — each is ONE channel in the five " +
                                "splat textures (shown in brackets). Painting writes that channel; the " +
                                "shader blends it over the height bands."),
                 _materialIndex, names);
@@ -513,7 +513,7 @@ namespace HiddenHarbours.App.Editor
             foreach (var s in Object.FindObjectsByType<TerrainSplatSurface>())
             {
                 if (s == null) continue;
-                s.ConfigureSplat(_splatTexs[0], _splatTexs[1], _splatTexs[2], _splatTexs[3]);
+                s.ConfigureSplat(_splatTexs[0], _splatTexs[1], _splatTexs[2], _splatTexs[3], _splatTexs[4]);
                 if (s.isActiveAndEnabled) { s.enabled = false; s.enabled = true; }
             }
         }
@@ -1374,19 +1374,21 @@ namespace HiddenHarbours.App.Editor
             EditorUtility.SetDirty(painted);
 
             // 3) The splat GROUND reads it too (ADR 0028): point every TerrainSplatSurface at the
-            //    adopted height data AND the four splat assets (loaded fresh from disk — never a
+            //    adopted height data AND every splat asset (loaded fresh from disk — never a
             //    stale in-memory reference), so the ground, the water and the sim share one field.
             //    The builder wires the same assets on rebuild; adopting keeps an un-rebuilt scene
             //    in step. Missing splat PNGs wire as null — the surface falls back to bands-only.
-            var splatA = AssetDatabase.LoadAssetAtPath<Texture2D>(TerrainSplatAssets.PathOf(0));
-            var splatB = AssetDatabase.LoadAssetAtPath<Texture2D>(TerrainSplatAssets.PathOf(1));
-            var splatC = AssetDatabase.LoadAssetAtPath<Texture2D>(TerrainSplatAssets.PathOf(2));
-            var splatD = AssetDatabase.LoadAssetAtPath<Texture2D>(TerrainSplatAssets.PathOf(3));
+            //    ⚠ Loaded in a LOOP off TextureCount, not as N named locals: this site used to name
+            //    each map, and a named list is the copy that silently stops at D the next time the
+            //    kit grows a map (it grew to five with v3's reef beds).
+            var adopted = new Texture2D[TerrainSplatBrush.TextureCount];
+            for (int i = 0; i < adopted.Length; i++)
+                adopted[i] = AssetDatabase.LoadAssetAtPath<Texture2D>(TerrainSplatAssets.PathOf(i));
             foreach (var surface in Object.FindObjectsByType<TerrainSplatSurface>())
             {
                 Undo.RecordObject(surface, "Adopt painted seabed");
                 surface.ConfigureHeightMap(_map.HeightTexture, _map.MinElevation, _map.MaxElevation);
-                surface.ConfigureSplat(splatA, splatB, splatC, splatD);
+                surface.ConfigureSplat(adopted[0], adopted[1], adopted[2], adopted[3], adopted[4]);
                 EditorUtility.SetDirty(surface);
                 if (surface.isActiveAndEnabled) { surface.enabled = false; surface.enabled = true; }
             }
