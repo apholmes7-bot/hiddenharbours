@@ -25,8 +25,13 @@ namespace HiddenHarbours.Boats
         /// Greybox feel-scale that translates the hulls' design-unit FORCE stats (EnginePower, drag,
         /// windage, oar power) into a good 2D-physics feel. Shared by every force path so they stay in
         /// proportion to one another.
+        ///
+        /// <para>Public so the hull's OTHER force consumers can read the one scale instead of carrying a
+        /// copy of the number: <see cref="BoatAnchor"/> reads it here. (<see cref="BoatMooring"/> predates
+        /// this and still serializes its own <c>_driftFeelScale</c>, documented as "matched to
+        /// BoatController.ForceFeelScale" — a copy this const exists to stop spreading.)</para>
         /// </summary>
-        private const float ForceFeelScale = 0.01f;
+        public const float ForceFeelScale = 0.01f;
 
         /// <summary>
         /// Greybox feel-scale for the engine RUDDER torque. Matched to <see cref="ForceFeelScale"/> so the
@@ -136,6 +141,17 @@ namespace HiddenHarbours.Boats
             // rather than re-deriving it, so a shipped build has ONE flag to be false, not two.
             if (Application.isPlaying && GetComponent<DevInstrumentCycle>() == null)
                 gameObject.AddComponent<DevInstrumentCycle>();
+
+            // THE GROUND TACKLE: the anchor she lies to (sim) and the greybox key that works it. Same
+            // runtime-spawn reasoning as the three above — every already-built scene grows the hook on
+            // load, with no builder re-run and no prefab churn. Play mode only for the same reason
+            // (EditMode tests build BoatControllers freely and must stay presentation-free); an EditMode
+            // rig that wants the tackle adds BoatAnchor itself.
+            if (Application.isPlaying && GetComponent<BoatAnchor>() == null)
+            {
+                gameObject.AddComponent<BoatAnchor>();
+                gameObject.AddComponent<DevAnchorInput>();
+            }
 
             _rb = GetComponent<Rigidbody2D>();
             _rb.gravityScale = 0f;

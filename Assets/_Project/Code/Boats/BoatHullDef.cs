@@ -83,6 +83,18 @@ namespace HiddenHarbours.Boats
         [Tooltip("Worst sea state this boat can work safely. Above it, danger rises (P5).")]
         public SeaState MaxSafeSeaState = SeaState.Lively;
 
+        [Header("Ground tackle")]
+        [Tooltip("How much ANCHOR RODE this hull carries (m) — the length of her anchor line, and so " +
+                 "the DEEPEST water she can anchor in: the hook only holds where the rode reaches the " +
+                 "bottom (depth ≤ this). Bigger vessels carry longer rodes, so deeper anchorages open " +
+                 "up the ladder (P2). Not a scope figure — the swing circle she lies to is derived " +
+                 "from this and the depth (AnchorMath.SwingRadius).\n\n" +
+                 "0 = this hull has not been given her own rode and takes the shared dinghy-class " +
+                 "default (GameConfig.Anchor.DefaultRodeMeters). Hull assets serialized before this " +
+                 "field existed deserialize as 0, so an untouched hull carries a SHORT rode rather " +
+                 "than none — the HelmAheadNotches convention.")]
+        [Min(0f)] public float RodeMeters = 0f;
+
         [Header("Seakeeping (ADR 0018 B3 — how the sea moves THIS hull)")]
         [Tooltip("Seakeeping mass factor (≥ 0): how much inertia the hull opposes to the sea. Higher = the " +
                  "waves move it LESS (a laden trader shrugs). Combined with liveliness below (response = " +

@@ -947,6 +947,70 @@ are important — you read roughly how full a tray/tote is by looking at it*).
   so the tray snaps with the picture and stays on the same spot of the *pictured* deck; the sprite itself
   stays screen-upright and never anchors to the counter-rotated visual child.
 
+### 9.11 Anchoring — drop the hook where the rode reaches the bottom
+
+*"An anchor option on the boat: it drops only if there is enough depth for the anchor to reach the
+bottom. Larger vessels carry longer rodes. An anchored boat holds against wind/tide drift."* (owner
+ask, 2026-08-06.) Built as **one rule the player can read off the water**, not a place-flagged
+"anchorage zone": she anchors where her line reaches, and nowhere else.
+
+- **The gate is DEPTH, and the depth is the one the game already has.** `depth = waterLevel −
+  seabedElevation` via `BoatCrossing.DepthAt` → `TidalExposure.WaterDepth` — the *same* single number
+  the water render, the walkability sim, the crossing gate and the sounder read (ADR 0014: paint =
+  sail). No second copy of the arithmetic, nothing cached: it is recomputed every tick from
+  `(worldSeed, gameTime)` and never saved (rule 5). She anchors iff she is genuinely **afloat**
+  (`depth > 0` *and* `depth ≥ draught` — the existing float rule) **and** `depth ≤ rode`. Too deep →
+  the hook *"finds no bottom"*: a refusal with no state change. On the flats you do not anchor, you
+  are **aground**, which the existing grounding sim already owns. Where a region paints **no seabed
+  at all**, the depth is infinite and the tackle refuses — the mirror of the crossing gate's "a
+  missing height map never falsely *blocks* a boat" (here: never falsely *claims to hold* one).
+- **The rode is DATA** (rule 2): `BoatHullDef.RodeMeters` — how much anchor line the hull carries, and
+  therefore the deepest water she can anchor in. It grows up the ladder (dory 6 m → punt 8 → console
+  skiff 12 → lobster boat 30 → dragger 60 → trawler 90 → packet 130 → tanker 180), so **deeper
+  anchorages are a thing you buy** (P2). `0` means "she authors none" and takes the shared
+  dinghy-class `GameConfig.Anchor.DefaultRodeMeters` — which is also what every hull asset written
+  before the field existed deserializes to, so an untouched hull carries a *short* rode, never none.
+- **Holding is a swing circle, not a freeze.** She lies within `√(rode² − depth²)` of the drop point —
+  the plain geometry of a taut rode, where the vertical leg takes the depth and whatever is left is
+  horizontal. **Spare rode is swing**: a short scope in deep water pins her almost over her anchor, the
+  same rode in shallow water lets her range nearly its full length. Inside the circle she is
+  completely free — wind, tide and sea work her exactly as the unanchored sim says; at the edge the
+  rode goes taut and checks her firmly.
+- **ONE restraint mechanism, two consumers.** The rode is checked with the *mooring line's* own maths
+  (`BoatMooring.TetherForce` + the inextensible `BoatMooring.ConstrainToRope`, §9.5), with the swing
+  circle standing in for the rope's length. A boat brought up on her anchor is held exactly the way a
+  boat made fast to a cleat is, because it is the same code and the same tuning. No second
+  "near-rigid tether" implementation exists.
+- **The tide keeps moving — this is where the teeth are (P1/P5).** On the **ebb** the depth shrinks,
+  the swing circle *widens*, and if her draught meets the bottom the existing grounding sim takes her:
+  the anchor never prevented that; a badly-chosen anchorage did. On the **flood** the depth grows and
+  the circle *shrinks* — to nothing at `depth == rode`, the last moment she holds — and the instant the
+  water is past her rode the hook **loses the bottom and she DRAGS**: no longer held, creeping off
+  downwind/downtide at about `GameConfig.Anchor.DragCreepMetersPerSec` while the tackle skips along
+  the seabed. Come the ebb she **brings up again where she has fetched to**, not at the berth she
+  lost: dragging costs you your spot, not your anchor.
+- **Owner-tunable, no magic numbers** (rule 6): the whole policy is `GameConfig.Anchor` — the
+  dinghy-class rode, the swing floor, the firm-limit trio, and the drag creep + brake. ⚠️ The **drag
+  rate** is flagged `_confirm` — it is the number that decides how nasty losing your bottom feels.
+- **Input is a dev key for now** (`R`, for *rode* — audited free across code *and*
+  `InputSystem_Actions`, where `C` turns out to be taken by Crouch). It lives only from the boat (helm
+  or deck, never ashore), only on the hull you are on, and stands down under a dialogue or a text
+  field. The real control is a **diegetic windlass** on the helm console — `ui-ux`/`art-director`
+  later work, not this slice.
+- **Visual v1 is minimal**: a greybox `LineRenderer` rode from the hull to the hook, dull galvanised
+  while holding and red while dragging, on the `SortingBands.AboveDecor` rope tier the mooring line and
+  the trap-haul line already share (ADR 0032). No bespoke animation — a windlass clip is routed to the
+  art-director.
+- **Nothing is saved.** The drop point is live runtime state, like the mooring's tie point; reload and
+  the hook is catted. *Persisting an anchored boat across a save is a follow-up, not this slice.*
+- Code: `Code/Boats/AnchorMath.cs` (the pure rules — gate, swing, drag brake, rode resolution),
+  `Code/Boats/BoatAnchor.cs` (state + the per-tick restraint, runtime-spawned by `BoatController` so
+  no builder re-run is needed), `Code/Boats/DevAnchorInput.cs` (the key),
+  `Code/Core/Boats/AnchorSettings.cs` (the owner's policy). Tests: `AnchorMathTests` (EditMode — the
+  whole decision half, plus the `GameConfig.asset` YAML-key guard) and `AnchorPlayTests` (PlayMode —
+  the gate on a live tide, the hold under a stiff wind against an un-anchored control, and the
+  rising-tide drag).
+
 ---
 
 ## 10. Open questions
