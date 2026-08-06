@@ -1,0 +1,180 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8e963cec94c290ca72be0cf932b826b, type: 3}
+  m_Name: TankerIso
+  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.BoatDeckDef
+  Id: deck.tanker_iso
+  SourceSidecar: docs/art/rigs/gameplay/tankerIsoRig.gameplay.json
+  SourceRig: docs/art/rigs/tankerIsoRig.js
+  DerivedFromRigSha256: f1745a485e288f16bf9684bfe26532eaf3bf73d6038161b9271c12c29e868060
+  LoaMeters: 110
+  Areas:
+  - Id: poop_aft
+    Kind: 0
+    Outline:
+    - {x: 6.362, y: -53.68}
+    - {x: 6.575, y: -51.987}
+    - {x: 6.788, y: -50.293}
+    - {x: 7.001, y: -48.6}
+    - {x: -7.001, y: -48.6}
+    - {x: -6.788, y: -50.293}
+    - {x: -6.575, y: -51.987}
+    - {x: -6.362, y: -53.68}
+    HeightPlane: {x: 0, y: 0, z: 11.6}
+    HeightResidualMax: 0
+    Bounds: {x: -7.001, y: -53.68, z: 7.001, w: -48.6}
+  - Id: poop_alley_port
+    Kind: 0
+    Outline:
+    - {x: -7.8, y: -36.923}
+    - {x: -7.8, y: -26.62}
+    - {x: -8.32, y: -26.62}
+    - {x: -8.269, y: -29.196}
+    - {x: -8.196, y: -31.771}
+    - {x: -8.123, y: -34.347}
+    - {x: -8.05, y: -36.923}
+    HeightPlane: {x: 0, y: 0, z: 11.6}
+    HeightResidualMax: 0
+    Bounds: {x: -8.32, y: -36.923, z: -7.8, w: -26.62}
+  - Id: poop_alley_star
+    Kind: 0
+    Outline:
+    - {x: 8.05, y: -36.923}
+    - {x: 8.123, y: -34.347}
+    - {x: 8.196, y: -31.771}
+    - {x: 8.269, y: -29.196}
+    - {x: 8.32, y: -26.62}
+    - {x: 7.8, y: -26.62}
+    - {x: 7.8, y: -36.923}
+    HeightPlane: {x: 0, y: 0, z: 11.6}
+    HeightResidualMax: 0
+    Bounds: {x: 7.8, y: -36.923, z: 8.32, w: -26.62}
+  - Id: aft_working_area
+    Kind: 0
+    Outline:
+    - {x: 8.276, y: -26.62}
+    - {x: 8.284, y: -24.165}
+    - {x: 8.293, y: -21.71}
+    - {x: 8.302, y: -19.255}
+    - {x: 8.312, y: -16.8}
+    - {x: -8.312, y: -16.8}
+    - {x: -8.302, y: -19.255}
+    - {x: -8.293, y: -21.71}
+    - {x: -8.284, y: -24.165}
+    - {x: -8.276, y: -26.62}
+    HeightPlane: {x: 0, y: 0, z: 8.6}
+    HeightResidualMax: 0
+    Bounds: {x: -8.312, y: -26.62, z: 8.312, w: -16.8}
+  - Id: tank_lane_port
+    Kind: 0
+    Outline:
+    - {x: -6.3, y: -16.8}
+    - {x: -6.3, y: 24.8}
+    - {x: -8.013, y: 24.8}
+    - {x: -8.178, y: 19.6}
+    - {x: -8.305, y: 14.4}
+    - {x: -8.322, y: 9.2}
+    - {x: -8.324, y: 4}
+    - {x: -8.326, y: -1.2}
+    - {x: -8.326, y: -6.4}
+    - {x: -8.326, y: -11.6}
+    - {x: -8.312, y: -16.8}
+    HeightPlane: {x: 0, y: 0, z: 8.6}
+    HeightResidualMax: 0
+    Bounds: {x: -8.326, y: -16.8, z: -6.3, w: 24.8}
+  - Id: tank_lane_star
+    Kind: 0
+    Outline:
+    - {x: 8.312, y: -16.8}
+    - {x: 8.326, y: -11.6}
+    - {x: 8.326, y: -6.4}
+    - {x: 8.326, y: -1.2}
+    - {x: 8.324, y: 4}
+    - {x: 8.322, y: 9.2}
+    - {x: 8.305, y: 14.4}
+    - {x: 8.178, y: 19.6}
+    - {x: 8.013, y: 24.8}
+    - {x: 6.3, y: 24.8}
+    - {x: 6.3, y: -16.8}
+    HeightPlane: {x: 0, y: 0, z: 8.6}
+    HeightResidualMax: 0
+    Bounds: {x: 6.3, y: -16.8, z: 8.326, w: 24.8}
+  - Id: fore_deck
+    Kind: 0
+    Outline:
+    - {x: 8.013, y: 24.8}
+    - {x: 7.915, y: 27.35}
+    - {x: 7.432, y: 29.9}
+    - {x: 6.835, y: 32.45}
+    - {x: -6.835, y: 32.45}
+    - {x: -7.432, y: 29.9}
+    - {x: -7.915, y: 27.35}
+    - {x: -8.013, y: 24.8}
+    HeightPlane: {x: 0, y: 0, z: 8.6}
+    HeightResidualMax: 0
+    Bounds: {x: -8.013, y: 24.8, z: 8.013, w: 32.45}
+  - Id: catwalk
+    Kind: 0
+    Outline:
+    - {x: 0.78, y: -21.3}
+    - {x: 0.78, y: 30.3}
+    - {x: -0.78, y: 30.3}
+    - {x: -0.78, y: -21.3}
+    HeightPlane: {x: 0, y: 0, z: 13.875}
+    HeightResidualMax: 0
+    Bounds: {x: -0.78, y: -21.3, z: 0.78, w: 30.3}
+  - Id: focsle_deck
+    Kind: 0
+    Outline:
+    - {x: 7.692, y: 33.25}
+    - {x: 7.414, y: 36.455}
+    - {x: 7.136, y: 39.663}
+    - {x: 6.852, y: 42.863}
+    - {x: 5.373, y: 46.04}
+    - {x: 3.894, y: 49.181}
+    - {x: 2.415, y: 52.273}
+    - {x: 0.936, y: 55.301}
+    - {x: -0.936, y: 55.301}
+    - {x: -2.415, y: 52.273}
+    - {x: -3.894, y: 49.181}
+    - {x: -5.373, y: 46.04}
+    - {x: -6.852, y: 42.863}
+    - {x: -7.136, y: 39.663}
+    - {x: -7.414, y: 36.455}
+    - {x: -7.692, y: 33.25}
+    HeightPlane: {x: 0, y: 0.15926644, z: 5.784159}
+    HeightResidualMax: 0.09120314
+    Bounds: {x: -7.692, y: 33.25, z: 7.692, w: 55.301}
+  Cleats:
+  - Id: bow_1
+    Type: bitt
+    PositionMeters: {x: 0, y: 51.2, z: 13.31}
+  - Id: bow_port
+    Type: bollard
+    PositionMeters: {x: -1.7, y: 43.8, z: 13.29}
+  - Id: bow_star
+    Type: bollard
+    PositionMeters: {x: 1.7, y: 43.8, z: 13.29}
+  - Id: quarter_port
+    Type: bollard
+    PositionMeters: {x: -4, y: -49.8, z: 11.73}
+  - Id: quarter_star
+    Type: bollard
+    PositionMeters: {x: 4, y: -49.8, z: 11.73}
+  - Id: stern_port
+    Type: bollard
+    PositionMeters: {x: -6.1, y: -53.5, z: 11.74}
+  - Id: stern_star
+    Type: bollard
+    PositionMeters: {x: 6.1, y: -53.5, z: 11.74}
+  WalkCenter: {x: 0, y: 0.8105}
+  WalkHalfExtents: {x: 8.326, y: 54.4905}

@@ -5,9 +5,17 @@ namespace HiddenHarbours.Core
     /// <summary>
     /// The live WALKABLE-DECK frame under the player's feet (Rod Fishing v2 §4 — fishing off the
     /// rocking, drifting deck): where the hull is, which way its drawn picture points, and the deck
-    /// rectangle the player walks — exactly the frame the Player lane's deck-walk is clamping to this
-    /// frame. Everything a consumer needs to express "where does the angler stand ON the boat, and
-    /// does their line cross the hull?" without touching the Player or Boats modules.
+    /// bounds the player walks in, and where in those bounds they stand — exactly the frame the Player
+    /// lane's deck-walk is clamping to this frame. Everything a consumer needs to express "where does
+    /// the angler stand ON the boat, and does their line cross the hull?" without touching the Player
+    /// or Boats modules.
+    ///
+    /// <para><b>The bounds are the HULL's, not a constant.</b> Since M2-37's data half they are the
+    /// axis-aligned box around that hull's authored walkable polygons (imported from her rig sidecar),
+    /// so a dragger grades her rails as a dragger rather than as the dory every hull used to borrow;
+    /// a hull with no measured deck still publishes the deck-walk's greybox rectangle. Either way it is
+    /// a BOX around the walk area, deliberately — a consumer grading "how far across the hull does this
+    /// line run" wants the hull's extent, and a box keeps that read closed-form.</para>
     /// </summary>
     public readonly struct DeckStanceState
     {
@@ -27,13 +35,33 @@ namespace HiddenHarbours.Core
         /// x = half the beam, y = half the length along the keel.</summary>
         public readonly Vector2 DeckHalfExtents;
 
+        /// <summary>
+        /// Where the player is STANDING, in that same deck frame (m) — published outright rather than
+        /// left for a consumer to recover from their world position.
+        ///
+        /// <para>It has to be, now that hulls carry real polygons: a measured deck is projected onto the
+        /// screen with its own artwork's iso foreshortening, so inverting a world offset back into the
+        /// deck frame needs both that elevation AND the height of the deck being stood on. The publisher
+        /// knows all three; a consumer knowing only the heading would silently read the angler out of
+        /// place at every facing but N/S. On the greybox rectangle this is simply the rotation of the
+        /// player's boat-relative offset — exactly what consumers computed themselves before.</para>
+        /// </summary>
+        public readonly Vector2 AnglerDeckPosition;
+
+        /// <summary>The pre-M2-37 shape: no angler position published, so it defaults to the deck
+        /// centre. Kept for callers (and tests) that only describe a deck, not somebody standing on it.</summary>
         public DeckStanceState(Vector2 hullPosition, float drawnHeadingDegrees,
                                Vector2 deckCenter, Vector2 deckHalfExtents)
+            : this(hullPosition, drawnHeadingDegrees, deckCenter, deckHalfExtents, deckCenter) { }
+
+        public DeckStanceState(Vector2 hullPosition, float drawnHeadingDegrees,
+                               Vector2 deckCenter, Vector2 deckHalfExtents, Vector2 anglerDeckPosition)
         {
             HullPosition = hullPosition;
             DrawnHeadingDegrees = drawnHeadingDegrees;
             DeckCenter = deckCenter;
             DeckHalfExtents = deckHalfExtents;
+            AnglerDeckPosition = anglerDeckPosition;
         }
     }
 

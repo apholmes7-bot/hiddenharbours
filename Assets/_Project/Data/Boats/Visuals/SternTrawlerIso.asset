@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: visual.stern_trawler_iso
   Variant: 1
   HullMesh: {fileID: 11400000, guid: 18c64df2280cc4147a2fabb6441bbce5, type: 2}
+  Deck: {fileID: 11400000, guid: ee103bda93960b3918040fb5e1e21802, type: 2}
   Facings: []
   ZeroHeadingDegrees: 0
   FacingsAreCounterClockwise: 0

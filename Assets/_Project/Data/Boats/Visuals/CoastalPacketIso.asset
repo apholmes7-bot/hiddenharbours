@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: visual.coastal_packet_iso
   Variant: 1
   HullMesh: {fileID: 11400000, guid: 65a5a974002d5cb4aa33be9c017e8860, type: 2}
+  Deck: {fileID: 11400000, guid: 7e204703e2de167dbc925c82d5658202, type: 2}
   Facings: []
   ZeroHeadingDegrees: 0
   FacingsAreCounterClockwise: 0

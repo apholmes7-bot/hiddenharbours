@@ -1,0 +1,136 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8e963cec94c290ca72be0cf932b826b, type: 3}
+  m_Name: SternTrawlerIso
+  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.BoatDeckDef
+  Id: deck.stern_trawler_iso
+  SourceSidecar: docs/art/rigs/gameplay/sternTrawlerIsoRig.gameplay.json
+  SourceRig: docs/art/rigs/sternTrawlerIsoRig.js
+  DerivedFromRigSha256: 3b0dfa023a22b3e071f39a2524cc2344f1d4df342b21fe3075752a8349fc0a37
+  LoaMeters: 38
+  Areas:
+  - Id: ramp_strip_port
+    Kind: 0
+    Outline:
+    - {x: -1.7, y: -18.392}
+    - {x: -1.7, y: -13.6}
+    - {x: -3.754, y: -13.6}
+    - {x: -3.617, y: -14.798}
+    - {x: -3.423, y: -15.996}
+    - {x: -3.227, y: -17.194}
+    - {x: -3.029, y: -18.392}
+    HeightPlane: {x: 0, y: 0, z: 3.5}
+    HeightResidualMax: 0
+    Bounds: {x: -3.754, y: -18.392, z: -1.7, w: -13.6}
+  - Id: ramp_strip_star
+    Kind: 0
+    Outline:
+    - {x: 3.029, y: -18.392}
+    - {x: 3.227, y: -17.194}
+    - {x: 3.423, y: -15.996}
+    - {x: 3.617, y: -14.798}
+    - {x: 3.754, y: -13.6}
+    - {x: 1.7, y: -13.6}
+    - {x: 1.7, y: -18.392}
+    HeightPlane: {x: 0, y: 0, z: 3.5}
+    HeightResidualMax: 0
+    Bounds: {x: 1.7, y: -18.392, z: 3.754, w: -13.6}
+  - Id: trawl_deck
+    Kind: 0
+    Outline:
+    - {x: 3.754, y: -13.6}
+    - {x: 3.894, y: -11.713}
+    - {x: 4.033, y: -9.825}
+    - {x: 4.095, y: -7.938}
+    - {x: 4.142, y: -6.05}
+    - {x: 4.174, y: -4.162}
+    - {x: 4.172, y: -2.275}
+    - {x: 4.17, y: -0.387}
+    - {x: 4.128, y: 1.5}
+    - {x: -4.128, y: 1.5}
+    - {x: -4.17, y: -0.387}
+    - {x: -4.172, y: -2.275}
+    - {x: -4.174, y: -4.162}
+    - {x: -4.142, y: -6.05}
+    - {x: -4.095, y: -7.938}
+    - {x: -4.033, y: -9.825}
+    - {x: -3.894, y: -11.713}
+    - {x: -3.754, y: -13.6}
+    HeightPlane: {x: 0, y: 0, z: 3.5}
+    HeightResidualMax: 0
+    Bounds: {x: -4.174, y: -13.6, z: 4.174, w: 1.5}
+  - Id: house_alley_port
+    Kind: 0
+    Outline:
+    - {x: -3.45, y: 1.5}
+    - {x: -3.45, y: 7.714}
+    - {x: -3.7, y: 7.714}
+    - {x: -3.843, y: 6.471}
+    - {x: -3.984, y: 5.229}
+    - {x: -4.058, y: 3.986}
+    - {x: -4.094, y: 2.743}
+    - {x: -4.128, y: 1.5}
+    HeightPlane: {x: 0, y: 0, z: 3.5}
+    HeightResidualMax: 0
+    Bounds: {x: -4.128, y: 1.5, z: -3.45, w: 7.714}
+  - Id: house_alley_star
+    Kind: 0
+    Outline:
+    - {x: 4.128, y: 1.5}
+    - {x: 4.094, y: 2.743}
+    - {x: 4.058, y: 3.986}
+    - {x: 3.984, y: 5.229}
+    - {x: 3.843, y: 6.471}
+    - {x: 3.7, y: 7.714}
+    - {x: 3.45, y: 7.714}
+    - {x: 3.45, y: 1.5}
+    HeightPlane: {x: 0, y: 0, z: 3.5}
+    HeightResidualMax: 0
+    Bounds: {x: 3.45, y: 1.5, z: 4.128, w: 7.714}
+  - Id: focsle_deck
+    Kind: 0
+    Outline:
+    - {x: 3.64, y: 10.066}
+    - {x: 3.333, y: 11.711}
+    - {x: 3.027, y: 13.364}
+    - {x: 2.72, y: 15.008}
+    - {x: 1.923, y: 16.626}
+    - {x: 1.052, y: 18.204}
+    - {x: 0.181, y: 19.724}
+    - {x: -0.181, y: 19.724}
+    - {x: -1.052, y: 18.204}
+    - {x: -1.923, y: 16.626}
+    - {x: -2.72, y: 15.008}
+    - {x: -3.027, y: 13.364}
+    - {x: -3.333, y: 11.711}
+    - {x: -3.64, y: 10.066}
+    HeightPlane: {x: 0, y: 0.1958927, z: 3.0223496}
+    HeightResidualMax: 0.033862554
+    Bounds: {x: -3.64, y: 10.066, z: 3.64, w: 19.724}
+  Cleats:
+  - Id: bow_1
+    Type: samson_post
+    PositionMeters: {x: 0, y: 18.419, z: 6.815}
+  - Id: bow_port
+    Type: bollard
+    PositionMeters: {x: -1.1, y: 12.6, z: 6.055}
+  - Id: bow_star
+    Type: bollard
+    PositionMeters: {x: 1.1, y: 12.6, z: 6.055}
+  - Id: quarter_port
+    Type: bollard
+    PositionMeters: {x: -2.6, y: -18, z: 3.61}
+  - Id: quarter_star
+    Type: bollard
+    PositionMeters: {x: 2.6, y: -18, z: 3.61}
+  WalkCenter: {x: 0, y: 0.666}
+  WalkHalfExtents: {x: 4.174, y: 19.058}

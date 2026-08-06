@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: visual.tanker_iso
   Variant: 1
   HullMesh: {fileID: 11400000, guid: 6d4b9f59c277b6e41aea6396b924e2b6, type: 2}
+  Deck: {fileID: 11400000, guid: feca644c5937cefb7436920afae8e4eb, type: 2}
   Facings: []
   ZeroHeadingDegrees: 0
   FacingsAreCounterClockwise: 0

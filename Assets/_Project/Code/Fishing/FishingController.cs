@@ -763,10 +763,14 @@ namespace HiddenHarbours.Fishing
             RodFightSettings fight = _config != null ? _config.RodFight : RodFightSettings.Default;
             if (fight.DeckAngleFactor <= 0f) return 0f;
 
-            Vector2 angler = AnglerPosition;
+            // The ANGLER's deck-frame position comes straight off the stance, never re-derived here: on
+            // a hull with authored deck polygons the walk projects them with that artwork's own iso
+            // foreshortening, and un-projecting a world offset needs the elevation AND the height of the
+            // deck underfoot — both the publisher's to know. The FISH is un-projected as before, and
+            // deliberately: she is on the water in honest world metres, not standing on the drawn hull.
             Vector2 fishWorld = FishWorldPosition();
             float across = DeckAngleMath.AcrossHull01(
-                DeckAngleMath.WorldToDeckFrame(angler - deck.HullPosition, deck.DrawnHeadingDegrees),
+                deck.AnglerDeckPosition,
                 DeckAngleMath.WorldToDeckFrame(fishWorld - deck.HullPosition, deck.DrawnHeadingDegrees),
                 deck.DeckCenter, deck.DeckHalfExtents);
             return DeckAngleMath.TensionPerSec(across, fight.DeckAngleFactor);

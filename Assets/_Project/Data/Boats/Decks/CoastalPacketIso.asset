@@ -1,0 +1,151 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8e963cec94c290ca72be0cf932b826b, type: 3}
+  m_Name: CoastalPacketIso
+  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.BoatDeckDef
+  Id: deck.coastal_packet_iso
+  SourceSidecar: docs/art/rigs/gameplay/coastalPacketIsoRig.gameplay.json
+  SourceRig: docs/art/rigs/coastalPacketIsoRig.js
+  DerivedFromRigSha256: 723b916ad80574a2edb1390b8b11608a5ec79cd1297355b88d4eeaa6955b3ceb
+  LoaMeters: 60
+  Areas:
+  - Id: aft_deck
+    Kind: 0
+    Outline:
+    - {x: 3.435, y: -29.28}
+    - {x: 3.481, y: -28.94}
+    - {x: 3.528, y: -28.6}
+    - {x: -3.528, y: -28.6}
+    - {x: -3.481, y: -28.94}
+    - {x: -3.435, y: -29.28}
+    HeightPlane: {x: 0, y: 0, z: 5}
+    HeightResidualMax: 0
+    Bounds: {x: -3.528, y: -29.28, z: 3.528, w: -28.6}
+  - Id: house_alley_port
+    Kind: 0
+    Outline:
+    - {x: -4.2, y: -20.623}
+    - {x: -4.2, y: -17.8}
+    - {x: -4.598, y: -17.8}
+    - {x: -4.561, y: -18.506}
+    - {x: -4.524, y: -19.211}
+    - {x: -4.487, y: -19.917}
+    - {x: -4.45, y: -20.623}
+    HeightPlane: {x: 0, y: 0, z: 5}
+    HeightResidualMax: 0
+    Bounds: {x: -4.598, y: -20.623, z: -4.2, w: -17.8}
+  - Id: house_alley_star
+    Kind: 0
+    Outline:
+    - {x: 4.45, y: -20.623}
+    - {x: 4.487, y: -19.917}
+    - {x: 4.524, y: -19.211}
+    - {x: 4.561, y: -18.506}
+    - {x: 4.598, y: -17.8}
+    - {x: 4.2, y: -17.8}
+    - {x: 4.2, y: -20.623}
+    HeightPlane: {x: 0, y: 0, z: 5}
+    HeightResidualMax: 0
+    Bounds: {x: 4.2, y: -20.623, z: 4.598, w: -17.8}
+  - Id: midship_gap
+    Kind: 0
+    Outline:
+    - {x: 4.598, y: -17.8}
+    - {x: 4.659, y: -16.65}
+    - {x: 4.719, y: -15.5}
+    - {x: -4.719, y: -15.5}
+    - {x: -4.659, y: -16.65}
+    - {x: -4.598, y: -17.8}
+    HeightPlane: {x: 0, y: 0, z: 5}
+    HeightResidualMax: 0
+    Bounds: {x: -4.719, y: -17.8, z: 4.719, w: -15.5}
+  - Id: hold_walkway_port
+    Kind: 0
+    Outline:
+    - {x: -3.55, y: -15.5}
+    - {x: -3.55, y: 18.5}
+    - {x: -4.053, y: 18.5}
+    - {x: -4.715, y: 14.25}
+    - {x: -4.866, y: 10}
+    - {x: -4.939, y: 5.75}
+    - {x: -4.941, y: 1.5}
+    - {x: -4.941, y: -2.75}
+    - {x: -4.941, y: -7}
+    - {x: -4.843, y: -11.25}
+    - {x: -4.719, y: -15.5}
+    HeightPlane: {x: 0, y: 0, z: 5}
+    HeightResidualMax: 0
+    Bounds: {x: -4.941, y: -15.5, z: -3.55, w: 18.5}
+  - Id: hold_walkway_star
+    Kind: 0
+    Outline:
+    - {x: 4.719, y: -15.5}
+    - {x: 4.843, y: -11.25}
+    - {x: 4.941, y: -7}
+    - {x: 4.941, y: -2.75}
+    - {x: 4.941, y: 1.5}
+    - {x: 4.939, y: 5.75}
+    - {x: 4.866, y: 10}
+    - {x: 4.715, y: 14.25}
+    - {x: 4.053, y: 18.5}
+    - {x: 3.55, y: 18.5}
+    - {x: 3.55, y: -15.5}
+    HeightPlane: {x: 0, y: 0, z: 5}
+    HeightResidualMax: 0
+    Bounds: {x: 3.55, y: -15.5, z: 4.941, w: 18.5}
+  - Id: fore_gap
+    Kind: 0
+    Outline:
+    - {x: 4.053, y: 18.5}
+    - {x: 3.946, y: 19}
+    - {x: 3.834, y: 19.5}
+    - {x: -3.834, y: 19.5}
+    - {x: -3.946, y: 19}
+    - {x: -4.053, y: 18.5}
+    HeightPlane: {x: 0, y: 0, z: 5}
+    HeightResidualMax: 0
+    Bounds: {x: -4.053, y: 18.5, z: 4.053, w: 19.5}
+  - Id: focsle_deck
+    Kind: 0
+    Outline:
+    - {x: 4.2, y: 20.395}
+    - {x: 4.029, y: 22.159}
+    - {x: 3.774, y: 23.913}
+    - {x: 2.925, y: 25.65}
+    - {x: 2.076, y: 27.363}
+    - {x: 1.227, y: 29.047}
+    - {x: 0.378, y: 30.693}
+    - {x: -0.378, y: 30.693}
+    - {x: -1.227, y: 29.047}
+    - {x: -2.076, y: 27.363}
+    - {x: -2.925, y: 25.65}
+    - {x: -3.774, y: 23.913}
+    - {x: -4.029, y: 22.159}
+    - {x: -4.2, y: 20.395}
+    HeightPlane: {x: 0, y: 0.15233967, z: 2.3700979}
+    HeightResidualMax: 0.102934465
+    Bounds: {x: -4.2, y: 20.395, z: 4.2, w: 30.693}
+  Cleats:
+  - Id: bow_port
+    Type: bollard
+    PositionMeters: {x: -1, y: 26.8, z: 6.076}
+  - Id: bow_star
+    Type: bollard
+    PositionMeters: {x: 1, y: 26.8, z: 6.076}
+  - Id: quarter_port
+    Type: bollard
+    PositionMeters: {x: -3, y: -29.3, z: 5.11}
+  - Id: quarter_star
+    Type: bollard
+    PositionMeters: {x: 3, y: -29.3, z: 5.11}
+  WalkCenter: {x: 0, y: 0.7065}
+  WalkHalfExtents: {x: 4.941, y: 29.9865}

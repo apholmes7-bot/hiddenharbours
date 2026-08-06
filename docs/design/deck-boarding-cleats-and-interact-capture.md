@@ -62,6 +62,10 @@ build on data that already exists.
 
 ### M2-37 — Deck & washboard boarding (Space to climb)
 - On-foot movement on a boat is constrained to the `DECK` (+ `WASHBOARD`) polygons of that hull.
+  **(The `DECK` half is built** — rig sidecar → `BoatDeckDef` → per-hull polygon clamp, with the
+  artwork's iso foreshortening applied when the hull metres are projected onto the drawn hull.
+  `WASHBOARD` strips are imported and tagged but stay out of the free-walk area: they are what the
+  Space climb promotes, and that verb is still to build.**)**
 - `Space` climbs deck↔washboard (and boat↔wharf where sensible) **only where the hull's data offers
   it**; no prompt on hulls without washboards.
 - The boat keeps riding the wave field underneath the player (the deck is a moving platform —
@@ -123,7 +127,7 @@ you while you occupy it.
 
 | When | What |
 |---|---|
-| **Now (rides ADR 0022)** | Add `DECK`/`WASHBOARD`/`CLEATS` to the art-director export ask; extractor pass-through to Def data. Additive, small. |
+| ~~**Now (rides ADR 0022)**~~ **LANDED** | Add `DECK`/`WASHBOARD`/`CLEATS` to the art-director export ask; extractor pass-through to Def data. Additive, small. — **done**: the eleven sidecars import to `BoatDeckDef` assets (`DeckSidecarImporter`) and the on-deck player is clamped to each hull's own polygons instead of the one-size rectangle. `CLEATS` and `WASHBOARD` ride along as data; no rope gameplay and no Space climb yet. |
 | **M2, in order** | M2-39 (the interact verb — the other two consume it) → M2-37 (boarding) → M2-38 (ropes). Alongside M2-33, which shares the leave-the-helm/moving-deck substrate. |
 | **Owner's call** | M2-39 is a strong candidate to pull forward earlier (it improves the existing bucket/rod/trap interactions on its own). Raise, don't sneak. |
 

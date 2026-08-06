@@ -2,10 +2,19 @@
 
 `<rigBasename>.gameplay.json` — one per pilotable hull, named mechanically from its rig
 (`lobsterBoatIsoRig.js` → `lobsterBoatIsoRig.gameplay.json`). Authored by **art-director**
-(this folder is that role's lane, see `agents/art-director.md`); consumed — eventually — by
-the rig extractor and the deck-boarding/mooring work (M2-37..39). As of this PR the
-extractor does **not** read these files yet; this folder establishes the contract and the
-content.
+(this folder is that role's lane, see `agents/art-director.md`); consumed by the deck
+sidecar importer and the deck-boarding/mooring work (M2-37..39).
+
+**These files are read by the game now** (M2-37's data half). `Hidden Harbours ▸ Dev ▸
+Import Deck Sidecars` turns each one into a `BoatDeckDef` asset under
+`Assets/_Project/Data/Boats/Decks/`, wired onto that hull's `BoatVisualDef.Deck`; the
+on-deck player is clamped to those polygons instead of the one-size greybox rectangle
+(`Assets/_Project/Code/Tools/Editor/RigBaking/DeckSidecarImporter.cs`). Nothing is
+transcribed by hand, and `DeckSidecarImportParityTests` re-reads every file here in CI and
+fails if a committed Def has drifted from it. **Edit a sidecar → re-run the importer.**
+What the runtime uses today: `DECK` (walked), `CLEATS` (carried as data, no rope gameplay
+yet), `WASHBOARD` (imported and tagged, but NOT walkable until the Space climb of M2-37
+lands — a washboard is somewhere you climb onto).
 
 ## Extractor resolution (per section)
 
@@ -29,7 +38,16 @@ error). Never invent a section to fill a gap.
 - `derivedFromRigSha256` — SHA-256 of the exact rig source file the values were derived
   from. **Hash mismatch = the hull was reshaped and the sidecar must be re-checked** before
   anything trusts it. Update the SHA in the same PR as any rig geometry change
-  (art-director charter rule 2).
+  (art-director charter rule 2). The importer enforces this: a mismatch is a loud refusal
+  and that hull keeps the greybox rectangle — it never silently imports polygons cut from a
+  different boat.
+  - ⚠️ **Eight of the eleven SHAs below are CRLF hashes** (cape, packet, lobster, sideDragger,
+    sportSkiff, both sternTrawlers, tanker) — they were derived from working copies with
+    Windows line endings, and the repo stores the rigs with LF. The importer accepts a match
+    on either convention and says so on every run, because a line ending cannot move a
+    vertex; every cited line number and constant in those files still reads exactly as
+    written. **art-director: please re-stamp those eight from the committed files** so the
+    check goes back to exact. dory / punt / console already hash exactly.
 - `DECK` — array of walkable polygons, each with an `id` and
   `winding: "ccw_from_above"` (counter-clockwise when viewed from +z).
   - `polygon` + `z` for FLAT areas: `[x, y]` pairs, height in the single `z` field.
