@@ -349,13 +349,17 @@ namespace HiddenHarbours.App.Editor
 
             // Just outside a cliff sector: adopt the neighbouring wall's class so the run continues into
             // the feather, where the blended profile tapers its drop away to nothing.
-            for (float d = StationMetres; d <= RunOverrunDegrees; d += 0.25f)
+            //
+            // ⚠ EVERY TERM HERE IS DEGREES. The first draft started this sweep at StationMetres, which
+            // is a length — it read fine because 0.25 m and 0.25° are both small, and it would have gone
+            // on reading fine after a station-spacing change silently moved the overrun.
+            const float SweepStepDegrees = 0.25f;
+            for (float d = SweepStepDegrees; d <= RunOverrunDegrees; d += SweepStepDegrees)
             {
-                foreach (float side in new[] { -d, d })
-                {
-                    CoastClass c = terrain.CoastClassAt(ShorePoint(bearing + side));
-                    if (CoastPlan.IsCliff(c)) return c;
-                }
+                if (CoastPlan.IsCliff(terrain.CoastClassAt(ShorePoint(bearing - d))))
+                    return terrain.CoastClassAt(ShorePoint(bearing - d));
+                if (CoastPlan.IsCliff(terrain.CoastClassAt(ShorePoint(bearing + d))))
+                    return terrain.CoastClassAt(ShorePoint(bearing + d));
             }
             return CoastClass.Beach;
         }
@@ -503,18 +507,10 @@ namespace HiddenHarbours.App.Editor
                                  StPetersBuilder.IslandRadiusY * Mathf.Cos(r));
         }
 
-        /// <summary>A point <paramref name="outMetres"/> of ELLIPTICAL distance seaward of the plateau
-        /// edge — the frame the plunge width is authored in. In world metres it is not the same distance
-        /// on both axes, which is exactly why the batter varies along one sector.</summary>
-        public static Vector2 ShorePointOut(float bearingDegrees, float outMetres)
-        {
-            float r = bearingDegrees * Mathf.Deg2Rad;
-            float d = StPetersBuilder.IslandRadius + outMetres;
-            return StPetersBuilder.IslandCenter
-                   + new Vector2(d * Mathf.Sin(r),
-                                 d * Mathf.Cos(r) * StPetersBuilder.IslandRadiusY
-                                   / StPetersBuilder.IslandRadius);
-        }
+        // ⚠ THERE IS DELIBERATELY NO ShorePointOut HERE. StPetersCoastTests has one — a RADIAL step
+        // outward in the normalised frame — and reaching for the same construction is what put the first
+        // draft of this generator 20° off the coast's outward normal. A wall goes out along the NORMAL;
+        // see TryMarchToDistance.
 
         /// <summary>Arc length per radian of bearing — the ellipse's own speed, so a constant step of
         /// SHORE can be walked in bearing.</summary>
