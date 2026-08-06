@@ -492,13 +492,63 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void TheTerrainIsAPureFunctionOfPosition()
+        public void TheTerrainIsAPureFunctionOfPosition_AcrossSampleOrderAndAcrossRebuilds()
         {
-            // Deterministic from geometry alone: no RNG, no clock, nothing saved (rule 5). Cheap to
-            // assert and the whole simulation contract rests on it.
-            foreach (var p in new[] { new Vector2(200f, -175f), new Vector2(-150f, 118f),
-                                      new Vector2(128f, 92f), new Vector2(24f, 152f) })
-                Assert.That(Elev(p), Is.EqualTo(Elev(p)).Within(0f));
+            // Deterministic from geometry alone: no RNG, no clock, nothing saved (rule 5) — and the whole
+            // simulation contract rests on it.
+            //
+            // ⚠ Asserting Elev(p) == Elev(p) would prove nothing (the compiler is free to fold it). The
+            // two things that could actually break purity here are ORDER and CACHED STATE: the terrain
+            // memoises the coast run's length rather than re-summing the polyline on all 1.7 million
+            // samples of a seabed bake, so a stale cache is a live failure mode this feature introduced.
+            // Sample forwards, rebuild the component from the plan, sample BACKWARDS, and compare.
+            var probes = new[]
+            {
+                new Vector2(200f, -175f),   // the bar's crest
+                new Vector2(-150f, 118f),   // a town lot
+                new Vector2(128f, 92f),     // the wharf deck
+                new Vector2(24f, 152f),     // inside the creek mouth's notch
+                new Vector2(98f, 85f),      // a berth, over the gate
+                new Vector2(340f, 200f),    // the open bay
+                new Vector2(33f, -6f),      // the Access gully's foreshore
+            };
+
+            var forwards = new float[probes.Length];
+            for (int i = 0; i < probes.Length; i++) forwards[i] = Elev(probes[i]);
+
+            var rebuiltGo = new GameObject("NineMileCreekMainland_DeterminismRebuild");
+            try
+            {
+                var rebuilt = rebuiltGo.AddComponent<MainlandTidalTerrain>();
+                NineMileCreekMainland.ConfigureTerrain(rebuilt);
+
+                for (int i = probes.Length - 1; i >= 0; i--)
+                    Assert.That(rebuilt.ElevationAt(probes[i]), Is.EqualTo(forwards[i]).Within(0f),
+                        $"the ground at {probes[i]} came out {rebuilt.ElevationAt(probes[i]):0.0000} on a " +
+                        $"fresh build sampled in reverse, against {forwards[i]:0.0000} on the first — the " +
+                        "height field depends on something other than the position");
+            }
+            finally { Object.DestroyImmediate(rebuiltGo); }
+        }
+
+        [Test]
+        public void ReAuthoringTheCoastlineInvalidatesTheCachedRunLength()
+        {
+            // The memoised run length is the one piece of mutable state on the terrain. If a re-author
+            // does not clear it, the blend keeps measuring the LAST coastline's end — which reads as a
+            // coast plan that silently refuses to move, the worst kind of bug to chase in a builder that
+            // is meant to converge on re-run.
+            float authored = _mainland.CoastRunLength;
+            Assert.That(authored, Is.EqualTo(MainlandCoast.RunLength(NineMileCreekMainland.CoastPoints))
+                .Within(0.01f));
+
+            _mainland.CoastPoints = new[] { new Vector2(0f, -100f), new Vector2(0f, 100f) };
+            Assert.That(_mainland.CoastRunLength, Is.EqualTo(200f).Within(0.01f),
+                "re-authoring the coastline must invalidate the cached run length");
+
+            NineMileCreekMainland.ConfigureTerrain(_mainland);
+            Assert.That(_mainland.CoastRunLength, Is.EqualTo(authored).Within(0.01f),
+                "and so must a full re-configure");
         }
 
         // ---- helpers --------------------------------------------------------------------------------
