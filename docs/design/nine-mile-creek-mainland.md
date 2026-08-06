@@ -282,6 +282,16 @@ Two findings worth stating plainly:
 ⚠ **The cliffs are still walkable-by-sim** until the slope gate lands. Flagged, not fixed, per the
 handoff.
 
+⚠ **The mooring scope was tuned against a taller deck** *(noted 2026-08-06, after #451 landed)*. The
+mooring line's 9 m default scope is sized on St Peters' geometry — a **+5.35 m** deck against ±2.2 m
+of tide, so a 2.6–7.0 m drop from cleat to boat. This wharf's deck is **+3.0 m**, which makes the drop
+**0.8–5.2 m**: every line here has *more* horizontal reach for the same scope
+(`sqrt(scope² − drop²)`), so tying up is easier and the falling-tide slip is less likely than on the
+island. That is the right way round — the working wharf should be the forgiving one — but it means
+**the ebb's teeth are a St Peters property, not a universal one**, and anyone tuning mooring against
+this wharf will read the mechanism as gentler than it is. Not a defect; a calibration note for
+whoever tunes it next.
+
 ⚠ **The boat shed.** The 2026-07-25 ruling says there is **no shipwright in this region**, but the
 shipped scene has a "shipwright shed" that sells the Punt and the pots, and the economy data hangs off
 it. A lot is reserved under a neutral name so nothing breaks. **Where the shipwright's yard really lives
@@ -298,6 +308,7 @@ it is in `NineMileCreekMainland.cs`.
 |---|---|
 | The quay from ISO pieces | **North wall** 84 × 10 m at `(128, 92)`; **west wall** 10 × 48 m at `(87, 68)`; deck +3.0 m; the tall face measured (§6) |
 | Moorings, finger piers, fenders, ladders | **14 berths** at 5.5 m spacing from `(98, 85)` along the north wall's **south** face — the one edge the kit gives a tall face to |
+| **Bollards / shore cleats** ⭐ *added 2026-08-06* | **A-2 must carry these, not Phase B.** #451 made shore cleats real: `NineMileCreekWharf.PlaceMooringCleats` gives every mooring fitting on the quay a `ShoreCleat`, derived from the **same fittings table that positions the bollard sprites** — so the bollard you can see is the bollard you can tie to. When A-2 moves the wharf onto this geography the fittings table moves with it, or that guarantee quietly breaks. It takes `deckElevation`, which is now **+3.0 m** here rather than St Peters' +5.35 m |
 | The crib breakwater | A **92 m south arm** at `(140, 38)`, crest +3.4 m, and the ~50 m entrance it leaves |
 | The winch + unloading apron | `(87, 84)` / `(87, 74)` on the west wall — and the note that its water side faces **east**, a curb-only edge, so the winch wants to be a **tall legible object**, not a detail on a wall |
 | Bait shed · trap store · fish holds | `(136, 132)` · `(148, 130)` · `(120, 112)`. **No `fishPlant` / `cannery`** — the owner's "no processing here yet" |
