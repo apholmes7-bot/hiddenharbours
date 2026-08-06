@@ -146,6 +146,67 @@ namespace HiddenHarbours.App.Editor
         /// path EDGE to resolve. Now there is.</summary>
         public const string HabitatVerge = "verge";
 
+        // =====================================================================================
+        // ⭐ THIN POOLS AND THEIR ALLIES (the 2026-08-06 variety retune)
+        // =====================================================================================
+        // The owner stood in the retuned meadow and said the wide "saggy" clumps read as the SAME
+        // sprite tiled. He was reading the library, not the scatter: of 29 baked variants only FIVE
+        // are two cells wide, and the two that carry meadow (ClumpWideA/B) were the entire broad pool
+        // for the island's cores — about two fifths of the ground, drawn from two silhouettes, four
+        // with the mirror. The VERGE was worse: it is baked with exactly those two variants and
+        // nothing else, so every metre of the ribbon either side of both walked paths was one of two
+        // sprites.
+        //
+        // ⚠ THE HONEST FIX IS MORE BAKES — retag the saltmeadow pair `meadow,verge` in the rig, or
+        // draw more wide clumps. Both are `docs/art/rigs/**`, the art-director's lane, and this pass
+        // deliberately does not reach into it. What IS in this lane is which baked art a piece of
+        // ground is allowed to wear, so a pool too thin to read as a field borrows from a documented
+        // ALLY instead.
+        //
+        // This is the same failure the catalog's own "fall back to the whole library rather than paint
+        // nothing" guard exists for, caught one step earlier and far more narrowly: an ally list, in
+        // order, rather than the whole library.
+
+        /// <summary>How many distinct variants a pool needs before it reads as a field rather than a
+        /// pattern. <b>Four</b> — with the 50/50 mirror that is eight silhouettes, which at this grain
+        /// is where the eye stops matching neighbours up. Below it the pool borrows (see
+        /// <see cref="AlliesFor"/>); at or above it nothing is borrowed and the habitat wears exactly
+        /// what was baked for it.</summary>
+        public const int MinHabitatVariety = 4;
+
+        /// <summary>
+        /// Which habitats a thin pool may borrow art from, in order, until it clears
+        /// <see cref="MinHabitatVariety"/>. Ordered by how alike the GROUND is, so the first borrow is
+        /// always the least surprising one.
+        ///
+        /// <para><b>⚠ An ally lends only art of a height class the thin pool ALREADY has</b> (the
+        /// chooser enforces it). That is what keeps a borrow from changing the habitat's read: the
+        /// verge is trodden ground and its two baked variants are both SHORT, so it borrows the
+        /// meadow's short blades and never its tall timothy — grass beside a walked track that stands
+        /// knee-high is not a verge. Same reason the headland, which is wind-cropped, borrows only the
+        /// sward's short carpet.</para>
+        ///
+        /// <para>Deliberately NOT a cycle: each list is walked once, front to back, and stops the
+        /// moment the pool is varied enough. A habitat missing from this map simply never borrows.</para>
+        /// </summary>
+        public static string[] AlliesFor(string habitat) => habitat switch
+        {
+            // Trodden meadow is still meadow; the dune's wide saltmeadow is the only other low wide
+            // art baked, and it is what the verge's BROAD pool needs (its two allies are the same
+            // two ClumpWide sprites it already has).
+            HabitatVerge => new[] { HabitatMeadow, HabitatDune },
+            // The meadow's normal pool is 17 deep and borrows nothing. Its BROAD pool is the two
+            // ClumpWide, and the dune's saltmeadow pair is the only other wide grass on the island —
+            // saltmeadow hay grows in coastal meadows, so this is the ally the art already suggests.
+            HabitatMeadow => new[] { HabitatDune, HabitatFringe },
+            HabitatSward => new[] { HabitatMeadow },
+            HabitatFringe => new[] { HabitatMeadow, HabitatDune },
+            HabitatDune => new[] { HabitatMeadow, HabitatFringe },
+            // Scoured open ground reads as a cropped version of the inland carpet.
+            HabitatHeadland => new[] { HabitatSward, HabitatMeadow },
+            _ => System.Array.Empty<string>(),
+        };
+
         /// <summary>How far (m) from the grass band's edge still counts as FRINGE. One grid step plus a
         /// little: the fringe variants are the low wide ones whose whole job is to hide the splat
         /// boundary where the painted grass hands over to bare ground, so the band has to be at least
