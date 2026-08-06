@@ -127,7 +127,7 @@
   &quot;hour&quot;:      { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 6, &quot;min&quot;: 0, &quot;max&quot;: 23, &quot;step&quot;: 1, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Clock&quot; },
   &quot;minute&quot;:    { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 0, &quot;min&quot;: 0, &quot;max&quot;: 59, &quot;step&quot;: 1, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Clock&quot; },
   &quot;use24&quot;:     { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: false, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Clock&quot; },
-  &quot;season&quot;:    { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;Early Spring&quot;, &quot;options&quot;: [&quot;Early Spring&quot;, &quot;High Summer&quot;, &quot;The Turn&quot;, &quot;Hard Winter&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Clock&quot; },
+  &quot;season&quot;:    { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;Spring&quot;, &quot;options&quot;: [&quot;Spring&quot;, &quot;Summer&quot;, &quot;Fall&quot;, &quot;Winter&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Clock&quot; },
   &quot;day&quot;:       { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 1, &quot;min&quot;: 1, &quot;max&quot;: 28, &quot;step&quot;: 1, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Clock&quot; },
   &quot;year&quot;:      { &quot;editor&quot;: &quot;int&quot;, &quot;default&quot;: 1, &quot;min&quot;: 1, &quot;max&quot;: 99, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Clock&quot; },
   &quot;nightMode&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;Auto&quot;, &quot;options&quot;: [&quot;Auto&quot;, &quot;Day&quot;, &quot;Night&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Clock&quot; }
@@ -135,7 +135,7 @@
 class Component extends DCLogic {
   constructor(props){
     super(props);
-    const R=window.WatchRig, FULL=(R&&R.SEASON_FULL)||['Early Spring','High Summer','The Turn','Hard Winter'];
+    const R=window.WatchRig, FULL=(R&&R.SEASON_FULL)||['Spring','Summer','Fall','Winter'];
     this.FULL=FULL;
     const s=this._load();
     const seasonIdx = s.seasonIdx ?? this._seasonToIdx(props.season) ?? 0;
@@ -264,7 +264,7 @@ class Component extends DCLogic {
         {k:'WEEKDAY',  v:WD_FULL[d.wd]+(d.market?'  \u00b7  market day':''), fg: d.market?'#e6c96a':'#c4cdcd', border},
         {k:'DAY INDEX',v:'#'+d.di+'  \u00b7  Y'+S.year, fg:'#c4cdcd', border},
         {k:'HOUR',     v:d.hf.toFixed(2)+'  \u00b7  '+phase, fg:'#c4cdcd', border},
-        {k:'START',    v:'new game \u2192 EarlySpring D1 06:00', fg:'#8a969b', border},
+        {k:'START',    v:'new game \u2192 Spring D1 06:00', fg:'#8a969b', border},
       ],
       downloadFace:()=>this._downloadFace(),
     };
