@@ -95,6 +95,84 @@ namespace HiddenHarbours.Boats
             if (_instance == this) _instance = null;
         }
 
+        /// <summary>The one live host, or null before it installs / after it is torn down. Exposed so the
+        /// radar's contact source can read the fleet that is actually running rather than searching for
+        /// one (<see cref="RadarContactSource"/>, ADR 0025 S5).</summary>
+        public static AmbientFleetPresenter Instance => _instance;
+
+        /// <summary>
+        /// APPEND every fleet contact within <paramref name="rangeMetres"/> of <paramref name="centre"/>
+        /// to <paramref name="into"/>, and report how many were added — the fleet's half of the
+        /// <see cref="IRadarContacts"/> seam (ADR 0025 S5).
+        ///
+        /// <para><b>Appends, never clears.</b> The seam's clear-first contract belongs to the COMPOSER
+        /// (<see cref="RadarContactSource"/>), which gathers from several sources into one list; a
+        /// source that cleared would silently delete whatever was gathered before it.</para>
+        ///
+        /// <para><b>A read, not a second model.</b> Everything published here is state this presenter
+        /// already holds and already draws — the same <c>fisher.Position</c> the hull sprite sits at and
+        /// the same buoy transforms the player can see. The radar therefore cannot show a boat that is
+        /// not there, or miss one that is, which is the honesty invariant the fish seam established.
+        /// Determinism rides along for free: the fleet is closed-form from
+        /// <c>(worldSeed, gameTime)</c>, so the same seed at the same instant yields the same contacts.</para>
+        ///
+        /// <para><b>Only what is on the surface.</b> A buoy mid-dip (rising or sinking) is under water
+        /// and returns nothing — the same test the sprite's own visibility uses. A fleet whose region
+        /// scene is not active is skipped entirely rather than echoing from another harbour.</para>
+        ///
+        /// <para>Allocation-free (rule 7): the caller owns the list and this only appends structs.</para>
+        /// </summary>
+        public int RadarContactsInto(Vector2 centre, float rangeMetres, List<RadarContact> into)
+        {
+            if (into == null || rangeMetres <= 0f) return 0;
+            float rangeSqr = rangeMetres * rangeMetres;
+            int added = 0;
+
+            for (int i = 0; i < _fleets.Count; i++)
+            {
+                FleetRuntime fleet = _fleets[i];
+                if (!fleet.Active) continue;
+
+                for (int b = 0; b < fleet.Boats.Length; b++)
+                {
+                    Fisher fisher = fleet.Boats[b];
+                    // A boat with no work today is deactivated, not moved — skip her rather than echo
+                    // from wherever she was left standing.
+                    if (fisher.Root == null || !fisher.Root.activeSelf) continue;
+
+                    if ((fisher.Position - centre).sqrMagnitude <= rangeSqr)
+                    {
+                        float speed = fisher.CruiseSpeed * fisher.SpeedFraction;
+                        // ⚠ The ONE bearing convention (0 = N, clockwise) — never the rig's canvas atan2.
+                        float course = speed > 0f ? BoatKinematics.BearingDegrees(fisher.Heading) : float.NaN;
+                        into.Add(new RadarContact(fisher.Position, RadarEchoKind.Vessel,
+                                                  FisherEchoSize, course, speed));
+                        added++;
+                    }
+
+                    for (int j = 0; j < fisher.Buoys.Length; j++)
+                    {
+                        Buoy buoy = fisher.Buoys[j];
+                        if (buoy.Root == null || buoy.State != BuoyState.Shown) continue;
+                        Vector3 p = buoy.Root.transform.position;
+                        var pos = new Vector2(p.x, p.y);
+                        if ((pos - centre).sqrMagnitude > rangeSqr) continue;
+                        into.Add(RadarContact.Still(pos, RadarEchoKind.Buoy, BuoyEchoSize));
+                        added++;
+                    }
+                }
+            }
+            return added;
+        }
+
+        /// <summary>What an open working punt is worth as a radar return — radarRig.js:141-142, whose own
+        /// authored scene puts small craft at 1.05 and 1.25. The low end, because these are open boats.</summary>
+        public const float FisherEchoSize = 1.05f;
+
+        /// <summary>What a trap buoy is worth — radarRig.js:143's own authored buoy. Under the 0.8 band
+        /// edge <c>strengthIdx</c> uses, so a buoy always paints as the weakest return there is.</summary>
+        public const float BuoyEchoSize = 0.7f;
+
         private void OnTrapPlaced(TrapPlaced e)
         {
             if (string.IsNullOrEmpty(e.InstanceId)) return;

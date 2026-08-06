@@ -175,6 +175,34 @@ namespace HiddenHarbours.UI
             }
         }
 
+        /// <summary>
+        /// A thick line under the canvas <c>'lighter'</c> pass — <see cref="ThickLine"/>'s additive twin,
+        /// grown here by S5 because the radar's phosphor sweep is a fan of two dozen additive lines
+        /// (<c>radarRig.js:310-318</c>) and the guard-zone edges ride the same composite. The layer's own
+        /// remarks reserved this ("the sounder/radar slices grow this layer then").
+        ///
+        /// <para>Additive is not a stylistic choice here: the sweep's trailing wedge OVERLAPS itself as
+        /// the fan sweeps, and source-over would flatten twenty-four faint passes into one faint line
+        /// instead of the glow that makes a scope look alive. Stamped 1×1 like its source-over twin, so
+        /// the two agree pixel-for-pixel about which pixels a line covers.</para>
+        /// </summary>
+        public static void ThickLineAdd(DrawSurface s, double x0, double y0, double x1, double y1,
+                                        double w, Color32 c, float alpha01)
+        {
+            if (alpha01 <= 0f) return;
+            double dx = x1 - x0, dy = y1 - y0;
+            double len = System.Math.Max(1.0, System.Math.Sqrt(dx * dx + dy * dy));
+            int n = (int)System.Math.Ceiling(len);
+            double px = -dy / len, py = dx / len, hw = (w - 1.0) / 2.0;
+            for (int i = 0; i <= n; i++)
+            {
+                double t = (double)i / n, X = x0 + dx * t, Y = y0 + dy * t;
+                for (double j = -hw; j <= hw; j++)
+                    s.AddRect(DrawSurface.JsRound(X + px * j), DrawSurface.JsRound(Y + py * j), 1, 1,
+                              c, alpha01);
+            }
+        }
+
         /// <summary>consoleRig.js:136-140 — a slotted screw head off a 5-step ramp.</summary>
         public static void Screw(DrawSurface s, int cx, int cy, int r, Color32[] ramp)
         {
@@ -226,6 +254,14 @@ namespace HiddenHarbours.UI
             // of the table so it would render as loud tofu (RigFontUnknownGlyphTests) — this is the
             // slice that needs it, so it gets its pixels on purpose rather than by accident.
             ":", "...|.#.|...|.#.|...",
+            // U+0025 PERCENT: the radar's data panel prints GAIN/SEA/RAIN as `round(v*100)+'%'`
+            // (radarRig.js:374-376) and radarRig's own font table — like every rig's — carries no '%',
+            // so the rig's preview RENDERS IT AS A GAP. Pinned here as an authored blank on the '·'
+            // precedent below rather than left to the unknown-glyph fallback, which would draw a tofu
+            // block AND log an error on every repaint. ⚠ This is an ART CALL held at the rig's own
+            // answer, not a limitation: '%' is perfectly drawable in 3×5, and if the owner wants the
+            // sign to print it gets its pixels on this row and nothing else changes.
+            "%", "...|...|...|...|...",
             // U+00B7: both wheelhouse standby plates author a '·' separator (noviRig.js:359,
             // capeRig.js:348) that the sources' own font tables do not carry, so every preview
             // RENDERS it as a gap — that gap is the approved look, pinned here as an authored blank

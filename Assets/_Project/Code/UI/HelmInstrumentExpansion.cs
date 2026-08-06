@@ -1,14 +1,13 @@
 namespace HiddenHarbours.UI
 {
     /// <summary>Which brow instrument a click or an expansion is about. One value per instrument that
-    /// can be MOUNTED and then expanded; <see cref="Radar"/>/<see cref="Chartplotter"/> are named for
-    /// the S5/S6 units that will inherit this pattern and have no renderer yet.</summary>
+    /// can be MOUNTED and then expanded. All four are built.</summary>
     public enum HelmInstrumentSlot
     {
         None = 0,
         Sounder = 1,        // DepthRig — the plain depth sounder (ADR 0025 S2)
         FishFinder = 2,     // FishRig  — the colour sonar in the same cutout (S3b)
-        Radar = 3,          // S5 — not built
+        Radar = 3,          // RadarRig — the PPI scope in the brow's CENTRE slot (S5)
         Chartplotter = 4,   // NavRig  — the chart in the brow's GPS slot (S6)
     }
 

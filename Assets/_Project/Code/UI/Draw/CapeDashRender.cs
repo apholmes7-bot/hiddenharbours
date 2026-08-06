@@ -264,7 +264,18 @@ namespace HiddenHarbours.UI
                 else if (i == HelmDashGeometry.PilotRadarSlot)
                 {
                     HelmDashGeometry.SlotBoxOnCard(i, true, out int bx, out int by, out int bw, out int bh);
-                    ScreenMount(s, bx, by, bw, bh, "RADAR", fit.Radar, night);
+                    if (fit.Radar)
+                    {
+                        // S5: the GLASS belongs to the radar host, which composites the live PPI into
+                        // this very box — the sounder's fitted branch above, for the same reason. Drawing
+                        // the rig's STANDBY page under a fitted set would leave "STANDBY · UPGRADEABLE"
+                        // showing around a portrait instrument that cannot fill a square slot, and would
+                        // be the dash contradicting the instrument. No layout moves: same box, same
+                        // gasket, only the fill differs.
+                        RigDrawUtil.RRect(s, bx - 5, by - 4, bw + 10, bh + 9, 9, RUBBER[0]);
+                        RigDrawUtil.RRect(s, bx - 4, by - 3, bw + 8, bh + 7, 8, CHROME[2]);
+                    }
+                    else ScreenMount(s, bx, by, bw, bh, "RADAR", fitted: false, night);
                 }
                 else
                 {

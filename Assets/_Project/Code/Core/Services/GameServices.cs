@@ -92,6 +92,39 @@ namespace HiddenHarbours.Core
         private static IFishSchools _fishSchools;
 
         /// <summary>
+        /// What a radar can see (ADR 0025 S5): the NPC vessels and buoys out there right now, published
+        /// by whoever is driving them and read by the scope at the helm (<see cref="IRadarContacts"/>).
+        ///
+        /// <para><b>⚠ Like <see cref="FishSchools"/> and unlike every other optional service on this
+        /// class, this one is NEVER null — read it without a null check.</b> Absent a registered
+        /// producer it is <see cref="EmptyRadarSea"/>, an honest quiet sea. The coast still paints,
+        /// because land comes from <see cref="TidalTerrain"/> rather than from here, so "no producer"
+        /// draws open water rather than a dead instrument — the right SHIPPED behaviour in a bare art
+        /// scene, in EditMode, and in a region with no ambient fleet authored.</para>
+        ///
+        /// <para>Same lifetime and discipline as <see cref="FishSchools"/> otherwise: the producer
+        /// self-registers, and <b>must clear this on disable</b> (assign null — the getter turns that
+        /// back into the quiet sea) so a torn-down region cannot leave a dead producer behind.</para>
+        /// FLAG lead-architect: new Core contract (the ADR 0025 S5 radar-contact seam).
+        /// </summary>
+        public static IRadarContacts RadarContacts
+        {
+            get
+            {
+                IRadarContacts model = _radarContacts;
+                // ⚠️ NEVER `_radarContacts ?? EmptyRadarSea.Instance` here — the FishSchools reasoning
+                // verbatim. A producer is a MonoBehaviour, and once its scene unloads the reference is
+                // Unity's FAKE-null: `??`/`?.` bypass UnityEngine.Object's overloaded `==`, so a
+                // DESTROYED producer would read as live and every call through it would throw.
+                if (model is UnityEngine.Object producer && producer == null) return EmptyRadarSea.Instance;
+                return model != null ? model : EmptyRadarSea.Instance;
+            }
+            set => _radarContacts = value;
+        }
+
+        private static IRadarContacts _radarContacts;
+
+        /// <summary>
         /// The versioned save system (VS-08). Self-installing and persistent (SaveService bootstraps
         /// itself before the first scene), so unlike the others it is not wired by GameRoot. The world
         /// reads/writes persisted flags through it (the onboarding-flags consolidation off PlayerPrefs).
@@ -301,6 +334,13 @@ namespace HiddenHarbours.Core
         public static ChartplotterSettings Chartplotter =>
             Config != null ? Config.Chartplotter : ChartplotterSettings.Default;
 
+        /// <summary>The radar's tunables (ADR 0025 S5 — the range ladder, gain, sea clutter, and the
+        /// coastline scan's budget). Same contract as <see cref="WaveField"/>, including the
+        /// <c>Config != null</c> discipline. Read by the glass AND by the land-echo scan, so what the
+        /// scope shows and how far it looks for the coast can never disagree.</summary>
+        public static RadarSettings Radar =>
+            Config != null ? Config.Radar : RadarSettings.Default;
+
         /// <summary>The grabbable steering wheel's spin-feel tunables (ADR 0025 S2a — lock-to-lock
         /// turns, coast friction, self-centre, rim-grab pad). Same contract as
         /// <see cref="WaveField"/>, including the <c>Config != null</c> discipline.</summary>
@@ -359,6 +399,7 @@ namespace HiddenHarbours.Core
             HelmControl = null;
             HelmInstruments = null;
             FishSchools = null;          // → EmptyFishSchools.Instance; this property is never null
+            RadarContacts = null;        // → EmptyRadarSea.Instance; likewise never null
             Save = null;
             TidalTerrain = null;
             CurrentRegionId = null;
