@@ -77,6 +77,42 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 "shipped variant compiles cleanly; do NOT silence this guard:\n" + errors);
         }
 
+        /// <summary>
+        /// ⭐ <b>THE SHIPPED MATERIAL'S TEXTURE SLOTS MUST STAY EMPTY — the brow and toe decals depend
+        /// on it, and nothing else would say so.</b>
+        ///
+        /// <para>The kit's decal strips ship ONE pre-lit RGBA channel (README §8: they are fixed-sun by
+        /// nature). They ride this same shader with only <c>_Unlit</c> pushed, so <c>_Normal</c> and
+        /// <c>_Mask</c> fall through to the shader's own declared defaults — a flat "bump" and a white
+        /// mask — and the lighting maths collapses to exactly the right thing: a decal lit as a FLAT
+        /// texel of the wall it sits on. That is what buys this project a decal path with no second
+        /// cliff shader to force-compile.</para>
+        ///
+        /// <para><b>The failure it guards is silent.</b> Assign any texture to those slots in the
+        /// inspector and every decal on the coast is suddenly shaded by some unrelated rock's normals and
+        /// cast shadow — which renders, and renders wrong, and looks like the decals were drawn badly.
+        /// Property blocks override per renderer, so the FACE bands would be untouched and only the
+        /// decals would go strange.</para>
+        /// </summary>
+        [Test]
+        public void TheShippedMaterialLeavesNormalAndMaskUnset_WhichIsWhatLightsTheDecals()
+        {
+            var mat = AssetDatabase.LoadAssetAtPath<Material>(CliffMaterialPath);
+            Assert.IsNotNull(mat, $"The cliff material ('{CliffMaterialPath}') was not found.");
+
+            foreach (string slot in new[] { "_Unlit", "_Normal", "_Mask" })
+            {
+                Assert.IsTrue(mat.HasProperty(slot),
+                    $"CliffFace.mat has no {slot} property — the wall pushes it per chunk through a " +
+                    "property block and would be pushing into nothing");
+                Assert.IsNull(mat.GetTexture(slot),
+                    $"CliffFace.mat carries a texture in {slot}. Every channel arrives PER CHUNK through " +
+                    "a MaterialPropertyBlock (the bake root is gitignored, so there is nothing to assign " +
+                    "here anyway) — and the brow/toe decals rely on _Normal and _Mask falling through to " +
+                    "the shader's flat-bump and white defaults to be lit as flat texels of their wall.");
+            }
+        }
+
         static void CollectMessages(StringBuilder errors, StringBuilder warnings, string materialPath,
                                     string keywords, ShaderMessage[] messages)
         {

@@ -136,9 +136,83 @@ namespace HiddenHarbours.Art
         /// How many face tiles wide a run of shore is: plan arc length over the kit's 12 m period.
         /// Fractional by design — the face is exactly periodic in <c>s</c> and imported Repeat, so a run
         /// stops wherever the coast does rather than rounding to a whole tile.
+        ///
+        /// <para><b>⭐⭐ <paramref name="alongShoreMetres"/> IS MEASURED FROM THE START OF THE RUN, NOT OF
+        /// THE CHUNK — and getting that wrong is the whole of the B3 "cliff gaps" defect.</b> A chunk is
+        /// a SLICE of a run, cut for sorting reasons alone (see
+        /// <c>StPetersCliffWalls.ChunkToeSpanMetres</c>), so nothing about where the slice falls may
+        /// change the picture. Restart this at zero per chunk and two things break at once, both
+        /// MEASURED on the real coast:</para>
+        /// <list type="number">
+        /// <item><description>The rock TEXTURE jumps, because the shared boundary station is addressed at
+        /// <c>u</c> by one chunk and at 0 by the next — a mean of <b>3.30 m</b> and a worst of 6.00 m of
+        /// the kit's 12 m period, at <b>76 of the coast's 78 chunk boundaries</b>.</description></item>
+        /// <item><description>Worse, the plan-displacement profile is sampled at that same <c>u</c>, so
+        /// the two copies of the shared station are pushed DIFFERENT distances along the outward normal
+        /// and the overlap that exists to prevent a hole is torn open instead. Measured against the rig
+        /// itself: <b>RMS 0.40 m and up to 1.10 m</b> at the coast's mean cut. A metre of open sky, 76
+        /// times.</description></item>
+        /// </list>
+        /// <para>So the offset is a RUN quantity that the builder carries across every cut, and
+        /// <see cref="RowsBasisSurfaceMetres"/> is its twin for the other axis.</para>
         /// </summary>
         public static float TileU(float alongShoreMetres, float faceMetresS) =>
             faceMetresS <= 0f ? 0f : alongShoreMetres / faceMetresS;
+
+        /// <summary>
+        /// Wrap a tile coordinate into <c>[0,1)</c> for a CPU texture read.
+        ///
+        /// <para><b>⚠ For the CPU sample ONLY — never for the mesh UVs.</b> The GPU wraps a Repeat
+        /// texture itself and interpolates <c>u</c> correctly across a period boundary (0.98 → 1.02); a
+        /// UV that had been wrapped per-vertex would read 0.98 → 0.02 and run the whole texture backwards
+        /// between those two columns. <see cref="UnityEngine.Texture2D.GetPixelBilinear"/> is the one that
+        /// needs it, and doing it here rather than trusting the importer means a profile that arrived
+        /// Clamp still samples the right texel instead of smearing its last column down a whole run.</para>
+        /// </summary>
+        public static float WrapTile01(float tiles) => tiles - Mathf.Floor(tiles);
+
+        /// <summary>
+        /// The surface length a whole RUN's row count is derived from — the largest face anywhere in it.
+        ///
+        /// <para><b>Why the run and not the chunk.</b> Rows are how finely the profile displacement is
+        /// resolved, and the displaced face is a CURVE. Two chunks that meet at a shared station but
+        /// subdivide it differently approximate that curve with different polylines, so the shared edge
+        /// does not close — the T-junction case of the same "a slice must not change the picture" rule
+        /// <see cref="TileU"/> states. MEASURED before the fix: <b>26 of the coast's 76 cuts</b> joined
+        /// chunks with different row counts.</para>
+        /// </summary>
+        public static float RowsBasisSurfaceMetres(
+            System.Collections.Generic.IReadOnlyList<CliffWallSample> samples)
+        {
+            if (samples == null) return 0f;
+            float longest = 0f;
+            for (int i = 0; i < samples.Count; i++)
+            {
+                CliffWallSample s = samples[i];
+                longest = Mathf.Max(longest, SurfaceLengthMetres(in s));
+            }
+            return longest;
+        }
+
+        /// <summary>
+        /// ⭐ <b>THE SOIL HORIZON, AS THE FACE SEES IT.</b> A depth of overburden is a VERTICAL thickness
+        /// — a soil profile is so many metres deep, whatever the ground below it does — but a face is
+        /// addressed in SURFACE metres, so a battered wall presents more of it than a vertical one.
+        /// <c>overburden / sin(batter)</c>, the same conversion the kit's README applies to a bank's
+        /// height ("an 8 m bank at 48° needs 8/sin(48°) of t").
+        ///
+        /// <para>This is what makes ONE number express the owner's whole brief. He asked for stratified
+        /// faces — eroded topsoil above, red sandstone below — but also said solid rock is right in SOME
+        /// places. A soil horizon of fixed depth gives both without a second dial: on St Peters' 10 m
+        /// faces it is a sixth of the wall and the cliff reads as rock with a soil lip, while on its
+        /// shortest 2.85 m ones it is over half and the same cliff reads as an eroding bank. Height does
+        /// the art direction, because on a real coast it does.</para>
+        /// </summary>
+        public static float OverburdenSurfaceMetres(float overburdenMetres, float batterDegrees)
+        {
+            float sin = Mathf.Sin(Mathf.Clamp(batterDegrees, 1f, 90f) * Mathf.Deg2Rad);
+            return Mathf.Max(0f, overburdenMetres) / Mathf.Max(sin, 0.02f);
+        }
 
         /// <summary>
         /// How many face tiles LONG a face is, measured down its own surface (rule 2). An 8 m bank at 48°
@@ -239,5 +313,42 @@ namespace HiddenHarbours.Art
         /// </summary>
         public static float BrowToToeSeparationMetres(float dropMetres) =>
             Mathf.Max(0f, dropMetres) * SpriteLightMath.HeightScale;
+
+        // =============================================================================================
+        //  the decals — where the kit's brow and toe strips sit against a face
+        // =============================================================================================
+
+        /// <summary>
+        /// How far INLAND of the brow, in PLAN metres, a brow strip's top edge sits.
+        ///
+        /// <para>The kit's brow strip is 12 × 4 m and its sod line — <c>CliffCatalog.BrowLineAt</c>, the
+        /// rig's own <c>anchor</c> — sits 42% of the way down it. Above that line the strip is drawing the
+        /// PLAN surface of the clifftop (grass, seen from above); below it, the face. So the strip
+        /// straddles the brow and this is the plan half of it.</para>
+        /// </summary>
+        public static float BrowDecalInlandMetres(float stripMetresT, float browLineAt) =>
+            Mathf.Max(0f, stripMetresT) * Mathf.Clamp01(browLineAt);
+
+        /// <summary>How far DOWN THE SURFACE of the face a brow strip reaches — the rest of the strip.
+        /// This is where the sod's undercut shadow, its hanging clods and the soil wash spilling onto the
+        /// rock are drawn, and it is why the strip is measured in surface metres like everything else that
+        /// touches a face.</summary>
+        public static float BrowDecalFaceMetres(float stripMetresT, float browLineAt) =>
+            Mathf.Max(0f, stripMetresT) * (1f - Mathf.Clamp01(browLineAt));
+
+        /// <summary>
+        /// Where a toe strip's TOP edge sits, as a depth in surface metres measured UP from the drawn toe
+        /// — i.e. the strip occupies the last <paramref name="stripMetresT"/> of the face.
+        ///
+        /// <para><b>⚠ The kit gives no anchor constant for the toe, unlike <c>BrowLineAt</c> for the
+        /// brow.</b> Its own note says what the strip contains — the undercut notch the sea cuts at
+        /// high water, the salt-bleached basal beds "in every low-tide photograph", and the debris lying
+        /// against the foot — all of which are features OF the bottom of the face. MEASURED on the baked
+        /// strip, its alpha is zero across the top quarter and only reaches full weight in the bottom
+        /// three-eighths, so seating its bottom edge on the drawn toe puts the notch and the bleached
+        /// band where they belong and lets the top fade out onto plain rock. Anything else would have to
+        /// invent an anchor the rig does not state.</para>
+        /// </summary>
+        public static float ToeDecalFaceMetres(float stripMetresT) => Mathf.Max(0f, stripMetresT);
     }
 }

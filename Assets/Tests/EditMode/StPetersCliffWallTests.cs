@@ -407,6 +407,187 @@ namespace HiddenHarbours.Tests.EditMode
                                  SortingBands.DecorFloor, SortingBands.DecorCeiling);
 
         // =========================================================================================
+        //  ⭐⭐ 3b. B3 — A CHUNK IS A SLICE OF A RUN, AND SLICING MUST NOT SHOW
+        // =========================================================================================
+
+        /// <summary>
+        /// ⭐⭐ <b>THE B3 PIN: the owner's "cliff gaps", stated as the invariant that was broken.</b>
+        ///
+        /// <para><b>What was actually wrong.</b> The coast has 79 chunks and <b>76 of its 78 boundaries
+        /// are CUTS, not run ends</b> — measured, along with the fact that not one station dies mid-run.
+        /// So the gaps were never a finishing problem at the ends of runs; they were a chunk-cut defect
+        /// in the middle of them, which is the case the geometry has to answer rather than a decal.</para>
+        ///
+        /// <para><b>Why a cut showed at all.</b> A cut is a SORTING decision (see
+        /// <see cref="StPetersCliffWalls.ChunkToeSpanMetres"/>) and has no business being visible. But
+        /// <c>CliffWallSurface</c> measured its along-shore <c>u</c> from its OWN first station, so the
+        /// boundary station — the one deliberately shared with the next chunk to stop a 0.25 m hole of
+        /// open sky — was addressed at two different <c>u</c>. That jumped the rock texture by a measured
+        /// mean of 3.30 m of its 12 m period, and, far worse, the plan-displacement profile is sampled at
+        /// that same <c>u</c>: the two copies of one station were pushed different distances along the
+        /// outward normal, so the overlap that exists to close a hole <b>tore one open instead</b>.
+        /// Measured against the rig itself: <b>RMS 0.40 m, up to 1.10 m</b>, seventy-six times.</para>
+        ///
+        /// <para><b>So the claim is about the JOIN, not about the formula.</b> Wherever two chunks share
+        /// a station, that station must arrive at the same place along the run from both sides — to well
+        /// under one texel, because a texel is the smallest thing that could show.</para>
+        /// </summary>
+        [Test]
+        public void EveryChunkBoundaryClosesExactly_TheSharedStationAtTheSameU()
+        {
+            // A texel of face is the resolution at which anything could possibly be visible.
+            float texel = CliffCatalog.FaceMetresS / CliffCatalog.FaceWidth;
+            float worstAlong = 0f, worstAt = 0f;
+            int cuts = 0, runEnds = 0;
+
+            for (int i = 0; i + 1 < _chunks.Count; i++)
+            {
+                StPetersCliffWalls.Chunk a = _chunks[i], b = _chunks[i + 1];
+                CliffWallSample last = a.Samples[a.Samples.Count - 1];
+                if (last.BrowPlan != b.Samples[0].BrowPlan) { runEnds++; continue; }
+
+                cuts++;
+                Assert.AreEqual(a.RunIndex, b.RunIndex,
+                    "two chunks share a station but were put in different runs — the offset would reset " +
+                    "between them and the texture would jump");
+
+                float along = a.AlongOffsetMetres + RunLength(a);
+                float error = Mathf.Abs(along - b.AlongOffsetMetres);
+                if (error > worstAlong) { worstAlong = error; worstAt = last.BrowPlan.x; }
+
+                Assert.Less(error, texel * 0.1f,
+                    $"a shared station at {last.BrowPlan} arrives at {along:F4} m along its run from one " +
+                    $"chunk and {b.AlongOffsetMetres:F4} m from the next — {error * 1000f:F2} mm apart. " +
+                    "Both the rock texture and the profile displacement are addressed by that number, so " +
+                    "the two copies of this station are drawn in different places and the wall is torn " +
+                    "open between them.");
+
+                Assert.AreEqual(a.RunSurfaceMetres, b.RunSurfaceMetres, 1e-4f,
+                    "two chunks of one run disagree about the run's longest face, so they subdivide " +
+                    "their shared edge differently — the T-junction half of the same defect");
+            }
+
+            Assert.Greater(cuts, 0, "no chunk boundaries at all — this pin is asserting nothing");
+            Debug.Log($"[cliff-walls] {cuts} chunk boundaries CLOSE (shared station, same run, same u) " +
+                      $"and {runEnds} are genuine run ends. Worst along-run disagreement " +
+                      $"{worstAlong * 1000f:F3} mm near x={worstAt:F1} against a {texel * 1000f:F1} mm " +
+                      "texel — a cut is invisible.");
+        }
+
+        /// <summary>
+        /// Within a run the offsets march forward and the run's own length is what they add up to; at a
+        /// run end they start again. The bookkeeping behind the pin above, asserted separately so a
+        /// failure says WHICH half is wrong.
+        /// </summary>
+        [Test]
+        public void OffsetsMarchForwardThroughARun_AndResetOnlyWhereTheWallGenuinelyStops()
+        {
+            var runLength = new Dictionary<int, float>();
+            int previousRun = -1;
+            float previousOffset = 0f;
+
+            foreach (StPetersCliffWalls.Chunk c in _chunks)
+            {
+                if (c.RunIndex != previousRun)
+                {
+                    Assert.AreEqual(0f, c.AlongOffsetMetres, 1e-4f,
+                        $"run {c.RunIndex} starts {c.AlongOffsetMetres:F2} m along itself");
+                    previousRun = c.RunIndex;
+                }
+                else
+                {
+                    Assert.GreaterOrEqual(c.AlongOffsetMetres, previousOffset - 1e-4f,
+                        "a chunk starts BEHIND the one before it in the same run");
+                }
+                previousOffset = c.AlongOffsetMetres;
+
+                runLength.TryGetValue(c.RunIndex, out float had);
+                runLength[c.RunIndex] = Mathf.Max(had, c.AlongOffsetMetres + RunLength(c));
+
+                Assert.Greater(c.RunSurfaceMetres, 0f,
+                    "a chunk carries no row-count basis, so it would fall back to its own length");
+            }
+
+            var lengths = new List<string>();
+            foreach (var kv in runLength) lengths.Add($"{kv.Value:F1} m");
+            Debug.Log($"[cliff-walls] {runLength.Count} unbroken runs of coast: {string.Join(", ", lengths)}. " +
+                      "The gullies between them are the two Access sectors — a run end is where the wall " +
+                      "genuinely stops and the brow/toe decals finish it.");
+        }
+
+        static float RunLength(StPetersCliffWalls.Chunk c)
+        {
+            float run = 0f;
+            for (int i = 1; i < c.Samples.Count; i++)
+                run += Vector2.Distance(c.Samples[i - 1].BrowPlan, c.Samples[i].BrowPlan);
+            return run;
+        }
+
+        // =========================================================================================
+        //  ⭐ 3c. THE STRATA — the owner's PEI direction, measured on the real coast
+        // =========================================================================================
+
+        /// <summary>
+        /// ⭐ <b>THE SOIL HORIZON DOES BOTH HALVES OF THE OWNER'S BRIEF FROM ONE NUMBER.</b> He asked for
+        /// stratified faces — eroded topsoil over red sandstone — and also said solid rock is right in
+        /// some areas. A horizon of fixed DEPTH gives both, because a face's height decides what share of
+        /// it the soil takes: the island's tall walls read as rock with a soil lip and its short ones as
+        /// eroding banks, with no second dial and no per-sector exception.
+        ///
+        /// <para>What is pinned is that the range is a real spread rather than a constant — a horizon so
+        /// deep that every face is soil, or so shallow that none reads stratified, would satisfy "there
+        /// is a band" and fail the direction. The numbers themselves are REPORTED, because they are the
+        /// owner's to rule on.</para>
+        /// </summary>
+        [Test]
+        public void EveryFaceCarriesASoilBand_AndItsShareIsSetByHowTallTheFaceIs()
+        {
+            float leastShare = 1f, mostShare = 0f;
+            float shortestFace = float.MaxValue, tallestFace = 0f;
+            int allSoil = 0, sampled = 0;
+
+            foreach (StPetersCliffWalls.Chunk c in _chunks)
+            {
+                float batter = CliffCatalog.BatterAngles[
+                    StPetersCliffWalls.BakedBatterToCatalogIndex(c.BatterIndex)];
+                float band = CliffWallGeometry.OverburdenSurfaceMetres(
+                    StPetersCliffWalls.OverburdenMetres, batter);
+                Assert.Greater(band, 0f, "a chunk resolved a soil band of no depth at all");
+
+                foreach (CliffWallSample s in c.Samples)
+                {
+                    float surface = CliffWallGeometry.SurfaceLengthMetres(in s);
+                    shortestFace = Mathf.Min(shortestFace, surface);
+                    tallestFace = Mathf.Max(tallestFace, surface);
+
+                    float share = Mathf.Clamp01(band / surface);
+                    leastShare = Mathf.Min(leastShare, share);
+                    mostShare = Mathf.Max(mostShare, share);
+                    if (share >= 1f) allSoil++;
+                    sampled++;
+                }
+            }
+
+            Assert.Less(leastShare, 0.5f,
+                $"even the island's tallest face is {leastShare:P0} soil — the horizon " +
+                $"({StPetersCliffWalls.OverburdenMetres} m) has grown past the point where any of this " +
+                "coast reads as the solid rock the owner said is right in some places");
+            Assert.Greater(mostShare, 0.15f,
+                $"the shallowest face is only {mostShare:P0} soil — nothing on this coast would read as " +
+                "STRATIFIED, which is the direction");
+
+            Debug.Log(
+                $"[cliff-walls] the soil band over {StPetersCliffWalls.OverburdenMetres} m of horizon: " +
+                $"{leastShare:P0}…{mostShare:P0} of a face, over surface lengths " +
+                $"{shortestFace:F2}…{tallestFace:F2} m. {allSoil} of {sampled} stations are ENTIRELY " +
+                $"soil (a face shorter than its own horizon — the low-cliff case, drawn in " +
+                $"{StPetersCliffWalls.OverburdenRock} rather than given no wall at all).\n" +
+                "⚠ OWNER: this is the dial. One number, and height does the rest — tall faces read as " +
+                "rock with a soil lip, short ones as eroding bank. Say the word if a NAMED sector should " +
+                "be bare rock instead and it becomes a per-class table.");
+        }
+
+        // =========================================================================================
         //  4. determinism and idempotence
         // =========================================================================================
 
@@ -426,6 +607,13 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.AreEqual(_chunks[i].BatterIndex, again[i].BatterIndex, $"chunk {i} batter");
                 Assert.AreEqual(_chunks[i].WallAzimuth, again[i].WallAzimuth, $"chunk {i} azimuth");
                 Assert.AreEqual(_chunks[i].Samples.Count, again[i].Samples.Count, $"chunk {i} stations");
+                // The run bookkeeping too — it is accumulated across the whole walk, so it is the part
+                // most able to hide a hidden dependence on order or on previous state.
+                Assert.AreEqual(_chunks[i].RunIndex, again[i].RunIndex, $"chunk {i} run");
+                Assert.AreEqual(_chunks[i].AlongOffsetMetres, again[i].AlongOffsetMetres,
+                                $"chunk {i} along-run offset");
+                Assert.AreEqual(_chunks[i].RunSurfaceMetres, again[i].RunSurfaceMetres,
+                                $"chunk {i} run surface basis");
                 for (int j = 0; j < _chunks[i].Samples.Count; j++)
                 {
                     Assert.AreEqual(_chunks[i].Samples[j].BrowPlan, again[i].Samples[j].BrowPlan);

@@ -111,8 +111,39 @@ namespace HiddenHarbours.App.Editor
         public const float RunOverrunDegrees = StPetersBuilder.CoastBlendDegrees;
 
         /// <summary>The rock the coast is built from — St Peters is "red sandstone cliffs", and it is
-        /// what <see cref="CliffBaker.DefaultRock"/> ships.</summary>
+        /// what <see cref="CliffBaker.DefaultRock"/> ships. The LOWER band of every face.</summary>
         public const string Rock = CliffBaker.DefaultRock;
+
+        /// <summary>
+        /// The rock of the face's UPPER band — the kit's <c>till</c>, which its own rig calls "the soft
+        /// cliff: red boulder clay over the rock". Rill gullies, slump benches and grass tongues running
+        /// down them, against sandstone's horizontal red bedding.
+        /// </summary>
+        public const string OverburdenRock = CliffBaker.OverburdenRock;
+
+        /// <summary>
+        /// ⭐ <b>THE SOIL HORIZON — how deep the eroded topsoil goes before the rock shows, in metres of
+        /// TRUE HEIGHT.</b> This is the whole of the owner's stratified-cliff direction, as one number.
+        ///
+        /// <para><b>Why one number is enough for a brief with two halves.</b> He asked for stratified
+        /// faces — topsoil above, red sandstone below — and also said solid rock is right in SOME places.
+        /// A soil horizon has a real depth that does not care how tall the cliff under it is, so a fixed
+        /// one gives both at once: on this coast's 10 m faces it is a sixth of the wall and reads as rock
+        /// with a soil lip; on its shortest 2.85 m ones it is over half and the same wall reads as an
+        /// eroding bank. Height does the art direction, because on a real coast it does.</para>
+        ///
+        /// <para><b>1.8 m, and where that comes from.</b> It is the island's own meadow band — the
+        /// plateau stands at 6 m and grass reaches down to 4.2 m — so the soil on the face is exactly as
+        /// deep as the soil the clifftop is already growing on. <b>⚠ It is deliberately its OWN constant
+        /// and not a reference to those two.</b> The owner still owes a ruling on how far grass may reach
+        /// over the brow, and that ruling must be free to move the GRASS without silently repainting
+        /// every cliff face in the region.</para>
+        ///
+        /// <para><b>The low-cliff dial, too.</b> A face shorter than this carries no rock band at all —
+        /// it is drawn entirely in till, which is the topsoil-erosion treatment stated as geometry rather
+        /// than as paint. Below <see cref="MinFaceDropMetres"/> no wall stands at any rate.</para>
+        /// </summary>
+        public const float OverburdenMetres = 1.8f;
 
         /// <summary>One chunk's worth of resolved geometry — the builder's own intermediate, exposed so
         /// the tests can assert the RULES (span extraction, batter snap, aspect choice, sorting) without
@@ -124,6 +155,20 @@ namespace HiddenHarbours.App.Editor
             public int BatterIndex;         // into CliffCatalog.Batters
             public float WallAzimuth;       // TRUE, unsnapped — the shader wants the real bearing
             public CoastClass Class;
+
+            /// <summary>Which unbroken RUN of coast this chunk belongs to. Chunks are cut for sorting;
+            /// runs are where the wall genuinely stops.</summary>
+            public int RunIndex;
+
+            /// <summary>⭐ Metres of shore this chunk's run has already spent before this chunk's first
+            /// station. The B3 fix: see <see cref="CliffWallGeometry.TileU"/> for what restarting it at
+            /// zero per chunk measured out at.</summary>
+            public float AlongOffsetMetres;
+
+            /// <summary>⭐ The longest face anywhere in this chunk's RUN, in surface metres — the row
+            /// count every chunk of the run shares, so a shared edge is approximated identically on both
+            /// sides. See <see cref="CliffWallGeometry.RowsBasisSurfaceMetres"/>.</summary>
+            public float RunSurfaceMetres;
         }
 
         // =============================================================================================
@@ -175,13 +220,24 @@ namespace HiddenHarbours.App.Editor
             float toeLow = float.MaxValue, toeHigh = float.MinValue;
             Vector2 lastBrow = Vector2.zero;
 
+            // ⭐ THE RUN BOOKKEEPING — the B3 fix. A cut is a SORTING decision and must not be visible,
+            // so the two things a chunk would otherwise re-derive from its own first station are carried
+            // across every cut instead: how far along the run it starts (which is what `u` counts, for
+            // the texture AND for the profile displacement), and which run it belongs to (so the row
+            // count can be shared afterwards). Both reset only where the wall genuinely STOPS.
+            int runIndex = 0;
+            float runAlong = 0f;            // arc length from the run's start to `lastBrow`
+            float chunkStartAlong = 0f;     // ...and to `current`'s first station
+
             for (int i = 0; i < stations.Count; i++)
             {
                 var st = stations[i];
                 if (!st.live)
                 {
+                    if (current.Samples.Count > 0 || runAlong > 0f) runIndex++;
                     Flush(chunks, ref current);
                     runMetres = 0f; toeLow = float.MaxValue; toeHigh = float.MinValue;
+                    runAlong = 0f; chunkStartAlong = 0f;
                     continue;
                 }
 
@@ -189,7 +245,9 @@ namespace HiddenHarbours.App.Editor
                 bool startsNew = current.Samples.Count == 0;
                 if (!startsNew)
                 {
-                    runMetres += Vector2.Distance(lastBrow, st.sample.BrowPlan);
+                    float step = Vector2.Distance(lastBrow, st.sample.BrowPlan);
+                    runMetres += step;
+                    runAlong += step;                       // `runAlong` is now THIS station's along
                     bool textureChanged = st.aspect != current.AspectIndex ||
                                           st.batter != current.BatterIndex;
                     // The Y span INCLUDING this station — a chunk is cut before it grows too tall to
@@ -206,12 +264,19 @@ namespace HiddenHarbours.App.Editor
                         // the drop tapers fastest) one station moved the foot 0.62 m, so chunks came out
                         // 2.34 m wide against a 2 m rule. Carrying the PREVIOUS station forward instead
                         // gives the same seamless overlap while leaving every chunk inside its bound.
+                        //
+                        // ⚠ AND THE OVERLAP ONLY CLOSES IF ITS `u` COMES FORWARD WITH IT. The shared
+                        // station starts the next chunk at the along it already had — `runAlong - step`,
+                        // this station's along less the step just taken. Without that the two copies of
+                        // one station are displaced by different amounts and the overlap tears open
+                        // instead: measured at RMS 0.40 m and up to 1.10 m, at 76 of 78 boundaries.
                         CliffWallSample shared = current.Samples[current.Samples.Count - 1];
                         Flush(chunks, ref current);
                         current.Samples.Add(shared);
                         float sharedToe = CliffWallGeometry.ToeScreen(shared).y;
                         toeLow = toeHigh = sharedToe;
-                        runMetres = Vector2.Distance(shared.BrowPlan, st.sample.BrowPlan);
+                        runMetres = step;
+                        chunkStartAlong = runAlong - step;
                         startsNew = true;
                     }
                 }
@@ -222,6 +287,8 @@ namespace HiddenHarbours.App.Editor
                     current.BatterIndex = st.batter;
                     current.WallAzimuth = st.azimuth;
                     current.Class = st.cls;
+                    current.RunIndex = runIndex;
+                    current.AlongOffsetMetres = chunkStartAlong;
                 }
                 current.Samples.Add(st.sample);
                 toeLow = Mathf.Min(toeLow, toeY);
@@ -229,7 +296,34 @@ namespace HiddenHarbours.App.Editor
                 lastBrow = st.sample.BrowPlan;
             }
             Flush(chunks, ref current);
+            ResolveRunSurfaces(chunks);
             return chunks;
+        }
+
+        /// <summary>
+        /// Give every chunk of a run the same row-count basis: the longest face anywhere in that run.
+        ///
+        /// <para>A second pass because a run's tallest station is not known until the run has finished,
+        /// and because the alternative — letting each chunk size its own subdivision — is the other half
+        /// of the B3 defect. The displaced face is a curve; two chunks that meet at a shared station and
+        /// subdivide it differently approximate that curve with different polylines, so the seam does not
+        /// close. Measured at <b>26 of the coast's 76 cuts</b>.</para>
+        /// </summary>
+        static void ResolveRunSurfaces(List<Chunk> chunks)
+        {
+            var longest = new Dictionary<int, float>();
+            foreach (Chunk c in chunks)
+            {
+                float s = CliffWallGeometry.RowsBasisSurfaceMetres(c.Samples);
+                longest[c.RunIndex] = longest.TryGetValue(c.RunIndex, out float had)
+                                    ? Mathf.Max(had, s) : s;
+            }
+            for (int i = 0; i < chunks.Count; i++)
+            {
+                Chunk c = chunks[i];
+                c.RunSurfaceMetres = longest[c.RunIndex];
+                chunks[i] = c;
+            }
         }
 
         static void Flush(List<Chunk> into, ref Chunk current)
@@ -422,12 +516,16 @@ namespace HiddenHarbours.App.Editor
             }
 
             var root = new GameObject(RootName);
-            int built = 0;
+            int built = 0, stratified = 0, browDecals = 0, toeDecals = 0;
             foreach (Chunk chunk in chunks)
             {
-                if (!TryLoadChannels(chunk, out Texture2D unlit, out Texture2D normal,
-                                     out Texture2D mask, out Texture2D profile))
+                if (!TryLoadBands(chunk, out CliffFaceBand[] bands, out Texture2D profile))
                     continue;
+                if (bands.Length > 1) stratified++;
+
+                LoadDecals(chunk, out Texture2D browStrip, out Texture2D toeStrip);
+                if (browStrip != null) browDecals++;
+                if (toeStrip != null) toeDecals++;
 
                 int n = chunk.Samples.Count;
                 var brow = new Vector2[n];
@@ -451,48 +549,143 @@ namespace HiddenHarbours.App.Editor
                 go.transform.position = new Vector3(brow[0].x, brow[0].y, 0f);
 
                 var surface = go.AddComponent<CliffWallSurface>();
-                surface.Configure(brow, toe, drop, material, unlit, normal, mask, profile,
+                surface.Configure(brow, toe, drop, material, bands, profile, browStrip, toeStrip,
+                                  chunk.AlongOffsetMetres, chunk.RunSurfaceMetres,
                                   chunk.WallAzimuth,
                                   CliffCatalog.BatterAngles[BakedBatterToCatalogIndex(chunk.BatterIndex)],
                                   CliffCatalog.AspectBakeLights[chunk.AspectIndex],
                                   CliffCatalog.FaceMetresS, CliffCatalog.FaceMetresT,
-                                  CliffCatalog.ProfileSubdivideMetres, CliffCatalog.ProfileMetres);
+                                  CliffCatalog.ProfileSubdivideMetres, CliffCatalog.ProfileMetres,
+                                  CliffCatalog.StripMetresT, CliffCatalog.BrowLineAt);
                 built++;
             }
 
-            Debug.Log($"[cliff-walls] {built} chunks of standing cliff from {chunks.Count} resolved runs " +
+            int runs = 0;
+            foreach (Chunk c in chunks) runs = Mathf.Max(runs, c.RunIndex + 1);
+            Debug.Log($"[cliff-walls] {built} chunks of standing cliff over {runs} runs " +
                       $"(stations every {StationMetres} m, chunks up to {ChunkMetres} m). " +
-                      "Sorted into the decor band by each chunk's own toe (ADR 0032).");
+                      $"{stratified} carry a {OverburdenMetres} m topsoil band over the rock; " +
+                      $"{browDecals} brow and {toeDecals} toe decals seat their ends. " +
+                      "Sorted into the decor band by each chunk's own toe (ADR 0032); `u` and the row " +
+                      "count run continuously across every cut, so a chunk boundary is invisible.");
             return built;
         }
 
-        static bool TryLoadChannels(Chunk chunk, out Texture2D unlit, out Texture2D normal,
-                                    out Texture2D mask, out Texture2D profile)
+        /// <summary>
+        /// ⭐ <b>THE STRATA.</b> A face's rock bands, brow-downward: the eroded topsoil, then the
+        /// sandstone under it. One profile serves both — it is the LANDFORM's displacement and the bands
+        /// are materials lying on it, so giving each its own would tear them apart at the horizon.
+        ///
+        /// <para><b>The fallback is deliberate and it is not silent.</b> If the till bake is missing, the
+        /// face falls back to ONE sandstone band covering the whole wall rather than leaving the top
+        /// 1.8 m empty — a hole in the coast is a far worse failure than an unstratified cliff, and it is
+        /// the failure a naive "skip the band you cannot load" would produce.</para>
+        /// </summary>
+        static bool TryLoadBands(Chunk chunk, out CliffFaceBand[] bands, out Texture2D profile)
         {
+            bands = new CliffFaceBand[0];
             int catalogBatter = BakedBatterToCatalogIndex(chunk.BatterIndex);
             string aspect = CliffCatalog.Aspects[chunk.AspectIndex];
 
-            unlit = LoadFace(aspect, catalogBatter, "_unlit");
-            normal = LoadFace(aspect, catalogBatter, "_normal");
-            mask = LoadFace(aspect, catalogBatter, "_mask");
+            // ⚠ THE ONE PLACE THE DISPLACEMENT STILL STEPS, AND IT IS MEASURED RATHER THAN ASSUMED.
+            //
+            // The profile depends on rock and BATTER, so where the coast changes batter mid-run the map
+            // swaps and the silhouette steps — the only survivor of the B3 fix, which made `u` continuous
+            // everywhere else. It happens at 6 of the coast's 76 cuts, and it is left alone deliberately:
+            // measured off the rig, adjacent baked batters differ by RMS 0.045 m and at most 0.113 m
+            // (correlation 0.985 — the same ribs, respaced), against the RMS 0.40 m / 1.10 m the u defect
+            // was tearing open. A centimetres-wide step at six places where the ROCK TEXTURE also changes
+            // — the kit's own break-up mechanism — is not worth the cure, which would be pinning one
+            // batter's profile across a whole run and thereby putting the silhouette's ribs somewhere the
+            // face's own shading does not agree they are.
             profile = AssetDatabase.LoadAssetAtPath<Texture2D>(
                 $"{CliffBaker.SubFolder(CliffCatalog.BakeRoot, CliffAssetKind.Profile)}/" +
                 $"{CliffCatalog.ProfileName(Rock, catalogBatter)}.png");
 
-            if (unlit != null && normal != null && mask != null) return true;
+            if (!TryLoadFaceSet(Rock, aspect, catalogBatter, out CliffFaceBand rock))
+            {
+                Debug.LogWarning(
+                    $"[cliff-walls] no baked face for {Rock} {aspect} " +
+                    $"{CliffCatalog.Batters[catalogBatter]} — that stretch of coast will not stand up. " +
+                    "The kit ships as the rig; run the builder (it bakes on missing) or " +
+                    "'Hidden Harbours ▸ Dev ▸ Bake Cliff Face Kit'.");
+                return false;
+            }
 
-            Debug.LogWarning(
-                $"[cliff-walls] no baked face for {Rock} {aspect} " +
-                $"{CliffCatalog.Batters[catalogBatter]} — that stretch of coast will not stand up. " +
-                "The kit ships as the rig; run the builder (it bakes on missing) or " +
-                "'Hidden Harbours ▸ Dev ▸ Bake Cliff Face Kit'.");
-            return false;
+            // The soil horizon is a vertical depth; the face is addressed along its own surface, so the
+            // conversion uses the SNAPPED batter — the angle the pixels were actually baked at, not the
+            // station's true one, or the band would sit at a depth the texture disagrees with.
+            float overburden = CliffWallGeometry.OverburdenSurfaceMetres(
+                OverburdenMetres, CliffCatalog.BatterAngles[catalogBatter]);
+
+            if (!TryLoadFaceSet(OverburdenRock, aspect, catalogBatter, out CliffFaceBand soil))
+            {
+                Debug.LogWarning(
+                    $"[cliff-walls] no baked {OverburdenRock} face for {aspect} " +
+                    $"{CliffCatalog.Batters[catalogBatter]} — this face will stand as bare {Rock} with " +
+                    "no topsoil band. Re-run the builder (it bakes on missing) or " +
+                    $"'Hidden Harbours ▸ Dev ▸ Bake Cliff Face Kit — {OverburdenRock}'.");
+                rock.Label = "Rock";
+                bands = new[] { rock };
+                return true;
+            }
+
+            soil.Label = "Overburden";
+            soil.StartSurfaceMetres = 0f;
+            soil.EndSurfaceMetres = overburden;
+            rock.Label = "Rock";
+            rock.StartSurfaceMetres = overburden;
+            rock.EndSurfaceMetres = 0f;             // ...to the toe
+            bands = new[] { soil, rock };
+            return true;
         }
 
-        static Texture2D LoadFace(string aspect, int catalogBatter, string channel) =>
+        static bool TryLoadFaceSet(string rock, string aspect, int catalogBatter, out CliffFaceBand band)
+        {
+            band = CliffFaceBand.WholeFace(
+                LoadFace(rock, aspect, catalogBatter, "_unlit"),
+                LoadFace(rock, aspect, catalogBatter, "_normal"),
+                LoadFace(rock, aspect, catalogBatter, "_mask"),
+                rock);
+            return band.HasChannels;
+        }
+
+        /// <summary>
+        /// The kit's own finisher for a face's ends: the hanging sod lip at the brow, and the sea's
+        /// undercut plus the salt-bleached basal beds at the toe.
+        ///
+        /// <para><b>⚠ Loaded as TEXTURES, not as sprites.</b> The strips import as
+        /// <c>SpriteImportMode.Multiple</c> (the kit's own contract — they have silhouettes and were
+        /// meant to sort), and a Multiple-mode asset that nobody has sliced carries ZERO sprites, so
+        /// <c>LoadAssetAtPath&lt;Sprite&gt;</c> would hand back null on a freshly baked checkout. The
+        /// wall consumes them on a mesh that follows the coast rather than as flat quads, so the
+        /// <see cref="Texture2D"/> — which is the asset's main object either way — is the honest handle
+        /// and the import contract is left exactly as the kit states it.</para>
+        ///
+        /// <para>Missing decals are NOT an error: the wall stands without them and the warning for a
+        /// missing face already covers an unbaked checkout.</para>
+        /// </summary>
+        static void LoadDecals(Chunk chunk, out Texture2D brow, out Texture2D toe)
+        {
+            int catalogBatter = BakedBatterToCatalogIndex(chunk.BatterIndex);
+            string aspect = CliffCatalog.Aspects[chunk.AspectIndex];
+            string folder = CliffBaker.SubFolder(CliffCatalog.BakeRoot, CliffAssetKind.Strip);
+
+            brow = AssetDatabase.LoadAssetAtPath<Texture2D>(
+                $"{folder}/Brow_{CliffCatalog.BrowName(aspect, CliffCatalog.BaseStep)}.png");
+
+            // A wall or a steep face is undercut into a notch; a ramp keeps its debris and slumps. The
+            // kit pairs them by batter and the coast's batter is already snapped, so this cannot pick a
+            // feature the bake did not write.
+            string feature = CliffCatalog.ToeFeatureForBatter[catalogBatter];
+            toe = AssetDatabase.LoadAssetAtPath<Texture2D>(
+                $"{folder}/Toe_{CliffCatalog.ToeName(aspect, CliffCatalog.BaseStep, feature)}.png");
+        }
+
+        static Texture2D LoadFace(string rock, string aspect, int catalogBatter, string channel) =>
             AssetDatabase.LoadAssetAtPath<Texture2D>(
                 $"{CliffBaker.SubFolder(CliffCatalog.BakeRoot, CliffAssetKind.Face)}/" +
-                $"{CliffCatalog.FaceName(Rock, aspect, catalogBatter, CliffCatalog.BaseStep, channel)}.png");
+                $"{CliffCatalog.FaceName(rock, aspect, catalogBatter, CliffCatalog.BaseStep, channel)}.png");
 
         // =============================================================================================
         //  the ellipse (mirrors StPetersCoastTests' own measures — same frame, same three functions)

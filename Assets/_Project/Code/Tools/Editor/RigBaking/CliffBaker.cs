@@ -57,8 +57,31 @@ namespace HiddenHarbours.Tools.RigBaking
     /// </summary>
     public static class CliffBaker
     {
-        /// <summary>The rock St Peters is made of — "red sandstone cliffs" in the region docs.</summary>
+        /// <summary>The rock St Peters is made of — "red sandstone cliffs" in the region docs. The rock
+        /// of every face's LOWER band.</summary>
         public const string DefaultRock = "sandstone";
+
+        /// <summary>
+        /// The rock of a face's UPPER band — the eroded topsoil the owner's Prince Edward Island
+        /// reference photographs show capping every red sandstone cliff.
+        ///
+        /// <para><b>⭐ The kit already draws this; no rig change was owed.</b> Its own rig calls
+        /// <c>till</c> "the soft cliff — red boulder clay over the rock", and draws it as vertical rill
+        /// gullies, slump benches and grass tongues running down them — against sandstone's horizontal
+        /// red bedding. Stacked, the two ARE the stratified face: soft soil-coloured overburden above,
+        /// exposed red rock below.</para>
+        /// </summary>
+        public const string OverburdenRock = "till";
+
+        /// <summary>
+        /// The rocks a St Peters wall is built FROM, and therefore the rocks a checkout must carry before
+        /// its coast can stand up. <see cref="CliffBakeMenu.EnsureBaked"/> bakes all of them.
+        ///
+        /// <para><b>⚠ Not the same list as <see cref="CliffCatalog.Rocks"/>.</b> That is every rock the
+        /// rig knows (basalt is a future grey headland); this is the two the region actually consumes.
+        /// Adding a rock here costs a bake, not a commit — the sheets are gitignored by design.</para>
+        /// </summary>
+        public static readonly string[] DefaultRocks = { DefaultRock, OverburdenRock };
 
         /// <summary>The batters baked by default, as indices into <see cref="CliffCatalog.Batters"/>:
         /// wall (90°), steep (76°), ramp (62°). <c>bank</c> (48°) is omitted — a 48° slope is not a

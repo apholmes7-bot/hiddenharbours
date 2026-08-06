@@ -273,5 +273,120 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.AreEqual(0f, CliffWallGeometry.SortY(null));
             Assert.AreEqual(0f, CliffWallGeometry.SortY(new CliffWallSample[0]));
         }
+
+        // =========================================================================================
+        //  ⭐ 5. A CHUNK IS A SLICE OF A RUN — the two quantities the B3 gaps came from
+        // =========================================================================================
+
+        /// <summary>
+        /// ⭐⭐ <b>THE WRAP BELONGS TO THE CPU READ AND NOWHERE ELSE.</b> A run is a dozen tiles long, so
+        /// its <c>u</c> runs well past 1; the GPU wraps a Repeat texture itself and interpolates
+        /// 0.98 → 1.02 correctly across the period. Wrapping a mesh UV instead would emit 0.98 → 0.02 on
+        /// two adjacent columns and run the whole texture BACKWARDS between them — a defect that reads as
+        /// a mirrored stripe of rock rather than as a bug.
+        ///
+        /// <para>So this is asserted as the identity it is: wrapping lands in [0,1), is idempotent, and
+        /// preserves the position within the period of any tile coordinate however large.</para>
+        /// </summary>
+        [Test]
+        public void WrappingATileCoordinateKeepsItsPlaceInThePeriod_AndIsIdempotent()
+        {
+            foreach (float u in new[] { 0f, 0.25f, 0.999f, 1f, 1.25f, 12.03f, 137.5f })
+            {
+                float w = CliffWallGeometry.WrapTile01(u);
+                Assert.That(w, Is.InRange(0f, 1f), $"u={u} wrapped outside [0,1]");
+                Assert.AreEqual(w, CliffWallGeometry.WrapTile01(w), Eps, "wrapping is not idempotent");
+                Assert.AreEqual(0f, Mathf.Repeat(u - w, 1f), 1e-3f,
+                    $"u={u} wrapped to {w}, which is not the same point in the period");
+            }
+
+            // A negative tile cannot arise from an arc length, but a coordinate that slipped below zero
+            // would otherwise read the texture's far edge — so the wrap is total, not a clamp.
+            Assert.That(CliffWallGeometry.WrapTile01(-0.25f), Is.InRange(0f, 1f));
+        }
+
+        /// <summary>
+        /// The row-count basis is the RUN's longest face, never the chunk's — so two chunks meeting at a
+        /// shared station approximate their shared displaced edge with the same polyline. Measured before
+        /// the fix: 26 of the coast's 76 cuts joined chunks with different row counts.
+        /// </summary>
+        [Test]
+        public void TheRowsBasisIsTheLongestFaceInTheRun_SoEveryChunkOfItSubdividesAlike()
+        {
+            var run = new[] { Sample(0f, -2f, 4f), Sample(0f, -2f, 9f), Sample(0f, -2f, 3f) };
+            float basis = CliffWallGeometry.RowsBasisSurfaceMetres(run);
+
+            float longest = 0f;
+            foreach (CliffWallSample s in run)
+                longest = Mathf.Max(longest, CliffWallGeometry.SurfaceLengthMetres(in s));
+            Assert.AreEqual(longest, basis, Eps, "the basis is not the longest face in the run");
+
+            // …and a chunk holding only the SHORT stations re-derives a smaller number, which is exactly
+            // why the builder has to carry the run's own basis across every cut instead of letting each
+            // chunk work one out locally.
+            Assert.Greater(basis, CliffWallGeometry.RowsBasisSurfaceMetres(new[] { run[0], run[2] }),
+                "a sub-slice re-derives a smaller basis — the value must come from the RUN");
+
+            Assert.AreEqual(0f, CliffWallGeometry.RowsBasisSurfaceMetres(null));
+        }
+
+        // =========================================================================================
+        //  ⭐ 6. THE STRATA — a soil horizon is a DEPTH, and a face is measured along its surface
+        // =========================================================================================
+
+        /// <summary>
+        /// ⭐ A vertical wall presents exactly its soil horizon; anything battered presents MORE of it,
+        /// by <c>1/sin</c> — the same conversion the kit's README applies to a bank's height. Get it
+        /// backwards and a shallow face would show a THINNER soil band than a vertical one, which is the
+        /// opposite of what a slope does and would read as "the strata look wrong on the ramps".
+        /// </summary>
+        [Test]
+        public void TheSoilHorizonPresentsMoreSurfaceOnAShallowerFace_ByOneOverSin()
+        {
+            const float Horizon = 1.8f;
+
+            Assert.AreEqual(Horizon, CliffWallGeometry.OverburdenSurfaceMetres(Horizon, 90f), Eps,
+                "a vertical wall presents its horizon at true depth — no conversion at all");
+
+            float steep = CliffWallGeometry.OverburdenSurfaceMetres(Horizon, 76f);
+            float ramp = CliffWallGeometry.OverburdenSurfaceMetres(Horizon, 62f);
+            Assert.Greater(steep, Horizon, "a battered face presents MORE surface, not less");
+            Assert.Greater(ramp, steep, "the shallower the face, the more of its surface the soil takes");
+            Assert.AreEqual(Horizon / Mathf.Sin(62f * Mathf.Deg2Rad), ramp, Eps);
+
+            // Degenerate inputs must not hand back an infinity that would place a band at NaN depth.
+            Assert.AreEqual(0f, CliffWallGeometry.OverburdenSurfaceMetres(-1f, 90f), Eps,
+                "a negative horizon is not a band");
+            Assert.IsTrue(float.IsFinite(CliffWallGeometry.OverburdenSurfaceMetres(Horizon, 0f)),
+                "a flat 'face' must still return a finite depth rather than dividing by zero");
+        }
+
+        // =========================================================================================
+        //  ⭐ 7. THE DECALS — where the kit's own finishers sit against a face
+        // =========================================================================================
+
+        /// <summary>
+        /// The brow strip STRADDLES the lip and its two halves are the whole strip: above the sod line it
+        /// draws plan-view clifftop, below it the face. Split it any other way and the sod line — the one
+        /// feature the strip exists to draw — lands somewhere that is not the brow.
+        /// </summary>
+        [Test]
+        public void TheBrowStripStraddlesTheLip_AndItsTwoHalvesAreTheWholeStrip()
+        {
+            float h = CliffCatalog.StripMetresT, at = CliffCatalog.BrowLineAt;
+            float inland = CliffWallGeometry.BrowDecalInlandMetres(h, at);
+            float face = CliffWallGeometry.BrowDecalFaceMetres(h, at);
+
+            Assert.AreEqual(h, inland + face, Eps,
+                "the strip's plan half and its face half do not add up to the strip");
+            Assert.AreEqual(h * at, inland, Eps,
+                "the sod line does not sit where CliffCatalog.BrowLineAt says it does");
+            Assert.Greater(face, inland,
+                "the kit anchors its sod line above centre, so more of the strip hangs on the face than " +
+                "lies on the clifftop — which is where the undercut shade and the soil wash are drawn");
+
+            // The toe strip straddles nothing: it IS the last of the face, seated on the drawn toe.
+            Assert.AreEqual(h, CliffWallGeometry.ToeDecalFaceMetres(h), Eps);
+        }
     }
 }
