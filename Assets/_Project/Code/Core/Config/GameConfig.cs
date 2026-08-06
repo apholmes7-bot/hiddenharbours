@@ -118,6 +118,15 @@ namespace HiddenHarbours.Core
                  "existing seakeeping data.")]
         public StormRockSettings StormRock = StormRockSettings.Default;
 
+        [Header("Ground tackle (dropping the hook)")]
+        [Tooltip("World-wide ANCHORING policy: the dinghy-class rode a hull carries when her own Def " +
+                 "does not say (BoatHullDef.RodeMeters = 0), the swing-circle floor, the firm-limit trio " +
+                 "the rode is checked with (the mooring rope's own numbers — one restraint mechanism, two " +
+                 "consumers), and how a DRAGGING anchor lets her creep when a rising tide takes the bottom " +
+                 "away from the hook. The gate itself is not tunable: she anchors where the rode reaches " +
+                 "the seabed, and nowhere else.")]
+        public AnchorSettings Anchor = AnchorSettings.Default;
+
         [Header("The shared wave field (ADR 0018 — ONE sea, every consumer)")]
         [Tooltip("The wind + sea-state → wave-train derivation: how many trains, their wavelengths and " +
                  "amplitudes, the crest sharpening, and the ADR 0027 JONSWAP spectrum (SpectrumBlend 0 = " +

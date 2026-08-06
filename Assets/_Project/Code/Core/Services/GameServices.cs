@@ -219,6 +219,15 @@ namespace HiddenHarbours.Core
         public static StormRockSettings StormRock =>
             Config != null ? Config.StormRock : StormRockSettings.Default;
 
+        /// <summary>The GROUND-TACKLE policy (the rode, the swing circle, the firm limit, the drag creep),
+        /// same contract as <see cref="WaveField"/> including the <c>Config != null</c> discipline (never
+        /// <c>?.</c>/<c>??</c> on a <c>UnityEngine.Object</c>) and the resolved-per-read liveness, so
+        /// dragging the anchor sliders in play changes the next tick's hold. Falls back to
+        /// <see cref="AnchorSettings.Default"/> with no config wired, which is why an unwired test rig
+        /// still anchors on a dinghy-class rode rather than on a zero one.</summary>
+        public static AnchorSettings Anchor =>
+            Config != null ? Config.Anchor : AnchorSettings.Default;
+
         /// <summary>The wind-fetch model's tunables (ADR 0027 #1), same contract as
         /// <see cref="WaveField"/> including the <c>Config != null</c> discipline. Read by BOTH the
         /// shader bridge (which publishes them as globals) and every sim consumer that samples the
