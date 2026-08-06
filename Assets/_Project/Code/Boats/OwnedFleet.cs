@@ -16,6 +16,10 @@ namespace HiddenHarbours.Boats
     /// <see cref="ISaveService.Current"/> through the same hull-swap path a live purchase uses — applying
     /// the saved active hull last so you resume aboard the boat you saved in. It reads only the Core save
     /// seam, never Economy/Save concretes.
+    ///
+    /// <para>…and, since the mesh hulls landed, it also PRESENTS the worn hull once at load
+    /// (<see cref="PresentWornHull"/>) — the per-run choice ADR 0022 always assumed someone was making.
+    /// See that method for why the built scene cannot make it for us.</para>
     /// </summary>
     public class OwnedFleet : MonoBehaviour
     {
@@ -47,6 +51,54 @@ namespace HiddenHarbours.Boats
             EventBus.Unsubscribe<BoatPurchased>(OnBoatPurchased);
             EventBus.Unsubscribe<ControlModeChanged>(OnControlModeChanged);
             EventBus.Unsubscribe<GameLoaded>(OnGameLoaded);
+        }
+
+        // Start, not Awake: every other Awake (BoatController's included) has run, so the hull this boat
+        // wears is settled before we ask what it looks like. A save-restore that arrives later re-skins
+        // through ApplyHull anyway, and one that has ALREADY arrived is handled too — see below.
+        private void Start() => PresentWornHull();
+
+        /// <summary>
+        /// <b>Present the hull this boat is already wearing, from her data</b> — the load-time pass that
+        /// makes a running session agree with the assets (ADR 0022: the whole fleet is mesh).
+        ///
+        /// <para><b>Why it has to exist.</b> A built scene carries a SERIALISED rig, and it is serialised by
+        /// an edit-time builder (<c>PersistentCoreBuilder</c>, via the region builders) that deliberately
+        /// registers no mesh presentation service — <c>IsoFacetHullPresentationService</c> self-registers at
+        /// RUNTIME load only, because a builder must not bake a renderer whose setup is runtime-owned. So at
+        /// build time <see cref="BoatHullSkinner.ShouldPresentMesh"/> answers "no mesh path here" and the
+        /// builder banks the SPRITE compass, on the stated understanding that the mesh path would be chosen
+        /// live, per run, by the skinner. <b>Nothing was making that per-run choice for the player's boat.</b>
+        /// This class only re-skinned on a purchase or a save-restore, and <c>DevBoatPicker.Awake</c> only
+        /// computes its roster index — so every session opened on the banked sprite rig and stayed there
+        /// until the first runtime re-skin, which the owner was reaching by pressing V (the dev A/B toggle)
+        /// or F. That is the whole of the "boats are sprites until I press V" defect.</para>
+        ///
+        /// <para><b>It presents the WORN hull, not the scene default</b>, which makes it order-independent
+        /// against the save-restore: if <see cref="OnGameLoaded"/> has already run and re-pointed the
+        /// controller, this presents that hull; if it has not, this presents the one the scene serialised and
+        /// the restore re-skins over it later. Either way <see cref="BoatHullSkinner.ApplyHull"/> reads the
+        /// variant off the VISUAL ASSET — nothing here names a variant, so a visual that is authored sprite
+        /// (<c>visual.fishing_boat</c> carries no <c>Variant</c> key at all) still loads as a sprite.</para>
+        ///
+        /// <para>Public so PlayMode tests can drive the pass explicitly, in the same spirit as
+        /// <see cref="OnBoatPurchased"/> and <see cref="RestoreFromSave"/> — though the load-time CLAIM can
+        /// only be proven by letting the lifecycle fire it, which is a PlayMode-only affair.</para>
+        /// </summary>
+        public void PresentWornHull()
+        {
+            if (_boat == null) return;              // no controller wired → nothing wears a hull
+            var hull = _boat.Hull;
+            if (hull == null) return;               // a boat with no hull keeps whatever the scene drew
+
+            // The SAME entry point a purchase and a save-restore use, so what you load into is exactly what
+            // you would get by buying this boat or hopping to her on the picker — including ApplyHull's
+            // propulsion gate, which the builder's bare Apply() could not set.
+            //
+            // PICTURE ONLY: no SetHull (nothing changed hands — she is already wearing this hull) and no
+            // ActiveBoatChanged. Framing at load belongs to the ControlSwitcher, which publishes it when the
+            // player actually boards; a grant's reframe is keyed on _aboard for exactly that reason.
+            BoatHullSkinner.ApplyHull(gameObject, _spriteRenderer, hull, _boat);
         }
 
         /// <summary>Track whether the player is currently piloting, so a grant only reframes when aboard.</summary>
