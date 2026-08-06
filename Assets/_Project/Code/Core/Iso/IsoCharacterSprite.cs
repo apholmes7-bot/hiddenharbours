@@ -28,6 +28,14 @@ namespace HiddenHarbours.Core
     /// rather than snapping to North. <b>Feet stay planted</b> — the sheets' pivot IS ground contact, so
     /// swapping frames never moves the character and this component never touches <c>transform</c>.</para>
     ///
+    /// <para><b>Two axes, not one.</b> Besides the gait it also carries a <see cref="Stance"/> — braced on
+    /// a deck, at a helm, at the oars — and the def resolves the pair in one call
+    /// (<see cref="CharacterVisualDef.Playable"/>). The default <see cref="CharacterStance.Free"/> routes
+    /// straight back to the flat idle/walk/run fields, so a character with no stance art draws exactly what
+    /// it drew before stances existed. <see cref="HoldHeading"/> covers the other half of the same story:
+    /// a pilot stands still while the hull turns under them, so their facing comes from the BOAT rather
+    /// than from motion that isn't there.</para>
+    ///
     /// <para><b>Sharing the renderer.</b> Anything else that wants to drive the same
     /// <see cref="SpriteRenderer"/> for a while (the deck haul animation) calls <see cref="Suspend"/> and
     /// then <see cref="Release"/>; while suspended this component writes nothing at all, so two drivers can
@@ -66,9 +74,13 @@ namespace HiddenHarbours.Core
         private float _speed;
         private float _gaitElapsed;
         private CharacterGait _gait = CharacterGait.Idle;
+        private CharacterStance _stance = CharacterStance.Free;
+        private CharacterStance _drawnStance = CharacterStance.Free;
         private int _facingRow;
         private int _suspendCount;
         private Sprite _lastApplied;
+        private bool _headingHeld;
+        private float _heldHeadingDegrees;
 
         /// <summary>True when a complete skin is wired and this component is actually driving the renderer.
         /// Whoever else might write the sprite reads this to decide whether to stand down.</summary>
@@ -83,8 +95,56 @@ namespace HiddenHarbours.Core
         /// <summary>The gait currently playing (after the def's art-availability ladder). For tests / tooling.</summary>
         public CharacterGait Gait => _gait;
 
+        /// <summary>
+        /// <b>What the body is doing besides travelling</b> — braced on a deck, at a helm, at the oars, or
+        /// free (the default, and byte-identical to the pre-stance presenter). Set by whoever knows the
+        /// context: the <c>ControlSwitcher</c>'s deck rider on boarding, an NPC's routine later.
+        ///
+        /// <para>A stance is a REQUEST, not a guarantee: the def resolves it against what art is actually
+        /// wired (<see cref="CharacterVisualDef.Playable"/>), so asking for a stance the kit never baked
+        /// simply draws the free body. Read <see cref="DrawnStance"/> for what is really on screen.</para>
+        /// </summary>
+        public CharacterStance Stance
+        {
+            get => _stance;
+            set => _stance = value;
+        }
+
+        /// <summary>The stance actually being DRAWN this frame, after the def's availability ladder —
+        /// which may be <see cref="CharacterStance.Free"/> even while <see cref="Stance"/> asks for more.
+        /// For tests / tooling.</summary>
+        public CharacterStance DrawnStance => _drawnStance;
+
         /// <summary>True while another driver has claimed the renderer via <see cref="Suspend"/>.</summary>
         public bool IsSuspended => _suspendCount > 0;
+
+        /// <summary>True while the facing is pinned by <see cref="HoldHeading"/> rather than following motion.</summary>
+        public bool IsHeadingHeld => _headingHeld;
+
+        /// <summary>
+        /// PIN the facing to a compass heading and stop reading it off motion — for a character whose
+        /// direction is decided by something other than where they are walking. The pilot at the helm is
+        /// exactly that: they stand still while the hull turns under them, so motion says "no turn" and
+        /// only the HULL knows which way they are looking.
+        ///
+        /// <para>Idempotent and cheap; call it every frame with the live heading. <see cref="ReleaseHeading"/>
+        /// hands the facing back to motion, keeping whatever direction was last held (a character who steps
+        /// back from the helm keeps looking where the boat was pointed rather than snapping to North).</para>
+        /// </summary>
+        public void HoldHeading(float headingDegrees)
+        {
+            _headingHeld = true;
+            _heldHeadingDegrees = headingDegrees;
+        }
+
+        /// <summary>Give the facing back to motion (idempotent). The held direction is kept as the current
+        /// one, so releasing never snaps the character round.</summary>
+        public void ReleaseHeading()
+        {
+            if (!_headingHeld) return;
+            _headingHeld = false;
+            _headingDegrees = _heldHeadingDegrees;
+        }
 
         /// <summary>Claim the renderer for another driver — this component stops writing until a matching
         /// <see cref="Release"/>. Counted, so overlapping claims nest safely.</summary>
@@ -136,8 +196,12 @@ namespace HiddenHarbours.Core
             Vector2 velocity = dt > 1e-6f ? delta / dt : Vector2.zero;
 
             // Heading follows the RAW step (an averaged direction would lag round a corner); speed is
-            // smoothed, because it is the thing compared against a threshold.
-            _headingDegrees = IsoCharacterMath.HeadingFor(velocity, _headingMinSpeed, _headingDegrees);
+            // smoothed, because it is the thing compared against a threshold. A HELD heading overrides the
+            // read entirely rather than blending with it: the pilot faces where the hull points, and a
+            // drifting boat's sideways slip must not swing them round.
+            _headingDegrees = _headingHeld
+                ? _heldHeadingDegrees
+                : IsoCharacterMath.HeadingFor(velocity, _headingMinSpeed, _headingDegrees);
 
             float instant = velocity.magnitude;
             float k = _speedSmoothingSeconds > 1e-4f
@@ -158,20 +222,26 @@ namespace HiddenHarbours.Core
 
             CharacterGait wanted = IsoCharacterMath.GaitFor(_speed, _visual.WalkSpeedThreshold,
                                                             _visual.RunSpeedThreshold);
-            CharacterGait gait = _visual.PlayableGait(wanted);
-            if (gait != _gait)
+            // ONE resolution call owns both ladders (stance first at the wanted gait, else the free body
+            // down the run → walk → idle ladder). A def with no stance art always answers Free, so this is
+            // the same answer the pre-stance presenter gave.
+            CharacterPose pose = _visual.Playable(_stance, wanted);
+            CharacterGait gait = pose.Gait;
+            if (gait != _gait || pose.Stance != _drawnStance)
             {
                 _gait = gait;
-                _gaitElapsed = 0f;   // every gait change starts its cycle at frame 0 — no mid-stride pop-in
+                _drawnStance = pose.Stance;
+                _gaitElapsed = 0f;   // every gait OR stance change starts its cycle at frame 0 — no mid-stride pop-in
             }
             else
             {
                 _gaitElapsed += Time.deltaTime;
             }
 
-            int frame = IsoCharacterMath.FrameFor(_gaitElapsed, _visual.FramesPerSecondFor(gait),
-                                                  _visual.FrameCountFor(gait));
-            Sprite cell = _visual.SpriteFor(gait, _facingRow, frame);
+            int frame = IsoCharacterMath.FrameFor(_gaitElapsed,
+                                                  _visual.FramesPerSecondFor(_drawnStance, gait),
+                                                  _visual.FrameCountFor(_drawnStance, gait));
+            Sprite cell = _visual.SpriteFor(_drawnStance, gait, _facingRow, frame);
             if (cell == null || ReferenceEquals(cell, _lastApplied)) return;
 
             // The 8 directions are all DRAWN — nothing here is a mirror, so any flip a previous 4-way,

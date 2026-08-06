@@ -3,6 +3,28 @@ using UnityEngine;
 namespace HiddenHarbours.Boats
 {
     /// <summary>
+    /// How a hull says what a character piloting her should LOOK like. Authored per visual asset (rule 2),
+    /// with <see cref="Auto"/> — the default — reading the answer off the overlays the asset already
+    /// carries, so no shipped asset needed an edit to gain a pilot.
+    ///
+    /// <para><b>Append-only</b>: these are serialized on every boat visual, so the numbers are stable.</para>
+    /// </summary>
+    public enum PilotStanceChoice
+    {
+        /// <summary>Read it off this asset's own overlays: oars wired ⇒ rowed, otherwise steered. The
+        /// default, and right for every hull shipped so far.</summary>
+        Auto = 0,
+        /// <summary>Force the wheel/tiller stance — a hull that carries oars as ship's gear rather than as
+        /// her means of propulsion.</summary>
+        Helm = 1,
+        /// <summary>Force the oars stance — a pulled hull whose oars are not wired as overlays.</summary>
+        Oars = 2,
+        /// <summary>No piloting stance at all: the figure at the helm stands as they do ashore. For a hull
+        /// with no drawn helm position worth pinning a pose to.</summary>
+        None = 3,
+    }
+
+    /// <summary>
     /// <b>How a hull LOOKS — as data, not as a const (ADR 0003, rule 2).</b> One of these describes a
     /// complete directional boat skin: the compass of pre-drawn hull facings, the optional wave-coupled
     /// rock grid, and the optional per-side oar overlays. A <see cref="BoatHullDef"/> points at one via
@@ -239,7 +261,39 @@ namespace HiddenHarbours.Boats
                  "1.18 m further forward and 0.08 m higher.")]
         public Vector3 MotorMountLocalMeters = new Vector3(0f, -3.53f, 0.72f);
 
+        [Header("Pilot (which stance the figure at the helm shows)")]
+        [Tooltip("How a character PILOTING this hull stands: hands on a wheel/tiller (Helm) or pulling " +
+                 "oars (Oars). Leave on Auto — the default — and it is read off this same asset's " +
+                 "overlays: a hull that wears oar sheets or oar fittings is ROWED, everything else is " +
+                 "steered. Set it explicitly only where Auto reads wrong (a sculled hull, a hull whose " +
+                 "oars are decor). Never decided in code — that is rule 2.")]
+        public PilotStanceChoice PilotStance = PilotStanceChoice.Auto;
+
         // ---- the all-or-nothing gates (pure; EditMode-testable without a scene) --------------------
+
+        /// <summary>
+        /// <b>The stance a character piloting this hull shows</b> — the def's own answer to "wheel or
+        /// oars?", so no consumer has to know one hull from another (rule 2).
+        ///
+        /// <para><see cref="PilotStanceChoice.Auto"/> resolves off the overlays THIS asset already
+        /// carries: a hull wired with oar sheets (<see cref="HasOarSheets"/>) or oar fittings
+        /// (<see cref="HasOarMeshes"/>) is pulled, and everything else is steered. That is a read of
+        /// authored data, not a rule in code, and it is why adding a pilot cost no edit to any of the
+        /// fourteen shipped visual assets — the oars were already the fact that distinguishes them.</para>
+        ///
+        /// <para>Pure and total: every asset answers, and <see cref="PilotStanceChoice.None"/> answers
+        /// <see cref="HiddenHarbours.Core.CharacterStance.Free"/> — an unfigured helm, drawn as an
+        /// ordinary standing body.</para>
+        /// </summary>
+        public HiddenHarbours.Core.CharacterStance PilotStanceFor() => PilotStance switch
+        {
+            PilotStanceChoice.Helm => HiddenHarbours.Core.CharacterStance.Helm,
+            PilotStanceChoice.Oars => HiddenHarbours.Core.CharacterStance.Oars,
+            PilotStanceChoice.None => HiddenHarbours.Core.CharacterStance.Free,
+            _ => (HasOarSheets() || HasOarMeshes())
+                    ? HiddenHarbours.Core.CharacterStance.Oars
+                    : HiddenHarbours.Core.CharacterStance.Helm,
+        };
 
         /// <summary>How many hull headings this skin is drawn for (the compass size). 0 = no compass.</summary>
         public int HeadingCount => Facings != null ? Facings.Length : 0;

@@ -98,6 +98,11 @@ namespace HiddenHarbours.Player
                  "(clamped to the deck bounds) — amidships, a step away from the helm.")]
         [SerializeField] private Vector2 _boardLocalOffset = new Vector2(0f, 0.4f);
 
+        [Tooltip("The DECK RIDER on the player — what draws the on-deck / pilot figure riding the hull's " +
+                 "rock. Auto-resolved off the walk controller's object if left empty. Absent = the old " +
+                 "behaviour exactly: the fisher stands square on deck and vanishes at the helm.")]
+        [SerializeField] private DeckRiderVisual _deckRider;
+
         public ControlMode Mode { get; private set; } = ControlMode.OnFoot;
 
         private Text _hint;
@@ -129,6 +134,19 @@ namespace HiddenHarbours.Player
                 if (_deckWalk == null && _playerWalk != null)
                     _deckWalk = _playerWalk.GetComponent<DeckWalkController>();
                 return _deckWalk;
+            }
+        }
+
+        /// <summary>The player's deck rider — the explicit wired reference, else auto-resolved off the walk
+        /// controller's object (so the builder and existing Configure() call sites need no change). Null on
+        /// a rig that has none, where the pre-rider drawing rule stands.</summary>
+        private DeckRiderVisual DeckRider
+        {
+            get
+            {
+                if (_deckRider == null && _playerWalk != null)
+                    _deckRider = _playerWalk.GetComponent<DeckRiderVisual>();
+                return _deckRider;
             }
         }
 
@@ -317,10 +335,16 @@ namespace HiddenHarbours.Player
             EventBus.Publish(new ControlModeChanged(ControlMode.OnDeck));
         }
 
-        /// <summary>OnDeck → Aboard: take the HELM station. The player figure hands over to the boat
-        /// picture (hidden, still riding the hull); steering input goes live.</summary>
+        /// <summary>OnDeck → Aboard: take the HELM station. The player is seated exactly ON the helm spot
+        /// and DRAWN there in the hull's own piloting stance (the deck rider) rather than hidden; steering
+        /// input goes live.</summary>
         private void TakeHelm()
         {
+            // Stand ON the helm, not merely within reach of it. E fires anywhere inside _helmReach, so a
+            // figure left where the player happened to be standing would be drawn up to that far off the
+            // tiller — visible slop the hidden sprite used to conceal. Seated BEFORE the mode applies, so
+            // the rider's first frame already has them in place.
+            SnapPlayerToDeck(_helmLocalOffset);
             ApplyPlayerFor(ControlMode.Aboard);
             if (_boatController != null) _boatController.enabled = true;
             if (_boatInput != null) _boatInput.enabled = true;
@@ -401,6 +425,10 @@ namespace HiddenHarbours.Player
             {
                 if (Mooring != null) Mooring.Stow();                 // at the helm → rope stowed
                 ApplyPlayerFor(ControlMode.Aboard);
+                // The hop repositions player and boat independently, so re-seat the pilot ON the helm —
+                // the same re-seating the OnDeck branch below has always done, and now load-bearing
+                // because the figure at the helm is DRAWN rather than hidden.
+                SnapPlayerToDeck(_helmLocalOffset);
                 if (_boatController != null) _boatController.enabled = true;
                 if (_boatInput != null) _boatInput.enabled = true;
 
@@ -440,8 +468,9 @@ namespace HiddenHarbours.Player
         ///   <item><b>OnDeck</b> — deck-walk controller live, sprite shown, physics OFF (the deck is
         ///   transform-driven; the hull collider must never fight the footprint collider), parented to the
         ///   boat's PHYSICS ROOT so its drift carries the player (never the counter-rotated visual child).</item>
-        ///   <item><b>Aboard (helm)</b> — both walk controllers dead, sprite hidden, physics off, still
-        ///   parented (the hidden player rides the hull; stepping back to the deck re-shows them).</item>
+        ///   <item><b>Aboard (helm)</b> — both walk controllers dead, physics off, still parented. The
+        ///   figure is now DRAWN at the helm by the deck rider (see below); without one wired it is hidden,
+        ///   as it always was.</item>
         /// </list>
         /// Null-safe throughout: tests build a player without a footprint collider / deck controller.
         /// </summary>
@@ -453,8 +482,21 @@ namespace HiddenHarbours.Player
 
             _playerWalk.enabled = onFoot;
 
-            var sr = _playerWalk.GetComponent<SpriteRenderer>();
-            if (sr != null) sr.enabled = onFoot || onDeck;           // visible ashore + on deck; hidden at the helm
+            // WHO DRAWS THE CHARACTER. With a deck rider wired it owns BOTH renderers for every mode — it
+            // has to, because riding the hull's rock means drawing the figure on a child transform this
+            // one's upright stomp cannot reach, and two owners of one `enabled` flag would fight. Without
+            // one (older rigs, tests) the original rule stands untouched: visible ashore and on deck,
+            // hidden at the helm.
+            var rider = DeckRider;
+            if (rider != null && rider.HasRider)
+            {
+                rider.SetMode(mode, onFoot ? null : Boat);
+            }
+            else
+            {
+                var sr = _playerWalk.GetComponent<SpriteRenderer>();
+                if (sr != null) sr.enabled = onFoot || onDeck;
+            }
 
             var rb = _playerWalk.GetComponent<Rigidbody2D>();
             if (rb != null)
@@ -479,7 +521,12 @@ namespace HiddenHarbours.Player
             var deck = DeckWalk;
             if (deck != null)
             {
-                if (onDeck) deck.Bind(Boat);
+                // Bind whenever ABOARD, not only while deck-walking. The deck frame is what seats the
+                // player on the hull (SnapPlayerToDeck → SnapTo), and the helm needs that seating too now
+                // that the pilot is drawn — an unbound deck would silently no-op the snap and leave the
+                // figure wherever a region hop dropped them. Binding a DISABLED controller is inert: it
+                // stores two references and nothing else runs.
+                if (!onFoot) deck.Bind(Boat);
                 deck.enabled = onDeck;
             }
         }

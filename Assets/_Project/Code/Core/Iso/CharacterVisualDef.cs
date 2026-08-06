@@ -14,6 +14,87 @@ namespace HiddenHarbours.Core
     }
 
     /// <summary>
+    /// <b>What the character's BODY is doing besides travelling</b> — the second axis of the character
+    /// sheets, orthogonal to <see cref="CharacterGait"/>. The rig bakes these as separate sheets because
+    /// they are separate poses, not tints of one: a fisher braced against a rolling deck stands
+    /// differently from one strolling the wharf, and one with both hands on a wheel differently again.
+    ///
+    /// <para><b>Append-only</b> (CLAUDE.md §5): these name ART, and art ids are stable. The rig's own
+    /// <c>CARRIES</c> table (<c>characterIsoRig6.js</c>) is the source — <c>helm</c> and <c>oars</c> are
+    /// carry stances there, <c>balance</c> is a deck anim — so a stance added here must exist there first.</para>
+    /// </summary>
+    public enum CharacterStance
+    {
+        /// <summary>Hands empty, feet on solid ground — the plain idle / walk / run sheets. The default,
+        /// and what every character showed before stances existed.</summary>
+        Free = 0,
+        /// <summary>Braced on a working deck: the rig's <c>balance</c> clip, a gentle ±10° list that reads
+        /// as keeping your feet under you. Idle only — a character CROSSING the deck walks normally.</summary>
+        Balance = 1,
+        /// <summary>Piloting from a wheel or tiller: the rig's <c>helm</c> carry, hands pinned to the helm
+        /// and the body leaned 6° into it.</summary>
+        Helm = 2,
+        /// <summary>At the oars: the rig's <c>oars</c> carry, hands pinned to the looms and a 10° lean.
+        /// The rowed hull's answer to <see cref="Helm"/>.</summary>
+        Oars = 3,
+    }
+
+    /// <summary>
+    /// One STANCE's worth of art: the same idle/walk pair the free body carries, for a character whose
+    /// hands and posture are committed to something. Its own frame counts and rates because the rig bakes
+    /// its own — <c>balance</c> is 8 frames at 150 ms where the free idle is 6 at 170.
+    ///
+    /// <para><b>Why idle + walk and no run.</b> The rig's <c>CARRIES</c> table declares
+    /// <c>anims:['idle','walk']</c> for both piloting stances, and <c>balance</c> is an idle clip with no
+    /// walking twin at all. A stance that leaves a sheet empty is not broken — the presenter falls back to
+    /// the FREE body for that gait, which is exactly right: you cross a rolling deck at an ordinary walk
+    /// and only brace when you stop.</para>
+    ///
+    /// <para><b>All-or-nothing, like every other sheet here</b> (<see cref="CharacterVisualDef.HasGait"/>):
+    /// a stance sheet counts as wired only when it is COMPLETE. A short one is dropped whole rather than
+    /// indexing a stale cell mid-cycle.</para>
+    /// </summary>
+    [System.Serializable]
+    public class CharacterStanceSheets
+    {
+        [Tooltip("Idle frames in this stance, element [direction·IdleFrameCount + frame]. Empty/short = " +
+                 "this stance has no idle art and the FREE idle draws instead.")]
+        public Sprite[] IdleSheet = System.Array.Empty<Sprite>();
+        [Tooltip("Frames per direction on this stance's idle sheet (from the rig's own ANIMS table).")]
+        [Min(1)] public int IdleFrameCount = 6;
+        [Tooltip("Playback rate of this stance's idle sheet, in frames per second (1000 / the rig's ms).")]
+        [Min(0f)] public float IdleFramesPerSecond = 6f;
+
+        [Tooltip("Walk frames in this stance, element [direction·WalkFrameCount + frame]. Empty/short = " +
+                 "this stance has no walk art and the FREE walk draws instead — which is what the deck " +
+                 "'balance' stance wants: you brace standing still and walk normally when you cross.")]
+        public Sprite[] WalkSheet = System.Array.Empty<Sprite>();
+        [Tooltip("Frames per direction on this stance's walk sheet.")]
+        [Min(1)] public int WalkFrameCount = 8;
+        [Tooltip("Playback rate of this stance's walk sheet, in frames per second.")]
+        [Min(0f)] public float WalkFramesPerSecond = 10f;
+    }
+
+    /// <summary>
+    /// The stance + gait a character is ACTUALLY drawing, after the availability ladders have run — what
+    /// <see cref="CharacterVisualDef.Playable"/> answers. A tiny pair so the resolution is one pure,
+    /// EditMode-testable call rather than two out-params that a caller can combine wrongly.
+    /// </summary>
+    public readonly struct CharacterPose
+    {
+        /// <summary>The stance whose sheets will actually be indexed.</summary>
+        public readonly CharacterStance Stance;
+        /// <summary>The gait within that stance.</summary>
+        public readonly CharacterGait Gait;
+
+        public CharacterPose(CharacterStance stance, CharacterGait gait)
+        {
+            Stance = stance;
+            Gait = gait;
+        }
+    }
+
+    /// <summary>
     /// <b>How a CHARACTER looks on foot — as data, not as a const (ADR 0003, rule 2).</b> One of these
     /// describes a complete 8-direction ¾-iso character skin: the three locomotion sheets (idle / walk /
     /// run), each laid out as <c>direction × frame</c>, plus the facts about how the art was BAKED (how
@@ -109,6 +190,20 @@ namespace HiddenHarbours.Core
                  "with no code change. Ignored when no run art is wired.")]
         [Min(0f)] public float RunSpeedThreshold = 4.5f;
 
+        [Header("Stances (append-only — the body doing something besides travelling)")]
+        [Tooltip("BRACED ON A DECK — the rig's 'balance' clip. Idle only: a character crossing a rolling " +
+                 "deck walks on the free walk sheet and braces when they stop. Leave empty and the deck " +
+                 "rider simply idles as they do ashore.")]
+        public CharacterStanceSheets BalanceStance = new CharacterStanceSheets();
+
+        [Tooltip("AT THE WHEEL / TILLER — the rig's 'helm' carry. What a pilot shows on a hull steered by " +
+                 "hand. Leave empty and the pilot falls back to the free body.")]
+        public CharacterStanceSheets HelmStance = new CharacterStanceSheets();
+
+        [Tooltip("AT THE OARS — the rig's 'oars' carry. What a rower shows on a pulled hull (the dory, the " +
+                 "punt), drawn alongside the hull's own oar overlays, which are separate sprites by design.")]
+        public CharacterStanceSheets OarsStance = new CharacterStanceSheets();
+
         // ---- the all-or-nothing gates + lookups (pure; EditMode-testable without a scene) ----------
 
         /// <summary>The sheet for a gait (never null — an unwired gait returns an empty array).</summary>
@@ -179,11 +274,105 @@ namespace HiddenHarbours.Core
         /// <summary>The sprite for a gait / direction row / frame, or null if that cell isn't wired.
         /// Row and frame wrap (negative-safe), so a mid-stride sheet swap can never index out of range.</summary>
         public Sprite SpriteFor(CharacterGait gait, int facingRow, int frame)
+            => SpriteFor(CharacterStance.Free, gait, facingRow, frame);
+
+        // ---- the STANCE axis: the same four questions, asked of a stance's sheets ------------------
+        // Every one of these is Free-identical by construction — CharacterStance.Free routes straight
+        // back to the flat fields above, so a def with no stance art answers exactly as it did before
+        // stances existed. That is the A/B contract the EditMode tests pin.
+
+        /// <summary>The stance block for a stance, or null for <see cref="CharacterStance.Free"/> (whose
+        /// sheets are the flat fields) and for anything unrecognised.</summary>
+        public CharacterStanceSheets StanceSheetsFor(CharacterStance stance) => stance switch
         {
-            var sheet = SheetFor(gait);
+            CharacterStance.Balance => BalanceStance,
+            CharacterStance.Helm => HelmStance,
+            CharacterStance.Oars => OarsStance,
+            _ => null,
+        };
+
+        /// <summary>The sheet for a stance + gait (never null — an unwired slot returns an empty array).
+        /// A stance has no RUN art by design (see <see cref="CharacterStanceSheets"/>), so asking for one
+        /// returns empty and the caller's ladder sends it back to the free body.</summary>
+        public Sprite[] SheetFor(CharacterStance stance, CharacterGait gait)
+        {
+            var s = StanceSheetsFor(stance);
+            if (s == null) return SheetFor(gait);
+            return gait switch
+            {
+                CharacterGait.Walk => s.WalkSheet ?? System.Array.Empty<Sprite>(),
+                CharacterGait.Idle => s.IdleSheet ?? System.Array.Empty<Sprite>(),
+                _ => System.Array.Empty<Sprite>(),   // no stance bakes a run
+            };
+        }
+
+        /// <summary>Frames per direction on a stance + gait's sheet.</summary>
+        public int FrameCountFor(CharacterStance stance, CharacterGait gait)
+        {
+            var s = StanceSheetsFor(stance);
+            if (s == null) return FrameCountFor(gait);
+            return gait switch
+            {
+                CharacterGait.Walk => Mathf.Max(1, s.WalkFrameCount),
+                _ => Mathf.Max(1, s.IdleFrameCount),
+            };
+        }
+
+        /// <summary>Playback rate (fps) for a stance + gait's sheet.</summary>
+        public float FramesPerSecondFor(CharacterStance stance, CharacterGait gait)
+        {
+            var s = StanceSheetsFor(stance);
+            if (s == null) return FramesPerSecondFor(gait);
+            return gait switch
+            {
+                CharacterGait.Walk => Mathf.Max(0f, s.WalkFramesPerSecond),
+                _ => Mathf.Max(0f, s.IdleFramesPerSecond),
+            };
+        }
+
+        /// <summary>True when a stance's sheet for a gait is COMPLETE — the same all-or-nothing gate
+        /// <see cref="HasGait"/> applies to the free body, for the same reason.</summary>
+        public bool HasStanceGait(CharacterStance stance, CharacterGait gait)
+        {
+            if (StanceSheetsFor(stance) == null) return HasGait(gait);
+            var sheet = SheetFor(stance, gait);
+            int expected = Mathf.Max(1, FacingCount) * FrameCountFor(stance, gait);
+            if (sheet.Length != expected || expected <= 0) return false;
+            for (int i = 0; i < sheet.Length; i++)
+                if (sheet[i] == null) return false;
+            return true;
+        }
+
+        /// <summary>
+        /// <b>The one resolution rule</b> — what a character asking for <paramref name="stance"/> at
+        /// <paramref name="wanted"/> speed actually DRAWS, given what art is wired.
+        ///
+        /// <para>The stance is tried FIRST and at the wanted gait only: if it bakes that gait, that is the
+        /// answer. Otherwise the whole thing falls back to the FREE body and the existing gait ladder
+        /// (<see cref="PlayableGait"/>: run → walk → idle). That order is the point — a deck-braced
+        /// character who starts WALKING must show the free WALK, never the braced idle held while they
+        /// slide across the deck. Laddering the gait first would do exactly that.</para>
+        ///
+        /// <para>Pure and total: every input answers with a pose, and a def with no stance art at all
+        /// always answers <see cref="CharacterStance.Free"/> — byte-identical to the pre-stance
+        /// presenter.</para>
+        /// </summary>
+        public CharacterPose Playable(CharacterStance stance, CharacterGait wanted)
+        {
+            if (stance != CharacterStance.Free && HasStanceGait(stance, wanted))
+                return new CharacterPose(stance, wanted);
+            return new CharacterPose(CharacterStance.Free, PlayableGait(wanted));
+        }
+
+        /// <summary>The sprite for a stance / gait / direction row / frame, or null if that cell isn't
+        /// wired. Row and frame wrap (negative-safe), so a mid-cycle sheet swap can never index out of
+        /// range — a stance change mid-stride is exactly that.</summary>
+        public Sprite SpriteFor(CharacterStance stance, CharacterGait gait, int facingRow, int frame)
+        {
+            var sheet = SheetFor(stance, gait);
             if (sheet.Length == 0) return null;
             int facings = Mathf.Max(1, FacingCount);
-            int frames = FrameCountFor(gait);
+            int frames = FrameCountFor(stance, gait);
             int row = ((facingRow % facings) + facings) % facings;
             int col = ((frame % frames) + frames) % frames;
             int idx = row * frames + col;
