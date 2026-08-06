@@ -1,0 +1,1366 @@
+{
+ "rig": "WharfDecor",
+ "source": "wharfDecorRig.js",
+ "ppu": "32 px = 1 m",
+ "camera": "ADR-0006 shared 3/4 turntable — 45deg steps, elev 40deg",
+ "dirs": [
+  "N",
+  "NE",
+  "E",
+  "SE",
+  "S",
+  "SW",
+  "W",
+  "NW"
+ ],
+ "light": "fixed upper-LEFT key, flat-facet, z-buffered, ordered dither, depth-edge darkening, 1px keyline, no AA",
+ "sheet": {
+  "w": 420,
+  "h": 520,
+  "pivot": {
+   "x": 210,
+   "y": 420
+  },
+  "note": "fixed sheet; pivot = ground-centre of footprint"
+ },
+ "render": "WharfDecor.render(name, dir, opts) -> Uint8ClampedArray, W*H*4, binary alpha",
+ "opts": {
+  "paint": "BODY palette key or null",
+  "metal": [
+   "galv",
+   "alum",
+   "iron"
+  ],
+  "variant": "int",
+  "len": "0..1 stack/run scale",
+  "loaded": "bool",
+  "tarp": "bool",
+  "weather": "0..1",
+  "night": "bool",
+  "elev": "degrees, default 40"
+ },
+ "mountKinds": {
+  "deck": "ground contact",
+  "rail": "rail-clamp",
+  "wall": "backboard plane",
+  "post": "pile/post bolt",
+  "hook": "lift point"
+ },
+ "cats": [
+  "gear",
+  "handling",
+  "lifting",
+  "safety",
+  "drying",
+  "decor",
+  "odds"
+ ],
+ "count": 61,
+ "props": [
+  {
+   "key": "trapStack",
+   "label": "Trap stack",
+   "cat": "gear",
+   "footprint_m": [
+    1,
+    0.63
+   ],
+   "height_m": 1.44,
+   "variants": [
+    "wire",
+    "wood"
+   ],
+   "run": true,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 0
+   }
+  },
+  {
+   "key": "trapSingle",
+   "label": "Single trap",
+   "cat": "gear",
+   "footprint_m": [
+    1,
+    0.64
+   ],
+   "height_m": 0.36,
+   "variants": [
+    "wire",
+    "wood"
+   ],
+   "run": false,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 0
+   }
+  },
+  {
+   "key": "buoyRack",
+   "label": "Buoy rack",
+   "cat": "gear",
+   "footprint_m": [
+    2.26,
+    1.04
+   ],
+   "height_m": 1.62,
+   "variants": [
+    "A-frame"
+   ],
+   "run": true,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 0
+   }
+  },
+  {
+   "key": "buoyWall",
+   "label": "Buoy wall",
+   "cat": "gear",
+   "footprint_m": [
+    2.42,
+    0.31
+   ],
+   "height_m": 1.95,
+   "variants": [
+    "two rails"
+   ],
+   "run": true,
+   "points": {
+    "deck": 0,
+    "rail": 0,
+    "wall": 2,
+    "post": 0,
+    "hook": 0
+   }
+  },
+  {
+   "key": "netReel",
+   "label": "Net reel",
+   "cat": "gear",
+   "footprint_m": [
+    1.74,
+    1.51
+   ],
+   "height_m": 1.52,
+   "variants": [
+    "timber drum"
+   ],
+   "run": true,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 0
+   }
+  },
+  {
+   "key": "netPile",
+   "label": "Net pile",
+   "cat": "gear",
+   "footprint_m": [
+    1.98,
+    1.36
+   ],
+   "height_m": 0.55,
+   "variants": [
+    "heaped"
+   ],
+   "run": true,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 0
+   }
+  },
+  {
+   "key": "ropeCoil",
+   "label": "Rope coils",
+   "cat": "gear",
+   "footprint_m": [
+    0.93,
+    0.93
+   ],
+   "height_m": 0.1,
+   "variants": [
+    "single",
+    "three coils"
+   ],
+   "run": true,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 0
+   }
+  },
+  {
+   "key": "ropeHanks",
+   "label": "Rope hanks",
+   "cat": "gear",
+   "footprint_m": [
+    1.71,
+    0.24
+   ],
+   "height_m": 1.85,
+   "variants": [
+    "pegged board"
+   ],
+   "run": true,
+   "points": {
+    "deck": 0,
+    "rail": 0,
+    "wall": 2,
+    "post": 0,
+    "hook": 0
+   }
+  },
+  {
+   "key": "floatBags",
+   "label": "Trawl floats",
+   "cat": "gear",
+   "footprint_m": [
+    1.44,
+    0.96
+   ],
+   "height_m": 0.52,
+   "variants": [
+    "loose pile"
+   ],
+   "run": true,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 0
+   }
+  },
+  {
+   "key": "trawlDoor",
+   "label": "Trawl door",
+   "cat": "gear",
+   "footprint_m": [
+    1.86,
+    0.58
+   ],
+   "height_m": 1.02,
+   "variants": [
+    "otter board"
+   ],
+   "run": true,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 0
+   }
+  },
+  {
+   "key": "toteStack",
+   "label": "Tote stack",
+   "cat": "handling",
+   "footprint_m": [
+    0.8,
+    0.57
+   ],
+   "height_m": 1.23,
+   "variants": [
+    "stacked"
+   ],
+   "run": true,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 1
+   }
+  },
+  {
+   "key": "toteSingle",
+   "label": "Fish tote",
+   "cat": "handling",
+   "footprint_m": [
+    0.78,
+    0.56
+   ],
+   "height_m": 0.36,
+   "variants": [
+    "fish",
+    "iced"
+   ],
+   "run": false,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 1
+   }
+  },
+  {
+   "key": "crateStack",
+   "label": "Crate stack",
+   "cat": "handling",
+   "footprint_m": [
+    0.74,
+    0.7
+   ],
+   "height_m": 0.86,
+   "variants": [
+    "slat crate"
+   ],
+   "run": true,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 0
+   }
+  },
+  {
+   "key": "pallet",
+   "label": "Pallets",
+   "cat": "handling",
+   "footprint_m": [
+    1.18,
+    0.91
+   ],
+   "height_m": 0.35,
+   "variants": [
+    "stacked"
+   ],
+   "run": true,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 0
+   }
+  },
+  {
+   "key": "saltBin",
+   "label": "Salt bin",
+   "cat": "handling",
+   "footprint_m": [
+    1.71,
+    1.1
+   ],
+   "height_m": 0.94,
+   "variants": [
+    "lid shut",
+    "lid propped"
+   ],
+   "run": true,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 0
+   }
+  },
+  {
+   "key": "iceChest",
+   "label": "Ice chest",
+   "cat": "handling",
+   "footprint_m": [
+    1.5,
+    0.96
+   ],
+   "height_m": 0.74,
+   "variants": [
+    "shut",
+    "open"
+   ],
+   "run": true,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 0
+   }
+  },
+  {
+   "key": "weighScale",
+   "label": "Weigh scale",
+   "cat": "handling",
+   "footprint_m": [
+    1.3,
+    0.86
+   ],
+   "height_m": 2.13,
+   "variants": [
+    "dial head"
+   ],
+   "run": true,
+   "points": {
+    "deck": 2,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 1
+   }
+  },
+  {
+   "key": "guttingTable",
+   "label": "Gutting table",
+   "cat": "handling",
+   "footprint_m": [
+    2.25,
+    1.12
+   ],
+   "height_m": 1.04,
+   "variants": [
+    "hosed"
+   ],
+   "run": true,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 0
+   }
+  },
+  {
+   "key": "baitBarrel",
+   "label": "Bait barrel",
+   "cat": "handling",
+   "footprint_m": [
+    0.68,
+    0.68
+   ],
+   "height_m": 0.86,
+   "variants": [
+    "single",
+    "pair"
+   ],
+   "run": false,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 1
+   }
+  },
+  {
+   "key": "bushelBaskets",
+   "label": "Baskets",
+   "cat": "handling",
+   "footprint_m": [
+    1.08,
+    0.86
+   ],
+   "height_m": 0.67,
+   "variants": [
+    "bushel"
+   ],
+   "run": true,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 0
+   }
+  },
+  {
+   "key": "sortingTrough",
+   "label": "Sorting trough",
+   "cat": "handling",
+   "footprint_m": [
+    2.65,
+    0.88
+   ],
+   "height_m": 0.84,
+   "variants": [
+    "graded",
+    "with tote"
+   ],
+   "run": true,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 0
+   }
+  },
+  {
+   "key": "davitHoist",
+   "label": "Davit hoist",
+   "cat": "lifting",
+   "footprint_m": [
+    0.7,
+    1.86
+   ],
+   "height_m": 3,
+   "variants": [
+    "swing arm"
+   ],
+   "run": true,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 1
+   }
+  },
+  {
+   "key": "capstan",
+   "label": "Capstan",
+   "cat": "lifting",
+   "footprint_m": [
+    0.96,
+    0.96
+   ],
+   "height_m": 0.79,
+   "variants": [
+    "powered",
+    "hand bar"
+   ],
+   "run": true,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 0
+   }
+  },
+  {
+   "key": "blockTackle",
+   "label": "Block & tackle",
+   "cat": "lifting",
+   "footprint_m": [
+    0.54,
+    1.4
+   ],
+   "height_m": 2.76,
+   "variants": [
+    "two block"
+   ],
+   "run": true,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 1
+   }
+  },
+  {
+   "key": "wheelbarrow",
+   "label": "Wheelbarrow",
+   "cat": "lifting",
+   "footprint_m": [
+    0.95,
+    1.35
+   ],
+   "height_m": 0.72,
+   "variants": [
+    "catch",
+    "net"
+   ],
+   "run": false,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 0
+   }
+  },
+  {
+   "key": "handTruck",
+   "label": "Hand truck",
+   "cat": "lifting",
+   "footprint_m": [
+    0.62,
+    0.62
+   ],
+   "height_m": 1.35,
+   "variants": [
+    "upright"
+   ],
+   "run": false,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 0
+   }
+  },
+  {
+   "key": "dockCart",
+   "label": "Dock cart",
+   "cat": "lifting",
+   "footprint_m": [
+    1.36,
+    1.7
+   ],
+   "height_m": 0.5,
+   "variants": [
+    "flat deck"
+   ],
+   "run": true,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 0
+   }
+  },
+  {
+   "key": "gantryFrame",
+   "label": "Gantry frame",
+   "cat": "lifting",
+   "footprint_m": [
+    3.02,
+    1.28
+   ],
+   "height_m": 3.08,
+   "variants": [
+    "A-frame"
+   ],
+   "run": true,
+   "points": {
+    "deck": 2,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 1
+   }
+  },
+  {
+   "key": "potHauler",
+   "label": "Pot hauler",
+   "cat": "lifting",
+   "footprint_m": [
+    0.7,
+    0.95
+   ],
+   "height_m": 1.1,
+   "variants": [
+    "sheave head"
+   ],
+   "run": true,
+   "points": {
+    "deck": 1,
+    "rail": 1,
+    "wall": 0,
+    "post": 0,
+    "hook": 1
+   }
+  },
+  {
+   "key": "ringStation",
+   "label": "Ring station",
+   "cat": "safety",
+   "footprint_m": [
+    0.98,
+    0.3
+   ],
+   "height_m": 1.72,
+   "variants": [
+    "board & line"
+   ],
+   "run": false,
+   "points": {
+    "deck": 2,
+    "rail": 1,
+    "wall": 2,
+    "post": 0,
+    "hook": 0
+   }
+  },
+  {
+   "key": "ringPost",
+   "label": "Ring post",
+   "cat": "safety",
+   "footprint_m": [
+    0.42,
+    0.42
+   ],
+   "height_m": 1.21,
+   "variants": [
+    "post & coil"
+   ],
+   "run": true,
+   "points": {
+    "deck": 1,
+    "rail": 1,
+    "wall": 0,
+    "post": 1,
+    "hook": 0
+   }
+  },
+  {
+   "key": "fireCabinet",
+   "label": "Fire cabinet",
+   "cat": "safety",
+   "footprint_m": [
+    0.7,
+    0.26
+   ],
+   "height_m": 1.75,
+   "variants": [
+    "glass front",
+    "with sand"
+   ],
+   "run": false,
+   "points": {
+    "deck": 0,
+    "rail": 0,
+    "wall": 2,
+    "post": 0,
+    "hook": 0
+   }
+  },
+  {
+   "key": "noticeBoard",
+   "label": "Notice board",
+   "cat": "safety",
+   "footprint_m": [
+    1.49,
+    0.45
+   ],
+   "height_m": 1.88,
+   "variants": [
+    "open",
+    "headed"
+   ],
+   "run": true,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 0
+   }
+  },
+  {
+   "key": "chalkSign",
+   "label": "Chalk board",
+   "cat": "safety",
+   "footprint_m": [
+    0.7,
+    0.56
+   ],
+   "height_m": 0.94,
+   "variants": [
+    "A-frame"
+   ],
+   "run": false,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 0
+   }
+  },
+  {
+   "key": "tideStaff",
+   "label": "Tide staff",
+   "cat": "safety",
+   "footprint_m": [
+    0.35,
+    0.31
+   ],
+   "height_m": 3.2,
+   "variants": [
+    "board",
+    "with float tube"
+   ],
+   "run": true,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 1,
+    "hook": 0
+   }
+  },
+  {
+   "key": "harbourSign",
+   "label": "Harbour sign",
+   "cat": "safety",
+   "footprint_m": [
+    2.6,
+    0.3
+   ],
+   "height_m": 2.09,
+   "variants": [
+    "plain",
+    "headed"
+   ],
+   "run": true,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 0
+   }
+  },
+  {
+   "key": "rescueLadder",
+   "label": "Rescue ladder",
+   "cat": "safety",
+   "footprint_m": [
+    0.62,
+    0.52
+   ],
+   "height_m": 1.06,
+   "variants": [
+    "rail hung"
+   ],
+   "run": true,
+   "points": {
+    "deck": 1,
+    "rail": 1,
+    "wall": 0,
+    "post": 0,
+    "hook": 0
+   }
+  },
+  {
+   "key": "codFlake",
+   "label": "Cod flake",
+   "cat": "drying",
+   "footprint_m": [
+    2.69,
+    1.86
+   ],
+   "height_m": 0.97,
+   "variants": [
+    "drying"
+   ],
+   "run": true,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 0
+   }
+  },
+  {
+   "key": "fishRack",
+   "label": "Fish rack",
+   "cat": "drying",
+   "footprint_m": [
+    2.11,
+    0.99
+   ],
+   "height_m": 2.16,
+   "variants": [
+    "two rails"
+   ],
+   "run": true,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 0
+   }
+  },
+  {
+   "key": "netFrame",
+   "label": "Net frame",
+   "cat": "drying",
+   "footprint_m": [
+    2.73,
+    1.24
+   ],
+   "height_m": 2.1,
+   "variants": [
+    "hung net"
+   ],
+   "run": true,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 0
+   }
+  },
+  {
+   "key": "oilskinLine",
+   "label": "Oilskin line",
+   "cat": "drying",
+   "footprint_m": [
+    2.53,
+    0.63
+   ],
+   "height_m": 1.86,
+   "variants": [
+    "gear line"
+   ],
+   "run": true,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 0
+   }
+  },
+  {
+   "key": "herringSticks",
+   "label": "Herring sticks",
+   "cat": "drying",
+   "footprint_m": [
+    1.98,
+    0.55
+   ],
+   "height_m": 1.65,
+   "variants": [
+    "three rails"
+   ],
+   "run": true,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 0
+   }
+  },
+  {
+   "key": "bench",
+   "label": "Bench",
+   "cat": "decor",
+   "footprint_m": [
+    1.95,
+    0.56
+   ],
+   "height_m": 0.97,
+   "variants": [
+    "plank back"
+   ],
+   "run": true,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 0
+   }
+  },
+  {
+   "key": "picnicTable",
+   "label": "Picnic table",
+   "cat": "decor",
+   "footprint_m": [
+    2.36,
+    2.24
+   ],
+   "height_m": 0.74,
+   "variants": [
+    "trestle"
+   ],
+   "run": true,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 0
+   }
+  },
+  {
+   "key": "deckChair",
+   "label": "Deck chair",
+   "cat": "decor",
+   "footprint_m": [
+    0.68,
+    0.78
+   ],
+   "height_m": 1.08,
+   "variants": [
+    "slat back"
+   ],
+   "run": false,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 0
+   }
+  },
+  {
+   "key": "drumPlanter",
+   "label": "Drum planter",
+   "cat": "decor",
+   "footprint_m": [
+    0.64,
+    0.64
+   ],
+   "height_m": 0.72,
+   "variants": [
+    "single",
+    "pair"
+   ],
+   "run": false,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 0
+   }
+  },
+  {
+   "key": "planterBox",
+   "label": "Planter box",
+   "cat": "decor",
+   "footprint_m": [
+    1.49,
+    0.64
+   ],
+   "height_m": 0.6,
+   "variants": [
+    "plank"
+   ],
+   "run": true,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 0
+   }
+  },
+  {
+   "key": "flagpole",
+   "label": "Flagpole",
+   "cat": "decor",
+   "footprint_m": [
+    0.62,
+    0.62
+   ],
+   "height_m": 6.77,
+   "variants": [
+    "halyard"
+   ],
+   "run": true,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 1,
+    "hook": 0
+   }
+  },
+  {
+   "key": "bunting",
+   "label": "Bunting line",
+   "cat": "decor",
+   "footprint_m": [
+    3.58,
+    0.38
+   ],
+   "height_m": 2.41,
+   "variants": [
+    "pennants"
+   ],
+   "run": true,
+   "points": {
+    "deck": 2,
+    "rail": 0,
+    "wall": 0,
+    "post": 2,
+    "hook": 0
+   }
+  },
+  {
+   "key": "lanternPost",
+   "label": "Lantern post",
+   "cat": "decor",
+   "footprint_m": [
+    0.46,
+    0.73
+   ],
+   "height_m": 2.46,
+   "variants": [
+    "hurricane"
+   ],
+   "run": true,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 1,
+    "hook": 0
+   }
+  },
+  {
+   "key": "anchorProp",
+   "label": "Old anchor",
+   "cat": "decor",
+   "footprint_m": [
+    1.06,
+    0.84
+   ],
+   "height_m": 1.87,
+   "variants": [
+    "leaning",
+    "on a skid"
+   ],
+   "run": true,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 0
+   }
+  },
+  {
+   "key": "ropeFence",
+   "label": "Rope fence",
+   "cat": "decor",
+   "footprint_m": [
+    3.38,
+    0.31
+   ],
+   "height_m": 0.97,
+   "variants": [
+    "one rail",
+    "two rail"
+   ],
+   "run": true,
+   "points": {
+    "deck": 3,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 0
+   }
+  },
+  {
+   "key": "trashBarrel",
+   "label": "Trash barrel",
+   "cat": "odds",
+   "footprint_m": [
+    0.66,
+    0.66
+   ],
+   "height_m": 0.86,
+   "variants": [
+    "open",
+    "lidded"
+   ],
+   "run": false,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 0
+   }
+  },
+  {
+   "key": "oilDrum",
+   "label": "Oil drum",
+   "cat": "odds",
+   "footprint_m": [
+    0.62,
+    0.62
+   ],
+   "height_m": 0.91,
+   "variants": [
+    "single",
+    "pair",
+    "stacked three"
+   ],
+   "run": false,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 0
+   }
+  },
+  {
+   "key": "saltBox",
+   "label": "Sand box",
+   "cat": "odds",
+   "footprint_m": [
+    1.34,
+    0.9
+   ],
+   "height_m": 0.88,
+   "variants": [
+    "closed",
+    "spilled"
+   ],
+   "run": true,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 0
+   }
+  },
+  {
+   "key": "bootRack",
+   "label": "Boot rack",
+   "cat": "odds",
+   "footprint_m": [
+    1.12,
+    0.42
+   ],
+   "height_m": 0.52,
+   "variants": [
+    "pegged"
+   ],
+   "run": true,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 0
+   }
+  },
+  {
+   "key": "bicycle",
+   "label": "Bicycle",
+   "cat": "odds",
+   "footprint_m": [
+    1.4,
+    0.55
+   ],
+   "height_m": 0.98,
+   "variants": [
+    "leaning",
+    "propped"
+   ],
+   "run": false,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 0
+   }
+  },
+  {
+   "key": "dogBowl",
+   "label": "Dog bowls",
+   "cat": "odds",
+   "footprint_m": [
+    0.34,
+    0.3
+   ],
+   "height_m": 0.09,
+   "variants": [
+    "single",
+    "pair"
+   ],
+   "run": false,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 0
+   }
+  },
+  {
+   "key": "tyrePile",
+   "label": "Tyre pile",
+   "cat": "odds",
+   "footprint_m": [
+    0.97,
+    0.97
+   ],
+   "height_m": 0.95,
+   "variants": [
+    "stacked",
+    "with leaner"
+   ],
+   "run": true,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 0
+   }
+  },
+  {
+   "key": "jerryCans",
+   "label": "Jerry cans",
+   "cat": "odds",
+   "footprint_m": [
+    0.86,
+    0.53
+   ],
+   "height_m": 0.47,
+   "variants": [
+    "row"
+   ],
+   "run": true,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 0
+   }
+  },
+  {
+   "key": "woodStack",
+   "label": "Wood stack",
+   "cat": "odds",
+   "footprint_m": [
+    2.18,
+    0.77
+   ],
+   "height_m": 0.75,
+   "variants": [
+    "cross-piled"
+   ],
+   "run": true,
+   "points": {
+    "deck": 1,
+    "rail": 0,
+    "wall": 0,
+    "post": 0,
+    "hook": 0
+   }
+  }
+ ]
+}

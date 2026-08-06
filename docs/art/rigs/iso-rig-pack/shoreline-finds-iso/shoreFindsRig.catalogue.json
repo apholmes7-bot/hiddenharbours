@@ -1,0 +1,786 @@
+{
+ "rig": "ShoreFinds",
+ "source": "shoreFindsRig.js",
+ "ppu": "32 px = 1 m",
+ "camera": "ADR-0006 shared 3/4 turntable — 45deg steps, elev 40deg",
+ "dirs": [
+  "N",
+  "NE",
+  "E",
+  "SE",
+  "S",
+  "SW",
+  "W",
+  "NW"
+ ],
+ "light": "fixed upper-LEFT key, flat-facet, z-buffered, ordered dither, depth-edge darkening, 1px keyline, no AA",
+ "groundForeshorten": 0.72,
+ "keyline": "#231d14",
+ "heading": "lie angle in the ground plane (8 steps), rotated in the generator — never a pixel rotate",
+ "readScale": "drawn px = 4.7 * trueCm^0.62 (compressive)",
+ "states": [
+  "wet",
+  "dry",
+  "bleached"
+ ],
+ "axes": {
+  "variant": "0..2 seeded",
+  "wear": "0..1",
+  "sand": "0..1"
+ },
+ "render": "ShoreFinds.render(key, dir, opts) -> { w, h, rgba, anchors, params, report }",
+ "anchors": {
+  "sit": "ground-contact centre (pivot)",
+  "pick": "hand grab point",
+  "catch": "2-3 snag points"
+ },
+ "cats": [
+  {
+   "key": "shell",
+   "name": "SHELLS"
+  },
+  {
+   "key": "remains",
+   "name": "REMAINS & MOULTS"
+  },
+  {
+   "key": "wood",
+   "name": "DRIFTWOOD & BONE"
+  },
+  {
+   "key": "case",
+   "name": "CASES & CRUSTS"
+  },
+  {
+   "key": "stone",
+   "name": "STONE & COAL"
+  },
+  {
+   "key": "flotsam",
+   "name": "FLOTSAM"
+  }
+ ],
+ "count": 36,
+ "finds": [
+  {
+   "key": "SoftshellClam",
+   "name": "Soft-shell Clam",
+   "cat": "shell",
+   "form": "valve",
+   "trueCm": 9,
+   "drawnPx": 18,
+   "cell": [
+    30,
+    29
+   ],
+   "pivot": [
+    15,
+    17
+   ],
+   "zone": "tide",
+   "rarity": "common",
+   "stack": 6,
+   "note": "The digging clam — steamer. Thin chalky valve, deep growth rings"
+  },
+  {
+   "key": "Quahog",
+   "name": "Quahog",
+   "cat": "shell",
+   "form": "valve",
+   "trueCm": 8,
+   "drawnPx": 17,
+   "cell": [
+    29,
+    28
+   ],
+   "pivot": [
+    15,
+    17
+   ],
+   "zone": "tide",
+   "rarity": "common",
+   "stack": 5,
+   "note": "Hard clam — heavy valve, tight rings, purple inner lip"
+  },
+  {
+   "key": "BlueMussel",
+   "name": "Blue Mussel",
+   "cat": "shell",
+   "form": "valve",
+   "trueCm": 6,
+   "drawnPx": 14,
+   "cell": [
+    25,
+    25
+   ],
+   "pivot": [
+    13,
+    15
+   ],
+   "zone": "tide",
+   "rarity": "common",
+   "stack": 9,
+   "note": "Wedge shell, blue-black with a worn nacre shoulder"
+  },
+  {
+   "key": "Scallop",
+   "name": "Scallop Shell",
+   "cat": "shell",
+   "form": "fanValve",
+   "trueCm": 9,
+   "drawnPx": 18,
+   "cell": [
+    31,
+    30
+   ],
+   "pivot": [
+    16,
+    18
+   ],
+   "zone": "wrack",
+   "rarity": "often",
+   "stack": 4,
+   "note": "Ribbed fan with hinge ears — the postcard shell"
+  },
+  {
+   "key": "Oyster",
+   "name": "Oyster Shell",
+   "cat": "shell",
+   "form": "valve",
+   "trueCm": 11,
+   "drawnPx": 21,
+   "cell": [
+    33,
+    34
+   ],
+   "pivot": [
+    17,
+    21
+   ],
+   "zone": "tide",
+   "rarity": "often",
+   "stack": 4,
+   "note": "Rough frilled cup, chalk outside, nacre in the bowl"
+  },
+  {
+   "key": "RazorClam",
+   "name": "Razor Shell",
+   "cat": "shell",
+   "form": "valve",
+   "trueCm": 13,
+   "drawnPx": 23,
+   "cell": [
+    36,
+    32
+   ],
+   "pivot": [
+    18,
+    18
+   ],
+   "zone": "tide",
+   "rarity": "often",
+   "stack": 5,
+   "note": "Long flat-sided blade, olive periostracum"
+  },
+  {
+   "key": "JingleShell",
+   "name": "Jingle Shell",
+   "cat": "shell",
+   "form": "valve",
+   "trueCm": 4,
+   "drawnPx": 11,
+   "cell": [
+    21,
+    19
+   ],
+   "pivot": [
+    11,
+    11
+   ],
+   "zone": "wrack",
+   "rarity": "often",
+   "stack": 8,
+   "note": "Translucent gold disc, one worn hole — rattles in a pocket"
+  },
+  {
+   "key": "Periwinkle",
+   "name": "Periwinkle",
+   "cat": "shell",
+   "form": "spiral",
+   "trueCm": 2.5,
+   "drawnPx": 8,
+   "cell": [
+    18,
+    21
+   ],
+   "pivot": [
+    9,
+    14
+   ],
+   "zone": "tide",
+   "rarity": "common",
+   "stack": 12,
+   "note": "Small dark coiled snail — the one under every rock"
+  },
+  {
+   "key": "Dogwhelk",
+   "name": "Dog Whelk",
+   "cat": "shell",
+   "form": "spiral",
+   "trueCm": 3.5,
+   "drawnPx": 10,
+   "cell": [
+    21,
+    26
+   ],
+   "pivot": [
+    11,
+    18
+   ],
+   "zone": "tide",
+   "rarity": "often",
+   "stack": 8,
+   "note": "Tall banded spire with axial ribs"
+  },
+  {
+   "key": "MoonSnail",
+   "name": "Moon Snail",
+   "cat": "shell",
+   "form": "spiral",
+   "trueCm": 6,
+   "drawnPx": 14,
+   "cell": [
+    26,
+    28
+   ],
+   "pivot": [
+    13,
+    18
+   ],
+   "zone": "wrack",
+   "rarity": "scarce",
+   "stack": 3,
+   "note": "Fat low body whorl, wide aperture, sunken spire"
+  },
+  {
+   "key": "SandDollar",
+   "name": "Sand Dollar",
+   "cat": "remains",
+   "form": "disc",
+   "trueCm": 7,
+   "drawnPx": 16,
+   "cell": [
+    27,
+    24
+   ],
+   "pivot": [
+    14,
+    14
+   ],
+   "zone": "wrack",
+   "rarity": "scarce",
+   "stack": 4,
+   "note": "Petal star on the disc — snaps if you pocket it"
+  },
+  {
+   "key": "GreenUrchin",
+   "name": "Urchin Test",
+   "cat": "remains",
+   "form": "disc",
+   "trueCm": 5,
+   "drawnPx": 13,
+   "cell": [
+    23,
+    25
+   ],
+   "pivot": [
+    12,
+    16
+   ],
+   "zone": "tide",
+   "rarity": "scarce",
+   "stack": 4,
+   "note": "Bare green test, tubercle rows where the spines were"
+  },
+  {
+   "key": "Starfish",
+   "name": "Sea Star",
+   "cat": "remains",
+   "form": "star",
+   "trueCm": 15,
+   "drawnPx": 25,
+   "cell": [
+    40,
+    36
+   ],
+   "pivot": [
+    20,
+    21
+   ],
+   "zone": "tide",
+   "rarity": "scarce",
+   "stack": 2,
+   "note": "Five arms, pebbled back, one arm always short"
+  },
+  {
+   "key": "BrittleStar",
+   "name": "Brittle Star",
+   "cat": "remains",
+   "form": "star",
+   "trueCm": 13,
+   "drawnPx": 23,
+   "cell": [
+    37,
+    31
+   ],
+   "pivot": [
+    19,
+    17
+   ],
+   "zone": "tide",
+   "rarity": "rare",
+   "stack": 2,
+   "note": "Tiny disc, whip arms — comes up in the trap bait"
+  },
+  {
+   "key": "CrabMoult",
+   "name": "Crab Moult",
+   "cat": "remains",
+   "form": "carapace",
+   "trueCm": 12,
+   "drawnPx": 22,
+   "cell": [
+    47,
+    44
+   ],
+   "pivot": [
+    24,
+    26
+   ],
+   "zone": "wrack",
+   "rarity": "often",
+   "stack": 3,
+   "note": "Empty rock-crab carapace, legs shed with it"
+  },
+  {
+   "key": "GreenCrabShell",
+   "name": "Green Crab Shell",
+   "cat": "remains",
+   "form": "carapace",
+   "trueCm": 7,
+   "drawnPx": 16,
+   "cell": [
+    36,
+    34
+   ],
+   "pivot": [
+    18,
+    20
+   ],
+   "zone": "wrack",
+   "rarity": "common",
+   "stack": 5,
+   "note": "The invader — smaller, squarer, five points a side"
+  },
+  {
+   "key": "LobsterClaw",
+   "name": "Lobster Claw",
+   "cat": "remains",
+   "form": "claw",
+   "trueCm": 19,
+   "drawnPx": 29,
+   "cell": [
+    47,
+    47
+   ],
+   "pivot": [
+    24,
+    29
+   ],
+   "zone": "wrack",
+   "rarity": "scarce",
+   "stack": 2,
+   "note": "Crusher claw off a boiled one — thrown from a boat"
+  },
+  {
+   "key": "Driftwood",
+   "name": "Drift Log",
+   "cat": "wood",
+   "form": "rod",
+   "trueCm": 110,
+   "drawnPx": 87,
+   "cell": [
+    128,
+    121
+   ],
+   "pivot": [
+    64,
+    74
+   ],
+   "zone": "wrack",
+   "rarity": "common",
+   "stack": 2,
+   "note": "Barked-off log, sun-silvered, checked along the grain"
+  },
+  {
+   "key": "DriftBranch",
+   "name": "Drift Branch",
+   "cat": "wood",
+   "form": "rod",
+   "trueCm": 70,
+   "drawnPx": 65,
+   "cell": [
+    99,
+    84
+   ],
+   "pivot": [
+    50,
+    48
+   ],
+   "zone": "wrack",
+   "rarity": "common",
+   "stack": 3,
+   "note": "Forked limb, bark gone, ends worn to points"
+  },
+  {
+   "key": "DriftRoot",
+   "name": "Root Wad",
+   "cat": "wood",
+   "form": "rootWad",
+   "trueCm": 55,
+   "drawnPx": 56,
+   "cell": [
+    105,
+    101
+   ],
+   "pivot": [
+    53,
+    62
+   ],
+   "zone": "upper",
+   "rarity": "often",
+   "stack": 2,
+   "note": "Gnarled root knot — the wrack line catches on it"
+  },
+  {
+   "key": "DriftPlank",
+   "name": "Drift Plank",
+   "cat": "wood",
+   "form": "rod",
+   "trueCm": 85,
+   "drawnPx": 74,
+   "cell": [
+    110,
+    90
+   ],
+   "pivot": [
+    55,
+    50
+   ],
+   "zone": "upper",
+   "rarity": "often",
+   "stack": 3,
+   "note": "Sawn plank off something — nail holes, split end"
+  },
+  {
+   "key": "WeatheredBone",
+   "name": "Weathered Bone",
+   "cat": "wood",
+   "form": "rod",
+   "trueCm": 28,
+   "drawnPx": 37,
+   "cell": [
+    59,
+    54
+   ],
+   "pivot": [
+    30,
+    32
+   ],
+   "zone": "upper",
+   "rarity": "scarce",
+   "stack": 3,
+   "note": "Sun-bleached long bone, knobbed at both ends"
+  },
+  {
+   "key": "GullFeather",
+   "name": "Gull Feather",
+   "cat": "wood",
+   "form": "feather",
+   "trueCm": 20,
+   "drawnPx": 30,
+   "cell": [
+    46,
+    37
+   ],
+   "pivot": [
+    23,
+    20
+   ],
+   "zone": "upper",
+   "rarity": "common",
+   "stack": 6,
+   "note": "White with a grey vane and a black tip band"
+  },
+  {
+   "key": "MermaidsPurse",
+   "name": "Mermaid's Purse",
+   "cat": "case",
+   "form": "pouch",
+   "trueCm": 9,
+   "drawnPx": 18,
+   "cell": [
+    34,
+    30
+   ],
+   "pivot": [
+    17,
+    17
+   ],
+   "zone": "wrack",
+   "rarity": "scarce",
+   "stack": 3,
+   "note": "Skate egg case — black leather with four horns"
+  },
+  {
+   "key": "WhelkEggMass",
+   "name": "Whelk Egg Case",
+   "cat": "case",
+   "form": "cluster",
+   "trueCm": 11,
+   "drawnPx": 21,
+   "cell": [
+    39,
+    38
+   ],
+   "pivot": [
+    20,
+    23
+   ],
+   "zone": "wrack",
+   "rarity": "scarce",
+   "stack": 2,
+   "note": "Papery string of capsules — the sea wash ball"
+  },
+  {
+   "key": "BarnacleCluster",
+   "name": "Barnacle Crust",
+   "cat": "case",
+   "form": "cluster",
+   "trueCm": 9,
+   "drawnPx": 18,
+   "cell": [
+    35,
+    33
+   ],
+   "pivot": [
+    18,
+    20
+   ],
+   "zone": "tide",
+   "rarity": "common",
+   "stack": 4,
+   "note": "Chalk cones crusted on a shell scrap"
+  },
+  {
+   "key": "WaveCobble",
+   "name": "Wave Cobble",
+   "cat": "stone",
+   "form": "cobble",
+   "trueCm": 14,
+   "drawnPx": 24,
+   "cell": [
+    37,
+    42
+   ],
+   "pivot": [
+    19,
+    28
+   ],
+   "zone": "tide",
+   "rarity": "common",
+   "stack": 4,
+   "note": "Rolled granite, one quartz band, no edges left"
+  },
+  {
+   "key": "PebbleScatter",
+   "name": "Pebble Scatter",
+   "cat": "stone",
+   "form": "cluster",
+   "trueCm": 26,
+   "drawnPx": 35,
+   "cell": [
+    61,
+    53
+   ],
+   "pivot": [
+    31,
+    30
+   ],
+   "zone": "tide",
+   "rarity": "common",
+   "stack": 3,
+   "note": "Handful of shingle — reads as texture, not a prop"
+  },
+  {
+   "key": "SeaCoal",
+   "name": "Sea Coal",
+   "cat": "stone",
+   "form": "cluster",
+   "trueCm": 12,
+   "drawnPx": 22,
+   "cell": [
+    41,
+    37
+   ],
+   "pivot": [
+    21,
+    22
+   ],
+   "zone": "wrack",
+   "rarity": "often",
+   "stack": 4,
+   "note": "Black angular bits — old fire, old cargo"
+  },
+  {
+   "key": "SeaGlass",
+   "name": "Sea Glass",
+   "cat": "flotsam",
+   "form": "shard",
+   "trueCm": 3,
+   "drawnPx": 9,
+   "cell": [
+    19,
+    20
+   ],
+   "pivot": [
+    10,
+    12
+   ],
+   "zone": "wrack",
+   "rarity": "often",
+   "stack": 10,
+   "note": "Frosted and edge-worn — green, blue or white"
+  },
+  {
+   "key": "GlassBottle",
+   "name": "Glass Bottle",
+   "cat": "flotsam",
+   "form": "bottle",
+   "trueCm": 26,
+   "drawnPx": 35,
+   "cell": [
+    57,
+    55
+   ],
+   "pivot": [
+    29,
+    34
+   ],
+   "zone": "upper",
+   "rarity": "often",
+   "stack": 2,
+   "note": "Green bottle, neck up the beach, sand inside"
+  },
+  {
+   "key": "RopeScrap",
+   "name": "Rope Scrap",
+   "cat": "flotsam",
+   "form": "coil",
+   "trueCm": 24,
+   "drawnPx": 34,
+   "cell": [
+    66,
+    58
+   ],
+   "pivot": [
+    33,
+    33
+   ],
+   "zone": "wrack",
+   "rarity": "common",
+   "stack": 3,
+   "note": "Cut length of poly warp, frayed at one end"
+  },
+  {
+   "key": "NetScrap",
+   "name": "Net Scrap",
+   "cat": "flotsam",
+   "form": "mesh",
+   "trueCm": 28,
+   "drawnPx": 37,
+   "cell": [
+    53,
+    43
+   ],
+   "pivot": [
+    27,
+    23
+   ],
+   "zone": "wrack",
+   "rarity": "often",
+   "stack": 3,
+   "note": "Torn mesh panel, knots at every crossing"
+  },
+  {
+   "key": "NetFloat",
+   "name": "Net Float",
+   "cat": "flotsam",
+   "form": "ball",
+   "trueCm": 11,
+   "drawnPx": 21,
+   "cell": [
+    33,
+    41
+   ],
+   "pivot": [
+    17,
+    28
+   ],
+   "zone": "wrack",
+   "rarity": "often",
+   "stack": 4,
+   "note": "Cracked plastic float, painted band, line gone"
+  },
+  {
+   "key": "TrapLath",
+   "name": "Trap Lath",
+   "cat": "flotsam",
+   "form": "rod",
+   "trueCm": 62,
+   "drawnPx": 61,
+   "cell": [
+    92,
+    74
+   ],
+   "pivot": [
+    46,
+    40
+   ],
+   "zone": "wrack",
+   "rarity": "common",
+   "stack": 4,
+   "note": "Broken trap slat, paint left in the grain"
+  },
+  {
+   "key": "RustedCan",
+   "name": "Rusted Can",
+   "cat": "flotsam",
+   "form": "can",
+   "trueCm": 12,
+   "drawnPx": 22,
+   "cell": [
+    37,
+    40
+   ],
+   "pivot": [
+    19,
+    26
+   ],
+   "zone": "upper",
+   "rarity": "often",
+   "stack": 3,
+   "note": "Crushed tin, rusted through at the seam"
+  }
+ ]
+}

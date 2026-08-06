@@ -1,0 +1,909 @@
+{
+ "rig": "UtilityIso",
+ "source": "utilityIsoRig.js",
+ "ppu": "32 px = 1 m",
+ "camera": "ADR-0006 shared 3/4 turntable — 45deg steps, elev 40deg",
+ "dirs": [
+  "N",
+  "NE",
+  "E",
+  "SE",
+  "S",
+  "SW",
+  "W",
+  "NW"
+ ],
+ "light": "fixed upper-LEFT key, flat-facet, z-buffered, ordered dither, depth-edge darkening, 1px keyline, no AA",
+ "sheet": {
+  "w": 440,
+  "h": 620,
+  "pivot": {
+   "x": 220,
+   "y": 520
+  },
+  "note": "fixed sheet; pivot = ground-centre of footprint"
+ },
+ "render": "UtilityIso.render(name, dir, opts) -> Uint8ClampedArray, W*H*4, binary alpha",
+ "opts": {
+  "paint": "BODY palette key or null",
+  "metal": [
+   "galv",
+   "alum",
+   "iron"
+  ],
+  "variant": "int",
+  "len": "0..1 height/length run",
+  "weather": "0..1",
+  "gravel": "bool apron",
+  "night": "bool",
+  "elev": "degrees, default 40"
+ },
+ "tieKinds": {
+  "wires": "primary span attach",
+  "secondary": "secondary/neutral",
+  "lamp": "luminaire point",
+  "drop": "service drop to a building"
+ },
+ "cats": [
+  "power",
+  "light",
+  "water",
+  "sewer",
+  "fuel",
+  "telecom"
+ ],
+ "count": 42,
+ "props": [
+  {
+   "key": "powerPole",
+   "label": "Power pole",
+   "cat": "power",
+   "footprint_m": [
+    0.54,
+    0.54
+   ],
+   "height_m": 9.08,
+   "variants": [
+    "crossarm",
+    "transformer",
+    "lamp arm"
+   ],
+   "run": true,
+   "points": {
+    "wires": 3,
+    "secondary": 3,
+    "lamp": 0,
+    "drop": 0
+   }
+  },
+  {
+   "key": "hFrame",
+   "label": "H-frame",
+   "cat": "power",
+   "footprint_m": [
+    3.13,
+    0.65
+   ],
+   "height_m": 8.59,
+   "variants": [
+    "twin circuit"
+   ],
+   "run": true,
+   "points": {
+    "wires": 4,
+    "secondary": 3,
+    "lamp": 0,
+    "drop": 0
+   }
+  },
+  {
+   "key": "padTransformer",
+   "label": "Pad transformer",
+   "cat": "power",
+   "footprint_m": [
+    2.05,
+    1.67
+   ],
+   "height_m": 1.3,
+   "variants": [
+    "single"
+   ],
+   "run": true,
+   "points": {
+    "wires": 0,
+    "secondary": 0,
+    "lamp": 0,
+    "drop": 0
+   }
+  },
+  {
+   "key": "switchgear",
+   "label": "Switch cabinet",
+   "cat": "power",
+   "footprint_m": [
+    2.38,
+    1.84
+   ],
+   "height_m": 1.7,
+   "variants": [
+    "four-way"
+   ],
+   "run": true,
+   "points": {
+    "wires": 0,
+    "secondary": 0,
+    "lamp": 0,
+    "drop": 0
+   }
+  },
+  {
+   "key": "pedestal",
+   "label": "Junction ped.",
+   "cat": "power",
+   "footprint_m": [
+    0.78,
+    0.62
+   ],
+   "height_m": 1,
+   "variants": [
+    "hooded"
+   ],
+   "run": false,
+   "points": {
+    "wires": 0,
+    "secondary": 0,
+    "lamp": 0,
+    "drop": 0
+   }
+  },
+  {
+   "key": "genset",
+   "label": "Standby set",
+   "cat": "power",
+   "footprint_m": [
+    1.94,
+    1.13
+   ],
+   "height_m": 1.34,
+   "variants": [
+    "enclosed"
+   ],
+   "run": true,
+   "points": {
+    "wires": 0,
+    "secondary": 0,
+    "lamp": 0,
+    "drop": 0
+   }
+  },
+  {
+   "key": "serviceMast",
+   "label": "Service mast",
+   "cat": "power",
+   "footprint_m": [
+    0.97,
+    0.54
+   ],
+   "height_m": 4.56,
+   "variants": [
+    "meter + head"
+   ],
+   "run": true,
+   "points": {
+    "wires": 0,
+    "secondary": 0,
+    "lamp": 0,
+    "drop": 1
+   }
+  },
+  {
+   "key": "meterBank",
+   "label": "Meter bank",
+   "cat": "power",
+   "footprint_m": [
+    1.64,
+    0.5
+   ],
+   "height_m": 1.94,
+   "variants": [
+    "three-gang",
+    "five-gang"
+   ],
+   "run": false,
+   "points": {
+    "wires": 0,
+    "secondary": 0,
+    "lamp": 0,
+    "drop": 1
+   }
+  },
+  {
+   "key": "guyAnchor",
+   "label": "Guy anchor",
+   "cat": "power",
+   "footprint_m": [
+    1.68,
+    1.56
+   ],
+   "height_m": 2.84,
+   "variants": [
+    "rod & guard"
+   ],
+   "run": true,
+   "points": {
+    "wires": 1,
+    "secondary": 0,
+    "lamp": 0,
+    "drop": 0
+   }
+  },
+  {
+   "key": "yardLight",
+   "label": "Yard light",
+   "cat": "light",
+   "footprint_m": [
+    0.54,
+    0.54
+   ],
+   "height_m": 7.26,
+   "variants": [
+    "cobra head"
+   ],
+   "run": true,
+   "points": {
+    "wires": 0,
+    "secondary": 0,
+    "lamp": 1,
+    "drop": 0
+   }
+  },
+  {
+   "key": "streetLamp",
+   "label": "Street lamp",
+   "cat": "light",
+   "footprint_m": [
+    1.08,
+    0.54
+   ],
+   "height_m": 4.48,
+   "variants": [
+    "pendant lantern",
+    "acorn globe"
+   ],
+   "run": true,
+   "points": {
+    "wires": 0,
+    "secondary": 0,
+    "lamp": 1,
+    "drop": 1
+   }
+  },
+  {
+   "key": "floodMast",
+   "label": "Flood mast",
+   "cat": "light",
+   "footprint_m": [
+    2.05,
+    0.76
+   ],
+   "height_m": 7.8,
+   "variants": [
+    "three-head"
+   ],
+   "run": true,
+   "points": {
+    "wires": 0,
+    "secondary": 0,
+    "lamp": 3,
+    "drop": 0
+   }
+  },
+  {
+   "key": "beacon",
+   "label": "Harbour beacon",
+   "cat": "light",
+   "footprint_m": [
+    1.51,
+    1.51
+   ],
+   "height_m": 4.34,
+   "variants": [
+    "tripod pile"
+   ],
+   "run": true,
+   "points": {
+    "wires": 0,
+    "secondary": 0,
+    "lamp": 1,
+    "drop": 0
+   }
+  },
+  {
+   "key": "hydrant",
+   "label": "Fire hydrant",
+   "cat": "water",
+   "footprint_m": [
+    0.62,
+    0.62
+   ],
+   "height_m": 0.96,
+   "variants": [
+    "two-way"
+   ],
+   "run": false,
+   "points": {
+    "wires": 0,
+    "secondary": 0,
+    "lamp": 0,
+    "drop": 0
+   }
+  },
+  {
+   "key": "yardHydrant",
+   "label": "Yard hydrant",
+   "cat": "water",
+   "footprint_m": [
+    0.45,
+    0.45
+   ],
+   "height_m": 1.39,
+   "variants": [
+    "frost-free"
+   ],
+   "run": true,
+   "points": {
+    "wires": 0,
+    "secondary": 0,
+    "lamp": 0,
+    "drop": 0
+   }
+  },
+  {
+   "key": "standpipe",
+   "label": "Standpipe",
+   "cat": "water",
+   "footprint_m": [
+    1.2,
+    1.7
+   ],
+   "height_m": 1.24,
+   "variants": [
+    "tap & trough"
+   ],
+   "run": false,
+   "points": {
+    "wires": 0,
+    "secondary": 0,
+    "lamp": 0,
+    "drop": 0
+   }
+  },
+  {
+   "key": "handPump",
+   "label": "Hand pump",
+   "cat": "water",
+   "footprint_m": [
+    0.88,
+    0.8
+   ],
+   "height_m": 1.28,
+   "variants": [
+    "pitcher pump"
+   ],
+   "run": false,
+   "points": {
+    "wires": 0,
+    "secondary": 0,
+    "lamp": 0,
+    "drop": 0
+   }
+  },
+  {
+   "key": "wellCap",
+   "label": "Well head",
+   "cat": "water",
+   "footprint_m": [
+    0.86,
+    0.86
+   ],
+   "height_m": 0.72,
+   "variants": [
+    "drilled casing",
+    "dug well lid"
+   ],
+   "run": false,
+   "points": {
+    "wires": 0,
+    "secondary": 0,
+    "lamp": 0,
+    "drop": 0
+   }
+  },
+  {
+   "key": "curbStop",
+   "label": "Curb stop",
+   "cat": "water",
+   "footprint_m": [
+    0.46,
+    0.46
+   ],
+   "height_m": 0.12,
+   "variants": [
+    "road box"
+   ],
+   "run": false,
+   "points": {
+    "wires": 0,
+    "secondary": 0,
+    "lamp": 0,
+    "drop": 0
+   }
+  },
+  {
+   "key": "valveVault",
+   "label": "Valve vault",
+   "cat": "water",
+   "footprint_m": [
+    1.3,
+    1.1
+   ],
+   "height_m": 0.9,
+   "variants": [
+    "twin lid"
+   ],
+   "run": false,
+   "points": {
+    "wires": 0,
+    "secondary": 0,
+    "lamp": 0,
+    "drop": 0
+   }
+  },
+  {
+   "key": "waterTank",
+   "label": "Water tank",
+   "cat": "water",
+   "footprint_m": [
+    2.29,
+    2.29
+   ],
+   "height_m": 4.28,
+   "variants": [
+    "timber stand"
+   ],
+   "run": true,
+   "points": {
+    "wires": 0,
+    "secondary": 0,
+    "lamp": 0,
+    "drop": 0
+   }
+  },
+  {
+   "key": "cistern",
+   "label": "Cistern",
+   "cat": "water",
+   "footprint_m": [
+    2.59,
+    2.05
+   ],
+   "height_m": 1.94,
+   "variants": [
+    "buried box"
+   ],
+   "run": true,
+   "points": {
+    "wires": 0,
+    "secondary": 0,
+    "lamp": 0,
+    "drop": 0
+   }
+  },
+  {
+   "key": "manhole",
+   "label": "Manhole",
+   "cat": "sewer",
+   "footprint_m": [
+    1.44,
+    1.44
+   ],
+   "height_m": 0.14,
+   "variants": [
+    "sanitary",
+    "road patch"
+   ],
+   "run": false,
+   "points": {
+    "wires": 0,
+    "secondary": 0,
+    "lamp": 0,
+    "drop": 0
+   }
+  },
+  {
+   "key": "cleanout",
+   "label": "Cleanout",
+   "cat": "sewer",
+   "footprint_m": [
+    0.44,
+    0.5
+   ],
+   "height_m": 0.5,
+   "variants": [
+    "capped"
+   ],
+   "run": false,
+   "points": {
+    "wires": 0,
+    "secondary": 0,
+    "lamp": 0,
+    "drop": 0
+   }
+  },
+  {
+   "key": "ventStack",
+   "label": "Vent stack",
+   "cat": "sewer",
+   "footprint_m": [
+    0.65,
+    0.37
+   ],
+   "height_m": 2.72,
+   "variants": [
+    "candy cane"
+   ],
+   "run": true,
+   "points": {
+    "wires": 0,
+    "secondary": 0,
+    "lamp": 0,
+    "drop": 0
+   }
+  },
+  {
+   "key": "septicLids",
+   "label": "Septic lids",
+   "cat": "sewer",
+   "footprint_m": [
+    3.04,
+    1.45
+   ],
+   "height_m": 0.47,
+   "variants": [
+    "twin riser"
+   ],
+   "run": true,
+   "points": {
+    "wires": 0,
+    "secondary": 0,
+    "lamp": 0,
+    "drop": 0
+   }
+  },
+  {
+   "key": "catchBasin",
+   "label": "Catch basin",
+   "cat": "sewer",
+   "footprint_m": [
+    1.24,
+    1.24
+   ],
+   "height_m": 0.34,
+   "variants": [
+    "curb inlet",
+    "with apron"
+   ],
+   "run": false,
+   "points": {
+    "wires": 0,
+    "secondary": 0,
+    "lamp": 0,
+    "drop": 0
+   }
+  },
+  {
+   "key": "trenchDrain",
+   "label": "Trench drain",
+   "cat": "sewer",
+   "footprint_m": [
+    0.87,
+    4.71
+   ],
+   "height_m": 0.16,
+   "variants": [
+    "grated channel",
+    "with apron"
+   ],
+   "run": true,
+   "points": {
+    "wires": 0,
+    "secondary": 0,
+    "lamp": 0,
+    "drop": 0
+   }
+  },
+  {
+   "key": "liftStation",
+   "label": "Lift station",
+   "cat": "sewer",
+   "footprint_m": [
+    2.7,
+    1.7
+   ],
+   "height_m": 1.62,
+   "variants": [
+    "well + panel"
+   ],
+   "run": false,
+   "points": {
+    "wires": 0,
+    "secondary": 0,
+    "lamp": 0,
+    "drop": 0
+   }
+  },
+  {
+   "key": "outfall",
+   "label": "Outfall",
+   "cat": "sewer",
+   "footprint_m": [
+    1.9,
+    1.7
+   ],
+   "height_m": 1,
+   "variants": [
+    "headwall & flap"
+   ],
+   "run": false,
+   "points": {
+    "wires": 0,
+    "secondary": 0,
+    "lamp": 0,
+    "drop": 0
+   }
+  },
+  {
+   "key": "culvert",
+   "label": "Culvert end",
+   "cat": "sewer",
+   "footprint_m": [
+    3.66,
+    5.25
+   ],
+   "height_m": 0.75,
+   "variants": [
+    "corrugated"
+   ],
+   "run": true,
+   "points": {
+    "wires": 0,
+    "secondary": 0,
+    "lamp": 0,
+    "drop": 0
+   }
+  },
+  {
+   "key": "oilTank",
+   "label": "Oil tank",
+   "cat": "fuel",
+   "footprint_m": [
+    1.12,
+    0.66
+   ],
+   "height_m": 2,
+   "variants": [
+    "275 gal",
+    "twin"
+   ],
+   "run": false,
+   "points": {
+    "wires": 0,
+    "secondary": 0,
+    "lamp": 0,
+    "drop": 0
+   }
+  },
+  {
+   "key": "fillPipes",
+   "label": "Fill & vent",
+   "cat": "fuel",
+   "footprint_m": [
+    0.7,
+    0.42
+   ],
+   "height_m": 0.98,
+   "variants": [
+    "pair"
+   ],
+   "run": false,
+   "points": {
+    "wires": 0,
+    "secondary": 0,
+    "lamp": 0,
+    "drop": 0
+   }
+  },
+  {
+   "key": "propaneTank",
+   "label": "Propane tank",
+   "cat": "fuel",
+   "footprint_m": [
+    2.93,
+    1.02
+   ],
+   "height_m": 1.2,
+   "variants": [
+    "500 gal",
+    "bottle pair"
+   ],
+   "run": true,
+   "points": {
+    "wires": 0,
+    "secondary": 0,
+    "lamp": 0,
+    "drop": 0
+   }
+  },
+  {
+   "key": "bulkTank",
+   "label": "Bulk tank",
+   "cat": "fuel",
+   "footprint_m": [
+    3.47,
+    3.25
+   ],
+   "height_m": 3.64,
+   "variants": [
+    "vertical shell"
+   ],
+   "run": true,
+   "points": {
+    "wires": 0,
+    "secondary": 0,
+    "lamp": 0,
+    "drop": 0
+   }
+  },
+  {
+   "key": "fuelPump",
+   "label": "Fuel pump",
+   "cat": "fuel",
+   "footprint_m": [
+    0.68,
+    0.58
+   ],
+   "height_m": 1.94,
+   "variants": [
+    "dockside"
+   ],
+   "run": false,
+   "points": {
+    "wires": 0,
+    "secondary": 0,
+    "lamp": 0,
+    "drop": 0
+   }
+  },
+  {
+   "key": "drumRack",
+   "label": "Drum rack",
+   "cat": "fuel",
+   "footprint_m": [
+    1.9,
+    1.5
+   ],
+   "height_m": 1.24,
+   "variants": [
+    "two drum",
+    "three drum"
+   ],
+   "run": false,
+   "points": {
+    "wires": 0,
+    "secondary": 0,
+    "lamp": 0,
+    "drop": 0
+   }
+  },
+  {
+   "key": "coalBin",
+   "label": "Coal bin",
+   "cat": "fuel",
+   "footprint_m": [
+    2.35,
+    2.24
+   ],
+   "height_m": 1.2,
+   "variants": [
+    "plank bin"
+   ],
+   "run": true,
+   "points": {
+    "wires": 0,
+    "secondary": 0,
+    "lamp": 0,
+    "drop": 0
+   }
+  },
+  {
+   "key": "telecomPed",
+   "label": "Telecom ped.",
+   "cat": "telecom",
+   "footprint_m": [
+    0.56,
+    0.44
+   ],
+   "height_m": 1,
+   "variants": [
+    "hooded"
+   ],
+   "run": false,
+   "points": {
+    "wires": 0,
+    "secondary": 0,
+    "lamp": 0,
+    "drop": 1
+   }
+  },
+  {
+   "key": "crossBox",
+   "label": "Cross-connect",
+   "cat": "telecom",
+   "footprint_m": [
+    1.4,
+    0.86
+   ],
+   "height_m": 1.38,
+   "variants": [
+    "cross-connect"
+   ],
+   "run": true,
+   "points": {
+    "wires": 0,
+    "secondary": 0,
+    "lamp": 0,
+    "drop": 1
+   }
+  },
+  {
+   "key": "alarmBox",
+   "label": "Call box",
+   "cat": "telecom",
+   "footprint_m": [
+    0.45,
+    0.45
+   ],
+   "height_m": 1.69,
+   "variants": [
+    "pull box"
+   ],
+   "run": true,
+   "points": {
+    "wires": 0,
+    "secondary": 0,
+    "lamp": 0,
+    "drop": 1
+   }
+  },
+  {
+   "key": "radioMast",
+   "label": "Radio mast",
+   "cat": "telecom",
+   "footprint_m": [
+    5.92,
+    5.92
+   ],
+   "height_m": 10.1,
+   "variants": [
+    "guyed lattice"
+   ],
+   "run": true,
+   "points": {
+    "wires": 0,
+    "secondary": 0,
+    "lamp": 1,
+    "drop": 1
+   }
+  }
+ ]
+}

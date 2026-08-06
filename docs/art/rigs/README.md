@@ -55,6 +55,14 @@ Pixel-verified: `puntIsoRig` (golden master — byte-identical until the v2 rig 
 · `sideDraggerIsoRig` · `skiffMotorRig` · `sportSkiffIsoRig` · `sternTrawlerIsoRig` ·
 `sternTrawlerMk2IsoRig` · `tankerIsoRig` · `wharfBuildingRig`
 
+**COUNTER-CLOCKWISE, MEASURED (iso rig pack, 2026-08-06)** — `iso-rig-pack/wharf-kit-iso/wharfIsoRig`
+· `iso-rig-pack/wharf-decor-iso/wharfDecorRig` · `iso-rig-pack/utility-iso/utilityIsoRig`. Not
+inferred from the `th = ±dir·π/4` sign (which the correction above forbids) and not taken from the
+pack README: each was measured to turn its +X axis **−46.75° of screen rotation per dir step** — the
+same figure, to the digit, as `houseIsoRig` / `wharfBuildingRig` / `interiorIsoRig`. Their `project()`
+outputs also agree to **0.000000000 px** relative to each rig's own origin, so the three ride ONE
+turntable rather than three that resemble each other. The bake still probes from pixels.
+
 **No azimuth term (18 + 4 + 1 + 2)** — kits, props and creatures that aren't 8-way directional; they need no
 convention. (`sceneKit`, `shorelineRig`, `potRig`, `foxRig`, …) The fishing kit adds `bobberRig` ·
 `crustaceanRig` · `shellfishRig` · `catchKit` to this group; the drift-weed kit adds `driftWeedRig`
@@ -581,3 +589,69 @@ which is what let `GrassPaintTool` drop its three hard-coded sprite paths.
 
 Bake: **Hidden Harbours ▸ Dev ▸ Bake Grass Library** (or `GrassLibraryBakeMenu.BakeFromCommandLine`).
 Kit README: [`../grass-species-kit/README.md`](../grass-species-kit/README.md).
+
+---
+
+## The ISO rig pack (imported 2026-08-06) — wharf kit · wharf decor · utility · shoreline finds
+
+An owner drop of **four independent rigs** under [`iso-rig-pack/`](iso-rig-pack/), landed verbatim
+with the pack README, four per-rig READMEs, three `*.catalogue.json` sidecars and the wharf kit's
+`gameplay/wharfIsoRig.gameplay.json` + `harness.html`.
+
+| folder | global | what it is |
+|---|---|---|
+| `wharf-kit-iso/` | `WharfIso` | 7 wharf structure families, 17 presets, tide model, gameplay contract |
+| `wharf-decor-iso/` | `WharfDecor` | 61 pieces of wharf gear and dressing, 7 categories |
+| `utility-iso/` | `UtilityIso` | 42 village services (power/light/water/sewer/fuel/telecom), 6 categories |
+| `shoreline-finds-iso/` | `ShoreFinds` | 36 beachcombing finds from 19 forms, 3 states |
+
+**Conventions are PER FAMILY and every number below is measured, not read.** The measured contract
+for each family is committed beside where its sheets will bake:
+`Art/Sprites/Wharf/Iso/`, `Art/Sprites/Wharf/Decor/`, `Art/Sprites/Utility/`,
+`Art/Sprites/Shore/FindsIso/` — the same "the committed contract is the oracle, and the baker
+refuses rather than rewrites" arrangement the shore-plant and shrub kits use.
+
+| | wharf kit | wharf decor | utility | shoreline finds |
+|---|---|---|---|---|
+| cell | tight, `px,py` per bake (fractional) | fixed 420×520 | fixed 440×620 | tight, `cellOf(key)` |
+| pivot | model origin = footprint centre at chart datum | ground centre (210,420) | ground centre (220,520) | `sit`, ground-contact centre |
+| load | `InstallModule` (no `W/H/pivot`) | `Install` | `Install` | `InstallModule` (no pivot) |
+| azimuth | CCW, measured | CCW, measured | CCW, measured | none — flat lie angle |
+| ground squash | 0.6428 | 0.6428 | 0.6428 | **0.72** |
+| keyline | `#1a1c22` | `#1a1c22` | `#1a1c22` | `#231d14` (warm) |
+| import cap | **4096** | 2048 | 2048 | 2048 |
+
+### The five things that will bite the bake
+
+1. **`ShoreFinds.DIRS` is a string array, not a number**, and the rig declares no `pivot`. Fed to
+   `RigCatalog.Install` it throws on the pivot, and the `typeof DIRS === 'number'` probe reports 0
+   facings rather than 8. Use `InstallModule` and `cellOf(key)`.
+2. **Its ground foreshorten is 0.72, not 0.6428.** Carrying the structure rigs' constant across is
+   the un-squash error this repo keeps repeating. Measured per family, always.
+3. **The union cell is much larger than the biggest per-facing cell** wherever the model origin's
+   projection swings with the facing. `floatSet` / `plasticSet` (a float *plus* its gangway) measure
+   **757×592** unioned against **478×423** as a naive per-facing max — a 1.6× miss that is exactly
+   what a cap computed from the wrong number would hide. This is why the wharf kit's cap is 4096 and
+   everything else's is 2048.
+4. **`wharfDecor`'s `fireCabinet` pivot lands 5 px BELOW its own ink.** It is wall-hung, so nothing
+   is drawn down at deck level, and a crop that is merely "tight to ink" puts the piece's ground
+   contact outside its own cell. The committed cells are therefore pivot-**inclusive** unions, and
+   the contract carries `pivotInsideInk` so a baker can assert it rather than discover it.
+5. **The wharf cell is parametric, so a fixed cap is not a fixed guarantee.** At the rig's defaults
+   every preset fits; at `bays: 8`, or at a Fundy `tideRange: 14`, the same preset packs past 2048.
+   Assert native resolution from the *rendered* cells at bake time — never from a table.
+
+### What was verified, and what the pack claims
+
+The pack README's **"No order dependency, no shared state, no globals beyond the four rig objects"
+is TRUE, and was measured rather than believed** — 83 probe keys, including the full RGBA buffers of
+24 representative renders across all four rigs, are byte-identical whether each rig loads alone, in
+the README's order, reversed, or shuffled. That claim is checked here because the shop kit's README
+made the same one and was wrong three ways (#437).
+
+**All four bake a 1 px keyline and none carries a `KEYLINE_DEFAULT` gate.** They arrive in the
+pre-ADR-0031 style, which ADR 0031 §4 explicitly permits ("sheets migrate naturally … a mixed period
+is expected and accepted"). The pack states its two keyline colours are deliberate, so the ring was
+left alone rather than stripped — the retirement order for these families is the owner's call. The
+ring is not free: it is **25.6 %** of every ink pixel on a `powerPole` and 15.2 % on a clam, which is
+the perimeter-cost law from `../outline-interaction-language.md` landing on filamentary subjects.
