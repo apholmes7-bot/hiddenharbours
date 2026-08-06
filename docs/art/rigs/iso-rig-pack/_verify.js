@@ -167,19 +167,28 @@ function verifyTraps(ctx) {
       `— the native-res assert must read RENDERED cells, never a table`);
   }
 
-  console.log('\n[trap 2b] packed sheets against the ruled 4096 import cap');
-  const C = contractOf(FAMILIES[0]);
-  let worst = { m: 0 };
-  for (const e of C.cells) {
-    const c = cellBufferUnion(WharfIso, e.key);
-    const sw = e.sheet.cols * c.w, sh = e.sheet.rows * c.h, m = Math.max(sw, sh);
-    if (m > worst.m) worst = { m, key: e.key, sw, sh };
+  // A texture cap binds on the LONGEST SIDE, so `worstSheet` (worst by AREA) is the wrong field to
+  // size headroom off. Every contract therefore also carries `worstSheetByMaxDim`; assert it.
+  console.log('\n[trap 2b] packed sheets against each family\'s ruled import cap');
+  for (const f of FAMILIES) {
+    const C = contractOf(f);
+    let worst = { m: 0 };
+    for (const e of C.cells) {
+      // wharfIso re-measures from the live rig (its cells are parametric); the fixed-sheet families
+      // pack from a committed cell, so the contract's own sheet figures are the thing to check.
+      const c = f.rule === 'bufferUnion' ? cellBufferUnion(ctx[f.global], e.key)
+                                         : { w: e.cellW, h: e.cellH };
+      const sw = e.sheet.cols * c.w, sh = e.sheet.rows * c.h, m = Math.max(sw, sh);
+      if (m > worst.m) worst = { m, key: e.key, sw, sh };
+    }
+    const cap = C.importSizeCap, d = C.worstSheetByMaxDim;
+    (worst.m <= cap ? ok : fail)(`${f.key}: worst sheet by MAX DIMENSION is ${worst.key} ` +
+      `${worst.sw}x${worst.sh} = ${worst.m} px, ${cap - worst.m} px under the ${cap} cap`);
+    if (!d) fail(`${f.key}: contract declares no worstSheetByMaxDim — headroom cannot be sized off ` +
+                 `worstSheet, which is the worst by AREA`);
+    else (d.key === worst.key && d.maxDim === worst.m && d.headroomToCap === cap - worst.m ? ok : fail)(
+      `${f.key}: worstSheetByMaxDim reproduces (${d.key} ${d.maxDim} px, ${d.headroomToCap} px headroom)`);
   }
-  (worst.m <= 4096 ? ok : fail)(`worst packed sheet by MAX DIMENSION: ${worst.key} ${worst.sw}x${worst.sh} ` +
-    `= ${worst.m} px, ${4096 - worst.m} px under the cap`);
-  if (worst.key !== C.worstSheet.key)
-    note(`contract worstSheet names "${C.worstSheet.key}" (${C.worstSheet.w}x${C.worstSheet.h}) — ` +
-         `that is the worst by AREA. The cap binds on MAX DIMENSION, where "${worst.key}" is worse.`);
 
   console.log('\n[trap 3] fireCabinet is wall-hung — its pivot lies outside its own ink');
   {

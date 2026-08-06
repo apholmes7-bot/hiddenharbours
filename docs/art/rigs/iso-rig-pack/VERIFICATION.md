@@ -12,9 +12,13 @@ node docs/art/rigs/iso-rig-pack/_verify.js          # contracts + the seven trap
 node docs/art/rigs/iso-rig-pack/_verify.js --gate   # + the keyline-gate A/B
 ```
 
-**Headline: 155 of the 156 committed cell entries reproduce exactly** — cell, pivot, `pivotInsideInk`
+**Headline: all 156 committed cell entries now reproduce exactly** — cell, pivot, `pivotInsideInk`
 and sheet packing. The contracts are a sound oracle. Five findings below change what the baker slice
-should do; they are listed worst-first.
+should do, listed worst-first; **two of them have been applied to the contracts** under coordinator
+ruling (2026-08-06), and are marked ✅ APPLIED where they appear.
+
+On first measurement it was 155 of 156 — `fireCabinet` (§5) was the one that did not, and fixing it
+is one of the two applied rulings.
 
 ---
 
@@ -40,7 +44,7 @@ geometry and reports a fractional `px,py` per bake; the contract records that bu
 
 ---
 
-## 2. ⚠️ The 4096 cap binds on a preset the contract does not name
+## 2. ✅ APPLIED — the 4096 cap bound on a preset the contract did not name
 
 `wharfIsoRig.contract.json` declares `worstSheet: floatSet 3028×1184`. That is the worst sheet **by
 area**. The import cap binds on **max dimension**, and by that measure the worst is `timberQuay`:
@@ -67,6 +71,20 @@ summary field.
 
 **Cheap fix, and it is not a cap raise:** pack `timberQuay` 4×2 like its larger siblings →
 2024×862, comfortable. The 4096 cap ruling stands regardless; this is a packing-grid choice.
+
+### ✅ What was applied
+
+Coordinator ruling, 2026-08-06 — endorsed as recommended:
+
+1. **`timberQuay` repacked 8×1 → 4×2**, so its sheet goes 4048×431 → **2024×862**. The binding
+   constraint becomes `sheetedPier` at 3784 px, **312 px of headroom** instead of 48.
+2. **Every contract now carries `worstSheetByMaxDim`** beside `worstSheet`, with `maxDim` and
+   `headroomToCap`. `worstSheet` is the worst by *area* and is the wrong field to size import
+   headroom off; two of the four families disagreed between the two measures — `wharfIso`
+   (`floatSet` by area vs `sheetedPier` by max dim) and `shoreFinds` (`Driftwood` vs `RopeScrap`).
+   `_verify.js` now asserts the new field reproduces, per family.
+
+The cap itself is unchanged at 4096 — that is the owner's ruling and this did not touch it.
 
 ---
 
@@ -127,9 +145,9 @@ families.
 
 ---
 
-## 5. `fireCabinet` — the one cell that does not reproduce
+## 5. ✅ APPLIED — `fireCabinet`, the one cell that did not reproduce
 
-The only failure in the sweep, and it is on the piece the trap was written to protect.
+The only failure in the sweep, and it was on the piece the trap was written to protect.
 
 | | |
 |---|---|
@@ -148,6 +166,20 @@ facings the tightest gap is **6 px** (`d1/d2/d6/d7`, ink bottom at −6 relative
 **Either fix the entry to 26×53 or record the exclusive convention explicitly** — otherwise a baker
 implementing the documented pivot-inclusive rule refuses on `fireCabinet`, and it will read as a rig
 regression rather than a contract typo.
+
+### ✅ What was applied
+
+Coordinator ruling, 2026-08-06 — the measurement wins over the doc:
+
+1. **`fireCabinet.cellH` 52 → 53** (and its `sheet.sheetH` 52 → 53 to match). `pivotY` stays 52,
+   which is what the rule already yielded.
+2. **Every contract's `projection` now carries a `cellRule` string** stating that family's exact
+   rule in words — pivot-INCLUSIVE ink union for `wharfDecor`/`utilityIso`, buffer union for
+   `wharfIso`, analytic `cellOf` for `shoreFinds`. That is the convention note that stops the next
+   reader re-litigating it, and it is also §1's recovered rule written where a baker will find it.
+
+The pivot gap remains **6 px**, not the 5 px the handoff and #448 both state; the contract records no
+gap figure, so nothing needed changing for that — it is recorded here.
 
 ---
 
@@ -194,11 +226,16 @@ Determinism: two independent harness runs from a cold V8 host produce byte-ident
 
 ## What the baker slice should do with this
 
-1. **Port the four cell rules from `_verify.js`** — do not re-derive, and do not assume one rule.
-2. **Fix `worstSheet`, or pack `timberQuay` 4×2.** 48 px of headroom is not a margin (§2).
-3. **Take facings from the contract, not `nativeDirs`** (§4).
-4. **Resolve `fireCabinet` to 26×53 or document the exclusive convention** (§5) before it reads as a
-   rig regression.
-5. **Regenerate contracts for decor + utility only** when the gated rigs land; wharf and finds are
-   unaffected (§3).
-6. **Gate the ring pass, never filter by colour** (§3).
+Two of the six are now done in the contracts themselves; four remain for the baker.
+
+| | |
+|---|---|
+| ✅ | **`timberQuay` repacked 4×2 and `worstSheetByMaxDim` added to all four contracts** (§2). |
+| ✅ | **`fireCabinet` fixed to 26×53 and `cellRule` recorded per family** (§5). |
+| ☐ | **Port the four cell rules from `_verify.js`** — do not re-derive, and do not assume one rule. They are also written into each contract's `projection.cellRule`. |
+| ☐ | **Take facings from the contract, not `nativeDirs`** — three of four rigs report 0 (§4). |
+| ☐ | **Regenerate contracts for decor + utility only** when the gated rigs land; wharf and finds are unaffected (§3). |
+| ☐ | **Gate the ring pass, never filter by colour** — 551 interior keyline pixels in `radioMast` alone (§3). |
+
+Size import headroom off `worstSheetByMaxDim`, never off `worstSheet` — and because the wharf cell is
+parametric (§7 trap 2), re-measure rather than trusting either field after an authoring change.
