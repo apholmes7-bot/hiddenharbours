@@ -122,9 +122,10 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsFalse(eelgrass.Algae,
                 "Eelgrass is recorded as an alga, which means an algae-only rule would exclude it and " +
                 "this test no longer demonstrates why the ZONE check exists. Re-check the contract.");
-            Assert.GreaterOrEqual(eelgrass.StandingHeightM, StPetersWoodsPlanter.ShadowCasterMinHeightM,
-                "Eelgrass is now below the height floor, so the height rule alone would exclude it and " +
-                "this test no longer demonstrates why the ZONE check exists.");
+            Assert.GreaterOrEqual(eelgrass.PlantedStandingHeightM,
+                StPetersWoodsPlanter.ShadowCasterMinHeightM,
+                "Eelgrass is now below the height floor as DRAWN, so the height rule alone would " +
+                "exclude it and this test no longer demonstrates why the ZONE check exists.");
             Assert.IsFalse(Casts(eelgrass),
                 "🔴 Eelgrass casts a shadow. It stands 1.44 m and is not an alga, so only the SUBTIDAL " +
                 "ZONE check stops it — and it is permanently submerged, where a projected ground shadow " +
@@ -603,11 +604,16 @@ namespace HiddenHarbours.Tests.EditMode
         // =========================================================================================
 
         /// <summary>The planter's caster rule, mirrored so the tests measure the SAME decision the build
-        /// makes. Kept in one place here rather than restated in each test.</summary>
+        /// makes. Kept in one place here rather than restated in each test.
+        ///
+        /// <para>⚠ The height is the one the plant is DRAWN at
+        /// (<see cref="ShorePlantDef.PlantedStandingHeightM"/> — after the authored per-species scale),
+        /// not the full-growth height the rig baked. A species turned down below the floor stops
+        /// casting, which is the whole point of having a floor.</para></summary>
         static bool Casts(ShorePlantDef def) =>
             !def.Algae &&
             def.Zone != StPetersWoodsPlanter.SubtidalZone &&
-            def.StandingHeightM >= StPetersWoodsPlanter.ShadowCasterMinHeightM;
+            def.PlantedStandingHeightM >= StPetersWoodsPlanter.ShadowCasterMinHeightM;
 
         static Dictionary<string, ShorePlantDef> LoadDefs()
         {

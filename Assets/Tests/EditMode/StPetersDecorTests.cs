@@ -108,8 +108,10 @@ namespace HiddenHarbours.Tests.EditMode
                     minY + (iy + 0.5f) * StPetersGrass.GrassStep
                          + (StPetersShoreMap.Hash01(ix, iy, 167) * 2f - 1f) * StPetersGrass.GrassJitter);
 
-                if (!StPetersWoods.IsPlantable(_terrain, p, StPetersShoreMap.GrassFloorElevation))
-                    continue;
+                // ⚠ The MEADOW's gate, not the trees'. The 2026-08-05 retune gave grass its own
+                // clearings (StPetersGrass.IsPlantableMeadow) — the prediction has to walk the gate the
+                // scatter actually walks or it predicts a different island.
+                if (!StPetersGrass.IsPlantableMeadow(_terrain, p)) continue;
                 cells++;
                 if (!StPetersGrass.InSwathe(p)) continue;
 
@@ -131,33 +133,87 @@ namespace HiddenHarbours.Tests.EditMode
                 "TUNED, so a divergence this size means a GATE changed behaviour — check the swathe " +
                 "gate, the stand/open chance split, and the per-blade re-gate on the sub-tuft offsets.");
 
-            // The structural ceiling, also derived: TuftsAt is capped at 3, so nothing can plant more
-            // than three per candidate cell however the knobs move. A count above this is not a
-            // tuning result, it is the grid walk itself being wrong.
-            Assert.LessOrEqual(actual, cells * 3,
-                $"{actual} tufts from {cells} candidate cells is more than the 3-per-cell cap allows.");
+            // The structural ceiling, also derived: TuftsAt is capped at 2 (it was 3 before the grid
+            // halved), so nothing can plant more than two per candidate cell however the knobs move.
+            // A count above this is not a tuning result, it is the grid walk itself being wrong.
+            Assert.LessOrEqual(actual, cells * StPetersGrass.MaxTuftsPerCell,
+                $"{actual} tufts from {cells} candidate cells is more than the " +
+                $"{StPetersGrass.MaxTuftsPerCell}-per-cell cap allows.");
         }
 
+        /// <summary>
+        /// What the meadow actually keeps clear, per BLADE — the sub-tuft offsets re-pass the gate, and
+        /// this is the pin for that.
+        ///
+        /// <para><b>⚠ RE-DERIVED at the 2026-08-05 retune, and the list got SHORTER on purpose.</b> It
+        /// used to assert the TREES' clearings, because grass borrowed them: a 44 m village disc, a
+        /// 40 m crossing sightline, a spawn disc. Every one of those is a reason about things that
+        /// stand two storeys high — you must be able to see the bar over the treetops, the first thing
+        /// you look at must not be a trunk. Grass is ankle-deep, and at the density the owner asked for
+        /// those discs would have left roughly a third of the island bald with a hard edge round each
+        /// one. So the claims below are the meadow's own (<see cref="StPetersGrass.IsPlantableMeadow"/>)
+        /// and they are the ones that survive the argument: not through a building, not on the wharf,
+        /// not down the middle of a walked path.</para>
+        /// </summary>
         [Test]
-        public void EveryTuft_StandsOnTheGrassBand_AndOutOfTheClearings()
+        public void EveryTuft_StandsOnTheGrassBand_AndOutOfTheMeadowsOwnClearings()
         {
-            // Per BLADE, not per cell — the sub-tuft offsets re-pass the gate, and this is the pin.
             foreach (var s in StPetersGrass.Scatter(_terrain))
             {
                 Assert.GreaterOrEqual(_terrain.ElevationAt(s.Position),
                     StPetersShoreMap.GrassFloorElevation - 1e-3f,
                     $"a tuft at {s.Position} sits below the grass band");
 
-                Assert.Greater(Vector2.Distance(s.Position, StPetersBuilder.CottagePos),
-                    StPetersWoods.VillageClearingRadius, "a tuft is inside the village clearing");
-                Assert.Greater(Vector2.Distance(s.Position, StPetersBuilder.StartSpawnPos),
-                    StPetersWoods.SpawnClearingRadius, "a tuft is on the spawn");
-                Assert.Greater(StPetersShoreMap.DistanceToSegment(s.Position,
-                        StPetersBuilder.SandbarFrom, StPetersBuilder.SandbarTo),
-                    StPetersWoods.CrossingClearance, "a tuft is on the crossing's approach");
-                Assert.Greater(Vector2.Distance(s.Position, StPetersBuilder.DockZonePos),
+                foreach (var site in StPetersGrass.BuildingSites)
+                    Assert.GreaterOrEqual(Vector2.Distance(s.Position, site),
+                        StPetersGrass.BuildingClearanceMetres,
+                        $"a tuft at {s.Position} is inside the building at {site}");
+
+                Assert.GreaterOrEqual(Vector2.Distance(s.Position, StPetersBuilder.DockZonePos),
                     StPetersWoods.DockClearance, "a tuft is on the dock");
+                Assert.GreaterOrEqual(StPetersShoreMap.DistanceToSegment(s.Position,
+                        StPetersBuilder.BerthFrom, StPetersBuilder.BerthTo),
+                    StPetersWoods.DockClearance, "a tuft is in the berth");
+
+                Assert.GreaterOrEqual(StPetersGrass.DistanceToWalkedPath(s.Position),
+                    StPetersGrass.PathBareHalfWidthMetres,
+                    $"a tuft at {s.Position} is growing down the middle of a walked path — the tread " +
+                    "is what makes a path read as one, and at this coverage the meadow would swallow " +
+                    "it whole");
             }
+        }
+
+        /// <summary>
+        /// 🔴 <b>The building clearance, derived from the buildings.</b> The meadow keeps grass off a
+        /// building's site by a flat radius, because <see cref="StPetersGrass.IsPlantableMeadow"/> is
+        /// called tens of thousands of times a build and must not read a JSON contract to answer. That
+        /// makes this the place the radius is checked against the contract instead — the same shape
+        /// <c>StPetersVillageTests</c> uses for the tree clearing.
+        ///
+        /// <para>The buildings pivot at their footprint CENTRE and the owner may re-face one, so the
+        /// number that has to be covered is the largest HALF-DIAGONAL, not the largest width.</para>
+        /// </summary>
+        [Test]
+        public void TheMeadowsBuildingClearance_CoversTheBiggestFootprintTheKitDeclares()
+        {
+            var placements = HiddenHarbours.Art.Editor.VillageBuildingCatalog.Scan();
+            if (placements == null || placements.Count == 0)
+                Assert.Ignore("The village building kit is not on disk in this checkout.");
+
+            float worst = 0f;
+            string worstKey = null;
+            foreach (var p in placements)
+            {
+                Vector2 f = p.FootprintMetres;
+                float halfDiagonal = 0.5f * Mathf.Sqrt(f.x * f.x + f.y * f.y);
+                if (halfDiagonal > worst) { worst = halfDiagonal; worstKey = p.Entry.label; }
+            }
+
+            Assert.GreaterOrEqual(StPetersGrass.BuildingClearanceMetres, worst,
+                $"StPetersGrass.BuildingClearanceMetres is {StPetersGrass.BuildingClearanceMetres} m " +
+                $"but '{worstKey}' needs {worst:F2} m of half-diagonal — a quarter-turned building " +
+                "would have grass growing through its corner. Raise the clearance to the number in " +
+                "this message; do not shrink the building.");
         }
 
         /// <summary>
@@ -202,8 +258,7 @@ namespace HiddenHarbours.Tests.EditMode
                 field++;
                 if (StPetersGrass.InSwathe(p)) fieldPass++;
 
-                if (!StPetersWoods.IsPlantable(_terrain, p, StPetersShoreMap.GrassFloorElevation))
-                    continue;
+                if (!StPetersGrass.IsPlantableMeadow(_terrain, p)) continue;
                 if (StPetersWoods.InStand(p, _terrain.ElevationAt(p))) continue;
                 meadow++;
                 if (StPetersGrass.InSwathe(p)) meadowPass++;

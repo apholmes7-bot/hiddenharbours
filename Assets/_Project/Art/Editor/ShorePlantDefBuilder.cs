@@ -181,6 +181,13 @@ namespace HiddenHarbours.Art.Editor
             def.TideSprites = sprites;
             def.TideLadderOverM = Ladder(contract, def.ZoneBaseM);
 
+            // ⚠ ShorePlantDef.PlantedScale is deliberately NOT written here. Everything above is
+            // DERIVED from the contract and is rewritten on every run; PlantedScale is AUTHORED — how
+            // big a TYPICAL individual of this species is drawn, which is a placement judgment with a
+            // real plant behind it and not something the rig knows (the rig bakes full growth, and it
+            // is right to). Re-running this builder after a re-bake must not silently reset the whole
+            // shore to full growth. Same reason the two sorting orders are only set on CREATE.
+
             // The baked light channels, as whole TEXTURES rather than sprites. That is not a shortcut:
             // the shared lit path samples every sheet at the ALBEDO's uv through the ALBEDO's mesh, so
             // giving these their own sprites would give them their own (Tight, and therefore SMALLER)

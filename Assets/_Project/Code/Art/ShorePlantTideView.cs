@@ -170,11 +170,29 @@ namespace HiddenHarbours.Art
             float overM = ShorePlantTideMath.OverGround(waterLevel, terrain.ElevationAt(pos));
 
             int state = ShorePlantTideMath.StateFor(overM, _def.TideLadderOverM);
-            bool submerged = ShorePlantTideMath.IsSubmerged(overM, _def.StandingHeightM);
+            bool submerged = ShorePlantTideMath.IsSubmerged(overM, DrawnStandingHeightM);
 
             if (_appliedOnce && state == _state && submerged == _submerged) return;   // the common case
             Apply(state, submerged);
         }
+
+        /// <summary>
+        /// How tall this plant stands IN THE PICTURE, metres.
+        ///
+        /// <para><b>⚠ Not <see cref="ShorePlantDef.StandingHeightM"/>.</b> That is the rig's FULL-GROWTH
+        /// number — what the pixels were baked at, and right for a bake. What decides whether this
+        /// plant is drawn under the sea plane or sticking up through it is how tall it actually is,
+        /// which is the baked height times everything in the transform: the Def's authored
+        /// <see cref="ShorePlantDef.PlantedScale"/> and this instance's own size jitter, both already
+        /// folded into <c>lossyScale</c> by whoever placed it. Reading the baked number instead lets a
+        /// plant scaled to two thirds be called emergent under a metre of water — and it then draws in
+        /// the decor band, on top of the sea.</para>
+        ///
+        /// <para>Which baked COLUMN it wears is untouched by this: the ladder is water-over-ground, a
+        /// property of the tide and the seabed, and it does not know how big the plant is.</para>
+        /// </summary>
+        public float DrawnStandingHeightM =>
+            _def == null ? 0f : _def.StandingHeightM * Mathf.Max(0.01f, Mathf.Abs(transform.lossyScale.y));
 
         /// <summary>
         /// The live water level, or the edit-mode preview. Time comes from
