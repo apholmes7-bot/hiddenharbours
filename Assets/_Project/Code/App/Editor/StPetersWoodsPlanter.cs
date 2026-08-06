@@ -80,9 +80,16 @@ namespace HiddenHarbours.App.Editor
         /// the call is written down rather than left in a reviewer's head. See
         /// <see cref="SubtidalZone"/> for the other half of it.
         ///
-        /// <para>0.6 m puts the line above the mats and below the stands: Irish moss (0.53 m), sea
-        /// lettuce, glasswort and beach pea fall out; cattails, rushes, cordgrass and bayberry fall
+        /// <para>0.6 m puts the line above the mats and below the stands: sea lettuce, glasswort and
+        /// beach pea fall out; cordgrass, threesquare, marram, bayberry, sweet fern and cattail fall
         /// in.</para>
+        ///
+        /// <para><b>⚠ Measured against the height a plant is DRAWN at</b>
+        /// (<see cref="ShorePlantDef.PlantedStandingHeightM"/>), not the full-growth height the rig
+        /// baked. When the 2026-08-05 retune turned the oversized species down to typical individuals,
+        /// saltmeadow hay (0.75 → 0.52 m) and black rush (0.66 → 0.45 m) crossed below this line and
+        /// stopped casting — correctly: at half a metre they are the same tussocky mat as the beach pea
+        /// this line was drawn to exclude, and a shadow sheared off one reads as a smudge.</para>
         /// </summary>
         public const float ShadowCasterMinHeightM = 0.6f;
 
@@ -144,14 +151,79 @@ namespace HiddenHarbours.App.Editor
                       $"{result.Flowers} wildflowers ({result.FlowerSummary()}), " +
                       $"{result.GrassTufts} grass tufts ({result.HabitatSummary()}) and " +
                       $"{result.ShorePlants} shore plants ({result.ZoneSummary()}) — stands, heath, " +
-                      "meadow and sward by habitat and the tidal coast by zone, with the village, the " +
-                      "spawn, the crossing's approach and the dock left clear.");
+                      "meadow and sward by habitat and the tidal coast by zone. The TREE line keeps " +
+                      "the village, the spawn, the crossing's approach and the dock clear; the GRASS " +
+                      "keeps only the buildings, the wharf and the walked tread clear, because a " +
+                      "meadow grows up to a doorstep (StPetersGrass.IsPlantableMeadow).");
             return result;
         }
 
         // =====================================================================================
         //  GRASS
         // =====================================================================================
+
+        /// <summary>
+        /// <b>Which baked blade a scattered site grows</b> — the one definition of it, so the build and
+        /// anything that MEASURES the build (the renderer/batch budget in
+        /// <c>StPetersGroundCoverBudgetTests</c>) cannot disagree about what the island is drawn with.
+        ///
+        /// <para>The split of concerns is the habitat tag's, one level down. The SCATTER decides that a
+        /// metre of ground wants a broad clump — a density judgment it can make from the field alone.
+        /// The LIBRARY decides which art IS broad, and it answers in the only currency that cannot go
+        /// stale: the baked WIDTH. Anything at least two cells across covers twice the ground for one
+        /// SpriteRenderer, which is what pays for a 1 m grid.</para>
+        ///
+        /// <para>⚠ A habitat with no wide bake gets its normal list back rather than nothing — sparser
+        /// art beats a bald patch the owner has to diagnose. Today that is SWARD and HEADLAND: the wide
+        /// clumps carry <c>meadow,verge</c>, the saltmeadow pair <c>dune</c>, and FringeB <c>fringe</c>.
+        /// Tagging the ClumpWide pair <c>sward</c> in <c>grassSpeciesRig.js</c> — a manifest retag, no
+        /// new pixels — would cut the sward's renderer count by about a quarter. Flagged for the
+        /// art-director lane rather than fudged here.</para>
+        /// </summary>
+        public sealed class GrassArtChooser
+        {
+            readonly List<GrassLibraryCatalog.Entry> _imported;
+            readonly Dictionary<string, List<GrassLibraryCatalog.Entry>> _byHabitat =
+                new Dictionary<string, List<GrassLibraryCatalog.Entry>>();
+            readonly Dictionary<string, List<GrassLibraryCatalog.Entry>> _broadByHabitat =
+                new Dictionary<string, List<GrassLibraryCatalog.Entry>>();
+
+            public GrassArtChooser(List<GrassLibraryCatalog.Entry> imported) =>
+                _imported = imported ?? new List<GrassLibraryCatalog.Entry>();
+
+            /// <summary>Everything baked for a habitat. <c>Library.Choose</c> falls back to the whole
+            /// library rather than returning nothing, which is what keeps an untagged habitat planted
+            /// instead of bald.</summary>
+            public List<GrassLibraryCatalog.Entry> For(string habitat)
+            {
+                if (_byHabitat.TryGetValue(habitat, out var list)) return list;
+                var narrowed = new GrassLibraryCatalog.Library();
+                narrowed.Entries.AddRange(_imported);
+                list = narrowed.Choose(new[] { habitat }, null);
+                _byHabitat[habitat] = list;
+                return list;
+            }
+
+            /// <summary>The broad art of a habitat — at least two cells wide — or its normal list when
+            /// nothing baked for that ground is broad.</summary>
+            public List<GrassLibraryCatalog.Entry> BroadFor(string habitat)
+            {
+                if (_broadByHabitat.TryGetValue(habitat, out var list)) return list;
+                list = For(habitat).Where(e => e.Width >= GrassLibraryCatalog.Ppu * 2).ToList();
+                if (list.Count == 0) list = For(habitat);
+                _broadByHabitat[habitat] = list;
+                return list;
+            }
+
+            /// <summary>The entry a site grows, or null when the library has nothing at all. The site's
+            /// own stable roll picks between the matching variants, so the same metre of ground always
+            /// grows the same blade across rebuilds (rule 5).</summary>
+            public GrassLibraryCatalog.Entry Choose(StPetersGrass.GrassTuftSite site)
+            {
+                var choices = site.Broad ? BroadFor(site.Habitat) : For(site.Habitat);
+                return choices.Count == 0 ? null : choices[site.Roll % choices.Count];
+            }
+        }
 
         /// <summary>
         /// The moving meadow: wind-reactive tufts over the ground the splat shader already paints as
@@ -186,28 +258,13 @@ namespace HiddenHarbours.App.Editor
                 Debug.LogWarning($"[StPetersWoodsPlanter] {GrassMaterialPath} missing — the tufts will " +
                                  "stand still instead of swaying on the shared wind.");
 
-            // One list per habitat, built once. Choose() falls back to the whole library rather than
-            // returning nothing, so a habitat with no matching bake still plants — sparser art beats a
-            // bald patch the owner has to diagnose.
-            var byHabitat = new Dictionary<string, List<GrassLibraryCatalog.Entry>>();
-            List<GrassLibraryCatalog.Entry> For(string habitat)
-            {
-                if (byHabitat.TryGetValue(habitat, out var list)) return list;
-                var narrowed = new GrassLibraryCatalog.Library();
-                narrowed.Entries.AddRange(imported);
-                list = narrowed.Choose(new[] { habitat }, null);
-                byHabitat[habitat] = list;
-                return list;
-            }
+            var chooser = new GrassArtChooser(imported);
 
             var root = new GameObject(GrassRootName);
             foreach (var site in StPetersGrass.Scatter(terrain))
             {
-                var choices = For(site.Habitat);
-                if (choices.Count == 0) continue;
-                // The site's own stable roll picks between the matching variants, so the same metre of
-                // ground always grows the same blade across rebuilds (rule 5).
-                var entry = choices[site.Roll % choices.Count];
+                var entry = chooser.Choose(site);
+                if (entry == null) continue;
                 var sprite = GrassLibraryCatalog.LoadSprite(entry);
                 if (sprite == null) continue;
 
@@ -220,6 +277,12 @@ namespace HiddenHarbours.App.Editor
                 sr.sprite = sprite;
                 if (material != null) sr.sharedMaterial = material;
                 sr.sortingOrder = GrassSortingOrder;
+                // ⚠ flipX, never a negative localScale.x. A mirrored tuft is free variety — the pivot is
+                // bottom-CENTRE so it mirrors in place, the wind is world-space, and the shader's bend
+                // reads sprite uv.y, which a horizontal flip does not touch. A negative scale would do
+                // the same picture and quietly invert the winding for anything that later reads this
+                // transform.
+                sr.flipX = site.Mirror;
                 // Multiplied over the sprite's own gradient by the grass shader, so shading survives.
                 sr.color = site.Tint;
                 go.AddComponent<YSortSprite>();
@@ -273,7 +336,17 @@ namespace HiddenHarbours.App.Editor
                 var go = new GameObject(site.SpeciesKey);
                 go.transform.SetParent(root.transform, worldPositionStays: false);
                 go.transform.position = new Vector3(site.Position.x, site.Position.y, 0f);
-                go.transform.localScale = new Vector3(site.Scale, site.Scale, 1f);
+
+                // ⭐ THE SPECIES' OWN SCALE × this site's jitter, and in that order for a reason. The rig
+                // bakes every species at FULL GROWTH, which is botanically honest and reads oversized
+                // when a whole shore of it is planted at once (owner, first playtest: the sea plants
+                // "stand out a little too much in their size"). PlantedScale is the authored answer —
+                // per species, on the Def, where the owner can turn it, and where a hand-placed plant
+                // picks it up too. It is folded into the TRANSFORM rather than kept on the side because
+                // that is what ShorePlantTideView reads to decide submergence: one drawn size, one
+                // height, no way for them to disagree.
+                float drawn = site.Scale * Mathf.Max(0.01f, def.PlantedScale);
+                go.transform.localScale = new Vector3(drawn, drawn, 1f);
 
                 var sr = go.AddComponent<SpriteRenderer>();
                 sr.sprite = def.SpriteFor(0);          // the view replaces this on its first refresh
@@ -294,8 +367,12 @@ namespace HiddenHarbours.App.Editor
                 // real species: not algae (weed and kelp drape, they do not stand), not the subtidal
                 // fringe (permanently under water — this is what catches EELGRASS, which is no alga and
                 // stands 1.44 m), and tall enough to throw something. 8 of the 16 species cast.
+                //
+                // ⚠ The height it is DRAWN at, not the height it was baked at — a species turned down
+                // to two thirds that no longer clears the floor must stop casting, or it throws a
+                // shadow bigger than itself.
                 if (!def.Algae && def.Zone != SubtidalZone &&
-                    def.StandingHeightM >= ShadowCasterMinHeightM)
+                    def.PlantedStandingHeightM >= ShadowCasterMinHeightM)
                     go.AddComponent<SpriteShadow>();
 
                 result.ShorePlants++;

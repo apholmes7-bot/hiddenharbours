@@ -56,6 +56,29 @@ namespace HiddenHarbours.Art
                  "states already show it, this is here so a scatter can reason about it.")]
         public bool Algae;
 
+        [Header("How big it is drawn (AUTHORED — the Def builder never overwrites this)")]
+        [Tooltip("Multiplies the baked art's own size when this species is planted. 1 draws it at the " +
+                 "height the rig baked, which is this species at FULL GROWTH — botanically honest, " +
+                 "but a shore where every plant is the biggest of its kind reads oversized. Turn it " +
+                 "down to plant a typical individual instead. Owner-tunable: it is the whole knob for " +
+                 "'that weed is too big'.")]
+        public float PlantedScale = 1f;
+
+        /// <summary>
+        /// How tall a PLANTED individual of this species stands — the height in the picture, which is
+        /// the only height anything downstream should reason about.
+        ///
+        /// <para><b>⚠ THE SHADOW GATE AND THE SUBMERGENCE TEST BOTH READ A HEIGHT, AND IT HAS TO BE A
+        /// DRAWN ONE.</b> <see cref="StandingHeightM"/> is the rig's FULL-GROWTH number: it is what the
+        /// pixels were baked at, and it is right for a bake. Scale the art down and leave those two
+        /// reading the unscaled number and they come apart — a plant drawn 0.6 m tall gets declared
+        /// emergent under a metre of water and then draws in the decor band on top of the sea, and a
+        /// shrunk plant that no longer clears <c>ShadowCasterMinHeightM</c> keeps throwing a shadow
+        /// bigger than itself. This is the number the gate takes; the live view takes the instance's
+        /// own drawn scale, which includes the per-site jitter as well.</para>
+        /// </summary>
+        public float PlantedStandingHeightM => StandingHeightM * Mathf.Max(0.01f, PlantedScale);
+
         [Header("The five baked tide states, low → high (sway row 0, resting)")]
         [Tooltip("Sprites for the low/ebb/half/flood/high columns of the tide-axis sheet. All five " +
                  "share ONE ground-contact pivot — that is what makes a state swap anchored instead " +

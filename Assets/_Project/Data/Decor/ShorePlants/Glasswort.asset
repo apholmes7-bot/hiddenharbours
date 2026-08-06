@@ -18,6 +18,7 @@ MonoBehaviour:
   ZoneBaseM: 2.55
   StandingHeightM: 0.47
   Algae: 0
+  PlantedScale: 0.6875
   TideSprites:
   - {fileID: -976684130, guid: 05cfc0a5a4e9bd913fcf13974974ec11, type: 3}
   - {fileID: -422433186, guid: 05cfc0a5a4e9bd913fcf13974974ec11, type: 3}

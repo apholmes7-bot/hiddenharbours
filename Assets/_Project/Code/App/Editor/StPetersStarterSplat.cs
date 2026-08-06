@@ -114,7 +114,20 @@ namespace HiddenHarbours.App.Editor
         public const float TalusIntensity = 0.5f;        // "a closed apron"
 
         // --- Stroke tunables (the owner's ask: subtle, low intensity) ---------------------------
-        public const float PathWidthMetres = 2.5f;          // → brush radius 1.25
+        /// <summary>
+        /// How wide the walked paths are, in metres — the dirt tread, not the worn band around it.
+        ///
+        /// <para><b>⭐ 1.5 m, down from 2.5 (owner, first playtest of the green-over: the paths should
+        /// be NARROWER).</b> 2.5 m is a cart track; 1.5 m is a line two people have walked single file
+        /// for a generation, which is what this island has. The ~1.8 m fisher is the scale reference —
+        /// the tread is now a little under his own height across.</para>
+        ///
+        /// <para><b>⚠ TWO LAYERS READ THIS.</b> It is the splat's brush width AND the width of the bare
+        /// tread <see cref="StPetersGrass.PathBareHalfWidthMetres"/> keeps grass off — because a path
+        /// the ground paints as dirt and the meadow grows over is not a path. Turning it here narrows
+        /// both together; there is no second number.</para>
+        /// </summary>
+        public const float PathWidthMetres = 1.5f;          // → brush radius 0.75
         public const float PathDabSpacingMetres = 0.75f;
         public const float PathFalloff = 0.5f;
         public const float SlipPathIntensity = 0.35f;       // village green → the slip
