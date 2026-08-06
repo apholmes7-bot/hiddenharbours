@@ -412,7 +412,25 @@ the gateway from the safe cove to the wider inshore cluster.
 
 ---
 
-### 6.3 Nine Mile Creek — *the market town*
+### 6.3 Nine Mile Creek — *the working wharf on the mainland*
+
+> **⚠ AMENDED 2026-08-06 — this region is the MAINLAND and it is no longer the market town.**
+> Two rulings landed on it: 2026-07-25 made it *"Port Greywick's working wharf, one region two zones —
+> the wharf is where fish move, the town is where money and paperwork move"*, and 2026-08-06 made it
+> **mainland rather than the small island it was built as**, with the tidal crossing landing on its
+> coast. Its geography — coastline, coast plan, the crossing, roads, town lots, the wharf plan — is
+> [`nine-mile-creek-mainland.md`](nine-mile-creek-mainland.md); the wharf itself is
+> [`nine-mile-creek-wharf.md`](nine-mile-creek-wharf.md). **The auction, the chart shop, the processing
+> plant and the shipwright's yard named below have NO home in this region any more**; where they go is
+> the open question [`world-map-plan.md`](world-map-plan.md) §5 asks the owner to close (recommendation:
+> Port Greywick, east). The brief below is kept as the MARKET-TOWN brief it always was — it describes
+> the place that job moves to, not this one.
+>
+> **What Nine Mile Creek is now:** a low red-sandstone coast facing east into the bay, a working wharf on
+> a made spit at a creek's mouth, a barachois behind it, fields and a scattered community up the road,
+> and — the region's whole reason to exist — **the mainland end of the tide-gated crossing from
+> St Peters**. Its harbour takes boats *up to the lobster boat* (a ~1.6 m berth); the dragger has to go
+> east. The first place the sea is somebody's job.
 
 **Identity & mood.** The beating commercial and social heart of the Banks. A larger working
 harbour town of weathered clapboard, a stone breakwater, a busy public wharf, and the
@@ -869,7 +887,13 @@ and none is a flat repeat of the last.
 > **How big is each scene?** See [`scene-sizing-and-world-scale.md`](scene-sizing-and-world-scale.md)
 > — the per-region extents, derived from the measured camera framing and the boat ladder's real
 > terminal speeds rather than picked. It also carries the scaled-up St Peters and the sandbar-as-its-
-> own-scene proposal (owner ask, 2026-07-23).
+> own-scene proposal (owner ask, 2026-07-23; **superseded 2026-08-06** — the bar is split across the
+> St Peters ↔ Nine Mile Creek seam instead of being its own scene).
+>
+> **How many scenes, and what goes east?** See [`world-map-plan.md`](world-map-plan.md) — the owner's
+> 2026-08-06 ask for a larger world map: the home cluster as **two land scenes plus four water scenes**
+> capped at the lobster boat, and the trawler ports further east. It is a **proposal**; canon region
+> names are still locked until the owner rules on §5 of it.
 
 - **One Unity scene per region** (additively loaded), e.g. `Scene_CoddleCove`,
   `Scene_TheSunkers`, `Scene_PortNine Mile Creek`, `Scene_DrowndedLands`, `Scene_FundyRips`,
