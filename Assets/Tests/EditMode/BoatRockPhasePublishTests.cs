@@ -180,11 +180,35 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(DeckRideMath.LevelPhaseDegrees, wave.RockPhaseDegrees, 1e-4f);
         }
 
-        // NOTE: "a DISABLED hull reports a level deck" is deliberately NOT tested here. It is an OnDisable
-        // claim, and the editor does not run the enable/disable callbacks for runtime scripts outside play
-        // mode — an EditMode test of it passes or fails on the harness, not on the code. It lives in
-        // DeckRiderPlayTests.DisablingTheHullsWaveMotion_PutsHerPassengerBackSquare, where the callback
-        // genuinely fires and the claim is end-to-end (the FISHER goes level, not just a field).
+        [Test]
+        public void ADisabledHull_ReportsALevelDeck_WithoutRelyingOnTheCallbackHavingRun()
+        {
+            // The first cut of this test asserted OnDisable's field reset, and failed: the editor does not
+            // run the enable/disable callbacks for runtime scripts outside play mode, so it was measuring
+            // the harness. The fix was in the CODE, not the test — the getter is gated on
+            // isActiveAndEnabled, so a component that is not ticking cannot claim to be drawing a rock
+            // whether or not the callback reached it. That makes the claim true by construction, and
+            // testable right here.
+            var (wave, _, clock) = Rig(RoughSea);
+            for (int t = 0; t < 30; t++) { clock.Advance(Dt); wave.Tick(); }
+            Assert.IsTrue(wave.IsRocking, "harness: rocking before teardown");
+
+            wave.enabled = false;
+
+            Assert.IsFalse(wave.IsRocking, "a disabled hull reports a level deck, never its last frame");
+            Assert.AreEqual(DeckRideMath.LevelPhaseDegrees, wave.RockPhaseDegrees, 1e-4f,
+                            "…and the phase and the flag agree, because one reads the other");
+
+            // Re-enabling hands the live read back rather than latching level.
+            wave.enabled = true;
+            clock.Advance(Dt);
+            wave.Tick();
+            Assert.IsTrue(wave.IsRocking, "she rocks again once she is running again");
+        }
+
+        // The END-TO-END teardown claim — that the FISHER goes square, not merely a published field — is
+        // DeckRiderPlayTests.DisablingTheHullsWaveMotion_PutsHerPassengerBackSquare, in PlayMode, where
+        // OnDisable genuinely fires.
 
         [Test]
         public void AHullWithNoRockGrid_ReportsLevel_RatherThanInventingACycleFromTheSurface()

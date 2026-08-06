@@ -208,12 +208,21 @@ namespace HiddenHarbours.Boats
         /// <para>Read-only and presentation-only: nothing here feeds the sim (rule 5). It is published from
         /// the same tick that poses the hull, so a reader ordered AFTER this component (−120) sees a
         /// settled pose rather than last frame's — the same discipline the oar layers keep.</para>
+        ///
+        /// <para><b>A component that is not RUNNING reports level, whatever its last field held.</b>
+        /// <c>OnDisable</c> already clears the field, but the gate is what makes the answer true rather
+        /// than merely usually-true: it holds for a component disabled before it ever woke, for one on a
+        /// deactivated GameObject, and for any reader that polls at a moment the callback has not reached.
+        /// A hull that is not ticking cannot be drawing a rock, so it must not be able to say it is —
+        /// otherwise a stale phase leans a passenger on a deck nothing is moving.</para>
         /// </summary>
-        public float RockPhaseDegrees => _rockPhaseDegrees;
+        public float RockPhaseDegrees =>
+            isActiveAndEnabled ? _rockPhaseDegrees : DeckRideMath.LevelPhaseDegrees;
 
         /// <summary>True when this hull is actually rocking — i.e. <see cref="RockPhaseDegrees"/> names a
-        /// live point in the cycle rather than the level pose.</summary>
-        public bool IsRocking => DeckRideMath.IsRocking(_rockPhaseDegrees);
+        /// live point in the cycle rather than the level pose. Reads the GATED property, not the raw field,
+        /// so the two can never disagree about a component that is not running.</summary>
+        public bool IsRocking => DeckRideMath.IsRocking(RockPhaseDegrees);
 
         /// <summary>Master strength, settable at runtime (dev rigs / feel sessions). 0 = off.</summary>
         public float MasterStrength
