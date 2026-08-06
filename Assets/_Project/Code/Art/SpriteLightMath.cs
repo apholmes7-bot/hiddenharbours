@@ -23,14 +23,17 @@ namespace HiddenHarbours.Art
     /// and the tests that use them). A ported snippet swaps two channels and looks SUBTLY wrong
     /// rather than broken.</para>
     ///
-    /// <para><b>🔴 THE NORMAL SHEET IS SMALLER THAN THE MASK.</b> The rig composites a 1 px keyline
-    /// ring outside the volume: those pixels are opaque in the albedo (and so in the mask's A) but
-    /// carry NO surface normal — measured at 611 px of Red Spruce's 7601
-    /// (<c>TreeRigBakeTests.ChannelCoverage_AlbedoAndMaskAgree_ButTheNormalOmitsTheKeyline</c>). All
-    /// three channels are therefore sampled through the <b>albedo's</b> mesh and uv, and every term
-    /// that needs a normal falls back to the baked mask where there is none — see
-    /// <see cref="KeyResponse"/>'s <c>hasNormal</c>. Light the keyline from the MASK, never the
-    /// normal.</para>
+    /// <para><b>🔴 THE NORMAL SHEET USED TO BE SMALLER THAN THE MASK.</b> The rig composited a 1 px
+    /// keyline ring outside the volume: those pixels were opaque in the albedo (and so in the mask's
+    /// A) but carried NO surface normal — measured at 611 px of Red Spruce's 7601 on pass 1, 722 of
+    /// 6570 on pass 2. ADR 0031 wave 2 retired that ring at the rig, so a freshly baked sheet has all
+    /// three channels covering exactly the geometry
+    /// (<c>TreeRigBakeTests.ChannelCoverage_AlbedoMaskAndNormal_AllAgree_NowTheKeylineIsRetired</c>).
+    /// <b>The sampling rule is unchanged and deliberate:</b> all three channels are still sampled
+    /// through the <b>albedo's</b> mesh and uv, and every term that needs a normal still falls back
+    /// to the baked mask where there is none — see <see cref="KeyResponse"/>'s <c>hasNormal</c>.
+    /// That fallback is what keeps sheets baked before the retirement, and any other rig sharing
+    /// this path (#428), from consuming a fabricated normal.</para>
     ///
     /// <para>Pure and allocation-free: no <see cref="Time"/>, no <see cref="Random"/>, no engine
     /// state. Visual-only — nothing here drives sim or save (rule 5).</para>

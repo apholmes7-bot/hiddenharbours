@@ -96,6 +96,16 @@
 
   const ELEV = 40, CE = Math.cos(ELEV * Math.PI / 180), SE = Math.sin(ELEV * Math.PI / 180);
   const KEYLINE = '#101d21';
+  // ADR 0031 — the outline is retired from world art (wave 2, with the trees; shore plants piloted
+  // it). Gated OFF by default, reachable with `{outline:true}`, mirroring the engine's own
+  // `GameConfig.HullKeylineFlood` so the owner keeps a one-flag A/B.
+  //
+  // ⚠ KEYLINE IS TWO DIFFERENT THINGS IN THIS FILE AND ONLY ONE OF THEM IS AN OUTLINE. The colour
+  // is also the mix anchor for the FRUIT SEAT — one dark pixel UNDER a berry, an interior shading
+  // term on a painted pixel that never leaves the silhouette. This flag does not touch it, and a
+  // sweep for `KEYLINE` must not either: without the seat a 2 px berry reads as a hole punched in
+  // the canopy. Same trap as rockIsoRig's wet-rock anchor (outline-interaction-language.md §1.1).
+  const KEYLINE_DEFAULT = false;
   const COLD = '#22404e', WARM = '#e8b06a';
   const SNOWC = '#cdd9dc', CRUST = '#e6eef0';
 
@@ -1356,9 +1366,16 @@
         rgba[d * 4 + c] = rgba[d * 4 + c] * 0.44 + kl[c] * 0.56;
     }
 
-    // KEYLINE — and the one rule that makes the veil work: a filament takes NO keyline. An outline
-    // round every 1 px strand turns the whole field into a grey solid, which is what the first pass did.
-    if (o.outline !== false) {
+    // KEYLINE — RETIRED BY DEFAULT (ADR 0031), and the one rule that makes the veil work: a
+    // filament takes NO keyline. An outline round every 1 px strand turns the whole field into a
+    // grey solid, which is what the first pass did. That exemption is the ADR's own perimeter law
+    // found early and encoded locally; retiring the ring generalises it to the whole shrub rather
+    // than replacing it — the VEIL/FLECK carve-out below stays exactly as it was, because with the
+    // flag ON (the A/B arm) it is still what keeps the veil readable.
+    //
+    // Switching it off is a PURE RING DELETION: every pixel this pass writes has no geometry under
+    // it, so no painted pixel of any shrub changes value (proven per species, 0 violations).
+    if (o.outline === undefined ? KEYLINE_DEFAULT : o.outline !== false) {
       const kl = h2r(KEYLINE), add = [];
       for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
         const i = y * w + x; if (v.a[i]) continue;
@@ -1728,7 +1745,11 @@
       rig: 'shrubIsoRig', version: 1, generated: new Date().toISOString(),
       projection: { ppu: PPU, elev: ELEV, heightScale: +CE.toFixed(4), depthScale: +SE.toFixed(4),
         pivot: 'ground contact (root crown), bottom-centre of the union cell',
-        antialias: false, alpha: 'binary', keyline: KEYLINE },
+        antialias: false, alpha: 'binary',
+        // ADR 0031: retired. The colour is kept so the A/B arm (`{outline:true}`) and any archived
+        // sheet remain describable — `keylineDefault:false` is what production bakes. It is also
+        // still the FRUIT SEAT's mix anchor, which is not an outline and is not gated.
+        keyline: KEYLINE, keylineDefault: KEYLINE_DEFAULT },
       materials: {
         body:  { id: M.BODY,  linear: false, massFloorPx: MIN_R, carriesRim: true, keyline: true,
           note: 'foliage masses. Obeys the mass floor — no radius under MIN_R in any axis, clamped at the emitter.' },
@@ -1794,7 +1815,8 @@
   }
 
   root.Shrubs = {
-    PPU, RIM_PX, MIN_BODY, MIN_R, SWAY, VARIANTS, SPECIES, byKey, LIGHT, KEYLINE, COLD, WARM,
+    PPU, RIM_PX, MIN_BODY, MIN_R, SWAY, VARIANTS, SPECIES, byKey, LIGHT, KEYLINE, KEYLINE_DEFAULT,
+    COLD, WARM,
     SNOWC, CRUST, ELEV, CE, SE, SNOW_M, SNOWS, SNOW_KEYS, PHASES, PHASE_KEYS, HABITATS, habOf,
     STAGES, STAGE_KEYS, GRAINS, EDGES, M, MAT_NAME, LINEAR,
     sizeOf, stageName, phaseOf, snowOf, grainOf, edgeOf, grainName, folColour, stemColour, rampOf,

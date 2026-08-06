@@ -27,6 +27,13 @@
         tooth-aware de-speckle so nothing accidental survives into the rim channel.
      3. THICKNESS-GATED RIM — rim *= smoothstep(localThickness); a mass too thin to hold a rim
         never gets one.
+     4. NO KEYLINE (ADR 0031).  The 1 px near-black ring is retired: rule 2's authored silhouette
+        and rule 3's rim are what carry the tree's edge, and they were always the real drawing —
+        the ring only traced what they had already decided. A tree is the AREA end of the perimeter
+        law (0.11 ring px per painted px, against 0.39 on the shore plants), so this family paid
+        least for the ring and loses least by dropping it. `{outline:true}` restores it for an A/B
+        — see KEYLINE_DEFAULT. ⚠ Retiring it TIGHTENS coverage by 1 px, which is what makes the
+        albedo/mask footprint equal the normal's; see packMask.
 
    SPEC: PPU 32 · ¾ from S at 40° (ADR-0006/0022) · bottom-centre TRUNK pivot · no AA · binary alpha
    · sheets ≤ 2048 px/axis · upper-left key. PALETTE: cold ambient (#1d3b4a) + ONE warm key (#e8b06a).
@@ -45,6 +52,11 @@
   // ---- camera: the ADR-0006/0022 projection the rest of the world is baked on -------------------
   const ELEV = 40, CE = Math.cos(ELEV * Math.PI / 180), SE = Math.sin(ELEV * Math.PI / 180);
   const KEYLINE = '#101d21';
+  // ADR 0031 — the outline is retired from world art; the silhouette is carried by the form's own
+  // dark side. Trees are wave 2 of the ADR's §4 "as each family is redone" (shore plants were the
+  // pilot). The ring is not deleted: it is gated OFF by default and reachable with `{outline:true}`,
+  // mirroring the engine's own `GameConfig.HullKeylineFlood` so the owner keeps a one-flag A/B.
+  const KEYLINE_DEFAULT = false;
   const COLD = '#1d3b4a', WARM = '#e8b06a';
 
   // ---- leaf-cell grain: PER SPECIES ------------------------------------------
@@ -989,8 +1001,13 @@
       mRim[i] = clamp(Math.round(rim * 255), 0, 255);
     }
 
-    // soft keyline: sits in the landscape, traces the (authored) silhouette
-    if (opts.outline !== false) {
+    // KEYLINE — RETIRED BY DEFAULT (ADR 0031). It traced the (authored) silhouette, which is the
+    // point: rule 2 had already decided that edge and rule 3's rim already lights it, so the ring
+    // was restating a decision rather than making one. Switching it off is a PURE RING DELETION —
+    // every pixel it touches has no geometry under it, so no painted pixel of any tree changes
+    // value (proven per species, 0 violations). ⚠ It expands the opaque footprint, so retiring it
+    // makes albedo/mask coverage EQUAL the normal's instead of 11% larger — see packMask.
+    if (opts.outline === undefined ? KEYLINE_DEFAULT : opts.outline !== false) {
       const kl = h2r(KEYLINE), add = [];
       for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
         const i = y * w + x; if (v.a[i]) continue;
@@ -1106,6 +1123,10 @@
   }
 
   // channel pack for the shader bake: R = key light · G = back rim · B = depth · A = coverage
+  // A is the ALBEDO's alpha, so it inherits whatever the keyline did to the footprint. With the
+  // ring retired (ADR 0031) that footprint is the geometry itself, so albedo, mask and normal now
+  // all cover the SAME pixels — the ring used to make the first two 11% larger than the third, and
+  // "light the keyline from the mask, never the normal" is advice about art that no longer exists.
   function packMask(res) {
     const n = res.w * res.h, out = new Uint8ClampedArray(n * 4);
     for (let i = 0; i < n; i++) {
@@ -1158,7 +1179,8 @@
   }
 
   root.TreeRig2 = {
-    PPU, RIM_PX, MIN_BODY, MIN_R, SWAY, VARIANTS, SEASONS, SPECIES, byKey, LIGHT, KEYLINE, COLD, WARM, ELEV, CE, SE,
+    PPU, RIM_PX, MIN_BODY, MIN_R, SWAY, VARIANTS, SEASONS, SPECIES, byKey, LIGHT, KEYLINE,
+    KEYLINE_DEFAULT, COLD, WARM, ELEV, CE, SE,
     STAGES, STAGE_KEYS, sizeOf, stageName,
     render, packMask, grey, massView, normalView, leafView, massIdView, sheetSpec, cellOf, folRamp, barkRamp,
     LEAF_W, LEAF_H, M, GRAINS, grainOf, EDGES, edgeOf,

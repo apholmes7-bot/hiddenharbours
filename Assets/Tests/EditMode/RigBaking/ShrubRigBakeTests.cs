@@ -1156,5 +1156,129 @@ namespace HiddenHarbours.Tests.RigBaking
                 "The contract should say out loud which species it deliberately excludes.");
             Debug.Log("[shrub-scope] " + string.Join(" ", contract.NotInThisRig));
         }
+
+        // =====================================================================================
+        // ADR 0031 — the keyline is retired, and retiring it touches nothing else
+        // =====================================================================================
+
+        /// <summary>
+        /// ⭐ The outline retirement (ADR 0031, wave 2), pinned on rendered pixels — the same
+        /// STRUCTURAL claim the shore-plant pilot made
+        /// (<c>ShorePlantRigBakeTests.TheKeylineIsRetired_AndTurningItBackOn_ChangesOnlyTheRing</c>).
+        ///
+        /// <para><b>The definition used here is exact.</b> A keyline pixel is one the shade pass
+        /// made opaque where the rig has <i>no geometry</i> — <c>rgba.a != 0</c> while
+        /// <c>res.alpha == 0</c>. That is what the ring pass does and the only thing it does, so a
+        /// dark twig or a shaded leaf can never be mistaken for it, and it survives a re-tune of the
+        /// keyline colour on the A/B arm.</para>
+        ///
+        /// <para><b>Why the second half matters more than the first.</b> "No keyline" alone would
+        /// also pass if the ring pass were broken. So the test carries its own control:
+        /// <c>{outline:true}</c> must bring the ring BACK, and — the real assertion — <b>every pixel
+        /// that differs between the two arms must be a ring pixel.</b></para>
+        ///
+        /// <para><b>⚠ THE FRUIT PHASE IS IN THE PROBE SET ON PURPOSE.</b> <c>KEYLINE</c> names TWO
+        /// mechanisms in this rig and only one of them is an outline: the colour is also the mix
+        /// anchor for the FRUIT SEAT, the single dark pixel under a berry that stops it reading as a
+        /// hole in the canopy. The seat lands on a PAINTED pixel, so if the gate ever swept it up
+        /// with the ring this test fails on `violations` — which is precisely the
+        /// <c>rockIsoRig</c>-shaped trap the survey warned about
+        /// (<c>docs/art/outline-interaction-language.md</c> §1.1).</para>
+        ///
+        /// <para><b>Measured across all twenty species</b> (variant 0, full/leaf): 8,399 ring px
+        /// against 28,813 painted px = <b>0.29×</b>, 0 violations. The VEIL/FLECK exemption already
+        /// kept the ring off every filament — this generalises that carve-out to the whole shrub
+        /// rather than replacing it, so with the flag ON the exemption still does its job.</para>
+        /// </summary>
+        [Test]
+        public void TheKeylineIsRetired_AndTurningItBackOn_ChangesOnlyTheRing()
+        {
+            using var host = CreateHost();
+            var report = new System.Text.StringBuilder("[shrub-bake] ADR 0031 — keyline retirement, live:\n");
+            int totalRing = 0, totalPainted = 0;
+
+            foreach (string phase in new[] { ShrubBaker.DefaultPhase, "fruit" })
+            foreach (string key in Probes)
+            {
+                var shipped = RenderArm(host, key, phase, opts: null);
+                var restored = RenderArm(host, key, phase, opts: "outline:true");
+
+                CollectionAssert.AreEqual(shipped.Geometry, restored.Geometry,
+                    $"{key}/{phase}: the outline flag moved the GEOMETRY. The ring pass writes only " +
+                    "where there is no geometry; if this fired it is doing something else as well.");
+
+                int ringDefault = 0, ringRestored = 0, painted = 0, violations = 0;
+                for (int i = 0, p = 0; i < shipped.Rgba.Length; i += 4, p++)
+                {
+                    bool hasGeometry = shipped.Geometry[p] != 0;
+                    if (hasGeometry) painted++;
+                    if (!hasGeometry && shipped.Rgba[i + 3] != 0) ringDefault++;
+                    if (!hasGeometry && restored.Rgba[i + 3] != 0) ringRestored++;
+
+                    bool differs = shipped.Rgba[i] != restored.Rgba[i] ||
+                                   shipped.Rgba[i + 1] != restored.Rgba[i + 1] ||
+                                   shipped.Rgba[i + 2] != restored.Rgba[i + 2] ||
+                                   shipped.Rgba[i + 3] != restored.Rgba[i + 3];
+                    if (differs && hasGeometry) violations++;
+                }
+
+                Assert.AreEqual(0, ringDefault,
+                    $"{key}/{phase}: {ringDefault} pixel(s) are opaque where the rig has no " +
+                    "geometry, on a DEFAULT render. The keyline is retired (ADR 0031) — a default " +
+                    "bake must draw no ring at all.");
+
+                Assert.Greater(ringRestored, 0,
+                    $"{key}/{phase}: {{outline:true}} produced no ring either — the A/B arm is " +
+                    "broken, so the zero above proves nothing about the default.");
+
+                Assert.AreEqual(0, violations,
+                    $"{key}/{phase}: {violations} PAINTED pixel(s) differ between the retired and " +
+                    "restored arms. Retiring the keyline must be a pure ring deletion. If this " +
+                    "fired on the FRUIT phase, suspect the fruit seat — it shares the KEYLINE " +
+                    "colour but is an interior shading term and must NOT be gated with the ring.");
+
+                totalRing += ringRestored;
+                totalPainted += painted;
+                report.AppendLine(
+                    $"  {key,-18} {phase,-6} {painted,6} painted px · ring {ringRestored,5} px " +
+                    $"({ringRestored / (float)Math.Max(1, painted):F2}× painted) · " +
+                    $"default ring {ringDefault} · painted-pixel diffs {violations}");
+            }
+
+            report.AppendLine(
+                $"  ── {totalRing} ring px against {totalPainted} painted px " +
+                $"({totalRing / (float)totalPainted:F2}×), 0 painted pixels touched — the fruit " +
+                "seat included, which is the mechanism that must NOT move with this flag.");
+            Debug.Log(report.ToString());
+        }
+
+        readonly struct Arm
+        {
+            public readonly byte[] Rgba, Geometry;
+            public Arm(byte[] rgba, byte[] geometry) { Rgba = rgba; Geometry = geometry; }
+        }
+
+        /// <summary>
+        /// One render with extra options spliced into the SAME expression the baker builds, so an
+        /// A/B arm cannot drift from the production call in any other respect. The splice targets
+        /// the trailing <c>})</c> of the baker's own options object rather than restating it —
+        /// <paramref name="opts"/> is a bare JS fragment, e.g. <c>"outline:true"</c>.
+        /// </summary>
+        static Arm RenderArm(IRigScriptHost host, string species, string phase, string opts)
+        {
+            string expr = ShrubBaker.ResultExpr(species, Stage, phase, variant: 0, frame: 0);
+            if (!string.IsNullOrEmpty(opts))
+            {
+                int close = expr.LastIndexOf("})", StringComparison.Ordinal);
+                Assert.Greater(close, 0,
+                    "ShrubBaker.ResultExpr no longer ends in an options object — this splice is " +
+                    $"built on that shape. Got: {expr}");
+                expr = expr.Substring(0, close) + "," + opts + expr.Substring(close);
+            }
+
+            const string Res = "__hhShrubArm";
+            host.Execute($"globalThis.{Res} = {expr};");
+            return new Arm(host.EvaluateBytes($"{Res}.rgba"), host.EvaluateBytes($"{Res}.alpha"));
+        }
     }
 }

@@ -38,6 +38,10 @@
   // the same numbers the boat, rock and shoreline bakes use, so a tree sits in the same world.
   const ELEV = 40, CE = Math.cos(ELEV * Math.PI / 180), SE = Math.sin(ELEV * Math.PI / 180);
   const KEYLINE = '#101d21';                               // cold soft keyline, sits in landscape
+  // ADR 0031 — retired by default, exactly as in treeIsoRig2. This is the PREVIOUS pass, but it is
+  // not dead code: TreeKitCatalog.HeldBackSpecies keeps Tamarack on this rig, so its shipped sheets
+  // come from here. Gating only the pass-2 rig would have left one species inked forever.
+  const KEYLINE_DEFAULT = false;
   const COLD = '#1d3b4a', WARM = '#e8b06a';                // the whole lighting story
 
   // ---- vec ------------------------------------------------------------------
@@ -630,8 +634,9 @@
       mDepth[i] = clamp(Math.round(((v.z[i] - zmin) / zr) * 255), 0, 255);
     }
 
-    // soft keyline: sits in the landscape, traces the (now deliberate) silhouette
-    if (opts.outline !== false) {
+    // KEYLINE — RETIRED BY DEFAULT (ADR 0031). Same gate, same proof as treeIsoRig2: every pixel
+    // this pass touches has no geometry under it, so switching it off is a pure ring deletion.
+    if (opts.outline === undefined ? KEYLINE_DEFAULT : opts.outline !== false) {
       const kl = h2r(KEYLINE), add = [];
       for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
         const i = y * w + x; if (v.a[i]) continue;
@@ -773,7 +778,8 @@
   }
 
   root.TreeRig = {
-    PPU, RIM_PX, MIN_BODY, MIN_R, SWAY, VARIANTS, SEASONS, SPECIES, byKey, LIGHT, KEYLINE, COLD, WARM, ELEV, CE, SE,
+    PPU, RIM_PX, MIN_BODY, MIN_R, SWAY, VARIANTS, SEASONS, SPECIES, byKey, LIGHT, KEYLINE,
+    KEYLINE_DEFAULT, COLD, WARM, ELEV, CE, SE,
     STAGES, STAGE_KEYS, sizeOf, stageName,
     render, packMask, grey, massView, normalView, sheetSpec, cellOf, folRamp, barkRamp,
   };

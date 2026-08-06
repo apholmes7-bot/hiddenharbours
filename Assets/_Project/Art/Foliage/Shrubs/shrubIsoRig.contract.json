@@ -10,7 +10,8 @@
     "pivot": "ground contact (root crown), bottom-centre of the union cell",
     "antialias": false,
     "alpha": "binary",
-    "keyline": "#101d21"
+    "keyline": "#101d21",
+    "keylineDefault": false
   },
   "materials": {
     "body": {
