@@ -240,9 +240,16 @@
                   balance:{frames:8, ms:150}, stagger:{frames:10, ms:90},
                   bite:{frames:6, ms:150}, strike:{frames:6, ms:80},
                   reel:{frames:12, ms:90}, land:{frames:12, ms:100},
-                  castBack:{frames:6, ms:90}, castRelease:{frames:8, ms:70} };
+                  castBack:{frames:6, ms:90}, castRelease:{frames:8, ms:70},
+                  /* 6.1 — append-only. board/boardDown read opts.railZ (world metres). */
+                  board:{frames:10, ms:90, oneShot:true}, boardDown:{frames:6, ms:95, oneShot:true},
+                  haul:{frames:8, ms:120},
+                  /* 6.2 — append-only. ladderDown reads opts.rung / opts.ladderW (world metres,
+                     defaulting to the wharf rig's own FIT.ladder) and LOOPS. */
+                  ladderDown:{frames:10, ms:110} };
   const GROUPS = { base:['idle','walk','run'], balance:['balance','stagger'],
-                   fishing:['hold','cast','castBack','castRelease','bite','strike','reel','land'] };
+                   fishing:['hold','cast','castBack','castRelease','bite','strike','reel','land'],
+                   boarding:['board','boardDown','ladderDown'], work:['dig','haul'] };
   const CAST_W1 = 0.34, CAST_S1 = 0.50;
 
   /* ---------------- THE MOUNT CONTRACT (pass 6) ----------------
@@ -256,17 +263,20 @@
   const ANIM_MOUNT = {
     idle:'free', walk:'free', run:'free', balance:'free', stagger:'free',
     hold:'rod', cast:'rod', castBack:'rod', castRelease:'rod',
-    bite:'rod', strike:'rod', reel:'rod', land:'rod', dig:'shovel' };
+    bite:'rod', strike:'rod', reel:'rod', land:'rod', dig:'shovel',
+    board:'free', boardDown:'free', haul:'free',
+    /* 'ladder' is neither free nor a tool: both hands are committed to the rungs, so no carry
+       stance may ride this clip and no prop layer mounts on it. */
+    ladderDown:'ladder' };
   /* The four carry stances. anims = the animations each one may ride (a tool anim always wins:
      pose() ignores carry when a tool curve is active). */
   const CARRIES = {
-    buckets:{ label:'PAILS',  layer:'BucketIso (tier 1/2)', pin:'handL + handR', anims:['idle','walk','run'] },
-    tray:   { label:'TRAY',   layer:'BucketIso (tier 3)',   pin:'mid',           anims:['idle','walk','run'] },
+    buckets:{ label:'PAILS',  layer:'BucketIso (tier 1/2)', pin:'handL + handR', anims:['idle','walk','run','board','boardDown'] },
+    tray:   { label:'TRAY',   layer:'BucketIso (tier 3)',   pin:'mid',           anims:['idle','walk','run','board','boardDown'] },
     helm:   { label:'HELM',   layer:'wheel / tiller',       pin:'mid + handL/handR', anims:['idle','walk'] },
     oars:   { label:'OARS',   layer:'DoryIso / PuntIso oars', pin:'handL + handR', anims:['idle','walk'] },
   };
   const CARRY_ORDER = ['buckets','tray','helm','oars'];
-
   function rampOf(map, key, fb){ return Array.isArray(key) ? key : (map[key] || map[fb]); }
 
   /* VALUE SPANS. gain is the SPAN control: at ~10 px across, an 8-segment lathe gives every pixel
@@ -486,6 +496,163 @@
              wlY:lerp(0.13,0.085,t), wlZ:0.50, lean:lerp(LF,0,t), twist:lerp(9,6,t), dip:0.020*(1-t), bend:lerp(SB,0.05,t) };
   }
 
+  /* ==================== BOARDING + HAUL (6.1) ====================
+     board / boardDown are the only clips whose GROUND CHANGES under the figure. The pivot stays on
+     the dock-side contact for the whole clip and the rise is carried in the pose, so an engine plays
+     the clip in place and re-seats the sprite by boardMount().landing on the last frame — no new
+     cell, no new pivot, no special case in the baker.
+
+     railZ is a WORLD metre off opts (default 0.55 — a dory sheer) and is deliberately NOT scaled by
+     hS: a child steps over the same rail an adult does. It is soft-clamped to 1.55x the figure's own
+     hip height, because past that the step stops being a step. A gangway is just railZ near 0 and
+     the clip degrades to a long stride; a fixed-wharf face is the wharf rig's own needsLadder case
+     (drop > 1.2 m), not this clip. */
+  const BOARDING = { board:1, boardDown:1 };
+  const RAIL_DEF = 0.55, RAIL_MIN = 0.06, RAIL_MAX = 1.30;
+  function railOf(o){
+    const r = (o && o.railZ!=null) ? +o.railZ : RAIL_DEF;
+    return isFinite(r) ? Math.max(RAIL_MIN, Math.min(RAIL_MAX, r)) : RAIL_DEF;
+  }
+  function kf(track, u){
+    if(u<=track[0][0]) return track[0][1];
+    for(let i=0;i+1<track.length;i++){ const a=track[i], c=track[i+1];
+      if(u<=c[0]) return a[1]+(c[1]-a[1])*sm((u-a[0])/((c[0]-a[0])||1)); }
+    return track[track.length-1][1];
+  }
+  /* Foot heights are quoted as fractions of R plus a constant, never as fixed metres, so the same
+     tracks stay inside the leg's 0.53 m reach at every rail height instead of snapping straight. */
+  function boardCurve(anim, u, req, hipBase){
+    const cap = hipBase*1.55, R = Math.min(req, cap), clamped = R < req - 1e-6;
+    const K = (t)=>kf(t,u), rc = (f,k)=>R*f + (k||0);
+    if(anim==='boardDown'){
+      /* Stepping down is not the up-clip reversed. The leg has only 0.530 m of reach against a
+         0.515 m stance, so a foot can never sit more than ~15 mm below its own hip: the hips must
+         come DOWN with the reaching foot and the deep bend goes into the trail leg, still on the
+         deck. That is also what a person actually does off a gunwale. */
+      return { anim, railZ:R, requested:req, clamped,
+        rise:   K([[0,R],[0.18,R*0.92],[0.42,R*0.58],[0.62,R*0.30],[0.78,0],[0.88,-0.045],[1,0]]),
+        /* No rail plant going down. Standing on the deck, the rail is at your ANKLES — reaching
+           for it is both unreachable from the shoulder and wrong: the hand steadies out to the
+           side and never takes load. handOn stays 0 for the whole clip. */
+        handOn: 0,
+        handOut:K([[0,0.01],[0.25,0.07],[0.60,0.06],[1,0.012]]),
+        handZoff:K([[0,0.055],[0.26,0.115],[0.62,0.09],[1,0.055]]),
+        handY:  K([[0,0.05],[0.24,0.17],[0.60,0.13],[1,0.018]]),
+        phase:  u<0.22?'lift':u<0.55?'reach':u<0.82?'transfer':'settle',
+        lead:  { y:K([[0,0.04],[0.22,0.17],[0.50,0.14],[0.70,0.09],[1,0.045]]),
+                 z:K([[0,R],[0.14,rc(1,0.055)],[0.34,rc(0.86)],[0.52,rc(0.46)],[0.70,rc(0.16)],[0.82,0],[1,0]]) },
+        trail: { y:K([[0,-0.05],[0.52,-0.09],[0.70,-0.02],[0.88,-0.06],[1,-0.05]]),
+                 z:K([[0,R],[0.46,R],[0.58,rc(0.62)],[0.72,rc(0.26)],[0.86,0],[1,0]]) },
+        handY:  K([[0,0.05],[0.14,0.26],[0.60,0.27],[0.76,0.14],[1,0.018]]),
+        freeY:  K([[0,0.02],[0.30,0.16],[0.62,0.10],[1,0.015]]),
+        freeOut:K([[0,0.012],[0.34,0.085],[0.70,0.05],[1,0.012]]),
+        freeZ:  K([[0,0.055],[0.34,0.115],[0.70,0.085],[1,0.055]]),
+        lean:   K([[0,0],[0.24,7],[0.55,11],[0.80,4],[0.90,-2],[1,0]]),
+        list:   K([[0,0],[0.24,-4],[0.62,-5],[0.85,0],[1,0]]),
+        twist:  K([[0,0],[0.34,6],[0.68,4],[1,0]]) };
+    }
+    /* load (crouch, hand finds the rail) -> lift (lead foot clears) -> plant (lead sole on deck)
+       -> transfer (hips drive up, trail leg swings through) -> settle.
+       The trail foot is quoted RELATIVE TO THE RISE, not absolutely: a grounded foot goes out of
+       leg reach the instant the hips lift, so it has to leave the dock on the same frame the rise
+       starts and then ride it. Quoting the airborne heights as fractions of R keeps the same
+       tracks inside reach at every rail height instead of snapping the leg straight. */
+    const rise = K([[0,0],[0.16,-0.045],[0.44,-0.030],[0.62,rc(0.46)],[0.84,rc(1.04)],[0.93,rc(0.985)],[1,R]]);
+    const trailAir = K([[0,0],[0.44,0],[0.56,0.18],[0.72,0.30],[0.86,0.16],[0.94,0],[1,0]]);
+    return { anim, railZ:R, requested:req, clamped, rise,
+      /* The hand comes OFF the rail as the rise takes over: the arm has 0.44 m of reach and the
+         shoulder climbs by R, so anything still pinned to the rail past the push-off tears loose.
+         Releasing on the drive is also just what pushing off a rail looks like. */
+      handOn: K([[0,0],[0.14,1],[0.46,1],[0.60,0],[1,0]]),
+      handOut: 0, handZoff: 0.055,
+      phase:  u<0.16?'load':u<0.44?'lift':u<0.62?'plant':u<0.86?'transfer':'settle',
+      lead:  { y:K([[0,0.055],[0.16,0.02],[0.34,0.26],[0.52,0.33],[0.66,0.24],[0.84,0.115],[1,0.045]]),
+               z:K([[0,0],[0.14,0.02],[0.34,rc(1,0.085)],[0.50,rc(1,0.085)],[0.62,R],[1,R]]) },
+      trail: { y:K([[0,-0.075],[0.42,-0.105],[0.62,-0.16],[0.78,0.055],[0.90,-0.05],[1,-0.045]]),
+               z: Math.max(0, rise) + trailAir },
+      handY:  K([[0,0.06],[0.14,0.30],[0.62,0.31],[0.78,0.22],[0.90,0.06],[1,0.018]]),
+      freeY:  K([[0,0.02],[0.24,-0.14],[0.52,0.06],[0.72,0.20],[0.88,0.06],[1,0.015]]),
+      freeOut:K([[0,0.012],[0.30,0.075],[0.62,0.10],[0.84,0.04],[1,0.012]]),
+      freeZ:  K([[0,0.055],[0.30,0.10],[0.62,0.16],[0.84,0.08],[1,0.055]]),
+      lean:   K([[0,0],[0.16,9],[0.42,15],[0.62,10],[0.80,2],[1,0]]),
+      list:   K([[0,0],[0.20,-4],[0.60,-6],[0.82,-1],[1,0]]),
+      twist:  K([[0,0],[0.30,7],[0.60,9],[0.84,3],[1,0]]) };
+  }
+  /* haul — a two-handed heave on a line. Synchronised with the left lagging the right, NOT strict
+     hand-over-hand: at 32 px/m alternating hands read as a wobble rather than as work. No tool
+     layer — the rope is a runtime line between haulGrip()'s two pins, the way the v1 FisherHaul kit
+     drew it. This is the pass-6 answer to tighten/slacken, anchor raise and the windlass read. */
+  function haulCurve(u){
+    const K=(t)=>kf(t,u);
+    const pull = K([[0,0],[0.28,0.06],[0.42,0.55],[0.58,1],[0.74,0.5],[0.88,0.1],[1,0]]);
+    return { pull, dip:0.045*pull, lean:-(2+12*pull), twist:-4*pull,
+      R:{ y:K([[0,0.29],[0.28,0.31],[0.56,0.02],[0.78,0.15],[1,0.29]]),
+          z:K([[0,0.185],[0.28,0.205],[0.56,0.075],[0.78,0.135],[1,0.185]]) },
+      L:{ y:K([[0,0.245],[0.34,0.275],[0.62,-0.015],[0.84,0.115],[1,0.245]]),
+          z:K([[0,0.135],[0.34,0.155],[0.62,0.055],[0.84,0.10],[1,0.135]]) } };
+  }
+
+  /* ==================== LADDER DESCENT (6.2) ====================
+     The clip 6.1 wrote down as missing: above the board clamp (1.55x hip) the answer is a ladder,
+     and there was no ladder. This is a LOCOMOTION cycle, not a boarding clip — the ground does not
+     change under the figure, the cell plays IN PLACE the way walk does, and the engine translates
+     the sprite down the ladder as the loop runs.
+
+     The rungs are the wharf rig's own — WharfIso.FIT.ladder = { w:0.45, rung:0.30 }. Both arrive as
+     world metres off opts (rung, ladderW) and neither is scaled by build, for the same reason railZ
+     is not: a child climbs the same rungs an adult does.
+
+     FEET STEP, HANDS SLIDE. The feet alternate and each one steps TWO rungs, which is the only
+     pattern that keeps both soles on real rungs and holds them exactly one rung apart the whole way
+     down; the body therefore goes down two rungs — 0.60 m — per loop. The hands do NOT change rungs.
+     They ride the stringers at 0.42 of the ladder's own width and slide, which is both what a person
+     does on a galvanised wharf ladder and the only thing that reads at 32 px/m: this figure is
+     1.51 m tall against a 0.30 m rung, so a hand hopping rungs is a four-pixel flail. Two hands are
+     on the ladder in every frame and at least one foot, so contact never drops below three points.
+
+     THE BODY DOES NOT SINK AT A CONSTANT RATE, and that is the part an engine has to respect. A
+     climber drops when a LEG extends, so drop(u) is a two-step stair: 0.30 m eased through each foot
+     swing, dead flat while both feet are planted. A planted hold is fixed in the WORLD, so its
+     height in the cell is (hold - drop(u)) — which is why a planted foot rides 0.30 m up the cell
+     and then steps back down. Translate the sprite by ladderMount().descend and the soles sit still
+     on real rungs; translate it linearly instead and they creep by up to a third of a rung. */
+  const LADDER = { ladderDown:1 };
+  const RUNG_DEF = 0.30, LADW_DEF = 0.45, LAD_SW = 0.24, LAD_RF = 0.00, LAD_LF = 0.50;
+  function rungOf(o){ const r = (o && o.rung!=null) ? +o.rung : RUNG_DEF;
+    return isFinite(r) ? Math.max(0.18, Math.min(0.45, r)) : RUNG_DEF; }
+  function ladWOf(o){ const w = (o && o.ladderW!=null) ? +o.ladderW : LADW_DEF;
+    return isFinite(w) ? Math.max(0.30, Math.min(0.70, w)) : LADW_DEF; }
+  function ladderCurve(u, R, LW, hipBase, ankleZ){
+    const seg = (a,f)=> Math.max(0, Math.min(1, (f-a)/LAD_SW));
+    /* metres descended by u. Defined past the ends of the loop so a foot planted across the wrap
+       reads one continuous stair instead of snapping back at u = 0. */
+    const D = (t)=>{ const k = Math.floor(t), f = t - k;
+      return 2*R*k + R*sm(seg(LAD_RF,f)) + R*sm(seg(LAD_LF,f)); };
+    const foot = (ph)=>{
+      let plant = ph + LAD_SW;                 // this foot's most recent plant
+      while(plant > u) plant -= 1;
+      const go = plant + 1 - LAD_SW;           // and when it leaves the rung again
+      if(u <= go) return { z: ankleZ + D(u) - D(plant), air:0 };
+      const s = (u - go)/LAD_SW, e = sm(s);
+      const z0 = ankleZ + D(go) - D(plant), z1 = ankleZ + D(u) - D(plant) - 2*R;
+      return { z: z0 + (z1-z0)*e, air: Math.sin(Math.PI*s) };
+    };
+    const fR = foot(LAD_RF), fL = foot(LAD_LF);
+    const sw = Math.sin(2*Math.PI*(u + 0.25));
+    /* contralateral: the hand opposite the stepping foot is the low one, taking the load */
+    const hand = (sgn, d)=>({ x: sgn*LW*0.42, y:0.275, dz: 0.11 + 0.15*d, air:0 });
+    const step = (t)=>({ y: 0.16 - 0.055*t.air, z:t.z, air:t.air });
+    const air = Math.max(fR.air, fL.air);
+    return { rung:R, width:LW, stepZ:2*R, drop:D(u),
+      hipZ: ankleZ + (hipBase - ankleZ)*0.95,
+      F:{ L:step(fL), R:step(fR) }, H:{ L:hand(-1,-sw), R:hand(1,sw) },
+      moving: fR.air>0.001 ? 'RF' : fL.air>0.001 ? 'LF' : 'set',
+      contact: air>0.001 ? 3 : 4,
+      lean:  13 + 2*Math.sin(2*Math.PI*u),
+      list:  2.6*Math.sin(2*Math.PI*(u+0.12)),
+      twist: 4*sw };
+  }
+
   /* ============================ POSE ============================
      Built from the GROUND UP so age can change proportion without breaking contact with the floor:
        ankle -> leg (length scale) -> hip -> torso (length scale) -> collar -> neck -> head (size
@@ -498,7 +665,14 @@
     const hS=PR.hS, wS=PR.wS;
     const ankleZ = 0.060*hS;
     const legLen = 0.515*hS*PR.legK;
-    const hipZ0  = ankleZ + legLen;
+    /* 6.1: the rise is folded into hipZ0 so every derived height — torso, collar, chin, head,
+       shoulders — rides up with it. Everything below resolves to the pass-5 constant when no
+       boarding clip is active, so the frozen poses stay byte-identical. */
+    const hipBase = ankleZ + legLen;
+    const brd = BOARDING[anim] ? boardCurve(anim, u, railOf(arguments[5]), hipBase) : null;
+    const hl  = (anim==='haul') ? haulCurve(u) : null;
+    const lad = LADDER[anim] ? ladderCurve(u, rungOf(arguments[5]), ladWOf(arguments[5]), hipBase, ankleZ) : null;
+    const hipZ0  = lad ? lad.hipZ : hipBase + (brd ? brd.rise : 0);
     const TS     = hS*PR.torsoK;
     const torsoC = hipZ0 + 0.280*TS;
     const collarZ= torsoC + 0.182*TS;
@@ -522,23 +696,32 @@
     if(carry==='buckets') lean = lean*0.5;
     if(carry==='helm') lean = 6*DEG;
     if(carry==='oars') lean = 10*DEG;
+    if(brd) lean = brd.lean*DEG;
+    if(hl)  lean = hl.lean*DEG;
+    if(lad) lean = lad.lean*DEG;
     const senv = stag ? Math.exp(-2.4*u) : 0;
     if(stag) lean += (6*DEG)*senv*Math.sin(2*Math.PI*1.2*u);
     let list = 0;
     if(bal)  list = (10*DEG)*Math.sin(2*Math.PI*u);
     if(stag) list = (20*DEG)*senv*Math.sin(2*Math.PI*1.3*u);
+    if(brd)  list = brd.list*DEG;
+    if(lad)  list = lad.list*DEG;
     if(rock && rock.counter){ const c=counterLean(rock.roll||0, rock.pitch||0, rock.counter);
       list += c.list*DEG; lean += c.lean*DEG; }
     const breathe = calm ? 0.018*Math.sin(2*Math.PI*u)*hS : 0;
-    const swayX = tc ? (calm?0.012*tw:0) : (idle ? 0.012*tw : 0.010*tw);
+    const swayX = tc ? (calm?0.012*tw:0) : ((brd||lad) ? 0 : (idle ? 0.012*tw : 0.010*tw));
     let dip;
     if(tc) dip = tc.dip*hS;
+    else if(brd||lad) dip = 0;
+    else if(hl)  dip = hl.dip*hS;
     else if(idle) dip = 0;
     else if(bal)  dip = 0.010*hS*(0.5+0.5*Math.cos(4*Math.PI*u));
     else if(stag) dip = 0.060*hS*senv*(u<0.5?1:0.6);
     else dip = bob*hS*(0.5+0.5*Math.cos(4*Math.PI*u));
     const hipZ = hipZ0 - dip;
-    const yawS = tc ? tc.twist*DEG : yaw*tw, yawH = tc ? tc.twist*0.45*DEG : -0.6*yaw*tw;
+    const twS = brd||hl||lad;
+    const yawS = tc ? tc.twist*DEG : twS ? twS.twist*DEG : yaw*tw,
+          yawH = tc ? tc.twist*0.45*DEG : twS ? twS.twist*0.40*DEG : -0.6*yaw*tw;
 
     /* STOOP is a real pitch of the upper body about a point below the ribs, applied on top of the
        whole-body lean about the hip. Chaining two pivots is what makes an elder read as bent rather
@@ -556,15 +739,27 @@
     for(const [side, ph] of [['L',0],['R',0.5]]){
       const sgn = side==='L' ? -1 : 1;
       const p2=(u+ph)%1;
-      const braceX = (carry==='helm'||carry==='oars'||bal||stag) ? 1.55 : 1;
+      const braceX = (carry==='helm'||carry==='oars'||bal||stag||hl) ? 1.55 : 1;
       const hip0 = rotZ(yawH)([sgn*0.082*wS*PR.hipK*braceX, 0, 0]); hip0[0]+=swayX*0.5; hip0[2]=hipZ;
       let yF, zF;
       if(tc){ yF = sgn<0 ? (tc.dig?0.105:0.075) : (tc.dig?-0.085:-0.055); zF = ankleZ; }
+      else if(brd){ const LG=(side==='R'?brd.lead:brd.trail); yF = LG.y; zF = ankleZ + LG.z; }
+      /* the ladder tracks are already absolute: z is the rung the sole is on, plus the ankle */
+      else if(lad){ const LG=(side==='R'?lad.F.R:lad.F.L); yF = LG.y; zF = LG.z; }
+      else if(hl){ yF = (side==='R') ? 0.115 : -0.135; zF = ankleZ; }
       else if(idle){ yF = sgn*0.012; zF = ankleZ; }
       else if(bal||stag){ yF = sgn*0.02 + (stag?0.05*senv*Math.sin(2*Math.PI*1.3*u):0); zF = ankleZ; }
       else { yF = stride*Math.cos(2*Math.PI*p2); zF = ankleZ + lift*Math.max(0,-Math.sin(2*Math.PI*p2)); }
+      /* Same guard as the arms, for the same reason: a boarding foot is the only target that can
+         out-reach its own leg (at a tall rail, or at the top of the drive). Tuned so the default
+         rails never need it — it is the floor under the extremes, not the mechanism. */
+      if(brd||lad){ const mx=(thigh+shin)*0.995, dy2=yF-hip0[1], dz2=zF-hip0[2], dd=Math.hypot(dy2,dz2);
+        if(dd>mx){ const k=mx/dd; yF=hip0[1]+dy2*k; zF=hip0[2]+dz2*k; } }
       const [ky,kz]=ik2(hip0[1],hip0[2], yF, zF, thigh, shin, +1);
-      P.legs[side]={ hip:hip0, knee:[hip0[0]*0.97,ky,kz], ankle:[hip0[0]*0.92, yF, zF] };
+      /* a ladder knee goes OUT, not forward — the 2D solver can only bend in the sagittal plane, so
+         the splay is added here. It is what stops a bent leg reading as a sit. */
+      const kx = lad ? hip0[0]*0.97 + sgn*0.038 : hip0[0]*0.97;
+      P.legs[side]={ hip:hip0, knee:[kx,ky,kz], ankle:[hip0[0]*0.92, yF, zF] };
     }
     P.arms = {};
     const upA=0.230*hS*PR.legK, foA=0.210*hS*PR.legK, shZ=shZ0+breathe, sw=0.150*wS*PR.shoulderK;
@@ -580,9 +775,30 @@
       else if(carry==='tray'){ tx = sgn*0.24; ty = 0.150 + (idle ? 0.006*Math.sin(2*Math.PI*u) : 0.012*Math.cos(4*Math.PI*u)); tz = 0.615*hS + breathe*0.5; }
       else if(carry==='helm'){ tx = sh[0]+sgn*0.005; ty = 0.150 + (idle?0.006*Math.sin(2*Math.PI*u):0.012*Math.cos(4*Math.PI*u)); tz = 0.72*hS + breathe*0.5; }
       else if(carry==='oars'){ tx = sh[0]+sgn*0.055; ty = 0.120 + (idle?0.014*Math.sin(2*Math.PI*u):0.02*Math.cos(4*Math.PI*u)); tz = 0.575*hS + breathe*0.5; }
+      /* Boarding with a load: the carry branches sit ABOVE this one, so a pail or a tray keeps both
+         hands and the clip still plays — the legs carry the whole read. Empty-handed, the left hand
+         plants on the rail (handOn blends it between a body-relative rest and the rail's own
+         absolute height) and the right arm counterbalances. */
+      else if(brd){
+        if(side==='L'){ const on=brd.handOn;
+          tx = sh[0] - 0.020 - 0.030*on - brd.handOut; ty = brd.handY;
+          tz = (hipZ + brd.handZoff*hS)*(1-on) + (ankleZ + brd.railZ + 0.022)*on + breathe*0.5; }
+        else { tx = sh[0] + brd.freeOut; ty = brd.freeY; tz = hipZ + brd.freeZ*hS; }
+      }
+      else if(hl){ const HH = side==='R' ? hl.R : hl.L;
+        tx = sh[0] + sgn*0.028; ty = HH.y; tz = hipZ + HH.z*hS; }
+      /* On the ladder the hands ride the STRINGERS: x sits over the rails at 0.42 of the ladder's
+         own width and dz is an offset off the shoulder, so the grip slides instead of hopping. */
+      else if(lad){ const HH = side==='R' ? lad.H.R : lad.H.L;
+        tx = HH.x; ty = HH.y; tz = shZ0 + HH.dz + breathe*0.5; }
       else if(bal||stag){ const out=0.05+Math.abs(list)*0.9; tx = sh[0]+sgn*out; ty = 0.03 - list*sgn*0.35; tz = (0.585 - (stag?0.03*senv:0))*hS + breathe*0.5; }
       else if(idle){ ty = 0.015 + 0.008*Math.sin(2*Math.PI*u+(sgn>0?0.6:0)); tz = 0.63*hS+breathe*0.5; }
       else { ty = sh[1] + arm*Math.cos(2*Math.PI*p2); tz = handF*hS; }
+      /* Only the new clips move a hand far enough to out-reach the arm (the frozen fourteen were
+         all authored inside it). ik2 clamps the ELBOW but the wrist is placed raw, so without this
+         the hand detaches from the forearm the moment the shoulders climb past the rail. */
+      if(brd||hl||lad){ const mx=(upA+foA)*0.985, dy2=ty-sh[1], dz2=tz-sh[2], dd=Math.hypot(dy2,dz2);
+        if(dd>mx){ const k=mx/dd; ty=sh[1]+dy2*k; tz=sh[2]+dz2*k; } }
       const [ey,ez]=ik2(sh[1],sh[2], ty, tz, upA, foA, -1);
       P.arms[side]={ sh, elbow:[sh[0]+sgn*0.01,ey,ez], wrist:[tx,ty,tz] };
     }
@@ -596,6 +812,7 @@
       ? root.HeadIso.look({ anim, u, t:(rock&&rock.t), expr:(b.expr||(rock&&rock.expr)), talk:(rock&&rock.talk) })
       : { gaze:[0,0], lid:(P.eyesClosed?1:0), brow:0, mouth:'neutral' };
     P.tool = tc ? { pitch:tc.pitch*DEG, yaw:tc.yaw*DEG, bend:tc.bend } : null;
+    P.board = brd; P.haul = hl; P.ladder = lad; P.rise = brd ? brd.rise : 0;
     return P;
   }
 
@@ -651,10 +868,21 @@
       /* BOOT SHAFT — pass 4 gave the boot one screen row, so the trouser simply changed colour at
          the floor and the leg had no terminator. A shaft up the calf is both the right garment and
          the thing that stops the teal reading as a hem-less skirt. */
-      const bz = P.ankleZ + G.bootZ*hS;
+      /* The boot top is cut at a fixed HEIGHT for the frozen fourteen, which is what pass 4 baked
+         and what a planted foot wants. A boarding foot tucks high enough that its knee sits BELOW
+         its own ankle, and a fixed-height cut then extrapolates backwards down the shin into a
+         shaft several metres long. On the boarding clips the shaft is measured as a DISTANCE along
+         the shin instead — identical for a vertical shin, correct for an inverted one. */
       if(G.bootZ>0.02){
-        const t=(bz-a[2])/Math.max(0.001,(knee[2]-a[2]));
-        const top=[a[0]+(knee[0]-a[0])*t, a[1]+(knee[1]-a[1])*t, bz];
+        let top;
+        if(P.board){
+          const vx=knee[0]-a[0], vy=knee[1]-a[1], vz=knee[2]-a[2];
+          const vl=Math.hypot(vx,vy,vz)||1, tt=Math.min(1,(G.bootZ*hS)/vl);
+          top=[a[0]+vx*tt, a[1]+vy*tt, a[2]+vz*tt];
+        } else {
+          const bz=P.ankleZ+G.bootZ*hS, t=(bz-a[2])/Math.max(0.001,(knee[2]-a[2]));
+          top=[a[0]+(knee[0]-a[0])*t, a[1]+(knee[1]-a[1])*t, bz];
+        }
         add(limb(top, [a[0],a[1],a[2]+0.006], rAn*1.20, rAn*1.14, 'boot', -0.10));
         add(lathe([top[0],top[1],top[2]], [[-0.020,rAn*1.24,rAn*1.24],[0.018,rAn*1.28,rAn*1.28]],
           'bootL', 0.10, 0.014, null, 6));   // cuff: one row, so the boot top OWNS a pixel row
@@ -667,8 +895,9 @@
        background and the pair reads as one mass with a seam scratched on it. A dark panel set BACK
        (negative db) fills the gap so the two legs are separated by a dark line instead. */
     if(!G.skirtHem){
-      const iz0=P.ankleZ+0.11*hS, iz1=P.hipZ-0.010*hS;
-      add(box([P.swayX*0.5, 0.004, (iz0+iz1)/2], [0.044*wS, 0.050*wS, (iz1-iz0)/2], 'overD', -0.62, -0.09));
+      const iz0=P.ankleZ+P.rise+0.11*hS, iz1=P.hipZ-0.010*hS;
+      if(iz1 > iz0 + 0.01)
+        add(box([P.swayX*0.5, 0.004, (iz0+iz1)/2], [0.044*wS, 0.050*wS, (iz1-iz0)/2], 'overD', -0.62, -0.09));
     }
 
     // ---------- PELVIS ----------
@@ -745,7 +974,7 @@
 
     // ---------- APRON ----------
     if(G.apron){
-      const aTop=zOf(0.086), aBot=P.ankleZ+0.40*hS;
+      const aTop=zOf(0.086), aBot=P.ankleZ+P.rise+0.40*hS;
       const rx=0.150*wS, ry=0.100*wS;
       const rows=[]; const n=5;
       for(let i=0;i<=n;i++) rows.push([aBot+(aTop-aBot)*i/n - P.torsoC, rx*(1+0.06*(1-i/n)), ry]);
@@ -761,7 +990,7 @@
 
     // ---------- SKIRT ----------
     if(G.skirtHem){
-      const sTop=-0.100, sBotZ=P.ankleZ+0.30*hS;
+      const sTop=-0.100, sBotZ=P.ankleZ+P.rise+0.30*hS;
       const rows=[]; const n=5;
       for(let i=0;i<=n;i++){
         const t=i/n, z=sBotZ+(zOf(sTop)-sBotZ)*t;
@@ -1032,6 +1261,61 @@
              handL:{x:vl.sx,y:vl.sy}, handR:{x:vr.sx,y:vr.sy}, mid:{x:md.sx,y:md.sy},
              swingL, swingR, behindL:beh(wl[0]), behindR:beh(wr[0]), behind:false };
   }
+  /* Boarding contract for the engine. The clip plays IN PLACE (pivot on the dock-side ground the
+     whole way); `landing` is the cell-px offset of the deck-side ground contact, so the re-seat on
+     the last frame is one vector add and never a guess. `rail` is where the plant hand meets the
+     rail — use it to sanity-check a railZ against a hull's actual sheer, or to spark a grip FX. */
+  function boardMount(dir, opts){
+    const {o,b,anim,u,power,carry:c}=resolveOpts(dir,opts);
+    if(!BOARDING[anim]) return null;
+    const P=pose(anim,u,b,power,c,o), B=camBasis(o), K=P.board;
+    const pt=(p)=>{ const v=projVert(p[0],p[1],p[2],B); return {x:v.sx, y:v.sy}; };
+    const wl=P.arms.L.wrist;
+    return { railZ:K.railZ, requested:K.requested, clamped:K.clamped, rise:K.rise,
+             /* a carried load wins over the rail plant in pose(), so the grip flag has to agree */
+             phase:K.phase, handOn:c?0:K.handOn, gripped:!c && K.handOn>0.5, carried:!!c,
+             hand:pt(wl), rail:pt([wl[0], K.handY, K.railZ]),
+             leadFoot:pt(P.legs.R.ankle), trailFoot:pt(P.legs.L.ankle),
+             landing:pt([0,0,K.railZ]) };
+  }
+  /* Ladder contract for the engine. The clip LOOPS and plays in place: z = 0 in the cell is the top
+     of the rung the lower foot last planted on, and `descend` is how far the body has sunk below it
+     at this frame (0 -> stepZ across the loop). Seat the sprite at that rung, subtract descend, and
+     drop the rung reference by stepZ every time the loop wraps. `standoff` is how far the pivot
+     sits off the ladder plane, so a face-mounted ladder needs no eyeballing. */
+  function ladderMount(dir, opts){
+    const {o,b,anim,u,power}=resolveOpts(dir,opts);
+    if(!LADDER[anim]) return null;
+    const P=pose(anim,u,b,power,null,o), B=camBasis(o), K=P.ladder, A=ANIMS.ladderDown;
+    const pt=(p)=>{ const v=projVert(p[0],p[1],p[2],B); return {x:v.sx, y:v.sy}; };
+    const sole=(a)=>pt([a[0], a[1], a[2]-P.ankleZ]);
+    return { rung:K.rung, width:K.width, stepZ:K.stepZ, descend:+K.drop.toFixed(4),
+             rate:+(K.stepZ/((A.frames*A.ms)/1000)).toFixed(3), standoff:0.275,
+             moving:K.moving, contact:K.contact,
+             handL:pt(P.arms.L.wrist), handR:pt(P.arms.R.wrist),
+             footL:pt(P.legs.L.ankle), footR:pt(P.legs.R.ankle),
+             rungL:sole(P.legs.L.ankle), rungR:sole(P.legs.R.ankle),
+             airL:K.F.L.air, airR:K.F.R.air, handsOn:true,
+             /* the ladder is a +y layer like a carried tray: it goes UNDER the sprite on the away
+                facings and over it on the near ones. Same test the carry pins use. */
+             ladderBehind: B.ct > 0.05,
+             hip:pt([P.swayX*0.5,0,P.hipZ]),
+             head:pt([P.headC[0],P.headC[1],P.headC[2]+0.17*P.PR.headK]) };
+  }
+  /* haul pins. The rope is a runtime line: draw it through handL/handR and out along `out`.
+     tension 0..1 is the heave envelope — drive rope sag, a strain SFX or a winch tick off it. */
+  function haulGrip(dir, opts){
+    const src = (typeof opts==='number') ? {elev:opts} : (opts||{});
+    const {o,b,u,power}=resolveOpts(dir,Object.assign({},src,{anim:'haul'}));
+    const P=pose('haul',u,b,power,null,o), B=camBasis(o);
+    const pt=(p)=>{ const v=projVert(p[0],p[1],p[2],B); return {x:v.sx, y:v.sy}; };
+    const wl=P.arms.L.wrist, wr=P.arms.R.wrist;
+    const md=[(wl[0]+wr[0])/2,(wl[1]+wr[1])/2,(wl[2]+wr[2])/2];
+    const a=pt(md), f=pt([md[0], md[1]+0.50, md[2]+0.12]);
+    const dx=f.x-a.x, dy=f.y-a.y, m=Math.hypot(dx,dy)||1;
+    return { handL:pt(wl), handR:pt(wr), mid:a, lead:'R',
+             tension:P.haul.pull, out:{x:dx/m, y:dy/m} };
+  }
   function projectLocal(dir, p, elev){
     const v=projVert(p[0],p[1],p[2],camBasis({dir, elev}));
     return { x:v.sx, y:v.sy };
@@ -1049,10 +1333,12 @@
     ANIMS, BUILDS, CAST, SKINS, HAIRS, OUTFITS, EYES, SHIRT, SHIRTS, HATCOLS, APRONS, BOOT,
     HAIRSTYLES, BEARDS, FACES, SEXES, SEX, AGES, AGE_ORDER, GARMENTS, GARMENT_ORDER, KEY,
     get HATS(){ return hatList(); }, hatList, HATS_LOCAL,
-    ANIM_MOUNT, CARRIES, CARRY_ORDER,
+    ANIM_MOUNT, CARRIES, CARRY_ORDER, BOARDING, RAIL_DEF, RAIL_MIN, RAIL_MAX, railOf,
+    LADDER, RUNG_DEF, LADW_DEF, rungOf, ladWOf, ladderMount, ladderCurve,
+    boardMount, haulGrip, boardCurve, haulCurve,
     GROUPS, CAST_W1, CAST_S1, DEFAULT_BUILD,
     render, anchors, tool, carry, counter:counterLean, projectLocal, metrics, propsOf,
-    facesOf, pose, makeMats, lathe, arcLathe, limb, torsoProf, GAIN, BIAS, LN, BAYER, pass:6,
+    facesOf, pose, makeMats, lathe, arcLathe, limb, torsoProf, GAIN, BIAS, LN, BAYER, pass:6, revision:'6.2',
     get head(){ return root.HeadIso || null; } };
   root.CharacterIso6 = API;
   if(!root.CharacterIso5) root.CharacterIso5 = API;   // drop-in when pass 5 is not loaded

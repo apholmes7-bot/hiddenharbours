@@ -155,6 +155,39 @@ namespace HiddenHarbours.Tests.PlayMode
             public GameObject BoatGo;
             public BoatDeckDef Deck;
             public Transform DisembarkPoint;
+            public CharacterClipPlayer ClipPlayer;
+            public CharacterVisualDef Skin;
+        }
+
+        /// <summary>A character skin with the two BOARDING clips baked at the counts the pass-6.2 rig
+        /// declares (board 10 f, boardDown 6 f, eight rows each) and nothing else — the clips are what
+        /// the vault reads, and leaving the body sheets out keeps the assertions about the clip.</summary>
+        CharacterVisualDef ClipSkin()
+        {
+            var tex = new Texture2D(4, 4);
+            _spawned.Add(tex);
+
+            Sprite[] SheetOf(int count)
+            {
+                var set = new Sprite[count];
+                for (int i = 0; i < count; i++)
+                {
+                    set[i] = Sprite.Create(tex, new Rect(0, 0, 4, 4), new Vector2(0.5f, 0.1f), 32f);
+                    set[i].name = $"cell_{i}";
+                    _spawned.Add(set[i]);
+                }
+                return set;
+            }
+
+            var def = ScriptableObject.CreateInstance<CharacterVisualDef>();
+            def.Id = "visual.boarding_clip_test";
+            def.FacingCount = 8;
+            def.BoardClip = new CharacterClipSheets
+            { FrameCount = 10, FramesPerSecond = 1000f / 90f, Loops = false, Sheet = SheetOf(8 * 10) };
+            def.BoardDownClip = new CharacterClipSheets
+            { FrameCount = 6, FramesPerSecond = 1000f / 95f, Loops = false, Sheet = SheetOf(8 * 6) };
+            _spawned.Add(def);
+            return def;
         }
 
         /// <summary>A measured hull with a skin, a dock zone and a disembark point on the planks, and a
@@ -166,6 +199,13 @@ namespace HiddenHarbours.Tests.PlayMode
             var walk = playerGo.AddComponent<PlayerWalkController>();
             var deckWalk = playerGo.AddComponent<DeckWalkController>();
             deckWalk.enabled = false;
+
+            // The clip seam the vault presents through. Added to EVERY rig, deliberately: with no skin
+            // configured it can play nothing, so the tests that predate the boarding art keep pinning the
+            // arc exactly as they did — which is also the shipped fallback for an un-skinned character.
+            // (The SpriteRenderer its RequireComponent wants is already on the GameObject: PlayerWalkController
+            // requires one too and brought it in above. Adding a second Renderer is an error, not a no-op.)
+            var clipPlayer = playerGo.AddComponent<CharacterClipPlayer>();
 
             var boatGo = NewGo("Boat", boatPos);
             var boat = boatGo.AddComponent<BoatController>();
@@ -193,7 +233,8 @@ namespace HiddenHarbours.Tests.PlayMode
                                      vaultSeconds: 0.5f, vaultHopMeters: 0.35f);
 
             return new Rig { Switcher = sw, DeckWalk = deckWalk, Walk = walk, PlayerGo = playerGo,
-                             BoatGo = boatGo, Deck = deck, DisembarkPoint = disembark.transform };
+                             BoatGo = boatGo, Deck = deck, DisembarkPoint = disembark.transform,
+                             ClipPlayer = clipPlayer };
         }
 
         /// <summary>Pump real frames until the move lands, in SECONDS — a frame count would be pinning the
@@ -424,6 +465,135 @@ namespace HiddenHarbours.Tests.PlayMode
 
             Assert.IsFalse(InteractionGate.IsBlocked, "the key is handed back on teardown");
             Assert.IsFalse(r.Switcher.IsBoardingMove);
+        }
+
+        // ---- the vault's CLIP (art drop of 2026-08-06) ------------------------------------------
+        //
+        // Owner's phase-2 call, made by commissioning the art: the arc plays the rig's `board` clip
+        // instead of the walk frames it drew while no boarding art existed. These are PlayMode claims
+        // and not EditMode ones because they are about ENABLE-TIME behaviour on a live component —
+        // the clip player takes the renderer through its own lifecycle, and a frame count is not time.
+
+        /// <summary>The claim the art was commissioned for: while the fisher is going over the rail, the
+        /// BOARD clip owns the renderer — and it is scaled to the arc, so it is still on its own last
+        /// frames as she lands rather than a third of the way through a 0.9 s cycle.</summary>
+        [UnityTest]
+        public IEnumerator TheVaultPlaysTheBoardClip_ScaledToTheArc()
+        {
+            var r = Build(new Vector3(2.6f, 0f, 0f), Vector3.zero);
+            r.ClipPlayer.Configure(ClipSkin());
+            yield return null;
+
+            r.Switcher.BeginInteract();
+
+            bool sawTheClip = false;
+            int highestFrame = -1;
+            float spent = 0f;
+            while (r.Switcher.IsBoardingMove && spent < 5f)
+            {
+                yield return null;
+                spent += Time.deltaTime;
+                if (r.ClipPlayer.IsPlaying && r.ClipPlayer.Clip == CharacterClip.Board)
+                {
+                    sawTheClip = true;
+                    highestFrame = Mathf.Max(highestFrame, r.ClipPlayer.Frame);
+                }
+            }
+
+            Assert.IsTrue(sawTheClip, "the vault drew walk frames — the board clip never took the renderer");
+            // SCALED, not merely started. The vault is 0.5 s here and the clip's own duration is 0.9 s,
+            // so an unscaled clip could only ever reach frame 5 of 10. Reaching the back half proves the
+            // clip was fitted to the move rather than the move left to outrun it.
+            Assert.GreaterOrEqual(highestFrame, 6,
+                $"the board clip only reached frame {highestFrame}/9 across a 0.5 s vault — it is " +
+                "playing at its own 0.9 s rate instead of being scaled to the arc");
+        }
+
+        /// <summary>Landing hands the renderer back. A clip left running would freeze the fisher in a
+        /// boarding pose while she walks the deck.</summary>
+        [UnityTest]
+        public IEnumerator WhenTheMoveLands_TheClipIsOffTheRenderer()
+        {
+            var r = Build(new Vector3(2.6f, 0f, 0f), Vector3.zero);
+            r.ClipPlayer.Configure(ClipSkin());
+            yield return null;
+
+            r.Switcher.BeginInteract();
+            yield return RunTheMoveOut(r);
+
+            Assert.AreEqual(ControlMode.OnDeck, r.Switcher.Mode, "she boarded");
+            Assert.IsFalse(r.ClipPlayer.IsPlaying, "the clip let the renderer go when the arc landed");
+            Assert.AreEqual(CharacterClip.None, r.ClipPlayer.Clip);
+        }
+
+        /// <summary>Stepping ashore is its own authored clip, not the boarding one reversed — so the
+        /// move must ask for <c>boardDown</c> and never for <c>board</c>.</summary>
+        [UnityTest]
+        public IEnumerator SteppingAshorePlaysTheBoardDownClip()
+        {
+            var r = Build(new Vector3(2.6f, 0f, 0f), Vector3.zero);
+            r.ClipPlayer.Configure(ClipSkin());
+            yield return null;
+
+            r.Switcher.BeginInteract();                       // aboard first
+            yield return RunTheMoveOut(r);
+            Assert.AreEqual(ControlMode.OnDeck, r.Switcher.Mode);
+            yield return null;
+
+            r.Switcher.BeginInteract();                       // …and back off her
+            bool sawBoardDown = false, sawBoard = false;
+            float spent = 0f;
+            while (r.Switcher.IsBoardingMove && spent < 5f)
+            {
+                yield return null;
+                spent += Time.deltaTime;
+                if (!r.ClipPlayer.IsPlaying) continue;
+                sawBoardDown |= r.ClipPlayer.Clip == CharacterClip.BoardDown;
+                sawBoard |= r.ClipPlayer.Clip == CharacterClip.Board;
+            }
+
+            Assert.IsTrue(sawBoardDown, "stepping ashore never played the boardDown clip");
+            Assert.IsFalse(sawBoard, "stepping ashore played the BOARDING clip — they are authored apart");
+        }
+
+        /// <summary>A move torn down mid-air must not leave a boarding frame on a fisher who is standing
+        /// on the wharf again — the clip comes off on every ending the move has, not only the happy one.</summary>
+        [UnityTest]
+        public IEnumerator TornDownMidVault_TheClipComesOffToo()
+        {
+            var r = Build(new Vector3(2.6f, 0f, 0f), Vector3.zero);
+            r.ClipPlayer.Configure(ClipSkin());
+            yield return null;
+
+            r.Switcher.BeginInteract();
+            float spent = 0f;
+            while (!(r.ClipPlayer.IsPlaying && r.ClipPlayer.Clip == CharacterClip.Board) && spent < 2f)
+            {
+                yield return null;
+                spent += Time.deltaTime;
+            }
+            Assert.IsTrue(r.ClipPlayer.IsPlaying, "the clip never started, so this proves nothing");
+
+            r.Switcher.enabled = false;                       // the rig goes away under the move
+            yield return null;
+
+            Assert.IsFalse(r.ClipPlayer.IsPlaying, "the clip outlived the move that started it");
+        }
+
+        /// <summary>The fallback that keeps this a presentation change: a character whose kit never baked
+        /// the boarding clips boards exactly as before, drawing whatever drew them.</summary>
+        [UnityTest]
+        public IEnumerator WithNoBoardingArt_TheMoveIsUnchanged()
+        {
+            var r = Build(new Vector3(2.6f, 0f, 0f), Vector3.zero);
+            // No Configure — the clip player has no skin at all, which is the un-skinned greybox case.
+            yield return null;
+
+            r.Switcher.BeginInteract();
+            yield return RunTheMoveOut(r);
+
+            Assert.IsFalse(r.ClipPlayer.IsPlaying, "nothing was played, and nothing was claimed");
+            Assert.AreEqual(ControlMode.OnDeck, r.Switcher.Mode, "and the boarding still happened");
         }
     }
 }

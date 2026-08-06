@@ -33,6 +33,8 @@ namespace HiddenHarbours.Tests.RigBaking
             ("hold", 6), ("cast", 10), ("castBack", 6), ("castRelease", 8),
             ("bite", 6), ("strike", 6), ("reel", 12), ("land", 12),
             ("dig", 10),
+            // rev 6.1 (board, boardDown, haul) and rev 6.2 (ladderDown), drop of 2026-08-06.
+            ("board", 10), ("boardDown", 6), ("haul", 8), ("ladderDown", 10),
         };
 
         /// <summary>Which layer each anim drives, from the pass-6 mount contract.</summary>
@@ -42,6 +44,10 @@ namespace HiddenHarbours.Tests.RigBaking
             ("balance", "free"), ("stagger", "free"),
             ("hold", "rod"), ("cast", "rod"), ("reel", "rod"), ("land", "rod"),
             ("dig", "shovel"),
+            // The boarding clips are free — a pail or a tray may ride them. ladderDown is the rev-6.2
+            // 'ladder' mount: both hands are on the rungs, so nothing carries and no prop mounts.
+            ("board", "free"), ("boardDown", "free"), ("haul", "free"),
+            ("ladderDown", "ladder"),
         };
 
         const int CellW = 64, CellH = 92, Dirs = 8;
@@ -383,6 +389,76 @@ namespace HiddenHarbours.Tests.RigBaking
             // The rounding replacer really ran: no full-precision doubles in the file.
             StringAssert.DoesNotContain("0000000000", json,
                 "anchor numbers are not rounded — the sidecar is carrying float noise");
+        }
+
+        [Test]
+        public void TheSidecar_CarriesClipPins_ForEachOfTheThreeClipFamilies()
+        {
+            // The rev 6.1/6.2 clips each expose a pin call the ladder and rope slices read instead of
+            // re-deriving contact points: boardMount() (the rail plant and the landing re-seat),
+            // haulGrip() (the two rope pins and the tension envelope), ladderMount() (the rung locks,
+            // the standoff and the per-frame descent). A sidecar with anchors but no clip pins looks
+            // complete and silently costs the gameplay slice its geometry.
+            string outFolder = "artifacts/rig-bake-test-clippins";
+            Directory.CreateDirectory(Path.Combine(RepoRoot, outFolder));
+
+            var r = CharacterRigBaker.Bake(
+                "character",
+                new[]
+                {
+                    new CharacterState("board"),        // -> boardMount
+                    new CharacterState("haul"),         // -> haulGrip
+                    new CharacterState("ladderDown"),   // -> ladderMount
+                    new CharacterState("walk"),         // free, no clip -> no clip pins at all
+                },
+                outFolder, "ClipPins_", "ClipPinAnchors.json", buildPreset: "fisher");
+
+            Assert.AreEqual(4, r.Sheets.Count);
+            string json = File.ReadAllText(Path.Combine(RepoRoot, r.AnchorJsonPath));
+
+            StringAssert.Contains("\"clipPinSource\": \"boardMount\"", json);
+            StringAssert.Contains("\"rail\"", json, "boardMount reports where the plant hand meets the rail");
+            StringAssert.Contains("\"landing\"", json, "and the vector the last frame re-seats by");
+
+            StringAssert.Contains("\"clipPinSource\": \"haulGrip\"", json);
+            StringAssert.Contains("\"tension\"", json, "haulGrip carries the 0..1 heave envelope");
+
+            StringAssert.Contains("\"clipPinSource\": \"ladderMount\"", json);
+            StringAssert.Contains("\"standoff\"", json, "ladderMount states how far the pivot sits off the plane");
+            StringAssert.Contains("\"descend\"", json, "and the per-frame descent that keeps soles on real rungs");
+            StringAssert.Contains("\"mount\": \"ladder\"", json, "the rig's own mount kind reaches the sidecar");
+
+            // A clip pin is never invented for an anim that has none — walk gets anchors and nothing else.
+            StringAssert.DoesNotContain("undefined", json,
+                "a pin call was emitted for an anim the rig has no pin function for");
+        }
+
+        [Test]
+        public void ACarryStanceExclusion_KeepsTheBoardingClipsFreeHanded()
+        {
+            // The rig rides pails and a tray on both boarding clips, so the carry expansion would grow
+            // four more sheets for art nothing can reach yet (nothing fills the fisher's hands before a
+            // vault). The exclusion is a BUDGET lever and this pins that it excludes only what it names:
+            // walk still grows its full stance set from the rig's own table.
+            string outFolder = "artifacts/rig-bake-test-exclusions";
+            Directory.CreateDirectory(Path.Combine(RepoRoot, outFolder));
+
+            var r = CharacterRigBaker.Bake(
+                "character",
+                new[] { new CharacterState("board"), new CharacterState("walk") },
+                outFolder, "Excl_", anchorFileName: null, buildPreset: "fisher",
+                withCarryStances: true,
+                carryStanceExclusions: new[] { "board" });
+
+            var keys = new System.Collections.Generic.List<string>();
+            foreach (var s in r.Sheets) keys.Add(s.State);
+
+            CollectionAssert.Contains(keys, "board");
+            CollectionAssert.DoesNotContain(keys, "board_buckets", "the exclusion held");
+            CollectionAssert.DoesNotContain(keys, "board_tray", "the exclusion held");
+
+            CollectionAssert.Contains(keys, "walk_buckets", "an un-excluded anim still expands");
+            CollectionAssert.Contains(keys, "walk_helm", "…across every stance the rig rides on it");
         }
 
         [Test]

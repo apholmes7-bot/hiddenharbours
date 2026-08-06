@@ -76,6 +76,75 @@ namespace HiddenHarbours.Core
     }
 
     /// <summary>
+    /// <b>A whole-body CLIP the character plays as an EVENT</b> — the third axis, and the one neither
+    /// <see cref="CharacterGait"/> nor <see cref="CharacterStance"/> can express. A gait is chosen from
+    /// measured speed and a stance from context; a clip is <b>started</b>, runs on its own clock, and
+    /// ends. Nothing about "climbing over a rail" can be derived from how fast the fisher is moving.
+    ///
+    /// <para><b>Append-only</b> (CLAUDE.md §5): these name ART. Each maps to one anim in the rig's own
+    /// <c>ANIMS</c> table (<c>characterIsoRig6.js</c> rev 6.2), so a clip added here must exist there
+    /// first — and the rig's <c>ANIM_MOUNT</c> decides whether a carry stance or a prop layer may ride
+    /// it (<see cref="LadderDown"/> is the rig's <c>'ladder'</c> mount: both hands are committed).</para>
+    /// </summary>
+    public enum CharacterClip
+    {
+        /// <summary>No clip — the gait/stance presenter owns the renderer. The default.</summary>
+        None = 0,
+        /// <summary>Stepping up and over a rail, from the rig's <c>board</c> (10 f, 90 ms, one-shot).
+        /// The clip the boarding move's vault plays.</summary>
+        Board = 1,
+        /// <summary>Stepping ashore off a rail, from the rig's <c>boardDown</c> (6 f, 95 ms, one-shot).
+        /// Authored, not a mirror of <see cref="Board"/> — going down the hand only steadies.</summary>
+        BoardDown = 2,
+        /// <summary>A two-handed heave on a line, from the rig's <c>haul</c> (8 f, 120 ms, LOOPING).
+        /// The pass-6 answer to the legacy hand-pixelled <c>PlayerHaul.png</c>, which was one facing at
+        /// a different cell and unusable at seven of the eight headings.</summary>
+        Haul = 3,
+        /// <summary>Climbing DOWN a fixed ladder, from the rig's <c>ladderDown</c> (10 f, 110 ms,
+        /// LOOPING). Locomotion, not a transition: the cell plays in place and the engine translates the
+        /// sprite down the ladder. There is no <c>ladderUp</c> and it is not this reversed.</summary>
+        LadderDown = 4,
+    }
+
+    /// <summary>
+    /// One CLIP's worth of art: a direction × frame sheet like every other, plus the two facts a clip
+    /// carries that a gait sheet does not — whether it LOOPS, and how many directions it was baked at.
+    ///
+    /// <para><b>Why its own facing count.</b> The gait sheets all bake the def's
+    /// <see cref="CharacterVisualDef.FacingCount"/>, but a clip need not: a ladder climb is often
+    /// authored at one or two facings because a climber faces the ladder, and a kit is free to ship it
+    /// that way. Leave this <b>0</b> to inherit the def's count (what the pass-6 kit wants — it bakes
+    /// all four clips at the full eight). Set it and the row snap re-solves against THAT many
+    /// directions, so a 2-facing climb never indexes row 5 of a 2-row sheet.</para>
+    ///
+    /// <para><b>All-or-nothing</b>, like every other sheet here
+    /// (<see cref="CharacterVisualDef.HasClip"/>): a clip counts as wired only when it is COMPLETE.
+    /// A short one is dropped whole and the clip simply never plays — the caller's fallback is
+    /// whatever drew the character already, which is always a legal picture.</para>
+    /// </summary>
+    [System.Serializable]
+    public class CharacterClipSheets
+    {
+        [Tooltip("Clip frames, element [direction·FrameCount + frame]. Empty/short = this clip has no " +
+                 "art and never plays.")]
+        public Sprite[] Sheet = System.Array.Empty<Sprite>();
+        [Tooltip("Frames per direction on this clip's sheet (from the rig's own ANIMS table).")]
+        [Min(1)] public int FrameCount = 1;
+        [Tooltip("The clip's NATURAL playback rate in frames per second (1000 / the rig's ms). Used when " +
+                 "a caller plays the clip unscaled; a caller that scales the clip to a move's own " +
+                 "duration overrides it.")]
+        [Min(0f)] public float FramesPerSecond = 10f;
+        [Tooltip("LOOPS (haul, ladderDown) rather than playing once and holding its last frame (board, " +
+                 "boardDown). The rig's ANIMS table states this per clip — oneShot there is loop=false " +
+                 "here.")]
+        public bool Loops = false;
+        [Tooltip("Directions this clip was baked at, or 0 to inherit the def's FacingCount. Set it ONLY " +
+                 "for a clip whose kit baked fewer rows than the body (a 1–2 facing ladder climb); the " +
+                 "pass-6 kit bakes all four clips at the full eight, so 0 is right for it.")]
+        [Min(0)] public int FacingCount = 0;
+    }
+
+    /// <summary>
     /// The stance + gait a character is ACTUALLY drawing, after the availability ladders have run — what
     /// <see cref="CharacterVisualDef.Playable"/> answers. A tiny pair so the resolution is one pure,
     /// EditMode-testable call rather than two out-params that a caller can combine wrongly.
@@ -203,6 +272,27 @@ namespace HiddenHarbours.Core
         [Tooltip("AT THE OARS — the rig's 'oars' carry. What a rower shows on a pulled hull (the dory, the " +
                  "punt), drawn alongside the hull's own oar overlays, which are separate sprites by design.")]
         public CharacterStanceSheets OarsStance = new CharacterStanceSheets();
+
+        [Header("Clips (append-only — whole-body actions played as EVENTS, not chosen from speed)")]
+        [Tooltip("STEPPING OVER A RAIL — the rig's 'board' clip (one-shot). What the boarding move's vault " +
+                 "plays. Leave empty and the vault falls back to the measured-speed walk it showed before.")]
+        public CharacterClipSheets BoardClip = new CharacterClipSheets
+        { FrameCount = 10, FramesPerSecond = 1000f / 90f, Loops = false };
+
+        [Tooltip("STEPPING ASHORE — the rig's 'boardDown' clip (one-shot). The disembarking half of the " +
+                 "same move; authored separately rather than mirrored.")]
+        public CharacterClipSheets BoardDownClip = new CharacterClipSheets
+        { FrameCount = 6, FramesPerSecond = 1000f / 95f, Loops = false };
+
+        [Tooltip("HEAVING ON A LINE — the rig's 'haul' clip (LOOPING). The 8-direction replacement for the " +
+                 "legacy one-facing PlayerHaul sheet.")]
+        public CharacterClipSheets HaulClip = new CharacterClipSheets
+        { FrameCount = 8, FramesPerSecond = 1000f / 120f, Loops = true };
+
+        [Tooltip("CLIMBING DOWN A LADDER — the rig's 'ladderDown' clip (LOOPING). The art for the tide-gap " +
+                 "boarding slice; playing it is this def's job, deciding WHEN is the gameplay slice's.")]
+        public CharacterClipSheets LadderDownClip = new CharacterClipSheets
+        { FrameCount = 10, FramesPerSecond = 1000f / 110f, Loops = true };
 
         // ---- the all-or-nothing gates + lookups (pure; EditMode-testable without a scene) ----------
 
@@ -373,6 +463,99 @@ namespace HiddenHarbours.Core
             if (sheet.Length == 0) return null;
             int facings = Mathf.Max(1, FacingCount);
             int frames = FrameCountFor(stance, gait);
+            int row = ((facingRow % facings) + facings) % facings;
+            int col = ((frame % frames) + frames) % frames;
+            int idx = row * frames + col;
+            return (idx >= 0 && idx < sheet.Length) ? sheet[idx] : null;
+        }
+
+        // ---- the CLIP axis: the same questions, asked of a clip's sheet ----------------------------
+        // Deliberately parallel to the stance block above rather than folded into it: a clip is not a
+        // gait, has no gait ladder to fall down, and carries two facts a stance sheet does not (it may
+        // LOOP, and it may have been baked at fewer directions than the body).
+
+        /// <summary>The block for a clip, or null for <see cref="CharacterClip.None"/> and anything
+        /// unrecognised.</summary>
+        public CharacterClipSheets ClipSheetsFor(CharacterClip clip) => clip switch
+        {
+            CharacterClip.Board => BoardClip,
+            CharacterClip.BoardDown => BoardDownClip,
+            CharacterClip.Haul => HaulClip,
+            CharacterClip.LadderDown => LadderDownClip,
+            _ => null,
+        };
+
+        /// <summary>Frames per direction on a clip's sheet (1 for an unknown clip — never 0, so no
+        /// caller divides by it).</summary>
+        public int ClipFrameCount(CharacterClip clip)
+        {
+            var c = ClipSheetsFor(clip);
+            return c == null ? 1 : Mathf.Max(1, c.FrameCount);
+        }
+
+        /// <summary>A clip's NATURAL playback rate (fps) — what it plays at unscaled.</summary>
+        public float ClipFramesPerSecond(CharacterClip clip)
+        {
+            var c = ClipSheetsFor(clip);
+            return c == null ? 0f : Mathf.Max(0f, c.FramesPerSecond);
+        }
+
+        /// <summary>True when a clip LOOPS (haul, ladderDown) rather than playing once and holding its
+        /// last frame (board, boardDown).</summary>
+        public bool ClipLoops(CharacterClip clip)
+        {
+            var c = ClipSheetsFor(clip);
+            return c != null && c.Loops;
+        }
+
+        /// <summary>
+        /// How many direction rows a clip's sheet actually carries — its own
+        /// <see cref="CharacterClipSheets.FacingCount"/> when set, else the def's
+        /// <see cref="FacingCount"/>. <b>The one place the "clips need not bake eight" rule lives</b>:
+        /// every clip row snap and every clip index goes through this, so a kit that ships a 2-facing
+        /// ladder climb needs no code change and can never index a row its sheet does not have.
+        /// </summary>
+        public int ClipFacingCount(CharacterClip clip)
+        {
+            var c = ClipSheetsFor(clip);
+            int own = c == null ? 0 : c.FacingCount;
+            return Mathf.Max(1, own > 0 ? own : FacingCount);
+        }
+
+        /// <summary>True when a clip's sheet is COMPLETE — exactly <see cref="ClipFacingCount"/> ×
+        /// its frame count, every slot assigned. The gate a clip plays behind; anything short means the
+        /// clip never plays and the caller keeps whatever was drawing the character.</summary>
+        public bool HasClip(CharacterClip clip)
+        {
+            var c = ClipSheetsFor(clip);
+            if (c == null) return false;
+            var sheet = c.Sheet ?? System.Array.Empty<Sprite>();
+            int expected = ClipFacingCount(clip) * ClipFrameCount(clip);
+            if (sheet.Length != expected || expected <= 0) return false;
+            for (int i = 0; i < sheet.Length; i++)
+                if (sheet[i] == null) return false;
+            return true;
+        }
+
+        /// <summary>
+        /// The DIRECTION ROW of a CLIP's sheet that depicts a compass heading — the clip twin of
+        /// <see cref="FacingRowFor"/>, snapped against <see cref="ClipFacingCount"/> rather than the
+        /// body's. A clip baked at two facings snaps the whole compass into those two rows; one baked
+        /// at the body's eight answers exactly what <see cref="FacingRowFor"/> answers.
+        /// </summary>
+        public int ClipFacingRowFor(CharacterClip clip, float headingDegrees) =>
+            IsoFacing.HeadingToFacingIndex(headingDegrees, ClipFacingCount(clip), ZeroHeadingDegrees,
+                                           FacingsAreCounterClockwise);
+
+        /// <summary>The sprite for a clip / direction row / frame, or null if that cell isn't wired. Row
+        /// and frame wrap (negative-safe) against the CLIP's own counts.</summary>
+        public Sprite ClipSpriteFor(CharacterClip clip, int facingRow, int frame)
+        {
+            var c = ClipSheetsFor(clip);
+            var sheet = c?.Sheet;
+            if (sheet == null || sheet.Length == 0) return null;
+            int facings = ClipFacingCount(clip);
+            int frames = ClipFrameCount(clip);
             int row = ((facingRow % facings) + facings) % facings;
             int col = ((frame % frames) + frames) % frames;
             int idx = row * frames + col;

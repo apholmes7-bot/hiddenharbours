@@ -393,11 +393,19 @@ in this repo.
 
 ---
 
-## The character rig kit, pass 6 (imported 2026-08-02)
+## The character rig kit, pass 6 (imported 2026-08-02 · **rev 6.2 imported 2026-08-06**)
 
-One procedural person: eight facings, **fourteen** animations, four carry stances, and the axes that
+One procedural person: eight facings, **eighteen** animations, four carry stances, and the axes that
 make her somebody in particular. This drop replaces the pass-1 body (`characterIsoRig.js`) and splits
 the head and the eyes into rigs of their own.
+
+> **Rev 6.2 (2026-08-06) is append-only over the 6.0 body this repo already carried.** Four clips
+> arrived — `board`, `boardDown`, `haul` (rev 6.1) and `ladderDown` (rev 6.2) — plus `boardMount()`,
+> `haulGrip()`, `ladderMount()` and the new `'ladder'` mount kind. **The cell, the pivot, the camera,
+> the ten presets and all fourteen earlier clips are untouched and re-bake byte-identical**, which is
+> the drop's own claim and the reason this was a rig swap and not a re-derivation. `presets.json` is
+> unchanged; `options.json` grew only the four new `anims` entries. See *The three clip families*
+> below.
 
 ### ⚠️ LOAD ORDER IS A HARD REQUIREMENT
 
@@ -444,7 +452,7 @@ has been CCW-mislabelled twice. `CharacterRigAzimuthProbe` measures it from rend
 time and the bake refuses on a mismatch, exactly like every sibling. Until that bake has run, treat
 the clockwise claim as a prior.
 
-### Animations — fourteen, and the mount contract is in the rig
+### Animations — eighteen, and the mount contract is in the rig
 
 Frame counts and `ms` come from `C.ANIMS`; which layer each one drives comes from `C.ANIM_MOUNT`.
 Never restate either in engine code.
@@ -458,10 +466,53 @@ Never restate either in engine code.
 | `stagger` | 10 | 90 | free | | `castBack` | 6 | 90 | rod |
 | `hold` | 6 | 170 | rod | | `castRelease` | 8 | 70 | rod |
 | `cast` | 10 | 70 | rod (`power:'short'\|'long'`) | | `dig` | 10 | 90 | **shovel** |
+| **`board`** | 10 | 90 | free · one-shot · reads `railZ` | | **`haul`** | 8 | 120 | free · **loops** |
+| **`boardDown`** | 6 | 95 | free · one-shot · reads `railZ` | | **`ladderDown`** | 10 | 110 | **`ladder`** · loops |
 
 `C.GROUPS` bundles them: `base` = idle/walk/run · `balance` = balance/stagger · `fishing` = the eight
-rod states. The four carry stances (`C.CARRIES`: `buckets` · `tray` · `helm` · `oars`) ride the
-**free** anims only — a tool anim always wins and `carry` is ignored.
+rod states · `boarding` = board/boardDown/ladderDown · `work` = dig/haul. The four carry stances
+(`C.CARRIES`: `buckets` · `tray` · `helm` · `oars`) ride the **free** anims only — a tool anim always
+wins and `carry` is ignored. Rev 6.1 added `board` / `boardDown` to the `buckets` and `tray` lists.
+
+**`'ladder'` is a third mount kind**, neither free nor a tool: both hands are committed to the rungs,
+so no carry stance rides `ladderDown` and no prop layer mounts on it. The baker needs no special case
+— everything that asks "is this free?" already refuses carry on it.
+
+### The three clip families (rev 6.1 / 6.2)
+
+These are **events**, not gaits: a gait is picked from measured speed and a stance from context, but a
+clip is *started*, runs on its own clock and ends. In engine that is `CharacterClipPlayer`
+(`HiddenHarbours.Core`), which takes the renderer through the same counted `Suspend`/`Release` claim
+`PlayerHaulAnimator` uses and reads every fact off `CharacterVisualDef` — no sheet paths in code.
+
+Each family exposes a **pin call** the baker writes into the sidecar as `clipPins`, tagged with
+`clipPinSource`. Read them; never re-derive a contact point.
+
+| family | clips | pin call | what the pins carry |
+|---|---|---|---|
+| **boarding** | `board`, `boardDown` | `boardMount()` | `rail` (where the plant hand meets the rail), `landing` (the cell-px vector the LAST frame re-seats the sprite by), `phase`, `rise`, `clamped` |
+| **haul** | `haul` | `haulGrip()` | `handL`/`handR` (the two rope grips), `mid` (where a rope FX starts), `out` (unit direction), `tension` (0–1 heave envelope) |
+| **ladder** | `ladderDown` | `ladderMount()` | `rungL`/`rungR` (soles projected to rung level), `standoff` (0.275 m off the ladder plane), `descend`, `stepZ` (0.60 m per loop), `ladderBehind` (draw order) |
+
+Three things about them that are easy to get wrong:
+
+- **`board` re-solves per `railZ`, but a sheet does not.** The shipped bake uses the rig's default
+  **0.55 m** (a dory sheer). A hull with a different sheer wants its own sheet — the kit's own rule is
+  "bake one sheet per rail height you ship". Above the clamp (drop > 1.2 m) the answer is
+  `ladderDown`, not a taller `board`.
+- **`ladderDown` is locomotion, not a transition.** The ground does not change under the figure; the
+  cell plays in place like `walk` and the engine translates the sprite down the ladder. Drive that
+  translation off `ladderMount().descend` — a *stair*, not a ramp — and the soles sit still on real
+  rungs. A constant 0.55 m/s creeps up to a third of a rung, three visible pixels at 32 px/m.
+- **`haul` replaces the legacy `PlayerHaul.png`** (`fisherRig.js` → `FisherHaul`, c0–c5 + strain +
+  ease): hand-pixelled side profile, ONE facing, 32 × 64 at pivot (16, 64) — a different cell and a
+  different contract, unusable at seven of the eight headings. The old sheet is still what
+  `PlayerHaulAnimator` draws; swapping that presenter over to this clip is its own change.
+
+**Known open, from the kit:** there is no `ladderUp` and it is not this clip reversed (going up the
+arms pull and the hips stay in). The turn-around at the top of a ladder and the step off at the bottom
+onto a moving gunwale are not authored — an engine covers both with `board`/`boardDown` or a hard cut,
+and the turn-around is the one players will notice.
 
 ### Customization — colour is data, structure is geometry
 
