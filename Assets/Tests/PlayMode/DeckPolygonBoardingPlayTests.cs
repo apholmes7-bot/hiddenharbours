@@ -104,22 +104,47 @@ namespace HiddenHarbours.Tests.PlayMode
                                   bakeElevationDegrees: Iso);
         }
 
-        /// <summary>Is a boat-relative WORLD offset standing on one of her DECK areas? Un-projects it the
-        /// way the walk projects it and asks the polygons — with a millimetre of slack, because a clamped
-        /// player stands exactly ON the outline, where a crossing test may read either way.</summary>
-        static bool OnTheDeck(BoatDeckDef deck, Vector2 worldOffset, float headingDeg, float elevationDeg)
+        /// <summary>
+        /// Assert the player is standing on the deck, in the two halves that actually matter:
+        /// <b>(1)</b> the hull-frame position the walk clamped to lies on one of her <c>DECK</c>
+        /// polygons, and <b>(2)</b> the transform is the honest FORWARD projection of exactly that
+        /// point, at that area's height, in that facing.
+        ///
+        /// <para>Deliberately not "un-project the transform and see if it lands inside" — that inverse
+        /// is a converging iteration, not a closed form (height and along-hull distance share a screen
+        /// axis), so a fixed number of passes reads a legitimately-clamped point on a SLOPED area as
+        /// off the deck. That is a false negative in the check, and it is what this test hit: the
+        /// player was standing exactly on the foredeck's port stemhead corner and the two-pass inverse
+        /// had only crept to within half a metre of it. Forward-projecting is exact and needs no
+        /// tolerance beyond float noise.</para>
+        /// </summary>
+        static void AssertStandingOnDeck(DeckWalkController walk, Transform player, Transform boat,
+                                         float headingDeg, string who)
         {
+            BoatDeckDef deck = walk.Deck;
+            Assert.IsNotNull(deck, $"{who}: the walk resolved no deck at all");
+
+            Vector2 local = walk.DeckLocalPosition;
+            float height = 0f;
+            bool onDeck = false;
             foreach (DeckArea a in deck.Areas)
             {
                 if (a.Kind != DeckAreaKind.Deck) continue;
-                float height = DeckAreaMath.HeightAt(a.HeightPlane,
-                    DeckAreaMath.WorldToDeck(worldOffset, 0f, headingDeg, elevationDeg));
-                Vector2 local = DeckAreaMath.WorldToDeck(worldOffset, height, headingDeg, elevationDeg);
-                if (DeckAreaMath.Contains(a.Outline, a.Bounds, local)) return true;
                 DeckAreaMath.ClosestPointOnOutline(a.Outline, local, out float sqr);
-                if (sqr < 1e-2f) return true;                 // within 10 cm of the outline = on the rail
+                // Inside, or ON the outline — a clamped player stands exactly on the edge, where an
+                // even-odd crossing test may legitimately read either way.
+                if (!DeckAreaMath.Contains(a.Outline, a.Bounds, local) && sqr > 1e-6f) continue;
+                height = DeckAreaMath.HeightAt(a.HeightPlane, local);
+                onDeck = true;
+                break;
             }
-            return false;
+            Assert.IsTrue(onDeck, $"{who}: hull-frame {local} is not on any DECK area of {deck.Id}");
+
+            Vector2 expected = DeckAreaMath.DeckToWorld(local, height, headingDeg, Iso);
+            Vector2 actual = (Vector2)player.position - (Vector2)boat.position;
+            Assert.Less(Vector2.Distance(expected, actual), 1e-3f,
+                $"{who}: standing at hull-frame {local} (height {height:0.00} m) should draw at {expected}, " +
+                $"but the player is at {actual}");
         }
 
         // ---------------------------------------------------------------------------------------------
@@ -160,9 +185,7 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;                       // one Update: the deck-walk steps, clamps, publishes
 
             float heading = boatGo.GetComponent<DirectionalBoatSprite>().DrawnHeadingDegrees();
-            Vector2 offset = (Vector2)playerGo.transform.position - (Vector2)boatGo.transform.position;
-            Assert.IsTrue(OnTheDeck(deck, offset, heading, Iso),
-                $"boarding put the player at {offset} — off her authored deck (heading {heading}°)");
+            AssertStandingOnDeck(deckWalk, playerGo.transform, boatGo.transform, heading, "after boarding");
         }
 
         [UnityTest]
@@ -184,16 +207,18 @@ namespace HiddenHarbours.Tests.PlayMode
             {
                 // Turn her: bow = transform.up, so the drawn facing follows the physics root's rotation.
                 boatGo.transform.rotation = Quaternion.Euler(0f, 0f, -step * 45f);
-                // …and shove the player well off the deck before the tick, so the clamp has real work.
-                playerGo.transform.position = boatGo.transform.position + new Vector3(9f, 9f, 0f);
+                yield return null;                   // the facing settles
 
-                yield return null;                   // the facing settles…
-                yield return null;                   // …and one full Update of the deck-walk clamps in it
+                // …then throw the player well clear of her and make the walk seat them again. SnapTo is
+                // the supported way in (the switcher's own path); writing the transform would do nothing,
+                // because the HULL-frame position is what this controller steers by.
+                deckWalk.SnapTo(new Vector2(9f, 9f));
+
+                yield return null;                   // one full Update: step, clamp, project, publish
 
                 float heading = directional.DrawnHeadingDegrees();
-                Vector2 offset = (Vector2)playerGo.transform.position - (Vector2)boatGo.transform.position;
-                Assert.IsTrue(OnTheDeck(deck, offset, heading, Iso),
-                    $"facing {step} (drawn {heading:0.#}°): the player ended at {offset}, off the deck");
+                AssertStandingOnDeck(deckWalk, playerGo.transform, boatGo.transform, heading,
+                                     $"facing {step} (drawn {heading:0.#}°)");
             }
         }
 

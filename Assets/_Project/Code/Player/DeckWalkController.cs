@@ -76,6 +76,12 @@ namespace HiddenHarbours.Player
         private float _deckHeight;          // height above the keel of the area under _deckLocal (m)
         private int _deckArea = -1;         // which area holds it — the per-tick search hint (rule 7)
 
+        /// <summary>How many passes <see cref="SeedDeckLocal"/> takes to invert the projection. Four:
+        /// one is exact on a flat sole, and a sheer-following foredeck is within a millimetre by the
+        /// fourth. Not a feel knob — an iteration count on a converging solve, and it runs on boarding
+        /// only.</summary>
+        private const int SeedPasses = 4;
+
         /// <summary>The boat physics root the deck belongs to (set by the switcher on boarding).</summary>
         public Transform BoatRoot => _boatRoot;
 
@@ -355,18 +361,25 @@ namespace HiddenHarbours.Player
 
         /// <summary>
         /// Recover a hull-frame position from a boat-relative WORLD offset, on a hull with real areas.
-        /// Two passes: the projection folds along-hull distance and deck height onto one screen axis, so
-        /// the first pass guesses height 0, finds the area that answer lands in, and the second re-reads
-        /// the offset at that area's real height. Converges exactly for the flat soles and within a few
-        /// centimetres on the sheer-following foredecks — and it only ever runs on boarding, never per
-        /// tick.
+        ///
+        /// <para>The projection folds along-hull distance and deck height onto the same screen axis, so
+        /// there is no closed-form inverse: this is a fixed-point iteration. Guess height 0, clamp to
+        /// find which area that answer lands on, re-read the offset at THAT area's height, repeat. A
+        /// flat sole is exact on the first pass because its height does not depend on where you stand;
+        /// a sheer-following foredeck needs the iteration, because there the height varies fastest along
+        /// the very axis the projection folded it into — two passes leaves you about half a metre out
+        /// near the stemhead, four converges to millimetres. It only ever runs on boarding / a snap,
+        /// never per tick, so the extra passes cost nothing that matters.</para>
         /// </summary>
         private void SeedDeckLocal(Vector2 worldRelative, float heading, float elevation, BoatDeckDef deck)
         {
-            Vector2 local = DeckAreaMath.WorldToDeck(worldRelative, 0f, heading, elevation);
-            local = deck.ClampToWalkable(local, ref _deckArea, out float height);
-            local = DeckAreaMath.WorldToDeck(worldRelative, height, heading, elevation);
-            _deckLocal = deck.ClampToWalkable(local, ref _deckArea, out _deckHeight);
+            float height = 0f;
+            for (int pass = 0; pass < SeedPasses; pass++)
+            {
+                Vector2 local = DeckAreaMath.WorldToDeck(worldRelative, height, heading, elevation);
+                _deckLocal = deck.ClampToWalkable(local, ref _deckArea, out height);
+            }
+            _deckHeight = height;
         }
 
         private static Vector2 ReadInput()
