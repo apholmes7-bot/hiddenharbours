@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: visual.console_skiff
   Variant: 1
   HullMesh: {fileID: 11400000, guid: d681332addb706645ac359c491ef7de5, type: 2}
+  Deck: {fileID: 11400000, guid: e059964bfcc004d9eab9f48d8d380713, type: 2}
   Facings:
   - {fileID: 2151550861935500239, guid: 0a3fc06be11cf6041b8747917f5589d8, type: 3}
   - {fileID: -2801265273135910886, guid: 0a3fc06be11cf6041b8747917f5589d8, type: 3}

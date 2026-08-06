@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: visual.cape_islander_iso
   Variant: 1
   HullMesh: {fileID: 11400000, guid: bd4f4d8467fc9184ca81249147950e0c, type: 2}
+  Deck: {fileID: 11400000, guid: a74f7b0779036a473a3341ae3ce4951c, type: 2}
   Facings:
   - {fileID: 7059747339026985028, guid: c8bfd215164f2bd4ca869c35175b66a0, type: 3}
   - {fileID: 2295441931385811504, guid: c8bfd215164f2bd4ca869c35175b66a0, type: 3}

@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: visual.side_dragger_iso
   Variant: 1
   HullMesh: {fileID: 11400000, guid: a12309c09ec28884db86217b692d067f, type: 2}
+  Deck: {fileID: 11400000, guid: b3a97112c6dc3c63c7ad0fad69637131, type: 2}
   Facings: []
   ZeroHeadingDegrees: 0
   FacingsAreCounterClockwise: 0

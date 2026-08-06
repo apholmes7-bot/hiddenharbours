@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8e963cec94c290ca72be0cf932b826b, type: 3}
+  m_Name: ConsoleIso
+  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.BoatDeckDef
+  Id: deck.console_iso
+  SourceSidecar: docs/art/rigs/gameplay/consoleIsoRig.gameplay.json
+  SourceRig: docs/art/rigs/consoleIsoRig.js
+  DerivedFromRigSha256: 7fc9455043a35eb57624f78ed595e4f2ac5640c25d9cdbac7fd25dbbc398f4d1
+  LoaMeters: 7
+  Areas:
+  - Id: cockpit
+    Kind: 0
+    Outline:
+    - {x: -0.511, y: 2.1}
+    - {x: -0.673, y: 1.575}
+    - {x: -0.788, y: 1.05}
+    - {x: -0.862, y: 0.525}
+    - {x: -0.915, y: 0}
+    - {x: -0.93, y: -0.525}
+    - {x: -0.935, y: -1.05}
+    - {x: -0.92, y: -1.575}
+    - {x: -0.888, y: -2.1}
+    - {x: -0.848, y: -2.625}
+    - {x: -0.773, y: -3.15}
+    - {x: 0.773, y: -3.15}
+    - {x: 0.848, y: -2.625}
+    - {x: 0.888, y: -2.1}
+    - {x: 0.92, y: -1.575}
+    - {x: 0.935, y: -1.05}
+    - {x: 0.93, y: -0.525}
+    - {x: 0.915, y: 0}
+    - {x: 0.862, y: 0.525}
+    - {x: 0.788, y: 1.05}
+    - {x: 0.673, y: 1.575}
+    - {x: 0.511, y: 2.1}
+    HeightPlane: {x: 0, y: 0, z: 0.28}
+    HeightResidualMax: 0
+    Bounds: {x: -0.935, y: -3.15, z: 0.935, w: 2.1}
+  Cleats:
+  - Id: bow_1
+    Type: cleat
+    PositionMeters: {x: 0, y: 3.1, z: 1.047}
+  WalkCenter: {x: 0, y: -0.525}
+  WalkHalfExtents: {x: 0.935, y: 2.625}

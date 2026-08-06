@@ -109,16 +109,24 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         // The greybox dory deck (DeckWalkController defaults). FlickGestures cast due NORTH of the
-        // angler, so the stance is set by where the hull sits around the origin-standing angler:
-        //   WORST — hull centred 1.5 m north: the angler stands at the stern, the fish lands beyond the
-        //           bow, the line runs virtually the whole deck (across ≈ 0.97);
-        //   CLEAN — hull centred 1.6 m south: the angler stands exactly ON the bow rail the line leaves
-        //           over (across = 0 exactly — the bit-for-bit parity stance).
+        // angler, so the stance is set by where the angler stands ON that deck:
+        //   WORST — 1.5 m aft, near the transom: the fish lands beyond the bow and the line runs
+        //           virtually the whole deck (across ≈ 0.97);
+        //   CLEAN — exactly ON the bow rail the line leaves over (across = 0 exactly — the bit-for-bit
+        //           parity stance).
+        //
+        // The angler's deck-frame position is stated OUTRIGHT here (M2-37's data half), where it used to
+        // be implied by putting the hull 1.5 m north / 1.6 m south of an origin-standing angler and
+        // letting the fight rotate the difference back. It has to be: a measured hull's deck is projected
+        // with her artwork's iso foreshortening, so only the publisher can invert it. These are the very
+        // offsets the old world-position setup produced.
         private static readonly Vector2 DeckHalf = new Vector2(0.7f, 1.6f);
         private void PublishWorstStance()
-            => DeckStance.Publish(_stanceOwner, new DeckStanceState(new Vector2(0f, 1.5f), 0f, Vector2.zero, DeckHalf));
+            => DeckStance.Publish(_stanceOwner, new DeckStanceState(
+                   new Vector2(0f, 1.5f), 0f, Vector2.zero, DeckHalf, anglerDeckPosition: new Vector2(0f, -1.5f)));
         private void PublishCleanStance()
-            => DeckStance.Publish(_stanceOwner, new DeckStanceState(new Vector2(0f, -1.6f), 0f, Vector2.zero, DeckHalf));
+            => DeckStance.Publish(_stanceOwner, new DeckStanceState(
+                   new Vector2(0f, -1.6f), 0f, Vector2.zero, DeckHalf, anglerDeckPosition: new Vector2(0f, 1.6f)));
 
         private static void AdvanceIntoRodFight(FishingController c, float maxSeconds = 30f)
         {

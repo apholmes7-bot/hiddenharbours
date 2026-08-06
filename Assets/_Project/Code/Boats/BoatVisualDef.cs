@@ -64,6 +64,19 @@ namespace HiddenHarbours.Boats
                  "def — the lobster boat does, which is what makes the dev A/B comparison possible.")]
         public HiddenHarbours.Core.HullMeshDef HullMesh = null;
 
+        [Tooltip("WHERE YOU CAN STAND on this hull — the walkable DECK/WASHBOARD polygons and named " +
+                 "CLEATS, IMPORTED from this hull's rig sidecar (docs/art/rigs/gameplay/<rig>.gameplay.json) " +
+                 "by Hidden Harbours ▸ Dev ▸ Boats ▸ Import deck sidecars. Never hand-authored: the design " +
+                 "ruling this executes is explicit that the polygons must reach the runtime with no human " +
+                 "copy step (the baked-anchors JSON went dead exactly that way).\n\n" +
+                 "It hangs HERE, beside MotorMountLocalMeters and ArtBakeElevationDegrees, because those " +
+                 "are the other hull-local rig facts and this asset is what maps 1:1 to a rig — two paint " +
+                 "builds of one hull (punt basic/upgraded, sport skiff single/twin) rightly share one deck, " +
+                 "since paint does not move the sole.\n\n" +
+                 "Null = this hull has no measured deck and the deck-walk keeps its greybox rectangle. " +
+                 "That is the sidecar contract's 'absence is data', not a fault to fix in the inspector.")]
+        public BoatDeckDef Deck = null;
+
         [Header("Hull compass (REQUIRED — element 0 = North, then CLOCKWISE)")]
         [Tooltip("The pre-drawn hull facings in CLOCKWISE order from the zero heading: for the 8-way set " +
                  "N, NE, E, SE, S, SW, W, NW. The snap math is generalised to ANY count, so a 16-way set " +

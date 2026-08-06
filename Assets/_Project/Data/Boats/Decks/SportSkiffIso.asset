@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8e963cec94c290ca72be0cf932b826b, type: 3}
+  m_Name: SportSkiffIso
+  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.BoatDeckDef
+  Id: deck.sport_skiff_iso
+  SourceSidecar: docs/art/rigs/gameplay/sportSkiffIsoRig.gameplay.json
+  SourceRig: docs/art/rigs/sportSkiffIsoRig.js
+  DerivedFromRigSha256: 38e794a587c6411ed84c107ca5636ac37f60508b54b364ecba07a66c1b9fe5f4
+  LoaMeters: 7
+  Areas:
+  - Id: cockpit_sole
+    Kind: 0
+    Outline:
+    - {x: 0.725, y: -3.5}
+    - {x: 0.823, y: -2.8}
+    - {x: 0.888, y: -2.1}
+    - {x: 0.925, y: -1.4}
+    - {x: 0.935, y: -0.7}
+    - {x: 0.915, y: 0}
+    - {x: 0.841, y: 0.7}
+    - {x: 0.666, y: 1.4}
+    - {x: 0.43, y: 2.1}
+    - {x: -0.43, y: 2.1}
+    - {x: -0.666, y: 1.4}
+    - {x: -0.841, y: 0.7}
+    - {x: -0.915, y: 0}
+    - {x: -0.935, y: -0.7}
+    - {x: -0.925, y: -1.4}
+    - {x: -0.888, y: -2.1}
+    - {x: -0.823, y: -2.8}
+    - {x: -0.725, y: -3.5}
+    HeightPlane: {x: 0, y: 0, z: 0.28}
+    HeightResidualMax: 0
+    Bounds: {x: -0.935, y: -3.5, z: 0.935, w: 2.1}
+  Cleats:
+  - Id: bow_1
+    Type: cleat
+    PositionMeters: {x: 0, y: 3.16, z: 1.049}
+  WalkCenter: {x: 0, y: -0.7}
+  WalkHalfExtents: {x: 0.935, y: 2.8}
