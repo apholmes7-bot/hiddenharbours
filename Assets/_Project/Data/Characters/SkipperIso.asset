@@ -142,21 +142,21 @@ MonoBehaviour:
   BalanceStance:
     IdleSheet: []
     IdleFrameCount: 8
-    IdleFramesPerSecond: 6.6666667
+    IdleFramesPerSecond: 6.6666665
     WalkSheet: []
     WalkFrameCount: 8
     WalkFramesPerSecond: 10
   HelmStance:
     IdleSheet: []
     IdleFrameCount: 6
-    IdleFramesPerSecond: 5.8823529
+    IdleFramesPerSecond: 5.882353
     WalkSheet: []
     WalkFrameCount: 8
-    WalkFramesPerSecond: 9.0909091
+    WalkFramesPerSecond: 9.090909
   OarsStance:
     IdleSheet: []
     IdleFrameCount: 6
-    IdleFramesPerSecond: 5.8823529
+    IdleFramesPerSecond: 5.882353
     WalkSheet: []
     WalkFrameCount: 8
-    WalkFramesPerSecond: 9.0909091
+    WalkFramesPerSecond: 9.090909

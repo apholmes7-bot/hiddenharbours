@@ -254,7 +254,7 @@ MonoBehaviour:
     - {fileID: 1726602978, guid: 8531437ea7faa664d9594e7a2900ce97, type: 3}
     - {fileID: 644366506, guid: 8531437ea7faa664d9594e7a2900ce97, type: 3}
     IdleFrameCount: 8
-    IdleFramesPerSecond: 6.6666667
+    IdleFramesPerSecond: 6.6666665
     WalkSheet: []
     WalkFrameCount: 8
     WalkFramesPerSecond: 10
@@ -309,7 +309,7 @@ MonoBehaviour:
     - {fileID: 155617091, guid: cd644b4a2994704438c43189b93880b4, type: 3}
     - {fileID: 321466326, guid: cd644b4a2994704438c43189b93880b4, type: 3}
     IdleFrameCount: 6
-    IdleFramesPerSecond: 5.8823529
+    IdleFramesPerSecond: 5.882353
     WalkSheet:
     - {fileID: 1367362504, guid: 4f5454b09e6cc494cb55bbe6c6072d63, type: 3}
     - {fileID: -1908394553, guid: 4f5454b09e6cc494cb55bbe6c6072d63, type: 3}
@@ -376,7 +376,7 @@ MonoBehaviour:
     - {fileID: 40349043, guid: 4f5454b09e6cc494cb55bbe6c6072d63, type: 3}
     - {fileID: -1826446609, guid: 4f5454b09e6cc494cb55bbe6c6072d63, type: 3}
     WalkFrameCount: 8
-    WalkFramesPerSecond: 9.0909091
+    WalkFramesPerSecond: 9.090909
   OarsStance:
     IdleSheet:
     - {fileID: -837010799, guid: 310ffbce3b91a3a40aa338231a1c6f2c, type: 3}
@@ -428,7 +428,7 @@ MonoBehaviour:
     - {fileID: 326381526, guid: 310ffbce3b91a3a40aa338231a1c6f2c, type: 3}
     - {fileID: 503682851, guid: 310ffbce3b91a3a40aa338231a1c6f2c, type: 3}
     IdleFrameCount: 6
-    IdleFramesPerSecond: 5.8823529
+    IdleFramesPerSecond: 5.882353
     WalkSheet:
     - {fileID: -1326407888, guid: 5c79b497fadebe14bbd1dd64b243b19e, type: 3}
     - {fileID: -1431090928, guid: 5c79b497fadebe14bbd1dd64b243b19e, type: 3}
@@ -495,4 +495,4 @@ MonoBehaviour:
     - {fileID: 1249690354, guid: 5c79b497fadebe14bbd1dd64b243b19e, type: 3}
     - {fileID: -1292469067, guid: 5c79b497fadebe14bbd1dd64b243b19e, type: 3}
     WalkFrameCount: 8
-    WalkFramesPerSecond: 9.0909091
+    WalkFramesPerSecond: 9.090909
