@@ -22,6 +22,13 @@ namespace HiddenHarbours.Player
     ///   before. INTERACT again steps back onto the deck. Steering input is dead unless at the helm.</item>
     ///   <item><b>Disembark happens from the deck</b> (near a dock or over standable land — the same
     ///   step-off rules as before, just sourced from the deck state).</item>
+    ///   <item><b>Boarding and stepping ashore are MOVES, not repositions</b> (owner ask, 2026-08-06:
+    ///   "you push E and get teleported; the character should jump/climb/whatever to get onto the boat").
+    ///   E sends the fisher walking to the nearest point on THIS hull's rail — her authored deck outline,
+    ///   side decks included where her data carries them — and then over it, landing where boarding has
+    ///   always seated them. The state machine below is untouched: the move decides WHEN the same
+    ///   transition lands, never WHETHER it may. See the boarding-move block for where the sim flips and
+    ///   why that end.</item>
     /// </list>
     ///
     /// The deck-walking player (and the helm spot / deck bounds maths) ride the boat's PHYSICS ROOT —
@@ -102,6 +109,32 @@ namespace HiddenHarbours.Player
                  "rock. Auto-resolved off the walk controller's object if left empty. Absent = the old " +
                  "behaviour exactly: the fisher stands square on deck and vanishes at the helm.")]
         [SerializeField] private DeckRiderVisual _deckRider;
+
+        [Header("The boarding MOVE (owner ask 2026-08-06 — you climb aboard, you are not teleported)")]
+        [Tooltip("Play the boarding MOVE at all. Off restores the instant reposition exactly (E → you are " +
+                 "simply on the deck), which is the A/B for whether the move reads better than the snap, " +
+                 "and the escape hatch if it ever fights something. The state machine is identical either " +
+                 "way — the move only decides WHEN the same transition lands.")]
+        [SerializeField] private bool _boardingMove = true;
+        [Tooltip("Pace of the APPROACH leg (m/s) — the fisher walking to the rail. Matched to the on-foot " +
+                 "walk (PlayerWalkController's 3 m/s) on purpose: the character's sprite driver picks " +
+                 "idle/walk/run from MEASURED speed alone, so travelling at walking pace is what makes the " +
+                 "approach draw as a walk. Push it past the skin's run threshold (4.5 m/s on FisherIso) and " +
+                 "the fisher sprints at the boat instead.")]
+        [SerializeField, Min(0.1f)] private float _boardApproachSpeed = 3f;
+        [Tooltip("Hard cap on the approach leg (s), so boarding from the far edge of BoardReach still feels " +
+                 "prompt. At 3 m/s this only bites past ~2.4 m; the reach is 3.5 m, so the worst case is a " +
+                 "slightly brisk walk rather than a long trudge.")]
+        [SerializeField, Min(0f)] private float _boardApproachMaxSeconds = 0.8f;
+        [Tooltip("The VAULT leg (s) — up and over the rail, or down onto the wharf. The one duration the " +
+                 "move's read really lives on; short enough to stay responsive, long enough to see. Both " +
+                 "legs freeze under a pause and resume with it (they run on scaled time).")]
+        [SerializeField, Min(0.01f)] private float _boardVaultSeconds = 0.55f;
+        [Tooltip("How high the vault arcs above the straight line, in metres of SCREEN (up-screen is up in " +
+                 "a ¾ view — the same axis a deck's own height lifts the player along). Keep it modest: the " +
+                 "player Y-sorts on world Y, so a big hop would briefly sort the fisher behind things they " +
+                 "are in front of. 0 makes the vault a flat slide.")]
+        [SerializeField, Min(0f)] private float _boardVaultHopMeters = 0.35f;
 
         public ControlMode Mode { get; private set; } = ControlMode.OnFoot;
 
@@ -261,9 +294,14 @@ namespace HiddenHarbours.Player
         public bool CanInteract() => Mode switch
         {
             ControlMode.OnFoot => WithinBoardReach() && BoardableNow(),
-            ControlMode.OnDeck => WithinHelmReach() || InDockZone() || OnLand(),
+            ControlMode.OnDeck => WithinHelmReach() || CanStepAshore(),
             _ => true,   // at the helm → step back onto the deck, always allowed
         };
+
+        /// <summary>Is there a standable step-off from the deck right now — the authored dock/wharf, or
+        /// land under the boat? Named because three places must agree on it: the prompt, the transition,
+        /// and the boarding move re-reading the rule at the far end of its arc.</summary>
+        public bool CanStepAshore() => InDockZone() || OnLand();
 
         /// <summary>Attempt the contextual INTERACT transition for the current mode (board the deck /
         /// take the helm / step back / disembark). Returns true if a transition happened.</summary>
@@ -280,13 +318,39 @@ namespace HiddenHarbours.Player
                     // The helm is a STATION: standing at it, E takes the helm; elsewhere on the deck,
                     // E steps ashore (when a standable step-off is there).
                     if (WithinHelmReach()) { TakeHelm(); return true; }
-                    if (InDockZone() || OnLand()) { Disembark(); return true; }
+                    if (CanStepAshore()) { Disembark(); return true; }
                     return false;
 
                 default: // Aboard (at the helm) → step back onto the deck
                     LeaveHelm();
                     return true;
             }
+        }
+
+        /// <summary>
+        /// <b>The INTERACT key's entry point — E, as the player presses it.</b> Where
+        /// <see cref="TryInteract"/> is the transition itself (instant, and still exactly that for every
+        /// caller it has ever had), this is the same verb played as a MOVE: boarding and stepping ashore
+        /// send the fisher walking to the rail and over it, and make the transition when they land.
+        ///
+        /// <para><b>It decides nothing the state machine does not.</b> The gates are the very same
+        /// predicates the instant path reads, and everything the move cannot present — taking or leaving
+        /// the helm (steps WITHIN the boat, not a boarding), a rig with no boat or no player, the move
+        /// switched off — falls straight through to <see cref="TryInteract"/> and behaves as it always
+        /// did. So there is one set of rules about when you may board, not two.</para>
+        /// </summary>
+        /// <returns>True if a move started or a transition happened.</returns>
+        public bool BeginInteract()
+        {
+            if (IsBoardingMove) return false;          // a move in flight owns the verb until it lands
+
+            if (Mode == ControlMode.OnFoot && WithinBoardReach() && BoardableNow()
+                && BeginBoardingMove(BoardingMoveKind.Boarding)) return true;
+
+            if (Mode == ControlMode.OnDeck && !WithinHelmReach() && CanStepAshore()
+                && BeginBoardingMove(BoardingMoveKind.Disembarking)) return true;
+
+            return TryInteract();
         }
 
         // ---- rope: hold / root (the mooring mechanic — the owner's refinement) --------------
@@ -381,18 +445,14 @@ namespace HiddenHarbours.Player
             // player's hand and trails them on the leash). Press the root key to drop the line to the ground
             // (the boat tethers there; the player roams free). The boat always drifts on wind+tide on its
             // current tether (held or rooted) via the firm/slack rope physics.
-            bool atDock = InDockZone();
             if (_boatController != null) _boatController.enabled = false;
             if (_boatInput != null) _boatInput.enabled = false;
 
             // Place the on-foot player: a tidy landing on the dock planks when disembarking at the dock,
             // otherwise step off right where the boat is (onto the nearby land/flats) so disembark-on-land
-            // doesn't teleport you back to a far dock. Null-safe (tests / no disembark point wired).
-            if (Player != null)
-            {
-                if (atDock && _disembarkPoint != null) Player.position = _disembarkPoint.position;
-                else if (Boat != null) Player.position = Boat.position;
-            }
+            // doesn't teleport you back to a far dock. Null-safe (tests / no disembark point wired), and
+            // the same rule the boarding move arcs to — one source, so the landing can't pop.
+            if (Player != null && TryDisembarkLanding(out Vector3 landing)) Player.position = landing;
 
             ApplyPlayerFor(ControlMode.OnFoot);
             Mode = ControlMode.OnFoot;
@@ -405,6 +465,312 @@ namespace HiddenHarbours.Player
 
             // Camera: retarget to the player + reframe to the on-foot view (CameraFollow owns the value).
             EventBus.Publish(new ControlModeChanged(ControlMode.OnFoot));
+        }
+
+        /// <summary>Where stepping ashore PUTS you — the tidy landing on the dock planks when the boat is
+        /// in the dock zone and a disembark point is wired, otherwise straight off the boat onto the land
+        /// she is sitting over. Factored out because the boarding move has to arc the fisher to the very
+        /// spot <see cref="Disembark"/> will place them at, and a second copy of this rule would put a pop
+        /// at the end of every landing the moment the two drifted.</summary>
+        /// <returns>False when there is nowhere to place them (no dock point AND no boat) — the same case
+        /// in which <see cref="Disembark"/> leaves the player exactly where they stand.</returns>
+        private bool TryDisembarkLanding(out Vector3 world)
+        {
+            if (InDockZone() && _disembarkPoint != null) { world = _disembarkPoint.position; return true; }
+            if (Boat != null) { world = Boat.position; return true; }
+            world = Player != null ? Player.position : Vector3.zero;
+            return false;
+        }
+
+        // ---- the boarding MOVE (the owner's ask: climb aboard, don't teleport) ----------------
+        //
+        // WHAT IT IS. E used to reposition you instantly; now the fisher walks to the boat's rail, steps
+        // up and over it, and lands where BoardDeck() has always seated them. Stepping ashore is the same
+        // move mirrored: cross the deck to the rail nearest the landing, then down onto the wharf.
+        //
+        // WHERE THE SIM FLIPS, AND WHY THAT END. ONCE, at the FAR end of the arc — the instant the
+        // fisher's feet meet the surface they were moving to. The move never re-implements a transition:
+        // it lands by calling the very BoardDeck() / Disembark() the instant path calls, behind the very
+        // gates that path reads, so everything downstream of them is byte-identical. The far end is the
+        // only honest choice because of what ControlMode.OnDeck MEANS to the things that read it — "the
+        // fisher is standing on this deck and may work her gear" (PotDeckWorkController,
+        // TrapHaulController, DevTrapInput) and "publish a deck stance" (DeckStance → the rod fight's
+        // deck-angle term). Every one of those is false while the fisher is in the air, so flipping at the
+        // near end would put the world into a state the picture flatly contradicts for the whole move.
+        //
+        // TryInteract() is deliberately NOT the thing called at the landing: E is contextual on POSITION,
+        // and by the far end the fisher has moved (onto a small hull's deck, they can easily be standing
+        // inside the helm's reach), so a re-dispatch would answer a different question than the one the
+        // move set out to ask. A move finishes the transition it started, or none at all.
+        //
+        // THE ONE WINDOW THAT LEAVES, AND HOW IT IS SHUT. Stepping ashore is still OnDeck while the
+        // fisher arcs down to the planks, so those three gear gates would stay live for the length of the
+        // arc. The move therefore HOLDS InteractionGate for its duration — the Core seam that already
+        // means "something else owns the interact key right now", and the very flag all three of them
+        // already check (`_onDeck && !InteractionGate.IsBlocked`). DeckStance needs no such help: the deck
+        // walk is disabled for the transit, which clears the stance, which is the truth — nobody in mid-air
+        // is standing on a deck.
+        //
+        // PHYSICS. The fisher's real transform travels the arc; there is no separate visual to keep in
+        // step, and no teleport hidden under an animation. That is safe because the transit shape parks
+        // everything that could fight it (both walk controllers off, Rigidbody2D un-simulated, footprint
+        // collider off, un-parented) — see ApplyPlayerFor's `inTransit`. It also earns the animation for
+        // free: IsoCharacterSprite picks idle/walk/run from MEASURED transform speed, so a fisher moved at
+        // walking pace draws walking, with no new clip and no new selection seam.
+        //
+        // THE HULL DOES NOT HOLD STILL. Every waypoint on the boat is stored as a boat-relative offset and
+        // re-projected through her LIVE drawn heading and position each tick, so a rocking, turning,
+        // drifting hull carries the landing spot with her. Nothing here captures a world point off the boat.
+
+        private enum BoardingMoveKind { None = 0, Boarding, Disembarking }
+
+        private BoardingMoveKind _moveKind = BoardingMoveKind.None;
+        private float _moveElapsed;
+        private float _moveApproachSeconds;
+        // The move's one WORLD-anchored end — the shore end, whichever end of the arc that is. Boarding:
+        // where the fisher stood when they pressed E (leg 1's start, and where a refused move puts them
+        // back). Stepping ashore: where they will land (leg 2's finish). The other two waypoints are on
+        // the boat and are stored as boat-relative offsets, because the boat does not hold still.
+        private Vector3 _moveShoreWorld;
+        private Vector2 _moveDeckRelative;     // where they stood ON the deck (stepping ashore: leg 1's start)
+        private Vector2 _moveRailRelative;     // the rail, as a boat-relative offset re-clamped every tick
+        private bool _moveWashboards;          // does this hull carry side decks to step over?
+        private bool _moveHeldGate;            // did WE raise InteractionGate? (only we may lower it)
+
+        /// <summary>True while the fisher is mid-boarding — walking to the rail, over it, or down onto the
+        /// wharf. The mode has NOT changed yet; it changes when they land.</summary>
+        public bool IsBoardingMove => _moveKind != BoardingMoveKind.None;
+
+        /// <summary>How far through the move, 0→1 (0 when none is running). For tests and tooling.</summary>
+        public float BoardingMoveProgress
+        {
+            get
+            {
+                if (_moveKind == BoardingMoveKind.None) return 0f;
+                float total = _moveApproachSeconds + Mathf.Max(0.01f, _boardVaultSeconds);
+                return total > 1e-4f ? Mathf.Clamp01(_moveElapsed / total) : 1f;
+            }
+        }
+
+        /// <summary>
+        /// Start the move. Returns false — so the caller falls back to the instant transition — whenever
+        /// the move cannot honestly be presented: switched off, no player or boat, or a hull the deck walk
+        /// cannot place anyone on. The GATES are the caller's business and have already been read; this
+        /// only decides whether the transition is played or made.
+        /// </summary>
+        private bool BeginBoardingMove(BoardingMoveKind kind)
+        {
+            if (!_boardingMove || kind == BoardingMoveKind.None) return false;
+            if (Player == null || Boat == null) return false;
+
+            var deck = DeckWalk;
+            if (deck == null) return false;               // no deck walk → no rail to find; snap as before
+
+            // Bind (inert while disabled) so the deck can be asked where this hull's rail and seat are.
+            deck.Bind(Boat);
+            _moveWashboards = deck.HullHasWashboards();
+
+            Vector3 boatPos = Boat.position;
+            Vector3 playerPos = Player.position;
+            _moveKind = kind;
+            _moveElapsed = 0f;
+            _moveDeckRelative = (Vector2)(playerPos - boatPos);
+
+            // The RAIL: for boarding, the point on her outline nearest where the fisher stands; for
+            // stepping ashore, the point nearest where they are headed. Stored as the raw boat-relative
+            // offset and clamped afresh every tick, so the rail stays on the hull as she moves.
+            if (kind == BoardingMoveKind.Boarding)
+            {
+                _moveShoreWorld = playerPos;              // leg 1 starts here (world-anchored: the wharf)
+                _moveRailRelative = _moveDeckRelative;
+            }
+            else
+            {
+                TryDisembarkLanding(out Vector3 landing);
+                _moveShoreWorld = landing;                // leg 2 ends here (world-anchored: the wharf)
+                _moveRailRelative = (Vector2)(landing - boatPos);
+            }
+
+            // The approach is a WALK, so its length is a distance at a walking pace — not a fixed
+            // duration that would slide a distant fisher and dawdle a close one.
+            float approachDistance = Vector3.Distance(ApproachStartWorld(), RailWorld());
+            _moveApproachSeconds = Mathf.Clamp(approachDistance / Mathf.Max(0.1f, _boardApproachSpeed),
+                                               0f, Mathf.Max(0f, _boardApproachMaxSeconds));
+
+            // The fisher is now a free body in the air: nothing drives them but this move.
+            ApplyPlayerFor(Mode, inTransit: true);
+            HoldInteractionGate();
+            return true;
+        }
+
+        /// <summary>
+        /// Advance an in-flight move. The Update pump calls this with <c>Time.deltaTime</c>; tests call it
+        /// directly, because a PlayMode frame count is not time and a move measured in seconds must be
+        /// driven in seconds. Harmless when no move is running.
+        /// </summary>
+        public void TickBoardingMove(float deltaTime)
+        {
+            if (_moveKind == BoardingMoveKind.None) return;
+
+            // The gates are law, mid-arc as much as at the key-press: a hull that stops being boardable
+            // (or stops existing) under a fisher in mid-air does not get boarded. Nothing has flipped yet,
+            // so calling it off costs nothing but putting them back where they started.
+            if (_moveKind == BoardingMoveKind.Boarding && (Boat == null || !BoardableNow()))
+            {
+                CancelBoardingMove(restorePosition: true);
+                return;
+            }
+
+            _moveElapsed += Mathf.Max(0f, deltaTime);
+            float vault = Mathf.Max(0.01f, _boardVaultSeconds);
+
+            if (_moveElapsed >= _moveApproachSeconds + vault)
+            {
+                FinishBoardingMove();
+                return;
+            }
+
+            if (Player == null) { CancelBoardingMove(restorePosition: true); return; }
+
+            Vector3 rail = RailWorld();
+            if (_moveElapsed < _moveApproachSeconds)
+            {
+                // LEG 1 — the approach: ashore to the rail, or across the deck to it. Linear, because a
+                // walk is a walk; easing it would read as a drift.
+                float u = _moveApproachSeconds > 1e-4f ? _moveElapsed / _moveApproachSeconds : 1f;
+                Player.position = Vector3.Lerp(ApproachStartWorld(), rail, u);
+                return;
+            }
+
+            // LEG 2 — the vault: over the rail onto the deck, or down off it onto the wharf. Eased out so
+            // the fisher plants rather than arrives at speed, and lifted on a parabola that is zero at
+            // both ends, so the arc joins the two legs with no step in position.
+            float v = Mathf.Clamp01((_moveElapsed - _moveApproachSeconds) / vault);
+            Vector3 pos = Vector3.Lerp(rail, VaultEndWorld(), Mathf.SmoothStep(0f, 1f, v));
+            pos.y += 4f * Mathf.Max(0f, _boardVaultHopMeters) * v * (1f - v);
+            Player.position = pos;
+        }
+
+        /// <summary>
+        /// The move landed: make the transition it set out to make. It calls the SAME
+        /// <see cref="BoardDeck"/> / <see cref="Disembark"/> the instant path calls, behind the SAME
+        /// gates, re-read here because a short arc is still time passing and the rules are the rules.
+        ///
+        /// <para>Deliberately NOT a re-dispatch through <see cref="TryInteract"/>. By the far end the
+        /// fisher has moved, and E is contextual on POSITION: a fisher who has just arced onto a small
+        /// hull's deck can easily be standing inside <see cref="_helmReach"/>, so re-dispatching would
+        /// answer "take the helm" to a move that set out to step ashore. A move finishes the transition it
+        /// started or none at all.</para>
+        /// </summary>
+        private void FinishBoardingMove()
+        {
+            BoardingMoveKind kind = _moveKind;
+            EndBoardingMove();
+
+            if (kind == BoardingMoveKind.Boarding)
+            {
+                // The REPAIR gate, not the reach gate. Reach ("are you close enough to set off?") is a
+                // key-press question and is meaningless here — the fisher is standing on her. Whether she
+                // may be boarded at all is the rule that still applies at the rail, and on a long hull the
+                // seat can be further from her origin than BoardReach, so re-reading reach here would
+                // refuse a perfectly good boarding on a dragger.
+                if (Boat != null && BoardableNow()) { BoardDeck(); return; }
+                // Refused at the rail — the fisher is put back down where they started, still ashore.
+                ApplyPlayerFor(ControlMode.OnFoot);
+                if (Player != null) Player.position = _moveShoreWorld;
+                return;
+            }
+
+            if (CanStepAshore()) { Disembark(); return; }
+            // The step-off stopped being standable mid-air (she drifted off her land) — the fisher never
+            // left the deck as far as the state machine is concerned, so put them back on it.
+            ApplyPlayerFor(ControlMode.OnDeck);
+            SnapPlayerToDeck(_boardLocalOffset);
+        }
+
+        /// <summary>Call the move off without transitioning. The fisher goes back to the mode they never
+        /// left — on the wharf where they started (a boarding that was refused mid-air), or re-seated on
+        /// the deck (anything that tore the move down under them).</summary>
+        private void CancelBoardingMove(bool restorePosition)
+        {
+            if (_moveKind == BoardingMoveKind.None) return;
+            bool wasBoarding = _moveKind == BoardingMoveKind.Boarding;
+            EndBoardingMove();
+
+            if (restorePosition && Player != null && wasBoarding) Player.position = _moveShoreWorld;
+            ApplyPlayerFor(Mode);
+            if (Mode == ControlMode.OnDeck) SnapPlayerToDeck(_boardLocalOffset);
+        }
+
+        /// <summary>Clear the move's own state and hand the interact key back. Deliberately separate from
+        /// what happens to the PLAYER, because finishing and cancelling disagree about that and agree
+        /// about everything else.</summary>
+        private void EndBoardingMove()
+        {
+            _moveKind = BoardingMoveKind.None;
+            _moveElapsed = 0f;
+            ReleaseInteractionGate();
+        }
+
+        /// <summary>The rail this move is going over, in world — a boat-relative offset clamped onto the
+        /// hull's walkable outline (side decks included where she has them), re-read every tick.</summary>
+        private Vector3 RailWorld() => DeckPointWorld(_moveRailRelative, _moveWashboards);
+
+        /// <summary>Where the approach STARTS: the wharf the fisher is standing on (boarding), or the spot
+        /// on the deck they were standing on (stepping ashore) — the latter re-clamped every tick so
+        /// crossing the deck of a moving hull crosses the deck rather than the water beside it.</summary>
+        private Vector3 ApproachStartWorld()
+            => _moveKind == BoardingMoveKind.Boarding ? _moveShoreWorld : DeckPointWorld(_moveDeckRelative);
+
+        /// <summary>Where the vault ENDS. Both answers are re-read every tick, and for the same reason: the
+        /// arc must finish at the spot the transition is about to place the fisher at, or the landing pops.
+        /// Boarding, that is the seat <see cref="BoardDeck"/> will snap them to on THIS hull at THIS
+        /// heading; stepping ashore, it is whatever <see cref="Disembark"/> will choose — the dock planks
+        /// while she is still in the zone, the boat's own spot the moment she drifts out of it.</summary>
+        private Vector3 VaultEndWorld()
+        {
+            if (_moveKind == BoardingMoveKind.Boarding) return DeckPointWorld(_boardLocalOffset);
+            return TryDisembarkLanding(out Vector3 landing) ? landing : _moveShoreWorld;
+        }
+
+        /// <summary>A boat-relative offset as the world point it lands on for this hull. Falls back to the
+        /// raw offset on a rig with no deck walk (tests, greybox), which is what the switcher's own
+        /// <see cref="SnapPlayerToDeck"/> does in the same case.</summary>
+        private Vector3 DeckPointWorld(Vector2 boatRelative, bool includeWashboards = false)
+        {
+            var deck = DeckWalk;
+            if (deck != null && deck.TryDeckPointWorld(boatRelative, includeWashboards, out Vector3 world))
+                return world;
+            return Boat != null ? Boat.position + new Vector3(boatRelative.x, boatRelative.y, 0f)
+                                : (Player != null ? Player.position : Vector3.zero);
+        }
+
+        /// <summary>
+        /// Take the interact key for the length of the move — the same Core seam a modal dialogue uses,
+        /// and the flag the deck-gear gates already read. Raised only if it was DOWN, and lowered again
+        /// only by whoever raised it, so a move started under an open dialogue neither claims that
+        /// dialogue's hold nor hands it back.
+        ///
+        /// <para><b>The known edge, stated rather than hidden.</b> <see cref="InteractionGate"/> is a plain
+        /// bool with several owners and no ref-count, so a modal that opens WHILE the move is in flight
+        /// would have its hold lowered when the move lands. That is the same trade
+        /// <see cref="ShellFlow"/>'s pause menu already makes with the same flag, and it stays narrow here
+        /// because the move holds the key for well under a second and is the only thing that could raise a
+        /// modal in that window. If the gate ever grows a counter, both this and the pause menu should use
+        /// it — not one of them.</para>
+        /// </summary>
+        private void HoldInteractionGate()
+        {
+            if (InteractionGate.IsBlocked) return;
+            InteractionGate.IsBlocked = true;
+            _moveHeldGate = true;
+        }
+
+        private void ReleaseInteractionGate()
+        {
+            if (!_moveHeldGate) return;
+            _moveHeldGate = false;
+            InteractionGate.IsBlocked = false;
         }
 
         /// <summary>
@@ -421,6 +787,11 @@ namespace HiddenHarbours.Player
         /// </summary>
         public void ReassertControlMode()
         {
+            // A region hop repositions player and boat independently, which is exactly the ground an
+            // in-flight arc is interpolating over. Call it off first (keeping the mode it had not yet
+            // left) and let the re-assert below settle the fisher properly.
+            CancelBoardingMove(restorePosition: true);
+
             if (Mode == ControlMode.Aboard)
             {
                 if (Mooring != null) Mooring.Stow();                 // at the helm → rope stowed
@@ -471,16 +842,29 @@ namespace HiddenHarbours.Player
         ///   <item><b>Aboard (helm)</b> — both walk controllers dead, physics off, still parented. The
         ///   figure is now DRAWN at the helm by the deck rider (see below); without one wired it is hidden,
         ///   as it always was.</item>
+        ///   <item><b>In transit (the boarding move)</b> — the fisher is between the wharf and the deck and
+        ///   belongs to neither: drawn as the ordinary ashore figure (a rider leans with a deck they are
+        ///   not standing on), un-parented so the arc is a plain world path, and with both walk
+        ///   controllers, the physics body and the footprint collider all parked, because the MOVE drives
+        ///   the transform and nothing else may argue with it. <paramref name="mode"/> is still the mode
+        ///   they have not left yet — the transit shape overlays it rather than replacing it, so there is
+        ///   no fourth <see cref="ControlMode"/> for anyone to have to know about.</item>
         /// </list>
         /// Null-safe throughout: tests build a player without a footprint collider / deck controller.
         /// </summary>
-        private void ApplyPlayerFor(ControlMode mode)
+        private void ApplyPlayerFor(ControlMode mode, bool inTransit = false)
         {
             if (_playerWalk == null) return;
             bool onFoot = mode == ControlMode.OnFoot;
             bool onDeck = mode == ControlMode.OnDeck;
 
-            _playerWalk.enabled = onFoot;
+            // The three things the transit shape actually changes, named once so the rest reads as before:
+            // it is drawn ashore, it moves under nobody's power but the move's, and it rides no boat.
+            bool drawnAshore = onFoot || inTransit;
+            bool free = onFoot && !inTransit;
+            bool ridesBoat = !onFoot && !inTransit;
+
+            _playerWalk.enabled = free;
 
             // WHO DRAWS THE CHARACTER. With a deck rider wired it owns BOTH renderers for every mode — it
             // has to, because riding the hull's rock means drawing the figure on a child transform this
@@ -490,32 +874,33 @@ namespace HiddenHarbours.Player
             var rider = DeckRider;
             if (rider != null && rider.HasRider)
             {
-                rider.SetMode(mode, onFoot ? null : Boat);
+                rider.SetMode(drawnAshore ? ControlMode.OnFoot : mode, ridesBoat ? Boat : null);
             }
             else
             {
                 var sr = _playerWalk.GetComponent<SpriteRenderer>();
-                if (sr != null) sr.enabled = onFoot || onDeck;
+                if (sr != null) sr.enabled = drawnAshore || onDeck;
             }
 
             var rb = _playerWalk.GetComponent<Rigidbody2D>();
             if (rb != null)
             {
-                rb.simulated = onFoot;                               // aboard, the transform (not physics) drives
+                rb.simulated = free;                                 // aboard (or airborne), the transform drives
                 rb.linearVelocity = Vector2.zero;                    // no residual drift across the switch
             }
             // Drop the player's footprint collider while aboard so the hull collider can't bump the
-            // frozen on-foot body. Restored on disembark.
+            // frozen on-foot body. Restored on disembark. Dropped mid-boarding for the same reason: the
+            // arc passes straight through the hull she is being boarded from.
             var col = _playerWalk.GetComponent<Collider2D>();
-            if (col != null) col.enabled = onFoot;
+            if (col != null) col.enabled = free;
 
             // Ride the boat: parent to the PHYSICS ROOT while aboard (deck or helm) so the boat's drift
             // carries the player for free; stand free ashore. worldPositionStays keeps the handoff clean.
             if (Player != null)
             {
-                Transform parent = onFoot ? null : Boat;
+                Transform parent = ridesBoat ? Boat : null;
                 if (Player.parent != parent) Player.SetParent(parent, worldPositionStays: true);
-                if (onFoot) Player.rotation = Quaternion.identity;   // never keep a hull tilt ashore
+                if (!ridesBoat) Player.rotation = Quaternion.identity;   // never keep a hull tilt ashore
             }
 
             var deck = DeckWalk;
@@ -525,9 +910,10 @@ namespace HiddenHarbours.Player
                 // player on the hull (SnapPlayerToDeck → SnapTo), and the helm needs that seating too now
                 // that the pilot is drawn — an unbound deck would silently no-op the snap and leave the
                 // figure wherever a region hop dropped them. Binding a DISABLED controller is inert: it
-                // stores two references and nothing else runs.
-                if (!onFoot) deck.Bind(Boat);
-                deck.enabled = onDeck;
+                // stores two references and nothing else runs — which is also why a boarding move can
+                // bind it purely to ASK where this hull's rail and seat are, without waking the walk.
+                if (!onFoot || inTransit) deck.Bind(Boat);
+                deck.enabled = onDeck && !inTransit;
             }
         }
 
@@ -562,6 +948,19 @@ namespace HiddenHarbours.Player
             _helmReach = helmReach;
         }
 
+        /// <summary>Tune the boarding MOVE in one call (tests / editor feel sessions). Passing
+        /// <paramref name="enabled"/> false restores the instant reposition exactly, which is both the
+        /// owner's A/B and the shape every pre-move caller of <see cref="TryInteract"/> still gets.</summary>
+        public void ConfigureBoardingMove(bool enabled, float approachSpeed, float approachMaxSeconds,
+                                          float vaultSeconds, float vaultHopMeters)
+        {
+            _boardingMove = enabled;
+            _boardApproachSpeed = Mathf.Max(0.1f, approachSpeed);
+            _boardApproachMaxSeconds = Mathf.Max(0f, approachMaxSeconds);
+            _boardVaultSeconds = Mathf.Max(0.01f, vaultSeconds);
+            _boardVaultHopMeters = Mathf.Max(0f, vaultHopMeters);
+        }
+
         /// <summary>
         /// Re-point the dock-landing zone to ANOTHER region's mooring on a VS-22 travel — WITHOUT changing
         /// the control mode (you arrive in the new region still aboard / still on foot). The persistent
@@ -578,6 +977,11 @@ namespace HiddenHarbours.Player
         // ---- lifecycle (greybox dev input + prompt) -----------------------------------------
 
         private void Awake() => BuildHint();
+
+        /// <summary>Torn down mid-move (scene teardown, a disabled rig): call the move off so it can hand
+        /// back the interact key. A held <see cref="InteractionGate"/> outliving its holder is the one way
+        /// this could wedge interaction off for the whole game.</summary>
+        private void OnDisable() => CancelBoardingMove(restorePosition: true);
 
         /// <summary>
         /// LEAVE-THE-HELM DRIFT (boats-and-navigation.md §3 "leave the helm, work the rail"; Rod
@@ -602,6 +1006,16 @@ namespace HiddenHarbours.Player
             // rather than merely deaf. A pause you can sail through is not a pause.
             if (ApplyShellInputBlock()) return;
 
+            // A boarding move owns the frame while it runs, and is ticked BEFORE the gate check because
+            // it is holding that gate itself (see the boarding-move block above). Scaled time, so a pause
+            // freezes the fisher mid-vault and resumes them there rather than teleporting them on.
+            if (IsBoardingMove)
+            {
+                if (_hint != null && _hint.enabled) _hint.enabled = false;
+                TickBoardingMove(Time.deltaTime);
+                return;
+            }
+
             // A modal dialogue (VS-21, world-content) owns the shared Interact key while it's up —
             // don't also board/disembark under it. Gate is a Core contract so neither lane references
             // the other (see InteractionGate). Hide our board/dock hint too while blocked.
@@ -612,7 +1026,7 @@ namespace HiddenHarbours.Player
             }
 
             var kb = Keyboard.current;
-            if (kb != null && kb.eKey.wasPressedThisFrame) TryInteract();
+            if (kb != null && kb.eKey.wasPressedThisFrame) BeginInteract();
             // Q holds/roots the rope of a moored boat you're standing by (the mooring interaction).
             if (kb != null && kb.qKey.wasPressedThisFrame) ToggleMooring();
             UpdateHint();
