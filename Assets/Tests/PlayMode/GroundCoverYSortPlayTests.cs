@@ -27,24 +27,25 @@ namespace HiddenHarbours.Tests.PlayMode
     /// stay true — that one grid step resolves to a different sorting order — is asserted where the
     /// real constant is visible, in <c>StPetersGroundCoverBudgetTests</c>.</para>
     ///
-    /// <para><b>⚠⚠ AND THE ROW IS PLACED INSIDE THE SORTING BAND ON PURPOSE — read this before
-    /// widening it.</b> <see cref="YSortSprite"/> clamps to orders 2…40 around a base of 10 at 4 per
-    /// metre, so it only RESOLVES world Y from −7.5 m to +2.0 m; past either end every sprite saturates
-    /// on the same order and ties. St Peters is 140 m tall, so most of the island's decor — and the
-    /// player standing in it — sits on a saturated order and interleaves arbitrarily rather than by
-    /// position. That is a PRE-EXISTING limitation of the component, not of the ground cover (the
-    /// wharf's deck orders are solved against the same band: see <c>StPetersWharf</c>), it is far older
-    /// than this retune, and fixing it means re-basing the sort — camera-relative Y, or a wider band
-    /// with every fixed order in the game re-derived. It is reported rather than patched here.
-    /// <c>StPetersGroundCoverBudgetTests</c> measures how much of the island it costs.</para>
+    /// <para><b>✅ The row used to be placed inside a 9.5 m window ON PURPOSE — that constraint is
+    /// gone.</b> <see cref="YSortSprite"/> clamped to orders 2…40 around a base of 10, so it resolved
+    /// world Y only from −7.5 m to +2.0 m; past either end every sprite saturated on one order and
+    /// tied, which on a 520 m region meant most of the island's decor — and the player standing in it
+    /// — interleaved arbitrarily rather than by position. ADR 0032 re-based the band to span
+    /// ±<c>SortingBands.DecorHalfExtentMetres</c> m with its floor held at 2, so nothing below it had
+    /// to be re-derived. The row below still sits near the origin, which is now simply a convenient
+    /// place rather than the only workable one — and <c>SortingBandsTests</c> plus
+    /// <c>StPetersGroundCoverBudgetTests.TheSortingBandsReach_…</c> now ASSERT the reach instead of
+    /// reporting it.</para>
     /// </summary>
     public class GroundCoverYSortPlayTests
     {
         /// <summary>Mirrors <c>StPetersGrass.GrassStep</c>. See the class remarks for why it is copied.</summary>
         const float GrassStepM = 0.85f;
 
-        /// <summary>Where the row starts. Chosen so the whole row lands inside YSortSprite's resolving
-        /// band (−7.5 … +2.0 m) — see the class remarks.</summary>
+        /// <summary>Where the row starts. It once had to sit inside a 9.5 m resolving window; since
+        /// ADR 0032 re-based the band the whole island resolves, so this is just a convenient spot near
+        /// the origin — see the class remarks.</summary>
         const float RowBaseY = -5f;
 
         readonly List<GameObject> _spawned = new List<GameObject>();

@@ -50,9 +50,11 @@ namespace HiddenHarbours.Art
                  "the untouched two-onset gate keeps clear/light days DRY.")]
         [SerializeField] private RainConfig _config = RainConfig.Default;
 
-        [Tooltip("Sorting order — rain draws ABOVE the water and boats (POSITIVE). A SortingGroup + a small " +
-                 "camera-ward z on each drop make this robust against the water MeshRenderer (see class docs).")]
-        [SerializeField] private int _sortingOrder = 50;
+        [Tooltip("Sorting order — rain draws ABOVE the water, the boats and ALL decor, whatever their Y. A " +
+                 "SortingGroup + a small camera-ward z on each drop make this robust against the water " +
+                 "MeshRenderer (see class docs). Was a literal 50, which cleared the decor band's old " +
+                 "ceiling of 40; the band now reaches 2402, so this follows it by name (ADR 0032).")]
+        [SerializeField] private int _sortingOrder = SortingBands.AboveDecor;
 
         [Tooltip("Metres toward the camera (−z) each drop is nudged so it draws in FRONT of the water plane " +
                  "even where sortingOrder alone can't beat the mesh's world-z (the #134 boat-spotlight quirk).")]

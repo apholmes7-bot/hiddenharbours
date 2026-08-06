@@ -2,6 +2,7 @@ using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
+using HiddenHarbours.Core;
 using HiddenHarbours.Art;
 
 namespace HiddenHarbours.Tests.PlayMode
@@ -37,7 +38,13 @@ namespace HiddenHarbours.Tests.PlayMode
             return sort;
         }
 
-        private static int ExpectedOrder(float y) => YSortSprite.OrderFor(y, 10f, 4f, 2, 40);
+        /// <summary>What the component's SHIPPED defaults produce. ⚠ Asks <see cref="SortingBands"/> rather
+        /// than restating <c>10f, 4f, 2, 40</c> — those were the defaults until ADR 0032 re-based the band,
+        /// and a copy of them here would have made this test compare the component against a mapping it had
+        /// stopped using.</summary>
+        private static int ExpectedOrder(float y) =>
+            YSortSprite.OrderFor(y, SortingBands.DecorBase, SortingBands.OrdersPerMetre,
+                                 SortingBands.DecorFloor, SortingBands.DecorCeiling);
 
         [UnityTest]
         public IEnumerator StaticSprite_SortsOnEnable_ThenDisablesItself()
