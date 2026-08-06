@@ -1,26 +1,29 @@
-# Hidden Harbours — Terrain Material Kit v2
+# Hidden Harbours — Terrain Material Kit v3
 
-**16 materials × 3 intensity steps = 48 tileable albedo maps, plus 4 edge strips × 3 steps = 12 RGBA decals.**
+**20 materials × 3 intensity steps = 60 tileable albedo maps, plus 5 edge strips × 3 steps = 15 RGBA decals.**
 32 px/m, sRGB. Everything tileable here is exactly periodic; sample it with **Repeat + Point**, no filtering.
 
 ```
-tex/            48 PNGs — <Material>_Lo.png · <Material>.png · <Material>_Hi.png
-edges/          12 PNGs — <Edge>_Lo.png · <Edge>.png · <Edge>_Hi.png   (RGBA, 256×128)
+tex/            60 PNGs — <Material>_Lo.png · <Material>.png · <Material>_Hi.png
+edges/          15 PNGs — <Edge>_Lo.png · <Edge>.png · <Edge>_Hi.png   (RGBA, 256×128)
 materials.json  manifest: size, metres, projection, offset flag, step names
 edges.json      manifest: anchor, wrap rules, usual neighbours, the sampling formula
 ladders.jpg     contact sheet — every material at Lo · base · Hi, tiling inside each window
 edges.jpg       contact sheet — every strip at Lo · base · Hi, over its usual neighbours
-bake/           terrainBake.js + terrainBake2.js + terrainBake3.js — the parametric source of truth
+bake/           terrainBake.js + terrainBake2.js + terrainBake3.js + terrainBake4.js — the parametric source of truth
 ```
 
-### What changed since v1
+### What changed since v2
 
-- **Four new materials** for the shoreline: **Foreshore**, **Talus**, **Ledge**, **Rockweed**.
-- **Edge strips** — a new asset type. See §6; it is the part of this kit that needs new shader work.
-- **Sand was re-ramped** from a grey-cream granite-coast sand to Island pink-tan. Marram's substrate
-  and Shingle's grit matrix share that ramp, so **Marram and Shingle were rebaked too**. If you have
-  v1 files in the project, replace all nine; do not mix passes.
-- **Ledge is now on the no-chunk-offset list** with the other directional materials.
+- **Four new materials — the reef beds:** **Musselbed**, **Oysterreef**, **Eelgrass**, **Irishmoss**.
+  All four are plan-view ground materials on the standard ladder; nothing new is needed in the
+  shader to use them. See §6.
+- **A fifth edge strip: Reefedge** — the margin of a bed, with its scour moat and rubble apron.
+  Same asset type and same sampling as the other four.
+- **Chunk-offset lists updated:** Oysterreef and Irishmoss take offsets; Musselbed and Eelgrass
+  do not. See §4.
+- Nothing from v2 was rebaked. The 48 v2 material tiles and 12 v2 strips are byte-identical here,
+  so this kit drops in over v2 without a re-import of the old files.
 
 ---
 
@@ -36,11 +39,12 @@ these maps — there is none to remove.
 
 Luminance is held inside roughly **20–236** so a grade has headroom at both ends.
 
-Alpha is 255 across all 48 tiles. The 12 edge strips are the single deliberate exception.
+Alpha is 255 across all 60 tiles. The 15 edge strips are the single deliberate exception.
 
 **Foreshore in particular is a dry albedo.** It looks lighter and less red than the reference
 photographs of a PEI low-tide flat because those photographs are of *wet* sand. Run your wet band
-over it and it lands where it should. Baking the wet in would freeze the tide.
+over it and it lands where it should. Baking the wet in would freeze the tide. The same holds for
+the four beds: a drained pan on a mussel bed is baked as **mud**.
 
 ---
 
@@ -83,13 +87,17 @@ bracket becomes two array slices in one sampler. The edge strips array the same 
 | Dirt | a worn line, stubble and moss holding | bare compacted earth, pebble lag | churned — clods, loose tilth, grooves |
 | Marsh | pioneer sprigs on open creek mud | closed cordgrass sward | high marsh — thatch, wrack, pans |
 | Sedge | short sedge lawn, peat and moss showing | tussocks | rank tussocks, heavy thatch, rush |
-| **Foreshore** | planed — firm quiet sand, runnels only | a working wave-ripple field | megaripple, shell and gravel lag |
-| **Talus** | a scatter of fallen slabs | a closed apron | a deep chaotic blockfield |
-| **Ledge** | intact bevelled pavement | dissected — benches, scour pans, weed | stripped to the third bed |
-| **Rockweed** | barnacled rock, scattered tufts | a closed olive canopy | deep drape, bladders, Ulva in the wet |
+| Foreshore | planed — firm quiet sand, runnels only | a working wave-ripple field | megaripple, shell and gravel lag |
+| Talus | a scatter of fallen slabs | a closed apron | a deep chaotic blockfield |
+| Ledge | intact bevelled pavement | dissected — benches, scour pans, weed | stripped to the third bed |
+| Rockweed | barnacled rock, scattered tufts | a closed olive canopy | deep drape, bladders, Ulva in the wet |
+| **Musselbed** | spat and scattered clumps on mud | a closed bed | thick and hummocked, dead shell in the troughs |
+| **Oysterreef** | singles and cultch on the mud | a working reef, channels open | a closed reef, channels choked with mud |
+| **Eelgrass** | sparse shoots on open sand | a closed meadow | deep, epiphyte crusted, cut blades drifted in |
+| **Irishmoss** | scattered cushions on cobble | a closed turf | a deep drape, the cobble hidden |
 
-Because wear lives on the ladder, **a footpath, a grazed headland or a storm-scoured berm is a
-brush stroke on the intensity channel, not a new material slot.**
+Because wear lives on the ladder, **a footpath, a grazed headland, a storm-scoured berm or a raked-
+over oyster bottom is a brush stroke on the intensity channel, not a new material slot.**
 
 ---
 
@@ -97,7 +105,7 @@ brush stroke on the intensity channel, not a new material slot.**
 
 | | Materials | UV |
 |---|---|---|
-| **Plan** | Ripple, Shingle, Grass, Marram, Sand, Shelf, Silt, Dirt, Marsh, Sedge, Foreshore, Talus, Ledge, Rockweed | world XZ ÷ tile metres |
+| **Plan** | Ripple, Shingle, Grass, Marram, Sand, Shelf, Silt, Dirt, Marsh, Sedge, Foreshore, Talus, Ledge, Rockweed, Musselbed, Oysterreef, Eelgrass, Irishmoss | world XZ ÷ tile metres |
 | **Face** | **Sandstone, Bank** | **s along the cliff, t DOWN it** |
 
 Sandstone and Bank are cliff **faces**. They belong on face geometry — the vertical band between
@@ -113,17 +121,19 @@ face:  uv = float2(distanceAlongCliff, heightBelowTop) / 16.0
 
 ---
 
-## 4. Per-chunk UV offsets — allowed on 9 of 16
+## 4. Per-chunk UV offsets — allowed on 11 of 20
 
 Every tile's low-frequency mean is flattened before write, so a hashed per-chunk UV offset will not
 reveal a repeating light/dark blotch.
 
-**Apply offsets to:** Shingle · Grass · Sand · Shelf · Silt · Dirt · Marsh · Sedge · Talus
-**Never to:** Ripple · Marram · Sandstone · Bank · Foreshore · Rockweed · Ledge
+**Apply offsets to:** Shingle · Grass · Sand · Shelf · Silt · Dirt · Marsh · Sedge · Talus ·
+Oysterreef · Irishmoss
+**Never to:** Ripple · Marram · Sandstone · Bank · Foreshore · Rockweed · Ledge · Musselbed ·
+Eelgrass
 
-Those seven are directional. An offset slices a ripple train, a wind-combed stand, a bedding plane,
-a rill gully or a lie of fronds apart at the chunk border. All seven carry enough low-frequency
-variation of their own to hide the repeat without help.
+Those nine are directional. An offset slices a ripple train, a wind-combed stand, a bedding plane,
+a rill gully, a lie of fronds, a mussel lie or an eelgrass ribbon apart at the chunk border. All
+nine carry enough low-frequency variation of their own to hide the repeat without help.
 
 ```hlsl
 float2 off = hashOffsetAllowed
@@ -135,6 +145,11 @@ uv += off;
 Offset the **whole material**, all three steps by the same amount, or the ladder lerp will
 cross-fade misaligned images. Edge strips take no offset at all — they are laid along a spline,
 not tiled on a chunk grid.
+
+Musselbed and Oysterreef are mean-flattened at about **half strength**, like Shelf and for the same
+reason: their hummock and cluster structure *is* the low-frequency signal, and flattening it away
+removes the reef. Oysterreef still takes an offset because its clusters are near-isotropic;
+Musselbed does not, because its shell lie is not.
 
 ---
 
@@ -153,17 +168,49 @@ Pairs known to blend cleanly, since they share substrate ramps:
 - Sedge ↔ Dirt (both on the red-bed soil ramps)
 - Sandstone ↔ Bank (the hard and soft cliff, same red beds)
 - Talus ↔ Ledge ↔ Rockweed (all on the red-bed rock ramps)
+- Musselbed ↔ Oysterreef ↔ Silt (all three on the anoxic bed mud)
+- Eelgrass ↔ Sand ↔ Foreshore (Eelgrass sits on a silted version of the sand ramp)
+- Irishmoss ↔ Ledge (the same red cobble under the turf)
 
 Height-aware blending (favour the higher of the two cavity terms) is a clear improvement on a
-straight lerp for Shingle, Shelf, Talus and Ledge, where the cavity carries real relief.
+straight lerp for Shingle, Shelf, Talus, Ledge, Musselbed and Oysterreef, where the cavity carries
+real relief.
 
 ---
 
-## 6. Edge strips — the new part
+## 6. The reef beds — where they go
+
+A shellfish bed is a reef in the ecological sense: **the animals are the substrate**, and the
+ladder is how far the bed has built. That is why these are ground materials and not props or
+scatter — at 32 px/m a mussel is two texels long. What reads is the grain, the clumping and the
+gaps.
+
+| Bed | Bottom | Sits between | Its margin |
+|---|---|---|---|
+| Musselbed | soft, anoxic mud | Silt / Foreshore, from mid-tide down | Reefedge |
+| Oysterreef | soft mud, cemented clusters | Silt, in the sheltered bays | Reefedge |
+| Eelgrass | muddy sand | Sand / Foreshore, subtidal into the channel | Reefedge (soft) |
+| Irishmoss | red cobble | Ledge / Rockweed, on the exposed rock | Reefedge |
+
+Two things worth knowing when you paint them:
+
+- **The floors are part of the material.** Musselbed's floor is black-brown anoxic mud, Eelgrass's
+  substrate is deliberately silted, Irishmoss's cobble is held down in value. Painting a bed at low
+  intensity over a *clean* Sand or Silt chunk will not look like a thin bed, because the material
+  already carries the correct floor. Use the ladder, not the splat weight, for a sparse bed.
+- **Musselbed and Rockweed do not belong on the same rock.** Rockweed is the canopy on the exposed
+  intertidal; a mussel bed on hard exposed rock is a Rockweed hollow, not a bed. Beds want shelter.
+
+Prop-scale shellfish — a raked pile, a cage, a bag on a wharf — are the crustacean and catch rigs,
+not this kit.
+
+---
+
+## 7. Edge strips
 
 A shoreline is made of **lines**: the sod lip, the erosion scarp, the strand line, the upper limit
-of the weed. A noise cross-fade between two band materials cannot draw a line, and it is the line
-the eye reads. So each of those four is an asset in its own right.
+of the weed, the margin of a bed. A noise cross-fade between two band materials cannot draw a line,
+and it is the line the eye reads. So each of those five is an asset in its own right.
 
 | Strip | Size | Covers | Line sits at | Usually joins |
 |---|---|---|---|---|
@@ -171,13 +218,17 @@ the eye reads. So each of those four is an asset in its own right.
 | Scarp | 256×128 | 8 × 4 m | t = 0.24 | grass → foreshore / shingle |
 | Wrack | 256×128 | 8 × 4 m | t = 0.46 | sand → foreshore |
 | Weedline | 256×128 | 8 × 4 m | t = 0.34 | ledge / shelf → rockweed |
+| **Reefedge** | 256×128 | 8 × 4 m | t = 0.38 | musselbed / oysterreef → silt / foreshore |
 
 **s runs along the shore and tiles. t runs across the boundary and does not.**
 t = 0 is landward/upper, t = 1 seaward/lower. Set **Wrap S = Repeat, Wrap T = Clamp**.
 
 Alpha falls to zero at both t ends. That is the whole point: one strip lays over whatever two
 materials happen to meet there, so the same turf lip serves grass-onto-sandstone,
-grass-onto-till and grass-onto-talus without a variant.
+grass-onto-till and grass-onto-talus without a variant. **Reefedge leans on this harder than the
+others** — its bed side is left almost entirely transparent, so the one strip serves a mussel bed,
+an oyster reef, a moss turf or an eelgrass meadow; the decal draws only the outliers, the moat and
+the apron, which is what neither material can draw for itself.
 
 ### Laying one down
 
@@ -191,6 +242,10 @@ if (t < 0.0 || t > 1.0) return bandRGB;            // outside the strip entirely
 half4  e   = SampleEdgeLadder(kind, edgeIntensity, float2(s, t));
 return lerp(bandRGB, e.rgb, e.a);
 ```
+
+Reefedge is the one strip that is usually **not** laid on the shoreline spline — a bed margin is
+its own closed loop out on the flat. Any spline with a signed distance and an arc length works; it
+does not have to be the coast.
 
 Offsetting the bands along the **normal** rather than along world X keeps the band widths constant
 around a bend, and gives you `d` for free. Arc length can be approximated by the along-shore
@@ -209,12 +264,12 @@ divide it back out before the lerp, or the dark parts of the wrack rope will cru
 
 Driftwood **logs** are props — see the shore finds rig — not texture. Only chips and sticks are in
 the wrack line. Foam, swash and the wet band are the water shader's. And the cliff-toe boundary
-(talus fading into the platform) has **no strip yet**; it is currently a plain noise blend and is
-the obvious candidate for a fifth.
+(talus fading into the platform) still has **no strip**; it is a plain noise blend and is the
+obvious candidate for a sixth.
 
 ---
 
-## 7. Import settings
+## 8. Import settings
 
 | Setting | Materials (`tex/`) | Edge strips (`edges/`) |
 |---|---|---|
@@ -228,15 +283,15 @@ the obvious candidate for a fifth.
 | Generate Mip Maps | off at 1:1; on with Point if it zooms | **off** |
 | Max Size | ≥ native (512 / 256) | ≥ 256 |
 
-DXT blocking is visible on the flats, and worse on an alpha decal. Leave these uncompressed until
-memory says otherwise.
+DXT blocking is visible on the flats, and worse on an alpha decal — worst of all on the beds, where
+the shell flecks are two to four texels. Leave these uncompressed until memory says otherwise.
 
 ---
 
-## 8. Seams
+## 9. Seams
 
 Seam step is measured against the distribution of each tile's **own** interior column and row
-steps. For all 48, the seam falls inside that distribution; for most, below its mean. The busiest
+steps. For all 60, the seam falls inside that distribution; for most, below its mean. The busiest
 is Marsh at the base step, whose seam column sits at the 96th percentile of its own interior
 columns — busy, not discontinuous. Nothing here needs a fixup pass.
 
@@ -248,27 +303,27 @@ suspect the tile.
 
 ---
 
-## 9. Re-baking
+## 10. Re-baking
 
-`bake/terrainBake.js`, `terrainBake2.js` and `terrainBake3.js` are plain browser scripts with no
-dependencies. Load them **in that order** — each registers into the same `TB.MATS` / `TB.CFG` /
-`TB.SPEC` tables.
+`bake/terrainBake.js`, `terrainBake2.js`, `terrainBake3.js` and `terrainBake4.js` are plain browser
+scripts with no dependencies. Load them **in that order** — each registers into the same `TB.MATS` /
+`TB.CFG` / `TB.SPEC` tables (and `TB3.EDGES` / `ECFG` / `ESPEC` for the strips).
 
 ```js
-TB.bake('rockweed', 2, createCanvas)      // → { albedo: <canvas>, H: Float32Array, N: 256 }
-TB3.bakeEdge('weedline', 1, createCanvas) // → { albedo: <canvas>, W: 256, H: 128 }
+TB.bake('musselbed', 2, createCanvas)     // → { albedo: <canvas>, H: Float32Array, N: 512 }
+TB3.bakeEdge('reefedge', 1, createCanvas) // → { albedo: <canvas>, W: 256, H: 128 }
 ```
 
 `H` is the height field the cavity pass was derived from. If you ever want a real normal map or a
 parallax/height channel, take it from `H` at bake time rather than deriving one from the albedo —
 the albedo has colour variation in it that is not relief.
 
-Anything you want changed — palette, coverage, a fourth ladder step, a different tile size, a fifth
+Anything you want changed — palette, coverage, a fourth ladder step, a different tile size, a sixth
 edge — change the rig and re-bake. **Do not hand-edit the PNGs**; they will be overwritten.
 
 ---
 
-## 10. Rules the rig has paid for, if you extend it
+## 11. Rules the rig has paid for, if you extend it
 
 1. **Never let a line feature fall below one texel.** A joint modulated toward zero width aliases
    into dotted stitching. Fade it with opacity and hold the width.
@@ -293,3 +348,12 @@ edge — change the rig and re-bake. **Do not hand-edit the PNGs**; they will be
     inside it, or the strand line comes out as dry-brush scratches.
 12. **A band of even width is a painted stripe.** Modulate the width and both boundaries of every
     line along s, or it reads as a decal — because it is one.
+13. **Cover is a per-object decision, not an alpha.** Gating a bed with a smooth noise field and
+    using that field as tint opacity gives a half-strength wash of shell colour over mud, which is
+    indistinguishable from mud. Decide per cell whether a shell is there, draw it opaque, and let
+    the gaps be gaps. Coverage moves the threshold; it never fades the objects.
+14. **A shell fills its cell.** Left as a small ellipse in the middle of its cell, a packed bed
+    comes out as spilled rice. Fill the cell and let the boundary drop in the height field draw the
+    packing.
+15. **A blade stroke has to lean the way its mat runs.** Upright strokes over a mat whose ribbons
+    run across them turn a meadow into a lawn instantly.

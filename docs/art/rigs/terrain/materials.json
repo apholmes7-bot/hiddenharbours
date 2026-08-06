@@ -1,6 +1,6 @@
 {
   "kit": "Hidden Harbours terrain materials",
-  "version": 2,
+  "version": 3,
   "pxPerMetre": 32,
   "colorSpace": "sRGB",
   "alpha": "always 255",
@@ -41,6 +41,15 @@
     { "key": "ledge",     "name": "Ledge",     "size": 256, "metres": 8,  "projection": "plan", "chunkOffset": false, "pass": 4,
       "steps": ["intact bevelled pavement", "dissected — benches, scour pans, weed in the joints", "stripped to the third bed, cobble on the benches"] },
     { "key": "rockweed",  "name": "Rockweed",  "size": 256, "metres": 8,  "projection": "plan", "chunkOffset": false, "pass": 4,
-      "steps": ["barnacled rock with scattered tufts", "a closed olive canopy", "deep drape, bladders showing, Ulva in the wet"] }
+      "steps": ["barnacled rock with scattered tufts", "a closed olive canopy", "deep drape, bladders showing, Ulva in the wet"] },
+
+    { "key": "musselbed",  "name": "Musselbed",  "size": 512, "metres": 16, "projection": "plan", "chunkOffset": false, "pass": 5, "bed": true,
+      "steps": ["spat and scattered clumps on a mud floor", "a closed bed", "thick and hummocked, mud mounded into it, dead shell in the troughs"] },
+    { "key": "oysterreef", "name": "Oysterreef", "size": 512, "metres": 16, "projection": "plan", "chunkOffset": true,  "pass": 5, "bed": true,
+      "steps": ["singles and cultch scattered on the mud", "a working reef, channels open", "a closed reef, channels choked with mud"] },
+    { "key": "eelgrass",   "name": "Eelgrass",   "size": 256, "metres": 8,  "projection": "plan", "chunkOffset": false, "pass": 5, "bed": true,
+      "steps": ["sparse shoots on open sand", "a closed meadow", "deep, epiphyte crusted, cut blades drifted in"] },
+    { "key": "irishmoss",  "name": "Irishmoss",  "size": 256, "metres": 8,  "projection": "plan", "chunkOffset": true,  "pass": 5, "bed": true,
+      "steps": ["scattered cushions on barnacled cobble", "a closed turf", "a deep drape, the cobble hidden"] }
   ]
 }

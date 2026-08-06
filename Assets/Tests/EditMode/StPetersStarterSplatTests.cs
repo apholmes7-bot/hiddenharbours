@@ -30,6 +30,10 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual("Talus", TerrainSplatBrush.MaterialNames[StPetersStarterSplat.Talus]);
             Assert.AreEqual("Ledge", TerrainSplatBrush.MaterialNames[StPetersStarterSplat.Ledge]);
             Assert.AreEqual("Rockweed", TerrainSplatBrush.MaterialNames[StPetersStarterSplat.Rockweed]);
+            Assert.AreEqual("Musselbed", TerrainSplatBrush.MaterialNames[StPetersStarterSplat.Musselbed]);
+            Assert.AreEqual("Oysterreef", TerrainSplatBrush.MaterialNames[StPetersStarterSplat.Oysterreef]);
+            Assert.AreEqual("Eelgrass", TerrainSplatBrush.MaterialNames[StPetersStarterSplat.Eelgrass]);
+            Assert.AreEqual("Irishmoss", TerrainSplatBrush.MaterialNames[StPetersStarterSplat.Irishmoss]);
         }
 
         // ============================ THE KIT V2 SHORE BANDS ============================
@@ -433,6 +437,273 @@ namespace HiddenHarbours.Tests.EditMode
                     "KitV2Families name disagrees with the canonical material at that index");
             }
             Assert.AreEqual(4, seen.Count);
+        }
+
+        // ============================ THE KIT V3 REEF BEDS ============================
+        //  "i made mussel beds, oyster beds and some other areas to be hidden by tides" — owner,
+        //  2026-08-06. What makes them hidden is the WINDOW each is painted in, so that is what
+        //  these pin. Same doctrine as the v2 bands: every threshold is read from the LIVE tide, so
+        //  a future amplitude ruling moves the assertions with the sea instead of stranding them.
+
+        /// <summary>The four beds with their authored windows, as the rules read them — the one
+        /// list the bed tests iterate, so a fifth bed cannot be added and left unasserted.</summary>
+        private static readonly (int Material, string Name, float Lo, float Peak, float Hi)[] Beds =
+        {
+            (StPetersStarterSplat.Eelgrass, "Eelgrass",
+                StPetersStarterSplat.EelgrassLoFraction, StPetersStarterSplat.EelgrassPeakFraction,
+                StPetersStarterSplat.EelgrassHiFraction),
+            (StPetersStarterSplat.Oysterreef, "Oysterreef",
+                StPetersStarterSplat.OysterLoFraction, StPetersStarterSplat.OysterPeakFraction,
+                StPetersStarterSplat.OysterHiFraction),
+            (StPetersStarterSplat.Irishmoss, "Irishmoss",
+                StPetersStarterSplat.IrishmossLoFraction, StPetersStarterSplat.IrishmossPeakFraction,
+                StPetersStarterSplat.IrishmossHiFraction),
+            (StPetersStarterSplat.Musselbed, "Musselbed",
+                StPetersStarterSplat.MusselLoFraction, StPetersStarterSplat.MusselPeakFraction,
+                StPetersStarterSplat.MusselHiFraction),
+        };
+
+        /// <summary>The ADR 0012 reveal contract, restated: the sea covers ground below the live
+        /// waterline, so ground is BARE exactly when the tide is under it. No bed code is involved —
+        /// which is the claim these tests exist to hold.</summary>
+        private static bool IsBare(float elevation, float tideLevel) => tideLevel < elevation;
+
+        /// <summary>A ground sample on this bed's own substrate, at a given elevation.</summary>
+        private static StPetersStarterSplat.GroundSample OnBedGround(int material, float elevation) =>
+            material == StPetersStarterSplat.Irishmoss
+                ? At(elevation, Shelf, 0f, weatherCoast: true)     // exposed rock
+                : At(elevation, Sand, 0f, weatherCoast: false);    // sheltered mud/sand
+
+        [Test]
+        public void TheBedWindows_AreTideFractions_SoTheyRescaleWithTheSea()
+        {
+            // TideElevation is the unit. If it ever stopped deriving from the live amplitude, every
+            // bed would strand the next time the owner retunes the tide — the exact failure the
+            // 2026-08-01 ruling caused for absolute elevations.
+            Assert.AreEqual(StPetersBuilder.TideMean, StPetersStarterSplat.TideElevation(0f), 1e-4f);
+            Assert.AreEqual(StPetersStarterSplat.SpringLowWater,
+                StPetersStarterSplat.TideElevation(-1f), 1e-4f);
+            Assert.AreEqual(StPetersStarterSplat.SpringHighWater,
+                StPetersStarterSplat.TideElevation(1f), 1e-4f);
+
+            foreach (var bed in Beds)
+            {
+                Assert.Less(bed.Lo, bed.Peak, $"{bed.Name}: window lo must sit below its peak");
+                Assert.Less(bed.Peak, bed.Hi, $"{bed.Name}: window peak must sit below its top");
+                Assert.GreaterOrEqual(bed.Lo, -1f,
+                    $"{bed.Name}: a window below spring low is ground the tide never uncovers");
+                Assert.LessOrEqual(bed.Hi, 1f,
+                    $"{bed.Name}: a window above spring high is ground the sea never reaches");
+            }
+        }
+
+        [Test]
+        public void EveryBedPeaks_AboveThePaintFloor_SoItCanActuallyCloseUp()
+        {
+            // ⚠ The paint floor (−1.95 m) sits ABOVE spring low (−2.2 m): there is no painted ground
+            // underneath it. A bed whose PEAK fell below the floor would be capped at a fraction of
+            // its own coverage everywhere it is visible, and would read as permanently sparse — which
+            // looks like a tuning problem and is actually a geometry one.
+            foreach (var bed in Beds)
+            {
+                float peak = StPetersStarterSplat.TideElevation(bed.Peak);
+                Assert.Greater(peak, StPetersShoreMap.PaintFloorElevation,
+                    $"{bed.Name}: peak {peak:0.##} m is below the paint floor " +
+                    $"{StPetersShoreMap.PaintFloorElevation:0.##} m — it can never reach full coverage.");
+
+                float atPeak = StPetersStarterSplat.CoverageOf(bed.Material, OnBedGround(bed.Material, peak));
+                Assert.AreEqual(1f, atPeak, 1e-4f,
+                    $"{bed.Name} should be at full habitat coverage at its own peak elevation");
+            }
+        }
+
+        [Test]
+        public void EveryBed_DrownsAtHighWater_AndBaresOnALowOne()
+        {
+            // THE OWNER'S ASK, ASSERTED. Each bed must be hidden when the tide is up and walkable-to
+            // when it is down; a bed that did only one of the two is scenery, not a tide feature.
+            foreach (var bed in Beds)
+            {
+                float peak = StPetersStarterSplat.TideElevation(bed.Peak);
+
+                Assert.IsFalse(IsBare(peak, StPetersStarterSplat.SpringHighWater),
+                    $"{bed.Name} is not covered at spring high water — it is never hidden.");
+                Assert.IsFalse(IsBare(peak, StPetersBuilder.TideMean),
+                    $"{bed.Name} is not covered at mean water — it would be bare most of the day.");
+                Assert.IsTrue(IsBare(peak, StPetersStarterSplat.SpringLowWater),
+                    $"{bed.Name} is still drowned at spring low water — it never bares at all.");
+            }
+        }
+
+        [Test]
+        public void TheBedsZoneLowToHigh_EelgrassDeepest_MusselShallowest()
+        {
+            // The zonation is the point of having four. Eelgrass is effectively subtidal; the mussel
+            // bed is the one an ordinary low tide hands the player. Beds is ordered lowest-first and
+            // that order IS the exclusive paint order, so this also pins the layering.
+            for (int i = 1; i < Beds.Length; i++)
+                Assert.LessOrEqual(Beds[i - 1].Peak, Beds[i].Peak,
+                    $"{Beds[i - 1].Name} should sit at or below {Beds[i].Name} in the tide — " +
+                    "the Beds list is ordered lowest-first and the paint order depends on it.");
+
+            Assert.Less(StPetersStarterSplat.EelgrassPeakFraction,
+                        StPetersStarterSplat.MusselPeakFraction,
+                        "eelgrass must be the deeper of the two, or nothing is 'subtidal'");
+
+            // Irish moss belongs UNDER the weed belt on the same exposed rock — the kit's zonation.
+            float mossPeak = StPetersStarterSplat.TideElevation(StPetersStarterSplat.IrishmossPeakFraction);
+            float weedPeak = StPetersStarterSplat.NeapHighWater
+                - (StPetersStarterSplat.NeapHighWater - StPetersBuilder.TideMean)
+                  * StPetersStarterSplat.RockweedPeakDrop;
+            Assert.Less(mossPeak, weedPeak,
+                "irish moss should sit below the rockweed canopy, not in it");
+        }
+
+        [Test]
+        public void MusselAndRockweed_CanNeverShareATexel()
+        {
+            // The kit is explicit (README §6): "Musselbed and Rockweed do not belong on the same
+            // rock." It holds here by CONSTRUCTION — a bed wants sand underfoot, the weed wants rock
+            // — but construction is exactly what a later edit breaks quietly, so sweep the whole
+            // intertidal on every substrate and prove no sample gets both.
+            foreach (var sub in new[] { Sand, Ripple, Shelf, Shingle, Grass })
+            for (float e = StPetersShoreMap.PaintFloorElevation;
+                 e <= StPetersStarterSplat.SpringHighWater; e += 0.05f)
+            foreach (var weather in new[] { true, false })
+            {
+                var g = At(e, sub, 0f, weather);
+                float mussel = StPetersStarterSplat.MusselbedCoverage(g);
+                float weed = StPetersStarterSplat.RockweedCoverage(g);
+                Assert.IsTrue(mussel <= 1e-6f || weed <= 1e-6f,
+                    $"mussel ({mussel:0.###}) and rockweed ({weed:0.###}) both claim {sub} at " +
+                    $"e={e:0.##} weather={weather} — a mussel bed on exposed rock is a rockweed hollow.");
+            }
+        }
+
+        [Test]
+        public void EachBed_IsConfinedToItsOwnSubstrateAndCoast()
+        {
+            float mid = StPetersStarterSplat.TideElevation(StPetersStarterSplat.MusselPeakFraction);
+
+            // The three soft-bottom beds want sand/mud; none of them belongs on rock or meadow.
+            foreach (int m in new[] { StPetersStarterSplat.Musselbed, StPetersStarterSplat.Oysterreef,
+                                      StPetersStarterSplat.Eelgrass })
+            foreach (var rock in new[] { Shelf, Shingle, Grass })
+                Assert.AreEqual(0f, StPetersStarterSplat.CoverageOf(m, At(mid, rock)), 1e-6f,
+                    $"{TerrainSplatBrush.MaterialNames[m]} painted onto {rock}");
+
+            // Irish moss is a thing of the OPEN shore — rock, and only the weather coast. The
+            // sheltered band ladder also ends in shelf, so without the coast gate the moss would
+            // turf the quiet side too.
+            float mossPeak = StPetersStarterSplat.TideElevation(StPetersStarterSplat.IrishmossPeakFraction);
+            Assert.Greater(StPetersStarterSplat.IrishmossCoverage(
+                At(mossPeak, Shelf, 0f, weatherCoast: true)), 0.5f);
+            Assert.AreEqual(0f, StPetersStarterSplat.IrishmossCoverage(
+                At(mossPeak, Shelf, 0f, weatherCoast: false)), 1e-6f,
+                "irish moss on the sheltered coast — it wants the exposed rock");
+            Assert.AreEqual(0f, StPetersStarterSplat.IrishmossCoverage(
+                At(mossPeak, Sand, 0f, weatherCoast: true)), 1e-6f,
+                "irish moss on sand — a cushion needs cobble to hold");
+        }
+
+        [Test]
+        public void BedCoverage_StaysInRange_AndIsSilentOutsideItsWindow()
+        {
+            foreach (var bed in Beds)
+            {
+                for (float e = StPetersShoreMap.PaintFloorElevation - 1f;
+                     e <= StPetersShoreMap.GrassFloorElevation + 1f; e += 0.05f)
+                foreach (var sub in new[] { Sand, Ripple, Shelf, Shingle, Grass })
+                foreach (var weather in new[] { true, false })
+                {
+                    float c = StPetersStarterSplat.CoverageOf(bed.Material, At(e, sub, 0f, weather));
+                    Assert.That(c, Is.InRange(0f, 1f),
+                        $"{bed.Name} coverage {c} out of range at e={e:0.##} {sub}");
+                }
+
+                // Hard zero outside the window at both ends, on its own ground.
+                float lo = StPetersStarterSplat.TideElevation(bed.Lo);
+                float hi = StPetersStarterSplat.TideElevation(bed.Hi);
+                Assert.AreEqual(0f, StPetersStarterSplat.CoverageOf(
+                    bed.Material, OnBedGround(bed.Material, lo - 0.01f)), 1e-6f,
+                    $"{bed.Name} below its window");
+                Assert.AreEqual(0f, StPetersStarterSplat.CoverageOf(
+                    bed.Material, OnBedGround(bed.Material, hi + 0.01f)), 1e-6f,
+                    $"{bed.Name} above its window");
+            }
+        }
+
+        [Test]
+        public void BedPatch_IsDeterministic_PatchyAndNotACarpet()
+        {
+            // A bed is a PLACE. Without this gate the window would carpet every eligible metre of
+            // sheltered mud on the island, which is the failure the shader header calls out.
+            var probes = new System.Collections.Generic.List<Vector2>();
+            for (float x = -300f; x <= 300f; x += 7f)
+            for (float y = -200f; y <= 200f; y += 7f)
+                probes.Add(new Vector2(x, y));
+
+            int inBed = 0;
+            foreach (Vector2 p in probes)
+            {
+                float a = StPetersStarterSplat.BedPatch(p, 74);
+                float b = StPetersStarterSplat.BedPatch(p, 74);
+                Assert.AreEqual(a, b, 0f, $"BedPatch is not a pure function of position at {p}");
+                Assert.That(a, Is.InRange(0f, 1f), $"BedPatch {a} out of range at {p}");
+                if (a > 0.5f) inBed++;
+            }
+
+            float share = inBed / (float)probes.Count;
+            Assert.That(share, Is.InRange(0.02f, 0.60f),
+                $"beds cover {share:P0} of eligible ground — under 2% is invisible, over 60% is a " +
+                "carpet. Tune BedPatchThreshold, not this bound, unless the owner has ruled.");
+
+            // Different beds must not stack in the same places — that is what the per-bed salts buy.
+            int same = 0;
+            foreach (Vector2 p in probes)
+                if ((StPetersStarterSplat.BedPatch(p, 74) > 0.5f) ==
+                    (StPetersStarterSplat.BedPatch(p, 71) > 0.5f)) same++;
+            Assert.Less(same, probes.Count,
+                "two salts produced an identical patch layout — the salts are not separating the beds");
+        }
+
+        [Test]
+        public void PatchGate_AppliesToBedsOnly_NeverToTheV2Bands()
+        {
+            // Gating a band would punch holes in the shore: a foreshore really is the whole
+            // wave-worked zone, not a scatter of patches.
+            var probe = new Vector2(37f, -21f);
+            foreach (var fam in StPetersStarterSplat.KitV2Families)
+            {
+                Assert.IsFalse(StPetersStarterSplat.IsBed(fam.Material), $"{fam.Name} is not a bed");
+                Assert.AreEqual(1f, StPetersStarterSplat.PatchGateOf(fam.Material, probe), 0f,
+                    $"{fam.Name} is a continuous band — it must not be patch-gated");
+            }
+            foreach (var bed in Beds)
+                Assert.IsTrue(StPetersStarterSplat.IsBed(bed.Material), $"{bed.Name} should be a bed");
+        }
+
+        [Test]
+        public void ShoreFamilies_IsTheV2BandsThenTheV3Beds_WithNoDuplicates()
+        {
+            var all = StPetersStarterSplat.ShoreFamilies;
+            Assert.AreEqual(StPetersStarterSplat.KitV2Families.Length + StPetersStarterSplat.KitV3Beds.Length,
+                all.Length, "ShoreFamilies must be exactly the two lists, concatenated");
+
+            // Order is the layering: bands first so a bed reads as sitting ON the foreshore.
+            for (int i = 0; i < StPetersStarterSplat.KitV2Families.Length; i++)
+                Assert.AreEqual(StPetersStarterSplat.KitV2Families[i].Material, all[i].Material,
+                    "the v2 bands must still be painted first");
+
+            var seen = new System.Collections.Generic.HashSet<int>();
+            foreach (var fam in all)
+            {
+                Assert.IsTrue(seen.Add(fam.Material), $"{fam.Name} listed twice");
+                Assert.AreEqual(fam.Name, TerrainSplatBrush.MaterialNames[fam.Material],
+                    "ShoreFamilies name disagrees with the canonical material at that index");
+                Assert.That(fam.Intensity, Is.InRange(0.4f, 0.6f),
+                    $"{fam.Name} ladder intensity {fam.Intensity} is outside the starter range");
+            }
         }
 
         [Test]
