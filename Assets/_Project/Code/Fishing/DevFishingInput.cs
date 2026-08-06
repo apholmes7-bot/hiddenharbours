@@ -97,10 +97,13 @@ namespace HiddenHarbours.Fishing
         public void OnControlModeChanged(ControlModeChanged e) => _mode = e.Mode;
 
         /// <summary>True while the rod/handline cast is worked — ON FOOT (dock/shore) or ON DECK, not at
-        /// the helm, not under a modal dialogue, and not while a trap haul OR a deck pot being worked
-        /// (Build 7) owns the Space key. Public + input-free so the gate itself is EditMode-testable.</summary>
+        /// the helm, not under a modal dialogue, not while a trap haul OR a deck pot being worked
+        /// (Build 7) owns the Space key, and not while a ROPE owns the flick (M2-38: standing at a cleat,
+        /// the cast gesture throws a mooring line, not a handline — see <see cref="CastActionClaim"/>).
+        /// Public + input-free so the gate itself is EditMode-testable.</summary>
         public bool FishingLive => (_mode == ControlMode.OnFoot || _mode == ControlMode.OnDeck)
                                    && !InteractionGate.IsBlocked
+                                   && !CastActionClaim.IsClaimed
                                    && !(Haul != null && Haul.IsHauling)
                                    && !(DeckWork != null && DeckWork.HasPotAboard);
 

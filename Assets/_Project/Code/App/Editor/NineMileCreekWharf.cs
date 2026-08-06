@@ -348,9 +348,13 @@ namespace HiddenHarbours.App.Editor
 
             int fittings = PlaceFittings(root);
             int armour = PlaceBreakwater(root);
+            // WHERE A ROPE MAY BE MADE FAST (M2-38) — from the same fittings table as the sprites, and
+            // outside PlaceFittings so mooring does not depend on the overlay art being imported.
+            int cleats = PlaceMooringCleats(root, deckElevation);
 
             Debug.Log($"[NineMileCreekWharf] Built the working quay: {placed} '{DeckMaterial}' deck tiles " +
                       $"over {LengthCells} × {WidthCells} m, drawn back to front, plus {fittings} fitting(s) " +
+                      $"({cleats} of them mooring cleats) " +
                       $"and a {armour}-block '{BreakwaterArmour}' breakwater arm along y={BreakwaterY:0.#}. " +
                       $"The deck is FLOOR: registered as standable surface '{SurfaceId}' with its deck " +
                       $"measured at {deckElevation:0.00} m above datum, so the on-foot sim stands on the " +
@@ -388,6 +392,33 @@ namespace HiddenHarbours.App.Editor
                 placed++;
             }
             return placed;
+        }
+
+        /// <summary>
+        /// Give every mooring fitting on the quay a <see cref="ShoreCleat"/> — the Core-side tie-off point
+        /// M2-38's ropes are made fast to. Derived from <see cref="Fittings"/> so placement has exactly one
+        /// source, and filtered by <see cref="WharfKitCatalog.IsMooringFitting"/> so the kit decides what
+        /// counts as a tie-off. The elevation is the quay's MEASURED deck height — the fixed end of every
+        /// line, against which the tide moves the other one.
+        /// </summary>
+        static int PlaceMooringCleats(GameObject root, float deckElevation)
+        {
+            var cleatRoot = new GameObject("MooringCleats");
+            cleatRoot.transform.SetParent(root.transform, worldPositionStays: false);
+
+            int n = 0;
+            foreach (var f in Fittings())
+            {
+                if (!WharfKitCatalog.IsMooringFitting(f.Name)) continue;
+
+                var go = new GameObject($"Cleat_{f.Name}_{n}");
+                go.transform.SetParent(cleatRoot.transform, worldPositionStays: false);
+                go.transform.position = new Vector3(f.Position.x, f.Position.y, 0f);
+                go.AddComponent<HiddenHarbours.World.ShoreCleat>()
+                  .Configure($"{SurfaceId}.{f.Name}_{n}", deckElevation);
+                n++;
+            }
+            return n;
         }
 
         static int PlaceBreakwater(GameObject root)
