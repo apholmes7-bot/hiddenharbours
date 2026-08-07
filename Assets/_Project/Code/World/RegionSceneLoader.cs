@@ -53,11 +53,17 @@ namespace HiddenHarbours.World
         /// just re-activate it — loading a second copy would duplicate the scene. Setting the active scene
         /// raises <see cref="SceneManager.activeSceneChanged"/>, which the persistent RegionTravelCoordinator
         /// listens to in order to show the region, silence its stray camera, and rebind the rig.
+        ///
+        /// <para>Returns TRUE when a crossing actually began — the region was re-activated, or an additive
+        /// load was started — and FALSE when it was declined (already there, unknown/unbuilt scene). The
+        /// caller needs to know, because a declined travel raises no <c>activeSceneChanged</c>: anything a
+        /// passage published for the arrival it expected (its arrival key) has to be taken back rather
+        /// than left standing for the next one.</para>
         /// </summary>
-        public void Travel(RegionDef to)
+        public bool Travel(RegionDef to)
         {
             if (!RegionTravel.ShouldLoad(_currentSceneName, to))
-                return;
+                return false;
 
             // Already loaded (re-visit) → re-activate it, don't load a duplicate.
             var existing = SceneManager.GetSceneByName(to.SceneName);
@@ -65,7 +71,7 @@ namespace HiddenHarbours.World
             {
                 SceneManager.SetActiveScene(existing);
                 _currentSceneName = to.SceneName;
-                return;
+                return true;
             }
 
             var op = SceneManager.LoadSceneAsync(to.SceneName, LoadSceneMode.Additive);
@@ -74,7 +80,7 @@ namespace HiddenHarbours.World
                 // Scene not in Build Settings (e.g. the region scene hasn't been generated yet).
                 Debug.LogWarning($"[RegionSceneLoader] Could not load scene '{to.SceneName}' for " +
                                  $"{to.Id} — is it built and in Build Settings?", this);
-                return;
+                return false;
             }
 
             string loaded = to.SceneName;
@@ -84,6 +90,7 @@ namespace HiddenHarbours.World
                 if (scene.IsValid() && scene.isLoaded) SceneManager.SetActiveScene(scene);
                 _currentSceneName = loaded;
             };
+            return true;
         }
     }
 }

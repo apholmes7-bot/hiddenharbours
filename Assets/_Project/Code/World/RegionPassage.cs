@@ -1,4 +1,5 @@
 using UnityEngine;
+using HiddenHarbours.Core;
 
 namespace HiddenHarbours.World
 {
@@ -35,6 +36,12 @@ namespace HiddenHarbours.World
         [SerializeField] private RegionDef _target;
         [Tooltip("The loader that performs the additive scene load.")]
         [SerializeField] private RegionSceneLoader _loader;
+        [Tooltip("WHICH WAY IN this passage is — the key of the arrival point it lands at in the TARGET " +
+                 "region. Leave BLANK for the target's own single arrival, which is what every region " +
+                 "built before Nine Mile Creek's mainland has. Set it where a region can be entered more " +
+                 "than one way (sail into the wharf vs walk in over the tidal bar) and the target's " +
+                 "RegionAnchor authors a matching named arrival.")]
+        [SerializeField] private string _arrivalKey = "";
 
         [Header("Re-fire guard (keeps the helm live across the boundary)")]
         [Tooltip("Seconds after a crossing during which this passage ignores further trigger entries — a " +
@@ -43,6 +50,10 @@ namespace HiddenHarbours.World
         [SerializeField] private float _reentryCooldownSeconds = 1.5f;
 
         public RegionDef Target => _target;
+
+        /// <summary>Which arrival point in the target region this passage lands at; empty = the target's
+        /// own default.</summary>
+        public string ArrivalKey => _arrivalKey;
 
         // The leave-then-enter latch: set true when the passage fires, so it WON'T fire again on the same
         // body lingering in / nudging back into the band — only a real OnTriggerExit2D re-arms it. Guards the
@@ -104,6 +115,11 @@ namespace HiddenHarbours.World
         /// Take the passage now (also callable from a future Interact prompt / dev input). Latches the
         /// re-fire guard (consumed + stamps the time) so the crossing fires exactly once until the boat
         /// leaves and re-enters / the cooldown elapses — the just-arrived boat never re-fires it.
+        ///
+        /// <para>Publishes <see cref="ArrivalKey"/> to <see cref="GameServices.PendingArrivalKey"/> before
+        /// travelling, so the destination's anchor knows WHICH WAY IN the player came. It is published
+        /// unconditionally — including as null for a keyless passage — because the field is consume-once
+        /// and the one thing worse than no key is somebody else's.</para>
         /// </summary>
         public void Activate()
         {
@@ -118,7 +134,21 @@ namespace HiddenHarbours.World
             // the guard hold across that bounce.
             _consumed = true;
             _lastActivateTime = Time.unscaledTime;
-            _loader.Travel(_target);
+
+            GameServices.PendingArrivalKey = string.IsNullOrEmpty(_arrivalKey) ? null : _arrivalKey;
+            // A travel that did NOT happen (already there, unloadable scene) raises no activeSceneChanged,
+            // so nobody would ever consume the key we just set — and it would then be read by whatever
+            // arrival came next. Take it back ourselves.
+            if (!_loader.Travel(_target)) GameServices.PendingArrivalKey = null;
+        }
+
+        /// <summary>Wire the passage in one call (tests / editor builder) — the same direct-configure
+        /// convention <c>RegionAnchor.Configure</c> follows.</summary>
+        public void Configure(RegionDef target, RegionSceneLoader loader, string arrivalKey = "")
+        {
+            _target = target;
+            _loader = loader;
+            _arrivalKey = arrivalKey ?? "";
         }
 
         // TODO (Cove side): place the matching Coddle Cove -> Nine Mile Creek passage in the cove scene.

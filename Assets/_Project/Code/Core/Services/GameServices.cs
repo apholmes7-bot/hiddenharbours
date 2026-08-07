@@ -158,6 +158,36 @@ namespace HiddenHarbours.Core
         public static string CurrentRegionId { get; set; }
 
         /// <summary>
+        /// WHICH WAY IN the player is taking — the key of the arrival point the passage they just took
+        /// names in the region they are travelling TO, or null/empty for "the region's own default
+        /// arrival".
+        ///
+        /// <para><b>Why this is a relay and not a reference.</b> A passage is authored in the region you
+        /// LEAVE and the arrival point it lands at is a <c>Transform</c> in the region you ARRIVE in — a
+        /// scene that may not even be loaded when the passage fires, so the two can never be wired
+        /// together directly. The passage therefore names its arrival, and the destination's anchor
+        /// resolves that name against its own authored table. The <b>World</b> passage is the writer and
+        /// the <b>App</b> travel coordinator is the reader, neither module referencing the other — the
+        /// same Core-mediated indirection as <see cref="CurrentRegionId"/> (rule 4).</para>
+        ///
+        /// <para><b>⚠ CONSUME-ONCE.</b> Read it with <see cref="ConsumePendingArrivalKey"/>, never with a
+        /// bare get. A key left standing outlives the crossing that set it, and the next arrival — a
+        /// re-activated region, a travel that took no passage at all — would silently land the player at
+        /// somebody else's beach. The writer clears it too when its travel turns out to be a no-op.</para>
+        /// FLAG lead-architect: new Core contract (the per-passage arrival seam).
+        /// </summary>
+        public static string PendingArrivalKey { get; set; }
+
+        /// <summary>Take the pending arrival key and clear it in one step — see the consume-once note on
+        /// <see cref="PendingArrivalKey"/>. Returns null when no passage named one.</summary>
+        public static string ConsumePendingArrivalKey()
+        {
+            string key = PendingArrivalKey;
+            PendingArrivalKey = null;
+            return key;
+        }
+
+        /// <summary>
         /// The world rectangle the CURRENT region occupies — <c>RegionDef.WorldCenter</c> /
         /// <c>WorldSizeMeters</c>, the one authored extent the sea sprite, the flat backdrop, the
         /// shader's height bake and the displaced mesh all already read. Same writer and same
@@ -412,6 +442,7 @@ namespace HiddenHarbours.Core
             Save = null;
             TidalTerrain = null;
             CurrentRegionId = null;
+            PendingArrivalKey = null;
             CurrentRegionBounds = default;
             Config = null;
             CatchFactory = null;

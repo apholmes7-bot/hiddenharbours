@@ -6,6 +6,46 @@ using HiddenHarbours.Core;
 namespace HiddenHarbours.App
 {
     /// <summary>
+    /// ONE WAY IN to a region: a name, and where the rig lands when the player arrives by it.
+    ///
+    /// <para>Nine Mile Creek's mainland is the first region you can enter two different ways — sail into
+    /// the wharf, or walk in over the tidal bar — and the two land 400 m apart. A <c>RegionPassage</c> in
+    /// the region you LEAVE names the way in by <see cref="Key"/>; the destination's
+    /// <see cref="RegionAnchor"/> resolves that name against its own table here. A name rather than a
+    /// reference because the two live in different scenes and the destination may not be loaded yet.</para>
+    ///
+    /// <para><b>Both transforms are OPTIONAL and fall back INDEPENDENTLY</b> to the region's own
+    /// <see cref="RegionAnchor.ArrivalPoint"/> / <see cref="RegionAnchor.DisembarkPoint"/>. That is what
+    /// makes the walk-in case one field rather than two: the bar landing sets only
+    /// <see cref="DisembarkPoint"/>, so the player steps ashore on the bar while the boat still parks at
+    /// the wharf where it was left. A water entrance that wanted its own berth would set only
+    /// <see cref="ArrivalPoint"/>.</para>
+    ///
+    /// <para><b>Namespace-level, deliberately not nested</b> — the same CS0426 lesson
+    /// <c>CoastClass</c> and <c>CoastRunSector</c> carry.</para>
+    /// </summary>
+    [System.Serializable]
+    public struct NamedArrival
+    {
+        [Tooltip("The name a RegionPassage uses to ask for this arrival (e.g. 'bar'). Case-insensitive; " +
+                 "must be non-empty to be reachable.")]
+        public string Key;
+        [Tooltip("Where the BOAT parks when the player arrives this way. Leave empty to use the region's " +
+                 "own arrival point.")]
+        public Transform ArrivalPoint;
+        [Tooltip("Where the ON-FOOT player is placed when the player arrives this way. Leave empty to " +
+                 "use the region's own disembark point.")]
+        public Transform DisembarkPoint;
+
+        public NamedArrival(string key, Transform arrivalPoint, Transform disembarkPoint)
+        {
+            Key = key;
+            ArrivalPoint = arrivalPoint;
+            DisembarkPoint = disembarkPoint;
+        }
+    }
+
+    /// <summary>
     /// The binding point a region scene exposes to the persistent core (VS-22 travel). Each region scene
     /// (Coddle Cove, Nine Mile Creek) places ONE of these, naming where the persistent player/boat should
     /// appear on arrival (<see cref="ArrivalPoint"/>) and which transforms are this region's boarding zone
@@ -26,6 +66,11 @@ namespace HiddenHarbours.App
         [SerializeField] private Transform _dockZone;
         [Tooltip("Where the on-foot player is placed when disembarking in this region.")]
         [SerializeField] private Transform _disembarkPoint;
+
+        [Tooltip("The region's OTHER ways in, if it has any — one entry per passage that lands somewhere " +
+                 "other than the default above. EMPTY is the normal case and is exactly the behaviour " +
+                 "every region had before this table existed.")]
+        [SerializeField] private NamedArrival[] _arrivals = new NamedArrival[0];
 
         // This region's authored extent, relayed to consumers that outlive the region scene (the
         // persistent camera's bounds clamp). The values COME FROM RegionDef.WorldCenter /
@@ -56,6 +101,56 @@ namespace HiddenHarbours.App
         public Transform ArrivalPoint => _arrivalPoint != null ? _arrivalPoint : transform;
         public Transform DockZone => _dockZone;
         public Transform DisembarkPoint => _disembarkPoint;
+
+        /// <summary>The region's named ways in (empty for a region with a single arrival).</summary>
+        public NamedArrival[] Arrivals => _arrivals;
+
+        // ---- per-passage arrivals -----------------------------------------------------------
+
+        /// <summary>
+        /// Find the named arrival <paramref name="key"/> asks for. PURE — no scene, no component state —
+        /// so the fallback rule is EditMode-assertable on its own, which is the whole reason it is a
+        /// static rather than a loop inside the accessors below.
+        ///
+        /// <para>A null/empty key, an empty table and an unmatched key all report FALSE, and every one of
+        /// them means the same thing to the caller: use the region's own default. Matching is
+        /// case-insensitive and ignores entries with a blank key (an authored-but-unfinished row must not
+        /// silently swallow a blank lookup).</para>
+        /// </summary>
+        public static bool TryFindArrival(NamedArrival[] arrivals, string key, out NamedArrival found)
+        {
+            found = default;
+            if (arrivals == null || string.IsNullOrEmpty(key)) return false;
+            for (int i = 0; i < arrivals.Length; i++)
+            {
+                if (string.IsNullOrEmpty(arrivals[i].Key)) continue;
+                if (!string.Equals(arrivals[i].Key, key, System.StringComparison.OrdinalIgnoreCase)) continue;
+                found = arrivals[i];
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>True if this region authors a way in under that name.</summary>
+        public bool HasArrival(string key) => TryFindArrival(_arrivals, key, out _);
+
+        /// <summary>Where the BOAT parks arriving by <paramref name="key"/> — the named arrival's own
+        /// point if it sets one, else this region's <see cref="ArrivalPoint"/>.</summary>
+        public Transform ArrivalPointFor(string key) =>
+            TryFindArrival(_arrivals, key, out NamedArrival a) && a.ArrivalPoint != null
+                ? a.ArrivalPoint
+                : ArrivalPoint;
+
+        /// <summary>Where the ON-FOOT player lands arriving by <paramref name="key"/> — the named
+        /// arrival's own point if it sets one, else this region's <see cref="DisembarkPoint"/>.
+        ///
+        /// <para>⚠ This is where you ARRIVE, which is not the same place as where you step off the boat.
+        /// The dock's own step-off spot stays <see cref="DisembarkPoint"/> for the whole visit — see the
+        /// note in <c>RegionTravelCoordinator.ApplyArrival</c>.</para></summary>
+        public Transform DisembarkPointFor(string key) =>
+            TryFindArrival(_arrivals, key, out NamedArrival a) && a.DisembarkPoint != null
+                ? a.DisembarkPoint
+                : DisembarkPoint;
 
         // ---- live registry (lets the coordinator find the anchor for the active scene) -------
 
@@ -106,6 +201,11 @@ namespace HiddenHarbours.App
             _dockZone = dockZone;
             _disembarkPoint = disembarkPoint;
         }
+
+        /// <summary>Publish this region's OTHER ways in (the region builder's push). Null or empty leaves
+        /// the region with a single arrival, which is what it had before this table existed.</summary>
+        public void ConfigureArrivals(params NamedArrival[] arrivals) =>
+            _arrivals = arrivals ?? new NamedArrival[0];
 
         /// <summary>
         /// Publish this region's authored extent — pass <c>RegionDef.WorldCenter</c> /
