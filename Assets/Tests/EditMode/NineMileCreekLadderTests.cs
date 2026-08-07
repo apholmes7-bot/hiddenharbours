@@ -150,37 +150,57 @@ namespace HiddenHarbours.Tests.EditMode
             }
         }
 
-        /// <summary>It registers itself, so the boarding move finds it through Core without the Player
-        /// module ever naming the World component (rule 4).</summary>
+        /// <summary>
+        /// The built ladder answers the Core lookup the boarding move makes, so the Player module finds it
+        /// without ever naming the World component (rule 4).
+        ///
+        /// <para><b>Driven through the PURE overload, not the live registry, and that is not a shortcut.</b>
+        /// Unity does not call <c>OnEnable</c> on a component added in EDIT mode unless it is
+        /// <c>[ExecuteAlways]</c> — which <see cref="WharfLadder"/> is not, and neither are its siblings
+        /// <see cref="ShoreCleat"/> / <see cref="StandablePlatform"/>. So the registry is legitimately
+        /// empty here and "it registers itself on enable" is a claim only PlayMode can make; it is made
+        /// there, by <c>LadderBoardingPlayTests.AWharfLadder_RegistersItselfOnEnable</c>. What EditMode
+        /// can prove is the half that is actually this fixture's business: the BUILDER produced ladders
+        /// the lookup rule accepts.</para>
+        ///
+        /// <para>⚠ The first draft of this pair used the <c>Now</c> twin against that empty registry. The
+        /// positive assertion failed honestly and is what caught it — but the negative one below
+        /// <b>passed for the wrong reason</b>, because "no ladder within reach" is exactly what an empty
+        /// registry says. A negative assertion over a live global is worth very little; this is why both
+        /// now supply their own list.</para>
+        /// </summary>
         [Test]
-        public void TheBuiltLadder_IsVisibleThroughTheCoreRegistry()
+        public void TheBuiltLadder_AnswersTheCoreLookup()
         {
-            WharfLadder[] built = BuildAndCollect(3.0f);
-            Assert.AreEqual(built.Length, BoardingLadders.Count,
-                "every built ladder must have registered itself on enable");
+            List<IBoardingLadder> built = BuildAndCollect(3.0f).Cast<IBoardingLadder>().ToList();
+            Assert.That(built.Count, Is.GreaterThanOrEqualTo(1), "the builder made no ladder to look up");
 
             var table = TableLadders();
             Assert.That(table.Count, Is.GreaterThanOrEqualTo(1));
 
             Assert.IsTrue(
-                BoardingLadders.TryFindNearestNow(table[0].Position, 1f, out IBoardingLadder found),
-                "a fisher standing at the ladder must find it through the Core registry");
+                BoardingLadders.TryFindNearest(built, table[0].Position, 1f, out IBoardingLadder found),
+                "a fisher standing at the ladder must find it through the Core lookup");
             Assert.IsNotNull(found);
             Assert.AreEqual(3.0f, found.TopElevationMeters, 1e-4f);
         }
 
         /// <summary>The reach lookup is a REACH: a fisher at the far end of an 84 m wall is not at the
-        /// ladder, and must not be handed one.</summary>
+        /// ladder, and must not be handed one. Supplied its own list — see the note above for why a
+        /// negative assertion over the live registry proves nothing.</summary>
         [Test]
         public void ALadderAcrossTheWharf_IsNotWithinReach()
         {
-            BuildAndCollect(3.0f);
-            var table = TableLadders();
+            List<IBoardingLadder> built = BuildAndCollect(3.0f).Cast<IBoardingLadder>().ToList();
+            Assert.That(built.Count, Is.GreaterThanOrEqualTo(1),
+                "with no ladders in the list this assertion would be vacuous");
 
+            var table = TableLadders();
             Vector2 farOff = table[0].Position + new Vector2(30f, 0f);
+
             Assert.IsFalse(
-                BoardingLadders.TryFindNearestNow(farOff, LadderBoardingSettings.Default.LadderReachMetres,
-                                                  out _),
+                BoardingLadders.TryFindNearest(built, farOff,
+                                               LadderBoardingSettings.Default.LadderReachMetres, out _),
                 "a ladder 30 m along the quay is not the way aboard from here — that berth steps across " +
                 "or does not board at all");
         }

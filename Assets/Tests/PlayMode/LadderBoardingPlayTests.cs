@@ -195,6 +195,41 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         // =============================================================================================
+        //  0. THE REGISTRATION ITSELF
+        // =============================================================================================
+
+        /// <summary>
+        /// A <see cref="WharfLadder"/> puts itself on the Core registry when it enables, and takes itself
+        /// off when it disables — the self-installing, scene-scoped contract it shares with
+        /// <c>ShoreCleat</c> and <c>StandablePlatform</c>.
+        ///
+        /// <para><b>This claim lives here rather than in the builder's EditMode fixture</b> because Unity
+        /// does not call <c>OnEnable</c> on a component added in EDIT mode unless it is
+        /// <c>[ExecuteAlways]</c>, which this is not. The EditMode suite proves the BUILDER makes a
+        /// correct ladder; only PlayMode can prove the ladder then announces itself, and everything else
+        /// in this file depends on it doing so.</para>
+        /// </summary>
+        [UnityTest]
+        public IEnumerator AWharfLadder_RegistersItselfOnEnable()
+        {
+            Assert.AreEqual(0, BoardingLadders.Count, "the fixture starts with an empty registry");
+
+            var r = Build(waterLevel: 0f);
+            yield return null;
+
+            Assert.AreEqual(1, BoardingLadders.Count, "the ladder must register itself on enable");
+            Assert.IsTrue(BoardingLadders.TryFindNearestNow(r.Ladder.WorldPosition, 1f,
+                                                            out IBoardingLadder found));
+            Assert.AreSame(r.Ladder, found, "and it is the ladder that was built, not a stand-in");
+
+            r.Ladder.enabled = false;
+            yield return null;
+            Assert.AreEqual(0, BoardingLadders.Count,
+                "and relinquish it on disable — a leaked registration would let a fisher climb down a " +
+                "wharf that is no longer loaded");
+        }
+
+        // =============================================================================================
         //  1. THE TIDE CHOOSES THE ROUTE
         // =============================================================================================
 
