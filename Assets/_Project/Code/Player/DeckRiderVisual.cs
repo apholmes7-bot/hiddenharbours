@@ -83,9 +83,10 @@ namespace HiddenHarbours.Player
     ///
     /// <para><b>Rules.</b> Visual-only: it reads the rock the boat already computed and writes nothing back
     /// (rule 5). Every amplitude is a serialized tunable and <see cref="_rideStrength"/> 0 restores the old
-    /// bolt-upright read exactly, so the owner can A/B it (rule 6). No allocation and no
-    /// <c>GetComponent</c> on the hot path — the boat's components are resolved once per binding, and a
-    /// hull swapped under the player's feet re-resolves (rule 7). Player references Boats already
+    /// bolt-upright read exactly, so the owner can A/B it (rule 6). No allocation on the hot path: the
+    /// boat's COMPONENTS are resolved once per binding and survive a re-skin, and only the presenter —
+    /// a POCO the skinner replaces outright — is re-read live, at one <c>GetComponent</c> a read
+    /// (<see cref="LiveHull"/>, rule 7). Player references Boats already
     /// (<see cref="DeckWalkController"/> does the same presenter read), so no module gains an edge (rule 4).</para>
     /// </summary>
     [DisallowMultipleComponent]
@@ -176,8 +177,9 @@ namespace HiddenHarbours.Player
         private ControlMode _mode = ControlMode.OnFoot;
         private Transform _boatRoot;
 
-        // The boat's components, resolved ONCE per binding (rule 7). Re-armed by Bind, so the dev hull
-        // picker swapping a hull under the player's feet is never read through a stale reference.
+        // The boat's components, resolved ONCE per binding (rule 7) — re-armed when the BOAT changes.
+        // The PRESENTER is the exception: a hull swapped in place does not change the boat, so _hull is
+        // only the bind-time fallback and every read goes through LiveHull(). See its remarks.
         private BoatWaveMotion _wave;
         private BoatController _boat;
         private IBoatHullPresenter _hull;
@@ -230,6 +232,10 @@ namespace HiddenHarbours.Player
         /// <summary>Where the fisher is looking RELATIVE TO THE DECK (degrees; 0 = at the bow, +90 = to
         /// starboard). Only their own walking changes it — the hull's turning cannot. For tests / tooling.</summary>
         public float DeckBearingDegrees => _deckBearingDegrees;
+
+        /// <summary>The compass heading of the hull PICTURE this rider is reading RIGHT NOW — the quantity
+        /// a presenter cached across a hull swap silently pins to north. For tests / tooling.</summary>
+        public float HullDrawnHeadingDegrees => DrawnHeadingDegrees();
 
         /// <summary>True when a rider child is wired at all. A rig without one is legal and inert.</summary>
         public bool HasRider => _riderRenderer != null;
@@ -434,18 +440,20 @@ namespace HiddenHarbours.Player
         private void ApplyOcclusion()
         {
             // A hull re-skinned under the player's feet (the dev picker does exactly that) hands us a
-            // NEW presenter for the same boat. Let the old one go first, or she keeps splitting an
-            // image nobody is standing in front of.
-            if (_occupiedHull != null && !ReferenceEquals(_occupiedHull, _hull)) ClearDeckOccupant();
+            // NEW presenter for the same boat — which is why this reads the LIVE host and not the
+            // bind-time field. Let the old one go first, or she keeps splitting an image nobody is
+            // standing in front of.
+            IBoatHullPresenter hull = LiveHull();
+            if (_occupiedHull != null && !ReferenceEquals(_occupiedHull, hull)) ClearDeckOccupant();
 
             float occluderId = 0f;
-            if (_hull != null)
+            if (hull != null)
             {
                 Vector2 stand = _deckWalk != null ? _deckWalk.DeckLocalPosition : Vector2.zero;
                 float height = _deckWalk != null ? _deckWalk.DeckHeightMeters : 0f;
-                _hull.SetDeckOccupant(new Vector3(stand.x, stand.y, height), true);
-                occluderId = _hull.DeckOccluderId;
-                _occupiedHull = _hull;
+                hull.SetDeckOccupant(new Vector3(stand.x, stand.y, height), true);
+                occluderId = hull.DeckOccluderId;
+                _occupiedHull = hull;
             }
             WriteOccluderId(occluderId);
         }
@@ -577,10 +585,36 @@ namespace HiddenHarbours.Player
         /// </summary>
         private float DrawnHeadingDegrees()
         {
-            if (_hull != null) return _hull.DrawnHeadingDegrees();
+            IBoatHullPresenter hull = LiveHull();
+            if (hull != null) return hull.DrawnHeadingDegrees();
             return _boatRoot != null
                 ? DirectionalBoatSprite.HeadingDegreesFromBow(_boatRoot.up)
                 : 0f;
+        }
+
+        /// <summary>
+        /// <b>The presenter for the hull worn RIGHT NOW</b> — the host's when there is one, else the one
+        /// resolved at bind. The same live read as <see cref="DeckWalkController"/>'s own <c>LiveHull()</c>,
+        /// and it must STAY the same read, for the reason <see cref="DrawnHeadingDegrees"/> gives — the
+        /// walk and the rider have to agree about which hull is under the fisher.
+        ///
+        /// <para>Live, because the dev hull picker re-skins a boat <i>in place</i>: the BOAT ROOT never
+        /// changes, so <see cref="ResolveBoat"/> never re-arms and a presenter cached once per binding
+        /// would go on answering for a hull that is no longer drawn.</para>
+        ///
+        /// <para>Silently, which is what made it worth pinning: a dead
+        /// <see cref="MeshHullPresenter"/> returns heading 0 (north) by its null-tolerant contract rather
+        /// than throwing, so the fisher would simply stop turning with the boat — and would keep marking
+        /// her occupant on a hull nobody stands on, leaving the new one unable to draw over her crew.</para>
+        ///
+        /// <para>One <c>GetComponent</c> per read and no allocation (rule 7) — the cost every other
+        /// consumer of this seam already pays (<see cref="BoatCleats"/>, the deck containers).</para>
+        /// </summary>
+        private IBoatHullPresenter LiveHull()
+        {
+            if (_boatRoot == null) return _hull;
+            var host = _boatRoot.GetComponent<BoatHullPresenterHost>();
+            return (host != null && host.Presenter != null) ? host.Presenter : _hull;
         }
 
         /// <summary>
@@ -718,7 +752,12 @@ namespace HiddenHarbours.Player
 
         /// <summary>Find the boat's rock, helm and skin — once per binding, never on the hot path. Plain
         /// <c>!= null</c> against the components throughout (Unity fake-null: a destroyed boat must degrade
-        /// to "no ride", not throw).</summary>
+        /// to "no ride", not throw).
+        ///
+        /// <para>The rock and the helm are COMPONENTS on the physics root: a re-skin re-configures them in
+        /// place, so caching them per binding is honest. The presenter is not — it is a POCO the skinner
+        /// swaps out — so <see cref="_hull"/> is a fallback for a boat with no host, and readers go through
+        /// <see cref="LiveHull"/>.</para></summary>
         private void ResolveBoat()
         {
             if (_boatResolved) return;
