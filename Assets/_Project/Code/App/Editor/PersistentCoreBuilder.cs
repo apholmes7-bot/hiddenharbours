@@ -405,6 +405,18 @@ namespace HiddenHarbours.App.Editor
                                  "if the sheets were re-imported).");
             }
 
+            // --- THE CLIP SEAM ----------------------------------------------------------------------------
+            // Whole-body clips the fisher PLAYS rather than falls into from speed: the rig's board /
+            // boardDown over a rail, haul on a line, ladderDown on a wharf ladder. It reads its clips off the
+            // SAME def the iso skin above is wearing (no second wiring), and takes the renderer through the
+            // counted Suspend/Release claim PlayerHaulAnimator already uses, so the two can never fight.
+            //
+            // Added unconditionally, including on the FisherSheet fallback path: with no def, or a def whose
+            // clip sheets are not baked, every Play() answers false and the component costs one early-out per
+            // frame. That is the null-safe greybox rule — the thing that plays a clip does not have to know
+            // whether the art landed yet.
+            playerGo.AddComponent<HiddenHarbours.Core.CharacterClipPlayer>();
+
             // --- WADE SUBMERSION, RE-CALIBRATED FOR THE ISO CELL ------------------------------------------
             // PlayerSubmergeVisual clips the waterline on the SPRITE's uv.y, so its two tunables describe the
             // CELL, not the character. The old flat sheet was 32×64 px (2.0 m at PPU 32) with the fisher

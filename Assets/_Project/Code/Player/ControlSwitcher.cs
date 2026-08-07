@@ -536,6 +536,10 @@ namespace HiddenHarbours.Player
         private Vector2 _moveRailRelative;     // the rail, as a boat-relative offset re-clamped every tick
         private bool _moveWashboards;          // does this hull carry side decks to step over?
         private bool _moveHeldGate;            // did WE raise InteractionGate? (only we may lower it)
+        private bool _moveClipPlaying;         // is the vault's clip on the renderer right now?
+        private bool _moveClipAttempted;       // has this move already asked for its clip? (ask once)
+        private CharacterClipPlayer _clipPlayer;
+        private bool _clipPlayerResolved;
 
         /// <summary>True while the fisher is mid-boarding — walking to the rail, over it, or down onto the
         /// wharf. The mode has NOT changed yet; it changes when they land.</summary>
@@ -646,9 +650,85 @@ namespace HiddenHarbours.Player
             // the fisher plants rather than arrives at speed, and lifted on a parabola that is zero at
             // both ends, so the arc joins the two legs with no step in position.
             float v = Mathf.Clamp01((_moveElapsed - _moveApproachSeconds) / vault);
-            Vector3 pos = Vector3.Lerp(rail, VaultEndWorld(), Mathf.SmoothStep(0f, 1f, v));
+            Vector3 end = VaultEndWorld();
+            Vector3 pos = Vector3.Lerp(rail, end, Mathf.SmoothStep(0f, 1f, v));
             pos.y += 4f * Mathf.Max(0f, _boardVaultHopMeters) * v * (1f - v);
             Player.position = pos;
+
+            PlayVaultClip(rail, end, vault);
+        }
+
+        // ---- the vault's CLIP (art drop of 2026-08-06 — the rig's board / boardDown) ---------------
+        //
+        // The arc used to draw WALK frames the whole way over, because IsoCharacterSprite picks its cell
+        // from measured transform speed and a fisher moved at walking pace looks like one walking. That
+        // was the honest read while no boarding art existed; the pass-6.1 kit added `board` (step up and
+        // over a rail) and `boardDown` (stepping ashore), so the vault now plays the clip it always meant.
+        //
+        // ONLY THE VAULT. Leg 1 is a walk to the rail and stays a walk — measured speed already draws it
+        // right, and a boarding clip played while crossing a deck would be a lie about what the body is
+        // doing. The clip starts the instant the arc does and stops when the move ends, however it ends.
+        //
+        // SCALED TO THE ARC, NEVER THE ARC TO THE CLIP. `_boardVaultSeconds` is owner-approved feel
+        // (0.55 s by default); the rig's `board` is 10 f × 90 ms = 0.9 s. Stretching the move to suit the
+        // art would retune a move the owner already signed off, so the clip is compressed to fit instead
+        // — CharacterClipPlayer.Play's scaleToSeconds, which is exactly what it is for.
+        //
+        // PRESENTATION ONLY. Nothing here reads or writes a gate, a mode or a position: the whole block
+        // is skippable, and where the clip is missing (an un-skinned character, a kit baked without it)
+        // Play returns false and the arc draws the walk frames it drew before, unchanged.
+
+        /// <summary>Start the vault's clip on the first tick of leg 2, then keep it aimed. Facing comes
+        /// from the leg's TRAVEL direction rather than from the hop-modified position, so the parabola's
+        /// rise never reads as the fisher turning.</summary>
+        private void PlayVaultClip(Vector3 railWorld, Vector3 endWorld, float vaultSeconds)
+        {
+            var player = ResolveClipPlayer();
+            if (player == null) return;
+
+            float heading = IsoCharacterMath.HeadingFor(
+                new Vector2(endWorld.x - railWorld.x, endWorld.y - railWorld.y),
+                minSpeed: 0f, fallbackHeading: 0f);
+
+            if (!_moveClipAttempted)
+            {
+                // ONCE per move, whatever the answer. A character with no boarding art must not re-ask
+                // (and re-walk its sheet) on all ~33 frames of the arc to be told "no" each time.
+                _moveClipAttempted = true;
+                CharacterClip clip = _moveKind == BoardingMoveKind.Boarding
+                    ? CharacterClip.Board
+                    : CharacterClip.BoardDown;
+                // holdOnFinish: the ARC owns the timing. A clip that rounds a hair short of the vault
+                // would otherwise hand the renderer back for one frame mid-air, which reads as a flicker.
+                _moveClipPlaying = player.Play(clip, heading, scaleToSeconds: vaultSeconds,
+                                               holdOnFinish: true);
+                return;
+            }
+
+            if (_moveClipPlaying) player.SetHeading(heading);
+        }
+
+        /// <summary>Take the vault's clip off the renderer (idempotent). Called from
+        /// <see cref="EndBoardingMove"/>, so it runs on every ending a move has — landed, refused at the
+        /// rail, or torn down mid-air.</summary>
+        private void StopVaultClip()
+        {
+            _moveClipAttempted = false;
+            if (!_moveClipPlaying) return;
+            _moveClipPlaying = false;
+            _clipPlayer?.Stop();
+        }
+
+        /// <summary>Find the player's clip seam once, lazily — the switcher may be configured before the
+        /// fisher has a skin, and a character with no clip player simply never gets one.</summary>
+        private CharacterClipPlayer ResolveClipPlayer()
+        {
+            if (_clipPlayerResolved) return _clipPlayer;
+            Transform t = Player;
+            if (t == null) return null;              // not resolvable yet — try again next tick
+            _clipPlayerResolved = true;
+            _clipPlayer = t.GetComponent<CharacterClipPlayer>();
+            return _clipPlayer;
         }
 
         /// <summary>
@@ -709,6 +789,7 @@ namespace HiddenHarbours.Player
         {
             _moveKind = BoardingMoveKind.None;
             _moveElapsed = 0f;
+            StopVaultClip();
             ReleaseInteractionGate();
         }
 

@@ -160,3 +160,27 @@ MonoBehaviour:
     WalkSheet: []
     WalkFrameCount: 8
     WalkFramesPerSecond: 9.090909
+  BoardClip:
+    Sheet: []
+    FrameCount: 10
+    FramesPerSecond: 11.111111
+    Loops: 0
+    FacingCount: 0
+  BoardDownClip:
+    Sheet: []
+    FrameCount: 6
+    FramesPerSecond: 10.526316
+    Loops: 0
+    FacingCount: 0
+  HaulClip:
+    Sheet: []
+    FrameCount: 8
+    FramesPerSecond: 8.333333
+    Loops: 1
+    FacingCount: 0
+  LadderDownClip:
+    Sheet: []
+    FrameCount: 10
+    FramesPerSecond: 9.090909
+    Loops: 1
+    FacingCount: 0

@@ -90,6 +90,28 @@ namespace HiddenHarbours.App.Editor
         const int CarryWalkFrames = 8;
         const float CarryWalkFps = 1000f / 110f;  // 9.09
 
+        // ---- the CLIP sheets (whole-body actions played as events) ---------------------------------
+        // Same rule as the stances: the counts and rates ARE the rig's own ANIMS table, rev 6.2 —
+        //     board:{frames:10, ms:90, oneShot}   boardDown:{frames:6, ms:95, oneShot}
+        //     haul:{frames:8, ms:120}             ladderDown:{frames:10, ms:110}
+        // and `oneShot` there is Loops=false here. The two boarding clips play once and hold their last
+        // frame (a board that wrapped would drop the fisher back on the wharf at the top of her own
+        // vault); haul and ladderDown loop, because a heave and a climb are cycles that run until the
+        // thing driving them stops.
+        //
+        // FACING COUNT is left at the def's eight for all four — the pass-6.2 kit bakes every clip at
+        // the full eight rows (verified against the rendered pixels, not the labels: all eight facings
+        // come back non-empty for all four clips). A later kit that ships a reduced-facing ladder climb
+        // sets CharacterClipSheets.FacingCount and the row snap re-solves with no code change here.
+        const int BoardFrames = 10;
+        const float BoardFps = 1000f / 90f;        // 11.11
+        const int BoardDownFrames = 6;
+        const float BoardDownFps = 1000f / 95f;    // 10.53
+        const int HaulFrames = 8;
+        const float HaulFps = 1000f / 120f;        // 8.33
+        const int LadderDownFrames = 10;
+        const float LadderDownFps = 1000f / 110f;  // 9.09
+
         /// <summary>One character's worth of sheets on disk → one <see cref="CharacterVisualDef"/> asset.</summary>
         struct Kit
         {
@@ -219,6 +241,17 @@ namespace HiddenHarbours.App.Editor
                                         idleSuffix: "_idle_oars", idleFrames: CarryIdleFrames, idleFps: CarryIdleFps,
                                         walkSuffix: "_walk_oars", walkFrames: CarryWalkFrames, walkFps: CarryWalkFps);
 
+            // The CLIPS, attempted for every kit on exactly the same terms as the stances: an absent
+            // sheet yields an empty block, the def's all-or-nothing gate drops it whole, and the clip
+            // simply never plays. So the cast — which bakes idle + walk only — wires no clips today and
+            // wires them the day their bake grows, with no edit here.
+            def.BoardClip = TakeClip(folder, kit.Stem, "_board", BoardFrames, BoardFps, loops: false);
+            def.BoardDownClip = TakeClip(folder, kit.Stem, "_boardDown", BoardDownFrames, BoardDownFps,
+                                         loops: false);
+            def.HaulClip = TakeClip(folder, kit.Stem, "_haul", HaulFrames, HaulFps, loops: true);
+            def.LadderDownClip = TakeClip(folder, kit.Stem, "_ladderDown", LadderDownFrames,
+                                          LadderDownFps, loops: true);
+
             if (created) AssetDatabase.CreateAsset(def, path);
             else EditorUtility.SetDirty(def);
 
@@ -240,6 +273,10 @@ namespace HiddenHarbours.App.Editor
                       $"; stances balance {StanceState(def, CharacterStance.Balance)}, " +
                       $"helm {StanceState(def, CharacterStance.Helm)}, " +
                       $"oars {StanceState(def, CharacterStance.Oars)}" +
+                      $"; clips board {ClipState(def, CharacterClip.Board)}, " +
+                      $"boardDown {ClipState(def, CharacterClip.BoardDown)}, " +
+                      $"haul {ClipState(def, CharacterClip.Haul)}, " +
+                      $"ladderDown {ClipState(def, CharacterClip.LadderDown)}" +
                       $"{(def.FacingsAreCounterClockwise ? ", rows UN-MIRRORED (art bakes CCW)" : ", rows as labelled (art bakes CW)")}.");
             return true;
         }
@@ -267,6 +304,30 @@ namespace HiddenHarbours.App.Editor
             }
             return s;
         }
+
+        /// <summary>One clip's sheet, or an EMPTY (never null) block where the art isn't baked — the same
+        /// all-or-nothing <see cref="TakeExactly"/> gate the free body and the stances go through, for the
+        /// same reason. <paramref name="loops"/> is the rig's own <c>oneShot</c> flag, inverted.</summary>
+        static CharacterClipSheets TakeClip(string folder, string stem, string suffix,
+                                            int frames, float fps, bool loops)
+        {
+            var c = new CharacterClipSheets
+            {
+                FrameCount = Mathf.Max(1, frames),
+                FramesPerSecond = fps,
+                Loops = loops,
+                // 0 = inherit the def's FacingCount. The pass-6.2 kit bakes all eight rows for every
+                // clip; this is the seam a reduced-facing kit would use instead.
+                FacingCount = 0,
+            };
+            if (frames > 0)
+                c.Sheet = TakeExactly($"{folder}/{stem}{suffix}.png", Directions * frames);
+            return c;
+        }
+
+        /// <summary>A clip's wiring state for the build log.</summary>
+        static string ClipState(CharacterVisualDef def, CharacterClip clip) =>
+            def.HasClip(clip) ? "WIRED" : "none";
 
         /// <summary>A stance's wiring state for the build log — which gaits of it actually came through.</summary>
         static string StanceState(CharacterVisualDef def, CharacterStance stance)

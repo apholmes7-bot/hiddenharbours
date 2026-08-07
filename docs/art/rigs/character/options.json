@@ -730,6 +730,30 @@
       "castRelease": {
         "frames": 8,
         "ms": 70
+      },
+      "board": {
+        "frames": 10,
+        "ms": 90,
+        "oneShot": true,
+        "reads": "railZ"
+      },
+      "boardDown": {
+        "frames": 6,
+        "ms": 95,
+        "oneShot": true,
+        "reads": "railZ"
+      },
+      "haul": {
+        "frames": 8,
+        "ms": 120
+      },
+      "ladderDown": {
+        "frames": 10,
+        "ms": 110,
+        "loops": true,
+        "reads": "rung, ladderW",
+        "stepZ": 0.6,
+        "note": "in-place locomotion cycle; translate the sprite by ladderMount().descend"
       }
     },
     "groups": {
@@ -751,6 +775,15 @@
         "strike",
         "reel",
         "land"
+      ],
+      "boarding": [
+        "board",
+        "boardDown",
+        "ladderDown"
+      ],
+      "work": [
+        "dig",
+        "haul"
       ]
     },
     "mount": {
@@ -767,7 +800,11 @@
       "strike": "rod",
       "reel": "rod",
       "land": "rod",
-      "dig": "shovel"
+      "dig": "shovel",
+      "board": "free",
+      "boardDown": "free",
+      "haul": "free",
+      "ladderDown": "ladder"
     },
     "carries": {
       "buckets": {
@@ -777,7 +814,9 @@
         "anims": [
           "idle",
           "walk",
-          "run"
+          "run",
+          "board",
+          "boardDown"
         ]
       },
       "tray": {
@@ -787,7 +826,9 @@
         "anims": [
           "idle",
           "walk",
-          "run"
+          "run",
+          "board",
+          "boardDown"
         ]
       },
       "helm": {

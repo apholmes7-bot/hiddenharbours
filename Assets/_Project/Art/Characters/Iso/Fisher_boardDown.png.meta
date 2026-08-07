@@ -1,0 +1,1378 @@
+fileFormatVersion: 2
+guid: 786026bac5e44e04e9004c63dc4aaf75
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -8191378853483388806
+    second: Fisher_boardDown_0
+  - first:
+      213: 104488584679680547
+    second: Fisher_boardDown_1
+  - first:
+      213: 4401822286405352872
+    second: Fisher_boardDown_2
+  - first:
+      213: -1169582227931874794
+    second: Fisher_boardDown_3
+  - first:
+      213: 6573363220992204126
+    second: Fisher_boardDown_4
+  - first:
+      213: -6347663721500920283
+    second: Fisher_boardDown_5
+  - first:
+      213: -2884410678054474638
+    second: Fisher_boardDown_6
+  - first:
+      213: 3024874735962831990
+    second: Fisher_boardDown_7
+  - first:
+      213: 6843485193671727579
+    second: Fisher_boardDown_8
+  - first:
+      213: -4620551316521323981
+    second: Fisher_boardDown_9
+  - first:
+      213: 693436439814898636
+    second: Fisher_boardDown_10
+  - first:
+      213: -6032556741669634326
+    second: Fisher_boardDown_11
+  - first:
+      213: -6494318686305676238
+    second: Fisher_boardDown_12
+  - first:
+      213: 5704787761668385593
+    second: Fisher_boardDown_13
+  - first:
+      213: 9127454961820465374
+    second: Fisher_boardDown_14
+  - first:
+      213: 2189383087174204642
+    second: Fisher_boardDown_15
+  - first:
+      213: 969509645219805023
+    second: Fisher_boardDown_16
+  - first:
+      213: -3895880054531194002
+    second: Fisher_boardDown_17
+  - first:
+      213: 3485197475027017340
+    second: Fisher_boardDown_18
+  - first:
+      213: 8112048052637362077
+    second: Fisher_boardDown_19
+  - first:
+      213: -6344636459393490071
+    second: Fisher_boardDown_20
+  - first:
+      213: 6753383346646538032
+    second: Fisher_boardDown_21
+  - first:
+      213: 4548230383480961649
+    second: Fisher_boardDown_22
+  - first:
+      213: 4456624794487308664
+    second: Fisher_boardDown_23
+  - first:
+      213: -2486236034324289018
+    second: Fisher_boardDown_24
+  - first:
+      213: -8807302828388453823
+    second: Fisher_boardDown_25
+  - first:
+      213: 8387343292807511372
+    second: Fisher_boardDown_26
+  - first:
+      213: 4302327586461768526
+    second: Fisher_boardDown_27
+  - first:
+      213: 5757033102260716651
+    second: Fisher_boardDown_28
+  - first:
+      213: 457942654549831538
+    second: Fisher_boardDown_29
+  - first:
+      213: 4352944840898800892
+    second: Fisher_boardDown_30
+  - first:
+      213: -2170418229951691659
+    second: Fisher_boardDown_31
+  - first:
+      213: 4611904460594478157
+    second: Fisher_boardDown_32
+  - first:
+      213: -8423577986469419581
+    second: Fisher_boardDown_33
+  - first:
+      213: -8918763486523315765
+    second: Fisher_boardDown_34
+  - first:
+      213: -8888640633557613564
+    second: Fisher_boardDown_35
+  - first:
+      213: -6858106848279059414
+    second: Fisher_boardDown_36
+  - first:
+      213: -2400196212975193550
+    second: Fisher_boardDown_37
+  - first:
+      213: -90281268415132594
+    second: Fisher_boardDown_38
+  - first:
+      213: 5012088996493028355
+    second: Fisher_boardDown_39
+  - first:
+      213: -3062221035564854901
+    second: Fisher_boardDown_40
+  - first:
+      213: 664420478020496595
+    second: Fisher_boardDown_41
+  - first:
+      213: 7877629055987815202
+    second: Fisher_boardDown_42
+  - first:
+      213: 5217650751990576962
+    second: Fisher_boardDown_43
+  - first:
+      213: -555763116257457889
+    second: Fisher_boardDown_44
+  - first:
+      213: 8773893992251525774
+    second: Fisher_boardDown_45
+  - first:
+      213: 5663154855558503989
+    second: Fisher_boardDown_46
+  - first:
+      213: -4189188216489441683
+    second: Fisher_boardDown_47
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 7
+  spritePivot: {x: 0.5, y: 0}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Fisher_boardDown_d0_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 644
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 231bdc5b726591d4589b088a4cfc7ee9
+      internalID: -175782248
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_boardDown_d0_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 644
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 85a68743b3a4a224083ec6df573c9e98
+      internalID: -2052820786
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_boardDown_d0_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 644
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d343251d210588541b304fc42b35bc4f
+      internalID: -234804844
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_boardDown_d0_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 644
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4715026f901cff6489f837623ad36088
+      internalID: -172180226
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_boardDown_d0_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 644
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c48178c0d38e96240b27d11a44384433
+      internalID: -315494275
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_boardDown_d0_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 644
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6c262c74f06ea9c439e2b1084e5e70d7
+      internalID: 269087074
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_boardDown_d1_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 552
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3037d47ec638fa94895fa8738874a2c1
+      internalID: -130980253
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_boardDown_d1_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 552
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 10bb1b99f2f7fb8498a5e4c6e2e39213
+      internalID: -387053639
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_boardDown_d1_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 552
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0895af2fbf4004c40af5c44c5bc9a286
+      internalID: -681006426
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_boardDown_d1_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 552
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a68459fcda22a5c4daa09496147352e7
+      internalID: 1255928215
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_boardDown_d1_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 552
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 28ca27ed6b800904bb486c632043798a
+      internalID: -2062839207
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_boardDown_d1_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 552
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 533478a2f0ecc714db9e1e2c44e6d6ca
+      internalID: -1829968869
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_boardDown_d2_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 460
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: df59ca2527620ac42a165ddb66fe668f
+      internalID: -906823857
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_boardDown_d2_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 460
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d39ea8816d57a7444aa07000ce8664a6
+      internalID: 649248407
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_boardDown_d2_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 460
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cda7a0b11cae9f741b0b87c90af36e21
+      internalID: -307805832
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_boardDown_d2_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 460
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8daf4a51609175545ba292a5489181fc
+      internalID: -1958834893
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_boardDown_d2_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 460
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7706e27daa2be174190e4157d87496ec
+      internalID: -1167158527
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_boardDown_d2_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 460
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 531a25db833586c459923b9643a800b2
+      internalID: -465731884
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_boardDown_d3_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 368
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 95d56f118ef85c248a272593c90a158e
+      internalID: -334677839
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_boardDown_d3_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 368
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 43832aa5820b0eb46b19d75266bfe16f
+      internalID: 391904452
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_boardDown_d3_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 368
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 064a68f83620dcf41b8fbc5cf165259a
+      internalID: 399110017
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_boardDown_d3_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 368
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 45f997650025f204cb49249ef7f941d7
+      internalID: 1176607063
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_boardDown_d3_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 368
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1de8001aa327b024eb59b84f45652f9a
+      internalID: 1095268565
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_boardDown_d3_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 368
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 460d64017f7e7844cad2dc1dd2c36f2b
+      internalID: -1966482942
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_boardDown_d4_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 276
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d60115fe59ad7d9418ac427f293bcbe4
+      internalID: -1776566117
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_boardDown_d4_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 276
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7af30186eadb9cf4199c64b788791c76
+      internalID: 1402964680
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_boardDown_d4_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 276
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5ed887c78cd7be94798aeeb51310698b
+      internalID: -1253448725
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_boardDown_d4_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 276
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 96f378981fb288f4599b5f9e9b6c6d15
+      internalID: -2045510028
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_boardDown_d4_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 276
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2bb938ae545b99e448824d6f812b7ed0
+      internalID: -1264871229
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_boardDown_d4_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 276
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4f21feb3913b1e948b87b63a17f7817d
+      internalID: 726312220
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_boardDown_d5_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 184
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 81bfae919ee1b5143a19a8f45addfe01
+      internalID: -1370964989
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_boardDown_d5_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 184
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ae1e0460c0297d94d9f9d452c0593a2b
+      internalID: 2003334531
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_boardDown_d5_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 184
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 21a0de35815151b469989125613bffa0
+      internalID: -794918854
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_boardDown_d5_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 184
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f8704c36308714a4885acaa16900bc39
+      internalID: -2046211266
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_boardDown_d5_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 184
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0471d16ff22397b43bcd35d411ea9612
+      internalID: 1379687745
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_boardDown_d5_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 184
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b7a31c6223f3f64438cad55e4dd4f72f
+      internalID: 1813279734
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_boardDown_d6_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 92
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4d21526d905ef0b43b1c75022748bf78
+      internalID: 641000672
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_boardDown_d6_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 92
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 41b971280dc6d3841b1a95598589bbb9
+      internalID: -1288358871
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_boardDown_d6_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 92
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f291b998d81bcc64c8a5b24d2d906b03
+      internalID: -467227264
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_boardDown_d6_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 92
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eb65a6eaf88270d41b578b8d212820c1
+      internalID: 1399844806
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_boardDown_d6_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 92
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7c10252422886ce49b79661282038350
+      internalID: 478327428
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_boardDown_d6_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 92
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a997194f8fdbd9748a65278c365ce1a6
+      internalID: -1119885727
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_boardDown_d7_f0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 34eca4c62808d96419d349941ac873a7
+      internalID: 1946656465
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_boardDown_d7_f1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d4ac9481e6a946d4f942906a277fa0ce
+      internalID: -482857722
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_boardDown_d7_f2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a3f6202fa84da9a4caced1fac813de99
+      internalID: 354933928
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_boardDown_d7_f3
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6aa23659071919940818eb4cc0a19e23
+      internalID: -1606290366
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_boardDown_d7_f4
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 29e6c2f3f6c727a409ca4053003df585
+      internalID: 389970845
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Fisher_boardDown_d7_f5
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 0
+        width: 64
+        height: 92
+      alignment: 9
+      pivot: {x: 0.5, y: 0.10869565}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5730caa102ecc6c4aa8ad0c79cf6ac8b
+      internalID: 1352841090
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: f8d993273778d08418efc6591acb5d70
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Fisher_boardDown_d0_f0: -175782248
+      Fisher_boardDown_d0_f1: -2052820786
+      Fisher_boardDown_d0_f2: -234804844
+      Fisher_boardDown_d0_f3: -172180226
+      Fisher_boardDown_d0_f4: -315494275
+      Fisher_boardDown_d0_f5: 269087074
+      Fisher_boardDown_d1_f0: -130980253
+      Fisher_boardDown_d1_f1: -387053639
+      Fisher_boardDown_d1_f2: -681006426
+      Fisher_boardDown_d1_f3: 1255928215
+      Fisher_boardDown_d1_f4: -2062839207
+      Fisher_boardDown_d1_f5: -1829968869
+      Fisher_boardDown_d2_f0: -906823857
+      Fisher_boardDown_d2_f1: 649248407
+      Fisher_boardDown_d2_f2: -307805832
+      Fisher_boardDown_d2_f3: -1958834893
+      Fisher_boardDown_d2_f4: -1167158527
+      Fisher_boardDown_d2_f5: -465731884
+      Fisher_boardDown_d3_f0: -334677839
+      Fisher_boardDown_d3_f1: 391904452
+      Fisher_boardDown_d3_f2: 399110017
+      Fisher_boardDown_d3_f3: 1176607063
+      Fisher_boardDown_d3_f4: 1095268565
+      Fisher_boardDown_d3_f5: -1966482942
+      Fisher_boardDown_d4_f0: -1776566117
+      Fisher_boardDown_d4_f1: 1402964680
+      Fisher_boardDown_d4_f2: -1253448725
+      Fisher_boardDown_d4_f3: -2045510028
+      Fisher_boardDown_d4_f4: -1264871229
+      Fisher_boardDown_d4_f5: 726312220
+      Fisher_boardDown_d5_f0: -1370964989
+      Fisher_boardDown_d5_f1: 2003334531
+      Fisher_boardDown_d5_f2: -794918854
+      Fisher_boardDown_d5_f3: -2046211266
+      Fisher_boardDown_d5_f4: 1379687745
+      Fisher_boardDown_d5_f5: 1813279734
+      Fisher_boardDown_d6_f0: 641000672
+      Fisher_boardDown_d6_f1: -1288358871
+      Fisher_boardDown_d6_f2: -467227264
+      Fisher_boardDown_d6_f3: 1399844806
+      Fisher_boardDown_d6_f4: 478327428
+      Fisher_boardDown_d6_f5: -1119885727
+      Fisher_boardDown_d7_f0: 1946656465
+      Fisher_boardDown_d7_f1: -482857722
+      Fisher_boardDown_d7_f2: 354933928
+      Fisher_boardDown_d7_f3: -1606290366
+      Fisher_boardDown_d7_f4: 389970845
+      Fisher_boardDown_d7_f5: 1352841090
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

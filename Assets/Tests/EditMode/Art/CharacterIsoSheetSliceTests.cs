@@ -8,8 +8,8 @@ using UnityEngine;
 namespace HiddenHarbours.Tests.Art.EditMode
 {
     /// <summary>
-    /// Guards the baked slice of the 8-direction ISO CHARACTER sheets — the player's fifteen states at
-    /// the folder root, and the nine cast presets one subfolder each. The slice lives in the
+    /// Guards the baked slice of the 8-direction ISO CHARACTER sheets — the player's twenty-nine states
+    /// at the folder root, and the nine cast presets one subfolder each. The slice lives in the
     /// <c>.meta</c>, not in code, so nothing at runtime would notice it rotting: a re-export that
     /// drifts the grid, a re-slice that loses the ground pivot, or an importer setting that downscales
     /// the sheet all land as silently wrong sprites.
@@ -66,6 +66,13 @@ namespace HiddenHarbours.Tests.Art.EditMode
             { "bite", 6 },   { "strike", 6 },      { "reel", 12 }, { "land", 12 },
             { "dig", 10 },
 
+            // The pass-6.2 clip families: the boarding vault up and back down, the deck haul, and the
+            // ladder descent. Boarding is TWO authored clips, not one mirrored — going down the hand
+            // only steadies and the weight drops ahead of the foot — so boardDown carries its own
+            // count. Cross-checked against the rig's own ANIMS table by CharacterRigBakeTests.
+            { "board", 10 },   { "boardDown", 6 },
+            { "haul", 8 },     { "ladderDown", 10 },
+
             // The carry stances — separate sheets because the stance changes the POSE, not just
             // where the hands are. Which stance rides which anim is the RIG's CARRIES table: pails
             // and tray on all three gaits, helm and oars on idle and walk only (nobody runs a
@@ -76,7 +83,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
             { "idle_oars", 6 },    { "walk_oars", 8 },
         };
 
-        /// <summary>The player's twenty-five: every state the rig declares, plus its carry stances.</summary>
+        /// <summary>The player's twenty-nine: every state the rig declares, plus its carry stances and
+        /// the pass-6.2 clip families.</summary>
         private static readonly string[] PlayerStates =
         {
             "idle", "walk", "run", "balance", "stagger",
@@ -85,6 +93,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             "idle_helm", "walk_helm", "idle_oars", "walk_oars",
             "hold", "cast_short", "cast_long", "castBack", "castRelease",
             "bite", "strike", "reel", "land", "dig",
+            "board", "boardDown", "haul", "ladderDown",
         };
 
         /// <summary>What a cast standee gets: the gaits, not the gear. (See the bake menu for why.)</summary>

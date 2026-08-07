@@ -42,7 +42,9 @@ namespace HiddenHarbours.Tools.RigBaking
         /// CARRIES table (<c>withCarryStances: true</c>), because which stance rides which anim is the
         /// rig's statement about its art. Ten sheets today: pails and tray on idle/walk/run, helm and
         /// oars on idle/walk. They are separate sheets rather than pins on the free ones because
-        /// <b>a stance changes the POSE</b>, not only the hands.</para>
+        /// <b>a stance changes the POSE</b>, not only the hands. The rev-6.1 boarding clips also ride
+        /// pails and a tray, and are deliberately held back — see
+        /// <see cref="PlayerCarryStanceExclusions"/>.</para>
         ///
         /// <para>Grown from the eight of the v2 wave-1 spec: locomotion (idle/walk/run) and
         /// <c>dig</c> join the fight/balance set, and <c>hold</c>/<c>cast</c> are re-baked here rather
@@ -63,7 +65,33 @@ namespace HiddenHarbours.Tools.RigBaking
             new CharacterState("reel"), new CharacterState("land"),
             // shovel
             new CharacterState("dig"),
+            // the rev 6.1 / 6.2 CLIPS — whole-body actions played as events rather than chosen from
+            // speed. board/boardDown re-solve per railZ and bake here at the rig's default 0.55 m (a
+            // dory sheer, which is the hull M1 ships); a hull with a different sheer wants its own
+            // sheet, per the kit README's "bake one sheet per rail height you ship".
+            new CharacterState("board"), new CharacterState("boardDown"),
+            new CharacterState("haul"),
+            // ladderDown drives the rig's 'ladder' mount: both hands on the rungs, so no carry stance
+            // and no prop layer ride it. The bake needs no special case — MountOf says so and the
+            // expansion already skips anything that is not free.
+            new CharacterState("ladderDown"),
         };
+
+        /// <summary>
+        /// Anims left OUT of the carry expansion, baked free-handed only.
+        ///
+        /// <para>The rig's CARRIES table rides <c>buckets</c> and <c>tray</c> on both boarding clips,
+        /// so the expansion would grow four more sheets — <c>board_buckets</c>, <c>board_tray</c>,
+        /// <c>boardDown_buckets</c>, <c>boardDown_tray</c> — for <b>+5.8 MiB of RGBA32 on the player
+        /// alone</b>. Nothing in the game can carry a pail over a rail yet: the boarding move plays one
+        /// clip, free-handed, and no verb fills the fisher's hands first. That is rule 7 (the budget is
+        /// a feature) meeting rule 8 (stay in your phase), and it is a BUDGET call, not a correctness
+        /// one — the rig remains the authority on which stance may ride which anim.</para>
+        ///
+        /// <para><b>To ship the carrying variants, delete an entry.</b> The art is already authored;
+        /// this list is the only thing declining it.</para>
+        /// </summary>
+        public static readonly string[] PlayerCarryStanceExclusions = { "board", "boardDown" };
 
         /// <summary>
         /// What a cast standee needs for M1: <c>idle</c> is what the world builders render, and
@@ -71,6 +99,13 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <c>run</c> and the rod states are deliberately NOT baked for the cast — nine presets ×
         /// fifteen states is tens of MiB of texture for animations nobody plays (CLAUDE.md rule 7;
         /// the budget lands in the log either way).
+        ///
+        /// <para><b>The rev 6.1 / 6.2 clips are FISHER-FIRST</b> for the same reason. All four bake
+        /// happily for any preset — but boarding, hauling and climbing a ladder are the PLAYER's verbs
+        /// today: the boarding move is the player's, the trap haul is the player's, and the ladder
+        /// slice that follows is the player's. Adding them to the cast is one line here and costs
+        /// <b>+6.1 MiB of RGBA32 per preset</b> (55 MiB across the nine), against 2.5 MiB for the
+        /// whole Iso folder today. The day an NPC routine boards a boat, that is the line to add.</para>
         /// </summary>
         public static readonly CharacterState[] CastStates =
         {
@@ -110,6 +145,7 @@ namespace HiddenHarbours.Tools.RigBaking
                 results.Add(CharacterRigBaker.Bake(
                     "character", PlayerStates, CharacterArtFolder, SheetPrefix, AnchorFileName,
                     buildPreset: PlayerPreset, withCarryStances: true,
+                    carryStanceExclusions: PlayerCarryStanceExclusions,
                     progress: (label, t) =>
                         EditorUtility.DisplayProgressBar("Baking the player's sheets", label, t)));
             }
