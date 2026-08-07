@@ -10,7 +10,7 @@
     "alpha": "binary",
     "pivot": "projection of the model origin (footprint centre at chart datum) — the rig reports px,py per bake",
     "keyline": "#1a1c22",
-    "keylineDefault": true
+    "keylineDefault": false
   },
   "azimuth": {
     "convention": "counterClockwise",

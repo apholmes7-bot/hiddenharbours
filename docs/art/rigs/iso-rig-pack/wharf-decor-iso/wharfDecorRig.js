@@ -7,7 +7,8 @@
 
    Each piece is one parametric 3D model baked through the SHARED 3/4 camera: 45deg steps, elev 40deg,
    flat-facet shading from the fixed upper-LEFT key, z-buffered, ordered dither, per-face uv texture,
-   depth-edge darkening, 1px keyline, NO AA. 32 px = 1 m. All 8 facings fall out of one model.
+   depth-edge darkening, NO AA. 32 px = 1 m. The 1px keyline is RETIRED by default per ADR 0031 and
+   reachable with `{outline:true}`. All 8 facings fall out of one model.
 
    PROP ORIGIN: ground-centre of the footprint (== the utility / house / room pivot), so
    WharfDecor.render(name,dir) drops straight onto a wharf deck tile with no offset maths. At the
@@ -74,6 +75,12 @@
   const GLASSD   = ['#7d9ea6','#a1c2c6','#cfe6e8'], GLASSN = ['#141d2b','#233247','#3d5570'];
   const GLOW     = ['#7a5a18','#c09a2c','#efd06a','#fdf0b6'];
   const KEY      = '#1a1c22';
+  // ADR 0031 — the outline is retired from world art; the silhouette is carried by the form's own
+  // dark side. The ring is not deleted: it is gated OFF by default and reachable with
+  // `{outline:true}`, mirroring the engine's own `GameConfig.HullKeylineFlood` so the owner keeps a
+  // one-flag A/B. Depth-edge darkening (the EDGE pass in post()) is the separate INTERIOR rule
+  // ADR 0031 §2 keeps untouched — do not confuse the two.
+  const KEYLINE_DEFAULT = false;
   const BUOYSET  = ['red','white','gold','teal','blue'];   // the mixed wall of a buoy rack
 
   // ---- shading (identical recipe to utilityIsoRig / interiorPropRig) ----
@@ -1274,7 +1281,10 @@
     return { name, paint: opts.paint!==undefined?opts.paint:(P.def.paint||null), metal:g('metal','galv'),
       variant: opts.variant!=null?opts.variant:0, len: opts.len!=null?opts.len:(P.run?0.4:0),
       loaded: g('loaded',false)?true:false, tarp: g('tarp',false)?true:false,
-      weather: opts.weather!=null?opts.weather:0.45, night:!!opts.night }; }
+      weather: opts.weather!=null?opts.weather:0.45, night:!!opts.night,
+      // ADR 0031 A/B arm: carried through UNNORMALISED so `undefined` still means "use
+      // KEYLINE_DEFAULT" at the ring pass. Do not coerce it to a bool here.
+      outline: opts.outline }; }
 
   function makeMats(s){ const wx=s.weather, night=s.night;
     const grime=r=>r.map(c=>mix(desat(c,wx*0.24),'#3a3128',wx*0.14));
@@ -1336,9 +1346,14 @@
     for(let y=0;y<H;y++) for(let x=0;x<W;x++){ const i=y*W+x; if(!out[i]) continue; let n=0;
       for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){ const nx=x+dx,ny=y+dy; if(nx>=0&&nx<W&&ny>=0&&ny<H&&out[ny*W+nx]) n++; }
       if(n===0){ out[i]=null; rbuf[i]=null; } }
-    for(let y=0;y<H;y++) for(let x=0;x<W;x++){ const i=y*W+x; if(out[i]) continue; let touch=false;
-      for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){ const nx=x+dx,ny=y+dy; if(nx>=0&&nx<W&&ny>=0&&ny<H&&rbuf[ny*W+nx]){ touch=true; break; } }
-      if(touch) out[i]=KEY; }
+    // KEYLINE — RETIRED BY DEFAULT (ADR 0031). Pure ring deletion: every pixel this pass writes is
+    // an EMPTY neighbour of the silhouette, so switching it off changes no painted pixel of any
+    // prop. What holds the edge instead is the prop's own dark side.
+    if(s.outline === undefined ? KEYLINE_DEFAULT : s.outline !== false){
+      for(let y=0;y<H;y++) for(let x=0;x<W;x++){ const i=y*W+x; if(out[i]) continue; let touch=false;
+        for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){ const nx=x+dx,ny=y+dy; if(nx>=0&&nx<W&&ny>=0&&ny<H&&rbuf[ny*W+nx]){ touch=true; break; } }
+        if(touch) out[i]=KEY; }
+    }
     return out;
   }
   function toRGBA(cols){ const rgba=new Uint8ClampedArray(W*H*4);
@@ -1372,5 +1387,6 @@
     order:['N','NE','E','SE','S','SW','W','NW'],
     WOOD, PLANK, POLE, IRON, GALV, ALUM, CONCRETE, COPPER, BRASS, ROPE, POLYR, NET, CANVAS, FISH, ICE,
     RUBBER, FOAM, SLATE, PAPER, GRAVEL, ASPHALT, SALT, GLASSD, GLOW, BODY, BUOYSET, KEY,
+    KEYLINE_DEFAULT,
     PROPS, CATS, list, footprint, height, mounts, anchors, render, project };
 })(typeof globalThis!=='undefined'?globalThis:window);

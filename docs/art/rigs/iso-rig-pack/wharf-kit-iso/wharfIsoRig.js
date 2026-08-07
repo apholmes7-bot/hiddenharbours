@@ -13,7 +13,8 @@
 
    Here every dimension is METRES in one 3D model, baked at 32 px = 1 m through the shared 3/4
    camera (45deg steps, elev 40deg, flat-facet shading from the fixed upper-LEFT key, z-buffered,
-   ordered dither, per-face uv texture, depth-edge darkening, 1px keyline, NO AA). A 0.45 m ladder
+   ordered dither, per-face uv texture, depth-edge darkening, NO AA; the 1px keyline is RETIRED by
+   default per ADR 0031 and reachable with `{outline:true}`). A 0.45 m ladder
    is 14 px wide because it is 0.45 m, and it reads correctly beside a 1.75 m fisher and a 4.9 m
    dory because all three go through the same projection.
 
@@ -82,6 +83,12 @@
   const HDPE     = ['#1b1f22','#262b2f','#33393e','#434a50','#555d64','#6a737a']; // black poly dock cube
   const HDPEDECK = ['#3f4348','#4e545a','#5f666d','#727a81','#868f96','#9aa4ab']; // grey poly walking grid
   const KEY      = '#1a1c22';
+  // ADR 0031 — the outline is retired from world art; the silhouette is carried by the form's own
+  // dark side. The ring is not deleted: it is gated OFF by default and reachable with
+  // `{outline:true}`, mirroring the engine's own `GameConfig.HullKeylineFlood` so the owner keeps a
+  // one-flag A/B. Depth-edge darkening (the EDGE pass above the ring) is the separate INTERIOR rule
+  // ADR 0031 §2 keeps untouched — do not confuse the two.
+  const KEYLINE_DEFAULT = false;
 
   // ---- shading (identical recipe to wharfDecorRig / utilityIsoRig) ----
   const GAIN = 3.1, BIAS = 2.55, EDGE = 0.16;
@@ -1054,9 +1061,14 @@
       if(n===0){ out[i]=null; rbuf[i]=null; nbuf[i]=null; } }
     const wet = new Uint8Array(N);
     for(let i=0;i<N;i++) if(nbuf[i] && /W$/.test(nbuf[i])) wet[i] = 1;
-    for(let y=0;y<H;y++) for(let x=0;x<W;x++){ const i=y*W+x; if(out[i]) continue; let touch=false;
-      for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){ const nx=x+dx, ny=y+dy; if(nx>=0&&nx<W&&ny>=0&&ny<H&&rbuf[ny*W+nx]){ touch=true; break; } }
-      if(touch) out[i] = KEY; }
+    // KEYLINE — RETIRED BY DEFAULT (ADR 0031). Pure ring deletion: every pixel this pass writes is
+    // an EMPTY neighbour of the silhouette, so switching it off changes no painted pixel of the
+    // structure. What holds the edge instead is the deck/face's own dark side.
+    if(s.outline === undefined ? KEYLINE_DEFAULT : s.outline !== false){
+      for(let y=0;y<H;y++) for(let x=0;x<W;x++){ const i=y*W+x; if(out[i]) continue; let touch=false;
+        for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){ const nx=x+dx, ny=y+dy; if(nx>=0&&nx<W&&ny>=0&&ny<H&&rbuf[ny*W+nx]){ touch=true; break; } }
+        if(touch) out[i] = KEY; }
+    }
     const data = new Uint8ClampedArray(N*4);
     for(let i=0;i<N;i++){ const c = out[i];
       if(!c || (s.clipBelowWater && wet[i])){ data[i*4+3] = 0; continue; }
@@ -1179,6 +1191,7 @@
   root.WharfIso = { PX, S, DIRS:8, defaultElev:DEFAULT_ELEV, order:['N','NE','E','SE','S','SW','W','NW'],
     FAMILIES, PRESETS, BOATS, BERTH_CLR, FIT, DECK, WOOD, PLANK, POLE, IRON, GALV, ALUM, CONCRETE, ROCK,
     SANDST, RUST, STEEL, HDPE, HDPEDECK, RUBBER, FOAM, ROPE, NET, YEL, POLY, BARN, WEED, ALG, KEY,
+    KEYLINE_DEFAULT,
     GROWTH_ALL, FIT_DEFAULT,
     STYLES: { face:['concrete','steelSheet','timberSheet'], struct:['open','sheeted','steelPile'],
       cap:['plank','concrete'], hull:['timber','plastic'], stone:['granite','sandstone'],

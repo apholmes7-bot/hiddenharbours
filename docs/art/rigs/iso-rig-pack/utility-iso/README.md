@@ -15,7 +15,8 @@ Exposes `globalThis.UtilityIso`. Viewer page (in-project): `Utility Iso.dc.html`
 | scale | 32 px = 1 m |
 | camera | ADR-0006 shared turntable — 45° steps, elev 40°, orthographic |
 | facings | `N NE E SE S SW W NW`, all 8 out of one model |
-| light | fixed upper-LEFT key, flat-facet, z-buffered, ordered dither, per-face uv texture, depth-edge darkening, 1 px keyline `#1a1c22`, no AA |
+| light | fixed upper-LEFT key, flat-facet, z-buffered, ordered dither, per-face uv texture, depth-edge darkening, no AA |
+| keyline | **retired** — `KEYLINE_DEFAULT = false` (ADR 0031); the 1 px ring `#1a1c22` is reachable with `{outline:true}` |
 | sheet | fixed 440 × 620, pivot **(220, 520)** |
 | pivot | ground-centre of the footprint — the same origin as the house and room rigs |
 
