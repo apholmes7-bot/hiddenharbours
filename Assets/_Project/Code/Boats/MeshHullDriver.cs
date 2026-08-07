@@ -40,7 +40,7 @@ namespace HiddenHarbours.Boats
         private float _elevationDegrees = 90f;
         private float _rockRollDegrees, _rockPitchDegrees, _rockHeavePixels;
         private int _pxPerMetre = 32;
-        private float _restingDraftMeters;
+        private float _designWaterlineMeters;
 
         private bool _rockLevel = true;
         private float _rockPhaseDegrees;
@@ -93,9 +93,11 @@ namespace HiddenHarbours.Boats
             _rockPhaseDegrees = phaseDegrees;
         }
 
-        /// <summary>The resting draft (metres) of the def being presented — the design-waterline
-        /// sink applied while the displaced sea is active (<see cref="HullMeshDef.RestingDraftMeters"/>).</summary>
-        public float RestingDraftMeters => _restingDraftMeters;
+        /// <summary>The DESIGN WATERLINE (metres above the keel) of the def being presented — how far
+        /// up her planking the sea stands at rest (<see cref="HullMeshDef.RestingDraftMeters"/>).
+        /// <b>Not the sink</b>: <see cref="HullSettleMath.AppliedSinkMeters"/> turns it into one, and
+        /// the two differ by the iso projection's 1.1457 gain at the fleet's 40° bake.</summary>
+        public float DesignWaterlineMeters => _designWaterlineMeters;
 
         /// <summary>
         /// The metre-scale displaced-sea ride under this hull (ADR 0023 phase 3 step 2 — the
@@ -151,7 +153,7 @@ namespace HiddenHarbours.Boats
                 _rockPitchDegrees = def.RockPitchDegrees;
                 _rockHeavePixels = def.RockHeavePixels;
                 _pxPerMetre = Mathf.Max(1, def.PxPerMetre);
-                _restingDraftMeters = Mathf.Max(0f, def.RestingDraftMeters);
+                _designWaterlineMeters = Mathf.Max(0f, def.RestingDraftMeters);
             }
             _rockLevel = true;
             _rockFrame = MountedRockPoseMath.LevelRockFrame;
@@ -194,8 +196,8 @@ namespace HiddenHarbours.Boats
 
             // (4) The SHARED HEAVE (ADR 0023 phase 3 step 2): while the displaced sea is live,
             // the hull rides it — the metre-scale displaced lift BoatWaveMotion sampled under the
-            // hull this frame, minus the resting draft that sinks the keel-origin rig to its
-            // design waterline. Composed into the SAME heave-pixels channel as the rig's own rock
+            // hull this frame, less the sink that settles the keel-origin rig at her design
+            // waterline. Composed into the SAME heave-pixels channel as the rig's own rock
             // heave, so the renderer's screen lift AND its calibrated iso z (HullDepthBias's
             // heave term) move together by construction — the waterline stays truthful for free.
             // Displaced OFF ⇒ the term is exactly 0 and this line is byte-inert (the A/B
@@ -205,10 +207,21 @@ namespace HiddenHarbours.Boats
             // translation of the whole boat, not an in-cell animation like the rig's rock, so the
             // drawer has to carry the hull's compositing window with it (see IHullMeshRenderer.
             // RidePixels). Same number, told twice — HeavePixels keeps its exact meaning.
+            //
+            // ⚠️ THE SINK IS NOT THE WATERLINE (owner playtest 2026-08-07, "generally they should
+            // level out at the boats water line"). This line used to subtract the def's waterline
+            // RAW, and the shared z-buffer then drew the sea climbing (cos+sin)/(cos²+sin) = 1.1457
+            // rig-metres of planking for every metre of sink — so the whole fleet floated 14.57%
+            // deeper than its own data said, from the dory's +16 mm to the tanker's +360 mm. It is a
+            // pure MEAN-level error: a constant, not a wobble, so no amount of heave averages it
+            // out, and every test stayed green because they all pinned this line against itself.
+            // HullSettleMath inverts the projection off the def's own ElevationDeg, so the number an
+            // owner types is the number the sea draws.
             float ride = 0f;
             if (DisplacedSea.IsActive)
             {
-                ride = (_displacedHeaveMeters - _restingDraftMeters) * _pxPerMetre;
+                float sink = HullSettleMath.AppliedSinkMeters(_designWaterlineMeters, _elevationDegrees);
+                ride = (_displacedHeaveMeters - sink) * _pxPerMetre;
                 heave += ride;
             }
 

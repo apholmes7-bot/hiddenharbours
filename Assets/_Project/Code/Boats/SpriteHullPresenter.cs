@@ -68,6 +68,13 @@ namespace HiddenHarbours.Boats
         public float BakeElevationDegrees => _directional != null ? _directional.BakeElevationDegrees : 90f;
 
         /// <inheritdoc/>
+        // 0 = art already drawn at her waterline, which is every sprite compass shipped so far and the
+        // only honest answer for an absent skin: sinking a hull nobody wired would move a picture that
+        // was never measured.
+        public float DesignWaterlineMeters =>
+            _directional != null ? _directional.DesignWaterlineMeters : 0f;
+
+        /// <inheritdoc/>
         public bool HasRockGrid => _directional != null && _directional.HasRockGrid;
 
         /// <inheritdoc/>

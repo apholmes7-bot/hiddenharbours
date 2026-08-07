@@ -33,6 +33,7 @@ namespace HiddenHarbours.Tests.EditMode
         const float Dt = 1f / 60f;
         const int Frames = 600;                      // 10 s of sail
         const int PxPerMetre = 32;
+        const float RigElevationDegrees = 40f;       // every boat rig's bake elevation
 
         readonly object _seaOwner = new object();
         readonly List<Object> _spawned = new List<Object>();
@@ -120,7 +121,7 @@ namespace HiddenHarbours.Tests.EditMode
                 visual.transform.SetParent(Root.transform, false);
 
                 _def = ScriptableObject.CreateInstance<HullMeshDef>();
-                _def.ElevationDeg = 40f;
+                _def.ElevationDeg = RigElevationDegrees;
                 _def.AzimuthCounterClockwise = true;
                 _def.RockRollDegrees = rockRollDegrees;
                 _def.RockPitchDegrees = rockPitchDegrees;
@@ -389,7 +390,12 @@ namespace HiddenHarbours.Tests.EditMode
                 for (int f = 0; f < Frames; f++)
                 {
                     rig.Tick();
-                    rides[f] = rig.Renderer.HeavePixels / PxPerMetre + draft;   // heave = (ride − draft)·px
+                    // heave = (ride − sink)·px, where the sink is the design waterline through the
+                    // iso projection (HullSettleMath — owner playtest 2026-08-07). It is a CONSTANT
+                    // per hull, so it cancels out of every dynamic law below exactly as the raw
+                    // draft used to; adding it back here recovers the ride itself.
+                    rides[f] = rig.Renderer.HeavePixels / PxPerMetre
+                             + HullSettleMath.AppliedSinkMeters(draft, RigElevationDegrees);
                 }
                 return rides;
             }

@@ -266,7 +266,12 @@ namespace HiddenHarbours.Boats
                 // Also per-artwork, and for the same reason: the iso kits were baked by a 40° camera, the
                 // hand-drawn compass by nobody's. Everything anchored to a point ON the hull picture reads it
                 // off here — this component is where an artwork's own facts live.
-                bakeElevationDegrees: visual.ArtBakeElevationDegrees);
+                bakeElevationDegrees: visual.ArtBakeElevationDegrees,
+                // …and her flotation datum, the third per-artwork fact of the same family: how far up
+                // this drawing the sea stands when she is at rest. This branch only ever runs for a
+                // SPRITE hull, so the visual's own field is the right half of the resolution rule
+                // (a mesh hull's waterline rides its def, through MeshHullDriver).
+                designWaterlineMeters: visual.DesignWaterlineMeters);
 
             // (3) The rock grid: DirectionalBoatSprite draws rockGrid[heading·frames + RockFrame] instead
             // of the static facing, and BoatWaveMotion sets RockFrame from the wave phase under the hull —
