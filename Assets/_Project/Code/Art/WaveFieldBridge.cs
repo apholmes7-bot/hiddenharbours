@@ -151,8 +151,12 @@ namespace HiddenHarbours.Art
         {
             SceneManager.sceneLoaded -= OnSceneLoaded;
             // Leave the globals SILENT (count 0 -> the shader's legacy look) rather than frozen on the
-            // last live trains — a stopped play session must not haunt the editor's scene view.
+            // last live trains — a stopped play session must not haunt the editor's scene view. The
+            // Core seam is RELEASED rather than left silent: an empty published field would tell every
+            // rider "the sea is glass", which is a claim; releasing it says "ask someone else", and the
+            // riders fall back to their own animators exactly as they did before the seam existed.
             PublishEmpty();
+            SharedWaveField.Clear(this);
             _animator.Reset();
             _hasLastTime = false;
         }
@@ -172,8 +176,11 @@ namespace HiddenHarbours.Art
             if (env == null || clock == null)
             {
                 // No sim (EditMode / pre-boot / bare demo): publish the EMPTY field so the wave path is
-                // silent and the legacy tuned look holds (the _DayNightTint/_MoonDir "unset" convention).
+                // silent and the legacy tuned look holds (the _DayNightTint/_MoonDir "unset" convention),
+                // and RELEASE the Core seam — with no environment a rider reads a flat sea anyway, and
+                // a host that cannot derive a sea must not be the one telling everyone what it is.
                 PublishEmpty();
+                SharedWaveField.Clear(this);
                 _animator.Reset();
                 _hasLastTime = false;
                 return;
@@ -186,15 +193,24 @@ namespace HiddenHarbours.Art
             _lastTimeSeconds = time;
             _hasLastTime = true;
 
-            // Tick the shared eased, phase-continuous field (the same animator code the boat ticks with
-            // the same inputs — the identical eased sea) and publish it. The accumulated phase rides in
+            // Tick the eased, phase-continuous field and publish it. The accumulated phase rides in
             // each train's PhaseOffset, so the packed field is the t = 0 evaluation frame.
+            //
+            // ⚠️ THIS ANIMATOR IS THE SEA. It used to say here that the boat "ticks the same animator
+            // code with the same inputs — the identical eased sea", which was true of the code and
+            // the inputs and false of the STATE: WaveFieldAnimator accumulates travel phase from zero
+            // at its own first tick and at every Reset, so a hull that woke at a different moment
+            // from this host carried a different Φ and rode the right wave at the wrong instant
+            // (owner playtest 2026-08-07 — the hulls that never settle at their waterline). The trains
+            // are therefore PUBLISHED to the Core seam beside the shader push, in the same statement
+            // pair, so a rider cannot even be one tick behind the pixels.
             EnvironmentSample sample = env.Sample();
             WaveFieldSettings field = GameServices.WaveField;
             WaveFieldAnimatorSettings smoothing = GameServices.WaveFieldAnimator;
             WaveTrains trains = _animator.Tick(dt, sample.WindVector, sample.SeaState01,
                                                in field, in smoothing);
             PublishGlobals(Pack(in trains));
+            SharedWaveField.Publish(this, in trains);
 
             // The FETCH model (ADR 0027 #1) travels alongside the trains, from the SAME GameConfig the
             // hull consumers read — that shared instance is the whole reason the lee the player sees is

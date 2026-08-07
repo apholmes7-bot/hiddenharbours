@@ -65,6 +65,14 @@ namespace HiddenHarbours.Boats
                  "default 90 so an unskinned or half-wired boat is placed exactly as it always was.")]
         [Range(0f, 90f)] [SerializeField] private float _bakeElevationDegrees = 90f;
 
+        [Tooltip("THE DESIGN WATERLINE of this artwork — metres above its own origin at which the sea " +
+                 "stands when she floats at rest (owner playtest 2026-08-07). Set from " +
+                 "BoatVisualDef.DesignWaterlineMeters; default 0 = 'this art is already drawn at her " +
+                 "waterline', which is true of every sprite compass shipped so far (they share the hull's " +
+                 "waterline pivot) and keeps an unskinned or half-wired boat placed exactly as she " +
+                 "always was.")]
+        [Min(0f)] [SerializeField] private float _designWaterlineMeters = 0f;
+
         [Tooltip("Child SpriteRenderer the facing is written to. In SnapDirectional it is counter-rotated " +
                  "to stay screen-axis-aligned; in SmoothRotateSingle it is left to rotate with the hull.")]
         [SerializeField] private SpriteRenderer _renderer;
@@ -142,7 +150,8 @@ namespace HiddenHarbours.Boats
         public void Configure(Sprite[] facings, SpriteRenderer renderer, float zeroHeadingDegrees = 0f,
                               Sprite smoothModeSprite = null, RotationMode mode = RotationMode.SnapDirectional,
                               bool facingsAreCounterClockwise = false,
-                              float bakeElevationDegrees = 90f)
+                              float bakeElevationDegrees = 90f,
+                              float designWaterlineMeters = 0f)
         {
             _facings = facings;
             _renderer = renderer;
@@ -151,8 +160,21 @@ namespace HiddenHarbours.Boats
             _mode = mode;
             _facingsAreCounterClockwise = facingsAreCounterClockwise;
             _bakeElevationDegrees = Mathf.Clamp(bakeElevationDegrees, 0f, 90f);
+            _designWaterlineMeters = Mathf.Max(0f, designWaterlineMeters);
             _lastIndex = -1;
         }
+
+        /// <summary>
+        /// <b>The design waterline of THIS artwork</b> — metres above its own origin at which the sea
+        /// stands when she floats at rest (owner playtest 2026-08-07). Read through
+        /// <see cref="SpriteHullPresenter.DesignWaterlineMeters"/> by <see cref="BoatWaveMotion"/>, which
+        /// sinks her by it so she settles on the sea instead of riding its surface keel-first.
+        ///
+        /// <para>It lives here beside <see cref="BakeElevationDegrees"/> for exactly the same reason: it
+        /// is a fact about the SHEETS, and the art lineages disagree. 0 is not "unset" — it is the true
+        /// answer for a compass drawn at its own waterline, which is every one shipped so far.</para>
+        /// </summary>
+        public float DesignWaterlineMeters => _designWaterlineMeters;
 
         /// <summary>
         /// The elevation (degrees above the horizon) of the camera THIS artwork was baked at — 40 for the iso

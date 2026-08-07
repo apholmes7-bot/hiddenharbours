@@ -79,6 +79,26 @@ namespace HiddenHarbours.Boats
         float BakeElevationDegrees { get; }
 
         /// <summary>
+        /// <b>Where the sea stands on this hull when she floats at rest</b> — metres above the art's own
+        /// origin (owner playtest 2026-08-07: <i>"generally they should level out at the boats water
+        /// line"</i>). Mesh: the def's <c>RestingDraftMeters</c>, measured against the rig's keel-bottom
+        /// pivot. Sprite: <see cref="BoatVisualDef.DesignWaterlineMeters"/> — 0 for art already drawn at
+        /// her waterline, which is every shipped compass.
+        ///
+        /// <para>It rides the seam for the reason the seam exists at all: <see cref="BoatWaveMotion"/>
+        /// computes the ride and knows the hull ONLY as this interface, so this is its only route to
+        /// the datum when it must sink a SPRITE hull's transform itself. Composed with
+        /// <see cref="BakeElevationDegrees"/> through <see cref="HullSettleMath"/>; a hull with no datum
+        /// (0) sinks by exactly 0 and renders byte-identically to before the settle fix.</para>
+        ///
+        /// <para>⚠️ <b>A MESH hull is sunk by <see cref="MeshHullDriver"/>, not by the caller</b> —
+        /// deliberately, so a mesh hull with no wave motion wired at all still sits at her waterline.
+        /// <see cref="SetDisplacedHeaveMeters"/> therefore carries the SEA'S LIFT and never a settled
+        /// ride; sinking it on the way in as well would sink her twice.</para>
+        /// </summary>
+        float DesignWaterlineMeters { get; }
+
+        /// <summary>
         /// True when this hull can present a distinct pose per rock frame. Sprite: a complete heading×frame
         /// rock grid is wired. Mesh: always true, because rock is a transform and costs no memory (ADR 0022).
         /// </summary>

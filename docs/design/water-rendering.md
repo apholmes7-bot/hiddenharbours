@@ -1456,12 +1456,36 @@ weighting the peak IS slot 0, so the published bytes are unchanged — but "the 
 "whichever one is first" the moment a spectrum could re-weight it.
 
 **No time uniform exists**: the shader evaluates `θ = k·(dir·worldPos) + φ` — the advancing time lives entirely
-in the phase the animator accumulates, so the unbounded game time never touches float trig on the GPU, and the
-water pixels and the hull provably ride the **identical eased sea** (both consumers tick the same animator code
-with the same inputs; `WaveFieldBridgeTests` pins the parity). Cycle-off (EditMode / a bare art scene / no sim)
-publishes count 0 → the pre-B1 look, the `_DayNightTint`/`_MoonDir` "unset" convention. The bridge's
-`WaveFieldSettings`/`WaveFieldAnimatorSettings` start at the same `Default`s `BoatWaveMotion` uses — keep them
-identical until a later Arc B PR unifies them on `GameConfig`.
+in the phase the animator accumulates, so the unbounded game time never touches float trig on the GPU.
+Cycle-off (EditMode / a bare art scene / no sim) publishes count 0 → the pre-B1 look, the
+`_DayNightTint`/`_MoonDir` "unset" convention. The bridge's `WaveFieldSettings`/`WaveFieldAnimatorSettings`
+start at the same `Default`s `BoatWaveMotion` uses — keep them identical until a later Arc B PR unifies them on
+`GameConfig`.
+
+⚠️⚠️ **"Both consumers tick the same animator code with the same inputs" is NOT the same sea — and this
+paragraph used to claim it was** (owner playtest 2026-08-07; closed by the `SharedWaveField` seam below).
+`WaveFieldAnimator` is stateful *on purpose*: it accumulates travel phase `Φ += k·c·dt` from **zero at its own
+first tick, and again at every `Reset()`**. The bridge resets on wake and on every scene load; a
+`BoatWaveMotion` resets in its own `OnEnable` — when she is skinned, when a region loads, when a hull is
+swapped, whenever she is re-enabled at all. Two animators seeded at two different moments therefore hold two
+different `Φ`, and their trains differ by an arbitrary constant phase: **the same wave, at the wrong moment**.
+The hull heaved on a sea of exactly the right size, period and direction that was not the sea drawn around her
+— she lifted as the water fell — and no flotation datum could have made her settle at her waterline. The old
+parity claim compared the code and the inputs, which were never in doubt; nothing measured the STATE.
+
+**The bridge therefore PUBLISHES the eased trains** to the Core seam `SharedWaveField`
+(`Core/Environment/SharedWaveField.cs`, the `DisplacedSea` pattern), in the same statement pair as the shader
+push so a rider cannot be even one tick behind the pixels. `BoatWaveMotion` samples the published trains (at
+`timeSeconds = 0` — the accumulated travel already rides in each train's `PhaseOffset`) and falls back to its
+own local animator when nothing has published, so EditMode, bare demo scenes and edit-time builders stay
+byte-identical. This is the **phase** half of the one-sea rule; ADR 0023 closed the **wavelength** half at
+`DisplacedSeaState.FreqScale` (#331). `HullWaterlineSettleTests` measures it end-to-end and its sabotage arm
+releases the seam to watch the waterline wander.
+
+⚠️ Six other water-riders still tick private animators — `BuoyWaveVisual`, `BoatWakeEmitter`,
+`TrapHaulController`, `FoamInjector`, `SeaweedPresenter`. Each is a one-line repoint at `SharedWaveField` now
+the seam exists; nothing is *worse* in the meantime (they were already mutually decorrelated), but a buoy
+beside a settled hull is still bobbing to its own clock.
 
 ### 16.2 The HLSL twin (`WaveFieldSample()`) and the §(6) transition mapping
 
@@ -3010,9 +3034,106 @@ and the owner reported in the same breath that *"a lot of the boats seem to be s
 nearly submerged."* A hull riding too deep loses the shared z-test to the drawn sea, so her lower
 interior fragments never enter the facet MRT and the flat sea sprite shows through from underneath.
 No interior mask can intercept that; it is a DRAFT/ride problem (`HullMeshDef.RestingDraftMeters`
-and the §24 ride law), banked by the owner for its own session. Triage rule: a classifier miss is a
-whole face wet regardless of sea state and unchanged at `WaveExaggeration = 0`; a draft flood rides
-up and down with the swell and hugs the lowest surfaces.
+and the §24 ride law), banked by the owner for its own session — **that session is §24.5**. Triage
+rule: a classifier miss is a whole face wet regardless of sea state and unchanged at
+`WaveExaggeration = 0`; a draft flood rides up and down with the swell and hugs the lowest surfaces.
+
+### 24.5 The settle level — a metre of sink is not a metre of waterline
+
+Owner playtest 2026-08-07: *"the hulls of most boats do not tend to stay at the waterline level, its
+normal in waves for them to bounce and heave out of the water, but generally they should level out at
+the boats water line."* The bounce is **wanted and untouched** (ADR 0018 B2.5 loft, and he said so in
+the same sentence). The defect is the MEAN level, and there were two independent causes.
+
+**(1) The iso projection gain.** Both objects move by a plain world +Y translation — the water's
+vertex stage does `ws.y += lift`, the hull's frame does `HeavePixels / PxPerMetre` — but they are
+*compared* through the calibrated iso-depth convention, and depth and screen-y foreshorten
+differently. Taking §24's own z-test at the root line (`ry = 0`) with the honest, unclamped
+`zHeave = H`:
+
+```
+water covers a face at rig height r  ⟺  r·(cos²E + sinE) < L·(cosE + sinE) − H·sinE − H·cosE
+⇒  the drawn waterline sits at   r_wl = (L − H) · (cosE + sinE) / (cos²E + sinE)
+```
+
+`(L − H)` is exactly the sink the driver applied, so **the sea climbs 1.14574 rig-metres of planking
+per metre of sink** at the fleet's 40° bake. `MeshHullDriver` applied `RestingDraftMeters` raw, so
+every mesh hull floated **14.57 % deeper than her own data claimed** — a constant, not a wobble, so no
+amount of heave averages it out:
+
+| hull | datum W (m) | drawn before (m) | error | applied sink now (m) |
+|---|---|---|---|---|
+| dory | 0.11 | 0.126 | +16 mm | 0.096 |
+| punt / sport skiff | 0.19 | 0.218 | +28 mm | 0.166 |
+| console skiff | 0.21 | 0.241 | +31 mm | 0.183 |
+| lobster boat | 0.50 | 0.573 | +73 mm | 0.436 |
+| cape islander | 0.53 | 0.607 | +77 mm | 0.463 |
+| side dragger | 1.10 | 1.260 | +160 mm | 0.960 |
+| stern trawler | 1.60 | 1.833 | +233 mm | 1.397 |
+| stern trawler mk2 | 1.63 | 1.868 | +238 mm | 1.423 |
+| coastal packet | 1.90 | 2.177 | +277 mm | 1.658 |
+| tanker | 2.47 | 2.830 | +360 mm | 2.156 |
+
+`Boats/HullSettleMath.cs` inverts the projection: `AppliedSinkMeters(W, E) = W / IsoWaterlineGain(E)`,
+with the gain **derived from the def's own `ElevationDeg`** — an art fact the baker writes, so a rig
+baked at a different elevation is right for free and there is no magic number (rule 6). The gain is
+well-conditioned across `[0°, 90°]` (denominator ≥ 1, exactly 1 at both ends; the gain peaks at
+≈1.2257 near 63°) and returns exactly 1 at a degenerate side-on or plan bake. `W = 0` sinks by exactly
+0, which is what keeps every sprite compass byte-identical.
+
+**Why every test stayed green through it:** `SharedHeaveTests` and `SharedHeavePlayTests` both pinned
+`heave = (ride − draft)·px` — the line against itself. Nothing measured the waterline the sea actually
+draws. The suites now derive the sink from `HullSettleMath` and assert the *drawn* waterline against
+the datum, and `HullWaterlineSettleTests` re-derives the gain from §24's inequality by **bisection**
+rather than restating the formula, so the C# and the thing that draws cannot agree by construction.
+
+**(2) The hull rode a phase-decorrelated sea** — see the ⚠️⚠️ block in §16.1. A flotation datum is
+meaningless if the hull is heaving on a different instant of the sea from the one drawn around her;
+the `SharedWaveField` seam closes it, and this section's data fix only becomes visible once it is.
+
+**The datum is DATA, on all fourteen hull visuals.** `HullMeshDef.RestingDraftMeters` is the design
+waterline for the thirteen mesh visuals (eleven distinct meshes — the punts and the sport skiffs share
+one); `BoatVisualDef.DesignWaterlineMeters` (append-only, default 0) carries it for the sprite
+`FishingBoat`, whose compass is already drawn at its waterline. `BoatVisualDef.ResolveDesignWaterlineMeters()`
+is the ONE place the precedence lives, and it follows the skinner's own gate (a usable `HullMesh`
+wins), so the sink is always taken from the hull the player is looking at. The values themselves are
+unchanged and remain the owner's to tune — raising one number floats that hull deeper.
+
+⚠️ **The sink is applied in two places, once each, and that split is load-bearing.**
+`MeshHullDriver` applies it as it folds the ride into the heave-pixels channel — a mesh hull with no
+`BoatWaveMotion` wired at all must still sit at her waterline, which `SharedHeaveTests` pins —
+and `BoatWaveMotion` applies it on the sprite transform paths. `IBoatHullPresenter.SetDisplacedHeaveMeters`
+therefore carries the **sea's lift**, never a settled ride: sinking it on the way in would sink a mesh
+hull twice.
+
+**(3) A THIRD cause was found, measured, and deliberately left to #414.** B2.5's heave chase is
+asymmetric on purpose: downward acceleration capped at g (so she unweights and falls off a sharpened
+crest — the owner asked for it, twice) while buoyancy upward is uncapped and a hard band stops her
+ever riding below the surface. A one-sided constraint set carries a DC bias. Swept over the sea-state
+axis on the shipped tuning (lobster datum 0.5 m, 30 s per case, exaggeration 1.6, freqScale 2.8; the
+numbers are pinned on `HullWaterlineSettleTests`'s TestCases):
+
+| sea state | median drawn waterline | mean bias | airborne |
+|---|---|---|---|
+| 0.30 (below the storm band) | 0.500 m | +0 mm | 0 % |
+| 0.50 | 0.500 m | +0 mm | 0 % |
+| 0.70 | 0.499 m | −20 mm (0.7 px) | 0 % |
+| 1.00 (storm ceiling) | **0.421 m** | **−472 mm** | **27.3 %** |
+
+Below the storm band the filter is the exact passthrough, so the settle law is bit-exact. Through a
+fresh breeze the residual is sub-pixel. **Only at the storm ceiling does it bite**: the level she is
+at more often than not sits 79 mm (2.5 px) high, and the 27 % airborne tail drags the *mean* to
+472 mm. The owner's report was a work skiff turning at speed, not a gale, so causes (1) and (2) cover
+what he saw — but a gale currently does not level out at her waterline, and the lever is
+`StormRockMath.StepHeaveWeight`, not this section. Two candidate fixes, neither taken here because
+both change #414's owner-tuned feel: **gate the free-fall cap on being AIRBORNE** (a floating hull in
+green water genuinely can be driven down faster than g; "obey gravity" is a statement about a body in
+air), or **low-pass the chase target over the hull's own waterplane length** (she is currently riding
+waves shorter than herself as if she were a point — at freqScale 2.8 the dominant train is 5.7 m under
+a 4.9 m dory, which is what makes the surface accelerate at 2.5 g beneath her).
+
+⚠️ The MEDIAN is what carries the guarantee in the tests, not the mean: the loft is a fat one-sided
+tail by design, and a mean lets wanted behaviour argue about where the hull floats.
 
 ## 25. Sea-state band scaling + dispersion — the octaves stop sliding over each other (ADR 0027 #4 + #9)
 
