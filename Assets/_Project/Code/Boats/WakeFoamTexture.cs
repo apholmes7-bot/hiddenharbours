@@ -42,6 +42,21 @@ namespace HiddenHarbours.Boats
         /// enough that each bubble is still several pixels across on a 16 px puff.</summary>
         public const int BubblesPerRaft = 7;
 
+        /// <summary>
+        /// Rungs on the AERATION LADDER: how many progressively-more-open rafts are baked per variant so a
+        /// puff can visibly OPEN UP as it ages (owner playtest 2026-08-07, "dispersing back to water over
+        /// time") instead of only dimming.
+        ///
+        /// <para>Four is chosen against the two costs. Texture memory: 6 variants × 4 rungs × 16² px = 6 KB
+        /// total, built once at boot and shared by every particle of every boat. Per-frame writes: a puff
+        /// crosses a rung three times in a whole lifetime, and the renderer only assigns
+        /// <c>sprite</c> on a crossing — so this stays the "nothing per frame" the raft pass paid for
+        /// (rule 7). Fewer rungs and the opening-up steps visibly; more and the memory buys nothing the eye
+        /// can read at 16 px. When <c>WakeTrailConfig.FoamAgeErosion</c> is 0 only ONE rung is built, so
+        /// the off switch costs no memory either.</para>
+        /// </summary>
+        public const int AgeStages = 4;
+
         /// <summary>Native pixel size of a foam puff (square). 16 px at PPU 32 = half a metre.</summary>
         public const int PuffPixels = 16;
 
@@ -118,6 +133,40 @@ namespace HiddenHarbours.Boats
             }
 
             return field;
+        }
+
+        /// <summary>
+        /// One rung of the AGE LADDER: the raft with <paramref name="erosion01"/> of its film DISSOLVED —
+        /// <c>(v − e) / (1 − e)</c>, clamped. The owner's 2026-08-07 read, <i>"dispersing back to water
+        /// over time"</i>.
+        ///
+        /// <para><b>Why erosion and not more aeration.</b> The obvious move — walk
+        /// <see cref="BuildRaftCoverage"/>'s aeration up with age — was tried and MEASURED, and it does the
+        /// opposite: from the shipped 0.85 to 1.0 the raft's mean coverage RISES (0.172 → 0.179 on variant
+        /// 0) and its hole count is not even monotone, because that axis brightens bubble RIMS faster than
+        /// it hollows bubble middles. Aeration turns a disc into a raft; it was never a dial for how much
+        /// raft there is. Erosion is: every texel loses the same absolute coverage, so the thin film
+        /// between bubbles reaches zero first and the holes eat outward from it, while the bright rims
+        /// survive longest and stay crisp. That is foam breaking into separate bubbles and then into water
+        /// — and, unlike fading alpha, it changes the SHAPE, which is what still read as painted.</para>
+        ///
+        /// <para>Monotone by construction: raising the erosion can only lower a texel and can only add
+        /// holes. <paramref name="erosion01"/> = 0 returns the field unchanged. Pure + static.</para>
+        /// </summary>
+        public static float[] ErodeCoverage(float[] field, float erosion01)
+        {
+            if (field == null) return System.Array.Empty<float>();
+            float e = Mathf.Clamp01(erosion01);
+            var result = new float[field.Length];
+            if (e <= 0f)
+            {
+                System.Array.Copy(field, result, field.Length);
+                return result;
+            }
+            float denominator = Mathf.Max(1e-4f, 1f - e);
+            for (int i = 0; i < field.Length; i++)
+                result[i] = Mathf.Clamp01((field[i] - e) / denominator);
+            return result;
         }
 
         /// <summary>
