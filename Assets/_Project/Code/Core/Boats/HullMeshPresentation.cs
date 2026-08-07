@@ -56,6 +56,33 @@ namespace HiddenHarbours.Core
         /// sprite would (ADR 0022 "Unchanged"). Sets the SortingGroup the overlay quad sorts under.
         /// </summary>
         void SetSorting(int sortingLayerId, int sortingOrder);
+
+        /// <summary>
+        /// <b>Somebody is standing on this deck, HERE</b> — their feet, in the hull's own rig metres
+        /// (+X starboard, +Y toward the bow, +Z up from the keel: the frame the deck polygons and
+        /// every fitting pivot already speak). <paramref name="active"/> false = nobody.
+        ///
+        /// <para><b>Why the drawer has to know.</b> A figure on deck is a sprite sorted above the
+        /// hull's whole-object slot, so a wheelhouse in front of them can never cover them — sorting
+        /// is per OBJECT and the question is per PIXEL (owner playtest 2026-08-07: "sprites visible
+        /// THROUGH closed cabins"). The hull is the only thing that can answer it, because only her
+        /// facet pass holds her depth. Told where the figure stands, she marks the geometry NEARER
+        /// the camera than that point with a second id, and the figure's own shader discards there.
+        /// So the boat occludes her crew because she is genuinely in front of them, at any heading,
+        /// with no authored cabin footprint and no sorting hack.</para>
+        ///
+        /// <para>Cheap and idempotent, safe to write every LateUpdate with no allocation (rule 7).
+        /// Never called = nobody aboard = byte-identical to before this existed.</para>
+        /// </summary>
+        void SetDeckOccupant(Vector3 rigLocalMeters, bool active);
+
+        /// <summary>
+        /// The id an occludable sprite must discard against to be hidden by this hull, already
+        /// divided by 255 for the shader — and <b>0 whenever there is nothing to hide behind</b>
+        /// (no occupant set, or the hull is not live). One value, so no consumer downstream has to
+        /// re-derive the question from two fields.
+        /// </summary>
+        float DeckOccluderId { get; }
     }
 
     /// <summary>

@@ -167,6 +167,34 @@ namespace HiddenHarbours.Boats
         /// </summary>
         void SetStormRock(float amplitudeScale, float extraRollDegrees, float extraPitchDegrees);
 
+        /// <summary>
+        /// <b>Somebody is standing on this deck, HERE</b> — their feet, in the hull's own rig metres
+        /// (+X starboard, +Y toward the bow, +Z up from the keel: the frame the authored deck
+        /// polygons and every fitting pivot already speak). <paramref name="active"/> false = nobody.
+        ///
+        /// <para><b>Why a hull is told this at all</b> (owner playtest 2026-08-07: "rider/player
+        /// sprites visible THROUGH closed cabins"). A figure on deck is a sprite Y-sorted above the
+        /// hull's whole-object sorting slot, so no ordering can put a wheelhouse in front of them:
+        /// sorting is per OBJECT, and "is the boat between the camera and the fisher?" is per PIXEL.
+        /// A MESH hull can answer it, because her facet pass owns a private z-buffer — told where the
+        /// figure stands, she marks the geometry nearer the camera than that point so the figure's
+        /// own shader discards behind it. At any heading, with no authored cabin footprint.</para>
+        ///
+        /// <para>A SPRITE hull ignores it, deliberately and for the same reason she ignores
+        /// <see cref="SetRockPhaseDegrees"/>: her image is one flat sheet with no depth in it, and
+        /// there is nothing honest she could do with the question. The whole pilotable fleet is mesh
+        /// (ADR 0022), so the fix reaches every hull the player can actually stand on.</para>
+        /// </summary>
+        void SetDeckOccupant(Vector3 rigLocalMeters, bool active);
+
+        /// <summary>
+        /// The id an occludable sprite must discard against to be hidden by this hull, already
+        /// divided by 255 for the shader — <b>0 whenever there is nothing to hide behind</b>: no
+        /// occupant set, a sprite hull, a hull not live. Read every tick by whoever draws the
+        /// figure; 0 leaves their shader inert.
+        /// </summary>
+        float DeckOccluderId { get; }
+
         /// <summary>The visual child the hull is drawn into. Overlays parent here; nothing may re-parent it.</summary>
         Transform Visual { get; }
 

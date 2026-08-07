@@ -375,6 +375,97 @@ namespace HiddenHarbours.Tests.RigBaking
                 "drawing where the hull should draw nothing.");
         }
 
+        // -------------------------------------------------------- the boat draws over her crew
+
+        /// <summary>
+        /// <b>A FIGURE ON DECK IS HIDDEN BY THE HULL IN FRONT OF THEM</b> — owner playtest
+        /// 2026-08-07: <i>"rider/player sprites visible THROUGH closed cabins"</i> on hulls with a
+        /// cockpit and doors.
+        ///
+        /// <para>The sorting proof above establishes the thing that made this unfixable by ordering:
+        /// a sprite with a higher order covers the hull <b>everywhere</b>, whole-object, by design.
+        /// So this asks the question the other way round. The hull is told somebody is standing on
+        /// her deck; her facet pass marks the geometry nearer the camera than that point with her
+        /// SECOND id; and a covering sprite drawn through <c>HiddenHarbours/DeckOccludedSprite</c> —
+        /// sorted well ABOVE her, exactly as the on-deck fisher is — discards there and nowhere
+        /// else.</para>
+        ///
+        /// <para>Measured on real pixels through the real URP pass, against the LOBSTER BOAT,
+        /// because she is the hull with a wheelhouse to be hidden behind. Both arms are asserted:
+        /// occupant ON must reveal a substantial part of her through the figure, and occupant OFF
+        /// must reveal none of her at all — the second is the A/B contract, and it is what says this
+        /// whole mechanism costs nothing on every hull with nobody aboard.</para>
+        /// </summary>
+        [Test]
+        public void ADeckOccupant_IsHiddenByTheHullInFrontOfThem_PerPixel()
+        {
+            RequireAGraphicsDevice();
+            EnsureLobster();
+
+            var view = new RigViewOptions(0, s_Lobster.DefaultElev);
+            using var scene = new HullScene(s_Lobster, s_LobsterMesh);
+            scene.SetPose(view);
+            byte[] baseline = scene.Render();          // the hull alone: the GPU's own coverage truth
+
+            int inked = 0;
+            for (int i = 0; i < baseline.Length; i += 4) if (baseline[i + 3] > 0) inked++;
+            Assert.Greater(inked, 200, "harness: the hull must actually have drawn something");
+
+            var red = new Color32(255, 0, 0, 255);
+            Assert.Greater(scene.Hull.ForeHullId, 0,
+                "harness: a live hull must hold a FORE id, or there is nothing for the figure to " +
+                "discard against");
+            Assert.AreNotEqual(scene.Hull.HullId, scene.Hull.ForeHullId,
+                "her two ids must differ, or the split cannot separate anything");
+            float foreId = scene.Hull.ForeHullId / 255f;
+
+            // ---- ARM 1: NOBODY ABOARD. The sprite is above the hull and covers her completely,
+            // exactly as the sorting proof says it must. This is the contract that makes the feature
+            // free when it is not in use — and the failure mode if the split ever fires by default.
+            var idle = scene.AddOccludableSprite(red, sortingOrder: 10, occluderId: foreId);
+            byte[] withIdle = scene.Render();
+            Object.DestroyImmediate(idle);
+            int hullThroughIdle = 0;
+            ForEachPixel(withIdle, (i, px) => { if (!Equal(px, red)) hullThroughIdle++; });
+            Assert.AreEqual(0, hullThroughIdle,
+                $"{hullThroughIdle} px of hull drew over the figure with NO occupant set. With " +
+                "nobody aboard the split must not happen at all — the facet alpha has to stay " +
+                "byte-identical to before this existed.");
+
+            // ---- ARM 2: SOMEBODY IS STANDING IN HER COCKPIT. Aft of amidships, on the sole, which
+            // at heading 0 puts her wheelhouse between them and the camera.
+            scene.Hull.SetDeckOccupant(new Vector3(0f, -1.6f, 1.35f), true);
+            scene.Hull.ApplyPose();
+
+            var aboard = scene.AddOccludableSprite(red, sortingOrder: 10, occluderId: foreId);
+            byte[] withAboard = scene.Render();
+            Object.DestroyImmediate(aboard);
+
+            int hullThroughAboard = 0, sprayedOutsideTheHull = 0;
+            for (int i = 0; i < baseline.Length; i += 4)
+            {
+                var got = new Color32(withAboard[i], withAboard[i + 1], withAboard[i + 2], withAboard[i + 3]);
+                if (Equal(got, red)) continue;
+                hullThroughAboard++;
+                // Whatever shows through must be the HULL's own pixels: the discard may only happen
+                // where she actually drew. A hole anywhere else would mean the figure is being
+                // clipped by something that is not the boat.
+                if (baseline[i + 3] == 0) sprayedOutsideTheHull++;
+            }
+
+            Assert.AreEqual(0, sprayedOutsideTheHull,
+                $"{sprayedOutsideTheHull} px outside the hull's own silhouette stopped drawing the " +
+                "figure. She may only be hidden where the BOAT is, never over open water.");
+            Assert.Greater(hullThroughAboard, inked / 20,
+                $"only {hullThroughAboard} of {inked} hull px covered a figure standing in her " +
+                "cockpit. A lobster boat's wheelhouse is a large part of her image at heading 0 — " +
+                "this close to zero means the depth split is not separating anything.");
+            Assert.Less(hullThroughAboard, inked,
+                $"ALL {inked} hull px covered the figure — the split has classified the whole hull " +
+                "as 'in front', which hides them completely and is the pre-#445 behaviour the owner " +
+                "asked to be rid of. The deck under their own boots must stay behind them.");
+        }
+
         // ------------------------------------------------------------------ the deck contract
 
         /// <summary>
@@ -676,6 +767,36 @@ namespace HiddenHarbours.Tests.RigBaking
                 Assert.IsNotNull(unlit, "URP's Sprite-Unlit-Default shader is missing?");
                 sr.sharedMaterial = new Material(unlit);
                 _warm = false;                         // new material variant may need compiling
+                return go;
+            }
+
+            /// <summary>
+            /// The same full-frame sprite, drawn through <c>HiddenHarbours/DeckOccludedSprite</c> and
+            /// told which hull id hides it — a stand-in for the on-deck figure, who is exactly this:
+            /// an ordinary sprite sorted above the boat, with one extra number on its property
+            /// block. Caller destroys it.
+            ///
+            /// <para>The occluder id goes on a PROPERTY BLOCK rather than the material, because that
+            /// is how the shipping path writes it (per renderer, no material instancing) — a test
+            /// that set it on the material would be proving a mechanism nothing uses.</para>
+            /// </summary>
+            public GameObject AddOccludableSprite(Color32 tint, int sortingOrder, float occluderId)
+            {
+                var go = AddCoveringSprite(tint, sortingOrder);
+                var sr = go.GetComponent<SpriteRenderer>();
+
+                var shader = Shader.Find("HiddenHarbours/DeckOccludedSprite");
+                Assert.IsNotNull(shader,
+                    "HiddenHarbours/DeckOccludedSprite is missing — the figure has no way to be " +
+                    "hidden behind anything, so treat it as a failure, not a pass.");
+                sr.sharedMaterial = new Material(shader);
+
+                var block = new MaterialPropertyBlock();
+                sr.GetPropertyBlock(block);
+                block.SetFloat("_HHDeckOccluderId", occluderId);
+                sr.SetPropertyBlock(block);
+
+                _warm = false;                         // a new shader variant needs compiling
                 return go;
             }
 

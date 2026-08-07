@@ -197,6 +197,21 @@ namespace HiddenHarbours.Player
         private Vector2 _lastDeckLocal;
         private bool _deckTracked;
 
+        // THE OCCLUSION CHANNEL (see ApplyOcclusion). One property block, reused; the id is written
+        // only when it CHANGES, which is twice a voyage rather than twice a second.
+        private MaterialPropertyBlock _occluderBlock;
+        private Material _occluderMaterial;
+        private IBoatHullPresenter _occupiedHull;
+        private float _occluderIdWritten;
+        private bool _occluderBlockValid;
+
+        /// <summary>The shader property the occluding hull id is written to, and the shader that
+        /// reads it. Named here rather than reached for through Art, which Player may not reference
+        /// (rule 4) — a shader name is a string contract, and this is the one place it is spelled on
+        /// this side of the seam.</summary>
+        private const string OccludedSpriteShader = "HiddenHarbours/DeckOccludedSprite";
+        private static readonly int DeckOccluderIdProperty = Shader.PropertyToID("_HHDeckOccluderId");
+
         /// <summary>The control mode this rider is presenting (set by the <see cref="ControlSwitcher"/>).</summary>
         public ControlMode Mode => _mode;
 
@@ -229,6 +244,8 @@ namespace HiddenHarbours.Player
             _bodyRenderer = bodyRenderer;
             _character = character;
             _baseCached = false;
+            _occluderBlockValid = false;   // a different renderer carries a different property block
+            EnsureOccludableMaterial();
         }
 
         /// <summary>Tune the ride in one call (tests / editor feel sessions).</summary>
@@ -255,6 +272,10 @@ namespace HiddenHarbours.Player
             _mode = mode;
             if (_boatRoot != boatRoot)
             {
+                // The boat we are LEAVING must be told her deck is empty before we forget her — a
+                // stranded occupant would keep her splitting her own image, hiding the next thing
+                // that ever stands in front of her, with nobody aboard to explain it.
+                ClearDeckOccupant();
                 _boatRoot = boatRoot;
                 _boatResolved = false;    // a different boat — re-find her rock, her helm and her skin
             }
@@ -271,6 +292,7 @@ namespace HiddenHarbours.Player
             if (_bodyRenderer == null) _bodyRenderer = GetComponent<SpriteRenderer>();
             if (_character == null) _character = GetComponent<IsoCharacterSprite>();
             if (_deckWalk == null) _deckWalk = GetComponent<DeckWalkController>();
+            EnsureOccludableMaterial();
         }
 
         private void OnEnable()
@@ -313,13 +335,20 @@ namespace HiddenHarbours.Player
         /// hull-frame position, and a second call in the same frame would read that step as zero and report
         /// a standing fisher. <see cref="SetMode"/> may call it out of turn, but a transition drops the
         /// track first, so that path takes the seed branch and measures nothing.</para>
+        ///
+        /// <para>The OCCLUSION is stated here for the same reason the facing is: the hull's own drawer
+        /// composes her split in LateUpdate at execution order 0, before this component's 100, so an
+        /// occupant written from there would be a frame stale — and at the moment somebody steps aboard
+        /// or ashore, a frame stale is a frame of the wrong picture.</para>
         /// </summary>
         private void StateContext()
         {
-            bool aboard = Aboard();
-            if (!aboard || _riderRenderer == null || !isActiveAndEnabled || _character == null) return;
+            if (!Aboard() || _riderRenderer == null || !isActiveAndEnabled) return;
 
             ResolveBoat();
+            ApplyOcclusion();
+
+            if (_character == null) return;
             RequestedStance = StanceForMode();
             _character.Stance = RequestedStance;
             ApplyFacing();
@@ -373,6 +402,124 @@ namespace HiddenHarbours.Player
             // to lie over further with every degree she turned. See the class doc's ORIENTATION note.
             _riderRenderer.transform.rotation = Quaternion.Euler(0f, 0f, pose.RollDegrees);
             _riding = true;
+        }
+
+        /// <summary>
+        /// <b>THE BOAT DRAWS OVER HER OWN CREW</b> — owner playtest 2026-08-07: <i>"rider/player sprites
+        /// visible THROUGH closed cabins"</i> on hulls with a cockpit and doors.
+        ///
+        /// <para><b>Why sorting could never have fixed it.</b> The figure is Y-sorted in the decor band
+        /// (ADR 0032) and the hull composes at her own whole-object slot beneath it, so the fisher is drawn
+        /// over the WHOLE boat — wheelhouse included. Dropping her under the hull instead would hide her
+        /// entirely, which is the pre-#445 behaviour the owner asked to be rid of. Neither order is right,
+        /// because sorting is per OBJECT and the question is per PIXEL: a wheelhouse roof is in front of a
+        /// figure inside it and the deck under their boots is behind them, in the same picture.</para>
+        ///
+        /// <para><b>So the hull answers it, where the answer already lives.</b> A mesh hull's facet pass
+        /// runs against a private z-buffer; handed the fisher's stand point in her own rig metres, she marks
+        /// every fragment nearer the camera than that point with a second id, and this renderer's shader
+        /// discards where it reads it. Per pixel, at any heading, on every hull in the fleet, with no
+        /// authored cabin footprint and no per-hull tuning — the geometry that is genuinely in front of the
+        /// fisher is exactly the geometry that covers them.</para>
+        ///
+        /// <para><b>The stand point is the FEET</b>, and a single depth is the right model for a billboard
+        /// whose base is there: the figure is a vertical plane at that depth, so anything nearer covers it
+        /// and anything farther does not. The hull's own planking is at the same depth and stays behind
+        /// (the compare is strict). Hull-frame all the way — <c>DeckLocalPosition</c> plus the height of
+        /// the deck under them — so a rocking, turning, sailing boat needs no re-projection here at all.</para>
+        ///
+        /// <para>Cleared the moment the rider stands down, and 0 on any hull that cannot answer (a sprite
+        /// hull, a greybox boat), where the shader is inert and the figure draws exactly as before.</para>
+        /// </summary>
+        private void ApplyOcclusion()
+        {
+            // A hull re-skinned under the player's feet (the dev picker does exactly that) hands us a
+            // NEW presenter for the same boat. Let the old one go first, or she keeps splitting an
+            // image nobody is standing in front of.
+            if (_occupiedHull != null && !ReferenceEquals(_occupiedHull, _hull)) ClearDeckOccupant();
+
+            float occluderId = 0f;
+            if (_hull != null)
+            {
+                Vector2 stand = _deckWalk != null ? _deckWalk.DeckLocalPosition : Vector2.zero;
+                float height = _deckWalk != null ? _deckWalk.DeckHeightMeters : 0f;
+                _hull.SetDeckOccupant(new Vector3(stand.x, stand.y, height), true);
+                occluderId = _hull.DeckOccluderId;
+                _occupiedHull = _hull;
+            }
+            WriteOccluderId(occluderId);
+        }
+
+        /// <summary>Tell whichever hull we last stood on that her deck is empty. Held as its own
+        /// reference rather than read off <see cref="_hull"/>, because the two part company exactly
+        /// when it matters: a boat swapped under the player's feet, and a rider torn down after the
+        /// presenter has already been re-resolved.</summary>
+        private void ClearDeckOccupant()
+        {
+            if (_occupiedHull == null) return;
+            _occupiedHull.SetDeckOccupant(Vector3.zero, false);
+            _occupiedHull = null;
+        }
+
+        /// <summary>Push the occluding id onto the rider's renderer through a property block — per
+        /// renderer, no material instancing, no allocation after the first frame (rule 7). Skipped
+        /// entirely while the value has not changed, which is every frame but the two either side of
+        /// boarding.</summary>
+        private void WriteOccluderId(float occluderId)
+        {
+            if (_riderRenderer == null) return;
+            if (_occluderIdWritten == occluderId && _occluderBlockValid) return;
+
+            _occluderBlock ??= new MaterialPropertyBlock();
+            _riderRenderer.GetPropertyBlock(_occluderBlock);
+            _occluderBlock.SetFloat(DeckOccluderIdProperty, occluderId);
+            _riderRenderer.SetPropertyBlock(_occluderBlock);
+            _occluderIdWritten = occluderId;
+            _occluderBlockValid = true;
+        }
+
+        /// <summary>
+        /// Give the rider child the material that CAN be occluded, once, at wake-up.
+        ///
+        /// <para><b>Built here rather than wired by the builder</b> so that every rig — the shipped
+        /// persistent core, an older scene, a test fixture — gets it without a re-run, and so the
+        /// component that owns the id also owns the shader that reads it. Owned and destroyed here,
+        /// with <c>HideAndDontSave</c>, the same discipline the hull renderer's own materials keep.</para>
+        ///
+        /// <para><b>A missing shader is not fatal and must never be.</b> If it cannot be found (a
+        /// player build that stripped it, a broken import) the rider keeps whatever material it had
+        /// and simply draws un-occluded — the picture that shipped before this existed. A magenta
+        /// fisher would be far worse than a fisher visible through a cabin.</para>
+        /// </summary>
+        private void EnsureOccludableMaterial()
+        {
+            if (_riderRenderer == null) return;
+
+            if (_occluderMaterial == null)
+            {
+                Shader shader = Shader.Find(OccludedSpriteShader);
+                if (shader == null)
+                {
+                    Debug.LogWarning($"[DeckRiderVisual] Shader '{OccludedSpriteShader}' not found — " +
+                                     "the on-deck figure will draw through the boat's own " +
+                                     "superstructure (the pre-fix picture). Nothing else is affected.");
+                    return;
+                }
+                _occluderMaterial = new Material(shader) { hideFlags = HideFlags.HideAndDontSave };
+            }
+            // Assigned every time this runs, not only when the material was just built: Configure may
+            // hand us a DIFFERENT renderer (a re-wired rig, a test fixture), and the material has to
+            // follow the renderer rather than the other way round.
+            if (_riderRenderer.sharedMaterial != _occluderMaterial)
+                _riderRenderer.sharedMaterial = _occluderMaterial;
+        }
+
+        private void OnDestroy()
+        {
+            if (_occluderMaterial == null) return;
+            if (Application.isPlaying) Destroy(_occluderMaterial);
+            else DestroyImmediate(_occluderMaterial);
+            _occluderMaterial = null;
         }
 
         /// <summary>
@@ -512,6 +659,12 @@ namespace HiddenHarbours.Player
                     _character.ReleaseSpeed();
                 }
             }
+            // The hull stops hiding anybody, and the figure stops discarding against her. Both must
+            // go: a stale occupant would keep splitting a hull nobody is standing on, and a stale id
+            // on the renderer would punch a boat-shaped hole in a fisher who is ashore.
+            ClearDeckOccupant();
+            WriteOccluderId(0f);
+
             _riding = false;
             _deckTracked = false;
             Pose = DeckRidePose.Level;

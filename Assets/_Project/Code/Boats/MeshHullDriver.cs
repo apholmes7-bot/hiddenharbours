@@ -124,6 +124,21 @@ namespace HiddenHarbours.Boats
             _stormExtraPitchDegrees = extraPitchDegrees;
         }
 
+        /// <summary>
+        /// Somebody is standing on this deck at <paramref name="rigLocalMeters"/> — handed straight
+        /// to the drawer, which is the only thing that can act on it (only the facet pass holds the
+        /// hull's depth). See <see cref="IBoatHullPresenter.SetDeckOccupant"/> for what it buys.
+        /// Written every tick by the deck rider; inert with no mesh renderer installed.
+        /// </summary>
+        public void SetDeckOccupant(Vector3 rigLocalMeters, bool active)
+        {
+            if (_renderer != null) _renderer.SetDeckOccupant(rigLocalMeters, active);
+        }
+
+        /// <summary>The id an occludable sprite discards against to be hidden by this hull; 0 when
+        /// nothing is being split (no occupant set, or no mesh renderer at all).</summary>
+        public float DeckOccluderId => _renderer != null ? _renderer.DeckOccluderId : 0f;
+
         /// <summary>The rig dir units currently being presented — the live turntable angle the
         /// anchors project through. Derived from the transform, so it is correct before the first
         /// LateUpdate, same as <see cref="DirectionalBoatSprite.CurrentFacingIndex"/>.</summary>

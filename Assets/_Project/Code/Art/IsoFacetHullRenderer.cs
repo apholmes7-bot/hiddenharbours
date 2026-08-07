@@ -98,6 +98,14 @@ namespace HiddenHarbours.Art
         private SortingGroup _sortingGroup;
         private MaterialPropertyBlock _props;
         private int _hullId;
+        // THE DECK-OCCUPANT SPLIT (owner playtest 2026-08-07: sprites showing through closed
+        // cabins). A SECOND registry id, held for this hull's whole registered life so it is stable
+        // across the frames a figure boards and leaves, plus where that figure's feet are in rig
+        // metres. Nobody aboard ⇒ _occupantActive false ⇒ the facet shader never compares and every
+        // pixel carries _hullId, exactly as before this existed.
+        private int _foreHullId;
+        private Vector3 _occupantRigMeters;
+        private bool _occupantActive;
         private bool _poseDirty = true;
         // The watertight clamp's footprint scan radius (half the cell width in world metres) —
         // derived once at Configure, cached (rule 7: ApplyPose runs every frame).
@@ -164,6 +172,27 @@ namespace HiddenHarbours.Art
 
         /// <summary>The id in [1,255] this hull writes into the facet buffer's alpha. 0 = not registered.</summary>
         public int HullId => _hullId;
+
+        /// <summary>
+        /// This hull's SECOND id — what she writes into the facet alpha for geometry NEARER the
+        /// camera than the figure standing on her deck. 0 when she is not registered.
+        ///
+        /// <para>The sprite that must be hidden behind her wheelhouse is told this number and
+        /// discards where it reads it (<c>HiddenHarbours/DeckOccludedSprite</c>). It is handed out
+        /// once at registration and held for life, not per boarding: a figure stepping aboard must
+        /// not be able to change what the boat is drawing with, and a per-frame id would make the
+        /// split a race between two components' execution order.</para>
+        /// </summary>
+        public int ForeHullId => _foreHullId;
+
+        /// <summary>
+        /// The id an occludable sprite should be told to discard against — <see cref="ForeHullId"/>
+        /// divided by 255, ready for the shader, and <b>0 whenever nothing is being split</b> (no
+        /// occupant registered, or the hull is not live). The one value a consumer needs, so nobody
+        /// downstream has to re-derive "is there anything to hide behind?" from two fields.
+        /// </summary>
+        public float DeckOccluderId
+            => _occupantActive && _foreHullId > 0 ? _foreHullId / 255f : 0f;
 
         /// <summary>
         /// The child that carries this hull's heading, rock and heave — what an articulated fitting
@@ -357,7 +386,13 @@ namespace HiddenHarbours.Art
         private void OnEnable()
         {
             if (_hullId == 0)
+            {
                 _hullId = IsoFacetHullRegistry.Register(this);
+                // …and her FORE id, taken in the same breath so the pair lives and dies together.
+                // Registering twice is what halves the id budget (127 hulls rather than 255) — an
+                // abundance either way, and the registry says so itself when they run out.
+                _foreHullId = IsoFacetHullRegistry.RegisterFore(this);
+            }
             _poseDirty = true;
         }
 
@@ -368,6 +403,14 @@ namespace HiddenHarbours.Art
                 IsoFacetHullRegistry.Unregister(this, _hullId);
                 _hullId = 0;
             }
+            if (_foreHullId != 0)
+            {
+                IsoFacetHullRegistry.UnregisterFore(_foreHullId);
+                _foreHullId = 0;
+            }
+            // A hull going away carries her occupant with her: nothing may keep discarding against
+            // an id that is now free for another boat to be issued.
+            _occupantActive = false;
         }
 
         private void OnDestroy() => ReleaseOwned();
@@ -481,8 +524,49 @@ namespace HiddenHarbours.Art
             Vector3 p = transform.position;
             _props.SetVector(IsoFacetShaderIds.HullOrigin, new Vector4(p.x, p.y, 0f, 0f));
             _props.SetFloat(IsoFacetShaderIds.HullId, _hullId / 255f);
+            _props.SetFloat(IsoFacetShaderIds.HullIdFore, _foreHullId / 255f);
+            // WHERE THE DECK OCCUPANT STANDS, in the depth the facet fragment carries. The rig point
+            // goes through the POSED mesh child's own transform — the very matrix the shader's
+            // `mul(unity_ObjectToWorld, positionOS)` uses — so the two numbers are commensurate by
+            // construction rather than by a duplicated copy of the iso projection. (Duplicating that
+            // projection is what the wake plume and the deck clamp both had to be fixed for.)
+            _props.SetVector(IsoFacetShaderIds.DeckOccupant, DeckOccupantVector());
             _meshRenderer.SetPropertyBlock(_props);
             _overlayRenderer.SetPropertyBlock(_props);
+        }
+
+        /// <summary>
+        /// <b>Somebody is standing on this deck HERE</b> — the rig point their feet are at
+        /// (+X starboard, +Y bow, +Z up from the keel; the deck data's own frame), or
+        /// <paramref name="active"/> false for nobody.
+        ///
+        /// <para>What it buys: hull geometry nearer the camera than that point is written with this
+        /// hull's FORE id, and a sprite told <see cref="DeckOccluderId"/> discards there — so the
+        /// wheelhouse covers the figure inside it, per pixel, at any heading, with no sorting-order
+        /// hack and no authored cabin footprint. What it costs when nobody is aboard: one bool.</para>
+        ///
+        /// <para>Cheap and idempotent, safe to write every frame (rule 7): it only stores, and the
+        /// depth is computed in <see cref="ApplyPose"/> where the posed transform is already to hand.</para>
+        /// </summary>
+        public void SetDeckOccupant(Vector3 rigLocalMeters, bool active)
+        {
+            _occupantRigMeters = rigLocalMeters;
+            _occupantActive = active;
+        }
+
+        /// <summary>
+        /// The split plane for the facet shader: x = the occupant's view depth, w = 1 while there is
+        /// one. <see cref="Vector4.zero"/> — nobody aboard, no fore id, or no posed mesh yet — is the
+        /// exact inert value: w = 0 means the shader never compares, so the facet alpha is
+        /// byte-identical to before the split existed.
+        /// </summary>
+        private Vector4 DeckOccupantVector()
+        {
+            if (!_occupantActive || _foreHullId == 0 || _meshChild == null) return Vector4.zero;
+            // The POSED child, not the root: it carries the rig→world map (rotation × the mirror
+            // scale) AND the heave/waterline offset, which is exactly what the vertices got.
+            float viewDepth = _meshChild.TransformPoint(_occupantRigMeters).z;
+            return new Vector4(viewDepth, 0f, 0f, 1f);
         }
 
         private void ReleaseOwned()

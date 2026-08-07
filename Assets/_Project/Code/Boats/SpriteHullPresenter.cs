@@ -121,6 +121,18 @@ namespace HiddenHarbours.Boats
         }
 
         /// <inheritdoc/>
+        public void SetDeckOccupant(Vector3 rigLocalMeters, bool active)
+        {
+            // Deliberately a no-op, in the same family as the two above. Occluding a figure behind a
+            // wheelhouse is a per-PIXEL depth question, and a sprite hull's image is one flat sheet
+            // with no depth in it — there is nothing honest to answer with. The pilotable fleet is
+            // all mesh (ADR 0022); a sprite hull here is the greybox and the ambient fleet.
+        }
+
+        /// <inheritdoc/>
+        public float DeckOccluderId => 0f;   // nothing to hide behind — see SetDeckOccupant
+
+        /// <inheritdoc/>
         public Transform Visual => _anchors.Visual;
 
         /// <inheritdoc/>

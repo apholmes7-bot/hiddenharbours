@@ -8,9 +8,14 @@ using UnityEditor.Rendering;
 namespace HiddenHarbours.Tests.Art.EditMode
 {
     /// <summary>
-    /// MAGENTA GUARD for the three mesh-hull shaders (ADR 0022 phase 3) — the IsoFacet twin of
+    /// MAGENTA GUARD for the mesh-hull shader family (ADR 0022 phase 3) — the IsoFacet twin of
     /// <see cref="WaterShaderCompileGuardTests"/>. Force-reimports each shader from its on-disk
     /// source AND force-compiles its default variant, failing RED on ANY compiler error.
+    ///
+    /// <para>The DECK-OCCLUDED SPRITE joins the family because it is half of one mechanism with the
+    /// facet pass: the hull marks the geometry in front of her crew, and that shader is what reads
+    /// the mark. It is also the one in this list a player can see up close on a character, so a
+    /// magenta break there would be the most obvious of the lot.</para>
     ///
     /// <para><b>Why compiling is the right headless check.</b> CI has no graphics device, so it
     /// can never RENDER a hull (the real rendering acceptance lives in IsoFacetUrpPassTests and
@@ -30,6 +35,12 @@ namespace HiddenHarbours.Tests.Art.EditMode
              "Hidden/HiddenHarbours/IsoFacetResolve"),
             ("Assets/_Project/Art/Shaders/HiddenHarboursIsoFacetOverlay.shader",
              "HiddenHarbours/IsoFacetOverlay"),
+            // The other half of the deck-occlusion mechanism: the figure's own shader, which reads
+            // the fore id the facet pass writes. DeckRiderVisual finds it BY NAME at runtime, so the
+            // name assertion below is not cosmetic — a rename silently returns the fisher to drawing
+            // through the wheelhouse, with only a warning in the log to say so.
+            ("Assets/_Project/Art/Shaders/HiddenHarboursDeckOccludedSprite.shader",
+             "HiddenHarbours/DeckOccludedSprite"),
         };
 
         [Test]

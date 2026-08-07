@@ -31,21 +31,52 @@ namespace HiddenHarbours.Art
         {
             s_Hulls.Add(hull);
             EnsureFallbackBound();
-            if (s_FreeIds.Count > 0) return s_FreeIds.Pop();
-            if (s_NextId > 255)
-            {
-                // 255 simultaneous mesh hulls would be a fleet nobody budgeted for; collapsing
-                // onto id 255 degrades overlap separation for the surplus, nothing worse.
-                Debug.LogWarning("[IsoFacetHullRegistry] More than 255 live mesh hulls; ids exhausted.");
-                return 255;
-            }
-            return s_NextId++;
+            return TakeId();
         }
+
+        /// <summary>
+        /// A hull's SECOND id — the deck-occupant split (owner playtest 2026-08-07). Taken from the
+        /// same pool as the first, because it lives in the same 8-bit alpha channel and must not be
+        /// able to collide with another boat's.
+        ///
+        /// <para>It does NOT add the hull to <see cref="Count"/>: that number is the render feature's
+        /// zero-cost gate ("is there anything to draw?"), and one boat is one boat however many ids
+        /// she wears. Counting her twice would be harmless today and wrong the first time anything
+        /// budgeted off it.</para>
+        ///
+        /// <para>The real cost is the budget: two ids per hull means <b>127</b> simultaneous mesh
+        /// hulls rather than 255. That is an abundance either way — the largest scene the roadmap
+        /// contemplates is a harbour of a dozen — and the exhaustion warning below still fires with
+        /// the true number.</para>
+        /// </summary>
+        internal static int RegisterFore(IsoFacetHullRenderer hull) => TakeId();
 
         internal static void Unregister(IsoFacetHullRenderer hull, int id)
         {
             if (s_Hulls.Remove(hull) && id >= 1 && id < 255)
                 s_FreeIds.Push(id);
+        }
+
+        /// <summary>Give a FORE id back. Not paired with the hull list — the hull's own
+        /// <see cref="Unregister"/> owns that; this only returns the number.</summary>
+        internal static void UnregisterFore(int id)
+        {
+            if (id >= 1 && id < 255) s_FreeIds.Push(id);
+        }
+
+        static int TakeId()
+        {
+            if (s_FreeIds.Count > 0) return s_FreeIds.Pop();
+            if (s_NextId > 255)
+            {
+                // 255 ids — 127 simultaneous mesh hulls, each wearing two — would be a fleet nobody
+                // budgeted for; collapsing onto id 255 degrades overlap separation for the surplus,
+                // nothing worse.
+                Debug.LogWarning("[IsoFacetHullRegistry] Facet hull ids exhausted (255 in use); " +
+                                 "further hulls share id 255 and may composite over one another.");
+                return 255;
+            }
+            return s_NextId++;
         }
 
         /// <summary>
@@ -132,5 +163,21 @@ namespace HiddenHarbours.Art
         public static readonly int PivotPx = Shader.PropertyToID("_PivotPx");
         public static readonly int PixelsPerMetre = Shader.PropertyToID("_PixelsPerMetre");
         public static readonly int HullId = Shader.PropertyToID("_HullId");
+
+        /// <summary>A hull's SECOND id (already /255) — the deck-occupant split. Geometry nearer the
+        /// camera than the figure standing on her deck is written with this instead of
+        /// <see cref="HullId"/>, so that figure's own shader can discard behind it. The overlay
+        /// composes BOTH, so the boat's own picture is unchanged. 0 = no split.</summary>
+        public static readonly int HullIdFore = Shader.PropertyToID("_HullIdFore");
+
+        /// <summary>Where that occupant stands: x = their view depth, in the same world z the facet
+        /// fragment carries; w = 1 only while somebody is actually there. w = 0 — every hull with
+        /// nobody aboard — leaves the facet alpha byte-identical to before the split existed.</summary>
+        public static readonly int DeckOccupant = Shader.PropertyToID("_DeckOccupant");
+
+        /// <summary>Per RENDERER on an occludable sprite: the id that hides it (the fore id of the
+        /// hull it is standing on), already /255. 0 = nothing occludes this sprite, which is every
+        /// sprite in the game bar the one on a deck.</summary>
+        public static readonly int DeckOccluderId = Shader.PropertyToID("_HHDeckOccluderId");
     }
 }

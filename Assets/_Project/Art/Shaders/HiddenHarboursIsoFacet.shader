@@ -23,6 +23,20 @@
 // screen-pinned dither) and needs no per-render-target phase calibration (the spike's
 // _DitherPhase probe becomes unnecessary: world-derived cell coordinates are y-flip-proof).
 //
+// THE DECK-OCCUPANT SPLIT (owner playtest 2026-08-07: "rider/player sprites visible THROUGH
+// closed cabins"). A figure standing on deck is an ordinary sprite drawn ABOVE the hull's
+// whole-object sorting slot, so a wheelhouse in front of them can never cover them: sorting is per
+// OBJECT and the question is per PIXEL. This pass already holds the answer — it runs against a
+// private z-buffer, so every fragment knows its own view depth, and a figure standing on the deck
+// has ONE depth, their feet. So a hull carrying an occupant writes _HullIdFore into the facet alpha
+// wherever her geometry is NEARER the camera than that figure, and _HullId everywhere else. It is a
+// PARTITION, never a duplication: every solid pixel still carries exactly one id, the overlay
+// re-composes both (so the hull's own picture is unchanged), and the FIGURE's shader discards where
+// it reads the fore id — covered exactly where the boat is genuinely in front of them.
+//
+// _DeckOccupant.w = 0 — nobody aboard, and every hull most of the time — means the compare never
+// runs and the alpha is byte-identical to before this existed.
+//
 // SHADER CAUTIONS honoured (this project lost hours to magenta shaders): no operator characters
 // in Property display strings; no [unroll] over runtime bounds; force-compiled headless by
 // IsoFacetShaderCompileGuardTests so a break fails CI red.
@@ -70,6 +84,12 @@ Shader "HiddenHarbours/IsoFacet"
             // Per draw via MaterialPropertyBlock (IsoFacetHullRenderer.ApplyPose).
             float4 _HullOrigin;         // xy = world position of the rig origin (unheaved root)
             float  _HullId;             // hull id already divided by 255; the facet alpha
+            // THE DECK-OCCUPANT SPLIT (see the header). _HullIdFore is this hull's SECOND id,
+            // already divided by 255; _DeckOccupant.x is the occupant's view depth in the same
+            // world z the fragment carries, and .w is 1 only while somebody is actually standing
+            // there. Both default to 0, so a material nobody wrote to never splits.
+            float  _HullIdFore;
+            float4 _DeckOccupant;
 
             struct Attributes
             {
@@ -141,8 +161,16 @@ Shader "HiddenHarbours/IsoFacet"
                 int idx = (int)fbase + ((i.fidx - fbase) > bay ? 1 : 0) + off;
                 idx = clamp(idx, 0, len - 1);
 
+                // WHICH OF THIS HULL'S TWO IDS THIS PIXEL CARRIES. Camera looks along +Z, so a
+                // SMALLER depth is nearer: hull geometry in front of the figure standing on the
+                // deck takes the FORE id and is composed over them. Strictly less-than, so the very
+                // planking under their feet (same depth) stays behind them. One branch on a uniform
+                // that is 0 for every hull with nobody aboard.
+                float hullId = _HullId;
+                if (_DeckOccupant.w > 0.5 && i.wpos.z < _DeckOccupant.x) hullId = _HullIdFore;
+
                 FragOut o;
-                o.facet = float4(_RampTex.Load(int3(idx, m, 0)).rgb, _HullId);
+                o.facet = float4(_RampTex.Load(int3(idx, m, 0)).rgb, hullId);
                 o.dark  = float4(_DarkRampTex.Load(int3(idx, m, 0)).rgb, 1.0);
                 o.key   = float4(_KeyColor.rgb, 1.0);
                 o.depth = i.wpos.z;
