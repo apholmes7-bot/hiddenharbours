@@ -452,8 +452,10 @@ namespace HiddenHarbours.App.Editor
             deckWalk.enabled = false;
 
             // THE CHARACTER RIDES THE BOAT (and is visible at the helm). The player's own transform is held
-            // world-upright every frame by DeckWalkController — deliberately, so the fisher never spins with
-            // the hull — so the ROCK cannot reach them by parenting. The boat solves the identical problem by
+            // world-upright every frame while aboard — by DeckWalkController on deck and by the
+            // ControlSwitcher in EVERY aboard mode (the helm included, where the deck walk is disabled and
+            // the un-squared root once let the drawn pilot spin with the hull) — so the ROCK cannot reach
+            // them by parenting. The boat solves the identical problem by
             // putting its rock on a counter-rotated VISUAL CHILD; this is the character's copy of that. The
             // child owns nothing but the picture: DeckRiderVisual mirrors whatever the root renderer is
             // showing (iso skin, haul cycle, rod fight — one authority for the cell) onto a transform it may

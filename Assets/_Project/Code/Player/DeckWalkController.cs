@@ -43,6 +43,12 @@ namespace HiddenHarbours.Player
     /// world rotation is still stomped upright each LateUpdate (the DirectionalBoatSprite convention) so
     /// the fisher never spins with the hull.</para>
     ///
+    /// <para>⚠️ <b>That stomp covers the DECK only</b>, because the switcher disables this controller at the
+    /// helm — which is how the drawn pilot came to inherit the hull's rotation and lie over further with
+    /// every degree she turned (owner playtest 2026-08-07). The invariant now belongs to
+    /// <c>ControlSwitcher.LateUpdate</c>, which holds it in every aboard mode; this one stays as the deck's
+    /// own guarantee, and the two agree because both write the same identity.</para>
+    ///
     /// <para>Input is dev-keyed via the New Input System (legacy Input throws at runtime), mirroring
     /// <see cref="PlayerWalkController.ReadInput"/>; a real InputService replaces it later (ui-ux).
     /// The clamp maths is pure + static so the bounds rule is EditMode-testable.</para>

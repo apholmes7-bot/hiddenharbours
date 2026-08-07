@@ -50,6 +50,32 @@ namespace HiddenHarbours.Player
     /// about the spot where they meet the deck. Lean without slide, for free, because of how the art was
     /// baked.</para>
     ///
+    /// <para><b>ORIENTATION IS DERIVED, NEVER INHERITED OR ACCUMULATED</b> (owner playtest 2026-08-07:
+    /// <i>"the sprite doesn't follow the orientation of the boat, they slowly lose reference and spin
+    /// horizontally"</i>). A rider lives inside a frame that rotates — the boat's physics root — and there
+    /// were two ways for that rotation to leak into the picture. Both are now closed by stating the pose
+    /// from the authority every frame instead of letting anything compose:</para>
+    /// <list type="number">
+    ///   <item><b>The figure's screen ROTATION.</b> The lean is written as a WORLD rotation, not a local
+    ///   one, so the drawn body is exactly the pose <see cref="DeckRideMath"/> asked for and nothing else.
+    ///   Until this it was a local rotation on a child of the player root, and the player root is only
+    ///   stomped upright by <see cref="DeckWalkController"/> — which the switcher DISABLES at the helm. So
+    ///   the moment #445 made the pilot visible, the pilot inherited the hull's own z rotation and lay over
+    ///   further with every degree she turned. (The switcher now keeps the root square in every aboard mode
+    ///   as well; this is the belt to that braces, and the reason a future component parked on the player
+    ///   cannot re-open it.)</item>
+    ///   <item><b>The figure's FACING and GAIT.</b> <see cref="IsoCharacterSprite"/> reads both off its own
+    ///   <c>localPosition</c>, which is right for a drifting hull and wrong for a TURNING one: a hull coming
+    ///   about moves a motionless fisher in her frame with no step taken, so the measured velocity is an
+    ///   artefact of the turn — it sweeps round as she turns and the facing chases it, which is the slow
+    ///   horizontal spin. The rider therefore STATES both: the facing is
+    ///   <see cref="DeckRiderFacingMath.CompassHeading"/> of (the fisher's own deck bearing) + (the hull's
+    ///   drawn heading), and the speed is metres of DECK per second read off
+    ///   <see cref="DeckWalkController.DeckLocalPosition"/> — a hull-frame quantity, so the hull's turn is
+    ///   not in it at all. A fisher standing still now turns WITH the deck; one walking the deck faces
+    ///   their walk.</item>
+    /// </list>
+    ///
     /// <para><b>Y-sort (ADR 0032).</b> The child copies the root renderer's <c>sortingOrder</c> every
     /// frame, which <c>YSortSprite</c> has just written from the player's world Y. So the rider keeps
     /// exactly the layering the visible on-deck player already had — no second policy, no parked constant,
@@ -82,6 +108,12 @@ namespace HiddenHarbours.Player
         [Tooltip("The character presenter that picks the cell. This component tells it which STANCE to " +
                  "ask for and which way to face; it never picks a sprite itself. Auto-resolved if empty.")]
         [SerializeField] private IsoCharacterSprite _character;
+
+        [Tooltip("The player's deck walk — read ONLY for where the fisher stands in the HULL's own frame, " +
+                 "which is what makes their facing and gait immune to the hull's turn. Auto-resolved off " +
+                 "this object if left empty. Absent (a rig with no deck walk) = the fisher holds the facing " +
+                 "they boarded with and is drawn standing, which is honest: nothing is walking them.")]
+        [SerializeField] private DeckWalkController _deckWalk;
 
         [Header("Ride (how the deck moves its passenger — all tunable, rule 6)")]
         [Tooltip("Master strength of the whole ride. 0 = the character stands bolt upright on a rolling " +
@@ -125,6 +157,14 @@ namespace HiddenHarbours.Player
                  "for the rig's own counterLean, which needs a re-bake to draw properly.")]
         [SerializeField, Range(0f, 1f)] private float _footing = 0.6f;
 
+        [Header("Facing (which way the figure looks while aboard)")]
+        [Tooltip("Deck-frame speed (m/s) below which a step is treated as noise and the fisher's DECK " +
+                 "BEARING is held — so someone who stops keeps looking where they were going instead of " +
+                 "snapping round. The deck-frame twin of IsoCharacterSprite's own heading floor, and the " +
+                 "same small number for the same reason: the gait may read 'idle' while a real turn is " +
+                 "still finishing.")]
+        [SerializeField, Min(0f)] private float _deckStepMinSpeed = 0.05f;
+
         [Header("Pilot")]
         [Tooltip("Draw the character while they are AT THE HELM. Off restores the old behaviour (taking " +
                  "the helm hides the figure entirely) — kept as a switch because it is the single most " +
@@ -147,6 +187,16 @@ namespace HiddenHarbours.Player
         private bool _baseCached;
         private bool _riding;
 
+        // WHERE THE FISHER IS LOOKING, relative to the deck (0 = at the bow). The one piece of facing state
+        // there is, and it is deliberately in the HULL's frame: the hull's turn cannot touch it, so composing
+        // it with her drawn heading every frame carries the fisher round with the boat and never drifts.
+        private float _deckBearingDegrees;
+        // Last frame's hull-frame stand point, for the deck-frame velocity the bearing and the gait are read
+        // from. Un-seeded (_deckTracked false) on the first riding frame and after any re-bind, so a SNAP
+        // onto the deck is never read as one enormous stride.
+        private Vector2 _lastDeckLocal;
+        private bool _deckTracked;
+
         /// <summary>The control mode this rider is presenting (set by the <see cref="ControlSwitcher"/>).</summary>
         public ControlMode Mode => _mode;
 
@@ -161,6 +211,10 @@ namespace HiddenHarbours.Player
 
         /// <summary>The ride pose applied to the rider child last tick. For tests / tooling.</summary>
         public DeckRidePose Pose { get; private set; } = DeckRidePose.Level;
+
+        /// <summary>Where the fisher is looking RELATIVE TO THE DECK (degrees; 0 = at the bow, +90 = to
+        /// starboard). Only their own walking changes it — the hull's turning cannot. For tests / tooling.</summary>
+        public float DeckBearingDegrees => _deckBearingDegrees;
 
         /// <summary>True when a rider child is wired at all. A rig without one is legal and inert.</summary>
         public bool HasRider => _riderRenderer != null;
@@ -204,6 +258,11 @@ namespace HiddenHarbours.Player
                 _boatRoot = boatRoot;
                 _boatResolved = false;    // a different boat — re-find her rock, her helm and her skin
             }
+            // Every transition re-seats the fisher (BoardDeck / TakeHelm / LeaveHelm all snap them), so the
+            // deck-frame step measured across one is a TELEPORT, not a stride. Drop the track and let the
+            // next tick re-seed both it and the bearing.
+            _deckTracked = false;
+            StateContext();   // the presenter must not pick one cell from the OLD mode
             Apply();
         }
 
@@ -211,27 +270,71 @@ namespace HiddenHarbours.Player
         {
             if (_bodyRenderer == null) _bodyRenderer = GetComponent<SpriteRenderer>();
             if (_character == null) _character = GetComponent<IsoCharacterSprite>();
+            if (_deckWalk == null) _deckWalk = GetComponent<DeckWalkController>();
         }
 
-        private void OnEnable() => Apply();
+        private void OnEnable()
+        {
+            StateContext();
+            Apply();
+        }
 
         /// <summary>Hand the picture back on teardown: the child goes dark and the body renderer resumes
         /// under the pre-rider rule. A rider torn down mid-voyage therefore degrades to exactly the
         /// behaviour that shipped before it existed — never to nobody drawing at all.</summary>
         private void OnDisable() => StandDown();
 
+        /// <summary>
+        /// <b>STATE THE CONTEXT, in Update — before the presenter chooses a cell.</b>
+        ///
+        /// <para>The stance, the facing and the travelling speed are INPUTS to
+        /// <see cref="IsoCharacterSprite"/>, and it consumes them in its own <c>LateUpdate</c> at execution
+        /// order 0 — before this component's 100. Written from here they would always be read one frame
+        /// late: a hull turning at 6°/frame draws her pilot a whole 45° facing bucket behind herself,
+        /// which is exactly what a PlayMode test measuring the turn caught. (That lag has been there since
+        /// the pilot was first drawn; it was invisible because nothing had asked the question.)</para>
+        ///
+        /// <para>Update is the honest place for it: the hull's drawn heading is computed LIVE off her
+        /// transform, and physics has already run for the frame, so the number here is the same one
+        /// LateUpdate would see. The MIRROR still runs in <see cref="LateUpdate"/> at order 100 — that
+        /// half must be last, or it copies a stale cell. Inputs early, picture late.</para>
+        /// </summary>
+        private void Update() => StateContext();
+
         private void LateUpdate() => Apply();
 
         // ---- the one path ------------------------------------------------------------------------
+
+        /// <summary>
+        /// Tell the character presenter what it is standing on: which stance to ask for, which way the
+        /// figure is looking, and how fast they are really travelling. It still owns every sheet decision.
+        ///
+        /// <para>Exactly ONCE per frame — <see cref="TrackDeckStep"/> measures a step against last frame's
+        /// hull-frame position, and a second call in the same frame would read that step as zero and report
+        /// a standing fisher. <see cref="SetMode"/> may call it out of turn, but a transition drops the
+        /// track first, so that path takes the seed branch and measures nothing.</para>
+        /// </summary>
+        private void StateContext()
+        {
+            bool aboard = Aboard();
+            if (!aboard || _riderRenderer == null || !isActiveAndEnabled || _character == null) return;
+
+            ResolveBoat();
+            RequestedStance = StanceForMode();
+            _character.Stance = RequestedStance;
+            ApplyFacing();
+        }
+
+        /// <summary>Is a figure being drawn on a boat right now? On deck always; at the helm only with the
+        /// pilot switched on.</summary>
+        private bool Aboard()
+            => _mode == ControlMode.OnDeck || (_mode == ControlMode.Aboard && _drawPilot);
 
         /// <summary>Present the character for the current mode. Idempotent and cheap — safe to call from
         /// the mode switch and from every LateUpdate.</summary>
         private void Apply()
         {
-            bool aboard = _mode == ControlMode.OnDeck ||
-                          (_mode == ControlMode.Aboard && _drawPilot);
-
-            if (!aboard || _riderRenderer == null || !isActiveAndEnabled)
+            if (!Aboard() || _riderRenderer == null || !isActiveAndEnabled)
             {
                 StandDown();
                 return;
@@ -245,17 +348,7 @@ namespace HiddenHarbours.Player
 
             ResolveBoat();
 
-            // (1) Ask the character presenter for the right stance, and — at the helm — for the right
-            //     facing. It still owns every sheet decision; this only states the context.
-            RequestedStance = StanceForMode();
-            if (_character != null)
-            {
-                _character.Stance = RequestedStance;
-                if (_mode == ControlMode.Aboard && _hull != null) _character.HoldHeading(_hull.DrawnHeadingDegrees());
-                else _character.ReleaseHeading();
-            }
-
-            // (2) MIRROR the finished picture. Everything the body renderer carries travels — the cell
+            // (1) MIRROR the finished picture. Everything the body renderer carries travels — the cell
             //     (whoever wrote it: the iso skin, the haul animation, the rod fight), the Y-sorted order,
             //     the flip and any tint — so there is exactly one place the character's look is decided.
             if (_bodyRenderer != null)
@@ -269,13 +362,117 @@ namespace HiddenHarbours.Player
             }
             if (!_riderRenderer.enabled) _riderRenderer.enabled = true;
 
-            // (3) RIDE. The rock the hull is drawing, in the rider's own tuned amplitudes.
+            // (2) RIDE. The rock the hull is drawing, in the rider's own tuned amplitudes.
             DeckRidePose pose = ReadRide();
             Pose = pose;
             _riderRenderer.transform.localPosition =
                 _riderBaseLocalPosition + new Vector3(0f, pose.LiftMeters, 0f);
-            _riderRenderer.transform.localRotation = Quaternion.Euler(0f, 0f, pose.RollDegrees);
+            // WORLD rotation, not local: the drawn figure's screen orientation IS the pose and nothing else.
+            // A local write would compose the lean onto whatever the player root happens to be carrying, and
+            // aboard that root is a child of the hull's ROTATING physics body — which is how the pilot came
+            // to lie over further with every degree she turned. See the class doc's ORIENTATION note.
+            _riderRenderer.transform.rotation = Quaternion.Euler(0f, 0f, pose.RollDegrees);
             _riding = true;
+        }
+
+        /// <summary>
+        /// State which way the figure looks, and how fast they are really travelling.
+        ///
+        /// <para><b>On deck</b> the facing is composed: the fisher's own DECK BEARING (moved only by their
+        /// own walking, measured in the hull's frame) plus the hull's DRAWN heading. So a fisher standing
+        /// still turns with the boat, and one walking the deck faces their walk — and because both terms are
+        /// re-read from the authority every frame there is no delta anywhere for drift to accumulate in.</para>
+        ///
+        /// <para><b>At the helm</b> the bearing is the bow: a pilot is at their station, facing forward, and
+        /// the deck walk is disabled so there is no step to read anyway. This is exactly the pinned
+        /// <c>DrawnHeadingDegrees()</c> that shipped, restated through the one composition.</para>
+        ///
+        /// <para><b>Ashore</b> nothing is held and the presenter's own motion read stands untouched.</para>
+        ///
+        /// <para>With no boat at all — which cannot happen while aboard, but a torn-down rig can reach it —
+        /// nothing is held and the presenter reads motion as it always did.</para>
+        /// </summary>
+        private void ApplyFacing()
+        {
+            if (_boatRoot == null)
+            {
+                _character.ReleaseHeading();
+                _character.ReleaseSpeed();
+                return;
+            }
+
+            float hullHeading = DrawnHeadingDegrees();
+            float deckSpeed = 0f;
+
+            if (_mode == ControlMode.OnDeck)
+            {
+                TrackDeckStep(hullHeading, out deckSpeed);
+            }
+            else
+            {
+                // At the helm: the station's own facing, and a body that is not travelling.
+                _deckBearingDegrees = 0f;
+                _deckTracked = false;
+            }
+
+            _character.HoldHeading(DeckRiderFacingMath.CompassHeading(hullHeading, _deckBearingDegrees));
+            _character.HoldSpeed(deckSpeed);
+        }
+
+        /// <summary>
+        /// The compass heading of the hull PICTURE the fisher is standing on — quantised for a sprite
+        /// compass, continuous for a mesh hull, and the physics heading for a boat wearing neither.
+        ///
+        /// <para>Deliberately the same three-way read as <see cref="DeckWalkController"/>'s own, because the
+        /// two must agree: the deck walk clamps the fisher onto the deck of the hull drawn at this heading,
+        /// and the facing composed here is what that fisher is drawn looking along. A second, differently
+        /// sourced heading would put the figure on one hull and facing along another.</para>
+        /// </summary>
+        private float DrawnHeadingDegrees()
+        {
+            if (_hull != null) return _hull.DrawnHeadingDegrees();
+            return _boatRoot != null
+                ? DirectionalBoatSprite.HeadingDegreesFromBow(_boatRoot.up)
+                : 0f;
+        }
+
+        /// <summary>
+        /// Read this tick's step in the HULL's own frame and turn it into the fisher's deck bearing and their
+        /// honest travelling speed.
+        ///
+        /// <para>The hull frame is the whole trick: the walkable polygons live in it, so a heading change
+        /// costs a standing fisher exactly zero deck-frame movement — which is precisely the property the
+        /// world-frame read lacked. Metres of DECK per second is also the number the gait should be chosen
+        /// from: it is what the fisher's legs are doing.</para>
+        ///
+        /// <para>The first tracked frame (and the first after any re-seating) measures nothing: the fisher
+        /// was PUT there, and a snap is not a stride. The bearing is seeded from the facing they arrived
+        /// with, so stepping aboard is continuous rather than a spin to face forward.</para>
+        /// </summary>
+        private void TrackDeckStep(float hullHeading, out float deckSpeed)
+        {
+            deckSpeed = 0f;
+            if (_deckWalk == null) return;
+
+            Vector2 deckLocal = _deckWalk.DeckLocalPosition;
+            if (!_deckTracked)
+            {
+                _deckTracked = true;
+                _lastDeckLocal = deckLocal;
+                _deckBearingDegrees =
+                    DeckRiderFacingMath.DeckBearingFor(_character.HeadingDegrees, hullHeading);
+                return;
+            }
+
+            float dt = Time.deltaTime;
+            Vector2 step = deckLocal - _lastDeckLocal;
+            _lastDeckLocal = deckLocal;
+            if (dt <= 1e-6f) return;
+
+            Vector2 deckVelocity = step / dt;
+            _deckBearingDegrees = DeckRiderFacingMath.DeckBearing(deckVelocity, _deckStepMinSpeed,
+                                                                  _deckBearingDegrees);
+            deckSpeed = deckVelocity.magnitude;
         }
 
         /// <summary>
@@ -300,16 +497,23 @@ namespace HiddenHarbours.Player
             {
                 if (_riderRenderer != null)
                 {
-                    _riderRenderer.transform.localRotation = Quaternion.identity;
+                    // World, matching the write in Apply: "level" is a statement about the SCREEN, and a
+                    // local identity would leave the child carrying whatever the root is carrying.
+                    _riderRenderer.transform.rotation = Quaternion.identity;
                     if (_baseCached) _riderRenderer.transform.localPosition = _riderBaseLocalPosition;
                 }
                 if (_character != null)
                 {
                     _character.Stance = CharacterStance.Free;
+                    // Both holds go back together: the figure is no longer standing on anything this
+                    // component knows the frame of, so the presenter's own motion read is the honest one
+                    // again. ReleaseHeading keeps the direction they were last facing, so nobody snaps.
                     _character.ReleaseHeading();
+                    _character.ReleaseSpeed();
                 }
             }
             _riding = false;
+            _deckTracked = false;
             Pose = DeckRidePose.Level;
             RequestedStance = CharacterStance.Free;
 
