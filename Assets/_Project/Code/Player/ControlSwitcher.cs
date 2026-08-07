@@ -524,6 +524,10 @@ namespace HiddenHarbours.Player
 
         private enum BoardingMoveKind { None = 0, Boarding, Disembarking }
 
+        /// <summary>How this move crosses the last stretch: over the rail in one step, or down a wharf
+        /// ladder because the tide has opened a gap a step cannot honestly cross.</summary>
+        private enum BoardingRoute { Step = 0, Ladder }
+
         private BoardingMoveKind _moveKind = BoardingMoveKind.None;
         private float _moveElapsed;
         private float _moveApproachSeconds;
@@ -536,10 +540,20 @@ namespace HiddenHarbours.Player
         private Vector2 _moveRailRelative;     // the rail, as a boat-relative offset re-clamped every tick
         private bool _moveWashboards;          // does this hull carry side decks to step over?
         private bool _moveHeldGate;            // did WE raise InteractionGate? (only we may lower it)
-        private bool _moveClipPlaying;         // is the vault's clip on the renderer right now?
-        private bool _moveClipAttempted;       // has this move already asked for its clip? (ask once)
+        private bool _moveClipPlaying;         // is a move clip on the renderer right now?
+        private CharacterClip _moveClipAsked;  // which clip THIS leg asked for (ask once per leg)
+        private bool _moveClipAttempted;       // has the current leg already asked? (ask once)
         private CharacterClipPlayer _clipPlayer;
         private bool _clipPlayerResolved;
+
+        // ---- the LADDER route's own state (see the ladder-boarding block below) --------------------
+        private BoardingRoute _moveRoute = BoardingRoute.Step;
+        private IBoardingLadder _moveLadder;
+        private Vector3 _moveLadderSeat;       // world PLAN point the climber occupies while on the rungs
+        private float _moveGapMetres;          // the tide gap this climb crosses (m), measured at the start
+        private float _moveClimbSeconds;       // how long the rungs themselves take (gap ÷ stepZ × loop)
+        private float _moveTransitionSeconds;  // the unauthored turn-around / step-off cover, each end
+        private float _moveLegTwoSeconds;      // leg 2 in total: a vault, or turn + climb + step-off
 
         /// <summary>True while the fisher is mid-boarding — walking to the rail, over it, or down onto the
         /// wharf. The mode has NOT changed yet; it changes when they land.</summary>
@@ -551,7 +565,7 @@ namespace HiddenHarbours.Player
             get
             {
                 if (_moveKind == BoardingMoveKind.None) return 0f;
-                float total = _moveApproachSeconds + Mathf.Max(0.01f, _boardVaultSeconds);
+                float total = _moveApproachSeconds + Mathf.Max(0.01f, _moveLegTwoSeconds);
                 return total > 1e-4f ? Mathf.Clamp01(_moveElapsed / total) : 1f;
             }
         }
@@ -595,11 +609,21 @@ namespace HiddenHarbours.Player
                 _moveRailRelative = (Vector2)(landing - boatPos);
             }
 
+            // WHICH ROUTE? Read the tide gap and look for a ladder BEFORE the approach is timed, because
+            // the ladder head is somewhere else on the wharf and leg 1 has to walk to whichever it is.
+            ChooseBoardingRoute();
+
             // The approach is a WALK, so its length is a distance at a walking pace — not a fixed
             // duration that would slide a distant fisher and dawdle a close one.
-            float approachDistance = Vector3.Distance(ApproachStartWorld(), RailWorld());
+            float approachDistance = Vector3.Distance(ApproachStartWorld(), LegTwoStartWorld());
             _moveApproachSeconds = Mathf.Clamp(approachDistance / Mathf.Max(0.1f, _boardApproachSpeed),
                                                0f, Mathf.Max(0f, _boardApproachMaxSeconds));
+
+            // Leg 2's budget. A step is the owner's tuned vault; a climb is two covers for the kit's
+            // unauthored ends plus however many rungs the tide has put between the deck and the planks.
+            _moveLegTwoSeconds = _moveRoute == BoardingRoute.Ladder
+                ? _moveTransitionSeconds + _moveClimbSeconds + _moveTransitionSeconds
+                : Mathf.Max(0.01f, _boardVaultSeconds);
 
             // The fisher is now a free body in the air: nothing drives them but this move.
             ApplyPlayerFor(Mode, inTransit: true);
@@ -626,9 +650,9 @@ namespace HiddenHarbours.Player
             }
 
             _moveElapsed += Mathf.Max(0f, deltaTime);
-            float vault = Mathf.Max(0.01f, _boardVaultSeconds);
+            float legTwo = Mathf.Max(0.01f, _moveLegTwoSeconds);
 
-            if (_moveElapsed >= _moveApproachSeconds + vault)
+            if (_moveElapsed >= _moveApproachSeconds + legTwo)
             {
                 FinishBoardingMove();
                 return;
@@ -636,27 +660,241 @@ namespace HiddenHarbours.Player
 
             if (Player == null) { CancelBoardingMove(restorePosition: true); return; }
 
-            Vector3 rail = RailWorld();
+            Vector3 start = LegTwoStartWorld();
             if (_moveElapsed < _moveApproachSeconds)
             {
-                // LEG 1 — the approach: ashore to the rail, or across the deck to it. Linear, because a
-                // walk is a walk; easing it would read as a drift.
+                // LEG 1 — the approach: ashore to the rail (or to the LADDER HEAD), or across the deck to
+                // it. Linear, because a walk is a walk; easing it would read as a drift.
                 float u = _moveApproachSeconds > 1e-4f ? _moveElapsed / _moveApproachSeconds : 1f;
-                Player.position = Vector3.Lerp(ApproachStartWorld(), rail, u);
+                Player.position = Vector3.Lerp(ApproachStartWorld(), start, u);
                 return;
             }
+
+            float legTwoElapsed = _moveElapsed - _moveApproachSeconds;
+            if (_moveRoute == BoardingRoute.Ladder) { TickLadderLeg(legTwoElapsed, start); return; }
 
             // LEG 2 — the vault: over the rail onto the deck, or down off it onto the wharf. Eased out so
             // the fisher plants rather than arrives at speed, and lifted on a parabola that is zero at
             // both ends, so the arc joins the two legs with no step in position.
-            float v = Mathf.Clamp01((_moveElapsed - _moveApproachSeconds) / vault);
+            float v = Mathf.Clamp01(legTwoElapsed / legTwo);
             Vector3 end = VaultEndWorld();
-            Vector3 pos = Vector3.Lerp(rail, end, Mathf.SmoothStep(0f, 1f, v));
+            Vector3 pos = Vector3.Lerp(start, end, Mathf.SmoothStep(0f, 1f, v));
             pos.y += 4f * Mathf.Max(0f, _boardVaultHopMeters) * v * (1f - v);
             Player.position = pos;
 
-            PlayVaultClip(rail, end, vault);
+            PlayMoveClip(_moveKind == BoardingMoveKind.Boarding ? CharacterClip.Board : CharacterClip.BoardDown,
+                         HeadingBetween(start, end), legTwo, holdOnFinish: true);
         }
+
+        // ---- the LADDER route (the tide-gap climb) ------------------------------------------------
+        //
+        // WHAT IT IS. A wharf deck stands still above chart datum; a boat floats. So the vertical gap
+        // between the planks and her deck is TIDE-DRIVEN, and at some state of the ebb it stops being
+        // something a fisher can step across. Past that the boarding move goes down the wharf ladder
+        // instead: the same E, the same gates, the same landing — a different way across the last stretch.
+        // At Nine Mile Creek (+3.0 m deck, 2.2 m amplitude, a dory's 0.55 m sheer) that is a step aboard
+        // around high water and a climb for the bottom of the tide, which is P1 made physical.
+        //
+        // WHERE THE THRESHOLD COMES FROM. GameConfig.LadderBoarding.BoardClampMetres — owner data, not a
+        // literal here. The kit states two different numbers for it and they measure different things; the
+        // field's own tooltip carries that argument and the one-number way to change sides.
+        //
+        // NOTHING IS SAVED, AND NOTHING IS CACHED. The gap is read once, at the key-press, from the
+        // deterministic water level (recomputed from (worldSeed, gameTime) — rule 5) and the wharf's fixed
+        // deck. Read ONCE rather than per tick deliberately: a climb whose length changed under the
+        // climber because the tide moved a centimetre mid-descent would be a rung appearing beneath a
+        // planted foot. The tide decides whether you climb and how far; it does not get to redecide.
+        //
+        // ⚠ THE BODY DOES NOT SINK AT A CONSTANT RATE. The descent is a two-step STAIR — a rung eased
+        // through each foot swing, flat while both feet are planted — and driving it linearly slides the
+        // soles by up to 2.7 px at 32 px = 1 m. LadderBoardingMath.DescendMetresAt is the rig's own curve,
+        // pinned frame-by-frame against the shipped sidecar. The clip is played at its BAKED rate and the
+        // height is driven off the SAME phase, so picture and position cannot drift apart.
+        //
+        // ⚠ TWO ENDS THE KIT DOES NOT AUTHOR. There is no clip for the turn-around at the top (swinging
+        // off the wharf edge onto the top rung) and none for the step off at the bottom onto a moving
+        // gunwale. The kit names board/boardDown or a hard cut as the covers, and says the turn-around is
+        // the one players notice — so both get the authored step rather than a cut: boardDown for the end
+        // that steps DOWN, board for the end that steps UP, each scaled to TransitionSeconds. And there is
+        // no ladderUp at all, so going up reuses this same descent stair sign-flipped — see
+        // LadderBoardingMath.TravelMetresAt for why the rung quantization is the half that carries over.
+
+        /// <summary>True while the fisher is on the rungs rather than stepping over a rail. For tests and
+        /// tooling; the mode has not changed either way until they land.</summary>
+        public bool IsLadderBoarding => _moveKind != BoardingMoveKind.None && _moveRoute == BoardingRoute.Ladder;
+
+        /// <summary>The tide gap (m) the running move is crossing — 0 when it is a plain step.</summary>
+        public float LadderGapMetres => _moveRoute == BoardingRoute.Ladder ? _moveGapMetres : 0f;
+
+        /// <summary>
+        /// Decide whether this move takes the ladder, and if so measure the climb. Sets
+        /// <see cref="_moveRoute"/> and, for a ladder, the seat, the gap and the timings.
+        ///
+        /// <para>Falls back to the step for every "no" there is — the feature off, no ladder within reach,
+        /// no boat, a gap inside the clamp, or a deck that rides ABOVE the planks (which is a step up, and
+        /// the <c>board</c> clip's own business). A wharf with no ladder is a valid wharf: the fisher
+        /// steps across a gap that is too big for it, exactly as they do on <c>main</c> today.</para>
+        /// </summary>
+        private void ChooseBoardingRoute()
+        {
+            _moveRoute = BoardingRoute.Step;
+            _moveLadder = null;
+            _moveGapMetres = 0f;
+            _moveClimbSeconds = 0f;
+
+            LadderBoardingSettings cfg = GameServices.LadderBoarding;
+            _moveTransitionSeconds = Mathf.Max(0f, cfg.TransitionSeconds);
+            if (Boat == null) return;
+
+            // Where the fisher is trying to get across, in plan. _moveShoreWorld is the WHARF end of the
+            // arc whichever way the move runs (see its own field doc), and the wharf is the side a ladder
+            // is bolted to — so one read serves boarding and stepping ashore alike.
+            if (!BoardingLadders.TryFindNearestNow((Vector2)_moveShoreWorld, cfg.LadderReachMetres,
+                                                   out IBoardingLadder ladder))
+                return;
+
+            float gap = LadderBoardingMath.VerticalGap(ladder.TopElevationMeters, BoatDeckElevationNow());
+            if (!LadderBoardingMath.NeedsLadder(gap, cfg.BoardClampMetres)) return;
+
+            _moveRoute = BoardingRoute.Ladder;
+            _moveLadder = ladder;
+            _moveGapMetres = gap;
+            // ClimbLoopSecondsNow(), never the raw field: a config asset that OMITTED the key deserializes
+            // it to 0, and a zero loop would make an eight-rung climb instantaneous with nothing failing.
+            _moveClimbSeconds = LadderBoardingMath.ClimbSeconds(gap, ladder.RungMetres, ClimbLoopSecondsNow());
+
+            // WHERE THE CLIMBER STANDS. Not on the ladder line — the rig's pose was authored with the body
+            // a MEASURED standoff off the plane, so seating the sprite on the stringers puts its hands
+            // inside the wall. Never eyeballed (#454's contract states this outright).
+            Vector2 seat = ladder.WorldPosition
+                         + LadderBoardingMath.SeatOffset(ladder.FaceHeadingDegrees, ladder.StandoffMetres);
+            _moveLadderSeat = new Vector3(seat.x, seat.y, 0f);
+        }
+
+        /// <summary>
+        /// How high the boat's deck stands above chart datum right now: the deterministic water level plus
+        /// how high that deck rides above her own floating waterline.
+        ///
+        /// <para>Composed from <see cref="LadderBoardingMath.BoatDeckElevation"/> — i.e. from the very
+        /// <c>MooringLineMath</c> the ropes use — rather than re-derived, so the ladder and the mooring
+        /// lines can never disagree about where the same deck is. With no environment service wired
+        /// (EditMode, pre-bootstrap) the water reads 0 and the deck sits at its own freeboard above datum:
+        /// the established gate-off shape, not a special case.</para>
+        /// </summary>
+        private float BoatDeckElevationNow()
+        {
+            var deck = DeckWalk;
+            float deckHeight = deck != null ? deck.DeckHeightMeters : 0f;
+            // _boatController, not Boat — Boat is the hull's TRANSFORM, and a draught is not a transform's
+            // to know.
+            float draught = _boatController != null && _boatController.Hull != null
+                ? _boatController.Hull.DraughtMeters
+                : 0f;
+
+            IEnvironmentService env = GameServices.Environment;
+            IGameClock clock = GameServices.Clock;
+            float water = env != null ? env.WaterLevelAt(clock != null ? clock.TotalSeconds : 0.0) : 0f;
+
+            return LadderBoardingMath.BoatDeckElevation(water, deckHeight, draught);
+        }
+
+        /// <summary>
+        /// Leg 2 on the ladder route: the turn-around, the rungs, and the step off — three sub-legs on one
+        /// clock. Position only; the transition itself still happens at
+        /// <see cref="FinishBoardingMove"/> behind the same gates as ever.
+        /// </summary>
+        private void TickLadderLeg(float legTwoElapsed, Vector3 climbStart)
+        {
+            bool descending = _moveKind == BoardingMoveKind.Boarding;
+            float trans = _moveTransitionSeconds;
+            Vector3 climbEnd = LadderRungsEndWorld();
+            Vector3 end = VaultEndWorld();
+            float climberHeading = LadderBoardingMath.ClimberHeadingFor(FaceHeadingOfMoveLadder());
+
+            // (a) GETTING ONTO THE RUNGS — the kit's first unauthored end, covered with the authored step.
+            // IN PLACE: leg 1 has already walked the fisher to the end of the ladder they start from, and
+            // what is missing is the turn of the body onto it, not a translation. Descending that is the
+            // turn-around at the top (boardDown — swinging off the lip onto the first rung); coming up it
+            // is the step from the gunwale onto the bottom rung (board — a step UP).
+            if (legTwoElapsed < trans)
+            {
+                Player.position = climbStart;
+                PlayMoveClip(descending ? CharacterClip.BoardDown : CharacterClip.Board,
+                             climberHeading, trans, holdOnFinish: true);
+                return;
+            }
+
+            // (b) THE RUNGS. The clip runs at its BAKED rate and the height comes off the SAME phase, so a
+            // frame of picture and a metre of travel can never drift apart. Plan position is fixed: you
+            // are on a ladder, you do not travel across while you are on it. Clamped to the gap so the
+            // last part-rung cannot carry the fisher past the deck she is climbing to.
+            float climbElapsed = legTwoElapsed - trans;
+            if (climbElapsed < _moveClimbSeconds)
+            {
+                double phase = LadderBoardingMath.PhaseAt(climbElapsed, ClimbLoopSecondsNow());
+                float travelled = LadderBoardingMath.TravelMetresAt(
+                    phase, RungOfMoveLadder(), LadderBoardingMath.RigSwingFraction,
+                    LadderBoardingMath.RigLeadFootPhase, LadderBoardingMath.RigTrailFootPhase,
+                    _moveGapMetres, ascending: !descending);
+
+                Player.position = climbStart + new Vector3(0f, travelled, 0f);
+
+                // It LOOPS — played once, left to run, and Stop()ped when the move ends (StopVaultClip).
+                // scaleToSeconds 0: a ladder is not a fixed-length move, so the clip keeps its baked rate
+                // and the climb simply takes as many loops as the tide has put rungs between the two decks.
+                PlayMoveClip(CharacterClip.LadderDown, climberHeading,
+                             scaleToSeconds: 0f, holdOnFinish: false);
+                return;
+            }
+
+            // (c) GETTING OFF THEM — the kit's other unauthored end. Descending, that is the step down onto
+            // a gunwale that is NOT holding still, so the destination is re-read every tick; coming up it
+            // is the heave over the lip onto the planks.
+            float offElapsed = climbElapsed - _moveClimbSeconds;
+            float u = trans > 1e-4f ? Mathf.Clamp01(offElapsed / trans) : 1f;
+            Player.position = Vector3.Lerp(climbEnd, end, Mathf.SmoothStep(0f, 1f, u));
+            PlayMoveClip(descending ? CharacterClip.BoardDown : CharacterClip.Board,
+                         HeadingBetween(climbEnd, end), trans, holdOnFinish: true);
+        }
+
+        /// <summary>Where the RUNGS end — the bottom of the climb going down, the top of it coming up. The
+        /// mirror of <see cref="LegTwoStartWorld"/>'s ladder answer.</summary>
+        private Vector3 LadderRungsEndWorld()
+            => _moveKind == BoardingMoveKind.Boarding
+                ? _moveLadderSeat - new Vector3(0f, _moveGapMetres, 0f)
+                : _moveLadderSeat;
+
+        private float FaceHeadingOfMoveLadder() => _moveLadder != null ? _moveLadder.FaceHeadingDegrees : 180f;
+
+        private float RungOfMoveLadder()
+            => _moveLadder != null ? _moveLadder.RungMetres : LadderBoardingMath.RigRungMetres;
+
+        private static float ClimbLoopSecondsNow()
+        {
+            float loop = GameServices.LadderBoarding.ClimbLoopSeconds;
+            return loop > 1e-4f ? loop : LadderBoardingMath.RigLoopSeconds;
+        }
+
+        /// <summary>
+        /// Where leg 2 begins, and therefore where leg 1 WALKS TO: the rail for a step, and for a climb
+        /// the end of the ladder the fisher starts from — the head coming down off the wharf, the FOOT
+        /// going up off the boat. (Getting that backwards would walk a fisher standing on a deck up the
+        /// wall to the ladder head before she had climbed anything.) This is why the route is chosen
+        /// before the approach is timed.
+        /// </summary>
+        private Vector3 LegTwoStartWorld()
+        {
+            if (_moveRoute != BoardingRoute.Ladder) return RailWorld();
+            return _moveKind == BoardingMoveKind.Boarding
+                ? _moveLadderSeat
+                : _moveLadderSeat - new Vector3(0f, _moveGapMetres, 0f);
+        }
+
+        /// <summary>The compass heading of travel between two world points — the leg's own direction,
+        /// taken from TRAVEL rather than from a hop-modified position so a rise never reads as a turn.</summary>
+        private static float HeadingBetween(Vector3 from, Vector3 to)
+            => IsoCharacterMath.HeadingFor(new Vector2(to.x - from.x, to.y - from.y),
+                                           minSpeed: 0f, fallbackHeading: 0f);
 
         // ---- the vault's CLIP (art drop of 2026-08-06 — the rig's board / boardDown) ---------------
         //
@@ -681,39 +919,43 @@ namespace HiddenHarbours.Player
         /// <summary>Start the vault's clip on the first tick of leg 2, then keep it aimed. Facing comes
         /// from the leg's TRAVEL direction rather than from the hop-modified position, so the parabola's
         /// rise never reads as the fisher turning.</summary>
-        private void PlayVaultClip(Vector3 railWorld, Vector3 endWorld, float vaultSeconds)
+        private void PlayMoveClip(CharacterClip clip, float heading, float scaleToSeconds, bool holdOnFinish)
         {
             var player = ResolveClipPlayer();
             if (player == null) return;
 
-            float heading = IsoCharacterMath.HeadingFor(
-                new Vector2(endWorld.x - railWorld.x, endWorld.y - railWorld.y),
-                minSpeed: 0f, fallbackHeading: 0f);
-
-            if (!_moveClipAttempted)
+            if (!_moveClipAttempted || _moveClipAsked != clip)
             {
-                // ONCE per move, whatever the answer. A character with no boarding art must not re-ask
-                // (and re-walk its sheet) on all ~33 frames of the arc to be told "no" each time.
+                // ONCE per LEG, whatever the answer. A character with no boarding art must not re-ask (and
+                // re-walk its sheet) on every one of the arc's ~33 frames to be told "no" each time. The
+                // clip is part of the key because the ladder route has three legs and each asks for its
+                // own — but only when it CHANGES, so the climb's looping clip is started once and left to
+                // run rather than restarted every tick (which would freeze it on frame 0).
                 _moveClipAttempted = true;
-                CharacterClip clip = _moveKind == BoardingMoveKind.Boarding
-                    ? CharacterClip.Board
-                    : CharacterClip.BoardDown;
-                // holdOnFinish: the ARC owns the timing. A clip that rounds a hair short of the vault
-                // would otherwise hand the renderer back for one frame mid-air, which reads as a flicker.
-                _moveClipPlaying = player.Play(clip, heading, scaleToSeconds: vaultSeconds,
-                                               holdOnFinish: true);
+                _moveClipAsked = clip;
+                // holdOnFinish: the LEG owns the timing. A one-shot that rounds a hair short would
+                // otherwise hand the renderer back for a frame mid-air, which reads as a flicker. The
+                // looping ladder clip needs no hold — it never finishes; it is Stop()ped.
+                // LATCHED, not assigned. Once a leg has taken the renderer, this move OWNS it until
+                // StopVaultClip hands it back — and a LATER leg whose art is missing must not clear the
+                // flag, or the previous leg's held pose would be left on the renderer with nothing left
+                // to Stop() it. (The ladder route makes this reachable: a kit with board/boardDown baked
+                // but no ladderDown plays the cover, then asks for a climb that is not there.)
+                if (player.Play(clip, heading, scaleToSeconds, holdOnFinish)) _moveClipPlaying = true;
                 return;
             }
 
             if (_moveClipPlaying) player.SetHeading(heading);
         }
 
-        /// <summary>Take the vault's clip off the renderer (idempotent). Called from
+        /// <summary>Take the move's clip off the renderer (idempotent). Called from
         /// <see cref="EndBoardingMove"/>, so it runs on every ending a move has — landed, refused at the
-        /// rail, or torn down mid-air.</summary>
+        /// rail, or torn down mid-air. <b>The ladder clip LOOPS</b>, so this is the only thing that ever
+        /// ends it: without it a landed fisher would go on climbing while she walks the deck.</summary>
         private void StopVaultClip()
         {
             _moveClipAttempted = false;
+            _moveClipAsked = CharacterClip.None;
             if (!_moveClipPlaying) return;
             _moveClipPlaying = false;
             _clipPlayer?.Stop();
@@ -789,6 +1031,11 @@ namespace HiddenHarbours.Player
         {
             _moveKind = BoardingMoveKind.None;
             _moveElapsed = 0f;
+            _moveRoute = BoardingRoute.Step;
+            _moveLadder = null;
+            _moveGapMetres = 0f;
+            _moveClimbSeconds = 0f;
+            _moveLegTwoSeconds = 0f;
             StopVaultClip();
             ReleaseInteractionGate();
         }

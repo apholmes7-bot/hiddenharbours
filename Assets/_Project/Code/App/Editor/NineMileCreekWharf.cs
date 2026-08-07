@@ -89,6 +89,17 @@ namespace HiddenHarbours.App.Editor
         /// against and the only edge the kit gives a tall face to.</summary>
         public static float MooringEdgeY => DeckFootprint().yMin;
 
+        /// <summary>
+        /// The compass heading the mooring face LOOKS ALONG (0 = North, 90 = East, clockwise) — out from
+        /// the wall, over the water. What a hung fitting hangs into, and the way a ladder on that face is
+        /// turned; a climber faces the reciprocal, back to the sea.
+        ///
+        /// <para>DERIVED, not typed: the mooring edge is the deck's <c>yMin</c>
+        /// (<see cref="MooringEdgeY"/>), so the water lies south of it and the face looks along −Y — which
+        /// is compass 180. Re-pointing the wall re-points this with it.</para>
+        /// </summary>
+        public static float MooringFaceHeadingDegrees => 180f;
+
         // --- the deck as FLOOR ------------------------------------------------------------------------
 
         /// <summary>Stable id of the north wall as a standable surface.</summary>
@@ -296,6 +307,9 @@ namespace HiddenHarbours.App.Editor
             // WHERE A ROPE MAY BE MADE FAST (M2-38) — from the same table as the sprites, and OUTSIDE
             // PlaceFittings so mooring never depends on the overlay art having imported.
             int cleats = PlaceMooringCleats(root, deckElevation);
+            // …and WHERE YOU CAN CLIMB DOWN, for exactly the same reason: the ladder is how you get aboard
+            // once the ebb has dropped the boat below the planks, and that must not depend on art either.
+            int ladders = PlaceLadders(root, deckElevation);
             int armour = PlaceBreakwater(root);
 
             Debug.Log(
@@ -304,8 +318,10 @@ namespace HiddenHarbours.App.Editor
                 $"{ApronFootprint().width:0.#} × {ApronFootprint().height:0.#} m, both registered as " +
                 $"standable floor with their decks MEASURED at {deckElevation:0.00} / {apronElevation:0.00} m " +
                 $"above datum. {BerthCount} berths along the mooring edge at y={MooringEdgeY:0.#}, " +
-                $"{fittings} fitting sprite(s) placed and {cleats} of them real mooring cleats (the " +
-                $"bollard you see IS the bollard you tie to). {armour} block(s) of '{BreakwaterArmour}' " +
+                $"{fittings} fitting sprite(s) placed, {cleats} of them real mooring cleats (the " +
+                $"bollard you see IS the bollard you tie to) and {ladders} real climbable ladder(s) at " +
+                $"deck +{deckElevation:0.00} m (the ladder you see IS the ladder you climb). " +
+                $"{armour} block(s) of '{BreakwaterArmour}' " +
                 $"breakwater along y={BreakwaterY:0.#}. THE DRAWN QUAY IS PHASE B's, from the ISO wharf " +
                 "pack — the old tile kit does not scale to an 84 m wall and is ruled for migration.");
             return cleats;
@@ -382,6 +398,39 @@ namespace HiddenHarbours.App.Editor
                 go.transform.position = new Vector3(f.Position.x, f.Position.y, 0f);
                 go.AddComponent<HiddenHarbours.World.ShoreCleat>()
                   .Configure($"{SurfaceId}.{f.Name}_{n}", deckElevation);
+                n++;
+            }
+            return n;
+        }
+
+        /// <summary>
+        /// Give every ladder fitting a <see cref="HiddenHarbours.World.WharfLadder"/> — the Core-side
+        /// climb the boarding move takes when the tide has opened a gap a step cannot cross. Derived from
+        /// <see cref="Fittings"/> for the same reason the cleats are: <b>the ladder you can see is the
+        /// ladder you can climb</b>, and placement has exactly one source.
+        ///
+        /// <para>The elevation is the quay's MEASURED deck height — the FIXED end of the tide gap, against
+        /// which the floating boat moves. At this wharf's +3.0 m against a 2.2 m tide amplitude and a
+        /// dory's 0.55 m sheer, the gap runs from about a quarter of a metre at high water to about two
+        /// and a half at low: a step aboard for the top of the tide, a climb for the bottom of it. That
+        /// spread is the whole point, and it is a property of THIS wharf's deck height — a higher quay
+        /// (St Peters is +5.35 m) is a ladder wharf at almost every state of tide.</para>
+        /// </summary>
+        static int PlaceLadders(GameObject root, float deckElevation)
+        {
+            var ladderRoot = new GameObject("Ladders");
+            ladderRoot.transform.SetParent(root.transform, worldPositionStays: false);
+
+            int n = 0;
+            foreach (var f in Fittings())
+            {
+                if (!string.Equals(f.Name, "ladder", System.StringComparison.Ordinal)) continue;
+
+                var go = new GameObject($"Ladder_{n}");
+                go.transform.SetParent(ladderRoot.transform, worldPositionStays: false);
+                go.transform.position = new Vector3(f.Position.x, f.Position.y, 0f);
+                go.AddComponent<HiddenHarbours.World.WharfLadder>()
+                  .Configure($"{SurfaceId}.ladder_{n}", deckElevation, MooringFaceHeadingDegrees);
                 n++;
             }
             return n;

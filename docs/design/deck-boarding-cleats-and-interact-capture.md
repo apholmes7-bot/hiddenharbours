@@ -72,6 +72,42 @@ build on data that already exists.
   reuses the shared wave/rock phase, same as the leave-helm gaff-haul in M2-33).
 - Extends M2-33's leave-the-helm precedent from "stand at the rail" to "walk the working deck".
 
+#### The tide decides HOW you get aboard — the ladder route (**BUILT 2026-08-07**)
+
+A wharf deck stands still above chart datum; a boat floats. The vertical gap between the planks and
+her deck is therefore **tide-driven**, and past some state of the ebb it stops being something a
+fisher can step across. Past that, the boarding move goes down the wharf **ladder** instead — the
+same `E`, the same gates, the same landing, a different way across the last stretch.
+
+- **The threshold is data**, not a literal: `GameConfig.LadderBoarding.BoardClampMetres`.
+  ⚠️ The art kit states two numbers for it and they measure *different quantities*.
+  `characterIsoRig6.js` cites **1.2 m** on the deck-to-**water** drop as where its `board` clip
+  soft-clamps; `wharfIsoRig.js:1103` *implements* a stricter **0.55 m** on `drop − freeboard` — the
+  deck-to-**gunwale** gap, which is the quantity the config actually compares. **We ship 1.2**, so a
+  step aboard survives the top of an ordinary tide and the ladder is what the ebb earns you. Dial the
+  one field to 0.55 for the wharf kit's stricter rule; no code moves.
+- **Ladder placement is region DATA** — the wharf builders place a `WharfLadder` from the same
+  fittings table that positions the ladder sprite, so the ladder you can see is the ladder you can
+  climb. Gameplay reads it through Core (`IBoardingLadder` / `BoardingLadders`), never the component.
+- **A wharf with no ladder is a valid wharf.** Boarding falls back to the step however deep the gap;
+  nothing strands the fisher.
+- ⚠️ **The descent is a STAIR, not a ramp.** The climber drops when a leg extends — a rung eased
+  through each foot swing, dead flat while both feet are planted. `LadderBoardingMath.DescendMetresAt`
+  is a twin of the rig's own `ladderCurve()`, pinned frame-by-frame against the shipped
+  `FisherFightAnchors.json`. Driving it at the clip's average rate instead slides a planted sole
+  ~2.5 px at the locked 32 px = 1 m — better than a quarter of a rung.
+- **The climb is never rate-scaled** the way the boarding vault is: real rungs are a real distance
+  apart, so a deeper gap takes *longer*. That is what makes the tide legible on the way down.
+- ⚠️ **Three gaps the 6.2 kit leaves open**, and what covers them today: the **turn-around at the
+  top** and the **step-off at the bottom** are unauthored — both are covered with the authored
+  `boardDown`/`board` step rather than a hard cut (the kit names that cover and says the turn-around
+  is the one players notice). And there is **no `ladderUp` at all**, so going up reuses the descent
+  stair sign-flipped: the rung quantization carries over exactly, the limb choreography does not.
+  All three become clip swaps the day the kit authors them; none of them moves the maths.
+- ⚠️ **Still open (not this slice):** `board` sheets are baked at `railZ` 0.55 m (a dory sheer). A
+  hull with a different sheer wants its own sheet — the multi-hull case needs `railZ` on
+  `CharacterState` and one sheet per height.
+
 #### ⚠️ Not every hull is walked — the dory has STATIONS (owner-ratified, 2026-07-25)
 
 The smallest boats are not scaled-down decks; they are a different thing, and the dory's own
