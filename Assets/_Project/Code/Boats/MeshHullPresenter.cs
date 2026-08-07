@@ -106,6 +106,18 @@ namespace HiddenHarbours.Boats
         }
 
         /// <inheritdoc/>
+        // THE MESH PATH'S WHOLE POINT: a mesh hull has a private z-buffer, so the crew can be
+        // composited into her image and settled per pixel rather than sorted against her whole.
+        public bool SetDeckOccupant(in HiddenHarbours.Core.HullDeckOccupantPose pose)
+            => _driver != null && _driver.SetDeckOccupant(in pose);
+
+        /// <inheritdoc/>
+        public void ClearDeckOccupant()
+        {
+            if (_driver != null) _driver.ClearDeckOccupant();
+        }
+
+        /// <inheritdoc/>
         public Transform Visual => _driver != null ? _driver.Visual : null;
 
         /// <inheritdoc/>

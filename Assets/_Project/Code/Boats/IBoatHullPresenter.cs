@@ -147,6 +147,34 @@ namespace HiddenHarbours.Boats
         /// </summary>
         void SetStormRock(float amplitudeScale, float extraRollDegrees, float extraPitchDegrees);
 
+        /// <summary>
+        /// <b>Draw a person standing on this hull, inside her own image</b> (owner playtest
+        /// 2026-08-07: "rider/player sprites visible THROUGH closed cabins").
+        ///
+        /// <para>Not a sorting request, because sorting cannot answer it. A MESH hull composes
+        /// through ONE overlay quad at one order, so a crew sprite compared against her is wholly in
+        /// front of the boat or wholly behind — and behind is invisible, since the sole they stand on
+        /// is hull pixels too. The mesh path therefore composites the figure into the hull's own
+        /// off-screen recording, where the private z-buffer settles it PER PIXEL: the wheelhouse
+        /// covers the fisher for the same reason it covers her far gunwale, on every hull in the
+        /// fleet, with no authored footprint and no re-bake.</para>
+        ///
+        /// <para><b>A SPRITE presenter returns false</b> — deliberately, like
+        /// <see cref="SetRockPhaseDegrees"/>. There is no depth buffer behind a baked compass sheet
+        /// to be occluded by, so the caller keeps drawing the figure in-scene exactly as it always
+        /// has. Absence is data, not a gap.</para>
+        ///
+        /// <para>Call every frame while someone is aboard; cheap and idempotent.</para>
+        /// </summary>
+        /// <returns>True when the HULL is now drawing the figure and the caller must stand its own
+        /// renderer down — two figures, one of them un-occluded, is the one outcome worse than the
+        /// defect this fixes.</returns>
+        bool SetDeckOccupant(in HiddenHarbours.Core.HullDeckOccupantPose pose);
+
+        /// <summary>Nobody aboard — stop drawing a figure. Idempotent; a presenter that never drew
+        /// one does nothing.</summary>
+        void ClearDeckOccupant();
+
         /// <summary>The visual child the hull is drawn into. Overlays parent here; nothing may re-parent it.</summary>
         Transform Visual { get; }
 

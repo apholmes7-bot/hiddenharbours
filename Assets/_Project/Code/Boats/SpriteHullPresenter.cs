@@ -114,6 +114,22 @@ namespace HiddenHarbours.Boats
         }
 
         /// <inheritdoc/>
+        public bool SetDeckOccupant(in HiddenHarbours.Core.HullDeckOccupantPose pose)
+        {
+            // FALSE, deliberately — the same shape as SetRockPhaseDegrees' no-op. A baked compass
+            // sheet is a flat picture with no depth behind it, so there is nothing for a figure to be
+            // occluded BY: compositing one into it would only hide the crew behind the hull entire.
+            // The caller keeps drawing them in-scene, which is exactly what shipped.
+            return false;
+        }
+
+        /// <inheritdoc/>
+        public void ClearDeckOccupant()
+        {
+            // Nothing was ever drawn here — see SetDeckOccupant.
+        }
+
+        /// <inheritdoc/>
         public Transform Visual => _anchors.Visual;
 
         /// <inheritdoc/>

@@ -122,6 +122,22 @@ namespace HiddenHarbours.Boats
             _stormExtraPitchDegrees = extraPitchDegrees;
         }
 
+        /// <summary>
+        /// Hand a person standing on this hull to the drawer, to be composited into her own image
+        /// (<see cref="IBoatHullPresenter.SetDeckOccupant"/>). Pure forwarding — the driver decides
+        /// nothing about the figure, exactly as it decides nothing about a fitting's articulation.
+        /// </summary>
+        /// <returns>False on a parked driver (no renderer wired — a hull swapped away from mesh), so
+        /// the caller falls back to drawing the figure in-scene.</returns>
+        public bool SetDeckOccupant(in HullDeckOccupantPose pose)
+            => _renderer != null && _renderer.SetDeckOccupant(in pose);
+
+        /// <summary>Nobody aboard — stop drawing a figure. Null-safe on a parked driver.</summary>
+        public void ClearDeckOccupant()
+        {
+            if (_renderer != null) _renderer.ClearDeckOccupant();
+        }
+
         /// <summary>The rig dir units currently being presented — the live turntable angle the
         /// anchors project through. Derived from the transform, so it is correct before the first
         /// LateUpdate, same as <see cref="DirectionalBoatSprite.CurrentFacingIndex"/>.</summary>

@@ -96,6 +96,11 @@ namespace HiddenHarbours.Art
         private MeshRenderer _meshRenderer;
         private MeshRenderer _overlayRenderer;
         private SortingGroup _sortingGroup;
+        // The crew composited into this hull's own recording (the Core deck contract). Built lazily —
+        // only the player's boat ever carries a drawn figure — and deliberately NOT released by
+        // ReleaseOwned: it holds none of the setup's state, so a hull SWAP keeps the same figure
+        // drawing rather than blinking her out for a frame while the new rig configures.
+        private HullDeckOccupant _occupant;
         private MaterialPropertyBlock _props;
         private int _hullId;
         private bool _poseDirty = true;
@@ -204,6 +209,62 @@ namespace HiddenHarbours.Art
                 _overlayRenderer.sortingLayerID = sortingLayerId;
                 _overlayRenderer.sortingOrder = sortingOrder;
             }
+        }
+
+        /// <summary>
+        /// Draw a person standing on this hull, INSIDE her own image — the Core deck contract.
+        ///
+        /// <para>The figure joins the facet pass's off-screen recording through the feature's
+        /// <c>HHHullDeck</c> renderer list, so the hull's private z-buffer settles crew-versus-boat per
+        /// PIXEL: the wheelhouse covers the fisher for the same reason it covers the far gunwale. It
+        /// carries THIS hull's id, so the same overlay quad re-composes boat and crew as one image, and
+        /// the whole question of sorting a sprite against a hull stops arising.</para>
+        ///
+        /// <para><b>It rides the hull's FRAME, which is the part that is easy to get wrong.</b> The
+        /// boots' depth arrives in the hull's own iso frame and this adds <c>_meshChild</c>'s world z —
+        /// where ADR 0023 phase 3's waterline calibration lives. A raw world-z occupant would sit far
+        /// NEARER than its calibrated hull while a displaced sea is up and win everywhere, which is
+        /// exactly the failure the feature's own doc warns a deck occupant about.</para>
+        /// </summary>
+        /// <returns>False while this renderer has no hull loaded or no registered id — there is no
+        /// image to composite into, so the caller keeps drawing the figure in-scene as before.</returns>
+        public bool SetDeckOccupant(in HiddenHarbours.Core.HullDeckOccupantPose pose)
+        {
+            if (_setup == null || _meshChild == null || _hullId == 0 || pose.Sprite == null)
+            {
+                ClearDeckOccupant();
+                return false;
+            }
+
+            EnsureOccupant();
+            if (_occupant == null) return false;
+
+            _occupant.Show(pose.Sprite, pose.WorldFeet, pose.HullFrameDepth,
+                           _meshChild.position.z, pose.DepthPerScreenRise, pose.RollDegrees,
+                           pose.FlipX, pose.Tint, _hullId, _setup.Keyline);
+            return _occupant.IsDrawing;
+        }
+
+        /// <summary>Nobody aboard — stop drawing a figure. Idempotent, and it never builds the child
+        /// just to hide it, so a hull that has never carried anyone stays exactly as it is today.</summary>
+        public void ClearDeckOccupant()
+        {
+            if (_occupant != null) _occupant.Hide();
+        }
+
+        /// <summary>Build the deck-occupant child on first use. Lazy on purpose (rule 7): the ambient
+        /// fleet is a dozen hulls and only the player's ever carries a drawn figure.</summary>
+        private void EnsureOccupant()
+        {
+            if (_occupant != null) return;
+            // The hull's own culling layer, not the default one. A new GameObject starts on layer 0
+            // whatever its parent is, and a crew member the camera culls away is a crew member who
+            // silently stops existing — the same trap as being sorted behind the boat, wearing a
+            // different hat. (The facet and overlay children are laid out by whoever sets the hull's
+            // layer AFTER Configure; this child is built later, so it must ask.)
+            var go = new GameObject("HullDeckOccupant") { hideFlags = HideFlags.DontSave, layer = gameObject.layer };
+            go.transform.SetParent(transform, false);
+            _occupant = go.AddComponent<HullDeckOccupant>();
         }
 
         /// <summary>

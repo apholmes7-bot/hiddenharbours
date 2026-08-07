@@ -56,6 +56,82 @@ namespace HiddenHarbours.Core
         /// sprite would (ADR 0022 "Unchanged"). Sets the SortingGroup the overlay quad sorts under.
         /// </summary>
         void SetSorting(int sortingLayerId, int sortingOrder);
+
+        /// <summary>
+        /// <b>Draw a person standing on this hull, INSIDE her own image</b> (ADR 0022 phase 3's deck
+        /// contract; owner playtest 2026-08-07: "sprites visible THROUGH closed cabins").
+        ///
+        /// <para>Deliberately not a sorting request. A mesh hull composes through ONE overlay quad at
+        /// one order, so a crew sprite sorted against her is wholly in front of the boat or wholly
+        /// behind her — and behind her is invisible, since the sole they stand on is hull pixels too.
+        /// The drawer instead composites the figure into the hull's own off-screen recording, where
+        /// the private z-buffer settles it per pixel and the wheelhouse covers the fisher for the
+        /// same reason it covers the far gunwale.</para>
+        ///
+        /// <para>Call every frame while someone is aboard; cheap and idempotent. Returns FALSE when
+        /// this drawer cannot present a figure at all — the caller then draws them in-scene exactly
+        /// as it always did, which is what keeps a hull with no depth buffer (a sprite compass, an
+        /// unconfigured rig) behaving as it does today. Absence is data, not an error.</para>
+        /// </summary>
+        bool SetDeckOccupant(in HullDeckOccupantPose pose);
+
+        /// <summary>Nobody is aboard any more — stop drawing a figure. Idempotent, and safe to call
+        /// on a drawer that never drew one.</summary>
+        void ClearDeckOccupant();
+    }
+
+    /// <summary>
+    /// <b>A person standing on a mesh hull, as the hull's drawer needs them</b> — the payload of
+    /// <see cref="IHullMeshRenderer.SetDeckOccupant"/>.
+    ///
+    /// <para>Everything here is a FINISHED presentation fact, because the character's look has exactly
+    /// one owner (<c>IsoCharacterSprite</c> picks the cell, the deck rider leans it) and this seam
+    /// must not become a second one. The drawer places what it is handed and decides nothing.</para>
+    ///
+    /// <para><b>Depth is the whole reason this struct exists.</b> Screen position cannot say whether
+    /// the wheelhouse is between the camera and the fisher: under a ¾ bake screen height is
+    /// <c>alongView·sin(elev) + height·cos(elev)</c> while distance is
+    /// <c>alongView·cos(elev) − height·sin(elev)</c>, two independent combinations of one pair. So the
+    /// caller states the boots' depth in the HULL's frame and the drawer adds its own frame offset.</para>
+    /// </summary>
+    public readonly struct HullDeckOccupantPose
+    {
+        /// <summary>The character cell to draw. Null means nobody is drawn.</summary>
+        public readonly Sprite Sprite;
+
+        /// <summary>Where the boots meet the deck, in world metres — the same screen position the
+        /// in-scene sprite would have used, so nothing about WHERE the figure appears changes.</summary>
+        public readonly Vector2 WorldFeet;
+
+        /// <summary>The boots' depth in the hull's own iso frame, metres, BEFORE the hull's frame
+        /// offset (<c>DeckAreaMath.DeckDepth</c>). Larger = further from the camera.</summary>
+        public readonly float HullFrameDepth;
+
+        /// <summary>How much nearer the camera one metre UP THE SCREEN is — <c>tan(elev)</c>. A
+        /// standing body leans into the scene, so a wheelhouse that clears the boots may still cross
+        /// the head; 0 draws the figure as a flat card at one distance.</summary>
+        public readonly float DepthPerScreenRise;
+
+        /// <summary>The figure's lean, degrees about the boots — the deck ride's roll.</summary>
+        public readonly float RollDegrees;
+
+        /// <summary>Mirror the sheet horizontally, as a <c>SpriteRenderer.flipX</c> would.</summary>
+        public readonly bool FlipX;
+
+        /// <summary>Colour multiplier, as a <c>SpriteRenderer.color</c> would be.</summary>
+        public readonly Color Tint;
+
+        public HullDeckOccupantPose(Sprite sprite, Vector2 worldFeet, float hullFrameDepth,
+                                    float depthPerScreenRise, float rollDegrees, bool flipX, Color tint)
+        {
+            Sprite = sprite;
+            WorldFeet = worldFeet;
+            HullFrameDepth = hullFrameDepth;
+            DepthPerScreenRise = depthPerScreenRise;
+            RollDegrees = rollDegrees;
+            FlipX = flipX;
+            Tint = tint;
+        }
     }
 
     /// <summary>

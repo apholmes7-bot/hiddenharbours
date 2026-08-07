@@ -2623,6 +2623,10 @@ z(point) = waterPlaneZ + (groundAnchorY − _HeightWorldMin.y) · cos(elev) − 
 - **Deck corollary (phase-4 note):** while the sea is displaced, a deck occupant that wants to
   interleave with ITS hull must ride the hull's frame (parent under the hull renderer or apply the
   same registry frame) — a raw world-z≈0 deck renderer sits far NEARER than a calibrated hull.
+  **Honoured by the shipped occupant** (2026-08-07, the crew who stopped showing through cabins):
+  `IsoFacetHullRenderer.SetDeckOccupant` adds `_meshChild`'s own world z to the boots' hull-frame
+  depth, so the crew is calibrated by exactly the constant their hull is and the two cannot drift
+  apart on a crest.
 
 ### 24.1 The per-face interior mask — the sea is told what it may not draw on
 

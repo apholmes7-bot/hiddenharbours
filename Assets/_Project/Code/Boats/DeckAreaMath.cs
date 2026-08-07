@@ -96,6 +96,69 @@ namespace HiddenHarbours.Boats
                                                    float bakeElevationDegrees = PlanViewElevationDegrees)
             => WorldToDeck(worldDirection, 0f, drawnHeadingDeg, bakeElevationDegrees);
 
+        /// <summary>
+        /// <b>How FAR FROM THE CAMERA a deck-frame point is</b>, in metres of the hull's own iso frame —
+        /// the third row of the very projection <see cref="DeckToWorld"/> keeps the first two rows of.
+        /// Larger = further away; the game's 2D camera looks along +Z, so a smaller value draws in front.
+        ///
+        /// <para><b>Why the deck needs a depth at all.</b> Screen position cannot answer "is the
+        /// wheelhouse between the camera and the fisher?". Under a ¾ bake a point's screen height is
+        /// <c>alongView·sin(elev) + height·cos(elev)</c> while its distance is
+        /// <c>alongView·cos(elev) − height·sin(elev)</c> — two INDEPENDENT combinations of the same pair,
+        /// so no horizontal cut through the picture separates "nearer than the fisher" from "further".
+        /// That is why the crew is depth-tested against the hull rather than sorted against it
+        /// (<c>IsoFacetHullFeature</c>'s <c>HHHullDeck</c> contract), and this is the number that test
+        /// compares.</para>
+        ///
+        /// <para><b>It is the rig's own depth row, not a second opinion.</b>
+        /// <c>IsoFacetMath.RigToWorld</c> maps a hull-frame point to
+        /// <c>depth = (x·sin θ + y·cos θ)·cos(elev) − z·sin(elev)</c>, and the bracket is exactly the
+        /// rotated along-keel term <see cref="DeckToWorld"/> already computes before squashing it into
+        /// screen y. So a deck point placed by <see cref="DeckToWorld"/> and a hull FACE drawn by the
+        /// facet pass agree about which is in front by construction — they are two rows of one matrix,
+        /// never two transcriptions of one idea.</para>
+        ///
+        /// <para>Pure, static, deterministic, NaN-safe. At <see cref="PlanViewElevationDegrees"/> it
+        /// returns <c>−heightMeters</c>: looking straight down, only height separates two points, which
+        /// is the honest answer for artwork no camera ever foreshortened.</para>
+        /// </summary>
+        public static float DeckDepth(Vector2 deckOffset, float heightMeters, float drawnHeadingDeg,
+                                      float bakeElevationDegrees = PlanViewElevationDegrees)
+        {
+            float rad = Safe(drawnHeadingDeg) * Mathf.Deg2Rad;
+            float cos = Mathf.Cos(rad), sin = Mathf.Sin(rad);
+            float dx = Safe(deckOffset.x), dy = Safe(deckOffset.y);
+
+            // The SAME rotated along-keel term DeckToWorld squashes into screen y (its `ry`).
+            float alongView = -dx * sin + dy * cos;
+            return alongView * DepthPerAlongView(bakeElevationDegrees)
+                   - Safe(heightMeters) * DepthPerHeight(bakeElevationDegrees);
+        }
+
+        /// <summary>How much further away one metre ALONG THE VIEW carries: <c>cos(elev)</c> — the exact
+        /// complement of <see cref="WakeGrading.ForeshortenY"/>'s <c>sin(elev)</c>, because the metre the
+        /// screen loses to foreshortening is the metre that went into depth instead. A plan view returns
+        /// 0: looking straight down, walking away from the camera is not possible.</summary>
+        public static float DepthPerAlongView(float bakeElevationDegrees) => LiftZ(bakeElevationDegrees);
+
+        /// <summary>How much NEARER one metre of height above the keel carries: <c>sin(elev)</c> — a
+        /// masthead leans toward the camera exactly as far as it rises up the screen is squashed. 1 for a
+        /// plan view, where height is the only thing depth can be.</summary>
+        public static float DepthPerHeight(float bakeElevationDegrees)
+            => WakeGrading.ForeshortenY(bakeElevationDegrees);
+
+        /// <summary>How far NEARER the camera a point sits per metre it rises UP THE SCREEN, for a body
+        /// standing upright on the deck: <c>tan(elev)</c>, i.e. <see cref="DepthPerHeight"/> over
+        /// <see cref="DeckToWorld"/>'s own <c>cos(elev)</c> lift. This is the whole reason a crew
+        /// billboard is a SLOPED plane rather than a flat card — a fisher's head is nearer the camera
+        /// than their boots, and a wheelhouse that clears the boots may still cross the head. Degenerate
+        /// (plan-view) elevations return 0, where height carries no screen travel to slope against.</summary>
+        public static float DepthPerScreenRise(float bakeElevationDegrees)
+        {
+            float lift = LiftZ(bakeElevationDegrees);
+            return lift <= 1e-4f ? 0f : DepthPerHeight(bakeElevationDegrees) / lift;
+        }
+
         /// <summary>How far up-screen one metre of HEIGHT above the keel carries: <c>cos(elev)</c>, and
         /// exactly 0 for a plan view (looking straight down, height is invisible). Degenerate elevations
         /// collapse to 0 for the same reason <see cref="WakeGrading.ForeshortenY"/> collapses to 1: the

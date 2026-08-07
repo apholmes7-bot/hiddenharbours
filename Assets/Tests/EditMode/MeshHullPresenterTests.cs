@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using HiddenHarbours.Boats;
@@ -43,6 +43,15 @@ namespace HiddenHarbours.Tests.EditMode
             public bool IsConfigured => true;
             public int SortingLayerId; public int SortingOrder;
             public void SetSorting(int layerId, int order) { SortingLayerId = layerId; SortingOrder = order; }
+            // The deck contract (a crew member composited into the hull's own image). These fakes
+            // exist to record what the driver PUSHES, so the figure is recorded and accepted: a
+            // false here would quietly assert 'this drawer cannot draw a crew', which is not what
+            // they are testing.
+            public HiddenHarbours.Core.HullDeckOccupantPose Occupant;
+            public bool OccupantCleared;
+            public bool SetDeckOccupant(in HiddenHarbours.Core.HullDeckOccupantPose pose)
+            { Occupant = pose; return pose.Sprite != null; }
+            public void ClearDeckOccupant() { Occupant = default; OccupantCleared = true; }
         }
 
         /// <summary>A fitting as the seam sees it: a local rotation and a lateral mount, nothing more

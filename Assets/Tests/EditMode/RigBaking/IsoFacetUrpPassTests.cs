@@ -444,6 +444,99 @@ namespace HiddenHarbours.Tests.RigBaking
                 "z-buffer is not being tested per pixel.");
         }
 
+        /// <summary>
+        /// <b>THE CREW, on the shipping path</b> (owner playtest 2026-08-07: "rider/player sprites
+        /// visible THROUGH closed cabins"). The probe above proves the CONTRACT — that an
+        /// <c>HHHullDeck</c> renderer is depth-tested per pixel. This proves the thing that actually
+        /// ships on top of it: <c>HullDeckOccupant</c> drawing a real character sprite through
+        /// <c>HiddenHarbours/HullDeckSprite</c>, reached through the very
+        /// <see cref="IsoFacetHullRenderer.SetDeckOccupant"/> the deck rider calls.
+        ///
+        /// <para>Worth its own test because the probe cannot fail the ways the shipping shader can:
+        /// the MRT contract is four targets and getting the hull id into the wrong one loses the crew
+        /// entirely at the resolve (the overlay re-composes only its own id), while an alpha handled
+        /// as a blend rather than a cutout would punch the figure's bounding CARD out of the hull.
+        /// Both would compile perfectly and both are invisible to every other test.</para>
+        ///
+        /// <para>All three regimes, exactly as the probe: decisively in front, decisively behind, and
+        /// intersecting — which is the per-pixel claim itself, and the one the owner's defect is.</para>
+        /// </summary>
+        [Test]
+        public void TheCrew_IsCompositedIntoTheHull_AndDepthTestedPerPixel()
+        {
+            RequireAGraphicsDevice();
+            EnsureLobster();
+
+            var view = new RigViewOptions(0, s_Lobster.DefaultElev);
+            using var scene = new HullScene(s_Lobster, s_LobsterMesh);
+            scene.SetPose(view);
+            byte[] baseline = scene.Render();
+
+            var magenta = new Color32(255, 0, 255, 255);
+            var rect = new Rect(-1f, -1f, 2f, 2f);   // the 2 × 2 m card the harness draws
+
+            // BEHIND the hull (50 m further from the camera): she covers the figure completely. This
+            // is the state a CLOSED WHEELHOUSE puts its occupant in, and the whole point of the fix.
+            byte[] behind = scene.RenderWithDeckOccupant(magenta, hullFrameDepth: 50f);
+            var diffBehind = RigMeshReferenceRasterizer.Compare(baseline, behind, s_Lobster.W, s_Lobster.H);
+            Assert.AreEqual(0, diffBehind.DifferingPixels,
+                $"A crew member 50 m BEHIND the hull changed {diffBehind} — they must lose the depth " +
+                "test everywhere the boat draws. If they painted over her, the figure is still being " +
+                "composited in front of the hull rather than depth-tested against her, which is the " +
+                "defect this whole path exists to fix.");
+
+            // IN FRONT (50 m nearer): the figure wins every pixel of its footprint. This is the half
+            // that proves the MRT contract — the id must reach SV_Target0's alpha or the resolve
+            // drops the crew and this reads as an unchanged baseline.
+            //
+            // Read the crew's colour OFF THE RENDER rather than asserting the tint we asked for: the
+            // sprite path multiplies a sampled texel by a property-block colour, and how many gamma
+            // conversions that has been through is not the claim under test. What IS the claim is
+            // that the card composites as ONE uniform colour which is not the boat — so the colour is
+            // measured once here and then used as the crew's signature below.
+            byte[] front = scene.RenderWithDeckOccupant(magenta, hullFrameDepth: -50f);
+            int centre = PixelIndexAtWorld(scene, Vector2.zero);
+            byte cr = front[centre], cg = front[centre + 1], cb = front[centre + 2];
+
+            int wrong = 0, differsFromHull = 0;
+            ForEachPixelInWorldRect(scene, rect, shrinkPx: 1, (i) =>
+            {
+                if (!(front[i] == cr && front[i + 1] == cg && front[i + 2] == cb)) wrong++;
+                if (front[i] != baseline[i] || front[i + 1] != baseline[i + 1] ||
+                    front[i + 2] != baseline[i + 2]) differsFromHull++;
+            });
+            Assert.AreEqual(0, wrong,
+                $"{wrong} px inside a crew member 50 m IN FRONT of the hull were not one uniform " +
+                "colour. Either the figure is not being composited at all (check the hull id reaching " +
+                "SV_Target0's alpha — the overlay quad re-composes only its own id), or the alpha is " +
+                "being treated as a blend instead of a cutout.");
+            Assert.Greater(differsFromHull, 0,
+                "A crew member 50 m in front of the hull changed NOTHING on screen — they are not " +
+                "reaching the composite at all, so every other assertion here is vacuous.");
+
+            // INTERSECTING: one figure must be BOTH occluded and occluding — a wheelhouse in front of
+            // them and a gunwale behind, within one draw. No sorting order can produce this picture,
+            // which is exactly why the crew is composited rather than sorted.
+            byte[] mixed = scene.RenderWithDeckOccupant(magenta, hullFrameDepth: 0f);
+            int crewWins = 0, hullWins2 = 0;
+            ForEachPixelInWorldRect(scene, rect, shrinkPx: 1, (i) =>
+            {
+                bool isCrew = mixed[i] == cr && mixed[i + 1] == cg && mixed[i + 2] == cb;
+                bool sameAsBaseline = mixed[i] == baseline[i] && mixed[i + 1] == baseline[i + 1] &&
+                                      mixed[i + 2] == baseline[i + 2];
+                if (isCrew) crewWins++;
+                else if (sameAsBaseline) hullWins2++;
+            });
+            Debug.Log($"[iso-facet-urp] crew at hull depth 0: crew wins {crewWins} px, hull wins {hullWins2} px");
+            Assert.Greater(crewWins, 0,
+                "An intersecting crew member never won the depth test — they are being drawn behind " +
+                "the whole boat, which is the OTHER half of the sorting defect (invisible, because " +
+                "the sole under their boots is hull pixels too).");
+            Assert.Greater(hullWins2, 0,
+                "An intersecting crew member won EVERYWHERE — the hull never occluded them, so this " +
+                "is still whole-object sorting wearing a depth buffer's clothes.");
+        }
+
         // ------------------------------------------------------------------ SABOTAGE
 
         /// <summary>
@@ -537,6 +630,17 @@ namespace HiddenHarbours.Tests.RigBaking
         {
             for (int i = 0; i < rgba.Length; i += 4)
                 visit(i, new Color32(rgba[i], rgba[i + 1], rgba[i + 2], rgba[i + 3]));
+        }
+
+        /// <summary>The byte-index of the pixel a WORLD-space point (hull-origin relative) lands on —
+        /// the single-point twin of <see cref="ForEachPixelInWorldRect"/>, sharing its mapping so the
+        /// two cannot disagree about where a world point is on screen.</summary>
+        static int PixelIndexAtWorld(HullScene scene, Vector2 world)
+        {
+            var d = scene.Data;
+            int x = Mathf.Clamp(Mathf.RoundToInt((float)d.PivotX + world.x * d.PxPerMetre), 0, d.W - 1);
+            int y = Mathf.Clamp(Mathf.RoundToInt((float)d.PivotY - world.y * d.PxPerMetre), 0, d.H - 1);
+            return (y * d.W + x) * 4;
         }
 
         /// <summary>Visit every byte-index whose pixel lies inside a WORLD-space rect (hull-origin
@@ -716,6 +820,47 @@ namespace HiddenHarbours.Tests.RigBaking
                     Object.DestroyImmediate(go);
                     Object.DestroyImmediate(mat);
                     Object.DestroyImmediate(mesh);
+                }
+            }
+
+            /// <summary>
+            /// Render with a real CREW MEMBER on the hull, through the SHIPPING path
+            /// (<see cref="IsoFacetHullRenderer.SetDeckOccupant"/> → <c>HullDeckOccupant</c> →
+            /// <c>HiddenHarbours/HullDeckSprite</c>) rather than through the test-only probe. A solid
+            /// 2 × 2 m card centred on the hull origin, tinted <paramref name="color"/>, standing at
+            /// <paramref name="hullFrameDepth"/> in the hull's own frame.
+            /// </summary>
+            public byte[] RenderWithDeckOccupant(Color32 color, float hullFrameDepth,
+                                                 float depthPerScreenRise = 0f)
+            {
+                var tex = new Texture2D(4, 4, TextureFormat.RGBA32, false, false)
+                {
+                    filterMode = FilterMode.Point,
+                };
+                var px = new Color32[16];
+                for (int i = 0; i < px.Length; i++) px[i] = new Color32(255, 255, 255, 255);
+                tex.SetPixels32(px);
+                tex.Apply(false, false);
+                // ppu 2 over a 4 px cell = a 2 × 2 m card; a centred pivot puts the "boots" at the
+                // hull origin, so it covers exactly the rect the deck-probe test uses.
+                var sprite = Sprite.Create(tex, new Rect(0, 0, 4, 4), new Vector2(0.5f, 0.5f), 2f);
+
+                try
+                {
+                    bool drawn = Hull.SetDeckOccupant(new HiddenHarbours.Core.HullDeckOccupantPose(
+                        sprite, new Vector2(_origin.x, _origin.y), hullFrameDepth,
+                        depthPerScreenRise, 0f, false, ((Color)color).linear));
+                    Assert.IsTrue(drawn,
+                        "harness: the hull refused to draw a deck occupant, so the test would be " +
+                        "asserting about an empty screen rather than about occlusion.");
+                    _warm = false;              // a new material variant may need compiling
+                    return Render();
+                }
+                finally
+                {
+                    Hull.ClearDeckOccupant();
+                    Object.DestroyImmediate(sprite);
+                    Object.DestroyImmediate(tex);
                 }
             }
 

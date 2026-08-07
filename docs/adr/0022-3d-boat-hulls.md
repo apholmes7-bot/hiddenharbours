@@ -424,10 +424,28 @@ Suggested phasing, each independently verifiable:
    verbatim claim stays pinned.)*
    Phase 3 also honours the owner's deck-walking decision (2026-07-21): a second renderer list (LightMode
    `HHHullDeck`) draws **between** the facet pass and the resolve against the **same private z-buffer**, so a
-   future character-on-deck billboard is per-pixel occluded by nearer hull geometry — probed in-repo
+   character-on-deck billboard is per-pixel occluded by nearer hull geometry — probed in-repo
    (`IsoFacetUrpPassTests.DeckRenderers_AreDepthTestedAgainstTheHull_PerPixel`). Note for phase 4: that path
    uses plain `ZTest LEqual` — the render-graph camera path handles reversed-Z; the spike's `GEqual`/clear-0
    convention belonged to its hand-built command buffer only.
+   ✅ **The billboard stopped being "future" on 2026-08-07** (owner playtest: *"rider/player sprites visible
+   THROUGH closed cabins on models with doors and a cockpit"*). `HullDeckOccupant` +
+   `HiddenHarbours/HullDeckSprite` draw the on-deck character through that list, carrying the hull's id so
+   the hull's own overlay quad re-composes boat and crew as **one image**. Compositing was the only
+   available fix, not a preference: a mesh hull composes through ONE overlay quad at ONE sorting order, so
+   a crew sprite compared against her is wholly in front of the boat or wholly behind — and behind is
+   invisible, because the sole under their boots is hull pixels too. (Every shipped `BoatVisualDef` carries
+   `SortingOrder` 1, below `SortingBands.DecorFloor`, while the player is Y-sorted inside the decor band, so
+   the fisher won that comparison at every position on the water.) Nor could a cleverer screen-space rule
+   replace it: under the ¾ bake screen height is `alongView·sin(elev) + height·cos(elev)` while distance is
+   `alongView·cos(elev) − height·sin(elev)` — two **independent** combinations of one pair, so no cut
+   through the picture separates "nearer than the fisher" from "further". The boots' depth is
+   `DeckAreaMath.DeckDepth`, the third row of the very projection the deck walk already uses for the first
+   two, pinned to `IsoFacetMath.RigToWorld`'s own depth row by
+   `DeckDepthTests.TheDecksDepthRow_IsTheRigsOwnDepthRow`; the shipping path is pixel-tested by
+   `IsoFacetUrpPassTests.TheCrew_IsCompositedIntoTheHull_AndDepthTestedPerPixel`. A **sprite** hull returns
+   false from `IBoatHullPresenter.SetDeckOccupant` and its figure is drawn in-scene exactly as it always
+   was — there is no depth behind a baked compass sheet to be occluded by, and absence is data.
 3. **Waterline clipping** (above) — designed, untested.
 4. ⚠️ **Geometry access.** The rigs' face list `F` is **closure-private and not exported**. The spike reads it
    via a loudly-marked in-memory string widening of the exported object literal. **In production the art

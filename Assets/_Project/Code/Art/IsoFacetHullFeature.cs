@@ -70,8 +70,13 @@ namespace HiddenHarbours.Art
     /// (owner decision, 2026-07-21).</b> The facet pass's private z-buffer stays attached for a
     /// second renderer list drawn between facet and resolve: any renderer whose shader has a
     /// LightMode <c>HHHullDeck</c> pass is depth-tested PER-PIXEL against the hull geometry (and
-    /// writes depth back), so a future character-on-deck billboard is occluded by the wheelhouse
-    /// in front of it and occludes the gunwale behind it — no sorting-order hacks. A deck pass
+    /// writes depth back), so a character-on-deck billboard is occluded by the wheelhouse
+    /// in front of it and occludes the gunwale behind it — no sorting-order hacks. <b>That billboard
+    /// now exists</b> (<see cref="HullDeckOccupant"/>, owner playtest 2026-08-07: "sprites visible
+    /// THROUGH closed cabins"): it is the ONLY answer available, because a hull composes through one
+    /// overlay quad at one order, so a crew sprite sorted against her is wholly in front of the boat
+    /// or wholly behind — and behind is invisible, the sole under their boots being hull pixels too.
+    /// A deck pass
     /// must honour the facet MRT contract: SV_Target0 = (colour, carrying hull's id/255),
     /// SV_Target1 = darkened colour, SV_Target2 = keyline colour, SV_Target3 = TRUE unbiased
     /// view depth (world z, metres), clip-space depth biased however the pass likes.

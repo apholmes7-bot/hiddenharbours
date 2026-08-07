@@ -83,6 +83,12 @@ namespace HiddenHarbours.Player
                  "ask for and which way to face; it never picks a sprite itself. Auto-resolved if empty.")]
         [SerializeField] private IsoCharacterSprite _character;
 
+        [Tooltip("The player's deck walk — read ONLY for where the fisher stands in the HULL's own " +
+                 "frame, which is what lets a mesh hull depth-test them against her wheelhouse. " +
+                 "Auto-resolved off this object if left empty. Absent = the figure is drawn in-scene " +
+                 "exactly as before, since nothing can say where on the deck they are standing.")]
+        [SerializeField] private DeckWalkController _deckWalk;
+
         [Header("Ride (how the deck moves its passenger — all tunable, rule 6)")]
         [Tooltip("Master strength of the whole ride. 0 = the character stands bolt upright on a rolling " +
                  "deck exactly as before this component existed (the owner's A/B); 1 = the tuned read.")]
@@ -162,18 +168,30 @@ namespace HiddenHarbours.Player
         /// <summary>The ride pose applied to the rider child last tick. For tests / tooling.</summary>
         public DeckRidePose Pose { get; private set; } = DeckRidePose.Level;
 
+        /// <summary>
+        /// True when the HULL is drawing the figure — composited into her own image and depth-tested
+        /// per pixel against her superstructure — rather than the in-scene child. False on a sprite
+        /// hull, an unskinned boat and ashore, where the child draws exactly as it always did. Never
+        /// both: <c>DrawnInHull</c> and <see cref="IsDrawing"/>'s child are mutually exclusive by
+        /// construction. For tests / tooling.
+        /// </summary>
+        public bool DrawnInHull { get; private set; }
+
         /// <summary>True when a rider child is wired at all. A rig without one is legal and inert.</summary>
         public bool HasRider => _riderRenderer != null;
 
         // ---- wiring -------------------------------------------------------------------------------
 
-        /// <summary>Wire the rider in one call (the editor builder / tests).</summary>
+        /// <summary>Wire the rider in one call (the editor builder / tests). <paramref name="deckWalk"/>
+        /// is optional and only unlocks the hull-composited figure: without it the rider cannot say
+        /// where on the deck the fisher stands, so the in-scene child draws, exactly as before.</summary>
         public void Configure(SpriteRenderer riderRenderer, SpriteRenderer bodyRenderer,
-                              IsoCharacterSprite character)
+                              IsoCharacterSprite character, DeckWalkController deckWalk = null)
         {
             _riderRenderer = riderRenderer;
             _bodyRenderer = bodyRenderer;
             _character = character;
+            if (deckWalk != null) _deckWalk = deckWalk;
             _baseCached = false;
         }
 
@@ -211,6 +229,7 @@ namespace HiddenHarbours.Player
         {
             if (_bodyRenderer == null) _bodyRenderer = GetComponent<SpriteRenderer>();
             if (_character == null) _character = GetComponent<IsoCharacterSprite>();
+            if (_deckWalk == null) _deckWalk = GetComponent<DeckWalkController>();
         }
 
         private void OnEnable() => Apply();
@@ -267,7 +286,6 @@ namespace HiddenHarbours.Player
                 _riderRenderer.color = _bodyRenderer.color;
                 if (_bodyRenderer.enabled) _bodyRenderer.enabled = false;   // one figure, not two
             }
-            if (!_riderRenderer.enabled) _riderRenderer.enabled = true;
 
             // (3) RIDE. The rock the hull is drawing, in the rider's own tuned amplitudes.
             DeckRidePose pose = ReadRide();
@@ -275,7 +293,54 @@ namespace HiddenHarbours.Player
             _riderRenderer.transform.localPosition =
                 _riderBaseLocalPosition + new Vector3(0f, pose.LiftMeters, 0f);
             _riderRenderer.transform.localRotation = Quaternion.Euler(0f, 0f, pose.RollDegrees);
+
+            // (4) WHO DRAWS THE FINISHED FIGURE. Offer it to the HULL first: a mesh hull composites
+            //     the crew into her own recording, where her private z-buffer settles them per pixel
+            //     and the wheelhouse covers them properly. She takes it or she does not (a sprite
+            //     compass never can), and the in-scene child draws exactly when she does not — so
+            //     there is always precisely one figure.
+            DrawnInHull = TryDrawInHull(pose);
+            if (_riderRenderer.enabled == DrawnInHull) _riderRenderer.enabled = !DrawnInHull;
             _riding = true;
+        }
+
+        /// <summary>
+        /// <b>Hand the finished figure to the hull, to be drawn INSIDE her image</b> (owner playtest
+        /// 2026-08-07: "sprites visible THROUGH closed cabins").
+        ///
+        /// <para>Sorting cannot fix that defect. A mesh hull composes through ONE overlay quad at one
+        /// order, so the fisher is wholly in front of the boat or wholly behind her — and behind her
+        /// is invisible, because the sole under their boots is hull pixels too. So the figure is not
+        /// sorted against the boat at all: the hull takes the same finished picture this component
+        /// would have drawn and composites it into her own off-screen recording, where the depth
+        /// buffer answers per PIXEL.</para>
+        ///
+        /// <para><b>The one number that makes it work</b> is the boots' DEPTH in the hull's frame —
+        /// <see cref="DeckAreaMath.DeckDepth"/>, the third row of the very projection the deck walk
+        /// already uses for the first two, so a fisher clamped onto the deck and the deck they are
+        /// clamped to agree about which is nearer by construction. Everything else in the pose is a
+        /// finished presentation fact copied from the picture already assembled above; nothing here
+        /// re-decides a cell, a facing or a tint.</para>
+        ///
+        /// <para>Returns FALSE — and the in-scene child draws as it always did — for a sprite hull, an
+        /// unskinned boat, a rig with no deck walk to say where on the deck they stand, or a presenter
+        /// torn off by a hull swap. Every one of those is the pre-existing behaviour, not a new
+        /// failure mode.</para>
+        /// </summary>
+        private bool TryDrawInHull(in DeckRidePose pose)
+        {
+            if (_hull == null || _deckWalk == null || _riderRenderer.sprite == null) return false;
+
+            // The child's ORIGIN is the boots: the character sheets pivot on ground contact, and the
+            // ride's lift is already in that transform. So this is where the figure meets the deck,
+            // lift and all, with nothing to keep in step by hand.
+            Vector3 feet = _riderRenderer.transform.position;
+
+            return _hull.SetDeckOccupant(DeckOccupantPoseMath.For(
+                _riderRenderer.sprite, new Vector2(feet.x, feet.y),
+                _deckWalk.DeckLocalPosition, _deckWalk.DeckHeightMeters,
+                _hull.DrawnHeadingDegrees(), _hull.BakeElevationDegrees,
+                pose.RollDegrees, _riderRenderer.flipX, _riderRenderer.color));
         }
 
         /// <summary>
@@ -292,6 +357,13 @@ namespace HiddenHarbours.Player
         private void StandDown()
         {
             if (_riderRenderer != null && _riderRenderer.enabled) _riderRenderer.enabled = false;
+
+            // Take the figure back off the hull. Unconditional and first, because the failure it
+            // guards is the same "nobody drawing" one this whole method exists for, mirrored: a hull
+            // still compositing a fisher who has stepped ashore would draw them standing on a boat
+            // they left. Null-safe — a torn-down or swapped-away presenter simply has nothing to clear.
+            if (_hull != null) _hull.ClearDeckOccupant();
+            DrawnInHull = false;
 
             // The child's pose is put back ONCE, on the way out — not re-zeroed every ashore frame. Nothing
             // else writes it while the rider is standing down, so a per-frame reset would only dirty a

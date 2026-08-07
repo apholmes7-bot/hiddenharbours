@@ -1,4 +1,4 @@
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using UnityEngine;
 using HiddenHarbours.Boats;
 using HiddenHarbours.Core;
@@ -106,6 +106,15 @@ namespace HiddenHarbours.Tests.EditMode
             public float RidePixels { get; set; }
             public bool IsConfigured => true;
             public void SetSorting(int sortingLayerId, int sortingOrder) { }
+            // The deck contract (a crew member composited into the hull's own image). These fakes
+            // exist to record what the driver PUSHES, so the figure is recorded and accepted: a
+            // false here would quietly assert 'this drawer cannot draw a crew', which is not what
+            // they are testing.
+            public HiddenHarbours.Core.HullDeckOccupantPose Occupant;
+            public bool OccupantCleared;
+            public bool SetDeckOccupant(in HiddenHarbours.Core.HullDeckOccupantPose pose)
+            { Occupant = pose; return pose.Sprite != null; }
+            public void ClearDeckOccupant() { Occupant = default; OccupantCleared = true; }
         }
 
         /// <summary>Flat authored seabed at a constant elevation (metres above datum) — with the
