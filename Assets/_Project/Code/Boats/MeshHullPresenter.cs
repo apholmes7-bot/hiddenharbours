@@ -113,6 +113,15 @@ namespace HiddenHarbours.Boats
         }
 
         /// <inheritdoc/>
+        public void SetDeckOccupant(Vector3 rigLocalMeters, bool active)
+        {
+            if (_driver != null) _driver.SetDeckOccupant(rigLocalMeters, active);
+        }
+
+        /// <inheritdoc/>
+        public float DeckOccluderId => _driver != null ? _driver.DeckOccluderId : 0f;
+
+        /// <inheritdoc/>
         public Transform Visual => _driver != null ? _driver.Visual : null;
 
         /// <inheritdoc/>

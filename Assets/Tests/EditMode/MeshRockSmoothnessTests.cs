@@ -101,6 +101,8 @@ namespace HiddenHarbours.Tests.EditMode
             public float RidePixels { get; set; }
             public bool IsConfigured => true;
             public void SetSorting(int sortingLayerId, int sortingOrder) { }
+            public void SetDeckOccupant(Vector3 rigLocalMeters, bool active) { }
+            public float DeckOccluderId => 0f;
         }
 
         // ------------------------------------------------------------------ the measurement

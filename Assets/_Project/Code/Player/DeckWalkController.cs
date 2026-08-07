@@ -105,6 +105,18 @@ namespace HiddenHarbours.Player
         /// <see cref="DeckStance"/>.</summary>
         public Vector2 DeckLocalPosition => _deckLocal;
 
+        /// <summary>
+        /// How high above the KEEL the deck under the player is (metres) — the third component of
+        /// where they stand, and the one the plan-view <see cref="DeckLocalPosition"/> cannot carry.
+        /// 0 on the greybox rectangle, which has no sheer to follow.
+        ///
+        /// <para>Load-bearing as soon as anything asks a 3D question about the fisher: the hull's
+        /// per-pixel occlusion compares her geometry against the DEPTH of their feet, and in a ¾ view
+        /// height and along-hull distance land on the same screen axis — a cockpit sole and a raised
+        /// foredeck at the same <c>y</c> sit at very different depths.</para>
+        /// </summary>
+        public float DeckHeightMeters => _deckHeight;
+
         // ---- pure logic (unit-testable) -----------------------------------------------------
 
         /// <summary>Clamp a DECK-FRAME position (x abeam, y along the keel) onto the deck rectangle.</summary>
