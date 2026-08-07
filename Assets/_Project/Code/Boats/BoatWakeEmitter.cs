@@ -176,7 +176,8 @@ namespace HiddenHarbours.Boats
         // The AERATED BUBBLE RAFTS (owner 2026-08-06: "it should BUBBLE, not paint a solid line"). A small
         // fixed set built once at boot and shared by every particle of every boat; a pool slot keeps the
         // raft (and mirror) it was built with, so nothing is assigned per frame and the wake still batches.
-        private Sprite[] _foamSprites;
+        // [variant][age rung] — the rung is what lets an ageing puff open up (2026-08-07 dispersal).
+        private Sprite[][] _foamSprites;
         private Sprite _lineSprite;
         // The WAKE WAVE's crest sprite — one shared sprite carrying the crest/trough profile in its RGB.
         private Sprite _waveSprite;
@@ -209,7 +210,7 @@ namespace HiddenHarbours.Boats
 
         private void Awake()
         {
-            _foamSprites = BuildFoamSprites(_trail.FoamAeration);
+            _foamSprites = BuildFoamSprites(_trail.FoamAeration, _trail.FoamAgeErosion);
             _lineSprite = BuildLineSprite();
             _waveSprite = BuildWaveSprite(_wave.CrestUndulation);
 
@@ -313,6 +314,10 @@ namespace HiddenHarbours.Boats
         private void Tick(float dt)
         {
             Vector2 current = Vector2.zero;
+            // The live sim WIND, read on the same tick as the current. Laid foam is dragged across the
+            // water by it (owner 2026-08-07: "as the tide and wind gradually manipulate it") — a LIVE
+            // source feeding a visual strength, never a tuned constant standing in for one.
+            Vector2 wind = Vector2.zero;
             float roughness = 0f;
             var env = GameServices.Environment;
             EnvironmentSample s = default;
@@ -320,6 +325,7 @@ namespace HiddenHarbours.Boats
             {
                 s = env.Sample();
                 current = s.CurrentVector;
+                wind = s.WindVector;
                 roughness = SeaStateRoughness(s.SeaState01);
             }
             double totalSeconds = GameServices.Clock != null ? GameServices.Clock.TotalSeconds : Time.timeAsDouble;
@@ -344,8 +350,8 @@ namespace HiddenHarbours.Boats
             }
 
             for (int r = 0; r < _rigs.Count; r++)
-                _rigs[r].Tick(current, roughness, time, dt, _config, _foamColor, _lineConfig, _lineColor, _grade,
-                              _spray, _sprayColor, _trail, _bowWave, _wave, _waveColor, in lift);
+                _rigs[r].Tick(current, wind, roughness, time, dt, _config, _foamColor, _lineConfig, _lineColor,
+                              _grade, _spray, _sprayColor, _trail, _bowWave, _wave, _waveColor, in lift);
         }
 
         /// <summary>
@@ -578,31 +584,48 @@ namespace HiddenHarbours.Boats
         /// <para>Built once at boot and shared by every particle of every boat — a handful of tiny textures,
         /// all batched (rule 7).</para>
         /// </summary>
-        private static Sprite[] BuildFoamSprites(float aeration01)
+        /// <para><b>The AGE LADDER (owner playtest 2026-08-07: "dispersing back to water over time").</b>
+        /// Each variant's raft is baked at <see cref="WakeFoamTexture.AgeStages"/> increasing EROSIONS, so
+        /// a puff's film dissolves as it ages — the thin web between bubbles going first, the holes eating
+        /// outward, the bright rims last — instead of keeping one solid shape and only dimming. Rung 0 is
+        /// the laid raft, bit-for-bit what shipped. <c>WakeTrailConfig.FoamAgeErosion = 0</c> builds ONE
+        /// rung, so the off switch costs no memory either (rule 7).</para>
+        /// </summary>
+        private static Sprite[][] BuildFoamSprites(float aeration01, float ageErosion01)
         {
             const int ppu = 32;        // matches the project PPU (1 world unit = 1 m at 32px)
             int size = WakeFoamTexture.PuffPixels;
-            var sprites = new Sprite[WakeFoamTexture.VariantCount];
+            int stages = ageErosion01 > 0f ? WakeFoamTexture.AgeStages : 1;
+            var sprites = new Sprite[WakeFoamTexture.VariantCount][];
             for (int v = 0; v < sprites.Length; v++)
             {
-                float[] coverage = WakeFoamTexture.BuildRaftCoverage(v, size, aeration01);
-                var tex = new Texture2D(size, size, TextureFormat.RGBA32, false, true)
+                sprites[v] = new Sprite[stages];
+                // The laid raft is generated ONCE per variant; each rung is that same raft eroded, so the
+                // bubbles never move as a puff ages — it dissolves in place instead of popping to a new shape.
+                float[] laid = WakeFoamTexture.BuildRaftCoverage(v, size, aeration01);
+                for (int s = 0; s < stages; s++)
                 {
-                    name = $"BoatWake.FoamRaft[{v}]",
-                    filterMode = FilterMode.Point,        // pixel-crisp
-                    wrapMode = TextureWrapMode.Clamp,
-                };
-                var px = new Color32[size * size];
-                for (int y = 0; y < size; y++)
-                for (int x = 0; x < size; x++)
-                {
-                    int i = y * size + x;
-                    px[i] = new Color32(255, 255, 255, BandDitherAlpha(coverage[i], x, y));
+                    float erosion = WakeTrailMath.StageErosion(s, stages, ageErosion01);
+                    float[] coverage = WakeFoamTexture.ErodeCoverage(laid, erosion);
+                    string label = $"BoatWake.FoamRaft[{v}.{s}]";
+                    var tex = new Texture2D(size, size, TextureFormat.RGBA32, false, true)
+                    {
+                        name = label,
+                        filterMode = FilterMode.Point,        // pixel-crisp
+                        wrapMode = TextureWrapMode.Clamp,
+                    };
+                    var px = new Color32[size * size];
+                    for (int y = 0; y < size; y++)
+                    for (int x = 0; x < size; x++)
+                    {
+                        int i = y * size + x;
+                        px[i] = new Color32(255, 255, 255, BandDitherAlpha(coverage[i], x, y));
+                    }
+                    tex.SetPixels32(px);
+                    tex.Apply(false, false);
+                    sprites[v][s] = Sprite.Create(tex, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), ppu);
+                    sprites[v][s].name = label;
                 }
-                tex.SetPixels32(px);
-                tex.Apply(false, false);
-                sprites[v] = Sprite.Create(tex, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), ppu);
-                sprites[v].name = $"BoatWake.FoamRaft[{v}]";
             }
             return sprites;
         }
@@ -766,7 +789,14 @@ namespace HiddenHarbours.Boats
             private float _depositCarry;        // metres of stern travel since the last laid deposit
             private float _dropletCarry;        // fractional bow droplets carried between ticks
             private Vector2 _prevStern;         // where the stern anchor was last tick (world)
+            private Vector2 _prevPos;           // where the BOAT ORIGIN was last tick (world) — the course
             private bool _hasPrevStern;
+            // The shared age ladder [variant][rung] and this rig's per-slot bookkeeping: which variant a
+            // slot draws (fixed for the slot's life) and which rung it is currently showing, so RenderFoam
+            // writes `sprite` only when a puff actually crosses a rung — never per frame (rule 7).
+            private readonly Sprite[][] _foamRafts;
+            private readonly int[] _foamVariant;
+            private readonly int[] _foamStage;
             private Vector2 _prevBow;           // last tick's bow direction (the plume turn-fade reads it)
             private bool _hasPrevBow;
             private uint _depositCounter;       // deterministic dice for the centre-churn fraction
@@ -782,7 +812,7 @@ namespace HiddenHarbours.Boats
             private const float PlanViewElevationDegrees = 90f;
 
             public WakeRig(BoatController boat, int pool, int linePool, int dropletPool, int transomPool,
-                           Sprite[] foamRafts, Sprite crest,
+                           Sprite[][] foamRafts, Sprite crest,
                            Sprite[] tierSprites, Sprite[] spraySprites, Transform parent, string sortingLayer,
                            int sortingOrder, int lineSortingOrder, int plumeSortingOrder, int spraySortingOrder)
             {
@@ -790,9 +820,12 @@ namespace HiddenHarbours.Boats
                 _sys = new WakeParticleSystem(pool);
                 _tierSprites = tierSprites;
                 _spraySprites = spraySprites;
-                // Raft 0 is also the fallback for anything that has no art of its own (a failed tier load,
-                // a bow droplet) — a droplet IS a fleck, so a round unit is right for it.
-                _fallbackSprite = foamRafts != null && foamRafts.Length > 0 ? foamRafts[0] : null;
+                _foamRafts = foamRafts;
+                // Raft 0 at rung 0 is also the fallback for anything with no art of its own (a failed tier
+                // load, a bow droplet) — a droplet IS a fleck, so a round unit is right for it.
+                _fallbackSprite = foamRafts != null && foamRafts.Length > 0
+                                  && foamRafts[0] != null && foamRafts[0].Length > 0
+                    ? foamRafts[0][0] : null;
                 // A stable per-boat phase for the churn pulses so two boats never boil in lockstep. Hashed
                 // from the boat's name — presentation phase only, never a sim input.
                 _pulseSeed = WakeParticleSystem.Hash01((uint)(boat.name != null ? boat.name.GetHashCode() : 0));
@@ -817,7 +850,12 @@ namespace HiddenHarbours.Boats
                 _sprayRenderer.sortingOrder = spraySortingOrder;
                 sprayGo.SetActive(false);
 
-                _renderers = BuildFoamRenderers(pool, foamRafts, sortingLayer, sortingOrder);
+                // One renderer per pool slot (RenderFoam walks the pool and indexes these in lockstep), so
+                // the ladder bookkeeping is sized off the SAME clamped count the particle system used.
+                int foamSlots = _sys.Capacity;
+                _foamVariant = new int[foamSlots];
+                _foamStage = new int[foamSlots];
+                _renderers = BuildFoamRenderers(foamSlots, foamRafts, sortingLayer, sortingOrder);
 
                 // The CRESTS: a SECOND pooled system + renderer slice under the same root, sharing all the
                 // emit/advect/fade/lifetime machinery of the foam — only the sprite, config, colour, sorting and
@@ -856,7 +894,7 @@ namespace HiddenHarbours.Boats
             /// slots, so consecutive deposits land on different rafts and a long trail never stamps one
             /// shape — for the cost of nothing per frame, because the sprite is written once, here.
             /// </summary>
-            private SpriteRenderer[] BuildFoamRenderers(int count, Sprite[] rafts, string sortingLayer,
+            private SpriteRenderer[] BuildFoamRenderers(int count, Sprite[][] rafts, string sortingLayer,
                                                         int sortingOrder)
             {
                 var arr = new SpriteRenderer[count];
@@ -868,7 +906,10 @@ namespace HiddenHarbours.Boats
                     var sr = go.AddComponent<SpriteRenderer>();
                     if (haveRafts)
                     {
-                        Sprite raft = rafts[WakeFoamTexture.VariantForSlot(i) % rafts.Length];
+                        int variant = WakeFoamTexture.VariantForSlot(i) % rafts.Length;
+                        _foamVariant[i] = variant;
+                        _foamStage[i] = 0;
+                        Sprite raft = RaftSprite(variant, 0);
                         sr.sprite = raft != null ? raft : _fallbackSprite;
                         WakeFoamTexture.MirrorForSlot(i, out bool flipX, out bool flipY);
                         sr.flipX = flipX;
@@ -881,6 +922,22 @@ namespace HiddenHarbours.Boats
                 }
                 return arr;
             }
+
+            /// <summary>One rung of one variant's age ladder, clamped on both axes so a rig built before a
+            /// config change (or with the ladder switched off — one rung) can never index past the shared
+            /// set. Null only if the whole set failed to build.</summary>
+            private Sprite RaftSprite(int variant, int stage)
+            {
+                if (_foamRafts == null || _foamRafts.Length == 0) return null;
+                var rungs = _foamRafts[Mathf.Clamp(variant, 0, _foamRafts.Length - 1)];
+                if (rungs == null || rungs.Length == 0) return null;
+                return rungs[Mathf.Clamp(stage, 0, rungs.Length - 1)];
+            }
+
+            /// <summary>How many rungs the shared ladder actually has (1 when the age-aeration is off).</summary>
+            private int FoamStageCount()
+                => _foamRafts != null && _foamRafts.Length > 0 && _foamRafts[0] != null
+                    ? Mathf.Max(1, _foamRafts[0].Length) : 1;
 
             /// <summary>The tier sprite for an index from a graded set (plume or spray), or the foam-puff fallback
             /// if that tier failed to load (so a bad art load never leaves an invisible effect). Null only if even
@@ -910,7 +967,7 @@ namespace HiddenHarbours.Boats
                 return arr;
             }
 
-            public void Tick(Vector2 current, float roughness, float time, float dt,
+            public void Tick(Vector2 current, Vector2 wind, float roughness, float time, float dt,
                              in WakeConfig cfg, Color foamColor, in WakeLineConfig lineCfg, Color lineColor,
                              in WakeGradeConfig grade, in BowSprayGradeConfig spray, Color sprayColor,
                              in WakeTrailConfig trail, in BowWaveConfig bowWave,
@@ -979,7 +1036,13 @@ namespace HiddenHarbours.Boats
                     DepositBowDroplets(pos, bow, speed, aground, length, mass, bakeElev, spray, bowWave, dt);
 
                 // --- STEP + RENDER every stream (advect with the current, dissipate, ride the displaced sea) ---
-                _sys.Step(current, fcfg.VelocityDecay, dt);
+                // FOAM alone also takes a share of the WIND (owner 2026-08-07). Scoped deliberately: the
+                // crests are WATER standing up and do not blow downwind, and the bow droplets already have
+                // their own thrown ballistics — only the floating foam is dragged across the sea by air.
+                Vector2 foamDrift = trail.Enabled
+                    ? WakeTrailMath.DriftVelocity(current, wind, trail.FoamWindDriftFraction)
+                    : current;
+                _sys.Step(foamDrift, fcfg.VelocityDecay, dt);
                 RenderFoam(roughness, time, fcfg, foamColor, in trail, in lift);
 
                 if (_lineSys != null)
@@ -1039,22 +1102,40 @@ namespace HiddenHarbours.Boats
                 if (!_hasPrevStern)
                 {
                     _prevStern = stern;
+                    _prevPos = pos;
                     _hasPrevStern = true;
                     return;
                 }
 
                 Vector2 prev = _prevStern;
-                float dist = (stern - prev).magnitude;
+                Vector2 sternSwept = stern - prev;
+                Vector2 travel = pos - _prevPos;
 
-                // A teleport (region travel, dev picker) must not stripe foam across the map.
-                if (dist > Mathf.Max(1f, trail.TeleportResetMeters))
+                // A teleport (region travel, dev picker) must not stripe foam across the map. Watch BOTH
+                // segments: the hull jumping is one way to get here, and a HULL SWAP is the other — the dev
+                // key-cycle changes LengthMeters, which moves the stern anchor metres in one tick while the
+                // boat itself has not moved at all.
+                float resetLimit = Mathf.Max(1f, trail.TeleportResetMeters);
+                if (travel.magnitude > resetLimit || sternSwept.magnitude > resetLimit)
                 {
                     _prevStern = stern;
+                    _prevPos = pos;
                     _depositCarry = 0f;
                     return;
                 }
 
                 _prevStern = stern;
+                _prevPos = pos;
+
+                // THE TRACK the trail is laid along (owner 2026-08-07: "the wake originates at the CENTRE of
+                // the hull, obvious when turning"). Taking this from the stern anchor's own swept segment —
+                // as it did — hands the geometry to the anchor's SWING ABOUT THE BOAT'S CENTRE in a turn,
+                // which is what fanned the trail around amidships. It comes from the hull's travel now,
+                // blended toward the swing by SternSwingFraction (1 restores the shipped behaviour). The
+                // deposit POSITION below is untouched and still rides the stern segment, so the foam is
+                // still born at the transom.
+                Vector2 track = WakeTrailMath.TrackVector(travel, sternSwept, trail.SternSwingFraction);
+                float dist = track.magnitude;
 
                 // Gates: no trail below the foam's own speed threshold, none aground (and drop the carry so
                 // a restart doesn't burp a clump — the EmissionCount discipline).
@@ -1068,7 +1149,7 @@ namespace HiddenHarbours.Boats
                                                           trail.MaxDepositsPerTick);
                 if (deposits <= 0) return;
 
-                Vector2 trackDir = WakeTrailMath.TrackDir(prev, stern, bow);
+                Vector2 trackDir = WakeTrailMath.TrackDir(Vector2.zero, track, bow);
                 float spread = WakeTrailMath.ShoulderSpreadSpeed(speed, in trail);
                 float halfWidth = WakeTrailMath.ShoulderHalfWidth(hullLength, magnitude, in trail);
                 float lifeScale = WakeTrailMath.Graded(trail.LifetimeScaleAtMagnitude0,
@@ -1355,10 +1436,31 @@ namespace HiddenHarbours.Boats
                 if (!_sprayRenderer.gameObject.activeSelf) _sprayRenderer.gameObject.SetActive(true);
             }
 
+            /// <summary>
+            /// Draw the foam pool. Beyond the fade/spread/boil the shipped pass already had, this is where
+            /// the owner's 2026-08-07 DISPERSAL reads land — the two that are render-only:
+            ///
+            /// <list type="bullet">
+            /// <item><b>The raft OPENS UP with age.</b> Each puff climbs the shared aeration ladder
+            /// (<see cref="WakeTrailMath.AgeStageIndex"/>), so the mat grows holes as it dies rather than
+            /// keeping one solid silhouette and merely dimming — the difference between foam going back to
+            /// water and a decal being turned down. The sprite is written ONLY on a rung crossing (three
+            /// times in a whole lifetime), so the "nothing per frame" cost the raft pass paid for holds.</item>
+            /// <item><b>The band SHEARS apart</b> (<see cref="WakeTrailMath.DispersalOffset"/>): each puff
+            /// takes its own small drift, so a laid trail stops translating as one rigid sheet and the
+            /// overlap that made it read solid breaks down. Deterministic from the particle's own seed and
+            /// applied at RENDER only, exactly like the wave distortion beside it.</item>
+            /// </list>
+            ///
+            /// <para>The third dispersal read — the WIND walking the whole trail off the track — is not
+            /// here: it is real advection, and lives in the integration
+            /// (<see cref="WakeTrailMath.DriftVelocity"/>).</para>
+            /// </summary>
             private void RenderFoam(float roughness, float time, in WakeConfig cfg, Color foamColor,
                                     in WakeTrailConfig trail, in SeaLift lift)
             {
                 var pool = _sys.Pool;
+                int stages = FoamStageCount();
                 for (int i = 0; i < pool.Length; i++)
                 {
                     var sr = _renderers[i];
@@ -1370,6 +1472,19 @@ namespace HiddenHarbours.Boats
                     }
 
                     float life = WakeParticleSystem.Life01(p.Age, p.Lifetime);
+
+                    // Climb the aeration ladder. One int compare per live puff per frame; the sprite write
+                    // happens only on the (stages−1) crossings of a whole lifetime.
+                    if (stages > 1)
+                    {
+                        int stage = WakeTrailMath.AgeStageIndex(life, stages);
+                        if (stage != _foamStage[i])
+                        {
+                            _foamStage[i] = stage;
+                            Sprite raft = RaftSprite(_foamVariant[i], stage);
+                            if (raft != null) sr.sprite = raft;
+                        }
+                    }
                     // BirthStrength is baked at emit — a deposited trail keeps the brightness it was laid
                     // with even after the boat stops (template-emitted puffs carry 1, unchanged).
                     float alpha = WakeParticleSystem.LifeFade(life, cfg) * p.BirthStrength;
@@ -1386,6 +1501,12 @@ namespace HiddenHarbours.Boats
                                                          trail.FoamPulseAmount * 0.6f, life);
                     }
                     Vector2 renderPos = WakeParticleSystem.RenderPosition(in p, time, roughness, cfg);
+                    // The SHEAR: each puff wanders a little off its neighbours so the band tears instead of
+                    // sliding as one sheet. Gated on the trail, like the boil above, so Enabled=false keeps
+                    // the legacy stamp byte-identical.
+                    if (trail.Enabled)
+                        renderPos += WakeTrailMath.DispersalOffset(p.Seed, p.Age,
+                                                                   trail.FoamDispersalMetersPerSecond);
                     // Ride the displaced sea at the FOAM'S OWN position — laid foam heaves with the swell
                     // passing under it (display-only; the integrated position is untouched).
                     float ride = lift.LiftAt(p.Pos);
