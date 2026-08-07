@@ -258,6 +258,16 @@ namespace HiddenHarbours.Core
         public static AnchorSettings Anchor =>
             Config != null ? Config.Anchor : AnchorSettings.Default;
 
+        /// <summary>The LADDER-BOARDING policy (the tide gap at which a step aboard becomes a climb, and
+        /// the measured rig geometry the climb runs on), same contract as <see cref="WaveField"/> —
+        /// including the <c>Config != null</c> discipline (never <c>?.</c>/<c>??</c> on a
+        /// <c>UnityEngine.Object</c>) and the resolved-per-read liveness, so dragging the threshold in
+        /// Play changes the very next boarding. Falls back to
+        /// <see cref="LadderBoardingSettings.Default"/> with no config wired, which is why an unwired test
+        /// rig still climbs the rig's real geometry rather than a zeroed one.</summary>
+        public static LadderBoardingSettings LadderBoarding =>
+            Config != null ? Config.LadderBoarding : LadderBoardingSettings.Default;
+
         /// <summary>The wind-fetch model's tunables (ADR 0027 #1), same contract as
         /// <see cref="WaveField"/> including the <c>Config != null</c> discipline. Read by BOTH the
         /// shader bridge (which publishes them as globals) and every sim consumer that samples the

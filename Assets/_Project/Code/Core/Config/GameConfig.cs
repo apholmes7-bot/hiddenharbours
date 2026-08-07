@@ -315,6 +315,14 @@ namespace HiddenHarbours.Core
                  "try again). Every dial is here so the feel is tuned without code.")]
         public MooringLineSettings MooringLine = MooringLineSettings.Default;
 
+        [Header("Ladder boarding (the tide-gap climb — when a step aboard becomes a climb down)")]
+        [Tooltip("How the fisher gets aboard when the tide has dropped the boat below the wharf: the GAP " +
+                 "at which a step becomes a climb, how near a ladder must be to serve a berth, and the " +
+                 "measured rig geometry the climb is driven by. The threshold is the dial that matters — " +
+                 "raise it and low water still lets you step across (the ladder becomes a rarity); lower " +
+                 "it and the ladder is the ordinary way aboard for most of the tide.")]
+        public LadderBoardingSettings LadderBoarding = LadderBoardingSettings.Default;
+
         [Header("Displaced water (ADR 0023 — the sea's readable drama)")]
         [Tooltip("Owner tuning for the displaced water surface (ADR 0023, phase 2): how much taller " +
                  "the sea DRAWS than it simulates, how wide the tear-safe calm band along every shore " +
@@ -1333,6 +1341,77 @@ namespace HiddenHarbours.Core
             ScopeStepMetres = 1f,
             WorkingLoadFactor = 1.25f,
             SlipGraceSeconds = 2f,
+        };
+    }
+
+    /// <summary>
+    /// The owner-tunable knobs of <b>ladder boarding</b> (<see cref="GameConfig.LadderBoarding"/>) — the
+    /// tide-gap climb, and the geometry the rig's <c>ladderDown</c> clip was authored against.
+    ///
+    /// <para><b>Two of these are FEEL and the rest are MEASUREMENTS.</b>
+    /// <see cref="BoardClampMetres"/> and <see cref="LadderReachMetres"/> are the owner's to tune. The
+    /// four below them are the rig's and the wharf kit's own published numbers, exposed only so a future
+    /// kit revision is a data edit rather than a code change — <b>changing them without a re-bake puts
+    /// the fisher's feet between the rungs</b>, which is precisely what
+    /// <c>LadderBoardingMathTests.TheStair_ReproducesTheBakedDescendTable</c> exists to catch.</para>
+    /// </summary>
+    [System.Serializable]
+    public struct LadderBoardingSettings
+    {
+        [Tooltip("THE THRESHOLD. How far (m) the boat's deck may lie BELOW the wharf top and still be " +
+                 "boarded with a step. Past this, boarding goes down a ladder instead.\n\n" +
+                 "⚠ The art kit states two different numbers for this and they measure different things. " +
+                 "1.2 m is what characterIsoRig6.js cites as where its 'board' clip soft-clamps, measured " +
+                 "on the deck-to-WATER drop, and it is what ships here. wharfIsoRig.js:1103 implements a " +
+                 "stricter 0.55 m on the deck-to-GUNWALE gap — which is the quantity this field actually " +
+                 "compares, and which is also the rail height the one shipped 'board' sheet was baked at. " +
+                 "So 1.2 is the generous reading: it keeps a step aboard available for the upper half of " +
+                 "an ordinary tide (the sea has moods, and boarding should FEEL them), at the cost of " +
+                 "letting the step clip stretch past the sheer it was drawn for. Dial it to 0.55 for the " +
+                 "wharf kit's own stricter rule — one number, no code.")]
+        [Min(0f)] public float BoardClampMetres;
+
+        [Tooltip("How near (m) a ladder must be to where you are boarding for it to serve that berth. A " +
+                 "wharf with no ladder within reach simply has no climb to offer: boarding falls back to " +
+                 "the step, however deep the gap. Roughly the width of a berth, so the ladder mid-wall " +
+                 "serves the boats lying either side of it and not the whole quay.")]
+        [Min(0f)] public float LadderReachMetres;
+
+        [Tooltip("MEASURED — the wharf kit's rung spacing (m), WharfIso.FIT.ladder.rung. The tread of " +
+                 "the descent stair, and what the clip's foot placement was authored against.")]
+        [Min(0.01f)] public float RungMetres;
+
+        [Tooltip("MEASURED — the rig's standoff (m), ladderMount().standoff: how far the climber's pivot " +
+                 "sits off the ladder plane. Seat the sprite on the ladder line instead and its hands go " +
+                 "inside the wall. Not a nudge to taste.")]
+        [Min(0f)] public float StandoffMetres;
+
+        [Tooltip("MEASURED — one whole loop of the ladderDown clip (real seconds; 10 frames × 110 ms). " +
+                 "The climb is NOT rate-scaled to a duration the way the boarding vault is: real rungs " +
+                 "are a real distance apart, so a deeper gap takes longer rather than the same time " +
+                 "faster. That is what makes the tide legible on the way down.")]
+        [Min(0.01f)] public float ClimbLoopSeconds;
+
+        [Tooltip("How long (real seconds) the unauthored TURN-AROUND at the top of the ladder is given — " +
+                 "the moment the fisher swings off the wharf edge onto the top rung. The kit has no clip " +
+                 "for it and says it is the gap players will notice, so it is covered with the authored " +
+                 "'boardDown' step rather than a cut. Also covers the step OFF at the bottom onto the " +
+                 "gunwale, which is the same authored motion.")]
+        [Min(0f)] public float TransitionSeconds;
+
+        /// <summary>The Nine Mile Creek reference tuning: a step aboard stays available until the boat's
+        /// deck is 1.2 m below the planks, one ladder serves the berths within 4 m of it, and the climb
+        /// runs the rig's own measured geometry at its own baked rate. Sized against that wharf's REAL
+        /// numbers — a +3.0 m deck against a 2.2 m tide amplitude — so a dory is stepped onto around high
+        /// water and climbed down to for the bottom half of the ebb.</summary>
+        public static LadderBoardingSettings Default => new LadderBoardingSettings
+        {
+            BoardClampMetres = 1.2f,
+            LadderReachMetres = 4f,
+            RungMetres = LadderBoardingMath.RigRungMetres,
+            StandoffMetres = LadderBoardingMath.RigStandoffMetres,
+            ClimbLoopSeconds = LadderBoardingMath.RigLoopSeconds,
+            TransitionSeconds = 0.45f,
         };
     }
 

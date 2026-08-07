@@ -205,6 +205,13 @@ MonoBehaviour:
     ScopeStepMetres: 1
     WorkingLoadFactor: 1.25
     SlipGraceSeconds: 2
+  LadderBoarding:
+    BoardClampMetres: 1.2
+    LadderReachMetres: 4
+    RungMetres: 0.3
+    StandoffMetres: 0.275
+    ClimbLoopSeconds: 1.1
+    TransitionSeconds: 0.45
   DisplacedWater:
     WaveExaggeration: 1.6
     ShoreBandCoefficient: 2
