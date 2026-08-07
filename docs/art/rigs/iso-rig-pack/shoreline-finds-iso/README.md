@@ -14,7 +14,7 @@ Exposes `globalThis.ShoreFinds`. Viewer page (in-project): `Shoreline Finds Iso.
 |---|---|
 | scale | 32 px = 1 m |
 | camera | ¾ iso from the south, elev 40°; ground foreshorten **Q = 0.72** baked into every shape |
-| keyline | 1 px soft `#231d14` — a warm shore keyline, darker than the finds panel ground |
+| keyline | **retired** (`KEYLINE_DEFAULT = false`, ADR 0031). The ring — 1 px soft, two-tone, `#231d14` with a lit side, a warm shore keyline darker than the finds panel ground — is reachable with `{outline:true}` |
 | alpha | binary, no AA |
 | cell | tight per find; `cellOf(key)` reports `w, h` and the pivot |
 | pivot | `sit` — the ground-contact centre |

@@ -15,7 +15,8 @@ Exposes `globalThis.WharfDecor`. Viewer page (in-project): `Wharf Decor Iso.dc.h
 | scale | 32 px = 1 m |
 | camera | ADR-0006 shared turntable — 45° steps, elev 40°, orthographic |
 | facings | `N NE E SE S SW W NW`, all 8 out of one model |
-| light | fixed upper-LEFT key, flat-facet, z-buffered, ordered dither, per-face uv texture, depth-edge darkening, 1 px keyline `#1a1c22`, no AA |
+| light | fixed upper-LEFT key, flat-facet, z-buffered, ordered dither, per-face uv texture, depth-edge darkening, no AA |
+| keyline | **retired** — `KEYLINE_DEFAULT = false` (ADR 0031); the 1 px ring `#1a1c22` is reachable with `{outline:true}` |
 | sheet | fixed 420 × 520, pivot **(210, 420)** |
 | pivot | ground-centre of the footprint — the same origin as the house, room and utility rigs |
 

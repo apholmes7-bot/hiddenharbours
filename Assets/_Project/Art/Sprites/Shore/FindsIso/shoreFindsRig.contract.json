@@ -10,7 +10,7 @@
     "alpha": "binary",
     "pivot": "'sit' — the ground-contact centre",
     "keyline": "#231d14",
-    "keylineDefault": true,
+    "keylineDefault": false,
     "note": "ground foreshorten is 0.72 here, NOT the 0.6428 the structure/prop rigs use — do not carry the constant across families"
   },
   "azimuth": {

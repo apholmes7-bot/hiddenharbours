@@ -20,14 +20,18 @@ tile as anything else and be in scale with the fleet, the buildings and the char
 | scale | 32 px = 1 m |
 | camera | ADR-0006 turntable, ¾ from the south, elev 40°, orthographic |
 | facings | `N NE E SE S SW W NW` — 8 facings out of one model |
-| light | fixed upper-LEFT key, flat-facet, z-buffered, ordered dither, per-face uv texture, depth-edge darkening, 1 px keyline, no AA |
+| light | fixed upper-LEFT key, flat-facet, z-buffered, ordered dither, per-face uv texture, depth-edge darkening, no AA |
+| keyline | **retired** — all four carry `KEYLINE_DEFAULT = false` (ADR 0031); `{outline:true}` restores the ring |
 | pivot | ground contact — footprint centre for the props and structures, `sit` for the finds |
 | alpha | binary |
 
 Nothing here bakes water. The wharf rig hands out a `wet` mask instead and the shader decides.
 
-Two keyline colours, on purpose: the structures and props use the cold harbour keyline `#1a1c22`; the
-shore finds use a warm sand keyline `#231d14`, because they sit on beach, not on planking.
+Two keyline colours, still declared on purpose even though the ring no longer bakes: the structures
+and props use the cold harbour keyline `#1a1c22`; the shore finds use a warm sand keyline `#231d14`,
+because they sit on beach, not on planking. The colours stay exported and stay in each rig's
+contract so the A/B arm and the archived sheets remain describable — ADR 0031 gates the ring, it
+does not delete it. Depth-edge darkening is the separate INTERIOR rule and is untouched.
 
 ## Sheets
 

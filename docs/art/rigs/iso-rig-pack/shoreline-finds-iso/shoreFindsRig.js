@@ -4,8 +4,9 @@
    parametric source, forms not drawings, colour via ramps, anchors as data.
 
    CAMERA — ¾ iso, camera from the south, elev 40°. Ground foreshorten Q = 0.72 baked into
-   every shape. 32 px = 1 m. No AA, binary alpha, 1 px soft keyline #231d14 (warm shore
-   keyline, darkened from the finds panel ground #12100b).
+   every shape. 32 px = 1 m. No AA, binary alpha. The 1 px soft keyline #231d14 (warm shore
+   keyline, darkened from the finds panel ground #12100b) is RETIRED by default per ADR 0031
+   and reachable with `{outline:true}`.
 
    HEADING — these lie FLAT, so there is no facing, only a LIE ANGLE. 8 canonical steps
    (N NE E SE S SW W NW = the object's long axis in the ground plane) so the compositor can
@@ -34,14 +35,22 @@
 
    GAMEPLAY DATA — trueCm, zone (tide/wrack/upper/dune), rarity, stack (pile cap).
 
-   Exposes globalThis.ShoreFinds = { PPU, Q, KEYLINE, DIRS, FINDS, CATS, MAT, STATES,
+   Exposes globalThis.ShoreFinds = { PPU, Q, KEYLINE, KEYLINE_DEFAULT, DIRS, FINDS, CATS, MAT, STATES,
      list(), cellOf(key), rampsOf(key,state), render(key, dir, opts) ->
      { w, h, rgba, anchors, params, report } }
-     opts: { variant:0..2, state:'wet'|'dry'|'bleached', wear:0..1, sand:0..1 }
+     opts: { variant:0..2, state:'wet'|'dry'|'bleached', wear:0..1, sand:0..1, outline:bool }
    Runs in the bake sandbox and in the browser. */
 (function (root) {
   'use strict';
   const PPU = 32, Q = 0.72, KEYLINE = '#231d14';
+  // ADR 0031 — the outline is retired from world art; the silhouette is carried by the form's own
+  // dark side. The ring is not deleted: it is gated OFF by default and reachable with
+  // `{outline:true}`, mirroring the engine's own `GameConfig.HullKeylineFlood` so the owner keeps a
+  // one-flag A/B. NOTE this rig's ring is TWO-TONE — the lit side is `mix(KEYLINE,'#6b6045',0.30)`,
+  // not KEYLINE flat — so the gate wraps the whole `!m` branch in toRGBA(), and KEYLINE itself
+  // stays a live constant (exported, and the contract's `keyline`) for the A/B arm and for any
+  // archived sheet to remain describable.
+  const KEYLINE_DEFAULT = false;
   const COLD = '#2a3b47', WARM = '#f2cf94', BONE = '#e9e6df', WETC = '#2f4148';
   const DIRS = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
   const STATES = ['wet', 'dry', 'bleached'];
@@ -804,8 +813,11 @@
 
   // ---- shade ----------------------------------------------------------------
   const LX = -0.55, LY = -0.735, LZ = 0.40;                                    // upper-left key
-  function toRGBA(b, ramps, state, seed) {
+  function toRGBA(b, ramps, state, seed, outline) {
     const w = b.w, h = b.h, out = new Uint8ClampedArray(w * h * 4);
+    // ADR 0031 gate, resolved once. `kl` stays declared alongside zmax — the constant is a live
+    // colour for the A/B arm, not dead code, and zmax is read by the BODY path below.
+    const ring = outline === undefined ? KEYLINE_DEFAULT : outline !== false;
     const kl = h2r(KEYLINE), zmax = Math.max(0.8, maxZ(b));
     const mott = state === 'wet' ? 0.030 : state === 'bleached' ? 0.075 : 0.055;
     const cols = {};
@@ -814,6 +826,11 @@
     for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
       const i = y * w + x, o = i * 4, m = b.mat[i];
       if (!m) {                                                                 // 1 px soft keyline outside
+        // KEYLINE — RETIRED BY DEFAULT (ADR 0031). Pure ring deletion: this branch only ever
+        // writes pixels with NO material, so switching it off leaves every painted pixel of every
+        // find untouched. What holds the edge instead is the shell/wood's own dark side, which the
+        // contact-shade term below already drives. 15.2 % of every ink pixel on a clam.
+        if (!ring) { out[o + 3] = 0; continue; }
         const nb = zAt(x - 1, y) >= 0 || zAt(x + 1, y) >= 0 || zAt(x, y - 1) >= 0 || zAt(x, y + 1) >= 0;
         if (!nb) { out[o + 3] = 0; continue; }
         const lit = (zAt(x + 1, y) >= 0 || zAt(x, y + 1) >= 0) && !(zAt(x - 1, y) >= 0 || zAt(x, y - 1) >= 0);
@@ -883,7 +900,7 @@
     wearPass(b, o.wear || 0, P.seed);
     sandPass(b, o.sand == null ? 0 : o.sand, P.seed);
     const ramps = rampsOf(f.key, state);
-    const rgba = toRGBA(b, ramps, state, P.seed);
+    const rgba = toRGBA(b, ramps, state, P.seed, o.outline);
     const an = anchorsFor(b, cell);
     return {
       w: cell.w, h: cell.h, rgba, pivot: { x: cell.pvx, y: cell.pvy },
@@ -899,7 +916,7 @@
   }
 
   root.ShoreFinds = {
-    PPU, Q, KEYLINE, DIRS, STATES, CATS, MAT, FINDS, BANDS,
+    PPU, Q, KEYLINE, KEYLINE_DEFAULT, DIRS, STATES, CATS, MAT, FINDS, BANDS,
     READ: { k: READ_K, e: READ_E, px: drawnPx },
     list: () => FINDS.map(f => f.key),
     get: (k) => byKey[k],

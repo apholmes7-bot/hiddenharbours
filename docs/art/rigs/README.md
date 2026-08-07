@@ -700,9 +700,27 @@ is TRUE, and was measured rather than believed** — 83 probe keys, including th
 the README's order, reversed, or shuffled. That claim is checked here because the shop kit's README
 made the same one and was wrong three ways (#437).
 
-**All four bake a 1 px keyline and none carries a `KEYLINE_DEFAULT` gate.** They arrive in the
-pre-ADR-0031 style, which ADR 0031 §4 explicitly permits ("sheets migrate naturally … a mixed period
-is expected and accepted"). The pack states its two keyline colours are deliberate, so the ring was
-left alone rather than stripped — the retirement order for these families is the owner's call. The
-ring is not free: it is **25.6 %** of every ink pixel on a `powerPole` and 15.2 % on a clam, which is
-the perimeter-cost law from `../outline-interaction-language.md` landing on filamentary subjects.
+**All four now carry a `KEYLINE_DEFAULT` gate, default FALSE — the ring is retired (ADR 0031).**
+They *arrived* in the pre-ADR-0031 style, which ADR 0031 §4 explicitly permits ("sheets migrate
+naturally … a mixed period is expected and accepted"); this is those four families being redone, in
+the shape `shorePlantRig` / `shrubIsoRig` already use. Four touch points per rig: the
+`const KEYLINE_DEFAULT = false` beside the keyline colour · the ring pass wrapped in
+`o.outline === undefined ? KEYLINE_DEFAULT : o.outline !== false` · `KEYLINE_DEFAULT` in the rig's
+exports · `keylineDefault: false` in the rig's `*.contract.json`. `wharfDecorRig` and
+`utilityIsoRig` needed one extra line each — their `resolve()` returns an explicit whitelist, so
+`outline` is threaded through it unnormalised; `shoreFindsRig`'s ring is **two-tone** (the lit side
+is `mix(KEYLINE,'#6b6045',0.30)`, not `KEYLINE` flat), so the gate wraps the whole no-material
+branch and the `KEYLINE` constant stays live and exported.
+
+**The colours are NOT deleted, and the A/B arm is proven.** The pack states its two keyline colours
+are deliberate; they stay exported and stay in each contract's `keyline`, so the archived sheets
+remain describable. Measured in a standalone V8 host over **49 subjects** (7 wharf families, 3 decor
+props, 3 utility props, all 36 finds): `{outline:true}` reproduces the pre-gate render **byte for
+byte** on every one, `{outline:false}` is byte-identical to the new default, and switching the ring
+off is a **pure ring deletion** — 0 painted pixels changed on any subject, because every pixel the
+pass writes is an empty neighbour of the silhouette. The ring was not free: **25.6 %** of every ink
+pixel on a `powerPole` and 15.2 % on a clam, the perimeter-cost law from
+`../outline-interaction-language.md` landing on filamentary subjects.
+
+The gate changes what the *rigs* draw; the shipped sheets still carry the ring until the owner
+re-runs the bake. That is ADR 0031 §4's mixed period, working as intended.

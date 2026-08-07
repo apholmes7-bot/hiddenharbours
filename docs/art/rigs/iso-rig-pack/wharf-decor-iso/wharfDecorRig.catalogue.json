@@ -13,7 +13,8 @@
   "W",
   "NW"
  ],
- "light": "fixed upper-LEFT key, flat-facet, z-buffered, ordered dither, depth-edge darkening, 1px keyline, no AA",
+ "light": "fixed upper-LEFT key, flat-facet, z-buffered, ordered dither, depth-edge darkening, no AA; the 1px keyline #1a1c22 is RETIRED by default (ADR 0031) and reachable with {outline:true}",
+ "keylineDefault": false,
  "sheet": {
   "w": 420,
   "h": 520,

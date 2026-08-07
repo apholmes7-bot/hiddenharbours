@@ -14,7 +14,7 @@
     "nativePivotY": 520,
     "pivot": "ground centre of the footprint",
     "keyline": "#1a1c22",
-    "keylineDefault": true
+    "keylineDefault": false
   },
   "azimuth": {
     "convention": "counterClockwise",
