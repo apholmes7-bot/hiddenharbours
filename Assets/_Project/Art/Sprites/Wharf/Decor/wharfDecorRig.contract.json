@@ -14,6 +14,7 @@
     "nativePivotY": 420,
     "pivot": "ground centre of the footprint",
     "keyline": "#1a1c22",
+    "cellRule": "pivot-INCLUSIVE union of the INK bbox across all 8 facings on the fixed nativeSheetW x nativeSheetH buffer, seeded at the pivot so a piece whose ink does not span its own pivot still contains it. fireCabinet is the only piece where that seeding is load-bearing (pivotInsideInk=false, ink stops 6 px above the pivot) and its cellH of 53 is what the rule yields — measured, not inferred.",
     "keylineDefault": true
   },
   "azimuth": {
@@ -27,6 +28,14 @@
     "key": "bunting",
     "w": 912,
     "h": 133
+  },
+  "worstSheetByMaxDim": {
+    "key": "bunting",
+    "w": 912,
+    "h": 133,
+    "maxDim": 912,
+    "headroomToCap": 1136,
+    "note": "A texture cap binds on the LONGEST SIDE, not on area — size import headroom off THIS, not off worstSheet (which is the worst by area). Cells are parametric, so re-measure rather than trusting either field after an authoring change."
   },
   "count": 61,
   "cells": [
@@ -808,7 +817,7 @@
     {
       "key": "fireCabinet",
       "cellW": 26,
-      "cellH": 52,
+      "cellH": 53,
       "pivotX": 13,
       "pivotY": 52,
       "footprintW": 0.7,
@@ -827,7 +836,7 @@
         "cols": 8,
         "rows": 1,
         "sheetW": 208,
-        "sheetH": 52
+        "sheetH": 53
       }
     },
     {

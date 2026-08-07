@@ -14,6 +14,7 @@
     "nativePivotY": 520,
     "pivot": "ground centre of the footprint",
     "keyline": "#1a1c22",
+    "cellRule": "pivot-INCLUSIVE union of the INK bbox across all 8 facings on the fixed nativeSheetW x nativeSheetH buffer, seeded at the pivot. Same rule as wharfDecorRig.",
     "keylineDefault": true
   },
   "azimuth": {
@@ -27,6 +28,14 @@
     "key": "hFrame",
     "w": 1520,
     "h": 291
+  },
+  "worstSheetByMaxDim": {
+    "key": "hFrame",
+    "w": 1520,
+    "h": 291,
+    "maxDim": 1520,
+    "headroomToCap": 528,
+    "note": "A texture cap binds on the LONGEST SIDE, not on area — size import headroom off THIS, not off worstSheet (which is the worst by area). Cells are parametric, so re-measure rather than trusting either field after an authoring change."
   },
   "count": 42,
   "cells": [
