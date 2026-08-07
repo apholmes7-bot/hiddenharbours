@@ -455,6 +455,20 @@ namespace HiddenHarbours.App.Editor
         public static readonly Vector3 BoatRampToePos    = new Vector3( 78f,  90f, 0f);
         public static readonly Vector3 HarbourBeaconPos  = new Vector3(184f,  38f, 0f);  // breakwater head
 
+        /// <summary>
+        /// THE DORY YARD — the hard the damaged dory is bought off, and where the used-outboard man stands
+        /// at his barrel. ⭐ <b>Added in Phase A-2.</b> A-1 positioned the derelict but not the ground you
+        /// buy her from, and the two cannot be far apart: the boat you are SHOWN and the boat you are SOLD
+        /// have to be the same boat, or §7.2's exit condition becomes two unrelated beats.
+        ///
+        /// <para>8.5 m west-south-west of her, at the spit's landward end — on the made ground, clear of
+        /// her hull, of the boat ramp's head and of the shanty row, and (the constraint that actually
+        /// binds) <b>off the sightline from where the player lands to the derelict</b>, which is what
+        /// <c>NineMileCreekDoryTests</c> measures. It is a YARD, not a shed: the 2026-07-25 ruling says
+        /// the man who sells her here is not a shipwright.</para>
+        /// </summary>
+        public static readonly Vector3 DoryYardPos       = new Vector3( 64f, 112f, 0f);
+
         /// <summary>The shanty row — five gable sheds side by side along the yard's north edge, which is
         /// how they stand in the photograph (eight there; five reads as the same place at this scale).</summary>
         public static readonly Vector3[] ShantyRow =

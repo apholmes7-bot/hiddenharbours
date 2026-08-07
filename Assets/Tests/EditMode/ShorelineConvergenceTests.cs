@@ -42,10 +42,10 @@ namespace HiddenHarbours.Tests.EditMode
             return t;
         }
 
-        static RectTidalTerrain MakeNineMileCreek(out GameObject go)
+        static MainlandTidalTerrain MakeNineMileCreek(out GameObject go)
         {
             go = new GameObject("NineMileCreekTerrain_Test");
-            var t = go.AddComponent<RectTidalTerrain>();
+            var t = go.AddComponent<MainlandTidalTerrain>();
             NineMileCreekBuilder.ConfigureNineMileCreekTerrain(t);
             return t;
         }
@@ -145,63 +145,84 @@ namespace HiddenHarbours.Tests.EditMode
         // =====================================================================================
 
         [Test]
-        public void NineMileCreek_TownLandAndWharfDeck_AlwaysExposed_EvenAtHighWater()
+        public void NineMileCreek_TheQuayAndTheTown_AlwaysExposed_EvenAtHighWater()
         {
             var t = MakeNineMileCreek(out var go);
             try
             {
-                // The vendor buildings, the quay the player roams, the wharf deck (disembark) + head.
-                foreach (var p in new[]
+                // Everywhere the player stands and everywhere a vendor does — derived from the plan, so
+                // moving a lot re-checks it rather than leaving a stale literal behind.
+                var dry = new List<Vector2>
                 {
-                    new Vector2(-8f, 3f),  new Vector2(-8f, -3f),   // shipwright / fish stall
-                    new Vector2(-12f, 9f), new Vector2(-12f, -9f),  // harbourmaster / general store
-                    (Vector2)NineMileCreekBuilder.DisembarkPos,          // the wharf deck planks
-                    (Vector2)NineMileCreekBuilder.DockZonePos,           // the wharf head
-                })
+                    (Vector2)NineMileCreekBuilder.DisembarkPos,   // the quay you step onto
+                    (Vector2)NineMileCreekBuilder.FishBuyerPos,   // the till on the spit
+                    (Vector2)NineMileCreekBuilder.DoryYardPos,    // the hard the dory is sold off
+                    NineMileCreekWharf.DeckFootprint().center,
+                    NineMileCreekWharf.ApronFootprint().center,
+                    (Vector2)NineMileCreekMainland.WinchPos,
+                    (Vector2)NineMileCreekMainland.UnloadApronPos,
+                };
+                dry.AddRange(NineMileCreekMainland.TownLots.Select(v => (Vector2)v));
+                dry.AddRange(NineMileCreekMainland.ShantyRow.Select(v => (Vector2)v));
+
+                foreach (var p in dry)
                 {
                     float e = t.ElevationAt(p);
                     Assert.IsTrue(TidalExposure.IsExposed(HighWater, e),
-                        $"Nine Mile Creek's land/deck at {p} must stay walkable at the highest water");
+                        $"Nine Mile Creek's ground at {p} stands at {e:0.00} m and must stay walkable at " +
+                        $"the highest water ({HighWater:0.00} m)");
                 }
             }
             finally { Object.DestroyImmediate(go); }
         }
 
         [Test]
-        public void NineMileCreek_DredgedHarbour_StaysDeep_AtLowWater()
+        public void NineMileCreek_TheBerthIsGATED_NotDredged_TheShoalIsTheLaddersMiddleRung()
         {
+            // ⚠ THIS TEST'S CLAIM IS INVERTED FROM ITS ANCESTOR'S, and that is the recreation.
+            //
+            // It used to read "the DREDGED berth keeps a deep-harbour margin at low water — no tide-gating
+            // here", because the region was standing in for Port Greywick with a flat −6 m floor. The
+            // ruled ladder is three HARBOURS — St Peters' dock ~0.6 m, Nine Mile Creek ~1.6 m, Greywick
+            // 6 m dredged — and this is the middle rung: the lobster-boat berth. So the berth is a SHOAL,
+            // the shoal IS the gate, and the fleet dries out under itself at spring low exactly as the
+            // ladders and tyre fenders in the owner's photograph imply.
             var t = MakeNineMileCreek(out var go);
             try
             {
-                // Canon: Nine Mile Creek is the DEEP, DREDGED harbour (IsDeepHarbour). The arrival berth and the
-                // return passage carry a real under-keel margin even at dead low — no tide-gating here.
-                float arrivalDepth = TidalExposure.WaterDepth(
-                    LowWater, t.ElevationAt(NineMileCreekBuilder.ArrivalPos));
-                Assert.Greater(arrivalDepth, 2f,
-                    "the dredged berth off the wharf head keeps a deep-harbour margin at low water");
-                Assert.Greater(TidalExposure.WaterDepth(
-                        LowWater, t.ElevationAt(NineMileCreekBuilder.ToCovePassagePos)), 2f,
-                    "the return passage east stays deep");
+                float bed = t.ElevationAt(NineMileCreekBuilder.ArrivalPos);
+                Assert.AreEqual(NineMileCreekMainland.BasinBedElevation, bed, 0.01f,
+                    "the berth must sit on the ruled gate — not the open bay, and not the made ground");
+
+                Assert.Greater(TidalExposure.WaterDepth(HighWater, bed), 1.3f,
+                    "a lobster boat must float here on the flood, or the region's ceiling hull has no home");
+                Assert.LessOrEqual(TidalExposure.WaterDepth(LowWater, bed), 0f,
+                    "…and the basin must BARE at spring low. A berth that never dries has quietly become " +
+                    "the dredged harbour this region stopped being");
+
                 Assert.AreEqual(NineMileCreekBuilder.NineMileCreekDeepElevation,
-                    t.ElevationAt(new Vector2(30f, 0f)), 1e-4f, "open harbour = the dredged floor");
+                    t.ElevationAt(NineMileCreekBuilder.ToCovePassagePos), 1e-3f,
+                    "…while the open bay you sail home across is the deep floor, and never gates anyone");
             }
             finally { Object.DestroyImmediate(go); }
         }
 
         [Test]
-        public void NineMileCreek_QuayEdge_IsIntertidal_TheTideReadsAgainstTheQuay()
+        public void NineMileCreek_TheBarIsIntertidal_TheCrossingIsTheShorelineThatMoves()
         {
-            // The converged tide in Nine Mile Creek: a MODEST intertidal band on the steep quay edge (the sand
-            // strip east of the fence line) — the water visibly rises/falls against the quay, while the
-            // dredged harbour itself never gates a boat. A point on the quay-edge falloff, clear of the wharf.
+            // THE CONVERGENCE ASSERTION for this region. The old one probed a 3 m sand strip beside a
+            // quay; the mainland's moving shoreline is the CROSSING — 305 m of bar that covers at high
+            // water and bares at low, which is the whole reason the region exists.
             var t = MakeNineMileCreek(out var go);
             try
             {
-                float e = t.ElevationAt(new Vector2(-2.5f, 8f));
+                Vector2 midBar = Vector2.Lerp(NineMileCreekMainland.BarFrom, NineMileCreekMainland.BarTo, 0.7f);
+                float e = t.ElevationAt(midBar);
+
                 Assert.IsFalse(TidalExposure.IsExposed(HighWater, e),
-                    "at high water the quay-edge sand is covered");
+                    $"at high water the bar at {midBar} ({e:0.00} m) is covered — you need a boat");
                 Assert.IsTrue(TidalExposure.IsExposed(LowWater, e),
-                    "at low water the same sand bares — the waterline visibly falls against the quay");
+                    "at low water the same ground bares — you can walk to the island, if you watch the water");
             }
             finally { Object.DestroyImmediate(go); }
         }
@@ -213,7 +234,7 @@ namespace HiddenHarbours.Tests.EditMode
             var gw = MakeNineMileCreek(out var gwGo);
             try
             {
-                var p = new Vector2(3.1f, -6.4f);
+                var p = new Vector2(63.1f, 86.4f);   // in the creek's basin, and in the cove's open water
                 float c0 = cove.ElevationAt(p);
                 float g0 = gw.ElevationAt(p);
                 for (int i = 0; i < 8; i++)

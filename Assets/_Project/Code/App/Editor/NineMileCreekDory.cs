@@ -2,6 +2,8 @@
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using HiddenHarbours.Core;                // SortingBands — the one place the sorting axis is partitioned
+using HiddenHarbours.Art;                 // YSortSprite — she lies on ground, so she layers by world Y
 
 namespace HiddenHarbours.App.Editor
 {
@@ -69,12 +71,18 @@ namespace HiddenHarbours.App.Editor
         public static float HullAbovePivotMetres => HullHeightMetres - HullBelowPivotMetres;
 
         /// <summary>
-        /// Where she lies: on the quay's landward end, bow overhanging the root onto the beach. Chosen so
-        /// her whole hull stays clear of the mooring edge and the north curb (nothing hangs over the
-        /// water) while her pivot sits comfortably inside the arrival view — see
-        /// <see cref="ArrivalSafeView"/>, which is what actually constrains it.
+        /// Where she lies: hauled out ON THE HARD at the west end of the spit, among the trap stacks and
+        /// the parked trucks — the plan's own site (§7, "the derelict dory on the hard"), and the
+        /// 2026-07-25 rider's words.
+        ///
+        /// <para>⚠ SHE IS NO LONGER ON THE QUAY, and that is the recreation rather than a drift. On the
+        /// 120 m island the wharf was the only dry ground inside the on-foot frame, so canon's "lying at
+        /// the wharf" and "on the concrete" were the same place. The mainland has a whole made spit behind
+        /// the quay — which is where a derelict actually sits, because a working wharf does not store a
+        /// wreck on its mooring face. What still has to be true, and what
+        /// <see cref="IsVisibleFromArrival"/> measures, is that you can SEE her from where you land.</para>
         /// </summary>
-        public static readonly Vector2 HaulOutPos = new Vector2(-2.6f, 0f);
+        public static Vector2 HaulOutPos => NineMileCreekMainland.DerelictDoryPos;
 
         /// <summary>Her drawn silhouette in world metres, from the cell above and the pivot's place in
         /// it. What "does she hang over the water" is asked of.</summary>
@@ -107,10 +115,16 @@ namespace HiddenHarbours.App.Editor
         /// sitting a long time, without asking art-pipeline for a second sheet.</summary>
         public static readonly Color DerelictWash = new Color(0.80f, 0.78f, 0.74f);
 
-        /// <summary>Sorting order. One above the deck band's top, with the wharf's own fittings, so she
-        /// sits ON the concrete rather than being cut into it by a row of it. (People are Y-sorted well
-        /// above this, so anyone walking her southern lane passes correctly in front.)</summary>
-        public static int SortingOrder => NineMileCreekWharf.SortingOrderMax + 1;
+        /// <summary>
+        /// She lies on the SPIT now, which is ground rather than a sprite deck, so she takes a
+        /// <see cref="YSortSprite"/> and layers by world Y like every other object you walk around — the
+        /// same treatment the creek's buildings and the quay's fittings get.
+        ///
+        /// <para>This is the pre-Play default only; the Y-sort owns the order from Awake. It is the decor
+        /// band's FLOOR rather than a number above the wharf's structure band, because the thing she used
+        /// to have to out-draw — a deck of wharf-kit sprites — is not drawn any more.</para>
+        /// </summary>
+        public static int SortingOrder => SortingBands.DecorFloor;
 
         // =====================================================================================
         //  THE SIGHTLINE — the part that is a maths problem, not a taste one
@@ -153,7 +167,22 @@ namespace HiddenHarbours.App.Editor
             return new Rect(c.x - w * 0.5f, c.y - h * 0.5f, w, h);
         }
 
-        /// <summary>Is <paramref name="worldPos"/> inside the frame the player is handed on arrival?</summary>
+        /// <summary>
+        /// Is <paramref name="worldPos"/> inside the frame the player is handed on arrival?
+        ///
+        /// <para>⚠ <b>SHE NO LONGER IS, AND THAT IS THE RECREATION — flagged for the owner.</b> §7.2's
+        /// exit condition was written for a 120 × 120 m island where the wharf was the only dry ground in
+        /// shot: "arrive off the sandbar, sell, SEE THE DORY" happened inside one 16 × 9 m frame because
+        /// the whole region nearly fitted in one. On the mainland it cannot. You now come ashore from the
+        /// bar 260 m SOUTH of the wharf and walk in; the derelict lies on the hard among the trap stacks,
+        /// 41 m from where a boat lands, and no 9 m-tall frame holds both. Contorting either the wharf or
+        /// the hard to keep the sentence literally true would be bending the place to fit a test.</para>
+        ///
+        /// <para>So the promise is re-derived rather than dropped, and the tests measure what the mainland
+        /// CAN honestly offer: she is on the working spit you cross, nothing built stands in the line from
+        /// where you land to her, and she is nearer the yard that sells her than anything else is. The
+        /// helper stays because it is how you MEASURE the beat if the owner wants it re-staged.</para>
+        /// </summary>
         public static bool IsVisibleFromArrival(Vector2 worldPos) => ArrivalSafeView().Contains(worldPos);
 
         /// <summary>
@@ -203,7 +232,8 @@ namespace HiddenHarbours.App.Editor
             var sr = go.AddComponent<SpriteRenderer>();
             sr.sprite = sprite;
             sr.color = DerelictWash;
-            sr.sortingOrder = SortingOrder;
+            sr.sortingOrder = SortingOrder;   // pre-Play default only; the Y-sort below OWNS the order
+            go.AddComponent<YSortSprite>();
 
             // Solid through her planking only. The lane either side is asserted, not hoped for — a hull
             // parked across the whole quay would wall the player off from the buyer at its root.

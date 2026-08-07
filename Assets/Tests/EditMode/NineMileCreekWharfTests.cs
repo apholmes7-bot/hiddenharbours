@@ -4,27 +4,32 @@ using NUnit.Framework;
 using UnityEngine;
 using HiddenHarbours.App.Editor;
 using HiddenHarbours.Art.Editor;
+using HiddenHarbours.Core;
 using HiddenHarbours.World;
 
 namespace HiddenHarbours.Tests.EditMode
 {
     /// <summary>
-    /// The working quay at Nine Mile Creek — the wharf tile kit's second consumer, and the first one on
-    /// a region that was already authored around its wharf.
+    /// <b>THE SQUARED-U WHARF ON THE MADE SPIT</b> — an 84 × 10 m north wall the fleet moors along, a
+    /// 10 × 48 m west wall carrying the unloading apron, and a 92 m crib breakwater sheltering the basin.
     ///
-    /// <para><b>What these tests are actually protecting.</b> The quay was re-DRESSED, not re-sited: the
-    /// shoreline fence dips around the same rectangle, the dock zone sits on its east tip, and the boat
-    /// parks 3 m off that tip so <c>ControlSwitcher</c>'s pure distance test lets you disembark (owner
-    /// playtest gap #52). Three separate pieces of the builder therefore agree on one rectangle, and the
-    /// cheapest way for that to stop being true is for someone to move the deck by a metre. So the deck
-    /// footprint is checked AGAINST the fence and the dock geometry rather than against a copy of
-    /// itself.</para>
+    /// <para><b>What changed, and why these tests are different in kind.</b> The quay used to be 48 cells
+    /// of the wharf tile kit over an 8 × 6 m deck, and most of this file's ancestor was about the KIT: the
+    /// back-to-front draw order, which auto-tile variant each cell asks for, that a rectangle never needs
+    /// an end cap. None of that survives, because the quay is not drawn here any more — A-1 authors both
+    /// walls as terrain FILLS, and the drawn ISO quay is Phase B's (owner's ruling, 2026-08-07: the old
+    /// kit does not scale to an 84 m wall and is ruled for migration). Testing a draw order that no longer
+    /// happens would be testing nothing.</para>
     ///
-    /// <para>The rest is the kit's own contract: back-to-front draw order with one sorting order per row
-    /// (the 24 px face overhangs the cell below, so a wrong order means a face drawn over its neighbour's
-    /// deck), variants the atlas actually has, and a deck height MEASURED off the authored terrain rather
-    /// than asserted from a comment — the #345 lesson, which is how a pier rooted in the sea was
-    /// caught.</para>
+    /// <para><b>So these test what a quay must be true of whatever it is drawn with:</b> that the walls
+    /// ARE the ground the terrain says is there, that you can stand on them, that a boat lies alongside on
+    /// the ruled gate rather than on dry land, that every berth has something to tie to, and that the
+    /// breakwater shelters the basin without closing the way in.</para>
+    ///
+    /// <para><b>Every bound is DERIVED from <see cref="NineMileCreekMainland"/>, never copied out of
+    /// it</b> — that is what makes the file a check rather than a second copy of the plan. Where a number
+    /// appears below it is because a test needs to say what a metre means (a hull's draught, a walking
+    /// lane), not because the geography was restated.</para>
     /// </summary>
     public class NineMileCreekWharfTests
     {
@@ -36,261 +41,360 @@ namespace HiddenHarbours.Tests.EditMode
             foreach (var o in _spawned)
                 if (o != null) Object.DestroyImmediate(o);
             _spawned.Clear();
+            GameServices.Reset();
         }
 
-        private RectTidalTerrain MakeCreekTerrain()
+        private MainlandTidalTerrain MakeCreekTerrain()
         {
             var go = new GameObject("TidalTerrain");
             _spawned.Add(go);
-            var terrain = go.AddComponent<RectTidalTerrain>();
+            var terrain = go.AddComponent<MainlandTidalTerrain>();
             NineMileCreekBuilder.ConfigureNineMileCreekTerrain(terrain);
             return terrain;
         }
 
-        // ---- 1. the deck is the rectangle the region is already authored around --------------------
+        private static float SpringHigh => NineMileCreekMainland.SpringHighWater;
+        private static float SpringLow => NineMileCreekMainland.SpringLowWater;
+
+        /// <summary>The rectangle a plan fill occupies — computed here the same way the wharf computes it,
+        /// so "the deck IS the fill" is a real comparison rather than a tautology through one helper.</summary>
+        private static Rect RectOfZone(MainlandZone z) =>
+            new Rect(z.Center.x - z.HalfSize.x, z.Center.y - z.HalfSize.y,
+                     z.HalfSize.x * 2f, z.HalfSize.y * 2f);
+
+        private static void AssertSameRect(Rect expected, Rect actual, string what)
+        {
+            Assert.That(actual.xMin, Is.EqualTo(expected.xMin).Within(1e-3f), $"{what}: west edge");
+            Assert.That(actual.xMax, Is.EqualTo(expected.xMax).Within(1e-3f), $"{what}: east edge");
+            Assert.That(actual.yMin, Is.EqualTo(expected.yMin).Within(1e-3f), $"{what}: south edge");
+            Assert.That(actual.yMax, Is.EqualTo(expected.yMax).Within(1e-3f), $"{what}: north edge");
+        }
+
+        // =============================================================================================
+        //  1. the walls ARE the ground — no second copy of the wharf
+        // =============================================================================================
 
         [Test]
-        public void DeckFootprint_MatchesTheTerrainPlateauTheRegionWasAuthoredWith()
+        public void BothWalls_AreExactlyTheFillsTheTerrainStandsThemOn()
         {
-            Rect deck = NineMileCreekWharf.DeckFootprint();
-            Vector2 c = NineMileCreekBuilder.NineMileCreekWharfCenter;
-            Vector2 h = NineMileCreekBuilder.NineMileCreekWharfHalfSize;
-
-            Assert.AreEqual(c.x - h.x, deck.xMin, 1e-4f, "the deck's west root must meet the wharf plateau's west edge");
-            Assert.AreEqual(c.x + h.x, deck.xMax, 1e-4f, "the deck's east head must meet the wharf plateau's east edge");
-            Assert.AreEqual(c.y - h.y, deck.yMin, 1e-4f, "the deck's south lip must meet the wharf plateau's south edge");
-            Assert.AreEqual(c.y + h.y, deck.yMax, 1e-4f, "the deck's north curb must meet the wharf plateau's north edge");
+            AssertSameRect(RectOfZone(NineMileCreekMainland.NorthWallFill),
+                           NineMileCreekWharf.DeckFootprint(),
+                           "the north wall the fleet moors along");
+            AssertSameRect(RectOfZone(NineMileCreekMainland.WestWallFill),
+                           NineMileCreekWharf.ApronFootprint(),
+                           "the west wall carrying the unloading apron");
         }
 
         [Test]
-        public void DockZone_IsOnTheDeckHead_AndDisembark_IsOnThePlanks()
+        public void TheWallsAreTheShapeThePlanDescribes_NotSomethingThatDriftedIntoIt()
         {
-            Rect deck = NineMileCreekWharf.DeckFootprint();
+            Rect north = NineMileCreekWharf.DeckFootprint();
+            Rect west = NineMileCreekWharf.ApronFootprint();
 
-            Assert.AreEqual(deck.xMax, NineMileCreekBuilder.DockZonePos.x, 1e-4f,
-                "the dock zone IS the deck's seaward head — you stop the boat against the concrete, " +
-                "so if the deck moves the dock zone has moved with it or the two have come apart");
-            Assert.IsTrue(deck.yMin <= NineMileCreekBuilder.DockZonePos.y &&
-                          NineMileCreekBuilder.DockZonePos.y <= deck.yMax,
-                "the dock zone must sit against the head, not off one of its corners");
+            Assert.That(north.width, Is.GreaterThan(north.height),
+                "the north wall runs EAST-WEST — it is the long face the fleet lies against");
+            Assert.That(west.height, Is.GreaterThan(west.width),
+                "the west wall runs NORTH-SOUTH — the apron arm of the U");
 
-            Vector2 disembark = NineMileCreekBuilder.DisembarkPos;
-            Assert.IsTrue(deck.Contains(disembark),
-                $"the disembark spot {disembark} must land the on-foot player ON the deck {deck} — " +
-                "stepping ashore into the dredged harbour is the bug this rectangle exists to prevent");
+            // They meet: the U is one structure, not two piers with a gap between them.
+            Assert.That(north.Overlaps(west), Is.True,
+                $"the two walls must join at the U's corner — north {north}, west {west}. A quay in two " +
+                "pieces is two quays, and the fleet would be moored against the gap");
         }
 
         [Test]
-        public void ShorelineFence_DipsAroundExactlyTheDeck()
+        public void TheDeckHeight_IsMEASUREDOffTheTerrain_AndIsTheDeckThePlanAuthored()
         {
-            Rect deck = NineMileCreekWharf.DeckFootprint();
-            var pts = NineMileCreekBuilder.ShorelinePoints;
+            var terrain = MakeCreekTerrain();
 
-            // The fence traces the deck's north edge out to the head, down the head, and back along the
-            // south edge — the dip that makes the wharf a solid peninsula. Every one of those four
-            // corners has to be a corner of THIS rectangle.
-            foreach (var corner in new[]
+            Assert.That(NineMileCreekWharf.DeckElevationFrom(terrain),
+                Is.EqualTo(NineMileCreekMainland.WharfDeckElevation).Within(0.01f),
+                "the deck the sim stands on must be the deck the plan filled to — measured, so that a " +
+                "terrain edit which lowered the wall takes the standing height down with it instead of " +
+                "leaving it quietly lying about where your feet are");
+            Assert.That(NineMileCreekWharf.ApronElevationFrom(terrain),
+                Is.EqualTo(NineMileCreekMainland.WharfDeckElevation).Within(0.01f),
+                "…and the apron is the same deck: a wharf is LEVEL");
+        }
+
+        [Test]
+        public void TheWholeQuay_StaysDryAtSpringHigh()
+        {
+            var terrain = MakeCreekTerrain();
+
+            foreach (Rect deck in NineMileCreekWharf.Decks())
+            foreach (var p in Corners(deck).Append(deck.center))
+            {
+                float ground = terrain.ElevationAt(p);
+                Assert.That(TidalExposure.IsExposed(SpringHigh, ground), Is.True,
+                    $"the quay at {p} stands at {ground:0.00} m against a spring high of {SpringHigh:0.00} m " +
+                    "— a working wharf does not go under. Move the deck; do not lower the tide");
+            }
+        }
+
+        private static IEnumerable<Vector2> Corners(Rect r)
+        {
+            // Half a metre inside each corner: a corner sits exactly on the fill's edge, where the
+            // falloff begins, and the claim is about the DECK rather than about its lip.
+            yield return new Vector2(r.xMin + 0.5f, r.yMin + 0.5f);
+            yield return new Vector2(r.xMax - 0.5f, r.yMin + 0.5f);
+            yield return new Vector2(r.xMin + 0.5f, r.yMax - 0.5f);
+            yield return new Vector2(r.xMax - 0.5f, r.yMax - 0.5f);
+        }
+
+        // =============================================================================================
+        //  2. ⭐ THE RULED GATE — a berth is water, and the shoal is what decides who lies in it
+        // =============================================================================================
+
+        [Test]
+        public void EveryBerth_IsWaterOnTheRuledGate_NotDryLandAndNotTheOpenBay()
+        {
+            var terrain = MakeCreekTerrain();
+
+            for (int i = 0; i < NineMileCreekWharf.BerthCount; i++)
+            {
+                Vector2 berth = NineMileCreekWharf.BerthPos(i);
+                float bed = terrain.ElevationAt(berth);
+
+                Assert.That(bed, Is.EqualTo(NineMileCreekMainland.BasinBedElevation).Within(0.01f),
+                    $"berth {i} at {berth} lies over {bed:0.00} m. The harbour shoal IS the gate " +
+                    "(plan §6): a berth deeper than it would admit hulls the region is meant to " +
+                    "exclude, and one shallower would strand the fleet it is built for");
+            }
+        }
+
+        [Test]
+        public void NoBerth_IsMooredOnTheDeck_OrPastTheEndOfTheWall()
+        {
+            // ⚠ THE DEFECT A-1 CAUGHT IN ITS OWN FIRST DRAFT, kept as a guard: the west wall stood at
+            // x ∈ [85, 95] with the first berth at x = 92.5, i.e. the first two boats were moored ON the
+            // concrete. Re-derived here against the walls the builder actually writes.
+            Rect deck = NineMileCreekWharf.DeckFootprint();
+            Rect apron = NineMileCreekWharf.ApronFootprint();
+
+            for (int i = 0; i < NineMileCreekWharf.BerthCount; i++)
+            {
+                Vector2 berth = NineMileCreekWharf.BerthPos(i);
+
+                Assert.That(deck.Contains(berth), Is.False, $"berth {i} at {berth} is on the north wall's deck");
+                Assert.That(apron.Contains(berth), Is.False, $"berth {i} at {berth} is on the west wall's deck");
+                Assert.That(berth.y, Is.LessThan(NineMileCreekWharf.MooringEdgeY),
+                    $"berth {i} must lie SOUTH of the mooring edge — that is the face with the fleet on it");
+                Assert.That(berth.x, Is.InRange(deck.xMin, deck.xMax),
+                    $"berth {i} at {berth} has run past the end of the wall it is supposed to lie against");
+            }
+        }
+
+        [Test]
+        public void TheGateIsEMERGENT_TheFleetFloatsOnTheFloodAndTakesTheGroundOnTheEbb()
+        {
+            // ⭐ THE REGION'S WHOLE TEETH, as arithmetic. Gating here is not a rule anybody wrote: it is
+            // waterLevel − bed > draught against a −1.6 m shoal under a ±2.2 m swing. A working wharf on a
+            // big-tide coast SHOULD dry out under its fleet at spring low — the ladders and tyre fenders
+            // in the owner's photograph exist for exactly that — and the old region, a dredged −6 m basin,
+            // could not do it at any state of the tide.
+            var terrain = MakeCreekTerrain();
+            float bed = terrain.ElevationAt(NineMileCreekWharf.BerthPos(0));
+
+            const float LobsterBoatDraught = 1.30f;
+            Assert.That(TidalExposure.WaterDepth(SpringHigh, bed), Is.GreaterThan(LobsterBoatDraught),
+                "the lobster boat this berth exists for must float at high water, or the wharf is a wall");
+            Assert.That(TidalExposure.WaterDepth(SpringLow, bed), Is.LessThanOrEqualTo(0f),
+                "…and the basin must BARE at spring low. If it never dries the shoal has stopped being a " +
+                "gate and Nine Mile Creek has quietly become the dredged harbour Port Greywick is");
+        }
+
+        [Test]
+        public void TheBoatParksWhereItCanLie_AndTheApproachIsWaterTheWholeWayIn()
+        {
+            var terrain = MakeCreekTerrain();
+
+            foreach (var (what, p) in new (string, Vector3)[]
                      {
-                         new Vector2(deck.xMin, deck.yMax),
-                         new Vector2(deck.xMax, deck.yMax),
-                         new Vector2(deck.xMax, deck.yMin),
-                         new Vector2(deck.xMin, deck.yMin),
+                         ("the arrival park", NineMileCreekBuilder.ArrivalPos),
+                         ("the dock zone", NineMileCreekBuilder.DockZonePos),
                      })
-                Assert.IsTrue(pts.Any(p => Vector2.Distance(p, corner) < 1e-4f),
-                    $"the shoreline fence must turn at the deck corner {corner} — the fence and the " +
-                    $"planks have drifted apart, so the boat can sail through a wharf that is drawn " +
-                    $"there. Fence: {string.Join(" ", pts)}");
+            {
+                float bed = terrain.ElevationAt(new Vector2(p.x, p.y));
+                Assert.That(bed, Is.LessThanOrEqualTo(NineMileCreekMainland.BasinBedElevation + 0.01f),
+                    $"{what} at {p} sits on {bed:0.00} m — a boat cannot park on the quay");
+                Assert.That(TidalExposure.WaterDepth(SpringHigh, bed), Is.GreaterThan(0.3f),
+                    $"{what} must carry the start dory at high water");
+            }
         }
 
-        // ---- 2. the kit's draw rule, as numbers ---------------------------------------------------
+        // =============================================================================================
+        //  3. ⭐ THE BOLLARD YOU SEE IS THE BOLLARD YOU TIE TO (#451, carried forward per the handoff)
+        // =============================================================================================
 
         [Test]
-        public void EveryDeckRow_GetsItsOwnSortingOrder_SouthDrawnLast()
+        public void EveryBerth_HasABollardOnTheWallBesideIt()
         {
-            var orders = new List<int>();
-            for (int y = NineMileCreekWharf.MaxCellY; y >= NineMileCreekWharf.MinCellY; y--)
-                orders.Add(NineMileCreekWharf.SortingOrderFor(y));
+            var bollards = NineMileCreekWharf.Fittings()
+                                             .Where(f => f.Name == "bollard")
+                                             .Select(f => f.Position.x)
+                                             .ToList();
 
-            Assert.AreEqual(NineMileCreekWharf.WidthCells, orders.Distinct().Count(),
-                "the deck's 24 px face overhangs the cell below it, so every row needs its OWN order or " +
-                "a face is drawn over its southern neighbour's deck. The band is only six wide — a " +
-                "wharf that outgrows it has to stop being a plain sprite set");
+            Assert.That(bollards.Count, Is.EqualTo(NineMileCreekWharf.BerthCount),
+                "one bollard per berth is what 'there is always one where you come alongside' means. " +
+                "Derived from the berth line, so the two cannot drift apart");
 
-            for (int i = 1; i < orders.Count; i++)
-                Assert.Greater(orders[i], orders[i - 1],
-                    "north rows draw first/behind and south rows last/in front — the kit's back-to-front rule");
+            for (int i = 0; i < NineMileCreekWharf.BerthCount; i++)
+                Assert.That(bollards, Has.Some.EqualTo(NineMileCreekWharf.BerthPos(i).x).Within(1e-3f),
+                    $"berth {i} has no bollard beside it");
+        }
 
-            foreach (int o in orders)
+        [Test]
+        public void EveryFitting_StandsOnTheQuay_NotOverTheBasin()
+        {
+            foreach (var f in NineMileCreekWharf.Fittings())
+                Assert.That(NineMileCreekWharf.Decks().Any(d => d.Contains(f.Position)), Is.True,
+                    $"the {f.Name} at {f.Position} is not on either wall — a fitting hanging over the " +
+                    "basin is a fitting nobody can reach");
+        }
+
+        [Test]
+        public void EveryMooringFitting_BecomesARealCleat_AndTheKitDecidesWhichOnesThoseAre()
+        {
+            var fittings = NineMileCreekWharf.Fittings();
+            int expected = fittings.Count(f => WharfKitCatalog.IsMooringFitting(f.Name));
+
+            Assert.That(NineMileCreekWharf.MooringFittingCount(), Is.EqualTo(expected));
+            Assert.That(expected, Is.GreaterThanOrEqualTo(NineMileCreekWharf.BerthCount),
+                "at least one tie-off per berth, or a boat can be moored where no rope can be made fast");
+
+            // The kit's own list is the decider — a tyre is a fender, not a tie-off, and this file must
+            // not have an opinion about that.
+            Assert.That(WharfKitCatalog.IsMooringFitting("tyre"), Is.False);
+            Assert.That(WharfKitCatalog.IsMooringFitting("ladder"), Is.False);
+        }
+
+        [Test]
+        public void TheFittingsAreOnesTheKitActuallyPublishes()
+        {
+            foreach (var f in NineMileCreekWharf.Fittings())
             {
-                Assert.GreaterOrEqual(o, NineMileCreekWharf.SortingOrderMin);
-                Assert.LessOrEqual(o, NineMileCreekWharf.SortingOrderMax);
+                Assert.That(WharfKitCatalog.Fittings, Contains.Item(f.Name),
+                    $"'{f.Name}' is not a fitting the kit bakes — it would place nothing, silently");
+                // Throws on an unknown name, which is the point.
+                Assert.That(WharfKitCatalog.FittingSlice(f.Name), Is.Not.Null.And.Not.Empty);
             }
         }
 
         [Test]
-        public void TheWholeDeckBand_SitsAboveTheSeaPlane_AndBelowTheCharacters()
+        public void NoTwoFittings_ShareAMetreOfLip()
         {
-            // The Sea plane the builder lays down, and the first order YSortSprite's character band uses.
-            const int seaSortingOrder = -5;
-            const int characterBandStart = 2;
+            var lip = NineMileCreekWharf.Fittings()
+                                        .Where(f => Mathf.Approximately(f.Position.y, NineMileCreekWharf.MooringEdgeY))
+                                        .OrderBy(f => f.Position.x)
+                                        .ToList();
 
-            Assert.Greater(NineMileCreekWharf.SortingOrderMin, seaSortingOrder,
-                "a wharf stands OVER the water: if the deck's northmost row is not above the Sea plane " +
-                "the harbour is drawn on top of its own quay");
-            Assert.Less(NineMileCreekWharf.SortingOrderMax, characterBandStart,
-                "and under the people standing on it");
-            Assert.Greater(NineMileCreekWharf.BreakwaterSortingOrder, seaSortingOrder,
-                "the breakwater has to be above the sea it is armour against, or the harbour is drawn " +
-                "over its own arm");
+            for (int i = 1; i < lip.Count; i++)
+                Assert.That(lip[i].Position.x - lip[i - 1].Position.x, Is.GreaterThanOrEqualTo(1f),
+                    $"the {lip[i - 1].Name} and the {lip[i].Name} are stacked on the same metre of the " +
+                    "wall face — hung gear reads as one broken object when it overlaps");
         }
+
+        // =============================================================================================
+        //  4. the breakwater shelters the basin without closing the way in
+        // =============================================================================================
 
         [Test]
-        public void DeckCellsBackToFront_CoverEveryCell_NorthRowsFirst()
+        public void TheBreakwater_IsTheArmThePlanFilled()
         {
-            var cells = NineMileCreekWharf.DeckCellsBackToFront().ToList();
-
-            Assert.AreEqual(NineMileCreekWharf.LengthCells * NineMileCreekWharf.WidthCells, cells.Count,
-                "every cell of the rectangle is placed exactly once");
-            Assert.AreEqual(cells.Count, cells.Distinct().Count(), "no cell is placed twice");
-
-            for (int i = 1; i < cells.Count; i++)
-                Assert.LessOrEqual(cells[i].y, cells[i - 1].y,
-                    "the iteration order IS the draw order — it must never step back north");
+            AssertSameRect(RectOfZone(NineMileCreekMainland.BreakwaterFill),
+                           NineMileCreekWharf.BreakwaterFootprint(),
+                           "the crib breakwater");
         }
-
-        // ---- 3. the variants are ones the atlas actually has --------------------------------------
-
-        [Test]
-        public void EveryDeckCell_AsksTheAtlasForASliceItHas()
-        {
-            foreach (var cell in NineMileCreekWharf.DeckCellsBackToFront())
-            {
-                string variant = NineMileCreekWharf.DeckVariantAt(cell.x, cell.y);
-                Assert.Contains(variant, WharfKitCatalog.DeckVariants,
-                    $"cell {cell} asks for a variant the kit does not publish");
-
-                // Throws on an unknown material/variant, which is the point: a typo here would place a
-                // silently wrong tile rather than fail.
-                int index = WharfKitCatalog.AtlasIndex(NineMileCreekWharf.DeckMaterial, variant);
-                Assert.GreaterOrEqual(index, 0);
-                Assert.Less(index, WharfKitCatalog.AtlasCols * WharfKitCatalog.AtlasRows);
-            }
-        }
-
-        [Test]
-        public void ARectangleNeverNeedsACapOrADiagonal()
-        {
-            var used = NineMileCreekWharf.DeckCellsBackToFront()
-                                         .Select(c => NineMileCreekWharf.DeckVariantAt(c.x, c.y))
-                                         .Distinct()
-                                         .ToList();
-
-            foreach (string v in used)
-                Assert.IsFalse(v.StartsWith("cap") || v.StartsWith("di"),
-                    $"'{v}' is an end cap or a 45° cut — reaching for one means the quay has stopped " +
-                    "being a rectangle, and the fence and dock geometry have not been told");
-
-            Assert.Contains("ctr", used, "an 8 × 6 deck has an interior");
-            foreach (string corner in new[] { "coNW", "coNE", "coSW", "coSE" })
-                Assert.Contains(corner, used, "…and four outer corners");
-        }
-
-        [Test]
-        public void TheDeckMaterial_IsTheConcreteRow_NotTheIslandsTimber()
-        {
-            Assert.Contains(NineMileCreekWharf.DeckMaterial, WharfKitCatalog.DeckMaterials);
-            Assert.AreEqual("quay", NineMileCreekWharf.DeckMaterial,
-                "design/nine-mile-creek-wharf.md §3's build table names the concrete 'quay' row for this " +
-                "wharf. The island's own dock is deliberately the rung below it in the same kit's " +
-                "age/means gradient, so the two harbours are told apart by their material before a " +
-                "single label is read — changing this collapses that read");
-        }
-
-        // ---- 4. the deck height is MEASURED, not claimed -------------------------------------------
-
-        [Test]
-        public void DeckElevation_IsMeasuredOffTheTerrain_AndIsDryAtEveryTide()
-        {
-            var terrain = MakeCreekTerrain();
-            float deck = NineMileCreekWharf.DeckElevationFrom(terrain);
-
-            Assert.AreEqual(NineMileCreekBuilder.NineMileCreekLandElevation, deck, 0.01f,
-                "the deck is level with the ground it launches from — the wharf plateau");
-
-            // The live tide is the START region's, not this region's own: nothing re-points the tide per
-            // region yet, so the start scene's profile is what actually runs here — RegionValidation's
-            // WidestSwing exists for exactly this, and names the Nine Mile Creek builder's caveat as its
-            // reason. The creek's own authored swing (±0.8 m, the gentle market harbour) is strictly
-            // inside the island's, so the island's is the envelope that has to be cleared.
-            var live = RegionValidation.SwingOf(StPetersBuilder.TideMean, StPetersBuilder.TideAmplitude);
-
-            Assert.Greater(deck, live.High,
-                $"the quay stands at {deck:0.00} m against a spring high of {live.High:0.00} m — a " +
-                "working wharf does not go under. Move the deck; do not lower the tide");
-        }
-
-        [Test]
-        public void TheDeckHeadStandsOverWater_SoTheQuayIsAWharfAndNotACauseway()
-        {
-            var terrain = MakeCreekTerrain();
-
-            // Just seaward of the head: the dredged harbour, which is what a boat comes alongside into.
-            float seabed = terrain.ElevationAt(new Vector2(NineMileCreekBuilder.DockZonePos.x + 1.5f, 0f));
-            Assert.Less(seabed, 0f,
-                $"the ground {seabed:0.00} m off the wharf head is above chart datum — the boat would " +
-                "ground where it is supposed to lie alongside");
-        }
-
-        // ---- 5. the breakwater shelters the basin without closing the approach ---------------------
 
         [Test]
         public void TheBreakwater_IsAContiguousCribRun_CappedAtTheSeawardTip()
         {
             var blocks = NineMileCreekWharf.BreakwaterBlocks();
-            Assert.AreEqual(NineMileCreekWharf.BreakwaterBlockCount, blocks.Count);
-            Assert.Greater(blocks.Count, 1, "an arm of one block is not an arm");
-
-            Assert.Contains(NineMileCreekWharf.BreakwaterArmour, WharfKitCatalog.ArmourTypes);
+            Assert.That(blocks.Count, Is.EqualTo(NineMileCreekWharf.BreakwaterBlockCount));
+            Assert.That(blocks.Count, Is.GreaterThan(1), "an arm of one block is not an arm");
+            Assert.That(WharfKitCatalog.ArmourTypes, Contains.Item(NineMileCreekWharf.BreakwaterArmour));
 
             for (int i = 0; i < blocks.Count; i++)
             {
                 string expected = i == blocks.Count - 1 ? "end" : "straight";
-                Assert.AreEqual(expected, blocks[i].Name,
+                Assert.That(blocks[i].Name, Is.EqualTo(expected),
                     "the tileable run carries the arm and the battered cap finishes it");
-                Assert.Contains(blocks[i].Name, WharfKitCatalog.ArmourVariants);
-                Assert.GreaterOrEqual(
-                    WharfKitCatalog.BreakwaterIndex(NineMileCreekWharf.BreakwaterArmour, blocks[i].Name), 0);
+                Assert.That(WharfKitCatalog.ArmourVariants, Contains.Item(blocks[i].Name));
             }
 
             // The positions are CENTRES (the armour sheet pivots top-centre), so the run must butt the
             // arm's west end and stay inside its east end — a half-block on the beach is the failure.
             float half = NineMileCreekWharf.ArmourWidthMetres * 0.5f;
-            Assert.AreEqual(NineMileCreekWharf.BreakwaterWestX, blocks[0].Position.x - half, 1e-4f);
-            Assert.LessOrEqual(blocks[blocks.Count - 1].Position.x + half,
-                               NineMileCreekWharf.BreakwaterEastX + 1e-4f);
+            Assert.That(blocks[0].Position.x - half,
+                Is.EqualTo(NineMileCreekWharf.BreakwaterWestX).Within(1e-3f));
+            Assert.That(blocks[blocks.Count - 1].Position.x + half,
+                Is.LessThanOrEqualTo(NineMileCreekWharf.BreakwaterEastX + 1e-3f));
             for (int i = 1; i < blocks.Count; i++)
-                Assert.AreEqual(NineMileCreekWharf.ArmourWidthMetres,
-                                blocks[i].Position.x - blocks[i - 1].Position.x, 1e-4f,
-                                "gaps in a breakwater are holes the sea comes through");
+                Assert.That(blocks[i].Position.x - blocks[i - 1].Position.x,
+                    Is.EqualTo(NineMileCreekWharf.ArmourWidthMetres).Within(1e-3f),
+                    "gaps in a breakwater are holes the sea comes through");
         }
 
         [Test]
-        public void TheBreakwater_LeavesTheApproachAndTheDeckClear()
+        public void TheBreakwater_LeavesTheBasinAndTheWayHomeClear()
         {
             Rect deck = NineMileCreekWharf.DeckFootprint();
-            Assert.Less(NineMileCreekWharf.BreakwaterY, deck.yMin,
+            Assert.That(NineMileCreekWharf.BreakwaterY, Is.LessThan(deck.yMin),
                 "the arm lies south of the basin, not across the quay it shelters");
 
-            // You come in from the EAST and stop against the head. Neither the park nor the dock zone may
-            // be south of the arm, or the arrival is walled off from the wharf it arrives at.
-            foreach (var p in new[] { NineMileCreekBuilder.ArrivalPos, NineMileCreekBuilder.DockZonePos,
-                                      NineMileCreekBuilder.DisembarkPos })
-                Assert.Greater(p.y, NineMileCreekWharf.BreakwaterY,
-                    $"{p} is on the seaward side of the breakwater — the boat would have to cross it");
+            foreach (var (what, p) in new (string, Vector3)[]
+                     {
+                         ("the arrival park", NineMileCreekBuilder.ArrivalPos),
+                         ("the dock zone", NineMileCreekBuilder.DockZonePos),
+                         ("the step ashore", NineMileCreekBuilder.DisembarkPos),
+                     })
+                Assert.That(p.y, Is.GreaterThan(NineMileCreekWharf.BreakwaterY),
+                    $"{what} at {p} is on the seaward side of the arm — the boat would have to cross it");
 
-            // The return passage east to the cove has to stay outside the arm's reach too.
-            Assert.Greater(NineMileCreekBuilder.ToCovePassagePos.x, NineMileCreekWharf.BreakwaterEastX,
+            Assert.That(NineMileCreekBuilder.ToCovePassagePos.x,
+                Is.GreaterThan(NineMileCreekWharf.BreakwaterEastX),
                 "the passage home must be clear of the arm's seaward tip");
+        }
+
+        [Test]
+        public void TheBreakwaterHead_IsWhereTheBeaconStands()
+        {
+            Vector3 beacon = NineMileCreekMainland.HarbourBeaconPos;
+            Assert.That(NineMileCreekWharf.BreakwaterFootprint().Contains(beacon), Is.True,
+                $"the range light at {beacon} must stand ON the arm it marks — a beacon in the water is " +
+                "a beacon nobody built");
+            Assert.That(beacon.x, Is.GreaterThan(NineMileCreekWharf.BreakwaterFootprint().center.x),
+                "…and at its SEAWARD end, which is the end a boat coming in has to find");
+        }
+
+        // =============================================================================================
+        //  5. the stack — read off the partition, not typed
+        // =============================================================================================
+
+        [Test]
+        public void TheWharfsStructureBand_IsThePartitionsOwn()
+        {
+            Assert.That(NineMileCreekWharf.SortingOrderMin, Is.EqualTo(SortingBands.WharfDeckMin));
+            Assert.That(NineMileCreekWharf.SortingOrderMax, Is.EqualTo(SortingBands.WharfDeckMax));
+
+            Assert.That(NineMileCreekWharf.BreakwaterSortingOrder, Is.GreaterThan(SortingBands.Sea),
+                "the breakwater has to be above the sea it is armour against, or the harbour is drawn " +
+                "over its own arm");
+            Assert.That(NineMileCreekWharf.BreakwaterSortingOrder, Is.LessThan(SortingBands.DecorFloor),
+                "…and below everything that stands on the coast");
+        }
+
+        [Test]
+        public void TheGreyboxGround_DrawsUnderTheSea_SoTheWetDryClipDecidesWhatYouSee()
+        {
+            Assert.That(NineMileCreekBuilder.GroundSortingOrder, Is.LessThan(SortingBands.Sea),
+                "the ground plane must sit UNDER the sea plane: the shader's wet-dry clip is what shows " +
+                "ground where the terrain is bared and water where it is not. Above the sea it would " +
+                "paint the whole bay green");
+            Assert.That(NineMileCreekBuilder.GroundSortingOrder,
+                Is.GreaterThanOrEqualTo(SortingBands.PaintedSeabedMax),
+                "…but above the painted seabed, which is the rung below it");
         }
     }
 }
