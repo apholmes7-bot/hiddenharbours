@@ -984,6 +984,31 @@ namespace HiddenHarbours.Player
         private void OnDisable() => CancelBoardingMove(restorePosition: true);
 
         /// <summary>
+        /// <b>THE PLAYER IS SCREEN-UPRIGHT WHENEVER THEY RIDE A BOAT</b> — in every mode, not only while
+        /// deck-walking.
+        ///
+        /// <para>This is the invariant <see cref="ApplyPlayerFor"/> states for the ashore case
+        /// (<c>if (!ridesBoat) Player.rotation = identity</c>) and that the fisher on deck has always had
+        /// from <see cref="DeckWalkController"/>'s own LateUpdate stomp. The gap was the HELM: the switcher
+        /// disables the deck walk there, so nothing squared the root, and the player object quietly inherited
+        /// the rotation of the hull's physics body it is parented to. That cost nothing for as long as the
+        /// figure at the helm was HIDDEN — and became the owner's 2026-08-07 defect the moment #445 drew the
+        /// pilot, who then lay over further with every degree the boat turned (<i>"slowly lose reference and
+        /// spin horizontally"</i>).</para>
+        ///
+        /// <para>It belongs here rather than in the rider because this is the component that PARENTED them to
+        /// a rotating body, it is present in every rig (a rider is optional), and it therefore also covers
+        /// anything else ever parked on the player. LateUpdate for the same reason the deck walk uses it: the
+        /// hull's rotation is written by physics, so squaring in Update would be a step stale by the time
+        /// anything is drawn. Idempotent and free when already square.</para>
+        /// </summary>
+        private void LateUpdate()
+        {
+            if (Mode == ControlMode.OnFoot || Player == null) return;
+            if (Player.rotation != Quaternion.identity) Player.rotation = Quaternion.identity;
+        }
+
+        /// <summary>
         /// LEAVE-THE-HELM DRIFT (boats-and-navigation.md §3 "leave the helm, work the rail"; Rod
         /// Fishing v2 §4.1 — you fish unmanned): while the player is ON DECK nobody is steering, but the
         /// sea keeps working the hull — she sets with the current, is shoved by the wind and slewed by
