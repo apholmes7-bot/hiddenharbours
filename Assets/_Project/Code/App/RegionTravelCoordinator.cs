@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using HiddenHarbours.Core;
 using HiddenHarbours.Boats;
 using HiddenHarbours.Player;
 
@@ -51,13 +52,37 @@ namespace HiddenHarbours.App
         /// target. Idempotent.</para>
         /// </summary>
         public static void ApplyArrival(Transform player, Transform boat, ControlSwitcher switcher, RegionAnchor anchor)
+            => ApplyArrival(player, boat, switcher, anchor, null);
+
+        /// <summary>
+        /// <inheritdoc cref="ApplyArrival(Transform, Transform, ControlSwitcher, RegionAnchor)"/>
+        ///
+        /// <para><paramref name="arrivalKey"/> names WHICH WAY IN the player took — the key the
+        /// <c>RegionPassage</c> they crossed published. It selects among the region's
+        /// <see cref="NamedArrival"/>s; null, empty or unmatched means the region's own single arrival,
+        /// which is every region built before Nine Mile Creek's mainland.</para>
+        ///
+        /// <para><b>⚠ The DOCK keeps the region's own step-off spot, never the arrival's.</b>
+        /// <c>SetDock</c> says where you land when you get OFF THE BOAT, and that is a property of the
+        /// wharf — it is true for the whole visit, not just for the moment you turned up. Passing the
+        /// per-passage point in here would mean walking in over the tidal bar re-pointed every later
+        /// disembark at the bar landing, so a player who moored at the wharf would step off it onto a
+        /// beach 400 m away. Where you ARRIVE and where you STEP ASHORE are two different questions and
+        /// only the first one is the passage's to answer.</para>
+        /// </summary>
+        public static void ApplyArrival(Transform player, Transform boat, ControlSwitcher switcher,
+                                        RegionAnchor anchor, string arrivalKey)
         {
             if (anchor == null) return;
-            if (boat != null && anchor.ArrivalPoint != null) boat.position = anchor.ArrivalPoint.position;
-            if (player != null && anchor.DisembarkPoint != null) player.position = anchor.DisembarkPoint.position;
+
+            Transform arrivalPoint = anchor.ArrivalPointFor(arrivalKey);
+            Transform landingPoint = anchor.DisembarkPointFor(arrivalKey);
+
+            if (boat != null && arrivalPoint != null) boat.position = arrivalPoint.position;
+            if (player != null && landingPoint != null) player.position = landingPoint.position;
             if (switcher != null)
             {
-                switcher.SetDock(anchor.DockZone, anchor.DisembarkPoint);
+                switcher.SetDock(anchor.DockZone, anchor.DisembarkPoint);   // the WHARF's step-off — see above
                 switcher.ReassertControlMode();   // re-enable the active boat/foot controller after the toggle
             }
         }
@@ -66,11 +91,24 @@ namespace HiddenHarbours.App
 
         private void OnActiveSceneChanged(Scene previous, Scene next)
         {
+            // WHICH WAY IN, taken once. Consumed here whether or not the arrived region has named
+            // arrivals, so a key can never survive its own crossing and steer the next one.
+            string arrivalKey = GameServices.ConsumePendingArrivalKey();
+
             SetSceneRootsActive(previous, false);   // the region we left (persistents already DDOL'd out)
             SetSceneRootsActive(next, true);
             SilenceRegionCamera(next);              // the persistent core's camera/listener are the live ones
             BindHoldProxies(next);
-            ApplyArrival(_player, _boat, _switcher, RegionAnchor.ForScene(next));
+
+            var anchor = RegionAnchor.ForScene(next);
+            // A key the region does not answer to is a MIS-WIRE, not a style: the player lands at the
+            // default and everything looks fine, which is exactly how a passage pointed at a renamed
+            // arrival stays broken. Say so once, then fall back.
+            if (anchor != null && !string.IsNullOrEmpty(arrivalKey) && !anchor.HasArrival(arrivalKey))
+                Debug.LogWarning($"[RegionTravelCoordinator] Passage asked for arrival '{arrivalKey}' in " +
+                                 $"'{anchor.RegionId}', which authors no such way in — landing at the " +
+                                 "region's default instead.", anchor);
+            ApplyArrival(_player, _boat, _switcher, anchor, arrivalKey);
 
             // The boat was just teleported to the arrival point — bring it to rest there so a residual
             // velocity from the previous region doesn't carry it off the mark once the controller re-enables.
