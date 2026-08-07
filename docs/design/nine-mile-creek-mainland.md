@@ -1,7 +1,9 @@
 # Nine Mile Creek — the mainland (Phase A: the geography)
 
-> **Status:** Phase A geography **PROPOSED and BUILT AS DATA + TESTS**, awaiting the owner's first
-> in-editor scene build. Subordinate to [`../vision-and-pillars.md`](../vision-and-pillars.md) (canon),
+> **Status:** Phase A **COMPLETE IN CODE.** A-1 built the geography as data + tests; **A-2 wired the
+> builder, moved every site onto it, changed the `RegionDef`, and rewrote the six coupled test files.**
+> Awaiting the owner's first in-editor scene build + seabed bake (§8.3) — that is the only step left.
+> Subordinate to [`../vision-and-pillars.md`](../vision-and-pillars.md) (canon),
 > [`world-and-regions.md`](world-and-regions.md) (what the region *is*) and
 > [`scene-sizing-and-world-scale.md`](scene-sizing-and-world-scale.md) (how big it may be).
 > The wharf's own brief is [`nine-mile-creek-wharf.md`](nine-mile-creek-wharf.md).
@@ -304,9 +306,17 @@ is the coordinator's open question**, not world-content's to close.
 Nothing in this list has to be re-decided, and nothing Phase B lands on has to be torn out first. All of
 it is in `NineMileCreekMainland.cs`.
 
+> **⭐ RULED 2026-08-07 (owner), settled in A-2: the quay is authored as GROUND, and Phase B draws it.**
+> A-2 registers both walls as standable floor at their measured deck height, places the mooring
+> fittings and gives every one of them a real `ShoreCleat` — and draws no quay at all. The old wharf
+> tile kit put one sprite on every square metre against a six-order sorting band; these walls are
+> 84 × 10 m and 10 × 48 m, so it would be 1 320 GameObjects and a band ten rows too narrow, for a kit
+> already ruled for migration to the ISO pack. The walls are terrain fills, so the height field already
+> knows the quay is there.
+
 | Phase B will build | Phase A has positioned |
 |---|---|
-| The quay from ISO pieces | **North wall** 84 × 10 m at `(128, 92)`; **west wall** 10 × 48 m at `(87, 68)`; deck +3.0 m; the tall face measured (§6) |
+| The quay from ISO pieces | **North wall** 84 × 10 m at `(128, 92)`; **west wall** 10 × 48 m at `(87, 68)`; deck +3.0 m; the tall face measured (§6). **A-2 makes both STANDABLE and cleated; the drawing is Phase B's** |
 | Moorings, finger piers, fenders, ladders | **14 berths** at 5.5 m spacing from `(98, 85)` along the north wall's **south** face — the one edge the kit gives a tall face to |
 | **Bollards / shore cleats** ⭐ *added 2026-08-06* | **A-2 must carry these, not Phase B.** #451 made shore cleats real: `NineMileCreekWharf.PlaceMooringCleats` gives every mooring fitting on the quay a `ShoreCleat`, derived from the **same fittings table that positions the bollard sprites** — so the bollard you can see is the bollard you can tie to. When A-2 moves the wharf onto this geography the fittings table moves with it, or that guarantee quietly breaks. It takes `deckElevation`, which is now **+3.0 m** here rather than St Peters' +5.35 m |
 | The crib breakwater | A **92 m south arm** at `(140, 38)`, crest +3.4 m, and the ~50 m entrance it leaves |
@@ -314,7 +324,7 @@ it is in `NineMileCreekMainland.cs`.
 | Bait shed · trap store · fish holds | `(136, 132)` · `(148, 130)` · `(120, 112)`. **No `fishPlant` / `cannery`** — the owner's "no processing here yet" |
 | The shanty row | Five sheds at 14 m spacing along `y = 132` (the photograph shows eight; five reads as the same place at this scale) |
 | Buyers' trucks + parking | `(92, 118)` / `(88, 110)` |
-| The derelict dory on the hard | `(70, 118)` — at the wharf, per the 2026-07-25 rider |
+| The derelict dory on the hard | `(70, 118)` — at the wharf, per the 2026-07-25 rider. **A-2 added the `DoryYardPos` `(64, 112)` she is bought off**, 8.5 m away and off the landing→dory sightline: the boat you are SHOWN must be the boat you are SOLD |
 | The boat ramp | Head `(66, 100)` → toe `(78, 90)`; deliberately **not** authored into terrain — a ramp is dressing |
 | Harbour beacon / range light | The breakwater head `(184, 38)`. *(The "small lighthouse on the point" in `world-and-regions.md` §6.3 belongs to Greywick; a community wharf gets a range light.)* |
 | **The utility-pole route** | **Along Wharf Road, 5 m to its north, at 40 m spacing**, town → wharf, ending at the yard light |

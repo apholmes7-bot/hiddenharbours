@@ -66,7 +66,7 @@ namespace HiddenHarbours.Tests.EditMode
             var go = new GameObject("TidalTerrain");
             try
             {
-                var terrain = go.AddComponent<RectTidalTerrain>();
+                var terrain = go.AddComponent<MainlandTidalTerrain>();
                 NineMileCreekBuilder.ConfigureNineMileCreekTerrain(terrain);
 
                 foreach (var house in NineMileCreekFlavour.Houses)
@@ -84,13 +84,20 @@ namespace HiddenHarbours.Tests.EditMode
         public void TheSpringHighUsedForSitingIsTheWidestThatCanReachTheRegion()
         {
             // Nothing re-points the tide per region yet, so the START scene's swing is what actually runs
-            // here — checking a house against Nine Mile Creek's own gentle ±0.8 m would pass a site that
-            // the live tide covers.
+            // here. The two are now IDENTICAL — the recreation gave the mainland St Peters' tide verbatim,
+            // because the tidal bar spans the seam between them and two tides means two bars — so the fold
+            // is a no-op today. It is kept, and asserted, precisely BECAUSE it is a no-op: the day
+            // somebody re-tunes one of the two, siting must follow the bigger of them rather than silently
+            // keeping the smaller.
             Assert.GreaterOrEqual(NineMileCreekBuilder.SpringHighWater,
                                   NineMileCreekBuilder.TideMean + NineMileCreekBuilder.TideAmplitude);
             Assert.GreaterOrEqual(NineMileCreekBuilder.SpringHighWater,
                                   StPetersBuilder.TideMean + StPetersBuilder.TideAmplitude,
-                "the live tide is the start scene's, and it is the bigger of the two");
+                "siting must clear the widest swing that can actually reach this region");
+
+            Assert.AreEqual(StPetersBuilder.TideAmplitude, NineMileCreekBuilder.TideAmplitude, 1e-4f,
+                "⭐ the two halves of ONE tidal bar must run one tide: a crossing that spans a region " +
+                "seam is dry on one side and flooded on the other the moment they differ");
         }
 
         [Test]

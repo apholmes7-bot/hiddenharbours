@@ -40,10 +40,55 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void NineMileCreekArrival_IsEastOfItsDock_EnterFromTheEast()
         {
-            // You cross heading west and enter Nine Mile Creek from the EAST, so the arrival sits east of the wharf
-            // head and you continue WEST onto the deck.
+            // You cross heading west and enter Nine Mile Creek from the EAST, so the arrival sits east of
+            // the dock zone and you come alongside heading west up the wall's face.
             Assert.Greater(NineMileCreekBuilder.ArrivalPos.x, NineMileCreekBuilder.DockZonePos.x,
-                "the Nine Mile Creek arrival must be EAST of the dock zone (enter from the east, continue west to the wharf)");
+                "the Nine Mile Creek arrival must be EAST of the dock zone (enter from the east, come " +
+                "alongside heading west)");
+        }
+
+        // ---- ⭐ THE OTHER crossing: the tidal bar out to St Peters ---------------------------------
+
+        [Test]
+        public void TheBarToStPeters_LeavesTheMainlandShoreHeadingESE()
+        {
+            // The overhead is the layout truth: St Peters lies offshore to the SOUTH-EAST, and the bar
+            // leaves the mainland shore heading east-south-east to reach it. Measured off the plan's own
+            // bar rather than restated, so a re-aim re-checks this.
+            Vector2 run = NineMileCreekMainland.BarTo - NineMileCreekMainland.BarFrom;
+
+            Assert.Greater(run.x, 0f, "the bar runs OUT TO SEA, and the sea is east");
+            Assert.Less(run.y, 0f, "…and southward, because the island lies off the SOUTH-east");
+            Assert.Greater(Mathf.Abs(run.x), Mathf.Abs(run.y),
+                "east must be the dominant axis: ESE, not SSE. A bar running mostly south would leave the " +
+                "region through its own coast instead of crossing the bay");
+        }
+
+        [Test]
+        public void TheSeamBand_SitsBeyondTheBarsTip_SoYouCrossItLEAVING()
+        {
+            Vector2 tip = NineMileCreekMainland.BarTo;
+            Vector2 band = NineMileCreekMainland.ToStPetersPassagePos;
+            Vector2 axis = (NineMileCreekMainland.BarTo - NineMileCreekMainland.BarFrom).normalized;
+
+            Assert.Greater(Vector2.Dot(band - tip, axis), 0f,
+                "the passage band must lie PAST the tip along the bar's own axis — a band short of it " +
+                "fires while you are still walking your own region's half of the crossing");
+        }
+
+        [Test]
+        public void TheWalkInArrival_LandsYouAtTheSeam_NotBackAshore()
+        {
+            // The mainland owns 305 m of the 610 m crossing. You are handed over mid-flats and walk the
+            // rest; an arrival back at the landing would skip the half this region exists to carry.
+            Vector2 landing = NineMileCreekMainland.CoastPoints[2];   // ⭐ THE BAR LANDING
+            Vector2 arrival = NineMileCreekMainland.WalkArrivalPos;
+
+            Assert.Less(Vector2.Distance(arrival, NineMileCreekMainland.BarTo), 20f,
+                $"the walk-in arrival {arrival} must land you at the SEAM ({NineMileCreekMainland.BarTo}), " +
+                "which is where the other region handed you over");
+            Assert.Greater(Vector2.Distance(arrival, landing), 100f,
+                "…and emphatically not ashore: the walk in IS this region's half of the crossing");
         }
 
         [Test]
