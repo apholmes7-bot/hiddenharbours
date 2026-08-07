@@ -5,10 +5,12 @@
 # TRIAGING A RED X — start from the verdict, not the per-step conclusions. The job's final
 # step ("Red X verdict — environment fault or code failure?") runs only when the job fails
 # and posts a one-line diagnosis as an ::error:: annotation (the box at the top of the run
-# page and the PR checks tab) plus a step-summary heading. It says either ENVIRONMENT FAULT
+# page and the PR checks tab) plus a step-summary heading. It says ENVIRONMENT FAULT
 # (hub install, license activation, or checkout died before any test ran — not your code;
-# re-run the job) or TESTS RAN AND FAILED (read the "Summarise test failures" output for the
-# failing tests). On green runs the verdict step shows as skipped.
+# re-run the job), ACCOUNT BILLING (the Git LFS budget is exhausted — re-runs cannot pass;
+# the owner must raise the budget in GitHub billing settings), or TESTS RAN AND FAILED
+# (read the "Summarise test failures" output for the failing tests). On green runs the
+# verdict step shows as skipped.
 #
 # WHY BUILDALON (and not GameCI): Unity 6 issues a machine-bound "entitlement" license,
 # and Unity removed manual `.ulf` activation for free Personal licenses back in ~2023.
@@ -64,10 +66,45 @@ jobs:
     name: EditMode + PlayMode tests
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout (with LFS)
+      # WHY LFS IS CACHED (not `lfs: true` on checkout): checkout with `lfs: true` downloads
+      # the full ~227 MB LFS object set from GitHub's LFS store on EVERY run. At ~164 runs in
+      # the first six days of Aug 2026 that was ~36 GB of LFS bandwidth — which exhausted the
+      # account's Git LFS budget on 2026-08-06. Instead: plain checkout (pointer files only),
+      # restore `.git/lfs` from the actions cache keyed on the LFS manifest, then `git lfs
+      # pull` fetches only the objects the cache lacks. An unchanged LFS set costs ~zero LFS
+      # bandwidth per run. (The actions cache only saves on a green job, so the first green
+      # run after a change pays the download once and later runs ride the cache.)
+      - name: Checkout (LFS pointers only)
         uses: actions/checkout@v4
         with:
-          lfs: true
+          lfs: false
+
+      - name: Compute LFS manifest (cache key)
+        shell: bash
+        run: git lfs ls-files -l | cut -d' ' -f1 | sort > .lfs-assets-id
+
+      - name: Cache LFS objects
+        uses: actions/cache@v4
+        with:
+          path: .git/lfs
+          key: lfs-${{ hashFiles('.lfs-assets-id') }}
+          restore-keys: |
+            lfs-
+
+      - name: Pull LFS objects
+        id: lfs_pull
+        shell: bash
+        run: |
+          # The pull log is tee'd so the Red X verdict step can tell an exhausted LFS budget
+          # (account billing — a re-run cannot fix it) apart from a transient checkout death.
+          set -o pipefail
+          if ! git lfs pull 2>&1 | tee "$RUNNER_TEMP/git-lfs-pull.log"; then
+            if grep -qi "exceeded its LFS budget" "$RUNNER_TEMP/git-lfs-pull.log"; then
+              echo "budget=exceeded" >> "$GITHUB_OUTPUT"
+            fi
+            exit 1
+          fi
+          git lfs checkout
 
       - name: Cache Library
         uses: actions/cache@v4
@@ -198,6 +235,7 @@ jobs:
         if: failure()
         shell: bash
         env:
+          LFS_BUDGET: ${{ steps.lfs_pull.outputs.budget }}
           SETUP: ${{ steps.setup_unity.outcome }}
           ACTIVATE: ${{ steps.activate_license.outcome }}
           EDITMODE: ${{ steps.editmode.outcome }}
@@ -211,8 +249,13 @@ jobs:
             { echo "## ${1}"; echo; echo "${2}"; } >> "$GITHUB_STEP_SUMMARY"
           }
           # Order matters: PlayMode's `success() || failure()` means it runs (and fails) even
-          # when setup died, so check the environment steps before reading the test outcomes.
-          if [ "$SETUP" = "failure" ]; then
+          # when setup died, so check the environment steps before reading the test outcomes —
+          # and the LFS-budget case before everything, because it is the one fault a re-run
+          # can never fix.
+          if [ "$LFS_BUDGET" = "exceeded" ]; then
+            verdict "ACCOUNT BILLING — Git LFS budget exhausted — re-runs CANNOT pass" \
+              "GitHub refused the LFS download because the account has exceeded its Git LFS bandwidth budget. This is billing, not code and not a flake — do NOT re-run the job; every re-run fails the same way and burns more of any remaining quota. The owner must raise the Git LFS budget in GitHub's billing settings (Settings ▸ Billing and plans ▸ Git LFS). Ignore the PlayMode failure below: the 'success() || failure()' guard makes that step run with no Unity installed, so its red is this same fault echoing, not a test result."
+          elif [ "$SETUP" = "failure" ]; then
             verdict "ENVIRONMENT FAULT at 'Set up Unity' — not a code failure" \
               "The Unity Hub / editor-install toolchain died before any test ran. Re-run the job; if it recurs, read the hub-pin header in .github/workflows/ci.yml."
           elif [ "$ACTIVATE" = "failure" ]; then
