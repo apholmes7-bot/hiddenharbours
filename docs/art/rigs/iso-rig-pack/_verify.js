@@ -251,6 +251,53 @@ function verifyTraps(ctx) {
   }
 }
 
+// ---- 2b. the bakers' own guards, ported ----------------------------------
+// The recipe says port each baker's guards into this harness. This is WharfIsoSheetBaker's
+// arithmetic — the cell rule AND the per-facing inset — reproduced exactly, so the bake math is
+// checked here at ~2 s a render rather than only inside an editor nobody in CI has.
+function verifyBakeMath(ctx) {
+  console.log('\n[bake math] WharfIsoSheetBaker — union cell + per-facing inset');
+  const W = ctx.WharfIso, C = contractOf(FAMILIES[0]);
+  const byKey = {}; for (const e of C.cells) byKey[e.key] = e;
+  // RigBaker.DirForCell(cell, 8, CounterClockwise) => ((8-k)%8) * (8/8)
+  const dirFor = (k, n) => ((n - k) % n) * (8 / n);
+  let cellsOk = 0, insets = 0, bad = 0;
+
+  for (const preset of W.presets()) {
+    const f = [];
+    for (let cell = 0; cell < C.facings; cell++) {
+      const r = W.render(preset, dirFor(cell, C.facings), {});
+      f.push({ w: r.w, h: r.h, px: r.px, py: r.py });
+    }
+    let L = Infinity, R = -Infinity, T = Infinity, B = -Infinity;
+    for (const x of f) {
+      L = Math.min(L, -x.px);            R = Math.max(R, x.w - 1 - x.px);
+      T = Math.min(T, -x.py);            B = Math.max(B, x.h - 1 - x.py);
+    }
+    const cw = Math.ceil(R) - Math.floor(L) + 1, ch = Math.ceil(B) - Math.floor(T) + 1;
+    const pvx = -Math.floor(L), pvy = -Math.floor(T);
+    const e = byKey[preset];
+
+    if (e.cellW === cw && e.cellH === ch && e.pivotX === pvx && e.pivotY === pvy) cellsOk++;
+    else { bad++; note(`${preset}: contract ${e.cellW}x${e.cellH}@${e.pivotX},${e.pivotY} vs baker rule ${cw}x${ch}@${pvx},${pvy}`); }
+
+    for (let i = 0; i < f.length; i++) {
+      const x = f[i];
+      const ox = Math.round(pvx - x.px), oy = Math.round(pvy - x.py);   // Mathf.RoundToInt
+      insets++;
+      if (ox < 0 || oy < 0 || ox + x.w > cw || oy + x.h > ch) {
+        bad++;
+        note(`${preset} facing ${i}: ${x.w}x${x.h} insets to (${ox},${oy}) — outside the ${cw}x${ch} cell`);
+      }
+    }
+  }
+  (cellsOk === C.cells.length ? ok : fail)(
+    `${cellsOk}/${C.cells.length} cells reproduce under the BAKER's rule (not just the contract's)`);
+  (bad === 0 ? ok : fail)(
+    `${insets} per-facing insets all land inside their cell — a slip here reads as art jitter as the ` +
+    `structure turns, not as a bake error`);
+}
+
 // ---- 3. the keyline gate A/B ---------------------------------------------
 // "Zero ring pixels" ALONE also passes on a renderer that draws nothing. The positive control is
 // what makes it evidence: the ring must come BACK when the gate is on.
@@ -320,6 +367,7 @@ console.log('ISO rig pack — contract verification (bare V8, no DOM, no deps)')
 const ctx = loadRigs(FAMILIES, true);
 verifyContracts(ctx);
 verifyTraps(ctx);
+verifyBakeMath(ctx);
 if (process.argv.includes('--gate')) verifyGate();
 console.log(failures === 0 ? '\nPASS — every contract measurement reproduces.'
                            : `\nFAIL — ${failures} check(s) did not reproduce.`);

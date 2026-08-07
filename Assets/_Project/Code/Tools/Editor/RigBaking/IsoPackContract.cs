@@ -428,6 +428,44 @@ namespace HiddenHarbours.Tools.RigBaking
                     $"{Rule}. One of the two is stale.");
         }
 
+        /// <summary>
+        /// Refuse to bake art that still carries its 1 px keyline ring.
+        ///
+        /// <para>The owner ruled (2026-08-06) that all four pack rigs gain a
+        /// <c>KEYLINE_DEFAULT = false</c> gate BEFORE anything bakes, because baking pre-gate art bakes
+        /// the ring in and forces the re-bake this pack was explicitly steered away from. That ruling is
+        /// a process gate everywhere else; here it is mechanical, so a bake cannot quietly land ringed
+        /// sheets if the gate has not shipped.</para>
+        ///
+        /// <para><b>The ring is a PASS, not a colour.</b> Whoever implements the gate upstream must skip
+        /// the pass and never filter by keyline colour: the art legitimately carries interior pixels at
+        /// exactly that value with no transparent neighbour — <c>radioMast</c> alone has 551, in its
+        /// lattice — and a colour match would punch holes straight through them.</para>
+        ///
+        /// <para>Lives here rather than on one baker so all three call the SAME gate. A second copy is
+        /// the kind of thing that stays right until one of the two is touched.</para>
+        /// </summary>
+        public void AssertKeylineGated(IRigScriptHost host, string globalName, string rigKey)
+        {
+            if (host.EvaluateBool(
+                    $"typeof {globalName} !== 'undefined' && " +
+                    $"typeof {globalName}.KEYLINE_DEFAULT !== 'undefined'"))
+                return;
+
+            throw new InvalidOperationException(
+                $"REFUSING TO BAKE {rigKey}: its rig source exposes no KEYLINE_DEFAULT gate, so every " +
+                "sheet would bake with the 1 px ring in it.\n\n" +
+                "The owner ruled on 2026-08-06 that the art director adds KEYLINE_DEFAULT = false to " +
+                "all four ISO-pack rigs BEFORE anything bakes, precisely so this pack does not need the " +
+                "re-bake that #444 did. docs/art/rigs/** is the art director's lane — do NOT edit the " +
+                "rig here to get past this.\n\n" +
+                "When the gated rigs land, regenerate the contracts for wharfDecor and utilityIso in " +
+                "the same commit: their cells shrink 2×2 px (fireCabinet 2×1). wharfIso's 17 cells and " +
+                "shoreFinds' 36 do NOT move — wharfIso measures a buffer the geometry sizes before the " +
+                "ring pass runs, and shoreFinds' cellOf() is analytic.\n\n" +
+                $"(This contract was measured with the ring {(KeylineDefault ? "ON" : "OFF")}.)");
+        }
+
         /// <summary>Every standing check, for a caller that just wants the contract vetted.</summary>
         public void AssertSelfConsistent()
         {
