@@ -131,6 +131,11 @@ namespace HiddenHarbours.UI
         /// <summary>Which slot this host owns in the shared expansion arbiter.</summary>
         private const HelmInstrumentSlot Slot = HelmInstrumentSlot.Chartplotter;
 
+        // The EXPANDED card as a WINDOW (2026-08-07 ruling). The flush face is part of the dash
+        // picture and follows the HELM window instead — it gets no chrome of its own.
+        private readonly BoatUiWindowController _window =
+            new BoatUiWindowController(BoatUiWindowId.Chartplotter);
+
         /// <summary>The one host per play session (it self-installs and survives scene loads). Exposed so
         /// a PlayMode test can drive the host that is actually running rather than a second copy — a
         /// duplicate destroys itself in <c>Awake</c>.</summary>
@@ -249,7 +254,7 @@ namespace HiddenHarbours.UI
 
         private void OnDestroy()
         {
-            if (_instance == this) _instance = null;
+            if (_instance == this) { _instance = null; _window.StandDown(); }
             // A host torn down mid-edit must never leave the helm deaf — that is a boat you cannot
             // steer, which is worse than the bug the gate prevents (HelmKeyCapture's remarks).
             ReleaseKeyboard();
@@ -267,6 +272,30 @@ namespace HiddenHarbours.UI
                 ForgetMaxFace();                // losing the glass must not strand the keyboard
                 _painted = false;
                 FlushMounted = false;
+                _window.StandDown();
+                if (_cardGo.activeSelf) _cardGo.SetActive(false);
+                return;
+            }
+
+            // This instrument's WINDOW is hidden (hide-all or its own ×): stand down, and close any
+            // expansion — CloseMaxFace (not Forget) so the tool and layers survive the way they do
+            // for an ordinary collapse, and the keyboard is never stranded mid-edit.
+            if (!_window.Shown)
+            {
+                if (Expanded) HelmInstrumentExpansion.Collapse();
+                CloseMaxFace();
+                FlushMounted = false;
+                _window.StandDown();
+                if (_cardGo.activeSelf) _cardGo.SetActive(false);
+                return;
+            }
+
+            // The flush face follows the HELM window (2026-08-07 ruling) — see SounderOverlayHost.
+            if (!Expanded && instruments.Fit.Rig != ConsoleRigKind.None
+                          && !BoatUiWindows.FlushMountsAvailable)
+            {
+                FlushMounted = false;
+                _window.StandDown();
                 if (_cardGo.activeSelf) _cardGo.SetActive(false);
                 return;
             }
@@ -295,8 +324,28 @@ namespace HiddenHarbours.UI
             ClampSelection();
 
             Rect card = GlassRect(expanded, max);
+            if (expanded)
+            {
+                // The expanded card is this instrument's WINDOW (2026-08-07): the player's layout
+                // goes over the shipped one, and both faces' hit maps scale with the same rect.
+                card = _window.Apply(card, Screen.width, Screen.height, HudBandLayout.ReservedTopPx());
+            }
+            else
+            {
+                _window.StandDown();   // flush face / fallback card: no chrome, no publication
+            }
+            bool visible = !expanded || _window.CardVisible;
+            if (_image.enabled != visible) _image.enabled = visible;
+
             LayoutCard(card);
-            Repaint(in state, regionId, max);
+            if (visible) Repaint(in state, regionId, max);
+
+            if (expanded)
+            {
+                _window.LayoutChrome(_cardGo.transform.parent);
+                if (_window.HandlePointer(controlDragLive: _measureDragging)) return;
+            }
+            if (BoatUiWindows.AnySession) return;   // a window drag owns the pointer
             ReadPointer(instruments, save, regionId, in prefs, in cfg, in state, card, expanded, max);
         }
 
@@ -695,6 +744,10 @@ namespace HiddenHarbours.UI
                 return;
 
             if (!mouse.leftButton.wasPressedThisFrame) return;
+
+            // A press on ANY window's chrome is that window's business — never this instrument's
+            // expand, collapse-away or controls (2026-08-07 ruling).
+            if (BoatUiWindows.OverAnyChrome(pos)) return;
 
             if (!expanded)
             {

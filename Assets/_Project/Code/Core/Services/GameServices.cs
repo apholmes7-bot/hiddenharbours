@@ -396,6 +396,13 @@ namespace HiddenHarbours.Core
         public static HelmWheelSettings HelmWheel =>
             Config != null ? Config.HelmWheel : HelmWheelSettings.Default;
 
+        /// <summary>The boat-UI windows' chrome tunables (the 2026-08-07 windowing ruling — the
+        /// hover title strip, its buttons, the corner grip, and the resize/collapse scale bounds).
+        /// Same contract as <see cref="WaveField"/>, including the <c>Config != null</c> discipline
+        /// (never <c>?.</c>/<c>??</c> on a <c>UnityEngine.Object</c>).</summary>
+        public static BoatUiWindowSettings BoatUiWindowing =>
+            Config != null ? Config.BoatUiWindows : BoatUiWindowSettings.Default;
+
         /// <summary>The masthead pennant's tunables (VS-19) — the boat's own wind instrument. Same
         /// contract as <see cref="WaveField"/>, including the <c>Config != null</c> discipline (never
         /// <c>?.</c>/<c>??</c> on a <c>UnityEngine.Object</c>). Falls back to

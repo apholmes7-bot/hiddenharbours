@@ -161,6 +161,13 @@ MonoBehaviour:
     SelfCentre: 0
     RimGrabPadPx: 8
     SteerEaseSeconds: 0.25
+  BoatUiWindows:
+    TitleBarPx: 18
+    ChromeButtonPx: 22
+    GripPx: 14
+    CompactScale: 0.55
+    MinScale: 0.35
+    MaxScale: 3
   StormRock:
     Enabled: 1
     StormStartSeaState01: 0.4
