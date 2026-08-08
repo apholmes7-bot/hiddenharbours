@@ -373,8 +373,14 @@ lands:
    *(Or skip the delete and answer the wipe dialog with "Rebuild from zero" — same outcome, one more
    click.)*
 2. **Hidden Harbours ▸ Build Nine Mile Creek Scene.**
-3. **Hidden Harbours ▸ Terrain Paint Tool** → bake the region's painted seabed at 2 px/m
-   (`NineMileCreekSeabed`), then save.
+3. **Hidden Harbours ▸ Tools ▸ Terrain Paint Tool (height + look)** → set **Region** to
+   `NineMileCreek` (760 × 560 m at 2 px/m → 1520 × 1120 texels), put this region's own painted map in
+   the **Height Map** slot, and click **Export analytic coast (open scene) → painted map**. That reads
+   the `MainlandTidalTerrain` the scene just built and writes the coast above into that map, then save.
+   ⚠ **Not** "Export analytic St Peters → painted map": that one is hard-wired to St Peters' constants
+   and to the `StPetersSeabed` asset, so with this region assigned it would bake the wrong coast at
+   this region's size, over the start region's seed. And ⚠ the crossing's heights must come from this
+   bake, never from a freehand brush — the bar crest is seam-pinned against St Peters' half of it.
 4. Press Play and walk it: the crossing, the bar road, Wharf Road, the wharf front.
 
 Nothing else in the project needs deleting. Region builders are re-runnable and converge on re-run.

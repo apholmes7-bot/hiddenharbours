@@ -5,6 +5,7 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using HiddenHarbours.Core;         // ITidalTerrain — the one seam every analytic coast publishes
 using HiddenHarbours.World;
 using HiddenHarbours.Art;
 using HiddenHarbours.Art.Editor;   // TileAssetBuilder (tile names/paths), PaintableTilemapMenu (create canvas)
@@ -41,10 +42,16 @@ namespace HiddenHarbours.App.Editor
     /// colour — an sRGB import would gamma-warp every painted value), references re-wired from the
     /// fresh loads.</para>
     ///
-    /// <para><b>Seed from today's coast.</b> "Export analytic St Peters → painted map" samples the shipped
-    /// <see cref="TidalTerrain.ElevationAtZones"/> (the St Peters constants) across the bake rect into a new
-    /// painted map, so the owner paints FROM the existing coast — not a blank canvas. It does NOT change the
-    /// shipped St Peters look; adopting the painted map is the explicit "Adopt on the open scene" step.</para>
+    /// <para><b>Seed from today's coast — two buttons, and the difference matters.</b>
+    /// "Export analytic St Peters → painted map" samples the shipped
+    /// <see cref="TidalTerrain.ElevationAtZones"/> (the St Peters constants) across the bake rect into the
+    /// committed St Peters seed. It is hard-wired to that region on purpose: it is the start scene's seed
+    /// path, with a batch entry point behind it. "Export analytic coast (open scene) → painted map" is the
+    /// GENERAL case — extent from the assigned <see cref="RegionDef"/>, coast from whatever analytic
+    /// terrain the OPEN SCENE carries, written into whatever map sits in the Height Map slot. Nine Mile
+    /// Creek's seabed comes from that one. Either way the owner paints FROM the existing coast, not from a
+    /// blank canvas; neither changes the shipped look, because adopting the painted map is the explicit
+    /// "Adopt on the open scene" step.</para>
     ///
     /// <para><b>Lane &amp; seams.</b> tools-editor; writes the painted-height DATA asset (the height side, the
     /// single source of truth for water + tide — UNCHANGED here) and stamps tiles on the scene's ground
@@ -279,6 +286,14 @@ namespace HiddenHarbours.App.Editor
                 if (GUILayout.Button("New Blank Map…")) CreateBlankMap();
                 if (GUILayout.Button("Export analytic St Peters → painted map")) ExportStPeters();
             }
+
+            using (new EditorGUI.DisabledScope(_region == null || !_region.HasUsableExtent))
+                if (GUILayout.Button(new GUIContent(
+                        "Export analytic coast (open scene) → painted map",
+                        "Seed the map in the Height Map slot above from the OPEN SCENE's own analytic " +
+                        "terrain, at the assigned region's extent. The button to its left is hard-wired " +
+                        "to St Peters — this one exports whatever coast is open.")))
+                    ExportOpenSceneCoast();
 
             DrawGroundTilemapRow();
 
@@ -1209,6 +1224,331 @@ namespace HiddenHarbours.App.Editor
             }
         }
 
+        // ==================== EXPORT THE **OPEN SCENE'S** ANALYTIC COAST (any region) ====================
+        //
+        // ⚠ WHY THIS EXISTS, AND WHY IT IS A SECOND BUTTON RATHER THAN A FIX TO THE FIRST.
+        //
+        // The tool shipped with exactly one seeder, and it is hard-wired twice over: it samples the
+        // St Peters CONSTANTS and it writes the StPetersSeabed ASSET. Assign a different region and it
+        // still offers to bake St Peters' island — at the new region's dimensions, over St Peters' map.
+        // With Nine Mile Creek assigned that is a click away from writing a 760 × 560 m stretch of the
+        // wrong coast over the start region's committed seed, and the owner came within one click of it
+        // on 2026-08-08.
+        //
+        // The St Peters button stays EXACTLY as it is: it is the shipped seed path for the start region,
+        // it has a batch entry point CI and the owner both drive, and other code sizes maps from its
+        // conventions. This one is the general case beside it — extent from the assigned RegionDef,
+        // coast from whatever scene is open, written into whatever map is in the Height Map slot.
+
+        /// <summary>
+        /// Seed the ASSIGNED map from the OPEN SCENE's own analytic coast: sample every analytic
+        /// <see cref="ITidalTerrain"/> the scene carries across the assigned region's rect, and write the
+        /// result into the map in the Height Map slot. The general-case sibling of
+        /// <see cref="ExportStPeters"/> — nothing about the region, the coast or the target asset is
+        /// named in this file.
+        ///
+        /// <para>Refuses LOUDLY (one <see cref="Debug.LogError"/>, no dialog) rather than guessing when
+        /// any of the three inputs is missing: no region (no extent — the tool holds no size of its own),
+        /// no map (nowhere to write), or no analytic terrain in the open scene (nothing to read). The
+        /// confirm dialog NAMES the asset and the PNG it is about to overwrite, so "which map am I about
+        /// to replace" is never a thing the owner has to remember.</para>
+        /// </summary>
+        private void ExportOpenSceneCoast()
+        {
+            if (!RequireExtent(out Vector2 center, out Vector2 worldSize, out Vector2Int texels)) return;
+
+            if (_map == null)
+            {
+                Debug.LogError(
+                    "[TerrainPaintTool] No painted map assigned — this export writes into the map in the " +
+                    "Height Map slot, and will not invent a target. Assign one (or mint one with 'New " +
+                    "Blank Map…', which sizes it from the region) and click again.");
+                return;
+            }
+
+            var terrains = FindAnalyticTerrainsInOpenScene(out string terrainNames);
+            if (terrains.Count == 0)
+            {
+                Debug.LogError(
+                    "[TerrainPaintTool] The open scene carries no analytic terrain (TidalTerrain / " +
+                    "RectTidalTerrain / MainlandTidalTerrain), so there is no coast to export. Open the " +
+                    "region's scene first — and note that a scene whose terrain has already been " +
+                    "ADOPTED still qualifies: adopting DISABLES the analytic component, it does not " +
+                    "remove it, and this export reads the disabled plan on purpose.");
+                return;
+            }
+
+            if (!ResolveMapWritePaths(_map, out string assetPath, out string pngPath))
+            {
+                Debug.LogError(
+                    "[TerrainPaintTool] '" + _map.name + "' is not a saved asset on disk, so there is no " +
+                    "file to write. Save it (or mint one with 'New Blank Map…') first.");
+                return;
+            }
+
+            if (!EditorUtility.DisplayDialog(
+                    "Export analytic coast (open scene)",
+                    "Overwrite\n\n    " + assetPath + "\n    " + pngPath + "\n\nwith a fresh export of " +
+                    "the OPEN SCENE's analytic coast (" + terrainNames + ") at " + texels.x + " × " +
+                    texels.y + " texels over " + worldSize.x + " × " + worldSize.y + " m?\n\nAny " +
+                    "painting already on that map will be replaced.",
+                    "Overwrite", "Cancel"))
+                return;
+
+            PaintedHeightMap map;
+            try
+            {
+                map = BakeAnalyticCoast(_map, terrains, center, worldSize, texels, ExportProgress);
+            }
+            finally
+            {
+                EditorUtility.ClearProgressBar();
+            }
+
+            if (map == null) return;   // cancelled or refused — BakeAnalyticCoast has already said why
+            _map = map; CacheTexture(); _overlayDirty = true;
+            EditorGUIUtility.PingObject(map);
+        }
+
+        /// <summary>A cancelable progress bar over the sample walk (1.7 M samples at Nine Mile Creek's
+        /// 2 px/m — long enough that a silent editor reads as a hang). Returns false when the owner
+        /// cancels, which aborts the bake BEFORE anything is written.</summary>
+        private static bool ExportProgress(float fraction) =>
+            !EditorUtility.DisplayCancelableProgressBar(
+                "Export analytic coast", "Sampling the open scene's terrain…", fraction);
+
+        /// <summary>
+        /// The analytic terrains the OPEN SCENE carries — the SAME three concrete types the Adopt button
+        /// disables, for the same reason: they are the family that composes an authored coast out of
+        /// constants.
+        ///
+        /// <para>⚠ <see cref="PaintedTidalTerrain"/> is deliberately NOT in the list. It reads the painted
+        /// map, so seeding the painted map from it is a no-op wearing a bake — and after an Adopt it is
+        /// the component that would be found FIRST.</para>
+        ///
+        /// <para>⚠ And the scene is asked DIRECTLY, never <c>GameServices.TidalTerrain</c>: the accessor
+        /// is filled by <c>OnEnable</c>, which does not run in the editor for a component with no
+        /// <c>[ExecuteAlways]</c>. In edit mode the accessor is null however well-wired the scene is.</para>
+        /// </summary>
+        private static List<ITidalTerrain> FindAnalyticTerrainsInOpenScene(out string names)
+        {
+            var found = new List<ITidalTerrain>();
+            var labels = new List<string>();
+
+            void Collect<T>() where T : MonoBehaviour, ITidalTerrain
+            {
+                // Include INACTIVE: an adopted scene's analytic terrain is disabled, and a region kept on
+                // a toggled-off root is still the region's authored plan.
+                foreach (var t in Object.FindObjectsByType<T>(FindObjectsInactive.Include,
+                                                              FindObjectsSortMode.None))
+                {
+                    if (t == null) continue;
+                    found.Add(t);
+                    labels.Add(typeof(T).Name + " '" + t.gameObject.name + "'");
+                }
+            }
+
+            Collect<TidalTerrain>();
+            Collect<RectTidalTerrain>();
+            Collect<MainlandTidalTerrain>();
+
+            names = labels.Count == 0 ? "none" : string.Join(" + ", labels);
+            return found;
+        }
+
+        /// <summary>
+        /// PURE: the elevation the export writes where several analytic terrains overlap — the HIGHEST of
+        /// them. Max-compose is not a choice made here; it is the rule every terrain in the family already
+        /// uses internally for its own zones (<c>TidalTerrain</c>, <c>RectTidalTerrain</c> and
+        /// <c>MainlandTidalTerrain</c>'s fills all say "the highest feature wins"), so a scene carrying two
+        /// of them composes the same way one carrying two zones does. Null entries are skipped; an empty
+        /// list is <see cref="float.NaN"/> — a caller that reached here with nothing to sample has a bug,
+        /// and a quiet 0 m would bake a sea-level plateau over the whole region.
+        /// </summary>
+        public static float ComposeElevation(IReadOnlyList<ITidalTerrain> terrains, Vector2 worldPos)
+        {
+            float e = float.NaN;
+            if (terrains == null) return e;
+            for (int i = 0; i < terrains.Count; i++)
+            {
+                ITidalTerrain terrain = terrains[i];
+                if (terrain == null) continue;
+                // ⚠ An interface reference does NOT get Unity's == overload, so a DESTROYED component
+                // reads as non-null here and throws on the sample. Ask the Object side as well.
+                if (terrain is Object unityObject && unityObject == null) continue;
+                float sample = terrain.ElevationAt(worldPos);
+                if (float.IsNaN(e) || sample > e) e = sample;
+            }
+            return e;
+        }
+
+        /// <summary>
+        /// PURE: sample the composed analytic coast across the region's texel grid, in METRES above datum.
+        /// Row-major with y outer and <b>y = 0 the world-MIN row</b> — the identical walk
+        /// <see cref="BakeStPetersSeabed"/> makes, which is what keeps a map exported here and a map
+        /// exported there the same way up.
+        ///
+        /// <para>Returns null when <paramref name="onProgress"/> cancels, so a cancelled bake writes
+        /// nothing at all rather than half a coast.</para>
+        /// </summary>
+        public static float[] SampleAnalyticElevations(IReadOnlyList<ITidalTerrain> terrains,
+            Vector2 center, Vector2 worldSize, Vector2Int texels,
+            System.Func<float, bool> onProgress = null)
+        {
+            int w = Mathf.Max(1, texels.x), h = Mathf.Max(1, texels.y);
+            Vector2 min = center - worldSize * 0.5f;
+            // Report ~100 times, not once per row: a repaint per row costs more than the sampling does
+            // on a tall grid, and a cancel checked every percent is still checked every few milliseconds.
+            int reportEvery = Mathf.Max(1, h / 100);
+            var elev = new float[w * h];
+            for (int y = 0; y < h; y++)
+            {
+                if (onProgress != null && y % reportEvery == 0 && !onProgress((float)y / h)) return null;
+                float wy = min.y + (y + 0.5f) / h * worldSize.y;
+                for (int x = 0; x < w; x++)
+                {
+                    float wx = min.x + (x + 0.5f) / w * worldSize.x;
+                    elev[y * w + x] = ComposeElevation(terrains, new Vector2(wx, wy));
+                }
+            }
+            return elev;
+        }
+
+        /// <summary>The narrowest elevation span a map may publish. Below this the R channel's 256 steps
+        /// land inside one <c>EncodeElevation</c> clamp floor and every texel decodes to the same height —
+        /// a flat map that looks exactly like a successful bake. A numeric floor, not a tunable.</summary>
+        public const float MinimumEncodeSpan = 1f;
+
+        /// <summary>
+        /// PURE: the elevation range the export encodes across — wide enough for <b>every sampled
+        /// elevation</b> AND for the range the target map <b>already publishes</b>.
+        ///
+        /// <para>⚠ Both halves are load-bearing. Encoding is a clamp (<c>EncodeElevation</c> saturates),
+        /// so a range that stops short of the coast CLIPS it silently: Nine Mile Creek's −6 m bay floor
+        /// written into a −4 m map is a bay four metres shallower than the one the sim reads, with no
+        /// error anywhere. And keeping the map's existing range means a re-export never NARROWS the
+        /// headroom the owner's brush presets paint into — the Cliff preset's 8 m stays reachable on a map
+        /// that already reached it.</para>
+        /// </summary>
+        public static void ResolveEncodeRange(float[] elevations, float mapMin, float mapMax,
+                                              out float minElevation, out float maxElevation)
+        {
+            // A map whose range was authored backwards still widens sanely rather than inverting.
+            float lo = Mathf.Min(mapMin, mapMax);
+            float hi = Mathf.Max(mapMin, mapMax);
+            if (elevations != null)
+                for (int i = 0; i < elevations.Length; i++)
+                {
+                    float e = elevations[i];
+                    if (float.IsNaN(e)) continue;
+                    if (e < lo) lo = e;
+                    if (e > hi) hi = e;
+                }
+            if (hi - lo < MinimumEncodeSpan) hi = lo + MinimumEncodeSpan;
+            minElevation = lo;
+            maxElevation = hi;
+        }
+
+        /// <summary>PURE: metres above datum → the R8 grayscale colours the height PNG stores (G = B = R
+        /// so an 8-bit grayscale PNG round-trips), through the one shared
+        /// <see cref="PaintedHeightField.EncodeElevation"/>.</summary>
+        public static Color[] EncodeElevationPixels(float[] elevations, float minElevation, float maxElevation)
+        {
+            if (elevations == null) return System.Array.Empty<Color>();
+            var pixels = new Color[elevations.Length];
+            for (int i = 0; i < elevations.Length; i++)
+            {
+                float r01 = PaintedHeightField.EncodeElevation(elevations[i], minElevation, maxElevation);
+                pixels[i] = new Color(r01, r01, r01, 1f);
+            }
+            return pixels;
+        }
+
+        /// <summary>
+        /// Where an export writes: the target map's OWN asset path, and the PNG it ALREADY points at
+        /// (falling back to the <c>_HeightTex</c> sibling convention when it points at nothing). Never a
+        /// name from this file — that is the whole defect this export exists to not repeat. False when the
+        /// map is an in-memory instance with no file behind it.
+        /// </summary>
+        public static bool ResolveMapWritePaths(PaintedHeightMap map, out string assetPath, out string pngPath)
+        {
+            assetPath = null; pngPath = null;
+            if (map == null) return false;
+
+            assetPath = AssetDatabase.GetAssetPath(map);
+            if (string.IsNullOrEmpty(assetPath)) return false;
+
+            string existing = map.HeightTexture != null ? AssetDatabase.GetAssetPath(map.HeightTexture) : null;
+            pngPath = !string.IsNullOrEmpty(existing) &&
+                      existing.EndsWith(".png", StringComparison.OrdinalIgnoreCase)
+                ? existing
+                : (Path.GetDirectoryName(assetPath) ?? DataDir).Replace('\\', '/') + "/" +
+                  Path.GetFileNameWithoutExtension(assetPath) + "_HeightTex.png";
+            return true;
+        }
+
+        /// <summary>
+        /// Bake the open scene's analytic coast into <paramref name="target"/>. The general-case mirror of
+        /// <see cref="BakeStPetersSeabed"/>: same texel walk, same encode, same external-PNG write and
+        /// data-texture import — but the coast comes from the scene, the extent from the region, and the
+        /// destination from the map the caller handed in.
+        ///
+        /// <para>Static and parameterised so the window owns only the dialog, and so an EditMode test can
+        /// bake a configured terrain into a temp asset and read the texels back.</para>
+        /// </summary>
+        public static PaintedHeightMap BakeAnalyticCoast(PaintedHeightMap target,
+            IReadOnlyList<ITidalTerrain> terrains, Vector2 center, Vector2 worldSize, Vector2Int texels,
+            System.Func<float, bool> onProgress = null)
+        {
+            if (target == null || terrains == null || terrains.Count == 0) return null;
+            if (texels.x <= 0 || texels.y <= 0) return null;
+            if (!ResolveMapWritePaths(target, out string assetPath, out string pngPath)) return null;
+
+            float[] elevations = SampleAnalyticElevations(terrains, center, worldSize, texels, onProgress);
+            if (elevations == null)
+            {
+                Debug.Log("[TerrainPaintTool] Analytic coast export cancelled — " + assetPath +
+                          " is untouched.");
+                return null;
+            }
+
+            ResolveEncodeRange(elevations, target.MinElevation, target.MaxElevation,
+                               out float min0, out float max0);
+            var pixels = EncodeElevationPixels(elevations, min0, max0);
+
+            var map = CreatePaintedMapAsset(Path.GetFileNameWithoutExtension(assetPath),
+                                            texels.x, texels.y, center, worldSize, min0, max0,
+                                            pixels: pixels, overwrite: true,
+                                            assetPath: assetPath, pngPath: pngPath);
+            if (map == null)
+            {
+                Debug.LogError("[TerrainPaintTool] The analytic coast export produced no map at " + assetPath + ".");
+                return null;
+            }
+
+            // ⚠ POST-CONDITION, not a prediction. A RegionDef may legally publish up to
+            // RegionDef.MaxSeabedTexels (4096) per axis, and a texture importer's size cap silently
+            // DOWNSCALES anything above it — which would leave every world→texel mapping in the map a
+            // lie, with the bake reporting success. Ask the imported asset how big it actually is.
+            var written = map.HeightTexture;
+            if (written != null && (written.width != texels.x || written.height != texels.y))
+                Debug.LogError("[TerrainPaintTool] " + pngPath + " imported at " + written.width + " × " +
+                               written.height + " but was baked at " + texels.x + " × " + texels.y +
+                               " — the importer's size cap has RESCALED the height data, so every " +
+                               "elevation in this map is off. Raise the texture's Max Size (or the " +
+                               "region's px/m) and re-export.");
+
+            Debug.Log("[TerrainPaintTool] Exported the open scene's analytic coast → " + assetPath +
+                      " (" + pngPath + ") at " + texels.x + " × " + texels.y + " texels (" +
+                      (worldSize.x / texels.x).ToString("F2") + " × " +
+                      (worldSize.y / texels.y).ToString("F2") + " m per texel) over " + worldSize.x +
+                      " × " + worldSize.y + " m, elevation " + min0.ToString("F2") + ".." +
+                      max0.ToString("F2") + " m (" + ((max0 - min0) / 255f).ToString("F3") +
+                      " m per R8 step). Paint FROM this coast, then 'Adopt this map on the OPEN scene' " +
+                      "to make the sim + water read it.");
+            return map;
+        }
+
         /// <summary>
         /// Create (or OVERWRITE in place) a <see cref="PaintedHeightMap"/> at <c>DataDir/baseName.asset</c>
         /// backed by an EXTERNAL, LFS-friendly, smart-mergeable <c>baseName_HeightTex.png</c> written NEXT TO
@@ -1223,25 +1563,35 @@ namespace HiddenHarbours.App.Editor
         /// not one: a region is rarely square, and a square texture stretched over a non-square rect
         /// samples the two axes at different densities — which is what the hard-coded 192² did.
         /// </summary>
+        /// <param name="assetPath">Explicit destination for the <c>.asset</c>. Null = the
+        /// <c>DataDir/baseName.asset</c> convention (what every caller before the open-scene export
+        /// used). Supplied so an export can write into the map the owner ASSIGNED rather than into a
+        /// name this file knows.</param>
+        /// <param name="pngPath">Explicit destination for the height PNG. Null = the
+        /// <c>_HeightTex</c> sibling convention.</param>
         private static PaintedHeightMap CreatePaintedMapAsset(string baseName, int resX, int resY,
             Vector2 center, Vector2 worldSize, float minElev, float maxElev, float fillElevation = 0f,
-            Color[] pixels = null, bool overwrite = false)
+            Color[] pixels = null, bool overwrite = false,
+            string assetPath = null, string pngPath = null)
         {
-            if (!AssetDatabase.IsValidFolder(DataDir))
-            {
-                string parent = Path.GetDirectoryName(DataDir).Replace('\\', '/');
-                AssetDatabase.CreateFolder(parent, Path.GetFileName(DataDir));
-            }
-
             // Resolve the .asset + .png paths. Overwrite reuses the existing names (update in place);
             // otherwise mint unique sibling names so the .asset and its .png stay paired.
-            string assetPath = DataDir + "/" + baseName + ".asset";
-            string pngPath   = DataDir + "/" + baseName + "_HeightTex.png";
+            assetPath ??= DataDir + "/" + baseName + ".asset";
+            pngPath   ??= (Path.GetDirectoryName(assetPath) ?? DataDir).Replace('\\', '/') + "/" +
+                          Path.GetFileNameWithoutExtension(assetPath) + "_HeightTex.png";
+
+            string dir = (Path.GetDirectoryName(assetPath) ?? DataDir).Replace('\\', '/');
+            if (!AssetDatabase.IsValidFolder(dir))
+            {
+                string parent = Path.GetDirectoryName(dir).Replace('\\', '/');
+                AssetDatabase.CreateFolder(parent, Path.GetFileName(dir));
+            }
+
             if (!overwrite)
             {
                 assetPath = AssetDatabase.GenerateUniqueAssetPath(assetPath);
                 string uniqueBase = Path.GetFileNameWithoutExtension(assetPath);
-                pngPath = DataDir + "/" + uniqueBase + "_HeightTex.png";
+                pngPath = dir + "/" + uniqueBase + "_HeightTex.png";
             }
 
             // Build the R8 pixel buffer (R = normalized elevation; G=B=R so 8-bit grayscale PNG round-trips).

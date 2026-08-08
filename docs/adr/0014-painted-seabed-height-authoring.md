@@ -204,6 +204,20 @@ for St Peters is an **explicit, optional step** (swap the scene's `TidalTerrain`
 silently change the shipped St Peters look**; the analytic terrain remains the default until the owner
 opts in.
 
+**Amendment (2026-08-08) — the seeder is now TWO buttons, because one of them can only ever seed one
+region.** The St Peters seeder above is hard-wired twice: it samples the St Peters *constants* and it
+writes the `StPetersSeabed` *asset*. Assign a different `RegionDef` and it still offers to bake
+St Peters' island — at the new region's dimensions, over St Peters' map. Beside it now sits
+**"Export analytic coast (open scene) → painted map"**: extent from the assigned `RegionDef` (the tool
+still holds no size of its own), coast from every analytic `ITidalTerrain` the OPEN scene carries
+(`TidalTerrain` / `RectTidalTerrain` / `MainlandTidalTerrain`, max-composed — never
+`PaintedTidalTerrain`, which would seed the map from itself), destination the map in the Height Map
+slot, named in the confirm dialog. It is what fills a mainland region's canvas — Nine Mile Creek's
+crossing heights are seam-pinned against St Peters' and must come from the analytic plan, never from a
+freehand brush. The encode range widens to hold both the sampled coast and the range the target map
+already publishes, so a −6 m bay floor cannot be silently clipped into a −4 m map. The St Peters
+button is unchanged: it is the start region's shipped seed path and has a batch entry point behind it.
+
 ### Determinism & save (the invariant guarded)
 
 The painted map is **authored DATA committed like a tilemap** — read at runtime, never written at runtime.
