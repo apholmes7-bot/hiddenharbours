@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using HiddenHarbours.Core;
 
@@ -82,6 +83,14 @@ namespace HiddenHarbours.UI
         private RawImage _watchImage;
         private DrawSurface _watchSurface;
         private Texture2D _watchTexture;
+
+        // The watch as a hide-only WINDOW (2026-08-07 windowing ruling): a hover × on the face hides
+        // it; the boat-UI hide-all toggle hides and restores it with everything else, and its restore
+        // half is the recovery path back from an individual hide.
+        private RectTransform _watchRect;          // the face (hover test)
+        private Text _watchHideBtn;                // the hover ×
+        private bool _watchWindowShown = true;     // change detection for the hidden gate
+        private readonly Vector3[] _watchBtnCorners = new Vector3[4];   // reused; no per-frame alloc
         private Text _tideLabel;
         private Text _windLabel;
         private Text _seaLabel;
@@ -218,10 +227,64 @@ namespace HiddenHarbours.UI
             }
 
             UpdateClock();
+            UpdateWatchWindow();      // the hidden gate + hover × (2026-08-07 windowing ruling)
             UpdateEnvironmentThrottled();
             UpdateMoney();            // event-driven, but reconcile once services exist (boot balance)
             TickPayoutFlash();
             TickCatchCard();
+        }
+
+        /// <summary>
+        /// The watch face's WINDOW behaviour (2026-08-07 ruling): hide-only. Gates the face on
+        /// <see cref="BoatUiWindows.IsShown"/> (its own × and the hide-all toggle both land there),
+        /// shows the hover × while the pointer is over the face, and publishes the ×'s rect so the
+        /// helm cards never read a press on it as their own click-away. Everything here is
+        /// change-detected rect/enabled writes — no per-frame allocation (rule 7).
+        /// </summary>
+        private void UpdateWatchWindow()
+        {
+            if (_watchImage == null) return;
+
+            bool shown = BoatUiWindows.IsShown(BoatUiWindowId.Watch);
+            if (shown != _watchWindowShown)
+            {
+                _watchWindowShown = shown;
+                if (!shown && _watchImage.enabled) _watchImage.enabled = false;
+                // Coming back after time passed hidden: the face is stale — force a repaint.
+                if (shown) _lastMinuteOfDay = int.MinValue;
+            }
+            if (!shown || _watchHideBtn == null)
+            {
+                if (_watchHideBtn != null && _watchHideBtn.enabled) _watchHideBtn.enabled = false;
+                BoatUiWindows.ClearChrome(BoatUiWindowId.Watch);
+                return;
+            }
+
+            var mouse = Mouse.current;
+            bool hover = false;
+            Vector2 pos = default;
+            if (mouse != null && _watchImage.enabled)
+            {
+                pos = mouse.position.ReadValue();
+                // ScreenSpaceOverlay: no camera — screen point tests directly against the rect.
+                hover = RectTransformUtility.RectangleContainsScreenPoint(_watchRect, pos);
+            }
+            if (_watchHideBtn.enabled != hover) _watchHideBtn.enabled = hover;
+            if (!hover)
+            {
+                BoatUiWindows.ClearChrome(BoatUiWindowId.Watch);
+                return;
+            }
+
+            var btnRt = (RectTransform)_watchHideBtn.transform;
+            btnRt.GetWorldCorners(_watchBtnCorners);   // overlay canvas: world == screen px
+            var btnRect = new Rect(_watchBtnCorners[0].x, _watchBtnCorners[0].y,
+                                   _watchBtnCorners[2].x - _watchBtnCorners[0].x,
+                                   _watchBtnCorners[2].y - _watchBtnCorners[0].y);
+            BoatUiWindows.PublishChrome(BoatUiWindowId.Watch, btnRect);
+
+            if (mouse.leftButton.wasPressedThisFrame && btnRect.Contains(pos))
+                BoatUiWindows.SetHidden(BoatUiWindowId.Watch, true);
         }
 
         // ---- per-readout updates ------------------------------------------------------------
@@ -267,6 +330,9 @@ namespace HiddenHarbours.UI
         private void PaintWatch(IGameClock clock)
         {
             if (_watchImage == null) return;
+            // Hidden (its × or hide-all): no raster and no re-enable. The unhide transition forces
+            // the next repaint by resetting the minute cache (UpdateWatchWindow).
+            if (!BoatUiWindows.IsShown(BoatUiWindowId.Watch)) return;
 
             var state = new WatchRigState(WatchFaceState.FromClock(clock),
                                           _watchUse24, light: false, showSeconds: _watchShowSeconds);
@@ -685,6 +751,17 @@ namespace HiddenHarbours.UI
                 // like every other band element (MakeLabel's convention).
                 watchW = _watchHeightRef * WatchRigRender.W / WatchRigRender.H;
                 _watchImage = MakeWatch(bandRt, 0f, -4f, watchW, _watchHeightRef);
+                _watchRect = (RectTransform)_watchImage.transform;
+
+                // The hover × that hides the watch (2026-08-07 windowing ruling) — the face's one
+                // piece of chrome, shown only while the pointer is over it. A glyph, not a string
+                // (nothing to localize). Restored by the hide-all toggle's restore half.
+                _watchHideBtn = MakeLabel(bandRt, "WatchHide", TextAnchor.MiddleCenter,
+                    new Vector2(0f, 1f), new Vector2(0f, 1f), watchW - 26f, -6f, 22);
+                var hideRt = (RectTransform)_watchHideBtn.transform;
+                hideRt.sizeDelta = new Vector2(24f, 24f);
+                _watchHideBtn.text = "×";
+                _watchHideBtn.enabled = false;
             }
 
             // The tide line clears the watch horizontally: the face is a block where a single text line

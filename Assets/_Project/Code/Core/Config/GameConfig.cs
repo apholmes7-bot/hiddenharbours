@@ -272,6 +272,13 @@ namespace HiddenHarbours.Core
                  "owner-tunable, no code (rule 6).")]
         public HelmWheelSettings HelmWheel = HelmWheelSettings.Default;
 
+        [Header("Boat-UI windows (draggable/resizable instrument cards — 2026-08-07 ruling)")]
+        [Tooltip("The windowed boat UI's chrome sizes and resize/collapse bounds: the hover title " +
+                 "strip every instrument card is dragged by, its two buttons, the corner grip, and " +
+                 "the scale clamps. Presentation only — where a player parks a window is transient " +
+                 "session state, never saved.")]
+        public BoatUiWindowSettings BoatUiWindows = BoatUiWindowSettings.Default;
+
         [Header("The strike (owner drop §10.2 — \"pull back and press maybe?\": BOTH candidates, tunable)")]
         [Tooltip("Which gesture sets the hook on the true take, and how hard the pull-back must be. " +
                  "BOTH candidates ship ON so the owner picks in play — turn one off to feel the other " +
@@ -658,6 +665,57 @@ namespace HiddenHarbours.Core
             SelfCentre = 0f,
             RimGrabPadPx = 8f,
             SteerEaseSeconds = 0.25f,
+        };
+    }
+
+    /// <summary>
+    /// Owner tuning for the <b>boat-UI windows</b> (<see cref="GameConfig.BoatUiWindows"/> — the
+    /// 2026-08-07 windowing ruling: every instrument card draggable, resizable, collapsible, plus the
+    /// one hide-all input). The chrome's strip/button/grip sizes and the resize/collapse scale bounds
+    /// live here so the whole feel is dialled in the Inspector with no code (rule 6). Presentation
+    /// preferences only — where a player parks a window is transient session state (rule 5), never
+    /// saved, and never stored here.
+    ///
+    /// <para><b>The size floor is about grabbability, not legibility.</b> Resizing a window only
+    /// re-targets the destination rect of the instrument's ONE native raster (the letterbox
+    /// contract) — no rig is ever re-rendered small, so no font law is in play at any size. MinScale
+    /// simply keeps a window big enough to grab back.</para>
+    /// </summary>
+    [System.Serializable]
+    public struct BoatUiWindowSettings
+    {
+        [Tooltip("Height (screen px) of the window title strip that appears on hover above each " +
+                 "boat-UI card — the grab handle for dragging.")]
+        [Min(0f)] public float TitleBarPx;
+
+        [Tooltip("Width (screen px) of the two strip buttons (collapse tier, hide).")]
+        [Min(0f)] public float ChromeButtonPx;
+
+        [Tooltip("Size (screen px) of the corner resize grip inside the card's bottom-right.")]
+        [Min(0f)] public float GripPx;
+
+        [Tooltip("The COMPACT collapse tier's scale multiplier on the window's Full size — the " +
+                 "glance-sized middle tier between Full and the bare title bar.")]
+        [Range(0.1f, 1f)] public float CompactScale;
+
+        [Tooltip("Floor on the per-window resize multiplier. Grabbability, not legibility — the " +
+                 "raster is never re-rendered, only re-targeted.")]
+        [Min(0.05f)] public float MinScale;
+
+        [Tooltip("Ceiling on the per-window resize multiplier (the window still clamps to the " +
+                 "screen and under the HUD band whatever this says).")]
+        [Min(0.1f)] public float MaxScale;
+
+        /// <summary>An 18 px strip with 22 px buttons and a 14 px grip; Compact at 55% of Full;
+        /// resize clamped 0.35×–3× of the dialled base size.</summary>
+        public static BoatUiWindowSettings Default => new BoatUiWindowSettings
+        {
+            TitleBarPx = 18f,
+            ChromeButtonPx = 22f,
+            GripPx = 14f,
+            CompactScale = 0.55f,
+            MinScale = 0.35f,
+            MaxScale = 3f,
         };
     }
 
