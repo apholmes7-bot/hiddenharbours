@@ -96,7 +96,10 @@ Every feature must serve at least one pillar. If it serves none, cut it.
 > jobs split across **East Point** (fishing port), **Finnigan's Landing** (commercial hub), and
 > **New Scotland** (cargo run). **Shipyards: one of varying sizes at each port** — boats are
 > bought, sold and upgraded at yards sized to their harbour (NMC small, East Point working-fleet,
-> Finnigan's Landing large). ⚠ *Held tension, deliberately unresolved:* the 2026-07-25 ruling "no
+> Finnigan's Landing large). A yard is a **commercial business with a local name — the word
+> "shipwright" is not used in-world**; each has an interior and a working yard (boats on supports
+> under repair, perhaps boats for sale), and the old placeholder assets are ruled out
+> (`design/world-map-plan.md` §3). ⚠ *Held tension, deliberately unresolved:* the 2026-07-25 ruling "no
 > shipwright stands in Nine Mile Creek" (the dory is sold by a non-shipwright and put right by
 > hand) predates the small-yard-at-every-port ruling; the dory beat **stands as ruled** unless the
 > owner says the small yard absorbs it. Geography detail and the build order:

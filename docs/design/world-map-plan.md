@@ -138,6 +138,16 @@ damaged-dory beat and small-boat work), East Point's serves the working fleet, F
 is the big yard. (Which tiers each yard buys/sells/upgrades is data to author when the shipyard
 system is built.)
 
+**How a yard presents — RULED 2026-08-07 (same day, later message):** a yard is a **commercial
+business, never called "a shipwright" in-world** — each carries a **local commercial name** (owner
+to pick). It has an **interior** (the seamless, true-to-footprint model) and an **actual working
+yard** outdoors: boats up on supports being worked on, perhaps boats for sale on display. **The old
+placeholder assets are ruled out** — Nine Mile Creek's shipped "shipwright shed" lot (the
+neutral-named stand-in that sells the Punt and the pots) is to be **replaced with new assets, not
+dressed**. Economy ids under `Data/Shipwright/` stay stable (ids are append-only; the business name
+is display — ADR 0009's seam); the player-facing "shipwright" strings in onboarding were already
+part of the flagged M2 rework, and this ruling sets their replacement register.
+
 **The far arc** (the canon's Banks, Ironbound, the Smother, the Drownded Lands, Fundy Rips) is
 **not re-placed by these rulings** — presumably east and offshore past New Scotland, but that
 geography is deliberately unruled. See §7.
