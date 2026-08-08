@@ -41,6 +41,17 @@ lobster traps, working wharves.
 
 ### 2.1 Mental map (relative geography, not to scale)
 
+> **⚠ SUPERSEDED IN PART — 2026-08-07 (the Hillsborough Bay rulings).** The near-world geography
+> below is now ruled onto the real Hillsborough Bay: Nine Mile Creek on the west shore north of
+> St Peters; **Governors Island** (uninhabited, rock-fringed) mid-bay; **East Point** — which
+> **replaces the retired Port Greywick** — as the commercial fishing port on the east shore;
+> **Finnigan's Landing** (the main city, all hulls, late game) up the channel off the north shore;
+> **New Scotland** across the strait SE as the cargo run. The far arc (the Banks, Ironbound, the
+> Smother…) keeps its slots; its placement is unruled. The live map and build order:
+> [`world-map-plan.md`](world-map-plan.md); canon: `../vision-and-pillars.md` §5.3 amendment. The
+> sketch below is kept for the gradient it still teaches — read "Port Greywick" as East Point /
+> Finnigan's Landing per the split.
+
 ```
                               ~ open North Atlantic ~
 

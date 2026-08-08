@@ -1,243 +1,226 @@
 # Hidden Harbours — the larger world map
 
-> **Status: PROPOSAL, nothing built.** Written for the owner's 2026-08-06 ask: *"St Peters is a scene,
-> Nine Mile Creek is a scene, surrounding St Peters should be multiple water scenes — let's create a
-> plan for a larger world map. I want it closer to my home province in design. The other regions will be
-> recreated and renamed once we have a decent starter region, which will likely stop at the lobster boat
-> in terms of progression. We will add other ports further east which will be used for the trawlers and
-> will represent closer to Newfoundland, Nova Scotia, New Brunswick."*
+> **Status: RATIFIED IN PART — 2026-08-07, the Hillsborough Bay rulings.** The owner attached the
+> real chart of Hillsborough Bay, PEI, and ruled the home world onto it (chat, 2026-08-07). What is
+> ruled below is marked **RULED**; §7 lists what is still open. Earlier drafts of this document
+> proposed an abstract "home cluster + eastern arc"; that framing is **superseded** by the bay.
 >
-> Subordinate to [`../vision-and-pillars.md`](../vision-and-pillars.md) (**CANON — region names are
-> LOCKED there**) and [`world-and-regions.md`](world-and-regions.md). This document proposes; §7 says
-> exactly what has to be ratified before any of it can be built, and in what order.
+> Subordinate to [`../vision-and-pillars.md`](../vision-and-pillars.md) (canon — amended for these
+> rulings in the same PR that rewrote this document) and
+> [`world-and-regions.md`](world-and-regions.md).
 >
-> **⚠ Nothing here renames a canon region.** Renaming a locked name is an owner decision recorded in
-> canon *first*, then in an ADR, then in code (CLAUDE.md rule 1 + §7). §5 lays out the mapping so the
-> owner can rule on it in one sitting; until he does, every canon name stands.
+> The delightful accident this ruling surfaced: the canon was already this chart in disguise. The
+> **real** Nine Mile Creek Wharf and the **real** St Peters Island are neighbours in the real
+> Hillsborough Bay, and the game had placed them next to each other before anyone noticed.
 
 ---
 
-## 1. The idea in one breath
+## 1. The world is Hillsborough Bay **(RULED)**
 
-**The Maritimes already contain the difficulty curve.** Prince Edward Island's south shore is the
-gentlest working coast in Atlantic Canada — red sandstone you could climb, shallow bays, barachois
-ponds, farm fields running down to the water, wharves that dry out under their own fleet. Nova Scotia's
-Atlantic shore is granite and surf. The Bay of Fundy is a tide that runs like a river. Newfoundland is
-cliff, fog, and the open Atlantic.
-
-So the owner's two asks — *"closer to my home province"* and *"other ports further east for the
-trawlers"* — are the same ask. **Sail east and the coast gets harder.** That is P1, P2 and P5 stacked
-into geography that already exists, and it costs nothing to author because the world was already
-designed as a gradient from sheltered inshore to lethal offshore (`world-and-regions.md` §2.1). This
-proposal keeps every canon structure and re-skins the *near* half of it as PEI.
+The home world is a variant of Hillsborough Bay, Prince Edward Island — red sandstone, shallow
+water, mud and sand bottom, a working coast. Sail east across the strait and the coast gets harder:
+that gradient (P1, P2, P5 stacked into geography) survives from every earlier draft; it just has a
+real bay for a home end now.
 
 ```
-          ~ the open Atlantic ~
-                                            THE SMOTHER  ·  ·  ·  (fog, optional)
-                                                   ·
-   THE OUTPORT COAST ....... THE BANKS ....... THE OUTER GROUNDS
-   (Newfoundland: cliff,     (offshore:              (procedural, endless)
-    storm, the outer         dragger grounds)
-    grounds)                      |
-        \                         |
-         \                  THE NARROWS  (Fundy: tide as a wall — the gate east)
-          \                       |
-           +---------- THE MARKET PORT  (Nova Scotia: the auction, the yard,
-                          |               the 6 m dredged berth, the shipwright)
-                          |
-   ======================= THE STRAIT ========================   <- the LOBSTER-BOAT CEILING
-                          |
-                     THE BAY   (open home water)
-                    /         \
-        THE ROADS  ---- ST PETERS ---- THE SHOAL GROUNDS
-        (sheltered)      (island)       (reef + flats)
-              \            ||  <- the tide-gated crossing
-               \           ||
-            NINE MILE CREEK (the mainland: the working wharf, the town)
-                    |
-              THE HOME COVE  (the cottage you sail the dory to)
-
-        <---- Prince Edward Island: shallow, red, sheltered, farmed
-                        Nova Scotia / Fundy / Newfoundland: deep, hard, cold ---->
+                the channel inland
+                       |
+              FINNIGAN'S LANDING          (the island's main city — commercial hub,
+                       |                   ALL vessel sizes, late-game destination)
+        ~ north shore: coves and points ~
+                       |
+   NINE MILE CREEK     |
+   (town + wharf)      |         EAST POINT
+        |          GOVERNORS     (commercial fishing port —
+        | the bar   ISLAND        "almost mirrors Nine Mile Creek")
+        |  610 m   (uninhabited,
+     ST PETERS      rocks all round)
+     (home island)     |
+        ~ home grounds: fish · mussels · lobster · crab ~
+                       |
+      ==================================== the strait
+                       |
+                  NEW SCOTLAND            (across the strait SE — the cargo run,
+                                           a LONG sail, larger vessels primarily)
 ```
+
+Compass facts, all **RULED** from the chart:
+
+- **St Peters Island** sits in the bay. The open water to its **north, east and south** is the home
+  fishing ground — local fish, mussels, lobsters and crabs.
+- **Nine Mile Creek is on the west shore, further north than St Peters.** Crossing the sandbar
+  westward you land with **shoreline on the south**, then the shore **runs north** until you reach
+  the town. *(The built A-2 mainland already matches: `NineMileCreekMainland` authors the coast
+  north–south, fields west, the crossing leaving ESE with St Peters offshore to the south-east.
+  Verified 2026-08-07 — no rework.)*
+- **The north shore** (north of St Peters' water, north-east of Nine Mile Creek) is coves and
+  points, as the chart draws them. Far enough along it, a **channel heads inland** to the island's
+  main city.
+- **Governors Island** lies mid-bay: **uninhabited, rocks all around** — the bay's standing hazard,
+  square in the way of any sail from home water toward East Point.
+- **The east side of the bay** almost mirrors Nine Mile Creek: land, a working shore, and the
+  commercial fishing port — **East Point**.
+- **Across the strait to the south-east** — a long sail — lies **New Scotland**, the cargo
+  destination, used primarily by the larger cargo vessels.
 
 ---
 
-## 2. The home cluster — six scenes, and it caps at the lobster boat
+## 2. The home bay — what stands and what it holds
 
-Two land scenes exist; four water scenes are proposed. **Sizes are derived by time-to-cross in the boat
-each is gated to** ([`scene-sizing-and-world-scale.md`](scene-sizing-and-world-scale.md) §1.3), not
-picked.
+### 2.1 The two built land scenes
 
-| # | Scene | Kind | Extent | Gating hull | Cross | Identity |
-|---|---|---|---|---|---|---|
-| 1 | **St Peters** | land | 760 × 520 *(built)* | on foot | 2:30 | the home island; clam flats; the crossing leaves west |
-| 2 | **Nine Mile Creek** | land | **760 × 560** *(this slice)* | on foot | 3:06 N–S | the mainland: working wharf, the town, the crossing lands here |
-| 3 | **The Roads** | water | **700 × 700** | punt 2.32 m/s | 5:02 | sheltered water between island and mainland; your first sail |
-| 4 | **The Shoal Grounds** | water | **900 × 900** | console skiff 3.90 | 3:51 | the reef-and-flats water: shellfish, grounding, tide pools |
-| 5 | **The Bay** | water | **1100 × 1100** | Cape Islander 4.20 | 4:22 | open home water; the run to the cove; weather starts to matter |
-| 6 | **The Home Cove** | land | 520 × 400 | dory | 2:53 | the cottage and its wharf — the home you *arrive at* |
+| Scene | Extent | Status | Identity |
+|---|---|---|---|
+| **St Peters** | 760 × 520 m | **built** | The home island: clam flats, the village, the crossing leaves west. Dock ~0.6 m. |
+| **Nine Mile Creek** | 760 × 560 m | **built** (owner's scene rebuild pending) | The mainland: small town + small wharf, its half of the crossing. Berth ~1.6 m. |
 
-Plus the corridor that closes the cluster:
+**Nine Mile Creek's town, RULED contents:** a fish buyer, a bait seller, supplies, a restaurant, a
+post office — "everything needed for a small town and a small wharf." Its wharf is **home to
+approximately 16 lobster boats** plus a **new smaller class of boat for mussel fishing** (and
+lobster boats can be **outfitted** to fish mussels — the fishing role is gear on a hull, not the
+hull class). The north wall was sized at ~14 berths, so a 16-boat fleet fills it past full —
+rafted pairs and moorings — which is what a working wharf should look like.
 
-| 7 | **The Strait** | water | **1200 × 700** | lobster boat | 4:46 | the way east — and **the ceiling** |
+### 2.2 The three home water scenes **(RULED "for now")**
 
-**Every one of them lands at 20–27 screens across**, which is the sanity check the sizing doc noticed
-falls out of honest arithmetic. Nothing here is a new kind of thing: a water scene is a sea plane, a
-painted seabed, a couple of authored hazards and a passage — the sizing doc's §3 already establishes
-that extent is nearly free and that the real cost is authoring, which for open water is small.
+The bay partitions into **three water scenes**; the channel to the city and the strait crossing are
+**passages, not scenes**, until their phases arrive.
 
-### 2.1 Why *multiple* water scenes and not one big one
+| Scene (working name) | Water | Character |
+|---|---|---|
+| **The west water** | the bar, St Peters' lee, the run up to Nine Mile Creek | The first sail. Sheltered, forgiving, the dory's water. |
+| **The mid-bay** | the home grounds around St Peters | Fish, mussels, lobster, crab — with **Governors Island** as its hazard. |
+| **The east water** | Governors Island across to East Point | The working run: longer, more exposed, the lobster boat's commute. |
 
-The owner asked for several, and he is right, for three reasons that are not aesthetic:
+Extents to be derived by time-to-cross in each scene's gating boat
+([`scene-sizing-and-world-scale.md`](scene-sizing-and-world-scale.md) §1.3) when the water-scene
+template is built — not picked in advance.
 
-1. **They are different places, and difficulty is per-place.** The Roads are forgiving; the Shoal Grounds
-   will hole your hull at low water; the Bay has weather; the Strait has current. One scene would have
-   to be uniformly as dangerous as its worst corner or as safe as its best.
-2. **Painted seabed is per-region.** One 3000 m scene at 2 px/m is a 6000² texture — 36 MB and over the
-   4096 cap. Four 900 m scenes at 2 px/m are 3.2 MiB each. The split is what keeps the seabed paintable
-   at inshore resolution at all.
-3. **Camera bounds, tide profile and region state are all per-region seams that already exist.** Four
-   scenes cost four `RegionDef`s and four builders; one scene costs a new streaming system.
+**Offshore seabed, RULED:** open-water scenes carry **no painted seabed** — they are deep enough
+that the bottom is never visible. They still carry **height-map and terrain data everywhere**,
+because the depth sounder and the fish finder read real depth (the one-height-map law). Paint is
+a *look*; data is the *world*. This also removes the paint-resolution ceiling from open-water scene
+size entirely — only the 6–10-minute crossing rule constrains them now.
 
-### 2.2 The lobster-boat ceiling is bathymetry, not a rule
-
-The owner's ceiling enforces itself, and it needs no new system:
+### 2.3 The lobster-boat ceiling is bathymetry **(RULED: physics, never a rule)**
 
 | Harbour | Berth depth | Admits | Turns away |
 |---|---|---|---|
-| St Peters dock | ~0.6 m | dory · skiff · punt · console skiff | everything larger |
-| **Nine Mile Creek** | **~1.6 m** | + **lobster boat 1.30 · Cape Islander 1.40** | **side dragger 2.90** |
-| The Home Cove | ~1.6 m *(proposed, to match)* | as above | as above |
-| **The Market Port** *(east)* | **6 m dredged** | **everything, including the dragger** | — |
+| St Peters dock | ~0.6 m | dory · punt · skiffs | everything larger |
+| **Nine Mile Creek** | **~1.6 m** | + lobster boat 1.30 · Cape Islander 1.40 | side dragger 2.90 |
+| **East Point** | working-port depth (TBD, ≥ NMC) | the fishing fleet | — |
+| **Finnigan's Landing** | deep (dredged) | **everything** | — |
 
-**The dragger you save up for has nowhere at home to lie.** She can cross the Strait and berth in the
-east, and that is the whole point: you feel your own promotion in where you are allowed to tie up. The
-mechanism is emergent already (`waterLevel − bed > draught`), so the ceiling costs one painted number
-per harbour.
+The owner ruled the dragger exclusion stays **emergent** (`waterLevel − bed > draught`): on NMC's
+±2.2 m tide a dragger *can* nose in near high water (~30 % of the cycle) but can never lie there —
+the ebb grounds her. That loophole is accepted as a story, not patched as a bug. Companion vision,
+logged: **grounding hulls should ride the ground and keel over**, exposing the underside the 3D
+iso rigs already model — flat-bottomed hulls (dory, punt) sit upright as they dry; round-bilged
+hulls lie over. Per-hull resting heel is data.
 
 ---
 
-## 3. The eastern arc — where the trawlers live
+## 3. The ports **(names RULED)**
 
-Everything east of the Strait is the *rest* of the Maritimes, and it maps onto the canon's existing
-slots without inventing new ones.
+The earlier draft's single eastern "Market Port" is **superseded** — its job splits three ways, and
+**Port Greywick is retired as a place name** (canon amendment in this PR; region *ids* in code and
+saves stay stable per ADR 0009 — display names are a seam, ids are append-only).
 
-| Order | Region | Real-coast flavour | What it is for | Gate |
-|---|---|---|---|---|
-| E1 | **The Market Port** | Nova Scotia — a real commercial harbour | The auction, the **shipwright's yard**, the chandlery, the chart shop, the processing plant, the 6 m dredged berth. **This is where the market-town job goes** now that Nine Mile Creek is a working wharf. | Cape Islander / lobster tier + story |
-| E2 | **The Flats** | PEI/NS head-of-bay | The walkable-seabed flats; spring-low secret runs | tide table |
-| E3 | **The Narrows** | Bay of Fundy | Tide as a wall; slack-water transit; the graduation gate | capable hull + nav skill |
-| E4 | **The Banks** | offshore | Dragger grounds; industry-scale fishing; overnight steaming | side dragger |
-| E5 | **The Outport Coast** | Newfoundland | Cliff, fog, storm; rare and legendary fish; the lighthouse keeper | stern trawler + weather skill |
-| E✦ | **The Fogbank** | offshore | Navigate by instrument and sound; the uncanny | late instruments |
-| E⚓ | **The Lanes** | — | Freight, contracts, the fleet | freighter tier + business |
+| Port | Where | What it is | When |
+|---|---|---|---|
+| **East Point** | east side of the bay | The **commercial fishing port** — the fleet, the fish trade at scale, a working shore that mirrors Nine Mile Creek. | mid-game |
+| **Finnigan's Landing** | up the channel inland, off the north shore | The island's **main city** — the commercial hub **all vessel sizes can reach**. Business, buildings, the big money. A **late-game destination** — but the player may end up there early *for various reasons*, to see the potential (larger vessels, businesses, building ownership) without being granted it. | late, glimpsed early |
+| **New Scotland** | across the strait, south-east | The **cargo destination** — a long sail, used primarily by the larger cargo vessels. The freight game's far end. | late (freight tier) |
 
-**Nothing in that table is new canon.** It is canon §5.3's slots 3–7 + ✦ + ⚓ with a coastal identity
-attached to each, plus the one genuine structural change the 2026-07-25 ruling already forced: **the
-market town is no longer Nine Mile Creek and needs a home.** E1 is that home, and it closes the
-outstanding *"where does the shipwright's yard live?"* question at the same time.
+**Shipyards, RULED: multiple — one of varying sizes at each port.** Boats are bought, sold and
+upgraded at yards, and the yard's size sets what it can handle: Nine Mile Creek's is small (the
+damaged-dory beat and small-boat work), East Point's serves the working fleet, Finnigan's Landing's
+is the big yard. (Which tiers each yard buys/sells/upgrades is data to author when the shipyard
+system is built.)
+
+**How a yard presents — RULED 2026-08-07 (same day, later message):** a yard is a **commercial
+business, never called "a shipwright" in-world** — each carries a **local commercial name** (owner
+to pick). It has an **interior** (the seamless, true-to-footprint model) and an **actual working
+yard** outdoors: boats up on supports being worked on, perhaps boats for sale on display. **The old
+placeholder assets are ruled out** — Nine Mile Creek's shipped "shipwright shed" lot (the
+neutral-named stand-in that sells the Punt and the pots) is to be **replaced with new assets, not
+dressed**. Economy ids under `Data/Shipwright/` stay stable (ids are append-only; the business name
+is display — ADR 0009's seam); the player-facing "shipwright" strings in onboarding were already
+part of the flagged M2 rework, and this ruling sets their replacement register.
+
+**The far arc** (the canon's Banks, Ironbound, the Smother, the Drownded Lands, Fundy Rips) is
+**not re-placed by these rulings** — presumably east and offshore past New Scotland, but that
+geography is deliberately unruled. See §7.
 
 ---
 
 ## 4. What has to be built for a multi-scene world to work
 
-Ordered by what blocks what. The first two are small and they block everything.
+Ordered by what blocks what.
 
-1. **⛔ Per-passage arrival points.** `RegionAnchor` exposes ONE `DisembarkPoint`, and
-   `RegionTravelCoordinator.ApplyArrival` teleports the player to it on *every* arrival. That is correct
-   for a region with one door and wrong the moment a region has two — Nine Mile Creek already has a
-   wharf you sail into and a bar you walk in across, and every water scene will have three or four
-   seams. **Until this lands, a multi-door region drops the player at the wrong door.** Small change,
-   App/Core, `lead-architect`'s call. *(Flagged in this slice; the mainland's walk-in arrival point is
-   already authored and waiting for it.)*
-2. **⛔ `MapGraph` as data.** Canon §9.3 specifies a `MapGraph` ScriptableObject holding region nodes and
-   gated edges, read by both the chart UI and the router. It **does not exist**: today the edges are
-   hard-wired as `RegionPassage` components pointing at `RegionDef`s. Twelve scenes with three or four
-   doors each is 40 hand-wired triggers with no single place to ask "where can I go from here."
-3. **A tide-continuity rule, enforced.** *Adjacent regions that share a piece of terrain must share a
-   tide profile.* This slice discovered it the hard way: Nine Mile Creek ran a ±0.8 m tide and St Peters
-   ±2.2 m, and a sandbar spanning that seam would have been dry on one side and flooded on the other at
-   the same instant. As the world grows this stops being a two-region coincidence and becomes a law —
-   worth a `RegionValidation` check rather than a comment.
-4. **Seams in featureless water.** A scene load fires best where nothing is happening. Put every seam in
-   open water clear of hazards, never on a landfall or in a channel the player is threading.
-5. **A water-scene builder template.** The four water scenes are ~90% identical (sea plane, painted
-   seabed, region anchor, passages, camera bounds, weather). One parameterised builder, four small
-   plans — not four 1200-line files.
-6. **Set-a-course, eventually.** Twelve scenes hand-sailed is romantic at the dory and a chore at the
-   freighter. Canon already allows fast travel once a route is discovered; that is an M3 concern, but
-   the map graph (item 2) is its prerequisite, which is another reason to do item 2 early.
+1. ~~**Per-passage arrival points.**~~ **DONE** — shipped as PR #456 (2026-08-07): a passage names
+   its own arrival point; the fisher lands where they walked.
+2. **⛔ `MapGraph` as data.** Canon §9.3 specifies a `MapGraph` ScriptableObject holding region
+   nodes and gated edges, read by both the chart UI and the router. It **does not exist**: today the
+   edges are hard-wired as `RegionPassage` components pointing at `RegionDef`s. A bay of five-plus
+   scenes with three or four doors each needs one place that answers "where can I go from here."
+3. **A tide-continuity rule, enforced.** Adjacent regions sharing terrain must share a tide profile
+   (the bar taught this the hard way). Worth a `RegionValidation` check rather than a comment.
+4. **Seams in featureless water.** Every seam in open water clear of hazards — never on a landfall
+   or in a channel the player is threading. (Governors Island's rock fringe is exactly what a seam
+   must stay away from.)
+5. **A water-scene builder template.** The three bay scenes are ~90 % identical (sea plane, height
+   data, region anchor, passages, camera bounds, weather). One parameterised builder, three small
+   plans.
+6. **Set-a-course, eventually.** An M3 concern; the map graph (item 2) is its prerequisite.
 
 ---
 
-## 5. Names — the owner's call, laid out for one sitting
+## 5. Names — resolved
 
-Canon §5.3 **locks** region names. The owner has said the other regions "will be recreated and renamed."
-That is a canon amendment, and it should be made once, deliberately, rather than drifting.
+The owner ruled for **variants of real PEI names** (2026-08-07) and then named the new places
+directly. Canon names locked in `vision-and-pillars.md` §5.3, as amended:
 
-**The recommendation is to keep the fictional frame and re-skin the geography.** The world is the
-*Sablewick Banks*, "a small fictional archipelago off Atlantic Canada" (canon §5.1) — which is already
-exactly what this plan describes; it just wasn't drawn as PEI. Keeping it fictional means real place
-names never constrain the map, and the vernacular canon already asks for (*sunkers, rips, drownded,
-barachois*) does the work of place.
-
-| Canon slot | Job it does | Recommendation |
+| Place | Name | Status |
 |---|---|---|
-| 0 · St Peters Island | prologue home island | **keep** — it is already a real PEI name and it is built |
-| 1 · Coddle Cove | the home you sail the dory to | **keep the name, re-skin the coast** to PEI red sandstone + spruce |
-| 2 · The Sunkers | reef field | **keep** — "sunker" is Maritime vernacular, canon flavour |
-| 3 · Nine Mile Creek | ⚠ *was* the market town | **keep the name, keep the new job**: the working wharf + its small community (already ruled 2026-07-25) |
-| — | ⚠ **the market town's job is now homeless** | **NEW region needed** — the eastern Market Port (§3 E1). Needs a name and a canon row. |
-| 4 · The Drownded Lands | walkable flats | **keep** |
-| 5 · Fundy Rips | narrows | **keep** — Fundy is the right water and the right gate east |
-| 6 · The Banks | offshore | **keep** |
-| 7 · Ironbound | storm coast | **keep the name, skin it Newfoundland** |
-| ✦ · The Smother | fogbank | **keep** |
-| ⚓ · Shipping Lanes | commerce | **keep** |
-| — | **Port Greywick** | ⚠ **retire or relocate.** Canon still names it in places as the market town; the 2026-07-25 ruling took that job away from Nine Mile Creek without giving it back to Greywick explicitly. The cleanest reading: **Greywick IS the eastern Market Port.** One decision closes three open questions. |
-
-So the amendment the owner actually has to make is **small**: confirm that Port Greywick is the eastern
-market port (which houses the auction, the shipwright's yard and the deep berth), and add the four home
-water scenes as regions. Everything else keeps its locked name.
+| Home island | **St Peters Island** | canon, built — a real bay name |
+| Mainland town + wharf | **Nine Mile Creek** | canon, built — a real bay name |
+| Mid-bay hazard island | **Governors Island** | **RULED 2026-08-07** — real bay name; uninhabited, rocks all round |
+| East-shore fishing port | **East Point** | **RULED 2026-08-07** — replaces Port Greywick |
+| The main city | **Finnigan's Landing** | **RULED 2026-08-07** |
+| The cross-strait cargo port | **New Scotland** | **RULED 2026-08-07** |
+| ~~Port Greywick~~ | — | **RETIRED 2026-08-07.** Historical mentions in ADRs and older docs stand as history; player-facing strings (`WorldStrings.OnboardBuyDory` / `OnboardRepairDory`, `OnboardingDirector`) are part of the already-flagged M2 onboarding rework; region ids stay stable (ADR 0009). |
+| The three water scenes | working names only (§2.2) | names owed when the scenes are built |
+| Far-arc regions | canon names stand (Banks, Ironbound, Smother…) | geography unruled — §7 |
 
 ---
 
 ## 6. Order of work
 
-Deliberately paced so the owner can play and rule at each step, and so nothing is built twice.
-
 | Step | What | Why here |
 |---|---|---|
-| **0** | **Nine Mile Creek mainland, Phase A + B** *(in progress)* | The starter region has to be good before anything is copied from it |
-| **1** | **Per-passage arrival points** (§4.1) | Blocks every multi-door region, including the one being built now |
-| **2** | **`The Roads`** — the first water scene | Proves the water-scene template and the seam model on the *easiest* possible case; it is also the first sail in the dory, which the owner should play before four more are built |
-| **3** | **Owner plays the home arc** — St Peters → crossing → Nine Mile Creek → the Roads | The go/no-go gate. Is it *fun* before more is spent (roadmap §6) |
-| **4** | **`MapGraph`** (§4.2) | Before the door count gets away from us |
-| **5** | **The Shoal Grounds + The Bay + The Home Cove** | The rest of the home cluster; the lobster-boat ceiling lands with them |
-| **6** | **The Strait**, and the canon amendment of §5 | The ceiling becomes a door east |
-| **7** | **The Market Port** | The auction, the yard, the 6 m berth — and the dragger finally has somewhere to lie |
-| **8** | Eastward: the Narrows → the Banks → the Outport Coast | The trawler world, in the order the difficulty ramps |
-
-**What NOT to do yet:** do not recreate or rename the drafted eastern regions before step 3. The owner
-has said the starter region comes first, and every hour spent on the Banks before the home arc is proven
-fun is an hour spent on the wrong end of the map.
+| **0** | Nine Mile Creek Phase B (wharf dressing from the ISO kits) + the owner's scene rebuild | The starter region has to be good before anything is copied from it |
+| **1** | **The west water** — the first water scene | Proves the water-scene template on the easiest case; it is the first sail, which the owner should play before more water is built |
+| **2** | **Owner plays the home arc** — St Peters → the bar → Nine Mile Creek → the west water | The go/no-go gate: is it *fun* (roadmap §6) |
+| **3** | **`MapGraph`** (§4.2) | Before the door count gets away from us |
+| **4** | **The mid-bay + the east water** — Governors Island, the home grounds, the run to East Point | The rest of the bay; the mussel fishery's water arrives with it |
+| **5** | **East Point** | The first port beyond home; the working fleet's world |
+| **6** | The channel + **Finnigan's Landing** (glimpse-grade first) | The late-game window the owner asked for — show it before it is playable |
+| **7** | The strait + **New Scotland** | The freight run |
+| **8** | The far arc | Unruled geography; rule it when the bay is real |
 
 ---
 
 ## 7. Open questions for the owner
 
-1. **Is Port Greywick the eastern Market Port?** One yes closes three open questions: where the market
-   town went, where the shipwright's yard lives, and what the dragger's home berth is.
-2. **How many water scenes around St Peters — four, or fewer?** §2 proposes The Roads, The Shoal
-   Grounds, The Bay and The Strait. Two (a near one and a far one) would work; four gives each its own
-   hazard and its own tier.
-3. **Should the crossing get its teeth back** — a ~900 m total bar, at the cost of a ~300 m wider Nine
-   Mile Creek region? The arithmetic is in
-   [`nine-mile-creek-mainland.md`](nine-mile-creek-mainland.md) §3.3.
-4. **Fictional names or real ones?** §5 recommends keeping the fictional Sablewick Banks frame and
-   re-skinning the *look* to PEI. The alternative — real PEI place names throughout — is warmer and
-   riskier (it constrains the map to a real coastline that does not have a Fundy or a Newfoundland
-   within sailing distance).
-5. **Does the home cluster get a season?** Canon has four seasons. A PEI winter closes the wharves and
-   ices the bay, which is either a wonderful pressure or a month of the game where nothing works.
+1. **Where does the Home Cove (canon: Coddle Cove — the cottage you row the dory to) sit in the
+   bay?** The arc says: buy and repair the dory at Nine Mile Creek, row her *home*. The chart offers
+   candidates (a cove on the west shore south of the bar; a cove on the north shore) but this is not
+   ruled, and it decides the dory's first real voyage.
+2. **The far arc's geography** — the Banks, Ironbound, the Smother, the Drownded Lands, Fundy Rips
+   keep their canon names and jobs, but where they lie relative to New Scotland is unruled.
+3. **East Point's berth depth** and how far its "almost mirrors Nine Mile Creek" goes — same kit,
+   bigger fleet, or its own look?
+4. **The three water scenes' real names** — owed when they are built; the owner's PEI-variant style
+   applies.
+5. **Winter** — deferred 2026-08-07 ("that can wait for now").
