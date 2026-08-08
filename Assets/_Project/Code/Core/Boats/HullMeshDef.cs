@@ -92,18 +92,26 @@ namespace HiddenHarbours.Core
         public float RockHeavePixels;
 
         [Header("Flotation (GAME-SIDE — the baker never writes this field, so it survives re-bakes)")]
-        [Tooltip("Resting draft in METRES: how deep this hull's design waterline sits above the rig " +
-                 "origin. Every boat rig's pivot is the KEEL BOTTOM ('amidships, keel bottom, " +
-                 "centreline'), so 0 leaves a resting hull keel-ON-the-surface — troughs open air " +
-                 "under the whole boat and only a crest ever wets the planking. A real draft sinks " +
-                 "the hull to a believable waterline and widens the moving waterline band (ADR 0023 " +
-                 "phase 3 step 2). Applied ONLY while the displaced sea is active — with the flat " +
-                 "water the render stays byte-identical to before phase 3 (the A/B contract). " +
-                 "Reference: the 3d-water spike framed the lobster boat at 0.5 m " +
-                 "(spike/3d-water Spike3dWaterMenu.cs, 'sunk half a metre of draft'). Set BY HAND; " +
-                 "the natural long-term home is the rig's gameplay sidecar (a WATERLINE symbol in " +
-                 "the export contract) — migrate this field there when the art-director's export " +
-                 "grows one, and have the baker write it.")]
+        [Tooltip("THE DESIGN WATERLINE, in METRES above the rig origin — how far up this hull's " +
+                 "planking the sea stands when she is floating at rest. Every boat rig's pivot is " +
+                 "the KEEL BOTTOM ('amidships, keel bottom, centreline'), so this doubles as her " +
+                 "resting draft, and 0 leaves a resting hull keel-ON-the-surface: troughs open air " +
+                 "under the whole boat and only a crest ever wets the planking.\n\n" +
+                 "THIS NUMBER IS NOW DRAWN EXACTLY (owner playtest 2026-08-07: 'generally they " +
+                 "should level out at the boats water line'). It used to be subtracted from the " +
+                 "hull's ride RAW, and the shared z-buffer's iso projection then drew the water " +
+                 "climbing 1.1457 rig-metres of planking per metre of sink — so every hull in the " +
+                 "fleet floated 14.57% deeper than this field claimed, always. HullSettleMath now " +
+                 "pre-divides by that gain (derived from ElevationDeg below), so what is typed here " +
+                 "is what the sea draws. Raise it to float her deeper, lower it for more freeboard " +
+                 "— one number, one hull, no code.\n\n" +
+                 "Applied ONLY while the displaced sea is active — with the flat water the render " +
+                 "stays byte-identical to before ADR 0023 phase 3 (the A/B contract). Reference: " +
+                 "the 3d-water spike framed the lobster boat at 0.5 m (spike/3d-water " +
+                 "Spike3dWaterMenu.cs, 'sunk half a metre of draft'). Set BY HAND; the natural " +
+                 "long-term home is the rig's gameplay sidecar (a WATERLINE symbol in the export " +
+                 "contract) — migrate this field there when the art-director's export grows one, " +
+                 "and have the baker write it.")]
         [Min(0f)] public float RestingDraftMeters = 0f;
 
         [Tooltip("The WATERTIGHT clamp (owner playtest 2026-07-23: 'water enters hull on the mesh " +

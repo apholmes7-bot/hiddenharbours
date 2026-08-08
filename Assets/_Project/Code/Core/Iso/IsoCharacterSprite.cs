@@ -28,13 +28,21 @@ namespace HiddenHarbours.Core
     /// rather than snapping to North. <b>Feet stay planted</b> — the sheets' pivot IS ground contact, so
     /// swapping frames never moves the character and this component never touches <c>transform</c>.</para>
     ///
+    /// <para><b>…and both reads can be OVERRIDDEN by whoever knows better</b> (<see cref="HoldHeading"/> /
+    /// <see cref="HoldSpeed"/>). The local-position read is right in the two frames the player lives in, but
+    /// it measures the frame's ROTATION as motion: a boat turning under a motionless fisher moves them in
+    /// her frame with no step taken, so an un-overridden read would swing their facing round and march them
+    /// on the spot. On a deck the <c>DeckRiderVisual</c> therefore states both — the facing composed from
+    /// the deck bearing and the hull's heading, the speed measured in metres of DECK. Ashore nothing holds
+    /// either and the motion read stands exactly as it always did.</para>
+    ///
     /// <para><b>Two axes, not one.</b> Besides the gait it also carries a <see cref="Stance"/> — braced on
     /// a deck, at a helm, at the oars — and the def resolves the pair in one call
     /// (<see cref="CharacterVisualDef.Playable"/>). The default <see cref="CharacterStance.Free"/> routes
     /// straight back to the flat idle/walk/run fields, so a character with no stance art draws exactly what
-    /// it drew before stances existed. <see cref="HoldHeading"/> covers the other half of the same story:
-    /// a pilot stands still while the hull turns under them, so their facing comes from the BOAT rather
-    /// than from motion that isn't there.</para>
+    /// it drew before stances existed. <see cref="HoldHeading"/> and <see cref="HoldSpeed"/> cover the other
+    /// half of the same story: a character standing on something that MOVES has no honest motion of its own
+    /// to read, so whoever owns that frame supplies both the facing and the speed.</para>
     ///
     /// <para><b>Sharing the renderer.</b> Anything else that wants to drive the same
     /// <see cref="SpriteRenderer"/> for a while (the deck haul animation) calls <see cref="Suspend"/> and
@@ -81,6 +89,8 @@ namespace HiddenHarbours.Core
         private Sprite _lastApplied;
         private bool _headingHeld;
         private float _heldHeadingDegrees;
+        private bool _speedHeld;
+        private float _heldSpeed;
 
         /// <summary>True when a complete skin is wired and this component is actually driving the renderer.
         /// Whoever else might write the sprite reads this to decide whether to stand down.</summary>
@@ -146,6 +156,35 @@ namespace HiddenHarbours.Core
             _headingDegrees = _heldHeadingDegrees;
         }
 
+        /// <summary>True while the GAIT's speed is stated by <see cref="HoldSpeed"/> rather than measured.</summary>
+        public bool IsSpeedHeld => _speedHeld;
+
+        /// <summary>
+        /// STATE the travelling speed (m/s) the gait should be chosen from, instead of measuring it — the
+        /// twin of <see cref="HoldHeading"/>, and needed for the same reason. The local-position read
+        /// measures the parent frame's ROTATION as motion, so a fisher standing on a turning deck (or a
+        /// pilot standing at a turning helm) would be measured as walking and would draw a stride they are
+        /// not taking. Whoever moves them in that frame knows the honest number: on a deck it is metres of
+        /// DECK per second.
+        ///
+        /// <para>Taken as stated, with no smoothing: this IS the truth, not a sample of it. Idempotent and
+        /// cheap; call it every frame. <see cref="ReleaseSpeed"/> hands the gait back to measurement,
+        /// keeping the last stated value as the current one so the hand-back never pops a stride.</para>
+        /// </summary>
+        public void HoldSpeed(float metresPerSecond)
+        {
+            _speedHeld = true;
+            _heldSpeed = Mathf.Max(0f, metresPerSecond);
+        }
+
+        /// <summary>Give the gait back to measured motion (idempotent), keeping the last stated speed.</summary>
+        public void ReleaseSpeed()
+        {
+            if (!_speedHeld) return;
+            _speedHeld = false;
+            _speed = _heldSpeed;
+        }
+
         /// <summary>Claim the renderer for another driver — this component stops writing until a matching
         /// <see cref="Release"/>. Counted, so overlapping claims nest safely.</summary>
         public void Suspend() => _suspendCount++;
@@ -203,11 +242,22 @@ namespace HiddenHarbours.Core
                 ? _heldHeadingDegrees
                 : IsoCharacterMath.HeadingFor(velocity, _headingMinSpeed, _headingDegrees);
 
-            float instant = velocity.magnitude;
-            float k = _speedSmoothingSeconds > 1e-4f
-                ? 1f - Mathf.Exp(-dt / _speedSmoothingSeconds)
-                : 1f;
-            _speed += (instant - _speed) * Mathf.Clamp01(k);
+            // A HELD speed replaces the read outright rather than being smoothed toward: it is a statement
+            // of fact from whoever is moving the character, and filtering it would only add lag to a number
+            // that has none. The local position is still tracked above, so releasing the hold never reads
+            // the accumulated gap as one enormous stride.
+            if (_speedHeld)
+            {
+                _speed = _heldSpeed;
+            }
+            else
+            {
+                float instant = velocity.magnitude;
+                float k = _speedSmoothingSeconds > 1e-4f
+                    ? 1f - Mathf.Exp(-dt / _speedSmoothingSeconds)
+                    : 1f;
+                _speed += (instant - _speed) * Mathf.Clamp01(k);
+            }
 
             Apply();
         }

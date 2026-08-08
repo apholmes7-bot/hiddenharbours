@@ -19,20 +19,27 @@ using UnityEngine.Rendering.Universal;   // PixelPerfectCamera
 namespace HiddenHarbours.App.Editor
 {
     /// <summary>
-    /// One-click <b>Nine Mile Creek</b> (VS-22): the market town as a SEPARATE region scene, built by
-    /// its own builder so the greybox cove (GreyboxBuilder) is untouched. Menu: Hidden Harbours ▸
-    /// Build Nine Mile Creek Scene. Re-runnable (idempotent on the assets).
+    /// One-click <b>Nine Mile Creek</b> — the MAINLAND. Menu: Hidden Harbours ▸ Build Nine Mile Creek
+    /// Scene. Re-runnable (idempotent on the assets).
     ///
-    /// Nine Mile Creek is a <b>services region, not a town</b> (M2 grows it): a deep, sheltered harbour with a
-    /// public wharf carrying the Fish Buyer + the Shipwright (the same Economy components the cove uses,
-    /// referenced by stable id), plus a couple of flavour buildings. It is authored as a per-region
-    /// scene that the <see cref="RegionSceneLoader"/> loads additively (CLAUDE.md §3), and it adds the
-    /// Nine Mile Creek + Coddle Cove <see cref="RegionDef"/> assets and a return passage.
+    /// <para><b>⭐ PHASE A-2 OF THE RECREATION.</b> The region shipped as a 120 × 120 m harbour ISLAND
+    /// with a rectangular quay poking east into a dredged −6 m basin — a stand-in for Port Greywick,
+    /// authored before the 2026-07-25 ruling split the two. The owner's reference photographs are of a
+    /// MAINLAND wharf on a low red spit, fields behind it, a barachois pond, and St Peters lying offshore
+    /// to the south-east. That is a different landform, not a bigger one.</para>
     ///
-    /// <para>The wharf itself lives in <see cref="NineMileCreekWharf"/> — the deck, its fittings and the
-    /// breakwater arm, built from the baked wharf tile kit and registered as standable floor. It is a
-    /// separate file for the same reason the island's dock is: the geometry is pure and public so a test
-    /// can assert the quay against the fence and the dock zone without opening a scene.</para>
+    /// <para><b>Phase A-1 (#453) wrote the new geography down and proved it</b> —
+    /// <see cref="NineMileCreekMainland"/> plus <c>MainlandTidalTerrain</c> / <c>MainlandCoast</c>, with
+    /// thirty EditMode assertions, as data and pure maths with no builder on top. <b>This is the wiring:</b>
+    /// the terrain the scene carries, every creekside site moved onto the new coast, the region's own
+    /// def, and the two passages — the return to Coddle Cove and, new, the tidal crossing to St Peters.
+    /// Everything geographic here is a window onto the plan; this builder authors no coastline of its
+    /// own.</para>
+    ///
+    /// <para>The wharf lives in <see cref="NineMileCreekWharf"/>: two walls registered as standable floor
+    /// at their MEASURED deck height, the mooring fittings and the <c>ShoreCleat</c>s derived from the
+    /// same table, and the breakwater's collision line. It no longer DRAWS the quay — the walls are
+    /// terrain fills and the drawn ISO quay is Phase B's (owner's ruling, 2026-08-07).</para>
     ///
     /// SCOPE / TODO: this scene currently carries its own Main Camera + AudioListener so it can be
     /// opened and reviewed standalone. When the additive Cove↔Nine Mile Creek transition is fully wired (player
@@ -78,79 +85,174 @@ namespace HiddenHarbours.App.Editor
         // (The fight's UI art — TensionGauge / LineHook / FishOnSilhouette — is no longer wired anywhere:
         // the rod fight has no HUD. Owner's ruling 2026-07-23.)
 
-        // VS-22 arrival/dock geometry — single source of truth shared with NineMileCreekDockTests. The persistent
-        // ControlSwitcher disembarks via a pure DISTANCE test (Vector2.Distance(boat, dockZone) <= radius);
-        // the boat parks at ArrivalPos on arrival, so ArrivalPos MUST sit within DockZoneRadius of DockZonePos
-        // or the player lands out of dock range and can't disembark (the owner-playtest gap #52 fixed — keep it).
+        // =================================================================================================
+        //  ⭐ THE GEOGRAPHY IS THE PLAN'S. This block FORWARDS, it does not author.
+        // =================================================================================================
+        // Phase A-1 (#453) wrote Nine Mile Creek's mainland down in ONE place — NineMileCreekMainland —
+        // and proved it with thirty EditMode assertions before a line of builder code was written on top.
+        // A-2's job is to make the scene say what that plan says, so every constant this builder used to
+        // author is now a window onto it. Two copies of a coastline is the failure mode this region has
+        // already been through once (#345), and a builder with a comment and a test with a literal is the
+        // shape it takes.
         //
-        // CROSSING DIRECTION (canon map): Nine Mile Creek lies WEST of the cove, so you cross by SAILING WEST
-        // and ARRIVE HEADING WEST (the hop preserves heading). The harbour reads true: the public wharf is a
-        // peninsula pointing EAST into the deep harbour (open to the east), its dockable HEAD the EAST tip.
-        // You enter from the EAST, park just east of the head (still heading west), and step WEST onto the deck.
-        public const float DockZoneRadius = 3.5f;                              // ControlSwitcher's default _zoneRadius (cove pattern)
-        public static readonly Vector3 ArrivalPos   = new Vector3(7f, 0f, 0f);  // deep harbour, just EAST of the wharf head
-        public static readonly Vector3 DockZonePos  = new Vector3(4f, 0f, 0f);  // the wharf's seaward (EAST) HEAD — dock here
-        public static readonly Vector3 DisembarkPos = new Vector3(2f, 0f, 0f);  // on the public wharf deck planks (west of the head)
-        public static readonly Vector3 ToCovePassagePos = new Vector3(14f, 0f, 0f); // return passage: EAST edge → sail east back to the cove
+        // They stay PUBLIC and keep their names because the dressing layers and the tests read them
+        // (NineMileCreekWharf, NineMileCreekDory, NineMileCreekFlavour, NineMileCreekPeople, and six test
+        // files) — re-pointing the window moves all of them at once, which is the whole point.
+        //
+        // ⚠ EXPRESSION-BODIED, not `static readonly`, on purpose: a `static readonly` initialised from
+        // another type's `static readonly` binds at type-init time, and this file already has a static
+        // dependency on StPetersBuilder through the plan's CrossingTotalMetres. A property cannot be
+        // caught by an initialisation order.
+        //
+        // WHAT CHANGED, IN ONE LINE: the region was a 120 × 120 m harbour ISLAND whose wharf pointed east
+        // into a dredged -6 m basin. It is now 760 × 560 m of MAINLAND — water east, fields west, a
+        // squared-U wharf on a made spit at the creek's mouth, and the tidal bar to St Peters coming
+        // ashore 260 m south of it.
+
+        /// <summary>The persistent ControlSwitcher's dock radius — the boat must PARK inside it or the
+        /// player lands out of range and cannot disembark (owner-playtest gap #52; keep it).</summary>
+        public const float DockZoneRadius = NineMileCreekMainland.DockZoneRadius;
+
+        /// <summary>Where the greybox ground plane sits in the stack: below the sea, so the water shader's
+        /// wet-dry clip is what decides whether you see ground or sea at a given tide. Named off the
+        /// partition rather than typed, so a re-base of the bands moves it (ADR 0032).</summary>
+        public const int GroundSortingOrder = SortingBands.Sea - 2;
+
+        /// <summary>
+        /// A passage trigger's band, in metres — wide ACROSS the way you are travelling and deep enough
+        /// that you cannot slip through it at speed between two physics steps.
+        ///
+        /// <para>Both of this region's passages use it and both are crossed heading roughly east/west, so
+        /// the band is a tall north–south gate. Forgiving on purpose (P5): the re-fire guard on
+        /// <c>RegionPassage</c> is what makes a wide band safe, so width costs nothing and narrowness
+        /// costs a crossing that silently does not fire.</para>
+        /// </summary>
+        public static readonly Vector2 PassageBandSize = new Vector2(6f, 40f);
+
+        /// <summary>Where the boat parks arriving under power — in the basin, off the north wall's face.</summary>
+        public static Vector3 ArrivalPos   => NineMileCreekMainland.ArrivalPos;
+        /// <summary>The dock zone: against the north wall's south face, beside the unloading apron.</summary>
+        public static Vector3 DockZonePos  => NineMileCreekMainland.DockZonePos;
+        /// <summary>Step ashore onto the north wall's deck.</summary>
+        public static Vector3 DisembarkPos => NineMileCreekMainland.DisembarkPos;
+        /// <summary>Return passage to Coddle Cove — the cove lies EAST (canon), so you sail east out of
+        /// the bay, well clear of the crossing's flats to the south.</summary>
+        public static Vector3 ToCovePassagePos => NineMileCreekMainland.ToCovePassagePos;
+
+        /// <summary>The walk-out band at the mainland's bar tip: cross it heading ESE and the crossing
+        /// hands over to St Peters, mid-bar.</summary>
+        public static Vector3 ToStPetersPassagePos => NineMileCreekMainland.ToStPetersPassagePos;
+        /// <summary>Where the player STANDS arriving from St Peters ON FOOT, mid-crossing — the other end
+        /// of the same bar. Consumed at last, through the per-passage arrival seam (#456): this is the
+        /// region's named <see cref="BarArrivalKey"/> arrival.</summary>
+        public static Vector3 WalkArrivalPos => NineMileCreekMainland.WalkArrivalPos;
+
+        /// <summary>
+        /// The name the St Peters side's passage asks for when the player walks in over the bar (#456).
+        ///
+        /// <para>⭐ THIS IS WHY PR 1 EXISTED. Nine Mile Creek is the first region with two doors, and they
+        /// are <see cref="WalkArrivalPos"/> and <see cref="DisembarkPos"/> — 400 m apart. Without a named
+        /// arrival, a fisher who has just walked 610 m of wet cobble is teleported onto the wharf deck the
+        /// moment they step ashore.</para>
+        ///
+        /// <para>⚠ The MATCHING half is a passage in the St Peters scene pointing here with this key, and
+        /// it is <b>not</b> wired by this builder — a region builder may not reach into another region's
+        /// scene. It is StPetersBuilder's, and until it lands the walk-in lands at the wharf exactly as it
+        /// did before, which is the fallback the seam was built to give.</para>
+        /// </summary>
+        public const string BarArrivalKey = "bar";
 
         // --- CREEKSIDE SITES (named, because other things are derived FROM them) ---------------------
-        // These were inline literals in Build(). They are constants now for two reasons: rule 6, and
-        // because the people, the dory's sightline and the tests all have to be able to ask where a
-        // building IS without a second copy of the number (the island's #345 lesson). Every one is on the
-        // WEST land (x < -4, the shoreline fence); the harbour is open to the EAST.
+        // Same windows-onto-the-plan rule as the block above: the people, the dory's sightline, the
+        // flavour houses and the tests all ask where a building IS, and none of them may hold a second
+        // copy of the number (the island's #345 lesson).
         //
-        // ⚠️ The rows at x = -8 and x = -12 are also what the tree scatter at the bottom of this file is
-        // authored around, so moving one means checking the trees with it.
+        // ⚠ THE SITES DID NOT MOVE A FEW METRES — THEY MOVED TO A DIFFERENT LANDFORM. The old row at
+        // x ∈ [−12, −6] was the 24 m-wide town strip of a 120 m island. The mainland separates what that
+        // strip conflated: the WORKING sites are on the made spit at the creek's mouth (x ≈ 60…150,
+        // y ≈ 96…140) and the TOWN is inland on the through-road, 230 m west of the shore — which is how
+        // a rural PEI community actually sits, and is the whole reason the walk between them exists.
 
         /// <summary>
-        /// The fish buyer's truck, off the quay's south-west corner where the planks meet the yard. THE
-        /// beat of §7.2's exit — you arrive and you SELL — so it is inside a stall's reach of the deck
-        /// rather than back among the buildings where it used to sit (it was at (-8, -3), a walk).
+        /// The fish buyer's till, at his tailgate on the spit by the parking (the plan's §7 site).
         ///
-        /// <para>South rather than north for two reasons: it is the side the mooring edge and the fleet
-        /// are on, which is where fish actually come ashore, and it keeps the truck out of the line
-        /// between the arrival point and the derelict dory — see <see cref="NineMileCreekDory"/>, whose
-        /// sightline test is what would fail if this moved into it.</para>
+        /// <para>⚠ HE IS NO LONGER WITHIN A STALL'S REACH OF THE PLANKS, and that is the geography rather
+        /// than a regression. On a 120 m island the whole region fitted inside the on-foot frame, so "you
+        /// arrive and you SELL" and "the till is 4 m from the deck" were the same sentence. On an 84 m
+        /// working wharf they are not: the buyer stands where a buyer stands, on the apron among the
+        /// trucks, and you walk up the quay past the sheds to him. What must stay true — and what the test
+        /// now measures instead — is that selling happens ON THE WORKING SPIT and is a fraction of the
+        /// walk to town, never a trip up the hill.</para>
         /// </summary>
-        public static readonly Vector3 FishBuyerPos = new Vector3(-6.5f, -3.5f, 0f);
-
-        /// <summary>The shed that sells the Punt and the pots.</summary>
-        public static readonly Vector3 ShipwrightShedPos = new Vector3(-8f, 3f, 0f);
-
-        /// <summary>The yard the damaged dory is bought from — and where the used-outboard man stands.</summary>
-        public static readonly Vector3 DoryYardPos = new Vector3(-8f, 8f, 0f);
-
-        /// <summary>The harbourmaster's office: the cod licence.</summary>
-        public static readonly Vector3 HarbourmasterPos = new Vector3(-12f, 9f, 0f);
-
-        /// <summary>The chandlery: the rod.</summary>
-        public static readonly Vector3 ChandleryPos = new Vector3(-12f, -9f, 0f);
+        public static Vector3 FishBuyerPos => NineMileCreekMainland.FishBuyerPos;
 
         /// <summary>
-        /// The two flavour houses, set well BACK from the working rows in the empty western half of the
-        /// land. They moved out there when they stopped being 5 m greybox squares: the village kit's
-        /// houses measure 6.6 × 8.1 m and 7.0 × 8.7 m in its own contract — half-diagonals of 5.2 and
-        /// 5.6 m against the 3.5 m the sprites reserved — so at their old x = −12 they would have been
-        /// standing in the harbourmaster's office. Sixteen metres apart, which is two footprints and a
-        /// lane; the tests re-derive both numbers from the contract rather than trusting this comment.
+        /// The shed that sells the Punt and the pots — the plan's reserved boat-shed lot in town.
+        ///
+        /// <para>⚠ NAMED NEUTRALLY ON PURPOSE, and this is an OPEN RULING, not a decision this slice
+        /// makes. The 2026-07-25 ruling says there is no shipwright in this region; the shipped scene has
+        /// one selling the Punt and the pots, and the economy data hangs off it. A-1 reserved a lot under
+        /// a neutral name so nothing breaks. WHERE the shipwright's yard really lives is the
+        /// coordinator's question — flagged, not settled (plan §10).</para>
         /// </summary>
-        public static readonly Vector3 FlavourHouseRedPos = new Vector3(-22f, 8f, 0f);
+        public static Vector3 ShipwrightShedPos => NineMileCreekMainland.BoatShedPos;
 
-        /// <summary>Flavour, south. See the north one.</summary>
-        public static readonly Vector3 FlavourHouseTealPos = new Vector3(-22f, -8f, 0f);
+        /// <summary>The hard the damaged dory is bought off — and where the used-outboard man stands. On
+        /// the spit beside the derelict herself, because the boat you are shown and the boat you are sold
+        /// have to be the same boat.</summary>
+        public static Vector3 DoryYardPos => NineMileCreekMainland.DoryYardPos;
 
-        // --- THE REGION'S OWN TIDE PROFILE (was three literals in two places) ------------------------
-        // Nine Mile Creek is the gentle market harbour: a small swing so business is never stranded.
-        // ⚠ It is NOT what actually runs here yet — nothing re-points the tide per region, so the START
-        // scene's profile is live everywhere (see the water-model note below). Anything that must clear
-        // high water is therefore checked against the WIDEST of the two, which is what
-        // RegionValidation.WidestSwing exists for and names this builder as the reason for.
-        public const float TideMean = 0f;
-        public const float TideAmplitude = 0.8f;
-        public const float TidePhaseHours = 2f;
+        /// <summary>Hector's barrel — the used-outboard till. DERIVED from where he actually stands
+        /// (<see cref="NineMileCreekPeople.OutboardStallMetres"/> out from the yard toward the water), so
+        /// the man and the counter cannot come apart: a player who can talk to him but not buy from him
+        /// has met a decoration.</summary>
+        public static Vector3 HectorsBarrelPos
+        {
+            get
+            {
+                Vector2 p = NineMileCreekPeople.Toward(DoryYardPos, NineMileCreekWharf.DeckFootprint().center,
+                                                       NineMileCreekPeople.OutboardStallMetres);
+                return new Vector3(p.x, p.y, 0f);
+            }
+        }
 
-        /// <summary>The highest water that can actually reach this region — the region's own spring high
-        /// folded with the start scene's, which is the one that is really running.</summary>
+        /// <summary>The harbourmaster's office: the cod licence. In town, on the through-road.</summary>
+        public static Vector3 HarbourmasterPos => NineMileCreekMainland.HarbourmasterPos;
+
+        /// <summary>The chandlery: the rod. In town.</summary>
+        public static Vector3 ChandleryPos => NineMileCreekMainland.ChandleryPos;
+
+        /// <summary>Flavour, north — one of the plan's nine town lots. The village kit's houses measure
+        /// 6.6 × 8.1 m and 7.0 × 8.7 m in its own contract, and the plan reserves 6 m of radius per lot,
+        /// so the pair clear each other by construction rather than by a typed-in gap; the tests re-derive
+        /// both numbers from the contract rather than trusting this comment.</summary>
+        public static Vector3 FlavourHouseRedPos => NineMileCreekMainland.HouseNorthPos;
+
+        /// <summary>Flavour, south — strung along the same through-road, 136 m away, so the two read as a
+        /// community spread along a road rather than a matched pair.</summary>
+        public static Vector3 FlavourHouseTealPos => NineMileCreekMainland.HouseSouthPos;
+
+        // --- THE REGION'S TIDE — ⚠ THIS IS A CHANGE, AND IT IS FORCED --------------------------------
+        // The region shipped mean 0, amplitude 0.8 m, phase 2 h: the "gentle market harbour so business is
+        // never stranded" profile, authored when Nine Mile Creek was standing in for Port Greywick.
+        //
+        // It cannot survive the recreation, for a reason that is geometry rather than taste: the tidal bar
+        // to St Peters is ONE bar SPANNING THE REGION SEAM, and its exposure is a function of (crest,
+        // amplitude, phase). Two tides either side of the seam means the crossing is dry on one side and
+        // flooded on the other at the same instant — the region's whole lesson, broken by arithmetic.
+        // So the mainland takes St Peters' tide verbatim (plan §2; endorsed in the A-2 handoff).
+        public const float TideMean = NineMileCreekMainland.TideMean;
+        public const float TideAmplitude = NineMileCreekMainland.TideAmplitude;
+        public const float TidePhaseHours = NineMileCreekMainland.TidePhaseHours;
+
+        /// <summary>
+        /// The highest water that can actually reach this region.
+        ///
+        /// <para>Still folded through <see cref="RegionValidation.WidestSwing"/> even though the two
+        /// swings are now IDENTICAL — deliberately. Nothing re-points the tide per region yet, so the
+        /// START scene's profile is what really runs here; the fold is what makes that fact survive the
+        /// day somebody re-tunes one of the two, and a hard-coded 2.2 would not.</para>
+        /// </summary>
         public static float SpringHighWater =>
             RegionValidation.WidestSwing(
                 RegionValidation.SwingOf(TideMean, TideAmplitude),
@@ -187,34 +289,52 @@ namespace HiddenHarbours.App.Editor
         /// </summary>
         public const MarketId CreekMarket = MarketId.NineMileCreek;
 
-        // --- CONVERGED TIDE-DRIVEN WATER MODEL (ADR 0012 rec. 4 / ADR 0014; shoreline convergence) ------
-        // Nine Mile Creek now runs the SAME water model as St Peters: an analytic seabed (a RectTidalTerrain —
-        // the town land strip + the wharf as steep-sided plateaus over a DREDGED floor) registered into
-        // GameServices.TidalTerrain, plus the layered WaterSurface shader on the harbour Sea plane baking
-        // that terrain — the visible waterline and the walkability/boat-grounding gate read the one same
-        // height (P1). The old static model (a flat tinted sea sprite + a drifting-marker scatter, no
-        // tide) is retired; the Shoreline EdgeCollider2D REMAINS as the physical land/wharf wall the boat
-        // bumps (it is bounds, not the look). Canon holds: Nine Mile Creek is the DEEP, DREDGED harbour
-        // (IsDeepHarbour, -6 m floor), so its quay edge is steep and the waterline sweep is modest — the
-        // tide reads here as rising/falling against the quay, not a wandering beach (the cove and St
-        // Peters carry the big flats). NOTE the live tide is the persistent core's (St Peters ±2.2 m;
-        // nothing re-points it per region yet) — these values are authored against that swing. Public +
-        // single-source-of-truth so the EditMode convergence test asserts the same coast the scene is
-        // built from (the StPetersBuilder convention). All tunables (rule 6).
-        public const float NineMileCreekDeepElevation = -6f;   // the dredged floor (never bares; HarbourDepthMeters 6)
-        public const float NineMileCreekLandElevation = 6f;    // town land + wharf deck: dry/walkable at every tide
-        public const float NineMileCreekQuayFalloff   = 3f;    // steep dredged quay edge → a modest ~1.5 m waterline sweep
-        public const float NineMileCreekWharfFalloff  = 1.2f;  // the wharf drops fast — boats float right at the head
-        public static readonly Vector2 NineMileCreekLandCenter   = new Vector2(-16f, 0f);
-        public static readonly Vector2 NineMileCreekLandHalfSize = new Vector2(12f, 20f);  // x -28..-4 (the fence's waterline), y -20..20
-        public static readonly Vector2 NineMileCreekWharfCenter   = new Vector2(0f, 0f);
-        public static readonly Vector2 NineMileCreekWharfHalfSize = new Vector2(4f, 3f);   // the deck: x -4..4, y -3..3 (head at x=4)
-        // The Sea plane + height-map bake rectangle (the existing 120×120 harbour plane).
-        public static readonly Vector2 NineMileCreekSeaCenter = Vector2.zero;
-        public static readonly Vector2 NineMileCreekSeaSize   = new Vector2(120f, 120f);
-        public const int   NineMileCreekHeightResolution = 192;   // ADR 0012 §A step 1 (the smoothed-shore bake)
-        public const float NineMileCreekHeightMin = -6f;            // brackets the DREDGED floor …
-        public const float NineMileCreekHeightMax = 6f;             // … and the land plateau
+        // --- THE WATER MODEL: a MAINLAND coast, not a dredged basin (ADR 0012 rec. 4 / ADR 0014) --------
+        // Same converged model as before and as St Peters — ONE authored height field registered into
+        // GameServices.TidalTerrain, with the WaterSurface shader baking it, so the visible waterline and
+        // the walkability / boat-grounding gate read the same number (P1). What changed is the field:
+        //
+        //   WAS  RectTidalTerrain — two axis-aligned plateaus (a 24 × 40 m town strip and an 8 × 6 m
+        //        wharf) over a flat -6 m DREDGED floor, inside a 120 × 120 m plane.
+        //   NOW  MainlandTidalTerrain — an open coast RUN with a coast plan (beach · dune · ledge · gully
+        //        · cliff · deep shore), the tidal bar to St Peters, two ponds carved behind the shore and
+        //        the harbour shoal / spit / walls / breakwater filled on top, inside 760 × 560 m.
+        //
+        // ⚠ THE SHORELINE FENCE IS GONE, and its job is done properly now. The region used to carry a
+        // hand-traced EdgeCollider2D at x = -4 that dipped around the wharf, because a rectangular quay on
+        // a flat -6 m floor gave the boat nothing to ground on. A mainland does not need one: the hull is
+        // stopped by DEPTH against the authored terrain (BoatController's shallows drag over
+        // BoatCrossing.DepthAt), which is exactly how St Peters — a painted region with no fence at all —
+        // already works. One coastline, and it is the one the water draws.
+        //
+        // ⚠ AND THE DEEP-HARBOUR CANON IS RETIRED WITH IT. Nine Mile Creek is no longer "the deep dredged
+        // harbour": the ruled ladder is three HARBOURS (St Peters ~0.6 m, here ~1.6 m, Port Greywick 6 m
+        // dredged), and this is the lobster-boat berth. RegionDef goes IsDeepHarbour false /
+        // HarbourDepthMeters 1.6 below.
+
+        /// <summary>The open bay floor — nothing grounds out there.</summary>
+        public const float NineMileCreekDeepElevation = NineMileCreekMainland.BayFloorElevation;
+        /// <summary>The fields inland of the shore: dry at every tide.</summary>
+        public const float NineMileCreekLandElevation = NineMileCreekMainland.LandElevation;
+        /// <summary>⭐ THE RULED GATE — the harbour shoal the wharf stands out onto, and the one number
+        /// every hull here is measured against (plan §3/§6).</summary>
+        public const float NineMileCreekBasinElevation = NineMileCreekMainland.BasinBedElevation;
+
+        /// <summary>The region's world rectangle — sized by TIME TO CROSS (plan §1). The long axis carries
+        /// the crossing; the short axis is the landing → wharf → town walk. 760 m is St Peters' own width
+        /// deliberately: the same water 610 m away gets the same scale.</summary>
+        public static Vector2 NineMileCreekSeaCenter => NineMileCreekMainland.RegionWorldCenter;
+        /// <inheritdoc cref="NineMileCreekSeaCenter"/>
+        public static Vector2 NineMileCreekSeaSize   => NineMileCreekMainland.RegionWorldSize;
+
+        /// <summary>Height-bake resolution for the water shader — DERIVED from the extent and the ruled
+        /// 2 px/m inshore figure, never a literal, and clamped to what a region may ask for.</summary>
+        public static int NineMileCreekHeightResolution => NineMileCreekMainland.WaterHeightBakeResolution;
+        /// <summary>The elevation range the baked R channel maps across. It must BRACKET the whole field
+        /// or the bake clips: the bay floor at the bottom, the fields at the top.</summary>
+        public const float NineMileCreekHeightMin = NineMileCreekMainland.BayFloorElevation;
+        /// <inheritdoc cref="NineMileCreekHeightMin"/>
+        public const float NineMileCreekHeightMax = NineMileCreekMainland.LandElevation;
 
         [MenuItem("Hidden Harbours/Build Nine Mile Creek Scene")]
         public static void Build()
@@ -233,10 +353,7 @@ namespace HiddenHarbours.App.Editor
             var nineMileCreek = LoadOrCreate<RegionDef>(DataRegions + "/NineMileCreek.asset", r =>
             {
                 r.Id = "region.nine_mile_creek"; r.DisplayName = "Nine Mile Creek"; r.SceneName = SceneName;
-                r.IsDeepHarbour = true; r.HarbourDepthMeters = 6f;
-                r.TideMeanLevel = TideMean; r.TideAmplitude = TideAmplitude; r.TidePhaseHours = TidePhaseHours;
-                r.Description = "The market town: a deep, sheltered harbour where the coast's business " +
-                                "gets done — selling, buying, hiring. Services, not a fishing ground.";
+                ApplyMainlandRegionFacts(r);
             });
             var cove = LoadOrCreate<RegionDef>(DataRegions + "/CoddleCove.asset", r =>
             {
@@ -328,7 +445,10 @@ namespace HiddenHarbours.App.Editor
             cam.orthographicSize = CameraFollow.OrthoSizeForWorldHeight(CameraFollow.OnFootWorldHeightMeters);
             cam.clearFlags = CameraClearFlags.SolidColor;
             cam.backgroundColor = new Color(0.05f, 0.10f, 0.15f); // deep-harbour dusk
-            camGo.transform.position = new Vector3(-2f, 0f, -10f); // frame the west town + the east-poking wharf (standalone review)
+            // Standalone review opens on the WHARF, because that is the thing worth looking at and the
+            // region is now 760 m wide — a camera at the origin would open on empty bay. Derived from the
+            // quay rather than typed, so it follows the wharf if the wharf ever moves.
+            camGo.transform.position = new Vector3(DisembarkPos.x, DisembarkPos.y, -10f);
             camGo.AddComponent<AudioListener>();
             ArtCameraSetup.ConfigurePixelPerfect(camGo);
             var ppc = camGo.GetComponent<PixelPerfectCamera>();
@@ -348,7 +468,7 @@ namespace HiddenHarbours.App.Editor
             // roots activate in order). Hand-painting later replaces this via the Terrain Paint Tool's
             // Adopt step (ADR 0014) — the same adoption seam St Peters has.
             var terrainGo = new GameObject("TidalTerrain");
-            var terrain = terrainGo.AddComponent<RectTidalTerrain>();
+            var terrain = terrainGo.AddComponent<MainlandTidalTerrain>();
             ConfigureNineMileCreekTerrain(terrain);
 
             // --- DEEP HARBOUR WATER (the layered SIM-DRIVEN water shader — the St Peters model) ---
@@ -417,6 +537,17 @@ namespace HiddenHarbours.App.Editor
             lobsterPotOffer  = AssetDatabase.LoadAssetAtPath<PotOffer>(DataShip + "/LobsterPotOffer.asset");
             crabPotOffer     = AssetDatabase.LoadAssetAtPath<PotOffer>(DataShip + "/CrabPotOffer.asset");
 
+            // ⚠ RE-APPLY the region's facts to the EXISTING asset, unconditionally.
+            //
+            // LoadOrCreate runs its initialiser ONLY when the asset is absent, which is right for the
+            // offers (the owner's prices are his) and WRONG for the geography. Nine Mile Creek's def has
+            // shipped since VS-22, so every fact the recreation changes — the extent, the tide, the depth
+            // ladder, the "deep dredged harbour" description — would have been left saying the old thing
+            // forever, on the owner's machine and on anyone's, with the builder reporting success. The
+            // committed asset in this PR already carries these values; this is what keeps a re-run from
+            // being the only way to get them, and a hand-edit from being the only way to keep them.
+            ApplyMainlandRegionFacts(nineMileCreek);
+
             // --- QUAY (the land the town sits on, along the WEST) ---------------------------
             // Nine Mile Creek lies WEST of the cove, so you arrive from the EAST and the town is to the WEST; the
             // public wharf is a peninsula reaching EAST into the deep harbour (open water is to the east).
@@ -426,8 +557,16 @@ namespace HiddenHarbours.App.Editor
             // fine the moment the flavour houses moved out to the empty western land, where they would
             // have been standing on walkable terrain with the sea plane drawn under them. One rule, one
             // shape: the same convergence the water model already follows.
-            MakeTiledGround("Quay",      LoadSpriteAny(ArtGrass),     NineMileCreekLandCenter, NineMileCreekLandHalfSize * 2f, -7, waterSprite, new Color(0.40f, 0.46f, 0.40f));
-            MakeTiledGround("QuayEdge",  LoadSpriteAny(ArtSand),      new Vector2(-4.5f, 0f), new Vector2(3f, NineMileCreekLandHalfSize.y * 2f), -6, waterSprite, new Color(0.62f, 0.58f, 0.46f));
+            // ⭐ ONE ground plane over the WHOLE region, under the sea, and the shader's wet-dry clip
+            // decides which of the two you see at any tide. The old pair — a 24 × 40 m grass rectangle and
+            // a 3 m sand strip beside it — described the town strip of a 120 m island; laid on a 760 m
+            // mainland they would be a patch of lawn in the middle of a bay.
+            //
+            // GREYBOX, and deliberately so: the real ground here is the owner's Terrain Paint Tool pass
+            // (ADR 0014), which paints beach/dune/rock/grass off the coast plan the terrain already
+            // carries. This is what the region reads as until he runs it, and it is one draw call.
+            MakeTiledGround("Ground", LoadSpriteAny(ArtGrass), NineMileCreekSeaCenter, NineMileCreekSeaSize,
+                            GroundSortingOrder, waterSprite, new Color(0.40f, 0.46f, 0.40f));
 
             // --- THE WORKING QUAY (the wharf tile kit, replacing the flat WharfDeck.png rectangle) ----
             // The public wharf reaching EAST out into the deep harbour (head = the east tip, x=4) is now
@@ -443,10 +582,9 @@ namespace HiddenHarbours.App.Editor
 
             // --- BUILDINGS (services + a couple of flavour houses), on the WEST land ---------
             var shipwrightShed = MakeBuilding("ShipwrightShed",   LoadSpriteAny(ArtShipwright), ShipwrightShedPos, waterSprite, new Color(0.50f, 0.42f, 0.34f));
-            // The buyer's truck stands at the HEAD of the quay now, not back in the building row: §7.2's
-            // exit is "you arrive off the sandbar, SELL", and a till four buildings inland is a walk
-            // before it is a beat. StallGate's reach is 4 m from the stall, so from here you sell with
-            // your feet still on the concrete.
+            // The buyer's truck stands on the SPIT among the parked trucks, which is where a buyer stands
+            // on a working wharf. See FishBuyerPos for why this is no longer "four metres off the planks"
+            // and what the test measures instead.
             var fishStall      = MakeBuilding("FishBuyerStall",   LoadSpriteAny(ArtFishStall),  FishBuyerPos, waterSprite, new Color(0.42f, 0.50f, 0.52f));
 
             // The two FLAVOUR houses are no longer loose sprites — they come from the baked village
@@ -455,17 +593,16 @@ namespace HiddenHarbours.App.Editor
             // keep theirs on purpose: their kit (wharfBuildingRig's sheds) has never been baked.
             NineMileCreekFlavour.Place(terrain, SpringHighWater);
 
-            // --- SHORELINE BOUNDARY ---------------------------------------------------------
-            // Mirror the cove's ShoreEdge (an EdgeCollider2D fence dividing land from water) so the boat
-            // can't sail THROUGH the quay/wharf geometry (owner playtest gap #2). The fence runs along the
-            // WEST land waterline (x=-4) but DIPS EAST around the public wharf deck (centred (0,0), size
-            // (8,6) → x ∈ [-4,4], seaward head at the EAST tip x=4): out the north edge, down the head, back
-            // along the south edge. That makes the wharf a SOLID peninsula pointing east — the boat
-            // approaches the head from the deep harbour (EAST) and stops against it to dock (dock zone
-            // (4,0)), but cannot slip onto the deck or land. The disembark spot (2,0) sits on the deck BEHIND
-            // the fence; the player is teleported there, then their footprint keeps them land-side. Open
-            // water (EAST) is left fully open for the arrival + sail-in.
-            MakeShoreline();
+            // --- (NO SHORELINE FENCE — the coast is the terrain now) -------------------------
+            // The region used to trace a hand-made EdgeCollider2D at x = -4 that dipped around the wharf,
+            // because a rectangular quay standing on a flat -6 m dredged floor gave a hull nothing to
+            // ground on: without the fence you could sail straight through the town (owner playtest gap
+            // #2). A mainland is not built that way. The coastline, the beach, the ledges, the spit and
+            // the quay decks are all AUTHORED TERRAIN, and the hull is stopped by depth against it — the
+            // same shallows drag that already stops her on the tidal bar, over the same
+            // BoatCrossing.DepthAt read. St Peters, a painted region with a real coast, carries no fence
+            // either; a second hand-traced coastline beside the authored one is exactly the duplicate
+            // this recreation exists to remove.
 
             // --- ECONOMY (reuse the cove's components, referenced by id) --------------------
             // Fish Buyer stall: Market → FishBuyer → WharfSellPoint (+ dev 'B' to sell). The hold/wallet
@@ -567,7 +704,10 @@ namespace HiddenHarbours.App.Editor
             // scene after each load and adds a DevBuyInput (P, on-foot + in reach) to any vendor stall
             // lacking one — the driver the creek's other flagged tills already run on.
             var outboardStall = new GameObject("UsedOutboardSeller");
-            outboardStall.transform.position = new Vector3(DoryYardPos.x + 2f, DoryYardPos.y - 2f, 0f);
+            // At Hector's own spot rather than an offset off the yard's corner: NineMileCreekPeople
+            // already derives where he stands (out from the yard toward the water), and the man and his
+            // till coming apart is the exact failure NineMileCreekDoryTests measures.
+            outboardStall.transform.position = HectorsBarrelPos;
             var outboardSeller = outboardStall.AddComponent<Shipwright>();
             SetRef(outboardSeller, "_offer", doryOutboardOffer);
             SetRef(outboardSeller, "_walletProvider", providersGo);
@@ -586,33 +726,74 @@ namespace HiddenHarbours.App.Editor
             passageGo.transform.position = ToCovePassagePos;
             var trigger = passageGo.AddComponent<BoxCollider2D>();
             trigger.isTrigger = true;
-            trigger.size = new Vector2(3f, 16f);   // a tall east-edge band (forgiving, wide)
+            trigger.size = PassageBandSize;
             var passage = passageGo.AddComponent<RegionPassage>();
             SetRef(passage, "_target", cove);
             SetRef(passage, "_loader", loader);
 
-            // VS-22 arrival anchor: where the persistent rig binds when you sail in from the cove. The boat
-            // appears in the deep harbour just off the public wharf head; board/disembark at the wharf deck.
-            // The App RegionTravelCoordinator reads this on arrival to reposition the rig + re-point the dock.
+            // ⭐ THE CROSSING, THIS SIDE OF THE SEAM. The tidal bar to St Peters is ONE bar spanning two
+            // regions: you walk 305 m here, cross this band mid-flats, and walk 305 m more over there.
+            // A-1 authored the mainland's half and its walk-out band; this is the trigger that stands in
+            // it. Note it is deliberately a band you WALK across on bared sand as often as sail over — the
+            // load is hidden on flat open flats with nothing happening, which is why the seam sits at the
+            // bar's midpoint rather than at the landing (plan §3.2).
+            //
+            // ⚠ The MATCHING half — a passage on St Peters' side pointing here with BarArrivalKey — is
+            // StPetersBuilder's and is NOT wired here; a region builder may not reach into another
+            // region's scene. Until it lands, walking in from the island falls back to the wharf, which
+            // is precisely the fallback #456's seam was built to give.
+            var stPetersRegion = AssetDatabase.LoadAssetAtPath<RegionDef>(DataRegions + "/StPeters.asset");
+            if (stPetersRegion != null)
+            {
+                var barGo = new GameObject("PassageToStPeters");
+                barGo.transform.position = ToStPetersPassagePos;
+                var barTrigger = barGo.AddComponent<BoxCollider2D>();
+                barTrigger.isTrigger = true;
+                barTrigger.size = PassageBandSize;
+                var barPassage = barGo.AddComponent<RegionPassage>();
+                SetRef(barPassage, "_target", stPetersRegion);
+                SetRef(barPassage, "_loader", loader);
+                SetRefArray(loader, "_regions", new Object[] { nineMileCreek, cove, stPetersRegion });
+            }
+            else
+            {
+                Debug.LogWarning("[NineMileCreekBuilder] No StPeters RegionDef at " + DataRegions +
+                                 "/StPeters.asset — the crossing to the island has no passage on this " +
+                                 "side, so the bar dead-ends at the region edge. Re-run after building " +
+                                 "St Peters.");
+            }
+
+            // VS-22 arrival anchor: where the persistent rig binds on arrival. The boat parks in the basin
+            // off the north wall's face; you step ashore onto its deck. The App RegionTravelCoordinator
+            // reads this to reposition the rig and re-point the dock.
             //
             // DISEMBARK GEOMETRY (the cove's proven pattern; do NOT regress #52): ControlSwitcher.InDockZone()
             // is a pure DISTANCE test — Vector2.Distance(boat, dockZone) <= _zoneRadius (3.5 m default on the
             // persistent switcher). It needs NO trigger collider on the dock zone; it only needs the BOAT to
-            // PARK within 3.5 m of the dock zone on arrival. With the EAST-facing wharf the head is the deck's
-            // east tip (4,0); you cross by sailing WEST, so you enter the harbour from the EAST still heading
-            // west and park just east of the head at (7,0) — 3.0 m from the dock zone, comfortably in range —
-            // then step WEST onto the deck. The PublicWharf deck is centred (0,0) size (8,6) → its seaward
-            // (EAST) edge is x=4; the deep harbour is open east of it. The three positions are public
-            // constants (single source of truth) so an EditMode test can assert the arrival↔dock distance
-            // stays inside DockZoneRadius without a scene (NineMileCreekDockTests).
+            // PARK within 3.5 m of the dock zone on arrival. The three positions are the plan's, and an
+            // EditMode test asserts the arrival↔dock distance stays inside DockZoneRadius without a scene
+            // (NineMileCreekDockTests).
             var gwArrival = new GameObject("NineMileCreekArrival");
-            gwArrival.transform.position = ArrivalPos;       // deep harbour, just EAST of the wharf head (open water; deck ends at x=4)
+            gwArrival.transform.position = ArrivalPos;         // in the basin, off the north wall's south face
             var gwDock = new GameObject("NineMileCreekDockZone");
-            gwDock.transform.position = DockZonePos;          // the wharf's seaward (EAST) HEAD — within the dock radius of arrival
+            gwDock.transform.position = DockZonePos;           // against the wall by the unloading apron
             var gwDisembark = new GameObject("NineMileCreekDisembark");
-            gwDisembark.transform.position = DisembarkPos;    // on the public wharf deck planks (west of the head)
+            gwDisembark.transform.position = DisembarkPos;     // up onto the quay deck
             var gwAnchor = new GameObject("NineMileCreekRegionAnchor").AddComponent<RegionAnchor>();
             gwAnchor.Configure("region.nine_mile_creek", gwArrival.transform, gwDock.transform, gwDisembark.transform);
+
+            // ⭐ THE SECOND DOOR (#456). This is the first region you can enter two ways, and this is the
+            // half of it that lives here: the bar landing, named, so a fisher who walked the crossing
+            // arrives ON THE BAR instead of being teleported 400 m north onto the wharf deck.
+            //
+            // The BOAT point is deliberately left unset. You walked; your boat is not with you, and an
+            // unset point on a named arrival means "leave this one alone" — so she stays at the berth
+            // rather than being dragged across the region after you.
+            var gwBarLanding = new GameObject("NineMileCreekBarLanding");
+            gwBarLanding.transform.position = WalkArrivalPos;
+            gwAnchor.ConfigureArrivals(
+                new NamedArrival(BarArrivalKey, arrivalPoint: null, disembarkPoint: gwBarLanding.transform));
+
             // The camera's bounds clamp reads this on arrival — the same extent the sea reads.
             gwAnchor.ConfigureExtent(NineMileCreekSeaCenter, NineMileCreekSeaSize);
 
@@ -651,36 +832,35 @@ namespace HiddenHarbours.App.Editor
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            Debug.Log("[NineMileCreekBuilder] Built NineMileCreek.unity — Nine Mile Creek (services region), EAST-FACING " +
-                      "to read true (canon: Nine Mile Creek lies WEST of the cove). You cross by sailing WEST, arrive " +
-                      "from the EAST heading west, and continue west onto the wharf (Fish Buyer B + Shipwright " +
-                      "P, reused by id). NEW St Peters opening vendors PLACED: Harbourmaster (cod licence), " +
-                      "General Store (rod), and a Shipwright DORY YARD with the DAMAGED dory (buy + repair) — " +
-                      "data-wired to the persistent wallet proxy; their buy/repair screens are ui-ux/gameplay's. " +
-                      "Clams sell at the Fish Buyer (baseline Shellfish demand). The return passage heads EAST " +
-                      "back to Coddle Cove. THE WHARF IS NOW A WHARF: the flat WharfDeck.png rectangle is " +
-                      "retired for the baked wharf tile kit (NineMileCreekWharf) — 'quay' concrete drawn " +
-                      "back to front, bollards/tyres/ladder/pileheads on the mooring edge, a 'crib' " +
-                      "breakwater arm to the south, and the deck registered as a StandablePlatform so you " +
-                      "stand ON the planks over the dredged harbour. A WORKING CREEK: the buyer's truck " +
-                      "is at the head of the quay (and its Market finally says it is Nine Mile Creek, not " +
-                      "the Cove), the DERELICT DORY lies on the quay in plain sight of where you land, " +
-                      "Wendell and Hector stand at their own counters, and the two flavour houses come " +
-                      "from the baked village kit. HECTOR NOW SELLS SOMETHING: his barrel carries a real " +
-                      "Shipwright over the USED OUTBOARD offer (boat.dory_outboard, ₲900 — the owner's " +
-                      "tunable, in Data/Shipwright/DoryOutboardOffer.asset), paid from the same persistent " +
-                      "wallet proxy, so the M1 ladder's closing rung is finally reachable in play. " +
-                      "Loaded additively via RegionSceneLoader. CONVERGED WATER (ADR 0012): " +
-                      "the harbour now runs the St Peters tide-driven model — a RectTidalTerrain (dredged -6 m " +
-                      "floor, steep quay edge) + the layered WaterSurface shader on the Sea plane; the waterline " +
-                      "rises/falls against the quay off the live deterministic tide and the SAME height gates " +
-                      "walkability + boat grounding (P1). The drifting-marker scatter is retired.");
+            Debug.Log(
+                $"[NineMileCreekBuilder] Built NineMileCreek.unity — ⭐ THE MAINLAND. The region is " +
+                $"{NineMileCreekSeaSize.x:0} × {NineMileCreekSeaSize.y:0} m now, not a 120 m island: water " +
+                "EAST, fields WEST, an open coast run with a coast plan (beach · dune · ledge · gully · " +
+                "cliff · deep shore), the barachois and the marsh pool carved behind it, and the harbour " +
+                "shoal, the spit, both quay walls and the crib breakwater filled on top " +
+                "(MainlandTidalTerrain, pushed from the authored plan in NineMileCreekMainland). " +
+                $"TIDE CHANGED: mean {TideMean}, amplitude {TideAmplitude} m, phase {TidePhaseHours} h — " +
+                "St Peters' verbatim, because the tidal bar SPANS the seam between the two regions and " +
+                "two tides would leave the crossing dry on one side and flooded on the other. " +
+                $"DEPTH LADDER: IsDeepHarbour false, {-NineMileCreekBasinElevation:0.0} m — the " +
+                "lobster-boat berth, not the dredged harbour it was standing in for. THE CROSSING now has " +
+                "a passage on this side, mid-bar, and the region authors a SECOND ARRIVAL " +
+                $"('{BarArrivalKey}') so a fisher who WALKS in over the flats lands on the bar instead of " +
+                "being teleported onto the wharf 400 m north (#456). THE QUAY IS GROUND: two walls " +
+                "registered as standable floor with their decks measured, every berth given a bollard and " +
+                "every bollard a real ShoreCleat — the drawn ISO quay is Phase B's. The town moved INLAND " +
+                "to the through-road; the working sites are on the spit. Vendors, offers and the market " +
+                "id are unchanged and still wired by stable id.");
             EditorUtility.DisplayDialog("Hidden Harbours",
-                "Nine Mile Creek scene built (EAST-FACING — the crossing now reads true).\n\nCanon: Nine Mile Creek " +
-                "lies WEST of the cove, so:\n• You SAIL WEST to cross\n• You ARRIVE from the EAST, heading " +
-                "west, and continue west onto the wharf (Fish Buyer + Shipwright)\n• The return passage heads " +
-                "EAST → you arrive home at the cove dock from the WEST\n\nLoaded additively by " +
-                "RegionSceneLoader. RE-RUN both 'Build Greybox Scene' and 'Build Nine Mile Creek Scene', then re-test.",
+                "Nine Mile Creek rebuilt as the MAINLAND.\n\n" +
+                $"• {NineMileCreekSeaSize.x:0} × {NineMileCreekSeaSize.y:0} m — water east, fields west\n" +
+                "• The tidal bar to St Peters comes ashore to the SOUTH; its passage is mid-bar\n" +
+                $"• Tide is now ±{TideAmplitude} m, phase {TidePhaseHours} h (St Peters', because it is one bar)\n" +
+                "• The wharf dries out under its fleet at spring low — that is the ruled gate\n\n" +
+                "STILL TO DO, and it is yours:\n" +
+                "1. Hidden Harbours ▸ Terrain Paint Tool → bake the seabed at 2 px/m, then save\n" +
+                "2. Press Play and walk it: the crossing, the bar road, Wharf Road, the wharf front\n\n" +
+                "The ground is a single greybox plane until you paint it.",
                 "Fair winds");
         }
 
@@ -844,18 +1024,54 @@ namespace HiddenHarbours.App.Editor
 
         // ---- converged water model — shared config (single source of truth with the EditMode test) ----
 
-        /// <summary>Author Nine Mile Creek's analytic seabed from the public constants above (the town land strip
-        /// + the wharf deck as steep-sided plateaus over the dredged floor). One place, mirrored by the
-        /// EditMode shoreline-convergence test — the StPetersBuilder convention.</summary>
-        public static void ConfigureNineMileCreekTerrain(RectTidalTerrain terrain)
+        /// <summary>
+        /// Author Nine Mile Creek's seabed — the whole authored plan, pushed in one call. The builder and
+        /// every EditMode test go through HERE, so a test can never assert a coast the scene does not
+        /// have (the <see cref="StPetersBuilder.ConfigureTidalTerrain"/> convention).
+        ///
+        /// <para>It is a one-line forward to <see cref="NineMileCreekMainland.ConfigureTerrain"/> and that
+        /// is deliberate: A-1 proved the plan with its own fixtures before any of this existed, and a
+        /// builder-shaped copy of it here would be the second coastline this region is not allowed to
+        /// have. Kept as a named method on the builder because the name is the seam six test files and
+        /// three dressing layers already reach for.</para>
+        /// </summary>
+        public static void ConfigureNineMileCreekTerrain(MainlandTidalTerrain terrain) =>
+            NineMileCreekMainland.ConfigureTerrain(terrain);
+
+        /// <summary>
+        /// Everything the region's <see cref="RegionDef"/> asserts about itself, applied to an EXISTING
+        /// asset as well as a new one (see the call site for why that matters).
+        ///
+        /// <para>⚠ <b>The depth ladder is the ruled one and it changed here.</b> Nine Mile Creek shipped
+        /// as <c>IsDeepHarbour = true, HarbourDepthMeters = 6</c> — it was standing in for Port Greywick.
+        /// The ladder is three HARBOURS (St Peters' dock ~0.6 m · Nine Mile Creek ~1.6 m · Port Greywick
+        /// 6 m dredged), so this is <b>false / 1.6</b>: the lobster-boat berth, which is the owner's
+        /// stated ceiling for the starter world. The fields are flavour today — nothing gates on them —
+        /// but leaving them saying "deep dredged harbour" would be a lie in the data, and the day
+        /// something DOES gate on them it would be a silent one.</para>
+        /// </summary>
+        public static void ApplyMainlandRegionFacts(RegionDef r)
         {
-            terrain.Configure(NineMileCreekDeepElevation, new[]
-            {
-                new RectTidalTerrain.LandZone(NineMileCreekLandCenter, NineMileCreekLandHalfSize,
-                                              NineMileCreekLandElevation, NineMileCreekQuayFalloff),
-                new RectTidalTerrain.LandZone(NineMileCreekWharfCenter, NineMileCreekWharfHalfSize,
-                                              NineMileCreekLandElevation, NineMileCreekWharfFalloff),
-            });
+            if (r == null) return;
+            r.Id = "region.nine_mile_creek";
+            r.DisplayName = "Nine Mile Creek";
+            r.SceneName = SceneName;
+
+            r.IsDeepHarbour = false;
+            r.HarbourDepthMeters = -NineMileCreekBasinElevation;   // the shoal IS the gate: 1.6 m
+
+            r.TideMeanLevel = TideMean;
+            r.TideAmplitude = TideAmplitude;
+            r.TidePhaseHours = TidePhaseHours;
+
+            r.WorldCenter = NineMileCreekSeaCenter;
+            r.WorldSizeMeters = NineMileCreekSeaSize;
+            r.SeabedPixelsPerMetre = NineMileCreekMainland.SeabedPixelsPerMetre;
+
+            r.Description = "A working wharf on a big-tide coast: a squared-U quay on a made spit at the " +
+                            "creek's mouth, a barachois behind it, and the tidal bar out to St Peters " +
+                            "coming ashore to the south. The fleet dries out under itself at spring low.";
+            EditorUtility.SetDirty(r);
         }
 
         /// <summary>Configure the Sea's <see cref="HiddenHarbours.Art.WaterSurface"/>: the world rectangle
@@ -1013,34 +1229,12 @@ namespace HiddenHarbours.App.Editor
             else { sr.sprite = fallback; sr.color = fallbackColor; go.transform.localScale = new Vector3(size.x * 2f, size.y * 2f, 1f); }
         }
 
-        // (The loose WharfPost.png pilings that used to line the deck edges are retired: the kit draws the
-        // quay's own structure — pileheads at the exposed corners, tyres down the face — and doubling them
-        // with a second set of hand-made posts read as two wharves in one place. Nothing is lost in
-        // collision terms: the Shoreline fence below is what makes the wharf solid to a boat, and it
-        // already traces the same rectangle.)
-
-        // The land/water boundary: an EdgeCollider2D fence (like the cove's ShoreEdge) tracing the WEST land
-        // waterline (x=-4) and dipping EAST around the public wharf deck so the wharf reads as a solid
-        // peninsula pointing into the deep harbour and the boat can't sail through Nine Mile Creek. Land is WEST
-        // (x < -4); the deep harbour is open to the EAST. The boat arrives from the east and stops against
-        // the wharf HEAD (the deck's east tip, x=4 — the dock zone). Public so an EditMode test can assert
-        // its shape without a scene.
-        public static readonly Vector2[] ShorelinePoints =
-        {
-            new Vector2(-4f,  20f),  // west land waterline, north
-            new Vector2(-4f,   3f),  // in to the deck's north edge
-            new Vector2( 4f,   3f),  // east along the deck's north edge to the head (the east tip)
-            new Vector2( 4f,  -3f),  // down the head (east edge) — the boat stops here to dock (dock zone (4,0))
-            new Vector2(-4f,  -3f),  // west along the deck's south edge back to the waterline
-            new Vector2(-4f, -20f),  // west land waterline, south
-        };
-
-        static void MakeShoreline()
-        {
-            var shore = new GameObject("Shoreline");
-            var edge = shore.AddComponent<EdgeCollider2D>();
-            edge.points = ShorelinePoints;   // non-trigger by default → a solid wall the boat bumps
-        }
+        // (ShorelinePoints / MakeShoreline are RETIRED. They traced a hand-made land/water fence at x = -4
+        // that dipped around an 8 × 6 m quay — the only thing stopping a boat sailing through the town
+        // when the harbour floor was a flat -6 m plane. The mainland's coast, beach, ledges, spit and quay
+        // decks are authored terrain, so depth stops the hull, and a second hand-traced coastline beside
+        // the authored one is the duplicate this recreation exists to remove. See the note at the call
+        // site in Build().)
 
         static GameObject MakeBuilding(string name, Sprite sprite, Vector2 pos, Sprite fallback, Color fallbackColor)
         {
@@ -1104,29 +1298,38 @@ namespace HiddenHarbours.App.Editor
             public TreeSpec(float x, float y, string variety) { X = x; Y = y; Variety = variety; }
         }
 
-        // COLD NORTH ATLANTIC scatter for Nine Mile Creek — WEST quay land ONLY (land is x < -4; the deep harbour
-        // is open to the EAST). Hugs the far-west back edge behind the x=-12 house row and tucks into the
-        // gaps north/south of the building rows. NONE in the open harbour water, on the public wharf deck
-        // (x∈[-4,4], y∈[-3,3]) or its zones, on the paths, or over a building (rows at x=-8 and x=-12, each
-        // ≈5 m). Varieties: green broadleaf (Tree01/05/06/08/18/21/34/35), pine (Tree02/22), birch (Tree25).
+        // COLD NORTH ATLANTIC scatter, RE-SITED onto the mainland. The old eleven hugged the back edge of a
+        // 24 m island strip at x ≈ −14 and tucked into gaps between two building rows that no longer
+        // exist; laid on this landform unchanged they would stand in the middle of the bay.
+        //
+        // WHERE TREES BELONG HERE, and where they emphatically do not:
+        //  · The owner's photographs are of a coast of FIELDS, not forest, so this stays SPARSE on
+        //    purpose. The real dressing is the owner's paint pass and Phase B.
+        //  · A wind-scoured shelter belt WEST of the through-road, behind the town on the +6 m plateau —
+        //    the one place a PEI farm actually plants trees.
+        //  · A few round the two pond margins, where the ground is too wet to plough.
+        //  · NONE on the spit (made ground, and a working yard), none on the wharf, none seaward of the
+        //    coast run, and none inside a road's cleared corridor.
+        // Varieties: green broadleaf (Tree01/05/06/08/18/21/34/35), pine (Tree02/22), birch (Tree25).
         static readonly TreeSpec[] NineMileCreekTrees =
         {
-            // Far-west back edge of the quay, behind the x=-12 house row (north → south), clear of houses.
-            new TreeSpec(-14.4f, 12.0f, "Tree02"),  // pine, NW
-            new TreeSpec(-14.2f,  7.0f, "Tree08"),  // broadleaf (between HarbourOffice y9 and HouseRed y5)
-            new TreeSpec(-14.5f,  0.0f, "Tree25"),  // birch, mid west edge
-            new TreeSpec(-14.2f, -7.0f, "Tree06"),  // broadleaf (between HouseTeal y-5 and GeneralStore y-9)
-            new TreeSpec(-14.4f,-12.0f, "Tree22"),  // pine, SW
-            // North end of the quay, above the building rows (y>10, clear of HarbourOffice at -12,9).
-            new TreeSpec(-9.2f,  12.5f, "Tree01"),  // broadleaf
-            new TreeSpec(-6.0f,  13.0f, "Tree05"),  // broadleaf, NE land edge (well west of the x=-4 shore)
-            // South end of the quay, below the building rows (y<-11, clear of GeneralStore at -12,-9).
-            new TreeSpec(-9.4f, -12.5f, "Tree18"),  // broadleaf
-            new TreeSpec(-5.8f, -13.0f, "Tree21"),  // broadleaf, SE land edge
-            // A couple between the x=-8 service row and the shore strip (north/south of the wharf, clear of
-            // the deck y∈[-3,3] and the sheds at -8,±3 / -8,8).
-            new TreeSpec(-5.2f,   7.5f, "Tree34"),  // broadleaf, north of the wharf
-            new TreeSpec(-5.0f,  -7.5f, "Tree35"),  // broadleaf, south of the wharf
+            // The shelter belt, west of the through-road (which runs x ≈ −176…−230), north → south.
+            new TreeSpec(-244f, 238f, "Tree02"),  // pine, N end
+            new TreeSpec(-240f, 198f, "Tree08"),  // broadleaf
+            new TreeSpec(-246f, 150f, "Tree25"),  // birch
+            new TreeSpec(-238f, 108f, "Tree06"),  // broadleaf, behind the chandlery
+            new TreeSpec(-244f,  64f, "Tree22"),  // pine, behind the parish hall
+            new TreeSpec(-240f,  16f, "Tree01"),  // broadleaf
+            new TreeSpec(-236f, -40f, "Tree05"),  // broadleaf, S end
+            // The barachois margin — too wet to plough, so the scrub stands. The pond is centred (−10,132)
+            // with a (54,26) half-size, so this is off its north-west shoulder, well clear of Wharf Road
+            // (which runs y ≈ 92 along the neck between the two ponds).
+            new TreeSpec( -72f, 166f, "Tree18"),  // broadleaf, NW shoulder of the barachois
+            new TreeSpec( -34f, 172f, "Tree21"),  // broadleaf, its north shore
+            // The marsh pool's south margin — the pool is centred (−26,58), half (30,16), so this sits
+            // below it and clear of the bar road, which passes east of the pool at x ≈ 20.
+            new TreeSpec( -52f,  28f, "Tree34"),  // broadleaf
+            new TreeSpec(  -4f,  26f, "Tree35"),  // broadleaf
         };
 
         // Instance the tree decor under a single "Decor/Trees" parent. sortingOrder derives from the

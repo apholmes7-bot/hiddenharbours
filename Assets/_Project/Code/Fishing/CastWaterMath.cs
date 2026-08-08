@@ -1,4 +1,5 @@
 using UnityEngine;
+using HiddenHarbours.Core;   // FlickCastMath/FlickCastResult — the gesture maths lives in Core (M2-38)
 
 namespace HiddenHarbours.Fishing
 {

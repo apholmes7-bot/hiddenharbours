@@ -130,6 +130,11 @@ namespace HiddenHarbours.UI
         /// can prove the scan repaints at <c>WaterfallHz</c> and not per frame.</summary>
         public int RepaintCount { get; private set; }
 
+        // The EXPANDED card as a WINDOW (2026-08-07 ruling). The flush face is part of the dash
+        // picture and follows the HELM window instead — it gets no chrome of its own.
+        private readonly BoatUiWindowController _window =
+            new BoatUiWindowController(BoatUiWindowId.FishFinder);
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void Bootstrap()
         {
@@ -168,7 +173,7 @@ namespace HiddenHarbours.UI
 
         private void OnDestroy()
         {
-            if (_instance == this) _instance = null;
+            if (_instance == this) { _instance = null; _window.StandDown(); }
             if (_texture != null) Destroy(_texture);
         }
 
@@ -187,6 +192,28 @@ namespace HiddenHarbours.UI
                 // re-ask the seam rather than paint the last boat's fish for a scan step.
                 _scanBucket = long.MinValue;
                 _drawMarks.Clear();
+                _window.StandDown();
+                if (_cardGo.activeSelf) _cardGo.SetActive(false);
+                return;
+            }
+
+            // This instrument's WINDOW is hidden (hide-all or its own ×): stand down, and close any
+            // expansion rather than leaving an invisible card owning the pointer and Esc.
+            if (!_window.Shown)
+            {
+                if (Expanded) HelmInstrumentExpansion.Collapse();
+                FlushMounted = false;
+                _window.StandDown();
+                if (_cardGo.activeSelf) _cardGo.SetActive(false);
+                return;
+            }
+
+            // The flush face follows the HELM window (2026-08-07 ruling) — see SounderOverlayHost.
+            if (!Expanded && instruments.Fit.Rig != ConsoleRigKind.None
+                          && !BoatUiWindows.FlushMountsAvailable)
+            {
+                FlushMounted = false;
+                _window.StandDown();
                 if (_cardGo.activeSelf) _cardGo.SetActive(false);
                 return;
             }
@@ -223,8 +250,29 @@ namespace HiddenHarbours.UI
 
             bool expanded = Expanded;
             Rect card = GlassRect(expanded, in finder);
+            if (expanded)
+            {
+                // The expanded card is this instrument's WINDOW (2026-08-07). Resize re-targets the
+                // ONE native raster's destination rect — the rig is never re-rendered small, so its
+                // two font laws (which disagree below ~83% of native when RE-RENDERED) never apply.
+                card = _window.Apply(card, Screen.width, Screen.height, HudBandLayout.ReservedTopPx());
+            }
+            else
+            {
+                _window.StandDown();   // flush face / fallback card: no chrome, no publication
+            }
+            bool visible = !expanded || _window.CardVisible;
+            if (_image.enabled != visible) _image.enabled = visible;
+
             LayoutCard(card);
-            Repaint(in state);
+            if (visible) Repaint(in state);
+
+            if (expanded)
+            {
+                _window.LayoutChrome(_cardGo.transform.parent);
+                if (_window.HandlePointer(controlDragLive: false)) return;
+            }
+            if (BoatUiWindows.AnySession) return;   // a window drag owns the pointer
             ReadPointer(instruments, in prefs, in sounder, in finder, card, expanded);
         }
 
@@ -333,6 +381,11 @@ namespace HiddenHarbours.UI
             if (mouse == null || !mouse.leftButton.wasPressedThisFrame) return;
 
             Vector2 pos = mouse.position.ReadValue();
+
+            // A press on ANY window's chrome is that window's business — never this instrument's
+            // expand, collapse-away or controls (2026-08-07 ruling).
+            if (BoatUiWindows.OverAnyChrome(pos)) return;
+
             bool inCard = card.Contains(pos);
 
             if (!expanded)

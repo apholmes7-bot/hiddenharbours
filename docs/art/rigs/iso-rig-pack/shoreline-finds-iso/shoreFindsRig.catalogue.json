@@ -13,9 +13,10 @@
   "W",
   "NW"
  ],
- "light": "fixed upper-LEFT key, flat-facet, z-buffered, ordered dither, depth-edge darkening, 1px keyline, no AA",
+ "light": "fixed upper-LEFT key, flat-facet, z-buffered, ordered dither, depth-edge darkening, no AA; the 1px keyline is RETIRED by default (ADR 0031) and reachable with {outline:true}",
  "groundForeshorten": 0.72,
  "keyline": "#231d14",
+ "keylineDefault": false,
  "heading": "lie angle in the ground plane (8 steps), rotated in the generator — never a pixel rotate",
  "readScale": "drawn px = 4.7 * trueCm^0.62 (compressive)",
  "states": [

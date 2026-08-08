@@ -118,6 +118,15 @@ namespace HiddenHarbours.Core
                  "existing seakeeping data.")]
         public StormRockSettings StormRock = StormRockSettings.Default;
 
+        [Header("Ground tackle (dropping the hook)")]
+        [Tooltip("World-wide ANCHORING policy: the dinghy-class rode a hull carries when her own Def " +
+                 "does not say (BoatHullDef.RodeMeters = 0), the swing-circle floor, the firm-limit trio " +
+                 "the rode is checked with (the mooring rope's own numbers — one restraint mechanism, two " +
+                 "consumers), and how a DRAGGING anchor lets her creep when a rising tide takes the bottom " +
+                 "away from the hook. The gate itself is not tunable: she anchors where the rode reaches " +
+                 "the seabed, and nowhere else.")]
+        public AnchorSettings Anchor = AnchorSettings.Default;
+
         [Header("The shared wave field (ADR 0018 — ONE sea, every consumer)")]
         [Tooltip("The wind + sea-state → wave-train derivation: how many trains, their wavelengths and " +
                  "amplitudes, the crest sharpening, and the ADR 0027 JONSWAP spectrum (SpectrumBlend 0 = " +
@@ -263,6 +272,13 @@ namespace HiddenHarbours.Core
                  "owner-tunable, no code (rule 6).")]
         public HelmWheelSettings HelmWheel = HelmWheelSettings.Default;
 
+        [Header("Boat-UI windows (draggable/resizable instrument cards — 2026-08-07 ruling)")]
+        [Tooltip("The windowed boat UI's chrome sizes and resize/collapse bounds: the hover title " +
+                 "strip every instrument card is dragged by, its two buttons, the corner grip, and " +
+                 "the scale clamps. Presentation only — where a player parks a window is transient " +
+                 "session state, never saved.")]
+        public BoatUiWindowSettings BoatUiWindows = BoatUiWindowSettings.Default;
+
         [Header("The strike (owner drop §10.2 — \"pull back and press maybe?\": BOTH candidates, tunable)")]
         [Tooltip("Which gesture sets the hook on the true take, and how hard the pull-back must be. " +
                  "BOTH candidates ship ON so the owner picks in play — turn one off to feel the other " +
@@ -296,6 +312,23 @@ namespace HiddenHarbours.Core
                  "(capped by the rod); WHEN you released = quality. A mistimed or weak cast is just a SHORT " +
                  "cast — reel in and go again, no penalty. Every feel dial lives here.")]
         public FlickCastSettings FlickCast = FlickCastSettings.Default;
+
+        [Header("Mooring lines (M2-38 — throw a rope to a cleat, mind the tide)")]
+        [Tooltip("The rope you throw to a cleat and make fast: how near you must stand to work a cleat, " +
+                 "how close the toss must land to catch, and — the part that carries the seamanship — how " +
+                 "much SCOPE (line length) you can pay out, in what steps, and how hard the loop will be " +
+                 "worked before it slips. Scope is the player's choice and the tide is the test: too short " +
+                 "a line on a falling tide hangs the boat and the loop surrenders (no damage — coil and " +
+                 "try again). Every dial is here so the feel is tuned without code.")]
+        public MooringLineSettings MooringLine = MooringLineSettings.Default;
+
+        [Header("Ladder boarding (the tide-gap climb — when a step aboard becomes a climb down)")]
+        [Tooltip("How the fisher gets aboard when the tide has dropped the boat below the wharf: the GAP " +
+                 "at which a step becomes a climb, how near a ladder must be to serve a berth, and the " +
+                 "measured rig geometry the climb is driven by. The threshold is the dial that matters — " +
+                 "raise it and low water still lets you step across (the ladder becomes a rarity); lower " +
+                 "it and the ladder is the ordinary way aboard for most of the tide.")]
+        public LadderBoardingSettings LadderBoarding = LadderBoardingSettings.Default;
 
         [Header("Displaced water (ADR 0023 — the sea's readable drama)")]
         [Tooltip("Owner tuning for the displaced water surface (ADR 0023, phase 2): how much taller " +
@@ -632,6 +665,57 @@ namespace HiddenHarbours.Core
             SelfCentre = 0f,
             RimGrabPadPx = 8f,
             SteerEaseSeconds = 0.25f,
+        };
+    }
+
+    /// <summary>
+    /// Owner tuning for the <b>boat-UI windows</b> (<see cref="GameConfig.BoatUiWindows"/> — the
+    /// 2026-08-07 windowing ruling: every instrument card draggable, resizable, collapsible, plus the
+    /// one hide-all input). The chrome's strip/button/grip sizes and the resize/collapse scale bounds
+    /// live here so the whole feel is dialled in the Inspector with no code (rule 6). Presentation
+    /// preferences only — where a player parks a window is transient session state (rule 5), never
+    /// saved, and never stored here.
+    ///
+    /// <para><b>The size floor is about grabbability, not legibility.</b> Resizing a window only
+    /// re-targets the destination rect of the instrument's ONE native raster (the letterbox
+    /// contract) — no rig is ever re-rendered small, so no font law is in play at any size. MinScale
+    /// simply keeps a window big enough to grab back.</para>
+    /// </summary>
+    [System.Serializable]
+    public struct BoatUiWindowSettings
+    {
+        [Tooltip("Height (screen px) of the window title strip that appears on hover above each " +
+                 "boat-UI card — the grab handle for dragging.")]
+        [Min(0f)] public float TitleBarPx;
+
+        [Tooltip("Width (screen px) of the two strip buttons (collapse tier, hide).")]
+        [Min(0f)] public float ChromeButtonPx;
+
+        [Tooltip("Size (screen px) of the corner resize grip inside the card's bottom-right.")]
+        [Min(0f)] public float GripPx;
+
+        [Tooltip("The COMPACT collapse tier's scale multiplier on the window's Full size — the " +
+                 "glance-sized middle tier between Full and the bare title bar.")]
+        [Range(0.1f, 1f)] public float CompactScale;
+
+        [Tooltip("Floor on the per-window resize multiplier. Grabbability, not legibility — the " +
+                 "raster is never re-rendered, only re-targeted.")]
+        [Min(0.05f)] public float MinScale;
+
+        [Tooltip("Ceiling on the per-window resize multiplier (the window still clamps to the " +
+                 "screen and under the HUD band whatever this says).")]
+        [Min(0.1f)] public float MaxScale;
+
+        /// <summary>An 18 px strip with 22 px buttons and a 14 px grip; Compact at 55% of Full;
+        /// resize clamped 0.35×–3× of the dialled base size.</summary>
+        public static BoatUiWindowSettings Default => new BoatUiWindowSettings
+        {
+            TitleBarPx = 18f,
+            ChromeButtonPx = 22f,
+            GripPx = 14f,
+            CompactScale = 0.55f,
+            MinScale = 0.35f,
+            MaxScale = 3f,
         };
     }
 
@@ -1225,6 +1309,167 @@ namespace HiddenHarbours.Core
             MinCastMetres = 1.5f,
             MaxCastDistanceMetres = 12f,
             LineFlightMetresPerSec = 18f,
+        };
+    }
+
+    /// <summary>
+    /// The owner-tunable feel of a <b>mooring line</b> (<see cref="GameConfig.MooringLine"/> — M2-38,
+    /// design/deck-boarding-cleats-and-interact-capture.md §3). Lives in Core beside the config it rides
+    /// on, the same Core-policy / feature-consumer split as <see cref="FlickCastSettings"/>: the pure
+    /// maths that consumes it (<see cref="MooringLineMath"/>) is fed these numbers, and the Boats/Player
+    /// consumers read them off the shared config each time they work a line.
+    ///
+    /// <para><b>The dial that matters is the scope range against a region's real DROP</b> — which is the
+    /// tidal range PLUS how high the wharf stands, not the tidal range alone. St Peters is the worked
+    /// example and it is a taller pier than it looks: its deck is measured at <b>+5.35 m</b> above datum
+    /// and the tide swings <b>±2.2 m</b> (the 2026-08-01 pacing ruling), so the gap from a bollard down to
+    /// a small hull's cleat runs from ~2.6 m at high water to <b>~7.0 m at low</b>. A line has to cover
+    /// that vertically before it reaches across the water at all. Hence the defaults below:
+    /// <list type="bullet">
+    ///   <item><b>9 m</b> to start — she rides the whole ebb, swinging ~8.6 m at high water and ~5.7 m at
+    ///   low. The boat is visibly drawn in as the water goes, which is the tell, but she is never hung.</item>
+    ///   <item><b>Snug her to ~4 m</b> at high water and it looks perfect — and the ebb collects on it.
+    ///   That is the lesson, and it is the player's own choice that sets it up.</item>
+    ///   <item><b>16 m</b> at the top so a big hull on a spring tide still has an answer.</item>
+    /// </list>
+    /// Re-tune these when a region's wharf height or tide amplitude changes, or the gradient flattens and
+    /// "mind the tide" becomes scenery. <c>MooringLineMathTests</c> pins that gradient against St Peters'
+    /// actual numbers.</para>
+    ///
+    /// <para><b>Not here on purpose:</b> rope damage, breaking strain and multi-line rafting. V1's failure
+    /// is the loop SLIPPING (<see cref="WorkingLoadFactor"/>) and the boat going quietly adrift — the
+    /// cozy fail the backlog names. A parting rope is a different, harsher feature and a separate call.</para>
+    /// </summary>
+    [System.Serializable]
+    public struct MooringLineSettings
+    {
+        [Tooltip("How close (m) you must stand to a cleat to work it — start a toss from it, or tighten, " +
+                 "slacken and cast off a line already made fast to it. Roughly arm's reach: you are " +
+                 "handling the fitting, not gesturing at it from across the deck.")]
+        [Min(0f)] public float CleatReachMetres;
+
+        [Tooltip("How near the far cleat the toss must LAND (m) for the loop to catch. This is the whole " +
+                 "skill of the throw — the flick-cast decides where the line lands, and this decides " +
+                 "whether that was good enough. Larger = kinder. Miss and the line simply falls in the " +
+                 "water: coil it and try again, no penalty (cozy fail).")]
+        [Min(0f)] public float TossCatchRadiusMetres;
+
+        [Tooltip("SCOPE the line starts at (m) when it first catches — a sensible working length before " +
+                 "the player has tightened or slackened anything.")]
+        [Min(0f)] public float DefaultScopeMetres;
+
+        [Tooltip("Shortest scope (m) you can haul a line in to. Above zero: a line hauled to nothing " +
+                 "would pin the boat rigidly against the wharf, which is neither seamanlike nor a thing " +
+                 "the constraint should have to express.")]
+        [Min(0f)] public float MinScopeMetres;
+
+        [Tooltip("Longest scope (m) you can pay out. THE tide dial — see the struct doc: this must be " +
+                 "comfortably larger than the region's tidal range or a short line is never a mistake, " +
+                 "and never so large that scope stops being a decision.")]
+        [Min(0f)] public float MaxScopeMetres;
+
+        [Tooltip("How much line (m) one press of tighten/slacken pays out or hauls in. Stepped rather " +
+                 "than continuous so the player can COUNT the scope they are giving the tide, and so a " +
+                 "keypress is a decision rather than a drag.")]
+        [Min(0.01f)] public float ScopeStepMetres;
+
+        [Tooltip("How far past bar-taut (×) the loop will be worked before it SLIPS off the cleat and the " +
+                 "boat goes adrift. 1.0 = it surrenders the instant the line comes taut; 1.25 = it will " +
+                 "take a quarter again its length of strain first. Keep above 1 — teeth should be earned " +
+                 "by misjudging the tide, not by touching the water.")]
+        [Min(1f)] public float WorkingLoadFactor;
+
+        [Tooltip("How long (real seconds) the line must stay over its working load before the loop lets " +
+                 "go. A grace period so a single wave that snatches the rope does not cast you off — it " +
+                 "is a SUSTAINED overload (a tide that has run away from your scope) that loses the boat.")]
+        [Min(0f)] public float SlipGraceSeconds;
+
+        /// <summary>The St Peters reference tuning: arm's reach to a fitting, a forgiving 1.5 m catch on
+        /// the throw, 9 m of scope to start, stepped by the metre between 2 m and 16 m, and a loop that
+        /// takes a quarter again its length of strain for a couple of seconds before it surrenders. Sized
+        /// against that pier's REAL drop (~2.6 m at high water, ~7.0 m at low — see the struct doc), so
+        /// the starting line rides an ordinary ebb out and a deliberately snugged one does not.</summary>
+        public static MooringLineSettings Default => new MooringLineSettings
+        {
+            CleatReachMetres = 1.5f,
+            TossCatchRadiusMetres = 1.5f,
+            DefaultScopeMetres = 9f,
+            MinScopeMetres = 2f,
+            MaxScopeMetres = 16f,
+            ScopeStepMetres = 1f,
+            WorkingLoadFactor = 1.25f,
+            SlipGraceSeconds = 2f,
+        };
+    }
+
+    /// <summary>
+    /// The owner-tunable knobs of <b>ladder boarding</b> (<see cref="GameConfig.LadderBoarding"/>) — the
+    /// tide-gap climb, and the geometry the rig's <c>ladderDown</c> clip was authored against.
+    ///
+    /// <para><b>Two of these are FEEL and the rest are MEASUREMENTS.</b>
+    /// <see cref="BoardClampMetres"/> and <see cref="LadderReachMetres"/> are the owner's to tune. The
+    /// four below them are the rig's and the wharf kit's own published numbers, exposed only so a future
+    /// kit revision is a data edit rather than a code change — <b>changing them without a re-bake puts
+    /// the fisher's feet between the rungs</b>, which is precisely what
+    /// <c>LadderBoardingMathTests.TheStair_ReproducesTheBakedDescendTable</c> exists to catch.</para>
+    /// </summary>
+    [System.Serializable]
+    public struct LadderBoardingSettings
+    {
+        [Tooltip("THE THRESHOLD. How far (m) the boat's deck may lie BELOW the wharf top and still be " +
+                 "boarded with a step. Past this, boarding goes down a ladder instead.\n\n" +
+                 "⚠ The art kit states two different numbers for this and they measure different things. " +
+                 "1.2 m is what characterIsoRig6.js cites as where its 'board' clip soft-clamps, measured " +
+                 "on the deck-to-WATER drop, and it is what ships here. wharfIsoRig.js:1103 implements a " +
+                 "stricter 0.55 m on the deck-to-GUNWALE gap — which is the quantity this field actually " +
+                 "compares, and which is also the rail height the one shipped 'board' sheet was baked at. " +
+                 "So 1.2 is the generous reading: it keeps a step aboard available for the upper half of " +
+                 "an ordinary tide (the sea has moods, and boarding should FEEL them), at the cost of " +
+                 "letting the step clip stretch past the sheer it was drawn for. Dial it to 0.55 for the " +
+                 "wharf kit's own stricter rule — one number, no code.")]
+        [Min(0f)] public float BoardClampMetres;
+
+        [Tooltip("How near (m) a ladder must be to where you are boarding for it to serve that berth. A " +
+                 "wharf with no ladder within reach simply has no climb to offer: boarding falls back to " +
+                 "the step, however deep the gap. Roughly the width of a berth, so the ladder mid-wall " +
+                 "serves the boats lying either side of it and not the whole quay.")]
+        [Min(0f)] public float LadderReachMetres;
+
+        [Tooltip("MEASURED — the wharf kit's rung spacing (m), WharfIso.FIT.ladder.rung. The tread of " +
+                 "the descent stair, and what the clip's foot placement was authored against.")]
+        [Min(0.01f)] public float RungMetres;
+
+        [Tooltip("MEASURED — the rig's standoff (m), ladderMount().standoff: how far the climber's pivot " +
+                 "sits off the ladder plane. Seat the sprite on the ladder line instead and its hands go " +
+                 "inside the wall. Not a nudge to taste.")]
+        [Min(0f)] public float StandoffMetres;
+
+        [Tooltip("MEASURED — one whole loop of the ladderDown clip (real seconds; 10 frames × 110 ms). " +
+                 "The climb is NOT rate-scaled to a duration the way the boarding vault is: real rungs " +
+                 "are a real distance apart, so a deeper gap takes longer rather than the same time " +
+                 "faster. That is what makes the tide legible on the way down.")]
+        [Min(0.01f)] public float ClimbLoopSeconds;
+
+        [Tooltip("How long (real seconds) the unauthored TURN-AROUND at the top of the ladder is given — " +
+                 "the moment the fisher swings off the wharf edge onto the top rung. The kit has no clip " +
+                 "for it and says it is the gap players will notice, so it is covered with the authored " +
+                 "'boardDown' step rather than a cut. Also covers the step OFF at the bottom onto the " +
+                 "gunwale, which is the same authored motion.")]
+        [Min(0f)] public float TransitionSeconds;
+
+        /// <summary>The Nine Mile Creek reference tuning: a step aboard stays available until the boat's
+        /// deck is 1.2 m below the planks, one ladder serves the berths within 4 m of it, and the climb
+        /// runs the rig's own measured geometry at its own baked rate. Sized against that wharf's REAL
+        /// numbers — a +3.0 m deck against a 2.2 m tide amplitude — so a dory is stepped onto around high
+        /// water and climbed down to for the bottom half of the ebb.</summary>
+        public static LadderBoardingSettings Default => new LadderBoardingSettings
+        {
+            BoardClampMetres = 1.2f,
+            LadderReachMetres = 4f,
+            RungMetres = LadderBoardingMath.RigRungMetres,
+            StandoffMetres = LadderBoardingMath.RigStandoffMetres,
+            ClimbLoopSeconds = LadderBoardingMath.RigLoopSeconds,
+            TransitionSeconds = 0.45f,
         };
     }
 

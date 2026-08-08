@@ -79,6 +79,26 @@ namespace HiddenHarbours.Boats
         float BakeElevationDegrees { get; }
 
         /// <summary>
+        /// <b>Where the sea stands on this hull when she floats at rest</b> — metres above the art's own
+        /// origin (owner playtest 2026-08-07: <i>"generally they should level out at the boats water
+        /// line"</i>). Mesh: the def's <c>RestingDraftMeters</c>, measured against the rig's keel-bottom
+        /// pivot. Sprite: <see cref="BoatVisualDef.DesignWaterlineMeters"/> — 0 for art already drawn at
+        /// her waterline, which is every shipped compass.
+        ///
+        /// <para>It rides the seam for the reason the seam exists at all: <see cref="BoatWaveMotion"/>
+        /// computes the ride and knows the hull ONLY as this interface, so this is its only route to
+        /// the datum when it must sink a SPRITE hull's transform itself. Composed with
+        /// <see cref="BakeElevationDegrees"/> through <see cref="HullSettleMath"/>; a hull with no datum
+        /// (0) sinks by exactly 0 and renders byte-identically to before the settle fix.</para>
+        ///
+        /// <para>⚠️ <b>A MESH hull is sunk by <see cref="MeshHullDriver"/>, not by the caller</b> —
+        /// deliberately, so a mesh hull with no wave motion wired at all still sits at her waterline.
+        /// <see cref="SetDisplacedHeaveMeters"/> therefore carries the SEA'S LIFT and never a settled
+        /// ride; sinking it on the way in as well would sink her twice.</para>
+        /// </summary>
+        float DesignWaterlineMeters { get; }
+
+        /// <summary>
         /// True when this hull can present a distinct pose per rock frame. Sprite: a complete heading×frame
         /// rock grid is wired. Mesh: always true, because rock is a transform and costs no memory (ADR 0022).
         /// </summary>
@@ -146,6 +166,34 @@ namespace HiddenHarbours.Boats
         /// art-director call, not a runtime rescale. (1, 0, 0) is the exact neutral.
         /// </summary>
         void SetStormRock(float amplitudeScale, float extraRollDegrees, float extraPitchDegrees);
+
+        /// <summary>
+        /// <b>Somebody is standing on this deck, HERE</b> — their feet, in the hull's own rig metres
+        /// (+X starboard, +Y toward the bow, +Z up from the keel: the frame the authored deck
+        /// polygons and every fitting pivot already speak). <paramref name="active"/> false = nobody.
+        ///
+        /// <para><b>Why a hull is told this at all</b> (owner playtest 2026-08-07: "rider/player
+        /// sprites visible THROUGH closed cabins"). A figure on deck is a sprite Y-sorted above the
+        /// hull's whole-object sorting slot, so no ordering can put a wheelhouse in front of them:
+        /// sorting is per OBJECT, and "is the boat between the camera and the fisher?" is per PIXEL.
+        /// A MESH hull can answer it, because her facet pass owns a private z-buffer — told where the
+        /// figure stands, she marks the geometry nearer the camera than that point so the figure's
+        /// own shader discards behind it. At any heading, with no authored cabin footprint.</para>
+        ///
+        /// <para>A SPRITE hull ignores it, deliberately and for the same reason she ignores
+        /// <see cref="SetRockPhaseDegrees"/>: her image is one flat sheet with no depth in it, and
+        /// there is nothing honest she could do with the question. The whole pilotable fleet is mesh
+        /// (ADR 0022), so the fix reaches every hull the player can actually stand on.</para>
+        /// </summary>
+        void SetDeckOccupant(Vector3 rigLocalMeters, bool active);
+
+        /// <summary>
+        /// The id an occludable sprite must discard against to be hidden by this hull, already
+        /// divided by 255 for the shader — <b>0 whenever there is nothing to hide behind</b>: no
+        /// occupant set, a sprite hull, a hull not live. Read every tick by whoever draws the
+        /// figure; 0 leaves their shader inert.
+        /// </summary>
+        float DeckOccluderId { get; }
 
         /// <summary>The visual child the hull is drawn into. Overlays parent here; nothing may re-parent it.</summary>
         Transform Visual { get; }

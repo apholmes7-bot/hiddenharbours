@@ -72,6 +72,11 @@ namespace HiddenHarbours.UI
         /// <summary>Which slot this host owns in the shared expansion arbiter.</summary>
         private const HelmInstrumentSlot Slot = HelmInstrumentSlot.Sounder;
 
+        // The EXPANDED card as a WINDOW (2026-08-07 ruling). The flush face is part of the dash
+        // picture and follows the HELM window instead — it gets no chrome of its own.
+        private readonly BoatUiWindowController _window =
+            new BoatUiWindowController(BoatUiWindowId.Sounder);
+
         /// <summary>The one host per play session (it self-installs and survives scene loads). Exposed so
         /// a PlayMode test can drive the host that is actually running rather than a second copy — a
         /// duplicate destroys itself in <c>Awake</c>.</summary>
@@ -132,7 +137,7 @@ namespace HiddenHarbours.UI
 
         private void OnDestroy()
         {
-            if (_instance == this) _instance = null;
+            if (_instance == this) { _instance = null; _window.StandDown(); }
             if (_texture != null) Destroy(_texture);
         }
 
@@ -147,6 +152,30 @@ namespace HiddenHarbours.UI
                 if (Expanded) HelmInstrumentExpansion.Collapse();
                 _painted = false;
                 FlushMounted = false;
+                _window.StandDown();
+                if (_cardGo.activeSelf) _cardGo.SetActive(false);
+                return;
+            }
+
+            // This instrument's WINDOW is hidden (hide-all or its own ×): stand down, and close any
+            // expansion rather than leaving an invisible card owning the pointer and Esc.
+            if (!_window.Shown)
+            {
+                if (Expanded) HelmInstrumentExpansion.Collapse();
+                FlushMounted = false;
+                _window.StandDown();
+                if (_cardGo.activeSelf) _cardGo.SetActive(false);
+                return;
+            }
+
+            // The flush face is bolted into the dash picture, so it follows the HELM window: a hidden
+            // or bar-collapsed dash folds its brow mounts away with it rather than popping the glass
+            // out to a standalone card the player never asked for (2026-08-07 ruling).
+            if (!Expanded && instruments.Fit.Rig != ConsoleRigKind.None
+                          && !BoatUiWindows.FlushMountsAvailable)
+            {
+                FlushMounted = false;
+                _window.StandDown();
                 if (_cardGo.activeSelf) _cardGo.SetActive(false);
                 return;
             }
@@ -178,8 +207,28 @@ namespace HiddenHarbours.UI
 
             bool expanded = Expanded;
             Rect card = GlassRect(expanded, in cfg);
+            if (expanded)
+            {
+                // The expanded card is this instrument's WINDOW: the player's layout goes over the
+                // shipped one, and the hit map below scales with the same rect (the S1 discipline).
+                card = _window.Apply(card, Screen.width, Screen.height, HudBandLayout.ReservedTopPx());
+            }
+            else
+            {
+                _window.StandDown();   // flush face / fallback card: no chrome, no publication
+            }
+            bool visible = !expanded || _window.CardVisible;
+            if (_image.enabled != visible) _image.enabled = visible;
+
             LayoutCard(card);
-            Repaint(in state);
+            if (visible) Repaint(in state);
+
+            if (expanded)
+            {
+                _window.LayoutChrome(_cardGo.transform.parent);
+                if (_window.HandlePointer(controlDragLive: false)) return;
+            }
+            if (BoatUiWindows.AnySession) return;   // a window drag owns the pointer
             ReadPointer(instruments, in prefs, in cfg, card, expanded);
         }
 
@@ -276,6 +325,11 @@ namespace HiddenHarbours.UI
             if (mouse == null || !mouse.leftButton.wasPressedThisFrame) return;
 
             Vector2 pos = mouse.position.ReadValue();
+
+            // A press on ANY window's chrome (a title strip, a grip, the watch's ×) is that window's
+            // business — never this instrument's expand, collapse-away or controls (2026-08-07).
+            if (BoatUiWindows.OverAnyChrome(pos)) return;
+
             bool inCard = card.Contains(pos);
 
             if (!expanded)

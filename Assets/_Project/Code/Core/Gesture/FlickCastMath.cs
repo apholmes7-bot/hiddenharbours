@@ -1,7 +1,6 @@
 using UnityEngine;
-using HiddenHarbours.Core;
 
-namespace HiddenHarbours.Fishing
+namespace HiddenHarbours.Core
 {
     /// <summary>One recorded point of the cast gesture: where the pointer was (world metres) and when
     /// (seconds since the wind-back began, from the caller's injected dt — never <c>Time</c>). Plain data
@@ -56,11 +55,19 @@ namespace HiddenHarbours.Fishing
     /// <summary>
     /// The PURE maths of the <b>flick-cast</b> (Rod Fishing v2, design/rod-fishing-v2-brainstorm.md §2.2) —
     /// the gesture cast that replaced the old press-to-cast: wind the mouse BACK behind the character, sweep
-    /// it FORWARD past them, release to let the spool loose. The Fishing-side twin of
-    /// <see cref="RodFightMath"/> / <see cref="TrapHaulMath"/>: no <c>Time</c>, no RNG, no scene, nothing
-    /// saved — gesture samples in (positions + caller-accumulated timestamps), a <see cref="FlickCastResult"/>
-    /// out, fully EditMode-testable and NaN-safe (rule 5). Every threshold is a passed
-    /// <see cref="FlickCastSettings"/> field (rule 6).
+    /// it FORWARD past them, release to let the spool loose. The twin of <c>RodFightMath</c> /
+    /// <c>TrapHaulMath</c>: no <c>Time</c>, no RNG, no scene, nothing saved — gesture samples in (positions +
+    /// caller-accumulated timestamps), a <see cref="FlickCastResult"/> out, fully EditMode-testable and
+    /// NaN-safe (rule 5). Every threshold is a passed <see cref="FlickCastSettings"/> field (rule 6).
+    ///
+    /// <para><b>ONE VERB, TWO CONTEXTS — which is why this lives in Core</b> (M2-38, 2026-08-06). It began
+    /// Fishing-side, but the owner's mooring ruling is that you "toss a line in the same manner you cast",
+    /// so the rope toss (<c>MooringController</c>, Player lane) resolves through this same function. Rule 4
+    /// forbids a feature module reaching into another feature module's concrete classes, and the alternative
+    /// — a second copy of the gesture maths — is exactly the "never compute one quantity two ways" failure
+    /// the flick-cast preview/resolver split was written to avoid. So the pure maths moved up beside the
+    /// <see cref="FlickCastSettings"/> that were ALREADY in Core, and both consumers call it. Nothing about
+    /// the gesture changed in the move; <c>FlickCastMathTests</c> pins that.</para>
     ///
     /// <para><b>How the gesture is read</b> (owner's ruling 2026-07-23: "wind-back sets the range you're
     /// aiming at, and the speed of the sweep adds or costs the last stretch").

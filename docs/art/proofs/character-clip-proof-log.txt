@@ -1,0 +1,171 @@
+Character clip proof renders — characterIsoRig6.js rev 6.2, drop of 2026-08-06
+==============================================================================
+
+WHAT THESE ARE. Proof renders of the four clips the rev 6.2 drop adds, produced by running
+the rig files VERBATIM (eye -> head -> body, the kit's mandatory load order) and blitting
+rows = 8 facings x columns = frames. They exist because CI has no graphics device and the
+shipped sheets are baked in the editor, so a reviewer would otherwise have nothing to look at.
+
+THEY ARE NOT THE SHIPPED ART. The game sheets are baked by CharacterRigBaker through
+ClearScript/V8 inside Unity (Hidden Harbours > Art > Bake Character Sheets - the player), at
+the FULL 64x92 cell with no crop and no scaling. These proofs crop each cell to the figure's
+own column and scale 4x nearest-neighbour so the pose is legible on a PR page.
+
+HOW TO REGENERATE:   node docs/art/proofs/_characterClipProof.mjs docs/art/rigs <outdir>
+Node 22 (V8). No dependencies.
+
+DETERMINISM: two independent runs produced byte-identical PNGs (verified 2026-08-06).
+
+WHY THE PNGs ARE NOT COMMITTED BESIDE THIS LOG. They were rendered and reviewed, and they
+belong in LFS like every other .png here -- but the session that produced them had
+lfs.github.com blocked by its egress policy, so the objects could not be uploaded and
+committing the pointers alone would have left a branch nobody could check out. The
+regenerate command above is one line, needs no dependencies and is deterministic, so the
+images are a command away rather than lost. Anyone with LFS reachable can run it, drop the
+four PNGs into this folder and commit them.
+
+------------------------------------------------------------------------------
+THE CLIP CONTRACT, read from the rig's own tables (never from the kit README)
+------------------------------------------------------------------------------
+
+  cell 64x92   pivot (32,82)   32 px/m
+
+  clip         frames    ms   loops    mount   baked sheet     carries
+  board            10    90      no     free   640x736       buckets,tray
+  boardDown         6    95      no     free   384x736       buckets,tray
+  haul              8   120     YES     free   512x736       -
+  ladderDown       10   110     YES   ladder   640x736       -
+
+  All four bake 8 direction rows. Verified against RENDERED PIXELS, not the rig's labels:
+  every facing of every clip returns a non-empty cell (opaque px at frame 0, per facing):
+    board        [482, 446, 336, 426, 494, 453, 336, 422]
+    boardDown    [482, 440, 339, 426, 491, 451, 340, 420]
+    haul         [483, 492, 424, 441, 524, 515, 418, 423]
+    ladderDown   [485, 469, 432, 419, 472, 483, 460, 446]
+  A reduced-facing kit would show zeros here. CharacterVisualDef.ClipFacingCount is the seam
+  that would carry it -- the presenter never assumes eight.
+
+------------------------------------------------------------------------------
+SHEET BUDGET (what the four clips cost, per preset, once imported as RGBA32)
+------------------------------------------------------------------------------
+
+  haul          512x736    1.438 MiB
+  board         640x736    1.797 MiB
+  boardDown     384x736    1.078 MiB
+  ladderDown    640x736    1.797 MiB
+                          ----------
+  TOTAL         4 sheets   6.109 MiB per preset
+
+  Shipped in this PR: the PLAYER (fisher) only -- 4 sheets, 6.108 MiB.
+  All ten presets would be 40 sheets / 61.1 MiB, against 2.5 MiB for the whole Iso folder
+  today. Fisher-first is the recipe's stated default; adding the cast is one line in
+  CharacterRigBakeMenu.CastStates.
+
+  Held back deliberately: the rig rides 'buckets' and 'tray' on board/boardDown, which the
+  carry expansion would grow into 4 more sheets (+5.750 MiB). Nothing can carry a pail over a
+  rail yet. See CharacterRigBakeMenu.PlayerCarryStanceExclusions -- delete an entry to ship them.
+
+------------------------------------------------------------------------------
+PIN SAMPLES (dir 4 = South) -- what the sidecar's clipPins carry
+------------------------------------------------------------------------------
+
+  boardMount:
+    {
+      "railZ": 0.55,
+      "requested": 0.55,
+      "clamped": false,
+      "rise": 0.04337037037037038,
+      "phase": "plant",
+      "handOn": 0.8017492711370263,
+      "gripped": true,
+      "carried": false,
+      "hand": {
+        "x": 39.961428411833595,
+        "y": 70.62646228630938
+      },
+      "rail": {
+        "x": 39.961428411833595,
+        "y": 74.86193150871213
+      },
+      "leadFoot": {
+        "x": 29.710643171424366,
+        "y": 71.67221526202702
+      },
+      "trailFoot": {
+        "x": 34.289356828575634,
+        "y": 74.67242821892987
+      },
+      "landing": {
+        "x": 32,
+        "y": 68.51761780110598
+      }
+    }
+
+  haulGrip:
+    {
+      "handL": {
+        "x": 37.868563339745656,
+        "y": 68.49450189829993
+      },
+      "handR": {
+        "x": 25.905162490274652,
+        "y": 68.32983417492629
+      },
+      "mid": {
+        "x": 31.886862915010155,
+        "y": 68.41216803661311
+      },
+      "lead": "R",
+      "tension": 0.43066964285714293,
+      "out": {
+        "x": 0,
+        "y": 1
+      }
+    }
+
+  ladderMount:
+    {
+      "rung": 0.3,
+      "width": 0.45,
+      "stepZ": 0.6,
+      "descend": 0.3,
+      "rate": 0.545,
+      "standoff": 0.275,
+      "moving": "set",
+      "contact": 4,
+      "handL": {
+        "x": 38.048,
+        "y": 57.9637278916305
+      },
+      "handR": {
+        "x": 25.952,
+        "y": 60.236247104784965
+      },
+      "footL": {
+        "x": 34.293290610985494,
+        "y": 76.43682447024868
+      },
+      "footR": {
+        "x": 29.70670938901451,
+        "y": 83.79085112419088
+      },
+      "rungL": {
+        "x": 34.293290610985494,
+        "y": 77.93704590765289
+      },
+      "rungR": {
+        "x": 29.70670938901451,
+        "y": 85.29107256159509
+      },
+      "airL": 0,
+      "airR": 0,
+      "handsOn": true,
+      "ladderBehind": false,
+      "hip": {
+        "x": 32,
+        "y": 68.26672292509566
+      },
+      "head": {
+        "x": 31.819270213995072,
+      
+

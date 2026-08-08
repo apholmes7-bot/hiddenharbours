@@ -158,6 +158,36 @@ namespace HiddenHarbours.Core
         public static string CurrentRegionId { get; set; }
 
         /// <summary>
+        /// WHICH WAY IN the player is taking — the key of the arrival point the passage they just took
+        /// names in the region they are travelling TO, or null/empty for "the region's own default
+        /// arrival".
+        ///
+        /// <para><b>Why this is a relay and not a reference.</b> A passage is authored in the region you
+        /// LEAVE and the arrival point it lands at is a <c>Transform</c> in the region you ARRIVE in — a
+        /// scene that may not even be loaded when the passage fires, so the two can never be wired
+        /// together directly. The passage therefore names its arrival, and the destination's anchor
+        /// resolves that name against its own authored table. The <b>World</b> passage is the writer and
+        /// the <b>App</b> travel coordinator is the reader, neither module referencing the other — the
+        /// same Core-mediated indirection as <see cref="CurrentRegionId"/> (rule 4).</para>
+        ///
+        /// <para><b>⚠ CONSUME-ONCE.</b> Read it with <see cref="ConsumePendingArrivalKey"/>, never with a
+        /// bare get. A key left standing outlives the crossing that set it, and the next arrival — a
+        /// re-activated region, a travel that took no passage at all — would silently land the player at
+        /// somebody else's beach. The writer clears it too when its travel turns out to be a no-op.</para>
+        /// FLAG lead-architect: new Core contract (the per-passage arrival seam).
+        /// </summary>
+        public static string PendingArrivalKey { get; set; }
+
+        /// <summary>Take the pending arrival key and clear it in one step — see the consume-once note on
+        /// <see cref="PendingArrivalKey"/>. Returns null when no passage named one.</summary>
+        public static string ConsumePendingArrivalKey()
+        {
+            string key = PendingArrivalKey;
+            PendingArrivalKey = null;
+            return key;
+        }
+
+        /// <summary>
         /// The world rectangle the CURRENT region occupies — <c>RegionDef.WorldCenter</c> /
         /// <c>WorldSizeMeters</c>, the one authored extent the sea sprite, the flat backdrop, the
         /// shader's height bake and the displaced mesh all already read. Same writer and same
@@ -218,6 +248,25 @@ namespace HiddenHarbours.Core
         /// the B3 FORCE path (<see cref="GameConfig.Seakeeping"/>) is a separate, untouched policy.</summary>
         public static StormRockSettings StormRock =>
             Config != null ? Config.StormRock : StormRockSettings.Default;
+
+        /// <summary>The GROUND-TACKLE policy (the rode, the swing circle, the firm limit, the drag creep),
+        /// same contract as <see cref="WaveField"/> including the <c>Config != null</c> discipline (never
+        /// <c>?.</c>/<c>??</c> on a <c>UnityEngine.Object</c>) and the resolved-per-read liveness, so
+        /// dragging the anchor sliders in play changes the next tick's hold. Falls back to
+        /// <see cref="AnchorSettings.Default"/> with no config wired, which is why an unwired test rig
+        /// still anchors on a dinghy-class rode rather than on a zero one.</summary>
+        public static AnchorSettings Anchor =>
+            Config != null ? Config.Anchor : AnchorSettings.Default;
+
+        /// <summary>The LADDER-BOARDING policy (the tide gap at which a step aboard becomes a climb, and
+        /// the measured rig geometry the climb runs on), same contract as <see cref="WaveField"/> —
+        /// including the <c>Config != null</c> discipline (never <c>?.</c>/<c>??</c> on a
+        /// <c>UnityEngine.Object</c>) and the resolved-per-read liveness, so dragging the threshold in
+        /// Play changes the very next boarding. Falls back to
+        /// <see cref="LadderBoardingSettings.Default"/> with no config wired, which is why an unwired test
+        /// rig still climbs the rig's real geometry rather than a zeroed one.</summary>
+        public static LadderBoardingSettings LadderBoarding =>
+            Config != null ? Config.LadderBoarding : LadderBoardingSettings.Default;
 
         /// <summary>The wind-fetch model's tunables (ADR 0027 #1), same contract as
         /// <see cref="WaveField"/> including the <c>Config != null</c> discipline. Read by BOTH the
@@ -347,6 +396,13 @@ namespace HiddenHarbours.Core
         public static HelmWheelSettings HelmWheel =>
             Config != null ? Config.HelmWheel : HelmWheelSettings.Default;
 
+        /// <summary>The boat-UI windows' chrome tunables (the 2026-08-07 windowing ruling — the
+        /// hover title strip, its buttons, the corner grip, and the resize/collapse scale bounds).
+        /// Same contract as <see cref="WaveField"/>, including the <c>Config != null</c> discipline
+        /// (never <c>?.</c>/<c>??</c> on a <c>UnityEngine.Object</c>).</summary>
+        public static BoatUiWindowSettings BoatUiWindowing =>
+            Config != null ? Config.BoatUiWindows : BoatUiWindowSettings.Default;
+
         /// <summary>The masthead pennant's tunables (VS-19) — the boat's own wind instrument. Same
         /// contract as <see cref="WaveField"/>, including the <c>Config != null</c> discipline (never
         /// <c>?.</c>/<c>??</c> on a <c>UnityEngine.Object</c>). Falls back to
@@ -403,6 +459,7 @@ namespace HiddenHarbours.Core
             Save = null;
             TidalTerrain = null;
             CurrentRegionId = null;
+            PendingArrivalKey = null;
             CurrentRegionBounds = default;
             Config = null;
             CatchFactory = null;

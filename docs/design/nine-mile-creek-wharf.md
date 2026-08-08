@@ -1,5 +1,13 @@
 # Nine Mile Creek — the first wharf
 
+> **⭐ AMENDED 2026-08-06 — the region is the MAINLAND.** The owner's reference photographs and overhead
+> made Nine Mile Creek a mainland wharf on a low made spit at a creek's mouth, not the small island it
+> was built as. The layout in §3 survives intact (walls, basin, breakwater south, beach north, yard and
+> parking) — it is now *placed on real coast*, with the tidal crossing landing 260 m to the south. The
+> geography, the coast plan, the roads, the town lots and the wharf's terrain plan are in
+> **[`nine-mile-creek-mainland.md`](nine-mile-creek-mainland.md)**; §4's size row is superseded there
+> (600 × 400 → **760 × 560 m**), and §4's depth-gate table gains a correction (see the box in §4).
+>
 > **Status:** the structural question is **RULED** (owner, 2026-07-25 — §1): this is Port Greywick's
 > working wharf, one region with the town, and it is where the damaged dory is bought. Subordinate to
 > [`../vision-and-pillars.md`](../vision-and-pillars.md) (canon) and
@@ -201,6 +209,30 @@ depth by tide.
 > **nothing gates a boat on it.** The gating here is emergent from painted depth vs. `DraughtMeters`,
 > the same mechanism as the reef ring. If it should ever be a *hard* rule with a "too shallow" warning
 > rather than a grounding, that is a `gameplay-systems` seam, not a terrain one.
+
+> ### ⚠ CORRECTION 2026-08-06 — "excludes the side dragger" does not survive the region's real tide
+>
+> The table above was written when Nine Mile Creek ran a gentle ±0.8 m market-harbour tide. The mainland
+> recreation gives it **St Peters' ±2.2 m** — not a preference, a necessity: the tidal bar spans the seam
+> between the two regions, and its exposure is a function of (crest, amplitude, phase), so two tides
+> either side of the seam means the crossing is dry on one side and flooded on the other at the same
+> instant ([`nine-mile-creek-mainland.md`](nine-mile-creek-mainland.md) §4).
+>
+> Against a −1.6 m bed under a ±2.2 m swing, the fleet lands like this as a fraction of the cycle afloat:
+> dory **70.1%**, fishing skiff **69.2%**, punt **66.7%**, console skiff **65.8%**, **lobster boat
+> 54.4%**, **Cape Islander 52.9%**, **side dragger 29.9%**.
+>
+> The **ordering is right** and the working hulls sit at "a little over half the cycle" — the same
+> nagging-constraint shape St Peters' berth has. But **a 4.4 m tide range is wider than the 2.6 m draught
+> spread**, so no single bed can admit a 1.4 m hull for half the cycle *and* exclude a 2.9 m one
+> outright. The dragger can enter near high water and then **take the ground under her own weight for
+> 70% of the cycle** — which is a better and more honest exclusion than a wall, and reads exactly like
+> the real thing. ⏳ **Owner call** if it should land harder; the lever is the bed, not the tide.
+>
+> Also: the ladder's Nine Mile Creek number is **1.6 m**, and the phrase "NMC is the deep-water berth"
+> that has appeared in handoffs resolves to *the deepest berth the **starter** world has* — the
+> lobster-boat berth, which is the owner's stated progression ceiling for this region. Port Greywick
+> keeps the 6 m.
 
 ---
 

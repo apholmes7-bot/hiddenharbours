@@ -149,6 +149,19 @@ namespace HiddenHarbours.Art.Editor
             "ladder", "tyre", "pilehead", "gangway",
         };
 
+        /// <summary>
+        /// Is this fitting something a mooring line can be MADE FAST to (M2-38)? The four the kit models
+        /// as tie-off points — a cleat, a bollard, a ring, a dolphin — and nothing else: a tyre is a
+        /// fender, a ladder is how you climb, a pilehead is structure, and a rail is what stops you
+        /// walking off the edge.
+        ///
+        /// <para>Lives here, in the kit's own vocabulary, so every wharf builder places its
+        /// <c>ShoreCleat</c> markers from ONE definition of "what you can tie to" rather than each
+        /// carrying its own list to drift out of step.</para>
+        /// </summary>
+        public static bool IsMooringFitting(string fitting)
+            => fitting == "cleat" || fitting == "bollard" || fitting == "ring" || fitting == "dolphin";
+
         /// <summary>Slice name of a fitting, as <see cref="WharfOverlaySlicer"/> writes it.</summary>
         public static string FittingSlice(string fitting)
         {

@@ -70,6 +70,12 @@ namespace HiddenHarbours.UI
         private readonly HelmDashController _dashCtl = new HelmDashController();
         private bool _dashShown;
 
+        // The helm card as a WINDOW (2026-08-07 ruling): drag by the hover strip, resize by the
+        // grip, collapse to Compact/Bar, hide (individually or via the hide-all key). One window
+        // whichever card the hull shows — dash, lone lever, or tiller.
+        private readonly BoatUiWindowController _window =
+            new BoatUiWindowController(BoatUiWindowId.Helm);
+
         // The live dash card, published for the brow instruments that flush-mount into it (S4.5).
         // Recomputed every frame a dash draws and cleared the moment one does not, so a stale rect can
         // never leave an instrument floating over a helm that is no longer on screen.
@@ -153,6 +159,7 @@ namespace HiddenHarbours.UI
                 // that is no longer drawn.
                 _dashLive = false;
                 HelmInstrumentExpansion.Collapse();
+                _window.StandDown();   // same reasoning for the window's chrome publication + session
             }
             if (_texture != null) Destroy(_texture);
         }
@@ -172,6 +179,21 @@ namespace HiddenHarbours.UI
                 HelmInstrumentExpansion.Collapse();   // losing the helm closes any expanded instrument
                 _shownStyle = HelmControlStyle.None;
                 CardKind = HelmCardKind.None;
+                _window.StandDown();
+                if (_cardGo.activeSelf) _cardGo.SetActive(false);
+                return;
+            }
+            // The helm WINDOW is hidden (hide-all or its own ×): the card stands down exactly like
+            // losing the helm, except the helm itself — drive, steer, keys — keeps working, and the
+            // window state is one toggle from bringing the card back.
+            if (!_window.Shown)
+            {
+                if (_dragging && helm != null) { helm.EndDrag(); _dragging = false; }
+                _dashCtl.Deactivate(helm);
+                _focused = false;
+                _shownStyle = HelmControlStyle.None;
+                CardKind = HelmCardKind.None;
+                _window.StandDown();
                 if (_cardGo.activeSelf) _cardGo.SetActive(false);
                 return;
             }
@@ -205,16 +227,40 @@ namespace HiddenHarbours.UI
                 Rect dashCard = HelmOverlayLayout.DashCardRect(_focused, dashW, dashH, in cfg,
                                                                Screen.width, Screen.height,
                                                                HudBandLayout.ReservedTopPx());
+                // The player's window layout goes over the shipped one (2026-08-07 ruling). Windowing
+                // the rect HERE, before anything consumes it, is what makes the flush brow mounts and
+                // the pointer mapping follow the moved/resized dash for free.
+                dashCard = _window.Apply(dashCard, Screen.width, Screen.height,
+                                         HudBandLayout.ReservedTopPx());
+                bool cardVisible = _window.CardVisible;
+                if (_image.enabled != cardVisible) _image.enabled = cardVisible;
+
                 LayoutCard(HelmControlStyle.Lever, dashCard, dashW, dashH, 0f);
-                _dashCtl.UpdateAndPaint(helm, fit, SampleHeadingDegrees(), Time.deltaTime, _focused,
-                                        ref _texture, _image);
+                if (cardVisible)
+                    _dashCtl.UpdateAndPaint(helm, fit, SampleHeadingDegrees(), Time.deltaTime,
+                                            _focused, ref _texture, _image);
 
                 // Publish BEFORE reading the pointer: the brow instruments hang off this rect, and the
-                // press routing below has to know where they are to leave their clicks alone.
+                // press routing below has to know where they are to leave their clicks alone. A
+                // BAR-collapsed dash publishes nothing — its brow mounts are folded away with it.
                 _dashCard = dashCard;
                 _dashFit = fit;
-                _dashLive = true;
+                _dashLive = cardVisible;
 
+                // An EXPANDED instrument owns the pointer outright (S4.5), chrome included: its card
+                // sorts over the dash, so a bar the player cannot see must not swallow its clicks.
+                // Collapse the instrument (click away / Esc) and the dash is draggable again.
+                if (HelmInstrumentExpansion.AnyExpanded)
+                {
+                    _window.StandDown();
+                }
+                else
+                {
+                    _window.LayoutChrome(_canvas.transform);
+                    if (_window.HandlePointer(_dashCtl.Interacting || _dragging)) return;
+                }
+                if (BoatUiWindows.AnySession) return;   // another window owns the pointer
+                if (!cardVisible) return;               // the strip is all there is to click
                 ReadDashPointer(helm, fit, dashCard, in cfg);
                 return;
             }
@@ -224,8 +270,25 @@ namespace HiddenHarbours.UI
             int rigH = style == HelmControlStyle.Lever ? LeverRigRender.H : TillerRigRender.H;
 
             Rect card = HelmOverlayLayout.CardRect(_focused, rigW, rigH, in cfg, Screen.width, Screen.height);
+            card = _window.Apply(card, Screen.width, Screen.height, HudBandLayout.ReservedTopPx());
+            bool visible = _window.CardVisible;
+            if (_image.enabled != visible) _image.enabled = visible;
+
             LayoutCard(style, card, rigW, rigH, helm.Steer);
-            Repaint(style, helm);
+            if (visible) Repaint(style, helm);
+
+            // Same yield as the dash path: an expanded instrument owns the pointer, chrome included.
+            if (HelmInstrumentExpansion.AnyExpanded)
+            {
+                _window.StandDown();
+            }
+            else
+            {
+                _window.LayoutChrome(_canvas.transform);
+                if (_window.HandlePointer(_dragging)) return;
+            }
+            if (BoatUiWindows.AnySession) return;   // another window owns the pointer
+            if (!visible) return;                   // BAR-collapsed: the strip is all there is
             ReadPointer(style, helm, card, in cfg);
         }
 
@@ -374,6 +437,10 @@ namespace HiddenHarbours.UI
 
             if (!down) return;
 
+            // A press on ANY window's chrome (another card's title strip, the watch's ×) is that
+            // window's business — never this card's click-away or focus toggle (2026-08-07 ruling).
+            if (BoatUiWindows.OverAnyChrome(pos)) return;
+
             if (!inCard)
             {
                 if (_focused)
@@ -441,6 +508,10 @@ namespace HiddenHarbours.UI
             }
 
             if (!down) return;
+
+            // A press on ANY window's chrome belongs to that window, never to this card's
+            // click-away or focus toggle (2026-08-07 ruling).
+            if (BoatUiWindows.OverAnyChrome(pos)) return;
 
             if (!inCard)
             {

@@ -12,6 +12,12 @@
 //
 // The hull-id filter is what keeps two OVERLAPPING mesh hulls honest: each quad re-composes
 // only its own hull's pixels, so hull A's image never rides along at hull B's sorting position.
+//
+// ⚠️ A HULL HAS TWO IDS, and this quad composes BOTH (see the facet shader's deck-occupant note).
+// While somebody stands on her deck, the geometry NEARER the camera than that figure is written
+// with _HullIdFore so the figure's own shader can discard behind it — but it is still HER image and
+// still belongs in HER sorting slot, so nothing about what this quad draws changes. Accepting only
+// _HullId here would delete the wheelhouse from the boat the moment anyone climbed aboard.
 Shader "HiddenHarbours/IsoFacetOverlay"
 {
     SubShader
@@ -39,8 +45,20 @@ Shader "HiddenHarbours/IsoFacetOverlay"
             // everywhere instead of sampling the grey unbound placeholder.
             Texture2D<float4> _HHHullScreenTex;
 
-            // Per draw via MaterialPropertyBlock: this hull's id, already divided by 255.
+            // Per draw via MaterialPropertyBlock: this hull's ids, already divided by 255.
+            // _HullIdFore is her SECOND id — the deck-occupant split (see the header). 0 when she
+            // is not registered for one, which no id ever is, so the second test never matches.
             float _HullId;
+            float _HullIdFore;
+
+            // True when a resolved alpha is one of THIS hull's ids. Ids are small integers over
+            // 255, so the comparison is done in id space with a half-step tolerance — 8-bit alpha
+            // rounding must not be able to drop a pixel of the boat.
+            bool HHIsThisHull(float a)
+            {
+                return abs(a - _HullId) * 255.0 < 0.5 ||
+                       (_HullIdFore > 0.0 && abs(a - _HullIdFore) * 255.0 < 0.5);
+            }
 
             struct Attributes
             {
@@ -62,9 +80,8 @@ Shader "HiddenHarbours/IsoFacetOverlay"
             float4 frag (Varyings i) : SV_Target
             {
                 float4 c = _HHHullScreenTex.Load(int3(int2(i.positionCS.xy), 0));
-                // Only THIS hull's pixels (ids are small integers over 255 — compare in id space
-                // with a half-step tolerance so 8-bit alpha rounding cannot drop pixels).
-                clip(0.5 - abs(c.a - _HullId) * 255.0);
+                // Only THIS hull's pixels — either of her ids.
+                clip(HHIsThisHull(c.a) ? 1.0 : -1.0);
                 clip(c.a - 0.5 / 255.0);
                 return float4(c.rgb, 1.0);
             }
@@ -114,9 +131,18 @@ Shader "HiddenHarbours/IsoFacetOverlay"
             Texture2D<float4> _HHHullScreenTex;
 
             float  _HullId;
+            float  _HullIdFore;        // her second id (the deck-occupant split) — see the header
             float4 _HHReflectOrigin;   // xy = the published ground-contact pivot, w = 1 when published
             float  _HHReflectLit;      // 1 = night light content (rides the post-grade bucket, §11.6)
             float4 _DayNightTint;      // GLOBAL (DayNightController) — the overlay this pass compensates for
+
+            // The in-scene pass's membership test, restated in this pass's own HLSL block (the two
+            // passes do not share one). Same rule, same tolerance.
+            bool HHIsThisHullReflect(float a)
+            {
+                return abs(a - _HullId) * 255.0 < 0.5 ||
+                       (_HullIdFore > 0.0 && abs(a - _HullIdFore) * 255.0 < 0.5);
+            }
 
             struct ReflectAttributes { float4 positionOS : POSITION; };
 
@@ -150,9 +176,10 @@ Shader "HiddenHarbours/IsoFacetOverlay"
                 if (any(px < 0) || any(px >= int2(_ScreenParams.xy))) discard;
 
                 float4 c = _HHHullScreenTex.Load(int3(px, 0));
-                // Only THIS hull's pixels — the same id filter the in-scene pass uses, for the same
-                // reason: two overlapping hulls must not reflect each other's image.
-                clip(0.5 - abs(c.a - _HullId) * 255.0);
+                // Only THIS hull's pixels — the same either-id filter the in-scene pass uses, for
+                // the same reason: two overlapping hulls must not reflect each other's image, and a
+                // boat must not lose her wheelhouse out of the water the moment anyone boards her.
+                clip(HHIsThisHullReflect(c.a) ? 1.0 : -1.0);
                 clip(c.a - 0.5 / 255.0);
 
                 // The resolved texture stores the hull OPAQUE (the in-scene pass returns alpha 1), so the

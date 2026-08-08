@@ -37,7 +37,7 @@ namespace HiddenHarbours.Boats
                  "of every other binding by a project-wide Key./KeyControl/.inputactions sweep " +
                  "(WASD/arrows helm, Space brace/haul, E interact, Q mooring, P buy, B sell, " +
                  "T trap-drop, G grant, H haul, Y auto-yaw, L spotlight/ice, F fleet/freezer/bucket, " +
-                 "V variant, I icebox, O displaced-water, N tide table, X DUMP SPOILED — " +
+                 "V variant, I icebox, O displaced-water, N tide table, R anchor/rode, X DUMP SPOILED — " +
                  "CatchDumpInput listens scene-wide, so X here would dump the catch on every chop " +
                  "to neutral).")]
         [SerializeField] private Key _neutralKey = Key.Z;

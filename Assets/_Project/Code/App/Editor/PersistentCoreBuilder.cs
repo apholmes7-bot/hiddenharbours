@@ -405,6 +405,18 @@ namespace HiddenHarbours.App.Editor
                                  "if the sheets were re-imported).");
             }
 
+            // --- THE CLIP SEAM ----------------------------------------------------------------------------
+            // Whole-body clips the fisher PLAYS rather than falls into from speed: the rig's board /
+            // boardDown over a rail, haul on a line, ladderDown on a wharf ladder. It reads its clips off the
+            // SAME def the iso skin above is wearing (no second wiring), and takes the renderer through the
+            // counted Suspend/Release claim PlayerHaulAnimator already uses, so the two can never fight.
+            //
+            // Added unconditionally, including on the FisherSheet fallback path: with no def, or a def whose
+            // clip sheets are not baked, every Play() answers false and the component costs one early-out per
+            // frame. That is the null-safe greybox rule — the thing that plays a clip does not have to know
+            // whether the art landed yet.
+            playerGo.AddComponent<HiddenHarbours.Core.CharacterClipPlayer>();
+
             // --- WADE SUBMERSION, RE-CALIBRATED FOR THE ISO CELL ------------------------------------------
             // PlayerSubmergeVisual clips the waterline on the SPRITE's uv.y, so its two tunables describe the
             // CELL, not the character. The old flat sheet was 32×64 px (2.0 m at PPU 32) with the fisher
@@ -452,8 +464,10 @@ namespace HiddenHarbours.App.Editor
             deckWalk.enabled = false;
 
             // THE CHARACTER RIDES THE BOAT (and is visible at the helm). The player's own transform is held
-            // world-upright every frame by DeckWalkController — deliberately, so the fisher never spins with
-            // the hull — so the ROCK cannot reach them by parenting. The boat solves the identical problem by
+            // world-upright every frame while aboard — by DeckWalkController on deck and by the
+            // ControlSwitcher in EVERY aboard mode (the helm included, where the deck walk is disabled and
+            // the un-squared root once let the drawn pilot spin with the hull) — so the ROCK cannot reach
+            // them by parenting. The boat solves the identical problem by
             // putting its rock on a counter-rotated VISUAL CHILD; this is the character's copy of that. The
             // child owns nothing but the picture: DeckRiderVisual mirrors whatever the root renderer is
             // showing (iso skin, haul cycle, rod fight — one authority for the cell) onto a transform it may

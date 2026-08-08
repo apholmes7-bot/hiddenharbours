@@ -43,6 +43,13 @@ namespace HiddenHarbours.Tests.EditMode
             public bool IsConfigured => true;
             public int SortingLayerId; public int SortingOrder;
             public void SetSorting(int layerId, int order) { SortingLayerId = layerId; SortingOrder = order; }
+            // The deck-occupant split: recorded, so a test can pin what the presenter forwarded.
+            public Vector3 OccupantRigMeters { get; private set; }
+            public bool OccupantActive { get; private set; }
+            public float DeckOccluderIdValue { get; set; }
+            public void SetDeckOccupant(Vector3 rigLocalMeters, bool active)
+            { OccupantRigMeters = rigLocalMeters; OccupantActive = active; }
+            public float DeckOccluderId => DeckOccluderIdValue;
         }
 
         /// <summary>A fitting as the seam sees it: a local rotation and a lateral mount, nothing more
@@ -196,7 +203,62 @@ namespace HiddenHarbours.Tests.EditMode
                 p.RockFrame = 3;
                 p.SetRockPhaseDegrees(90f);
                 p.VisualTiltDegrees = 1f;
+                p.SetDeckOccupant(new Vector3(0.3f, -1.2f, 0.9f), true);
+                Assert.AreEqual(0f, p.DeckOccluderId, 1e-6f,
+                    "a hull that is gone hides nobody — the figure must not keep discarding against " +
+                    "an id that is now free for another boat to be issued");
             });
+        }
+
+        // ---- the deck occupant: who stands on her, and what hides them -------------------------
+
+        [Test]
+        public void Presenter_HandsTheDeckOccupantStraightToTheDrawer_InRigMetres()
+        {
+            // Only the facet pass holds a hull's DEPTH, so "is the wheelhouse in front of the
+            // fisher?" can only be answered there. The presenter's whole job is to carry the
+            // question across without reinterpreting it: the point stays in the hull's own rig
+            // frame, which is the frame the deck polygons and every fitting pivot already speak.
+            var root = MakeRoot();
+            var fake = new FakeRenderer();
+            var driver = root.AddComponent<MeshHullDriver>();
+            driver.Configure(root.transform, fake, MakeUsableDef(), 0f);
+            var p = new MeshHullPresenter(driver);
+
+            var stand = new Vector3(0.42f, -1.35f, 0.85f);
+            p.SetDeckOccupant(stand, true);
+
+            Assert.AreEqual(stand, fake.OccupantRigMeters, "the rig point travels unchanged");
+            Assert.IsTrue(fake.OccupantActive);
+
+            fake.DeckOccluderIdValue = 7f / 255f;
+            Assert.AreEqual(7f / 255f, p.DeckOccluderId, 1e-6f,
+                "and the id that hides the figure comes back the same way");
+
+            p.SetDeckOccupant(Vector3.zero, false);
+            Assert.IsFalse(fake.OccupantActive, "stepping ashore stops the hull splitting her image");
+        }
+
+        [Test]
+        public void SpriteHull_IgnoresTheDeckOccupant_BecauseAFlatSheetHasNoDepth()
+        {
+            // Deliberately inert, in the same family as SetRockPhaseDegrees and SetStormRock: a
+            // sprite hull's image is one baked sheet with no depth in it, so there is no honest
+            // answer to give. The pilotable fleet is all mesh (ADR 0022) — this is the greybox and
+            // the ambient fleet, and they must neither crash nor half-answer.
+            var root = MakeRoot();
+            var visualChild = new GameObject("Visual");
+            visualChild.transform.SetParent(root.transform, false);
+            _spawned.Add(visualChild);
+            var sr = visualChild.AddComponent<SpriteRenderer>();
+            var directional = root.AddComponent<DirectionalBoatSprite>();
+            directional.Configure(new Sprite[8], sr);
+            var p = new SpriteHullPresenter(directional);
+
+            Assert.DoesNotThrow(() => p.SetDeckOccupant(new Vector3(0.3f, -1f, 0.8f), true));
+            Assert.AreEqual(0f, p.DeckOccluderId, 0f,
+                "0 means 'nothing hides you here' — the figure's shader stays inert and she draws " +
+                "exactly as she always has on a sprite hull");
         }
 
         // ---- the driver: heading mapping + rock channel ---------------------------------------

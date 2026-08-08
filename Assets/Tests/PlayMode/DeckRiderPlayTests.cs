@@ -375,6 +375,217 @@ namespace HiddenHarbours.Tests.PlayMode
                             1e-3f, "with nothing frozen on the child transform");
         }
 
+        // ---- ORIENTATION: the hull turns, the figure does not spin (owner playtest 2026-08-07) ------
+        //
+        // "The sprite doesn't follow the orientation of the boat, they slowly lose reference and spin
+        // horizontally." Two separate leaks of the hull's rotation into the picture, and the tests below
+        // drive a hull through sustained turning because both were INVISIBLE at small angles and total by
+        // half a turn. Neither test asserts an angle it imposed itself: each reads the hull's LIVE drawn
+        // heading and asserts a RELATION against it, so nothing here depends on physics leaving the boat
+        // exactly where the turn put her.
+
+        /// <summary>
+        /// Turn the boat through at least <paramref name="minTotalDegrees"/> of heading, a step per frame,
+        /// calling <paramref name="check"/> after each step with the hull's live drawn heading. Fails as a
+        /// HARNESS error (not a defect) if the hull never actually came about.
+        ///
+        /// <para><b>The turn is written to the TRANSFORM with the body un-simulated, and that is a
+        /// measurement decision, not a shortcut.</b> Everything under test runs in LateUpdate (the two
+        /// upright stomps, the rider's pose, the hull's drawn heading) and is therefore correct at the
+        /// moment the frame is DRAWN. A test resuming in Update reads the frame in between — and a physics
+        /// step landing there moves the boat AFTER the stomp and BEFORE the read, so a perfectly square
+        /// figure measures a fraction of a degree out. That reading is an artefact of where the coroutine
+        /// stands in the frame, not of the picture, and chasing it with a tolerance would have hidden the
+        /// real defect underneath it. Driving the rotation from the coroutine itself removes the ambiguity:
+        /// nothing moves the hull between the LateUpdate that squares the figure and the assertion that
+        /// reads it. Presentation does not care where the rotation came from.</para>
+        ///
+        /// <para><b>…and it lets the frame SETTLE before reading, which is the same kind of decision.</b> In
+        /// the GAME a hull's rotation is written by PHYSICS, and FixedUpdate always precedes Update, so the
+        /// rider states this frame's heading and the presenter draws it in the same frame — no lag. A test
+        /// coroutine writes it from its own Update slot, and where that slot sits relative to the rider's
+        /// execution order is Unity's business, not the contract's: read after a single frame and you can
+        /// catch the pipeline mid-flush and measure a whole 45° facing bucket of "lag" the game never has.
+        /// Settling removes the ambiguity, and it costs only frames — the loop is bounded by TURN, so the
+        /// claim is unchanged.</para>
+        /// </summary>
+        private static IEnumerator TurnTheHull(Rig r, float minTotalDegrees,
+                                               System.Action<float> check, float stepDegrees = 6f)
+        {
+            var rb = r.Boat.GetComponent<Rigidbody2D>();
+            if (rb != null) rb.simulated = false;
+            Transform boat = r.Boat.transform;
+            float turned = 0f;
+            float last = r.Hull.DrawnHeadingDegrees();
+            // Bounded by TURN, never by frames: the loop measures how far she has come round, so the
+            // assertion cannot quietly depend on how many frames a headless run happens to give it.
+            for (int guard = 0; guard < 2000 && turned < minTotalDegrees; guard++)
+            {
+                boat.rotation = Quaternion.Euler(0f, 0f, boat.eulerAngles.z - stepDegrees);
+                // The DRAWN heading of the rotation just written — a live read off the transform, so this is
+                // the number the rider will state and the picture will settle on.
+                float now = r.Hull.DrawnHeadingDegrees();
+                yield return null;
+                yield return null;
+                yield return null;
+                turned += Mathf.Abs(Mathf.DeltaAngle(last, now));
+                last = now;
+                check(now);
+            }
+            Assert.GreaterOrEqual(turned, minTotalDegrees,
+                                  $"harness: the hull only came round {turned:F0}° — the drift this guards " +
+                                  "against needs real turning to show, so a still hull proves nothing");
+        }
+
+        /// <summary>
+        /// Give the rig's boat a MEASURED deck — one rectangular walkable area in hull metres — so the deck
+        /// walk takes its polygon path rather than the greybox rectangle.
+        ///
+        /// <para><b>Why the tests that care about the deck FRAME must have one.</b> The two paths differ in
+        /// exactly the way these tests are about. On the measured path the fisher's position is authoritative
+        /// in HULL metres, so a heading change moves them not at all and their bearing on the deck is a fact
+        /// about the boat. The greybox fallback instead holds a fixed WORLD-axis offset from the hull and
+        /// derives the deck position from it each tick, so its deck position genuinely rotates as she
+        /// turns — the fisher does not ride that deck round. Every measured hull in the fleet carries
+        /// authored polygons (M2-37), so the polygon path is the one to pin.</para>
+        /// </summary>
+        private BoatDeckDef GiveHerAMeasuredDeck(Rig r)
+        {
+            var deck = ScriptableObject.CreateInstance<BoatDeckDef>();
+            deck.Id = "deck.test_rect";
+            deck.LoaMeters = 5f;
+            var area = new DeckArea
+            {
+                Id = "sole",
+                Kind = DeckAreaKind.Deck,
+                Outline = new[]
+                {
+                    new Vector2(-0.7f, -1.6f), new Vector2(0.7f, -1.6f),
+                    new Vector2(0.7f, 1.6f), new Vector2(-0.7f, 1.6f),
+                },
+                HeightPlane = Vector3.zero,
+                Bounds = new Vector4(-0.7f, -1.6f, 0.7f, 1.6f),
+            };
+            deck.Areas = new[] { area };
+            deck.WalkCenter = Vector2.zero;
+            deck.WalkHalfExtents = new Vector2(0.7f, 1.6f);
+            _spawned.Add(deck);
+            Assert.IsTrue(deck.HasWalkableDeck(), "harness: the authored deck must be walkable");
+            BoatDeckAreas.Write(r.Boat.gameObject, deck);
+            return deck;
+        }
+
+        [UnityTest]
+        public IEnumerator AtTheHelm_ATurningHullNeverRotatesThePilot_HoweverFarSheComesRound()
+        {
+            // THE DEFECT. The switcher DISABLES DeckWalkController at the helm, and that stomp was the only
+            // thing keeping the player's world rotation square while parented to the hull's rotating physics
+            // body. Hidden pilot, no symptom; #445 drew the pilot, and they lay over further with every
+            // degree she turned — past 90° the fisher is lying on their side, which is the owner's
+            // "spin horizontally". Pre-fix this fails within the first few steps.
+            var r = NewRig(rowed: false);
+            yield return null;
+
+            Assert.IsTrue(r.Switcher.TryInteract(), "board");
+            yield return null;
+            Assert.IsTrue(r.Switcher.TryInteract(), "take the helm");
+            yield return null;
+            Assert.IsTrue(r.RiderSr.enabled, "harness: the pilot must be DRAWN, or there is nothing to spin");
+
+            // No wave motion on this rig, so the ride pose is level and the drawn figure must be square.
+            yield return TurnTheHull(r, minTotalDegrees: 540f, check: _ =>
+            {
+                Assert.AreEqual(0f, Quaternion.Angle(r.RiderSr.transform.rotation, Quaternion.identity), 0.01f,
+                                "the DRAWN pilot is screen-square: their rotation is the ride pose and " +
+                                "nothing else — never the hull's rotation inherited through the parent");
+                Assert.AreEqual(0f, Quaternion.Angle(r.PlayerTransform.rotation, Quaternion.identity), 0.01f,
+                                "and the player object itself stays upright at the helm, not only on deck");
+            });
+        }
+
+        [UnityTest]
+        public IEnumerator OnDeck_AStandingFisherTurnsWITHTheHull_AndKeepsTheirBearingOnHer()
+        {
+            // The FACING half. IsoCharacterSprite reads its facing off localPosition, which measures the
+            // parent frame's ROTATION as motion: a hull coming about moves a motionless fisher in her frame
+            // with no step taken, so the "velocity" is an artefact of the turn, its direction sweeps round,
+            // and the facing chases it. The rider therefore states the facing instead — the fisher's deck
+            // bearing plus the hull's DRAWN heading — so a standing fisher keeps a fixed bearing on the boat
+            // however far she turns.
+            var r = NewRig(rowed: true, helmReach: 0.1f);   // tight helm reach: stay ON THE DECK
+            GiveHerAMeasuredDeck(r);                        // the fleet's path, where the deck frame is real
+            yield return null;
+
+            Assert.IsTrue(r.Switcher.TryInteract(), "board");
+            yield return null;
+            Assert.AreEqual(ControlMode.OnDeck, r.Switcher.Mode);
+            Assert.IsTrue(r.Character.IsHeadingHeld,
+                          "on deck the facing is STATED, because the frame under the fisher rotates");
+
+            float bearing = r.Rider.DeckBearingDegrees;
+            yield return TurnTheHull(r, minTotalDegrees: 720f, check: drawnHeading =>
+            {
+                Assert.AreEqual(bearing, r.Rider.DeckBearingDegrees, 1e-3f,
+                                "nobody walked, so the fisher's bearing ON THE DECK never moved");
+                Assert.AreEqual(0f, Mathf.DeltaAngle(
+                                    HiddenHarbours.Core.DeckRiderFacingMath.CompassHeading(drawnHeading, bearing),
+                                    r.Character.HeadingDegrees), 0.01f,
+                                "and their compass facing is that bearing carried round by the hull — the " +
+                                "DRAWN heading, exactly, with nothing accumulated");
+                Assert.AreEqual(CharacterGait.Idle, r.Character.Gait,
+                                "a fisher standing on a turning deck is STANDING — the turn must not be " +
+                                "measured as a stride and drawn as a walk");
+            });
+        }
+
+        [UnityTest]
+        public IEnumerator OnDeck_WalkingTheDeck_StillFacesTheWalk()
+        {
+            // The fix must not have pinned the facing so hard that walking stopped turning them. Move the
+            // fisher across the deck in the hull's own frame and the bearing must follow the step.
+            var r = NewRig(rowed: true, helmReach: 0.1f);
+            GiveHerAMeasuredDeck(r);
+            yield return null;
+            Assert.IsTrue(r.Switcher.TryInteract(), "board");
+            yield return null;
+
+            var deck = r.PlayerTransform.GetComponent<DeckWalkController>();
+            Assert.IsTrue(deck.enabled, "harness: the deck walk drives the fisher while OnDeck");
+
+            // Walk to STARBOARD in the hull's frame. SnapTo takes a boat-relative world offset, and this
+            // hull is drawn bow-north (heading 0), so +x world IS +x abeam.
+            float before = r.Rider.DeckBearingDegrees;
+            for (int i = 1; i <= 12; i++)
+            {
+                deck.SnapTo(new Vector2(0.06f * i, 0.4f));
+                yield return null;
+            }
+
+            Assert.AreNotEqual(before, r.Rider.DeckBearingDegrees,
+                               "a fisher who crosses the deck is looking where they are going");
+            Assert.AreEqual(90f, Mathf.Abs(Mathf.DeltaAngle(r.Rider.DeckBearingDegrees, 0f)), 25f,
+                            "…and that is roughly abeam to starboard, the way they were moving");
+        }
+
+        [UnityTest]
+        public IEnumerator SteppingAshore_HandsBackTheGaitToo_NotOnlyTheFacing()
+        {
+            // Both holds are one claim and must be released together: an on-foot fisher whose gait was left
+            // stated at 0 would glide about the island in the idle pose.
+            var r = NewRig(rowed: true, helmReach: 0.1f);
+            yield return null;
+
+            Assert.IsTrue(r.Switcher.TryInteract(), "board");
+            yield return null;
+            Assert.IsTrue(r.Character.IsSpeedHeld, "aboard, the deck states the honest travelling speed");
+
+            Assert.IsTrue(r.Switcher.TryInteract(), "at the dock, E steps ashore");
+            yield return null;
+
+            Assert.IsFalse(r.Character.IsHeadingHeld, "ashore the facing is back on motion");
+            Assert.IsFalse(r.Character.IsSpeedHeld, "and so is the gait");
+        }
+
         [UnityTest]
         public IEnumerator TearingTheRiderDown_MidVoyage_NeverLeavesAnInvisiblePlayer()
         {

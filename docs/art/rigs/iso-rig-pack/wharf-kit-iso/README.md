@@ -2,7 +2,8 @@
 
 The working waterfront, rebuilt as a **rig**: one parametric 3D structure per family, baked through
 the **shared ¾ camera** (45° steps, elev 40°, upper-LEFT key, z-buffered, ordered dither, per-face uv
-texture, depth-edge darkening, 1 px keyline, no AA) at **32 px = 1 m** — the same projection as
+texture, depth-edge darkening, no AA; the 1 px keyline is retired by default per ADR 0031 and
+reachable with `{outline:true}`) at **32 px = 1 m** — the same projection as
 `doryIsoRig` / `lobsterBoatIsoRig` / `houseIsoRig` / `wharfBuildingRig` / `characterIsoRig`.
 
 This replaces the near-plan tile kit for structure. **The baked kit is untouched** —

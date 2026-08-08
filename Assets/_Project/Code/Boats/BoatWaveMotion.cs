@@ -77,6 +77,20 @@ namespace HiddenHarbours.Boats
     /// is byte-identical to the owner's tuned calm — the negative control the EditMode tests pin.
     /// Per-hull character rides the hull's existing <c>BoatHullDef</c> seakeeping data via the
     /// sibling <see cref="BoatController"/>; a boat with none reads neutral.</para>
+    ///
+    /// <para><b>AND SHE SETTLES AT HER WATERLINE (owner playtest 2026-08-07: "the hulls of most
+    /// boats do not tend to stay at the waterline level … generally they should level out at the
+    /// boats water line").</b> The bounce was never the defect — the owner said in the same breath
+    /// that heaving out of the water is normal and wanted, and B2.5's loft is untouched. What was
+    /// wrong was the LEVEL she returns to, in two independent ways, both of them MEAN errors that no
+    /// amount of heave averages away. (1) The sink was applied raw, but the shared z-buffer draws the
+    /// sea climbing <c>(cos+sin)/(cos²+sin)</c> = 1.1457 rig-metres of planking per metre of sink at
+    /// the fleet's 40° bake, so every hull floated 14.57 % deeper than her own data claimed —
+    /// <see cref="HullSettleMath"/> inverts the projection. (2) This component ticked its OWN
+    /// <see cref="WaveFieldAnimator"/>, whose accumulated travel phase starts at zero on ITS wake
+    /// while the water's starts at zero on the bridge's, so the hull heaved on a sea correct in every
+    /// respect except WHEN — it now reads the published field through
+    /// <see cref="SharedWaveField"/> and rides the very trains the shader was handed.</para>
     /// </summary>
     [DisallowMultipleComponent]
     // THE WRITER of DirectionalBoatSprite.RockFrame, so it runs FIRST of the boat's visual chain
@@ -326,9 +340,11 @@ namespace HiddenHarbours.Boats
             _lastTimeSeconds = time;
             _hasLastTime = true;
 
-            // Tick the eased, phase-continuous field every frame (see the class doc — this replaced
-            // the 4 Hz TrainsFrom snapshot whose phase jumped at every refresh). The accumulated
-            // phase is baked into the trains, so the surface is sampled at time 0.
+            // Tick the LOCAL eased field every frame (see the class doc — this replaced the 4 Hz
+            // TrainsFrom snapshot whose phase jumped at every refresh). It is now the FALLBACK: the
+            // sea actually ridden is whatever the bridge published to SharedWaveField (see
+            // DrawnTrains), and this tick exists so a run with no bridge behaves byte-identically
+            // and so the fallback is never a stale sea the moment a publisher goes away.
             WaveSample wave;
             float seaState01 = 0f;                            // no sim = glass = no storm (blend 0)
             float fetchEnvelope = 1f;                         // resolved ONCE per tick (rule 7)
@@ -469,16 +485,54 @@ namespace HiddenHarbours.Boats
         private WaveSample SampleTheDrawnSea(Vector2 worldPos, float fetchEnvelope01)
         {
             float s = DisplacedSea.TryGet(out DisplacedSeaState sea) ? sea.FreqScale : 1f;
+            WaveTrains trains = DrawnTrains;
             // The WIND-FETCH envelope (ADR 0027 #1) — resolved by the CALLER at the TRUE world
             // position, never the freqScale-scaled one: freqScale is a wavelength trick, fetch is a
             // real distance over real water, and marching the scaled position would shelter the hull
             // behind a headland that is not there. Exactly 1 (and no terrain reads at all) while the
             // model is off. Hoisted to Tick so the storm-attitude envelope shares the same resolve
             // (one march per tick — rule 7).
-            if (s == 1f) return _animator.Sample(worldPos, fetchEnvelope01);
+            //
+            // Sampled at timeSeconds = 0: the accumulated travel already rides in each train's
+            // PhaseOffset (the animator's output convention, and the convention the published field
+            // inherits). Passing the real game time would add the travel a second time.
+            if (s == 1f) return WaveMath.Sample(worldPos, 0.0, in trains, fetchEnvelope01);
 
-            WaveSample raw = _animator.Sample(worldPos * s, fetchEnvelope01);
+            WaveSample raw = WaveMath.Sample(worldPos * s, 0.0, in trains, fetchEnvelope01);
             return new WaveSample(raw.Height, raw.Slope * s, raw.CrestFactor);
+        }
+
+        /// <summary>
+        /// <b>The eased trains this hull actually rides</b> — the field the <c>WaveFieldBridge</c>
+        /// published to <see cref="SharedWaveField"/> beside the shader push, or, when nothing has
+        /// published, this component's own local animator exactly as before.
+        ///
+        /// <para>⚠️ <b>This is the second half of the one-sea rule, and it is about WHEN, not what</b>
+        /// (owner playtest 2026-08-07). <see cref="WaveFieldAnimator"/> accumulates travel phase from
+        /// zero at its own first tick and at every <c>Reset</c> — and this component resets in
+        /// <c>OnEnable</c>: on skin, on region load, on hull swap, on any re-enable. The bridge resets
+        /// on ITS wake and on every scene load. Two accumulators seeded at two different moments hold
+        /// two different Φ, so the hull rode a sea of exactly the right size, period and direction, at
+        /// an arbitrary phase offset from the one drawn around her — she lifted as the water fell, and
+        /// no flotation datum on earth could make her settle at her waterline. ADR 0023 closed the
+        /// WAVELENGTH half of this at <see cref="DisplacedSeaState.FreqScale"/> (#331); this is the
+        /// phase half, and it is the last one.</para>
+        ///
+        /// <para>The local animator is still ticked every frame, so the fallback is never stale and a
+        /// run with no bridge (EditMode, a bare demo, an edit-time builder) behaves byte-identically
+        /// to before the seam. Cost is unchanged: it is the tick this component already paid.</para>
+        /// </summary>
+        private WaveTrains DrawnTrains =>
+            SharedWaveField.TryGet(out WaveTrains published) ? published : _animator.Current;
+
+        /// <summary>The DOMINANT (spectral-peak) train's own phase at a world position, off
+        /// <see cref="DrawnTrains"/> — character-for-character <see cref="WaveFieldAnimator.DominantPhaseDegrees"/>,
+        /// pointed at the shared sea. Returns 0 on an empty field, exactly as that method does;
+        /// callers gate calm on the envelope, not on this.</summary>
+        private float DrawnDominantPhaseDegrees(Vector2 worldPos)
+        {
+            WaveTrains trains = DrawnTrains;
+            return trains.Count > 0 ? WaveMath.TrainPhaseDegrees(trains.Dominant, worldPos, 0.0) : 0f;
         }
 
         /// <summary>
@@ -496,6 +550,28 @@ namespace HiddenHarbours.Boats
             return ShoreFadeMath.DisplacedHeight(waveHeightMeters, depth,
                                                  sea.ShoreFadeBandMeters, sea.Exaggeration);
         }
+
+        /// <summary>
+        /// <b>The level a TRANSFORM-ridden hull settles at</b> — the sea's lift under her, less the
+        /// sink her own design waterline demands (<see cref="HullSettleMath"/>, off the presenter
+        /// seam's <see cref="IBoatHullPresenter.DesignWaterlineMeters"/> and
+        /// <see cref="IBoatHullPresenter.BakeElevationDegrees"/>).
+        ///
+        /// <para><b>Only the transform paths route through here.</b> A MESH hull's ride leaves this
+        /// component as the raw sea lift through
+        /// <see cref="IBoatHullPresenter.SetDisplacedHeaveMeters"/> and is sunk inside
+        /// <see cref="MeshHullDriver"/> — deliberately, so a mesh hull with no wave motion wired at
+        /// all still floats at her waterline. Sinking it here as well would sink her twice.</para>
+        ///
+        /// <para>A null presenter, or one carrying no datum (0 — every sprite compass shipped so
+        /// far, whose art is already drawn at her waterline), returns the lift unchanged: the
+        /// byte-identical pre-fix path.</para>
+        /// </summary>
+        private static float SettleRideMeters(float surfaceLiftMeters, IBoatHullPresenter hull)
+            => hull == null
+                ? surfaceLiftMeters
+                : HullSettleMath.SettleRideMeters(surfaceLiftMeters, hull.DesignWaterlineMeters,
+                                                  hull.BakeElevationDegrees);
 
         /// <summary>True when the visible rock is drawn BY THE HULL ITSELF — swapping rock frames on a
         /// sprite hull with a grid, or posing the mesh continuously — rather than transforming the
@@ -549,7 +625,7 @@ namespace HiddenHarbours.Boats
             // The hull owns the rock: keep the additive roll hook neutral.
             hull.VisualTiltDegrees = 0f;
 
-            WaveTrains field = _animator.Current;
+            WaveTrains field = DrawnTrains;   // the published sea, or the local animator's fallback
             bool calm = field.Count <= 0 ||
                         field.TotalAmplitude <= Mathf.Max(0f, _calmAmplitudeThreshold);
 
@@ -583,7 +659,7 @@ namespace HiddenHarbours.Boats
                 float phaseDegrees = 0f;
                 if (!calm)
                 {
-                    phaseDegrees = _animator.DominantPhaseDegrees((Vector2)transform.position)
+                    phaseDegrees = DrawnDominantPhaseDegrees((Vector2)transform.position)
                                  + _crestFrameCalibrationDegrees;
                     if (stormBlend > 0f)
                     {
@@ -660,7 +736,13 @@ namespace HiddenHarbours.Boats
             float squash = Mathf.Min(
                 Mathf.Abs(_smoothedPitch) * Mathf.Max(0f, _pitchSquashPerSlope) * responseMultiplier,
                 Mathf.Max(0f, _maxPitchSquash) * responseMultiplier) * stormBlend;
-            ApplyRide(rideMeters + surge, squash);
+            // THE SETTLE LEVEL (owner playtest 2026-08-07): a sprite hull rides the sea's lift and
+            // then sinks to her own design waterline, exactly as the mesh path does inside
+            // MeshHullDriver — one law (HullSettleMath), two application sites, so the fleet cannot
+            // split into hulls that settle and hulls that surf. Every shipped compass carries 0
+            // (the art is already drawn at her waterline), and a 0 datum sinks by exactly 0, so
+            // this line is byte-identical for today's assets.
+            ApplyRide(SettleRideMeters(rideMeters, hull) + surge, squash);
 
             if (calm)
             {
@@ -672,7 +754,7 @@ namespace HiddenHarbours.Boats
 
             // Quantised: the SAME forward phase as the mesh path (the owner's 2026-07-22 ruling —
             // see the doc above), rounded to the sheet's frames exactly as before.
-            float phaseDeg = _animator.DominantPhaseDegrees((Vector2)transform.position);
+            float phaseDeg = DrawnDominantPhaseDegrees((Vector2)transform.position);
 
             _currentRockFrame = DoryRockMath.AdvanceFrame(
                 _currentRockFrame, phaseDeg, _rockFrameCount, _crestFrameCalibrationDegrees, _frameHysteresisDegrees);
@@ -694,9 +776,11 @@ namespace HiddenHarbours.Boats
         /// the DirectionalBoatSprite hook when present — it stomps rotation every LateUpdate); pitch+bob →
         /// a screen-vertical (world +Y) offset so the lift always reads UP on screen regardless of the
         /// body's physics yaw; |pitch| → a subtle y-squash. Everything clamped to its cap — EXCEPT the
-        /// displaced-sea ride: with <paramref name="rideActive"/> the bob term IS <paramref name="rideMeters"/>
-        /// (the shared displaced height — the same rule the surface lifts with, so it must not be
-        /// re-capped or re-scaled per consumer; it is bounded by envelope × exaggeration by construction).
+        /// displaced-sea ride: with <paramref name="rideActive"/> the bob term IS
+        /// <paramref name="rideMeters"/> settled onto this hull's design waterline
+        /// (<see cref="HullSettleMath"/>) — the shared displaced height, which must not be re-capped
+        /// or re-scaled per consumer (it is bounded by envelope × exaggeration by construction), less
+        /// a CONSTANT per-hull sink, which moves where she floats and never how she moves.
         /// <paramref name="responseMultiplier"/> is the B2.5 storm growth: it scales every gain AND
         /// every cap together (the tuned shape grows instead of pinning against a calm-sized
         /// ceiling), and it is EXACTLY 1 below the storm-start sea state — ×1f is the float
@@ -716,6 +800,7 @@ namespace HiddenHarbours.Boats
                                      Mathf.Max(0f, _maxPitchSquash) * r);
 
             var hull = Hull;
+            if (rideActive) bob = SettleRideMeters(bob, hull);   // ride the sea, sit at her waterline
             if (hull != null)
             {
                 hull.VisualTiltDegrees = rollDegrees;   // composed after the hull's rotation reset

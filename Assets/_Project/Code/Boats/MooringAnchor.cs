@@ -40,6 +40,29 @@ namespace HiddenHarbours.Boats
         public bool IsFixed => true;
     }
 
+    /// <summary>
+    /// A tie point on a <see cref="HiddenHarbours.Core.IMooringCleat"/> — the M2-38 case this whole
+    /// abstraction was written in anticipation of (see the interface doc's "future work": a dedicated
+    /// cleat/post is "just another <see cref="IMooringAnchor"/> whose Position the tether reads"). Read
+    /// live, because a boat's cleat swings with her heading and a wharf's does not.
+    ///
+    /// <para><see cref="IsFixed"/> reports whether the cleat is SHORE-side: a bollard holds still and the
+    /// boat swings around it, which is the anchor semantic. A boat-side cleat is not a fixed anchor — it
+    /// is the far END of the line, and <c>BoatMooring</c> reads it as such rather than tethering to
+    /// it.</para>
+    /// </summary>
+    public readonly struct CleatAnchor : IMooringAnchor
+    {
+        private readonly HiddenHarbours.Core.IMooringCleat _cleat;
+        public CleatAnchor(HiddenHarbours.Core.IMooringCleat cleat) { _cleat = cleat; }
+
+        /// <summary>The cleat this anchor names (null-safe for a torn-down region).</summary>
+        public HiddenHarbours.Core.IMooringCleat Cleat => _cleat;
+
+        public Vector2 Position => _cleat != null ? _cleat.WorldPosition : Vector2.zero;
+        public bool IsFixed => _cleat != null && _cleat.Side == HiddenHarbours.Core.CleatSide.Shore;
+    }
+
     /// <summary>A moving tie point that tracks a <see cref="Transform"/> — the rope held in the player's
     /// hand. The boat is tethered to wherever the player currently stands, so it follows them on the leash.
     /// The transform is read live each tick (null-safe: a destroyed/absent transform reports

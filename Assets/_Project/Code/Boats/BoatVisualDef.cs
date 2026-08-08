@@ -86,6 +86,21 @@ namespace HiddenHarbours.Boats
                  "def — the lobster boat does, which is what makes the dev A/B comparison possible.")]
         public HiddenHarbours.Core.HullMeshDef HullMesh = null;
 
+        [Tooltip("THE DESIGN WATERLINE of a SPRITE hull — metres above the art's own origin at which " +
+                 "the sea stands when she floats at rest (owner playtest 2026-08-07: 'generally they " +
+                 "should level out at the boats water line').\n\n" +
+                 "⚠️ MESH HULLS DO NOT READ THIS. A visual carrying a usable HullMesh takes its " +
+                 "waterline from that def's RestingDraftMeters, which is measured against the rig's " +
+                 "KEEL-BOTTOM pivot. Two numbers for one hull would drift; the resolution rule lives in " +
+                 "one place (ResolveDesignWaterlineMeters below) and a test pins that every shipped " +
+                 "visual answers with exactly one of them.\n\n" +
+                 "0 — the default, and the right answer for every sprite compass shipped so far — means " +
+                 "'this art is ALREADY drawn at her waterline': the hand-drawn FishingBoat_* compass " +
+                 "shares the hull's waterline pivot (see the conventions above), so she floats correctly " +
+                 "by riding the sea's lift with no sink at all, and 0 keeps that render byte-identical. " +
+                 "Set it only for sprite art whose origin is NOT the waterline.")]
+        [Min(0f)] public float DesignWaterlineMeters = 0f;
+
         [Tooltip("WHERE YOU CAN STAND on this hull — the walkable DECK/WASHBOARD polygons and named " +
                  "CLEATS, IMPORTED from this hull's rig sidecar (docs/art/rigs/gameplay/<rig>.gameplay.json) " +
                  "by Hidden Harbours ▸ Dev ▸ Boats ▸ Import deck sidecars. Never hand-authored: the design " +
@@ -320,6 +335,34 @@ namespace HiddenHarbours.Boats
         /// plain hull) stands instead.
         /// </summary>
         public bool HasHullMesh() => HullMesh != null && HullMesh.IsUsable();
+
+        /// <summary>
+        /// <b>Where the sea stands on this hull when she floats at rest</b> — metres above the art's
+        /// own origin (owner playtest 2026-08-07). The ONE place the mesh/sprite precedence is
+        /// decided, so the datum can never disagree with the hull actually drawn.
+        ///
+        /// <para><b>The rule is the SKINNER's rule, deliberately:</b> a usable
+        /// <see cref="HullMesh"/> wins, exactly as <see cref="HasHullMesh"/> gates the skinner's mesh
+        /// branch. A visual that carries both a compass and a mesh (the lobster boat does, for the
+        /// dev A/B) therefore reports the waterline of the hull the player is looking at, not of the
+        /// one she could have been wearing. Resolving it any other way would put the sink on a
+        /// different hull from the picture — the class of defect that costs a playtest to find.</para>
+        ///
+        /// <para>Composed with <see cref="ArtBakeElevationDegrees"/> (or the mesh def's own
+        /// <c>ElevationDeg</c>) by <see cref="HullSettleMath"/>: the datum says how high the water
+        /// stands, the elevation says how that height projects onto the screen, and neither alone is
+        /// enough to place her.</para>
+        /// </summary>
+        public float ResolveDesignWaterlineMeters() =>
+            HasHullMesh() ? Mathf.Max(0f, HullMesh.RestingDraftMeters)
+                          : Mathf.Max(0f, DesignWaterlineMeters);
+
+        /// <summary>The bake elevation that goes with <see cref="ResolveDesignWaterlineMeters"/> —
+        /// the mesh def's measured <c>ElevationDeg</c> for a mesh hull, this asset's own
+        /// <see cref="ArtBakeElevationDegrees"/> for a sprite. Resolved together and beside each
+        /// other so the pair can never be taken from two different hulls.</summary>
+        public float ResolveWaterlineElevationDegrees() =>
+            HasHullMesh() ? HullMesh.ElevationDeg : ArtBakeElevationDegrees;
 
         /// <summary>
         /// True when BOTH oar sheets give their full heading×column set. Both-or-neither: one oar drawn

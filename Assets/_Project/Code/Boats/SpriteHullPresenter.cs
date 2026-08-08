@@ -68,6 +68,13 @@ namespace HiddenHarbours.Boats
         public float BakeElevationDegrees => _directional != null ? _directional.BakeElevationDegrees : 90f;
 
         /// <inheritdoc/>
+        // 0 = art already drawn at her waterline, which is every sprite compass shipped so far and the
+        // only honest answer for an absent skin: sinking a hull nobody wired would move a picture that
+        // was never measured.
+        public float DesignWaterlineMeters =>
+            _directional != null ? _directional.DesignWaterlineMeters : 0f;
+
+        /// <inheritdoc/>
         public bool HasRockGrid => _directional != null && _directional.HasRockGrid;
 
         /// <inheritdoc/>
@@ -112,6 +119,18 @@ namespace HiddenHarbours.Boats
             // Its storm read is the offset/squash BoatWaveMotion layers under the frames; a steeper
             // drawn attitude is an art re-bake (the interface member's contract).
         }
+
+        /// <inheritdoc/>
+        public void SetDeckOccupant(Vector3 rigLocalMeters, bool active)
+        {
+            // Deliberately a no-op, in the same family as the two above. Occluding a figure behind a
+            // wheelhouse is a per-PIXEL depth question, and a sprite hull's image is one flat sheet
+            // with no depth in it — there is nothing honest to answer with. The pilotable fleet is
+            // all mesh (ADR 0022); a sprite hull here is the greybox and the ambient fleet.
+        }
+
+        /// <inheritdoc/>
+        public float DeckOccluderId => 0f;   // nothing to hide behind — see SetDeckOccupant
 
         /// <inheritdoc/>
         public Transform Visual => _anchors.Visual;

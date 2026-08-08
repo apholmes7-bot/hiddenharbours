@@ -68,6 +68,13 @@ namespace HiddenHarbours.Boats
         public float BakeElevationDegrees => _driver != null ? _driver.ElevationDegrees : 90f;
 
         /// <inheritdoc/>
+        // The baked def's own game-side flotation datum, carried on the driver since Configure. An
+        // unskinned/destroyed driver reports 0 — keel on the surface, which is exactly the pose an
+        // undriven hull already draws, so a torn-off rig degrades to the unsunk look rather than to
+        // a hull sunk by a stale number.
+        public float DesignWaterlineMeters => _driver != null ? _driver.DesignWaterlineMeters : 0f;
+
+        /// <inheritdoc/>
         public bool HasRockGrid => true;
 
         /// <inheritdoc/>
@@ -104,6 +111,15 @@ namespace HiddenHarbours.Boats
         {
             if (_driver != null) _driver.SetStormRock(amplitudeScale, extraRollDegrees, extraPitchDegrees);
         }
+
+        /// <inheritdoc/>
+        public void SetDeckOccupant(Vector3 rigLocalMeters, bool active)
+        {
+            if (_driver != null) _driver.SetDeckOccupant(rigLocalMeters, active);
+        }
+
+        /// <inheritdoc/>
+        public float DeckOccluderId => _driver != null ? _driver.DeckOccluderId : 0f;
 
         /// <inheritdoc/>
         public Transform Visual => _driver != null ? _driver.Visual : null;

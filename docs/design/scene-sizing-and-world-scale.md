@@ -123,8 +123,8 @@ Regions and their gating boats come from [`world-and-regions.md`](world-and-regi
 | Region | Scene extent | Gating mode | Cross long axis | Screens | Note |
 |---|---|---|---|---|---|
 | **St Peters Island** | **760 × 520 m** | on foot | **~2:30** walk / 1:22 sprint | 47 | §5. Island landmass ~240 × 140 m inside it (re-ruled smaller 2026-07-30 — the crossing, not the island, is the region's long walk). |
-| **St Peters Bar** *(built: 305 m)* | proposed 640 × 200 m | on foot | **1:42** walk / 0:55 sprint each way | 40 | §5.2. Meant to be sized by the tide window (**9:48** at spring as shipped); at 305 m it is not — see the slack-teeth box. |
-| **Nine Mile Creek** *(the town and its wharf)* | 600 × 400 m | on foot | ~3:20 | 37 | Two places in one region — the wharf where fish move, the town where money does. See [`nine-mile-creek-wharf.md`](nine-mile-creek-wharf.md); 420 × 320 m if the wharf becomes its own region instead. |
+| **St Peters Bar** *(built: 305 m)* | ~~proposed 640 × 200 m~~ **not a scene** | on foot | **1:42** walk / 0:55 sprint each way | 40 | §5.2. **SUPERSEDED 2026-08-06:** the bar is not its own scene — it is **split across the St Peters ↔ Nine Mile Creek seam**, 305 m in each region, total **610 m**. See [`nine-mile-creek-mainland.md`](nine-mile-creek-mainland.md) §3.2. |
+| **Nine Mile Creek** *(the MAINLAND: wharf + town)* | ~~600 × 400 m~~ **760 × 560 m** | on foot | **3:06** N–S · 4:13 E–W | 47 | **RE-SIZED 2026-08-06** — the region is the mainland now, not an island, and it carries **its half of the crossing** as well as the wharf and the town. The long axis is a CORRIDOR (the crossing, sized by the tide window per §1.3); the short axis is the foot region. 760 is St Peters' own width, deliberately: same water, same scale, same 2 px/m seabed. [`nine-mile-creek-mainland.md`](nine-mile-creek-mainland.md) §3.1. |
 | **Coddle Cove** | 520 × 400 m | dory | ~2:53 | 21 | Home water: small, sheltered, legible in one look. |
 | **The Sunkers** | 700 × 700 m | punt/skiff | ~5:02 punt | 23 | A reef field needs room to pick a line through it. |
 | **The Drownded Lands** | 900 × 700 m | skiff + tide | ~3:51 console | 27 | Big flats are the whole point; most of it is walkable at low water. |
@@ -291,6 +291,14 @@ through, which is the day-length lever, not the tide.
 > 600 m/6:32 pairing did). That is a terrain change and an owner call, so it is recorded here rather
 > than taken. Do **not** reach for the tide constants to fix it: he has just
 > ruled on those, and the window is one number while the bar is a scene's worth of terrain.
+>
+> **⭐ PARTLY ANSWERED 2026-08-06.** The mainland now supplies the bar's other half, so the crossing is
+> **610 m** — 305 m each side of the seam, and within 10 m of the 600 m this section originally
+> recommended, by coincidence rather than design. Round trip **6:47** against the 9:48 window:
+> **+3:01**, sharper than the 305 m bar's +6:25 but still not the "sprint the return" the 900 m option
+> buys. Going further is now a REGION-WIDTH decision as well as a terrain one — 900 m total needs a
+> ~1060 m-wide Nine Mile Creek. Full table in
+> [`nine-mile-creek-mainland.md`](nine-mile-creek-mainland.md) §3.3; still an owner call.
 
 > **An earlier draft of this section sized the bar at 400 m on an estimated ~4-minute window.** The
 > real window is 65% longer, which is the difference between a bar you can always walk back across and

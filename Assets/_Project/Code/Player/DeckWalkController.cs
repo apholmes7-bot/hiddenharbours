@@ -43,6 +43,12 @@ namespace HiddenHarbours.Player
     /// world rotation is still stomped upright each LateUpdate (the DirectionalBoatSprite convention) so
     /// the fisher never spins with the hull.</para>
     ///
+    /// <para>⚠️ <b>That stomp covers the DECK only</b>, because the switcher disables this controller at the
+    /// helm — which is how the drawn pilot came to inherit the hull's rotation and lie over further with
+    /// every degree she turned (owner playtest 2026-08-07). The invariant now belongs to
+    /// <c>ControlSwitcher.LateUpdate</c>, which holds it in every aboard mode; this one stays as the deck's
+    /// own guarantee, and the two agree because both write the same identity.</para>
+    ///
     /// <para>Input is dev-keyed via the New Input System (legacy Input throws at runtime), mirroring
     /// <see cref="PlayerWalkController.ReadInput"/>; a real InputService replaces it later (ui-ux).
     /// The clamp maths is pure + static so the bounds rule is EditMode-testable.</para>
@@ -98,6 +104,18 @@ namespace HiddenHarbours.Player
         /// stance the fight's deck-angle term grades, published every tick through
         /// <see cref="DeckStance"/>.</summary>
         public Vector2 DeckLocalPosition => _deckLocal;
+
+        /// <summary>
+        /// How high above the KEEL the deck under the player is (metres) — the third component of
+        /// where they stand, and the one the plan-view <see cref="DeckLocalPosition"/> cannot carry.
+        /// 0 on the greybox rectangle, which has no sheer to follow.
+        ///
+        /// <para>Load-bearing as soon as anything asks a 3D question about the fisher: the hull's
+        /// per-pixel occlusion compares her geometry against the DEPTH of their feet, and in a ¾ view
+        /// height and along-hull distance land on the same screen axis — a cockpit sole and a raised
+        /// foredeck at the same <c>y</c> sit at very different depths.</para>
+        /// </summary>
+        public float DeckHeightMeters => _deckHeight;
 
         // ---- pure logic (unit-testable) -----------------------------------------------------
 

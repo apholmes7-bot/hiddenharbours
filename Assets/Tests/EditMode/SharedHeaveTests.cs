@@ -11,14 +11,22 @@ namespace HiddenHarbours.Tests.EditMode
     /// boats visually ride the SAME exaggerated, shore-faded displaced height the surface lifts
     /// with (<see cref="ShoreFadeMath.DisplacedHeight"/> on the one wave sample the rock already
     /// reads, with the surface's own published exaggeration + band — the Core seam
-    /// <see cref="DisplacedSea"/>), and a mesh hull sinks to its data-driven resting draft
+    /// <see cref="DisplacedSea"/>), and a mesh hull settles at her data-driven DESIGN WATERLINE
     /// (<see cref="HullMeshDef.RestingDraftMeters"/> — the rigs' origin is the keel bottom, so
-    /// zero draft means keel-on-the-surface).
+    /// zero means keel-on-the-surface).
+    ///
+    /// <para><b>The sink is the waterline divided by the iso projection's gain</b>
+    /// (<see cref="HullSettleMath"/>, owner playtest 2026-08-07). These fixtures used to subtract
+    /// the datum RAW and pin that — which is why they went on passing while every hull in the fleet
+    /// floated 14.57 % deeper than her own data claimed: they pinned the line against itself. The
+    /// laws below now read the sink from <see cref="HullSettleMath.AppliedSinkMeters"/>, and
+    /// <c>HullWaterlineSettleTests</c> pins the thing that actually matters — the waterline the sea
+    /// DRAWS on the planking — against the datum instead.</para>
     ///
     /// <para><b>What is pinned, and how, without re-deriving the field:</b> the wave height under
     /// the hull is the animator's own business, so the assertions use LAWS that hold whatever the
-    /// height is — the OFF byte-identity (no seam ⇒ heave untouched), the resting draft at glass
-    /// calm (ride 0 ⇒ heave = −draft, exactly), the LINEARITY of the shared rule in the published
+    /// height is — the OFF byte-identity (no seam ⇒ heave untouched), the settle level at glass
+    /// calm (ride 0 ⇒ heave = −sink, exactly), the LINEARITY of the shared rule in the published
     /// exaggeration (double the exaggeration at the same instant ⇒ double the ride — which is
     /// precisely how an owner's live config edit reaches the boat: the surface re-publishes and
     /// the boat's next read moves), and the SHORE FADE (a shallow-depth ride is the open-water
@@ -41,9 +49,16 @@ namespace HiddenHarbours.Tests.EditMode
     {
         const float Dt = 1f / 60f;
         const int PxPerMetre = 32;
-        const float Draft = 0.5f;
+        const float Draft = 0.5f;              // the hull's DESIGN WATERLINE, metres above her keel
+        const float Elevation = 40f;           // every boat rig's bake elevation (MeshRig sets it)
         const float Band = 0.6f;
         const float Exag = 1.5f;
+
+        /// <summary>What the driver actually subtracts for <see cref="Draft"/>: the datum through
+        /// the iso projection (0.8728 × it at 40°), so the sea DRAWS the waterline at
+        /// <see cref="Draft"/>. Derived, never a second constant — a test that re-typed the number
+        /// would stop measuring the law and start measuring itself.</summary>
+        static readonly float Sink = HullSettleMath.AppliedSinkMeters(Draft, Elevation);
 
         readonly object _seaOwner = new object();
 
@@ -106,6 +121,8 @@ namespace HiddenHarbours.Tests.EditMode
             public float RidePixels { get; set; }
             public bool IsConfigured => true;
             public void SetSorting(int sortingLayerId, int sortingOrder) { }
+            public void SetDeckOccupant(Vector3 rigLocalMeters, bool active) { }
+            public float DeckOccluderId => 0f;
         }
 
         /// <summary>Flat authored seabed at a constant elevation (metres above datum) — with the
@@ -216,17 +233,26 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void MeshHull_AtGlassCalm_SitsExactlyAtItsRestingDraft()
+        public void MeshHull_AtGlassCalm_SitsExactlyAtItsDesignWaterline()
         {
             using var rig = new MeshRig(Draft, seaState01: 0f);   // glass — the field is exactly 0
             DisplacedSea.Publish(_seaOwner, new DisplacedSeaState(Exag, Band));
 
             for (int f = 0; f < 30; f++)
-                Assert.AreEqual(-Draft * PxPerMetre, rig.Tick(), 1e-3f,
-                    "glass calm + displaced sea ON: ride is 0, so the whole heave is the resting " +
-                    "draft — the keel-origin rig sunk to its design waterline, exactly " +
-                    "−draft × PxPerMetre. (A hull with no wave motion still sits at its " +
-                    "waterline: the draft gate is the driver's, not the ride's.)");
+                Assert.AreEqual(-Sink * PxPerMetre, rig.Tick(), 1e-3f,
+                    "glass calm + displaced sea ON: ride is 0, so the whole heave is the settle " +
+                    "sink — the keel-origin rig lowered until the sea DRAWS her waterline at the " +
+                    "datum. (A hull with no wave motion still sits at her waterline: the sink " +
+                    "gate is the driver's, not the ride's.)");
+
+            // …and the point of the whole exercise: what the sea draws on her planking at rest IS
+            // the number on her def. This is the assertion the pre-fix suite never made — it pinned
+            // the sink against itself, so a 14.57 % projection error was invisible to it.
+            float heaveMetres = rig.Tick() / PxPerMetre;
+            Assert.AreEqual(Draft,
+                HullSettleMath.DrawnWaterlineMeters(0f, heaveMetres, Elevation), 1e-3f,
+                "at rest on a glass sea the drawn waterline must be the DATUM itself — that is " +
+                "what 'settles at her waterline' means (owner playtest 2026-08-07).");
         }
 
         [Test]
@@ -259,7 +285,7 @@ namespace HiddenHarbours.Tests.EditMode
             for (int w = 0; w < 5; w++) rig.Tick();               // animator warm-up (snap frame)
             var rides = new float[frames];
             for (int f = 0; f < frames; f++)
-                rides[f] = rig.Tick() / PxPerMetre + Draft;       // heave = (ride − draft)·px
+                rides[f] = rig.Tick() / PxPerMetre + Sink;        // heave = (ride − sink)·px
             DisplacedSea.Clear(_seaOwner);
             GameServices.Reset();
             return rides;
@@ -299,7 +325,7 @@ namespace HiddenHarbours.Tests.EditMode
             for (int w = 0; w < 5; w++) rig.Tick();
             var rides = new float[frames];
             for (int f = 0; f < frames; f++)
-                rides[f] = rig.Tick() / PxPerMetre + Draft;
+                rides[f] = rig.Tick() / PxPerMetre + Sink;
             DisplacedSea.Clear(_seaOwner);
             GameServices.Reset();
             return rides;
@@ -319,8 +345,8 @@ namespace HiddenHarbours.Tests.EditMode
             DisplacedSea.Publish(_seaOwner, new DisplacedSeaState(0f, Band));
             float rockOnly = rig.Tick(0f);                        // exaggeration 0 ⇒ ride exactly 0
 
-            Assert.LessOrEqual(Mathf.Abs(rockOnly + Draft * PxPerMetre), 1.2f + 1e-3f,
-                "with exaggeration 0 the heave must be draft + the rig's own ±1.2 px rock alone");
+            Assert.LessOrEqual(Mathf.Abs(rockOnly + Sink * PxPerMetre), 1.2f + 1e-3f,
+                "with exaggeration 0 the heave must be the settle sink + the rig's own ±1.2 px rock alone");
 
             DisplacedSea.Publish(_seaOwner, new DisplacedSeaState(Exag * 2f, Band));
             float withDoubleRide = rig.Tick(0f);

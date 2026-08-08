@@ -75,6 +75,35 @@ namespace HiddenHarbours.Boats
             => Vector2.Lerp(prevStern, currStern, Mathf.Clamp01(t01));
 
         /// <summary>
+        /// The vector the trail is LAID ALONG this tick — the fix for the owner's 2026-08-07 read, <i>"the
+        /// wake originates at the CENTRE of the hull, obvious when turning"</i>.
+        ///
+        /// <para><b>What was wrong.</b> The deposit rate AND the whole emergent-V geometry were taken from
+        /// the STERN ANCHOR's own swept segment (<c>prevStern → stern</c>). The anchor is half a hull length
+        /// aft of the boat origin, so in a turn that segment is dominated by the anchor's <b>rotational swing
+        /// about the boat's centre</b>, not by the hull's travel: a 7 m skiff at 6 m/s turning at 90°/s swings
+        /// her stern anchor sideways at <c>ω·r</c> = 5.7 m/s against 6 m/s of headway, which throws
+        /// <see cref="TrackDir"/> ~44° off the heading. Every consumer then rotates with it — the shoulder
+        /// laterals (<see cref="ShoulderPoint"/>), the arm locus (<see cref="ArmDir"/>), the churn band and
+        /// the stern roll — and the deposits string out along an arc <b>centred on the hull's midpoint</b>.
+        /// That arc, swinging about amidships, is exactly the "originates at the centre / sweeps with the
+        /// hull's centre" read. The swing also inflates the DISTANCE the emitter thinks she covered, so a
+        /// hard turn lays over twice the foam a straight run at the same speed does — the fan is denser as
+        /// well as wrongly aimed. (A boat pivoting on the spot is not affected: the speed gate in
+        /// <c>DepositTrail</c> already stops her laying anything without way on.)</para>
+        ///
+        /// <para><b>The fix.</b> Lay the trail along the hull's TRAVEL through the water (course made good),
+        /// blended toward the stern-swept segment by <paramref name="swingFraction"/> — because a real
+        /// transom kicking out does throw some water, and refusing it entirely would be its own lie. The
+        /// deposit POSITION is untouched and still lerps the stern segment (<see cref="PointOnTrack"/>), so
+        /// every puff is still born at the transom; only the RATE and the GEOMETRY BASIS move to the course.
+        /// At <paramref name="swingFraction"/> = <b>1</b> this returns the stern-swept segment and the whole
+        /// change reverts bit-for-bit from one number, the <c>FoamAeration</c> idiom. Pure + static.</para>
+        /// </summary>
+        public static Vector2 TrackVector(Vector2 travel, Vector2 sternSwept, float swingFraction)
+            => Vector2.Lerp(travel, sternSwept, Mathf.Clamp01(swingFraction));
+
+        /// <summary>
         /// The unit direction the boat's stern swept this tick (prev→curr). When the segment is degenerate
         /// (she barely moved) it falls back to the boat's live bow direction so a deposit never gets a NaN
         /// frame. Pure + static.
@@ -242,6 +271,92 @@ namespace HiddenHarbours.Boats
         public static float AgedPulse(float time, float seed, float hz, float amount, float life01)
             => ChurnPulse(time, seed, hz, Mathf.Max(0f, amount) * (1f - Mathf.Clamp01(life01)));
 
+        // ==== DISPERSAL (owner playtest 2026-08-07: the trail must go back to being water) ==================
+        //
+        // Owner, verbatim: the foam "would be bubbling as it goes and dispersing back to water over time as
+        // the tide and wind gradually manipulate it." Three separable behaviours, three functions, each with
+        // an explicit value that restores the shipped behaviour exactly:
+        //   1. the SEA MOVES IT      — DriftVelocity: the tide already did; the WIND never did.
+        //   2. it TEARS APART        — DispersalOffset: neighbouring puffs must not translate as one sheet.
+        //   3. it OPENS UP           — StageAeration: the raft grows holes with age until it is water again.
+
+        /// <summary>
+        /// What carries a laid foam puff: the tidal current (which always did) PLUS a tunable fraction of
+        /// the live sim WIND (which never did — the gap behind the owner's "as the tide and wind gradually
+        /// manipulate it").
+        ///
+        /// <para>A fraction, not the whole wind: foam floats <i>in</i> the water and is only dragged across
+        /// it by the air, so it makes a fraction of the wind's way — the same reasoning the shore foam and
+        /// the grass already use against the one sim wind. The wind arrives from
+        /// <c>EnvironmentSample.WindVector</c> on the tick that reads the sea, so this is a LIVE source, not
+        /// a tuned strength standing in for one (the <c>foam-buffer-unsourced</c> lesson: a visual strength
+        /// with nothing feeding it is a decal). <paramref name="windFraction"/> = 0 returns the current
+        /// alone, bit-for-bit today. Pure + static.</para>
+        /// </summary>
+        public static Vector2 DriftVelocity(Vector2 current, Vector2 wind, float windFraction)
+            => current + wind * Mathf.Clamp01(windFraction);
+
+        /// <summary>
+        /// The render-only DISPERSAL offset (m) of one foam puff at <paramref name="ageSeconds"/> — a small
+        /// per-puff divergence, in a direction fixed by the puff's own seed, growing linearly with age.
+        ///
+        /// <para><b>Why a per-puff direction and not a shared one.</b> A band of foam that only advects
+        /// (current + wind) slides across the sea RIGIDLY: every puff keeps its neighbour's spacing forever,
+        /// which is what lets a dense trail keep reading as one painted object however much it fades. Give
+        /// each puff its own small drift and the band SHEARS — the spacing opens unevenly, the overlap that
+        /// made it solid breaks down, and what is left is a scatter of bubbles going back to water. Real
+        /// foam does this because the water under it is turbulent at exactly this scale.</para>
+        ///
+        /// <para>Deterministic from the particle seed — no RNG, no time input, so the same puff always
+        /// disperses the same way (rule 5) — and applied at RENDER, so the integrated sim position is
+        /// untouched (the <see cref="WakeParticleSystem.WaveDistort"/> idiom).
+        /// <paramref name="metersPerSecond"/> = 0 returns <see cref="Vector2.zero"/>, today bit-for-bit.
+        /// Pure + static.</para>
+        /// </summary>
+        public static Vector2 DispersalOffset(float seed, float ageSeconds, float metersPerSecond)
+        {
+            float rate = Mathf.Max(0f, metersPerSecond);
+            float age = Mathf.Max(0f, ageSeconds);
+            if (rate <= 0f || age <= 0f) return Vector2.zero;
+            float angle = Mathf.Repeat(seed, 1f) * (2f * Mathf.PI);
+            return new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * (rate * age);
+        }
+
+        /// <summary>
+        /// Which rung of the AERATION LADDER a puff of normalized life <paramref name="life01"/> draws —
+        /// 0 (freshly laid, the tightest raft) .. <paramref name="stageCount"/>−1 (about to vanish, the most
+        /// open). Banded rather than continuous because the rungs are baked sprites: a puff swaps its raft a
+        /// handful of times over a whole lifetime instead of every frame (rule 7). Degenerate counts clamp
+        /// to a single stage. Monotonic non-decreasing in life. Pure + static.
+        /// </summary>
+        public static int AgeStageIndex(float life01, int stageCount)
+        {
+            int n = Mathf.Max(1, stageCount);
+            int s = Mathf.FloorToInt(Mathf.Clamp01(life01) * n);
+            return Mathf.Clamp(s, 0, n - 1);
+        }
+
+        /// <summary>
+        /// How much of a puff's foam film has DISSOLVED on rung <paramref name="stage"/> of the age ladder:
+        /// 0 on the rung a puff is laid at, rising to <paramref name="ageErosion01"/> on the last. Feeds
+        /// <see cref="WakeFoamTexture.ErodeCoverage"/>, so an old puff is a scatter of surviving bubble
+        /// rims with water between them rather than the same solid shape dimmed — the foam "dispersing
+        /// back to water" as COVERAGE, which is the part fading alpha cannot do and the reason the owner
+        /// still read the trail as painted after the fade was already in.
+        ///
+        /// <para>Monotonic non-decreasing in stage; rung 0 is always exactly 0, so a freshly laid puff
+        /// draws precisely the raft that shipped. <paramref name="ageErosion01"/> = 0 makes every rung 0 —
+        /// one raft for the whole life, bit-for-bit today (and the emitter then builds only one).
+        /// Pure + static.</para>
+        /// </summary>
+        public static float StageErosion(int stage, int stageCount, float ageErosion01)
+        {
+            int n = Mathf.Max(1, stageCount);
+            if (n == 1) return 0f;
+            float t = Mathf.Clamp(stage, 0, n - 1) / (float)(n - 1);
+            return Mathf.Clamp01(Mathf.Max(0f, ageErosion01) * t);
+        }
+
         // ==== the LIVE plume (the boat-attached churn is allowed to be attached — but must be alive) ========
 
         /// <summary>
@@ -352,6 +467,13 @@ namespace HiddenHarbours.Boats
         [Tooltip("A stern jump longer than this in one tick (region travel, dev teleport) RESETS the trail " +
                  "instead of laying a straight line of foam across the map.")]
         public float TeleportResetMeters;
+        [Tooltip("How much of the STERN'S ROTATIONAL SWING counts toward the laid track (owner playtest " +
+                 "2026-08-07: \"the wake originates at the centre of the hull, obvious when turning\"). The " +
+                 "stern anchor sits half a hull aft of the origin, so in a turn its swept segment is mostly " +
+                 "the swing about the boat's CENTRE, not her travel — which is what fanned the trail around " +
+                 "amidships. 0 = lay purely along the course made good; 1 = the shipped stern-swept " +
+                 "behaviour, bit-for-bit. The deposit POSITION is at the transom either way.")]
+        [Range(0f, 1f)] public float SternSwingFraction;
 
         [Header("The emergent V (spread where laid)")]
         [Tooltip("The Kelvin half-angle (deg) the emergent V opens at: shoulder deposits spread outward at " +
@@ -419,6 +541,24 @@ namespace HiddenHarbours.Boats
                  "the same dense overlap reads as white water. See WakeFoamTexture.")]
         public float FoamAeration;
 
+        [Header("Dispersal (owner playtest 2026-08-07: \"bubbling as it goes and dispersing back to water\")")]
+        [Tooltip("Fraction of the live sim WIND that drags laid foam across the water, on top of the tidal " +
+                 "current it has always drifted with — the owner's \"as the tide and wind gradually " +
+                 "manipulate it\". A fraction, not the whole wind: foam floats IN the water and only makes " +
+                 "part of the air's way. 0 = the current alone, bit-for-bit today.")]
+        [Range(0f, 1f)] public float FoamWindDriftFraction;
+        [Tooltip("How much of a puff's foam FILM has dissolved by the end of its life. The thin film " +
+                 "between bubbles goes first, so the holes eat outward and an old puff is a scatter of " +
+                 "surviving bubble rims — foam going back to WATER as coverage, not as a solid shape " +
+                 "dimmed. (Walking the aeration up instead was tried and MEASURED: it raises coverage " +
+                 "rather than lowering it — see WakeFoamTexture.ErodeCoverage.) 0 = one raft for the " +
+                 "whole life, bit-for-bit today, and no extra textures are built at all.")]
+        [Range(0f, 1f)] public float FoamAgeErosion;
+        [Tooltip("Per-puff dispersal drift (m/s) in a direction fixed by that puff's own seed — the SHEAR " +
+                 "that tears a laid band apart instead of sliding it across the sea in one piece. " +
+                 "Render-only and deterministic. 0 = no shear, bit-for-bit today.")]
+        [Min(0f)] public float FoamDispersalMetersPerSecond;
+
         [Header("The live plume (the boat-attached churn sprite — allowed to be attached, must be alive)")]
         [Tooltip("Churn-pulse frequency (Hz) of the authored plume sprite — the boil at the transom.")]
         public float PlumePulseHz;
@@ -443,6 +583,9 @@ namespace HiddenHarbours.Boats
             // the explicit budget (rule 7).
             MaxDepositsPerTick         = 6,
             TeleportResetMeters        = 20f,
+            // A quarter of the stern's swing: the transom kicking out still throws a little water where it
+            // went, but the trail is laid along the course and no longer fans about amidships in a turn.
+            SternSwingFraction         = 0.25f,
 
             KelvinHalfAngleDeg         = 19f,    // the physical Kelvin angle — the emergent V opens at this
             SpreadSpeedMin             = 0.10f,
@@ -465,6 +608,12 @@ namespace HiddenHarbours.Boats
             FoamPulseHz                = 2.8f,   // a lively boil, faster than the plume's 1.7 Hz wash
             FoamPulseAmount            = 0.22f,  // fresh foam visibly bubbles; calm by end of life
             FoamAeration               = 0.85f,  // bubble films with holes — the 2026-08-06 "not a stripe"
+
+            FoamWindDriftFraction        = 0.30f, // the wind visibly walks the trail off the track…
+            // …the film dissolves as it goes (measured: mean coverage 0.172 → 0.070, lit texels 73 → 38
+            // across the four rungs, so over half the foam matter is gone by the end)…
+            FoamAgeErosion               = 0.55f,
+            FoamDispersalMetersPerSecond = 0.16f, // …and the band shears apart: ~0.35 m over a 2.2 s life
 
             PlumePulseHz               = 1.7f,
             PlumePulseScaleAmount      = 0.05f,

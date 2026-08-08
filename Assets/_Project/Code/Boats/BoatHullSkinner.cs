@@ -186,6 +186,9 @@ namespace HiddenHarbours.Boats
                 // rectangle. Cleared rather than left stale, so a swap DOWN from a measured hull does
                 // not leave the player clamped to the boat they just sold.
                 BoatDeckAreas.Write(root, null);
+                // …and nothing to tie to either (M2-38). Same clear-rather-than-stale reason: a rope must
+                // never stay made fast to the cleats of a hull that is no longer worn.
+                BoatCleats.Write(root, hull, null);
                 if (baseRenderer != null)
                 {
                     baseRenderer.enabled = true;
@@ -219,6 +222,11 @@ namespace HiddenHarbours.Boats
             // hull geometry and belong to the hull whichever way she is DRAWN (M2-37's data half). Null
             // for an unmeasured hull, which is how the deck-walk knows to keep its greybox rectangle.
             BoatDeckAreas.Write(root, visual.Deck);
+
+            // WHERE A ROPE MAY BE MADE FAST (M2-38), from the same imported sidecar and written at the
+            // same moment, so the walkable area and the cleats can never come from different hulls. The
+            // hull is needed for her draught — how far a fitting stands above the water she floats in.
+            BoatCleats.Write(root, boat != null ? boat.Hull : null, visual.Deck);
 
             // THE VARIANT BRANCH (ADR 0022 phase 4). Mesh when the data says so AND the mesh is
             // actually presentable here (usable def + a registered presentation service); otherwise
@@ -258,7 +266,12 @@ namespace HiddenHarbours.Boats
                 // Also per-artwork, and for the same reason: the iso kits were baked by a 40° camera, the
                 // hand-drawn compass by nobody's. Everything anchored to a point ON the hull picture reads it
                 // off here — this component is where an artwork's own facts live.
-                bakeElevationDegrees: visual.ArtBakeElevationDegrees);
+                bakeElevationDegrees: visual.ArtBakeElevationDegrees,
+                // …and her flotation datum, the third per-artwork fact of the same family: how far up
+                // this drawing the sea stands when she is at rest. This branch only ever runs for a
+                // SPRITE hull, so the visual's own field is the right half of the resolution rule
+                // (a mesh hull's waterline rides its def, through MeshHullDriver).
+                designWaterlineMeters: visual.DesignWaterlineMeters);
 
             // (3) The rock grid: DirectionalBoatSprite draws rockGrid[heading·frames + RockFrame] instead
             // of the static facing, and BoatWaveMotion sets RockFrame from the wave phase under the hull —

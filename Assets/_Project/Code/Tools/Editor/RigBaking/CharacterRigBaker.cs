@@ -171,12 +171,18 @@ namespace HiddenHarbours.Tools.RigBaking
         /// per carry stance the rig's own CARRIES table rides on that anim. The stances are never
         /// listed by a caller — they are read from the rig, so a kit that adds one grows a sheet with
         /// no code change.</param>
+        /// <param name="carryStanceExclusions">Anims to leave OUT of that expansion, baked free-handed
+        /// only. A BUDGET lever, never a correctness one: the rig's table is still the authority on
+        /// which stance may ride which anim, and this only declines art the game cannot reach yet
+        /// (CLAUDE.md rule 7 and rule 8). Null/empty expands everything, which is the old behaviour
+        /// exactly.</param>
         /// <param name="progress">Optional (label, 0..1) callback for a progress bar.</param>
         public static CharacterBakeResult Bake(string rigKey, IReadOnlyList<CharacterState> states,
                                                string outputFolder, string baseNamePrefix,
                                                string anchorFileName = null,
                                                string buildPreset = null,
                                                bool withCarryStances = false,
+                                               ICollection<string> carryStanceExclusions = null,
                                                Action<string, float> progress = null)
         {
             if (states == null || states.Count == 0)
@@ -216,7 +222,7 @@ namespace HiddenHarbours.Tools.RigBaking
 
             // Grow the recipe by the stances the RIG rides, before validation, so the expansion is
             // held to the same refusals a hand-written recipe is.
-            if (withCarryStances) states = ExpandCarryStances(host, g, states);
+            if (withCarryStances) states = ExpandCarryStances(host, g, states, carryStanceExclusions);
 
             // Validate the WHOLE recipe against the rig before writing anything, so a mistyped
             // state name (or build key, or an illegal carry) fails with zero files on disk rather
@@ -315,6 +321,7 @@ namespace HiddenHarbours.Tools.RigBaking
                                                string anchorFileName = null,
                                                string buildPreset = null,
                                                bool withCarryStances = false,
+                                               ICollection<string> carryStanceExclusions = null,
                                                Action<string, float> progress = null)
         {
             if (anims == null || anims.Count == 0)
@@ -322,7 +329,7 @@ namespace HiddenHarbours.Tools.RigBaking
             var states = new CharacterState[anims.Count];
             for (int i = 0; i < anims.Count; i++) states[i] = new CharacterState(anims[i]);
             return Bake(rigKey, states, outputFolder, baseNamePrefix, anchorFileName, buildPreset,
-                        withCarryStances, progress);
+                        withCarryStances, carryStanceExclusions, progress);
         }
 
         /// <summary>Frame count of one anim, from the rig's own ANIMS table — never a README.</summary>
@@ -347,8 +354,15 @@ namespace HiddenHarbours.Tools.RigBaking
 
         /// <summary>
         /// Which layer an anim drives, from the rig's own ANIM_MOUNT table: <c>free</c> / <c>rod</c> /
-        /// <c>shovel</c>. A missing table means the rig changed shape, and defaulting to "free" would
-        /// write a sidecar with no tool pins that still looks complete — so it refuses instead.
+        /// <c>shovel</c> / <c>ladder</c>. A missing table means the rig changed shape, and defaulting to
+        /// "free" would write a sidecar with no tool pins that still looks complete — so it refuses
+        /// instead.
+        ///
+        /// <para><c>ladder</c> arrived with rev 6.2 and is neither free nor a tool: both hands are
+        /// committed to the rungs, so no carry stance may ride the clip and no prop layer mounts on it.
+        /// Everything here already does the right thing with it by treating "not free" as "carry is
+        /// refused" — <see cref="ExpandCarryStances"/> skips it and <see cref="ValidateCarry"/> rejects
+        /// a hand-written one, which is exactly the rig's statement.</para>
         /// </summary>
         public static string MountOf(IRigScriptHost host, string globalName, string anim)
         {
@@ -373,13 +387,15 @@ namespace HiddenHarbours.Tools.RigBaking
         /// a rule worth restating in a menu.</para>
         /// </summary>
         static IReadOnlyList<CharacterState> ExpandCarryStances(
-            IRigScriptHost host, string g, IReadOnlyList<CharacterState> states)
+            IRigScriptHost host, string g, IReadOnlyList<CharacterState> states,
+            ICollection<string> exclusions = null)
         {
             var grown = new List<CharacterState>(states.Count * 2);
             foreach (var state in states)
             {
                 grown.Add(state);
                 if (state.Carry != null) continue;
+                if (exclusions != null && exclusions.Contains(state.Anim)) continue;
                 if (MountOf(host, g, state.Anim) != "free") continue;
                 foreach (string stance in CarriesFor(host, g, state.Anim))
                     grown.Add(new CharacterState(state.Anim, state.Power, stance));
@@ -481,7 +497,8 @@ namespace HiddenHarbours.Tools.RigBaking
             sb.Append($"  \"dirs\": {dirs},\n");
             sb.Append($"  \"measuredRigConvention\": \"{convention}\",\n");
             sb.Append("  \"facingsAreCounterClockwise\": false,\n");
-            sb.Append("  \"_note\": \"Baked in-engine with the rig's measured convention applied, so row d of every sheet depicts heading 360*d/dirs. Anchor cell px are TOP-LEFT origin, per direction row then per frame column. 'tool' is the prop grip for the rod/shovel states; 'carry' holds one block per stance the rig allows on that anim. Props pin from these at RUNTIME and are never baked into the sheet.\",\n");
+            sb.Append("  \"_note\": \"Baked in-engine with the rig's measured convention applied, so row d of every sheet depicts heading 360*d/dirs. Anchor cell px are TOP-LEFT origin, per direction row then per frame column. 'tool' is the prop grip for the rod/shovel states; 'carry' holds one block per stance the rig allows on that anim. 'clipPins' holds the clip-side pins named by 'clipPinSource' (boardMount / haulGrip / ladderMount). Props pin from these at RUNTIME and are never baked into the sheet.\",\n");
+            sb.Append("  \"_clipNote\": \"The boarding clips re-solve per railZ and are baked here at the rig's DEFAULT 0.55 m (a dory sheer) — a hull with a different sheer wants its own sheet, per the kit README's 'bake one sheet per rail height you ship'. The ladder clip is baked at the rig's default rung 0.30 m / width 0.45 m (WharfIso.FIT.ladder).\",\n");
             sb.Append("  \"states\": {\n");
 
             for (int a = 0; a < states.Count; a++)
@@ -511,6 +528,18 @@ namespace HiddenHarbours.Tools.RigBaking
                     sb.Append(",\n      \"carryPins\": ");
                     AppendDirFrameGrid(sb, host, g, dirs, frames, convention,
                                        (d, f) => $"{g}.carry({d},{OptsJs(state, f, buildPreset)})");
+                }
+
+                // The CLIP pins (rev 6.1 / 6.2). Independent of the two branches above rather than an
+                // else-arm of them: a boarding clip baked in a carry stance has BOTH a carry pin (where
+                // the pail hangs) and a clip pin (where the plant hand meets the rail), and they are
+                // different questions about the same cell.
+                string clipPin = ClipPinCallFor(host, g, state.Anim);
+                if (clipPin != null)
+                {
+                    sb.Append($",\n      \"clipPinSource\": \"{clipPin}\",\n      \"clipPins\": ");
+                    AppendDirFrameGrid(sb, host, g, dirs, frames, convention,
+                                       (d, f) => $"{g}.{clipPin}({d},{OptsJs(state, f, buildPreset)})");
                 }
 
                 sb.Append(a < states.Count - 1 ? "\n    },\n" : "\n    }\n");
@@ -545,6 +574,34 @@ namespace HiddenHarbours.Tools.RigBaking
                 sb.Append(d < dirs - 1 ? "],\n" : "]\n");
             }
             sb.Append(indent.Substring(2)).Append(']');
+        }
+
+        /// <summary>
+        /// The rig function that returns this anim's CLIP pins, or null for an anim that has none.
+        /// Rev 6.1 added <c>boardMount()</c> (the rail plant, the landing re-seat) and
+        /// <c>haulGrip()</c> (the two rope pins and the tension envelope); rev 6.2 added
+        /// <c>ladderMount()</c> (the rung locks, the standoff and the per-frame descent). They are the
+        /// clip-side twins of <c>tool()</c> and <c>carry()</c>, and the ladder gameplay slice reads
+        /// them straight out of the sidecar rather than re-deriving a climber's contact points.
+        ///
+        /// <para><b>Asked of the rig, not of a README</b> (ADR 0021 §4): the boarding and ladder clips
+        /// are read from the rig's own <c>BOARDING</c> / <c>LADDER</c> tables. <c>haul</c> is matched by
+        /// NAME because the rig declares no table for it — there is exactly one haul clip — and the
+        /// match is guarded by a <c>typeof</c> check, so a rig without <c>haulGrip</c> writes no pins
+        /// rather than emitting <c>undefined</c> into the sidecar.</para>
+        /// </summary>
+        static string ClipPinCallFor(IRigScriptHost host, string g, string anim)
+        {
+            string a = JsString(anim);
+            if (host.EvaluateBool($"typeof {g}.boardMount === 'function' && " +
+                                  $"!!({g}.BOARDING && {g}.BOARDING[{a}])"))
+                return "boardMount";
+            if (host.EvaluateBool($"typeof {g}.ladderMount === 'function' && " +
+                                  $"!!({g}.LADDER && {g}.LADDER[{a}])"))
+                return "ladderMount";
+            if (anim == "haul" && host.EvaluateBool($"typeof {g}.haulGrip === 'function'"))
+                return "haulGrip";
+            return null;
         }
 
         /// <summary>The carry stances the rig's own CARRIES table allows on this anim, in
