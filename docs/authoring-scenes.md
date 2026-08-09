@@ -268,9 +268,17 @@ Open it: **Hidden Harbours ▸ Tools ▸ Terrain Paint Tool (height + look)**. *
 ### Step by step
 
 1. **Open the scene you want to shape** (e.g. `StPeters.unity`).
-2. **Open the tool** (menu above). It needs a **Height Map** to paint into:
-   - For St Peters, click **Export analytic St Peters → painted map** — this seeds the map from the
-     existing coast so you paint *from* it, not a blank canvas. (Or **New Blank Map…** for an empty one.)
+2. **Open the tool** (menu above). Set the **Region** to the region you're shaping — a map's size comes
+   from the RegionDef, never from the tool. Then it needs a **Height Map** to paint into:
+   - **Any region:** put that region's map in the **Height Map** slot (or make one with **New Blank
+     Map…**) and click **Export analytic coast (open scene) → painted map**. It samples whatever
+     analytic terrain the OPEN scene carries and writes it into *that* map, so you paint *from* the
+     coast the region already has instead of from a blank canvas. It names the asset and the PNG in
+     the confirm dialog before it overwrites anything.
+   - **St Peters only:** **Export analytic St Peters → painted map** does the same for the start
+     region, hard-wired to St Peters' constants and to `StPetersSeabed`. ⚠ It ignores both the open
+     scene and the Height Map slot, so with another region assigned it would bake **St Peters' coast
+     at that region's size, over St Peters' map** — for everywhere else use the open-scene button.
 3. **Ground Tilemap** — click **Find** to auto-locate the scene's `TerrainTilemap`. If the scene has
    none, click **Add Ground Tilemap** and it makes one for you.
 4. **Pick a Terrain TYPE** from the **Type** dropdown (Deep / Channel / Beach / Sandbar / Grass /
