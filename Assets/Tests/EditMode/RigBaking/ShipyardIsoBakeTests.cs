@@ -318,15 +318,25 @@ namespace HiddenHarbours.Tests.RigBaking
             Assert.IsTrue(File.Exists(rig), rig);
             Assert.IsTrue(File.Exists(sidecar), sidecar);
 
+            // The stamp is of the COMMITTED bytes, which are LF. A Windows checkout materialises the
+            // working file with CRLF, so hash the LF-normalised bytes — otherwise this test is green
+            // on CI and red on every Windows clone carrying the SAME correct stamp (measured
+            // 2026-08-09: the two hashes differ and each is "right" for its own byte stream).
+            byte[] raw = File.ReadAllBytes(rig);
+            using var lfBytes = new MemoryStream(raw.Length);
+            for (int i = 0; i < raw.Length; i++)
+                if (raw[i] != (byte)'\r' || i + 1 >= raw.Length || raw[i + 1] != (byte)'\n')
+                    lfBytes.WriteByte(raw[i]);
+
             string actual;
             using (var sha = SHA256.Create())
-                actual = BitConverter.ToString(sha.ComputeHash(File.ReadAllBytes(rig)))
+                actual = BitConverter.ToString(sha.ComputeHash(lfBytes.ToArray()))
                                      .Replace("-", "").ToLowerInvariant();
 
             Assert.IsTrue(File.ReadAllText(sidecar).Contains(actual, StringComparison.Ordinal),
                 "The NMC sidecar's derivedFromRigSha256 does not match the committed rig bytes " +
-                $"({actual}). A mismatch means the yard was re-laid-out: every polygon, the door and " +
-                "the counter point must be re-derived before anything trusts them.");
+                $"({actual}, LF-normalised). A mismatch means the yard was re-laid-out: every polygon, " +
+                "the door and the counter point must be re-derived before anything trusts them.");
         }
 
         [Test]

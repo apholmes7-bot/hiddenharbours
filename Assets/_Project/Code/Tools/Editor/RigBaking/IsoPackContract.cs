@@ -79,6 +79,12 @@ namespace HiddenHarbours.Tools.RigBaking
 
             public SheetPlan sheet;
 
+            /// <summary>Present on <c>shipyardIso</c> only: the px/m THIS key bakes at — three sites
+            /// cannot hold 8 facings under the 4096 cap at the kit's native 32, so the contract
+            /// records each key's own scale and the baker passes it to <c>render()</c>. Absent
+            /// (JsonUtility-defaulted to 0) on every other family = "use the rig's default".</summary>
+            public int pxPerM;
+
             // ---- what the piece IS, as opposed to how it is packed -----------------------------
             // Declared here because JsonUtility drops any JSON field it has no field for, silently:
             // a consumer reading `zone` off an undeclared member gets null and scatters every find
@@ -427,6 +433,12 @@ namespace HiddenHarbours.Tools.RigBaking
             cols = c.sheet.cols;
             rows = c.sheet.rows;
         }
+
+        /// <summary>The px/m THIS key bakes at, or 0 = "the rig's default". Non-zero only where the
+        /// contract records it (<c>shipyardIso</c>: three sites cannot hold 8 facings under the cap at
+        /// native scale). The baker passes a non-zero value into <c>render()</c>; a zero must NOT be
+        /// passed — an explicit <c>pxPerM:0</c> is not the same as an absent option.</summary>
+        public int PxPerMFor(string key) => this[key].pxPerM;
 
         /// <summary>
         /// Assert a packed sheet fits the cap this family imports at, and that the pack agrees with the

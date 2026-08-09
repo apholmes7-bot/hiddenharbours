@@ -34,6 +34,7 @@ namespace HiddenHarbours.Tools.RigBaking
         public const string WharfDecorFolder = "Assets/_Project/Art/Sprites/Wharf/Decor";
         public const string UtilityIsoFolder = "Assets/_Project/Art/Sprites/Utility";
         public const string ShoreFindsFolder = ShoreFindsSheetBaker.DefaultOutputFolder;
+        public const string ShipyardIsoFolder = "Assets/_Project/Art/Sprites/Shipyard/Iso";
 
         // ---- menu ------------------------------------------------------------------------------------
 
@@ -58,6 +59,12 @@ namespace HiddenHarbours.Tools.RigBaking
                   priority = 65)]
         public static void BakeShoreFindsSheets() => RunBakes(("shoreFinds", BakeShoreFindsInternal));
 
+        // Not folded into "Bake Iso Rig Pack": that menu name promises 228 sheets and the pack's four
+        // families; the shipyard is its own kit that merely RIDES the wharf baker (measured, one
+        // turntable — its VERIFICATION §2), so it bakes from its own entry.
+        [MenuItem("Hidden Harbours/Art/Bake Shipyard Iso Kit (25 parts × 8 dir)", priority = 66)]
+        public static void BakeShipyardIsoKit() => RunBakes(("shipyardIso", BakeShipyardIsoInternal));
+
         // ---- the bakes -------------------------------------------------------------------------------
 
         /// <summary>What one family's bake produced, for the log line and the reimport pass.</summary>
@@ -81,6 +88,7 @@ namespace HiddenHarbours.Tools.RigBaking
         static FamilyBakeResult BakeWharfIsoInternal() => BakeDirectional("wharfIso", WharfIsoFolder);
         static FamilyBakeResult BakeWharfDecorInternal() => BakeDirectional("wharfDecor", WharfDecorFolder);
         static FamilyBakeResult BakeUtilityIsoInternal() => BakeDirectional("utilityIso", UtilityIsoFolder);
+        static FamilyBakeResult BakeShipyardIsoInternal() => BakeDirectional("shipyardIso", ShipyardIsoFolder);
 
         /// <summary>
         /// Bake one of the three directional families. <c>wharfIso</c> goes through
@@ -105,9 +113,10 @@ namespace HiddenHarbours.Tools.RigBaking
                 EditorUtility.DisplayProgressBar($"Baking {family}", $"{key} ({i + 1}/{keys.Count})",
                                                  (i + 1) / (float)keys.Count);
 
-                if (family == WharfIsoSheetBaker.RigKey)
+                if (family == WharfIsoSheetBaker.RigKey || family == "shipyardIso")
                 {
-                    var r = WharfIsoSheetBaker.Bake(new WharfIsoBakeRequest(key, folder), host);
+                    var r = WharfIsoSheetBaker.Bake(new WharfIsoBakeRequest(key, folder, rigKey: family),
+                                                    host);
                     result.Record(r.AssetPath, r.SheetWidth, r.SheetHeight, key);
                 }
                 else
@@ -239,6 +248,22 @@ namespace HiddenHarbours.Tools.RigBaking
             catch (Exception ex)
             {
                 Debug.LogError($"[rig-baker] headless iso-pack bake failed: {ex}");
+                EditorApplication.Exit(1);
+            }
+        }
+
+        /// <summary>Headless entry point for the shipyard kit — same contract as
+        /// <see cref="BakeIsoRigPackFromCommandLine"/>, one family.</summary>
+        public static void BakeShipyardIsoFromCommandLine()
+        {
+            try
+            {
+                BakeShipyardIsoKit();
+                EditorApplication.Exit(0);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[rig-baker] headless shipyard bake failed: {ex}");
                 EditorApplication.Exit(1);
             }
         }

@@ -28,7 +28,10 @@ namespace HiddenHarbours.Tools.RigBaking
         }
     }
 
-    /// <summary>One preset of the ISO wharf structure kit, through the 8-facing turntable.</summary>
+    /// <summary>One preset of an ISO structure kit, through the 8-facing turntable. The wharf kit is
+    /// the namesake; <c>shipyardIso</c> rides the same baker because it was MEASURED to ride the same
+    /// turntable and report the same per-bake buffer + fractional-pivot shape (its VERIFICATION §2) —
+    /// <see cref="RigKey"/> selects the family, defaulting to the wharf.</summary>
     public readonly struct WharfIsoBakeRequest
     {
         /// <summary>A preset from the rig's own <c>presets()</c> — <c>"floatSet"</c>, <c>"timberQuay"</c>…</summary>
@@ -36,11 +39,16 @@ namespace HiddenHarbours.Tools.RigBaking
         public readonly string OutputFolder;
         public readonly string BaseName;
 
-        public WharfIsoBakeRequest(string preset, string outputFolder, string baseName = null)
+        /// <summary>Which registered family to bake — null/empty means <see cref="WharfIsoSheetBaker.RigKey"/>.</summary>
+        public readonly string RigKey;
+
+        public WharfIsoBakeRequest(string preset, string outputFolder, string baseName = null,
+                                   string rigKey = null)
         {
             Preset = preset;
             OutputFolder = outputFolder;
             BaseName = string.IsNullOrEmpty(baseName) ? preset : baseName;
+            RigKey = string.IsNullOrEmpty(rigKey) ? WharfIsoSheetBaker.RigKey : rigKey;
         }
     }
 
@@ -106,22 +114,29 @@ namespace HiddenHarbours.Tools.RigBaking
 
         public static WharfIsoBakeResult Bake(WharfIsoBakeRequest req, IRigScriptHost host)
         {
-            var contract = IsoPackContract.Load(RigKey);
-            var entry = RigCatalog.Get(RigKey);
+            string rigKey = string.IsNullOrEmpty(req.RigKey) ? RigKey : req.RigKey;
+            var contract = IsoPackContract.Load(rigKey);
+            var entry = RigCatalog.Get(rigKey);
 
             contract.AssertSelfConsistent();
 
-            // InstallModule, never Install: this rig exposes no pivot and Install throws on that.
+            // InstallModule, never Install: these rigs expose no pivot and Install throws on that.
             RigCatalog.InstallModule(host, entry);
             string g = entry.GlobalName;
 
             // Install FIRST — the gate is a probe of the rig's own global, which does not exist until
             // the source has been executed into the host.
-            contract.AssertKeylineGated(host, g, RigKey);
+            contract.AssertKeylineGated(host, g, rigKey);
             AssertPresetExists(host, g, req.Preset);
 
+            // The options every facing renders with. Non-zero only where the contract records a
+            // per-key scale (shipyardIso's three big sites); "{}" otherwise, so the wharf path is
+            // byte-identical to what it always rendered.
+            int ppm = contract.PxPerMFor(req.Preset);
+            string opts = ppm > 0 ? $"{{pxPerM:{ppm}}}" : "{}";
+
             var facings = RenderFacings(host, g, req.Preset, contract.Facings,
-                                        entry.DeclaredConvention, out double renderMs);
+                                        entry.DeclaredConvention, out double renderMs, opts);
 
             // ---- the cell: pivot-aligned union of the BUFFER extents, floor/ceil --------------------
             MeasureCell(facings, out int cw, out int ch, out int pivotX, out int pivotY);
@@ -230,7 +245,8 @@ namespace HiddenHarbours.Tools.RigBaking
             RenderFacings(host, globalName, preset, facings, convention, out _);
 
         static WharfIsoFacing[] RenderFacings(IRigScriptHost host, string g, string preset, int facings,
-                                              AzimuthConvention convention, out double renderMs)
+                                              AzimuthConvention convention, out double renderMs,
+                                              string opts = "{}")
         {
             var outp = new WharfIsoFacing[facings];
             var clock = new Stopwatch();
@@ -245,7 +261,7 @@ namespace HiddenHarbours.Tools.RigBaking
                     // Render ONCE into a scratch global, then read its fields. Evaluating
                     // `render(...).w` and `render(...).data` separately would rasterise twice per field.
                     clock.Start();
-                    host.Execute($"{Scratch} = {g}.render({Quote(preset)},{d},{{}});");
+                    host.Execute($"{Scratch} = {g}.render({Quote(preset)},{d},{opts});");
                     clock.Stop();
 
                     int w = (int)host.EvaluateNumber($"{Scratch}.w");
@@ -285,14 +301,28 @@ namespace HiddenHarbours.Tools.RigBaking
 
         static void AssertPresetExists(IRigScriptHost host, string g, string preset)
         {
-            if (host.EvaluateBool($"{g}.presets().indexOf({Quote(preset)}) >= 0")) return;
+            // Two key vocabularies ride this baker: the wharf's presets(), and the shipyard's
+            // SITES + PARTS tables (it exposes no presets() at all — probe, don't assume).
+            if (host.EvaluateBool($"typeof {g}.presets === 'function'"))
+            {
+                if (host.EvaluateBool($"{g}.presets().indexOf({Quote(preset)}) >= 0")) return;
+
+                throw new InvalidOperationException(
+                    $"'{preset}' is not in {g}.presets(). Known: " +
+                    string.Join(", ", Presets(host, g)) + ".\n" +
+                    "⚠️ Note this baker takes a PRESET NAME and passes it positionally. Passing it as an " +
+                    "option object instead ({preset:'…'}) renders the rig DEFAULT with no error at all — " +
+                    "the same trap the building kit documents.");
+            }
+
+            if (host.EvaluateBool(
+                    $"(!!{g}.SITES && {Quote(preset)} in {g}.SITES) || " +
+                    $"(!!{g}.PARTS && {Quote(preset)} in {g}.PARTS)")) return;
 
             throw new InvalidOperationException(
-                $"'{preset}' is not in {g}.presets(). Known: " +
-                string.Join(", ", Presets(host, g)) + ".\n" +
-                "⚠️ Note this baker takes a PRESET NAME and passes it positionally. Passing it as an " +
-                "option object instead ({preset:'…'}) renders the rig DEFAULT with no error at all — " +
-                "the same trap the building kit documents.");
+                $"'{preset}' is in neither {g}.SITES nor {g}.PARTS, and the rig exposes no presets(). " +
+                "The contract's keys and the rig's tables have drifted — regenerate the contract " +
+                "rather than guessing which side is right.");
         }
 
         static string Quote(string s) => "'" + s.Replace("\\", "\\\\").Replace("'", "\\'") + "'";

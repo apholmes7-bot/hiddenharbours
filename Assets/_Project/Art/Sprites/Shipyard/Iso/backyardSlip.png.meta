@@ -1,0 +1,338 @@
+fileFormatVersion: 2
+guid: 066b216f8cd5db7419c4513aea8a1c43
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 7488228661636244133
+    second: backyardSlip_0
+  - first:
+      213: 4590873739121524304
+    second: backyardSlip_1
+  - first:
+      213: -7797702121029454300
+    second: backyardSlip_2
+  - first:
+      213: 742971392241761879
+    second: backyardSlip_3
+  - first:
+      213: 3556788834316748417
+    second: backyardSlip_4
+  - first:
+      213: 3361697409139174307
+    second: backyardSlip_5
+  - first:
+      213: -3031561255705148613
+    second: backyardSlip_6
+  - first:
+      213: -4202474028906537259
+    second: backyardSlip_7
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: backyardSlip_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1168
+        width: 710
+        height: 584
+      alignment: 9
+      pivot: {x: 0.49859154, y: 0.44520548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5a22abd1b488be760800000000000000
+      internalID: 7488228661636244133
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: backyardSlip_1
+      rect:
+        serializedVersion: 2
+        x: 710
+        y: 1168
+        width: 710
+        height: 584
+      alignment: 9
+      pivot: {x: 0.49859154, y: 0.44520548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 05ef10d975f06bf30800000000000000
+      internalID: 4590873739121524304
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: backyardSlip_2
+      rect:
+        serializedVersion: 2
+        x: 1420
+        y: 1168
+        width: 710
+        height: 584
+      alignment: 9
+      pivot: {x: 0.49859154, y: 0.44520548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 426bab32c3ff8c390800000000000000
+      internalID: -7797702121029454300
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: backyardSlip_3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 584
+        width: 710
+        height: 584
+      alignment: 9
+      pivot: {x: 0.49859154, y: 0.44520548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 75ef8d87b809f4a00800000000000000
+      internalID: 742971392241761879
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: backyardSlip_4
+      rect:
+        serializedVersion: 2
+        x: 710
+        y: 584
+        width: 710
+        height: 584
+      alignment: 9
+      pivot: {x: 0.49859154, y: 0.44520548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1868682a9904c5130800000000000000
+      internalID: 3556788834316748417
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: backyardSlip_5
+      rect:
+        serializedVersion: 2
+        x: 1420
+        y: 584
+        width: 710
+        height: 584
+      alignment: 9
+      pivot: {x: 0.49859154, y: 0.44520548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3ab671a8bf527ae20800000000000000
+      internalID: 3361697409139174307
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: backyardSlip_6
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 710
+        height: 584
+      alignment: 9
+      pivot: {x: 0.49859154, y: 0.44520548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b338bde891bbde5d0800000000000000
+      internalID: -3031561255705148613
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: backyardSlip_7
+      rect:
+        serializedVersion: 2
+        x: 710
+        y: 0
+        width: 710
+        height: 584
+      alignment: 9
+      pivot: {x: 0.49859154, y: 0.44520548}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5de9839e220dda5c0800000000000000
+      internalID: -4202474028906537259
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 87bfcd0cf1a6cd24c8f4fe199e0427a7
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      backyardSlip_0: 7488228661636244133
+      backyardSlip_1: 4590873739121524304
+      backyardSlip_2: -7797702121029454300
+      backyardSlip_3: 742971392241761879
+      backyardSlip_4: 3556788834316748417
+      backyardSlip_5: 3361697409139174307
+      backyardSlip_6: -3031561255705148613
+      backyardSlip_7: -4202474028906537259
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

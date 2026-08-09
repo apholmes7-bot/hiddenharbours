@@ -1,0 +1,362 @@
+fileFormatVersion: 2
+guid: 2a76258da08b3a249a2bd7bb5eb3a1a0
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 794049520049756751
+    second: liftDock_0
+  - first:
+      213: 2578199920092452918
+    second: liftDock_1
+  - first:
+      213: 2674077536276235618
+    second: liftDock_2
+  - first:
+      213: -654355214191365139
+    second: liftDock_3
+  - first:
+      213: 4605083268968352250
+    second: liftDock_4
+  - first:
+      213: -6608855641004821025
+    second: liftDock_5
+  - first:
+      213: -3330594296508452672
+    second: liftDock_6
+  - first:
+      213: -8195629935641098836
+    second: liftDock_7
+  - first:
+      213: 1872468384306124518
+    second: liftDock_8
+  - first:
+      213: -5959736756677560201
+    second: liftDock_9
+  - first:
+      213: 5990831151443075706
+    second: liftDock_10
+  - first:
+      213: 2667151847990057435
+    second: liftDock_11
+  - first:
+      213: -444914962831454071
+    second: liftDock_12
+  - first:
+      213: 3833822072601992859
+    second: liftDock_13
+  - first:
+      213: 90457655669085446
+    second: liftDock_14
+  - first:
+      213: -5808671157984093213
+    second: liftDock_15
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: liftDock_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1833
+        width: 815
+        height: 611
+      alignment: 9
+      pivot: {x: 0.4993865, y: 0.45171848}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f4a92a8d4d7050b00800000000000000
+      internalID: 794049520049756751
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: liftDock_1
+      rect:
+        serializedVersion: 2
+        x: 815
+        y: 1833
+        width: 815
+        height: 611
+      alignment: 9
+      pivot: {x: 0.4993865, y: 0.45171848}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6381d0dda2b97c320800000000000000
+      internalID: 2578199920092452918
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: liftDock_2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1222
+        width: 815
+        height: 611
+      alignment: 9
+      pivot: {x: 0.4993865, y: 0.45171848}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 265c893f95b3c1520800000000000000
+      internalID: 2674077536276235618
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: liftDock_3
+      rect:
+        serializedVersion: 2
+        x: 815
+        y: 1222
+        width: 815
+        height: 611
+      alignment: 9
+      pivot: {x: 0.4993865, y: 0.45171848}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: de3f23d46634be6f0800000000000000
+      internalID: -654355214191365139
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: liftDock_4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 611
+        width: 815
+        height: 611
+      alignment: 9
+      pivot: {x: 0.4993865, y: 0.45171848}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: af904f795da88ef30800000000000000
+      internalID: 4605083268968352250
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: liftDock_5
+      rect:
+        serializedVersion: 2
+        x: 815
+        y: 611
+        width: 815
+        height: 611
+      alignment: 9
+      pivot: {x: 0.4993865, y: 0.45171848}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fd5321a4fc0a844a0800000000000000
+      internalID: -6608855641004821025
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: liftDock_6
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 815
+        height: 611
+      alignment: 9
+      pivot: {x: 0.4993865, y: 0.45171848}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0c0fba1322a57c1d0800000000000000
+      internalID: -3330594296508452672
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: liftDock_7
+      rect:
+        serializedVersion: 2
+        x: 815
+        y: 0
+        width: 815
+        height: 611
+      alignment: 9
+      pivot: {x: 0.4993865, y: 0.45171848}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ca50e8feef5434e80800000000000000
+      internalID: -8195629935641098836
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: a06f1ac6870bede49b2eabdfc97d5455
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      liftDock_0: 794049520049756751
+      liftDock_1: 2578199920092452918
+      liftDock_2: 2674077536276235618
+      liftDock_3: -654355214191365139
+      liftDock_4: 4605083268968352250
+      liftDock_5: -6608855641004821025
+      liftDock_6: -3330594296508452672
+      liftDock_7: -8195629935641098836
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

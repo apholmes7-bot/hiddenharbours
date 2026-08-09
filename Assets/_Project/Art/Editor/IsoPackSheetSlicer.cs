@@ -323,12 +323,17 @@ namespace HiddenHarbours.Art.Editor
                     continue;
                 }
 
-                if (cell.sheet.cols * cell.sheet.rows != cellsPerSheet)
+                // A grid SMALLER than the cell count cannot hold the sheet — that is a real
+                // plan-vs-bake disagreement. A LARGER one is legitimate: shipyardIso's ruled plans
+                // are ragged by design (3×3 for 8 facings — the cap forces near-square grids, and
+                // the ninth slot is deliberately empty). BuildRects emits exactly cellsPerSheet
+                // row-major rects and never touches the trailing slots, so the padding is inert.
+                if (cell.sheet.cols * cell.sheet.rows < cellsPerSheet)
                 {
                     Debug.LogError($"[IsoPackSheetSlicer] '{matched}' plans a {cell.sheet.cols}×" +
                                    $"{cell.sheet.rows} grid = {cell.sheet.cols * cell.sheet.rows} slots, " +
-                                   $"but a {fam.Key} sheet holds exactly {cellsPerSheet} cells. " +
-                                   "Not slicing — a ragged grid means the plan and the bake disagree.");
+                                   $"which cannot hold a {fam.Key} sheet's {cellsPerSheet} cells. " +
+                                   "Not slicing — the plan and the bake disagree.");
                     continue;
                 }
 

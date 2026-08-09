@@ -1,0 +1,338 @@
+fileFormatVersion: 2
+guid: 481662649d2ba2842a309028194691c7
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -8637038526119466339
+    second: slipway_0
+  - first:
+      213: -6354570684912227207
+    second: slipway_1
+  - first:
+      213: 4863031648515522164
+    second: slipway_2
+  - first:
+      213: 441777611505346674
+    second: slipway_3
+  - first:
+      213: -7976669837635416694
+    second: slipway_4
+  - first:
+      213: 4267906945806976468
+    second: slipway_5
+  - first:
+      213: 2194572578128465537
+    second: slipway_6
+  - first:
+      213: 1122124911457387686
+    second: slipway_7
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: slipway_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1120
+        width: 726
+        height: 560
+      alignment: 9
+      pivot: {x: 0.4986226, y: 0.45357144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d9a2943b833132880800000000000000
+      internalID: -8637038526119466339
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: slipway_1
+      rect:
+        serializedVersion: 2
+        x: 726
+        y: 1120
+        width: 726
+        height: 560
+      alignment: 9
+      pivot: {x: 0.4986226, y: 0.45357144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 97c22b941a700d7a0800000000000000
+      internalID: -6354570684912227207
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: slipway_2
+      rect:
+        serializedVersion: 2
+        x: 1452
+        y: 1120
+        width: 726
+        height: 560
+      alignment: 9
+      pivot: {x: 0.4986226, y: 0.45357144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 47eff35d485fc7340800000000000000
+      internalID: 4863031648515522164
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: slipway_3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 560
+        width: 726
+        height: 560
+      alignment: 9
+      pivot: {x: 0.4986226, y: 0.45357144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2782f73a562812600800000000000000
+      internalID: 441777611505346674
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: slipway_4
+      rect:
+        serializedVersion: 2
+        x: 726
+        y: 560
+        width: 726
+        height: 560
+      alignment: 9
+      pivot: {x: 0.4986226, y: 0.45357144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a8d0b2d7b0d2d4190800000000000000
+      internalID: -7976669837635416694
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: slipway_5
+      rect:
+        serializedVersion: 2
+        x: 1452
+        y: 560
+        width: 726
+        height: 560
+      alignment: 9
+      pivot: {x: 0.4986226, y: 0.45357144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4d54f3f31c6aa3b30800000000000000
+      internalID: 4267906945806976468
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: slipway_6
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 726
+        height: 560
+      alignment: 9
+      pivot: {x: 0.4986226, y: 0.45357144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 18e0929e120b47e10800000000000000
+      internalID: 2194572578128465537
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: slipway_7
+      rect:
+        serializedVersion: 2
+        x: 726
+        y: 0
+        width: 726
+        height: 560
+      alignment: 9
+      pivot: {x: 0.4986226, y: 0.45357144}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6a4c80569a6929f00800000000000000
+      internalID: 1122124911457387686
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 3400f9363f2d6c84588e32e3d74b61bb
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      slipway_0: -8637038526119466339
+      slipway_1: -6354570684912227207
+      slipway_2: 4863031648515522164
+      slipway_3: 441777611505346674
+      slipway_4: -7976669837635416694
+      slipway_5: 4267906945806976468
+      slipway_6: 2194572578128465537
+      slipway_7: 1122124911457387686
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
