@@ -10,7 +10,8 @@
     "alpha": "binary",
     "pivot": "ground under the centre of the footprint",
     "cellRule": "pivot-INCLUSIVE union of the INK bbox across all facings on the fixed nativeW x nativeH buffer, seeded at the pivot. Same rule as wharfDecorRig / utilityIsoRig.",
-    "keyline": "ringless per ADR 0031; {keyline:true} is kept live on every kind as the A/B"
+    "keyline": "ringless per ADR 0031; {keyline:true} — or {outline:true}, the name the rest of the repo uses — is kept live on every kind as the A/B",
+    "keylineDefault": false
   },
   "azimuth": {
     "convention": "clockwise",

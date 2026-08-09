@@ -1,7 +1,8 @@
 /* Hidden Harbours — TRAP ISO RIG. Four builds of pot, on the fleet turntable.
    Same fixed 3/4 view as the hulls and the insulated tote (45deg steps CW, elev 40,
-   32 px = 1 m, dither, no AA) via Art/isoSolid.js. RINGLESS by default (ADR 0031);
-   {keyline:true} is kept as a live A/B.
+   32 px = 1 m, dither, no AA) via Art/isoSolid.js. RINGLESS by default (ADR 0031), gated by the
+   exported KEYLINE_DEFAULT; {keyline:true} — or {outline:true}, the spelling the rest of the repo
+   uses — is kept as a live A/B.
 
      wood      traditional half-round bow-top — oak bows, lengthwise laths, tarred head
      wire      rectangular vinyl-coated wire lobster trap — kitchen + parlour, oak runners
@@ -29,6 +30,16 @@
   const K = root.IsoSolid;
   const W = 72, H = 60, cx = 36, cy = 46, S = 32;
   const KEY = '#0f1614';
+  // ADR 0031 — the ring is retired; the silhouette is carried by the form's own dark side.
+  // BORROWED, NOT COPIED: isoSolid.paint owns the only ring pass this kit has, so a second
+  // `false` declared here could drift away from the pass it claims to gate. The guard keeps the
+  // turntable optional at load, as it is today (a missing IsoSolid renders wrong, it does not throw).
+  const KEYLINE_DEFAULT = K ? K.KEYLINE_DEFAULT : false;
+  // The A/B arm. `keyline` is this kit's name for it; `outline` is the name every OTHER gated rig
+  // in the repo uses (#463, #477), and a caller reaching for the familiar one used to get a
+  // silently ringless render. Both are accepted. Returns undefined when neither is given, so the
+  // one default lives at the pass rather than being re-decided here.
+  const keylineOpt = (o) => o.keyline!=null ? o.keyline : (o.outline!=null ? o.outline : undefined);
 
   const R = {
     OAK  :['#241a11','#3a2a1c','#63482f','#8c6a45','#b9975f'],
@@ -283,7 +294,7 @@
     const M=MATS_FOR(b,colour,!!opts.wet);
     return K.paint(facesOf(b,!!opts.wet), {
       W,H,cx,cy, dir, elev:opts.elev, MATS:M, key:KEY,
-      keyline: opts.keyline!=null?opts.keyline:false,
+      keyline: keylineOpt(opts),
       emit: front ? ((f,n,B)=> f.tag==='shell' && camFacing(n,B)) : null,
     });
   }
@@ -358,7 +369,7 @@
     return out;
   }
 
-  root.TrapIso = { W,H, pivot:{x:cx,y:cy}, KEY, BUILDS, LABELS, DIMS, COLOURS, CLABEL,
+  root.TrapIso = { W,H, pivot:{x:cx,y:cy}, KEY, KEYLINE_DEFAULT, BUILDS, LABELS, DIMS, COLOURS, CLABEL,
     CAPS, STACK, RAMPS:R, defaultElev:K.DEFAULT_ELEV,
     render, renderFront, slots, opening, stackStep, sheet };
 })(typeof globalThis!=='undefined'?globalThis:window);

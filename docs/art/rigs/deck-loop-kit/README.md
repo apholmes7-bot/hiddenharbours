@@ -53,7 +53,9 @@ already lists its own set in its `<helmet>`; copy that block if you are wiring a
 | Edges | binary alpha, ordered dither at band edges, no AA | same |
 
 Same turntable, camera and light as the fleet, so furniture, crew, pots, trays and hull composite
-without adjustment. Furniture is **ringless** (ADR 0031); `{keyline:true}` is kept as the A/B.
+without adjustment. Furniture is **ringless** (ADR 0031), gated by an exported `KEYLINE_DEFAULT` on
+every bakeable rig; `{keyline:true}` — or `{outline:true}`, the spelling the rest of the repo uses —
+is kept as the A/B.
 
 ---
 
@@ -172,5 +174,9 @@ that bake its contact sheets to PNG: `Traps.png`, `Buoys.png`, `FishTrays.png`, 
 - `toss` is authored for a pot going over the rail; a light object thrown flat is not the same arc.
 - The hauler clip is the drum only — the gaff itself is not authored, and beat 1 reads as a reach.
 - Both hulls' beat table is one shift on flat-to-moderate swell. Nothing in it degrades for weather.
-- Furniture is ringless per ADR 0031; if a keyline pass is ever wanted, `{keyline:true}` is still
-  live on every kind and re-bakes the A/B.
+- Furniture is ringless per ADR 0031; if a keyline pass is ever wanted, `{keyline:true}` (or
+  `{outline:true}`) is still live on every kind and re-bakes the A/B.
+- `TrapFauna.render` draws the six kinds in `KINDS` and **refuses everything else**. The lobster,
+  crab, jonah and short in `TrapCatch.MIXES` belong to `catchKit.js` / `crustaceanRig.js`; bake them
+  through their own rigs. (Before the refusal landed, every unowned kind rendered a byte-identical
+  urchin, so a bake of the wrong kind produced plausible art rather than an error.)

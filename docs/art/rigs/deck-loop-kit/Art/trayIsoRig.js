@@ -1,7 +1,8 @@
 /* Hidden Harbours — STACK-NEST FISH TRAY, iso. The shallow tray the catch is graded
    into before it goes in a tote — the reshape the catch-handling pass listed as next.
    Fleet turntable via Art/isoSolid.js (45deg CW, elev 40, 32 px = 1 m, dither, no AA),
-   RINGLESS (ADR 0031, {keyline:true} kept as the A/B).
+   RINGLESS (ADR 0031), gated by the exported KEYLINE_DEFAULT; {keyline:true} — or {outline:true},
+   the spelling the rest of the repo uses — kept as the A/B.
 
    The real trick of this tray is the one the name carries: tapered walls and a stepped
    rim, so empties NEST down into each other (0.075 m a tray) and full ones turned end
@@ -22,6 +23,16 @@
   const K = root.IsoSolid;
   const W = 48, H = 44, cx = 24, cy = 34, S = 32;
   const KEY = '#0f1614';
+  // ADR 0031 — the ring is retired; the silhouette is carried by the form's own dark side.
+  // BORROWED, NOT COPIED: isoSolid.paint owns the only ring pass this kit has, so a second
+  // `false` declared here could drift away from the pass it claims to gate. The guard keeps the
+  // turntable optional at load, as it is today (a missing IsoSolid renders wrong, it does not throw).
+  const KEYLINE_DEFAULT = K ? K.KEYLINE_DEFAULT : false;
+  // The A/B arm. `keyline` is this kit's name for it; `outline` is the name every OTHER gated rig
+  // in the repo uses (#463, #477), and a caller reaching for the familiar one used to get a
+  // silently ringless render. Both are accepted. Returns undefined when neither is given, so the
+  // one default lives at the pass rather than being re-decided here.
+  const keylineOpt = (o) => o.keyline!=null ? o.keyline : (o.outline!=null ? o.outline : undefined);
 
   const GREY =['#22282b','#333c40','#4a565b','#66757b','#8b9ba1'];
   const BLUE =['#152234','#1f3450','#2d4c71','#3f6a99','#5b8cbd'];
@@ -77,7 +88,7 @@
     if(!_F) _F=facesOf();
     const ramp=(COLOURS[opts.colour]||COLOURS.grey).ramp;
     return K.paint(_F, { W,H,cx,cy, dir, elev:opts.elev, key:KEY,
-      keyline: opts.keyline!=null?opts.keyline:false,
+      keyline: keylineOpt(opts),
       MATS:{ WALL:{ramp,off:0}, INNER:{ramp,off:-1} } });
   }
   const FILLZ={ empty:0, few:1, half:2, full:2, brim:3 };
@@ -105,7 +116,7 @@
     });
   }
   const px=(m,elev)=>Math.round(m*S*Math.cos(((elev!=null?elev:K.DEFAULT_ELEV))*K.DEG));
-  root.FishTray2 = { W,H, pivot:{x:cx,y:cy}, KEY, COLOURS, CORDER, FILLS,
+  root.FishTray2 = { W,H, pivot:{x:cx,y:cy}, KEY, KEYLINE_DEFAULT, COLOURS, CORDER, FILLS,
     dims:{ l:LX*2, w:LY*2, h:HZ }, nest_m:0.075, stack_m:0.25,
     nestStep:(e)=>px(0.075,e), stackStep:(e)=>px(0.25,e),
     defaultElev:K.DEFAULT_ELEV, render, slots, opening };

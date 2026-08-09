@@ -1,6 +1,7 @@
 /* Hidden Harbours — BUOY ISO RIG. The spar buoy rebuilt onto the fleet turntable
    (Art/isoSolid.js): 45deg steps CW, elev 40, 32 px = 1 m, dither, no AA, RINGLESS
-   (ADR 0031, {keyline:true} kept as the A/B).
+   (ADR 0031), gated by the exported KEYLINE_DEFAULT; {keyline:true} — or {outline:true}, the
+   spelling the rest of the repo uses — kept as the A/B.
 
    Supersedes the flat 24x48 buoyRig.js sprite. The eight registered colour schemes are
    carried over verbatim — each fisher's pots are marked in that boat's colours, and no
@@ -17,6 +18,16 @@
   const K = root.IsoSolid;
   const W = 36, H = 58, cx = 18, cy = 50;
   const KEY = '#0f1614';
+  // ADR 0031 — the ring is retired; the silhouette is carried by the form's own dark side.
+  // BORROWED, NOT COPIED: isoSolid.paint owns the only ring pass this kit has, so a second
+  // `false` declared here could drift away from the pass it claims to gate. The guard keeps the
+  // turntable optional at load, as it is today (a missing IsoSolid renders wrong, it does not throw).
+  const KEYLINE_DEFAULT = K ? K.KEYLINE_DEFAULT : false;
+  // The A/B arm. `keyline` is this kit's name for it; `outline` is the name every OTHER gated rig
+  // in the repo uses (#463, #477), and a caller reaching for the familiar one used to get a
+  // silently ringless render. Both are accepted. Returns undefined when neither is given, so the
+  // one default lives at the pass rather than being re-decided here.
+  const keylineOpt = (o) => o.keyline!=null ? o.keyline : (o.outline!=null ? o.outline : undefined);
 
   const FLEET = ['Dory','Punt','CapeIslander','LobsterBoat','SideDragger','SternTrawler','CoastalPacket','Tanker'];
   const SCHEMES = {
@@ -72,13 +83,13 @@
     if(!_F) _F=facesOf();
     return K.paint(_F, {
       W,H,cx,cy, dir, elev:opts.elev, key:KEY,
-      keyline: opts.keyline!=null?opts.keyline:false,
+      keyline: keylineOpt(opts),
       MATS:{ PRI:{ramp:ramp(s.pri)}, SEC:{ramp:ramp(s.sec)}, TOP:{ramp:ramp(s.top)},
              DARK:{ramp:DARK}, ROPE:{ramp:['#5a4326','#7a6242','#a98f66','#cdbe97','#e3d8b8']} },
     });
   }
   function sheet(scheme, opts){ const o=[]; for(let d=0;d<8;d++) o.push(render(scheme,d,opts)); return o; }
 
-  root.BuoyIso = { W,H, pivot:{x:cx,y:cy}, KEY, FLEET, SCHEMES, LABELS,
+  root.BuoyIso = { W,H, pivot:{x:cx,y:cy}, KEY, KEYLINE_DEFAULT, FLEET, SCHEMES, LABELS,
     defaultElev:K.DEFAULT_ELEV, render, sheet };
 })(typeof globalThis!=='undefined'?globalThis:window);

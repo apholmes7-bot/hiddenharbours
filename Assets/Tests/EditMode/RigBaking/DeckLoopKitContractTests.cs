@@ -256,7 +256,150 @@ namespace HiddenHarbours.Tests.RigBaking
                 "the hauler station drives the `hauler` clip");
         }
 
+        // ------------------------------------------------------------------ the keyline gate
+
+        /// <summary>One render per family, as a JS expression with <c>OPTS</c> standing in for the
+        /// options object. One key per family is enough for the gate arms — the exhaustive
+        /// key × facing sweep is <c>_verify.js</c>'s job, and it runs the same three properties.</summary>
+        static readonly (string family, string render)[] GateArms =
+        {
+            ("deckGear",  "DeckGear.render('haulerstation',0,OPTS)"),
+            ("trap",      "TrapIso.render('wood',0,OPTS)"),
+            ("tray",      "FishTray2.render(0,OPTS)"),
+            ("buoy",      "BuoyIso.render('LobsterBoat',0,OPTS)"),
+        };
+
+        /// <summary>
+        /// <b>The bake gate, run for real.</b> <see cref="IsoPackContract.AssertKeylineGated"/> probes
+        /// <c>KEYLINE_DEFAULT</c> on the RIG's own global and refuses the whole family when it is
+        /// absent — the shipyard kit landed that way and could not bake a single sheet until #477
+        /// added one (#472's G3). All five of this kit's globals were in the same state.
+        ///
+        /// <para><b>What made this kit's gap different, and easy to miss:</b> its rendered default was
+        /// ALREADY ringless, because each rig passed an explicit <c>keyline:false</c> into the shared
+        /// <c>isoSolid.paint</c>. The missing thing was the DECLARATION, which is mechanically
+        /// indistinguishable from ringed art — so the gate refused art that was already compliant.</para>
+        ///
+        /// <para>The contract instance is borrowed from another family deliberately:
+        /// <c>AssertKeylineGated</c> reads nothing off it but the wording of its failure message, so
+        /// this exercises the REAL gate expression rather than a copy of it that could drift. The
+        /// value claim below stands on its own if that ever stops being true.</para>
+        /// </summary>
+        [Test]
+        public void EveryBakeableRigCarriesTheKeylineGate()
+        {
+            var gate = IsoPackContract.Load("wharfIso");
+            foreach (var (catalog, family) in Families)
+            {
+                string global = RigCatalog.Get(catalog).GlobalName;
+                Assert.DoesNotThrow(() => gate.AssertKeylineGated(_host, global, catalog),
+                    $"{family}: a bake would refuse this family outright — {global} exposes no " +
+                    "KEYLINE_DEFAULT. Add it in the rig source (docs/art/rigs/** is the art " +
+                    "director's lane), do not relax the gate.");
+                Assert.IsFalse(_host.EvaluateBool($"{global}.KEYLINE_DEFAULT"),
+                    $"{family}: ADR 0031 retires the ring, so the gate's value must be false");
+            }
+
+            Assert.IsTrue(_contract.HasKeylineDefault,
+                "the committed contract states no projection.keylineDefault. An absent field reads as " +
+                "false to JsonUtility — i.e. exactly like a correct declaration — so it is asserted " +
+                "present before it is asserted false.");
+            Assert.IsFalse(_contract.KeylineDefault,
+                "the committed contract must declare keylineDefault: false alongside the rigs");
+        }
+
+        /// <summary>
+        /// <b>Both arms, because either alone passes on a broken rig.</b> Zero ring pixels by default
+        /// would also be true of a renderer that had stopped drawing, and a reachable ring says
+        /// nothing about what the default ships. So: the ring must be OFF by default, ON when asked,
+        /// and switching it must be a PURE RING DELETION — every pixel it adds was transparent, so no
+        /// painted pixel of any piece moves. That last property is what makes the gate safe to leave
+        /// off without re-checking the art.
+        /// </summary>
+        [Test]
+        public void TheRingIsAGateAndSwitchingItDeletesNothingPainted()
+        {
+            foreach (var (family, render) in GateArms)
+            {
+                double off = _host.EvaluateNumber(Opaque(render, "{}"));
+                double on = _host.EvaluateNumber(Opaque(render, "{keyline:true}"));
+
+                Assert.Greater(on, off,
+                    $"{family}: forcing {{keyline:true}} added no pixels. The ring is supposed to be a " +
+                    "GATE — if this is equal, the rig has stopped drawing it rather than defaulting it off.");
+                Assert.AreEqual(0, (int)_host.EvaluateNumber(PaintedChanged(render)),
+                    $"{family}: switching the ring changed a PAINTED pixel. It must be a pure ring " +
+                    "deletion — every pixel the pass writes is an empty neighbour of the silhouette.");
+            }
+        }
+
+        /// <summary>
+        /// This kit spells the A/B arm <c>{keyline:true}</c>; every other gated rig in the repo spells
+        /// it <c>{outline:true}</c> (#463, #477). Before both were accepted, an A/B driven with the
+        /// repo-standard name was silently ignored here and came back ringless — which looks exactly
+        /// like a successful gate-off render, and is the one failure this whole family of tests is
+        /// built to make impossible.
+        /// </summary>
+        [Test]
+        public void TheOutlineSpellingIsALiveAliasOfKeyline()
+        {
+            foreach (var (family, render) in GateArms)
+                Assert.IsTrue(_host.EvaluateBool(SameBytes(render, "{outline:true}", "{keyline:true}")),
+                    $"{family}: {{outline:true}} does not reproduce {{keyline:true}} byte for byte");
+        }
+
+        /// <summary>
+        /// <b>TrapFauna refuses a kind it does not own instead of substituting one.</b>
+        ///
+        /// <para><c>TrapCatch</c> delegates the kinds it does not draw to <c>CatchKit</c> /
+        /// <c>Crustacean</c> and returns NULL when those are absent, so a bake that forgets the
+        /// prerequisite comes up empty in silence — the kit's own documented warning. The bakeable
+        /// half was one step worse: <c>DRAW[kind] || drawUrchin</c> meant every unowned kind rendered
+        /// a byte-identical URCHIN. Empty sheets get noticed; sheets full of plausible urchins do not.</para>
+        ///
+        /// <para>Both arms again — the refusal must not be a rig that has stopped rendering.</para>
+        /// </summary>
+        [Test]
+        public void TrapFaunaRefusesADelegatedKindRatherThanDrawingAnUrchin()
+        {
+            foreach (string kind in new[] { "lobster", "crab", "jonah", "short", "nonsense" })
+                Assert.IsTrue(_host.EvaluateBool(RefusesKind(kind)),
+                    $"TrapFauna.render('{kind}') did not refuse. It is delegated to CatchKit or " +
+                    "Crustacean, which TrapCatch returns null for when absent — so a bake of it here " +
+                    "must fail loudly, never draw an urchin in its place.");
+
+            string owned = _host.EvaluateString("TrapFauna.KINDS.join(',')");
+            foreach (string kind in owned.Split(','))
+                Assert.IsTrue(_host.EvaluateBool(
+                        $"(function(){{ try {{ return TrapFauna.render('{kind}',{{}}).length > 0; }} " +
+                        "catch(e){ return false; } })()"),
+                    $"TrapFauna.render('{kind}') is a kind this rig OWNS and must still draw — the " +
+                    "refusal is a guard, not a rig that has stopped rendering.");
+        }
+
         // ------------------------------------------------------------------ helpers
+
+        /// <summary>Count of opaque pixels in one render — the ring's own measure.</summary>
+        static string Opaque(string render, string opts) =>
+            $"(function(){{ const a={render.Replace("OPTS", opts)}; let n=0; " +
+            "for(let i=3;i<a.length;i+=4) if(a[i]!==0) n++; return n; })()";
+
+        /// <summary>Painted (already-opaque) pixels that differ between ring-off and ring-on.</summary>
+        static string PaintedChanged(string render) =>
+            $"(function(){{ const o={render.Replace("OPTS", "{}")}, " +
+            $"k={render.Replace("OPTS", "{keyline:true}")}; " +
+            "let n=0; for(let i=0;i<o.length;i+=4){ if(o[i+3]===0) continue; " +
+            "if(o[i]!==k[i]||o[i+1]!==k[i+1]||o[i+2]!==k[i+2]||o[i+3]!==k[i+3]) n++; } return n; })()";
+
+        static string SameBytes(string render, string optsA, string optsB) =>
+            $"(function(){{ const a={render.Replace("OPTS", optsA)}, b={render.Replace("OPTS", optsB)}; " +
+            "if(a.length!==b.length) return false; " +
+            "for(let i=0;i<a.length;i++) if(a[i]!==b[i]) return false; return true; })()";
+
+        /// <summary>True when the kind throws the rig's own refusal, rather than any other error.</summary>
+        static string RefusesKind(string kind) =>
+            $"(function(){{ try {{ TrapFauna.render('{kind}',{{}}); return false; }} " +
+            "catch(e){ return /not one of this rig's kinds/.test(String(e && e.message)); } })()";
 
         static string RenderExpr(string family, string g, string key, int dir) => family switch
         {
@@ -326,6 +469,14 @@ namespace HiddenHarbours.Tests.RigBaking
         {
             public string AzimuthConvention;
             public double DepthScale;
+
+            /// <summary>Whether the contract was measured with the ring ON. JsonUtility defaults a
+            /// missing field to <c>false</c>, which would be the SAFE-looking answer for a contract
+            /// that never declared one — so <see cref="HasKeylineDefault"/> is checked beside it.</summary>
+            public bool KeylineDefault;
+
+            /// <summary>Whether the contract states <c>projection.keylineDefault</c> at all.</summary>
+            public bool HasKeylineDefault;
             readonly Dictionary<string, Fam> _families = new Dictionary<string, Fam>(StringComparer.Ordinal);
 
             public Fam Family(string key) =>
@@ -339,11 +490,14 @@ namespace HiddenHarbours.Tests.RigBaking
                 Assert.IsTrue(File.Exists(path),
                     $"the deck-loop contract is missing at {path} — re-emit it with " +
                     "`node docs/art/rigs/deck-loop-kit/_verify.js --emit`");
-                var dto = JsonUtility.FromJson<Dto>(File.ReadAllText(path));
+                string json = File.ReadAllText(path);
+                var dto = JsonUtility.FromJson<Dto>(json);
                 var c = new Contract
                 {
                     AzimuthConvention = dto.azimuth.convention,
                     DepthScale = dto.projection.depthScale,
+                    KeylineDefault = dto.projection.keylineDefault,
+                    HasKeylineDefault = json.Contains("\"keylineDefault\""),
                 };
                 foreach (var f in dto.families) c._families[f.key] = f;
                 return c;
@@ -355,7 +509,7 @@ namespace HiddenHarbours.Tests.RigBaking
                 public Azimuth azimuth;
                 public Fam[] families;
             }
-            [Serializable] sealed class Projection { public double depthScale; }
+            [Serializable] sealed class Projection { public double depthScale; public bool keylineDefault; }
             [Serializable] sealed class Azimuth { public string convention; }
         }
 
