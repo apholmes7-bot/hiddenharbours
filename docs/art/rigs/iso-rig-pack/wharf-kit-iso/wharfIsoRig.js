@@ -27,11 +27,20 @@
      z = 0        chart datum (lowest water)
      tideRange    metres from datum to highest water — 0.5 m to 12 m (Fundy) all work
      tide         current water level in metres above datum, ANY value, continuous
+     clearance    how far a FIXED deck stands above highest water: deckZ = tideRange + clearance.
+                  The same number sets a float's gangway abutment, so a ramp meets the deck beside
+                  it rather than a step above it.
+   The pack BAKES at tideRange 4.4 / clearance 0.8 — Hillsborough Bay, the home world (#466) — so a
+   sheet's face is 5.2 m of quay. See DEFAULTS for why, and regenerate the contract if you move it.
    Growth zones are pinned to the tidal FRAME, not to the instantaneous water level, which is what
    makes a falling tide read: the bands do not move, the water uncovers them.
-     dark tide stain   up to HHW + 0.10          barnacle band   0.34R .. 0.86R
-     ice scour scar    0.88R .. 1.04R            rockweed fringe -0.35 .. 0.46R (hangs, droops)
+     dark tide stain   up to HHW + 0.10          barnacle band   0.40R .. 0.80R
+     ice scour scar    0.90R .. min(R+0.14,      rockweed fringe 0.06R .. 0.40R (hangs, droops)
+                       1.04R+0.10)
      wet-sheen split   everything below tide + 0.05 (splash), as a ramp transform
+   (Those four are frame() verbatim. The figures here read 0.34R..0.86R / -0.35..0.46R before this
+   commit, which is a stale draft of the same table — worth knowing, because the bands are exactly
+   what the re-parameterisation moves and they are the natural thing to check it against.)
    Fixed structures (quay / pier / crib / slipway / riprap) hold station and expose pile, bracing,
    growth and marine hardware as the tide drops. FLOATS RIDE IT: deck z = tide + freeboard, guide
    hoops slide up the guide piles, mooring chain straightens, and the gangway re-solves its slope
@@ -691,7 +700,12 @@
         if(s.gangway){
           const gRun = s.gangRun != null ? clampF(s.gangRun, 3, 14)
             : Math.max(3, Math.min(14, (T.R + s.freeboard + 0.9) * 2.4));
-          const abut = s.abutZ != null ? s.abutZ : T.R + 1.0;
+          // Same quantity as the fixed families' deck: clearance above HIGHEST water. It must read
+          // s.clearance, not a second literal — at the shipped defaults the two were EQUAL (both
+          // 2.8 m), and a hard-coded 1.0 here would hinge this ramp 0.20 m ABOVE the quay deck it
+          // is supposed to meet, which draws as a step and reads as a bug in the float, not in the
+          // number.
+          const abut = s.abutZ != null ? s.abutZ : T.R + s.clearance;
           const land = s._rockPt ? s._rockPt([-hx + 0.4, 0, top])[2] : top;
           const hingeX = -hx - gRun + 0.30, aw = s.gangWidth/2 + 0.35;
           // the abutment it hinges off: without something under the hinge the ramp reads as floating
@@ -830,8 +844,26 @@
   }
 
   // ============================ SPEC RESOLUTION ==============================================
+  // ---- THE BAKE PARAMETERS -------------------------------------------------------------------
+  // `tideRange` and `clearance` are what the PACK IS BAKED AT: the baker renders every preset with
+  // `{}`, so these two numbers are the coast the 17 committed sheets depict. They are Hillsborough
+  // Bay's — 4.4 m from chart datum to highest water, and a deck standing 0.8 m above that — not a
+  // generic coast, because the game has one home world (#466) and Nine Mile Creek is the first
+  // wharf the player walks onto.
+  //
+  // They were 1.8 / 1.0 and the face baked 2.80 m against the 5.2 m NMC authors. #471 measured the
+  // 2.40 m shortfall and decomposed it: +2.60 m of tide, less 0.20 m of freeboard — this wharf sits
+  // closer to its own high water than a generic coast assumes, a wharf you step DOWN onto. Changing
+  // these re-pins the growth bands too (barnacle 0.40R..0.80R, rockweed 0.06R..0.40R), which is the
+  // half no vertical stack of cells could ever have fixed.
+  //
+  // ⚠️ THE CELL IS PARAMETRIC. These two numbers move 14 of the 17 committed cells — every fixed
+  // structure grows by exactly 2.40 m of deck, which is 59 px through this camera — so
+  // wharfIsoRig.contract.json must be regenerated in the SAME COMMIT or every bake refuses against
+  // its own oracle. The three that do not move (lowPier, tallPier, sheetCell) are exactly the
+  // presets that pin `deckZ` themselves and so never read the auto below.
   const DEFAULTS = {
-    tide: null, tideRange: 1.8, mudZ: -1.4, deckZ: null, width: null, bays: null, bayLen: null,
+    tide: null, tideRange: 4.4, clearance: 0.8, mudZ: -1.4, deckZ: null, width: null, bays: null, bayLen: null,
     pileR: 0.16, brace: true, capIron: true, curb: 'wood', fenderPiles: true,
     rail: 'none', railSides: ['shore','ends'], guidePiles: true, guideAbove: 1.6, chain: true,
     slipRails: true, run: null, toeZ: null, freeboard: 0.40,
@@ -897,7 +929,7 @@
       s.floatDeckZ = s.tide + s.freeboard;
       s.deckZ = s.floatDeckZ;
     } else {
-      const auto = s.tideRange + (opts.clearance != null ? opts.clearance : 1.0);
+      const auto = s.tideRange + s.clearance;
       s.deckZ = clampF(s.deckZ != null ? s.deckZ : auto, D.deckZ[0], Math.max(D.deckZ[1], s.tideRange + 3));
     }
     if(family === 'gangway'){
@@ -1158,9 +1190,9 @@
       berthUtilisation: P.berths.utilisation != null ? P.berths.utilisation : null,
       gangway: (s.family === 'float' && s.gangway) ? {
         run: +(s.gangRun != null ? clampF(s.gangRun, 3, 14) : Math.max(3, Math.min(14, (T.R + s.freeboard + 0.9) * 2.4))).toFixed(2),
-        width: s.gangWidth, abutZ: +(s.abutZ != null ? s.abutZ : T.R + 1.0).toFixed(2),
+        width: s.gangWidth, abutZ: +(s.abutZ != null ? s.abutZ : T.R + s.clearance).toFixed(2),
         landZ: +top.toFixed(2), ridesFloat: true, hingeFixed: true,
-        angleDeg: +(Math.atan2((s.abutZ != null ? s.abutZ : T.R + 1.0) - top,
+        angleDeg: +(Math.atan2((s.abutZ != null ? s.abutZ : T.R + s.clearance) - top,
           (s.gangRun != null ? clampF(s.gangRun, 3, 14) : Math.max(3, Math.min(14, (T.R + s.freeboard + 0.9) * 2.4)))) * 180/Math.PI).toFixed(1),
       } : null,
       snap: { px:{ x:+hx.toFixed(2), y:0, z:+top.toFixed(2), face:'+x' }, nx:{ x:+(-hx).toFixed(2), y:0, z:+top.toFixed(2), face:'-x' } },
