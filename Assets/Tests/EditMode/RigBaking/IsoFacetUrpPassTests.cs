@@ -524,7 +524,9 @@ namespace HiddenHarbours.Tests.RigBaking
         /// </summary>
         [Test]
         public void EverySlot_HidesTheSameWayAsSlotZero_PerPixel(
-            [Range(0, IsoFacetHullRenderer.DeckOccupantSlots - 1)] int slot)
+            // Qualified: this file imports both NUnit.Framework and UnityEngine, and each declares a
+            // RangeAttribute (the repo's FlowerPoseSelectTests hit the same ambiguity first).
+            [NUnit.Framework.Range(0, IsoFacetHullRenderer.DeckOccupantSlots - 1)] int slot)
         {
             RequireAGraphicsDevice();
             var red = new Color32(255, 0, 0, 255);
