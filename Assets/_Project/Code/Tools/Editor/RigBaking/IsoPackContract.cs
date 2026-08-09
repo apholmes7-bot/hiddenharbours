@@ -78,6 +78,41 @@ namespace HiddenHarbours.Tools.RigBaking
             public bool pivotInsideInk;
 
             public SheetPlan sheet;
+
+            // ---- what the piece IS, as opposed to how it is packed -----------------------------
+            // Declared here because JsonUtility drops any JSON field it has no field for, silently:
+            // a consumer reading `zone` off an undeclared member gets null and scatters every find
+            // into the same band. Each block is populated for the families that publish it and left
+            // at its default for the others, which is why a reader must know what it is asking.
+
+            /// <summary>Footprint in metres and drawn height — <c>wharfDecor</c> / <c>utilityIso</c>.
+            /// The honest size of a prop: its cell is larger, because the ¾ camera draws the near half
+            /// of the footprint and the whole of the height outside the ground box.</summary>
+            public float footprintW, footprintD, heightM;
+
+            /// <summary>Where a find belongs on the shore — <c>shoreFinds</c>: <c>tide</c> (below the
+            /// wrack line), <c>wrack</c> (the line itself), <c>upper</c> (upper beach), <c>dune</c>.
+            /// The kit bakes three STATES per find for exactly this axis.</summary>
+            public string zone;
+
+            /// <summary>How often a find turns up — <c>common</c> / <c>often</c> / <c>scarce</c> /
+            /// <c>rare</c>. <c>shoreFinds</c>.</summary>
+            public string rarity;
+
+            /// <summary>The find's category (<c>shell</c>, <c>remains</c>, <c>wood</c>, …).</summary>
+            public string cat;
+
+            /// <summary>The pile cap: how many of this find read as a heap before the shape goes to
+            /// mush. <c>shoreFinds</c>.</summary>
+            public int stack;
+
+            /// <summary>The find's TRUE size in centimetres, against which the drawn size is a
+            /// deliberate compression (<c>drawn px = 4.7·cm^0.62</c>). <c>shoreFinds</c>.</summary>
+            public float trueCm;
+
+            /// <summary>How far a find's silhouette reaches beyond its cell, as a multiple.
+            /// <c>shoreFinds</c>.</summary>
+            public float reach;
         }
 
         [Serializable]
