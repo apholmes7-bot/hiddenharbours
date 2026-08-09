@@ -104,6 +104,39 @@ namespace HiddenHarbours.Core
         /// LOOPING). Locomotion, not a transition: the cell plays in place and the engine translates the
         /// sprite down the ladder. There is no <c>ladderUp</c> and it is not this reversed.</summary>
         LadderDown = 4,
+
+        // ---- the DECK-WORK family, rig pass 6.3 (drop of 2026-08-09) ------------------------------
+        // Six clips for the working furniture in deck-loop-kit/Art/deckGearRig.js. Frame counts and
+        // rates below are MEASURED from the rig's own ANIMS table, not read off its README.
+        //
+        // ⚠️ THE WORK HEIGHT IS A WORLD METRE, never a body fraction — a bench belongs to the deck, not
+        // to whoever is standing at it. All six read opts.workZ, and DeckGear.station() is the only
+        // thing that should supply it. Never guess it and never scale it by build.
+        //
+        // These are declared AHEAD of their art: pass 6.3 is imported but its sheets are not baked yet
+        // (that is the coordinator's step after merge-review). That is safe and deliberate — clip art
+        // is all-or-nothing (HasClip), so until the bake lands ClipSheetsFor returns an unwired block,
+        // PlayDriven refuses, and every caller keeps the fallback it already has.
+
+        /// <summary>Working the hauler drum, from the rig's <c>hauler</c> (8 f, 115 ms, LOOPING). The
+        /// drum, the davit and the warp coming aboard. The gaff itself is NOT authored — the rig's own
+        /// known-open list says beat 1 reads as a reach.</summary>
+        Hauler = 5,
+        /// <summary>Any two-handed bench task — banding, gutting, emptying — from the rig's
+        /// <c>bench</c> (10 f, 130 ms, LOOPING).</summary>
+        Bench = 6,
+        /// <summary>Cutting bait off the chopping board, from the rig's <c>chop</c> (8 f, 105 ms,
+        /// LOOPING).</summary>
+        Chop = 7,
+        /// <summary>Taking a load off a surface, from the rig's <c>lift</c> (8 f, 105 ms, one-shot).</summary>
+        Lift = 8,
+        /// <summary>Putting a load down on a surface, from the rig's <c>place</c> (8 f, 110 ms,
+        /// one-shot).</summary>
+        Place = 9,
+        /// <summary>Sending a pot back over the rail, from the rig's <c>toss</c> (8 f, 95 ms, one-shot).
+        /// Authored for a POT going over a rail — the rig's known-open list is explicit that a light
+        /// object thrown flat is not the same arc, so do not reuse this for one.</summary>
+        Toss = 10,
     }
 
     /// <summary>
@@ -294,6 +327,38 @@ namespace HiddenHarbours.Core
         public CharacterClipSheets LadderDownClip = new CharacterClipSheets
         { FrameCount = 10, FramesPerSecond = 1000f / 110f, Loops = true };
 
+        // ---- the deck-work family (rig pass 6.3) — declared ahead of the bake --------------------
+        // Frame counts and rates are the rig's own ANIMS values, measured in a V8 host, not read off a
+        // README. Until the sheets are baked these blocks carry no sprites, HasClip stays false, and
+        // the clips simply never play.
+
+        [Tooltip("WORKING THE HAULER DRUM — the rig's 'hauler' clip (LOOPING). Pace it by the LINE " +
+                 "hauled, never by a clock. Its workZ must come from DeckGear.station('haulerstation').")]
+        public CharacterClipSheets HaulerClip = new CharacterClipSheets
+        { FrameCount = 8, FramesPerSecond = 1000f / 115f, Loops = true };
+
+        [Tooltip("A TWO-HANDED BENCH TASK — the rig's 'bench' clip (LOOPING). Banding, gutting, " +
+                 "emptying. Pace it by the QUANTITY worked, never by a clock.")]
+        public CharacterClipSheets BenchClip = new CharacterClipSheets
+        { FrameCount = 10, FramesPerSecond = 1000f / 130f, Loops = true };
+
+        [Tooltip("CUTTING BAIT — the rig's 'chop' clip (LOOPING), worked off the chopping board.")]
+        public CharacterClipSheets ChopClip = new CharacterClipSheets
+        { FrameCount = 8, FramesPerSecond = 1000f / 105f, Loops = true };
+
+        [Tooltip("TAKING A LOAD OFF A SURFACE — the rig's 'lift' clip (one-shot).")]
+        public CharacterClipSheets LiftClip = new CharacterClipSheets
+        { FrameCount = 8, FramesPerSecond = 1000f / 105f, Loops = false };
+
+        [Tooltip("PUTTING A LOAD DOWN — the rig's 'place' clip (one-shot).")]
+        public CharacterClipSheets PlaceClip = new CharacterClipSheets
+        { FrameCount = 8, FramesPerSecond = 1000f / 110f, Loops = false };
+
+        [Tooltip("SENDING A POT BACK OVER THE RAIL — the rig's 'toss' clip (one-shot). Authored for a " +
+                 "POT over a rail; a light object thrown flat is a different arc and is not this.")]
+        public CharacterClipSheets TossClip = new CharacterClipSheets
+        { FrameCount = 8, FramesPerSecond = 1000f / 95f, Loops = false };
+
         // ---- the all-or-nothing gates + lookups (pure; EditMode-testable without a scene) ----------
 
         /// <summary>The sheet for a gait (never null — an unwired gait returns an empty array).</summary>
@@ -482,6 +547,12 @@ namespace HiddenHarbours.Core
             CharacterClip.BoardDown => BoardDownClip,
             CharacterClip.Haul => HaulClip,
             CharacterClip.LadderDown => LadderDownClip,
+            CharacterClip.Hauler => HaulerClip,
+            CharacterClip.Bench => BenchClip,
+            CharacterClip.Chop => ChopClip,
+            CharacterClip.Lift => LiftClip,
+            CharacterClip.Place => PlaceClip,
+            CharacterClip.Toss => TossClip,
             _ => null,
         };
 
