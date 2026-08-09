@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: 575b4a15c1f15674c89b003615a89086
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 7037619390975141048
+    second: WaveCobble_bleached_0
+  - first:
+      213: -2995999559622140404
+    second: WaveCobble_bleached_1
+  - first:
+      213: 6699349899085919831
+    second: WaveCobble_bleached_2
+  - first:
+      213: 4775243793032496701
+    second: WaveCobble_bleached_3
+  - first:
+      213: -3479410633105834079
+    second: WaveCobble_bleached_4
+  - first:
+      213: 7855039715247937446
+    second: WaveCobble_bleached_5
+  - first:
+      213: -3317685379339236496
+    second: WaveCobble_bleached_6
+  - first:
+      213: 6902328742822232295
+    second: WaveCobble_bleached_7
+  - first:
+      213: -785995358130574541
+    second: WaveCobble_bleached_8
+  - first:
+      213: 3723985101119180956
+    second: WaveCobble_bleached_9
+  - first:
+      213: 492074724849112791
+    second: WaveCobble_bleached_10
+  - first:
+      213: -8740433558141919863
+    second: WaveCobble_bleached_11
+  - first:
+      213: -7340883117566476013
+    second: WaveCobble_bleached_12
+  - first:
+      213: -1800859119029581458
+    second: WaveCobble_bleached_13
+  - first:
+      213: 8334611916553111405
+    second: WaveCobble_bleached_14
+  - first:
+      213: -1206933771488534570
+    second: WaveCobble_bleached_15
+  - first:
+      213: 9091579023169686274
+    second: WaveCobble_bleached_16
+  - first:
+      213: -5670695342066383048
+    second: WaveCobble_bleached_17
+  - first:
+      213: -6299638765864639531
+    second: WaveCobble_bleached_18
+  - first:
+      213: 1535347543182353696
+    second: WaveCobble_bleached_19
+  - first:
+      213: 8656978033816610146
+    second: WaveCobble_bleached_20
+  - first:
+      213: 7565326329540441833
+    second: WaveCobble_bleached_21
+  - first:
+      213: -2233368077688203414
+    second: WaveCobble_bleached_22
+  - first:
+      213: 2121510307579638144
+    second: WaveCobble_bleached_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: WaveCobble_bleached_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 37
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.33333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b469779c85aaa160800000000000000
+      internalID: 7037619390975141048
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveCobble_bleached_1
+      rect:
+        serializedVersion: 2
+        x: 37
+        y: 0
+        width: 37
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.33333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c0ede7526421c66d0800000000000000
+      internalID: -2995999559622140404
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveCobble_bleached_2
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 0
+        width: 37
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.33333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 756b0111d3fd8fc50800000000000000
+      internalID: 6699349899085919831
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveCobble_bleached_3
+      rect:
+        serializedVersion: 2
+        x: 111
+        y: 0
+        width: 37
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.33333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d36479fede2154240800000000000000
+      internalID: 4775243793032496701
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveCobble_bleached_4
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 0
+        width: 37
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.33333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1af7202c676a6bfc0800000000000000
+      internalID: -3479410633105834079
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveCobble_bleached_5
+      rect:
+        serializedVersion: 2
+        x: 185
+        y: 0
+        width: 37
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.33333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6a750f3d005b20d60800000000000000
+      internalID: 7855039715247937446
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveCobble_bleached_6
+      rect:
+        serializedVersion: 2
+        x: 222
+        y: 0
+        width: 37
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.33333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 07b4affa9b635f1d0800000000000000
+      internalID: -3317685379339236496
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveCobble_bleached_7
+      rect:
+        serializedVersion: 2
+        x: 259
+        y: 0
+        width: 37
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.33333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7e043e6eb6ff9cf50800000000000000
+      internalID: 6902328742822232295
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveCobble_bleached_8
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 0
+        width: 37
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.33333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 33b658bd2659715f0800000000000000
+      internalID: -785995358130574541
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveCobble_bleached_9
+      rect:
+        serializedVersion: 2
+        x: 333
+        y: 0
+        width: 37
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.33333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c905e0d08b04ea330800000000000000
+      internalID: 3723985101119180956
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveCobble_bleached_10
+      rect:
+        serializedVersion: 2
+        x: 370
+        y: 0
+        width: 37
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.33333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7d65499ea5334d600800000000000000
+      internalID: 492074724849112791
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveCobble_bleached_11
+      rect:
+        serializedVersion: 2
+        x: 407
+        y: 0
+        width: 37
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.33333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 98d1c08dcfdb3b680800000000000000
+      internalID: -8740433558141919863
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveCobble_bleached_12
+      rect:
+        serializedVersion: 2
+        x: 444
+        y: 0
+        width: 37
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.33333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 311c9cfb2b1ff1a90800000000000000
+      internalID: -7340883117566476013
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveCobble_bleached_13
+      rect:
+        serializedVersion: 2
+        x: 481
+        y: 0
+        width: 37
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.33333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e6908bf2c201207e0800000000000000
+      internalID: -1800859119029581458
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveCobble_bleached_14
+      rect:
+        serializedVersion: 2
+        x: 518
+        y: 0
+        width: 37
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.33333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d67c2e2216d7aa370800000000000000
+      internalID: 8334611916553111405
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveCobble_bleached_15
+      rect:
+        serializedVersion: 2
+        x: 555
+        y: 0
+        width: 37
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.33333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6dfd003212c104fe0800000000000000
+      internalID: -1206933771488534570
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveCobble_bleached_16
+      rect:
+        serializedVersion: 2
+        x: 592
+        y: 0
+        width: 37
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.33333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 20b0c6bc3f6cb2e70800000000000000
+      internalID: 9091579023169686274
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveCobble_bleached_17
+      rect:
+        serializedVersion: 2
+        x: 629
+        y: 0
+        width: 37
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.33333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 837cbaa81a4ad41b0800000000000000
+      internalID: -5670695342066383048
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveCobble_bleached_18
+      rect:
+        serializedVersion: 2
+        x: 666
+        y: 0
+        width: 37
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.33333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5d3ab5b5bef2398a0800000000000000
+      internalID: -6299638765864639531
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveCobble_bleached_19
+      rect:
+        serializedVersion: 2
+        x: 703
+        y: 0
+        width: 37
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.33333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0252726b476ae4510800000000000000
+      internalID: 1535347543182353696
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveCobble_bleached_20
+      rect:
+        serializedVersion: 2
+        x: 740
+        y: 0
+        width: 37
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.33333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 265aff5b7a3c32870800000000000000
+      internalID: 8656978033816610146
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveCobble_bleached_21
+      rect:
+        serializedVersion: 2
+        x: 777
+        y: 0
+        width: 37
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.33333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9e6fa22c6307df860800000000000000
+      internalID: 7565326329540441833
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveCobble_bleached_22
+      rect:
+        serializedVersion: 2
+        x: 814
+        y: 0
+        width: 37
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.33333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a6792b4f09b7101e0800000000000000
+      internalID: -2233368077688203414
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveCobble_bleached_23
+      rect:
+        serializedVersion: 2
+        x: 851
+        y: 0
+        width: 37
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.33333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0813d9e626e117d10800000000000000
+      internalID: 2121510307579638144
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 89abd7b9d47a6044d8a2b3afcf8e659e
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      WaveCobble_bleached_0: 7037619390975141048
+      WaveCobble_bleached_1: -2995999559622140404
+      WaveCobble_bleached_10: 492074724849112791
+      WaveCobble_bleached_11: -8740433558141919863
+      WaveCobble_bleached_12: -7340883117566476013
+      WaveCobble_bleached_13: -1800859119029581458
+      WaveCobble_bleached_14: 8334611916553111405
+      WaveCobble_bleached_15: -1206933771488534570
+      WaveCobble_bleached_16: 9091579023169686274
+      WaveCobble_bleached_17: -5670695342066383048
+      WaveCobble_bleached_18: -6299638765864639531
+      WaveCobble_bleached_19: 1535347543182353696
+      WaveCobble_bleached_2: 6699349899085919831
+      WaveCobble_bleached_20: 8656978033816610146
+      WaveCobble_bleached_21: 7565326329540441833
+      WaveCobble_bleached_22: -2233368077688203414
+      WaveCobble_bleached_23: 2121510307579638144
+      WaveCobble_bleached_3: 4775243793032496701
+      WaveCobble_bleached_4: -3479410633105834079
+      WaveCobble_bleached_5: 7855039715247937446
+      WaveCobble_bleached_6: -3317685379339236496
+      WaveCobble_bleached_7: 6902328742822232295
+      WaveCobble_bleached_8: -785995358130574541
+      WaveCobble_bleached_9: 3723985101119180956
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

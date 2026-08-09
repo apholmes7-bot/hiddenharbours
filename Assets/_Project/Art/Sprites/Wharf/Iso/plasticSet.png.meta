@@ -1,0 +1,338 @@
+fileFormatVersion: 2
+guid: 74a8783e5dd0b4b42a38e36e839d3164
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -9164584881142571837
+    second: plasticSet_0
+  - first:
+      213: 2222586334346420430
+    second: plasticSet_1
+  - first:
+      213: 5471293295344703491
+    second: plasticSet_2
+  - first:
+      213: -3333009859856152249
+    second: plasticSet_3
+  - first:
+      213: -5232848377374756943
+    second: plasticSet_4
+  - first:
+      213: -3350422104606753432
+    second: plasticSet_5
+  - first:
+      213: 8060851856636716298
+    second: plasticSet_6
+  - first:
+      213: -2060351599682201355
+    second: plasticSet_7
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: plasticSet_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 592
+        width: 757
+        height: 592
+      alignment: 9
+      pivot: {x: 0.4993395, y: 0.4712838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3ccd49d4b9ad0d080800000000000000
+      internalID: -9164584881142571837
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: plasticSet_1
+      rect:
+        serializedVersion: 2
+        x: 757
+        y: 592
+        width: 757
+        height: 592
+      alignment: 9
+      pivot: {x: 0.4993395, y: 0.4712838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ec02b5dce7638de10800000000000000
+      internalID: 2222586334346420430
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: plasticSet_2
+      rect:
+        serializedVersion: 2
+        x: 1514
+        y: 592
+        width: 757
+        height: 592
+      alignment: 9
+      pivot: {x: 0.4993395, y: 0.4712838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3085ff29340fdeb40800000000000000
+      internalID: 5471293295344703491
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: plasticSet_3
+      rect:
+        serializedVersion: 2
+        x: 2271
+        y: 592
+        width: 757
+        height: 592
+      alignment: 9
+      pivot: {x: 0.4993395, y: 0.4712838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 74946660135ceb1d0800000000000000
+      internalID: -3333009859856152249
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: plasticSet_4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 757
+        height: 592
+      alignment: 9
+      pivot: {x: 0.4993395, y: 0.4712838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1bf291720203167b0800000000000000
+      internalID: -5232848377374756943
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: plasticSet_5
+      rect:
+        serializedVersion: 2
+        x: 757
+        y: 0
+        width: 757
+        height: 592
+      alignment: 9
+      pivot: {x: 0.4993395, y: 0.4712838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 86d3c4fd8d8e081d0800000000000000
+      internalID: -3350422104606753432
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: plasticSet_6
+      rect:
+        serializedVersion: 2
+        x: 1514
+        y: 0
+        width: 757
+        height: 592
+      alignment: 9
+      pivot: {x: 0.4993395, y: 0.4712838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a0521ed2e06eddf60800000000000000
+      internalID: 8060851856636716298
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: plasticSet_7
+      rect:
+        serializedVersion: 2
+        x: 2271
+        y: 0
+        width: 757
+        height: 592
+      alignment: 9
+      pivot: {x: 0.4993395, y: 0.4712838}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5f8d884e2292863e0800000000000000
+      internalID: -2060351599682201355
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5eb54982ceb17a54baab89535614b326
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      plasticSet_0: -9164584881142571837
+      plasticSet_1: 2222586334346420430
+      plasticSet_2: 5471293295344703491
+      plasticSet_3: -3333009859856152249
+      plasticSet_4: -5232848377374756943
+      plasticSet_5: -3350422104606753432
+      plasticSet_6: 8060851856636716298
+      plasticSet_7: -2060351599682201355
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

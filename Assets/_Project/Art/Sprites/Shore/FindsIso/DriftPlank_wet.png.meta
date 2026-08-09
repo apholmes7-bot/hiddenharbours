@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: 5ba0e3fe1e759d14cbd8b86c946f4f9f
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 3286274160264778216
+    second: DriftPlank_wet_0
+  - first:
+      213: -4840983116060839262
+    second: DriftPlank_wet_1
+  - first:
+      213: 8536989212555745909
+    second: DriftPlank_wet_2
+  - first:
+      213: 8007512079737468100
+    second: DriftPlank_wet_3
+  - first:
+      213: 4776964466653285
+    second: DriftPlank_wet_4
+  - first:
+      213: 9182776252093324093
+    second: DriftPlank_wet_5
+  - first:
+      213: 2306223508225789772
+    second: DriftPlank_wet_6
+  - first:
+      213: -3681828069672815212
+    second: DriftPlank_wet_7
+  - first:
+      213: -5327254763237037846
+    second: DriftPlank_wet_8
+  - first:
+      213: 2542734962296260239
+    second: DriftPlank_wet_9
+  - first:
+      213: -4578624737734770377
+    second: DriftPlank_wet_10
+  - first:
+      213: -5219432553728695333
+    second: DriftPlank_wet_11
+  - first:
+      213: -7938627092654928113
+    second: DriftPlank_wet_12
+  - first:
+      213: 2069355123502906373
+    second: DriftPlank_wet_13
+  - first:
+      213: 9107375519027590502
+    second: DriftPlank_wet_14
+  - first:
+      213: -4782781872084868284
+    second: DriftPlank_wet_15
+  - first:
+      213: -278149671609407761
+    second: DriftPlank_wet_16
+  - first:
+      213: 863987644644476721
+    second: DriftPlank_wet_17
+  - first:
+      213: 3297455032381722108
+    second: DriftPlank_wet_18
+  - first:
+      213: 3253667729620155980
+    second: DriftPlank_wet_19
+  - first:
+      213: -2762031478371775532
+    second: DriftPlank_wet_20
+  - first:
+      213: -5456270603264955951
+    second: DriftPlank_wet_21
+  - first:
+      213: -2821046868668054283
+    second: DriftPlank_wet_22
+  - first:
+      213: -3426477015438044091
+    second: DriftPlank_wet_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: DriftPlank_wet_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 90
+        width: 110
+        height: 90
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8e19025ffe03b9d20800000000000000
+      internalID: 3286274160264778216
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftPlank_wet_1
+      rect:
+        serializedVersion: 2
+        x: 110
+        y: 90
+        width: 110
+        height: 90
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2a2b78b218f51dcb0800000000000000
+      internalID: -4840983116060839262
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftPlank_wet_2
+      rect:
+        serializedVersion: 2
+        x: 220
+        y: 90
+        width: 110
+        height: 90
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 57a1ab9357a797670800000000000000
+      internalID: 8536989212555745909
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftPlank_wet_3
+      rect:
+        serializedVersion: 2
+        x: 330
+        y: 90
+        width: 110
+        height: 90
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4c4b6679fc5602f60800000000000000
+      internalID: 8007512079737468100
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftPlank_wet_4
+      rect:
+        serializedVersion: 2
+        x: 440
+        y: 90
+        width: 110
+        height: 90
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 568b326bf98f01000800000000000000
+      internalID: 4776964466653285
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftPlank_wet_5
+      rect:
+        serializedVersion: 2
+        x: 550
+        y: 90
+        width: 110
+        height: 90
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d3b5aed4956cf6f70800000000000000
+      internalID: 9182776252093324093
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftPlank_wet_6
+      rect:
+        serializedVersion: 2
+        x: 660
+        y: 90
+        width: 110
+        height: 90
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c4f0474df0a510020800000000000000
+      internalID: 2306223508225789772
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftPlank_wet_7
+      rect:
+        serializedVersion: 2
+        x: 770
+        y: 90
+        width: 110
+        height: 90
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 495f617b0e487ecc0800000000000000
+      internalID: -3681828069672815212
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftPlank_wet_8
+      rect:
+        serializedVersion: 2
+        x: 880
+        y: 90
+        width: 110
+        height: 90
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ae8af31940ac116b0800000000000000
+      internalID: -5327254763237037846
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftPlank_wet_9
+      rect:
+        serializedVersion: 2
+        x: 990
+        y: 90
+        width: 110
+        height: 90
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f8682a9e9fb994320800000000000000
+      internalID: 2542734962296260239
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftPlank_wet_10
+      rect:
+        serializedVersion: 2
+        x: 1100
+        y: 90
+        width: 110
+        height: 90
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 731c0834f057570c0800000000000000
+      internalID: -4578624737734770377
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftPlank_wet_11
+      rect:
+        serializedVersion: 2
+        x: 1210
+        y: 90
+        width: 110
+        height: 90
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bd324e10fb9d097b0800000000000000
+      internalID: -5219432553728695333
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftPlank_wet_12
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 110
+        height: 90
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f0fc20a48b454d190800000000000000
+      internalID: -7938627092654928113
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftPlank_wet_13
+      rect:
+        serializedVersion: 2
+        x: 110
+        y: 0
+        width: 110
+        height: 90
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 50c768a5583d7bc10800000000000000
+      internalID: 2069355123502906373
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftPlank_wet_14
+      rect:
+        serializedVersion: 2
+        x: 220
+        y: 0
+        width: 110
+        height: 90
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6657ab718c5e36e70800000000000000
+      internalID: 9107375519027590502
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftPlank_wet_15
+      rect:
+        serializedVersion: 2
+        x: 330
+        y: 0
+        width: 110
+        height: 90
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 44324344a3520adb0800000000000000
+      internalID: -4782781872084868284
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftPlank_wet_16
+      rect:
+        serializedVersion: 2
+        x: 440
+        y: 0
+        width: 110
+        height: 90
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fe6645de850d32cf0800000000000000
+      internalID: -278149671609407761
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftPlank_wet_17
+      rect:
+        serializedVersion: 2
+        x: 550
+        y: 0
+        width: 110
+        height: 90
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1374c596f208dfb00800000000000000
+      internalID: 863987644644476721
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftPlank_wet_18
+      rect:
+        serializedVersion: 2
+        x: 660
+        y: 0
+        width: 110
+        height: 90
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cfdcfeb91e9e2cd20800000000000000
+      internalID: 3297455032381722108
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftPlank_wet_19
+      rect:
+        serializedVersion: 2
+        x: 770
+        y: 0
+        width: 110
+        height: 90
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c4e3929bf89572d20800000000000000
+      internalID: 3253667729620155980
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftPlank_wet_20
+      rect:
+        serializedVersion: 2
+        x: 880
+        y: 0
+        width: 110
+        height: 90
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4db0439110b4ba9d0800000000000000
+      internalID: -2762031478371775532
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftPlank_wet_21
+      rect:
+        serializedVersion: 2
+        x: 990
+        y: 0
+        width: 110
+        height: 90
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1d96cfd7bce6744b0800000000000000
+      internalID: -5456270603264955951
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftPlank_wet_22
+      rect:
+        serializedVersion: 2
+        x: 1100
+        y: 0
+        width: 110
+        height: 90
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5f4005ac1d0a9d8d0800000000000000
+      internalID: -2821046868668054283
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftPlank_wet_23
+      rect:
+        serializedVersion: 2
+        x: 1210
+        y: 0
+        width: 110
+        height: 90
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44444445}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 54456c70f45b270d0800000000000000
+      internalID: -3426477015438044091
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: d0ccd7423aa53854eb93e749a2c8324a
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      DriftPlank_wet_0: 3286274160264778216
+      DriftPlank_wet_1: -4840983116060839262
+      DriftPlank_wet_10: -4578624737734770377
+      DriftPlank_wet_11: -5219432553728695333
+      DriftPlank_wet_12: -7938627092654928113
+      DriftPlank_wet_13: 2069355123502906373
+      DriftPlank_wet_14: 9107375519027590502
+      DriftPlank_wet_15: -4782781872084868284
+      DriftPlank_wet_16: -278149671609407761
+      DriftPlank_wet_17: 863987644644476721
+      DriftPlank_wet_18: 3297455032381722108
+      DriftPlank_wet_19: 3253667729620155980
+      DriftPlank_wet_2: 8536989212555745909
+      DriftPlank_wet_20: -2762031478371775532
+      DriftPlank_wet_21: -5456270603264955951
+      DriftPlank_wet_22: -2821046868668054283
+      DriftPlank_wet_23: -3426477015438044091
+      DriftPlank_wet_3: 8007512079737468100
+      DriftPlank_wet_4: 4776964466653285
+      DriftPlank_wet_5: 9182776252093324093
+      DriftPlank_wet_6: 2306223508225789772
+      DriftPlank_wet_7: -3681828069672815212
+      DriftPlank_wet_8: -5327254763237037846
+      DriftPlank_wet_9: 2542734962296260239
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -10,6 +10,7 @@
     "alpha": "binary",
     "pivot": "'sit' — the ground-contact centre",
     "keyline": "#231d14",
+    "cellRule": "cellOf(key) verbatim. It is ANALYTIC — computed from the find's form parameters, never rasterised — so no renderer change can move it, the keyline gate included.",
     "keylineDefault": false,
     "note": "ground foreshorten is 0.72 here, NOT the 0.6428 the structure/prop rigs use — do not carry the constant across families"
   },
@@ -26,6 +27,14 @@
     "key": "Driftwood",
     "w": 1536,
     "h": 242
+  },
+  "worstSheetByMaxDim": {
+    "key": "RopeScrap",
+    "w": 1584,
+    "h": 58,
+    "maxDim": 1584,
+    "headroomToCap": 464,
+    "note": "A texture cap binds on the LONGEST SIDE, not on area — size import headroom off THIS, not off worstSheet (which is the worst by area). Cells are parametric, so re-measure rather than trusting either field after an authoring change."
   },
   "count": 36,
   "cells": [

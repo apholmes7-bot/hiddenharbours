@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: d5dbdf5b3e5f06c42806fd73e72cc44b
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 6299197047709453705
+    second: TrapLath_dry_0
+  - first:
+      213: 4025135512421025088
+    second: TrapLath_dry_1
+  - first:
+      213: -2680143409007053978
+    second: TrapLath_dry_2
+  - first:
+      213: 5366118631406268035
+    second: TrapLath_dry_3
+  - first:
+      213: -828085157231409918
+    second: TrapLath_dry_4
+  - first:
+      213: -6875705108492497591
+    second: TrapLath_dry_5
+  - first:
+      213: 4196537644502697267
+    second: TrapLath_dry_6
+  - first:
+      213: 6444709410971974380
+    second: TrapLath_dry_7
+  - first:
+      213: 176053023885924190
+    second: TrapLath_dry_8
+  - first:
+      213: 112389320682116343
+    second: TrapLath_dry_9
+  - first:
+      213: -382621569365447393
+    second: TrapLath_dry_10
+  - first:
+      213: -231939788509292640
+    second: TrapLath_dry_11
+  - first:
+      213: -3970635750920079134
+    second: TrapLath_dry_12
+  - first:
+      213: 2175413860789567594
+    second: TrapLath_dry_13
+  - first:
+      213: 5359061749273646477
+    second: TrapLath_dry_14
+  - first:
+      213: -3361743458745090149
+    second: TrapLath_dry_15
+  - first:
+      213: 989471457928827439
+    second: TrapLath_dry_16
+  - first:
+      213: -4779011355577247315
+    second: TrapLath_dry_17
+  - first:
+      213: -1334811581351350436
+    second: TrapLath_dry_18
+  - first:
+      213: 220314534079626373
+    second: TrapLath_dry_19
+  - first:
+      213: 6249005601566675960
+    second: TrapLath_dry_20
+  - first:
+      213: 8915634806763999249
+    second: TrapLath_dry_21
+  - first:
+      213: 2063386216975550673
+    second: TrapLath_dry_22
+  - first:
+      213: 5494813923416146268
+    second: TrapLath_dry_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: TrapLath_dry_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 74
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 98d49ee175e3b6750800000000000000
+      internalID: 6299197047709453705
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_dry_1
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 74
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0454aa62c672cd730800000000000000
+      internalID: 4025135512421025088
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_dry_2
+      rect:
+        serializedVersion: 2
+        x: 184
+        y: 74
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 663b70ff4c73ecad0800000000000000
+      internalID: -2680143409007053978
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_dry_3
+      rect:
+        serializedVersion: 2
+        x: 276
+        y: 74
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 38e639fd678487a40800000000000000
+      internalID: 5366118631406268035
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_dry_4
+      rect:
+        serializedVersion: 2
+        x: 368
+        y: 74
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 205c277dfec0284f0800000000000000
+      internalID: -828085157231409918
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_dry_5
+      rect:
+        serializedVersion: 2
+        x: 460
+        y: 74
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 94d47f302a69490a0800000000000000
+      internalID: -6875705108492497591
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_dry_6
+      rect:
+        serializedVersion: 2
+        x: 552
+        y: 74
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3354323e0c81d3a30800000000000000
+      internalID: 4196537644502697267
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_dry_7
+      rect:
+        serializedVersion: 2
+        x: 644
+        y: 74
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ceaf9915015307950800000000000000
+      internalID: 6444709410971974380
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_dry_8
+      rect:
+        serializedVersion: 2
+        x: 736
+        y: 74
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e579a5eda47717200800000000000000
+      internalID: 176053023885924190
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_dry_9
+      rect:
+        serializedVersion: 2
+        x: 828
+        y: 74
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7f41ecfdd794f8100800000000000000
+      internalID: 112389320682116343
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_dry_10
+      rect:
+        serializedVersion: 2
+        x: 920
+        y: 74
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f1de19ab5b7a0baf0800000000000000
+      internalID: -382621569365447393
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_dry_11
+      rect:
+        serializedVersion: 2
+        x: 1012
+        y: 74
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0a7df90cdfbf7ccf0800000000000000
+      internalID: -231939788509292640
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_dry_12
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2e831f562d775e8c0800000000000000
+      internalID: -3970635750920079134
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_dry_13
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 0
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a60c2db616f903e10800000000000000
+      internalID: 2175413860789567594
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_dry_14
+      rect:
+        serializedVersion: 2
+        x: 184
+        y: 0
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d85d6d674463f5a40800000000000000
+      internalID: 5359061749273646477
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_dry_15
+      rect:
+        serializedVersion: 2
+        x: 276
+        y: 0
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b9f7183b220b851d0800000000000000
+      internalID: -3361743458745090149
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_dry_16
+      rect:
+        serializedVersion: 2
+        x: 368
+        y: 0
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f225c3d6c0f4bbd00800000000000000
+      internalID: 989471457928827439
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_dry_17
+      rect:
+        serializedVersion: 2
+        x: 460
+        y: 0
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: da9924d0e7a8dadb0800000000000000
+      internalID: -4779011355577247315
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_dry_18
+      rect:
+        serializedVersion: 2
+        x: 552
+        y: 0
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c5fa97b50fbc97de0800000000000000
+      internalID: -1334811581351350436
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_dry_19
+      rect:
+        serializedVersion: 2
+        x: 644
+        y: 0
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 58cfba6c6e6be0300800000000000000
+      internalID: 220314534079626373
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_dry_20
+      rect:
+        serializedVersion: 2
+        x: 736
+        y: 0
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8f3dec86c7de8b650800000000000000
+      internalID: 6249005601566675960
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_dry_21
+      rect:
+        serializedVersion: 2
+        x: 828
+        y: 0
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 110d644ae92babb70800000000000000
+      internalID: 8915634806763999249
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_dry_22
+      rect:
+        serializedVersion: 2
+        x: 920
+        y: 0
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1d8c34105de92ac10800000000000000
+      internalID: 2063386216975550673
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_dry_23
+      rect:
+        serializedVersion: 2
+        x: 1012
+        y: 0
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c51071c8620814c40800000000000000
+      internalID: 5494813923416146268
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 366444df43a584a4a88a11feb8622aad
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      TrapLath_dry_0: 6299197047709453705
+      TrapLath_dry_1: 4025135512421025088
+      TrapLath_dry_10: -382621569365447393
+      TrapLath_dry_11: -231939788509292640
+      TrapLath_dry_12: -3970635750920079134
+      TrapLath_dry_13: 2175413860789567594
+      TrapLath_dry_14: 5359061749273646477
+      TrapLath_dry_15: -3361743458745090149
+      TrapLath_dry_16: 989471457928827439
+      TrapLath_dry_17: -4779011355577247315
+      TrapLath_dry_18: -1334811581351350436
+      TrapLath_dry_19: 220314534079626373
+      TrapLath_dry_2: -2680143409007053978
+      TrapLath_dry_20: 6249005601566675960
+      TrapLath_dry_21: 8915634806763999249
+      TrapLath_dry_22: 2063386216975550673
+      TrapLath_dry_23: 5494813923416146268
+      TrapLath_dry_3: 5366118631406268035
+      TrapLath_dry_4: -828085157231409918
+      TrapLath_dry_5: -6875705108492497591
+      TrapLath_dry_6: 4196537644502697267
+      TrapLath_dry_7: 6444709410971974380
+      TrapLath_dry_8: 176053023885924190
+      TrapLath_dry_9: 112389320682116343
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

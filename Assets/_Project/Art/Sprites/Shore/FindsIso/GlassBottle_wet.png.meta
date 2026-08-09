@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: 793be9c8c60a42348af0d825b911fe9a
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8740487584210517630
+    second: GlassBottle_wet_0
+  - first:
+      213: -5336995587178094078
+    second: GlassBottle_wet_1
+  - first:
+      213: -5957734837123385125
+    second: GlassBottle_wet_2
+  - first:
+      213: 7131349509626211358
+    second: GlassBottle_wet_3
+  - first:
+      213: 6946665230840930009
+    second: GlassBottle_wet_4
+  - first:
+      213: -4105598815374226010
+    second: GlassBottle_wet_5
+  - first:
+      213: -8262081137760412271
+    second: GlassBottle_wet_6
+  - first:
+      213: 8893029126645269662
+    second: GlassBottle_wet_7
+  - first:
+      213: 4746031811782499984
+    second: GlassBottle_wet_8
+  - first:
+      213: 3091087761813288290
+    second: GlassBottle_wet_9
+  - first:
+      213: -492990248931194460
+    second: GlassBottle_wet_10
+  - first:
+      213: 3467365688453938860
+    second: GlassBottle_wet_11
+  - first:
+      213: 440092600603737604
+    second: GlassBottle_wet_12
+  - first:
+      213: -4969882484676427103
+    second: GlassBottle_wet_13
+  - first:
+      213: -2826020000202578661
+    second: GlassBottle_wet_14
+  - first:
+      213: 7009361205822629507
+    second: GlassBottle_wet_15
+  - first:
+      213: 2321641759026920048
+    second: GlassBottle_wet_16
+  - first:
+      213: 6241155048392968284
+    second: GlassBottle_wet_17
+  - first:
+      213: -4608708954050424356
+    second: GlassBottle_wet_18
+  - first:
+      213: 6079628626350242877
+    second: GlassBottle_wet_19
+  - first:
+      213: -5271056342881561110
+    second: GlassBottle_wet_20
+  - first:
+      213: 3868499187150499947
+    second: GlassBottle_wet_21
+  - first:
+      213: -8764122214864570983
+    second: GlassBottle_wet_22
+  - first:
+      213: -8471202239212078632
+    second: GlassBottle_wet_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: GlassBottle_wet_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.50877196, y: 0.38181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e7e749416237c4970800000000000000
+      internalID: 8740487584210517630
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GlassBottle_wet_1
+      rect:
+        serializedVersion: 2
+        x: 57
+        y: 0
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.50877196, y: 0.38181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2022c624ace2fe5b0800000000000000
+      internalID: -5336995587178094078
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GlassBottle_wet_2
+      rect:
+        serializedVersion: 2
+        x: 114
+        y: 0
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.50877196, y: 0.38181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bd87a472bbfd15da0800000000000000
+      internalID: -5957734837123385125
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GlassBottle_wet_3
+      rect:
+        serializedVersion: 2
+        x: 171
+        y: 0
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.50877196, y: 0.38181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e1c2d627894a7f260800000000000000
+      internalID: 7131349509626211358
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GlassBottle_wet_4
+      rect:
+        serializedVersion: 2
+        x: 228
+        y: 0
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.50877196, y: 0.38181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9de94d1f833876060800000000000000
+      internalID: 6946665230840930009
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GlassBottle_wet_5
+      rect:
+        serializedVersion: 2
+        x: 285
+        y: 0
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.50877196, y: 0.38181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6adca5b31abf507c0800000000000000
+      internalID: -4105598815374226010
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GlassBottle_wet_6
+      rect:
+        serializedVersion: 2
+        x: 342
+        y: 0
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.50877196, y: 0.38181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 19dd556caf0375d80800000000000000
+      internalID: -8262081137760412271
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GlassBottle_wet_7
+      rect:
+        serializedVersion: 2
+        x: 399
+        y: 0
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.50877196, y: 0.38181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e94c4e69fd26a6b70800000000000000
+      internalID: 8893029126645269662
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GlassBottle_wet_8
+      rect:
+        serializedVersion: 2
+        x: 456
+        y: 0
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.50877196, y: 0.38181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 09edff989ca4dd140800000000000000
+      internalID: 4746031811782499984
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GlassBottle_wet_9
+      rect:
+        serializedVersion: 2
+        x: 513
+        y: 0
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.50877196, y: 0.38181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 265307c21ffb5ea20800000000000000
+      internalID: 3091087761813288290
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GlassBottle_wet_10
+      rect:
+        serializedVersion: 2
+        x: 570
+        y: 0
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.50877196, y: 0.38181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4a989b60bfb8829f0800000000000000
+      internalID: -492990248931194460
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GlassBottle_wet_11
+      rect:
+        serializedVersion: 2
+        x: 627
+        y: 0
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.50877196, y: 0.38181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: caebca609be8e1030800000000000000
+      internalID: 3467365688453938860
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GlassBottle_wet_12
+      rect:
+        serializedVersion: 2
+        x: 684
+        y: 0
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.50877196, y: 0.38181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 40e734773e58b1600800000000000000
+      internalID: 440092600603737604
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GlassBottle_wet_13
+      rect:
+        serializedVersion: 2
+        x: 741
+        y: 0
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.50877196, y: 0.38181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1a20d65363e670bb0800000000000000
+      internalID: -4969882484676427103
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GlassBottle_wet_14
+      rect:
+        serializedVersion: 2
+        x: 798
+        y: 0
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.50877196, y: 0.38181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b15a6cf58c5f7c8d0800000000000000
+      internalID: -2826020000202578661
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GlassBottle_wet_15
+      rect:
+        serializedVersion: 2
+        x: 855
+        y: 0
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.50877196, y: 0.38181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 386267721e0464160800000000000000
+      internalID: 7009361205822629507
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GlassBottle_wet_16
+      rect:
+        serializedVersion: 2
+        x: 912
+        y: 0
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.50877196, y: 0.38181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 07a338611e0283020800000000000000
+      internalID: 2321641759026920048
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GlassBottle_wet_17
+      rect:
+        serializedVersion: 2
+        x: 969
+        y: 0
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.50877196, y: 0.38181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c58499f03790d9650800000000000000
+      internalID: 6241155048392968284
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GlassBottle_wet_18
+      rect:
+        serializedVersion: 2
+        x: 1026
+        y: 0
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.50877196, y: 0.38181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cd199a0df939a00c0800000000000000
+      internalID: -4608708954050424356
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GlassBottle_wet_19
+      rect:
+        serializedVersion: 2
+        x: 1083
+        y: 0
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.50877196, y: 0.38181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d3cf6ef360e2f5450800000000000000
+      internalID: 6079628626350242877
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GlassBottle_wet_20
+      rect:
+        serializedVersion: 2
+        x: 1140
+        y: 0
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.50877196, y: 0.38181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ae59973fe2279d6b0800000000000000
+      internalID: -5271056342881561110
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GlassBottle_wet_21
+      rect:
+        serializedVersion: 2
+        x: 1197
+        y: 0
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.50877196, y: 0.38181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b603ef7b38bafa530800000000000000
+      internalID: 3868499187150499947
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GlassBottle_wet_22
+      rect:
+        serializedVersion: 2
+        x: 1254
+        y: 0
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.50877196, y: 0.38181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 99533e6a7459f5680800000000000000
+      internalID: -8764122214864570983
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GlassBottle_wet_23
+      rect:
+        serializedVersion: 2
+        x: 1311
+        y: 0
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.50877196, y: 0.38181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8d9354f127e307a80800000000000000
+      internalID: -8471202239212078632
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: ead840743984a5b4c9586c9003e860ec
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      GlassBottle_wet_0: 8740487584210517630
+      GlassBottle_wet_1: -5336995587178094078
+      GlassBottle_wet_10: -492990248931194460
+      GlassBottle_wet_11: 3467365688453938860
+      GlassBottle_wet_12: 440092600603737604
+      GlassBottle_wet_13: -4969882484676427103
+      GlassBottle_wet_14: -2826020000202578661
+      GlassBottle_wet_15: 7009361205822629507
+      GlassBottle_wet_16: 2321641759026920048
+      GlassBottle_wet_17: 6241155048392968284
+      GlassBottle_wet_18: -4608708954050424356
+      GlassBottle_wet_19: 6079628626350242877
+      GlassBottle_wet_2: -5957734837123385125
+      GlassBottle_wet_20: -5271056342881561110
+      GlassBottle_wet_21: 3868499187150499947
+      GlassBottle_wet_22: -8764122214864570983
+      GlassBottle_wet_23: -8471202239212078632
+      GlassBottle_wet_3: 7131349509626211358
+      GlassBottle_wet_4: 6946665230840930009
+      GlassBottle_wet_5: -4105598815374226010
+      GlassBottle_wet_6: -8262081137760412271
+      GlassBottle_wet_7: 8893029126645269662
+      GlassBottle_wet_8: 4746031811782499984
+      GlassBottle_wet_9: 3091087761813288290
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

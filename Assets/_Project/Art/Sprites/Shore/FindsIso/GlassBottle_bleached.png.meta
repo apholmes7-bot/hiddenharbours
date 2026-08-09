@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: 1a0f524caee8a1e419ecffc65d20b963
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 1905332999982689257
+    second: GlassBottle_bleached_0
+  - first:
+      213: 8524470379182847676
+    second: GlassBottle_bleached_1
+  - first:
+      213: 3179125154537504987
+    second: GlassBottle_bleached_2
+  - first:
+      213: -6310737915573237889
+    second: GlassBottle_bleached_3
+  - first:
+      213: 7410320574754233246
+    second: GlassBottle_bleached_4
+  - first:
+      213: -4698724651373124327
+    second: GlassBottle_bleached_5
+  - first:
+      213: 7836940669638217715
+    second: GlassBottle_bleached_6
+  - first:
+      213: -9196618495636668426
+    second: GlassBottle_bleached_7
+  - first:
+      213: -1420423228135602744
+    second: GlassBottle_bleached_8
+  - first:
+      213: 2438503146346359094
+    second: GlassBottle_bleached_9
+  - first:
+      213: -8517556643204599648
+    second: GlassBottle_bleached_10
+  - first:
+      213: -8795461707454242435
+    second: GlassBottle_bleached_11
+  - first:
+      213: 582570696240700391
+    second: GlassBottle_bleached_12
+  - first:
+      213: -5117754135240555145
+    second: GlassBottle_bleached_13
+  - first:
+      213: 2178122672435306037
+    second: GlassBottle_bleached_14
+  - first:
+      213: -5261726330424590646
+    second: GlassBottle_bleached_15
+  - first:
+      213: 5431281221233495704
+    second: GlassBottle_bleached_16
+  - first:
+      213: -475503486758967229
+    second: GlassBottle_bleached_17
+  - first:
+      213: -4734650299762296282
+    second: GlassBottle_bleached_18
+  - first:
+      213: -7343600136531440392
+    second: GlassBottle_bleached_19
+  - first:
+      213: -4141722657279506643
+    second: GlassBottle_bleached_20
+  - first:
+      213: 5300242275905958292
+    second: GlassBottle_bleached_21
+  - first:
+      213: -6065346854998361491
+    second: GlassBottle_bleached_22
+  - first:
+      213: 187624670715176362
+    second: GlassBottle_bleached_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: GlassBottle_bleached_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.50877196, y: 0.38181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9eb2cc2c44a117a10800000000000000
+      internalID: 1905332999982689257
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GlassBottle_bleached_1
+      rect:
+        serializedVersion: 2
+        x: 57
+        y: 0
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.50877196, y: 0.38181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cb6788135a00d4670800000000000000
+      internalID: 8524470379182847676
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GlassBottle_bleached_2
+      rect:
+        serializedVersion: 2
+        x: 114
+        y: 0
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.50877196, y: 0.38181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bd087bcfb758e1c20800000000000000
+      internalID: 3179125154537504987
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GlassBottle_bleached_3
+      rect:
+        serializedVersion: 2
+        x: 171
+        y: 0
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.50877196, y: 0.38181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f770baf2d41cb68a0800000000000000
+      internalID: -6310737915573237889
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GlassBottle_bleached_4
+      rect:
+        serializedVersion: 2
+        x: 228
+        y: 0
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.50877196, y: 0.38181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e9b9ef91d4fb6d660800000000000000
+      internalID: 7410320574754233246
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GlassBottle_bleached_5
+      rect:
+        serializedVersion: 2
+        x: 285
+        y: 0
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.50877196, y: 0.38181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 915a88113d6caceb0800000000000000
+      internalID: -4698724651373124327
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GlassBottle_bleached_6
+      rect:
+        serializedVersion: 2
+        x: 342
+        y: 0
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.50877196, y: 0.38181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3ff0993640862cc60800000000000000
+      internalID: 7836940669638217715
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GlassBottle_bleached_7
+      rect:
+        serializedVersion: 2
+        x: 399
+        y: 0
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.50877196, y: 0.38181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6fff9c8343c0f5080800000000000000
+      internalID: -9196618495636668426
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GlassBottle_bleached_8
+      rect:
+        serializedVersion: 2
+        x: 456
+        y: 0
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.50877196, y: 0.38181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8c583488994a94ce0800000000000000
+      internalID: -1420423228135602744
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GlassBottle_bleached_9
+      rect:
+        serializedVersion: 2
+        x: 513
+        y: 0
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.50877196, y: 0.38181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 639a5ad11bd47d120800000000000000
+      internalID: 2438503146346359094
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GlassBottle_bleached_10
+      rect:
+        serializedVersion: 2
+        x: 570
+        y: 0
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.50877196, y: 0.38181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0a075876c5f8bc980800000000000000
+      internalID: -8517556643204599648
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GlassBottle_bleached_11
+      rect:
+        serializedVersion: 2
+        x: 627
+        y: 0
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.50877196, y: 0.38181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d71a3ab6d2e30f580800000000000000
+      internalID: -8795461707454242435
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GlassBottle_bleached_12
+      rect:
+        serializedVersion: 2
+        x: 684
+        y: 0
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.50877196, y: 0.38181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7eb9afd26f4b51800800000000000000
+      internalID: 582570696240700391
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GlassBottle_bleached_13
+      rect:
+        serializedVersion: 2
+        x: 741
+        y: 0
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.50877196, y: 0.38181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7754331aab51af8b0800000000000000
+      internalID: -5117754135240555145
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GlassBottle_bleached_14
+      rect:
+        serializedVersion: 2
+        x: 798
+        y: 0
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.50877196, y: 0.38181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 53e1bb7c70f3a3e10800000000000000
+      internalID: 2178122672435306037
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GlassBottle_bleached_15
+      rect:
+        serializedVersion: 2
+        x: 855
+        y: 0
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.50877196, y: 0.38181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: acef8b1c7c79af6b0800000000000000
+      internalID: -5261726330424590646
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GlassBottle_bleached_16
+      rect:
+        serializedVersion: 2
+        x: 912
+        y: 0
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.50877196, y: 0.38181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 89e4fda9e79cf5b40800000000000000
+      internalID: 5431281221233495704
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GlassBottle_bleached_17
+      rect:
+        serializedVersion: 2
+        x: 969
+        y: 0
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.50877196, y: 0.38181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 348a54e191ca669f0800000000000000
+      internalID: -475503486758967229
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GlassBottle_bleached_18
+      rect:
+        serializedVersion: 2
+        x: 1026
+        y: 0
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.50877196, y: 0.38181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 62ab8fa33a42b4eb0800000000000000
+      internalID: -4734650299762296282
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GlassBottle_bleached_19
+      rect:
+        serializedVersion: 2
+        x: 1083
+        y: 0
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.50877196, y: 0.38181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8fc8889759a461a90800000000000000
+      internalID: -7343600136531440392
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GlassBottle_bleached_20
+      rect:
+        serializedVersion: 2
+        x: 1140
+        y: 0
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.50877196, y: 0.38181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d270baedf25a586c0800000000000000
+      internalID: -4141722657279506643
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GlassBottle_bleached_21
+      rect:
+        serializedVersion: 2
+        x: 1197
+        y: 0
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.50877196, y: 0.38181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 491f1ee944e3e8940800000000000000
+      internalID: 5300242275905958292
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GlassBottle_bleached_22
+      rect:
+        serializedVersion: 2
+        x: 1254
+        y: 0
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.50877196, y: 0.38181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d6a3a44cb2f83dba0800000000000000
+      internalID: -6065346854998361491
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: GlassBottle_bleached_23
+      rect:
+        serializedVersion: 2
+        x: 1311
+        y: 0
+        width: 57
+        height: 55
+      alignment: 9
+      pivot: {x: 0.50877196, y: 0.38181818}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aa5e319d4a39a9200800000000000000
+      internalID: 187624670715176362
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: d049c7cdaf44610499b299c7ee5d1210
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      GlassBottle_bleached_0: 1905332999982689257
+      GlassBottle_bleached_1: 8524470379182847676
+      GlassBottle_bleached_10: -8517556643204599648
+      GlassBottle_bleached_11: -8795461707454242435
+      GlassBottle_bleached_12: 582570696240700391
+      GlassBottle_bleached_13: -5117754135240555145
+      GlassBottle_bleached_14: 2178122672435306037
+      GlassBottle_bleached_15: -5261726330424590646
+      GlassBottle_bleached_16: 5431281221233495704
+      GlassBottle_bleached_17: -475503486758967229
+      GlassBottle_bleached_18: -4734650299762296282
+      GlassBottle_bleached_19: -7343600136531440392
+      GlassBottle_bleached_2: 3179125154537504987
+      GlassBottle_bleached_20: -4141722657279506643
+      GlassBottle_bleached_21: 5300242275905958292
+      GlassBottle_bleached_22: -6065346854998361491
+      GlassBottle_bleached_23: 187624670715176362
+      GlassBottle_bleached_3: -6310737915573237889
+      GlassBottle_bleached_4: 7410320574754233246
+      GlassBottle_bleached_5: -4698724651373124327
+      GlassBottle_bleached_6: 7836940669638217715
+      GlassBottle_bleached_7: -9196618495636668426
+      GlassBottle_bleached_8: -1420423228135602744
+      GlassBottle_bleached_9: 2438503146346359094
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

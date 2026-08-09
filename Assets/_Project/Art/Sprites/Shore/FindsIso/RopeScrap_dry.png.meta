@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: 1d6a0c2f5cbd1cc468bb3f39e8139f0e
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 6202281947153167262
+    second: RopeScrap_dry_0
+  - first:
+      213: 5457112033226303412
+    second: RopeScrap_dry_1
+  - first:
+      213: -3839814134318208269
+    second: RopeScrap_dry_2
+  - first:
+      213: 2117515573784532786
+    second: RopeScrap_dry_3
+  - first:
+      213: 1828976838087374190
+    second: RopeScrap_dry_4
+  - first:
+      213: -5652300730969154084
+    second: RopeScrap_dry_5
+  - first:
+      213: 549677878722614524
+    second: RopeScrap_dry_6
+  - first:
+      213: -4230253614442602397
+    second: RopeScrap_dry_7
+  - first:
+      213: -6395599689666190485
+    second: RopeScrap_dry_8
+  - first:
+      213: -7842804431087999408
+    second: RopeScrap_dry_9
+  - first:
+      213: 1586800605832359180
+    second: RopeScrap_dry_10
+  - first:
+      213: 1214997117736273219
+    second: RopeScrap_dry_11
+  - first:
+      213: -562961614314547045
+    second: RopeScrap_dry_12
+  - first:
+      213: 1195238661869298277
+    second: RopeScrap_dry_13
+  - first:
+      213: 6590468883575268945
+    second: RopeScrap_dry_14
+  - first:
+      213: -7466819143089496228
+    second: RopeScrap_dry_15
+  - first:
+      213: -2570956298009983169
+    second: RopeScrap_dry_16
+  - first:
+      213: 8939145188579762222
+    second: RopeScrap_dry_17
+  - first:
+      213: 7114495123218866
+    second: RopeScrap_dry_18
+  - first:
+      213: -4568874178377285201
+    second: RopeScrap_dry_19
+  - first:
+      213: 301961320004362211
+    second: RopeScrap_dry_20
+  - first:
+      213: -1777154356688203878
+    second: RopeScrap_dry_21
+  - first:
+      213: 9104119134178110623
+    second: RopeScrap_dry_22
+  - first:
+      213: -3715480864864533546
+    second: RopeScrap_dry_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: RopeScrap_dry_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 66
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43103448}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e93f1e0e19ee21650800000000000000
+      internalID: 6202281947153167262
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RopeScrap_dry_1
+      rect:
+        serializedVersion: 2
+        x: 66
+        y: 0
+        width: 66
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43103448}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4b7a6ff2b7e8bbb40800000000000000
+      internalID: 5457112033226303412
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RopeScrap_dry_2
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 0
+        width: 66
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43103448}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3fa6078936d36bac0800000000000000
+      internalID: -3839814134318208269
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RopeScrap_dry_3
+      rect:
+        serializedVersion: 2
+        x: 198
+        y: 0
+        width: 66
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43103448}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 237d8cdf13de26d10800000000000000
+      internalID: 2117515573784532786
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RopeScrap_dry_4
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 0
+        width: 66
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43103448}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e657d907eb4d16910800000000000000
+      internalID: 1828976838087374190
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RopeScrap_dry_5
+      rect:
+        serializedVersion: 2
+        x: 330
+        y: 0
+        width: 66
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43103448}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cdd17eeae6efe81b0800000000000000
+      internalID: -5652300730969154084
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RopeScrap_dry_6
+      rect:
+        serializedVersion: 2
+        x: 396
+        y: 0
+        width: 66
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43103448}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cf4d62e4e19d0a700800000000000000
+      internalID: 549677878722614524
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RopeScrap_dry_7
+      rect:
+        serializedVersion: 2
+        x: 462
+        y: 0
+        width: 66
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43103448}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 360265120ce1b45c0800000000000000
+      internalID: -4230253614442602397
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RopeScrap_dry_8
+      rect:
+        serializedVersion: 2
+        x: 528
+        y: 0
+        width: 66
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43103448}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b6329d3b7f34e37a0800000000000000
+      internalID: -6395599689666190485
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RopeScrap_dry_9
+      rect:
+        serializedVersion: 2
+        x: 594
+        y: 0
+        width: 66
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43103448}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 056e3224ce2c82390800000000000000
+      internalID: -7842804431087999408
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RopeScrap_dry_10
+      rect:
+        serializedVersion: 2
+        x: 660
+        y: 0
+        width: 66
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43103448}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c0d23086eb2750610800000000000000
+      internalID: 1586800605832359180
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RopeScrap_dry_11
+      rect:
+        serializedVersion: 2
+        x: 726
+        y: 0
+        width: 66
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43103448}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3454bc5f0798cd010800000000000000
+      internalID: 1214997117736273219
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RopeScrap_dry_12
+      rect:
+        serializedVersion: 2
+        x: 792
+        y: 0
+        width: 66
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43103448}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b98d99cf465ff28f0800000000000000
+      internalID: -562961614314547045
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RopeScrap_dry_13
+      rect:
+        serializedVersion: 2
+        x: 858
+        y: 0
+        width: 66
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43103448}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5626886fa37569010800000000000000
+      internalID: 1195238661869298277
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RopeScrap_dry_14
+      rect:
+        serializedVersion: 2
+        x: 924
+        y: 0
+        width: 66
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43103448}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 156e4c4288c067b50800000000000000
+      internalID: 6590468883575268945
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RopeScrap_dry_15
+      rect:
+        serializedVersion: 2
+        x: 990
+        y: 0
+        width: 66
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43103448}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c5f501edc87806890800000000000000
+      internalID: -7466819143089496228
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RopeScrap_dry_16
+      rect:
+        serializedVersion: 2
+        x: 1056
+        y: 0
+        width: 66
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43103448}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f37cf045ed0225cd0800000000000000
+      internalID: -2570956298009983169
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RopeScrap_dry_17
+      rect:
+        serializedVersion: 2
+        x: 1122
+        y: 0
+        width: 66
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43103448}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e2060f8ff293e0c70800000000000000
+      internalID: 8939145188579762222
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RopeScrap_dry_18
+      rect:
+        serializedVersion: 2
+        x: 1188
+        y: 0
+        width: 66
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43103448}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2b1639a7896491000800000000000000
+      internalID: 7114495123218866
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RopeScrap_dry_19
+      rect:
+        serializedVersion: 2
+        x: 1254
+        y: 0
+        width: 66
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43103448}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fa10e5644291890c0800000000000000
+      internalID: -4568874178377285201
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RopeScrap_dry_20
+      rect:
+        serializedVersion: 2
+        x: 1320
+        y: 0
+        width: 66
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43103448}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3ef94ce7838c03400800000000000000
+      internalID: 301961320004362211
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RopeScrap_dry_21
+      rect:
+        serializedVersion: 2
+        x: 1386
+        y: 0
+        width: 66
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43103448}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a9fcf8247874657e0800000000000000
+      internalID: -1777154356688203878
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RopeScrap_dry_22
+      rect:
+        serializedVersion: 2
+        x: 1452
+        y: 0
+        width: 66
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43103448}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f9ce589ed14585e70800000000000000
+      internalID: 9104119134178110623
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RopeScrap_dry_23
+      rect:
+        serializedVersion: 2
+        x: 1518
+        y: 0
+        width: 66
+        height: 58
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43103448}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d30dffb6d5ff6cc0800000000000000
+      internalID: -3715480864864533546
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: edfd1c53bed433c4f812fdb8801ed6f8
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      RopeScrap_dry_0: 6202281947153167262
+      RopeScrap_dry_1: 5457112033226303412
+      RopeScrap_dry_10: 1586800605832359180
+      RopeScrap_dry_11: 1214997117736273219
+      RopeScrap_dry_12: -562961614314547045
+      RopeScrap_dry_13: 1195238661869298277
+      RopeScrap_dry_14: 6590468883575268945
+      RopeScrap_dry_15: -7466819143089496228
+      RopeScrap_dry_16: -2570956298009983169
+      RopeScrap_dry_17: 8939145188579762222
+      RopeScrap_dry_18: 7114495123218866
+      RopeScrap_dry_19: -4568874178377285201
+      RopeScrap_dry_2: -3839814134318208269
+      RopeScrap_dry_20: 301961320004362211
+      RopeScrap_dry_21: -1777154356688203878
+      RopeScrap_dry_22: 9104119134178110623
+      RopeScrap_dry_23: -3715480864864533546
+      RopeScrap_dry_3: 2117515573784532786
+      RopeScrap_dry_4: 1828976838087374190
+      RopeScrap_dry_5: -5652300730969154084
+      RopeScrap_dry_6: 549677878722614524
+      RopeScrap_dry_7: -4230253614442602397
+      RopeScrap_dry_8: -6395599689666190485
+      RopeScrap_dry_9: -7842804431087999408
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

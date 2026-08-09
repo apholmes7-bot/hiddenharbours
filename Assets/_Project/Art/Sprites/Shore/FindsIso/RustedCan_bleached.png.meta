@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: 344bb27256d4458418e4149ac5e1704b
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 6602673952522357538
+    second: RustedCan_bleached_0
+  - first:
+      213: -4059522607864945856
+    second: RustedCan_bleached_1
+  - first:
+      213: 6001002438328865318
+    second: RustedCan_bleached_2
+  - first:
+      213: 1556706866401813882
+    second: RustedCan_bleached_3
+  - first:
+      213: 8255531125694521456
+    second: RustedCan_bleached_4
+  - first:
+      213: -6087945464032106746
+    second: RustedCan_bleached_5
+  - first:
+      213: 6103892913664634648
+    second: RustedCan_bleached_6
+  - first:
+      213: 6470300205566918698
+    second: RustedCan_bleached_7
+  - first:
+      213: -2300068005406885568
+    second: RustedCan_bleached_8
+  - first:
+      213: 4793294235248926603
+    second: RustedCan_bleached_9
+  - first:
+      213: 1425994799458850098
+    second: RustedCan_bleached_10
+  - first:
+      213: 6576823302820908288
+    second: RustedCan_bleached_11
+  - first:
+      213: 3919474282103095750
+    second: RustedCan_bleached_12
+  - first:
+      213: -6440757589063341071
+    second: RustedCan_bleached_13
+  - first:
+      213: 5855759988104899787
+    second: RustedCan_bleached_14
+  - first:
+      213: 124425966042380240
+    second: RustedCan_bleached_15
+  - first:
+      213: 3003231580644876024
+    second: RustedCan_bleached_16
+  - first:
+      213: 3579688895608748850
+    second: RustedCan_bleached_17
+  - first:
+      213: 2597275156250321132
+    second: RustedCan_bleached_18
+  - first:
+      213: 6873753539960349169
+    second: RustedCan_bleached_19
+  - first:
+      213: -1773858454504709112
+    second: RustedCan_bleached_20
+  - first:
+      213: 8310398176460046332
+    second: RustedCan_bleached_21
+  - first:
+      213: -2416360305456403344
+    second: RustedCan_bleached_22
+  - first:
+      213: 1075709441280662673
+    second: RustedCan_bleached_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: RustedCan_bleached_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 37
+        height: 40
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.35}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 22bc1d33af861ab50800000000000000
+      internalID: 6602673952522357538
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RustedCan_bleached_1
+      rect:
+        serializedVersion: 2
+        x: 37
+        y: 0
+        width: 37
+        height: 40
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.35}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 043ea8842bda9a7c0800000000000000
+      internalID: -4059522607864945856
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RustedCan_bleached_2
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 0
+        width: 37
+        height: 40
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.35}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 62258d84ce7d74350800000000000000
+      internalID: 6001002438328865318
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RustedCan_bleached_3
+      rect:
+        serializedVersion: 2
+        x: 111
+        y: 0
+        width: 37
+        height: 40
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.35}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a75aa4fa5a88a9510800000000000000
+      internalID: 1556706866401813882
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RustedCan_bleached_4
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 0
+        width: 37
+        height: 40
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.35}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 070e333b1d9819270800000000000000
+      internalID: 8255531125694521456
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RustedCan_bleached_5
+      rect:
+        serializedVersion: 2
+        x: 185
+        y: 0
+        width: 37
+        height: 40
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.35}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6076a641bd5438ba0800000000000000
+      internalID: -6087945464032106746
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RustedCan_bleached_6
+      rect:
+        serializedVersion: 2
+        x: 222
+        y: 0
+        width: 37
+        height: 40
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.35}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 81f2102e34265b450800000000000000
+      internalID: 6103892913664634648
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RustedCan_bleached_7
+      rect:
+        serializedVersion: 2
+        x: 259
+        y: 0
+        width: 37
+        height: 40
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.35}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a2004fe71cf1bc950800000000000000
+      internalID: 6470300205566918698
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RustedCan_bleached_8
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 0
+        width: 37
+        height: 40
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.35}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0493b7ad5548410e0800000000000000
+      internalID: -2300068005406885568
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RustedCan_bleached_9
+      rect:
+        serializedVersion: 2
+        x: 333
+        y: 0
+        width: 37
+        height: 40
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.35}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b8f90f306b3358240800000000000000
+      internalID: 4793294235248926603
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RustedCan_bleached_10
+      rect:
+        serializedVersion: 2
+        x: 370
+        y: 0
+        width: 37
+        height: 40
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.35}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2359c4107b62ac310800000000000000
+      internalID: 1425994799458850098
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RustedCan_bleached_11
+      rect:
+        serializedVersion: 2
+        x: 407
+        y: 0
+        width: 37
+        height: 40
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.35}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 00dc62bc2f1954b50800000000000000
+      internalID: 6576823302820908288
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RustedCan_bleached_12
+      rect:
+        serializedVersion: 2
+        x: 444
+        y: 0
+        width: 37
+        height: 40
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.35}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6c1c803e715c46630800000000000000
+      internalID: 3919474282103095750
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RustedCan_bleached_13
+      rect:
+        serializedVersion: 2
+        x: 481
+        y: 0
+        width: 37
+        height: 40
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.35}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1fb6a7be815dd96a0800000000000000
+      internalID: -6440757589063341071
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RustedCan_bleached_14
+      rect:
+        serializedVersion: 2
+        x: 518
+        y: 0
+        width: 37
+        height: 40
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.35}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bcc20fc1fa6d34150800000000000000
+      internalID: 5855759988104899787
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RustedCan_bleached_15
+      rect:
+        serializedVersion: 2
+        x: 555
+        y: 0
+        width: 37
+        height: 40
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.35}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0d77ac2c1cc0ab100800000000000000
+      internalID: 124425966042380240
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RustedCan_bleached_16
+      rect:
+        serializedVersion: 2
+        x: 592
+        y: 0
+        width: 37
+        height: 40
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.35}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8fe9296f53f9da920800000000000000
+      internalID: 3003231580644876024
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RustedCan_bleached_17
+      rect:
+        serializedVersion: 2
+        x: 629
+        y: 0
+        width: 37
+        height: 40
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.35}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 23b7b25a51c9da130800000000000000
+      internalID: 3579688895608748850
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RustedCan_bleached_18
+      rect:
+        serializedVersion: 2
+        x: 666
+        y: 0
+        width: 37
+        height: 40
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.35}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ce06f306eff5b0420800000000000000
+      internalID: 2597275156250321132
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RustedCan_bleached_19
+      rect:
+        serializedVersion: 2
+        x: 703
+        y: 0
+        width: 37
+        height: 40
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.35}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1f1abe60d6a746f50800000000000000
+      internalID: 6873753539960349169
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RustedCan_bleached_20
+      rect:
+        serializedVersion: 2
+        x: 740
+        y: 0
+        width: 37
+        height: 40
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.35}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8046c69422df167e0800000000000000
+      internalID: -1773858454504709112
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RustedCan_bleached_21
+      rect:
+        serializedVersion: 2
+        x: 777
+        y: 0
+        width: 37
+        height: 40
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.35}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cff74f17c17745370800000000000000
+      internalID: 8310398176460046332
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RustedCan_bleached_22
+      rect:
+        serializedVersion: 2
+        x: 814
+        y: 0
+        width: 37
+        height: 40
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.35}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 07caae7ca1d577ed0800000000000000
+      internalID: -2416360305456403344
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RustedCan_bleached_23
+      rect:
+        serializedVersion: 2
+        x: 851
+        y: 0
+        width: 37
+        height: 40
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.35}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 19c51199900bdee00800000000000000
+      internalID: 1075709441280662673
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 6f77c99f193cd3f40900af2c57a8243a
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      RustedCan_bleached_0: 6602673952522357538
+      RustedCan_bleached_1: -4059522607864945856
+      RustedCan_bleached_10: 1425994799458850098
+      RustedCan_bleached_11: 6576823302820908288
+      RustedCan_bleached_12: 3919474282103095750
+      RustedCan_bleached_13: -6440757589063341071
+      RustedCan_bleached_14: 5855759988104899787
+      RustedCan_bleached_15: 124425966042380240
+      RustedCan_bleached_16: 3003231580644876024
+      RustedCan_bleached_17: 3579688895608748850
+      RustedCan_bleached_18: 2597275156250321132
+      RustedCan_bleached_19: 6873753539960349169
+      RustedCan_bleached_2: 6001002438328865318
+      RustedCan_bleached_20: -1773858454504709112
+      RustedCan_bleached_21: 8310398176460046332
+      RustedCan_bleached_22: -2416360305456403344
+      RustedCan_bleached_23: 1075709441280662673
+      RustedCan_bleached_3: 1556706866401813882
+      RustedCan_bleached_4: 8255531125694521456
+      RustedCan_bleached_5: -6087945464032106746
+      RustedCan_bleached_6: 6103892913664634648
+      RustedCan_bleached_7: 6470300205566918698
+      RustedCan_bleached_8: -2300068005406885568
+      RustedCan_bleached_9: 4793294235248926603
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

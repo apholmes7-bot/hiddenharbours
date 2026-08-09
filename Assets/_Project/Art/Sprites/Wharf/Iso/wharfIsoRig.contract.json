@@ -10,6 +10,7 @@
     "alpha": "binary",
     "pivot": "projection of the model origin (footprint centre at chart datum) — the rig reports px,py per bake",
     "keyline": "#1a1c22",
+    "cellRule": "pivot-aligned union of the rig's RETURNED BUFFER extents across all 8 facings, floor/ceil, pivot-inclusive: cellW=ceil(max(w-1-px))-floor(min(-px))+1, pivotX=-floor(min(-px)), likewise Y. Measure the BUFFER, not the ink bbox — ink gives floatSet 751x556 against the 757x592 recorded here, and every one of the 17 keys then disagrees.",
     "keylineDefault": false
   },
   "azimuth": {
@@ -29,6 +30,14 @@
     "key": "floatSet",
     "w": 3028,
     "h": 1184
+  },
+  "worstSheetByMaxDim": {
+    "key": "sheetedPier",
+    "w": 3784,
+    "h": 411,
+    "maxDim": 3784,
+    "headroomToCap": 312,
+    "note": "A texture cap binds on the LONGEST SIDE, not on area — size import headroom off THIS, not off worstSheet (which is the worst by area). Cells are parametric, so re-measure rather than trusting either field after an authoring change."
   },
   "count": 17,
   "cells": [
@@ -117,10 +126,10 @@
       "pivotX": 252,
       "pivotY": 235,
       "sheet": {
-        "cols": 8,
-        "rows": 1,
-        "sheetW": 4048,
-        "sheetH": 431
+        "cols": 4,
+        "rows": 2,
+        "sheetW": 2024,
+        "sheetH": 862
       }
     },
     {

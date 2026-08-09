@@ -14,6 +14,7 @@
     "nativePivotY": 420,
     "pivot": "ground centre of the footprint",
     "keyline": "#1a1c22",
+    "cellRule": "pivot-INCLUSIVE union of the INK bbox across all 8 facings on the fixed nativeSheetW x nativeSheetH buffer, seeded at the pivot so a piece whose ink does not span its own pivot still contains it. fireCabinet is the only piece where that seeding is load-bearing (pivotInsideInk=false, ink stops 6 px above the pivot) and its cellH of 53 is what the rule yields — measured, not inferred.",
     "keylineDefault": false
   },
   "azimuth": {
@@ -25,17 +26,25 @@
   "importSizeCap": 2048,
   "worstSheet": {
     "key": "bunting",
-    "w": 912,
-    "h": 133
+    "w": 896,
+    "h": 131
+  },
+  "worstSheetByMaxDim": {
+    "key": "bunting",
+    "w": 896,
+    "h": 131,
+    "maxDim": 896,
+    "headroomToCap": 1152,
+    "note": "A texture cap binds on the LONGEST SIDE, not on area — size import headroom off THIS, not off worstSheet (which is the worst by area). Cells are parametric, so re-measure rather than trusting either field after an authoring change."
   },
   "count": 61,
   "cells": [
     {
       "key": "trapStack",
-      "cellW": 38,
-      "cellH": 59,
-      "pivotX": 19,
-      "pivotY": 47,
+      "cellW": 36,
+      "cellH": 57,
+      "pivotX": 18,
+      "pivotY": 46,
       "footprintW": 1.0035,
       "footprintD": 0.6349,
       "heightM": 1.44,
@@ -51,16 +60,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 304,
-        "sheetH": 59
+        "sheetW": 288,
+        "sheetH": 57
       }
     },
     {
       "key": "trapSingle",
-      "cellW": 38,
-      "cellH": 33,
-      "pivotX": 19,
-      "pivotY": 21,
+      "cellW": 36,
+      "cellH": 31,
+      "pivotX": 18,
+      "pivotY": 20,
       "footprintW": 1,
       "footprintD": 0.64,
       "heightM": 0.36,
@@ -76,16 +85,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 304,
-        "sheetH": 33
+        "sheetW": 288,
+        "sheetH": 31
       }
     },
     {
       "key": "buoyRack",
-      "cellW": 68,
-      "cellH": 83,
-      "pivotX": 34,
-      "pivotY": 62,
+      "cellW": 66,
+      "cellH": 81,
+      "pivotX": 33,
+      "pivotY": 61,
       "footprintW": 2.2576,
       "footprintD": 1.0358,
       "heightM": 1.62,
@@ -101,16 +110,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 544,
-        "sheetH": 83
+        "sheetW": 528,
+        "sheetH": 81
       }
     },
     {
       "key": "buoyWall",
-      "cellW": 74,
-      "cellH": 95,
-      "pivotX": 37,
-      "pivotY": 72,
+      "cellW": 72,
+      "cellH": 93,
+      "pivotX": 36,
+      "pivotY": 71,
       "footprintW": 2.4168,
       "footprintD": 0.3053,
       "heightM": 1.95,
@@ -126,16 +135,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 592,
-        "sheetH": 95
+        "sheetW": 576,
+        "sheetH": 93
       }
     },
     {
       "key": "netReel",
-      "cellW": 72,
-      "cellH": 76,
-      "pivotX": 36,
-      "pivotY": 53,
+      "cellW": 70,
+      "cellH": 74,
+      "pivotX": 35,
+      "pivotY": 52,
       "footprintW": 1.74,
       "footprintD": 1.508,
       "heightM": 1.52,
@@ -151,16 +160,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 576,
-        "sheetH": 76
+        "sheetW": 560,
+        "sheetH": 74
       }
     },
     {
       "key": "netPile",
-      "cellW": 74,
-      "cellH": 52,
-      "pivotX": 37,
-      "pivotY": 28,
+      "cellW": 72,
+      "cellH": 50,
+      "pivotX": 36,
+      "pivotY": 27,
       "footprintW": 1.984,
       "footprintD": 1.364,
       "heightM": 0.55,
@@ -176,16 +185,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 592,
-        "sheetH": 52
+        "sheetW": 576,
+        "sheetH": 50
       }
     },
     {
       "key": "ropeCoil",
-      "cellW": 48,
-      "cellH": 33,
-      "pivotX": 24,
-      "pivotY": 17,
+      "cellW": 46,
+      "cellH": 31,
+      "pivotX": 23,
+      "pivotY": 16,
       "footprintW": 0.928,
       "footprintD": 0.928,
       "heightM": 0.1,
@@ -201,16 +210,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 384,
-        "sheetH": 33
+        "sheetW": 368,
+        "sheetH": 31
       }
     },
     {
       "key": "ropeHanks",
-      "cellW": 52,
-      "cellH": 70,
-      "pivotX": 26,
-      "pivotY": 62,
+      "cellW": 50,
+      "cellH": 68,
+      "pivotX": 25,
+      "pivotY": 61,
       "footprintW": 1.708,
       "footprintD": 0.244,
       "heightM": 1.85,
@@ -226,16 +235,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 416,
-        "sheetH": 70
+        "sheetW": 400,
+        "sheetH": 68
       }
     },
     {
       "key": "floatBags",
-      "cellW": 52,
-      "cellH": 45,
-      "pivotX": 26,
-      "pivotY": 28,
+      "cellW": 50,
+      "cellH": 43,
+      "pivotX": 25,
+      "pivotY": 27,
       "footprintW": 1.44,
       "footprintD": 0.96,
       "heightM": 0.52,
@@ -251,16 +260,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 416,
-        "sheetH": 45
+        "sheetW": 400,
+        "sheetH": 43
       }
     },
     {
       "key": "trawlDoor",
-      "cellW": 60,
-      "cellH": 64,
-      "pivotX": 30,
-      "pivotY": 44,
+      "cellW": 58,
+      "cellH": 62,
+      "pivotX": 29,
+      "pivotY": 43,
       "footprintW": 1.856,
       "footprintD": 0.58,
       "heightM": 1.02,
@@ -276,16 +285,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 480,
-        "sheetH": 64
+        "sheetW": 464,
+        "sheetH": 62
       }
     },
     {
       "key": "toteStack",
-      "cellW": 32,
-      "cellH": 51,
-      "pivotX": 16,
-      "pivotY": 41,
+      "cellW": 30,
+      "cellH": 49,
+      "pivotX": 15,
+      "pivotY": 40,
       "footprintW": 0.7956,
       "footprintD": 0.5712,
       "heightM": 1.225,
@@ -301,16 +310,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 256,
-        "sheetH": 51
+        "sheetW": 240,
+        "sheetH": 49
       }
     },
     {
       "key": "toteSingle",
-      "cellW": 32,
-      "cellH": 30,
-      "pivotX": 16,
-      "pivotY": 20,
+      "cellW": 30,
+      "cellH": 28,
+      "pivotX": 15,
+      "pivotY": 19,
       "footprintW": 0.78,
       "footprintD": 0.56,
       "heightM": 0.36,
@@ -326,16 +335,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 256,
-        "sheetH": 30
+        "sheetW": 240,
+        "sheetH": 28
       }
     },
     {
       "key": "crateStack",
-      "cellW": 32,
-      "cellH": 42,
-      "pivotX": 16,
-      "pivotY": 31,
+      "cellW": 30,
+      "cellH": 40,
+      "pivotX": 15,
+      "pivotY": 30,
       "footprintW": 0.7373,
       "footprintD": 0.6963,
       "heightM": 0.864,
@@ -351,16 +360,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 256,
-        "sheetH": 42
+        "sheetW": 240,
+        "sheetH": 40
       }
     },
     {
       "key": "pallet",
-      "cellW": 46,
-      "cellH": 38,
-      "pivotX": 23,
-      "pivotY": 23,
+      "cellW": 44,
+      "cellH": 36,
+      "pivotX": 22,
+      "pivotY": 22,
       "footprintW": 1.1786,
       "footprintD": 0.9144,
       "heightM": 0.345,
@@ -376,16 +385,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 368,
-        "sheetH": 38
+        "sheetW": 352,
+        "sheetH": 36
       }
     },
     {
       "key": "saltBin",
-      "cellW": 62,
-      "cellH": 62,
-      "pivotX": 31,
-      "pivotY": 43,
+      "cellW": 60,
+      "cellH": 60,
+      "pivotX": 30,
+      "pivotY": 42,
       "footprintW": 1.708,
       "footprintD": 1.098,
       "heightM": 0.94,
@@ -401,16 +410,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 496,
-        "sheetH": 62
+        "sheetW": 480,
+        "sheetH": 60
       }
     },
     {
       "key": "iceChest",
-      "cellW": 54,
-      "cellH": 50,
-      "pivotX": 27,
-      "pivotY": 35,
+      "cellW": 52,
+      "cellH": 48,
+      "pivotX": 26,
+      "pivotY": 34,
       "footprintW": 1.5,
       "footprintD": 0.96,
       "heightM": 0.735,
@@ -426,16 +435,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 432,
-        "sheetH": 50
+        "sheetW": 416,
+        "sheetH": 48
       }
     },
     {
       "key": "weighScale",
-      "cellW": 46,
-      "cellH": 71,
-      "pivotX": 23,
-      "pivotY": 56,
+      "cellW": 44,
+      "cellH": 69,
+      "pivotX": 22,
+      "pivotY": 55,
       "footprintW": 1.296,
       "footprintD": 0.864,
       "heightM": 2.13,
@@ -451,16 +460,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 368,
-        "sheetH": 71
+        "sheetW": 352,
+        "sheetH": 69
       }
     },
     {
       "key": "guttingTable",
-      "cellW": 96,
-      "cellH": 79,
-      "pivotX": 48,
-      "pivotY": 49,
+      "cellW": 94,
+      "cellH": 77,
+      "pivotX": 47,
+      "pivotY": 48,
       "footprintW": 2.2464,
       "footprintD": 1.1232,
       "heightM": 1.04,
@@ -476,16 +485,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 768,
-        "sheetH": 79
+        "sheetW": 752,
+        "sheetH": 77
       }
     },
     {
       "key": "baitBarrel",
-      "cellW": 22,
-      "cellH": 35,
-      "pivotX": 11,
-      "pivotY": 28,
+      "cellW": 20,
+      "cellH": 33,
+      "pivotX": 10,
+      "pivotY": 27,
       "footprintW": 0.68,
       "footprintD": 0.68,
       "heightM": 0.86,
@@ -501,16 +510,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 176,
-        "sheetH": 35
+        "sheetW": 160,
+        "sheetH": 33
       }
     },
     {
       "key": "bushelBaskets",
-      "cellW": 46,
-      "cellH": 45,
-      "pivotX": 23,
-      "pivotY": 31,
+      "cellW": 44,
+      "cellH": 43,
+      "pivotX": 22,
+      "pivotY": 30,
       "footprintW": 1.08,
       "footprintD": 0.864,
       "heightM": 0.67,
@@ -526,16 +535,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 368,
-        "sheetH": 45
+        "sheetW": 352,
+        "sheetH": 43
       }
     },
     {
       "key": "sortingTrough",
-      "cellW": 96,
-      "cellH": 74,
-      "pivotX": 48,
-      "pivotY": 48,
+      "cellW": 94,
+      "cellH": 72,
+      "pivotX": 47,
+      "pivotY": 47,
       "footprintW": 2.6544,
       "footprintD": 0.8848,
       "heightM": 0.84,
@@ -551,16 +560,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 768,
-        "sheetH": 74
+        "sheetW": 752,
+        "sheetH": 72
       }
     },
     {
       "key": "davitHoist",
-      "cellW": 98,
-      "cellH": 112,
-      "pivotX": 49,
-      "pivotY": 104,
+      "cellW": 96,
+      "cellH": 110,
+      "pivotX": 48,
+      "pivotY": 103,
       "footprintW": 0.696,
       "footprintD": 1.856,
       "heightM": 3,
@@ -576,16 +585,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 784,
-        "sheetH": 112
+        "sheetW": 768,
+        "sheetH": 110
       }
     },
     {
       "key": "capstan",
-      "cellW": 32,
-      "cellH": 35,
-      "pivotX": 16,
-      "pivotY": 25,
+      "cellW": 30,
+      "cellH": 33,
+      "pivotX": 15,
+      "pivotY": 24,
       "footprintW": 0.9568,
       "footprintD": 0.9568,
       "heightM": 0.79,
@@ -601,16 +610,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 256,
-        "sheetH": 35
+        "sheetW": 240,
+        "sheetH": 33
       }
     },
     {
       "key": "blockTackle",
-      "cellW": 70,
-      "cellH": 104,
-      "pivotX": 35,
-      "pivotY": 90,
+      "cellW": 68,
+      "cellH": 102,
+      "pivotX": 34,
+      "pivotY": 89,
       "footprintW": 0.54,
       "footprintD": 1.404,
       "heightM": 2.76,
@@ -626,16 +635,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 560,
-        "sheetH": 104
+        "sheetW": 544,
+        "sheetH": 102
       }
     },
     {
       "key": "wheelbarrow",
-      "cellW": 46,
-      "cellH": 45,
-      "pivotX": 23,
-      "pivotY": 32,
+      "cellW": 44,
+      "cellH": 43,
+      "pivotX": 22,
+      "pivotY": 31,
       "footprintW": 0.95,
       "footprintD": 1.35,
       "heightM": 0.72,
@@ -651,16 +660,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 368,
-        "sheetH": 45
+        "sheetW": 352,
+        "sheetH": 43
       }
     },
     {
       "key": "handTruck",
-      "cellW": 30,
-      "cellH": 49,
-      "pivotX": 15,
-      "pivotY": 41,
+      "cellW": 28,
+      "cellH": 47,
+      "pivotX": 14,
+      "pivotY": 40,
       "footprintW": 0.62,
       "footprintD": 0.62,
       "heightM": 1.35,
@@ -676,16 +685,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 240,
-        "sheetH": 49
+        "sheetW": 224,
+        "sheetH": 47
       }
     },
     {
       "key": "dockCart",
-      "cellW": 48,
-      "cellH": 43,
-      "pivotX": 24,
-      "pivotY": 29,
+      "cellW": 46,
+      "cellH": 41,
+      "pivotX": 23,
+      "pivotY": 28,
       "footprintW": 1.3632,
       "footprintD": 1.704,
       "heightM": 0.5,
@@ -701,16 +710,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 384,
-        "sheetH": 43
+        "sheetW": 368,
+        "sheetH": 41
       }
     },
     {
       "key": "gantryFrame",
-      "cellW": 94,
-      "cellH": 119,
-      "pivotX": 47,
-      "pivotY": 88,
+      "cellW": 92,
+      "cellH": 117,
+      "pivotX": 46,
+      "pivotY": 87,
       "footprintW": 3.016,
       "footprintD": 1.276,
       "heightM": 3.08,
@@ -726,16 +735,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 752,
-        "sheetH": 119
+        "sheetW": 736,
+        "sheetH": 117
       }
     },
     {
       "key": "potHauler",
-      "cellW": 30,
-      "cellH": 46,
-      "pivotX": 15,
-      "pivotY": 37,
+      "cellW": 28,
+      "cellH": 44,
+      "pivotX": 14,
+      "pivotY": 36,
       "footprintW": 0.6996,
       "footprintD": 0.954,
       "heightM": 1.1,
@@ -751,16 +760,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 240,
-        "sheetH": 46
+        "sheetW": 224,
+        "sheetH": 44
       }
     },
     {
       "key": "ringStation",
-      "cellW": 32,
-      "cellH": 63,
-      "pivotX": 16,
-      "pivotY": 53,
+      "cellW": 30,
+      "cellH": 61,
+      "pivotX": 15,
+      "pivotY": 52,
       "footprintW": 0.98,
       "footprintD": 0.3,
       "heightM": 1.72,
@@ -776,16 +785,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 256,
-        "sheetH": 63
+        "sheetW": 240,
+        "sheetH": 61
       }
     },
     {
       "key": "ringPost",
-      "cellW": 34,
-      "cellH": 45,
-      "pivotX": 17,
-      "pivotY": 34,
+      "cellW": 32,
+      "cellH": 43,
+      "pivotX": 16,
+      "pivotY": 33,
       "footprintW": 0.416,
       "footprintD": 0.416,
       "heightM": 1.21,
@@ -801,16 +810,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 272,
-        "sheetH": 45
+        "sheetW": 256,
+        "sheetH": 43
       }
     },
     {
       "key": "fireCabinet",
-      "cellW": 26,
+      "cellW": 24,
       "cellH": 52,
-      "pivotX": 13,
-      "pivotY": 52,
+      "pivotX": 12,
+      "pivotY": 51,
       "footprintW": 0.7,
       "footprintD": 0.26,
       "heightM": 1.75,
@@ -826,16 +835,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 208,
+        "sheetW": 192,
         "sheetH": 52
       }
     },
     {
       "key": "noticeBoard",
-      "cellW": 50,
-      "cellH": 76,
-      "pivotX": 25,
-      "pivotY": 62,
+      "cellW": 48,
+      "cellH": 74,
+      "pivotX": 24,
+      "pivotY": 61,
       "footprintW": 1.488,
       "footprintD": 0.4464,
       "heightM": 1.88,
@@ -851,16 +860,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 400,
-        "sheetH": 76
+        "sheetW": 384,
+        "sheetH": 74
       }
     },
     {
       "key": "chalkSign",
-      "cellW": 28,
-      "cellH": 40,
-      "pivotX": 14,
-      "pivotY": 31,
+      "cellW": 26,
+      "cellH": 38,
+      "pivotX": 13,
+      "pivotY": 30,
       "footprintW": 0.7,
       "footprintD": 0.56,
       "heightM": 0.94,
@@ -876,16 +885,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 224,
-        "sheetH": 40
+        "sheetW": 208,
+        "sheetH": 38
       }
     },
     {
       "key": "tideStaff",
-      "cellW": 12,
-      "cellH": 87,
-      "pivotX": 6,
-      "pivotY": 83,
+      "cellW": 10,
+      "cellH": 85,
+      "pivotX": 5,
+      "pivotY": 82,
       "footprintW": 0.3536,
       "footprintD": 0.312,
       "heightM": 3.2,
@@ -901,16 +910,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 96,
-        "sheetH": 87
+        "sheetW": 80,
+        "sheetH": 85
       }
     },
     {
       "key": "harbourSign",
-      "cellW": 80,
-      "cellH": 103,
-      "pivotX": 40,
-      "pivotY": 77,
+      "cellW": 78,
+      "cellH": 101,
+      "pivotX": 39,
+      "pivotY": 76,
       "footprintW": 2.604,
       "footprintD": 0.2976,
       "heightM": 2.09,
@@ -926,16 +935,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 640,
-        "sheetH": 103
+        "sheetW": 624,
+        "sheetH": 101
       }
     },
     {
       "key": "rescueLadder",
-      "cellW": 26,
-      "cellH": 65,
-      "pivotX": 13,
-      "pivotY": 34,
+      "cellW": 24,
+      "cellH": 63,
+      "pivotX": 12,
+      "pivotY": 33,
       "footprintW": 0.624,
       "footprintD": 0.52,
       "heightM": 1.06,
@@ -951,16 +960,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 208,
-        "sheetH": 65
+        "sheetW": 192,
+        "sheetH": 63
       }
     },
     {
       "key": "codFlake",
-      "cellW": 96,
-      "cellH": 84,
-      "pivotX": 48,
-      "pivotY": 54,
+      "cellW": 94,
+      "cellH": 82,
+      "pivotX": 47,
+      "pivotY": 53,
       "footprintW": 2.688,
       "footprintD": 1.856,
       "heightM": 0.97,
@@ -976,16 +985,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 768,
-        "sheetH": 84
+        "sheetW": 752,
+        "sheetH": 82
       }
     },
     {
       "key": "fishRack",
-      "cellW": 68,
-      "cellH": 97,
-      "pivotX": 34,
-      "pivotY": 75,
+      "cellW": 66,
+      "cellH": 95,
+      "pivotX": 33,
+      "pivotY": 74,
       "footprintW": 2.108,
       "footprintD": 0.992,
       "heightM": 2.16,
@@ -1001,16 +1010,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 544,
-        "sheetH": 97
+        "sheetW": 528,
+        "sheetH": 95
       }
     },
     {
       "key": "netFrame",
-      "cellW": 88,
-      "cellH": 109,
-      "pivotX": 44,
-      "pivotY": 80,
+      "cellW": 86,
+      "cellH": 107,
+      "pivotX": 43,
+      "pivotY": 79,
       "footprintW": 2.728,
       "footprintD": 1.24,
       "heightM": 2.1,
@@ -1026,16 +1035,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 704,
-        "sheetH": 109
+        "sheetW": 688,
+        "sheetH": 107
       }
     },
     {
       "key": "oilskinLine",
-      "cellW": 84,
-      "cellH": 100,
-      "pivotX": 42,
-      "pivotY": 73,
+      "cellW": 82,
+      "cellH": 98,
+      "pivotX": 41,
+      "pivotY": 72,
       "footprintW": 2.528,
       "footprintD": 0.632,
       "heightM": 1.86,
@@ -1051,16 +1060,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 672,
-        "sheetH": 100
+        "sheetW": 656,
+        "sheetH": 98
       }
     },
     {
       "key": "herringSticks",
-      "cellW": 66,
-      "cellH": 84,
-      "pivotX": 33,
-      "pivotY": 62,
+      "cellW": 64,
+      "cellH": 82,
+      "pivotX": 32,
+      "pivotY": 61,
       "footprintW": 1.984,
       "footprintD": 0.5456,
       "heightM": 1.65,
@@ -1076,16 +1085,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 528,
-        "sheetH": 84
+        "sheetW": 512,
+        "sheetH": 82
       }
     },
     {
       "key": "bench",
-      "cellW": 62,
-      "cellH": 62,
-      "pivotX": 31,
-      "pivotY": 43,
+      "cellW": 60,
+      "cellH": 60,
+      "pivotX": 30,
+      "pivotY": 42,
       "footprintW": 1.952,
       "footprintD": 0.5612,
       "heightM": 0.97,
@@ -1101,16 +1110,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 496,
-        "sheetH": 62
+        "sheetW": 480,
+        "sheetH": 60
       }
     },
     {
       "key": "picnicTable",
-      "cellW": 90,
-      "cellH": 67,
-      "pivotX": 45,
-      "pivotY": 42,
+      "cellW": 88,
+      "cellH": 65,
+      "pivotX": 44,
+      "pivotY": 41,
       "footprintW": 2.36,
       "footprintD": 2.242,
       "heightM": 0.74,
@@ -1126,16 +1135,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 720,
-        "sheetH": 67
+        "sheetW": 704,
+        "sheetH": 65
       }
     },
     {
       "key": "deckChair",
-      "cellW": 36,
-      "cellH": 49,
-      "pivotX": 18,
-      "pivotY": 38,
+      "cellW": 34,
+      "cellH": 47,
+      "pivotX": 17,
+      "pivotY": 37,
       "footprintW": 0.68,
       "footprintD": 0.78,
       "heightM": 1.08,
@@ -1151,16 +1160,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 288,
-        "sheetH": 49
+        "sheetW": 272,
+        "sheetH": 47
       }
     },
     {
       "key": "drumPlanter",
-      "cellW": 22,
-      "cellH": 29,
-      "pivotX": 11,
-      "pivotY": 22,
+      "cellW": 20,
+      "cellH": 27,
+      "pivotX": 10,
+      "pivotY": 21,
       "footprintW": 0.64,
       "footprintD": 0.64,
       "heightM": 0.72,
@@ -1176,16 +1185,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 176,
-        "sheetH": 29
+        "sheetW": 160,
+        "sheetH": 27
       }
     },
     {
       "key": "planterBox",
-      "cellW": 50,
-      "cellH": 42,
-      "pivotX": 25,
-      "pivotY": 27,
+      "cellW": 48,
+      "cellH": 40,
+      "pivotX": 24,
+      "pivotY": 26,
       "footprintW": 1.488,
       "footprintD": 0.6448,
       "heightM": 0.6,
@@ -1201,16 +1210,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 400,
-        "sheetH": 42
+        "sheetW": 384,
+        "sheetH": 40
       }
     },
     {
       "key": "flagpole",
-      "cellW": 70,
-      "cellH": 180,
-      "pivotX": 35,
-      "pivotY": 173,
+      "cellW": 68,
+      "cellH": 178,
+      "pivotX": 34,
+      "pivotY": 172,
       "footprintW": 0.624,
       "footprintD": 0.624,
       "heightM": 6.77,
@@ -1226,16 +1235,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 560,
-        "sheetH": 180
+        "sheetW": 544,
+        "sheetH": 178
       }
     },
     {
       "key": "bunting",
-      "cellW": 114,
-      "cellH": 133,
-      "pivotX": 57,
-      "pivotY": 96,
+      "cellW": 112,
+      "cellH": 131,
+      "pivotX": 56,
+      "pivotY": 95,
       "footprintW": 3.584,
       "footprintD": 0.384,
       "heightM": 2.41,
@@ -1251,16 +1260,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 912,
-        "sheetH": 133
+        "sheetW": 896,
+        "sheetH": 131
       }
     },
     {
       "key": "lanternPost",
-      "cellW": 28,
-      "cellH": 73,
-      "pivotX": 14,
-      "pivotY": 68,
+      "cellW": 26,
+      "cellH": 71,
+      "pivotX": 13,
+      "pivotY": 67,
       "footprintW": 0.4576,
       "footprintD": 0.728,
       "heightM": 2.46,
@@ -1276,16 +1285,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 224,
-        "sheetH": 73
+        "sheetW": 208,
+        "sheetH": 71
       }
     },
     {
       "key": "anchorProp",
-      "cellW": 50,
-      "cellH": 66,
-      "pivotX": 25,
-      "pivotY": 60,
+      "cellW": 48,
+      "cellH": 64,
+      "pivotX": 24,
+      "pivotY": 59,
       "footprintW": 1.064,
       "footprintD": 0.84,
       "heightM": 1.87,
@@ -1301,16 +1310,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 400,
-        "sheetH": 66
+        "sheetW": 384,
+        "sheetH": 64
       }
     },
     {
       "key": "ropeFence",
-      "cellW": 108,
-      "cellH": 94,
-      "pivotX": 54,
-      "pivotY": 59,
+      "cellW": 106,
+      "cellH": 92,
+      "pivotX": 53,
+      "pivotY": 58,
       "footprintW": 3.38,
       "footprintD": 0.312,
       "heightM": 0.97,
@@ -1326,16 +1335,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 864,
-        "sheetH": 94
+        "sheetW": 848,
+        "sheetH": 92
       }
     },
     {
       "key": "trashBarrel",
-      "cellW": 26,
-      "cellH": 36,
-      "pivotX": 13,
-      "pivotY": 29,
+      "cellW": 24,
+      "cellH": 34,
+      "pivotX": 12,
+      "pivotY": 28,
       "footprintW": 0.66,
       "footprintD": 0.66,
       "heightM": 0.86,
@@ -1351,16 +1360,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 208,
-        "sheetH": 36
+        "sheetW": 192,
+        "sheetH": 34
       }
     },
     {
       "key": "oilDrum",
-      "cellW": 22,
-      "cellH": 35,
-      "pivotX": 11,
-      "pivotY": 28,
+      "cellW": 20,
+      "cellH": 33,
+      "pivotX": 10,
+      "pivotY": 27,
       "footprintW": 0.62,
       "footprintD": 0.62,
       "heightM": 0.91,
@@ -1376,16 +1385,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 176,
-        "sheetH": 35
+        "sheetW": 160,
+        "sheetH": 33
       }
     },
     {
       "key": "saltBox",
-      "cellW": 50,
-      "cellH": 53,
-      "pivotX": 25,
-      "pivotY": 38,
+      "cellW": 48,
+      "cellH": 51,
+      "pivotX": 24,
+      "pivotY": 37,
       "footprintW": 1.342,
       "footprintD": 0.9028,
       "heightM": 0.88,
@@ -1401,16 +1410,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 400,
-        "sheetH": 53
+        "sheetW": 384,
+        "sheetH": 51
       }
     },
     {
       "key": "bootRack",
-      "cellW": 36,
-      "cellH": 36,
-      "pivotX": 18,
-      "pivotY": 25,
+      "cellW": 34,
+      "cellH": 34,
+      "pivotX": 17,
+      "pivotY": 24,
       "footprintW": 1.121,
       "footprintD": 0.4248,
       "heightM": 0.52,
@@ -1426,16 +1435,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 288,
-        "sheetH": 36
+        "sheetW": 272,
+        "sheetH": 34
       }
     },
     {
       "key": "bicycle",
-      "cellW": 58,
-      "cellH": 48,
-      "pivotX": 29,
-      "pivotY": 33,
+      "cellW": 56,
+      "cellH": 46,
+      "pivotX": 28,
+      "pivotY": 32,
       "footprintW": 1.4,
       "footprintD": 0.55,
       "heightM": 0.98,
@@ -1451,16 +1460,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 464,
-        "sheetH": 48
+        "sheetW": 448,
+        "sheetH": 46
       }
     },
     {
       "key": "dogBowl",
-      "cellW": 10,
-      "cellH": 10,
-      "pivotX": 5,
-      "pivotY": 6,
+      "cellW": 8,
+      "cellH": 8,
+      "pivotX": 4,
+      "pivotY": 5,
       "footprintW": 0.34,
       "footprintD": 0.3,
       "heightM": 0.09,
@@ -1476,16 +1485,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 80,
-        "sheetH": 10
+        "sheetW": 64,
+        "sheetH": 8
       }
     },
     {
       "key": "tyrePile",
-      "cellW": 30,
-      "cellH": 36,
-      "pivotX": 15,
-      "pivotY": 28,
+      "cellW": 28,
+      "cellH": 34,
+      "pivotX": 14,
+      "pivotY": 27,
       "footprintW": 0.9744,
       "footprintD": 0.9744,
       "heightM": 0.95,
@@ -1501,16 +1510,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 240,
-        "sheetH": 36
+        "sheetW": 224,
+        "sheetH": 34
       }
     },
     {
       "key": "jerryCans",
-      "cellW": 22,
-      "cellH": 25,
-      "pivotX": 11,
-      "pivotY": 18,
+      "cellW": 20,
+      "cellH": 23,
+      "pivotX": 10,
+      "pivotY": 17,
       "footprintW": 0.864,
       "footprintD": 0.528,
       "heightM": 0.47,
@@ -1526,16 +1535,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 176,
-        "sheetH": 25
+        "sheetW": 160,
+        "sheetH": 23
       }
     },
     {
       "key": "woodStack",
-      "cellW": 72,
-      "cellH": 64,
-      "pivotX": 36,
-      "pivotY": 41,
+      "cellW": 70,
+      "cellH": 62,
+      "pivotX": 35,
+      "pivotY": 40,
       "footprintW": 2.176,
       "footprintD": 0.768,
       "heightM": 0.75,
@@ -1551,8 +1560,8 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 576,
-        "sheetH": 64
+        "sheetW": 560,
+        "sheetH": 62
       }
     }
   ]

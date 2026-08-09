@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: 0e69cedb74ab98147a8d559f15b917f8
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8238142967567035134
+    second: SoftshellClam_bleached_0
+  - first:
+      213: -6886261265355340709
+    second: SoftshellClam_bleached_1
+  - first:
+      213: 3012285124004688466
+    second: SoftshellClam_bleached_2
+  - first:
+      213: -7480074682557526484
+    second: SoftshellClam_bleached_3
+  - first:
+      213: -1440952787006409737
+    second: SoftshellClam_bleached_4
+  - first:
+      213: 6861243118822724585
+    second: SoftshellClam_bleached_5
+  - first:
+      213: -6883947379333842403
+    second: SoftshellClam_bleached_6
+  - first:
+      213: 5440827082490428314
+    second: SoftshellClam_bleached_7
+  - first:
+      213: 1448063316576974799
+    second: SoftshellClam_bleached_8
+  - first:
+      213: -4237899987674593439
+    second: SoftshellClam_bleached_9
+  - first:
+      213: -8843018000758780579
+    second: SoftshellClam_bleached_10
+  - first:
+      213: 2725518046591645425
+    second: SoftshellClam_bleached_11
+  - first:
+      213: 5611578511396554649
+    second: SoftshellClam_bleached_12
+  - first:
+      213: -5853233347256460417
+    second: SoftshellClam_bleached_13
+  - first:
+      213: 1388625177130258028
+    second: SoftshellClam_bleached_14
+  - first:
+      213: 5622756152387349518
+    second: SoftshellClam_bleached_15
+  - first:
+      213: 2407832461939959790
+    second: SoftshellClam_bleached_16
+  - first:
+      213: -4480893940218315265
+    second: SoftshellClam_bleached_17
+  - first:
+      213: 9206341054860156469
+    second: SoftshellClam_bleached_18
+  - first:
+      213: 5040619382436582527
+    second: SoftshellClam_bleached_19
+  - first:
+      213: 1061923698881690169
+    second: SoftshellClam_bleached_20
+  - first:
+      213: 4196282126284310399
+    second: SoftshellClam_bleached_21
+  - first:
+      213: 1900190279127219622
+    second: SoftshellClam_bleached_22
+  - first:
+      213: 4957392138574171240
+    second: SoftshellClam_bleached_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: SoftshellClam_bleached_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 30
+        height: 29
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41379312}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: efa27b6a163c35270800000000000000
+      internalID: 8238142967567035134
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftshellClam_bleached_1
+      rect:
+        serializedVersion: 2
+        x: 30
+        y: 0
+        width: 30
+        height: 29
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41379312}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b5486f73dd51f60a0800000000000000
+      internalID: -6886261265355340709
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftshellClam_bleached_2
+      rect:
+        serializedVersion: 2
+        x: 60
+        y: 0
+        width: 30
+        height: 29
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41379312}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2523e7a4c59cdc920800000000000000
+      internalID: 3012285124004688466
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftshellClam_bleached_3
+      rect:
+        serializedVersion: 2
+        x: 90
+        y: 0
+        width: 30
+        height: 29
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41379312}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c2e04c415bf613890800000000000000
+      internalID: -7480074682557526484
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftshellClam_bleached_4
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 0
+        width: 30
+        height: 29
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41379312}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7f3bf502315b00ce0800000000000000
+      internalID: -1440952787006409737
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftshellClam_bleached_5
+      rect:
+        serializedVersion: 2
+        x: 150
+        y: 0
+        width: 30
+        height: 29
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41379312}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9e3950f9348083f50800000000000000
+      internalID: 6861243118822724585
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftshellClam_bleached_6
+      rect:
+        serializedVersion: 2
+        x: 180
+        y: 0
+        width: 30
+        height: 29
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41379312}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d1a335ac45e4770a0800000000000000
+      internalID: -6883947379333842403
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftshellClam_bleached_7
+      rect:
+        serializedVersion: 2
+        x: 210
+        y: 0
+        width: 30
+        height: 29
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41379312}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a9bba20a763b18b40800000000000000
+      internalID: 5440827082490428314
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftshellClam_bleached_8
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 0
+        width: 30
+        height: 29
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41379312}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fc738dc0aed881410800000000000000
+      internalID: 1448063316576974799
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftshellClam_bleached_9
+      rect:
+        serializedVersion: 2
+        x: 270
+        y: 0
+        width: 30
+        height: 29
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41379312}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 16706012a64ff25c0800000000000000
+      internalID: -4237899987674593439
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftshellClam_bleached_10
+      rect:
+        serializedVersion: 2
+        x: 300
+        y: 0
+        width: 30
+        height: 29
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41379312}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d5d436a0bf9474580800000000000000
+      internalID: -8843018000758780579
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftshellClam_bleached_11
+      rect:
+        serializedVersion: 2
+        x: 330
+        y: 0
+        width: 30
+        height: 29
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41379312}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1f6f204193cf2d520800000000000000
+      internalID: 2725518046591645425
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftshellClam_bleached_12
+      rect:
+        serializedVersion: 2
+        x: 360
+        y: 0
+        width: 30
+        height: 29
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41379312}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 997c109bce450ed40800000000000000
+      internalID: 5611578511396554649
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftshellClam_bleached_13
+      rect:
+        serializedVersion: 2
+        x: 390
+        y: 0
+        width: 30
+        height: 29
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41379312}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f7bde4d484325cea0800000000000000
+      internalID: -5853233347256460417
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftshellClam_bleached_14
+      rect:
+        serializedVersion: 2
+        x: 420
+        y: 0
+        width: 30
+        height: 29
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41379312}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c6e4309cd33654310800000000000000
+      internalID: 1388625177130258028
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftshellClam_bleached_15
+      rect:
+        serializedVersion: 2
+        x: 450
+        y: 0
+        width: 30
+        height: 29
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41379312}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e0ca0b11eea080e40800000000000000
+      internalID: 5622756152387349518
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftshellClam_bleached_16
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 0
+        width: 30
+        height: 29
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41379312}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ee7e59cedd65a6120800000000000000
+      internalID: 2407832461939959790
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftshellClam_bleached_17
+      rect:
+        serializedVersion: 2
+        x: 510
+        y: 0
+        width: 30
+        height: 29
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41379312}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ffd3611c3baa0d1c0800000000000000
+      internalID: -4480893940218315265
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftshellClam_bleached_18
+      rect:
+        serializedVersion: 2
+        x: 540
+        y: 0
+        width: 30
+        height: 29
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41379312}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 53ed800896e73cf70800000000000000
+      internalID: 9206341054860156469
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftshellClam_bleached_19
+      rect:
+        serializedVersion: 2
+        x: 570
+        y: 0
+        width: 30
+        height: 29
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41379312}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f74d41a3f90e3f540800000000000000
+      internalID: 5040619382436582527
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftshellClam_bleached_20
+      rect:
+        serializedVersion: 2
+        x: 600
+        y: 0
+        width: 30
+        height: 29
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41379312}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 93a79625af5bcbe00800000000000000
+      internalID: 1061923698881690169
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftshellClam_bleached_21
+      rect:
+        serializedVersion: 2
+        x: 630
+        y: 0
+        width: 30
+        height: 29
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41379312}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f774f7a6c503c3a30800000000000000
+      internalID: 4196282126284310399
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftshellClam_bleached_22
+      rect:
+        serializedVersion: 2
+        x: 660
+        y: 0
+        width: 30
+        height: 29
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41379312}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6ad3701cdf4de5a10800000000000000
+      internalID: 1900190279127219622
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SoftshellClam_bleached_23
+      rect:
+        serializedVersion: 2
+        x: 690
+        y: 0
+        width: 30
+        height: 29
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41379312}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 86c070872e13cc440800000000000000
+      internalID: 4957392138574171240
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 88daebbc346c60047b8ae009f59139a3
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      SoftshellClam_bleached_0: 8238142967567035134
+      SoftshellClam_bleached_1: -6886261265355340709
+      SoftshellClam_bleached_10: -8843018000758780579
+      SoftshellClam_bleached_11: 2725518046591645425
+      SoftshellClam_bleached_12: 5611578511396554649
+      SoftshellClam_bleached_13: -5853233347256460417
+      SoftshellClam_bleached_14: 1388625177130258028
+      SoftshellClam_bleached_15: 5622756152387349518
+      SoftshellClam_bleached_16: 2407832461939959790
+      SoftshellClam_bleached_17: -4480893940218315265
+      SoftshellClam_bleached_18: 9206341054860156469
+      SoftshellClam_bleached_19: 5040619382436582527
+      SoftshellClam_bleached_2: 3012285124004688466
+      SoftshellClam_bleached_20: 1061923698881690169
+      SoftshellClam_bleached_21: 4196282126284310399
+      SoftshellClam_bleached_22: 1900190279127219622
+      SoftshellClam_bleached_23: 4957392138574171240
+      SoftshellClam_bleached_3: -7480074682557526484
+      SoftshellClam_bleached_4: -1440952787006409737
+      SoftshellClam_bleached_5: 6861243118822724585
+      SoftshellClam_bleached_6: -6883947379333842403
+      SoftshellClam_bleached_7: 5440827082490428314
+      SoftshellClam_bleached_8: 1448063316576974799
+      SoftshellClam_bleached_9: -4237899987674593439
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

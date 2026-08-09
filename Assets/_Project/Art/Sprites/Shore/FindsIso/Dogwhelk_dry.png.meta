@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: b73d67526156a1448b19a667dc7b96c4
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -4984868766199270221
+    second: Dogwhelk_dry_0
+  - first:
+      213: -3283068555873889341
+    second: Dogwhelk_dry_1
+  - first:
+      213: 6874453940730722806
+    second: Dogwhelk_dry_2
+  - first:
+      213: 6114418903803052958
+    second: Dogwhelk_dry_3
+  - first:
+      213: -5399330015620357679
+    second: Dogwhelk_dry_4
+  - first:
+      213: -3630231482311624887
+    second: Dogwhelk_dry_5
+  - first:
+      213: -690046928267165362
+    second: Dogwhelk_dry_6
+  - first:
+      213: 177418891568281516
+    second: Dogwhelk_dry_7
+  - first:
+      213: 8545118044270747947
+    second: Dogwhelk_dry_8
+  - first:
+      213: -5667940828023348234
+    second: Dogwhelk_dry_9
+  - first:
+      213: 5305605303992940884
+    second: Dogwhelk_dry_10
+  - first:
+      213: 1595679936294426305
+    second: Dogwhelk_dry_11
+  - first:
+      213: -3102866962652709319
+    second: Dogwhelk_dry_12
+  - first:
+      213: 7657794077723689951
+    second: Dogwhelk_dry_13
+  - first:
+      213: -3465338248913938006
+    second: Dogwhelk_dry_14
+  - first:
+      213: -5859851971373641200
+    second: Dogwhelk_dry_15
+  - first:
+      213: 8602089245851663026
+    second: Dogwhelk_dry_16
+  - first:
+      213: -197059048918502617
+    second: Dogwhelk_dry_17
+  - first:
+      213: 3540061807772050709
+    second: Dogwhelk_dry_18
+  - first:
+      213: 5304344363918934701
+    second: Dogwhelk_dry_19
+  - first:
+      213: -2713131813205268429
+    second: Dogwhelk_dry_20
+  - first:
+      213: -738782373898773311
+    second: Dogwhelk_dry_21
+  - first:
+      213: -2178741413020429950
+    second: Dogwhelk_dry_22
+  - first:
+      213: 9145088784546259030
+    second: Dogwhelk_dry_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Dogwhelk_dry_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 21
+        height: 26
+      alignment: 9
+      pivot: {x: 0.52380955, y: 0.30769232}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3b4b0c2a44032dab0800000000000000
+      internalID: -4984868766199270221
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Dogwhelk_dry_1
+      rect:
+        serializedVersion: 2
+        x: 21
+        y: 0
+        width: 21
+        height: 26
+      alignment: 9
+      pivot: {x: 0.52380955, y: 0.30769232}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3c3d1e9fa823072d0800000000000000
+      internalID: -3283068555873889341
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Dogwhelk_dry_2
+      rect:
+        serializedVersion: 2
+        x: 42
+        y: 0
+        width: 21
+        height: 26
+      alignment: 9
+      pivot: {x: 0.52380955, y: 0.30769232}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6f9f90acf67f66f50800000000000000
+      internalID: 6874453940730722806
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Dogwhelk_dry_3
+      rect:
+        serializedVersion: 2
+        x: 63
+        y: 0
+        width: 21
+        height: 26
+      alignment: 9
+      pivot: {x: 0.52380955, y: 0.30769232}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e934d11f897cad450800000000000000
+      internalID: 6114418903803052958
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Dogwhelk_dry_4
+      rect:
+        serializedVersion: 2
+        x: 84
+        y: 0
+        width: 21
+        height: 26
+      alignment: 9
+      pivot: {x: 0.52380955, y: 0.30769232}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1d128d925f9b115b0800000000000000
+      internalID: -5399330015620357679
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Dogwhelk_dry_5
+      rect:
+        serializedVersion: 2
+        x: 105
+        y: 0
+        width: 21
+        height: 26
+      alignment: 9
+      pivot: {x: 0.52380955, y: 0.30769232}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 947306c53b3de9dc0800000000000000
+      internalID: -3630231482311624887
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Dogwhelk_dry_6
+      rect:
+        serializedVersion: 2
+        x: 126
+        y: 0
+        width: 21
+        height: 26
+      alignment: 9
+      pivot: {x: 0.52380955, y: 0.30769232}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e41494a89f57c66f0800000000000000
+      internalID: -690046928267165362
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Dogwhelk_dry_7
+      rect:
+        serializedVersion: 2
+        x: 147
+        y: 0
+        width: 21
+        height: 26
+      alignment: 9
+      pivot: {x: 0.52380955, y: 0.30769232}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ca7fe58ba81567200800000000000000
+      internalID: 177418891568281516
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Dogwhelk_dry_8
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 0
+        width: 21
+        height: 26
+      alignment: 9
+      pivot: {x: 0.52380955, y: 0.30769232}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b21e988569b569670800000000000000
+      internalID: 8545118044270747947
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Dogwhelk_dry_9
+      rect:
+        serializedVersion: 2
+        x: 189
+        y: 0
+        width: 21
+        height: 26
+      alignment: 9
+      pivot: {x: 0.52380955, y: 0.30769232}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6f32cb1d8dd6751b0800000000000000
+      internalID: -5667940828023348234
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Dogwhelk_dry_10
+      rect:
+        serializedVersion: 2
+        x: 210
+        y: 0
+        width: 21
+        height: 26
+      alignment: 9
+      pivot: {x: 0.52380955, y: 0.30769232}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4597de6e9eb41a940800000000000000
+      internalID: 5305605303992940884
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Dogwhelk_dry_11
+      rect:
+        serializedVersion: 2
+        x: 231
+        y: 0
+        width: 21
+        height: 26
+      alignment: 9
+      pivot: {x: 0.52380955, y: 0.30769232}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1c61c02a27ef42610800000000000000
+      internalID: 1595679936294426305
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Dogwhelk_dry_12
+      rect:
+        serializedVersion: 2
+        x: 252
+        y: 0
+        width: 21
+        height: 26
+      alignment: 9
+      pivot: {x: 0.52380955, y: 0.30769232}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 93e3ac9efe660f4d0800000000000000
+      internalID: -3102866962652709319
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Dogwhelk_dry_13
+      rect:
+        serializedVersion: 2
+        x: 273
+        y: 0
+        width: 21
+        height: 26
+      alignment: 9
+      pivot: {x: 0.52380955, y: 0.30769232}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fd38fc51423f54a60800000000000000
+      internalID: 7657794077723689951
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Dogwhelk_dry_14
+      rect:
+        serializedVersion: 2
+        x: 294
+        y: 0
+        width: 21
+        height: 26
+      alignment: 9
+      pivot: {x: 0.52380955, y: 0.30769232}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aa919e60935a8efc0800000000000000
+      internalID: -3465338248913938006
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Dogwhelk_dry_15
+      rect:
+        serializedVersion: 2
+        x: 315
+        y: 0
+        width: 21
+        height: 26
+      alignment: 9
+      pivot: {x: 0.52380955, y: 0.30769232}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 012d6e9cdaf9daea0800000000000000
+      internalID: -5859851971373641200
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Dogwhelk_dry_16
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 0
+        width: 21
+        height: 26
+      alignment: 9
+      pivot: {x: 0.52380955, y: 0.30769232}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2ba3231e792c06770800000000000000
+      internalID: 8602089245851663026
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Dogwhelk_dry_17
+      rect:
+        serializedVersion: 2
+        x: 357
+        y: 0
+        width: 21
+        height: 26
+      alignment: 9
+      pivot: {x: 0.52380955, y: 0.30769232}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 723bf6dc6d7e34df0800000000000000
+      internalID: -197059048918502617
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Dogwhelk_dry_18
+      rect:
+        serializedVersion: 2
+        x: 378
+        y: 0
+        width: 21
+        height: 26
+      alignment: 9
+      pivot: {x: 0.52380955, y: 0.30769232}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5152e274573d02130800000000000000
+      internalID: 3540061807772050709
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Dogwhelk_dry_19
+      rect:
+        serializedVersion: 2
+        x: 399
+        y: 0
+        width: 21
+        height: 26
+      alignment: 9
+      pivot: {x: 0.52380955, y: 0.30769232}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: da2cbb96811dc9940800000000000000
+      internalID: 5304344363918934701
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Dogwhelk_dry_20
+      rect:
+        serializedVersion: 2
+        x: 420
+        y: 0
+        width: 21
+        height: 26
+      alignment: 9
+      pivot: {x: 0.52380955, y: 0.30769232}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 338a61d9df4095ad0800000000000000
+      internalID: -2713131813205268429
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Dogwhelk_dry_21
+      rect:
+        serializedVersion: 2
+        x: 441
+        y: 0
+        width: 21
+        height: 26
+      alignment: 9
+      pivot: {x: 0.52380955, y: 0.30769232}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1cc917d58515fb5f0800000000000000
+      internalID: -738782373898773311
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Dogwhelk_dry_22
+      rect:
+        serializedVersion: 2
+        x: 462
+        y: 0
+        width: 21
+        height: 26
+      alignment: 9
+      pivot: {x: 0.52380955, y: 0.30769232}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2811c737a3e83c1e0800000000000000
+      internalID: -2178741413020429950
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Dogwhelk_dry_23
+      rect:
+        serializedVersion: 2
+        x: 483
+        y: 0
+        width: 21
+        height: 26
+      alignment: 9
+      pivot: {x: 0.52380955, y: 0.30769232}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 650e94afbc1e9ee70800000000000000
+      internalID: 9145088784546259030
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: e71ad8327b102d54fb957939e65b441d
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Dogwhelk_dry_0: -4984868766199270221
+      Dogwhelk_dry_1: -3283068555873889341
+      Dogwhelk_dry_10: 5305605303992940884
+      Dogwhelk_dry_11: 1595679936294426305
+      Dogwhelk_dry_12: -3102866962652709319
+      Dogwhelk_dry_13: 7657794077723689951
+      Dogwhelk_dry_14: -3465338248913938006
+      Dogwhelk_dry_15: -5859851971373641200
+      Dogwhelk_dry_16: 8602089245851663026
+      Dogwhelk_dry_17: -197059048918502617
+      Dogwhelk_dry_18: 3540061807772050709
+      Dogwhelk_dry_19: 5304344363918934701
+      Dogwhelk_dry_2: 6874453940730722806
+      Dogwhelk_dry_20: -2713131813205268429
+      Dogwhelk_dry_21: -738782373898773311
+      Dogwhelk_dry_22: -2178741413020429950
+      Dogwhelk_dry_23: 9145088784546259030
+      Dogwhelk_dry_3: 6114418903803052958
+      Dogwhelk_dry_4: -5399330015620357679
+      Dogwhelk_dry_5: -3630231482311624887
+      Dogwhelk_dry_6: -690046928267165362
+      Dogwhelk_dry_7: 177418891568281516
+      Dogwhelk_dry_8: 8545118044270747947
+      Dogwhelk_dry_9: -5667940828023348234
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

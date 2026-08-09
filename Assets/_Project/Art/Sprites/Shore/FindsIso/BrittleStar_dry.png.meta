@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: 29560d2d7c4e6794e8d00675113e085e
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -3639573698975277865
+    second: BrittleStar_dry_0
+  - first:
+      213: -6202505381059680930
+    second: BrittleStar_dry_1
+  - first:
+      213: -8762200422422444342
+    second: BrittleStar_dry_2
+  - first:
+      213: 4326971040960011692
+    second: BrittleStar_dry_3
+  - first:
+      213: -9133676277248258187
+    second: BrittleStar_dry_4
+  - first:
+      213: -3795141415050007189
+    second: BrittleStar_dry_5
+  - first:
+      213: 7753745172498882399
+    second: BrittleStar_dry_6
+  - first:
+      213: 6308147774996011290
+    second: BrittleStar_dry_7
+  - first:
+      213: -3964089966959297518
+    second: BrittleStar_dry_8
+  - first:
+      213: -1450375926728879220
+    second: BrittleStar_dry_9
+  - first:
+      213: -2236809693686877121
+    second: BrittleStar_dry_10
+  - first:
+      213: -7688188421452404477
+    second: BrittleStar_dry_11
+  - first:
+      213: -6551404697113313386
+    second: BrittleStar_dry_12
+  - first:
+      213: -2441948937249612427
+    second: BrittleStar_dry_13
+  - first:
+      213: -5009873569976906823
+    second: BrittleStar_dry_14
+  - first:
+      213: 8607489536939945545
+    second: BrittleStar_dry_15
+  - first:
+      213: -2467723803102319876
+    second: BrittleStar_dry_16
+  - first:
+      213: -8625622525678344132
+    second: BrittleStar_dry_17
+  - first:
+      213: 4976468079263191457
+    second: BrittleStar_dry_18
+  - first:
+      213: 2872596706479948915
+    second: BrittleStar_dry_19
+  - first:
+      213: -736386858295127798
+    second: BrittleStar_dry_20
+  - first:
+      213: 4051963733771233637
+    second: BrittleStar_dry_21
+  - first:
+      213: 6571761043928989363
+    second: BrittleStar_dry_22
+  - first:
+      213: 7737585691681533920
+    second: BrittleStar_dry_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: BrittleStar_dry_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 37
+        height: 31
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.4516129}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7dc59ba0103ad7dc0800000000000000
+      internalID: -3639573698975277865
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BrittleStar_dry_1
+      rect:
+        serializedVersion: 2
+        x: 37
+        y: 0
+        width: 37
+        height: 31
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.4516129}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e552d7cd7364ce9a0800000000000000
+      internalID: -6202505381059680930
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BrittleStar_dry_2
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 0
+        width: 37
+        height: 31
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.4516129}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ac68bb2d329666680800000000000000
+      internalID: -8762200422422444342
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BrittleStar_dry_3
+      rect:
+        serializedVersion: 2
+        x: 111
+        y: 0
+        width: 37
+        height: 31
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.4516129}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cadd2d98c3d7c0c30800000000000000
+      internalID: 4326971040960011692
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BrittleStar_dry_4
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 0
+        width: 37
+        height: 31
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.4516129}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 57f843171d9ae3180800000000000000
+      internalID: -9133676277248258187
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BrittleStar_dry_5
+      rect:
+        serializedVersion: 2
+        x: 185
+        y: 0
+        width: 37
+        height: 31
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.4516129}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b6d22939df2f45bc0800000000000000
+      internalID: -3795141415050007189
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BrittleStar_dry_6
+      rect:
+        serializedVersion: 2
+        x: 222
+        y: 0
+        width: 37
+        height: 31
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.4516129}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f5f12bd3726da9b60800000000000000
+      internalID: 7753745172498882399
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BrittleStar_dry_7
+      rect:
+        serializedVersion: 2
+        x: 259
+        y: 0
+        width: 37
+        height: 31
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.4516129}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a19de47bafa0b8750800000000000000
+      internalID: 6308147774996011290
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BrittleStar_dry_8
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 0
+        width: 37
+        height: 31
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.4516129}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 21c73bd7d29bcf8c0800000000000000
+      internalID: -3964089966959297518
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BrittleStar_dry_9
+      rect:
+        serializedVersion: 2
+        x: 333
+        y: 0
+        width: 37
+        height: 31
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.4516129}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c831c8077ca3fdbe0800000000000000
+      internalID: -1450375926728879220
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BrittleStar_dry_10
+      rect:
+        serializedVersion: 2
+        x: 370
+        y: 0
+        width: 37
+        height: 31
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.4516129}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f34b4a94f6145f0e0800000000000000
+      internalID: -2236809693686877121
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BrittleStar_dry_11
+      rect:
+        serializedVersion: 2
+        x: 407
+        y: 0
+        width: 37
+        height: 31
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.4516129}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 309ee0d4d511e4590800000000000000
+      internalID: -7688188421452404477
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BrittleStar_dry_12
+      rect:
+        serializedVersion: 2
+        x: 444
+        y: 0
+        width: 37
+        height: 31
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.4516129}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 69f3cb8832cb415a0800000000000000
+      internalID: -6551404697113313386
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BrittleStar_dry_13
+      rect:
+        serializedVersion: 2
+        x: 481
+        y: 0
+        width: 37
+        height: 31
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.4516129}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 57d189b21647c1ed0800000000000000
+      internalID: -2441948937249612427
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BrittleStar_dry_14
+      rect:
+        serializedVersion: 2
+        x: 518
+        y: 0
+        width: 37
+        height: 31
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.4516129}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9bb88e3188a597ab0800000000000000
+      internalID: -5009873569976906823
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BrittleStar_dry_15
+      rect:
+        serializedVersion: 2
+        x: 555
+        y: 0
+        width: 37
+        height: 31
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.4516129}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 94e62312122f37770800000000000000
+      internalID: 8607489536939945545
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BrittleStar_dry_16
+      rect:
+        serializedVersion: 2
+        x: 592
+        y: 0
+        width: 37
+        height: 31
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.4516129}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cfa6f409642e0cdd0800000000000000
+      internalID: -2467723803102319876
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BrittleStar_dry_17
+      rect:
+        serializedVersion: 2
+        x: 629
+        y: 0
+        width: 37
+        height: 31
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.4516129}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c38a55e6302ab4880800000000000000
+      internalID: -8625622525678344132
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BrittleStar_dry_18
+      rect:
+        serializedVersion: 2
+        x: 666
+        y: 0
+        width: 37
+        height: 31
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.4516129}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1a19d840a57ff0540800000000000000
+      internalID: 4976468079263191457
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BrittleStar_dry_19
+      rect:
+        serializedVersion: 2
+        x: 703
+        y: 0
+        width: 37
+        height: 31
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.4516129}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 374c1b02c738dd720800000000000000
+      internalID: 2872596706479948915
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BrittleStar_dry_20
+      rect:
+        serializedVersion: 2
+        x: 740
+        y: 0
+        width: 37
+        height: 31
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.4516129}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a019d0ecd04d7c5f0800000000000000
+      internalID: -736386858295127798
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BrittleStar_dry_21
+      rect:
+        serializedVersion: 2
+        x: 777
+        y: 0
+        width: 37
+        height: 31
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.4516129}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 56923323c877b3830800000000000000
+      internalID: 4051963733771233637
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BrittleStar_dry_22
+      rect:
+        serializedVersion: 2
+        x: 814
+        y: 0
+        width: 37
+        height: 31
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.4516129}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3be332cc9d5933b50800000000000000
+      internalID: 6571761043928989363
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BrittleStar_dry_23
+      rect:
+        serializedVersion: 2
+        x: 851
+        y: 0
+        width: 37
+        height: 31
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.4516129}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0efa2dbe03d616b60800000000000000
+      internalID: 7737585691681533920
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 8692e27f1ac0062428c4aa651e8499bf
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      BrittleStar_dry_0: -3639573698975277865
+      BrittleStar_dry_1: -6202505381059680930
+      BrittleStar_dry_10: -2236809693686877121
+      BrittleStar_dry_11: -7688188421452404477
+      BrittleStar_dry_12: -6551404697113313386
+      BrittleStar_dry_13: -2441948937249612427
+      BrittleStar_dry_14: -5009873569976906823
+      BrittleStar_dry_15: 8607489536939945545
+      BrittleStar_dry_16: -2467723803102319876
+      BrittleStar_dry_17: -8625622525678344132
+      BrittleStar_dry_18: 4976468079263191457
+      BrittleStar_dry_19: 2872596706479948915
+      BrittleStar_dry_2: -8762200422422444342
+      BrittleStar_dry_20: -736386858295127798
+      BrittleStar_dry_21: 4051963733771233637
+      BrittleStar_dry_22: 6571761043928989363
+      BrittleStar_dry_23: 7737585691681533920
+      BrittleStar_dry_3: 4326971040960011692
+      BrittleStar_dry_4: -9133676277248258187
+      BrittleStar_dry_5: -3795141415050007189
+      BrittleStar_dry_6: 7753745172498882399
+      BrittleStar_dry_7: 6308147774996011290
+      BrittleStar_dry_8: -3964089966959297518
+      BrittleStar_dry_9: -1450375926728879220
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

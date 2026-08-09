@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: 95d2d61765f3f4a4388f491527bf0724
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -8429243912880400059
+    second: LobsterClaw_bleached_0
+  - first:
+      213: -2951403642495484255
+    second: LobsterClaw_bleached_1
+  - first:
+      213: -3174777278569091322
+    second: LobsterClaw_bleached_2
+  - first:
+      213: 347535243810394550
+    second: LobsterClaw_bleached_3
+  - first:
+      213: 6255337118484202080
+    second: LobsterClaw_bleached_4
+  - first:
+      213: -4212455703040692944
+    second: LobsterClaw_bleached_5
+  - first:
+      213: -3313983504273318627
+    second: LobsterClaw_bleached_6
+  - first:
+      213: 192905435223512824
+    second: LobsterClaw_bleached_7
+  - first:
+      213: 5020656872507651061
+    second: LobsterClaw_bleached_8
+  - first:
+      213: -9159876104005328572
+    second: LobsterClaw_bleached_9
+  - first:
+      213: -7262260793237927525
+    second: LobsterClaw_bleached_10
+  - first:
+      213: 86087954818683201
+    second: LobsterClaw_bleached_11
+  - first:
+      213: -8834692923250638028
+    second: LobsterClaw_bleached_12
+  - first:
+      213: 7606291108279457537
+    second: LobsterClaw_bleached_13
+  - first:
+      213: 3732703164597007075
+    second: LobsterClaw_bleached_14
+  - first:
+      213: -6361565253578073945
+    second: LobsterClaw_bleached_15
+  - first:
+      213: 8576612924427748384
+    second: LobsterClaw_bleached_16
+  - first:
+      213: -4155030135662543786
+    second: LobsterClaw_bleached_17
+  - first:
+      213: -6908749670120538769
+    second: LobsterClaw_bleached_18
+  - first:
+      213: -7041751081267979364
+    second: LobsterClaw_bleached_19
+  - first:
+      213: 5938298168316405604
+    second: LobsterClaw_bleached_20
+  - first:
+      213: 3277667660257199681
+    second: LobsterClaw_bleached_21
+  - first:
+      213: 4473946820206686500
+    second: LobsterClaw_bleached_22
+  - first:
+      213: 3613263610981864190
+    second: LobsterClaw_bleached_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: LobsterClaw_bleached_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.38297874}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 549d3af325f450b80800000000000000
+      internalID: -8429243912880400059
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterClaw_bleached_1
+      rect:
+        serializedVersion: 2
+        x: 47
+        y: 0
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.38297874}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1ae334c36028a07d0800000000000000
+      internalID: -2951403642495484255
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterClaw_bleached_2
+      rect:
+        serializedVersion: 2
+        x: 94
+        y: 0
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.38297874}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 60f68e5c2ece0f3d0800000000000000
+      internalID: -3174777278569091322
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterClaw_bleached_3
+      rect:
+        serializedVersion: 2
+        x: 141
+        y: 0
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.38297874}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6b15f328671b2d400800000000000000
+      internalID: 347535243810394550
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterClaw_bleached_4
+      rect:
+        serializedVersion: 2
+        x: 188
+        y: 0
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.38297874}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 062019197fb6fc650800000000000000
+      internalID: 6255337118484202080
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterClaw_bleached_5
+      rect:
+        serializedVersion: 2
+        x: 235
+        y: 0
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.38297874}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 03de03c4bd95a85c0800000000000000
+      internalID: -4212455703040692944
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterClaw_bleached_6
+      rect:
+        serializedVersion: 2
+        x: 282
+        y: 0
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.38297874}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d1dd844af8d5202d0800000000000000
+      internalID: -3313983504273318627
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterClaw_bleached_7
+      rect:
+        serializedVersion: 2
+        x: 329
+        y: 0
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.38297874}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8f65db5a8765da200800000000000000
+      internalID: 192905435223512824
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterClaw_bleached_8
+      rect:
+        serializedVersion: 2
+        x: 376
+        y: 0
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.38297874}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5f331f033d4fca540800000000000000
+      internalID: 5020656872507651061
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterClaw_bleached_9
+      rect:
+        serializedVersion: 2
+        x: 423
+        y: 0
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.38297874}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4416c2ae63591e080800000000000000
+      internalID: -9159876104005328572
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterClaw_bleached_10
+      rect:
+        serializedVersion: 2
+        x: 470
+        y: 0
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.38297874}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b998ec02944473b90800000000000000
+      internalID: -7262260793237927525
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterClaw_bleached_11
+      rect:
+        serializedVersion: 2
+        x: 517
+        y: 0
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.38297874}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 141586ee988d13100800000000000000
+      internalID: 86087954818683201
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterClaw_bleached_12
+      rect:
+        serializedVersion: 2
+        x: 564
+        y: 0
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.38297874}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4330df1389dd46580800000000000000
+      internalID: -8834692923250638028
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterClaw_bleached_13
+      rect:
+        serializedVersion: 2
+        x: 611
+        y: 0
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.38297874}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 107953f8679fe8960800000000000000
+      internalID: 7606291108279457537
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterClaw_bleached_14
+      rect:
+        serializedVersion: 2
+        x: 658
+        y: 0
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.38297874}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3e2f7c160c93dc330800000000000000
+      internalID: 3732703164597007075
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterClaw_bleached_15
+      rect:
+        serializedVersion: 2
+        x: 705
+        y: 0
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.38297874}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7a8d20d5b1e27b7a0800000000000000
+      internalID: -6361565253578073945
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterClaw_bleached_16
+      rect:
+        serializedVersion: 2
+        x: 752
+        y: 0
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.38297874}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0244a809300460770800000000000000
+      internalID: 8576612924427748384
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterClaw_bleached_17
+      rect:
+        serializedVersion: 2
+        x: 799
+        y: 0
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.38297874}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 65c7acc1b1e5656c0800000000000000
+      internalID: -4155030135662543786
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterClaw_bleached_18
+      rect:
+        serializedVersion: 2
+        x: 846
+        y: 0
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.38297874}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f6d3e5677c03f10a0800000000000000
+      internalID: -6908749670120538769
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterClaw_bleached_19
+      rect:
+        serializedVersion: 2
+        x: 893
+        y: 0
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.38297874}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c9b9c4c43bca64e90800000000000000
+      internalID: -7041751081267979364
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterClaw_bleached_20
+      rect:
+        serializedVersion: 2
+        x: 940
+        y: 0
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.38297874}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4672adcb8b2196250800000000000000
+      internalID: 5938298168316405604
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterClaw_bleached_21
+      rect:
+        serializedVersion: 2
+        x: 987
+        y: 0
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.38297874}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1468a650f5d9c7d20800000000000000
+      internalID: 3277667660257199681
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterClaw_bleached_22
+      rect:
+        serializedVersion: 2
+        x: 1034
+        y: 0
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.38297874}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4217862dde6a61e30800000000000000
+      internalID: 4473946820206686500
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterClaw_bleached_23
+      rect:
+        serializedVersion: 2
+        x: 1081
+        y: 0
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.38297874}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ef25b6c3c14e42230800000000000000
+      internalID: 3613263610981864190
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 012493890c4ac1343ba8103779cd76f5
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      LobsterClaw_bleached_0: -8429243912880400059
+      LobsterClaw_bleached_1: -2951403642495484255
+      LobsterClaw_bleached_10: -7262260793237927525
+      LobsterClaw_bleached_11: 86087954818683201
+      LobsterClaw_bleached_12: -8834692923250638028
+      LobsterClaw_bleached_13: 7606291108279457537
+      LobsterClaw_bleached_14: 3732703164597007075
+      LobsterClaw_bleached_15: -6361565253578073945
+      LobsterClaw_bleached_16: 8576612924427748384
+      LobsterClaw_bleached_17: -4155030135662543786
+      LobsterClaw_bleached_18: -6908749670120538769
+      LobsterClaw_bleached_19: -7041751081267979364
+      LobsterClaw_bleached_2: -3174777278569091322
+      LobsterClaw_bleached_20: 5938298168316405604
+      LobsterClaw_bleached_21: 3277667660257199681
+      LobsterClaw_bleached_22: 4473946820206686500
+      LobsterClaw_bleached_23: 3613263610981864190
+      LobsterClaw_bleached_3: 347535243810394550
+      LobsterClaw_bleached_4: 6255337118484202080
+      LobsterClaw_bleached_5: -4212455703040692944
+      LobsterClaw_bleached_6: -3313983504273318627
+      LobsterClaw_bleached_7: 192905435223512824
+      LobsterClaw_bleached_8: 5020656872507651061
+      LobsterClaw_bleached_9: -9159876104005328572
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

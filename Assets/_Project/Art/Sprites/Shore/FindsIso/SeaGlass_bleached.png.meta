@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: c797ed6170907f4408d3acbe90f3819f
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 1316452635287133592
+    second: SeaGlass_bleached_0
+  - first:
+      213: 8367863996739357527
+    second: SeaGlass_bleached_1
+  - first:
+      213: 1892186132728716362
+    second: SeaGlass_bleached_2
+  - first:
+      213: -4987790008796973989
+    second: SeaGlass_bleached_3
+  - first:
+      213: 8136859863019389035
+    second: SeaGlass_bleached_4
+  - first:
+      213: -264722158997619129
+    second: SeaGlass_bleached_5
+  - first:
+      213: -1522508836822147142
+    second: SeaGlass_bleached_6
+  - first:
+      213: 6521530324388366630
+    second: SeaGlass_bleached_7
+  - first:
+      213: 9170978061732962274
+    second: SeaGlass_bleached_8
+  - first:
+      213: 7558007038918401428
+    second: SeaGlass_bleached_9
+  - first:
+      213: -2426325160357186923
+    second: SeaGlass_bleached_10
+  - first:
+      213: -3036085476781346950
+    second: SeaGlass_bleached_11
+  - first:
+      213: 6589837231047650156
+    second: SeaGlass_bleached_12
+  - first:
+      213: -2027920090037152974
+    second: SeaGlass_bleached_13
+  - first:
+      213: -310316027749319296
+    second: SeaGlass_bleached_14
+  - first:
+      213: -2832519858387377591
+    second: SeaGlass_bleached_15
+  - first:
+      213: -807173478296539712
+    second: SeaGlass_bleached_16
+  - first:
+      213: -1260691054348250029
+    second: SeaGlass_bleached_17
+  - first:
+      213: 293597596364453722
+    second: SeaGlass_bleached_18
+  - first:
+      213: 4211519911237725419
+    second: SeaGlass_bleached_19
+  - first:
+      213: 8356314579344100778
+    second: SeaGlass_bleached_20
+  - first:
+      213: 8086127968216180556
+    second: SeaGlass_bleached_21
+  - first:
+      213: -3295586722034400022
+    second: SeaGlass_bleached_22
+  - first:
+      213: -355360361524099400
+    second: SeaGlass_bleached_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: SeaGlass_bleached_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 19
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5263158, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 89d9ae962baf44210800000000000000
+      internalID: 1316452635287133592
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaGlass_bleached_1
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 0
+        width: 19
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5263158, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 75b0e6e58ff902470800000000000000
+      internalID: 8367863996739357527
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaGlass_bleached_2
+      rect:
+        serializedVersion: 2
+        x: 38
+        y: 0
+        width: 19
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5263158, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a4c17323345624a10800000000000000
+      internalID: 1892186132728716362
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaGlass_bleached_3
+      rect:
+        serializedVersion: 2
+        x: 57
+        y: 0
+        width: 19
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5263158, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b54f967d96fc7cab0800000000000000
+      internalID: -4987790008796973989
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaGlass_bleached_4
+      rect:
+        serializedVersion: 2
+        x: 76
+        y: 0
+        width: 19
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5263158, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b60876a3feeebe070800000000000000
+      internalID: 8136859863019389035
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaGlass_bleached_5
+      rect:
+        serializedVersion: 2
+        x: 95
+        y: 0
+        width: 19
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5263158, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 74eb5c45994835cf0800000000000000
+      internalID: -264722158997619129
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaGlass_bleached_6
+      rect:
+        serializedVersion: 2
+        x: 114
+        y: 0
+        width: 19
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5263158, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: abf92dd8746fedae0800000000000000
+      internalID: -1522508836822147142
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaGlass_bleached_7
+      rect:
+        serializedVersion: 2
+        x: 133
+        y: 0
+        width: 19
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5263158, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6294b190741218a50800000000000000
+      internalID: 6521530324388366630
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaGlass_bleached_8
+      rect:
+        serializedVersion: 2
+        x: 152
+        y: 0
+        width: 19
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5263158, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2ef5e7c05fbd54f70800000000000000
+      internalID: 9170978061732962274
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaGlass_bleached_9
+      rect:
+        serializedVersion: 2
+        x: 171
+        y: 0
+        width: 19
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5263158, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 49d12ac9b5f63e860800000000000000
+      internalID: 7558007038918401428
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaGlass_bleached_10
+      rect:
+        serializedVersion: 2
+        x: 190
+        y: 0
+        width: 19
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5263158, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 59231533f16f35ed0800000000000000
+      internalID: -2426325160357186923
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaGlass_bleached_11
+      rect:
+        serializedVersion: 2
+        x: 209
+        y: 0
+        width: 19
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5263158, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a7fa9b04858add5d0800000000000000
+      internalID: -3036085476781346950
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaGlass_bleached_12
+      rect:
+        serializedVersion: 2
+        x: 228
+        y: 0
+        width: 19
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5263158, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c6b2d341c0ec37b50800000000000000
+      internalID: 6589837231047650156
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaGlass_bleached_13
+      rect:
+        serializedVersion: 2
+        x: 247
+        y: 0
+        width: 19
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5263158, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 23315782c616bd3e0800000000000000
+      internalID: -2027920090037152974
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaGlass_bleached_14
+      rect:
+        serializedVersion: 2
+        x: 266
+        y: 0
+        width: 19
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5263158, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 08d34e5873981bbf0800000000000000
+      internalID: -310316027749319296
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaGlass_bleached_15
+      rect:
+        serializedVersion: 2
+        x: 285
+        y: 0
+        width: 19
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5263158, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 942a495323ed0b8d0800000000000000
+      internalID: -2832519858387377591
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaGlass_bleached_16
+      rect:
+        serializedVersion: 2
+        x: 304
+        y: 0
+        width: 19
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5263158, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0cda4028ff75cc4f0800000000000000
+      internalID: -807173478296539712
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaGlass_bleached_17
+      rect:
+        serializedVersion: 2
+        x: 323
+        y: 0
+        width: 19
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5263158, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3545f0e5a20218ee0800000000000000
+      internalID: -1260691054348250029
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaGlass_bleached_18
+      rect:
+        serializedVersion: 2
+        x: 342
+        y: 0
+        width: 19
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5263158, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a5736365571131400800000000000000
+      internalID: 293597596364453722
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaGlass_bleached_19
+      rect:
+        serializedVersion: 2
+        x: 361
+        y: 0
+        width: 19
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5263158, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bec2fc1bb03527a30800000000000000
+      internalID: 4211519911237725419
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaGlass_bleached_20
+      rect:
+        serializedVersion: 2
+        x: 380
+        y: 0
+        width: 19
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5263158, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aad093516d797f370800000000000000
+      internalID: 8356314579344100778
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaGlass_bleached_21
+      rect:
+        serializedVersion: 2
+        x: 399
+        y: 0
+        width: 19
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5263158, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c4760e18b82b73070800000000000000
+      internalID: 8086127968216180556
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaGlass_bleached_22
+      rect:
+        serializedVersion: 2
+        x: 418
+        y: 0
+        width: 19
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5263158, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ae445aa4659b342d0800000000000000
+      internalID: -3295586722034400022
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaGlass_bleached_23
+      rect:
+        serializedVersion: 2
+        x: 437
+        y: 0
+        width: 19
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5263158, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b60a1c42a1811bf0800000000000000
+      internalID: -355360361524099400
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: d591b794463ce1e438ca3fd966f534a6
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      SeaGlass_bleached_0: 1316452635287133592
+      SeaGlass_bleached_1: 8367863996739357527
+      SeaGlass_bleached_10: -2426325160357186923
+      SeaGlass_bleached_11: -3036085476781346950
+      SeaGlass_bleached_12: 6589837231047650156
+      SeaGlass_bleached_13: -2027920090037152974
+      SeaGlass_bleached_14: -310316027749319296
+      SeaGlass_bleached_15: -2832519858387377591
+      SeaGlass_bleached_16: -807173478296539712
+      SeaGlass_bleached_17: -1260691054348250029
+      SeaGlass_bleached_18: 293597596364453722
+      SeaGlass_bleached_19: 4211519911237725419
+      SeaGlass_bleached_2: 1892186132728716362
+      SeaGlass_bleached_20: 8356314579344100778
+      SeaGlass_bleached_21: 8086127968216180556
+      SeaGlass_bleached_22: -3295586722034400022
+      SeaGlass_bleached_23: -355360361524099400
+      SeaGlass_bleached_3: -4987790008796973989
+      SeaGlass_bleached_4: 8136859863019389035
+      SeaGlass_bleached_5: -264722158997619129
+      SeaGlass_bleached_6: -1522508836822147142
+      SeaGlass_bleached_7: 6521530324388366630
+      SeaGlass_bleached_8: 9170978061732962274
+      SeaGlass_bleached_9: 7558007038918401428
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: d92925483ec20f94a86151debce1ecf0
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8159595147296735834
+    second: TrapLath_bleached_0
+  - first:
+      213: -1454943021577771215
+    second: TrapLath_bleached_1
+  - first:
+      213: -4667993500908459888
+    second: TrapLath_bleached_2
+  - first:
+      213: -7224154955920299387
+    second: TrapLath_bleached_3
+  - first:
+      213: 115601119321133353
+    second: TrapLath_bleached_4
+  - first:
+      213: 4531787956249707628
+    second: TrapLath_bleached_5
+  - first:
+      213: -2952407226644559562
+    second: TrapLath_bleached_6
+  - first:
+      213: -4951031279860683784
+    second: TrapLath_bleached_7
+  - first:
+      213: -8433911266398336357
+    second: TrapLath_bleached_8
+  - first:
+      213: 4925413124856024996
+    second: TrapLath_bleached_9
+  - first:
+      213: -7642967811421670736
+    second: TrapLath_bleached_10
+  - first:
+      213: 7088914267345387973
+    second: TrapLath_bleached_11
+  - first:
+      213: -5147365945016934466
+    second: TrapLath_bleached_12
+  - first:
+      213: 4788928975754892596
+    second: TrapLath_bleached_13
+  - first:
+      213: -7400351089683237938
+    second: TrapLath_bleached_14
+  - first:
+      213: 4847415767471224968
+    second: TrapLath_bleached_15
+  - first:
+      213: -7887621344142417521
+    second: TrapLath_bleached_16
+  - first:
+      213: 355690021095744259
+    second: TrapLath_bleached_17
+  - first:
+      213: 4509748786339336480
+    second: TrapLath_bleached_18
+  - first:
+      213: 2634630734355245511
+    second: TrapLath_bleached_19
+  - first:
+      213: -6352519916786317492
+    second: TrapLath_bleached_20
+  - first:
+      213: 2681459841297605488
+    second: TrapLath_bleached_21
+  - first:
+      213: -5031268143310170628
+    second: TrapLath_bleached_22
+  - first:
+      213: 1040105075127964232
+    second: TrapLath_bleached_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: TrapLath_bleached_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 74
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a528f991e84bc3170800000000000000
+      internalID: 8159595147296735834
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_bleached_1
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 74
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1376c6ec7010fcbe0800000000000000
+      internalID: -1454943021577771215
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_bleached_2
+      rect:
+        serializedVersion: 2
+        x: 184
+        y: 74
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 098e48c94a4f73fb0800000000000000
+      internalID: -4667993500908459888
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_bleached_3
+      rect:
+        serializedVersion: 2
+        x: 276
+        y: 74
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 58a2ef1c755aebb90800000000000000
+      internalID: -7224154955920299387
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_bleached_4
+      rect:
+        serializedVersion: 2
+        x: 368
+        y: 74
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 92116c40b92ba9100800000000000000
+      internalID: 115601119321133353
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_bleached_5
+      rect:
+        serializedVersion: 2
+        x: 460
+        y: 74
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c6448a1c22524ee30800000000000000
+      internalID: 4531787956249707628
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_bleached_6
+      rect:
+        serializedVersion: 2
+        x: 552
+        y: 74
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6390e871541f607d0800000000000000
+      internalID: -2952407226644559562
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_bleached_7
+      rect:
+        serializedVersion: 2
+        x: 644
+        y: 74
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8fb6e0c58476a4bb0800000000000000
+      internalID: -4951031279860683784
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_bleached_8
+      rect:
+        serializedVersion: 2
+        x: 736
+        y: 74
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b9a8923536ab4fa80800000000000000
+      internalID: -8433911266398336357
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_bleached_9
+      rect:
+        serializedVersion: 2
+        x: 828
+        y: 74
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4af071f14259a5440800000000000000
+      internalID: 4925413124856024996
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_bleached_10
+      rect:
+        serializedVersion: 2
+        x: 920
+        y: 74
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0b2777a0549bee590800000000000000
+      internalID: -7642967811421670736
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_bleached_11
+      rect:
+        serializedVersion: 2
+        x: 1012
+        y: 74
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5c1025ca7f1e06260800000000000000
+      internalID: 7088914267345387973
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_bleached_12
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ebf9256e1f1e098b0800000000000000
+      internalID: -5147365945016934466
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_bleached_13
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 0
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4351276d781b57240800000000000000
+      internalID: 4788928975754892596
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_bleached_14
+      rect:
+        serializedVersion: 2
+        x: 184
+        y: 0
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ec3714684ebac4990800000000000000
+      internalID: -7400351089683237938
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_bleached_15
+      rect:
+        serializedVersion: 2
+        x: 276
+        y: 0
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 888ffb235fa754340800000000000000
+      internalID: 4847415767471224968
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_bleached_16
+      rect:
+        serializedVersion: 2
+        x: 368
+        y: 0
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f812a9b8d2a898290800000000000000
+      internalID: -7887621344142417521
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_bleached_17
+      rect:
+        serializedVersion: 2
+        x: 460
+        y: 0
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 303209d803aafe400800000000000000
+      internalID: 355690021095744259
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_bleached_18
+      rect:
+        serializedVersion: 2
+        x: 552
+        y: 0
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0215104a0a8d59e30800000000000000
+      internalID: 4509748786339336480
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_bleached_19
+      rect:
+        serializedVersion: 2
+        x: 644
+        y: 0
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7c9229ba1b6109420800000000000000
+      internalID: 2634630734355245511
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_bleached_20
+      rect:
+        serializedVersion: 2
+        x: 736
+        y: 0
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c478b53fac057d7a0800000000000000
+      internalID: -6352519916786317492
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_bleached_21
+      rect:
+        serializedVersion: 2
+        x: 828
+        y: 0
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 073e408c485763520800000000000000
+      internalID: 2681459841297605488
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_bleached_22
+      rect:
+        serializedVersion: 2
+        x: 920
+        y: 0
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cf5124cc7485d2ab0800000000000000
+      internalID: -5031268143310170628
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_bleached_23
+      rect:
+        serializedVersion: 2
+        x: 1012
+        y: 0
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 842551c1e023f6e00800000000000000
+      internalID: 1040105075127964232
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 3c557710d2736a84baadfbd691437ac7
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      TrapLath_bleached_0: 8159595147296735834
+      TrapLath_bleached_1: -1454943021577771215
+      TrapLath_bleached_10: -7642967811421670736
+      TrapLath_bleached_11: 7088914267345387973
+      TrapLath_bleached_12: -5147365945016934466
+      TrapLath_bleached_13: 4788928975754892596
+      TrapLath_bleached_14: -7400351089683237938
+      TrapLath_bleached_15: 4847415767471224968
+      TrapLath_bleached_16: -7887621344142417521
+      TrapLath_bleached_17: 355690021095744259
+      TrapLath_bleached_18: 4509748786339336480
+      TrapLath_bleached_19: 2634630734355245511
+      TrapLath_bleached_2: -4667993500908459888
+      TrapLath_bleached_20: -6352519916786317492
+      TrapLath_bleached_21: 2681459841297605488
+      TrapLath_bleached_22: -5031268143310170628
+      TrapLath_bleached_23: 1040105075127964232
+      TrapLath_bleached_3: -7224154955920299387
+      TrapLath_bleached_4: 115601119321133353
+      TrapLath_bleached_5: 4531787956249707628
+      TrapLath_bleached_6: -2952407226644559562
+      TrapLath_bleached_7: -4951031279860683784
+      TrapLath_bleached_8: -8433911266398336357
+      TrapLath_bleached_9: 4925413124856024996
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

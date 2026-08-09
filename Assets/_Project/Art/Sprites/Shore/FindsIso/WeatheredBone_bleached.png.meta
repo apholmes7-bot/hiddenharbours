@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: 6604153ae3ac8304db5eba59ed9be848
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -4219904255402128874
+    second: WeatheredBone_bleached_0
+  - first:
+      213: 5229838623739625367
+    second: WeatheredBone_bleached_1
+  - first:
+      213: -7208625612751692748
+    second: WeatheredBone_bleached_2
+  - first:
+      213: -765604578766966096
+    second: WeatheredBone_bleached_3
+  - first:
+      213: -7748484666371595689
+    second: WeatheredBone_bleached_4
+  - first:
+      213: 7406895245498548009
+    second: WeatheredBone_bleached_5
+  - first:
+      213: -8976774296088011639
+    second: WeatheredBone_bleached_6
+  - first:
+      213: 2764287676982864228
+    second: WeatheredBone_bleached_7
+  - first:
+      213: 59874606312018224
+    second: WeatheredBone_bleached_8
+  - first:
+      213: -219196666383369174
+    second: WeatheredBone_bleached_9
+  - first:
+      213: 787749229847565106
+    second: WeatheredBone_bleached_10
+  - first:
+      213: 8962656812103564650
+    second: WeatheredBone_bleached_11
+  - first:
+      213: 8525279333114202401
+    second: WeatheredBone_bleached_12
+  - first:
+      213: 1032121442871308500
+    second: WeatheredBone_bleached_13
+  - first:
+      213: -5857007801764826248
+    second: WeatheredBone_bleached_14
+  - first:
+      213: 3955856755999013145
+    second: WeatheredBone_bleached_15
+  - first:
+      213: -8712726960145156327
+    second: WeatheredBone_bleached_16
+  - first:
+      213: -1995931862423082311
+    second: WeatheredBone_bleached_17
+  - first:
+      213: 8156855567495225862
+    second: WeatheredBone_bleached_18
+  - first:
+      213: -8877486526568189898
+    second: WeatheredBone_bleached_19
+  - first:
+      213: 1627783215976147908
+    second: WeatheredBone_bleached_20
+  - first:
+      213: 1129224409373181873
+    second: WeatheredBone_bleached_21
+  - first:
+      213: 4633304276366934373
+    second: WeatheredBone_bleached_22
+  - first:
+      213: -556511130215827195
+    second: WeatheredBone_bleached_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: WeatheredBone_bleached_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 59
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5084746, y: 0.4074074}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 61ac89e0073ef65c0800000000000000
+      internalID: -4219904255402128874
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WeatheredBone_bleached_1
+      rect:
+        serializedVersion: 2
+        x: 59
+        y: 0
+        width: 59
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5084746, y: 0.4074074}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 79f3e98f48e149840800000000000000
+      internalID: 5229838623739625367
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WeatheredBone_bleached_2
+      rect:
+        serializedVersion: 2
+        x: 118
+        y: 0
+        width: 59
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5084746, y: 0.4074074}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 43c1729b231d5fb90800000000000000
+      internalID: -7208625612751692748
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WeatheredBone_bleached_3
+      rect:
+        serializedVersion: 2
+        x: 177
+        y: 0
+        width: 59
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5084746, y: 0.4074074}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0b2be2421b60065f0800000000000000
+      internalID: -765604578766966096
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WeatheredBone_bleached_4
+      rect:
+        serializedVersion: 2
+        x: 236
+        y: 0
+        width: 59
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5084746, y: 0.4074074}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7522c59cf3ad77490800000000000000
+      internalID: -7748484666371595689
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WeatheredBone_bleached_5
+      rect:
+        serializedVersion: 2
+        x: 295
+        y: 0
+        width: 59
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5084746, y: 0.4074074}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 92f787c7bf39ac660800000000000000
+      internalID: 7406895245498548009
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WeatheredBone_bleached_6
+      rect:
+        serializedVersion: 2
+        x: 354
+        y: 0
+        width: 59
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5084746, y: 0.4074074}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 98c11d4b6571c6380800000000000000
+      internalID: -8976774296088011639
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WeatheredBone_bleached_7
+      rect:
+        serializedVersion: 2
+        x: 413
+        y: 0
+        width: 59
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5084746, y: 0.4074074}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 469ad831ff8bc5620800000000000000
+      internalID: 2764287676982864228
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WeatheredBone_bleached_8
+      rect:
+        serializedVersion: 2
+        x: 472
+        y: 0
+        width: 59
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5084746, y: 0.4074074}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0315b4023a7b4d000800000000000000
+      internalID: 59874606312018224
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WeatheredBone_bleached_9
+      rect:
+        serializedVersion: 2
+        x: 531
+        y: 0
+        width: 59
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5084746, y: 0.4074074}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a2cf4441bc145fcf0800000000000000
+      internalID: -219196666383369174
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WeatheredBone_bleached_10
+      rect:
+        serializedVersion: 2
+        x: 590
+        y: 0
+        width: 59
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5084746, y: 0.4074074}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 233d62930c5aeea00800000000000000
+      internalID: 787749229847565106
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WeatheredBone_bleached_11
+      rect:
+        serializedVersion: 2
+        x: 649
+        y: 0
+        width: 59
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5084746, y: 0.4074074}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a6dfa2962e0c16c70800000000000000
+      internalID: 8962656812103564650
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WeatheredBone_bleached_12
+      rect:
+        serializedVersion: 2
+        x: 708
+        y: 0
+        width: 59
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5084746, y: 0.4074074}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 12940457260ef4670800000000000000
+      internalID: 8525279333114202401
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WeatheredBone_bleached_13
+      rect:
+        serializedVersion: 2
+        x: 767
+        y: 0
+        width: 59
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5084746, y: 0.4074074}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4d0786fdbf4d25e00800000000000000
+      internalID: 1032121442871308500
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WeatheredBone_bleached_14
+      rect:
+        serializedVersion: 2
+        x: 826
+        y: 0
+        width: 59
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5084746, y: 0.4074074}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 873bd11af6ab7bea0800000000000000
+      internalID: -5857007801764826248
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WeatheredBone_bleached_15
+      rect:
+        serializedVersion: 2
+        x: 885
+        y: 0
+        width: 59
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5084746, y: 0.4074074}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 91976a3b2c606e630800000000000000
+      internalID: 3955856755999013145
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WeatheredBone_bleached_16
+      rect:
+        serializedVersion: 2
+        x: 944
+        y: 0
+        width: 59
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5084746, y: 0.4074074}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9173493edfc261780800000000000000
+      internalID: -8712726960145156327
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WeatheredBone_bleached_17
+      rect:
+        serializedVersion: 2
+        x: 1003
+        y: 0
+        width: 59
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5084746, y: 0.4074074}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9ba6368cb860d44e0800000000000000
+      internalID: -1995931862423082311
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WeatheredBone_bleached_18
+      rect:
+        serializedVersion: 2
+        x: 1062
+        y: 0
+        width: 59
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5084746, y: 0.4074074}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 60268b8fbe8f23170800000000000000
+      internalID: 8156855567495225862
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WeatheredBone_bleached_19
+      rect:
+        serializedVersion: 2
+        x: 1121
+        y: 0
+        width: 59
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5084746, y: 0.4074074}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 630369df905dcc480800000000000000
+      internalID: -8877486526568189898
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WeatheredBone_bleached_20
+      rect:
+        serializedVersion: 2
+        x: 1180
+        y: 0
+        width: 59
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5084746, y: 0.4074074}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4cbe997e53c079610800000000000000
+      internalID: 1627783215976147908
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WeatheredBone_bleached_21
+      rect:
+        serializedVersion: 2
+        x: 1239
+        y: 0
+        width: 59
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5084746, y: 0.4074074}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1b783601e9fcbaf00800000000000000
+      internalID: 1129224409373181873
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WeatheredBone_bleached_22
+      rect:
+        serializedVersion: 2
+        x: 1298
+        y: 0
+        width: 59
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5084746, y: 0.4074074}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5614629e0bdcc4040800000000000000
+      internalID: 4633304276366934373
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WeatheredBone_bleached_23
+      rect:
+        serializedVersion: 2
+        x: 1357
+        y: 0
+        width: 59
+        height: 54
+      alignment: 9
+      pivot: {x: 0.5084746, y: 0.4074074}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5093fe95310e648f0800000000000000
+      internalID: -556511130215827195
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 80cdeb95ebb57db46a8683357398c698
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      WeatheredBone_bleached_0: -4219904255402128874
+      WeatheredBone_bleached_1: 5229838623739625367
+      WeatheredBone_bleached_10: 787749229847565106
+      WeatheredBone_bleached_11: 8962656812103564650
+      WeatheredBone_bleached_12: 8525279333114202401
+      WeatheredBone_bleached_13: 1032121442871308500
+      WeatheredBone_bleached_14: -5857007801764826248
+      WeatheredBone_bleached_15: 3955856755999013145
+      WeatheredBone_bleached_16: -8712726960145156327
+      WeatheredBone_bleached_17: -1995931862423082311
+      WeatheredBone_bleached_18: 8156855567495225862
+      WeatheredBone_bleached_19: -8877486526568189898
+      WeatheredBone_bleached_2: -7208625612751692748
+      WeatheredBone_bleached_20: 1627783215976147908
+      WeatheredBone_bleached_21: 1129224409373181873
+      WeatheredBone_bleached_22: 4633304276366934373
+      WeatheredBone_bleached_23: -556511130215827195
+      WeatheredBone_bleached_3: -765604578766966096
+      WeatheredBone_bleached_4: -7748484666371595689
+      WeatheredBone_bleached_5: 7406895245498548009
+      WeatheredBone_bleached_6: -8976774296088011639
+      WeatheredBone_bleached_7: 2764287676982864228
+      WeatheredBone_bleached_8: 59874606312018224
+      WeatheredBone_bleached_9: -219196666383369174
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

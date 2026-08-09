@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: e0683b2f3009b3f42be2e57f3738d089
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 5986965533258820820
+    second: CrabMoult_bleached_0
+  - first:
+      213: 8884185243743939617
+    second: CrabMoult_bleached_1
+  - first:
+      213: 2546036502539593655
+    second: CrabMoult_bleached_2
+  - first:
+      213: -1936271102339759563
+    second: CrabMoult_bleached_3
+  - first:
+      213: -3437021759941519248
+    second: CrabMoult_bleached_4
+  - first:
+      213: -5280897146941503523
+    second: CrabMoult_bleached_5
+  - first:
+      213: 679232353618481271
+    second: CrabMoult_bleached_6
+  - first:
+      213: 7115413842436296389
+    second: CrabMoult_bleached_7
+  - first:
+      213: -3747389222159664166
+    second: CrabMoult_bleached_8
+  - first:
+      213: -7245408404641392682
+    second: CrabMoult_bleached_9
+  - first:
+      213: -8427056791743901137
+    second: CrabMoult_bleached_10
+  - first:
+      213: -6841794232495308408
+    second: CrabMoult_bleached_11
+  - first:
+      213: 6072236615590538754
+    second: CrabMoult_bleached_12
+  - first:
+      213: -2667545758911001666
+    second: CrabMoult_bleached_13
+  - first:
+      213: 7294190686996822790
+    second: CrabMoult_bleached_14
+  - first:
+      213: 7893081148618449909
+    second: CrabMoult_bleached_15
+  - first:
+      213: -6329216466228270825
+    second: CrabMoult_bleached_16
+  - first:
+      213: 1460071949360851682
+    second: CrabMoult_bleached_17
+  - first:
+      213: 8171386255413356465
+    second: CrabMoult_bleached_18
+  - first:
+      213: -2819371867965868346
+    second: CrabMoult_bleached_19
+  - first:
+      213: 9166634033514243645
+    second: CrabMoult_bleached_20
+  - first:
+      213: -4519025694627002485
+    second: CrabMoult_bleached_21
+  - first:
+      213: 2995149614446564663
+    second: CrabMoult_bleached_22
+  - first:
+      213: -3831378049260347176
+    second: CrabMoult_bleached_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: CrabMoult_bleached_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 47
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.4090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4dc2664ae69f51350800000000000000
+      internalID: 5986965533258820820
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CrabMoult_bleached_1
+      rect:
+        serializedVersion: 2
+        x: 47
+        y: 0
+        width: 47
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.4090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 12cef14a867fa4b70800000000000000
+      internalID: 8884185243743939617
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CrabMoult_bleached_2
+      rect:
+        serializedVersion: 2
+        x: 94
+        y: 0
+        width: 47
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.4090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7b7ec07a5b6555320800000000000000
+      internalID: 2546036502539593655
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CrabMoult_bleached_3
+      rect:
+        serializedVersion: 2
+        x: 141
+        y: 0
+        width: 47
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.4090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5324f24f0bbf025e0800000000000000
+      internalID: -1936271102339759563
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CrabMoult_bleached_4
+      rect:
+        serializedVersion: 2
+        x: 188
+        y: 0
+        width: 47
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.4090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 078d5616bee3d40d0800000000000000
+      internalID: -3437021759941519248
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CrabMoult_bleached_5
+      rect:
+        serializedVersion: 2
+        x: 235
+        y: 0
+        width: 47
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.4090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dd78d25360c76b6b0800000000000000
+      internalID: -5280897146941503523
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CrabMoult_bleached_6
+      rect:
+        serializedVersion: 2
+        x: 282
+        y: 0
+        width: 47
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.4090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 770d1651a3e1d6900800000000000000
+      internalID: 679232353618481271
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CrabMoult_bleached_7
+      rect:
+        serializedVersion: 2
+        x: 329
+        y: 0
+        width: 47
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.4090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5ce005cc0370fb260800000000000000
+      internalID: 7115413842436296389
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CrabMoult_bleached_8
+      rect:
+        serializedVersion: 2
+        x: 376
+        y: 0
+        width: 47
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.4090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: adbbb026b599efbc0800000000000000
+      internalID: -3747389222159664166
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CrabMoult_bleached_9
+      rect:
+        serializedVersion: 2
+        x: 423
+        y: 0
+        width: 47
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.4090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d758bc9173237b90800000000000000
+      internalID: -7245408404641392682
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CrabMoult_bleached_10
+      rect:
+        serializedVersion: 2
+        x: 470
+        y: 0
+        width: 47
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.4090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f22df021f741d0b80800000000000000
+      internalID: -8427056791743901137
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CrabMoult_bleached_11
+      rect:
+        serializedVersion: 2
+        x: 517
+        y: 0
+        width: 47
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.4090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8810dc915601d01a0800000000000000
+      internalID: -6841794232495308408
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CrabMoult_bleached_12
+      rect:
+        serializedVersion: 2
+        x: 564
+        y: 0
+        width: 47
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.4090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 20ee460a70be44450800000000000000
+      internalID: 6072236615590538754
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CrabMoult_bleached_13
+      rect:
+        serializedVersion: 2
+        x: 611
+        y: 0
+        width: 47
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.4090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ebb820af349fafad0800000000000000
+      internalID: -2667545758911001666
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CrabMoult_bleached_14
+      rect:
+        serializedVersion: 2
+        x: 658
+        y: 0
+        width: 47
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.4090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 60b786698cb2a3560800000000000000
+      internalID: 7294190686996822790
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CrabMoult_bleached_15
+      rect:
+        serializedVersion: 2
+        x: 705
+        y: 0
+        width: 47
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.4090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5f32cbe3c7bd98d60800000000000000
+      internalID: 7893081148618449909
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CrabMoult_bleached_16
+      rect:
+        serializedVersion: 2
+        x: 752
+        y: 0
+        width: 47
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.4090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 71929e7582b1a28a0800000000000000
+      internalID: -6329216466228270825
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CrabMoult_bleached_17
+      rect:
+        serializedVersion: 2
+        x: 799
+        y: 0
+        width: 47
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.4090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2ea6a20c3b7334410800000000000000
+      internalID: 1460071949360851682
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CrabMoult_bleached_18
+      rect:
+        serializedVersion: 2
+        x: 846
+        y: 0
+        width: 47
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.4090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1b72c646188966170800000000000000
+      internalID: 8171386255413356465
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CrabMoult_bleached_19
+      rect:
+        serializedVersion: 2
+        x: 893
+        y: 0
+        width: 47
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.4090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6c63a2849349fd8d0800000000000000
+      internalID: -2819371867965868346
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CrabMoult_bleached_20
+      rect:
+        serializedVersion: 2
+        x: 940
+        y: 0
+        width: 47
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.4090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d366f99261d663f70800000000000000
+      internalID: 9166634033514243645
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CrabMoult_bleached_21
+      rect:
+        serializedVersion: 2
+        x: 987
+        y: 0
+        width: 47
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.4090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b8705e4d2123941c0800000000000000
+      internalID: -4519025694627002485
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CrabMoult_bleached_22
+      rect:
+        serializedVersion: 2
+        x: 1034
+        y: 0
+        width: 47
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.4090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7355c3294b8e09920800000000000000
+      internalID: 2995149614446564663
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CrabMoult_bleached_23
+      rect:
+        serializedVersion: 2
+        x: 1081
+        y: 0
+        width: 47
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.4090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8d0ab95b6f534dac0800000000000000
+      internalID: -3831378049260347176
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 969c1c2bd9f7fa94dab55d359cdbac73
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      CrabMoult_bleached_0: 5986965533258820820
+      CrabMoult_bleached_1: 8884185243743939617
+      CrabMoult_bleached_10: -8427056791743901137
+      CrabMoult_bleached_11: -6841794232495308408
+      CrabMoult_bleached_12: 6072236615590538754
+      CrabMoult_bleached_13: -2667545758911001666
+      CrabMoult_bleached_14: 7294190686996822790
+      CrabMoult_bleached_15: 7893081148618449909
+      CrabMoult_bleached_16: -6329216466228270825
+      CrabMoult_bleached_17: 1460071949360851682
+      CrabMoult_bleached_18: 8171386255413356465
+      CrabMoult_bleached_19: -2819371867965868346
+      CrabMoult_bleached_2: 2546036502539593655
+      CrabMoult_bleached_20: 9166634033514243645
+      CrabMoult_bleached_21: -4519025694627002485
+      CrabMoult_bleached_22: 2995149614446564663
+      CrabMoult_bleached_23: -3831378049260347176
+      CrabMoult_bleached_3: -1936271102339759563
+      CrabMoult_bleached_4: -3437021759941519248
+      CrabMoult_bleached_5: -5280897146941503523
+      CrabMoult_bleached_6: 679232353618481271
+      CrabMoult_bleached_7: 7115413842436296389
+      CrabMoult_bleached_8: -3747389222159664166
+      CrabMoult_bleached_9: -7245408404641392682
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

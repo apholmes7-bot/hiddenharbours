@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: bf73df77dc24d7e4c99151f1866d12c7
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 3551383251236579956
+    second: SandDollar_bleached_0
+  - first:
+      213: 53820658742482402
+    second: SandDollar_bleached_1
+  - first:
+      213: -684298196068471414
+    second: SandDollar_bleached_2
+  - first:
+      213: 4382450213410294283
+    second: SandDollar_bleached_3
+  - first:
+      213: -3028105446956746064
+    second: SandDollar_bleached_4
+  - first:
+      213: -6402234693925400975
+    second: SandDollar_bleached_5
+  - first:
+      213: 6780888175373241305
+    second: SandDollar_bleached_6
+  - first:
+      213: 2572146940495499525
+    second: SandDollar_bleached_7
+  - first:
+      213: -348467991511687706
+    second: SandDollar_bleached_8
+  - first:
+      213: -7143086756609142620
+    second: SandDollar_bleached_9
+  - first:
+      213: 3785095669693666104
+    second: SandDollar_bleached_10
+  - first:
+      213: 3404517692084130468
+    second: SandDollar_bleached_11
+  - first:
+      213: 4425917041984755755
+    second: SandDollar_bleached_12
+  - first:
+      213: -6895631849739780029
+    second: SandDollar_bleached_13
+  - first:
+      213: -3377770299737725831
+    second: SandDollar_bleached_14
+  - first:
+      213: 3958687844720263931
+    second: SandDollar_bleached_15
+  - first:
+      213: -8848833860639431856
+    second: SandDollar_bleached_16
+  - first:
+      213: -1874933448248645656
+    second: SandDollar_bleached_17
+  - first:
+      213: -2908390694713755706
+    second: SandDollar_bleached_18
+  - first:
+      213: -7106236899381492206
+    second: SandDollar_bleached_19
+  - first:
+      213: 4147417522655055568
+    second: SandDollar_bleached_20
+  - first:
+      213: -689570438714527291
+    second: SandDollar_bleached_21
+  - first:
+      213: 5500933945187250010
+    second: SandDollar_bleached_22
+  - first:
+      213: 4256764810108147610
+    second: SandDollar_bleached_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: SandDollar_bleached_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 47a6a3f304c094130800000000000000
+      internalID: 3551383251236579956
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_bleached_1
+      rect:
+        serializedVersion: 2
+        x: 27
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2e55ced9a953fb000800000000000000
+      internalID: 53820658742482402
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_bleached_2
+      rect:
+        serializedVersion: 2
+        x: 54
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a8de5ee8a62e086f0800000000000000
+      internalID: -684298196068471414
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_bleached_3
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b0ac728ff3791dc30800000000000000
+      internalID: 4382450213410294283
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_bleached_4
+      rect:
+        serializedVersion: 2
+        x: 108
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0bab7bbb3220af5d0800000000000000
+      internalID: -3028105446956746064
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_bleached_5
+      rect:
+        serializedVersion: 2
+        x: 135
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 17e05e36771b627a0800000000000000
+      internalID: -6402234693925400975
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_bleached_6
+      rect:
+        serializedVersion: 2
+        x: 162
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9dbc4ca6edd8a1e50800000000000000
+      internalID: 6780888175373241305
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_bleached_7
+      rect:
+        serializedVersion: 2
+        x: 189
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 501975ab30a12b320800000000000000
+      internalID: 2572146940495499525
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_bleached_8
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6ed1a5e353ef92bf0800000000000000
+      internalID: -348467991511687706
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_bleached_9
+      rect:
+        serializedVersion: 2
+        x: 243
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4a0d388c078aedc90800000000000000
+      internalID: -7143086756609142620
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_bleached_10
+      rect:
+        serializedVersion: 2
+        x: 270
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 833d5f0157c578430800000000000000
+      internalID: 3785095669693666104
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_bleached_11
+      rect:
+        serializedVersion: 2
+        x: 297
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4a215349dc64f3f20800000000000000
+      internalID: 3404517692084130468
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_bleached_12
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b2859d4a9140c6d30800000000000000
+      internalID: 4425917041984755755
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_bleached_13
+      rect:
+        serializedVersion: 2
+        x: 351
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 34004660e5bcd40a0800000000000000
+      internalID: -6895631849739780029
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_bleached_14
+      rect:
+        serializedVersion: 2
+        x: 378
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 974a44ffecfbf11d0800000000000000
+      internalID: -3377770299737725831
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_bleached_15
+      rect:
+        serializedVersion: 2
+        x: 405
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bf24539ee9510f630800000000000000
+      internalID: 3958687844720263931
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_bleached_16
+      rect:
+        serializedVersion: 2
+        x: 432
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0536324ac70a23580800000000000000
+      internalID: -8848833860639431856
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_bleached_17
+      rect:
+        serializedVersion: 2
+        x: 459
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8e724af66f5eaf5e0800000000000000
+      internalID: -1874933448248645656
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_bleached_18
+      rect:
+        serializedVersion: 2
+        x: 486
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6c7f88d821253a7d0800000000000000
+      internalID: -2908390694713755706
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_bleached_19
+      rect:
+        serializedVersion: 2
+        x: 513
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 216c792c033916d90800000000000000
+      internalID: -7106236899381492206
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_bleached_20
+      rect:
+        serializedVersion: 2
+        x: 540
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0dec51d43469e8930800000000000000
+      internalID: 4147417522655055568
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_bleached_21
+      rect:
+        serializedVersion: 2
+        x: 567
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5c17fc8e6572e66f0800000000000000
+      internalID: -689570438714527291
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_bleached_22
+      rect:
+        serializedVersion: 2
+        x: 594
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a5f26c7274e375c40800000000000000
+      internalID: 5500933945187250010
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_bleached_23
+      rect:
+        serializedVersion: 2
+        x: 621
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a9711ee9a01131b30800000000000000
+      internalID: 4256764810108147610
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 45a184797c5fc4d41a9b89ee162a1795
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      SandDollar_bleached_0: 3551383251236579956
+      SandDollar_bleached_1: 53820658742482402
+      SandDollar_bleached_10: 3785095669693666104
+      SandDollar_bleached_11: 3404517692084130468
+      SandDollar_bleached_12: 4425917041984755755
+      SandDollar_bleached_13: -6895631849739780029
+      SandDollar_bleached_14: -3377770299737725831
+      SandDollar_bleached_15: 3958687844720263931
+      SandDollar_bleached_16: -8848833860639431856
+      SandDollar_bleached_17: -1874933448248645656
+      SandDollar_bleached_18: -2908390694713755706
+      SandDollar_bleached_19: -7106236899381492206
+      SandDollar_bleached_2: -684298196068471414
+      SandDollar_bleached_20: 4147417522655055568
+      SandDollar_bleached_21: -689570438714527291
+      SandDollar_bleached_22: 5500933945187250010
+      SandDollar_bleached_23: 4256764810108147610
+      SandDollar_bleached_3: 4382450213410294283
+      SandDollar_bleached_4: -3028105446956746064
+      SandDollar_bleached_5: -6402234693925400975
+      SandDollar_bleached_6: 6780888175373241305
+      SandDollar_bleached_7: 2572146940495499525
+      SandDollar_bleached_8: -348467991511687706
+      SandDollar_bleached_9: -7143086756609142620
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

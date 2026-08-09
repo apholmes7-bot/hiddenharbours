@@ -14,6 +14,7 @@
     "nativePivotY": 520,
     "pivot": "ground centre of the footprint",
     "keyline": "#1a1c22",
+    "cellRule": "pivot-INCLUSIVE union of the INK bbox across all 8 facings on the fixed nativeSheetW x nativeSheetH buffer, seeded at the pivot. Same rule as wharfDecorRig.",
     "keylineDefault": false
   },
   "azimuth": {
@@ -25,17 +26,25 @@
   "importSizeCap": 2048,
   "worstSheet": {
     "key": "hFrame",
-    "w": 1520,
-    "h": 291
+    "w": 1504,
+    "h": 289
+  },
+  "worstSheetByMaxDim": {
+    "key": "hFrame",
+    "w": 1504,
+    "h": 289,
+    "maxDim": 1504,
+    "headroomToCap": 544,
+    "note": "A texture cap binds on the LONGEST SIDE, not on area — size import headroom off THIS, not off worstSheet (which is the worst by area). Cells are parametric, so re-measure rather than trusting either field after an authoring change."
   },
   "count": 42,
   "cells": [
     {
       "key": "powerPole",
-      "cellW": 168,
-      "cellH": 293,
-      "pivotX": 84,
-      "pivotY": 239,
+      "cellW": 166,
+      "cellH": 291,
+      "pivotX": 83,
+      "pivotY": 238,
       "footprintW": 0.54,
       "footprintD": 0.54,
       "heightM": 9.08,
@@ -49,16 +58,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 1344,
-        "sheetH": 293
+        "sheetW": 1328,
+        "sheetH": 291
       }
     },
     {
       "key": "hFrame",
-      "cellW": 190,
-      "cellH": 291,
-      "pivotX": 95,
-      "pivotY": 230,
+      "cellW": 188,
+      "cellH": 289,
+      "pivotX": 94,
+      "pivotY": 229,
       "footprintW": 3.132,
       "footprintD": 0.648,
       "heightM": 8.59,
@@ -72,16 +81,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 1520,
-        "sheetH": 291
+        "sheetW": 1504,
+        "sheetH": 289
       }
     },
     {
       "key": "padTransformer",
-      "cellW": 102,
-      "cellH": 80,
-      "pivotX": 51,
-      "pivotY": 47,
+      "cellW": 100,
+      "cellH": 78,
+      "pivotX": 50,
+      "pivotY": 46,
       "footprintW": 2.052,
       "footprintD": 1.674,
       "heightM": 1.3,
@@ -95,16 +104,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 816,
-        "sheetH": 80
+        "sheetW": 800,
+        "sheetH": 78
       }
     },
     {
       "key": "switchgear",
-      "cellW": 114,
-      "cellH": 94,
-      "pivotX": 57,
-      "pivotY": 57,
+      "cellW": 112,
+      "cellH": 92,
+      "pivotX": 56,
+      "pivotY": 56,
       "footprintW": 2.376,
       "footprintD": 1.836,
       "heightM": 1.7,
@@ -118,16 +127,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 912,
-        "sheetH": 94
+        "sheetW": 896,
+        "sheetH": 92
       }
     },
     {
       "key": "pedestal",
-      "cellW": 52,
-      "cellH": 47,
-      "pivotX": 26,
-      "pivotY": 30,
+      "cellW": 50,
+      "cellH": 45,
+      "pivotX": 25,
+      "pivotY": 29,
       "footprintW": 0.78,
       "footprintD": 0.62,
       "heightM": 1,
@@ -141,16 +150,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 416,
-        "sheetH": 47
+        "sheetW": 400,
+        "sheetH": 45
       }
     },
     {
       "key": "genset",
-      "cellW": 90,
-      "cellH": 79,
-      "pivotX": 45,
-      "pivotY": 50,
+      "cellW": 88,
+      "cellH": 77,
+      "pivotX": 44,
+      "pivotY": 49,
       "footprintW": 1.944,
       "footprintD": 1.134,
       "heightM": 1.34,
@@ -164,16 +173,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 720,
-        "sheetH": 79
+        "sheetW": 704,
+        "sheetH": 77
       }
     },
     {
       "key": "serviceMast",
-      "cellW": 40,
-      "cellH": 132,
-      "pivotX": 20,
-      "pivotY": 119,
+      "cellW": 38,
+      "cellH": 130,
+      "pivotX": 19,
+      "pivotY": 118,
       "footprintW": 0.972,
       "footprintD": 0.54,
       "heightM": 4.56,
@@ -187,16 +196,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 320,
-        "sheetH": 132
+        "sheetW": 304,
+        "sheetH": 130
       }
     },
     {
       "key": "meterBank",
-      "cellW": 60,
-      "cellH": 82,
-      "pivotX": 30,
-      "pivotY": 62,
+      "cellW": 58,
+      "cellH": 80,
+      "pivotX": 29,
+      "pivotY": 61,
       "footprintW": 1.64,
       "footprintD": 0.5,
       "heightM": 1.94,
@@ -210,16 +219,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 480,
-        "sheetH": 82
+        "sheetW": 464,
+        "sheetH": 80
       }
     },
     {
       "key": "guyAnchor",
-      "cellW": 86,
-      "cellH": 105,
-      "pivotX": 43,
-      "pivotY": 97,
+      "cellW": 84,
+      "cellH": 103,
+      "pivotX": 42,
+      "pivotY": 96,
       "footprintW": 1.68,
       "footprintD": 1.56,
       "heightM": 2.84,
@@ -233,16 +242,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 688,
-        "sheetH": 105
+        "sheetW": 672,
+        "sheetH": 103
       }
     },
     {
       "key": "yardLight",
-      "cellW": 124,
-      "cellH": 229,
-      "pivotX": 62,
-      "pivotY": 218,
+      "cellW": 122,
+      "cellH": 227,
+      "pivotX": 61,
+      "pivotY": 217,
       "footprintW": 0.54,
       "footprintD": 0.54,
       "heightM": 7.26,
@@ -256,16 +265,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 992,
-        "sheetH": 229
+        "sheetW": 976,
+        "sheetH": 227
       }
     },
     {
       "key": "streetLamp",
-      "cellW": 66,
-      "cellH": 139,
-      "pivotX": 33,
-      "pivotY": 129,
+      "cellW": 64,
+      "cellH": 137,
+      "pivotX": 32,
+      "pivotY": 128,
       "footprintW": 1.08,
       "footprintD": 0.54,
       "heightM": 4.48,
@@ -279,16 +288,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 528,
-        "sheetH": 139
+        "sheetW": 512,
+        "sheetH": 137
       }
     },
     {
       "key": "floodMast",
-      "cellW": 60,
-      "cellH": 221,
-      "pivotX": 30,
-      "pivotY": 209,
+      "cellW": 58,
+      "cellH": 219,
+      "pivotX": 29,
+      "pivotY": 208,
       "footprintW": 2.052,
       "footprintD": 0.756,
       "heightM": 7.8,
@@ -302,16 +311,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 480,
-        "sheetH": 221
+        "sheetW": 464,
+        "sheetH": 219
       }
     },
     {
       "key": "beacon",
-      "cellW": 52,
-      "cellH": 125,
-      "pivotX": 26,
-      "pivotY": 108,
+      "cellW": 50,
+      "cellH": 123,
+      "pivotX": 25,
+      "pivotY": 107,
       "footprintW": 1.512,
       "footprintD": 1.512,
       "heightM": 4.34,
@@ -325,16 +334,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 416,
-        "sheetH": 125
+        "sheetW": 400,
+        "sheetH": 123
       }
     },
     {
       "key": "hydrant",
-      "cellW": 32,
-      "cellH": 35,
-      "pivotX": 16,
-      "pivotY": 25,
+      "cellW": 30,
+      "cellH": 33,
+      "pivotX": 15,
+      "pivotY": 24,
       "footprintW": 0.62,
       "footprintD": 0.62,
       "heightM": 0.96,
@@ -348,16 +357,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 256,
-        "sheetH": 35
+        "sheetW": 240,
+        "sheetH": 33
       }
     },
     {
       "key": "yardHydrant",
-      "cellW": 26,
-      "cellH": 51,
-      "pivotX": 13,
-      "pivotY": 43,
+      "cellW": 24,
+      "cellH": 49,
+      "pivotX": 12,
+      "pivotY": 42,
       "footprintW": 0.4536,
       "footprintD": 0.4536,
       "heightM": 1.39,
@@ -371,16 +380,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 208,
-        "sheetH": 51
+        "sheetW": 192,
+        "sheetH": 49
       }
     },
     {
       "key": "standpipe",
-      "cellW": 68,
-      "cellH": 58,
-      "pivotX": 34,
-      "pivotY": 36,
+      "cellW": 66,
+      "cellH": 56,
+      "pivotX": 33,
+      "pivotY": 35,
       "footprintW": 1.2,
       "footprintD": 1.7,
       "heightM": 1.24,
@@ -394,16 +403,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 544,
-        "sheetH": 58
+        "sheetW": 528,
+        "sheetH": 56
       }
     },
     {
       "key": "handPump",
-      "cellW": 40,
-      "cellH": 56,
-      "pivotX": 20,
-      "pivotY": 43,
+      "cellW": 38,
+      "cellH": 54,
+      "pivotX": 19,
+      "pivotY": 42,
       "footprintW": 0.88,
       "footprintD": 0.8,
       "heightM": 1.28,
@@ -417,16 +426,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 320,
-        "sheetH": 56
+        "sheetW": 304,
+        "sheetH": 54
       }
     },
     {
       "key": "wellCap",
-      "cellW": 58,
-      "cellH": 41,
-      "pivotX": 29,
-      "pivotY": 22,
+      "cellW": 56,
+      "cellH": 39,
+      "pivotX": 28,
+      "pivotY": 21,
       "footprintW": 0.86,
       "footprintD": 0.86,
       "heightM": 0.72,
@@ -440,16 +449,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 464,
-        "sheetH": 41
+        "sheetW": 448,
+        "sheetH": 39
       }
     },
     {
       "key": "curbStop",
-      "cellW": 16,
-      "cellH": 13,
-      "pivotX": 8,
-      "pivotY": 7,
+      "cellW": 14,
+      "cellH": 11,
+      "pivotX": 7,
+      "pivotY": 6,
       "footprintW": 0.46,
       "footprintD": 0.46,
       "heightM": 0.12,
@@ -463,16 +472,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 128,
-        "sheetH": 13
+        "sheetW": 112,
+        "sheetH": 11
       }
     },
     {
       "key": "valveVault",
-      "cellW": 56,
-      "cellH": 56,
-      "pivotX": 28,
-      "pivotY": 39,
+      "cellW": 54,
+      "cellH": 54,
+      "pivotX": 27,
+      "pivotY": 38,
       "footprintW": 1.3,
       "footprintD": 1.1,
       "heightM": 0.9,
@@ -486,16 +495,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 448,
-        "sheetH": 56
+        "sheetW": 432,
+        "sheetH": 54
       }
     },
     {
       "key": "waterTank",
-      "cellW": 120,
-      "cellH": 161,
-      "pivotX": 60,
-      "pivotY": 123,
+      "cellW": 118,
+      "cellH": 159,
+      "pivotX": 59,
+      "pivotY": 122,
       "footprintW": 2.288,
       "footprintD": 2.288,
       "heightM": 4.28,
@@ -509,16 +518,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 960,
-        "sheetH": 161
+        "sheetW": 944,
+        "sheetH": 159
       }
     },
     {
       "key": "cistern",
-      "cellW": 100,
-      "cellH": 101,
-      "pivotX": 50,
-      "pivotY": 69,
+      "cellW": 98,
+      "cellH": 99,
+      "pivotX": 49,
+      "pivotY": 68,
       "footprintW": 2.592,
       "footprintD": 2.052,
       "heightM": 1.94,
@@ -532,16 +541,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 800,
-        "sheetH": 101
+        "sheetW": 784,
+        "sheetH": 99
       }
     },
     {
       "key": "manhole",
-      "cellW": 48,
-      "cellH": 33,
-      "pivotX": 24,
-      "pivotY": 17,
+      "cellW": 46,
+      "cellH": 31,
+      "pivotX": 23,
+      "pivotY": 16,
       "footprintW": 1.44,
       "footprintD": 1.44,
       "heightM": 0.14,
@@ -555,16 +564,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 384,
-        "sheetH": 33
+        "sheetW": 368,
+        "sheetH": 31
       }
     },
     {
       "key": "cleanout",
-      "cellW": 28,
-      "cellH": 23,
-      "pivotX": 14,
-      "pivotY": 14,
+      "cellW": 26,
+      "cellH": 21,
+      "pivotX": 13,
+      "pivotY": 13,
       "footprintW": 0.44,
       "footprintD": 0.5,
       "heightM": 0.5,
@@ -578,16 +587,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 224,
-        "sheetH": 23
+        "sheetW": 208,
+        "sheetH": 21
       }
     },
     {
       "key": "ventStack",
-      "cellW": 38,
-      "cellH": 84,
-      "pivotX": 19,
-      "pivotY": 76,
+      "cellW": 36,
+      "cellH": 82,
+      "pivotX": 18,
+      "pivotY": 75,
       "footprintW": 0.648,
       "footprintD": 0.3672,
       "heightM": 2.72,
@@ -601,16 +610,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 304,
-        "sheetH": 84
+        "sheetW": 288,
+        "sheetH": 82
       }
     },
     {
       "key": "septicLids",
-      "cellW": 102,
-      "cellH": 76,
-      "pivotX": 51,
-      "pivotY": 43,
+      "cellW": 100,
+      "cellH": 74,
+      "pivotX": 50,
+      "pivotY": 42,
       "footprintW": 3.0368,
       "footprintD": 1.4483,
       "heightM": 0.47,
@@ -624,16 +633,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 816,
-        "sheetH": 76
+        "sheetW": 800,
+        "sheetH": 74
       }
     },
     {
       "key": "catchBasin",
-      "cellW": 58,
-      "cellH": 46,
-      "pivotX": 29,
-      "pivotY": 27,
+      "cellW": 56,
+      "cellH": 44,
+      "pivotX": 28,
+      "pivotY": 26,
       "footprintW": 1.24,
       "footprintD": 1.24,
       "heightM": 0.34,
@@ -647,16 +656,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 464,
-        "sheetH": 46
+        "sheetW": 448,
+        "sheetH": 44
       }
     },
     {
       "key": "trenchDrain",
-      "cellW": 82,
-      "cellH": 57,
-      "pivotX": 41,
-      "pivotY": 30,
+      "cellW": 80,
+      "cellH": 55,
+      "pivotX": 40,
+      "pivotY": 29,
       "footprintW": 0.868,
       "footprintD": 4.712,
       "heightM": 0.16,
@@ -670,16 +679,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 656,
-        "sheetH": 57
+        "sheetW": 640,
+        "sheetH": 55
       }
     },
     {
       "key": "liftStation",
-      "cellW": 120,
-      "cellH": 101,
-      "pivotX": 60,
-      "pivotY": 62,
+      "cellW": 118,
+      "cellH": 99,
+      "pivotX": 59,
+      "pivotY": 61,
       "footprintW": 2.7,
       "footprintD": 1.7,
       "heightM": 1.62,
@@ -693,16 +702,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 960,
-        "sheetH": 101
+        "sheetW": 944,
+        "sheetH": 99
       }
     },
     {
       "key": "outfall",
-      "cellW": 102,
-      "cellH": 77,
-      "pivotX": 51,
-      "pivotY": 44,
+      "cellW": 100,
+      "cellH": 75,
+      "pivotX": 50,
+      "pivotY": 43,
       "footprintW": 1.9,
       "footprintD": 1.7,
       "heightM": 1,
@@ -716,16 +725,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 816,
-        "sheetH": 77
+        "sheetW": 800,
+        "sheetH": 75
       }
     },
     {
       "key": "culvert",
-      "cellW": 140,
-      "cellH": 94,
-      "pivotX": 70,
-      "pivotY": 49,
+      "cellW": 138,
+      "cellH": 92,
+      "pivotX": 69,
+      "pivotY": 48,
       "footprintW": 3.66,
       "footprintD": 5.246,
       "heightM": 0.75,
@@ -739,16 +748,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 1120,
-        "sheetH": 94
+        "sheetW": 1104,
+        "sheetH": 92
       }
     },
     {
       "key": "oilTank",
-      "cellW": 74,
-      "cellH": 81,
-      "pivotX": 37,
-      "pivotY": 57,
+      "cellW": 72,
+      "cellH": 79,
+      "pivotX": 36,
+      "pivotY": 56,
       "footprintW": 1.12,
       "footprintD": 0.66,
       "heightM": 2,
@@ -762,16 +771,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 592,
-        "sheetH": 81
+        "sheetW": 576,
+        "sheetH": 79
       }
     },
     {
       "key": "fillPipes",
-      "cellW": 34,
-      "cellH": 43,
-      "pivotX": 17,
-      "pivotY": 32,
+      "cellW": 32,
+      "cellH": 41,
+      "pivotX": 16,
+      "pivotY": 31,
       "footprintW": 0.7,
       "footprintD": 0.42,
       "heightM": 0.98,
@@ -785,16 +794,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 272,
-        "sheetH": 43
+        "sheetW": 256,
+        "sheetH": 41
       }
     },
     {
       "key": "propaneTank",
-      "cellW": 122,
-      "cellH": 98,
-      "pivotX": 61,
-      "pivotY": 59,
+      "cellW": 120,
+      "cellH": 96,
+      "pivotX": 60,
+      "pivotY": 58,
       "footprintW": 2.9328,
       "footprintD": 1.0152,
       "heightM": 1.2,
@@ -808,16 +817,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 976,
-        "sheetH": 98
+        "sheetW": 960,
+        "sheetH": 96
       }
     },
     {
       "key": "bulkTank",
-      "cellW": 140,
-      "cellH": 149,
-      "pivotX": 70,
-      "pivotY": 104,
+      "cellW": 138,
+      "cellH": 147,
+      "pivotX": 69,
+      "pivotY": 103,
       "footprintW": 3.472,
       "footprintD": 3.248,
       "heightM": 3.64,
@@ -831,16 +840,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 1120,
-        "sheetH": 149
+        "sheetW": 1104,
+        "sheetH": 147
       }
     },
     {
       "key": "fuelPump",
-      "cellW": 40,
-      "cellH": 60,
-      "pivotX": 20,
-      "pivotY": 49,
+      "cellW": 38,
+      "cellH": 58,
+      "pivotX": 19,
+      "pivotY": 48,
       "footprintW": 0.68,
       "footprintD": 0.58,
       "heightM": 1.94,
@@ -854,16 +863,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 320,
-        "sheetH": 60
+        "sheetW": 304,
+        "sheetH": 58
       }
     },
     {
       "key": "drumRack",
-      "cellW": 80,
-      "cellH": 68,
-      "pivotX": 40,
-      "pivotY": 42,
+      "cellW": 78,
+      "cellH": 66,
+      "pivotX": 39,
+      "pivotY": 41,
       "footprintW": 1.9,
       "footprintD": 1.5,
       "heightM": 1.24,
@@ -877,16 +886,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 640,
-        "sheetH": 68
+        "sheetW": 624,
+        "sheetH": 66
       }
     },
     {
       "key": "coalBin",
-      "cellW": 108,
-      "cellH": 88,
-      "pivotX": 54,
-      "pivotY": 53,
+      "cellW": 106,
+      "cellH": 86,
+      "pivotX": 53,
+      "pivotY": 52,
       "footprintW": 2.352,
       "footprintD": 2.24,
       "heightM": 1.2,
@@ -900,16 +909,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 864,
-        "sheetH": 88
+        "sheetW": 848,
+        "sheetH": 86
       }
     },
     {
       "key": "telecomPed",
-      "cellW": 28,
-      "cellH": 39,
-      "pivotX": 14,
-      "pivotY": 30,
+      "cellW": 26,
+      "cellH": 37,
+      "pivotX": 13,
+      "pivotY": 29,
       "footprintW": 0.56,
       "footprintD": 0.44,
       "heightM": 1,
@@ -923,16 +932,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 224,
-        "sheetH": 39
+        "sheetW": 208,
+        "sheetH": 37
       }
     },
     {
       "key": "crossBox",
-      "cellW": 68,
-      "cellH": 69,
-      "pivotX": 34,
-      "pivotY": 47,
+      "cellW": 66,
+      "cellH": 67,
+      "pivotX": 33,
+      "pivotY": 46,
       "footprintW": 1.404,
       "footprintD": 0.864,
       "heightM": 1.38,
@@ -946,16 +955,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 544,
-        "sheetH": 69
+        "sheetW": 528,
+        "sheetH": 67
       }
     },
     {
       "key": "alarmBox",
-      "cellW": 22,
-      "cellH": 55,
-      "pivotX": 11,
-      "pivotY": 47,
+      "cellW": 20,
+      "cellH": 53,
+      "pivotX": 10,
+      "pivotY": 46,
       "footprintW": 0.4536,
       "footprintD": 0.4536,
       "heightM": 1.69,
@@ -969,16 +978,16 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 176,
-        "sheetH": 55
+        "sheetW": 160,
+        "sheetH": 53
       }
     },
     {
       "key": "radioMast",
-      "cellW": 178,
-      "cellH": 306,
-      "pivotX": 89,
-      "pivotY": 249,
+      "cellW": 176,
+      "cellH": 304,
+      "pivotX": 88,
+      "pivotY": 248,
       "footprintW": 5.9184,
       "footprintD": 5.9184,
       "heightM": 10.1,
@@ -992,8 +1001,8 @@
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 1424,
-        "sheetH": 306
+        "sheetW": 1408,
+        "sheetH": 304
       }
     }
   ]
