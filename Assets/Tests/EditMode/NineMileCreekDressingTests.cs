@@ -55,7 +55,7 @@ namespace HiddenHarbours.Tests.EditMode
             NineMileCreekDressing.AllProps().ToList();
 
         // =============================================================================================
-        //  1. THE QUAY FACE — the sub-item Phase B stopped on, and the arithmetic that says why
+        //  1. THE FACE ARITHMETIC — what this wharf needs, and what the pack now bakes
         // =============================================================================================
 
         [Test]
@@ -103,53 +103,337 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void TheCommittedPackCannotStackToThisFace_WhichIsWhyTheQuayIsStillUndrawn()
+        public void TheShortfallTripwireReadsZERO_BecauseThePackIsBakedForTHISCoast()
         {
-            // ⭐ THE SHORTFALL DECOMPOSES, and getting the decomposition right is the difference between
-            // a finding and a plausible story. The first draft of this test asserted the shortfall WAS
-            // the tide difference; CI caught it on the first run (2.4 against 2.6). It is the tide
-            // difference LESS the freeboard difference, because the rig quotes deck height as
-            // tideRange + clearance and this wharf authors 0.8 m of freeboard against the rig's 1.0.
+            // ⭐⭐ THE TRIPWIRE #471 LEFT, AND THE WHOLE GATE ON THE DRAWN QUAY. It wrote
+            // TideShortfallMetres with the note "if it ever goes to zero the pack has been re-baked at
+            // this tide". #477 re-parameterised the rig and #478 re-baked all 17 sheets, so it is zero —
+            // and it is asserted EXACTLY, not as "small", because the two sides are recomputed from
+            // different places: the left from the region's authored tide, the right from the rig's
+            // committed defaults. They agree only if the bake really is this coast's.
+            //
+            // ⚠️ IF THIS FAILS, THE QUAY IS BEING DRAWN AT THE WRONG HEIGHT. That defect renders
+            // perfectly and merely looks like a slightly wrong wharf, which is precisely why it is
+            // pinned here rather than left to the eye.
+            Assert.That(NineMileCreekQuayFace.TideShortfallMetres, Is.EqualTo(0f).Within(1e-4f),
+                $"the pack is baked at {NineMileCreekQuayFace.BakedRigTideRange:0.##} m of tide against " +
+                $"this region's {NineMileCreekQuayFace.RequiredTideRangeMetres:0.##} m. It was 1.8 for " +
+                "the whole of #471 and the quay could not be drawn; re-bake at " +
+                $"{NineMileCreekQuayFace.RequiredBakeOptions()} before drawing a wall off these sheets");
+
+            Assert.That(NineMileCreekQuayFace.ClearanceShortfallMetres, Is.EqualTo(0f).Within(1e-4f),
+                "…and the freeboard half. Both halves at zero is a stronger statement than the total " +
+                "being zero: the bake landed on the right TIDE and the right FREEBOARD, not merely on " +
+                "the right sum — and it is the tide that re-pins the growth bands");
+
+            // The decomposition still has to hold, because it is what made the re-bake orderable. The
+            // first draft of this test asserted the shortfall WAS the tide difference; CI caught it on
+            // the first run (2.4 against 2.6).
             Assert.That(NineMileCreekQuayFace.ShortfallMetres,
                 Is.EqualTo(NineMileCreekQuayFace.TideShortfallMetres +
                            NineMileCreekQuayFace.ClearanceShortfallMetres).Within(1e-4f),
-                "the shortfall has to be the sum of its two halves, or one of the three is wrong and the " +
-                "re-bake would be ordered off a number nothing checks");
+                "the shortfall has to be the sum of its two halves, or one of the three is wrong");
+            Assert.That(NineMileCreekQuayFace.ShortfallMetres, Is.EqualTo(0f).Within(1e-4f),
+                "…and therefore zero. #471 measured it at 2.40 m");
 
-            Assert.That(NineMileCreekQuayFace.TideShortfallMetres, Is.GreaterThan(0f),
-                "the tide term is what makes this 'baked for a different coast' rather than a modelling " +
-                "gap — if it ever goes to zero the pack has been re-baked at this tide");
-            Assert.That(NineMileCreekQuayFace.ClearanceShortfallMetres, Is.LessThan(0f),
-                "…and the freeboard term gives a little back: this wharf sits CLOSER to its own high " +
-                "water than the rig's default, which is authored and deliberate");
+            Assert.That(NineMileCreekQuayFace.BakedDeckZMetres,
+                Is.EqualTo(NineMileCreekQuayFace.RequiredDeckZMetres).Within(1e-4f),
+                "the baked deck and the authored deck are the same height, which is what makes the face " +
+                "one course of a piece rather than a tiling problem");
 
-            NineMileCreekQuayFace.BestStackTo(
-                NineMileCreekQuayFace.RequiredDeckZMetres, out float best, out int courses);
+            Assert.That(NineMileCreekQuayFace.BakedPackCanDrawTheFace(), Is.True,
+                "the committed pack can build this wharf's face, in this wharf's material, at this " +
+                "wharf's deck height. #471 asserted the opposite and said flipping it would be good news");
+        }
 
-            // ⭐ THE HONEST HALF FIRST. The height DOES land — two sheetCell courses come to 5.20 m
-            // exactly — and pinning that here is what stops this stop from later being restated as
-            // "the pieces do not add up", which would send art-director looking for the wrong fix.
+        [Test]
+        public void TheFaceIsDrawnInONECourse_SoTheFittingsLandAtTheDeck()
+        {
+            // ⭐ THE HALF A STACK COULD NEVER HAVE DELIVERED. The pack bakes a course's bollards, rings,
+            // ladder and hung tyres at ITS deck — so a piece used as a LOWER course puts that furniture
+            // halfway up the finished wall, which is what ruled vertical tiling out even before the
+            // material argument. One course puts them where a rope goes round them.
+            Assert.That(NineMileCreekQuayFace.CoursesNeeded, Is.EqualTo(1),
+                "the face needs more than one course, so the wall has a seam in it and a set of fittings " +
+                "hanging in the middle of it");
+            Assert.That(NineMileCreekQuayFace.DrawnInOneCourse, Is.True);
+            Assert.That(NineMileCreekQuayFace.FittingsLandAtTheDeck, Is.True,
+                "one course AND the right height — either alone would still hang the pack's bollards " +
+                "somewhere other than on the deck");
+
+            // ⭐ …AND THE GROWTH BANDS ARE RE-PINNED, which is the part no stack could ever have fixed:
+            // a stacked wall would have worn two sets of them, at the wrong heights, twice. #471 asked
+            // for barnacle at 1.76–3.52 m and rockweed at 0.26–1.76 m; the rig bands growth as fractions
+            // of the tidal frame, so the one parameter that fixed the height fixed these for free.
+            Assert.That(NineMileCreekQuayFace.BarnacleBand.x, Is.EqualTo(1.76f).Within(0.01f));
+            Assert.That(NineMileCreekQuayFace.BarnacleBand.y, Is.EqualTo(3.52f).Within(0.01f));
+            Assert.That(NineMileCreekQuayFace.RockweedBand.x, Is.EqualTo(0.26f).Within(0.01f));
+            Assert.That(NineMileCreekQuayFace.RockweedBand.y, Is.EqualTo(1.76f).Within(0.01f),
+                "the growth bands are not where #471 asked for them. They are pinned to the tidal FRAME " +
+                "as fractions of the range, so if these are wrong the range is wrong and so is the face");
+
+            // The historical record, kept on purpose: a stack was never blocked by the arithmetic, and
+            // saying otherwise would send a future art-director looking for the wrong fix.
             Assert.That(NineMileCreekQuayFace.AStackReachesTheHeight(), Is.True,
-                $"{courses} courses reach {best:0.00} m against a required " +
-                $"{NineMileCreekQuayFace.RequiredDeckZMetres:0.00} m — the arithmetic is not the problem");
-
-            // …and the half that actually stops it: the only course that reaches the height is the wrong
-            // material and has no working top.
+                "two sheetCell courses still come to 5.20 m exactly — the arithmetic was never the stop");
             var courseList = NineMileCreekQuayFace.StackableCourses();
             Assert.That(courseList.Count, Is.EqualTo(1),
-                "the pack's stackable-course list has changed — re-derive the stop before trusting it");
+                "the pack's stackable-course list has changed — re-derive before trusting the record");
             Assert.That(courseList[0].UsableHere, Is.False,
                 $"'{courseList[0].Key}' is recorded as usable on this wharf. #462 ruled it sheet pile, " +
                 "which this wharf is not built of, and a capped cell has no deck to land a catch on");
-
-            Assert.That(NineMileCreekQuayFace.BakedPackCanDrawTheFace(), Is.False,
-                "⭐ IF THIS FAILS, THAT IS GOOD NEWS: the pack has been re-baked (or a usable course has " +
-                "landed) and the quay can now be drawn. Delete the stop, place the face, and read the " +
-                "deck height off NineMileCreekQuayFace rather than re-deriving it.");
         }
 
         // =============================================================================================
-        //  2. THE DRESSING IS BUILDER-WIRED — the named trap
+        //  2. THE DRAWN QUAY — the wall #471 measured and could not place
+        // =============================================================================================
+        // ⚠️ ASSERTED ON THE PURE TABLE, not on loaded sprites, for the reason the class note gives: the
+        // wharf sheets are Git-LFS binaries and "has this piece got pixels" is a different question from
+        // "is this piece correctly placed". Only the second one is world-content's. The one test that
+        // needs pixels says so and passes vacuously without them.
+
+        private static List<NineMileCreekDressing.FacePiece> Face() =>
+            NineMileCreekDressing.FacePieces().ToList();
+
+        private static List<NineMileCreekDressing.FacePiece> FaceRun(string wall) =>
+            Face().Where(p => p.Wall == wall).ToList();
+
+        /// <summary>A run has to COVER its wall: the right number of pieces, evenly pitched, each half a
+        /// pitch inside the ends, and never pitched further apart than a piece is long.</summary>
+        private static void AssertRunCovers(string wall, Vector2 from, Vector2 to)
+        {
+            var run = FaceRun(wall);
+            float length = Vector2.Distance(from, to);
+            float piece = NineMileCreekQuayFace.FaceCourseRunMetres;
+
+            Assert.That(run, Is.Not.Empty, $"the {wall} has no face on it at all");
+            Assert.That(run.Count, Is.EqualTo(Mathf.CeilToInt(length / piece)),
+                $"the {wall} is {length:0.#} m of wall drawn with {run.Count} piece(s) of {piece:0.#} m. " +
+                "The count is the CEILING of that division on purpose — a floor would leave the far end " +
+                "of the wall undrawn, and a hole in a quay reads far worse than a small overlap");
+
+            float pitch = length / run.Count;
+            Assert.That(pitch, Is.LessThanOrEqualTo(piece + 1e-3f),
+                $"the {wall}'s pieces are pitched {pitch:0.00} m apart but are only {piece:0.00} m long — " +
+                "that is a gap between every pair of them, straight through to the bay behind");
+
+            Assert.That(Vector2.Distance(run[0].Lip, from), Is.EqualTo(pitch * 0.5f).Within(1e-3f),
+                $"the first {wall} piece is not centred in its own slot — the same 'west end PLUS half a " +
+                "block' rule #462's breakwater armour uses, and for the same reason: a piece placed at " +
+                "the start of its slot puts half of itself past the end of the wall");
+            Assert.That(Vector2.Distance(run[run.Count - 1].Lip, to), Is.EqualTo(pitch * 0.5f).Within(1e-3f),
+                $"…and the last {wall} piece overhangs the far end");
+
+            for (int i = 1; i < run.Count; i++)
+                Assert.That(Vector2.Distance(run[i].Lip, run[i - 1].Lip), Is.EqualTo(pitch).Within(1e-3f),
+                    $"{wall} pieces {i - 1} and {i} are not one pitch apart — the run has drifted");
+        }
+
+        [Test]
+        public void EachFaceRunCoversItsWholeWall_AndNeverLeavesAGap()
+        {
+            AssertRunCovers(NineMileCreekDressing.NorthWallRun,
+                            NineMileCreekDressing.NorthFaceWest, NineMileCreekDressing.NorthFaceEast);
+            AssertRunCovers(NineMileCreekDressing.WestWallRun,
+                            NineMileCreekDressing.ApronFaceSouth, NineMileCreekDressing.ApronFaceNorth);
+            AssertRunCovers(NineMileCreekDressing.BreakwaterRun,
+                            NineMileCreekDressing.BreakwaterCrestWest,
+                            NineMileCreekDressing.BreakwaterCrestEast);
+        }
+
+        [Test]
+        public void EveryFacePieceIsPlacedSoItsDRAWNLipLandsOnTheWallsREALLip()
+        {
+            // ⭐ THE ONE LINE THE PLACEMENT GUARANTEES, and the trap it exists to absorb: the wharf pack
+            // pivots at CHART DATUM — "ground-centre of the footprint at z = 0 = lowest water" — not
+            // where the piece touches the ground the way every other pack this region places does. A face
+            // piece dropped at the lip the way a crate is dropped on the deck draws the whole quay
+            // metres up-screen of the wall, and it looks fine, which is the problem.
+            foreach (var p in Face())
+            {
+                Vector2 seaward = NineMileCreekDressing.PlanDirectionOf(p.Heading);
+                Vector2 drawnLip = p.Position + NineMileCreekQuayFace.LipRiseFromPivot(seaward);
+
+                Assert.That(Vector2.Distance(drawnLip, p.Lip), Is.LessThan(1e-3f),
+                    $"a {p.Wall} piece pivoted at {p.Position} draws its lip at {drawnLip}, not at the " +
+                    $"{p.Lip} it claims. {p.Reason}");
+
+                Assert.That(Vector2.Distance(p.Position, p.Lip), Is.GreaterThan(1f),
+                    $"a {p.Wall} piece's pivot has been collapsed onto its lip. The wharf pack's pivot " +
+                    $"is {NineMileCreekQuayFace.BakedDeckZMetres:0.#} m of drawn height below the deck " +
+                    "and half a piece-width behind it — placing by the lip is the defect this offset exists to stop");
+
+                Assert.That(p.Reason, Is.Not.Null.And.Not.Empty,
+                    $"a {p.Wall} piece has no reason recorded");
+            }
+        }
+
+        [Test]
+        public void EveryFacePiecesLipLiesOnTheWallItBelongsTo()
+        {
+            Rect quay = NineMileCreekWharf.DeckFootprint();
+            Rect apron = NineMileCreekWharf.ApronFootprint();
+
+            foreach (var p in FaceRun(NineMileCreekDressing.NorthWallRun))
+            {
+                Assert.That(p.Lip.y, Is.EqualTo(NineMileCreekWharf.MooringEdgeY).Within(1e-3f),
+                    "the mooring face is drawn on the mooring edge — #462's own line, not a parallel one");
+                Assert.That(p.Lip.x, Is.InRange(quay.xMin, quay.xMax));
+            }
+
+            foreach (var p in FaceRun(NineMileCreekDressing.WestWallRun))
+            {
+                Assert.That(p.Lip.x, Is.EqualTo(apron.xMax).Within(1e-3f),
+                    "the apron's water side faces EAST, which NineMileCreekMainland states and the " +
+                    "fill's own shape confirms");
+                Assert.That(p.Lip.y, Is.InRange(apron.yMin, apron.yMax));
+            }
+
+            foreach (var p in FaceRun(NineMileCreekDressing.BreakwaterRun))
+            {
+                Assert.That(p.Lip.y, Is.EqualTo(NineMileCreekWharf.BreakwaterY).Within(1e-3f),
+                    "the arm is drawn on the crest line #462 lays its COLLISION on, so what a boat hits " +
+                    "and what a player sees are the same line");
+                Assert.That(p.Lip.x, Is.InRange(NineMileCreekWharf.BreakwaterWestX,
+                                                NineMileCreekWharf.BreakwaterEastX));
+            }
+        }
+
+        [Test]
+        public void TheInsideOfTheLWhereTheTwoWallsMeetIsNotDrawnAsAFace()
+        {
+            // ⚠️ The apron runs north to y = 92 and the quay's deck starts at y = 87, so each wall's
+            // edge disappears into the other's ground for the last few metres. Drawing either would put
+            // a 4.6 m wall of log crib in the middle of the wharf, facing a deck. Both bounds are derived
+            // from the OTHER wall's footprint, so re-siting either re-cuts the corner.
+            Rect quay = NineMileCreekWharf.DeckFootprint();
+            Rect apron = NineMileCreekWharf.ApronFootprint();
+
+            foreach (var p in FaceRun(NineMileCreekDressing.NorthWallRun))
+                Assert.That(p.Lip.x, Is.GreaterThan(apron.xMax),
+                    $"a mooring-face piece is drawn at x = {p.Lip.x:0.#}, west of the apron's east side " +
+                    $"({apron.xMax:0.#}) — that stretch of the quay's south side stands against the " +
+                    "apron's own deck, not against the basin");
+
+            foreach (var p in FaceRun(NineMileCreekDressing.WestWallRun))
+                Assert.That(p.Lip.y, Is.LessThan(quay.yMin),
+                    $"an apron-face piece is drawn at y = {p.Lip.y:0.#}, north of the quay's mooring " +
+                    $"edge ({quay.yMin:0.#}) — it would be a wall standing inside the wharf");
+        }
+
+        [Test]
+        public void EveryFacePieceLooksAtTheWaterItsOwnWallHolds()
+        {
+            foreach (var p in FaceRun(NineMileCreekDressing.NorthWallRun))
+                Assert.That(p.Heading,
+                    Is.EqualTo(NineMileCreekWharf.MooringFaceHeadingDegrees).Within(1e-3f),
+                    "the mooring face has to look the way #462's mooring face looks, or the wall is " +
+                    "drawn showing the player its back");
+
+            foreach (var p in FaceRun(NineMileCreekDressing.WestWallRun))
+                Assert.That(p.Heading, Is.EqualTo(NineMileCreekDressing.ApronSeawardHeading).Within(1e-3f),
+                    "the apron's face looks east, at the water a boat lies against it to take fuel from");
+
+            foreach (var p in FaceRun(NineMileCreekDressing.BreakwaterRun))
+                Assert.That(p.Heading,
+                    Is.EqualTo(NineMileCreekWharf.MooringFaceHeadingDegrees).Within(1e-3f),
+                    "the arm's exposed side is the one AWAY from the basin it shelters, which at this " +
+                    "wharf is the same way the quay looks. It is derived from where the two are, not " +
+                    "typed, so re-siting either turns the arm rather than leaving it facing its lee");
+
+            // ⚠️ THE MISLABEL THAT HAS SHIPPED IN FIVE KITS: the sheet's order array reads N NE E SE…
+            // (clockwise) while the wharf pack is registered COUNTER-clockwise, so cell i depicts
+            // heading −45°·i. Read as a compass, every wall would face the wrong way and nothing at all
+            // would fail.
+            foreach (var p in Face())
+                Assert.That(NineMileCreekDressing.FacingFor(p),
+                    Is.InRange(0, NineMileCreekDressing.Facings - 1),
+                    $"a {p.Wall} piece at heading {p.Heading:0.#}° resolves outside the sheet's " +
+                    $"{NineMileCreekDressing.Facings} facings");
+        }
+
+        [Test]
+        public void TheQuayFaceSortsByItsLip_SoABoatAtTheBerthIsNotDrawnBehindTheWall()
+        {
+            foreach (var p in Face())
+                Assert.That(p.Position.y + p.SortYOffset, Is.EqualTo(p.Lip.y).Within(1e-3f),
+                    $"a {p.Wall} piece's sort offset does not land on its lip");
+
+            // ⭐ WHY THE OFFSET IS LOAD-BEARING. The pivot sits down-screen of the wall, out where the
+            // fleet lies. Sorted from there the quay draws IN FRONT of every boat moored against it —
+            // invisible until there is a boat at the berth to be hidden, and then obviously wrong.
+            float berthY = NineMileCreekWharf.BerthPos(0).y;
+            int boat = Order(berthY);
+
+            var north = FaceRun(NineMileCreekDressing.NorthWallRun);
+            Assert.That(north, Is.Not.Empty);
+            foreach (var p in north)
+            {
+                Assert.That(Order(p.Position.y + p.SortYOffset), Is.LessThan(boat),
+                    $"sorted at its lip ({p.Lip.y:0.##}) the wall still draws over a hull at the berth " +
+                    $"line ({berthY:0.##})");
+                Assert.That(Order(p.Position.y), Is.GreaterThan(boat),
+                    "sorted at its PIVOT the wall would draw in front of the boat — which is exactly " +
+                    "the defect YSortSprite.SortPivotYOffset is set to avoid here. If this ever stops " +
+                    "being true the offset has become decoration and can go");
+            }
+        }
+
+        private static int Order(float worldY) =>
+            YSortSprite.OrderFor(worldY, SortingBands.DecorBase, SortingBands.OrdersPerMetre,
+                                 SortingBands.DecorFloor, SortingBands.DecorCeiling);
+
+        [Test]
+        public void TheWallIsDrawnInTheMaterialTheRegionRuledItToBe()
+        {
+            // #462 read the owner's photographs as log crib — "log boxes filled with stone, what a small
+            // community wharf actually builds" — and reserved sheet pile for "the commercial quay money
+            // and machinery would build". Held against the region's OWN constant so the ruling and the
+            // piece drawn for it cannot drift apart.
+            Assert.That(NineMileCreekQuayFace.FaceCourseFamily,
+                Is.EqualTo(NineMileCreekWharf.BreakwaterArmour),
+                $"the quay is drawn with the '{NineMileCreekQuayFace.FaceCourseFamily}' family while the " +
+                $"region rules its structure '{NineMileCreekWharf.BreakwaterArmour}'");
+
+            var course = NineMileCreekQuayFace.FaceCourse();
+            Assert.That(course.Key, Is.EqualTo(NineMileCreekQuayFace.FaceCourseKey));
+            Assert.That(course.IsRuledMaterial, Is.True,
+                "the face is drawn with a material this wharf is ruled not to be built of");
+            Assert.That(course.HasWorkingDeck, Is.True,
+                "a face with no working top has nothing to land a catch on and nowhere to stand a bollard");
+            Assert.That(course.UsableHere, Is.True);
+        }
+
+        [Test]
+        public void TheFaceIsItsOwnList_BecauseItFailsEverySweepTheGearTakes()
+        {
+            var face = Face();
+            var terrain = MakeCreekTerrain();
+
+            Assert.That(face.Count, Is.GreaterThan(0), "the quay is undrawn again");
+            // Rule 7: the retired tile kit would have needed 1 320 cells for these two walls. This is
+            // two dozen objects for the whole quay, and the ceiling is here so a future 'more detail'
+            // pass has to argue for it.
+            Assert.That(face.Count, Is.LessThan(40),
+                $"{face.Count} face objects for a static quay is a perf budget spent on nothing");
+
+            Assert.That(Props().Select(p => p.Key).ToList(),
+                Does.Not.Contain(NineMileCreekQuayFace.FaceCourseKey),
+                "the face has been folded into AllProps(). Every sweep over the props asks questions " +
+                "that are right for gear and wrong for structure");
+
+            // …and here is why, concretely: the pieces on the mooring face stand in the BASIN. A prop
+            // there is an authoring bug; a quay face there is the quay.
+            var onTheLip = face.Where(p => p.Wall == NineMileCreekDressing.NorthWallRun).ToList();
+            Assert.That(onTheLip, Is.Not.Empty);
+            foreach (var p in onTheLip)
+                Assert.That(terrain.ElevationAt(p.Position), Is.LessThan(SpringHigh),
+                    "a mooring-face piece's pivot is on dry land, which means it is not standing in the " +
+                    "water the wall is built out into");
+        }
+
+        // =============================================================================================
+        //  3. THE DRESSING IS BUILDER-WIRED — the named trap
         // =============================================================================================
 
         [Test]
@@ -166,12 +450,53 @@ namespace HiddenHarbours.Tests.EditMode
 
             foreach (string group in new[]
                      {
+                         NineMileCreekDressing.FaceRootName,
                          NineMileCreekDressing.QuayRootName, NineMileCreekDressing.ApronRootName,
                          NineMileCreekDressing.YardRootName, NineMileCreekDressing.UtilityRootName,
                      })
                 Assert.That(root.transform.Find(group), Is.Not.Null,
-                    $"'{group}' is missing — the four jobs this pass does should each be a group the " +
+                    $"'{group}' is missing — the jobs this pass does should each be a group the " +
                     "owner can find and hide");
+        }
+
+        [Test]
+        public void TheBuilderDrawsTheQuay_AndTheWallJoinsTheYSortBandLikeEverythingElse()
+        {
+            var terrain = MakeCreekTerrain();
+            NineMileCreekDressing.Place(terrain);
+
+            var root = GameObject.Find(NineMileCreekDressing.RootName);
+            _spawned.Add(root);
+            Assert.That(root, Is.Not.Null);
+
+            var group = root.transform.Find(NineMileCreekDressing.FaceRootName);
+            Assert.That(group, Is.Not.Null,
+                "the quay face has to come from the BUILDER like the rest of Phase B — a wall dragged " +
+                "into the scene survives exactly until the owner rebuilds it");
+
+            // Vacuous when the wharf pack has not imported (the sheets are Git-LFS binaries), and
+            // deliberately so: the PLACEMENT is asserted without art by §2.
+            var renderers = group.GetComponentsInChildren<SpriteRenderer>(includeInactive: true);
+            if (renderers.Length == 0) Assert.Pass("the wharf ISO pack has not imported — placement is " +
+                                                  "asserted without it in section 2");
+
+            Assert.That(renderers.Length, Is.EqualTo(Face().Count),
+                "the drawn wall and the placement table disagree about how many courses there are");
+
+            foreach (var sr in renderers)
+            {
+                var ysort = sr.GetComponent<YSortSprite>();
+                Assert.That(ysort, Is.Not.Null,
+                    $"'{sr.name}' has no YSortSprite. The wharf-deck band #462 kept open for this is six " +
+                    "orders wide and the north wall is 84 m long — that is #462's own argument against " +
+                    "the retired tile kit's per-row scheme, and it applies to the piece it was about");
+                Assert.That(ysort.SortPivotYOffset, Is.GreaterThan(0f),
+                    $"'{sr.name}' sorts by its own transform, which for this pack is a pivot at chart " +
+                    "datum — out in the basin, in front of the boats");
+                Assert.That(sr.sortingOrder,
+                    Is.InRange(SortingBands.DecorFloor, SortingBands.DecorCeiling),
+                    $"'{sr.name}' sorts at {sr.sortingOrder}, outside the decor band");
+            }
         }
 
         [Test]
@@ -240,7 +565,7 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         // =============================================================================================
-        //  3. WHERE THINGS STAND — derived, and clear of everything already there
+        //  4. WHERE THINGS STAND — derived, and clear of everything already there
         // =============================================================================================
 
         [Test]
@@ -411,7 +736,7 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         // =============================================================================================
-        //  4. THE FORESHORE
+        //  5. THE FORESHORE
         // =============================================================================================
 
         [Test]
@@ -538,7 +863,7 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         // =============================================================================================
-        //  5. THE FACING — the mislabel that has shipped five times
+        //  6. THE FACING — the mislabel that has shipped five times
         // =============================================================================================
 
         [Test]

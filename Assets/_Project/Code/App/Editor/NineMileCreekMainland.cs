@@ -393,12 +393,15 @@ namespace HiddenHarbours.App.Editor
 
         /// <summary>Deck elevation (m above datum) of the wharf: 0.8 m of freeboard at spring high water.
         ///
-        /// <para>⚠ FLAG FOR PHASE B / art-pipeline. The face this implies is <c>deck − basin</c> =
-        /// 4.6 m of quay wall, and 5.2 m of it stands exposed at spring low. The ISO wharf kit bakes a
-        /// 24 px overhanging face — 0.75 m at PPU 32 — so the kit CANNOT draw this wall once; it must
-        /// tile/stack the face vertically, or the deck must come down toward the water. Phase A authors
-        /// the honest terrain and reports the mismatch rather than quietly flattening a big-tide wharf to
-        /// suit a sprite.</para></summary>
+        /// <para>⚠ FLAG FOR PHASE B / art-pipeline — <b>RESOLVED, and the terrain never moved.</b> The
+        /// face this implies is <c>deck − basin</c> = 4.6 m of quay wall, and 5.2 m of it stands exposed
+        /// at spring low. The flag as first written ("the ISO wharf kit bakes a 24 px overhanging face —
+        /// 0.75 m at PPU 32 — so it must tile/stack the face vertically, or the deck must come down
+        /// toward the water") quoted the RETIRED near-plan tile kit; the ISO pack baked 2.80 m, and #471
+        /// re-measured the gap at 2.40 m. #477/#478 re-baked the pack at this coast's own tide and the
+        /// wall is now drawn in one course. Phase A authored the honest terrain and reported the
+        /// mismatch rather than quietly flattening a big-tide wharf to suit a sprite, and that is exactly
+        /// what got the sprite fixed instead.</para></summary>
         public const float WharfDeckElevation = 3f;
         /// <summary>The yard: 0.6 m above the deck, so you step DOWN onto the wharf. Real wharves do.</summary>
         public const float SpitYardElevation = 3.6f;

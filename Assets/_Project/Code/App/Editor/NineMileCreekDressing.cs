@@ -26,13 +26,21 @@ namespace HiddenHarbours.App.Editor
     /// <c>NineMileCreekMainland</c> already published for them. Re-site the wharf and the dressing goes
     /// with it.</para>
     ///
+    /// <para><b>⭐ AND SINCE #478, THE QUAY ITSELF.</b> #471 left this file with one hole in it: the ISO
+    /// pack was baked for a different coast and could not draw a 4.6 m face, so the wharf was dressed and
+    /// the wall it stood on was not. The re-bake closed it, and §7 below draws all three runs — both
+    /// walls and the breakwater — in <b>one course</b> of <c>logCrib</c> apiece, no vertical tiling. The
+    /// arithmetic lives in <see cref="NineMileCreekQuayFace"/>, which this file reads rather than
+    /// re-derives.</para>
+    ///
     /// <para><b>⚠️ WHAT THIS FILE DELIBERATELY DOES NOT PLACE, and why each is a trap rather than an
     /// omission.</b></para>
     /// <list type="bullet">
-    /// <item><description><b>The quay structure itself.</b> The committed ISO pack cannot draw this
-    /// wall — see <see cref="NineMileCreekQuayFace"/>, which measures the gap and names the re-bake that
-    /// closes it. Nothing here depends on that: gear stands on the terrain deck, which is real
-    /// already.</description></item>
+    /// <item><description><b>A second deck.</b> The face pieces are drawn for their FACE — the wall from
+    /// the lip down to the seabed. The deck you stand on is still terrain (#462 authored both walls as
+    /// fills and registered them as standable floor), so the pieces are anchored by their lip and the
+    /// sprite's own deck band is what lands on the ground the terrain already owns. Nothing here creates
+    /// floor, and nothing here can move it.</description></item>
     /// <item><description><b>The decor kit's <c>rescueLadder</c> and <c>ringPost</c>.</b> #462's
     /// guarantee is that <i>the ladder you can see is the ladder you can climb</i> and <i>the bollard you
     /// can see is the bollard you can tie to</i> — both are real components derived from one table. A
@@ -459,7 +467,7 @@ namespace HiddenHarbours.App.Editor
         // ---------------------------------------------------------------------------------------------
         // HiddenHarbours.Tests.EditMode cannot see HiddenHarbours.Tools.RigBaking.Editor, and adding the
         // reference to test one integer would let every future test reach past the region into the pack.
-        // These four are the only pack facts the dressing tests need, so the region hands them over and
+        // These few are the only pack facts the dressing tests need, so the region hands them over and
         // the tests stay tests OF THE REGION.
 
         /// <summary>Facings on a directional sheet.</summary>
@@ -474,6 +482,14 @@ namespace HiddenHarbours.App.Editor
         /// <summary>The facing cell a prop resolves to, by the PACK's declared azimuth convention.</summary>
         public static int FacingFor(Prop prop) =>
             IsoPackSprites.FacingForHeading(prop.Family, prop.Heading);
+
+        /// <summary>…and the facing cell a course of quay face resolves to. Its own re-export because
+        /// the face comes from a DIFFERENT family, and the convention is read per family: the wharf pack
+        /// is registered counter-clockwise, so cell <c>i</c> depicts heading −45°·i and reading the
+        /// sheet's <c>N NE E SE…</c> label order as a compass would turn every wall the wrong way with
+        /// nothing failing.</summary>
+        public static int FacingFor(FacePiece piece) =>
+            IsoPackSprites.FacingForHeading(WharfFamily, piece.Heading);
 
         /// <summary>Every distinct <c>zone</c> the finds contract declares — what
         /// <see cref="Bands"/> has to cover, or a find is baked and never placed.</summary>
@@ -499,7 +515,182 @@ namespace HiddenHarbours.App.Editor
         }
 
         // =============================================================================================
-        //  7. THE FORESHORE — what the tide left
+        //  7. THE QUAY FACE — the run #471 measured and could not draw
+        // =============================================================================================
+        // ⭐ ONE COURSE, THREE RUNS. NineMileCreekQuayFace owns every number below the plan: which piece,
+        // how tall it bakes, and where its pivot goes so the drawn lip lands on the real one. This
+        // section owns only the PLAN — which stretches of wall are actually faces, and which way each of
+        // them looks — and it derives all of that from NineMileCreekWharf and NineMileCreekMainland.
+
+        /// <summary>The pack family the wharf's STRUCTURE is drawn from — <c>wharfIso</c>, as against the
+        /// <c>wharfDecor</c> and <c>utilityIso</c> families everything else here comes out of.</summary>
+        public const string WharfFamily = "wharfIso";
+
+        /// <summary>The sub-root the drawn quay hangs under, so the owner can hide the wall without
+        /// hiding the gear standing on it.</summary>
+        public const string FaceRootName = "QuayFace";
+
+        /// <summary>The plan direction a compass heading points along (N = 0, clockwise) — the inverse of
+        /// <c>IsoPackSprites.HeadingOf</c>, so a run's seaward vector and the facing its sprite resolves
+        /// to are two views of ONE number rather than two numbers that must be kept agreeing.</summary>
+        public static Vector2 PlanDirectionOf(float headingDegrees) =>
+            new Vector2(Mathf.Sin(headingDegrees * Mathf.Deg2Rad), Mathf.Cos(headingDegrees * Mathf.Deg2Rad));
+
+        // --- which stretches are actually FACES -------------------------------------------------------
+        // ⚠️ THE TWO WALLS MEET IN AN L, and the inside of that corner is not a face. The apron runs
+        // north to y = 92 and the quay's deck starts at y = 87, so the apron's last five metres of east
+        // side stand against the quay's own ground; likewise the quay's south side west of x = 92 stands
+        // against the apron's. Drawing either would put a 4.6 m wall of log crib in the middle of the
+        // wharf, facing a deck. Both bounds are DERIVED from the other wall's footprint, so re-siting
+        // either wall re-cuts the corner.
+
+        /// <summary>Where the north wall's face begins: the east side of the apron, not the west end of
+        /// the deck.</summary>
+        public static Vector2 NorthFaceWest =>
+            new Vector2(Mathf.Max(Quay.xMin, Apron.xMax), NineMileCreekWharf.MooringEdgeY);
+
+        /// <summary>…and where it ends — the wharf head, which is a real corner.</summary>
+        public static Vector2 NorthFaceEast =>
+            new Vector2(Quay.xMax, NineMileCreekWharf.MooringEdgeY);
+
+        /// <summary>The apron's face runs up its EAST side — the water side
+        /// <c>NineMileCreekMainland</c> states — from its south corner…</summary>
+        public static Vector2 ApronFaceSouth => new Vector2(Apron.xMax, Apron.yMin);
+
+        /// <summary>…to where it disappears under the north wall's deck.</summary>
+        public static Vector2 ApronFaceNorth => new Vector2(Apron.xMax, Mathf.Min(Apron.yMax, Quay.yMin));
+
+        /// <summary>The breakwater is drawn on its CREST LINE, not on its south edge — the same line
+        /// #462 lays its collision on (<c>NineMileCreekWharf.BreakwaterPoints</c>) and the same one the
+        /// retired tile kit hung its armour from. An arm is a symmetric box of stone-filled cribs, so its
+        /// "lip" runs down the middle of it rather than along one side.</summary>
+        public static Vector2 BreakwaterCrestWest =>
+            new Vector2(NineMileCreekWharf.BreakwaterWestX, NineMileCreekWharf.BreakwaterY);
+
+        /// <inheritdoc cref="BreakwaterCrestWest"/>
+        public static Vector2 BreakwaterCrestEast =>
+            new Vector2(NineMileCreekWharf.BreakwaterEastX, NineMileCreekWharf.BreakwaterY);
+
+        /// <summary>Which way the breakwater's exposed side looks: AWAY from the basin the arm shelters.
+        /// Derived from which side of the arm the quay lies on, so re-siting either turns the arm's face
+        /// with it rather than leaving it presenting its sheltered side to the open bay.</summary>
+        public static float BreakwaterSeawardHeading =>
+            IsoPackSprites.HeadingOf(new Vector2(
+                0f, Mathf.Sign(NineMileCreekWharf.BreakwaterY - NineMileCreekWharf.MooringEdgeY)));
+
+        /// <summary>One placed course of quay face.</summary>
+        public readonly struct FacePiece
+        {
+            /// <summary>The pack preset — one key for the whole quay, because one material is what #462
+            /// ruled this wharf is built of.</summary>
+            public readonly string Key;
+
+            /// <summary>⚠️ Where the sprite's PIVOT goes, which is NOT where the piece is in plan. The
+            /// wharf pack pivots at chart datum, metres of drawn height below the deck — see
+            /// <c>NineMileCreekQuayFace.PivotForLip</c>, which is the only thing that computes this.</summary>
+            public readonly Vector2 Position;
+
+            /// <summary>The plan line the piece is READ as standing on — its deck lip, on the wall's own
+            /// edge. What it sorts by, and the one line the placement guarantees.</summary>
+            public readonly Vector2 Lip;
+
+            /// <summary>Compass heading the working face looks along, out over the water.</summary>
+            public readonly float Heading;
+
+            /// <summary>Which run it belongs to, so the hierarchy and any failure message name a wall
+            /// rather than an index.</summary>
+            public readonly string Wall;
+
+            public readonly string Reason;
+
+            public FacePiece(string key, Vector2 position, Vector2 lip, float heading,
+                             string wall, string reason)
+            {
+                Key = key; Position = position; Lip = lip;
+                Heading = heading; Wall = wall; Reason = reason;
+            }
+
+            /// <summary>How far UP-SCREEN this piece's lip sits above its own transform — what
+            /// <c>YSortSprite.SortPivotYOffset</c> takes, so the wall layers on the line it looks like it
+            /// stands on instead of on a pivot out in the basin.</summary>
+            public float SortYOffset => Lip.y - Position.y;
+        }
+
+        /// <summary>
+        /// A run of face along one straight stretch of wall, from <paramref name="from"/> to
+        /// <paramref name="to"/> along the LIP.
+        ///
+        /// <para>The count and pitch come from <c>NineMileCreekQuayFace.CoverRun</c> — ceiling, so the run
+        /// covers the wall end to end and pieces butt or overlap rather than leaving a hole. Each piece
+        /// is centred in its own slot, which is the same "west end PLUS half a block" rule #462's
+        /// breakwater armour uses and the same reason: a piece placed at the start of its slot puts half
+        /// of itself on the beach.</para>
+        /// </summary>
+        public static List<FacePiece> FaceRun(string wall, Vector2 from, Vector2 to, float seawardHeading,
+                                              string reason)
+        {
+            var list = new List<FacePiece>();
+
+            Vector2 span = to - from;
+            float run = span.magnitude;
+            if (run <= 1e-3f) return list;
+
+            Vector2 along = span / run;
+            Vector2 seaward = PlanDirectionOf(seawardHeading);
+            NineMileCreekQuayFace.CoverRun(run, out int count, out float pitch);
+
+            for (int i = 0; i < count; i++)
+            {
+                Vector2 lip = from + along * (pitch * (i + 0.5f));
+                list.Add(new FacePiece(
+                    NineMileCreekQuayFace.FaceCourseKey,
+                    NineMileCreekQuayFace.PivotForLip(lip, seaward),
+                    lip, seawardHeading, wall, reason));
+            }
+            return list;
+        }
+
+        /// <summary>Run names, so a test names the wall it is checking.</summary>
+        public const string NorthWallRun = "NorthWall";
+        /// <inheritdoc cref="NorthWallRun"/>
+        public const string WestWallRun = "WestWall";
+        /// <inheritdoc cref="NorthWallRun"/>
+        public const string BreakwaterRun = "Breakwater";
+
+        /// <summary>
+        /// The whole drawn quay: the mooring face, the apron's face and the breakwater arm.
+        ///
+        /// <para><b>Not part of <see cref="AllProps"/>, and that is deliberate.</b> Every sweep over the
+        /// props asks questions that are right for gear and wrong for structure — stand clear of the
+        /// working strip, stand clear of a mooring fitting, stand on ground above spring high water. A
+        /// quay face fails all three by DOING ITS JOB: it stands on the lip, it carries the fittings, and
+        /// its feet are 1.4 m under the lowest water. So the face is its own list and its own sweep.</para>
+        /// </summary>
+        public static IReadOnlyList<FacePiece> FacePieces()
+        {
+            var list = new List<FacePiece>();
+
+            list.AddRange(FaceRun(NorthWallRun, NorthFaceWest, NorthFaceEast, SeawardHeading,
+                "the mooring face — the wall the fleet lies against, and the only stretch of this " +
+                "region a player ever sees from the water. It starts at the apron's east side because " +
+                "west of that the quay's south side stands against the apron's own ground"));
+
+            list.AddRange(FaceRun(WestWallRun, ApronFaceSouth, ApronFaceNorth, ApronSeawardHeading,
+                "the apron's east face — a curb-only edge in the retired kit, which is the whole reason " +
+                "the plan wanted the winch to be a tall legible object. It is a drawn wall now, and it " +
+                "stops where it goes under the north wall's deck"));
+
+            list.AddRange(FaceRun(BreakwaterRun, BreakwaterCrestWest, BreakwaterCrestEast,
+                BreakwaterSeawardHeading,
+                "the arm, on its crest line — 92 m of the same stone-filled log crib the walls are, " +
+                "which is what #462 read off the owner's photographs and what " +
+                "NineMileCreekWharf.BreakwaterArmour has said since"));
+
+            return list;
+        }
+
+        // =============================================================================================
+        //  8. THE FORESHORE — what the tide left
         // =============================================================================================
         // The finds kit bakes THREE STATES of every find — wet, dry, bleached — and its own contract says
         // what they are for: `zone` is where a find belongs (tide / wrack / upper) and the state is what
@@ -741,11 +932,11 @@ namespace HiddenHarbours.App.Editor
         }
 
         // =============================================================================================
-        //  8. PLACEMENT
+        //  9. PLACEMENT
         // =============================================================================================
 
         /// <summary>
-        /// Dress the region. Returns how many objects were placed — props plus finds.
+        /// Dress the region. Returns how many objects were placed — the quay face, the props and the finds.
         ///
         /// <para>Null-tolerant throughout, the <see cref="NineMileCreekFlavour"/> arrangement: a pack that
         /// has not baked warns once and is skipped, a key with no pixels is skipped with its reason, and
@@ -758,13 +949,17 @@ namespace HiddenHarbours.App.Editor
 
             // ONE warning per family, not one per piece. An un-baked pack would otherwise report itself
             // forty-four times and bury the two lines that actually matter at the bottom of the console.
-            foreach (string family in new[] { DecorFamily, UtilityFamily, FindsFamily })
+            foreach (string family in new[] { WharfFamily, DecorFamily, UtilityFamily, FindsFamily })
                 if (!IsoPackSprites.FamilyHasSheets(family))
                     Debug.LogWarning(
                         $"[NineMileCreekDressing] the '{family}' pack has no sheets at " +
                         $"{IsoPackSprites.FolderFor(family)} — everything it would have drawn is skipped. " +
                         "The PLACEMENT is unaffected and still correct: re-run the builder after the " +
                         "sheets import and the same objects land in the same places.");
+
+            // THE WALL FIRST, so it is behind everything that stands on it in the hierarchy as well as
+            // on the screen.
+            int face = PlaceFace(root, FacePieces());
 
             int props = 0;
             props += PlaceProps(root, QuayRootName, QuayGear(), terrain);
@@ -777,20 +972,83 @@ namespace HiddenHarbours.App.Editor
 
             int finds = PlaceFinds(root, terrain);
 
-            // ⭐ THE ONE THING PHASE B WAS ASKED FOR AND DID NOT DO, said out loud on every rebuild rather
-            // than left in a merged PR body where the owner will never see it again.
-            Debug.Log(NineMileCreekQuayFace.StackReport());
+            // ⭐ THE STATE OF THE QUAY, said out loud on every rebuild rather than left in a merged PR
+            // body where the owner will never see it again. For the whole of #471 this line read "THE
+            // DRAWN QUAY IS STILL NOT DRAWN"; it now reports the face it drew and the numbers it drew it
+            // from, so a re-bake that moved them would be visible in the console as well as in the tests.
+            Debug.Log(NineMileCreekQuayFace.FaceReport());
 
             Debug.Log(
-                $"[NineMileCreekDressing] Dressed Nine Mile Creek: {props} prop(s) from the wharf-decor " +
+                $"[NineMileCreekDressing] Dressed Nine Mile Creek: {face} course(s) of quay face across " +
+                $"the mooring wall, the apron and the breakwater, {props} prop(s) from the wharf-decor " +
                 $"and utility packs and {finds} shore find(s) on the foreshore, all in the Y-sort decor " +
-                $"band. The quay's gear is laid out on the BERTH LINE and the poles on Wharf Road's own " +
-                $"published route, so both follow the wharf if it moves. NOT built, and deliberately: " +
-                $"the ~16 moored lobster boats and the mussel-boat class are owner vision and " +
-                $"phase-gated; the dory yard is left clear because a sightline test measures across it; " +
-                $"and the drawn quay face waits on a re-bake (see the line above).");
+                $"band. The face is anchored on its LIP and the gear is laid out on the BERTH LINE, with " +
+                $"the poles on Wharf Road's own published route, so all three follow the wharf if it " +
+                $"moves. NOT built, and deliberately: the ~16 moored lobster boats and the mussel-boat " +
+                $"class are owner vision and phase-gated, and the dory yard is left clear because a " +
+                $"sightline test measures across it.");
 
-            return props + finds;
+            return face + props + finds;
+        }
+
+        /// <summary>
+        /// Draw the quay. One sprite per course, anchored so its deck lip lands on the wall's lip.
+        ///
+        /// <para><b>⭐ IT SORTS BY ITS LIP, NOT BY ITS TRANSFORM.</b> The wharf pack pivots at chart
+        /// datum, so a face piece's transform sits several metres down-screen of the wall — out where the
+        /// boats are. Sorted from there it would draw IN FRONT of anything moored against it, which is
+        /// the one thing a quay must never do and is invisible until there is a boat at the berth to be
+        /// hidden. <see cref="YSortSprite.SortPivotYOffset"/> moves the sort point back up to the lip;
+        /// the band is still the decor band, and the order is still computed from world Y (ADR 0032).</para>
+        ///
+        /// <para><b>Not the wharf-deck band</b> (<c>SortingBands.WharfDeckMin</c>…<c>Max</c>), even
+        /// though #462 kept that band open for "the ISO quay Phase B draws". Six orders cannot resolve an
+        /// 84 m wall — that is #462's own argument against the retired tile kit's per-row scheme, and it
+        /// applies unchanged to the piece it was written about. The face joins the fittings in the decor
+        /// band for the same reason they did.</para>
+        /// </summary>
+        static int PlaceFace(GameObject root, IReadOnlyList<FacePiece> pieces)
+        {
+            if (pieces.Count == 0) return 0;
+
+            var group = new GameObject(FaceRootName);
+            group.transform.SetParent(root.transform, worldPositionStays: false);
+
+            int placed = 0;
+            foreach (var piece in pieces)
+            {
+                int facing = IsoPackSprites.FacingForHeading(WharfFamily, piece.Heading);
+                Sprite sprite = IsoPackSprites.Facing(WharfFamily, piece.Key, facing);
+                if (sprite == null)
+                {
+                    Debug.LogWarning(
+                        $"[NineMileCreekDressing] the {piece.Wall} face piece '{piece.Key}' facing " +
+                        $"{facing} has no sprite at {IsoPackSprites.SheetPath(WharfFamily, piece.Key)} — " +
+                        $"skipping it rather than placing a blank. It would have been: {piece.Reason}.");
+                    continue;
+                }
+
+                var go = new GameObject($"{piece.Wall}_{piece.Key}_{placed}");
+                go.transform.SetParent(group.transform, worldPositionStays: false);
+                // ⚠️ The PIVOT, not the plan position — see FacePiece.Position.
+                go.transform.position = new Vector3(piece.Position.x, piece.Position.y, 0f);
+
+                var sr = go.AddComponent<SpriteRenderer>();
+                sr.sprite = sprite;
+                go.AddComponent<YSortSprite>().SortPivotYOffset = piece.SortYOffset;
+
+                placed++;
+            }
+
+            if (placed == 0)
+                Debug.LogWarning(
+                    $"[NineMileCreekDressing] {pieces.Count} course(s) of quay face were sited and none " +
+                    $"had pixels — the wharf ISO pack has not sliced at " +
+                    $"{IsoPackSprites.FolderFor(WharfFamily)}. The PLACEMENT is unaffected and still " +
+                    "correct; re-run the builder after the sheets import and the same wall lands in the " +
+                    "same place.");
+
+            return placed;
         }
 
         static int PlaceProps(GameObject root, string groupName, IReadOnlyList<Prop> props,

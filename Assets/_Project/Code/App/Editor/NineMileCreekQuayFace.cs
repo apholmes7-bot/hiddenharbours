@@ -1,80 +1,62 @@
 #if UNITY_EDITOR
 using System.Collections.Generic;
 using UnityEngine;
+using HiddenHarbours.Art;                 // SpriteLightMath — the shared bake camera's two scales
 using HiddenHarbours.Core;                // ITidalTerrain
 
 namespace HiddenHarbours.App.Editor
 {
     /// <summary>
-    /// <b>THE QUAY FACE AT NINE MILE CREEK — THE MEASUREMENT, AND WHY PHASE B DOES NOT DRAW IT YET.</b>
+    /// <b>THE QUAY FACE AT NINE MILE CREEK — THE MEASUREMENT, AND NOW THE PLACEMENT IT WAS KEPT FOR.</b>
     ///
     /// <para>A-1 (#462) authored both wharf walls as terrain fills, registered them as standable floor at
-    /// the measured deck height, and deliberately DREW NO QUAY — leaving the drawing to Phase B and the
-    /// ISO wharf pack, with one flag attached: <i>"the quay face is 4.6 m tall and the kit bakes a 0.75 m
-    /// face, so Phase B must tile the face vertically."</i></para>
+    /// the measured deck height, and deliberately DREW NO QUAY. #471 measured why the ISO pack could not
+    /// draw it — <b>2.40 m of missing face</b> — and ordered the fix as two numbers on one bake call
+    /// rather than as new geometry. #477 re-parameterised the rig at those numbers and #478 re-baked all
+    /// 17 sheets. <b>This class now describes the sheets that are actually committed, and the quay is
+    /// drawn</b> (<see cref="NineMileCreekDressing.FacePieces"/>).</para>
     ///
-    /// <para><b>⭐ THE FLAG IS RIGHT THAT THERE IS A GAP AND WRONG ABOUT WHAT IT IS.</b> 0.75 m is the
-    /// OLD near-plan tile kit's 24 px face. The ISO pack is a different thing: a parametric rig baked
-    /// through the shared ¾ camera, and every structural preset in it carries a <b>2.80 m</b> face, not
-    /// 0.75 m. The gap is 2.4 m, not 3.85 m — and, more usefully, it is <b>ONE PARAMETER</b> rather than
-    /// a modelling limit:</para>
+    /// <para><b>⭐ THE TRIPWIRE, AND WHY IT IS THE CENTRE OF THIS FILE.</b> #471 wrote
+    /// <see cref="TideShortfallMetres"/> with the note <i>"if it ever goes to zero the pack has been
+    /// re-baked at this tide"</i>. It is zero. So are <see cref="ClearanceShortfallMetres"/> and
+    /// <see cref="ShortfallMetres"/>, and that is the whole gate: the numbers below are not a story about
+    /// the bake, they are <b>recomputed from the region's own geography and from the rig's committed
+    /// defaults</b>, and they agree. If a future re-bake moves the face, all three come off zero and
+    /// <c>NineMileCreekDressingTests</c> fails loudly here rather than leaving a quay drawn at the wrong
+    /// height — which is the one defect this whole apparatus exists to make impossible, because a wall
+    /// two metres short renders perfectly and merely looks like a slightly wrong wharf.</para>
     ///
+    /// <para><b>WHAT THE RE-BAKE ACTUALLY BOUGHT</b>, in the order it matters:</para>
     /// <list type="number">
-    /// <item><description>The rig quotes deck height as clearance above the HIGHEST water:
-    /// <c>deckZ = tideRange + clearance</c>. The pack baked at the rig's own defaults —
-    /// <see cref="BakedRigTideRange"/> m of range, <see cref="BakedRigClearance"/> m of clearance — so
-    /// every non-float preset came out at <see cref="BakedDeckZMetres"/> m.</description></item>
-    /// <item><description>Nine Mile Creek's tide is <see cref="RequiredTideRangeMetres"/> m from datum
-    /// to highest water, and its authored deck stands <see cref="RequiredClearanceMetres"/> m above
-    /// spring high — which <c>NineMileCreekMainland</c> states in words ("0.8 m of freeboard at spring
-    /// high water"). Put those through the rig's OWN formula and the deck this region needs is
-    /// <see cref="RequiredDeckZMetres"/> m — the same arithmetic, different coast.</description></item>
-    /// <item><description>So the pack is not short of GEOMETRY — it is baked for a different coast, and
-    /// the whole gap is two numbers on the same bake call. Every structural height in it falls
-    /// <see cref="ShortfallMetres"/> m short, which decomposes exactly:
-    /// <b>+2.60 m of tide</b> (1.8 baked against 4.4 here) <b>less 0.20 m of freeboard</b>
-    /// (1.0 baked against the 0.8 this wharf authors). ⚠️ It is <i>not</i> simply the tide difference —
-    /// a first draft of this class said so and the dressing tests caught it on the first CI run.
-    /// </description></item>
+    /// <item><description><b>One course, not a stack.</b> Every non-float preset now stands at
+    /// <see cref="BakedDeckZMetres"/> m, which is this wharf's <see cref="RequiredDeckZMetres"/> m to the
+    /// centimetre, so <see cref="CoursesNeeded"/> is 1 and the face covers deck lip to seabed in a single
+    /// piece.</description></item>
+    /// <item><description><b>The fittings land AT the deck.</b> That is the half a vertical stack could
+    /// never have had: a lower course carrying bollards, rings or a ladder puts that furniture halfway up
+    /// the finished wall. With one course the pack's own fittings sit on the deck, where a rope goes
+    /// round them. <see cref="FittingsLandAtTheDeck"/>.</description></item>
+    /// <item><description><b>The growth bands are re-pinned to the real frame.</b> The old sheets put
+    /// barnacle at 0.72–1.44 m and rockweed at 0.11–0.72 m, sized for a 1.8 m tide; this coast wanted
+    /// 1.76–3.52 and 0.26–1.76. The rig pins growth to the tidal FRAME as fractions of the range, so the
+    /// re-bake moved them for free — <see cref="BarnacleBand"/> / <see cref="RockweedBand"/> compute the
+    /// asked-for figures from <see cref="BakedRigTideRange"/> alone. <b>No stack could have fixed this</b>:
+    /// a stacked wall would have worn two sets of bands, at the wrong heights, twice.</description></item>
     /// </list>
     ///
-    /// <para><b>⛔ AND VERTICAL TILING DOES NOT RESCUE IT — but NOT because the arithmetic fails, which
-    /// is the easy version of this finding and the wrong one.</b> Stacking needs a course with a flat,
-    /// FURNITURE-FREE top: anything carrying bollards, ladders or hung fenders puts them halfway up the
-    /// finished wall. Of the pack's 17 presets only the four riprap ones bake no fittings, and three of
-    /// those are mounds with sloped tops (two revetments and the breakwater) — leaving <c>sheetCell</c>
-    /// as the single stackable course in the pack. <see cref="StackableCourses"/> is that list, and the
-    /// two facts about it that matter are recorded as data rather than as prose:</para>
+    /// <para><b>What this class is FOR.</b> Three things, and it does no drawing itself — the drawing is
+    /// <see cref="NineMileCreekDressing"/>'s, which reads its deck height from here instead of
+    /// re-deriving it (#471 said it would, and this is that promise kept):</para>
     /// <list type="bullet">
-    /// <item><description><b>Two <c>sheetCell</c> courses come to 5.20 m — this wharf's required deck
-    /// height, exactly.</b> <see cref="AStackReachesTheHeight"/> says so, on purpose, so nobody can
-    /// later restate this stop as "the pieces do not add up".</description></item>
-    /// <item><description><b>What rules it out is the MATERIAL and the missing deck.</b> Both courses
-    /// would be steel sheet pile — the one material this wharf is ruled not to be built of (#462 read
-    /// the owner's photographs as log crib and reserved sheet pile for "the commercial quay money and
-    /// machinery would build") — and a capped cell has no working top: no coping, nothing to land a
-    /// catch on, nothing to stand a bollard beside.</description></item>
-    /// <item><description><b>In the ruled material there is no course at all.</b> Crib bakes a plank or
-    /// concrete deck with furniture on it, so nothing seats on it; and even ignoring that, crib's 2.80 m
-    /// stacks to 2.80 (2.40 m short) or 5.60 (0.40 m over). 0.40 m over is a deck drawn 10 px above the
-    /// <c>StandablePlatform</c> the sim stands you on — the same class of quiet lie as a wharf that
-    /// floods without anything failing.</description></item>
+    /// <item><description>the MEASUREMENT — what this wharf needs, derived from its own authored
+    /// geography and never typed in (§1);</description></item>
+    /// <item><description>the BAKE — what the committed sheets carry, quoted from the rig's defaults with
+    /// their source, so a re-bake is a one-line edit here rather than a re-measurement (§2);</description></item>
+    /// <item><description>the PLACEMENT ARITHMETIC — where a piece's pivot goes so that its drawn deck
+    /// lip lands on the wall's real lip (§4). Pure <see cref="Vector2"/> trigonometry, so every rule is
+    /// asserted headless.</description></item>
     /// </list>
-    ///
-    /// <para><b>THE ASK (art-director / art-pipeline lane — this file reports it rather than doing
-    /// it).</b> Re-bake the wharf ISO pack, or a Nine Mile Creek variant of it, at
-    /// <c>{ tideRange: 4.4, clearance: 0.8 }</c> — equivalently <c>{ deckZ: 5.2 }</c>. <b>No new
-    /// geometry is needed and no new preset is needed:</b> the rig already renders it (its deckZ clamp
-    /// is <c>max(familyMax, tideRange + 3)</c>, which opens to 7.4 m at this tide), it draws the whole
-    /// 4.6 m face in ONE course, and — the part a stack could never have fixed — it re-pins the growth
-    /// bands to the real frame. The baked sheets put barnacle at 0.72–1.44 m and rockweed at
-    /// 0.11–0.72 m above datum, sized for a 1.8 m tide; on this coast they belong at 1.76–3.52 m and
-    /// 0.26–1.76 m. A stacked wall would have worn two sets of them, at the wrong heights, twice.</para>
-    ///
-    /// <para><b>What this class is FOR, now that it draws nothing.</b> It is the measurement, so the
-    /// re-bake is ordered off derived numbers rather than off a paragraph — and so that the day the
-    /// sheets land, the placement reads its deck height from here instead of re-deriving it. Pure:
-    /// no scene, no assets, no rig. <c>NineMileCreekDressingTests</c> holds every claim above.</para>
+    /// <para>Pure: no scene, no assets, no rig. <c>NineMileCreekDressingTests</c> holds every claim above.</para>
     /// </summary>
     public static class NineMileCreekQuayFace
     {
@@ -122,51 +104,88 @@ namespace HiddenHarbours.App.Editor
                 : NineMileCreekWharf.DeckElevationFrom(terrain) - NineMileCreekMainland.BasinBedElevation;
 
         // =============================================================================================
-        //  2. WHAT THE PACK ACTUALLY BAKED
+        //  2. WHAT THE PACK ACTUALLY BAKED — re-derived at #478, not remembered from #471
         // =============================================================================================
-        // These are the rig's DEFAULTS, quoted with their source, not measurements of the PNGs — the
-        // sheets were baked "at rig-default dimensions and tide" (wharfIsoRig.contract.json's own
-        // `generated` line), so the defaults ARE what the pixels carry. Stating the rule rather than the
-        // answer means a re-bake at a different tide is a one-line edit here, not a re-measurement.
+        // ⚠️ THESE ARE THE RIG'S DEFAULTS, quoted with their source, not measurements of the PNGs — the
+        // sheets are baked "at rig-default dimensions, tide and clearance" (wharfIsoRig.contract.json's
+        // own `generated` line, which now reads "tideRange 4.4, clearance 0.8"), so the defaults ARE what
+        // the pixels carry. Stating the RULE rather than the answer is what made the re-bake a one-line
+        // edit here instead of a re-measurement — which is exactly what this section just went through.
+        //
+        // ⚠️ AND THEY ARE NOT WHAT #471's DRAFT OF THIS FILE SAID. They were 1.8 / 1.0. Any number
+        // carried over from that draft, from its PR, or from the gameplay sidecar (which #477 did not
+        // regenerate) describes sheets that are no longer committed.
 
         /// <summary>The rig's default <c>tideRange</c> (<c>DEFAULTS.tideRange</c>) — the tide the
-        /// committed sheets were baked for. 1.8 m: the Gulf figure in the rig's own README table.</summary>
-        public const float BakedRigTideRange = 1.8f;
+        /// committed sheets were baked for. <b>4.4 m: Hillsborough Bay's, which is this region's</b>, set
+        /// by #477 off #471's order. It was 1.8 (the Gulf figure) when #471 measured the gap.</summary>
+        public const float BakedRigTideRange = 4.4f;
 
-        /// <summary>The rig's default deck clearance above highest water — the <c>1.0</c> in
-        /// <c>auto = tideRange + (opts.clearance ?? 1.0)</c>.</summary>
-        public const float BakedRigClearance = 1.0f;
+        /// <summary>The rig's default deck clearance above highest water (<c>DEFAULTS.clearance</c>, a
+        /// first-class default since #477 rather than a literal buried in the deck auto). <b>0.8 m</b> —
+        /// this wharf's authored freeboard. It was 1.0.</summary>
+        public const float BakedRigClearance = 0.8f;
 
-        /// <summary>What every non-float preset in the committed pack therefore stands at: 2.80 m.
-        /// <b>This is the number A-1's flag should have said instead of 0.75 m</b> — that figure is the
-        /// retired near-plan tile kit's 24 px face and has nothing to do with this pack.</summary>
+        /// <summary>The rig's default <c>mudZ</c> — where a structure's feet stop, 1.4 m BELOW chart
+        /// datum. Unchanged by the re-bake, and what makes the drawn face reach past the seabed rather
+        /// than stop short of it.</summary>
+        public const float BakedRigMudZ = -1.4f;
+
+        /// <summary>What every non-float preset in the committed pack therefore stands at: <b>5.20 m</b>.
+        /// It was 2.80, and the 2.40 m between those two numbers is the whole of #471's finding.</summary>
         public static float BakedDeckZMetres => BakedRigTideRange + BakedRigClearance;
 
         /// <summary>
-        /// How far short the tallest baked course falls: <b>2.40 m</b>.
+        /// How far short the tallest baked course falls: <b>zero</b>.
         ///
-        /// <para>⚠️ It is NOT "the difference between the two tides", which is what a first draft of this
-        /// class claimed and what <c>NineMileCreekDressingTests</c> caught on the first CI run. The tides
-        /// differ by 2.60 m; the shortfall is 2.40 because the deck heights are quoted as
-        /// <c>tideRange + clearance</c> and this wharf is authored with LESS freeboard than the rig's
-        /// default — 0.8 m against 1.0 m — which gives 0.20 m of it back. See
-        /// <see cref="TideShortfallMetres"/> and <see cref="ClearanceShortfallMetres"/>, which are the
-        /// two halves and are asserted to sum to this.</para>
+        /// <para>It was 2.40 m, and it decomposed — <b>+2.60 m of tide</b> less <b>0.20 m of freeboard</b>
+        /// — because deck heights are quoted as <c>tideRange + clearance</c> and this wharf authors less
+        /// freeboard than the rig's old default. Both halves are now zero, which is a stronger statement
+        /// than the total being zero: the bake did not merely land on the right height by luck, it landed
+        /// on the right TIDE and the right FREEBOARD, which is what re-pins the growth bands.</para>
         /// </summary>
         public static float ShortfallMetres => RequiredDeckZMetres - BakedDeckZMetres;
 
-        /// <summary>The part of the shortfall that is TIDE: +2.60 m. The dominant term, and the reason
-        /// this reads as "the pack was baked for a different coast" rather than as a modelling gap.</summary>
+        /// <summary>⭐ <b>THE TRIPWIRE.</b> The part of the shortfall that is TIDE. #471 wrote it with the
+        /// note <i>"if it ever goes to zero the pack has been re-baked at this tide"</i> — and it is zero.
+        /// A future re-bake at any other coast's tide moves this off zero and fails the dressing tests
+        /// before it can ship a wall at the wrong height.</summary>
         public static float TideShortfallMetres => RequiredTideRangeMetres - BakedRigTideRange;
 
-        /// <summary>The part that is FREEBOARD: −0.20 m. This wharf sits closer to its own high water
-        /// than the rig's default assumes, which is authored and deliberate (a working wharf you can step
-        /// down onto), and it takes a fifth of a metre back off the shortfall.</summary>
+        /// <summary>The part that is FREEBOARD — also zero now. This wharf sits closer to its own high
+        /// water than a generic coast assumes (a working wharf you step DOWN onto), and #477 made that
+        /// the rig's default rather than leaving it as a correction applied afterwards.</summary>
         public static float ClearanceShortfallMetres => RequiredClearanceMetres - BakedRigClearance;
 
+        // --- the growth bands: the half no stack could ever have fixed --------------------------------
+        // The rig pins growth to the tidal FRAME as fractions of the range (frame(): barnTop = R×0.80,
+        // barnBot = R×0.40, weedTop = R×0.40, weedBot = R×0.06), never to the water level. So the ONE
+        // parameter that fixed the height fixed these too, and they are recomputed here rather than
+        // copied: #471 asked for barnacle at 1.76–3.52 m and rockweed at 0.26–1.76 m, and that is what
+        // 4.4 m of range produces.
+
+        /// <summary>Fractions of <see cref="BakedRigTideRange"/> the rig bands growth at
+        /// (<c>frame()</c>): barnacle 0.40–0.80 of the range, rockweed 0.06–0.40.</summary>
+        public const float BarnacleBandLowFraction = 0.40f, BarnacleBandHighFraction = 0.80f;
+        /// <inheritdoc cref="BarnacleBandLowFraction"/>
+        public const float RockweedBandLowFraction = 0.06f, RockweedBandHighFraction = 0.40f;
+
+        /// <summary>Where the barnacle band lies on the committed sheets, in metres above chart datum —
+        /// 1.76 to 3.52 m. The band a wall on THIS coast wears.</summary>
+        public static Vector2 BarnacleBand => new Vector2(
+            BakedRigTideRange * BarnacleBandLowFraction, BakedRigTideRange * BarnacleBandHighFraction);
+
+        /// <summary>Where the rockweed band lies — 0.26 to 1.76 m above chart datum.</summary>
+        public static Vector2 RockweedBand => new Vector2(
+            BakedRigTideRange * RockweedBandLowFraction, BakedRigTideRange * RockweedBandHighFraction);
+
+        // =============================================================================================
+        //  3. THE COURSE THAT DRAWS IT
+        // =============================================================================================
+
         /// <summary>
-        /// One piece of the pack that could serve as a lower COURSE — a flat, furniture-free top another
-        /// piece can seat on — and the two things about it that decide whether it may be used here.
+        /// One piece of the pack that could serve as a COURSE, and the two things about it that decide
+        /// whether it may be used here.
         /// </summary>
         public readonly struct Course
         {
@@ -194,18 +213,53 @@ namespace HiddenHarbours.App.Editor
         }
 
         /// <summary>
-        /// The pack's stackable courses. <b>There is exactly one</b>, and that is the finding.
+        /// <b>THE PIECE THIS WHARF IS DRAWN WITH.</b> <c>logCrib</c> — the pack's drift-pinned log crib
+        /// with a plank deck, which is #462's ruling in the pack's own vocabulary: <i>"log boxes filled
+        /// with stone, what a small community wharf actually builds"</i>. Sheet pile stays reserved for
+        /// "the commercial quay money and machinery would build", so <c>torbayQuay</c> and
+        /// <c>sheetedPier</c> are ruled out here however well they would render.
+        /// </summary>
+        public const string FaceCourseKey = "logCrib";
+
+        /// <summary>…and the rig FAMILY that preset resolves to. Held equal to
+        /// <c>NineMileCreekWharf.BreakwaterArmour</c> by test, so the region's material ruling and the
+        /// piece drawn for it cannot drift apart.</summary>
+        public const string FaceCourseFamily = "crib";
+
+        /// <summary>
+        /// How much wall ONE piece covers along the run: 9.6 m — the crib family's default
+        /// <c>bays</c> × <c>bayLen</c> (3 × 3.2), which <c>logCrib</c> does not override. Quoted from the
+        /// rig with its source, the same discipline as the tide above. <b>Independent of the re-bake</b>:
+        /// tide and clearance move the piece's HEIGHT, never its plan.
+        /// </summary>
+        public const int FaceCourseBays = 3;
+        /// <inheritdoc cref="FaceCourseBays"/>
+        public const float FaceCourseBayLengthMetres = 3.2f;
+        /// <inheritdoc cref="FaceCourseBays"/>
+        public static float FaceCourseRunMetres => FaceCourseBays * FaceCourseBayLengthMetres;
+
+        /// <summary>How deep one piece is ACROSS the run — the crib family's default <c>width</c>, 5 m.
+        /// It is the reason a piece's pivot is not simply its lip: half of it lies between the two
+        /// (§4).</summary>
+        public const float FaceCourseWidthMetres = 5f;
+
+        /// <summary>The course the face is built of, as data — so "may this be used here?" is answered by
+        /// the same rule that once answered "no".</summary>
+        public static Course FaceCourse() =>
+            new Course(FaceCourseKey, BakedDeckZMetres, isRuledMaterial: true, hasWorkingDeck: true);
+
+        /// <summary>
+        /// The pack's stackable courses — flat, furniture-free tops another piece could seat on.
+        /// <b>There is still exactly one</b>, and it is still not this wharf's material. It is kept
+        /// because it is the record of what the alternative would have been: of the 17 presets only the
+        /// four <c>riprap</c> ones bake no fittings, and of those the two revetments and the breakwater
+        /// are MOUNDS whose tops are slopes.
         ///
-        /// <para>Of the 17 presets, only the four <c>riprap</c> ones bake no fittings
-        /// (<c>graniteEdge</c>, <c>redEdge</c>, <c>breakwater</c>, <c>sheetCell</c>); of those, the two
-        /// revetments and the breakwater are MOUNDS whose tops are slopes, so nothing seats on them.
-        /// Everything else carries bollards, rings, ladders or hung tyres, and a course with furniture on
-        /// it puts that furniture halfway up the finished wall.</para>
+        /// <para>⚠️ <c>sheetCell</c> is one of the THREE presets the re-bake did not move (it pins its
+        /// own <c>deckZ</c>), so this number is still 2.60 and is not stale.</para>
         /// </summary>
         public static IReadOnlyList<Course> StackableCourses() => new[]
         {
-            // A rock-filled steel sheet-pile cell with a cast cap: the only flat furniture-free top in
-            // the pack, and the one preset that overrides the auto deck height (2.60 m, not 2.80).
             new Course("sheetCell", 2.6f, isRuledMaterial: false, hasWorkingDeck: false),
         };
 
@@ -214,18 +268,10 @@ namespace HiddenHarbours.App.Editor
         public const string StackableCourseKey = "sheetCell";
 
         /// <summary>
-        /// ⚠️ <b>THE ARITHMETIC DOES CLOSE, AND SAYING OTHERWISE WOULD BE THE EASY LIE.</b> Two
-        /// <c>sheetCell</c> courses come to 5.20 m — this wharf's required deck height, to the
-        /// centimetre. What rules the stack out is not the height; it is that both courses would be
-        /// steel sheet pile, the one material this wharf is ruled not to be built of, and that neither
-        /// has a working deck to land a catch on. That is a judgement about the PLACE, so it is recorded
-        /// as data on <see cref="Course"/> and applied in <see cref="BakedPackCanDrawTheFace"/> rather
-        /// than smuggled into a search that then reports "impossible".
-        ///
-        /// <para>The closest total a stack of <paramref name="courseMetres"/> can reach, and how many it
-        /// takes. Exhaustive rather than clever — a five-course ceiling is already 13 m, past any wharf
-        /// this world has — and overshoot is reported as a signed error rather than silently preferred,
-        /// because a deck ABOVE the standable platform is its own defect.</para>
+        /// The closest total a stack of <paramref name="courseMetres"/> can reach, and how many it takes.
+        /// Exhaustive rather than clever — a five-course ceiling is already 13 m, past any wharf this
+        /// world has — and overshoot is reported as a signed error rather than silently preferred,
+        /// because a deck ABOVE the standable platform is its own defect.
         /// </summary>
         public static void BestStackOf(float courseMetres, float targetMetres,
                                        out float bestTotal, out int courses)
@@ -247,7 +293,8 @@ namespace HiddenHarbours.App.Editor
         }
 
         /// <summary>The best any stackable course can do against a target, ignoring whether it may be
-        /// used here — the pure arithmetic half of the finding.</summary>
+        /// used here — the pure arithmetic half of #471's finding, kept because it is what stopped that
+        /// stop from being restated as "the pieces do not add up".</summary>
         public static void BestStackTo(float targetMetres, out float bestTotal, out int courses)
         {
             bestTotal = 0f;
@@ -271,31 +318,55 @@ namespace HiddenHarbours.App.Editor
         /// bound keeps the search a thing you can check in your head.</summary>
         public const int MaxCoursesConsidered = 5;
 
-        /// <summary>How close a stacked deck must land to the measured one to be worth drawing, in
-        /// metres. Half the 0.10 m the terrain's own deck test allows, because a deck is drawn at
-        /// <c>cos 40° × 32</c> ≈ 24.5 px per metre and anything past this is a visible step between
-        /// where you stand and where the planks are.</summary>
+        /// <summary>How close a drawn deck must land to the measured one to be worth drawing, in metres.
+        /// Half the 0.10 m the terrain's own deck test allows, because a deck is drawn at
+        /// <c>cos 40° × 32</c> ≈ 24.5 px per metre and anything past this is a visible step between where
+        /// you stand and where the planks are.</summary>
         public const float DeckHeightToleranceMetres = 0.05f;
 
         /// <summary>
+        /// How many courses of <see cref="FaceCourse"/> it takes to reach this wharf's deck: <b>1</b>.
+        /// The number the whole re-bake was ordered to produce.
+        /// </summary>
+        public static int CoursesNeeded
+        {
+            get
+            {
+                BestStackOf(FaceCourse().DeckZMetres, RequiredDeckZMetres, out _, out int courses);
+                return courses;
+            }
+        }
+
+        /// <summary>⭐ The face is drawn in ONE course — no vertical tiling, and therefore no seam and no
+        /// second set of growth bands.</summary>
+        public static bool DrawnInOneCourse => CoursesNeeded == 1;
+
+        /// <summary>
         /// Whether the committed pack can build this wharf's face — reaching the deck height with a
-        /// course that may actually be used here. False, and <see cref="StackReport"/> says why in the
-        /// same words the PR does.
+        /// course that may actually be used here. <b>True since #478</b>; it was false for the whole of
+        /// #471, and <see cref="FaceReport"/> says so in the same words the PR does.
         /// </summary>
         public static bool BakedPackCanDrawTheFace()
         {
-            foreach (Course course in StackableCourses())
-            {
-                if (!course.UsableHere) continue;
-                BestStackOf(course.DeckZMetres, RequiredDeckZMetres, out float total, out _);
-                if (Mathf.Abs(RequiredDeckZMetres - total) <= DeckHeightToleranceMetres) return true;
-            }
-            return false;
+            Course course = FaceCourse();
+            if (!course.UsableHere) return false;
+            BestStackOf(course.DeckZMetres, RequiredDeckZMetres, out float total, out _);
+            return Mathf.Abs(RequiredDeckZMetres - total) <= DeckHeightToleranceMetres;
         }
 
-        /// <summary>Whether a stack could reach the height at all, setting aside whether the material is
-        /// this wharf's. True — two <c>sheetCell</c> courses land on it exactly — and it is stated as its
-        /// own fact so the stop cannot quietly become "the arithmetic does not work".</summary>
+        /// <summary>
+        /// ⭐ <b>THE FITTINGS LAND AT THE DECK.</b> The half of the re-bake a stack could never have
+        /// delivered: the pack bakes a course's bollards, rings, ladder and hung tyres at ITS deck, so a
+        /// piece used as a lower course puts that furniture halfway up the finished wall. One course, at
+        /// the height the wharf actually stands, puts them where a rope goes round them.
+        /// </summary>
+        public static bool FittingsLandAtTheDeck =>
+            DrawnInOneCourse && Mathf.Abs(ShortfallMetres) <= DeckHeightToleranceMetres;
+
+        /// <summary>Whether a stack could have reached the height at all, setting aside whether the
+        /// material is this wharf's. True — two <c>sheetCell</c> courses land on it exactly — and it is
+        /// kept as its own fact so #471's stop can never be misremembered as "the arithmetic did not
+        /// work".</summary>
         public static bool AStackReachesTheHeight()
         {
             BestStackTo(RequiredDeckZMetres, out float total, out _);
@@ -303,43 +374,125 @@ namespace HiddenHarbours.App.Editor
         }
 
         // =============================================================================================
-        //  3. THE ORDER — what art-director needs, as numbers
+        //  4. WHERE A PIECE GOES — the pivot, and the one line that has to be right
+        // =============================================================================================
+        //
+        // ⚠️ THE WHARF PACK'S PIVOT IS NOT A GROUND-CONTACT PIVOT, and that is the trap this section
+        // exists to absorb. Every other pack this region places (wharfDecor, utilityIso, shoreFinds)
+        // pivots where the piece TOUCHES THE GROUND, so a prop's plan position is its transform position
+        // and nothing is offset. The wharf pack's contract says something different:
+        //
+        //     "origin: ground-centre of the footprint at CHART DATUM (z = 0 = lowest water)"
+        //
+        // …so its pivot is 5.2 m of drawn height BELOW the deck and half a piece-width BEHIND the lip.
+        // Placing a face piece at the wall's lip the way a crate is placed on the deck would draw the
+        // whole quay several metres up-screen of the wall it belongs to — and it would look fine, which
+        // is the problem.
+        //
+        // So exactly ONE line is anchored: the DRAWN DECK LIP, onto the wall's real lip. Everything else
+        // in the sprite falls where the rig's own projection puts it. This is the same rule the retired
+        // tile kit's breakwater used ("TOP-CENTRE pivot: the block hangs BELOW its crest point"),
+        // generalised to a pivot that is neither top nor centre.
+
+        /// <summary>
+        /// The offset from a face piece's PIVOT to its drawn deck lip, in world units — add it to the
+        /// pivot to get the lip, subtract it from the lip to get the pivot
+        /// (<see cref="PivotForLip"/>).
+        ///
+        /// <para><b>Two terms, projected by DIFFERENT scales</b>, which is the whole of the arithmetic
+        /// and the one thing that is easy to get wrong (<c>CliffWallGeometry</c>'s first rule, in a
+        /// different kit):</para>
+        /// <list type="bullet">
+        /// <item><description><b>Height</b> — the deck stands <see cref="BakedDeckZMetres"/> m above the
+        /// pivot's chart datum, and a metre of HEIGHT draws
+        /// <see cref="SpriteLightMath.HeightScale"/> ≈ 0.766 up-screen. Always up, whichever way the
+        /// piece faces.</description></item>
+        /// <item><description><b>Plan</b> — the lip is half a piece-width toward the water from the
+        /// footprint centre, and a metre of GROUND travel draws foreshortened by
+        /// <see cref="SpriteLightMath.GroundDepthScale"/> ≈ 0.643 in Y and not at all in X. So the term
+        /// bites on a face that looks at the camera (the north wall, whose water is SOUTH) and vanishes
+        /// from the Y of one that looks across it (the apron, whose water is EAST) — where it becomes an
+        /// X offset instead.</description></item>
+        /// </list>
+        /// </summary>
+        /// <param name="seaward">Unit plan direction from the deck out over the water — the way the
+        /// piece's working face looks.</param>
+        public static Vector2 LipRiseFromPivot(Vector2 seaward)
+        {
+            Vector2 s = seaward.sqrMagnitude < 1e-12f ? Vector2.down : seaward.normalized;
+            float half = FaceCourseWidthMetres * 0.5f;
+            return new Vector2(
+                half * s.x,
+                BakedDeckZMetres * SpriteLightMath.HeightScale + half * s.y * SpriteLightMath.GroundDepthScale);
+        }
+
+        /// <summary>Where a piece's pivot goes so that its drawn deck lip lands on
+        /// <paramref name="lip"/>. The only placement rule this file publishes, and the reason #471 kept
+        /// the class alive after it stopped drawing anything.</summary>
+        public static Vector2 PivotForLip(Vector2 lip, Vector2 seaward) => lip - LipRiseFromPivot(seaward);
+
+        /// <summary>
+        /// How far the drawn face reaches below its own lip, in world units: <b>≈ 5.06 units for a 6.6 m
+        /// structure</b> — <c>(deckZ − mudZ)</c> of HEIGHT, at 0.766 a metre.
+        ///
+        /// <para>Pure height, with no plan term: on a face that looks at the camera the lip and the toe
+        /// stand on the SAME plan line (the water side of the footprint), so the only thing between them
+        /// is the wall. This is what the quay covers on screen, and therefore what a boat lying at the
+        /// berth line 2 m off the wall would be drawn behind if the piece sorted by its pivot instead of
+        /// by its lip — see <c>NineMileCreekDressing.PlaceFace</c>.</para>
+        /// </summary>
+        public static float DrawnFaceDropMetres =>
+            (BakedDeckZMetres - BakedRigMudZ) * SpriteLightMath.HeightScale;
+
+        /// <summary>
+        /// How many pieces it takes to cover <paramref name="runMetres"/> of wall, and at what pitch.
+        ///
+        /// <para><b>The run is spread to COVER, never to leave a gap.</b> The count is the CEILING of the
+        /// division and the pitch is the run over the count, so pieces butt or overlap slightly and the
+        /// wall is continuous end to end. No wall here is a whole number of pieces long, so a FLOOR would
+        /// have left the far end of every one of them undrawn — up to a piece-length of open bay showing
+        /// through the quay. An overlap of under a metre between two log cribs is invisible; a hole is
+        /// not. The pack's own snap sockets (±<c>L/2</c> at deck height) are what make butting legal in
+        /// the first place, and an overlap is only ever butting with the seam pushed inside a piece.</para>
+        /// </summary>
+        public static void CoverRun(float runMetres, out int count, out float pitchMetres)
+        {
+            count = Mathf.Max(1, Mathf.CeilToInt(runMetres / FaceCourseRunMetres));
+            pitchMetres = runMetres / count;
+        }
+
+        // =============================================================================================
+        //  5. THE REPORT
         // =============================================================================================
 
         /// <summary>
-        /// The bake this region needs, as the rig's own option names. Handed to the PR and to whoever
-        /// runs <i>Hidden Harbours ▸ Art ▸ Bake Iso Pack</i>, so the re-bake is ordered off derived
-        /// numbers and not off a remembered paragraph.
+        /// The bake this region needs, as the rig's own option names — now also the bake it HAS. Kept so
+        /// the numbers stay quotable in a PR and so a future re-bake at a different coast has the order
+        /// to hand rather than a remembered paragraph.
         /// </summary>
         public static string RequiredBakeOptions() =>
             $"{{ tideRange: {RequiredTideRangeMetres:0.##}, clearance: {RequiredClearanceMetres:0.##} }}" +
             $"  // deckZ resolves to {RequiredDeckZMetres:0.##} m";
 
         /// <summary>The finding, in one paragraph, from the numbers above — logged by the builder so the
-        /// owner sees it in the console after a scene rebuild rather than only in a merged PR.</summary>
-        public static string StackReport()
-        {
-            BestStackTo(RequiredDeckZMetres, out float total, out int courses);
-            return
-                $"[NineMileCreekQuayFace] THE DRAWN QUAY IS STILL NOT DRAWN, and this is the reason. " +
-                $"This wharf needs a {StructuralFaceMetres:0.0} m face with its deck " +
-                $"{RequiredDeckZMetres:0.0} m above lowest water. The committed ISO pack baked at the " +
-                $"rig's default {BakedRigTideRange:0.0} m tide, so every structural preset stands at " +
-                $"{BakedDeckZMetres:0.0} m — short by {ShortfallMetres:0.0#} m, which is " +
-                $"{TideShortfallMetres:0.0#} m of tide less {-ClearanceShortfallMetres:0.0#} m of " +
-                $"freeboard (this wharf sits closer to its own high water than the rig's default). " +
-                $"Vertical " +
-                $"tiling does not rescue it, and NOT for an arithmetic reason: '{StackableCourseKey}' is " +
-                $"the pack's only flat furniture-free course and {courses} of them reach {total:0.00} m " +
-                $"against {RequiredDeckZMetres:0.00} m — the height lands exactly. What rules the stack " +
-                $"out is that both courses would be steel sheet pile, the one material this wharf is " +
-                $"ruled not to be built of, with no working deck to land a catch on. " +
-                $"THE FIX IS A RE-BAKE, NOT A NEW PIECE — the rig already " +
-                $"draws this wall in one course at {RequiredBakeOptions()} — and it also re-pins the " +
-                "growth bands, which no stack could have fixed. Art-director's lane; reported, not " +
-                "worked around. The wharf's decor, services and shore finds are placed regardless: " +
-                "none of them depend on the face.";
-        }
+        /// owner sees the state of the quay in the console after a scene rebuild rather than only in a
+        /// merged PR.</summary>
+        public static string FaceReport() =>
+            $"[NineMileCreekQuayFace] THE QUAY FACE IS DRAWN, in ONE course of '{FaceCourseKey}'. " +
+            $"This wharf needs a {StructuralFaceMetres:0.0} m face with its deck " +
+            $"{RequiredDeckZMetres:0.0} m above lowest water; the committed ISO pack bakes every " +
+            $"structural preset at {BakedDeckZMetres:0.0} m, so the shortfall #471 measured at 2.40 m is " +
+            $"now {ShortfallMetres:0.0#} m — {TideShortfallMetres:0.0#} m of tide and " +
+            $"{ClearanceShortfallMetres:0.0#} m of freeboard, both closed by the re-bake at " +
+            $"tideRange {BakedRigTideRange:0.##} / clearance {BakedRigClearance:0.##}. " +
+            $"{CoursesNeeded} course, so the pack's bollards, rings and ladder " +
+            $"land AT the deck instead of halfway up the wall, and the growth bands are re-pinned to " +
+            $"this coast's frame: barnacle {BarnacleBand.x:0.00}–{BarnacleBand.y:0.00} m, rockweed " +
+            $"{RockweedBand.x:0.00}–{RockweedBand.y:0.00} m above datum (they were 0.72–1.44 and " +
+            $"0.11–0.72, and no vertical stack could ever have fixed that). For the record, a stack was " +
+            $"never the answer even though the arithmetic closed: {StackableCourseKey} is the pack's " +
+            "only flat furniture-free course, two of them reach 5.20 m exactly, and both would have been " +
+            "steel sheet pile — the one material this wharf is ruled not to be built of.";
     }
 }
 #endif
