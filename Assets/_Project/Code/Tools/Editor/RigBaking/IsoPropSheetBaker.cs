@@ -102,45 +102,25 @@ namespace HiddenHarbours.Tools.RigBaking
                                       entry.DeclaredConvention, out double renderMs);
 
             // ---- crop: pivot-INCLUSIVE union of the ink, seeded at the pivot ------------------------
-            // Seeding at the pivot is what makes fireCabinet work. It is wall-hung, so nothing is drawn
-            // at deck level and its ink stops 6 px ABOVE its own pivot; a crop merely "tight to ink"
-            // would put the piece's ground contact outside its own cell. 1 of 61 pieces needs this and
-            // 60 do not, which is exactly why it must be the rule rather than a special case.
             int px = Mathf.RoundToInt((float)geo.PivotX), py = Mathf.RoundToInt((float)geo.PivotY);
-            int left = 0, right = 0, top = 0, bottom = 0;
-            bool anyInk = false, pivotInsideInk = false;
 
-            foreach (byte[] rgba in cells)
-            {
-                BuildingRigAzimuthProbe.AlphaBounds(rgba, geo.Width, geo.Height,
-                                                    out int x0, out int y0, out int x1, out int y1);
-                if (x1 < x0) continue;                       // this facing drew nothing
-                anyInk = true;
-                left   = Mathf.Min(left,   x0 - px);
-                right  = Mathf.Max(right,  x1 - px);
-                top    = Mathf.Min(top,    y0 - py);
-                bottom = Mathf.Max(bottom, y1 - py);
-                if (px >= x0 && px <= x1 && py >= y0 && py <= y1) pivotInsideInk = true;
-            }
-
-            if (!anyInk)
+            if (!MeasureCell(cells, geo.Width, geo.Height, px, py,
+                             out int cw, out int ch, out int pivotX, out int pivotY,
+                             out int left, out int top, out bool pivotInsideInk))
                 throw new InvalidOperationException(
                     $"Every facing of {req.RigKey}.{req.PieceKey} rendered fully transparent. The key " +
                     "resolved but drew no pixels — refusing rather than writing an empty sheet.");
-
-            int cw = right - left + 1, ch = bottom - top + 1;
-            int pivotX = -left, pivotY = -top;
 
             // ---- THE ORACLE ------------------------------------------------------------------------
             contract.AssertMatchesContract(req.PieceKey, cw, ch, pivotX, pivotY);
             contract.AssertPivotInsideInk(req.PieceKey, pivotInsideInk);
 
             // ---- pack ------------------------------------------------------------------------------
-            // The grid is chosen against the cap this family IMPORTS at, not Unity's hard 4096: between
-            // the two, a sheet bakes fine and then imports SILENTLY DOWNSCALED with the sprite count
-            // still correct, so every slice rect lands wrong and nothing reports an error.
-            BuildingRigBaker.ChooseGrid(cw, ch, contract.Facings, out int cols, out int rows,
-                                        contract.ImportSizeCap);
+            // The grid comes from the COMMITTED PLAN, not from ChooseGrid. Both families happen to agree
+            // with ChooseGrid on all 103 pieces today, so this is not a live fix here — it is the same
+            // rule its wharf sibling genuinely needs (see IsoPackContract.GridFor), and one packing rule
+            // across the pack is what keeps that from being re-learned per baker.
+            contract.GridFor(req.PieceKey, out int cols, out int rows);
 
             int pw = cols * cw, ph = rows * ch;
             contract.AssertSheetFits(req.PieceKey, cols, rows, pw, ph);
@@ -179,10 +159,64 @@ namespace HiddenHarbours.Tools.RigBaking
             return result;
         }
 
+        /// <summary>
+        /// THE CELL RULE for the two fixed-sheet families: the pivot-INCLUSIVE union of the ink bbox
+        /// across every facing, seeded at the pivot. Pure — no host, no rig, no I/O — so a test can pin
+        /// it against known buffers without baking anything.
+        ///
+        /// <para><b>The seeding at zero is the whole rule.</b> Starting the union at the pivot rather
+        /// than at the first facing's ink is what makes <c>fireCabinet</c> work: it is wall-hung, nothing
+        /// is drawn at deck level, and its ink stops 6 px ABOVE its own pivot. A crop merely "tight to
+        /// ink" would put the piece's ground contact OUTSIDE its own cell — which does not fail loudly,
+        /// it just stands in the wrong place. 1 of 61 pieces needs this and 60 do not, which is exactly
+        /// why it must be the rule and not a special case.</para>
+        ///
+        /// <para>Returns <c>false</c> if every facing was fully transparent; the caller decides how loud
+        /// that is.</para>
+        /// </summary>
+        public static bool MeasureCell(IReadOnlyList<byte[]> facings, int bufW, int bufH,
+                                       int pivotX, int pivotY,
+                                       out int cellW, out int cellH,
+                                       out int cellPivotX, out int cellPivotY,
+                                       out int left, out int top, out bool pivotInsideInk)
+        {
+            int right = 0, bottom = 0;
+            left = 0; top = 0;
+            bool anyInk = false;
+            pivotInsideInk = false;
+
+            foreach (byte[] rgba in facings)
+            {
+                BuildingRigAzimuthProbe.AlphaBounds(rgba, bufW, bufH,
+                                                    out int x0, out int y0, out int x1, out int y1);
+                if (x1 < x0) continue;                       // this facing drew nothing
+                anyInk = true;
+                left   = Mathf.Min(left,   x0 - pivotX);
+                right  = Mathf.Max(right,  x1 - pivotX);
+                top    = Mathf.Min(top,    y0 - pivotY);
+                bottom = Mathf.Max(bottom, y1 - pivotY);
+                if (pivotX >= x0 && pivotX <= x1 && pivotY >= y0 && pivotY <= y1) pivotInsideInk = true;
+            }
+
+            cellW = right - left + 1;
+            cellH = bottom - top + 1;
+            cellPivotX = -left;
+            cellPivotY = -top;
+            return anyInk;
+        }
+
+        /// <summary>Render one piece's facings through an installed host — the input to
+        /// <see cref="MeasureCell"/>, exposed so a test measures without writing a PNG.</summary>
+        public static byte[][] RenderFacings(IRigScriptHost host, string rigKey, string pieceKey,
+                                             IsoPackContract contract, in RigGeometry geo,
+                                             AzimuthConvention convention) =>
+            RenderFacings(host, RigCatalog.Get(rigKey).GlobalName, pieceKey, contract, geo,
+                          convention, out _);
+
         // ---- install + the standing guards -------------------------------------------------------
 
-        static RigGeometry InstallAndGuard(IRigScriptHost host, in RigEntry entry,
-                                           IsoPackContract contract, string rigKey)
+        public static RigGeometry InstallAndGuard(IRigScriptHost host, in RigEntry entry,
+                                                  IsoPackContract contract, string rigKey)
         {
             if (contract.NeedsInstallModule)
                 throw new InvalidOperationException(

@@ -166,6 +166,13 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <summary>Silhouette variants per find. 3 — the cell is sized for the largest.</summary>
         public int Variants => _dto.variants;
 
+        /// <summary>
+        /// Cells on one packed sheet. <see cref="Facings"/> for the three directional families; for
+        /// <c>shoreFinds</c> it is <see cref="LieAngleCount"/> × <see cref="Variants"/> = 24, because a
+        /// finds sheet's axes are lie angle and variant rather than facing.
+        /// </summary>
+        public int CellsPerSheet => IsDirectional ? _dto.facings : LieAngleCount * Variants;
+
         /// <summary>Prose describing how a finds sheet is laid out.</summary>
         public string SheetAxes => _dto.sheetAxes;
 
@@ -342,12 +349,55 @@ namespace HiddenHarbours.Tools.RigBaking
         }
 
         /// <summary>
+        /// The grid a sheet packs at, <b>read from the committed plan</b> rather than re-derived.
+        ///
+        /// <para><b>⚠️ Do NOT reach for <c>BuildingRigBaker.ChooseGrid</c> here.</b> ChooseGrid picks the
+        /// WIDEST grid under the cap, and that is not the rule these contracts were packed with. The
+        /// committed plans follow "the largest DIVISOR of the cell count that fits the cap" — which is
+        /// also why no sheet in this pack has a ragged last row — and then <c>timberQuay</c> carries a
+        /// ruled override on top of it. ChooseGrid reproduces only 10 of wharfIso's 17 plans and 31 of
+        /// shoreFinds' 36.</para>
+        ///
+        /// <para><b>And the divergence is silent, because it is not an error.</b>
+        /// <see cref="AssertSheetFits"/> used to check only <c>sheetW == cols*cellW</c> and the cap, both
+        /// of which a differently-packed sheet satisfies. The worst case is exactly the one §2 of
+        /// VERIFICATION.md was written to close: ChooseGrid packs <c>timberQuay</c> 8×1 = <b>4048 px</b>,
+        /// undoing the coordinator's 4×2 repack, landing 48 px from the 4096 cap — and passing every
+        /// check. Reading the plan is what makes that ruling stick.</para>
+        /// </summary>
+        public void GridFor(string key, out int cols, out int rows)
+        {
+            var c = this[key];
+            if (c.sheet == null || c.sheet.cols <= 0 || c.sheet.rows <= 0)
+                throw new InvalidOperationException(
+                    $"{RigName}.{key} carries no sheet plan in {SourcePath}. The plan is the oracle for " +
+                    "packing as much as the cell is for size — a baker must not invent one.");
+
+            if (c.sheet.cols * c.sheet.rows < CellsPerSheet)
+                throw new InvalidOperationException(
+                    $"{RigName}.{key} plans a {c.sheet.cols}×{c.sheet.rows} grid = " +
+                    $"{c.sheet.cols * c.sheet.rows} slots, which cannot hold {CellsPerSheet} cells.");
+
+            cols = c.sheet.cols;
+            rows = c.sheet.rows;
+        }
+
+        /// <summary>
         /// Assert a packed sheet fits the cap this family imports at, and that the pack agrees with the
         /// committed plan. <paramref name="sheetW"/>/<paramref name="sheetH"/> are the real packed size.
         /// </summary>
         public void AssertSheetFits(string key, int cols, int rows, int sheetW, int sheetH)
         {
             var c = this[key];
+
+            if (c.sheet != null && (cols != c.sheet.cols || rows != c.sheet.rows))
+                throw new InvalidOperationException(
+                    $"SHEET PLAN MISMATCH on {RigName}.{key}: packed {cols}×{rows}, contract plans " +
+                    $"{c.sheet.cols}×{c.sheet.rows}.\n\n" +
+                    "This does NOT fail on its own — a differently-packed sheet still satisfies the " +
+                    "arithmetic and the cap, which is why the check is here. Pack from " +
+                    $"{nameof(GridFor)}, not from a re-derived grid: ChooseGrid would put timberQuay " +
+                    "back on one row at 4048 px and quietly undo its ruled 4×2 repack.");
 
             if (sheetW != cols * c.cellW || sheetH != rows * c.cellH)
                 throw new InvalidOperationException(

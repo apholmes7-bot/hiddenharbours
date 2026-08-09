@@ -7,6 +7,27 @@ using Stopwatch = System.Diagnostics.Stopwatch;
 
 namespace HiddenHarbours.Tools.RigBaking
 {
+    /// <summary>
+    /// One rendered facing of the wharf kit: the buffer the rig sized for it, and where the model
+    /// origin projected inside it.
+    ///
+    /// <para><b><see cref="PivotX"/>/<see cref="PivotY"/> are FRACTIONAL</b> — this rig reports the
+    /// projection of a continuous point, not a pixel index, and the cell rule's floor/ceil is what turns
+    /// the eight of them into one integer cell. Rounding here instead would move several presets by a
+    /// pixel.</para>
+    /// </summary>
+    public readonly struct WharfIsoFacing
+    {
+        public readonly byte[] Data;
+        public readonly int Width, Height;
+        public readonly double PivotX, PivotY;
+
+        public WharfIsoFacing(byte[] data, int width, int height, double pivotX, double pivotY)
+        {
+            Data = data; Width = width; Height = height; PivotX = pivotX; PivotY = pivotY;
+        }
+    }
+
     /// <summary>One preset of the ISO wharf structure kit, through the 8-facing turntable.</summary>
     public readonly struct WharfIsoBakeRequest
     {
@@ -103,29 +124,17 @@ namespace HiddenHarbours.Tools.RigBaking
                                         entry.DeclaredConvention, out double renderMs);
 
             // ---- the cell: pivot-aligned union of the BUFFER extents, floor/ceil --------------------
-            // Continuous, because px,py are fractional. floor/ceil rather than round is what the
-            // contract measured, and the two disagree by a pixel often enough to matter.
-            double left = double.MaxValue, right = double.MinValue;
-            double top = double.MaxValue, bottom = double.MinValue;
-
-            foreach (var f in facings)
-            {
-                left   = Math.Min(left,   -f.PivotX);
-                right  = Math.Max(right,  f.Width  - 1 - f.PivotX);
-                top    = Math.Min(top,    -f.PivotY);
-                bottom = Math.Max(bottom, f.Height - 1 - f.PivotY);
-            }
-
-            int cw = (int)Math.Ceiling(right) - (int)Math.Floor(left) + 1;
-            int ch = (int)Math.Ceiling(bottom) - (int)Math.Floor(top) + 1;
-            int pivotX = -(int)Math.Floor(left), pivotY = -(int)Math.Floor(top);
+            MeasureCell(facings, out int cw, out int ch, out int pivotX, out int pivotY);
 
             // ---- THE ORACLE ------------------------------------------------------------------------
             contract.AssertMatchesContract(req.Preset, cw, ch, pivotX, pivotY);
 
             // ---- pack ------------------------------------------------------------------------------
-            BuildingRigBaker.ChooseGrid(cw, ch, contract.Facings, out int cols, out int rows,
-                                        contract.ImportSizeCap);
+            // ⚠️ From the COMMITTED PLAN, never ChooseGrid — this is the family where the two genuinely
+            // disagree, on 7 of 17 presets. ChooseGrid puts timberQuay back on ONE ROW at 4048 px,
+            // undoing the 4×2 repack §2 ruled and landing 48 px from the cap, and every existing check
+            // passes while it does. See IsoPackContract.GridFor.
+            contract.GridFor(req.Preset, out int cols, out int rows);
 
             int pw = cols * cw, ph = rows * ch;
             contract.AssertSheetFits(req.Preset, cols, rows, pw, ph);
@@ -175,25 +184,55 @@ namespace HiddenHarbours.Tools.RigBaking
             return result;
         }
 
-        // ---- render ---------------------------------------------------------------------------------
-
-        readonly struct Facing
+        /// <summary>
+        /// THE CELL RULE for the wharf kit: the pivot-aligned union of the rig's RETURNED BUFFER
+        /// extents, floor/ceil. Pure — no host, no rig, no I/O — so a test can pin it without baking.
+        ///
+        /// <para><b>It is the BUFFER, not the ink.</b> Measuring the ink bbox instead gives
+        /// <c>floatSet</c> 751×556 against the committed 757×592, and then every one of the 17 keys
+        /// disagrees at once. The gap is real: a float plus its gangway swings its origin's projection
+        /// so far with the facing that the pivot-aligned union runs 1.58× wider than the largest single
+        /// facing.</para>
+        ///
+        /// <para><b>floor/ceil, never round.</b> The pivots are continuous, and the two disagree by a
+        /// pixel often enough to matter.</para>
+        /// </summary>
+        public static void MeasureCell(IReadOnlyList<WharfIsoFacing> facings,
+                                       out int cellW, out int cellH, out int pivotX, out int pivotY)
         {
-            public readonly byte[] Data;
-            public readonly int Width, Height;
-            /// <summary>FRACTIONAL — the rig reports where the model origin projected, per bake.</summary>
-            public readonly double PivotX, PivotY;
+            if (facings == null || facings.Count == 0)
+                throw new ArgumentException("No facings to measure.", nameof(facings));
 
-            public Facing(byte[] data, int width, int height, double pivotX, double pivotY)
+            double left = double.MaxValue, right = double.MinValue;
+            double top = double.MaxValue, bottom = double.MinValue;
+
+            foreach (var f in facings)
             {
-                Data = data; Width = width; Height = height; PivotX = pivotX; PivotY = pivotY;
+                left   = Math.Min(left,   -f.PivotX);
+                right  = Math.Max(right,  f.Width  - 1 - f.PivotX);
+                top    = Math.Min(top,    -f.PivotY);
+                bottom = Math.Max(bottom, f.Height - 1 - f.PivotY);
             }
+
+            cellW = (int)Math.Ceiling(right) - (int)Math.Floor(left) + 1;
+            cellH = (int)Math.Ceiling(bottom) - (int)Math.Floor(top) + 1;
+            pivotX = -(int)Math.Floor(left);
+            pivotY = -(int)Math.Floor(top);
         }
 
-        static Facing[] RenderFacings(IRigScriptHost host, string g, string preset, int facings,
-                                      AzimuthConvention convention, out double renderMs)
+        // ---- render ---------------------------------------------------------------------------------
+
+        /// <summary>Render one preset's facings through an installed host — the input to
+        /// <see cref="MeasureCell"/>, exposed so a test measures without writing a PNG.</summary>
+        public static WharfIsoFacing[] RenderFacings(IRigScriptHost host, string globalName,
+                                                     string preset, int facings,
+                                                     AzimuthConvention convention) =>
+            RenderFacings(host, globalName, preset, facings, convention, out _);
+
+        static WharfIsoFacing[] RenderFacings(IRigScriptHost host, string g, string preset, int facings,
+                                              AzimuthConvention convention, out double renderMs)
         {
-            var outp = new Facing[facings];
+            var outp = new WharfIsoFacing[facings];
             var clock = new Stopwatch();
 
             try
@@ -227,7 +266,7 @@ namespace HiddenHarbours.Tools.RigBaking
                             $"{w}×{h} RGBA. This rig returns {{data,w,h,px,py,wet}} — a bare array here " +
                             "means the return shape changed.");
 
-                    outp[cell] = new Facing(data, w, h, px, py);
+                    outp[cell] = new WharfIsoFacing(data, w, h, px, py);
                 }
             }
             finally
