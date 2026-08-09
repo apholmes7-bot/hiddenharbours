@@ -46,9 +46,14 @@ namespace HiddenHarbours.App.Editor
     /// there with these exact walls positioned for it.</para>
     ///
     /// <para><b>⚠ THE QUAY FACE IS 4.6 m TALL</b> (deck +3.0 m over the −1.6 m basin), and 5.2 m of it
-    /// stands exposed at spring low. The ISO kit bakes a 24 px overhanging face — 0.75 m at PPU 32 — so
-    /// the kit cannot draw this wall in one course: Phase B must tile the face vertically, or the deck
-    /// must come down toward the water. Flagged for art-pipeline by A-1 and still open.</para>
+    /// stands exposed at spring low. <b>CLOSED.</b> A-1's flag read "the ISO kit bakes a 24 px
+    /// overhanging face — 0.75 m at PPU 32 — so Phase B must tile the face vertically"; that figure was
+    /// the retired near-plan tile kit's and had nothing to do with the ISO pack, which baked 2.80 m.
+    /// #471 re-measured the real gap at 2.40 m and ordered it as two numbers on one bake call; #477
+    /// re-parameterised the rig at this coast's tide and #478 re-baked all 17 sheets. The face is drawn
+    /// in ONE course — see <see cref="NineMileCreekQuayFace"/> for the arithmetic and
+    /// <c>NineMileCreekDressing.FacePieces</c> for the placement. <b>No vertical tiling, and the deck did
+    /// not have to come down toward the water.</b></para>
     /// </summary>
     public static class NineMileCreekWharf
     {

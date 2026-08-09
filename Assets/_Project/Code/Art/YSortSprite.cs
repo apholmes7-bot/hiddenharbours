@@ -93,6 +93,34 @@ namespace HiddenHarbours.Art
             }
         }
 
+        /// <summary>
+        /// Sort by a point offset from the transform along Y, in metres — the serialized
+        /// <c>_pivotYOffset</c>, exposed so a BUILDER can set it (the inspector always could).
+        ///
+        /// <para><b>Why anything would need it.</b> The default of 0 is right for everything that pivots
+        /// where it touches the ground, which is all of this project's decor and the player. It is wrong
+        /// for a sprite whose pivot is somewhere else — the ISO wharf pack pivots at CHART DATUM, several
+        /// metres of drawn height below the deck, so a quay face placed by its pivot would sort as though
+        /// it stood out in the water and would draw in front of the boats moored against it. Setting this
+        /// to the distance from the transform up to the piece's real ground line (its lip) puts it back
+        /// on the line the player reads it as standing on.</para>
+        ///
+        /// <para>Assigning re-sorts immediately, so a static sprite that has already stood its dispatch
+        /// down still lands on the new order.</para>
+        /// </summary>
+        public float SortPivotYOffset
+        {
+            get => _pivotYOffset;
+            set
+            {
+                _pivotYOffset = value;
+                // Heal the cache the way OnEnable does: a builder assigns this in the same breath as
+                // AddComponent, and Apply() would otherwise no-op on a renderer it has not looked up yet.
+                if (_sr == null) _sr = GetComponent<SpriteRenderer>();
+                Apply();
+            }
+        }
+
         private void Awake() => _sr = GetComponent<SpriteRenderer>();
 
         private void OnEnable()
