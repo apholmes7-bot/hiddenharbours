@@ -105,14 +105,23 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void TheCommittedPackCannotStackToThisFace_WhichIsWhyTheQuayIsStillUndrawn()
         {
-            // The shortfall is not an arbitrary gap — it IS the difference between the tide the pack
-            // baked for and the tide this coast has. That equality is the finding.
+            // ⭐ THE SHORTFALL DECOMPOSES, and getting the decomposition right is the difference between
+            // a finding and a plausible story. The first draft of this test asserted the shortfall WAS
+            // the tide difference; CI caught it on the first run (2.4 against 2.6). It is the tide
+            // difference LESS the freeboard difference, because the rig quotes deck height as
+            // tideRange + clearance and this wharf authors 0.8 m of freeboard against the rig's 1.0.
             Assert.That(NineMileCreekQuayFace.ShortfallMetres,
-                Is.EqualTo(NineMileCreekQuayFace.RequiredTideRangeMetres -
-                           NineMileCreekQuayFace.BakedRigTideRange).Within(1e-4f),
-                "every structural preset is short by exactly the tide difference, because the rig sizes " +
-                "deck height off tideRange. A shortfall that stopped agreeing with that would mean the " +
-                "pack was re-baked and this whole finding needs re-deriving");
+                Is.EqualTo(NineMileCreekQuayFace.TideShortfallMetres +
+                           NineMileCreekQuayFace.ClearanceShortfallMetres).Within(1e-4f),
+                "the shortfall has to be the sum of its two halves, or one of the three is wrong and the " +
+                "re-bake would be ordered off a number nothing checks");
+
+            Assert.That(NineMileCreekQuayFace.TideShortfallMetres, Is.GreaterThan(0f),
+                "the tide term is what makes this 'baked for a different coast' rather than a modelling " +
+                "gap — if it ever goes to zero the pack has been re-baked at this tide");
+            Assert.That(NineMileCreekQuayFace.ClearanceShortfallMetres, Is.LessThan(0f),
+                "…and the freeboard term gives a little back: this wharf sits CLOSER to its own high " +
+                "water than the rig's default, which is authored and deliberate");
 
             NineMileCreekQuayFace.BestStackTo(
                 NineMileCreekQuayFace.RequiredDeckZMetres, out float best, out int courses);

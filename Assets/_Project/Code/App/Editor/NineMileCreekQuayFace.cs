@@ -29,9 +29,13 @@ namespace HiddenHarbours.App.Editor
     /// spring high — which <c>NineMileCreekMainland</c> states in words ("0.8 m of freeboard at spring
     /// high water"). Put those through the rig's OWN formula and the deck this region needs is
     /// <see cref="RequiredDeckZMetres"/> m — the same arithmetic, different coast.</description></item>
-    /// <item><description>So the pack is not short of geometry. It is baked for a 1.8 m tide and this is
-    /// a 4.4 m one, and every structural height in it is short by exactly that difference
-    /// (<see cref="ShortfallMetres"/> m).</description></item>
+    /// <item><description>So the pack is not short of GEOMETRY — it is baked for a different coast, and
+    /// the whole gap is two numbers on the same bake call. Every structural height in it falls
+    /// <see cref="ShortfallMetres"/> m short, which decomposes exactly:
+    /// <b>+2.60 m of tide</b> (1.8 baked against 4.4 here) <b>less 0.20 m of freeboard</b>
+    /// (1.0 baked against the 0.8 this wharf authors). ⚠️ It is <i>not</i> simply the tide difference —
+    /// a first draft of this class said so and the dressing tests caught it on the first CI run.
+    /// </description></item>
     /// </list>
     ///
     /// <para><b>⛔ AND VERTICAL TILING DOES NOT RESCUE IT — but NOT because the arithmetic fails, which
@@ -138,9 +142,27 @@ namespace HiddenHarbours.App.Editor
         /// retired near-plan tile kit's 24 px face and has nothing to do with this pack.</summary>
         public static float BakedDeckZMetres => BakedRigTideRange + BakedRigClearance;
 
-        /// <summary>How far short the tallest baked course falls: 2.40 m, which is exactly the
-        /// difference between the two tides. That equality is the whole finding.</summary>
+        /// <summary>
+        /// How far short the tallest baked course falls: <b>2.40 m</b>.
+        ///
+        /// <para>⚠️ It is NOT "the difference between the two tides", which is what a first draft of this
+        /// class claimed and what <c>NineMileCreekDressingTests</c> caught on the first CI run. The tides
+        /// differ by 2.60 m; the shortfall is 2.40 because the deck heights are quoted as
+        /// <c>tideRange + clearance</c> and this wharf is authored with LESS freeboard than the rig's
+        /// default — 0.8 m against 1.0 m — which gives 0.20 m of it back. See
+        /// <see cref="TideShortfallMetres"/> and <see cref="ClearanceShortfallMetres"/>, which are the
+        /// two halves and are asserted to sum to this.</para>
+        /// </summary>
         public static float ShortfallMetres => RequiredDeckZMetres - BakedDeckZMetres;
+
+        /// <summary>The part of the shortfall that is TIDE: +2.60 m. The dominant term, and the reason
+        /// this reads as "the pack was baked for a different coast" rather than as a modelling gap.</summary>
+        public static float TideShortfallMetres => RequiredTideRangeMetres - BakedRigTideRange;
+
+        /// <summary>The part that is FREEBOARD: −0.20 m. This wharf sits closer to its own high water
+        /// than the rig's default assumes, which is authored and deliberate (a working wharf you can step
+        /// down onto), and it takes a fifth of a metre back off the shortfall.</summary>
+        public static float ClearanceShortfallMetres => RequiredClearanceMetres - BakedRigClearance;
 
         /// <summary>
         /// One piece of the pack that could serve as a lower COURSE — a flat, furniture-free top another
@@ -303,8 +325,10 @@ namespace HiddenHarbours.App.Editor
                 $"This wharf needs a {StructuralFaceMetres:0.0} m face with its deck " +
                 $"{RequiredDeckZMetres:0.0} m above lowest water. The committed ISO pack baked at the " +
                 $"rig's default {BakedRigTideRange:0.0} m tide, so every structural preset stands at " +
-                $"{BakedDeckZMetres:0.0} m — short by {ShortfallMetres:0.0} m, which is exactly the " +
-                $"difference between that tide and this one ({RequiredTideRangeMetres:0.0} m). Vertical " +
+                $"{BakedDeckZMetres:0.0} m — short by {ShortfallMetres:0.0#} m, which is " +
+                $"{TideShortfallMetres:0.0#} m of tide less {-ClearanceShortfallMetres:0.0#} m of " +
+                $"freeboard (this wharf sits closer to its own high water than the rig's default). " +
+                $"Vertical " +
                 $"tiling does not rescue it, and NOT for an arithmetic reason: '{StackableCourseKey}' is " +
                 $"the pack's only flat furniture-free course and {courses} of them reach {total:0.00} m " +
                 $"against {RequiredDeckZMetres:0.00} m — the height lands exactly. What rules the stack " +
