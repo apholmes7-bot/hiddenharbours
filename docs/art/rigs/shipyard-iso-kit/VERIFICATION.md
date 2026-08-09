@@ -97,12 +97,42 @@ itself needs no hulls at all (`hullRigs()` reports which globals are present and
 
 ## 5. Two things the rig gets wrong by current canon
 
-**G3 — the keyline is unconditional.** The rig bakes the 1 px `#1a1c22` ring with **no
-`{outline:false}` gate anywhere in the source** (`out[i] = KEY;`, one call site, ungated), and its
-README advertises it as a feature. **ADR 0031** (accepted 2026-08-05) retired the keyline as the
-world-art default, and the four `iso-rig-pack` families all carry `KEYLINE_DEFAULT = false`. This
-family arrived *after* that ruling with the ring hard-on. Recorded in the contract as
-`keylineDefault: true` because that is what it *does*; the fix belongs upstream.
+**G3 — the keyline was unconditional. ✅ CLOSED.** As imported, the rig baked the 1 px `#1a1c22`
+ring with **no `{outline:false}` gate anywhere in the source** (`out[i] = KEY;`, one call site,
+ungated), and its README advertised it as a feature. **ADR 0031** (accepted 2026-08-05) retired the
+keyline as the world-art default, and the four `iso-rig-pack` families all carry
+`KEYLINE_DEFAULT = false`. This family arrived *after* that ruling with the ring hard-on, so
+`IsoPackContract.AssertKeylineGated` refused the whole kit and no sheet could bake.
+
+The gate has since been added in the rig's own lane, in **exactly the shape #463 (`feffa39d`) gave
+the four pack rigs** — `KEYLINE_DEFAULT = false` beside the keyline colour, the ring pass wrapped in
+`s.outline === undefined ? KEYLINE_DEFAULT : s.outline !== false`, the constant exported, and
+`keylineDefault: false` in the contract. `resolve()` here is a plain `Object.assign`, so `outline`
+reaches the pass unnormalised and no extra threading was needed (unlike `wharfDecorRig` /
+`utilityIsoRig`, which whitelist their options).
+
+**The cells did not move, and that was checked rather than assumed.** This family measures the
+`BufferUnion` rule — the buffer is sized from the geometry *before* the ring pass runs — so gating
+the ring cannot resize it, exactly as `IsoPackContract` predicts for wharfIso.
+
+Measured in a bare V8 host over **9 of the 25 keys — all 5 sites and 4 parts — across 23 facings
+and 92 renders**, comparing the gated rig against the pre-gate source byte for byte:
+
+| claim | result |
+|---|---|
+| `{outline:true}` reproduces the pre-gate render | **byte-identical**, all 23 |
+| `{outline:false}` reproduces the new default | **byte-identical**, all 23 |
+| buffer size and pivot move | **none**, all 23 — so no cell can move |
+| ring pixels at the default | **0**, all 23 |
+| ring pixels forced on | 956 – 19,183, i.e. the ring is really there to switch off |
+| painted pixels changed between the arms | **0 of 18.2 M** |
+| non-keyline pixels added when forced on | **0** |
+
+That last pair is the "pure ring deletion" property: the pass only ever writes EMPTY neighbours of
+the silhouette, so switching it off cannot touch the art. The remaining 16 keys and the full 25-cell
+reproduction are covered by `ShipyardIsoBakeTests.EveryCellReproducesFromTheLiveRig`, which
+re-derives every cell from the live rig on **every CI run** — the #452 discipline — and by
+`TheRingIsGoneByDefault_AndComesBackWhenForced`, which holds both arms there.
 
 **G1 — there is no interior.** `opts.ghost` x-rays the buildings; that is a massing aid, not a room.
 The existing `InteriorIso` rig cannot stand in either — **measured** at Wd 6.0–8.4 m × Ln 7.0–11.2 m

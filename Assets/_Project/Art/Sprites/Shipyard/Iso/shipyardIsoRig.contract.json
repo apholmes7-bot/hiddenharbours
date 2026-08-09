@@ -11,7 +11,7 @@
   "pivot": "projection of the model origin (footprint centre at chart datum) — the rig reports px,py per bake",
   "keyline": "#1a1c22",
   "cellRule": "pivot-aligned union of the rig's RETURNED BUFFER extents across all 8 facings, floor/ceil, pivot-inclusive: cellW=ceil(max(w-1-px))-floor(min(-px))+1, pivotX=-floor(min(-px)), likewise Y. Measure the BUFFER, not the ink bbox — identical rule to wharfIsoRig, whose turntable this rig was MEASURED to share exactly.",
-  "keylineDefault": true
+  "keylineDefault": false
  },
  "azimuth": {
   "convention": "counterClockwise",

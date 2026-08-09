@@ -193,38 +193,114 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         /// <summary>
-        /// ⚠️ <b>This kit CANNOT BE BAKED yet, and that is not a bug in this test.</b>
-        /// <see cref="IsoPackContract.AssertKeylineGated"/> mechanically refuses to bake any rig that
-        /// exposes no <c>KEYLINE_DEFAULT</c> gate, per the owner's 2026-08-06 ruling. The four pack
-        /// rigs have since gained the gate; this family arrived AFTER the ruling without it and bakes
-        /// the 1 px ring unconditionally — there is no <c>{outline:false}</c> anywhere in its source.
-        ///
-        /// <para>The fix is upstream: <c>docs/art/rigs/**</c> is the art director's lane and the rig
-        /// must not be edited here to get past the gate. This test pins the CURRENT state so the
-        /// blocker is visible in CI rather than discovered at bake time — and it FAILS LOUDLY when the
-        /// gated rig lands, which is the prompt to regenerate this contract with
-        /// <c>keylineDefault: false</c> in the same commit.</para>
+        /// <b>G3 CLOSED — the kit ships the ADR 0031 gate, so the bake is no longer refused.</b>
+        /// This family arrived after the owner's 2026-08-06 ruling without a
+        /// <c>KEYLINE_DEFAULT</c>, and <see cref="IsoPackContract.AssertKeylineGated"/> mechanically
+        /// blocked the whole kit. The gate has since been added in the rig's own lane, in the shape
+        /// #463 gave the four pack rigs, and this test is the inversion that commit was told to make.
         /// </summary>
         [Test]
-        public void TheKeylineGateIsStillOutstandingSoTheBakeWouldRefuse()
+        public void TheKeylineGateShippedSoTheBakeIsNoLongerRefused()
         {
-            bool gated = _host.EvaluateBool($"typeof {G}.KEYLINE_DEFAULT !== 'undefined'");
+            Assert.DoesNotThrow(() => _contract.AssertKeylineGated(_host, G, Key),
+                "shipyardIsoRig must expose KEYLINE_DEFAULT (#463's shape) before anything bakes.");
 
-            Assert.IsFalse(gated,
-                "shipyardIsoRig NOW exposes KEYLINE_DEFAULT — the upstream ADR 0031 gate has landed. " +
-                "That is good news, and this test is the reminder attached to it: regenerate " +
-                "Assets/_Project/Art/Sprites/Shipyard/Iso/shipyardIsoRig.contract.json against the " +
-                "gated rig (keylineDefault must become false, and any cell whose geometry the ring pass " +
-                "moved must be re-measured), update the keylineNote in the kit catalogue and gap G3 in " +
-                "VERIFICATION.md, then invert this assertion.");
+            Assert.IsFalse(_host.EvaluateBool($"{G}.KEYLINE_DEFAULT"),
+                "KEYLINE_DEFAULT is true — the ring is back on and every sheet would bake with it in. " +
+                "ADR 0031 retired it.");
 
-            Assert.IsTrue(_contract.KeylineDefault,
-                "the contract must record keylineDefault: true while the rig bakes the ring ungated — " +
-                "it describes what the rig DOES, not what canon wants.");
+            Assert.IsFalse(_contract.KeylineDefault,
+                "the contract still records keylineDefault=true, so its cells were measured with the " +
+                "ring ON while the rig now draws without it.");
+        }
 
-            Assert.Throws<InvalidOperationException>(
-                () => _contract.AssertKeylineGated(_host, G, Key),
-                "the shared keyline gate must refuse this rig while it carries no KEYLINE_DEFAULT");
+        /// <summary>
+        /// ⚠️ <b>THE POSITIVE CONTROL, and it is not optional.</b> Zero ring pixels alone would also
+        /// pass on a renderer that had stopped drawing entirely — exactly the failure a badly-placed
+        /// gate introduces. Both arms are required, which is the shape
+        /// <c>IsoPackBakeTests.TheRingIsGoneByDefault_AndComesBackWhenForced</c> established.
+        ///
+        /// <para>It also proves the gate is a <b>PURE RING DELETION</b>: every pixel the pass writes
+        /// is an EMPTY neighbour of the silhouette, so no painted pixel of the yard may differ
+        /// between the two arms. A gate that dimmed, shifted or dropped real geometry would satisfy
+        /// the pixel COUNTS above and fail here.</para>
+        /// </summary>
+        [Test]
+        public void TheRingIsGoneByDefault_AndComesBackWhenForced()
+        {
+            Color32 keyline = ParseHex(_contract.Keyline);
+
+            // One SITE and one PART: the two halves of this kit's key space, which take different
+            // paths into bake() and would not both be covered by either alone.
+            foreach (string key in new[] { "smallYard", "cradle" })
+            {
+                byte[] off = RenderRgba(key, "{}");
+                byte[] on = RenderRgba(key, "{outline:true}");
+
+                Assert.AreEqual(off.Length, on.Length,
+                    $"{key}: the two arms rendered different buffer sizes. This rig sizes its buffer " +
+                    "from the geometry BEFORE the ring pass runs, so the gate must not move it — if " +
+                    "it does, all 25 cells need re-measuring, not just this assertion relaxing.");
+
+                int offRing = CountKeyline(off, keyline), onRing = CountKeyline(on, keyline);
+
+                Assert.Zero(offRing,
+                    $"{key} still draws {offRing} keyline pixels at the rig default — the gate is not " +
+                    "doing anything.");
+                Assert.Greater(onRing, 0,
+                    $"{key} draws no keyline pixels even with {{outline:true}}. The gate did not switch " +
+                    "a ring off — the renderer has stopped drawing, which zero-ring alone would have " +
+                    "reported as a pass.");
+
+                // PURE RING DELETION: every pixel opaque in the DEFAULT arm is byte-identical forced-on.
+                int painted = 0;
+                for (int i = 0; i < off.Length; i += 4)
+                {
+                    if (off[i + 3] == 0) continue;
+                    painted++;
+                    if (off[i] == on[i] && off[i + 1] == on[i + 1] &&
+                        off[i + 2] == on[i + 2] && off[i + 3] == on[i + 3]) continue;
+
+                    Assert.Fail(
+                        $"{key}: pixel {i / 4} is painted at the default but differs with " +
+                        $"{{outline:true}} — RGBA({off[i]},{off[i + 1]},{off[i + 2]},{off[i + 3]}) vs " +
+                        $"({on[i]},{on[i + 1]},{on[i + 2]},{on[i + 3]}). The ring pass is supposed to " +
+                        "write only EMPTY neighbours of the silhouette, so gating it must change no " +
+                        "painted pixel. It has moved real geometry instead.");
+                }
+
+                Assert.Greater(painted, 0, $"{key} rendered nothing at all in the default arm.");
+                Debug.Log($"[shipyard] gate A/B {key}: default {offRing} ring px over {painted} painted, " +
+                          $"forced-on {onRing} ring px, 0 painted pixels changed.");
+            }
+        }
+
+        /// <summary>This rig returns <c>{data,w,h,px,py,…}</c> rather than a bare RGBA array, and it
+        /// rasterises the whole yard per call — so render ONCE into a scratch global and read the
+        /// buffer off it, never <c>render(…).data</c> per field.</summary>
+        static byte[] RenderRgba(string key, string opts)
+        {
+            _host.Execute($"{Scratch}k = {G}.render({Q(key)},0,{opts});");
+            try { return _host.EvaluateBytes($"{Scratch}k.data"); }
+            finally { _host.Execute($"{Scratch}k = null;"); }
+        }
+
+        static int CountKeyline(byte[] rgba, Color32 keyline)
+        {
+            int n = 0;
+            for (int i = 0; i < rgba.Length; i += 4)
+                if (rgba[i + 3] > 0 && rgba[i] == keyline.r && rgba[i + 1] == keyline.g &&
+                    rgba[i + 2] == keyline.b) n++;
+            return n;
+        }
+
+        static Color32 ParseHex(string hex)
+        {
+            string s = hex.TrimStart('#');
+            return new Color32(byte.Parse(s.Substring(0, 2), NumberStyles.HexNumber, CultureInfo.InvariantCulture),
+                               byte.Parse(s.Substring(2, 2), NumberStyles.HexNumber, CultureInfo.InvariantCulture),
+                               byte.Parse(s.Substring(4, 2), NumberStyles.HexNumber, CultureInfo.InvariantCulture),
+                               255);
         }
 
         // =====================================================================================

@@ -102,10 +102,10 @@ rides that same turntable and inherits its convention.
 > term as clockwise would have registered this family mirrored and flipped all 25 keys at once.
 > Details: [`shipyard-iso-kit/VERIFICATION.md`](shipyard-iso-kit/VERIFICATION.md) §2.
 >
-> ⚠️ **This kit cannot be baked yet.** It carries **no `KEYLINE_DEFAULT` gate** and bakes the 1 px
-> ring unconditionally, so `IsoPackContract.AssertKeylineGated` mechanically refuses it (owner ruling
-> 2026-08-06 / ADR 0031). The four pack rigs above have since gained the gate; this one arrived after
-> the ruling without it. The fix is upstream — do not edit the rig to get past the gate.
+> ✅ **The keyline gate has landed, so this kit bakes.** It arrived after the 2026-08-06 ruling with
+> the 1 px ring hard-on, and `IsoPackContract.AssertKeylineGated` refused the whole kit; it now
+> carries `KEYLINE_DEFAULT = false` in the same shape #463 gave the four pack rigs above. The cells
+> did not move — this family measures the buffer, which is sized before the ring pass runs.
 
 **No azimuth term (18 + 4 + 1 + 2)** — kits, props and creatures that aren't 8-way directional; they need no
 convention. (`sceneKit`, `shorelineRig`, `potRig`, `foxRig`, …) The fishing kit adds `bobberRig` ·
