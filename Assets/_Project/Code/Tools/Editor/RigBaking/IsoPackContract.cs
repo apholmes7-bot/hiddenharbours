@@ -412,7 +412,9 @@ namespace HiddenHarbours.Tools.RigBaking
                     "family's sheets bake; a baker cannot proceed without its oracle.", abs);
 
             string json = File.ReadAllText(abs);
-            var dto = reg.IsKitSection ? ReadKitSection(json, reg, rel) : JsonUtility.FromJson<Dto>(json);
+            var dto = reg.IsKitSection
+                ? ReadKitSection(json, reg.Section, rel)
+                : JsonUtility.FromJson<Dto>(json);
 
             if (dto?.cells == null || dto.cells.Count == 0)
                 throw new InvalidOperationException($"{rel} parsed but carries no cells.");
@@ -472,16 +474,19 @@ namespace HiddenHarbours.Tools.RigBaking
         /// (<c>wharfDecorRig</c>). It is normalised HERE, because <see cref="Rule"/> switches on it and
         /// a rig name that carries an extension falls through to the "no cell rule known" throw.</para>
         /// </summary>
-        static Dto ReadKitSection(string json, in Registration reg, string rel)
+        /// <remarks>Takes the SECTION rather than the <see cref="Registration"/> that carries it: an
+        /// <c>in</c> parameter cannot be captured by the lambda below, and copying the struct just to
+        /// read one string off it would be the wrong half of that trade.</remarks>
+        static Dto ReadKitSection(string json, string section, string rel)
         {
             var kit = JsonUtility.FromJson<KitDto>(json);
             if (kit?.families == null || kit.families.Count == 0)
                 throw new InvalidOperationException(
                     $"{rel} is registered as a kit contract but parsed with no families section.");
 
-            var fam = kit.families.FirstOrDefault(f => string.Equals(f.key, reg.Section, StringComparison.Ordinal))
+            var fam = kit.families.FirstOrDefault(f => string.Equals(f.key, section, StringComparison.Ordinal))
                 ?? throw new InvalidOperationException(
-                    $"{rel} carries no family '{reg.Section}'. It has: " +
+                    $"{rel} carries no family '{section}'. It has: " +
                     $"{string.Join(", ", kit.families.Select(f => f.key))}.");
 
             var proj = kit.projection ?? new Projection();
