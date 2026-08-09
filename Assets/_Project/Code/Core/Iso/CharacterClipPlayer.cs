@@ -27,6 +27,14 @@ namespace HiddenHarbours.Core
     /// <see cref="CharacterClipSheets.FacingCount"/>. The pass-6.2 kit bakes all four clips at the full
     /// eight, but a later kit that ships a two-facing ladder climb drops in with no code change.</para>
     ///
+    /// <para><b>Two ways to pace a clip, and only one of them is a clock.</b> <see cref="Play"/> runs a
+    /// clip off <c>Time.deltaTime</c> — the right answer for a move with a duration, like the boarding
+    /// vault. <see cref="PlayDriven"/> hands the pacing to the CALLER instead, for a presentation whose
+    /// pace is a quantity: the deck haul's heave is keyed to the LINE hauled, so the hands stop when the
+    /// rope stops and a brisk take runs them fast. A driven clip is never advanced by
+    /// <see cref="LateUpdate"/>; it moves only when <see cref="SeekFrame"/> is called, which is also what
+    /// keeps a snapshot-driven presenter free of per-frame work.</para>
+    ///
     /// <para><b>Budget (rule 7).</b> No allocation, no <c>GetComponent</c> after the first play, and the
     /// sprite assignment is skipped when the cell has not changed. Inert — and costing one early-out —
     /// whenever no clip is running.</para>
@@ -47,6 +55,8 @@ namespace HiddenHarbours.Core
         private float _elapsed;
         private float _scaledDuration;
         private bool _holdOnFinish;
+        private bool _driven;             // the CALLER paces this clip; the clock does not touch it
+        private float _framePosition;     // where along the clip a driven caller has put it, in frames
         private float _headingDegrees;
         private int _facingRow;
         private int _frame;
@@ -70,6 +80,13 @@ namespace HiddenHarbours.Core
         /// <summary>How far into the running clip, in seconds. For tests / tooling.</summary>
         public float Elapsed => _elapsed;
 
+        /// <summary>True while the running clip is paced by its CALLER rather than by the clock
+        /// (see <see cref="PlayDriven"/>). False when nothing is playing.</summary>
+        public bool IsDriven => _driven && _clip != CharacterClip.None;
+
+        /// <summary>Where along a DRIVEN clip the caller has put it, in frames. For tests / tooling.</summary>
+        public float FramePosition => _framePosition;
+
         /// <summary>True when a running ONE-SHOT has played out (always false for a looping clip, and
         /// for no clip at all). A held one-shot stays <see cref="IsPlaying"/> while this is true.</summary>
         public bool IsFinished
@@ -78,6 +95,10 @@ namespace HiddenHarbours.Core
             {
                 var def = ResolvedVisual();
                 if (_clip == CharacterClip.None || def == null) return false;
+                // A DRIVEN clip has no clock to be finished against — its progress IS the caller's
+                // frame position, so a one-shot is done once that has walked past the last frame.
+                if (_driven)
+                    return !def.ClipLoops(_clip) && _framePosition >= def.ClipFrameCount(_clip);
                 return CharacterClipMath.IsFinished(_elapsed, _scaledDuration,
                                                     def.ClipFrameCount(_clip),
                                                     def.ClipFramesPerSecond(_clip),
@@ -123,6 +144,61 @@ namespace HiddenHarbours.Core
         public bool Play(CharacterClip clip, float headingDegrees, float scaleToSeconds = 0f,
                          bool holdOnFinish = false)
         {
+            if (!Begin(clip, headingDegrees)) return false;
+
+            _driven = false;
+            _framePosition = 0f;
+            _scaledDuration = Mathf.Max(0f, scaleToSeconds);
+            _holdOnFinish = holdOnFinish;
+            Apply();
+            return true;
+        }
+
+        /// <summary>
+        /// Start a clip whose pace the CALLER owns — the clock never touches it. Returns FALSE, and
+        /// changes nothing, when the clip has no complete art, exactly like <see cref="Play"/>.
+        ///
+        /// <para>This is the answer for a presentation paced by a QUANTITY rather than by time. The deck
+        /// haul is the case it was built for: its heave is keyed to the LINE hauled, so the hands move
+        /// with the rope — they stop dead when the line stops and a brisk take on a big lift runs them
+        /// fast — and a timer would drift off the rope inside one pot. Drive it with
+        /// <see cref="SeekFrame"/>; nothing else will move it.</para>
+        ///
+        /// <para>Call it ONCE per presentation and seek thereafter. Calling it again restarts the clip at
+        /// <paramref name="framePosition"/>, so a caller that re-plays every tick freezes its own clip.</para>
+        /// </summary>
+        public bool PlayDriven(CharacterClip clip, float headingDegrees, float framePosition = 0f)
+        {
+            if (!Begin(clip, headingDegrees)) return false;
+
+            _driven = true;
+            _framePosition = framePosition;
+            _scaledDuration = 0f;
+            _holdOnFinish = true;      // a driven clip is never taken off the renderer by the clock
+            Apply();
+            return true;
+        }
+
+        /// <summary>
+        /// Move a DRIVEN clip to <paramref name="framePosition"/> frames along itself and push the cell.
+        /// A looping clip wraps, so the position may run past the end for as many cycles as the caller's
+        /// quantity covers; a one-shot clamps to its last frame. Harmless (and does nothing) when no clip
+        /// is running or when the running one is paced by the clock.
+        ///
+        /// <para>A driven clip re-resolves its facing row here too, so a caller that is turning should
+        /// call <see cref="SetHeading"/> before it seeks.</para>
+        /// </summary>
+        public void SeekFrame(float framePosition)
+        {
+            if (!_driven || _clip == CharacterClip.None) return;
+            _framePosition = framePosition;
+            Apply();
+        }
+
+        /// <summary>The take-over both play paths share: check the art, resolve the renderer, and claim
+        /// it from the iso driver on the FIRST clip only. Leaves the pacing fields to the caller.</summary>
+        private bool Begin(CharacterClip clip, float headingDegrees)
+        {
             if (!CanPlay(clip)) return false;
 
             Resolve();
@@ -139,11 +215,8 @@ namespace HiddenHarbours.Core
 
             _clip = clip;
             _elapsed = 0f;
-            _scaledDuration = Mathf.Max(0f, scaleToSeconds);
-            _holdOnFinish = holdOnFinish;
             _headingDegrees = headingDegrees;
             _lastApplied = null;
-            Apply();
             return true;
         }
 
@@ -160,6 +233,9 @@ namespace HiddenHarbours.Core
         public void Advance(float deltaTime)
         {
             if (_clip == CharacterClip.None) return;
+            // A DRIVEN clip is paced by its caller. The clock must not touch it, or the haul's heave
+            // would run on its own while the rope stands still.
+            if (_driven) return;
             _elapsed += Mathf.Max(0f, deltaTime);
 
             if (!_holdOnFinish && IsFinished) { Stop(); return; }
@@ -176,6 +252,8 @@ namespace HiddenHarbours.Core
             _elapsed = 0f;
             _scaledDuration = 0f;
             _holdOnFinish = false;
+            _driven = false;
+            _framePosition = 0f;
             _frame = 0;
             _lastApplied = null;
 
@@ -214,10 +292,12 @@ namespace HiddenHarbours.Core
             if (_renderer == null || def == null || _clip == CharacterClip.None) return;
 
             _facingRow = def.ClipFacingRowFor(_clip, _headingDegrees);
-            _frame = CharacterClipMath.FrameFor(_elapsed, _scaledDuration,
-                                                def.ClipFrameCount(_clip),
-                                                def.ClipFramesPerSecond(_clip),
-                                                def.ClipLoops(_clip));
+            _frame = _driven
+                ? CharacterClipMath.FrameAt(_framePosition, def.ClipFrameCount(_clip), def.ClipLoops(_clip))
+                : CharacterClipMath.FrameFor(_elapsed, _scaledDuration,
+                                             def.ClipFrameCount(_clip),
+                                             def.ClipFramesPerSecond(_clip),
+                                             def.ClipLoops(_clip));
 
             Sprite cell = def.ClipSpriteFor(_clip, _facingRow, _frame);
             if (cell == null || ReferenceEquals(cell, _lastApplied)) return;
