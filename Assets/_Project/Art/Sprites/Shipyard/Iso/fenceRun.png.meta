@@ -1,0 +1,338 @@
+fileFormatVersion: 2
+guid: bd223988b44600e41944337365c169ef
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -7400761778574768848
+    second: fenceRun_0
+  - first:
+      213: 8225321879461723302
+    second: fenceRun_1
+  - first:
+      213: -7677410042519096388
+    second: fenceRun_2
+  - first:
+      213: 488232267390260991
+    second: fenceRun_3
+  - first:
+      213: 4425419272166479491
+    second: fenceRun_4
+  - first:
+      213: -8902259178882476656
+    second: fenceRun_5
+  - first:
+      213: -2489871423116172174
+    second: fenceRun_6
+  - first:
+      213: 994579373146257582
+    second: fenceRun_7
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: fenceRun_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1644
+        width: 775
+        height: 548
+      alignment: 9
+      pivot: {x: 0.49935484, y: 0.47445256}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 03543c09f563b4990800000000000000
+      internalID: -7400761778574768848
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fenceRun_1
+      rect:
+        serializedVersion: 2
+        x: 775
+        y: 1644
+        width: 775
+        height: 548
+      alignment: 9
+      pivot: {x: 0.49935484, y: 0.47445256}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6ac70947ba6362270800000000000000
+      internalID: 8225321879461723302
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fenceRun_2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1096
+        width: 775
+        height: 548
+      alignment: 9
+      pivot: {x: 0.49935484, y: 0.47445256}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cb3f1a43e3c547590800000000000000
+      internalID: -7677410042519096388
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fenceRun_3
+      rect:
+        serializedVersion: 2
+        x: 775
+        y: 1096
+        width: 775
+        height: 548
+      alignment: 9
+      pivot: {x: 0.49935484, y: 0.47445256}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ff61ea119ac86c600800000000000000
+      internalID: 488232267390260991
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fenceRun_4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 548
+        width: 775
+        height: 548
+      alignment: 9
+      pivot: {x: 0.49935484, y: 0.47445256}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 38696a3916f3a6d30800000000000000
+      internalID: 4425419272166479491
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fenceRun_5
+      rect:
+        serializedVersion: 2
+        x: 775
+        y: 548
+        width: 775
+        height: 548
+      alignment: 9
+      pivot: {x: 0.49935484, y: 0.47445256}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 095df386172d47480800000000000000
+      internalID: -8902259178882476656
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fenceRun_6
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 775
+        height: 548
+      alignment: 9
+      pivot: {x: 0.49935484, y: 0.47445256}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 274a3c0f123327dd0800000000000000
+      internalID: -2489871423116172174
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: fenceRun_7
+      rect:
+        serializedVersion: 2
+        x: 775
+        y: 0
+        width: 775
+        height: 548
+      alignment: 9
+      pivot: {x: 0.49935484, y: 0.47445256}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ea8305d9ba47dcd00800000000000000
+      internalID: 994579373146257582
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 4620606974e67db4e9deac7cff824992
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      fenceRun_0: -7400761778574768848
+      fenceRun_1: 8225321879461723302
+      fenceRun_2: -7677410042519096388
+      fenceRun_3: 488232267390260991
+      fenceRun_4: 4425419272166479491
+      fenceRun_5: -8902259178882476656
+      fenceRun_6: -2489871423116172174
+      fenceRun_7: 994579373146257582
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

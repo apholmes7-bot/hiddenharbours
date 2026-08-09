@@ -1,0 +1,350 @@
+fileFormatVersion: 2
+guid: b86b987152c625e46ad6e6bfd9de80b5
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -4967546122094655743
+    second: staging_0
+  - first:
+      213: -8211854895896620226
+    second: staging_1
+  - first:
+      213: -4075380739880150882
+    second: staging_2
+  - first:
+      213: -4588277886291971440
+    second: staging_3
+  - first:
+      213: 7527137815687426827
+    second: staging_4
+  - first:
+      213: 7032385301051004617
+    second: staging_5
+  - first:
+      213: -7456731856480513351
+    second: staging_6
+  - first:
+      213: 9002670403423929054
+    second: staging_7
+  - first:
+      213: 5760769327637690904
+    second: staging_8
+  - first:
+      213: 6253579841592521395
+    second: staging_9
+  - first:
+      213: 3674546114635351293
+    second: staging_10
+  - first:
+      213: -1785955019216227513
+    second: staging_11
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: staging_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 682
+        width: 361
+        height: 341
+      alignment: 9
+      pivot: {x: 0.49861497, y: 0.37243402}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 107cd230f1bbf0bb0800000000000000
+      internalID: -4967546122094655743
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: staging_1
+      rect:
+        serializedVersion: 2
+        x: 361
+        y: 682
+        width: 361
+        height: 341
+      alignment: 9
+      pivot: {x: 0.49861497, y: 0.37243402}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e33970ffa71a90e80800000000000000
+      internalID: -8211854895896620226
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: staging_2
+      rect:
+        serializedVersion: 2
+        x: 722
+        y: 682
+        width: 361
+        height: 341
+      alignment: 9
+      pivot: {x: 0.49861497, y: 0.37243402}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e9899f23fc65177c0800000000000000
+      internalID: -4075380739880150882
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: staging_3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 341
+        width: 361
+        height: 341
+      alignment: 9
+      pivot: {x: 0.49861497, y: 0.37243402}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 09279c872992350c0800000000000000
+      internalID: -4588277886291971440
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: staging_4
+      rect:
+        serializedVersion: 2
+        x: 361
+        y: 341
+        width: 361
+        height: 341
+      alignment: 9
+      pivot: {x: 0.49861497, y: 0.37243402}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b03757f76f3c57860800000000000000
+      internalID: 7527137815687426827
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: staging_5
+      rect:
+        serializedVersion: 2
+        x: 722
+        y: 341
+        width: 361
+        height: 341
+      alignment: 9
+      pivot: {x: 0.49861497, y: 0.37243402}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9c6d2d01c2d089160800000000000000
+      internalID: 7032385301051004617
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: staging_6
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 361
+        height: 341
+      alignment: 9
+      pivot: {x: 0.49861497, y: 0.37243402}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9b2d32d42ed548890800000000000000
+      internalID: -7456731856480513351
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: staging_7
+      rect:
+        serializedVersion: 2
+        x: 361
+        y: 0
+        width: 361
+        height: 341
+      alignment: 9
+      pivot: {x: 0.49861497, y: 0.37243402}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ed28102a809efec70800000000000000
+      internalID: 9002670403423929054
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 794de7dd7a1109b419e8d4cdddec2505
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      staging_0: -4967546122094655743
+      staging_1: -8211854895896620226
+      staging_2: -4075380739880150882
+      staging_3: -4588277886291971440
+      staging_4: 7527137815687426827
+      staging_5: 7032385301051004617
+      staging_6: -7456731856480513351
+      staging_7: 9002670403423929054
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

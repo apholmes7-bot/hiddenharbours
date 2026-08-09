@@ -138,11 +138,11 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 592
-        width: 757
-        height: 592
+        y: 2721
+        width: 1155
+        height: 907
       alignment: 9
-      pivot: {x: 0.4993395, y: 0.4712838}
+      pivot: {x: 0.4995671, y: 0.44873208}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -159,12 +159,12 @@ TextureImporter:
       name: floatSet_1
       rect:
         serializedVersion: 2
-        x: 757
-        y: 592
-        width: 757
-        height: 592
+        x: 1155
+        y: 2721
+        width: 1155
+        height: 907
       alignment: 9
-      pivot: {x: 0.4993395, y: 0.4712838}
+      pivot: {x: 0.4995671, y: 0.44873208}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -181,12 +181,12 @@ TextureImporter:
       name: floatSet_2
       rect:
         serializedVersion: 2
-        x: 1514
-        y: 592
-        width: 757
-        height: 592
+        x: 0
+        y: 1814
+        width: 1155
+        height: 907
       alignment: 9
-      pivot: {x: 0.4993395, y: 0.4712838}
+      pivot: {x: 0.4995671, y: 0.44873208}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -203,12 +203,12 @@ TextureImporter:
       name: floatSet_3
       rect:
         serializedVersion: 2
-        x: 2271
-        y: 592
-        width: 757
-        height: 592
+        x: 1155
+        y: 1814
+        width: 1155
+        height: 907
       alignment: 9
-      pivot: {x: 0.4993395, y: 0.4712838}
+      pivot: {x: 0.4995671, y: 0.44873208}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -226,11 +226,11 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 0
-        width: 757
-        height: 592
+        y: 907
+        width: 1155
+        height: 907
       alignment: 9
-      pivot: {x: 0.4993395, y: 0.4712838}
+      pivot: {x: 0.4995671, y: 0.44873208}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -247,12 +247,12 @@ TextureImporter:
       name: floatSet_5
       rect:
         serializedVersion: 2
-        x: 757
-        y: 0
-        width: 757
-        height: 592
+        x: 1155
+        y: 907
+        width: 1155
+        height: 907
       alignment: 9
-      pivot: {x: 0.4993395, y: 0.4712838}
+      pivot: {x: 0.4995671, y: 0.44873208}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -269,12 +269,12 @@ TextureImporter:
       name: floatSet_6
       rect:
         serializedVersion: 2
-        x: 1514
+        x: 0
         y: 0
-        width: 757
-        height: 592
+        width: 1155
+        height: 907
       alignment: 9
-      pivot: {x: 0.4993395, y: 0.4712838}
+      pivot: {x: 0.4995671, y: 0.44873208}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -291,12 +291,12 @@ TextureImporter:
       name: floatSet_7
       rect:
         serializedVersion: 2
-        x: 2271
+        x: 1155
         y: 0
-        width: 757
-        height: 592
+        width: 1155
+        height: 907
       alignment: 9
-      pivot: {x: 0.4993395, y: 0.4712838}
+      pivot: {x: 0.4995671, y: 0.44873208}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []

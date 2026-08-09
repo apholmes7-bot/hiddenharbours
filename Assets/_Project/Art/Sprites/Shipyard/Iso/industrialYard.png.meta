@@ -1,0 +1,338 @@
+fileFormatVersion: 2
+guid: add3c7f03523ed3409b78ed6d60e9be1
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 1265164765245997066
+    second: industrialYard_0
+  - first:
+      213: 1676118562375846558
+    second: industrialYard_1
+  - first:
+      213: -199731379135980219
+    second: industrialYard_2
+  - first:
+      213: -1820862610490895766
+    second: industrialYard_3
+  - first:
+      213: 7102653408388799956
+    second: industrialYard_4
+  - first:
+      213: 8889857837079013746
+    second: industrialYard_5
+  - first:
+      213: 1038479251780090218
+    second: industrialYard_6
+  - first:
+      213: 8430770746508444769
+    second: industrialYard_7
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: industrialYard_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 2703
+        width: 1332
+        height: 901
+      alignment: 9
+      pivot: {x: 0.49924925, y: 0.46059933}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a0004de96a4ce8110800000000000000
+      internalID: 1265164765245997066
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: industrialYard_1
+      rect:
+        serializedVersion: 2
+        x: 1332
+        y: 2703
+        width: 1332
+        height: 901
+      alignment: 9
+      pivot: {x: 0.49924925, y: 0.46059933}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e9ac9d7b3f4c24710800000000000000
+      internalID: 1676118562375846558
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: industrialYard_2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1802
+        width: 1332
+        height: 901
+      alignment: 9
+      pivot: {x: 0.49924925, y: 0.46059933}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 54dd9107e596a3df0800000000000000
+      internalID: -199731379135980219
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: industrialYard_3
+      rect:
+        serializedVersion: 2
+        x: 1332
+        y: 1802
+        width: 1332
+        height: 901
+      alignment: 9
+      pivot: {x: 0.49924925, y: 0.46059933}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a6256e46a1ffab6e0800000000000000
+      internalID: -1820862610490895766
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: industrialYard_4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 901
+        width: 1332
+        height: 901
+      alignment: 9
+      pivot: {x: 0.49924925, y: 0.46059933}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4dd5bb9b4a1b19260800000000000000
+      internalID: 7102653408388799956
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: industrialYard_5
+      rect:
+        serializedVersion: 2
+        x: 1332
+        y: 901
+        width: 1332
+        height: 901
+      alignment: 9
+      pivot: {x: 0.49924925, y: 0.46059933}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 27921d23a9e1f5b70800000000000000
+      internalID: 8889857837079013746
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: industrialYard_6
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 1332
+        height: 901
+      alignment: 9
+      pivot: {x: 0.49924925, y: 0.46059933}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a6937fc906b696e00800000000000000
+      internalID: 1038479251780090218
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: industrialYard_7
+      rect:
+        serializedVersion: 2
+        x: 1332
+        y: 0
+        width: 1332
+        height: 901
+      alignment: 9
+      pivot: {x: 0.49924925, y: 0.46059933}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1640468635d100570800000000000000
+      internalID: 8430770746508444769
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: e8129dd8c5499e940b3baad9f4c62bc3
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      industrialYard_0: 1265164765245997066
+      industrialYard_1: 1676118562375846558
+      industrialYard_2: -199731379135980219
+      industrialYard_3: -1820862610490895766
+      industrialYard_4: 7102653408388799956
+      industrialYard_5: 8889857837079013746
+      industrialYard_6: 1038479251780090218
+      industrialYard_7: 8430770746508444769
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

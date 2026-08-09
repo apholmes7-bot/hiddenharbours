@@ -1,0 +1,338 @@
+fileFormatVersion: 2
+guid: 17cfa2ee0ad69dd45829ca9d0936f256
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -1611387748878493683
+    second: timberStack_0
+  - first:
+      213: 1531483192804245505
+    second: timberStack_1
+  - first:
+      213: 4321485260983107399
+    second: timberStack_2
+  - first:
+      213: -3599669234117459812
+    second: timberStack_3
+  - first:
+      213: -1425919869923403384
+    second: timberStack_4
+  - first:
+      213: -7820457403382615876
+    second: timberStack_5
+  - first:
+      213: 905450189473307763
+    second: timberStack_6
+  - first:
+      213: 4175727188079364710
+    second: timberStack_7
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: timberStack_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 660
+        width: 325
+        height: 220
+      alignment: 9
+      pivot: {x: 0.49846154, y: 0.52272725}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d085ea0416333a9e0800000000000000
+      internalID: -1611387748878493683
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: timberStack_1
+      rect:
+        serializedVersion: 2
+        x: 325
+        y: 660
+        width: 325
+        height: 220
+      alignment: 9
+      pivot: {x: 0.49846154, y: 0.52272725}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 100049689dbe04510800000000000000
+      internalID: 1531483192804245505
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: timberStack_2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 440
+        width: 325
+        height: 220
+      alignment: 9
+      pivot: {x: 0.49846154, y: 0.52272725}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 74ffbfad2fff8fb30800000000000000
+      internalID: 4321485260983107399
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: timberStack_3
+      rect:
+        serializedVersion: 2
+        x: 325
+        y: 440
+        width: 325
+        height: 220
+      alignment: 9
+      pivot: {x: 0.49846154, y: 0.52272725}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c90c68747e76b0ec0800000000000000
+      internalID: -3599669234117459812
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: timberStack_4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 220
+        width: 325
+        height: 220
+      alignment: 9
+      pivot: {x: 0.49846154, y: 0.52272725}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8895b03ee6d163ce0800000000000000
+      internalID: -1425919869923403384
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: timberStack_5
+      rect:
+        serializedVersion: 2
+        x: 325
+        y: 220
+        width: 325
+        height: 220
+      alignment: 9
+      pivot: {x: 0.49846154, y: 0.52272725}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cb03e4a1d67287390800000000000000
+      internalID: -7820457403382615876
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: timberStack_6
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 325
+        height: 220
+      alignment: 9
+      pivot: {x: 0.49846154, y: 0.52272725}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 37cdd59662ec09c00800000000000000
+      internalID: 905450189473307763
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: timberStack_7
+      rect:
+        serializedVersion: 2
+        x: 325
+        y: 0
+        width: 325
+        height: 220
+      alignment: 9
+      pivot: {x: 0.49846154, y: 0.52272725}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 66a496ce0c923f930800000000000000
+      internalID: 4175727188079364710
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e580d06cd619664aa88d092dbe8d50c
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      timberStack_0: -1611387748878493683
+      timberStack_1: 1531483192804245505
+      timberStack_2: 4321485260983107399
+      timberStack_3: -3599669234117459812
+      timberStack_4: -1425919869923403384
+      timberStack_5: -7820457403382615876
+      timberStack_6: 905450189473307763
+      timberStack_7: 4175727188079364710
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

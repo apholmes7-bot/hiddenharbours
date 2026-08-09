@@ -1,0 +1,338 @@
+fileFormatVersion: 2
+guid: dd8a25a983c0d3840a9ec8c7e6c26ec5
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -1077750785952991763
+    second: keelBlocks_0
+  - first:
+      213: -7346874410536840834
+    second: keelBlocks_1
+  - first:
+      213: -5571297319198680217
+    second: keelBlocks_2
+  - first:
+      213: -7957536961343133789
+    second: keelBlocks_3
+  - first:
+      213: 767355364098292223
+    second: keelBlocks_4
+  - first:
+      213: 5279211709093802421
+    second: keelBlocks_5
+  - first:
+      213: -6389682391549277713
+    second: keelBlocks_6
+  - first:
+      213: 2542232659902635171
+    second: keelBlocks_7
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: keelBlocks_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 948
+        width: 474
+        height: 316
+      alignment: 9
+      pivot: {x: 0.4978903, y: 0.51582277}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: de5bfdece5f0b01f0800000000000000
+      internalID: -1077750785952991763
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: keelBlocks_1
+      rect:
+        serializedVersion: 2
+        x: 474
+        y: 948
+        width: 474
+        height: 316
+      alignment: 9
+      pivot: {x: 0.4978903, y: 0.51582277}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e715b8626a8aa0a90800000000000000
+      internalID: -7346874410536840834
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: keelBlocks_2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 632
+        width: 474
+        height: 316
+      alignment: 9
+      pivot: {x: 0.4978903, y: 0.51582277}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 76b931f2b96cea2b0800000000000000
+      internalID: -5571297319198680217
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: keelBlocks_3
+      rect:
+        serializedVersion: 2
+        x: 474
+        y: 632
+        width: 474
+        height: 316
+      alignment: 9
+      pivot: {x: 0.4978903, y: 0.51582277}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3a7e9146b46219190800000000000000
+      internalID: -7957536961343133789
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: keelBlocks_4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 316
+        width: 474
+        height: 316
+      alignment: 9
+      pivot: {x: 0.4978903, y: 0.51582277}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ff9b19553a136aa00800000000000000
+      internalID: 767355364098292223
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: keelBlocks_5
+      rect:
+        serializedVersion: 2
+        x: 474
+        y: 316
+        width: 474
+        height: 316
+      alignment: 9
+      pivot: {x: 0.4978903, y: 0.51582277}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5b17e963417834940800000000000000
+      internalID: 5279211709093802421
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: keelBlocks_6
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 474
+        height: 316
+      alignment: 9
+      pivot: {x: 0.4978903, y: 0.51582277}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fe9032808b94357a0800000000000000
+      internalID: -6389682391549277713
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: keelBlocks_7
+      rect:
+        serializedVersion: 2
+        x: 474
+        y: 0
+        width: 474
+        height: 316
+      alignment: 9
+      pivot: {x: 0.4978903, y: 0.51582277}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3ac94e58223d74320800000000000000
+      internalID: 2542232659902635171
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5b170ab963873bd489e064c77561942e
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      keelBlocks_0: -1077750785952991763
+      keelBlocks_1: -7346874410536840834
+      keelBlocks_2: -5571297319198680217
+      keelBlocks_3: -7957536961343133789
+      keelBlocks_4: 767355364098292223
+      keelBlocks_5: 5279211709093802421
+      keelBlocks_6: -6389682391549277713
+      keelBlocks_7: 2542232659902635171
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

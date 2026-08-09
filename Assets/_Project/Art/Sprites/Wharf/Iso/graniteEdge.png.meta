@@ -139,10 +139,10 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 416
-        height: 358
+        width: 414
+        height: 418
       alignment: 9
-      pivot: {x: 0.49759614, y: 0.45251396}
+      pivot: {x: 0.49758455, y: 0.3923445}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -159,12 +159,12 @@ TextureImporter:
       name: graniteEdge_1
       rect:
         serializedVersion: 2
-        x: 416
+        x: 414
         y: 0
-        width: 416
-        height: 358
+        width: 414
+        height: 418
       alignment: 9
-      pivot: {x: 0.49759614, y: 0.45251396}
+      pivot: {x: 0.49758455, y: 0.3923445}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -181,12 +181,12 @@ TextureImporter:
       name: graniteEdge_2
       rect:
         serializedVersion: 2
-        x: 832
+        x: 828
         y: 0
-        width: 416
-        height: 358
+        width: 414
+        height: 418
       alignment: 9
-      pivot: {x: 0.49759614, y: 0.45251396}
+      pivot: {x: 0.49758455, y: 0.3923445}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -203,12 +203,12 @@ TextureImporter:
       name: graniteEdge_3
       rect:
         serializedVersion: 2
-        x: 1248
+        x: 1242
         y: 0
-        width: 416
-        height: 358
+        width: 414
+        height: 418
       alignment: 9
-      pivot: {x: 0.49759614, y: 0.45251396}
+      pivot: {x: 0.49758455, y: 0.3923445}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -225,12 +225,12 @@ TextureImporter:
       name: graniteEdge_4
       rect:
         serializedVersion: 2
-        x: 1664
+        x: 1656
         y: 0
-        width: 416
-        height: 358
+        width: 414
+        height: 418
       alignment: 9
-      pivot: {x: 0.49759614, y: 0.45251396}
+      pivot: {x: 0.49758455, y: 0.3923445}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -247,12 +247,12 @@ TextureImporter:
       name: graniteEdge_5
       rect:
         serializedVersion: 2
-        x: 2080
+        x: 2070
         y: 0
-        width: 416
-        height: 358
+        width: 414
+        height: 418
       alignment: 9
-      pivot: {x: 0.49759614, y: 0.45251396}
+      pivot: {x: 0.49758455, y: 0.3923445}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -269,12 +269,12 @@ TextureImporter:
       name: graniteEdge_6
       rect:
         serializedVersion: 2
-        x: 2496
+        x: 2484
         y: 0
-        width: 416
-        height: 358
+        width: 414
+        height: 418
       alignment: 9
-      pivot: {x: 0.49759614, y: 0.45251396}
+      pivot: {x: 0.49758455, y: 0.3923445}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -291,12 +291,12 @@ TextureImporter:
       name: graniteEdge_7
       rect:
         serializedVersion: 2
-        x: 2912
+        x: 2898
         y: 0
-        width: 416
-        height: 358
+        width: 414
+        height: 418
       alignment: 9
-      pivot: {x: 0.49759614, y: 0.45251396}
+      pivot: {x: 0.49758455, y: 0.3923445}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
