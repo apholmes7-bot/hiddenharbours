@@ -47,7 +47,7 @@ namespace HiddenHarbours.Tests.EditMode
 
         // ---- doubles (the Core presentation seam; no URP, no GPU) ---------------------------------
 
-        private sealed class FakeRenderer : IHullMeshRenderer
+        private sealed class FakeRenderer : IHullMeshRenderer, IDeckOccupantSlots
         {
             public float HeadingDirUnits { get; set; }
             public float RollDegrees { get; set; }
@@ -65,6 +65,20 @@ namespace HiddenHarbours.Tests.EditMode
             public void SetDeckOccupant(Vector3 rigLocalMeters, bool active)
             { OccupantRigMeters = rigLocalMeters; OccupantActive = active; }
             public float DeckOccluderId => DeckOccluderIdValue;
+
+            // The SLOT seam, which is what the rider actually publishes through. This double is
+            // itself the slot array — one slot is all it needs, because the question it exists to
+            // answer is WHICH hull was told somebody is aboard, not how many can stand on her.
+            public IDeckOccupantSlots DeckOccupants => this;
+
+            public int Capacity => 1;
+            public int ActiveCount => OccupantActive ? 1 : 0;
+            public int Claim(object owner) => 0;
+            public void Release(int slot, object owner) => OccupantActive = false;
+            public void Set(int slot, object owner, Vector3 rigLocalMeters, bool active)
+                => SetDeckOccupant(rigLocalMeters, active);
+            public float OccluderId(int slot) => OccupantActive ? DeckOccluderIdValue : 0f;
+            public float OccluderIdTop => DeckOccluderIdValue;
         }
 
         private sealed class FakeService : IHullMeshPresentationService

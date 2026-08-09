@@ -13,11 +13,12 @@
 // The hull-id filter is what keeps two OVERLAPPING mesh hulls honest: each quad re-composes
 // only its own hull's pixels, so hull A's image never rides along at hull B's sorting position.
 //
-// ⚠️ A HULL HAS TWO IDS, and this quad composes BOTH (see the facet shader's deck-occupant note).
-// While somebody stands on her deck, the geometry NEARER the camera than that figure is written
-// with _HullIdFore so the figure's own shader can discard behind it — but it is still HER image and
-// still belongs in HER sorting slot, so nothing about what this quad draws changes. Accepting only
-// _HullId here would delete the wheelhouse from the boat the moment anyone climbed aboard.
+// ⚠️ A HULL HAS A BLOCK OF IDS, and this quad composes ALL of them (see the facet shader's
+// deck-occupant note). While anybody stands on her deck, the geometry nearer the camera than each of
+// them is written with one of her FORE ids — one per occupancy band — so those figures' own shaders
+// can discard behind her. It is still HER image and still belongs in HER sorting slot, so nothing
+// about what this quad draws changes. Accepting only _HullId here would delete the wheelhouse from
+// the boat the moment anyone climbed aboard.
 Shader "HiddenHarbours/IsoFacetOverlay"
 {
     SubShader
@@ -46,18 +47,26 @@ Shader "HiddenHarbours/IsoFacetOverlay"
             Texture2D<float4> _HHHullScreenTex;
 
             // Per draw via MaterialPropertyBlock: this hull's ids, already divided by 255.
-            // _HullIdFore is her SECOND id — the deck-occupant split (see the header). 0 when she
-            // is not registered for one, which no id ever is, so the second test never matches.
+            // _HullIdFore is the BASE of her reserved FORE BLOCK — the deck-occupant split (see the
+            // header) — and _HullIdForeSpan is how many ids that block holds. 0 when she is not
+            // registered for one, which no id ever is, so the block test never matches.
             float _HullId;
             float _HullIdFore;
+            float _HullIdForeSpan;
 
             // True when a resolved alpha is one of THIS hull's ids. Ids are small integers over
             // 255, so the comparison is done in id space with a half-step tolerance — 8-bit alpha
             // rounding must not be able to drop a pixel of the boat.
+            //
+            // The fore ids are a CONTIGUOUS BLOCK (one per occupancy band), so membership in them is
+            // one range rather than one compare per band — cheaper than the two-id test it replaces
+            // once the span is above two, and identical to it at span 1.
             bool HHIsThisHull(float a)
             {
-                return abs(a - _HullId) * 255.0 < 0.5 ||
-                       (_HullIdFore > 0.0 && abs(a - _HullIdFore) * 255.0 < 0.5);
+                if (abs(a - _HullId) * 255.0 < 0.5) return true;
+                if (_HullIdFore <= 0.0) return false;
+                float d = (a - _HullIdFore) * 255.0;
+                return d > -0.5 && d < _HullIdForeSpan - 0.5;
             }
 
             struct Attributes
@@ -131,7 +140,8 @@ Shader "HiddenHarbours/IsoFacetOverlay"
             Texture2D<float4> _HHHullScreenTex;
 
             float  _HullId;
-            float  _HullIdFore;        // her second id (the deck-occupant split) — see the header
+            float  _HullIdFore;        // her fore BLOCK base (the deck-occupant split) — see the header
+            float  _HullIdForeSpan;    // how many ids that block holds
             float4 _HHReflectOrigin;   // xy = the published ground-contact pivot, w = 1 when published
             float  _HHReflectLit;      // 1 = night light content (rides the post-grade bucket, §11.6)
             float4 _DayNightTint;      // GLOBAL (DayNightController) — the overlay this pass compensates for
@@ -140,8 +150,10 @@ Shader "HiddenHarbours/IsoFacetOverlay"
             // passes do not share one). Same rule, same tolerance.
             bool HHIsThisHullReflect(float a)
             {
-                return abs(a - _HullId) * 255.0 < 0.5 ||
-                       (_HullIdFore > 0.0 && abs(a - _HullIdFore) * 255.0 < 0.5);
+                if (abs(a - _HullId) * 255.0 < 0.5) return true;
+                if (_HullIdFore <= 0.0) return false;
+                float d = (a - _HullIdFore) * 255.0;
+                return d > -0.5 && d < _HullIdForeSpan - 0.5;
             }
 
             struct ReflectAttributes { float4 positionOS : POSITION; };

@@ -20,6 +20,7 @@ namespace HiddenHarbours.Art
     {
         static readonly List<IsoFacetHullRenderer> s_Hulls = new List<IsoFacetHullRenderer>();
         static readonly Stack<int> s_FreeIds = new Stack<int>();
+        static readonly Stack<int> s_FreeForeBlocks = new Stack<int>();
         static int s_NextId = 1;
         static Texture2D s_ClearFallback;
         static Texture2D s_GuardFallback;
@@ -35,21 +36,31 @@ namespace HiddenHarbours.Art
         }
 
         /// <summary>
-        /// A hull's SECOND id — the deck-occupant split (owner playtest 2026-08-07). Taken from the
-        /// same pool as the first, because it lives in the same 8-bit alpha channel and must not be
-        /// able to collide with another boat's.
+        /// A hull's FORE BLOCK — <paramref name="count"/> CONTIGUOUS ids reserved for the
+        /// deck-occupant split (owner playtest 2026-08-07), one per occupancy band. Returns the base
+        /// of the block, or <b>0</b> when the pool cannot spare one. Taken from the same pool as the
+        /// hull's own id, because they live in the same 8-bit alpha channel and must not be able to
+        /// collide with another boat's.
+        ///
+        /// <para><b>Why contiguous.</b> The facet pass writes <c>base + band</c>, where the band is
+        /// how many occupants a pixel is in front of; consecutive ids are what let an occupant's
+        /// hiding region be one RANGE test in the sprite shader instead of one compare per band.
+        /// Nothing else needs them adjacent, and nothing may assume the base is stable across a
+        /// re-registration.</para>
         ///
         /// <para>It does NOT add the hull to <see cref="Count"/>: that number is the render feature's
         /// zero-cost gate ("is there anything to draw?"), and one boat is one boat however many ids
         /// she wears. Counting her twice would be harmless today and wrong the first time anything
         /// budgeted off it.</para>
         ///
-        /// <para>The real cost is the budget: two ids per hull means <b>127</b> simultaneous mesh
-        /// hulls rather than 255. That is an abundance either way — the largest scene the roadmap
-        /// contemplates is a harbour of a dozen — and the exhaustion warning below still fires with
-        /// the true number.</para>
+        /// <para><b>The budget is the real cost of the slot count.</b> One id plus a block of
+        /// <c>count</c> per hull means <c>255 / (count + 1)</c> simultaneous mesh hulls — at the
+        /// shipped twelve slots, <b>19</b>, against a roadmap whose largest scene is a harbour of a
+        /// dozen. Returning 0 rather than collapsing onto a shared block is deliberate: a shared FORE
+        /// block would make one boat's crew discard against another boat's planking, which is a
+        /// wrong picture, where 0 is merely the pre-split one.</para>
         /// </summary>
-        internal static int RegisterFore(IsoFacetHullRenderer hull) => TakeId();
+        internal static int RegisterForeBlock(int count) => TakeIdBlock(count);
 
         internal static void Unregister(IsoFacetHullRenderer hull, int id)
         {
@@ -57,11 +68,12 @@ namespace HiddenHarbours.Art
                 s_FreeIds.Push(id);
         }
 
-        /// <summary>Give a FORE id back. Not paired with the hull list — the hull's own
-        /// <see cref="Unregister"/> owns that; this only returns the number.</summary>
-        internal static void UnregisterFore(int id)
+        /// <summary>Give a FORE block back. Not paired with the hull list — the hull's own
+        /// <see cref="Unregister"/> owns that; this only returns the numbers.</summary>
+        internal static void UnregisterForeBlock(int baseId, int count)
         {
-            if (id >= 1 && id < 255) s_FreeIds.Push(id);
+            if (baseId >= 1 && count >= 1 && baseId + count - 1 <= 255)
+                s_FreeForeBlocks.Push(baseId);
         }
 
         static int TakeId()
@@ -69,7 +81,7 @@ namespace HiddenHarbours.Art
             if (s_FreeIds.Count > 0) return s_FreeIds.Pop();
             if (s_NextId > 255)
             {
-                // 255 ids — 127 simultaneous mesh hulls, each wearing two — would be a fleet nobody
+                // 255 ids — shared between hull ids and their fore blocks — would be a fleet nobody
                 // budgeted for; collapsing onto id 255 degrades overlap separation for the surplus,
                 // nothing worse.
                 Debug.LogWarning("[IsoFacetHullRegistry] Facet hull ids exhausted (255 in use); " +
@@ -77,6 +89,31 @@ namespace HiddenHarbours.Art
                 return 255;
             }
             return s_NextId++;
+        }
+
+        /// <summary>
+        /// <paramref name="count"/> contiguous ids, or 0 if the pool cannot spare them.
+        ///
+        /// <para>Freed blocks are reused whole, never split: every block this hands out is the same
+        /// size, so a returned one always fits the next request exactly and the pool cannot
+        /// fragment.</para>
+        /// </summary>
+        static int TakeIdBlock(int count)
+        {
+            if (count < 1) return 0;
+            if (s_FreeForeBlocks.Count > 0) return s_FreeForeBlocks.Pop();
+            if (s_NextId + count - 1 > 255)
+            {
+                Debug.LogWarning(
+                    $"[IsoFacetHullRegistry] Facet hull ids exhausted ({s_NextId - 1} in use); this " +
+                    $"hull gets NO deck-occupant block ({count} contiguous ids needed). Anything " +
+                    "standing on her deck will draw over her cabins instead of behind them. Each " +
+                    "hull costs 1 + " + count + " ids out of 255.");
+                return 0;
+            }
+            int baseId = s_NextId;
+            s_NextId += count;
+            return baseId;
         }
 
         /// <summary>
@@ -164,20 +201,36 @@ namespace HiddenHarbours.Art
         public static readonly int PixelsPerMetre = Shader.PropertyToID("_PixelsPerMetre");
         public static readonly int HullId = Shader.PropertyToID("_HullId");
 
-        /// <summary>A hull's SECOND id (already /255) — the deck-occupant split. Geometry nearer the
-        /// camera than the figure standing on her deck is written with this instead of
-        /// <see cref="HullId"/>, so that figure's own shader can discard behind it. The overlay
-        /// composes BOTH, so the boat's own picture is unchanged. 0 = no split.</summary>
+        /// <summary>The BASE of a hull's contiguous FORE BLOCK (already /255) — the deck-occupant
+        /// split. Geometry nearer the camera than the occupants standing on her deck is written with
+        /// <c>base + band - 1</c> instead of <see cref="HullId"/>, the band being how many of them
+        /// that pixel is in front of, so their own shaders can discard behind it. The overlay
+        /// composes the WHOLE block, so the boat's own picture is unchanged. 0 = no split.</summary>
         public static readonly int HullIdFore = Shader.PropertyToID("_HullIdFore");
 
-        /// <summary>Where that occupant stands: x = their view depth, in the same world z the facet
-        /// fragment carries; w = 1 only while somebody is actually there. w = 0 — every hull with
-        /// nobody aboard — leaves the facet alpha byte-identical to before the split existed.</summary>
+        /// <summary>How many ids that fore block holds — what the overlay needs to accept all of a
+        /// hull's bands as hers with one range test. 1 reproduces the single-plane split exactly.</summary>
+        public static readonly int HullIdForeSpan = Shader.PropertyToID("_HullIdForeSpan");
+
+        /// <summary>The occupant SLOTS: one float4 each, x = that occupant's view depth in the same
+        /// world z the facet fragment carries, w = 1 only while the slot is claimed and standing.
+        /// Always written full-length — a shorter array would leave the tail of a previous hull's
+        /// values live on the GPU.</summary>
         public static readonly int DeckOccupant = Shader.PropertyToID("_DeckOccupant");
 
-        /// <summary>Per RENDERER on an occludable sprite: the id that hides it (the fore id of the
-        /// hull it is standing on), already /255. 0 = nothing occludes this sprite, which is every
-        /// sprite in the game bar the one on a deck.</summary>
+        /// <summary>How many slots are live. 0 — every hull with nobody aboard — is the early-out
+        /// that leaves the facet alpha byte-identical to before the split existed, and it is why the
+        /// slot loop costs nothing on the hulls that are nearly all of them.</summary>
+        public static readonly int DeckOccupantCount = Shader.PropertyToID("_DeckOccupantCount");
+
+        /// <summary>Per RENDERER on an occludable sprite: the LOWEST id that hides it — the fore id
+        /// of its own occupancy rank on the hull it stands on — already /255. 0 = nothing occludes
+        /// this sprite, which is every sprite in the game bar those on a deck.</summary>
         public static readonly int DeckOccluderId = Shader.PropertyToID("_HHDeckOccluderId");
+
+        /// <summary>Per RENDERER on an occludable sprite: the TOP of that hull's fore block, /255.
+        /// Bounds the discard range to the hull the sprite is actually standing on — without it a
+        /// fisher could be cut out by another boat's id.</summary>
+        public static readonly int DeckOccluderIdTop = Shader.PropertyToID("_HHDeckOccluderIdTop");
     }
 }

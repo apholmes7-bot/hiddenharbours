@@ -122,6 +122,10 @@ namespace HiddenHarbours.Boats
         public float DeckOccluderId => _driver != null ? _driver.DeckOccluderId : 0f;
 
         /// <inheritdoc/>
+        public HiddenHarbours.Core.IDeckOccupantSlots DeckOccupants
+            => _driver != null ? _driver.DeckOccupants : HiddenHarbours.Core.NoDeckOccupantSlots.Instance;
+
+        /// <inheritdoc/>
         public Transform Visual => _driver != null ? _driver.Visual : null;
 
         /// <inheritdoc/>

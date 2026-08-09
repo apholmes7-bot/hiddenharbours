@@ -50,6 +50,10 @@ namespace HiddenHarbours.Tests.EditMode
             public void SetDeckOccupant(Vector3 rigLocalMeters, bool active)
             { OccupantRigMeters = rigLocalMeters; OccupantActive = active; }
             public float DeckOccluderId => DeckOccluderIdValue;
+            // The slot seam. Handed through by the presenter unchanged, so a test can assert it is
+            // the DRAWER's slots a caller reaches and not a second array on the way.
+            public IDeckOccupantSlots Slots = NoDeckOccupantSlots.Instance;
+            public IDeckOccupantSlots DeckOccupants => Slots;
         }
 
         /// <summary>A fitting as the seam sees it: a local rotation and a lateral mount, nothing more
@@ -237,6 +241,32 @@ namespace HiddenHarbours.Tests.EditMode
 
             p.SetDeckOccupant(Vector3.zero, false);
             Assert.IsFalse(fake.OccupantActive, "stepping ashore stops the hull splitting her image");
+        }
+
+        /// <summary>
+        /// The SLOT seam — what a second thing on the deck (gear, a pot stack, a sternman) claims
+        /// through. The presenter must hand back the DRAWER's own slots, not a copy and not a second
+        /// array: only the drawer's array is the one the facet pass publishes, so anything the
+        /// presenter interposed would claim slots nobody renders.
+        /// </summary>
+        [Test]
+        public void Presenter_HandsTheDrawersOwnOccupantSlotsThrough()
+        {
+            var root = MakeRoot();
+            var fake = new FakeRenderer();
+            var driver = root.AddComponent<MeshHullDriver>();
+            driver.Configure(root.transform, fake, MakeUsableDef(), 0f);
+            var p = new MeshHullPresenter(driver);
+
+            Assert.AreSame(fake.Slots, p.DeckOccupants,
+                "the presenter must pass the drawer's slots through untouched");
+
+            // …and a hull that has been torn off the boat (the dev picker does exactly that) hides
+            // nobody, answering with the refusing null object rather than null so no caller needs a
+            // branch and nothing keeps claiming slots on a drawer that is gone.
+            Object.DestroyImmediate(driver);
+            Assert.AreSame(NoDeckOccupantSlots.Instance, p.DeckOccupants,
+                "a presenter whose driver is gone must hand back the refusing null object");
         }
 
         [Test]

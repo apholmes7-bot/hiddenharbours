@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using HiddenHarbours.Core;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -99,13 +100,24 @@ namespace HiddenHarbours.Art
         private MaterialPropertyBlock _props;
         private int _hullId;
         // THE DECK-OCCUPANT SPLIT (owner playtest 2026-08-07: sprites showing through closed
-        // cabins). A SECOND registry id, held for this hull's whole registered life so it is stable
-        // across the frames a figure boards and leaves, plus where that figure's feet are in rig
-        // metres. Nobody aboard ⇒ _occupantActive false ⇒ the facet shader never compares and every
-        // pixel carries _hullId, exactly as before this existed.
+        // cabins). A contiguous BLOCK of registry ids — one per occupancy band — held for this
+        // hull's whole registered life so it is stable across the frames a figure boards and leaves,
+        // plus a fixed array of who is standing where in rig metres. Nobody aboard ⇒ no active slot
+        // ⇒ the facet shader's loop never runs and every pixel carries _hullId, exactly as before
+        // this existed.
         private int _foreHullId;
-        private Vector3 _occupantRigMeters;
-        private bool _occupantActive;
+        private readonly DeckSlot[] _deckSlots = new DeckSlot[DeckOccupantSlots];
+        // Reused every frame — a fresh array per LateUpdate would allocate on every hull in the
+        // scene (rule 7). Always sent whole, so a released slot's stale depth cannot survive on the
+        // GPU behind a w of 0.
+        private readonly Vector4[] _deckSlotVectors = new Vector4[DeckOccupantSlots];
+        // Scratch for the rank read — packed with the ACTIVE depths and handed to the Core rule.
+        // A field, not a local, so consulting a slot allocates nothing (rule 7).
+        private readonly float[] _activeDepths = new float[DeckOccupantSlots];
+        private DeckOccupantSlotView _deckOccupants;
+        // The slot the single-occupant shim holds, or -1. Claimed on the first ACTIVE write and kept
+        // for the hull's life, exactly like any other claimant's.
+        private int _legacySlot = -1;
         private bool _poseDirty = true;
         // The watertight clamp's footprint scan radius (half the cell width in world metres) —
         // derived once at Configure, cached (rule 7: ApplyPose runs every frame).
@@ -174,25 +186,73 @@ namespace HiddenHarbours.Art
         public int HullId => _hullId;
 
         /// <summary>
-        /// This hull's SECOND id — what she writes into the facet alpha for geometry NEARER the
-        /// camera than the figure standing on her deck. 0 when she is not registered.
+        /// <b>The number of deck occupants one hull can hide at once, and it is MEASURED.</b>
         ///
-        /// <para>The sprite that must be hidden behind her wheelhouse is told this number and
-        /// discards where it reads it (<c>HiddenHarbours/DeckOccludedSprite</c>). It is handed out
-        /// once at registration and held for life, not per boarding: a figure stepping aboard must
-        /// not be able to change what the boat is drawing with, and a per-frame id would make the
-        /// split a race between two components' execution order.</para>
+        /// <para>The stern-deck loop's worst beat — the deck-loop kit's own twelve-beat shift table,
+        /// with <c>TrapIso.CAPS</c> for what each surface holds — puts TEN things on a lobster boat's
+        /// deck at the same time: two hands (skipper at the hauler, sternman at the bench), four
+        /// pieces of working furniture (hauler station, banding bench, chopping board, bait bin), two
+        /// trap stacks (deck and washboard cap), the pot in play, and the fish tray. Twelve is that
+        /// plus two.</para>
+        ///
+        /// <para><b>What the number costs</b> is the id budget, not the per-pixel loop (which is one
+        /// compare per slot behind a single early-out that is false on every hull with nobody
+        /// aboard). Each hull reserves 1 + this many of the 255 ids the facet alpha can carry, so
+        /// twelve leaves <b>19</b> simultaneous mesh hulls against a roadmap whose largest scene is a
+        /// harbour of a dozen. Raise it and that headroom shrinks; lower it and the surplus occupants
+        /// are refused, loudly, and draw un-occluded.</para>
+        ///
+        /// <para>⚠️ <b>The facet shader holds this same number as a literal</b>
+        /// (<c>HH_DECK_OCCUPANT_SLOTS</c>) because HLSL needs a compile-time array bound.
+        /// <c>DeckOccupantSlotTests</c> asserts the two agree — change one and that test fails,
+        /// which is the only thing standing between a mismatch and a silently truncated deck.</para>
+        /// </summary>
+        public const int DeckOccupantSlots = 12;
+
+        /// <summary>
+        /// The BASE of this hull's contiguous FORE BLOCK — the first of the ids she writes into the
+        /// facet alpha for geometry NEARER the camera than somebody standing on her deck. 0 when she
+        /// is not registered, or when the id pool could not spare a block.
+        ///
+        /// <para>Band <i>m</i> (a pixel in front of <i>m</i> occupants) is written as
+        /// <c>ForeHullId + m - 1</c>, so the sprite that must be hidden behind her wheelhouse discards
+        /// across a RANGE of this block (<c>HiddenHarbours/DeckOccludedSprite</c>). The block is
+        /// handed out once at registration and held for life, not per boarding: a figure stepping
+        /// aboard must not be able to change what the boat is drawing with, and a per-frame id would
+        /// make the split a race between two components' execution order.</para>
         /// </summary>
         public int ForeHullId => _foreHullId;
 
+        /// <summary>The last id of that block — the top of every occupant's discard range, and what
+        /// stops one boat's ids cutting holes in another boat's crew. 0 when she holds no block.</summary>
+        public int ForeHullIdTop => _foreHullId == 0 ? 0 : _foreHullId + DeckOccupantSlots - 1;
+
         /// <summary>
-        /// The id an occludable sprite should be told to discard against — <see cref="ForeHullId"/>
-        /// divided by 255, ready for the shader, and <b>0 whenever nothing is being split</b> (no
-        /// occupant registered, or the hull is not live). The one value a consumer needs, so nobody
-        /// downstream has to re-derive "is there anything to hide behind?" from two fields.
+        /// <b>Who is standing on this deck</b> — the Core seam (<see cref="IDeckOccupantSlots"/>)
+        /// through which a rider, a trap stack or a piece of gear claims its own depth on this hull.
+        /// One view object per hull, made on first use and reused (rule 7).
         /// </summary>
-        public float DeckOccluderId
-            => _occupantActive && _foreHullId > 0 ? _foreHullId / 255f : 0f;
+        public IDeckOccupantSlots DeckOccupants => _deckOccupants ??= new DeckOccupantSlotView(this);
+
+        /// <summary>How many slots are claimed AND standing — the facet shader's early-out, and the
+        /// number a test reads to know the split is armed.</summary>
+        public int ActiveDeckOccupants
+        {
+            get
+            {
+                int n = 0;
+                for (int i = 0; i < DeckOccupantSlots; i++) if (_deckSlots[i].Active) n++;
+                return n;
+            }
+        }
+
+        /// <summary>
+        /// The id an occludable sprite should be told to discard against for the SINGLE-OCCUPANT
+        /// shim (<see cref="SetDeckOccupant(Vector3, bool)"/>) — 0 whenever nothing is being split.
+        /// Pair it with <see cref="ForeHullIdTop"/>; anything carrying more than one occupant should
+        /// be going through <see cref="DeckOccupants"/> instead.
+        /// </summary>
+        public float DeckOccluderId => OccluderIdForSlot(_legacySlot);
 
         /// <summary>
         /// The child that carries this hull's heading, rock and heave — what an articulated fitting
@@ -388,10 +448,11 @@ namespace HiddenHarbours.Art
             if (_hullId == 0)
             {
                 _hullId = IsoFacetHullRegistry.Register(this);
-                // …and her FORE id, taken in the same breath so the pair lives and dies together.
-                // Registering twice is what halves the id budget (127 hulls rather than 255) — an
-                // abundance either way, and the registry says so itself when they run out.
-                _foreHullId = IsoFacetHullRegistry.RegisterFore(this);
+                // …and her FORE BLOCK, taken in the same breath so the two live and die together.
+                // The block is what costs the id budget (1 + DeckOccupantSlots per hull, so 19
+                // simultaneous hulls out of 255) — the registry says so itself when they run out,
+                // and hands back 0, which simply means she splits for nobody.
+                _foreHullId = IsoFacetHullRegistry.RegisterForeBlock(DeckOccupantSlots);
             }
             _poseDirty = true;
         }
@@ -405,12 +466,12 @@ namespace HiddenHarbours.Art
             }
             if (_foreHullId != 0)
             {
-                IsoFacetHullRegistry.UnregisterFore(_foreHullId);
+                IsoFacetHullRegistry.UnregisterForeBlock(_foreHullId, DeckOccupantSlots);
                 _foreHullId = 0;
             }
-            // A hull going away carries her occupant with her: nothing may keep discarding against
-            // an id that is now free for another boat to be issued.
-            _occupantActive = false;
+            // A hull going away carries her occupants with her: nothing may keep discarding against
+            // ids that are now free for another boat to be issued.
+            ClearDeckSlots();
         }
 
         private void OnDestroy() => ReleaseOwned();
@@ -525,12 +586,8 @@ namespace HiddenHarbours.Art
             _props.SetVector(IsoFacetShaderIds.HullOrigin, new Vector4(p.x, p.y, 0f, 0f));
             _props.SetFloat(IsoFacetShaderIds.HullId, _hullId / 255f);
             _props.SetFloat(IsoFacetShaderIds.HullIdFore, _foreHullId / 255f);
-            // WHERE THE DECK OCCUPANT STANDS, in the depth the facet fragment carries. The rig point
-            // goes through the POSED mesh child's own transform — the very matrix the shader's
-            // `mul(unity_ObjectToWorld, positionOS)` uses — so the two numbers are commensurate by
-            // construction rather than by a duplicated copy of the iso projection. (Duplicating that
-            // projection is what the wake plume and the deck clamp both had to be fixed for.)
-            _props.SetVector(IsoFacetShaderIds.DeckOccupant, DeckOccupantVector());
+            _props.SetFloat(IsoFacetShaderIds.HullIdForeSpan, DeckOccupantSlots);
+            PublishDeckSlots();
             _meshRenderer.SetPropertyBlock(_props);
             _overlayRenderer.SetPropertyBlock(_props);
         }
@@ -550,23 +607,187 @@ namespace HiddenHarbours.Art
         /// </summary>
         public void SetDeckOccupant(Vector3 rigLocalMeters, bool active)
         {
-            _occupantRigMeters = rigLocalMeters;
-            _occupantActive = active;
+            if (_legacySlot < 0)
+            {
+                // Saying "nobody is aboard" must not burn a slot — that is the state of nearly every
+                // hull, nearly always, and a claim held for it would starve the real occupants.
+                if (!active) return;
+                _legacySlot = ClaimSlot(s_LegacyOccupant);
+                if (_legacySlot < 0) return;    // refused, and ClaimSlot has already said so loudly
+            }
+            SetSlot(_legacySlot, s_LegacyOccupant, rigLocalMeters, active);
+        }
+
+        // ---- the occupant slots -------------------------------------------------------------------
+
+        /// <summary>
+        /// WHERE EACH DECK OCCUPANT STANDS, in the depth the facet fragment carries — re-projected
+        /// here, in <see cref="ApplyPose"/>, where the posed transform is already to hand and is the
+        /// one the vertices will be drawn through this frame.
+        ///
+        /// <para>The whole array goes every time, deliberately: a shorter write would leave a
+        /// released slot's depth live on the GPU behind a stale w, and the one thing worse than a
+        /// figure showing through a cabin is a hole cut for somebody who left.</para>
+        ///
+        /// <para><c>_DeckOccupantCount</c> is the shader's early-out. 0 — every hull with nobody
+        /// aboard, which is nearly all of them — and the slot loop never runs at all, leaving the
+        /// facet alpha byte-identical to before any of this existed.</para>
+        /// </summary>
+        private void PublishDeckSlots()
+        {
+            int active = 0;
+            bool live = _foreHullId != 0 && _meshChild != null;
+            for (int i = 0; i < DeckOccupantSlots; i++)
+            {
+                if (live && _deckSlots[i].Active)
+                {
+                    float depth = _meshChild.TransformPoint(_deckSlots[i].RigMeters).z;
+                    _deckSlots[i].ViewDepth = depth;
+                    _deckSlotVectors[i] = new Vector4(depth, 0f, 0f, 1f);
+                    active++;
+                }
+                else
+                {
+                    _deckSlotVectors[i] = Vector4.zero;
+                }
+            }
+            _props.SetVectorArray(IsoFacetShaderIds.DeckOccupant, _deckSlotVectors);
+            _props.SetFloat(IsoFacetShaderIds.DeckOccupantCount, active);
+        }
+
+        /// <summary>One slot: who holds it, where they stand, and the depth that was published for
+        /// them. <see cref="Owner"/> null = free.</summary>
+        private struct DeckSlot
+        {
+            public object Owner;
+            public Vector3 RigMeters;
+            public bool Active;
+            /// <summary>The published view depth, refreshed on every <see cref="SetSlot"/> and again
+            /// in <see cref="ApplyPose"/>, so the rank the CPU hands out and the bands the GPU counts
+            /// are computed from the same numbers.</summary>
+            public float ViewDepth;
+        }
+
+        /// <summary>The owner token the single-occupant shim claims with. Static because slots are
+        /// per hull — one sentinel cannot collide with itself across two boats.</summary>
+        private static readonly object s_LegacyOccupant = new object();
+
+        /// <summary>
+        /// Take a slot for <paramref name="owner"/>, or -1 when all are held (logged LOUDLY — a
+        /// deck occupant that quietly failed to be occluded is exactly the defect this whole seam
+        /// exists to fix, and it would look like a shader bug).
+        ///
+        /// <para><b>Idempotent.</b> An owner that already holds a slot gets the same index back
+        /// rather than a second one, so a consumer that lost its index (a domain reload, a re-wire)
+        /// recovers instead of leaking slots one boarding at a time.</para>
+        /// </summary>
+        private int ClaimSlot(object owner)
+        {
+            if (owner == null) return -1;
+            for (int i = 0; i < DeckOccupantSlots; i++)
+                if (ReferenceEquals(_deckSlots[i].Owner, owner)) return i;
+
+            for (int i = 0; i < DeckOccupantSlots; i++)
+            {
+                if (_deckSlots[i].Owner != null) continue;
+                _deckSlots[i] = new DeckSlot { Owner = owner };
+                return i;
+            }
+
+            Debug.LogWarning(
+                $"[IsoFacetHullRenderer] '{name}' has all {DeckOccupantSlots} deck-occupant slots " +
+                $"claimed; '{owner}' is REFUSED and will draw over this hull's cabins instead of " +
+                "behind them. The earlier claims keep their slots (first claim wins). Either release " +
+                "a slot or raise IsoFacetHullRenderer.DeckOccupantSlots — and the shader's " +
+                "HH_DECK_OCCUPANT_SLOTS with it — at the cost of simultaneous hulls.", this);
+            return -1;
+        }
+
+        /// <summary>Give a slot back. Ignored unless <paramref name="owner"/> is the token it was
+        /// claimed with, so a stale holder cannot evict a live one.</summary>
+        private void ReleaseSlot(int slot, object owner)
+        {
+            if (slot < 0 || slot >= DeckOccupantSlots) return;
+            if (!ReferenceEquals(_deckSlots[slot].Owner, owner)) return;
+            _deckSlots[slot] = default;
+            if (slot == _legacySlot && ReferenceEquals(owner, s_LegacyOccupant)) _legacySlot = -1;
+        }
+
+        /// <summary>Publish where this occupant stands. Cheap and idempotent, safe every LateUpdate:
+        /// it stores and projects one point (rule 7).</summary>
+        private void SetSlot(int slot, object owner, Vector3 rigLocalMeters, bool active)
+        {
+            if (slot < 0 || slot >= DeckOccupantSlots) return;
+            if (!ReferenceEquals(_deckSlots[slot].Owner, owner)) return;
+            _deckSlots[slot].RigMeters = rigLocalMeters;
+            _deckSlots[slot].Active = active;
+            _deckSlots[slot].ViewDepth = ViewDepthOf(rigLocalMeters);
         }
 
         /// <summary>
-        /// The split plane for the facet shader: x = the occupant's view depth, w = 1 while there is
-        /// one. <see cref="Vector4.zero"/> — nobody aboard, no fore id, or no posed mesh yet — is the
-        /// exact inert value: w = 0 means the shader never compares, so the facet alpha is
-        /// byte-identical to before the split existed.
+        /// The LOW id this slot's sprite must discard from, /255 — 0 when there is nothing to hide
+        /// behind (unclaimed, not standing, no fore block, or the hull is not live).
+        ///
+        /// <para><b>It is a RANK, and that is why publishing has to come first.</b> An occupant is
+        /// hidden by every band from their own depth inward, so their low id is
+        /// <c>base + rank - 1</c>, where rank counts the occupants standing AT OR DEEPER THAN them —
+        /// a number that depends on where everybody else is. Consulting before publishing gets last
+        /// frame's ordering, which a consumer that writes both every frame corrects on the next one;
+        /// it can only differ at all in the frame two occupants actually cross in depth.</para>
         /// </summary>
-        private Vector4 DeckOccupantVector()
+        private float OccluderIdForSlot(int slot)
         {
-            if (!_occupantActive || _foreHullId == 0 || _meshChild == null) return Vector4.zero;
-            // The POSED child, not the root: it carries the rig→world map (rotation × the mirror
-            // scale) AND the heave/waterline offset, which is exactly what the vertices got.
-            float viewDepth = _meshChild.TransformPoint(_occupantRigMeters).z;
-            return new Vector4(viewDepth, 0f, 0f, 1f);
+            if (_foreHullId == 0 || slot < 0 || slot >= DeckOccupantSlots) return 0f;
+            if (!_deckSlots[slot].Active) return 0f;
+
+            int n = 0;
+            for (int i = 0; i < DeckOccupantSlots; i++)
+                if (_deckSlots[i].Active) _activeDepths[n++] = _deckSlots[i].ViewDepth;
+
+            // The rank rule lives in Core beside the band rule the SHADER counts, because the two
+            // are one theorem and a private copy here is how they would drift apart. It counts this
+            // slot itself, so it is never 0.
+            int rank = DeckOccupantPartition.RankOf(_deckSlots[slot].ViewDepth, _activeDepths, n);
+            return (_foreHullId + rank - 1) / 255f;
+        }
+
+        /// <summary>
+        /// A rig point in the depth the facet fragment carries. Through the POSED child, not the
+        /// root: it holds the rig→world map (rotation × the mirror scale) AND the heave/waterline
+        /// offset, which is exactly what the vertices got — so the two numbers are commensurate by
+        /// construction rather than by a duplicated copy of the iso projection. (Duplicating that
+        /// projection is what the wake plume and the deck clamp both had to be fixed for.)
+        /// </summary>
+        private float ViewDepthOf(in Vector3 rigLocalMeters)
+            => _meshChild != null ? _meshChild.TransformPoint(rigLocalMeters).z : 0f;
+
+        /// <summary>Empty every slot — a hull going away, or being re-configured, carries her
+        /// occupants with her. Nothing may keep discarding against ids that are about to be handed
+        /// to another boat.</summary>
+        private void ClearDeckSlots()
+        {
+            for (int i = 0; i < DeckOccupantSlots; i++) _deckSlots[i] = default;
+            _legacySlot = -1;
+        }
+
+        /// <summary>
+        /// The hull's <see cref="IDeckOccupantSlots"/> face. A small view rather than the component
+        /// implementing the interface itself, so the renderer's own API keeps saying what it means
+        /// (<c>Claim</c>/<c>Set</c> on a renderer would read as something about drawing).
+        /// </summary>
+        private sealed class DeckOccupantSlotView : IDeckOccupantSlots
+        {
+            private readonly IsoFacetHullRenderer _hull;
+            internal DeckOccupantSlotView(IsoFacetHullRenderer hull) => _hull = hull;
+
+            public int Capacity => DeckOccupantSlots;
+            public int ActiveCount => _hull.ActiveDeckOccupants;
+            public int Claim(object owner) => _hull.ClaimSlot(owner);
+            public void Release(int slot, object owner) => _hull.ReleaseSlot(slot, owner);
+            public void Set(int slot, object owner, Vector3 rigLocalMeters, bool active)
+                => _hull.SetSlot(slot, owner, rigLocalMeters, active);
+            public float OccluderId(int slot) => _hull.OccluderIdForSlot(slot);
+            public float OccluderIdTop => _hull._foreHullId == 0 ? 0f : _hull.ForeHullIdTop / 255f;
         }
 
         private void ReleaseOwned()

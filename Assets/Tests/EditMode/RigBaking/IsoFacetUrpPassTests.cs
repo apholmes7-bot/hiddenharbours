@@ -466,6 +466,291 @@ namespace HiddenHarbours.Tests.RigBaking
                 "asked to be rid of. The deck under their own boots must stay behind them.");
         }
 
+        // ------------------------------------------------- the occupant SLOTS (the #474 blocker)
+
+        /// <summary>The rig point of a figure standing on the sole, at a given distance forward of
+        /// amidships. +Y is the bow; 1.35 m is the cockpit sole the shipped test stands on.</summary>
+        static Vector3 Stand(float alongMetres) => new Vector3(0f, alongMetres, 1.35f);
+
+        /// <summary>
+        /// Render the lobster boat with ONE occupant, parked in slot <paramref name="slot"/>, and a
+        /// full-frame sprite drawn through the occluded-sprite shader with that occupant's own ids.
+        ///
+        /// <para>The slot is reached by first claiming — and never activating — the slots below it.
+        /// An unclaimed-but-parked slot contributes nothing to any band, which is itself part of what
+        /// these tests prove: idle slots must be invisible to the picture.</para>
+        /// </summary>
+        static byte[] RenderOccupantInSlot(int slot, Vector3 stand, Color32 tint, out int hullInk)
+        {
+            EnsureLobster();
+            using var scene = new HullScene(s_Lobster, s_LobsterMesh);
+            scene.SetPose(new RigViewOptions(0, s_Lobster.DefaultElev));
+
+            byte[] baseline = scene.Render();
+            hullInk = 0;
+            for (int i = 0; i < baseline.Length; i += 4) if (baseline[i + 3] > 0) hullInk++;
+
+            var slots = scene.Hull.DeckOccupants;
+            for (int i = 0; i < slot; i++)
+                Assert.AreEqual(i, slots.Claim(new object()),
+                    "harness: claims must fill slots in order, or this is not testing the slot asked for");
+
+            var owner = new object();
+            int mine = slots.Claim(owner);
+            Assert.AreEqual(slot, mine, "harness: the occupant did not land in the slot under test");
+            slots.Set(mine, owner, stand, true);
+            scene.Hull.ApplyPose();
+
+            var sprite = scene.AddOccludableSprite(tint, 10, slots.OccluderId(mine));
+            byte[] px = scene.Render();
+            Object.DestroyImmediate(sprite);
+            return px;
+        }
+
+        /// <summary>
+        /// <b>EVERY SLOT IS A REAL SLOT.</b> One occupant, standing in the same place, must produce
+        /// the same picture whichever slot they hold — pixel for pixel, all twelve of them.
+        ///
+        /// <para><b>Why this is the per-slot sabotage test.</b> Put the wrong depth in slot <i>k</i>
+        /// (or read the wrong index, or size the array short, or let the C# constant drift above the
+        /// shader's) and slot <i>k</i> alone stops matching slot 0: either the hull stops hiding the
+        /// figure at all (the loop never reached that slot) or it hides a different region (it read
+        /// somebody else's depth). Each case fails on its own and names its own slot, which is the
+        /// point — a single test over all twelve would go red without saying which one broke.</para>
+        ///
+        /// <para>Slot 0 is the control, so case 0 is a tautology on purpose: it is the one that
+        /// proves the HARNESS renders deterministically, and if it ever fails the other eleven mean
+        /// nothing.</para>
+        /// </summary>
+        [Test]
+        public void EverySlot_HidesTheSameWayAsSlotZero_PerPixel(
+            // Qualified: this file imports both NUnit.Framework and UnityEngine, and each declares a
+            // RangeAttribute (the repo's FlowerPoseSelectTests hit the same ambiguity first).
+            [NUnit.Framework.Range(0, IsoFacetHullRenderer.DeckOccupantSlots - 1)] int slot)
+        {
+            RequireAGraphicsDevice();
+            var red = new Color32(255, 0, 0, 255);
+            Vector3 stand = Stand(-1.6f);           // the cockpit — the wheelhouse is in front of it
+
+            byte[] control = RenderOccupantInSlot(0, stand, red, out int inkA);
+            byte[] under = RenderOccupantInSlot(slot, stand, red, out int inkB);
+
+            Assert.Greater(inkA, 200, "harness: the hull must actually have drawn something");
+            Assert.AreEqual(inkA, inkB, "harness: the two renders must be of the same boat");
+
+            int hidden = 0, differ = 0;
+            for (int i = 0; i < control.Length; i += 4)
+            {
+                var a = new Color32(control[i], control[i + 1], control[i + 2], control[i + 3]);
+                var b = new Color32(under[i], under[i + 1], under[i + 2], under[i + 3]);
+                if (!Equal(a, red)) hidden++;
+                if (!Equal(a, b)) differ++;
+            }
+
+            Assert.Greater(hidden, inkA / 20,
+                $"the control (slot 0) hid only {hidden} of {inkA} hull px — the harness is not " +
+                "occluding anything, so slot " + slot + " cannot be compared against it");
+            Assert.AreEqual(0, differ,
+                $"slot {slot} drew {differ} px differently from slot 0 with the occupant standing in " +
+                "exactly the same place. A slot that does not behave like every other slot is a slot " +
+                "the deck cannot use — check the facet shader's occupant loop bound, its indexing, " +
+                "and that HH_DECK_OCCUPANT_SLOTS still matches IsoFacetHullRenderer.DeckOccupantSlots.");
+        }
+
+        /// <summary>
+        /// <b>THE THING #474 STOPPED ON.</b> Three occupants at three depths on one deck. Each is
+        /// hidden by the hull in front of THEM, and — because the pixels in front of a near occupant
+        /// are always also in front of a deeper one — their hidden regions must NEST: strictly
+        /// growing as the occupant stands deeper, each one containing the last.
+        ///
+        /// <para>A single split plane cannot produce that. Nor can one id per occupant: a pixel
+        /// carries exactly one id, so an id that means "in front of the trap" cannot also mean "in
+        /// front of the fisher behind it", and the geometry between the two ends up marked for
+        /// neither. Nesting is the observable that separates the band encoding from every cheaper
+        /// thing that looks like it works with one occupant aboard.</para>
+        ///
+        /// <para>The depth ORDER is read from the ids the hull hands out rather than assumed from the
+        /// stand points — the projection's sign is exactly the sort of thing that has been fixed and
+        /// re-fixed on this lane, and this test has no business re-deriving it.</para>
+        /// </summary>
+        [Test]
+        public void OccupantsAtDifferentDepths_AreHiddenInStrictlyNestedRegions_PerPixel()
+        {
+            RequireAGraphicsDevice();
+            EnsureLobster();
+
+            using var scene = new HullScene(s_Lobster, s_LobsterMesh);
+            scene.SetPose(new RigViewOptions(0, s_Lobster.DefaultElev));
+            byte[] baseline = scene.Render();
+            int inked = 0;
+            for (int i = 0; i < baseline.Length; i += 4) if (baseline[i + 3] > 0) inked++;
+            Assert.Greater(inked, 200, "harness: the hull must actually have drawn something");
+
+            var slots = scene.Hull.DeckOccupants;
+            var owners = new object[3];
+            var mySlot = new int[3];
+            float[] along = { 1.6f, 0f, -1.6f };          // bow-ward, amidships, cockpit
+            for (int k = 0; k < 3; k++)
+            {
+                owners[k] = new object();
+                mySlot[k] = slots.Claim(owners[k]);
+                Assert.GreaterOrEqual(mySlot[k], 0, "harness: three claims must fit in twelve slots");
+                slots.Set(mySlot[k], owners[k], Stand(along[k]), true);
+            }
+            scene.Hull.ApplyPose();
+            Assert.AreEqual(3, slots.ActiveCount, "all three must be standing before anything is read");
+
+            // Sort by the id the hull handed back: rank 1 (the LOWEST id) is the deepest occupant,
+            // the one the most hull is in front of.
+            var order = new int[] { 0, 1, 2 };
+            Array.Sort(order, (x, y) => slots.OccluderId(mySlot[x]).CompareTo(slots.OccluderId(mySlot[y])));
+            Assert.AreNotEqual(slots.OccluderId(mySlot[order[0]]), slots.OccluderId(mySlot[order[2]]),
+                "three occupants at three depths must not all share one id — if they do the ranks " +
+                "collapsed and this is the single-plane split again, wearing twelve slots");
+
+            var red = new Color32(255, 0, 0, 255);
+            var hidden = new bool[3][];
+            var counts = new int[3];
+            for (int rank = 0; rank < 3; rank++)
+            {
+                int k = order[rank];
+                var sprite = scene.AddOccludableSprite(red, 10, slots.OccluderId(mySlot[k]));
+                byte[] px = scene.Render();
+                Object.DestroyImmediate(sprite);
+
+                var mask = new bool[px.Length / 4];
+                int n = 0, outside = 0;
+                for (int i = 0; i < px.Length; i += 4)
+                {
+                    var got = new Color32(px[i], px[i + 1], px[i + 2], px[i + 3]);
+                    bool hid = !Equal(got, red);
+                    mask[i / 4] = hid;
+                    if (!hid) continue;
+                    n++;
+                    if (baseline[i + 3] == 0) outside++;
+                }
+                Assert.AreEqual(0, outside,
+                    $"{outside} px OUTSIDE the hull's silhouette stopped drawing occupant {rank}. " +
+                    "Nobody may be cut out over open water — that is another boat's id leaking into " +
+                    "this hull's discard range.");
+                hidden[rank] = mask;
+                counts[rank] = n;
+            }
+
+            Assert.Greater(counts[2], 0,
+                "even the NEAREST occupant must have some hull in front of them at this heading, or " +
+                "the nesting below is being read off three empty sets");
+
+            for (int rank = 0; rank < 2; rank++)
+            {
+                Assert.Greater(counts[rank], counts[rank + 1],
+                    $"the deeper occupant (rank {rank + 1}) is hidden by {counts[rank]} px and the " +
+                    $"nearer one (rank {rank + 2}) by {counts[rank + 1]} — the deeper one must have " +
+                    "STRICTLY more of the boat in front of them. Equal counts mean the two are " +
+                    "sharing one split plane, which is exactly the defect this seam replaced.");
+
+                int notContained = 0;
+                for (int p = 0; p < hidden[rank].Length; p++)
+                    if (hidden[rank + 1][p] && !hidden[rank][p]) notContained++;
+                Assert.AreEqual(0, notContained,
+                    $"{notContained} px hide the NEARER occupant but not the deeper one. The regions " +
+                    "must nest: anything standing between the camera and a near occupant is also " +
+                    "between the camera and everyone behind them.");
+            }
+        }
+
+        /// <summary>
+        /// <b>THE BOAT'S OWN PICTURE IS UNCHANGED BY ANYBODY STANDING ON HER.</b> The split partitions
+        /// her alpha into more ids; her overlay quad has to accept every one of them, or she loses
+        /// the very pixels that were marked — a wheelhouse deleted the moment a second thing steps
+        /// aboard.
+        ///
+        /// <para>This is the A/B that keeps the whole mechanism honest, and it is asserted on pixels
+        /// with nobody, one occupant and three. Byte-identical, all three times.</para>
+        /// </summary>
+        [Test]
+        public void TheHullsOwnPicture_IsByteIdenticalHoweverManyStandOnHer()
+        {
+            RequireAGraphicsDevice();
+            EnsureLobster();
+
+            using var scene = new HullScene(s_Lobster, s_LobsterMesh);
+            scene.SetPose(new RigViewOptions(0, s_Lobster.DefaultElev));
+            byte[] empty = scene.Render();
+
+            var slots = scene.Hull.DeckOccupants;
+            float[] along = { 1.6f, 0f, -1.6f };
+            var owners = new object[3];
+            var mySlot = new int[3];
+
+            for (int k = 0; k < 3; k++)
+            {
+                owners[k] = new object();
+                mySlot[k] = slots.Claim(owners[k]);
+                slots.Set(mySlot[k], owners[k], Stand(along[k]), true);
+                scene.Hull.ApplyPose();
+
+                byte[] withCrew = scene.Render();
+                int differ = 0;
+                for (int i = 0; i < empty.Length; i++) if (empty[i] != withCrew[i]) differ++;
+                Assert.AreEqual(0, differ,
+                    $"{differ} bytes of the boat's own image changed with {k + 1} occupant(s) aboard. " +
+                    "The split is a PARTITION of her alpha, not a change to her picture — her overlay " +
+                    "must compose every band in her fore block (_HullIdForeSpan), or she is losing " +
+                    "the geometry the split marked.");
+            }
+        }
+
+        /// <summary>
+        /// <b>A REFUSED OCCUPANT DRAWS WHOLE.</b> Fill every slot, then ask for one more. The claim is
+        /// refused and logged; the refused claimant has no id, so it draws exactly as it did before
+        /// any of this existed — over the boat, completely.
+        ///
+        /// <para>Whole or nothing is the contract that matters. Half-occluded is what a silently
+        /// dropped claim would look like, and it is indistinguishable from the shader bug this seam
+        /// was built to fix.</para>
+        /// </summary>
+        [Test]
+        public void AnOccupantRefusedForWantOfASlot_DrawsWhole_NeverHalfOccluded()
+        {
+            RequireAGraphicsDevice();
+            EnsureLobster();
+
+            using var scene = new HullScene(s_Lobster, s_LobsterMesh);
+            scene.SetPose(new RigViewOptions(0, s_Lobster.DefaultElev));
+
+            var slots = scene.Hull.DeckOccupants;
+            int capacity = IsoFacetHullRenderer.DeckOccupantSlots;
+            for (int i = 0; i < capacity; i++)
+            {
+                var owner = new object();
+                int s = slots.Claim(owner);
+                Assert.AreEqual(i, s, "harness: the deck must fill in order");
+                slots.Set(s, owner, Stand(-1.6f + i * 0.2f), true);
+            }
+            scene.Hull.ApplyPose();
+
+            UnityEngine.TestTools.LogAssert.Expect(LogType.Warning,
+                new System.Text.RegularExpressions.Regex("deck-occupant slots"));
+            int refused = slots.Claim(new object());
+            Assert.AreEqual(-1, refused, "the surplus claim must be refused, loudly, never squeezed in");
+
+            // A refused claimant has nothing to discard against: id 0, which every sprite in the game
+            // bar those on a deck carries.
+            var red = new Color32(255, 0, 0, 255);
+            var sprite = scene.AddOccludableSprite(red, sortingOrder: 10, occluderId: 0f);
+            byte[] px = scene.Render();
+            Object.DestroyImmediate(sprite);
+
+            int hullThrough = 0;
+            ForEachPixel(px, (i, got) => { if (!Equal(got, red)) hullThrough++; });
+            Assert.AreEqual(0, hullThrough,
+                $"{hullThrough} px of hull drew over an occupant who was REFUSED a slot. With no id " +
+                "the discard must not run at all: the refused thing draws whole, exactly as it did " +
+                "before this seam existed. Anything else is the half-occluded picture that a silent " +
+                "drop would produce.");
+        }
+
         // ------------------------------------------------------------------ the deck contract
 
         /// <summary>
@@ -779,8 +1064,15 @@ namespace HiddenHarbours.Tests.RigBaking
             /// <para>The occluder id goes on a PROPERTY BLOCK rather than the material, because that
             /// is how the shipping path writes it (per renderer, no material instancing) — a test
             /// that set it on the material would be proving a mechanism nothing uses.</para>
+            ///
+            /// <para><b>Two ids, because the discard is a RANGE.</b> An occupant is hidden by every
+            /// band nearer than their own, so they carry their own LOW id and the hull's block TOP.
+            /// <paramref name="occluderIdTop"/> defaults to this hull's real top, which is what the
+            /// shipping path (<c>DeckRiderVisual</c>) writes — pass it explicitly only to prove what
+            /// happens when it is wrong.</para>
             /// </summary>
-            public GameObject AddOccludableSprite(Color32 tint, int sortingOrder, float occluderId)
+            public GameObject AddOccludableSprite(Color32 tint, int sortingOrder, float occluderId,
+                                                  float occluderIdTop = -1f)
             {
                 var go = AddCoveringSprite(tint, sortingOrder);
                 var sr = go.GetComponent<SpriteRenderer>();
@@ -794,6 +1086,8 @@ namespace HiddenHarbours.Tests.RigBaking
                 var block = new MaterialPropertyBlock();
                 sr.GetPropertyBlock(block);
                 block.SetFloat("_HHDeckOccluderId", occluderId);
+                block.SetFloat("_HHDeckOccluderIdTop",
+                               occluderIdTop >= 0f ? occluderIdTop : Hull.ForeHullIdTop / 255f);
                 sr.SetPropertyBlock(block);
 
                 _warm = false;                         // a new shader variant needs compiling

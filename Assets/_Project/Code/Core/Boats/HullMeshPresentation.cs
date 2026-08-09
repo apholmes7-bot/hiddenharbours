@@ -81,8 +81,22 @@ namespace HiddenHarbours.Core
         /// divided by 255 for the shader — and <b>0 whenever there is nothing to hide behind</b>
         /// (no occupant set, or the hull is not live). One value, so no consumer downstream has to
         /// re-derive the question from two fields.
+        ///
+        /// <para>⚠️ This and <see cref="SetDeckOccupant"/> are the SINGLE-OCCUPANT shim, kept because
+        /// one figure on a deck is the common case and reads better as two calls than as a claim.
+        /// They are implemented on top of <see cref="DeckOccupants"/> — a hull carrying more than one
+        /// thing (gear, pots, a second hand) must claim its own slots there, and pair this id with
+        /// <see cref="IDeckOccupantSlots.OccluderIdTop"/>, because the sprite's discard is a range.</para>
         /// </summary>
         float DeckOccluderId { get; }
+
+        /// <summary>
+        /// <b>Everything standing on this deck</b> — the fixed slot array behind the per-pixel
+        /// occlusion (<see cref="IDeckOccupantSlots"/>). Never null: a hull that cannot split her own
+        /// image hands back <see cref="NoDeckOccupantSlots.Instance"/>, whose every claim is refused
+        /// and every id 0, so a caller written against the real thing simply draws un-occluded.
+        /// </summary>
+        IDeckOccupantSlots DeckOccupants { get; }
     }
 
     /// <summary>
