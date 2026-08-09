@@ -99,10 +99,11 @@ Every feature must serve at least one pillar. If it serves none, cut it.
 > Finnigan's Landing large). A yard is a **commercial business with a local name — the word
 > "shipwright" is not used in-world**; each has an interior and a working yard (boats on supports
 > under repair, perhaps boats for sale), and the old placeholder assets are ruled out
-> (`design/world-map-plan.md` §3). ⚠ *Held tension, deliberately unresolved:* the 2026-07-25 ruling "no
-> shipwright stands in Nine Mile Creek" (the dory is sold by a non-shipwright and put right by
-> hand) predates the small-yard-at-every-port ruling; the dory beat **stands as ruled** unless the
-> owner says the small yard absorbs it. Geography detail and the build order:
+> (`design/world-map-plan.md` §3). **Resolved (owner, 2026-08-09): NMC's small yard ABSORBS the
+> dory beat** — the 2026-07-25 "no shipwright stands in Nine Mile Creek" ruling is superseded; the
+> damaged dory is sold from, and repaired at, the town's small yard business (still never called
+> "a shipwright" in-world; the *put-her-right-by-hand* flavour survives as what the yard offers a
+> broke newcomer, not as the absence of a yard). Geography detail and the build order:
 > [`design/world-map-plan.md`](design/world-map-plan.md).
 
 ### 5.4 Boat ladder (LOCKED — "Dory to Dynasty"). Detail + stats in `design/boats-and-navigation.md`.
