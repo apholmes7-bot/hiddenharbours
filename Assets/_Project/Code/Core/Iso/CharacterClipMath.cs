@@ -15,6 +15,13 @@ namespace HiddenHarbours.Core
     /// move the owner already signed off. So <paramref name="durationSeconds"/> wins whenever it is
     /// given, and the baked rate is the fallback for a caller that just wants the clip at its own
     /// speed.</para>
+    ///
+    /// <para><b>And the rule generalises past the clock.</b> Some presentations are not paced by TIME at
+    /// all: the deck haul's heave is keyed to the LINE hauled, so the hands stop when the rope stops and
+    /// a brisk take runs them fast — a timer would drift off the rope within one pot.
+    /// <see cref="FrameAt"/> is the same rule for those: the caller supplies a position along the clip
+    /// in FRAMES and the clip is scaled to that quantity exactly as <see cref="FrameFor"/> scales it to
+    /// a duration.</para>
     /// </summary>
     public static class CharacterClipMath
     {
@@ -67,6 +74,38 @@ namespace HiddenHarbours.Core
 
             if (loops) return ((step % frameCount) + frameCount) % frameCount;
             return Mathf.Clamp(step, 0, frameCount - 1);
+        }
+
+        /// <summary>
+        /// Which frame is showing at a position of <paramref name="framePosition"/> FRAMES along the
+        /// clip — the answer for a presentation whose pace is a quantity rather than a clock.
+        ///
+        /// <para>The unit is deliberately the clip's own frames, not a 0..1 progress: it makes the
+        /// caller state how far the clip has run in the clip's terms, so a rig that re-bakes the same
+        /// motion at a different frame count cannot silently change the pace. 12.4 on an 8-frame
+        /// looping clip is one-and-a-half cycles in, showing frame 4.</para>
+        ///
+        /// <para><paramref name="loops"/> wraps; a one-shot clamps to the last frame. Negative-safe and
+        /// total: NaN, infinity, negatives and a position far past the end all answer with a frame in
+        /// range. The arithmetic is done in <c>double</c> because a caller keyed to an unbounded
+        /// quantity can hand over a position that would overflow <c>int</c> on the way through.</para>
+        /// </summary>
+        public static int FrameAt(float framePosition, int frameCount, bool loops)
+        {
+            if (frameCount <= 0) return 0;
+            if (float.IsNaN(framePosition) || framePosition <= 0f) return 0;
+            if (float.IsInfinity(framePosition)) return loops ? 0 : frameCount - 1;
+
+            // Position is > 0 from here, so the cast truncates toward zero == floors. Taking the
+            // modulo BEFORE the cast is what keeps a huge position off int's range, and for positive
+            // values it agrees exactly with flooring first: floor(9.7) % 8 == (int)(9.7 % 8) == 1.
+            double pos = framePosition;
+            if (loops)
+            {
+                int wrapped = (int)(pos % frameCount);
+                return wrapped >= frameCount || wrapped < 0 ? 0 : wrapped;   // fp belt-and-braces
+            }
+            return pos >= frameCount - 1 ? frameCount - 1 : (int)pos;
         }
 
         /// <summary>

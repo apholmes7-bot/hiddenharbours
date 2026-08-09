@@ -265,5 +265,129 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(10, d.ClipFrameCount(CharacterClip.LadderDown));
             Assert.AreEqual(1000f / 110f, d.ClipFramesPerSecond(CharacterClip.LadderDown), 1e-3f);
         }
+
+        // ---- the DRIVEN clip: a pace that is a quantity, not a clock -------------------------------
+        //
+        // The deck haul's heave is keyed to the LINE hauled, which is the whole reason it reads as work:
+        // the hands stop when the rope stops and a brisk take runs them fast. That needs a clip whose
+        // position the caller sets, so these pin the second pacing mode the seam grew for it.
+
+        [Test]
+        public void FrameAt_WalksTheClipInItsOwnFrames_AndWrapsALoop()
+        {
+            const int frames = 8;
+
+            Assert.AreEqual(0, CharacterClipMath.FrameAt(0f, frames, loops: true));
+            Assert.AreEqual(3, CharacterClipMath.FrameAt(3.9f, frames, loops: true), "3.9 is still frame 3");
+            Assert.AreEqual(4, CharacterClipMath.FrameAt(4.0f, frames, loops: true));
+            Assert.AreEqual(0, CharacterClipMath.FrameAt(8f, frames, loops: true), "a whole cycle wraps");
+            Assert.AreEqual(4, CharacterClipMath.FrameAt(12.4f, frames, loops: true),
+                            "one and a half cycles in");
+        }
+
+        [Test]
+        public void FrameAt_ClampsAOneShot_AndNeverWrapsIt()
+        {
+            const int frames = 10;
+            Assert.AreEqual(9, CharacterClipMath.FrameAt(9.5f, frames, loops: false));
+            Assert.AreEqual(9, CharacterClipMath.FrameAt(400f, frames, loops: false),
+                            "a one-shot driven past its end holds its last frame rather than restarting");
+        }
+
+        [Test]
+        public void FrameAt_AgreesWithTheClockedMaths_ForTheSameProgress()
+        {
+            // The two pacing modes are the same rule wearing different units, so they must not be able
+            // to disagree: driving a clip to N frames must show what letting a clock run it to N frames
+            // shows. If these ever part, one of the two callers is drawing a different animation.
+            const int frames = 8;
+            const float fps = 1000f / 120f;
+            for (int step = 0; step < 40; step++)
+            {
+                float position = step * 0.37f;
+                Assert.AreEqual(CharacterClipMath.FrameFor(position / fps, 0f, frames, fps, loops: true),
+                                CharacterClipMath.FrameAt(position, frames, loops: true),
+                                $"the clocked and driven maths disagree at frame position {position}");
+            }
+        }
+
+        [Test]
+        public void FrameAt_IsTotal_OnEveryDegenerateInput()
+        {
+            // Everything reachable from a half-authored asset or an unbounded caller quantity: no frames
+            // at all, a negative or NaN position, and the infinity a divide-by-zero upstream would hand
+            // over. A quantity-keyed caller has no clock bounding its input, so this matters more here
+            // than it does on the clocked path.
+            Assert.AreEqual(0, CharacterClipMath.FrameAt(5f, 0, loops: true));
+            Assert.AreEqual(0, CharacterClipMath.FrameAt(-3f, 8, loops: true));
+            Assert.AreEqual(0, CharacterClipMath.FrameAt(float.NaN, 8, loops: true));
+            Assert.AreEqual(0, CharacterClipMath.FrameAt(float.NaN, 8, loops: false));
+            Assert.AreEqual(0, CharacterClipMath.FrameAt(float.PositiveInfinity, 8, loops: true));
+            Assert.AreEqual(7, CharacterClipMath.FrameAt(float.PositiveInfinity, 8, loops: false));
+
+            // A position far past int's range must still answer in range rather than overflowing on the
+            // way through — 1e12 frames is one line01 divided by an epsilon somewhere upstream.
+            int huge = CharacterClipMath.FrameAt(1e12f, 8, loops: true);
+            Assert.IsTrue(huge >= 0 && huge < 8, $"a huge frame position answered {huge}, out of 0..7");
+        }
+
+        [Test]
+        public void ADrivenClip_MovesOnlyWhenSeeked_AndNeverOnTheClock()
+        {
+            var go = new GameObject("Driven");
+            try
+            {
+                go.AddComponent<SpriteRenderer>();
+                var player = go.AddComponent<CharacterClipPlayer>();
+                player.Configure(NewDef(withClips: true));
+
+                Assert.IsTrue(player.PlayDriven(CharacterClip.Haul, 0f, 0f), "the haul clip is wired");
+                Assert.IsTrue(player.IsDriven);
+                Assert.AreEqual(0, player.Frame);
+
+                // The clock is exactly what must NOT move it: a whole natural duration of Advance leaves
+                // the heave where the rope left it.
+                player.Advance(10f);
+                Assert.AreEqual(0, player.Frame, "the clock advanced a clip whose pace belongs to the line");
+                Assert.IsTrue(player.IsPlaying, "…and it must not have played itself out, either");
+
+                player.SeekFrame(5.5f);
+                Assert.AreEqual(5, player.Frame);
+                player.SeekFrame(8f);
+                Assert.AreEqual(0, player.Frame, "the 8-frame heave loops");
+
+                player.Stop();
+                Assert.IsFalse(player.IsDriven, "stopping clears the driven pacing with everything else");
+                Assert.IsFalse(player.IsPlaying);
+            }
+            finally { Object.DestroyImmediate(go); }
+        }
+
+        [Test]
+        public void SeekingIsIgnored_ByAClockedClip_AndByNoClipAtAll()
+        {
+            var go = new GameObject("Clocked");
+            try
+            {
+                go.AddComponent<SpriteRenderer>();
+                var player = go.AddComponent<CharacterClipPlayer>();
+                player.Configure(NewDef(withClips: true));
+
+                // Nothing running: seeking is harmless.
+                Assert.DoesNotThrow(() => player.SeekFrame(4f));
+                Assert.IsFalse(player.IsPlaying);
+
+                // A clocked clip owns its own position — a stray seek must not yank it about.
+                Assert.IsTrue(player.Play(CharacterClip.Board, 0f, 0.55f, holdOnFinish: true));
+                Assert.IsFalse(player.IsDriven);
+                player.SeekFrame(7f);
+                Assert.AreEqual(0, player.Frame, "a clocked clip is not seekable");
+                player.Advance(0.30f);
+                Assert.AreEqual(5, player.Frame, "…and it still runs on the clock it was given");
+
+                player.Stop();
+            }
+            finally { Object.DestroyImmediate(go); }
+        }
     }
 }
