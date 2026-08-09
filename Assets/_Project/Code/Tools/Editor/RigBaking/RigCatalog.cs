@@ -339,6 +339,19 @@ namespace HiddenHarbours.Tools.RigBaking
                 ["buoyIso"] = new RigEntry($"{RigFolder}/deck-loop-kit/Art/buoyIsoRig.js", "BuoyIso",
                                            AzimuthConvention.Clockwise,
                                            prerequisites: new[] { "deckIsoSolid" }),
+
+                // The boatyard: 20 parts in metres and 5 named SITES that assemble them around a
+                // hull, sized by the boat each yard serves. Tight cells like wharfIso — it reports
+                // px,py per bake and declares no pivot global, so it loads with InstallModule.
+                //
+                // ⚠️ CounterClockwise is MEASURED, not inferred from its th = +dir*PI/4 sign (which
+                // the rig-lane README rules inadmissible). ShipyardIso.project() returns figures
+                // IDENTICAL to WharfIso.project() at all 8 dirs to 4 dp, and wharfIso is measured
+                // CCW — so the two ride one turntable. A probe that read the positive sign as
+                // clockwise would have registered this family mirrored and flipped all 25 keys at
+                // once. See docs/art/rigs/shipyard-iso-kit/VERIFICATION.md §2.
+                ["shipyardIso"] = new RigEntry($"{RigFolder}/shipyard-iso-kit/shipyardIsoRig.js",
+                                               "ShipyardIso", AzimuthConvention.CounterClockwise),
             };
 
         public static string RepoRoot =>

@@ -276,9 +276,16 @@ namespace HiddenHarbours.Tools.RigBaking
                 ["wharfDecor"] = "Assets/_Project/Art/Sprites/Wharf/Decor/wharfDecorRig.contract.json",
                 ["utilityIso"] = "Assets/_Project/Art/Sprites/Utility/utilityIsoRig.contract.json",
                 ["shoreFinds"] = "Assets/_Project/Art/Sprites/Shore/FindsIso/shoreFindsRig.contract.json",
+                ["shipyardIso"] = "Assets/_Project/Art/Sprites/Shipyard/Iso/shipyardIsoRig.contract.json",
             };
 
-        /// <summary>The four families this pack covers, in the order their READMEs list them.</summary>
+        /// <summary>
+        /// The families this loader covers, in the order their READMEs list them. The first four are
+        /// the ISO rig pack proper; <c>shipyardIso</c> is a later kit that was MEASURED to ride the
+        /// same turntable and share wharfIso's cell rule, so it uses this loader rather than a second
+        /// copy of it. <see cref="IsoPackBakeTests"/> pins the pack's own four in its own array and is
+        /// deliberately not driven off this property.
+        /// </summary>
         public static IEnumerable<string> Families => Paths.Keys;
 
         public static IsoPackContract Load(string rigKey)
@@ -290,7 +297,7 @@ namespace HiddenHarbours.Tools.RigBaking
             string abs = Path.Combine(RigCatalog.RepoRoot, rel);
             if (!File.Exists(abs))
                 throw new FileNotFoundException(
-                    $"Contract missing at {abs}. The four contracts are committed beside where each " +
+                    $"Contract missing at {abs}. Every contract is committed beside where its " +
                     "family's sheets bake; a baker cannot proceed without its oracle.", abs);
 
             var dto = JsonUtility.FromJson<Dto>(File.ReadAllText(abs));
@@ -316,6 +323,10 @@ namespace HiddenHarbours.Tools.RigBaking
             "wharfDecorRig" => CellRule.InkUnionFixed,
             "utilityIsoRig" => CellRule.InkUnionFixed,
             "shoreFindsRig" => CellRule.Analytic,
+            // Sites and parts both size themselves from the projected bbox and report px,py — the
+            // same tight-cell rule as its measured turntable-sibling wharfIsoRig, not the fixed
+            // sheet the two prop families use.
+            "shipyardIsoRig" => CellRule.BufferUnion,
             _ => throw new InvalidOperationException(
                      $"No cell rule known for rig '{RigName}'. A new family must state its rule here " +
                      "AND in its contract's projection.cellRule — the rule is per family and guessing " +

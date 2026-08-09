@@ -1,0 +1,1509 @@
+{
+  "rig": "ShipyardIso",
+  "version": "1.0",
+  "generated": "2026-08-09",
+  "contract": {
+    "pipeline": "pre-rendered 3D -> pixel sprite. Flat-facet shading, one fixed upper-LEFT key in screen space, z-buffered, ordered (Bayer) dither, per-face uv texture, depth-edge darkening, 1 px keyline, no AA. Deterministic: same inputs -> identical pixels.",
+    "camera": {
+      "projection": "axonometric 3/4",
+      "headings": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "dirs": 8,
+      "step_deg": 45,
+      "elev_deg_default": 40
+    },
+    "scale": {
+      "native_px_per_m": 32,
+      "note": "a whole SITE is a planning bake — fitScale() drops to 24/16/12/8 px per m so the sheet fits, and render() reports the scale it used in cell.pxPerM"
+    },
+    "lod": {
+      "gte16": "full detail (lod 1)",
+      "10to15": "lod 0.5 — weed fringe and sub-0.15 m trim dropped",
+      "lt10": "lod 0 — massing only"
+    },
+    "axes": {
+      "x": "along shore",
+      "y": "+Y is water, -Y is the road / back fence",
+      "z": "up, 0 = chart datum",
+      "note": "same convention as wharfIsoRig, so a yard and a wharf module share a shoreline"
+    },
+    "origin": "model origin = footprint centre at chart datum. cell.px/cell.py is its projection — blit at screen(anchor) - (px,py).",
+    "water": "ADR 0010/0012/0023 — ZERO water pixels are baked, even inside the wet basin. The rig publishes `wet` (per-pixel mask of its own submerged pixels); the shader owns the rest. opts.clipBelowWater drops those pixels outright.",
+    "returns": {
+      "data": "Uint8ClampedArray RGBA, row-major from top-left, straight alpha",
+      "w": "px",
+      "h": "px",
+      "px": "origin x in cell",
+      "py": "origin y in cell",
+      "wet": "Uint8Array, 1 = below waterline",
+      "dep": "Float32Array camera depth per px, Infinity where empty",
+      "pxPerM": "scale this cell baked at",
+      "mounts": "hull mounts in metres",
+      "hulls": "how many hulls were composited"
+    },
+    "budget_ms": {
+      "part": "15-60",
+      "site": "250-2500 (largest yards at reduced px/m)",
+      "note": "bake, atlas, blit — never call render per game frame"
+    }
+  },
+  "hullMounts": {
+    "schema": {
+      "id": "mountN",
+      "support": "blocks|cradle|davit|slings|afloat|ways",
+      "cls": "SHIPS id",
+      "label": "display name",
+      "loa": "m",
+      "beam": "m",
+      "draft": "m",
+      "depth": "m (keel to sheer)",
+      "x": "m",
+      "y": "m",
+      "keelZ": "m — where the keel bottom sits",
+      "heading": "deg, 0 = +X",
+      "note": "plain-English support description"
+    },
+    "note": "Every cradle, davit, blocking stack, sling and basin berth publishes one. render(what,dir,{hulls:true}) composites the fleet bakes onto them; anchors() bakes the same points to CELL pixels for a compositor that wants to place its own sprites."
+  },
+  "fleet": [
+    {
+      "id": "dory",
+      "label": "dory",
+      "loa": 4.5,
+      "beam": 1.5,
+      "draft": 0.26,
+      "depth": 0.6,
+      "tier": 0,
+      "rig": "DoryIso"
+    },
+    {
+      "id": "punt",
+      "label": "punt",
+      "loa": 5.2,
+      "beam": 1.58,
+      "draft": 0.28,
+      "depth": 0.56,
+      "tier": 0,
+      "rig": "PuntIso"
+    },
+    {
+      "id": "skiff",
+      "label": "console skiff",
+      "loa": 7,
+      "beam": 2.3,
+      "draft": 0.42,
+      "depth": 0.82,
+      "tier": 1,
+      "rig": "ConsoleIso"
+    },
+    {
+      "id": "lobster",
+      "label": "lobster boat",
+      "loa": 12,
+      "beam": 4.44,
+      "draft": 1.35,
+      "depth": 2.84,
+      "tier": 2,
+      "rig": "LobsterBoatIso"
+    },
+    {
+      "id": "cape",
+      "label": "Cape Islander",
+      "loa": 12.8,
+      "beam": 4.4,
+      "draft": 1.4,
+      "depth": 2.9,
+      "tier": 2,
+      "rig": "CapeIslanderIso"
+    },
+    {
+      "id": "dragger",
+      "label": "side dragger",
+      "loa": 25,
+      "beam": 7,
+      "draft": 2.55,
+      "depth": 3.5,
+      "tier": 4,
+      "rig": "SideDraggerIso"
+    },
+    {
+      "id": "trawler",
+      "label": "stern trawler Mk II",
+      "loa": 38,
+      "beam": 9,
+      "draft": 3.9,
+      "depth": 5.1,
+      "tier": 5,
+      "rig": "SternTrawlerMk2Iso"
+    },
+    {
+      "id": "packet",
+      "label": "coastal packet",
+      "loa": 60,
+      "beam": 10.4,
+      "draft": 4.2,
+      "depth": 5.25,
+      "tier": 6,
+      "rig": "CoastalPacketIso"
+    },
+    {
+      "id": "tanker",
+      "label": "gas tanker",
+      "loa": 110,
+      "beam": 17.4,
+      "draft": 6.2,
+      "depth": 12.3,
+      "tier": 7,
+      "rig": "TankerIso"
+    }
+  ],
+  "parts": [
+    {
+      "id": "keelBlocks",
+      "label": "keel blocks & poppets",
+      "kind": "haulout",
+      "pxPerM": 32,
+      "mounts": 1
+    },
+    {
+      "id": "cradle",
+      "label": "wheeled cradle",
+      "kind": "haulout",
+      "pxPerM": 32,
+      "mounts": 1
+    },
+    {
+      "id": "davitPair",
+      "label": "davit pair",
+      "kind": "haulout",
+      "pxPerM": 32,
+      "mounts": 1
+    },
+    {
+      "id": "travelLift",
+      "label": "travel-lift gantry",
+      "kind": "haulout",
+      "pxPerM": 32,
+      "mounts": 1
+    },
+    {
+      "id": "railway",
+      "label": "marine railway",
+      "kind": "haulout",
+      "pxPerM": 32,
+      "mounts": 1
+    },
+    {
+      "id": "slipway",
+      "label": "slipway",
+      "kind": "haulout",
+      "pxPerM": 32,
+      "mounts": 1
+    },
+    {
+      "id": "shed",
+      "label": "clear-span workshop",
+      "kind": "building",
+      "pxPerM": 32,
+      "mounts": 1
+    },
+    {
+      "id": "office",
+      "label": "yard office",
+      "kind": "building",
+      "pxPerM": 32,
+      "mounts": 0
+    },
+    {
+      "id": "winchHouse",
+      "label": "winch house",
+      "kind": "building",
+      "pxPerM": 32,
+      "mounts": 0
+    },
+    {
+      "id": "liftDock",
+      "label": "lift dock piers",
+      "kind": "haulout",
+      "pxPerM": 32,
+      "mounts": 1
+    },
+    {
+      "id": "gantryCrane",
+      "label": "overhead gantry crane",
+      "kind": "machine",
+      "pxPerM": 32,
+      "mounts": 0
+    },
+    {
+      "id": "jibCrane",
+      "label": "quay jib crane",
+      "kind": "machine",
+      "pxPerM": 32,
+      "mounts": 0
+    },
+    {
+      "id": "basin",
+      "label": "wet basin + gate",
+      "kind": "dock",
+      "pxPerM": 32,
+      "mounts": 1
+    },
+    {
+      "id": "basinRoof",
+      "label": "basin roof",
+      "kind": "dock",
+      "pxPerM": 32,
+      "mounts": 0
+    },
+    {
+      "id": "fenceRun",
+      "label": "chain-link fence",
+      "kind": "yard",
+      "pxPerM": 32,
+      "mounts": 0
+    },
+    {
+      "id": "staging",
+      "label": "staging",
+      "kind": "yard",
+      "pxPerM": 32,
+      "mounts": 0
+    },
+    {
+      "id": "timberStack",
+      "label": "timber stack",
+      "kind": "yard",
+      "pxPerM": 32,
+      "mounts": 0
+    },
+    {
+      "id": "sparRack",
+      "label": "spar rack",
+      "kind": "yard",
+      "pxPerM": 32,
+      "mounts": 0
+    },
+    {
+      "id": "drums",
+      "label": "oil drums",
+      "kind": "yard",
+      "pxPerM": 32,
+      "mounts": 0
+    },
+    {
+      "id": "sawhorse",
+      "label": "sawhorse",
+      "kind": "yard",
+      "pxPerM": 32,
+      "mounts": 0
+    }
+  ],
+  "sites": {
+    "backyardSlip": {
+      "id": "backyardSlip",
+      "label": "backyard slip",
+      "kind": "site",
+      "tier": 1,
+      "blurb": "One punt, a pair of timber davits and a set of ways run down the grass. No fence, no yard — a shed door and a beach.",
+      "servesHull": {
+        "id": "dory",
+        "label": "dory",
+        "loa": 4.5,
+        "beam": 1.5,
+        "draft": 0.26,
+        "depth": 0.6
+      },
+      "footprint": {
+        "w": 17,
+        "d": 14
+      },
+      "gradeZ": 2.15,
+      "waterZ": 0.99,
+      "tideRange": 1.8,
+      "mudZ": -2.2,
+      "surface": "grass",
+      "edge": "beach",
+      "capacity": {
+        "hulls": 2,
+        "biggest": 5.2
+      },
+      "hullMounts": [
+        {
+          "id": "mount0",
+          "support": "davit",
+          "cls": "dory",
+          "label": "dory",
+          "loa": 4.5,
+          "beam": 1.5,
+          "draft": 0.26,
+          "depth": 0.6,
+          "x": -2.8,
+          "y": 0.6,
+          "keelZ": 3.45,
+          "heading": 0,
+          "note": "slung in the davit falls"
+        },
+        {
+          "id": "mount1",
+          "support": "blocks",
+          "cls": "punt",
+          "label": "punt",
+          "loa": 5.2,
+          "beam": 1.58,
+          "draft": 0.28,
+          "depth": 0.56,
+          "x": -3.4,
+          "y": -3.4,
+          "keelZ": 2.7,
+          "heading": 8,
+          "note": "blocked on the hardstand",
+          "indoor": false
+        }
+      ],
+      "haulout": [
+        {
+          "type": "slipway",
+          "x": 4.4,
+          "run": 8.652,
+          "crestZ": 2.15,
+          "toeZ": -0.734,
+          "width": 2.6,
+          "launchable": true,
+          "waterEdgeY": null
+        },
+        {
+          "type": "davit",
+          "x": -2.8,
+          "y": 0.6,
+          "hull": "dory"
+        }
+      ],
+      "walk": [
+        {
+          "poly": [
+            [
+              -8.5,
+              -7
+            ],
+            [
+              8.5,
+              -7
+            ],
+            [
+              8.5,
+              3.6
+            ],
+            [
+              -8.5,
+              3.6
+            ]
+          ],
+          "z": 2.15,
+          "surface": "grass verge",
+          "wet": "spray only"
+        }
+      ],
+      "blockers": [
+        {
+          "shape": "box",
+          "x": 5.4,
+          "y": -4.2,
+          "w": 5,
+          "d": 3.4,
+          "h": 2.5,
+          "kind": "shed",
+          "ang": 0
+        }
+      ],
+      "buildings": [
+        {
+          "kind": "shed",
+          "x": 5.4,
+          "y": -4.2,
+          "L": 5,
+          "W": 3.4,
+          "eave": 2.5,
+          "gantry": false,
+          "clearSpan": 3.4,
+          "doorW": 2.2
+        }
+      ],
+      "zones": {
+        "stainTop": 1.9,
+        "barn": [
+          0.72,
+          1.44
+        ],
+        "weed": [
+          0.11,
+          0.72
+        ],
+        "ice": [
+          1.62,
+          1.94
+        ]
+      },
+      "snap": {
+        "px": {
+          "x": 8.5,
+          "y": 0,
+          "z": 2.15,
+          "face": "+x"
+        },
+        "nx": {
+          "x": -8.5,
+          "y": 0,
+          "z": 2.15,
+          "face": "-x"
+        }
+      },
+      "pxPerM": 32
+    },
+    "smallYard": {
+      "id": "smallYard",
+      "label": "small land yard",
+      "kind": "site",
+      "tier": 2,
+      "blurb": "Fully land based. Gravel hardstand, an office, one shed and a marine railway with a cradle — the lobster-boat yard.",
+      "servesHull": {
+        "id": "lobster",
+        "label": "lobster boat",
+        "loa": 12,
+        "beam": 4.44,
+        "draft": 1.35,
+        "depth": 2.84
+      },
+      "footprint": {
+        "w": 30,
+        "d": 24
+      },
+      "gradeZ": 2.7,
+      "waterZ": 0.99,
+      "tideRange": 1.8,
+      "mudZ": -2.2,
+      "surface": "gravel",
+      "edge": "beach",
+      "capacity": {
+        "hulls": 3,
+        "biggest": 12
+      },
+      "hullMounts": [
+        {
+          "id": "mount0",
+          "support": "cradle",
+          "cls": "lobster",
+          "label": "lobster boat",
+          "loa": 12,
+          "beam": 4.44,
+          "draft": 1.35,
+          "depth": 2.84,
+          "x": 7.5,
+          "y": -3.4,
+          "keelZ": 3.67,
+          "heading": 90,
+          "note": "on the railway cradle"
+        },
+        {
+          "id": "mount1",
+          "support": "davit",
+          "cls": "lobster",
+          "label": "lobster boat",
+          "loa": 12,
+          "beam": 4.44,
+          "draft": 1.35,
+          "depth": 2.84,
+          "x": -5.5,
+          "y": 2.2,
+          "keelZ": 5.05,
+          "heading": 0,
+          "note": "slung in the davit falls"
+        },
+        {
+          "id": "mount2",
+          "support": "blocks",
+          "cls": "skiff",
+          "label": "console skiff",
+          "loa": 7,
+          "beam": 2.3,
+          "draft": 0.42,
+          "depth": 0.82,
+          "x": -10.5,
+          "y": -4.6,
+          "keelZ": 3.25,
+          "heading": 6,
+          "note": "blocked on the hardstand",
+          "indoor": false
+        }
+      ],
+      "haulout": [
+        {
+          "type": "slipway",
+          "x": 7.5,
+          "run": 14.128,
+          "crestZ": 2.7,
+          "toeZ": -1.715,
+          "width": 6.640000000000001,
+          "launchable": true,
+          "waterEdgeY": null
+        },
+        {
+          "type": "railway",
+          "x": 7.5,
+          "gauge": 3.1968,
+          "run": 6.9,
+          "winch": true
+        },
+        {
+          "type": "davit",
+          "x": -5.5,
+          "y": 2.2,
+          "hull": "lobster"
+        }
+      ],
+      "walk": [
+        {
+          "poly": [
+            [
+              -15,
+              -12
+            ],
+            [
+              15,
+              -12
+            ],
+            [
+              15,
+              8
+            ],
+            [
+              -15,
+              8
+            ]
+          ],
+          "z": 2.7,
+          "surface": "crushed gravel hardstand",
+          "wet": "spray only"
+        }
+      ],
+      "blockers": [
+        {
+          "shape": "box",
+          "x": -6.5,
+          "y": -7.8,
+          "w": 13,
+          "d": 6.6,
+          "h": 4.4,
+          "kind": "shed",
+          "ang": 0
+        },
+        {
+          "shape": "box",
+          "x": 12,
+          "y": -8,
+          "w": 6.5,
+          "d": 4.6,
+          "h": 3,
+          "kind": "office",
+          "ang": 0
+        },
+        {
+          "shape": "wall",
+          "x0": -14.2,
+          "y0": -11,
+          "x1": 14.2,
+          "y1": -11,
+          "h": 2.1,
+          "kind": "fence",
+          "gate": true
+        }
+      ],
+      "buildings": [
+        {
+          "kind": "shed",
+          "x": -6.5,
+          "y": -7.8,
+          "L": 13,
+          "W": 6.6,
+          "eave": 4.4,
+          "gantry": false,
+          "clearSpan": 6.6,
+          "doorW": 5
+        },
+        {
+          "kind": "office",
+          "x": 12,
+          "y": -8,
+          "L": 6.5,
+          "W": 4.6,
+          "gantry": false,
+          "clearSpan": null,
+          "doorW": null
+        }
+      ],
+      "zones": {
+        "stainTop": 1.9,
+        "barn": [
+          0.72,
+          1.44
+        ],
+        "weed": [
+          0.11,
+          0.72
+        ],
+        "ice": [
+          1.62,
+          1.94
+        ]
+      },
+      "snap": {
+        "px": {
+          "x": 15,
+          "y": 0,
+          "z": 2.7,
+          "face": "+x"
+        },
+        "nx": {
+          "x": -15,
+          "y": 0,
+          "z": 2.7,
+          "face": "-x"
+        }
+      },
+      "pxPerM": 32
+    },
+    "workingYard": {
+      "id": "workingYard",
+      "label": "working yard",
+      "kind": "site",
+      "tier": 3,
+      "blurb": "The dragger yard: concrete apron over gravel, heavy railway and cradle, davits and staging, a proper workshop and a fenced road gate.",
+      "servesHull": {
+        "id": "dragger",
+        "label": "side dragger",
+        "loa": 25,
+        "beam": 7,
+        "draft": 2.55,
+        "depth": 3.5
+      },
+      "footprint": {
+        "w": 48,
+        "d": 36
+      },
+      "gradeZ": 3,
+      "waterZ": 0.99,
+      "tideRange": 1.8,
+      "mudZ": -2.2,
+      "surface": "gravel",
+      "edge": "quay",
+      "capacity": {
+        "hulls": 4,
+        "biggest": 25
+      },
+      "hullMounts": [
+        {
+          "id": "mount0",
+          "support": "cradle",
+          "cls": "dragger",
+          "label": "side dragger",
+          "loa": 25,
+          "beam": 7,
+          "draft": 2.55,
+          "depth": 3.5,
+          "x": 13,
+          "y": -4.5,
+          "keelZ": 4.03,
+          "heading": 90,
+          "note": "on the railway cradle"
+        },
+        {
+          "id": "mount1",
+          "support": "davit",
+          "cls": "cape",
+          "label": "Cape Islander",
+          "loa": 12.8,
+          "beam": 4.4,
+          "draft": 1.4,
+          "depth": 2.9,
+          "x": -6,
+          "y": 6.2,
+          "keelZ": 5.4,
+          "heading": 0,
+          "note": "slung in the davit falls"
+        },
+        {
+          "id": "mount2",
+          "support": "blocks",
+          "cls": "lobster",
+          "label": "lobster boat",
+          "loa": 12,
+          "beam": 4.44,
+          "draft": 1.35,
+          "depth": 2.84,
+          "x": -5,
+          "y": -2.4,
+          "keelZ": 4.05,
+          "heading": 0,
+          "note": "blocked on the hardstand",
+          "indoor": false
+        },
+        {
+          "id": "mount3",
+          "support": "blocks",
+          "cls": "skiff",
+          "label": "console skiff",
+          "loa": 7,
+          "beam": 2.3,
+          "draft": 0.42,
+          "depth": 0.82,
+          "x": -18,
+          "y": -7,
+          "keelZ": 3.55,
+          "heading": 15,
+          "note": "blocked on the hardstand",
+          "indoor": false
+        }
+      ],
+      "haulout": [
+        {
+          "type": "slipway",
+          "x": 13,
+          "run": 18.864,
+          "crestZ": 3,
+          "toeZ": -2.895,
+          "width": 10,
+          "launchable": true,
+          "waterEdgeY": null
+        },
+        {
+          "type": "railway",
+          "x": 13,
+          "gauge": 5.04,
+          "run": 14.9,
+          "winch": true
+        },
+        {
+          "type": "davit",
+          "x": -6,
+          "y": 6.2,
+          "hull": "cape"
+        }
+      ],
+      "walk": [
+        {
+          "poly": [
+            [
+              -24,
+              -18
+            ],
+            [
+              24,
+              -18
+            ],
+            [
+              24,
+              15
+            ],
+            [
+              -24,
+              15
+            ]
+          ],
+          "z": 3,
+          "surface": "crushed gravel hardstand",
+          "wet": "spray only"
+        }
+      ],
+      "blockers": [
+        {
+          "shape": "box",
+          "x": -9,
+          "y": -11.6,
+          "w": 20,
+          "d": 9,
+          "h": 6.2,
+          "kind": "shed",
+          "ang": 0
+        },
+        {
+          "shape": "box",
+          "x": 5.5,
+          "y": -13,
+          "w": 8,
+          "d": 5.4,
+          "h": 3,
+          "kind": "office",
+          "ang": 0
+        },
+        {
+          "shape": "box",
+          "x": 20.5,
+          "y": -7,
+          "w": 8,
+          "d": 5,
+          "h": 3.2,
+          "kind": "shed",
+          "ang": 1.5707963267948966
+        },
+        {
+          "shape": "wall",
+          "x0": -23.2,
+          "y0": -16.8,
+          "x1": 23.2,
+          "y1": -16.8,
+          "h": 2.1,
+          "kind": "fence",
+          "gate": true
+        }
+      ],
+      "buildings": [
+        {
+          "kind": "shed",
+          "x": -9,
+          "y": -11.6,
+          "L": 20,
+          "W": 9,
+          "eave": 6.2,
+          "gantry": true,
+          "clearSpan": 9,
+          "doorW": 6.8
+        },
+        {
+          "kind": "office",
+          "x": 5.5,
+          "y": -13,
+          "L": 8,
+          "W": 5.4,
+          "gantry": false,
+          "clearSpan": null,
+          "doorW": null
+        },
+        {
+          "kind": "shed",
+          "x": 20.5,
+          "y": -7,
+          "L": 8,
+          "W": 5,
+          "eave": 3.2,
+          "gantry": false,
+          "clearSpan": 5,
+          "doorW": 3
+        }
+      ],
+      "zones": {
+        "stainTop": 1.9,
+        "barn": [
+          0.72,
+          1.44
+        ],
+        "weed": [
+          0.11,
+          0.72
+        ],
+        "ice": [
+          1.62,
+          1.94
+        ]
+      },
+      "snap": {
+        "px": {
+          "x": 24,
+          "y": 0,
+          "z": 3,
+          "face": "+x"
+        },
+        "nx": {
+          "x": -24,
+          "y": 0,
+          "z": 3,
+          "face": "-x"
+        }
+      },
+      "pxPerM": 32
+    },
+    "largeYard": {
+      "id": "largeYard",
+      "label": "large yard",
+      "kind": "site",
+      "tier": 4,
+      "blurb": "Sized for the stern trawler Mk II: a clear-span workshop that swallows the whole ship, a travel-lift walking out over the dock slot, and blocked hulls on the apron.",
+      "servesHull": {
+        "id": "trawler",
+        "label": "stern trawler Mk II",
+        "loa": 38,
+        "beam": 9,
+        "draft": 3.9,
+        "depth": 5.1
+      },
+      "footprint": {
+        "w": 80,
+        "d": 56
+      },
+      "gradeZ": 3.2,
+      "waterZ": 0.99,
+      "tideRange": 1.8,
+      "mudZ": -2.2,
+      "surface": "conc",
+      "edge": "quay",
+      "capacity": {
+        "hulls": 5,
+        "biggest": 38
+      },
+      "hullMounts": [
+        {
+          "id": "mount0",
+          "support": "slings",
+          "cls": "trawler",
+          "label": "stern trawler Mk II",
+          "loa": 38,
+          "beam": 9,
+          "draft": 3.9,
+          "depth": 5.1,
+          "x": 19,
+          "y": 18,
+          "keelZ": 5.6,
+          "heading": 90,
+          "note": "in the travel-lift slings"
+        },
+        {
+          "id": "mount1",
+          "support": "blocks",
+          "cls": "trawler",
+          "label": "stern trawler Mk II",
+          "loa": 38,
+          "beam": 9,
+          "draft": 3.9,
+          "depth": 5.1,
+          "x": -15,
+          "y": -7,
+          "keelZ": 5.05,
+          "heading": 0,
+          "note": "blocked inside the workshop, under the gantry",
+          "indoor": true
+        },
+        {
+          "id": "mount2",
+          "support": "blocks",
+          "cls": "dragger",
+          "label": "side dragger",
+          "loa": 25,
+          "beam": 7,
+          "draft": 2.55,
+          "depth": 3.5,
+          "x": 15,
+          "y": -13,
+          "keelZ": 5.05,
+          "heading": 0,
+          "note": "blocked on the hardstand",
+          "indoor": false
+        },
+        {
+          "id": "mount3",
+          "support": "blocks",
+          "cls": "cape",
+          "label": "Cape Islander",
+          "loa": 12.8,
+          "beam": 4.4,
+          "draft": 1.4,
+          "depth": 2.9,
+          "x": 31,
+          "y": -5,
+          "keelZ": 4.25,
+          "heading": 0,
+          "note": "blocked on the hardstand",
+          "indoor": false
+        },
+        {
+          "id": "mount4",
+          "support": "davit",
+          "cls": "lobster",
+          "label": "lobster boat",
+          "loa": 12,
+          "beam": 4.44,
+          "draft": 1.35,
+          "depth": 2.84,
+          "x": 32,
+          "y": 6,
+          "keelZ": 5.55,
+          "heading": 0,
+          "note": "slung in the davit falls"
+        }
+      ],
+      "haulout": [
+        {
+          "type": "travelLift",
+          "x": 19,
+          "slot": 12.2,
+          "run": 26,
+          "maxBeam": 11.6
+        },
+        {
+          "type": "davit",
+          "x": 32,
+          "y": 6,
+          "hull": "lobster"
+        }
+      ],
+      "walk": [
+        {
+          "poly": [
+            [
+              -40,
+              -28
+            ],
+            [
+              40,
+              -28
+            ],
+            [
+              40,
+              24
+            ],
+            [
+              -40,
+              24
+            ]
+          ],
+          "z": 3.2,
+          "surface": "concrete apron",
+          "wet": "spray only"
+        }
+      ],
+      "blockers": [
+        {
+          "shape": "box",
+          "x": -15,
+          "y": -7,
+          "w": 47,
+          "d": 22.8,
+          "h": 12.6,
+          "kind": "shed",
+          "ang": 0
+        },
+        {
+          "shape": "box",
+          "x": 27,
+          "y": -21,
+          "w": 11,
+          "d": 7,
+          "h": 3,
+          "kind": "office",
+          "ang": 0
+        },
+        {
+          "shape": "box",
+          "x": 4,
+          "y": -22,
+          "w": 14,
+          "d": 8,
+          "h": 4.4,
+          "kind": "shed",
+          "ang": 0
+        },
+        {
+          "shape": "wall",
+          "x0": -39.2,
+          "y0": -26.6,
+          "x1": 39.2,
+          "y1": -26.6,
+          "h": 2.1,
+          "kind": "fence",
+          "gate": true
+        }
+      ],
+      "buildings": [
+        {
+          "kind": "shed",
+          "x": -15,
+          "y": -7,
+          "L": 47,
+          "W": 22.8,
+          "eave": 12.6,
+          "gantry": true,
+          "clearSpan": 22.8,
+          "doorW": 12.2
+        },
+        {
+          "kind": "office",
+          "x": 27,
+          "y": -21,
+          "L": 11,
+          "W": 7,
+          "gantry": false,
+          "clearSpan": null,
+          "doorW": null
+        },
+        {
+          "kind": "shed",
+          "x": 4,
+          "y": -22,
+          "L": 14,
+          "W": 8,
+          "eave": 4.4,
+          "gantry": false,
+          "clearSpan": 8,
+          "doorW": 5
+        }
+      ],
+      "zones": {
+        "stainTop": 1.9,
+        "barn": [
+          0.72,
+          1.44
+        ],
+        "weed": [
+          0.11,
+          0.72
+        ],
+        "ice": [
+          1.62,
+          1.94
+        ]
+      },
+      "snap": {
+        "px": {
+          "x": 40,
+          "y": 0,
+          "z": 3.2,
+          "face": "+x"
+        },
+        "nx": {
+          "x": -40,
+          "y": 0,
+          "z": 3.2,
+          "face": "-x"
+        }
+      },
+      "pxPerM": 24
+    },
+    "industrialYard": {
+      "id": "industrialYard",
+      "label": "industrial wet yard",
+      "kind": "site",
+      "tier": 5,
+      "blurb": "The covered dock. A gated basin cut back from the shore, long enough for the tanker and roofed on portal frames with the travelling crane on the eave rails. Pump it out and the same dock is a graving dock on blocks.",
+      "servesHull": {
+        "id": "tanker",
+        "label": "gas tanker",
+        "loa": 110,
+        "beam": 17.4,
+        "draft": 6.2,
+        "depth": 12.3
+      },
+      "footprint": {
+        "w": 78,
+        "d": 156
+      },
+      "gradeZ": 3.4,
+      "waterZ": 0.99,
+      "tideRange": 1.8,
+      "mudZ": -2.2,
+      "surface": "conc",
+      "edge": "quay",
+      "capacity": {
+        "hulls": 3,
+        "biggest": 110
+      },
+      "hullMounts": [
+        {
+          "id": "mount0",
+          "support": "afloat",
+          "cls": "tanker",
+          "label": "gas tanker",
+          "loa": 110,
+          "beam": 17.4,
+          "draft": 6.2,
+          "depth": 12.3,
+          "x": 0,
+          "y": 4,
+          "keelZ": -5.21,
+          "heading": 90,
+          "note": "afloat under the roof",
+          "waterlineZ": 0.99,
+          "indoor": true
+        },
+        {
+          "id": "mount1",
+          "support": "blocks",
+          "cls": "trawler",
+          "label": "stern trawler Mk II",
+          "loa": 38,
+          "beam": 9,
+          "draft": 3.9,
+          "depth": 5.1,
+          "x": 27,
+          "y": -28,
+          "keelZ": 5.25,
+          "heading": 90,
+          "note": "blocked on the hardstand",
+          "indoor": false
+        },
+        {
+          "id": "mount2",
+          "support": "blocks",
+          "cls": "dragger",
+          "label": "side dragger",
+          "loa": 25,
+          "beam": 7,
+          "draft": 2.55,
+          "depth": 3.5,
+          "x": -27,
+          "y": -30,
+          "keelZ": 5.25,
+          "heading": 90,
+          "note": "blocked on the hardstand",
+          "indoor": false
+        }
+      ],
+      "haulout": [
+        {
+          "type": "basin",
+          "x": 0,
+          "y": 4,
+          "L": 123.20000000000002,
+          "W": 28.188,
+          "floorZ": -8.2,
+          "copeZ": 3.4,
+          "wet": true,
+          "gateClosed": true,
+          "depthAtTide": 9.19,
+          "roofed": true,
+          "maxDraft": 8.39,
+          "maxLoa": 117.2
+        }
+      ],
+      "walk": [
+        {
+          "poly": [
+            [
+              -39,
+              -78
+            ],
+            [
+              39,
+              -78
+            ],
+            [
+              39,
+              70
+            ],
+            [
+              -39,
+              70
+            ]
+          ],
+          "z": 3.4,
+          "surface": "concrete apron",
+          "wet": "spray only"
+        }
+      ],
+      "blockers": [
+        {
+          "shape": "box",
+          "x": 28,
+          "y": 14,
+          "w": 40,
+          "d": 16,
+          "h": 11,
+          "kind": "shed",
+          "ang": 1.5707963267948966
+        },
+        {
+          "shape": "box",
+          "x": -28,
+          "y": 6,
+          "w": 26,
+          "d": 12,
+          "h": 7,
+          "kind": "shed",
+          "ang": 1.5707963267948966
+        },
+        {
+          "shape": "box",
+          "x": -26,
+          "y": -56,
+          "w": 14,
+          "d": 8,
+          "h": 3,
+          "kind": "office",
+          "ang": 0
+        },
+        {
+          "shape": "wall",
+          "x0": -38.2,
+          "y0": -76,
+          "x1": 38.2,
+          "y1": -76,
+          "h": 2.1,
+          "kind": "fence",
+          "gate": true
+        },
+        {
+          "shape": "box",
+          "x": 0,
+          "y": 4,
+          "w": 123.20000000000002,
+          "d": 28.188,
+          "h": 0,
+          "kind": "basin",
+          "hazard": "open water"
+        }
+      ],
+      "buildings": [
+        {
+          "kind": "shed",
+          "x": 28,
+          "y": 14,
+          "L": 40,
+          "W": 16,
+          "eave": 11,
+          "gantry": true,
+          "clearSpan": 16,
+          "doorW": 10
+        },
+        {
+          "kind": "shed",
+          "x": -28,
+          "y": 6,
+          "L": 26,
+          "W": 12,
+          "eave": 7,
+          "gantry": false,
+          "clearSpan": 12,
+          "doorW": 7
+        },
+        {
+          "kind": "office",
+          "x": -26,
+          "y": -56,
+          "L": 14,
+          "W": 8,
+          "gantry": false,
+          "clearSpan": null,
+          "doorW": null
+        }
+      ],
+      "zones": {
+        "stainTop": 1.9,
+        "barn": [
+          0.72,
+          1.44
+        ],
+        "weed": [
+          0.11,
+          0.72
+        ],
+        "ice": [
+          1.62,
+          1.94
+        ]
+      },
+      "snap": {
+        "px": {
+          "x": 39,
+          "y": 0,
+          "z": 3.4,
+          "face": "+x"
+        },
+        "nx": {
+          "x": -39,
+          "y": 0,
+          "z": 3.4,
+          "face": "-x"
+        }
+      },
+      "pxPerM": 16
+    }
+  },
+  "tideResponse": {
+    "smallYard": [
+      {
+        "tide": 0,
+        "slipLaunchable": true
+      },
+      {
+        "tide": 0.45,
+        "slipLaunchable": true
+      },
+      {
+        "tide": 0.9,
+        "slipLaunchable": true
+      },
+      {
+        "tide": 1.35,
+        "slipLaunchable": true
+      },
+      {
+        "tide": 1.8,
+        "slipLaunchable": true
+      }
+    ],
+    "industrialYard": [
+      {
+        "tide": 0,
+        "basinDepth": 8.2,
+        "basinMaxDraft": 7.4
+      },
+      {
+        "tide": 0.45,
+        "basinDepth": 8.65,
+        "basinMaxDraft": 7.85
+      },
+      {
+        "tide": 0.9,
+        "basinDepth": 9.1,
+        "basinMaxDraft": 8.3
+      },
+      {
+        "tide": 1.35,
+        "basinDepth": 9.55,
+        "basinMaxDraft": 8.75
+      },
+      {
+        "tide": 1.8,
+        "basinDepth": 10,
+        "basinMaxDraft": 9.2
+      }
+    ]
+  },
+  "options": {
+    "tideRange": "0.3-14 m, datum -> highest water",
+    "tide": "m, continuous; defaults to 0.55 * range",
+    "hull": "SHIPS id — overrides the site default, so any yard can be re-sized to any boat",
+    "surface": [
+      "gravel",
+      "conc",
+      "dirt",
+      "grass",
+      "ways"
+    ],
+    "shedColour": [
+      "corr",
+      "galv",
+      "red",
+      "grn",
+      "buff",
+      "white"
+    ],
+    "elev": "deg, default 40",
+    "pxPerM": "force a scale instead of fitScale()",
+    "hulls": "composite the fleet bakes onto the mounts (needs the hull rig globals loaded)",
+    "wet": "water in the basin at all",
+    "gateClosed": "basin gate shut (dock flooded) or open",
+    "fence": "perimeter fence",
+    "ghost": "x-ray the buildings",
+    "clipBelowWater": "drop submerged pixels outright",
+    "growth": "{stain,barn,weed,ice,wet} band toggles",
+    "weather": "0-1 wear",
+    "variant": "int, deterministic scatter seed",
+    "lod": "override the auto LOD"
+  }
+}
