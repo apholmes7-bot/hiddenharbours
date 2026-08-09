@@ -1,0 +1,157 @@
+{
+ "rig": "ShipyardIso",
+ "source": "shipyardIsoRig.js",
+ "ppu": "32 px = 1 m",
+ "camera": "ADR-0006 shared 3/4 turntable — 45deg steps, elev 40deg",
+ "dirs": [
+  "N",
+  "NE",
+  "E",
+  "SE",
+  "S",
+  "SW",
+  "W",
+  "NW"
+ ],
+ "azimuth": "counterClockwise — MEASURED, not inferred from the th = +dir*PI/4 sign (which the rig-lane README forbids as evidence). ShipyardIso.project() returns figures IDENTICAL to wharfIsoRig.project() to 4 dp at all 8 dirs, and wharfIsoRig is registered CounterClockwise; the shipyard therefore rides the same turntable and inherits the same convention. See VERIFICATION.md §2.",
+ "light": "fixed upper-LEFT key, flat-facet, z-buffered, ordered dither, per-face uv texture, depth-edge darkening, no AA",
+ "keylineDefault": true,
+ "keylineNote": "⚠️ This rig bakes the 1 px keyline #1a1c22 UNCONDITIONALLY — there is no {outline:false} gate anywhere in the source. ADR 0031 retired the keyline as a default for the world-art style, and the four iso-rig-pack families carry KEYLINE_DEFAULT = false. This family arrived AFTER that ruling with the ring hard-on, so it does not yet honour it. Recorded as measured, NOT edited: rig sources are the art director's and a fix belongs upstream (see VERIFICATION.md §5, gap G3).",
+ "sheet": {
+  "note": "no fixed sheet — cells size themselves from the projected bbox and the rig reports px,py per bake. Same tight-cell contract as wharfIsoRig; the measured cells and their under-cap sheet plans are in Assets/_Project/Art/Sprites/Shipyard/Iso/shipyardIsoRig.contract.json."
+ },
+ "render": "ShipyardIso.render(what, dir, opts) -> { data, w, h, px, py, wet, dep, pxPerM, mounts, hulls }; what = a site id or a part id",
+ "opts": {
+  "hull": "SHIPS id — re-sizes any site to any boat in the fleet",
+  "tide": "metres, continuous — NOT a baked state axis",
+  "tideRange": "0.3 .. 14 m",
+  "elev": "degrees, default 40",
+  "pxPerM": "force the bake scale; sites otherwise use fitScale()",
+  "surface": [
+   "gravel",
+   "conc",
+   "dirt",
+   "grass",
+   "ways"
+  ],
+  "shedColour": [
+   "corr",
+   "galv",
+   "red",
+   "grn",
+   "buff",
+   "white"
+  ],
+  "hulls": "bool — composite the fleet's own bakes onto the published mounts",
+  "wet": "bool",
+  "gateClosed": "bool",
+  "fence": "bool",
+  "ghost": "bool — x-ray the buildings (NOT an interior; see gap G1)",
+  "clipBelowWater": "bool",
+  "growth": "{stain,barn,weed,ice,wet}",
+  "weather": "0..1",
+  "variant": "int — deterministic scatter seed",
+  "lod": "0 | 0.5 | 1"
+ },
+ "tiers": {
+  "1": "backyardSlip — a backyard, not a business",
+  "2": "smallYard",
+  "3": "workingYard",
+  "4": "largeYard",
+  "5": "industrialYard"
+ },
+ "sites": [
+  {
+   "key": "backyardSlip",
+   "tier": 1,
+   "serves": "dory",
+   "footprint_m": [17, 14],
+   "pxPerM": 32,
+   "buildings": ["shed"],
+   "mounts": 2,
+   "indoorBerths": 0
+  },
+  {
+   "key": "smallYard",
+   "tier": 2,
+   "serves": "lobster",
+   "footprint_m": [30, 24],
+   "pxPerM": 32,
+   "buildings": ["shed", "office"],
+   "mounts": 3,
+   "indoorBerths": 0
+  },
+  {
+   "key": "workingYard",
+   "tier": 3,
+   "serves": "dragger",
+   "footprint_m": [48, 36],
+   "pxPerM": 16,
+   "buildings": ["shed", "office", "shed"],
+   "mounts": 4,
+   "indoorBerths": 0
+  },
+  {
+   "key": "largeYard",
+   "tier": 4,
+   "serves": "trawler",
+   "footprint_m": [80, 56],
+   "pxPerM": 12,
+   "buildings": ["shed", "office", "shed"],
+   "mounts": 5,
+   "indoorBerths": 1
+  },
+  {
+   "key": "industrialYard",
+   "tier": 5,
+   "serves": "tanker",
+   "footprint_m": [78, 156],
+   "pxPerM": 8,
+   "buildings": ["shed", "shed", "office"],
+   "mounts": 3,
+   "indoorBerths": 1
+  }
+ ],
+ "parts": [
+  { "key": "keelBlocks", "cat": "haulout" },
+  { "key": "cradle", "cat": "haulout" },
+  { "key": "railway", "cat": "haulout" },
+  { "key": "slipway", "cat": "haulout" },
+  { "key": "davitPair", "cat": "haulout" },
+  { "key": "travelLift", "cat": "haulout" },
+  { "key": "liftDock", "cat": "haulout" },
+  { "key": "gantryCrane", "cat": "machine" },
+  { "key": "jibCrane", "cat": "machine" },
+  { "key": "winchHouse", "cat": "building" },
+  { "key": "shed", "cat": "building" },
+  { "key": "office", "cat": "building" },
+  { "key": "basin", "cat": "dock" },
+  { "key": "basinRoof", "cat": "dock" },
+  { "key": "fenceRun", "cat": "yard" },
+  { "key": "staging", "cat": "yard" },
+  { "key": "timberStack", "cat": "yard" },
+  { "key": "sparRack", "cat": "yard" },
+  { "key": "drums", "cat": "yard" },
+  { "key": "sawhorse", "cat": "yard" }
+ ],
+ "count": 25,
+ "yards": [
+  {
+   "key": "shipyard.nmc_yard",
+   "site": "smallYard",
+   "region": "nine_mile_creek",
+   "tier": 2,
+   "displayName": "[PLACEHOLDER — OWNER TO NAME] Nine Mile Creek boat yard",
+   "displayNameIsPlaceholder": true,
+   "displayNameNote": "A yard presents as a COMMERCIAL BUSINESS with a local name, and the word \"shipwright\" never appears in-world (vision-and-pillars.md §5.3, owner 2026-08-07). This string is a deliberately ugly placeholder so it cannot ship by accident. Four PEI-commercial-style proposals are in the import PR for the owner to pick from; the pick is a display-string change only — the key and the id stay stable (ADR 0009).",
+   "absorbsDoryBeat": true,
+   "absorbsDoryBeatNote": "Owner ruling 2026-08-09: NMC's small yard ABSORBS the dory beat — the damaged starter dory is sold from, and repaired at, this yard, superseding the 2026-07-25 \"no shipwright stands in Nine Mile Creek\" ruling. This is therefore the FIRST yard the player ever walks into.",
+   "gameplaySidecar": "gameplay/shipyardIsoRig.nmc_yard.gameplay.json",
+   "canonRefs": [
+    "docs/vision-and-pillars.md §5.3",
+    "docs/design/world-map-plan.md §3"
+   ]
+  }
+ ],
+ "yardsNote": "Only the NMC yard is registered here — it is the one the owner's ruling put first and the only one this import was scoped to. East Point (working-fleet) and Finnigan's Landing (large) map cleanly onto workingYard and largeYard by tier, but registering them is a later item and is deliberately NOT done here: a catalogue key implies a placed, named business, and neither has been named."
+}

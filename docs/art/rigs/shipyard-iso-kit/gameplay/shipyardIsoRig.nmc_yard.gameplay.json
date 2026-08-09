@@ -1,0 +1,114 @@
+{
+ "schema": "hiddenharbours.gameplay.sidecar/1",
+ "rig": "shipyardIsoRig.js",
+ "exportSymbol": "ShipyardIso",
+ "derivedFromRigSha256": "d52fafc4a9c2e95da1efd44fa692c4ee7cfc8ce9e2c9672ded6cd7ae856373b7",
+ "derivedFromRigSha256Note": "SHA-256 of docs/art/rigs/shipyard-iso-kit/shipyardIsoRig.js EXACTLY as committed (LF endings — this one hashes exactly, unlike the eight legacy CRLF sidecars flagged in ../../gameplay/README.md). Hash mismatch = the yard was re-laid-out and every polygon below must be re-checked before anything trusts it.",
+ "catalogueKey": "shipyard.nmc_yard",
+ "site": "smallYard",
+ "region": "nine_mile_creek",
+ "units": "metres",
+ "frame": {
+  "origin": "site footprint centre at chart datum — the same point render() projects to cell (px,py)",
+  "axes": "+x along shore, +y water, -y road / back fence, +z up",
+  "z_datum": "z = 0 is chart datum (lowest water); this site's yard grade is z = 2.70, its mean water z = 0.99, tideRange 1.80",
+  "scale_px_per_m": 32,
+  "polygon_winding": "CCW viewed from +Z (above)",
+  "note": "Same convention as wharfIsoRig, so a yard and a wharf module share one shoreline."
+ },
+ "authoring": {
+  "derivation": "Every number below is derived from the rig's OWN published geometry, not eyeballed: ShipyardIso.gameplay('smallYard').buildings[0] reports the workshop as x=-6.5, y=-7.8, L=13.0 (along x), W=6.6 (along y), eave=4.4, clearSpan=6.6, doorW=5.0, and gradeZ=2.70. The shed box is therefore x [-13.0, 0.0], y [-11.1, -4.5]; the interior is that box inset by one wall thickness.",
+  "wall_thickness_m": 0.2,
+  "authored_by": "art-director, shipyard rig kit import",
+  "supersedes": "nothing — this is the first sidecar for a shipyard site"
+ },
+
+ "INTERIOR": [
+  {
+   "id": "workshop_floor",
+   "polygon": [[-12.8, -10.9], [-0.2, -10.9], [-0.2, -4.7], [-12.8, -4.7]],
+   "z": 2.7,
+   "surface": "swept plank over packed grade",
+   "clear_height_m": 4.4,
+   "area_m2": 78.12,
+   "note": "Seamless with the yard apron: the apron walk polygon already covers y up to +8, so a player crossing the door threshold never leaves a walkable surface and never changes z — floor and grade are both 2.70. True to the shed footprint the rig actually bakes (12.6 × 6.2 m of floor inside a 13.0 × 6.6 m shell)."
+  }
+ ],
+
+ "DOOR": [
+  {
+   "id": "workshop_main",
+   "wall": "+y",
+   "kind": "sliding double, big enough to take a hull",
+   "width_m": 5,
+   "threshold": [[-9.0, -4.6], [-4.0, -4.6]],
+   "outside_approach": [-6.5, -3.9],
+   "inside_approach": [-6.5, -5.5],
+   "z": 2.7,
+   "faces": "the water (+y), so a hull comes up the slipway and straight in — the working front the ruling asks for",
+   "note": "doorW = 5.0 m is the rig's own figure, centred on the shed's x centre (-6.5). The door is the ONLY opening: the shed has no back or side door in the rig's plan."
+  }
+ ],
+
+ "INTERACTION": [
+  {
+   "id": "counter",
+   "kind": "counter",
+   "purpose": "hosts the buy/repair interaction later — this is the yard's business face, where the damaged dory is bought and where she is booked in to be put right",
+   "footprint": [[-12.6, -10.9], [-9.6, -10.9], [-9.6, -10.1], [-12.6, -10.1]],
+   "top_z": 3.65,
+   "stand_point": [-11.1, -9.6],
+   "stand_heading_deg": 270,
+   "reach_m": 1.2,
+   "note": "Set against the back (-y) wall at the west end, deliberately clear of the door lane (x -9.0..-4.0) so a hull coming through the big door never passes through the player's transaction spot. stand_heading 270 deg = facing -y, i.e. facing the counter. No gameplay is wired to this yet; it is a named point so the buy/repair work does not have to invent one."
+  }
+ ],
+
+ "FIXTURES": [
+  {
+   "id": "workbench_back",
+   "kind": "workbench",
+   "footprint": [[-9.0, -10.9], [-3.4, -10.9], [-3.4, -10.2], [-9.0, -10.2]],
+   "top_z": 3.6,
+   "blocks_walk": true
+  },
+  {
+   "id": "toolwall_west",
+   "kind": "tool rack",
+   "footprint": [[-12.8, -9.6], [-12.4, -9.6], [-12.4, -6.2], [-12.8, -6.2]],
+   "top_z": 4.4,
+   "blocks_walk": true
+  },
+  {
+   "id": "sawhorse_pair",
+   "kind": "sawhorses",
+   "footprint": [[-7.6, -8.6], [-4.6, -8.6], [-4.6, -7.4], [-7.6, -7.4]],
+   "top_z": 3.4,
+   "blocks_walk": false,
+   "note": "Low enough to step over; carried as data so the interior dressing has somewhere ruled to go."
+  }
+ ],
+ "FIXTURES_note": "⚠️ These are POSITIONS ONLY — the interior ART does not exist yet and this sidecar does not pretend it does. See _gaps.G1: the rig bakes no interior, and the existing InteriorIso rig cannot reach this footprint. Positions are recorded now so the art, when it is made, has a ruled layout to hit rather than inventing one.",
+
+ "_confirm": [
+  "NMC is smallYard (tier 2), not backyardSlip (tier 1). Tier 1 is a BACKYARD and the ruling calls for a commercial business with a local name; tier 2 is the smallest site that carries an office as well as a shed. Reversible: swap `site` and re-derive.",
+  "The yard stays at its native LOBSTER sizing rather than being re-sized to the dory with `hull:'dory'`. NMC is the market town whose fleet is lobster boats, and a yard that can haul a lobster boat can obviously take a 4.5 m dory. Re-sizing would shrink the whole business to dory scale. Reversible: pass hull:'dory' and re-derive.",
+  "The damaged starter dory should sit on smallYard's `blocks` mount (mount2, x -10.5, y -4.6, currently classed `skiff`) rather than on the cradle or in the davits — blocked on the hardstand reads as 'not going anywhere until someone pays'. The mount publishes its class, so the compositor can drop a dory sprite on it without a rig change. Reversible: name a different mount.",
+  "The counter sits at the WEST end of the back wall. Any wall would serve; west keeps it out of the door lane. Reversible: move `stand_point` and `footprint` together.",
+  "Wall thickness is taken as 0.20 m. The rig publishes clearSpan 6.6 = its full W, so it does not itself distinguish shell from interior; 0.20 m is a workshop-plausible board-and-stud wall. Reversible: one number in `authoring.wall_thickness_m`, then re-inset.",
+  "The shed's back wall lands at y = -11.1 while the rig's own fence runs at y = -11.0, so the shell overhangs the fence line by 0.10 m. Left exactly as the rig lays it out rather than nudged, because moving it would put this sidecar out of step with the bake. Flagged so it is not mistaken for a sidecar error."
+ ],
+
+ "_gaps": {
+  "G1_interior_art": "The rig bakes NO interior. `opts.ghost` x-rays the buildings — that is a see-through massing aid, not a room. The existing InteriorIso rig cannot stand in either: it was MEASURED at Wd 6.0–8.4 m × Ln 7.0–11.2 m (a domestic range), and this workshop is 13.0 × 6.6 m — the 13.0 m length is outside its parametric reach, so it cannot be made true-to-footprint. The ruled 'seamless, true-to-footprint interior' therefore needs either an extension of InteriorIso's range or a workshop-interior rig, upstream, from the art director. The gameplay data above is authored and complete; only the art is missing.",
+  "G2_hull_undersides": "The owner's keel-over grounding vision (ADR 0022) needs hull UNDERSIDE art, and this drop does NOT supply it. Every cradle / keel-blocks / davit / sling berth publishes a mount and composites the fleet's own EXISTING bakes onto it, upright, positioned by keel bottom — an upright hull at 40 deg elevation shows its side and deck, never its bottom. Nothing here was registered as a hull-underside state, deliberately: boat rigs are their own family and this would be the wrong home for it. What the measurement DID find, and what grounding should inherit from instead: the hull rigs already model the underside (doryIsoRig comments its 'bottom (underside)') and already accept roll / pitch / heave — all three verified to change the render. So the underside path exists on the BOAT rigs and wants a keel-over pose there, not scenery states here.",
+  "G3_keyline": "This rig bakes the 1 px keyline #1a1c22 unconditionally — no {outline:false} gate exists in the source. ADR 0031 retired the keyline as the world-art default and the four iso-rig-pack families carry KEYLINE_DEFAULT = false. Recorded, not edited: rig sources belong to the art director and a fix belongs upstream."
+ },
+
+ "_excluded": {
+  "walk": "Not restated here. The yard apron polygon is already published by the rig itself and imported verbatim in gameplay/shipyardIsoRig.gameplay.json (sites.smallYard.walk); duplicating it would create two sources of truth for one polygon.",
+  "blockers": "Same — the rig publishes the shed box, the office box and the fence wall. Note the shed is a solid blocker there; whatever consumes INTERIOR above must make the workshop enterable rather than trusting that box.",
+  "haulout": "Published by the rig (slipway launchable at tide, railway gauge/run/winch, davits). Not an art-director judgement call, so not restated.",
+  "hullMounts": "Published by the rig, with class, support type, keel height and heading. See the third _confirm entry for which one the dory wants."
+ }
+}

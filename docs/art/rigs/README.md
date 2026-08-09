@@ -87,6 +87,26 @@ same figure, to the digit, as `houseIsoRig` / `wharfBuildingRig` / `interiorIsoR
 outputs also agree to **0.000000000 px** relative to each rig's own origin, so the three ride ONE
 turntable rather than three that resemble each other. The bake still probes from pixels.
 
+**COUNTER-CLOCKWISE, MEASURED (shipyard iso kit, 2026-08-09)** — `shipyard-iso-kit/shipyardIsoRig`
+(20 yard parts + 5 whole sites, `ShipyardIso`). Measured the same way and for the same reason: its
+`project()` returns figures **identical to `wharfIsoRig`'s at all 8 dirs to 4 decimal places**, so it
+rides that same turntable and inherits its convention.
+
+> ⚠️ **The calibration is the evidence, not the sign the probe prints — and this rig is the case that
+> proves it.** A probe reading the screen angle of the +X axis reports **+46.75°/step** for the
+> shipyard, the same magnitude as the −46.75 recorded above but the *opposite* sign. That is the
+> probe's own convention, not a mirrored rig: run the identical probe against `wharfIsoRig` and it
+> returns **+46.75 too**. The two rigs' `camBasis`/`projRaw` are the same formula character-for-
+> character (as are `doryIsoRig`'s and `houseIsoRig`'s). **Always calibrate a new family's probe
+> against a rig already measured before believing its sign** — reading the positive `th = +dir·π/4`
+> term as clockwise would have registered this family mirrored and flipped all 25 keys at once.
+> Details: [`shipyard-iso-kit/VERIFICATION.md`](shipyard-iso-kit/VERIFICATION.md) §2.
+>
+> ⚠️ **This kit cannot be baked yet.** It carries **no `KEYLINE_DEFAULT` gate** and bakes the 1 px
+> ring unconditionally, so `IsoPackContract.AssertKeylineGated` mechanically refuses it (owner ruling
+> 2026-08-06 / ADR 0031). The four pack rigs above have since gained the gate; this one arrived after
+> the ruling without it. The fix is upstream — do not edit the rig to get past the gate.
+
 **No azimuth term (18 + 4 + 1 + 2)** — kits, props and creatures that aren't 8-way directional; they need no
 convention. (`sceneKit`, `shorelineRig`, `potRig`, `foxRig`, …) The fishing kit adds `bobberRig` ·
 `crustaceanRig` · `shellfishRig` · `catchKit` to this group; the drift-weed kit adds `driftWeedRig`

@@ -1,0 +1,437 @@
+{
+ "rig": "shipyardIsoRig",
+ "version": 1,
+ "generated": "measured from docs/art/rigs/shipyard-iso-kit/shipyardIsoRig.js in a standalone V8 host at rig-default hull, tide and dimensions (hulls:false — the yard bakes no hull; a composited hull is the compositor's, not the cell's)",
+ "projection": {
+  "ppu": 32,
+  "elev": 40,
+  "depthScale": 0.6427876096865393,
+  "antialias": false,
+  "alpha": "binary",
+  "pivot": "projection of the model origin (footprint centre at chart datum) — the rig reports px,py per bake",
+  "keyline": "#1a1c22",
+  "cellRule": "pivot-aligned union of the rig's RETURNED BUFFER extents across all 8 facings, floor/ceil, pivot-inclusive: cellW=ceil(max(w-1-px))-floor(min(-px))+1, pivotX=-floor(min(-px)), likewise Y. Measure the BUFFER, not the ink bbox — identical rule to wharfIsoRig, whose turntable this rig was MEASURED to share exactly.",
+  "keylineDefault": true
+ },
+ "azimuth": {
+  "convention": "counterClockwise",
+  "measured": "+46.7526 deg by this repo's atan2-of-+X-axis probe, which returns the IDENTICAL figure for wharfIsoRig (registered CounterClockwise) — the two rigs' project() outputs agree to 4 dp at every one of the 8 dirs, so the shipyard rides the same turntable and inherits the same CCW convention. The sign printed by a probe is its own convention; the CALIBRATION against an already-measured sibling is the evidence.",
+  "order": "[\"N\",\"NE\",\"E\",\"SE\",\"S\",\"SW\",\"W\",\"NW\"]"
+ },
+ "facings": 8,
+ "importSizeCap": 4096,
+ "tide": {
+  "baked": 0.99,
+  "tideRange": 1.8,
+  "note": "tide is continuous in the rig and NOT a baked state axis; one water level is baked and the wet mask carries the rest"
+ },
+ "scales": {
+  "backyardSlip": 32,
+  "smallYard": 32,
+  "workingYard": 16,
+  "largeYard": 12,
+  "industrialYard": 8,
+  "keelBlocks": 32,
+  "cradle": 32,
+  "railway": 32,
+  "slipway": 32,
+  "davitPair": 32,
+  "travelLift": 32,
+  "liftDock": 32,
+  "gantryCrane": 32,
+  "jibCrane": 32,
+  "winchHouse": 32,
+  "shed": 32,
+  "office": 32,
+  "basin": 32,
+  "basinRoof": 32,
+  "fenceRun": 32,
+  "staging": 32,
+  "timberStack": 32,
+  "sparRack": 32,
+  "drums": 32,
+  "sawhorse": 32
+ },
+ "forcedScales": {
+  "workingYard": {
+   "from": 32,
+   "to": 16
+  },
+  "largeYard": {
+   "from": 24,
+   "to": 12
+  },
+  "industrialYard": {
+   "from": 16,
+   "to": 8
+  }
+ },
+ "sites": "[\"backyardSlip\",\"smallYard\",\"workingYard\",\"largeYard\",\"industrialYard\"]",
+ "parts": "[\"keelBlocks\",\"cradle\",\"railway\",\"slipway\",\"davitPair\",\"travelLift\",\"liftDock\",\"gantryCrane\",\"jibCrane\",\"winchHouse\",\"shed\",\"office\",\"basin\",\"basinRoof\",\"fenceRun\",\"staging\",\"timberStack\",\"sparRack\",\"drums\",\"sawhorse\"]",
+ "worstSheet": {
+  "key": "smallYard",
+  "w": 3690,
+  "h": 2859
+ },
+ "worstSheetByMaxDim": {
+  "key": "largeYard",
+  "w": 2668,
+  "h": 3692,
+  "maxDim": 3692,
+  "headroomToCap": 404,
+  "note": "A texture cap binds on the LONGEST SIDE, not on area — size import headroom off THIS. Every sheet here exceeds Unity's DEFAULT 2048 importer cap, so the slicer MUST lift maxTextureSize to 4096 or the sheet imports silently downscaled. Cells are parametric: re-measure after any authoring change."
+ },
+ "count": 25,
+ "cells": [
+  {
+   "key": "backyardSlip",
+   "cellW": 710,
+   "cellH": 584,
+   "pivotX": 354,
+   "pivotY": 324,
+   "pxPerM": 32,
+   "sheet": {
+    "cols": 3,
+    "rows": 3,
+    "sheetW": 2130,
+    "sheetH": 1752
+   }
+  },
+  {
+   "key": "smallYard",
+   "cellW": 1230,
+   "cellH": 953,
+   "pivotX": 614,
+   "pivotY": 534,
+   "pxPerM": 32,
+   "sheet": {
+    "cols": 3,
+    "rows": 3,
+    "sheetW": 3690,
+    "sheetH": 2859
+   }
+  },
+  {
+   "key": "workingYard",
+   "cellW": 959,
+   "cellH": 692,
+   "pivotX": 479,
+   "pivotY": 375,
+   "pxPerM": 16,
+   "sheet": {
+    "cols": 2,
+    "rows": 4,
+    "sheetW": 1918,
+    "sheetH": 2768
+   }
+  },
+  {
+   "key": "largeYard",
+   "cellW": 1334,
+   "cellH": 923,
+   "pivotX": 666,
+   "pivotY": 479,
+   "pxPerM": 12,
+   "sheet": {
+    "cols": 2,
+    "rows": 4,
+    "sheetW": 2668,
+    "sheetH": 3692
+   }
+  },
+  {
+   "key": "industrialYard",
+   "cellW": 1332,
+   "cellH": 901,
+   "pivotX": 665,
+   "pivotY": 486,
+   "pxPerM": 8,
+   "sheet": {
+    "cols": 2,
+    "rows": 4,
+    "sheetW": 2664,
+    "sheetH": 3604
+   }
+  },
+  {
+   "key": "keelBlocks",
+   "cellW": 474,
+   "cellH": 316,
+   "pivotX": 236,
+   "pivotY": 153,
+   "pxPerM": 32,
+   "sheet": {
+    "cols": 2,
+    "rows": 4,
+    "sheetW": 948,
+    "sheetH": 1264
+   }
+  },
+  {
+   "key": "cradle",
+   "cellW": 474,
+   "cellH": 316,
+   "pivotX": 236,
+   "pivotY": 153,
+   "pxPerM": 32,
+   "sheet": {
+    "cols": 2,
+    "rows": 4,
+    "sheetW": 948,
+    "sheetH": 1264
+   }
+  },
+  {
+   "key": "railway",
+   "cellW": 551,
+   "cellH": 395,
+   "pivotX": 275,
+   "pivotY": 207,
+   "pxPerM": 32,
+   "sheet": {
+    "cols": 2,
+    "rows": 4,
+    "sheetW": 1102,
+    "sheetH": 1580
+   }
+  },
+  {
+   "key": "slipway",
+   "cellW": 726,
+   "cellH": 560,
+   "pivotX": 362,
+   "pivotY": 306,
+   "pxPerM": 32,
+   "sheet": {
+    "cols": 3,
+    "rows": 3,
+    "sheetW": 2178,
+    "sheetH": 1680
+   }
+  },
+  {
+   "key": "davitPair",
+   "cellW": 534,
+   "cellH": 411,
+   "pivotX": 266,
+   "pivotY": 228,
+   "pxPerM": 32,
+   "sheet": {
+    "cols": 3,
+    "rows": 3,
+    "sheetW": 1602,
+    "sheetH": 1233
+   }
+  },
+  {
+   "key": "travelLift",
+   "cellW": 581,
+   "cellH": 482,
+   "pivotX": 290,
+   "pivotY": 284,
+   "pxPerM": 32,
+   "sheet": {
+    "cols": 3,
+    "rows": 3,
+    "sheetW": 1743,
+    "sheetH": 1446
+   }
+  },
+  {
+   "key": "liftDock",
+   "cellW": 815,
+   "cellH": 611,
+   "pivotX": 407,
+   "pivotY": 335,
+   "pxPerM": 32,
+   "sheet": {
+    "cols": 2,
+    "rows": 4,
+    "sheetW": 1630,
+    "sheetH": 2444
+   }
+  },
+  {
+   "key": "gantryCrane",
+   "cellW": 521,
+   "cellH": 460,
+   "pivotX": 260,
+   "pivotY": 282,
+   "pxPerM": 32,
+   "sheet": {
+    "cols": 3,
+    "rows": 3,
+    "sheetW": 1563,
+    "sheetH": 1380
+   }
+  },
+  {
+   "key": "jibCrane",
+   "cellW": 914,
+   "cellH": 968,
+   "pivotX": 456,
+   "pivotY": 664,
+   "pxPerM": 32,
+   "sheet": {
+    "cols": 3,
+    "rows": 3,
+    "sheetW": 2742,
+    "sheetH": 2904
+   }
+  },
+  {
+   "key": "winchHouse",
+   "cellW": 416,
+   "cellH": 279,
+   "pivotX": 207,
+   "pivotY": 134,
+   "pxPerM": 32,
+   "sheet": {
+    "cols": 2,
+    "rows": 4,
+    "sheetW": 832,
+    "sheetH": 1116
+   }
+  },
+  {
+   "key": "shed",
+   "cellW": 1039,
+   "cellH": 766,
+   "pivotX": 519,
+   "pivotY": 422,
+   "pxPerM": 32,
+   "sheet": {
+    "cols": 2,
+    "rows": 4,
+    "sheetW": 2078,
+    "sheetH": 3064
+   }
+  },
+  {
+   "key": "office",
+   "cellW": 642,
+   "cellH": 424,
+   "pivotX": 320,
+   "pivotY": 207,
+   "pxPerM": 32,
+   "sheet": {
+    "cols": 2,
+    "rows": 4,
+    "sheetW": 1284,
+    "sheetH": 1696
+   }
+  },
+  {
+   "key": "basin",
+   "cellW": 826,
+   "cellH": 580,
+   "pivotX": 412,
+   "pivotY": 338,
+   "pxPerM": 32,
+   "sheet": {
+    "cols": 2,
+    "rows": 4,
+    "sheetW": 1652,
+    "sheetH": 2320
+   }
+  },
+  {
+   "key": "basinRoof",
+   "cellW": 843,
+   "cellH": 823,
+   "pivotX": 421,
+   "pivotY": 632,
+   "pxPerM": 32,
+   "sheet": {
+    "cols": 3,
+    "rows": 3,
+    "sheetW": 2529,
+    "sheetH": 2469
+   }
+  },
+  {
+   "key": "fenceRun",
+   "cellW": 775,
+   "cellH": 548,
+   "pivotX": 387,
+   "pivotY": 288,
+   "pxPerM": 32,
+   "sheet": {
+    "cols": 2,
+    "rows": 4,
+    "sheetW": 1550,
+    "sheetH": 2192
+   }
+  },
+  {
+   "key": "staging",
+   "cellW": 361,
+   "cellH": 341,
+   "pivotX": 180,
+   "pivotY": 214,
+   "pxPerM": 32,
+   "sheet": {
+    "cols": 3,
+    "rows": 3,
+    "sheetW": 1083,
+    "sheetH": 1023
+   }
+  },
+  {
+   "key": "timberStack",
+   "cellW": 325,
+   "cellH": 220,
+   "pivotX": 162,
+   "pivotY": 105,
+   "pxPerM": 32,
+   "sheet": {
+    "cols": 2,
+    "rows": 4,
+    "sheetW": 650,
+    "sheetH": 880
+   }
+  },
+  {
+   "key": "sparRack",
+   "cellW": 416,
+   "cellH": 279,
+   "pivotX": 207,
+   "pivotY": 134,
+   "pxPerM": 32,
+   "sheet": {
+    "cols": 2,
+    "rows": 4,
+    "sheetW": 832,
+    "sheetH": 1116
+   }
+  },
+  {
+   "key": "drums",
+   "cellW": 280,
+   "cellH": 191,
+   "pivotX": 139,
+   "pivotY": 91,
+   "pxPerM": 32,
+   "sheet": {
+    "cols": 2,
+    "rows": 4,
+    "sheetW": 560,
+    "sheetH": 764
+   }
+  },
+  {
+   "key": "sawhorse",
+   "cellW": 235,
+   "cellH": 162,
+   "pivotX": 117,
+   "pivotY": 76,
+   "pxPerM": 32,
+   "sheet": {
+    "cols": 2,
+    "rows": 4,
+    "sheetW": 470,
+    "sheetH": 648
+   }
+  }
+ ]
+}
