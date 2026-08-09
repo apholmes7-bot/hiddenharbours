@@ -184,3 +184,39 @@ MonoBehaviour:
     FramesPerSecond: 9.090909
     Loops: 1
     FacingCount: 0
+  HaulerClip:
+    Sheet: []
+    FrameCount: 8
+    FramesPerSecond: 8.695652
+    Loops: 1
+    FacingCount: 0
+  BenchClip:
+    Sheet: []
+    FrameCount: 10
+    FramesPerSecond: 7.6923075
+    Loops: 1
+    FacingCount: 0
+  ChopClip:
+    Sheet: []
+    FrameCount: 8
+    FramesPerSecond: 9.523809
+    Loops: 1
+    FacingCount: 0
+  LiftClip:
+    Sheet: []
+    FrameCount: 8
+    FramesPerSecond: 9.523809
+    Loops: 0
+    FacingCount: 0
+  PlaceClip:
+    Sheet: []
+    FrameCount: 8
+    FramesPerSecond: 9.090909
+    Loops: 0
+    FacingCount: 0
+  TossClip:
+    Sheet: []
+    FrameCount: 8
+    FramesPerSecond: 10.526316
+    Loops: 0
+    FacingCount: 0

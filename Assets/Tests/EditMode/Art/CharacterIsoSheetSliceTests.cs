@@ -73,6 +73,14 @@ namespace HiddenHarbours.Tests.Art.EditMode
             { "board", 10 },   { "boardDown", 6 },
             { "haul", 8 },     { "ladderDown", 10 },
 
+            // The pass-6.3 deck-work family (#473/#474): the hauler drum, the bench, bait cutting,
+            // and the lift/place/toss one-shots — plus the pot carry on idle and walk (a pot is
+            // carried standing or walking, never at a run). Counts are the rig's own ANIMS values,
+            // cross-checked by CharacterRigBakeTests like every family before it.
+            { "hauler", 8 },  { "bench", 10 }, { "chop", 8 },
+            { "lift", 8 },    { "place", 8 },  { "toss", 8 },
+            { "idle_pot", 6 }, { "walk_pot", 8 },
+
             // The carry stances — separate sheets because the stance changes the POSE, not just
             // where the hands are. Which stance rides which anim is the RIG's CARRIES table: pails
             // and tray on all three gaits, helm and oars on idle and walk only (nobody runs a
@@ -83,8 +91,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
             { "idle_oars", 6 },    { "walk_oars", 8 },
         };
 
-        /// <summary>The player's twenty-nine: every state the rig declares, plus its carry stances and
-        /// the pass-6.2 clip families.</summary>
+        /// <summary>The player's thirty-seven: every state the rig declares, plus its carry stances and
+        /// the pass-6.2 and 6.3 clip families.</summary>
         private static readonly string[] PlayerStates =
         {
             "idle", "walk", "run", "balance", "stagger",
@@ -94,6 +102,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
             "hold", "cast_short", "cast_long", "castBack", "castRelease",
             "bite", "strike", "reel", "land", "dig",
             "board", "boardDown", "haul", "ladderDown",
+            "hauler", "bench", "chop", "lift", "place", "toss",
+            "idle_pot", "walk_pot",
         };
 
         /// <summary>What a cast standee gets: the gaits, not the gear. (See the bake menu for why.)</summary>

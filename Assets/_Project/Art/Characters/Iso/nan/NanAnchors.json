@@ -8,7 +8,8 @@
   "dirs": 8,
   "measuredRigConvention": "Clockwise",
   "facingsAreCounterClockwise": false,
-  "_note": "Baked in-engine with the rig's measured convention applied, so row d of every sheet depicts heading 360*d/dirs. Anchor cell px are TOP-LEFT origin, per direction row then per frame column. 'tool' is the prop grip for the rod/shovel states; 'carry' holds one block per stance the rig allows on that anim. Props pin from these at RUNTIME and are never baked into the sheet.",
+  "_note": "Baked in-engine with the rig's measured convention applied, so row d of every sheet depicts heading 360*d/dirs. Anchor cell px are TOP-LEFT origin, per direction row then per frame column. 'tool' is the prop grip for the rod/shovel states; 'carry' holds one block per stance the rig allows on that anim. 'clipPins' holds the clip-side pins named by 'clipPinSource' (boardMount / haulGrip / ladderMount). Props pin from these at RUNTIME and are never baked into the sheet.",
+  "_clipNote": "The boarding clips re-solve per railZ and are baked here at the rig's DEFAULT 0.55 m (a dory sheer) — a hull with a different sheer wants its own sheet, per the kit README's 'bake one sheet per rail height you ship'. The ladder clip is baked at the rig's default rung 0.30 m / width 0.45 m (WharfIso.FIT.ladder).",
   "states": {
     "idle": { "anim": "idle", "frames": 6, "ms": 170, "mount": "free",
       "anchors": [

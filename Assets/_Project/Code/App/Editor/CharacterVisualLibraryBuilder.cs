@@ -112,6 +112,20 @@ namespace HiddenHarbours.App.Editor
         const int LadderDownFrames = 10;
         const float LadderDownFps = 1000f / 110f;  // 9.09
 
+        // The deck-work family (rig 6.3) — the same ANIMS-table rule as the four above.
+        const int HaulerFrames = 8;
+        const float HaulerFps = 1000f / 115f;      // 8.70
+        const int BenchFrames = 10;
+        const float BenchFps = 1000f / 130f;       // 7.69
+        const int ChopFrames = 8;
+        const float ChopFps = 1000f / 105f;        // 9.52
+        const int LiftFrames = 8;
+        const float LiftFps = 1000f / 105f;        // 9.52
+        const int PlaceFrames = 8;
+        const float PlaceFps = 1000f / 110f;       // 9.09
+        const int TossFrames = 8;
+        const float TossFps = 1000f / 95f;         // 10.53
+
         /// <summary>One character's worth of sheets on disk → one <see cref="CharacterVisualDef"/> asset.</summary>
         struct Kit
         {
@@ -252,6 +266,18 @@ namespace HiddenHarbours.App.Editor
             def.LadderDownClip = TakeClip(folder, kit.Stem, "_ladderDown", LadderDownFrames,
                                           LadderDownFps, loops: true);
 
+            // The deck-work family (rig 6.3, #474). Same terms again — counts and rates are the rig's
+            // own ANIMS values, already declared on the def's field initialisers; wiring them here is
+            // what turns HasClip true once the bake exists. The two pot CARRY sheets (idle_pot /
+            // walk_pot) have no stance slot yet — CharacterStance.Pot is the compositing slice's
+            // one-field Core addition, and their sheets bake and commit ahead of it.
+            def.HaulerClip = TakeClip(folder, kit.Stem, "_hauler", HaulerFrames, HaulerFps, loops: true);
+            def.BenchClip = TakeClip(folder, kit.Stem, "_bench", BenchFrames, BenchFps, loops: true);
+            def.ChopClip = TakeClip(folder, kit.Stem, "_chop", ChopFrames, ChopFps, loops: true);
+            def.LiftClip = TakeClip(folder, kit.Stem, "_lift", LiftFrames, LiftFps, loops: false);
+            def.PlaceClip = TakeClip(folder, kit.Stem, "_place", PlaceFrames, PlaceFps, loops: false);
+            def.TossClip = TakeClip(folder, kit.Stem, "_toss", TossFrames, TossFps, loops: false);
+
             if (created) AssetDatabase.CreateAsset(def, path);
             else EditorUtility.SetDirty(def);
 
@@ -276,7 +302,13 @@ namespace HiddenHarbours.App.Editor
                       $"; clips board {ClipState(def, CharacterClip.Board)}, " +
                       $"boardDown {ClipState(def, CharacterClip.BoardDown)}, " +
                       $"haul {ClipState(def, CharacterClip.Haul)}, " +
-                      $"ladderDown {ClipState(def, CharacterClip.LadderDown)}" +
+                      $"ladderDown {ClipState(def, CharacterClip.LadderDown)}, " +
+                      $"hauler {ClipState(def, CharacterClip.Hauler)}, " +
+                      $"bench {ClipState(def, CharacterClip.Bench)}, " +
+                      $"chop {ClipState(def, CharacterClip.Chop)}, " +
+                      $"lift {ClipState(def, CharacterClip.Lift)}, " +
+                      $"place {ClipState(def, CharacterClip.Place)}, " +
+                      $"toss {ClipState(def, CharacterClip.Toss)}" +
                       $"{(def.FacingsAreCounterClockwise ? ", rows UN-MIRRORED (art bakes CCW)" : ", rows as labelled (art bakes CW)")}.");
             return true;
         }
