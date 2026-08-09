@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 using Stopwatch = System.Diagnostics.Stopwatch;
 
@@ -10,14 +11,16 @@ namespace HiddenHarbours.Tools.RigBaking
     /// <summary>
     /// One piece of a FIXED-SHEET ISO prop family, through the 8-facing turntable.
     ///
-    /// <para>Both families this baker serves — <c>wharfDecor</c> (61 pieces of deck gear) and
-    /// <c>utilityIso</c> (42 village services) — render into a fixed native buffer at a fixed pivot and
-    /// crop to a pivot-inclusive ink union. They share a render signature and a sheet shape, so they
-    /// share ONE parameterised baker rather than two that drift apart.</para>
+    /// <para>Every family this baker serves — <c>wharfDecor</c> (61 pieces of wharf dressing),
+    /// <c>utilityIso</c> (42 village services) and the deck-loop kit's five — renders into a fixed
+    /// native buffer at a fixed pivot and crops to a pivot-inclusive ink union. They share a buffer
+    /// shape and a cell rule, so they share ONE parameterised baker rather than several that drift
+    /// apart. What they do NOT share is the shape of the <c>render()</c> CALL, which is what
+    /// <see cref="IsoPropSheetBaker.RenderShape"/> carries.</para>
     /// </summary>
     public readonly struct IsoPropBakeRequest
     {
-        /// <summary><see cref="RigCatalog"/> key — <c>"wharfDecor"</c> or <c>"utilityIso"</c>.</summary>
+        /// <summary><see cref="RigCatalog"/> key — one of <see cref="IsoPropSheetBaker.Families"/>.</summary>
         public readonly string RigKey;
 
         /// <summary>The piece, as the rig's own <c>list()</c> spells it (e.g. <c>"trapStack"</c>).</summary>
@@ -75,11 +78,74 @@ namespace HiddenHarbours.Tools.RigBaking
     public static class IsoPropSheetBaker
     {
         /// <summary>
-        /// Families this baker serves. <c>wharfIso</c> and <c>shoreFinds</c> are deliberately NOT here:
-        /// the wharf kit sizes its own buffer per bake and reports a fractional pivot with it, and the
-        /// finds are not directional at all and take their cell from an analytic <c>cellOf()</c>.
+        /// How a family's <c>render()</c> is CALLED, and where its key vocabulary lives.
+        ///
+        /// <para><b>This is the thing that is NOT common across the families this baker serves, and it
+        /// is why "measure which baker fits" is a per-rig question rather than a per-kit one.</b> All
+        /// seven agree on the buffer, the pivot and the cell rule; they disagree on the call:</para>
+        /// <list type="bullet">
+        ///   <item><c>render(key, dir, opts)</c> — wharfDecor, utilityIso, deckGear, trap, buoyIso.</item>
+        ///   <item><c>render(dir, opts)</c> — <b>fishTray2</b>. The family draws exactly one thing, so
+        ///         the rig names no key and takes none. Passing its contract key <c>'tray'</c> in
+        ///         anyway would be read as the DIR argument.</item>
+        ///   <item><c>render(key, opts)</c> — <b>trapFauna</b>. What a pot comes up holding is not
+        ///         directional; there is no dir to pass and the contract records <c>facings: 1</c>.</item>
+        /// </list>
+        ///
+        /// <para><see cref="KeyTable"/> is the JS expression listing every key the family draws. The
+        /// pack's two expose a <c>list()</c> function; the kit's expose plain arrays under four
+        /// different names (<c>KINDS</c>, <c>BUILDS</c>, <c>FLEET</c>, <c>KINDS</c> again). It is null
+        /// only for the one family that names no keys at all.</para>
         /// </summary>
-        public static readonly IReadOnlyList<string> Families = new[] { "wharfDecor", "utilityIso" };
+        public readonly struct RenderShape
+        {
+            public readonly string KeyTable;
+            public readonly bool TakesKey, TakesDir;
+
+            public RenderShape(string keyTable, bool takesKey = true, bool takesDir = true)
+            {
+                KeyTable = keyTable; TakesKey = takesKey; TakesDir = takesDir;
+            }
+        }
+
+        /// <summary>
+        /// Families this baker serves, and the call shape each one answers to. <c>wharfIso</c> /
+        /// <c>shipyardIso</c> and <c>shoreFinds</c> are deliberately NOT here: the structure kits size
+        /// their own buffer per bake and report a fractional pivot with it (so
+        /// <see cref="WharfIsoSheetBaker"/> takes them), and the finds are not directional at all and
+        /// take their cell from an analytic <c>cellOf()</c>.
+        ///
+        /// <para><b>Measured, not assumed.</b> Each of the deck-loop five was checked against this
+        /// baker's two preconditions before it was listed: it exposes the <c>W</c>/<c>H</c>/<c>pivot</c>
+        /// triple that <c>RigCatalog.Install</c> requires, and its <c>render()</c> hands back a BARE
+        /// <c>W×H×4</c> RGBA array rather than the <c>{data,w,h,px,py}</c> object the structure kits
+        /// return. Both are re-checked at bake time — the first by <see cref="InstallAndGuard"/>, the
+        /// second by the length check in <c>RenderFacings</c>.</para>
+        /// </summary>
+        public static readonly IReadOnlyDictionary<string, RenderShape> Shapes =
+            new Dictionary<string, RenderShape>(StringComparer.Ordinal)
+            {
+                ["wharfDecor"] = new RenderShape("list()"),
+                ["utilityIso"] = new RenderShape("list()"),
+
+                // ---- the deck-loop kit ------------------------------------------------------------
+                ["deckGear"]  = new RenderShape("KINDS"),
+                ["trap"]      = new RenderShape("BUILDS"),
+                ["buoyIso"]   = new RenderShape("FLEET"),
+                ["fishTray2"] = new RenderShape(keyTable: null, takesKey: false, takesDir: true),
+                ["trapFauna"] = new RenderShape("KINDS", takesKey: true, takesDir: false),
+            };
+
+        public static readonly IReadOnlyList<string> Families = Shapes.Keys.ToArray();
+
+        static RenderShape ShapeOf(string rigKey) =>
+            Shapes.TryGetValue(rigKey, out var s)
+                ? s
+                : throw new InvalidOperationException(
+                      $"{rigKey} has no render shape registered with {nameof(IsoPropSheetBaker)}. " +
+                      $"It serves {string.Join(", ", Families)}. A family added to the contract " +
+                      "registry but not here has no way to be called — and guessing the call shape " +
+                      "renders the rig DEFAULT with no error at all.");
 
         public static IsoPropBakeResult Bake(IsoPropBakeRequest req)
         {
@@ -99,7 +165,7 @@ namespace HiddenHarbours.Tools.RigBaking
             var geo = InstallAndGuard(host, entry, contract, req.RigKey);
 
             var cells = RenderFacings(host, entry.GlobalName, req.PieceKey, contract, geo,
-                                      entry.DeclaredConvention, out double renderMs);
+                                      entry.DeclaredConvention, ShapeOf(req.RigKey), out double renderMs);
 
             // ---- crop: pivot-INCLUSIVE union of the ink, seeded at the pivot ------------------------
             int px = Mathf.RoundToInt((float)geo.PivotX), py = Mathf.RoundToInt((float)geo.PivotY);
@@ -211,7 +277,7 @@ namespace HiddenHarbours.Tools.RigBaking
                                              IsoPackContract contract, in RigGeometry geo,
                                              AzimuthConvention convention) =>
             RenderFacings(host, RigCatalog.Get(rigKey).GlobalName, pieceKey, contract, geo,
-                          convention, out _);
+                          convention, ShapeOf(rigKey), out _);
 
         // ---- install + the standing guards -------------------------------------------------------
 
@@ -221,9 +287,14 @@ namespace HiddenHarbours.Tools.RigBaking
             if (contract.NeedsInstallModule)
                 throw new InvalidOperationException(
                     $"{rigKey} does not load with Install — it belongs to a different baker. " +
-                    $"{nameof(IsoPropSheetBaker)} serves {string.Join(" and ", Families)} only.");
+                    $"{nameof(IsoPropSheetBaker)} serves {string.Join(", ", Families)} only.");
 
             contract.AssertSelfConsistent();
+
+            // Before a facing correction is applied to anything: the contract MEASURED a handedness
+            // and the catalog DECLARES one, and this baker's families no longer agree on it. Getting
+            // it wrong does not fail — it writes the eight facings in reverse order.
+            contract.AssertConventionAgrees(entry.DeclaredConvention, rigKey);
 
             // Install FIRST: the keyline gate is a probe of the rig's own global, which does not exist
             // until the source has been executed into the host.
@@ -236,10 +307,12 @@ namespace HiddenHarbours.Tools.RigBaking
                     $"measured {contract.Proj.nativeSheetW}×{contract.Proj.nativeSheetH}. The rig " +
                     "changed shape; regenerate the contract before baking against it.");
 
-            // ⚠️ nativeDirs is NOT the facing count here, and reads 0 rather than throwing. Neither of
-            // these two rigs declares a DIRS global at all, so Install's `typeof DIRS === 'number'`
-            // test is false and it reports 0 — silently, because 0 legitimately means "the rig does not
-            // say". Facings come from the contract; this only records that the rig stayed silent.
+            // ⚠️ nativeDirs is NOT the facing count here, and reads 0 rather than throwing. None of the
+            // rigs this baker serves declares a DIRS global at all, so Install's
+            // `typeof DIRS === 'number'` test is false and it reports 0 — silently, because 0
+            // legitimately means "the rig does not say". Facings come from the contract; this only
+            // records that the rig stayed silent. It matters most for trapFauna, whose contract says
+            // 1: believing a 0 there would bake a sheet with no cells in it.
             if (geo.NativeDirs != 0 && geo.NativeDirs != contract.Facings)
                 throw new InvalidOperationException(
                     $"{rigKey} now reports {geo.NativeDirs} native facings against the contract's " +
@@ -252,9 +325,10 @@ namespace HiddenHarbours.Tools.RigBaking
 
         static byte[][] RenderFacings(IRigScriptHost host, string g, string pieceKey,
                                       IsoPackContract contract, in RigGeometry geo,
-                                      AzimuthConvention convention, out double renderMs)
+                                      AzimuthConvention convention, in RenderShape shape,
+                                      out double renderMs)
         {
-            AssertPieceExists(host, g, pieceKey);
+            AssertPieceExists(host, g, pieceKey, shape, contract);
 
             int expected = geo.Width * geo.Height * 4;
             var cells = new byte[contract.Facings][];
@@ -263,34 +337,60 @@ namespace HiddenHarbours.Tools.RigBaking
             for (int cell = 0; cell < contract.Facings; cell++)
             {
                 // DirForCell carries the counter-clockwise correction, so what lands on disk is
-                // genuinely clockwise. All three directional pack rigs measured CCW, matching
-                // houseIsoRig / wharfBuildingRig / interiorIsoRig.
+                // genuinely clockwise. The pack's directional rigs measured CCW, matching houseIsoRig /
+                // wharfBuildingRig / interiorIsoRig; the deck-loop kit measured CLOCKWISE and takes no
+                // correction at all. IsoPackContract.AssertConventionAgrees is what stops those two
+                // being confused — the wrong answer here writes eight good cells in reverse order.
                 double dir = RigBaker.DirForCell(cell, contract.Facings, convention);
                 string d = dir.ToString("R", CultureInfo.InvariantCulture);
 
+                string call = shape.TakesKey && shape.TakesDir ? $"{Quote(pieceKey)},{d}"
+                            : shape.TakesDir                   ? d
+                            :                                    Quote(pieceKey);
+
                 clock.Start();
-                cells[cell] = host.EvaluateBytes($"{g}.render({Quote(pieceKey)},{d},{{}})");
+                cells[cell] = host.EvaluateBytes($"{g}.render({call},{{}})");
                 clock.Stop();
 
                 if (cells[cell] == null || cells[cell].Length != expected)
                     throw new InvalidOperationException(
-                        $"{g}.render({pieceKey}, dir {d}) came back " +
+                        $"{g}.render({call}) came back " +
                         $"{(cells[cell]?.Length.ToString() ?? "null")} bytes, expected {expected} for " +
                         $"a {geo.Width}×{geo.Height} RGBA buffer. These rigs return a BARE RGBA array, " +
-                        "not a {data,w,h} object — a wrapper here means the rig's return shape changed.");
+                        "not a {data,w,h} object — a wrapper here means the rig's return shape changed, " +
+                        "or that this family belongs to WharfIsoSheetBaker instead.");
             }
 
             renderMs = clock.Elapsed.TotalMilliseconds;
             return cells;
         }
 
-        static void AssertPieceExists(IRigScriptHost host, string g, string pieceKey)
+        /// <summary>
+        /// Refuse a key the rig does not know. Baking one draws nothing and would otherwise land as an
+        /// empty sheet with a correct-looking sprite count.
+        ///
+        /// <para>For the one family that names no keys, the check becomes "the contract must describe
+        /// exactly this one thing" — because there is no rig-side vocabulary to check against, and a
+        /// second key appearing in that family's contract would silently bake the same sheet twice
+        /// under two names.</para>
+        /// </summary>
+        static void AssertPieceExists(IRigScriptHost host, string g, string pieceKey,
+                                      in RenderShape shape, IsoPackContract contract)
         {
-            if (host.EvaluateBool($"{g}.list().indexOf({Quote(pieceKey)}) >= 0")) return;
+            if (shape.KeyTable == null)
+            {
+                if (contract.Count == 1 && contract.Cells[0].key == pieceKey) return;
+                throw new InvalidOperationException(
+                    $"{g} names no key table, so it draws exactly one thing — but its contract carries " +
+                    $"{contract.Count} cells and this bake asked for '{pieceKey}'. A key-less render() " +
+                    "would take that name as its DIR argument and bake a plausible, wrong sheet.");
+            }
+
+            if (host.EvaluateBool($"{g}.{shape.KeyTable}.indexOf({Quote(pieceKey)}) >= 0")) return;
 
             throw new InvalidOperationException(
-                $"'{pieceKey}' is not in {g}.list(). Baking a key the rig does not know draws nothing " +
-                "and would otherwise land as an empty sheet with a correct-looking sprite count.");
+                $"'{pieceKey}' is not in {g}.{shape.KeyTable}. Baking a key the rig does not know draws " +
+                "nothing and would otherwise land as an empty sheet with a correct-looking sprite count.");
         }
 
         static string Quote(string s) => "'" + s.Replace("\\", "\\\\").Replace("'", "\\'") + "'";

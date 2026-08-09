@@ -120,6 +120,11 @@ namespace HiddenHarbours.Tools.RigBaking
 
             contract.AssertSelfConsistent();
 
+            // The contract MEASURED a handedness and the catalog DECLARES one; a disagreement writes
+            // eight good facings in reverse order rather than failing. Both families here measured
+            // counter-clockwise — but that is now a per-family fact in this repo, not a pack-wide one.
+            contract.AssertConventionAgrees(entry.DeclaredConvention, rigKey);
+
             // InstallModule, never Install: these rigs expose no pivot and Install throws on that.
             RigCatalog.InstallModule(host, entry);
             string g = entry.GlobalName;

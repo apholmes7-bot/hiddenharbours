@@ -59,18 +59,15 @@ namespace HiddenHarbours.Tools.RigBaking
         //  where a sheet is
         // -----------------------------------------------------------------------------------------
 
-        /// <summary>The folder a family's sheets bake into — derived from where its CONTRACT is
-        /// committed, because the two are baked side by side and deriving means they cannot drift.</summary>
-        public static string FolderFor(string rigKey)
-        {
-            if (!IsoPackContract.Paths.TryGetValue(rigKey, out string contractPath))
-                throw new ArgumentException(
-                    $"'{rigKey}' is not an ISO-rig-pack family. Known: " +
-                    $"{string.Join(", ", IsoPackContract.Paths.Keys)}.");
-
-            int slash = contractPath.LastIndexOf('/');
-            return slash < 0 ? contractPath : contractPath.Substring(0, slash);
-        }
+        /// <summary>
+        /// The folder a family's sheets bake into.
+        ///
+        /// <para>⚠️ <b>Read from the registry, NOT re-derived from the contract path.</b> For every
+        /// family whose contract sits beside its own sheets the two are the same string — and for the
+        /// deck-loop kit's five they are not, because one contract governs five folders. Deriving here
+        /// would hand all five the kit's parent folder and every lookup would miss.</para>
+        /// </summary>
+        public static string FolderFor(string rigKey) => IsoPackContract.SheetFolderFor(rigKey);
 
         /// <summary>The sheet path for a directional piece — one PNG per key.</summary>
         public static string SheetPath(string rigKey, string key) => $"{FolderFor(rigKey)}/{key}.png";
@@ -184,7 +181,14 @@ namespace HiddenHarbours.Tools.RigBaking
             return byIndex;
         }
 
-        /// <summary>One facing of a directional piece, or null if the sheet or the slice is missing.</summary>
+        /// <summary>
+        /// One facing of a directional piece, or null if the sheet or the slice is missing.
+        ///
+        /// <para>⚠️ <b>Directional families only.</b> <c>trapFauna</c> is registered like its four
+        /// siblings but has no facing axis at all — one cell per sheet — so every facing but 0 returns
+        /// null here rather than the one sprite there is. Read a catch kind by its sheet, not through
+        /// this. (Nothing consumes the fauna yet; Phase B is where that read side gets designed.)</para>
+        /// </summary>
         public static Sprite Facing(string rigKey, string key, int facing)
         {
             var slices = SlicesOf(SheetPath(rigKey, key));

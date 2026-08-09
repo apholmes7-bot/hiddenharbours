@@ -320,12 +320,22 @@ namespace HiddenHarbours.Tools.RigBaking
                 // is the bakeable half: render(kind, opts) takes NO dir, because what a pot comes up
                 // holding is not directional. TrapCatch is a canvas FAÇADE — it calls
                 // document.createElement and cannot run in the bare host at all; bake through
-                // TrapFauna. Worse, TrapCatch delegates kinds it does not own to CatchKit and returns
-                // NULL when CatchKit is absent, so a bake that forgets that prerequisite comes up
-                // empty in silence rather than failing.
+                // TrapFauna.
+                //
+                // ⚠️ catchKit + crustacean are PREREQUISITES, and they are the reason this entry is
+                // three keys long instead of one. The file's two halves split the kit's kinds: this
+                // rig owns six (urchin whelk starfish sculpin kelp baitbag) and DELEGATES the rest —
+                // lobster, crab, jonah, short — to CatchKit / Crustacean. TrapCatch returns NULL for a
+                // delegated kind when those are absent, so a host without them produces empty mixes in
+                // silence; TrapFauna.render, since #480, THROWS for the same kinds rather than drawing
+                // a byte-identical urchin in their place. Declaring the pair here means neither
+                // failure can reach a bake, in the same way deckIsoSolid means the turntable cannot go
+                // missing. Both load clean in a bare host — catchKit only reaches
+                // document.createElement inside item(), which no bake path calls (the storage baker
+                // installs its canvas shim for exactly that call).
                 ["trapFauna"] = new RigEntry($"{RigFolder}/deck-loop-kit/Art/trapFaunaRig.js", "TrapFauna",
                                              AzimuthConvention.Clockwise,
-                                             prerequisites: new[] { "deckIsoSolid" }),
+                                             prerequisites: new[] { "deckIsoSolid", "catchKit", "crustacean" }),
 
                 // The banding/grading tray. Distinct from the top-level fishTrayRig.js — this is the
                 // kit's own FishTray2, with nest/stack steps in metres.

@@ -13,7 +13,7 @@ namespace HiddenHarbours.Tools.RigBaking
     /// decision (which family, every key it declares), and every number — cell, pivot, grid — comes from
     /// the committed contract at bake time.
     ///
-    /// <para><b>The inventory these four items produce</b> (what a pixel audit counts):</para>
+    /// <para><b>The inventory the pack's own item produces</b> (what a pixel audit counts):</para>
     /// <list type="bullet">
     ///   <item><b>wharfIso</b> — 17 presets → 17 sheets, 8 facings each. Cap 4096.</item>
     ///   <item><b>wharfDecor</b> — 61 pieces → 61 sheets, 8 facings each. Cap 2048.</item>
@@ -22,6 +22,18 @@ namespace HiddenHarbours.Tools.RigBaking
     ///         (8 lie angles × 3 variants). Cap 2048.</item>
     /// </list>
     /// <para><b>228 sheets in total.</b> The finds are two thirds of that and by far the longest bake.</para>
+    ///
+    /// <para><b>And the two later kits, each on its own item</b>, because neither belongs to the pack:</para>
+    /// <list type="bullet">
+    ///   <item><b>shipyardIso</b> — 5 sites + 20 parts → 25 sheets, 8 facings each. Cap 4096, and the
+    ///         only family whose grids are not one row.</item>
+    ///   <item><b>the deck-loop kit</b> — 5 gear + 4 traps + 1 tray + 8 buoys at 8 facings, plus 6
+    ///         catch kinds at ONE cell each → <b>24 sheets</b>. Cap 2048, and every sheet is so far
+    ///         under it (widest: <c>haulerstation</c> at 416 px) that the slicer's maxTextureSize lift
+    ///         never fires. ⚠️ <b>This kit turns CLOCKWISE</b> — see
+    ///         <see cref="IsoPackContract.AssertConventionAgrees"/>, which is what stops the fleet's
+    ///         correction being applied to it.</item>
+    /// </list>
     ///
     /// <para><b>Nothing here is silent.</b> A key the rig does not know, a cell that disagrees with the
     /// contract, a sheet that would import over its family's cap — each throws and takes the whole bake
@@ -35,6 +47,15 @@ namespace HiddenHarbours.Tools.RigBaking
         public const string UtilityIsoFolder = "Assets/_Project/Art/Sprites/Utility";
         public const string ShoreFindsFolder = ShoreFindsSheetBaker.DefaultOutputFolder;
         public const string ShipyardIsoFolder = "Assets/_Project/Art/Sprites/Shipyard/Iso";
+
+        /// <summary>
+        /// The deck-loop kit's five families, in the order the kit README lists them. Each is a
+        /// <see cref="RigCatalog"/> key AND an <see cref="IsoPackContract"/> registry key — the folder
+        /// comes from the registry rather than a constant here, because one contract governs five
+        /// folders and a second copy of that mapping is a second thing to get wrong.
+        /// </summary>
+        public static readonly IReadOnlyList<string> DeckLoopFamilies =
+            new[] { "deckGear", "trap", "fishTray2", "buoyIso", "trapFauna" };
 
         // ---- menu ------------------------------------------------------------------------------------
 
@@ -65,6 +86,15 @@ namespace HiddenHarbours.Tools.RigBaking
         [MenuItem("Hidden Harbours/Art/Bake Shipyard Iso Kit (25 parts × 8 dir)", priority = 66)]
         public static void BakeShipyardIsoKit() => RunBakes(("shipyardIso", BakeShipyardIsoInternal));
 
+        // Its own entry for the same reason as the shipyard's — and one more: this kit turns the other
+        // way. Five families, 24 sheets: 18 directional pieces at 8 facings, plus the six-kind catch
+        // at one cell each. The whole kit is 5,904 renders and by far the cheapest bake in this menu.
+        [MenuItem("Hidden Harbours/Art/Bake Deck Loop Kit (5 gear + 4 traps + 1 tray + 8 buoys + 6 catch)",
+                  priority = 67)]
+        public static void BakeDeckLoopKit() =>
+            RunBakes(DeckLoopFamilies.Select(f => (f, (Func<FamilyBakeResult>)(() => BakeDeckLoopFamily(f))))
+                                     .ToArray());
+
         // ---- the bakes -------------------------------------------------------------------------------
 
         /// <summary>What one family's bake produced, for the log line and the reimport pass.</summary>
@@ -90,17 +120,32 @@ namespace HiddenHarbours.Tools.RigBaking
         static FamilyBakeResult BakeUtilityIsoInternal() => BakeDirectional("utilityIso", UtilityIsoFolder);
         static FamilyBakeResult BakeShipyardIsoInternal() => BakeDirectional("shipyardIso", ShipyardIsoFolder);
 
+        /// <summary>One deck-loop family, into the folder the contract registry gives it — the five
+        /// share a contract and must not share a folder.</summary>
+        static FamilyBakeResult BakeDeckLoopFamily(string family) =>
+            BakeDirectional(family, IsoPackContract.SheetFolderFor(family));
+
         /// <summary>
-        /// Bake one of the three directional families. <c>wharfIso</c> goes through
-        /// <see cref="WharfIsoSheetBaker"/> and the two fixed-sheet families through
-        /// <see cref="IsoPropSheetBaker"/> — they are separate bakers because the wharf kit sizes its own
-        /// buffer per bake and reports a FRACTIONAL pivot with it, which the fixed-sheet crop cannot
-        /// express.
+        /// Bake one directional family, through whichever baker its CELL RULE calls for.
+        ///
+        /// <para><b>The dispatch is on the rule, not on a list of family names.</b> The two bakers exist
+        /// because the structure kits size their own buffer per bake and report a FRACTIONAL pivot with
+        /// it — which the fixed-sheet crop cannot express — and that difference is exactly what
+        /// <see cref="IsoPackContract.CellRule"/> already records, measured, per family. A name list
+        /// here would have to be remembered every time a family is registered, and forgetting would
+        /// send a rig to the baker that reads <c>{data,w,h,px,py}</c> off a bare RGBA array.</para>
         /// </summary>
         static FamilyBakeResult BakeDirectional(string family, string folder)
         {
             var contract = IsoPackContract.Load(family);
             var result = new FamilyBakeResult { Family = family };
+
+            if (contract.Rule == IsoPackContract.CellRule.Analytic)
+                throw new InvalidOperationException(
+                    $"{family} is not directional — it has no facing axis and no project() at all. " +
+                    "It bakes through ShoreFindsSheetBaker, one sheet per key per state.");
+
+            bool buffer = contract.Rule == IsoPackContract.CellRule.BufferUnion;
 
             using IRigScriptHost host = RigScriptHostFactory.Create();
 
@@ -113,7 +158,7 @@ namespace HiddenHarbours.Tools.RigBaking
                 EditorUtility.DisplayProgressBar($"Baking {family}", $"{key} ({i + 1}/{keys.Count})",
                                                  (i + 1) / (float)keys.Count);
 
-                if (family == WharfIsoSheetBaker.RigKey || family == "shipyardIso")
+                if (buffer)
                 {
                     var r = WharfIsoSheetBaker.Bake(new WharfIsoBakeRequest(key, folder, rigKey: family),
                                                     host);
@@ -227,9 +272,17 @@ namespace HiddenHarbours.Tools.RigBaking
                                    "are on disk but carry no usable sprite rects. Do not commit them yet.");
             }
 
+            // The folders are read back off what was actually written, never from a constant list —
+            // a fixed list tells the coordinator to commit the wrong folders the moment a new family
+            // is baked from this menu, and an uncommitted sheet looks exactly like one never baked.
+            string folders = string.Join(", ",
+                results.SelectMany(r => r.AssetPaths)
+                       .Select(p => p.Substring(0, Mathf.Max(0, p.LastIndexOf('/'))))
+                       .Distinct(StringComparer.Ordinal)
+                       .OrderBy(p => p, StringComparer.Ordinal));
+
             Debug.Log("[rig-baker] Baked and sliced. Nothing further to run — but the results must be " +
-                      "COMMITTED: every *.png + its .meta (LFS covers *.png) under " +
-                      $"{WharfIsoFolder}/, {WharfDecorFolder}/, {UtilityIsoFolder}/ and {ShoreFindsFolder}/.");
+                      $"COMMITTED: every *.png + its .meta (LFS covers *.png) under {folders}.");
         }
 
         /// <summary>
@@ -264,6 +317,22 @@ namespace HiddenHarbours.Tools.RigBaking
             catch (Exception ex)
             {
                 Debug.LogError($"[rig-baker] headless shipyard bake failed: {ex}");
+                EditorApplication.Exit(1);
+            }
+        }
+
+        /// <summary>Headless entry point for the deck-loop kit — same contract as
+        /// <see cref="BakeIsoRigPackFromCommandLine"/>, five families in one run.</summary>
+        public static void BakeDeckLoopKitFromCommandLine()
+        {
+            try
+            {
+                BakeDeckLoopKit();
+                EditorApplication.Exit(0);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[rig-baker] headless deck-loop bake failed: {ex}");
                 EditorApplication.Exit(1);
             }
         }
