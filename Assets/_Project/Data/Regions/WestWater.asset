@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9c4fb6be8dd46eba08510dde87bace3, type: 3}
+  m_Name: WestWater
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.RegionDef
+  Id: region.west_water
+  DisplayName: The West Water (working name)
+  Description: 'The sheltered run between the island and the mainland, north of the tidal bar: St Peters'' lee at one end, the reach up to Nine Mile Creek at the other. The dory''s water - the first sail, and the one crossing you can make without waiting on the tide. NAME OWED: the owner names the three water scenes in PEI-variant style (world-map-plan 7 Q4); the id is stable whatever he picks.'
+  SceneName: WestWater
+  UnlockFlag:
+  WorldCenter: {x: 0, y: 0}
+  WorldSizeMeters: {x: 760, y: 520}
+  SeabedPixelsPerMetre: 1
+  IsDeepHarbour: 0
+  HarbourDepthMeters: 6
+  TideMeanLevel: 0
+  TideAmplitude: 2.2
+  TidePhaseHours: 1
+  SpawnFishIds: []

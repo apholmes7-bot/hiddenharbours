@@ -142,6 +142,12 @@ namespace HiddenHarbours.App.Editor
         /// <summary>The walk-out band at the mainland's bar tip: cross it heading ESE and the crossing
         /// hands over to St Peters, mid-bar.</summary>
         public static Vector3 ToStPetersPassagePos => NineMileCreekMainland.ToStPetersPassagePos;
+
+        /// <summary>⭐ The SEA door: hold east past the breakwater head and the west water takes over —
+        /// the wharf's way out that does not wait on the tide (world-map-plan §6 step 1). The bar is the
+        /// same trip on foot, 158 m south of this band and only at low water.</summary>
+        public static Vector3 ToWestWaterPassagePos => NineMileCreekMainland.ToWestWaterPassagePos;
+
         /// <summary>Where the player STANDS arriving from St Peters ON FOOT, mid-crossing — the other end
         /// of the same bar. Consumed at last, through the per-passage arrival seam (#456): this is the
         /// region's named <see cref="BarArrivalKey"/> arrival.</summary>
@@ -761,6 +767,42 @@ namespace HiddenHarbours.App.Editor
                                  "/StPeters.asset — the crossing to the island has no passage on this " +
                                  "side, so the bar dead-ends at the region edge. Re-run after building " +
                                  "St Peters.");
+            }
+
+            // ⭐ THE SEA DOOR — out east into THE WEST WATER (world-map-plan §6 step 1). The bar above is
+            // the crossing you WAIT for; this is the one you don't. Leave the basin, round the breakwater
+            // head, hold east on the beacon's own latitude and the bay's first open-water scene takes
+            // over — which is the trip the owner buys the dory to make.
+            //
+            // ⚠ THIS HALF IS THE MAINLAND'S TO WIRE, and the return half is not: WestWaterBuilder authors
+            // the passage that brings a boat back here, because a region builder may not reach into
+            // another region's scene. Guarded on the west water's def existing, exactly like the crossing
+            // above — until it is built the wharf simply has no sea door, which is what it has today.
+            var westWaterRegion = AssetDatabase.LoadAssetAtPath<RegionDef>(
+                                      DataRegions + "/" + WestWaterPlan.RegionAssetName + ".asset");
+            if (westWaterRegion != null)
+            {
+                var seaDoorGo = new GameObject("PassageToWestWater");
+                seaDoorGo.transform.position = ToWestWaterPassagePos;
+                var seaTrigger = seaDoorGo.AddComponent<BoxCollider2D>();
+                seaTrigger.isTrigger = true;
+                seaTrigger.size = NineMileCreekMainland.WestWaterPassageBandSize;
+                var seaDoor = seaDoorGo.AddComponent<RegionPassage>();
+                // NAMED: the west water has two doors of equal standing, so it must be told which one
+                // this boat came in by (#456), or she is parked at the far end of the run she just began.
+                seaDoor.Configure(westWaterRegion, loader, WestWaterPlan.FromNineMileCreekArrivalKey);
+                // Nulls filtered: St Peters may be absent on a fresh checkout, and a null in the loader's
+                // region list is a hole the router would have to trip over rather than an absent door.
+                SetRefArray(loader, "_regions",
+                            new Object[] { nineMileCreek, cove, stPetersRegion, westWaterRegion }
+                                .Where(r => r != null).ToArray());
+            }
+            else
+            {
+                Debug.LogWarning("[NineMileCreekBuilder] No West Water RegionDef at " + DataRegions + "/" +
+                                 WestWaterPlan.RegionAssetName + ".asset — the wharf has no sea door, so " +
+                                 "the only way to the island is the tidal bar. Re-run after building the " +
+                                 "west water.");
             }
 
             // VS-22 arrival anchor: where the persistent rig binds on arrival. The boat parks in the basin
