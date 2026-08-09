@@ -44,10 +44,17 @@ namespace HiddenHarbours.Art.Editor
     ///   <item><b>shoreFinds</b> — 24 cells, <c>index = variant × 8 + lieAngle</c>. Note the contract's
     ///         <c>sheetAxes</c> prose describes the LOGICAL axes; the committed grids are 24×1 and 12×2,
     ///         so the flat index is what bridges the two. One sheet per find per state.</item>
+    ///   <item><b>shipyardIso</b> — 8 cells, <c>index = facing</c>, also counter-clockwise (MEASURED:
+    ///         its <c>project()</c> matches wharfIso's at all 8 dirs). ⚠️ Unlike the others it is the
+    ///         first family whose grids are <b>not one row</b> — every key packs 3×3 or 2×4, because no
+    ///         yard or part fits 8 facings across under the 4096 cap. A 3×3 grid therefore has a NINTH
+    ///         SLOT that is not a facing; <see cref="BuildRects"/> emits exactly <c>cells</c> rects and
+    ///         leaves it alone. Keys also bake at DIFFERENT px/m (three sites step down to 16/12/8), so
+    ///         two shipyard sheets do not share an atlas grid.</item>
     /// </list>
     ///
     /// <para>Import + slicing ONLY. This builds no Def asset, no prefab and no presenter, and touches
-    /// nothing outside the four folders in <see cref="Families"/>.</para>
+    /// nothing outside the folders in <see cref="Families"/>.</para>
     /// </summary>
     public static class IsoPackSheetSlicer
     {
@@ -72,6 +79,7 @@ namespace HiddenHarbours.Art.Editor
             new Family("wharfDecor", SpritesRoot + "Wharf/Decor/",    "wharfDecorRig.contract.json"),
             new Family("utilityIso", SpritesRoot + "Utility/",        "utilityIsoRig.contract.json"),
             new Family("shoreFinds", SpritesRoot + "Shore/FindsIso/", "shoreFindsRig.contract.json"),
+            new Family("shipyardIso", SpritesRoot + "Shipyard/Iso/",  "shipyardIsoRig.contract.json"),
         };
 
         // ---- the contract, as JsonUtility sees it ---------------------------------------------------
