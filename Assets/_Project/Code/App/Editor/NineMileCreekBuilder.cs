@@ -593,6 +593,21 @@ namespace HiddenHarbours.App.Editor
             // keep theirs on purpose: their kit (wharfBuildingRig's sheds) has never been baked.
             NineMileCreekFlavour.Place(terrain, SpringHighWater);
 
+            // --- PHASE B DRESSING: the gear, the services and the tideline -------------------
+            // ⭐ BUILDER-WIRED, NOT SCENE-WIRED, and that is the whole point of it living here. Phase B's
+            // dressing is a set of PURE TABLES derived off the wharf's own geometry — the quay's gear on
+            // the berth line, the apron's stations off the authored unloading point, the poles on Wharf
+            // Road's published route — so this call reproduces every one of them and the owner's next
+            // rebuild keeps the lot. A prop dragged into the scene instead would survive until exactly
+            // the next time someone ran this menu item.
+            //
+            // ⚠️ It does NOT draw the quay face. The committed ISO wharf pack was baked at the rig's
+            // default 1.8 m tide and Nine Mile Creek's is 4.4 m, so every structural preset in it stands
+            // 2.4 m too short and the pack has no furniture-free course to stack. NineMileCreekQuayFace
+            // measures that and states the re-bake that closes it; Place() logs the finding on every
+            // build so it cannot go quiet.
+            NineMileCreekDressing.Place(terrain);
+
             // --- (NO SHORELINE FENCE — the coast is the terrain now) -------------------------
             // The region used to trace a hand-made EdgeCollider2D at x = -4 that dipped around the wharf,
             // because a rectangular quay standing on a flat -6 m dredged floor gave a hull nothing to
