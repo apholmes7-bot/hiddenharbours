@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=IM+Fell+DW+Pica:ital@0;1&display=swap" rel="stylesheet">
+<script src="Art/isoSolid.js"></script>
+<script src="Art/lobsterRig.js"></script>
+<script src="Art/rockCrabRig.js"></script>
+<script src="Art/shellfishRig.js"></script>
+<script src="Art/fishIsoRig.js"></script>
+<script src="Art/crustaceanRig.js"></script>
+<script src="Art/catchKit.js"></script>
+<script src="Art/trapFaunaRig.js"></script>
+<script src="Art/trapIsoRig.js"></script>
+<script src="Art/buoyIsoRig.js"></script>
+<script src="Art/trayIsoRig.js"></script>
+<script src="Art/deckGearRig.js"></script>
+<script src="Art/fishToteRig.js"></script>
+<script src="Art/lobsterBoatIsoRig.js"></script>
+<style>
+  *{box-sizing:border-box;}
+  html,body{margin:0;background:#0b1216;}
+  canvas{image-rendering:pixelated;image-rendering:crisp-edges;display:block;}
+  a{color:#7fd6c9;text-decoration:none;}
+  a:hover{color:#a9e7dd;}
+  input[type=range]{-webkit-appearance:none;appearance:none;height:3px;background:#2a3b43;border-radius:2px;outline:none;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:16px;background:#c9d6d4;border:1px solid #0b1216;cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:12px;height:16px;background:#c9d6d4;border:1px solid #0b1216;cursor:pointer;border-radius:0;}
+</style>
+</helmet>
+<div style="min-height:100vh;background:#0b1216;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#aeb9bb;padding:30px 24px 60px;display:flex;flex-direction:column;align-items:center;gap:24px;">
+
+  <div style="width:100%;max-width:1000px;display:flex;align-items:flex-end;justify-content:space-between;border-bottom:1px solid #243137;padding-bottom:13px;gap:16px;flex-wrap:wrap;">
+    <div style="display:flex;flex-direction:column;gap:5px;">
+      <div style="font-family:'IM Fell English SC',serif;font-size:25px;color:#eef3f2;letter-spacing:0.5px;line-height:1;">Deck Gear</div>
+      <div style="font-size:10.5px;letter-spacing:0.16em;color:#6f7e83;">HIDDEN&nbsp;HARBOURS&nbsp;&middot;&nbsp;TRAPS&nbsp;&middot;&nbsp;BUOYS&nbsp;&middot;&nbsp;TRAYS&nbsp;&middot;&nbsp;BAIT&nbsp;&amp;&nbsp;BANDING&nbsp;&middot;&nbsp;WHAT&nbsp;FITS&nbsp;ON&nbsp;A&nbsp;DECK</div>
+    </div>
+    <div style="font-family:'IM Fell DW Pica',serif;font-style:italic;font-size:13.5px;color:#c9a86a;max-width:430px;text-align:right;line-height:1.45;">Four builds of pot, hollow like the totes, so what came up in them is the catch's own rigs and not a picture of a catch. Stacked to what each hull will actually take.</div>
+  </div>
+
+  <!-- TRAP STAGE -->
+  <div style="width:100%;max-width:1000px;display:flex;flex-direction:column;gap:12px;align-items:center;">
+    <div style="position:relative;border:1px solid #243137;background:#0e181d;width:100%;">
+      <canvas ref="{{ trapRef }}" width="940" height="430" style="width:100%;height:auto;"></canvas>
+      <div style="position:absolute;left:11px;top:10px;font-size:10px;letter-spacing:0.14em;color:rgba(231,236,235,0.9);background:rgba(11,18,22,0.6);padding:3px 8px;">{{ trapLine }}</div>
+      <div style="position:absolute;right:11px;top:10px;font-size:10px;letter-spacing:0.12em;color:rgba(200,168,106,0.9);">72&times;60 CELL &middot; PIVOT (36,46) &middot; 8 DIRS</div>
+    </div>
+    <div style="display:flex;gap:5px;justify-content:center;flex-wrap:wrap;">
+      <sc-for list="{{ buildChips }}" as="c" hint-placeholder-count="4">
+        <div onClick="{{ c.onClick }}" style="min-width:150px;text-align:center;padding:8px 14px;font-size:11px;letter-spacing:0.09em;cursor:pointer;user-select:none;color:{{ c.fg }};background:{{ c.bg }};border:1px solid {{ c.bd }};">{{ c.label }}</div>
+      </sc-for>
+    </div>
+    <div style="display:flex;gap:5px;justify-content:center;flex-wrap:wrap;">
+      <sc-for list="{{ colourChips }}" as="c" hint-placeholder-count="2">
+        <div onClick="{{ c.onClick }}" style="min-width:118px;text-align:center;padding:7px 12px;font-size:10.5px;letter-spacing:0.08em;cursor:pointer;user-select:none;color:{{ c.fg }};background:{{ c.bg }};border:1px solid {{ c.bd }};">{{ c.label }}</div>
+      </sc-for>
+      <sc-for list="{{ stateChips }}" as="c" hint-placeholder-count="2">
+        <div onClick="{{ c.onClick }}" style="min-width:104px;text-align:center;padding:7px 12px;font-size:10.5px;letter-spacing:0.08em;cursor:pointer;user-select:none;color:{{ c.fg }};background:{{ c.bg }};border:1px solid {{ c.bd }};">{{ c.label }}</div>
+      </sc-for>
+    </div>
+    <div style="display:flex;gap:5px;justify-content:center;flex-wrap:wrap;">
+      <sc-for list="{{ fillChips }}" as="c" hint-placeholder-count="5">
+        <div onClick="{{ c.onClick }}" style="min-width:80px;text-align:center;padding:7px 12px;font-size:11px;letter-spacing:0.09em;cursor:pointer;user-select:none;color:{{ c.fg }};background:{{ c.bg }};border:1px solid {{ c.bd }};">{{ c.label }}</div>
+      </sc-for>
+    </div>
+    <div style="display:flex;gap:5px;justify-content:center;flex-wrap:wrap;">
+      <sc-for list="{{ mixChips }}" as="c" hint-placeholder-count="8">
+        <div onClick="{{ c.onClick }}" style="min-width:92px;text-align:center;padding:6px 10px;font-size:10px;letter-spacing:0.08em;cursor:pointer;user-select:none;color:{{ c.fg }};background:{{ c.bg }};border:1px solid {{ c.bd }};">{{ c.label }}</div>
+      </sc-for>
+    </div>
+    <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:center;">
+      <div onClick="{{ rotL }}" style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:17px;cursor:pointer;user-select:none;background:#1c2c33;border:1px solid #2f444c;color:#cfd6d4;">&#8634;</div>
+      <div style="width:70px;text-align:center;font-family:'IM Fell English SC',serif;font-size:23px;color:#eef3f2;">{{ compass }}</div>
+      <div onClick="{{ rotR }}" style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:17px;cursor:pointer;user-select:none;background:#1c2c33;border:1px solid #2f444c;color:#cfd6d4;">&#8635;</div>
+      <div style="display:flex;flex-direction:column;gap:4px;width:160px;">
+        <div style="display:flex;justify-content:space-between;font-size:9.5px;letter-spacing:0.1em;color:#6f7e83;"><span>STACK</span><span style="color:#9aa6aa;">{{ stackN }} HIGH</span></div>
+        <input type="range" min="1" max="6" step="1" value="{{ stackN }}" onInput="{{ onStack }}" />
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px;width:140px;">
+        <div style="display:flex;justify-content:space-between;font-size:9.5px;letter-spacing:0.1em;color:#6f7e83;"><span>ZOOM</span><span style="color:#9aa6aa;">{{ zoom }}&times;</span></div>
+        <input type="range" min="3" max="6" step="1" value="{{ zoom }}" onInput="{{ onZoom }}" />
+      </div>
+    </div>
+    <div style="font-size:9.5px;color:#5f6e73;letter-spacing:0.06em;text-align:center;max-width:760px;line-height:1.6;">shell &rarr; <span style="color:#7fd6c9;">slots(build, dir)</span> blits the catch &rarr; <span style="color:#7fd6c9;">renderFront(build, dir)</span> redraws the camera-facing mesh, so the catch sits genuinely BEHIND the wire &middot; fills are monotonic &mdash; growing one never moves an earlier animal</div>
+  </div>
+
+  <!-- MATRIX -->
+  <div style="width:100%;max-width:1000px;display:flex;flex-direction:column;gap:10px;border-top:1px solid #243137;padding-top:18px;">
+    <div style="font-size:11px;letter-spacing:0.14em;color:#6f7e83;">FOUR&nbsp;BUILDS&nbsp;&times;&nbsp;FIVE&nbsp;FILLS&nbsp;&middot;&nbsp;THE&nbsp;GLANCE&nbsp;TEST</div>
+    <div style="overflow-x:auto;border:1px solid #243137;background:#0e181d;padding:14px;">
+      <canvas ref="{{ matrixRef }}" width="940" height="330"></canvas>
+    </div>
+  </div>
+
+  <!-- BUOYS -->
+  <div style="width:100%;max-width:1000px;display:flex;flex-direction:column;gap:10px;border-top:1px solid #243137;padding-top:18px;">
+    <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;">
+      <div style="font-size:11px;letter-spacing:0.14em;color:#6f7e83;">BUOYS&nbsp;&middot;&nbsp;EIGHT&nbsp;REGISTERED&nbsp;SCHEMES,&nbsp;REBUILT&nbsp;ISO</div>
+      <div style="font-size:9.5px;color:#5f6e73;">a fisher's pots are marked in that boat's colours &mdash; no two read alike &middot; 36&times;54, pivot (18,46)</div>
+    </div>
+    <div style="overflow-x:auto;border:1px solid #243137;background:#0e181d;padding:14px;">
+      <canvas ref="{{ buoyRef }}" width="940" height="220"></canvas>
+    </div>
+  </div>
+
+  <!-- TRAYS -->
+  <div style="width:100%;max-width:1000px;display:flex;flex-direction:column;gap:10px;border-top:1px solid #243137;padding-top:18px;">
+    <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;">
+      <div style="font-size:11px;letter-spacing:0.14em;color:#6f7e83;">STACK-NEST&nbsp;TRAYS&nbsp;&middot;&nbsp;EMPTIES&nbsp;NEST,&nbsp;FULL&nbsp;ONES&nbsp;STACK</div>
+      <div style="font-size:9.5px;color:#5f6e73;">0.72 &times; 0.44 &times; 0.25 m &middot; nest 0.075 m a tray, stack 0.25 m &mdash; both are data the planner counts with</div>
+    </div>
+    <div style="overflow-x:auto;border:1px solid #243137;background:#0e181d;padding:14px;">
+      <canvas ref="{{ trayRef }}" width="940" height="250"></canvas>
+    </div>
+    <div style="display:flex;gap:5px;justify-content:center;flex-wrap:wrap;">
+      <sc-for list="{{ trayChips }}" as="c" hint-placeholder-count="5">
+        <div onClick="{{ c.onClick }}" style="display:flex;align-items:center;gap:8px;min-width:104px;justify-content:center;padding:7px 12px;font-size:10.5px;letter-spacing:0.08em;cursor:pointer;user-select:none;color:{{ c.fg }};background:{{ c.bg }};border:1px solid {{ c.bd }};"><div style="width:10px;height:10px;background:{{ c.dot }};border:1px solid rgba(0,0,0,0.4);"></div>{{ c.label }}</div>
+      </sc-for>
+    </div>
+  </div>
+
+  <!-- DECK GEAR -->
+  <div style="width:100%;max-width:1000px;display:flex;flex-direction:column;gap:10px;border-top:1px solid #243137;padding-top:18px;">
+    <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;">
+      <div style="font-size:11px;letter-spacing:0.14em;color:#6f7e83;">THE&nbsp;WORKING&nbsp;FURNITURE&nbsp;&middot;&nbsp;BAIT,&nbsp;BOARD,&nbsp;BENCH,&nbsp;HAULER</div>
+      <div style="font-size:9.5px;color:#5f6e73;">one 80&times;76 cell, pivot (40,60) &mdash; every piece drops on a deck slot like a trap or a tote</div>
+    </div>
+    <div style="overflow-x:auto;border:1px solid #243137;background:#0e181d;padding:14px;">
+      <canvas ref="{{ gearRef }}" width="940" height="250"></canvas>
+    </div>
+  </div>
+
+  <!-- ON DECK -->
+  <div style="width:100%;max-width:1000px;display:flex;flex-direction:column;gap:10px;border-top:1px solid #243137;padding-top:18px;">
+    <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;">
+      <div style="font-size:11px;letter-spacing:0.14em;color:#6f7e83;">ON&nbsp;DECK&nbsp;&middot;&nbsp;THE&nbsp;LOOP&nbsp;IN&nbsp;POSITION</div>
+      <div style="font-size:9.5px;color:#5f6e73;">every piece placed in boat metres and projected on the hull's own camera &mdash; the rail and the transom cut what sits behind them</div>
+    </div>
+    <div style="position:relative;border:1px solid #243137;background:#0e181d;">
+      <canvas ref="{{ deckRef }}" width="940" height="600" style="width:100%;height:auto;"></canvas>
+      <div style="position:absolute;left:11px;top:10px;font-size:10px;letter-spacing:0.14em;color:rgba(231,236,235,0.9);background:rgba(11,18,22,0.6);padding:3px 8px;">LOBSTER&nbsp;BOAT &middot; 12.0 m &middot; HAULING</div>
+      <div style="position:absolute;right:11px;top:10px;font-size:10px;letter-spacing:0.12em;color:rgba(200,168,106,0.9);">{{ deckLine }}</div>
+    </div>
+    <div style="display:flex;gap:5px;justify-content:center;flex-wrap:wrap;">
+      <sc-for list="{{ deckChips }}" as="c" hint-placeholder-count="3">
+        <div onClick="{{ c.onClick }}" style="min-width:132px;text-align:center;padding:7px 12px;font-size:10.5px;letter-spacing:0.08em;cursor:pointer;user-select:none;color:{{ c.fg }};background:{{ c.bg }};border:1px solid {{ c.bd }};">{{ c.label }}</div>
+      </sc-for>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(236px,1fr));border-top:1px solid #243137;border-left:1px solid #243137;">
+      <sc-for list="{{ loop }}" as="s" hint-placeholder-count="7">
+        <div style="display:flex;gap:10px;padding:10px 12px;border-bottom:1px solid #243137;border-right:1px solid #243137;">
+          <div style="flex:none;width:19px;height:19px;border:1px solid #c9a86a;color:#c9a86a;font-size:10px;display:flex;align-items:center;justify-content:center;">{{ s.n }}</div>
+          <div style="display:flex;flex-direction:column;gap:4px;">
+            <div style="font-size:10.5px;color:#e7eceb;letter-spacing:0.1em;">{{ s.k }}</div>
+            <div style="font-size:9.5px;color:#6f7e83;line-height:1.55;">{{ s.v }}</div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <!-- PLAN -->
+  <div style="width:100%;max-width:1000px;display:flex;flex-direction:column;gap:10px;border-top:1px solid #243137;padding-top:18px;">
+    <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;">
+      <div style="font-size:11px;letter-spacing:0.14em;color:#6f7e83;">DECK&nbsp;LAYOUT&nbsp;&middot;&nbsp;WHAT&nbsp;ACTUALLY&nbsp;FITS</div>
+      <div style="font-size:9.5px;color:#5f6e73;">deck and washboard polygons read live from the gameplay sidecars &mdash; the work zone is reserved first, the pots pack into what's left</div>
+    </div>
+    <div style="overflow-x:auto;border:1px solid #243137;background:#0e181d;padding:14px;">
+      <canvas ref="{{ planRef }}" width="940" height="600"></canvas>
+    </div>
+    <div style="display:flex;gap:22px;flex-wrap:wrap;">
+      <sc-for list="{{ tallies }}" as="t" hint-placeholder-count="2">
+        <div style="flex:1;min-width:300px;display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:{{ t.dot }};"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">{{ t.hull }}</div></div>
+          <div style="border:1px solid #243137;display:grid;grid-template-columns:auto 1fr;font-size:11px;">
+            <sc-for list="{{ t.rows }}" as="row" hint-placeholder-count="6">
+              <div style="padding:6px 11px;color:#6f7e83;letter-spacing:0.08em;border-top:{{ row.border }};background:#0f191e;">{{ row.k }}</div>
+              <div style="padding:6px 11px;color:#c4cdcd;border-top:{{ row.border }};border-left:1px solid #243137;">{{ row.v }}</div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <!-- SPEC + DOWNLOADS -->
+  <div style="width:100%;max-width:1000px;display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start;border-top:1px solid #243137;padding-top:18px;">
+    <div style="display:flex;flex-direction:column;gap:8px;flex:1;min-width:340px;">
+      <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#c9a86a;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Spec</div></div>
+      <div style="border:1px solid #243137;display:grid;grid-template-columns:auto 1fr;font-size:11px;">
+        <sc-for list="{{ spec }}" as="row" hint-placeholder-count="9">
+          <div style="padding:6px 11px;color:#6f7e83;letter-spacing:0.08em;border-top:{{ row.border }};background:#0f191e;">{{ row.k }}</div>
+          <div style="padding:6px 11px;color:#c4cdcd;border-top:{{ row.border }};border-left:1px solid #243137;">{{ row.v }}</div>
+        </sc-for>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:5px;margin-top:6px;">
+        <sc-for list="{{ ramps }}" as="r" hint-placeholder-count="6">
+          <div style="display:flex;align-items:center;gap:9px;">
+            <div style="width:74px;font-size:9px;letter-spacing:0.08em;color:#6f7e83;">{{ r.name }}</div>
+            <div style="display:flex;gap:2px;flex:1;">
+              <sc-for list="{{ r.cols }}" as="c" hint-placeholder-count="5">
+                <div title="{{ c }}" style="flex:1;height:14px;background:{{ c }};"></div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;flex:1;min-width:300px;">
+      <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#2ba39a;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Downloads</div></div>
+      <div style="display:flex;flex-direction:column;gap:7px;">
+        <sc-for list="{{ sheets }}" as="d" hint-placeholder-count="4">
+          <div onClick="{{ d.onClick }}" style="font-size:10.5px;letter-spacing:0.1em;padding:9px 15px;border:1px solid #2f6079;background:#122530;color:#7fd6c9;text-align:center;cursor:pointer;user-select:none;">&darr; {{ d.label }}</div>
+        </sc-for>
+        <sc-for list="{{ files }}" as="f" hint-placeholder-count="6">
+          <a href="{{ f.href }}" download="{{ f.file }}" style="font-size:9.5px;letter-spacing:0.08em;padding:8px 8px;border:1px solid #243137;background:#0f191e;color:#8a969b;text-align:center;">&darr; {{ f.file }}</a>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 1040, &quot;height&quot;: 1500 },
+  &quot;build&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;wire&quot;, &quot;options&quot;: [&quot;wood&quot;,&quot;wire&quot;,&quot;crabWire&quot;,&quot;crabCone&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Trap&quot; },
+  &quot;wet&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: false, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Trap&quot; },
+  &quot;fill&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;half&quot;, &quot;options&quot;: [&quot;empty&quot;,&quot;few&quot;,&quot;half&quot;,&quot;full&quot;,&quot;brim&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Trap&quot; },
+  &quot;mix&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;lobster&quot;, &quot;options&quot;: [&quot;lobster&quot;,&quot;keepers&quot;,&quot;crab&quot;,&quot;jonah&quot;,&quot;mixed&quot;,&quot;bycatch&quot;,&quot;shorts&quot;,&quot;baited&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Trap&quot; },
+  &quot;stackN&quot;: { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 3, &quot;min&quot;: 1, &quot;max&quot;: 6, &quot;step&quot;: 1, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Trap&quot; },
+  &quot;keyline&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: false, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Bake&quot; }
+}">
+class Component extends DCLogic {
+  state = { build:'wire', dir:3, colour:null, wet:false, fill:'half', mix:'lobster',
+            stackN:3, zoom:4, tray:'grey', deckDir:7 };
+  DIRS = ['N','NE','E','SE','S','SW','W','NW'];
+  SOLE = 0.50;                      // lobster boat cockpit sole, boat metres
+
+  componentDidMount(){
+    this._c = {}; this._plans = null; this._label='';
+    this._wait = setInterval(()=>{
+      if (globalThis.TrapIso && globalThis.BuoyIso && globalThis.FishTray2 && globalThis.DeckGear
+          && globalThis.TrapCatch && globalThis.Crustacean && globalThis.CatchKit
+          && globalThis.FishTote && globalThis.LobsterBoatIso){
+        clearInterval(this._wait); this._ready = true; this._redraw();
+      }
+    }, 60);
+    Promise.all([
+      fetch('Art/gameplay/capeIslanderIsoRig.gameplay.json').then(r=>r.json()).catch(()=>null),
+      fetch('Art/gameplay/lobsterBoatIsoRig.gameplay.json').then(r=>r.json()).catch(()=>null),
+    ]).then(([cape, lob])=>{ this._plans = { cape, lob }; this._drawPlan(); this._drawDeck(); this.forceUpdate(); });
+  }
+  componentWillUnmount(){ clearInterval(this._wait); }
+  componentDidUpdate(){ this._redraw(); }
+  componentDidUpdateProps(){}
+
+  _redraw(){ if(!this._ready) return;
+    try { this._drawTrap(); this._drawMatrix(); this._drawBuoy(); this._drawTray(); this._drawGear();
+          this._drawDeck(); this._drawPlan(); }
+    catch(e){ if(!this._err){ this._err=true; console.error('deck gear draw', e); } } }
+
+  _cv(rgba,w,h){ const cv=document.createElement('canvas'); cv.width=w; cv.height=h;
+    cv.getContext('2d').putImageData(new ImageData(rgba,w,h),0,0); return cv; }
+  _mem(k, fn){ if(!this._c[k]) this._c[k]=fn(); return this._c[k]; }
+  _colour(build){ const T=globalThis.TrapIso; return this.state.colour || T.COLOURS[build][0]; }
+
+  _trapCv(build, dir, front){
+    const T=globalThis.TrapIso, st=this.state, col=this._colour(build);
+    const k=(front?'F|':'T|')+[build,dir,col,st.wet?1:0].join('|');
+    return this._mem(k, ()=> this._cv(
+      (front?T.renderFront:T.render)(build, dir, { colour:col, wet:st.wet }), T.W, T.H));
+  }
+  // one pot at (gx,gy) with its catch composited between shell and near mesh
+  _pot(c, gx, gy, build, dir, fill, mix, seed){
+    const T=globalThis.TrapIso, TC=globalThis.TrapCatch;
+    c.drawImage(this._trapCv(build,dir,false), gx-T.pivot.x, gy-T.pivot.y);
+    if (fill!=='empty'){
+      const slots=T.slots(build,dir);
+      const items=TC.fillItems(mix, fill, seed, slots.length);
+      const open=T.opening(build,dir);
+      c.save(); c.beginPath();
+      open.forEach((p,i)=>{ const px=gx+p.dx, py=gy+p.dy; i?c.lineTo(px,py):c.moveTo(px,py); });
+      c.closePath(); c.clip();
+      for (let i=0;i<items.length && i<slots.length;i++){
+        const it=items[i], item=TC.item(it.kind,{variant:it.variant,scale:it.scale});
+        if(!item) continue;
+        c.drawImage(item.canvas, gx+slots[i].dx-item.ax, gy+slots[i].dy-item.ay);
+      }
+      c.restore();
+    }
+    c.drawImage(this._trapCv(build,dir,true), gx-T.pivot.x, gy-T.pivot.y);
+  }
+  _stack(c, gx, gy, build, dir, n, fill, mix, seed){
+    const T=globalThis.TrapIso, step=T.stackStep(build), slew=T.STACK[build].slew;
+    for (let i=0;i<n;i++){
+      c.fillStyle='rgba(5,12,16,0.30)';
+      if(i===0){ c.beginPath(); c.ellipse(gx, gy+1, 17, 6, 0, 0, 7); c.fill(); }
+      this._pot(c, gx+slew[i%slew.length], gy-i*step, build, dir, fill, mix, seed+i*13);
+    }
+  }
+  _off(cv, z){
+    const ow=Math.ceil(cv.width/z), oh=Math.ceil(cv.height/z);
+    const k='off'+cv.width+'x'+cv.height+'|'+z;
+    if(!this[k] || this[k].width!==ow || this[k].height!==oh){
+      this[k]=document.createElement('canvas'); this[k].width=ow; this[k].height=oh; }
+    return this[k];
+  }
+  // one tray, hollow: shell, then the graded catch clipped to the rim, at (gx,gy)
+  _trayAt(c, gx, gy, dir, colour, fill, seed){
+    const R=globalThis.FishTray2, K=globalThis.CatchKit;
+    c.drawImage(this._mem('y|'+dir+'|'+colour, ()=>this._cv(R.render(dir,{colour}),R.W,R.H)),
+      gx-R.pivot.x, gy-R.pivot.y);
+    if(!fill || fill==='empty') return;
+    const slots=R.slots(dir,fill), items=K.fillItems('lobster',fill,seed,slots.length), open=R.opening(dir);
+    c.save(); c.beginPath();
+    open.forEach((p,i)=>{ i?c.lineTo(gx+p.dx,gy+p.dy):c.moveTo(gx+p.dx,gy+p.dy); });
+    c.closePath(); c.clip();
+    for(let i=0;i<items.length&&i<slots.length;i++){
+      const t=items[i], m=K.item(t.kind,{variant:t.variant,scale:t.scale});
+      if(m) c.drawImage(m.canvas, gx+slots[i].dx-m.ax, gy+slots[i].dy-m.ay);
+    }
+    c.restore();
+  }
+  _toteAt(c, gx, gy, dir, o){
+    const F=globalThis.FishTote, K=globalThis.CatchKit, fill=o.fill||'empty';
+    c.drawImage(this._mem('o|'+dir+'|'+o.colour+'|'+o.lid+'|'+fill,
+      ()=>this._cv(F.render(dir,{colour:o.colour,lid:o.lid,fill}),F.W,F.H)), gx-F.pivot.x, gy-F.pivot.y);
+    if(o.lid!=='off' || fill==='empty') return;
+    const slots=F.slots(dir,fill), items=K.fillItems('lobster',fill,o.seed||9,slots.length), open=F.opening(dir);
+    c.save(); c.beginPath();
+    open.forEach((p,i)=>{ i?c.lineTo(gx+p.dx,gy+p.dy):c.moveTo(gx+p.dx,gy+p.dy); });
+    c.closePath(); c.clip();
+    for(let i=0;i<items.length&&i<slots.length;i++){
+      const t=items[i], m=K.item(t.kind,{variant:t.variant,scale:t.scale});
+      if(m) c.drawImage(m.canvas, gx+slots[i].dx-m.ax, gy+slots[i].dy-m.ay);
+    }
+    c.restore();
+  }
+  _blit(cv, off, z){ const ctx=cv.getContext('2d'); ctx.imageSmoothingEnabled=false;
+    ctx.clearRect(0,0,cv.width,cv.height);
+    ctx.drawImage(off, 0,0,off.width,off.height, 0,0,off.width*z,off.height*z); }
+
+  _deckFloor(c, ow, oh){
+    c.fillStyle='#1d2127'; c.fillRect(0,0,ow,oh);
+    for (let y=0;y<oh;y+=7){ c.fillStyle=(y/7)%2?'#22262d':'#1d2127'; c.fillRect(0,y,ow,7);
+      c.fillStyle='#14171c'; c.fillRect(0,y,ow,1); }
+  }
+  _drawTrap(){
+    const cv=this._trap; if(!cv) return;
+    const st=this.state, z=st.zoom, T=globalThis.TrapIso;
+    const off=this._off(cv,z), c=off.getContext('2d'); c.imageSmoothingEnabled=false;
+    const ow=off.width, oh=off.height;
+    this._deckFloor(c, ow, oh);
+    const gy=Math.round(oh*0.80);
+    this._stack(c, Math.round(ow*0.32), gy, st.build, st.dir, st.stackN, st.fill, st.mix, 5);
+    // the single working pot beside the stack, with its buoy
+    this._pot(c, Math.round(ow*0.66), gy, st.build, st.dir, st.fill, st.mix, 41);
+    const B=globalThis.BuoyIso;
+    c.drawImage(this._mem('b|LobsterBoat|'+st.dir, ()=>this._cv(B.render('LobsterBoat',st.dir),B.W,B.H)),
+      Math.round(ow*0.84)-B.pivot.x, gy-B.pivot.y);
+    this._blit(cv, off, z);
+    const D=T.DIMS[st.build];
+    const lbl=T.LABELS[st.build]+' · '+T.CLABEL[this._colour(st.build)]+' · '+(st.wet?'WET':'DRY')
+      +' · '+st.fill.toUpperCase()+' OF '+st.mix.toUpperCase()+' · '+D.l.toFixed(2)+'×'+D.w.toFixed(2)+' m';
+    if(lbl!==this._label){ this._label=lbl; this.forceUpdate(); }
+  }
+  _drawMatrix(){
+    const cv=this._matrix; if(!cv) return;
+    const T=globalThis.TrapIso, c=cv.getContext('2d'), z=2;
+    c.imageSmoothingEnabled=false; c.clearRect(0,0,cv.width,cv.height);
+    c.font='10px ui-monospace, Menlo, monospace';
+    const off=this._off(cv,z), oc=off.getContext('2d'); oc.imageSmoothingEnabled=false;
+    oc.clearRect(0,0,off.width,off.height);
+    const fills=['empty','few','half','full','brim'];
+    T.BUILDS.forEach((b,r)=>{
+      fills.forEach((f,i)=>{
+        const x=Math.round(58/z + i*(off.width-58/z)/5 + (off.width-58/z)/10);
+        const y=Math.round(30/z + r*(off.height-34/z)/4 + (off.height-34/z)/4 - 6);
+        this._pot(oc, x, y, b, 3, f, b.indexOf('crab')===0?'crab':'lobster', 7+r*3);
+      });
+    });
+    this._blit(cv, off, z);
+    c.fillStyle='#6f7e83';
+    ['EMPTY','FEW','HALF','FULL','BRIM'].forEach((t,i)=>{
+      c.textAlign='center'; c.fillText(t, 58 + i*(cv.width-58)/5 + (cv.width-58)/10, 18); });
+    c.textAlign='left';
+    T.BUILDS.forEach((b,r)=>{ c.fillStyle='#9aa6aa';
+      c.fillText(T.LABELS[b].split(' ')[0], 6, 30 + r*(cv.height-34)/4 + (cv.height-34)/8); });
+    c.strokeStyle='#1b262c';
+    for(let r=1;r<4;r++){ c.beginPath(); c.moveTo(4, 26+r*(cv.height-34)/4); c.lineTo(cv.width-4, 26+r*(cv.height-34)/4); c.stroke(); }
+  }
+  _drawBuoy(){
+    const cv=this._buoy; if(!cv) return;
+    const B=globalThis.BuoyIso, z=3, c=cv.getContext('2d');
+    c.imageSmoothingEnabled=false; c.clearRect(0,0,cv.width,cv.height);
+    const off=this._off(cv,z), oc=off.getContext('2d'); oc.imageSmoothingEnabled=false;
+    oc.clearRect(0,0,off.width,off.height);
+    const gy=Math.round(off.height*0.86);
+    B.FLEET.forEach((s,i)=>{
+      const x=Math.round((i+0.5)*off.width/B.FLEET.length);
+      oc.fillStyle='rgba(5,12,16,0.35)'; oc.beginPath(); oc.ellipse(x,gy+1,6,2,0,0,7); oc.fill();
+      oc.drawImage(this._mem('b|'+s+'|'+this.state.dir, ()=>this._cv(B.render(s,this.state.dir),B.W,B.H)),
+        x-B.pivot.x, gy-B.pivot.y);
+    });
+    this._blit(cv, off, z);
+    c.font='9px ui-monospace, Menlo, monospace'; c.textAlign='center';
+    B.FLEET.forEach((s,i)=>{ c.fillStyle='#6f7e83';
+      c.fillText(B.LABELS[s], (i+0.5)*cv.width/B.FLEET.length, cv.height-6); });
+    c.textAlign='left';
+  }
+  _drawTray(){
+    const cv=this._tray; if(!cv) return;
+    const R=globalThis.FishTray2, K=globalThis.CatchKit, z=3, c=cv.getContext('2d');
+    c.imageSmoothingEnabled=false; c.clearRect(0,0,cv.width,cv.height);
+    const off=this._off(cv,z), oc=off.getContext('2d'); oc.imageSmoothingEnabled=false;
+    oc.clearRect(0,0,off.width,off.height);
+    const gy=Math.round(off.height*0.76), dir=this.state.dir, col=this.state.tray;
+    ['empty','few','half','full','brim'].forEach((f,i)=>{
+      this._trayAt(oc, Math.round((i+0.5)*off.width*0.52/5)+6, gy, dir, col, f, 11+i);
+    });
+    // nested empties (left of the pair) and stacked full trays (right)
+    const nx=Math.round(off.width*0.66), sx=Math.round(off.width*0.86);
+    for(let i=0;i<5;i++) this._trayAt(oc, nx, gy-i*R.nestStep(), dir, col, 'empty', 0);
+    for(let i=0;i<3;i++) this._trayAt(oc, sx, gy-i*R.stackStep(), dir, col, 'full', 3+i);
+    this._blit(cv, off, z);
+    c.font='9px ui-monospace, Menlo, monospace'; c.textAlign='center'; c.fillStyle='#6f7e83';
+    ['EMPTY','FEW','HALF','FULL','BRIM'].forEach((t,i)=>c.fillText(t, ((i+0.5)*cv.width*0.52/5)+18, cv.height-8));
+    c.fillStyle='#c9a86a';
+    c.fillText('NEST \u00d75 \u00b7 0.075 m', cv.width*0.66, cv.height-8);
+    c.fillText('STACK \u00d73 \u00b7 0.25 m', cv.width*0.86, cv.height-8);
+    c.textAlign='left';
+  }
+
+  // ---- ON DECK: the loop in position on the hull ---------------------------
+  // the hull rigs turn CCW with dir, the IsoSolid props turn CW, so a prop that
+  // must sit square to the boat renders at (8 - boatDir - 2*quarterTurns).
+  _bB(dir, elev){ const th=dir*Math.PI/4, e=(elev!=null?elev:40)*Math.PI/180;
+    return { ct:Math.cos(th), st:Math.sin(th), se:Math.sin(e), ce:Math.cos(e) }; }
+  _bp(x,y,z,B,ox,oy){ const xr=x*B.ct-y*B.st, yr=x*B.st+y*B.ct;
+    return { sx:ox+xr*32, sy:oy-(yr*B.se+z*B.ce)*32, d:yr*B.ce-z*B.se }; }
+  _pd(q){ return ((8 - this.state.deckDir - 2*(q||0)) % 8 + 8) % 8; }
+  // washboard cap centre x and cap height z at a station, read from the sidecar
+  _cap(y){
+    const wb=(((this._plans||{}).lob||{}).WASHBOARD||[])[0];
+    if(!wb || !wb.outer_edge) return { x:1.90, z:1.20 };
+    const oe=wb.outer_edge;
+    for(let i=0;i<oe.length-1;i++){ const a=oe[i], b=oe[i+1];
+      if((y-a[1])*(y-b[1])<=0){ const t=(y-a[1])/((b[1]-a[1])||1);
+        return { x:a[0]+(b[0]-a[0])*t-wb.width_m/2, z:a[2]+(b[2]-a[2])*t }; } }
+    const l=oe[oe.length-1]; return { x:l[0]-wb.width_m/2, z:l[2] };
+  }
+  // everything on the sole is seen THROUGH the near rim: transom coaming plus
+  // whichever washboard is nearest the camera. Clip to the region above it.
+  _rimPath(B, ox, oy, dir){
+    const wb=(((this._plans||{}).lob||{}).WASHBOARD||[])[0]; if(!wb) return null;
+    const s=Math.sin(dir*Math.PI/4);
+    const pts=[ this._bp(-1.40,-5.70,1.18,B,ox,oy), this._bp(1.40,-5.70,1.18,B,ox,oy) ];
+    if(Math.abs(s)>1e-6 && wb.outer_edge){
+      const sg=s<0?1:-1;
+      wb.outer_edge.forEach(p=>pts.push(this._bp(sg*(p[0]-wb.width_m), p[1], p[2], B, ox, oy)));
+    }
+    pts.sort((a,b)=>a.sx-b.sx);
+    const P=new Path2D();
+    P.moveTo(-4000,-4000); P.lineTo(-4000, pts[0].sy);
+    pts.forEach(p=>P.lineTo(p.sx,p.sy));
+    P.lineTo(4000, pts[pts.length-1].sy); P.lineTo(4000,-4000); P.closePath();
+    return P;
+  }
+  // the topside itself: everything below the near sheer is behind the hull side.
+  // Only the washboard section carries its own bulwark, so only it needs this.
+  _hullPath(B, ox, oy, dir){
+    const wb=(((this._plans||{}).lob||{}).WASHBOARD||[])[0];
+    if(!wb || !wb.outer_edge || Math.sin(dir*Math.PI/4)>=-1e-6) return null;
+    const pts=wb.outer_edge.map(p=>this._bp(p[0],p[1],p[2],B,ox,oy)).sort((a,b)=>a.sx-b.sx);
+    const P=new Path2D();
+    P.moveTo(-4000,-4000); P.lineTo(-4000, pts[0].sy);
+    pts.forEach(p=>P.lineTo(p.sx,p.sy));
+    P.lineTo(4000, pts[pts.length-1].sy); P.lineTo(4000,-4000); P.closePath();
+    return P;
+  }
+  // the hauling deck: work zone to port and amidships, rail gear to starboard
+  _deckItems(){
+    const D=this.SOLE, c1=this._cap(-2.55), c2=this._cap(-3.95), c3=this._cap(-5.15);
+    return [
+      { k:'gear', kind:'haulerstation', x:c1.x-0.30, y:-2.55, z:D, q:1 },
+      { k:'trap', build:'wire', x:c2.x, y:-3.95, z:c2.z, q:1, fill:'full', mix:'mixed', seed:71, cap:true },
+      { k:'trap', build:'wire', x:c3.x, y:-5.15, z:c3.z, q:1, fill:'empty', mix:'baited', seed:23, cap:true },
+      { k:'gear', kind:'bandingtable', x:-1.08, y:-2.25, z:D, q:1 },
+      { k:'tray', x:-1.08, y:-2.25, z:D+0.885, q:1, colour:'grey', fill:'few', seed:19 },
+      { k:'gear', kind:'chopboard', x:-1.08, y:-3.35, z:D, q:1 },
+      { k:'gear', kind:'baitbin', lid:'off', x:-1.08, y:-4.30, z:D, q:0 },
+      { k:'tote', x:0.25, y:-2.55, z:D, q:0, lid:'off', colour:'navy', fill:'half', seed:31 },
+      { k:'tote', x:0.25, y:-3.75, z:D, q:0, lid:'on', colour:'teal' },
+      { k:'trayNest',  x:-0.10, y:-4.62, z:D, q:0, n:5, colour:'grey' },
+      { k:'trayStack', x:0.62,  y:-4.62, z:D, q:0, n:3, colour:'blue', fill:'full' },
+      { k:'trapStack', build:'wire', x:-0.80, y:-5.25, z:D, q:0, n:4, fill:'empty', mix:'baited', seed:5 },
+      { k:'buoy', scheme:'LobsterBoat', x:-0.80, y:-5.25, z:D+4*0.38 },
+    ];
+  }
+  _deckDraw(c, it){
+    const T=globalThis.TrapIso, R=globalThis.FishTray2, G=globalThis.DeckGear, BY=globalThis.BuoyIso;
+    const gx=Math.round(it.sx), gy=Math.round(it.sy), d=this._pd(it.q);
+    if(it.k==='gear'){
+      c.drawImage(this._mem('g|'+it.kind+(it.lid||'')+'|'+d,
+        ()=>this._cv(G.render(it.kind,d,{lid:it.lid}),G.W,G.H)), gx-G.pivot.x, gy-G.pivot.y);
+    } else if(it.k==='trap'){
+      this._pot(c, gx, gy, it.build, d, it.fill, it.mix, it.seed||7);
+    } else if(it.k==='trapStack'){
+      const step=T.stackStep(it.build), slew=T.STACK[it.build].slew;
+      for(let i=0;i<it.n;i++)
+        this._pot(c, gx+slew[i%slew.length], gy-i*step, it.build, d, it.fill, it.mix, (it.seed||7)+i*13);
+    } else if(it.k==='tray'){
+      this._trayAt(c, gx, gy, d, it.colour, it.fill, it.seed||5);
+    } else if(it.k==='trayNest'){
+      for(let i=0;i<it.n;i++) this._trayAt(c, gx, gy-i*R.nestStep(), d, it.colour, 'empty', 0);
+    } else if(it.k==='trayStack'){
+      for(let i=0;i<it.n;i++) this._trayAt(c, gx, gy-i*R.stackStep(), d, it.colour, it.fill, 3+i);
+    } else if(it.k==='tote'){
+      this._toteAt(c, gx, gy, d, it);
+    } else if(it.k==='buoy'){
+      c.drawImage(this._mem('b|'+it.scheme+'|'+d, ()=>this._cv(BY.render(it.scheme,d),BY.W,BY.H)),
+        gx-BY.pivot.x, gy-BY.pivot.y);
+    }
+  }
+  _deckPins(c, B, ox, oy, Z){
+    const c1=this._cap(-2.55), c2=this._cap(-3.95);
+    const P=[[1,c1.x-0.30,-2.55,2.55],[2,c2.x,-3.95,c2.z+0.55],[3,-1.08,-2.25,1.95],
+             [5,0.25,-2.55,1.85],[6,-1.08,-4.30,2.30],[4,0.62,-4.62,1.45],[7,-0.80,-5.25,2.55]];
+    c.font='bold 11px ui-monospace, Menlo, monospace'; c.textAlign='center'; c.textBaseline='middle';
+    P.forEach(p=>{
+      const q=this._bp(p[1],p[2],p[3],B,ox,oy), X=q.sx*Z, Y=q.sy*Z;
+      c.beginPath(); c.arc(X,Y,10.5,0,7);
+      c.fillStyle='rgba(11,18,22,0.84)'; c.fill();
+      c.lineWidth=1.2; c.strokeStyle='#c9a86a'; c.stroke();
+      c.fillStyle='#c9a86a'; c.fillText(String(p[0]), X, Y+0.5);
+    });
+    c.textBaseline='alphabetic'; c.textAlign='left';
+  }
+  _drawDeck(){
+    const cv=this._deck; if(!cv||!this._ready||!this._plans||!globalThis.LobsterBoatIso) return;
+    const LB=globalThis.LobsterBoatIso, Z=2, dir=this.state.deckDir;
+    const off=this._off(cv,Z), c=off.getContext('2d'); c.imageSmoothingEnabled=false;
+    c.clearRect(0,0,off.width,off.height);
+    const ox=Math.round(off.width*0.515), oy=Math.round(off.height*0.60), B=this._bB(dir);
+    c.fillStyle='rgba(5,12,16,0.28)';
+    c.beginPath(); c.ellipse(ox, oy+14, 152, 40, 0, 0, 7); c.fill();
+    c.drawImage(this._mem('lb|'+dir, ()=>this._cv(LB.render(dir,{}),LB.W,LB.H)), ox-LB.pivot.x, oy-LB.pivot.y);
+    const clip=this._rimPath(B, ox, oy, dir), hull=this._hullPath(B, ox, oy, dir);
+    this._deckItems()
+      .map(it=>Object.assign({}, it, this._bp(it.x,it.y,it.z,B,ox,oy)))
+      .sort((a,b)=>b.d-a.d)
+      .forEach(it=>{
+        const masked = it.cap ? (it.hull ? hull : null) : clip;
+        if(masked){ c.save(); c.clip(masked); }
+        this._deckDraw(c, it);
+        if(masked) c.restore();
+      });
+    this._blit(cv, off, Z);
+    this._deckPins(cv.getContext('2d'), B, ox, oy, Z);
+  }
+  _drawGear(){
+    const cv=this._gear; if(!cv) return;
+    const G=globalThis.DeckGear, z=3, c=cv.getContext('2d');
+    c.imageSmoothingEnabled=false; c.clearRect(0,0,cv.width,cv.height);
+    const off=this._off(cv,z), oc=off.getContext('2d'); oc.imageSmoothingEnabled=false;
+    oc.clearRect(0,0,off.width,off.height);
+    const gy=Math.round(off.height*0.86), dir=this.state.dir;
+    const items=[['baitbin','on'],['baitbin','off'],['baitbox',''],['chopboard',''],['bandingtable',''],['haulerstation','']];
+    items.forEach(([k,lid],i)=>{
+      const x=Math.round((i+0.5)*off.width/items.length);
+      oc.fillStyle='rgba(5,12,16,0.32)'; oc.beginPath(); oc.ellipse(x,gy+1,11,4,0,0,7); oc.fill();
+      oc.drawImage(this._mem('g|'+k+lid+'|'+dir, ()=>this._cv(G.render(k,dir,{lid:lid||undefined}),G.W,G.H)),
+        x-G.pivot.x, gy-G.pivot.y);
+    });
+    this._blit(cv, off, z);
+    c.font='9px ui-monospace, Menlo, monospace'; c.textAlign='center'; c.fillStyle='#6f7e83';
+    items.forEach(([k,lid],i)=>c.fillText(G.LABELS[k]+(lid==='off'?' \u00b7 OPEN':''), (i+0.5)*cv.width/items.length, cv.height-6));
+    c.textAlign='left';
+  }
+
+  // ---- deck layout planner --------------------------------------------------
+  _poly(d, id){ const p=(d&&d.DECK||[]).find(x=>x.id===id); if(!p) return null;
+    return p.polygon ? p.polygon.map(q=>[q[0],q[1]]) : p.polygon3d.map(q=>[q[0],q[1]]); }
+  _inPoly(pt, poly){ let hit=false;
+    for(let i=0,j=poly.length-1;i<poly.length;j=i++){
+      const a=poly[i], b=poly[j];
+      if((a[1]>pt[1])!==(b[1]>pt[1]) && pt[0] < (b[0]-a[0])*(pt[1]-a[1])/(b[1]-a[1])+a[0]) hit=!hit; }
+    return hit; }
+  _area(poly){ let s=0; for(let i=0,j=poly.length-1;i<poly.length;j=i++) s+=(poly[j][0]+poly[i][0])*(poly[j][1]-poly[i][1]);
+    return Math.abs(s/2); }
+  _fits(r, poly, taken, clear){
+    const c=clear!=null?clear:0.06;
+    const pts=[[r.x-r.w/2,r.y-r.l/2],[r.x+r.w/2,r.y-r.l/2],[r.x+r.w/2,r.y+r.l/2],[r.x-r.w/2,r.y+r.l/2],[r.x,r.y]];
+    for(const p of pts) if(!this._inPoly(p,poly)) return false;
+    for(const t of taken) if(Math.abs(t.x-r.x)*2 < (t.w+r.w+c) && Math.abs(t.y-r.y)*2 < (t.l+r.l+c)) return false;
+    return true;
+  }
+  _layout(data, hullKey){
+    const T=globalThis.TrapIso;
+    const poly=this._poly(data,'cockpit')||this._poly(data,'cockpit_open')
+      ||((data&&data.DECK||[])[0] ? ((data.DECK[0].polygon||data.DECK[0].polygon3d).map(q=>[q[0],q[1]])) : null);
+    if(!poly) return null;
+    const xs=poly.map(p=>p[0]), ys=poly.map(p=>p[1]);
+    const bb={ x0:Math.min(...xs), x1:Math.max(...xs), y0:Math.min(...ys), y1:Math.max(...ys) };
+    const cap=T.CAPS[hullKey];
+    const taken=[], work=[];
+    // fixed gear, nudged inboard until it sits inside the real polygon
+    const put=(kind,label,x,y,w,l,colour,clear)=>{
+      let r={kind,label,x,y,w,l,colour};
+      for(let n=0;n<10 && !this._fits(r,poly,taken,0.04);n++) r={...r, x:r.x - Math.sign(r.x)*0.12};
+      taken.push(r); work.push(r); return r;
+    };
+    const stbd=bb.x1-0.34, port=bb.x0+0.34, fwd=bb.y1, aft=bb.y0;
+    // the working alley — kept clear on purpose. This is the workspace the catch
+    // handling needs, and it is why the pot packer does not simply fill the sole.
+    const alley={ kind:'alley', label:'WORK ALLEY', x:0, y:(aft+fwd)/2,
+      w:0.80, l:(fwd-aft)-0.30, colour:'#6f7e83' };
+    taken.push(alley); work.push(alley);
+    put('bench','BANDING', port+0.02, fwd-0.75, 0.56, 1.00, '#8e9d97');
+    put('bait','BAIT',     stbd,      fwd-0.55, 0.62, 0.62, '#2d4c71');
+    put('board','CHOP',    stbd,      fwd-1.42, 0.52, 0.72, '#8c6a45');
+    put('tote','TOTE',     port+0.24, aft+0.62, 1.00, 1.00, '#2f4c88');
+    put('tote','TOTE',     port+0.24, aft+1.70, 1.00, 1.00, '#2f4c88');
+    put('tray','TRAYS',    stbd+0.06, aft+0.52, 0.46, 0.74, '#66757b');
+    put('tray','TRAYS',    stbd+0.06, aft+1.34, 0.46, 0.74, '#66757b');
+    // pots pack into what is left — fore-and-aft along the rails where they fit,
+    // athwartships across the stern where they do not. Greedy 0.10 m sweep.
+    const D=T.DIMS[this.state.build], stacks=[];
+    const orient=[{w:D.w+0.03,l:D.l+0.05},{w:D.l+0.05,l:D.w+0.03}];
+    for (let x=bb.x0; x<=bb.x1; x+=0.10){
+      for (let y=aft; y<=fwd; y+=0.10){
+        for (const o of orient){
+          const r={x, y, w:o.w, l:o.l};
+          if(this._fits(r, poly, taken, 0.02)){ taken.push(r); stacks.push(r); break; }
+        }
+      }
+    }
+    // the washboard: hauler station on the starboard cap, plus the pots it lands
+    const wb=(data&&data.WASHBOARD||[])[0];
+    const wbPots=[], wbGear=[];
+    if(wb && wb.outer_edge){
+      const oe=wb.outer_edge.map(p=>[p[0],p[1]]);
+      // interpolate the cap's x at a station, so gear lands beside the WORKING deck
+      const capX=(y)=>{
+        for(let i=0;i<oe.length-1;i++){ const a=oe[i], b=oe[i+1];
+          if((a[1]-y)*(b[1]-y)<=0){ const t=(y-a[1])/((b[1]-a[1])||1); return Math.abs(a[0]+(b[0]-a[0])*t); } }
+        return Math.abs(oe[Math.floor(oe.length/2)][0]);
+      };
+      const yH=fwd-0.95;
+      wbGear.push({ label:'HAULER', x:capX(yH)-wb.width_m/2, y:yH, w:wb.width_m, l:1.50, colour:'#b45a2c' });
+      for(let i=0;i<cap.washboard;i++){
+        const y=Math.max(aft+0.7, fwd-2.6-i*1.15);
+        wbPots.push({ x:capX(y)-wb.width_m/2, y, w:wb.width_m, l:D.l*0.80 });
+      }
+    }
+    const used=work.reduce((a,r)=>a+r.w*r.l,0) + stacks.reduce((a,r)=>a+r.w*r.l,0);
+    return { poly, fore:this._poly(data,'foredeck'), wb, bb, work, stacks, wbPots, wbGear, cap,
+      alleyArea:alley.w*alley.l, area:this._area(poly), used, hullKey };
+  }
+  _drawPlan(){
+    const cv=this._plan; if(!cv||!this._plans||!this._ready) return;
+    const c=cv.getContext('2d'); c.imageSmoothingEnabled=false;
+    c.clearRect(0,0,cv.width,cv.height);
+    c.fillStyle='#0e181d'; c.fillRect(0,0,cv.width,cv.height);
+    const T=globalThis.TrapIso;
+    const sets=[['capeIslander',this._plans.cape],['lobsterBoat',this._plans.lob]];
+    this._tally=[];
+    sets.forEach(([key,data],col)=>{
+      const L=this._layout(data,key); if(!L) return;
+      const px=col*cv.width/2, pw=cv.width/2;
+      const allY=[L.bb.y0,L.bb.y1].concat(L.fore?L.fore.map(p=>p[1]):[]);
+      const y0=Math.min(...allY)-0.4, y1=Math.max(...allY)+0.4;
+      const s=Math.min((pw-70)/ (L.bb.x1-L.bb.x0+1.6), (cv.height-64)/(y1-y0));
+      const ox=px+pw/2, oy=cv.height-30;
+      const X=(x)=>ox+x*s, Y=(y)=>oy-(y-y0)*s;
+      const path=(poly)=>{ c.beginPath(); poly.forEach((p,i)=> i?c.lineTo(X(p[0]),Y(p[1])):c.moveTo(X(p[0]),Y(p[1]))); c.closePath(); };
+      if(L.fore){ path(L.fore); c.fillStyle='#141d22'; c.fill(); c.strokeStyle='#243137'; c.stroke(); }
+      if(L.wb && L.wb.outer_edge){
+        for(const sg of [1,-1]){
+          const oe=L.wb.outer_edge.map(p=>[p[0]*sg,p[1]]);
+          const inn=oe.map(p=>[p[0]-sg*L.wb.width_m, p[1]]).reverse();
+          path(oe.concat(inn)); c.fillStyle='rgba(201,168,106,0.10)'; c.fill();
+          c.strokeStyle='rgba(201,168,106,0.45)'; c.stroke();
+        }
+      }
+      path(L.poly); c.fillStyle='#16222a'; c.fill(); c.strokeStyle='#31454e'; c.lineWidth=1.4; c.stroke(); c.lineWidth=1;
+      // pot stacks
+      c.font='8px ui-monospace, Menlo, monospace';
+      L.stacks.forEach(r=>{
+        c.fillStyle='rgba(127,214,201,0.16)'; c.strokeStyle='rgba(127,214,201,0.62)';
+        c.fillRect(X(r.x-r.w/2),Y(r.y+r.l/2),r.w*s,r.l*s);
+        c.strokeRect(X(r.x-r.w/2)+0.5,Y(r.y+r.l/2)+0.5,r.w*s-1,r.l*s-1);
+        c.fillStyle='#7fd6c9'; c.textAlign='center';
+        c.fillText('\u00d7'+L.cap.deck, X(r.x), Y(r.y)+3);
+      });
+      (L.wbGear||[]).forEach(r=>{
+        c.fillStyle=r.colour+'55'; c.strokeStyle=r.colour;
+        c.fillRect(X(r.x-r.w/2),Y(r.y+r.l/2),r.w*s,r.l*s);
+        c.strokeRect(X(r.x-r.w/2)+0.5,Y(r.y+r.l/2)+0.5,r.w*s-1,r.l*s-1);
+        c.fillStyle=r.colour; c.textAlign='center';
+        c.save(); c.translate(X(r.x),Y(r.y)); c.rotate(-Math.PI/2); c.fillText(r.label,0,3); c.restore();
+      });
+      L.wbPots.forEach(r=>{
+        c.fillStyle='rgba(224,131,106,0.20)'; c.strokeStyle='rgba(224,131,106,0.75)';
+        c.fillRect(X(r.x-r.w/2),Y(r.y+r.l/2),r.w*s,r.l*s);
+        c.strokeRect(X(r.x-r.w/2)+0.5,Y(r.y+r.l/2)+0.5,r.w*s-1,r.l*s-1);
+      });
+      L.work.forEach(r=>{
+        if(r.kind==='alley'){
+          c.save(); c.setLineDash([4,4]); c.strokeStyle='rgba(174,185,187,0.55)';
+          c.strokeRect(X(r.x-r.w/2)+0.5,Y(r.y+r.l/2)+0.5,r.w*s-1,r.l*s-1); c.restore();
+          c.fillStyle='rgba(174,185,187,0.75)'; c.textAlign='center';
+          c.save(); c.translate(X(r.x),Y(r.y)); c.rotate(-Math.PI/2); c.fillText(r.label,0,3); c.restore();
+          return;
+        }
+        c.fillStyle=r.colour+'44'; c.strokeStyle=r.colour;
+        c.fillRect(X(r.x-r.w/2),Y(r.y+r.l/2),r.w*s,r.l*s);
+        c.strokeRect(X(r.x-r.w/2)+0.5,Y(r.y+r.l/2)+0.5,r.w*s-1,r.l*s-1);
+        c.fillStyle=r.colour; c.textAlign='center';
+        c.save(); c.translate(X(r.x),Y(r.y)+3);
+        if(r.l>r.w*1.4) c.rotate(-Math.PI/2);
+        c.fillText(r.label,0,0); c.restore();
+      });
+      c.textAlign='center'; c.font='11px ui-monospace, Menlo, monospace'; c.fillStyle='#eef3f2';
+      c.fillText(L.cap.label, px+pw/2, 20);
+      c.font='9px ui-monospace, Menlo, monospace'; c.fillStyle='#6f7e83';
+      c.fillText('BOW', px+pw/2, 34); c.textAlign='left';
+      const potsDeck=L.stacks.length*L.cap.deck, potsWb=L.wbPots.length;
+      this._tally.push({ key, hull:L.cap.label,
+        stacks:L.stacks.length, potsDeck, potsWb, cap:L.cap, alley:L.alleyArea,
+        area:L.area, free:Math.max(0, L.area-L.used) });
+    });
+    if(!this._tallied){ this._tallied=true; this.forceUpdate(); }
+  }
+
+  _dl(name, cv){ const a=document.createElement('a'); a.download=name; a.href=cv.toDataURL('image/png'); a.click(); }
+  _dlTrap(){ const T=globalThis.TrapIso, st=this.state;
+    const cv=document.createElement('canvas'); cv.width=T.W*8; cv.height=T.H*T.BUILDS.length;
+    const c=cv.getContext('2d');
+    T.BUILDS.forEach((b,r)=>{ for(let d=0;d<8;d++)
+      c.putImageData(new ImageData(T.render(b,d,{colour:T.COLOURS[b][0],wet:st.wet}),T.W,T.H), d*T.W, r*T.H); });
+    this._dl('Traps.png', cv); }
+  _dlBuoy(){ const B=globalThis.BuoyIso;
+    const cv=document.createElement('canvas'); cv.width=B.W*8; cv.height=B.H*8;
+    const c=cv.getContext('2d');
+    B.FLEET.forEach((s,r)=>{ for(let d=0;d<8;d++) c.putImageData(new ImageData(B.render(s,d),B.W,B.H), d*B.W, r*B.H); });
+    this._dl('Buoys.png', cv); }
+  _dlTray(){ const R=globalThis.FishTray2;
+    const cv=document.createElement('canvas'); cv.width=R.W*8; cv.height=R.H*R.CORDER.length;
+    const c=cv.getContext('2d');
+    R.CORDER.forEach((k,r)=>{ for(let d=0;d<8;d++) c.putImageData(new ImageData(R.render(d,{colour:k}),R.W,R.H), d*R.W, r*R.H); });
+    this._dl('FishTrays.png', cv); }
+  _dlGear(){ const G=globalThis.DeckGear;
+    const cv=document.createElement('canvas'); cv.width=G.W*8; cv.height=G.H*G.KINDS.length;
+    const c=cv.getContext('2d');
+    G.KINDS.forEach((k,r)=>{ for(let d=0;d<8;d++) c.putImageData(new ImageData(G.render(k,d),G.W,G.H), d*G.W, r*G.H); });
+    this._dl('DeckGear.png', cv); }
+
+  renderVals(){
+    const T=globalThis.TrapIso, R=globalThis.FishTray2, TC=globalThis.TrapCatch, st=this.state;
+    if(!this._h){
+      const chip=(label,on,active)=>({ label, onClick:on,
+        fg:active?'#7fd6c9':'#8a969b', bg:active?'#122530':'#0f191e', bd:active?'#2f6079':'#243137' });
+      this._h={ chip,
+        trapRef:(e)=>{ this._trap=e; if(this._ready) this._drawTrap(); },
+        matrixRef:(e)=>{ this._matrix=e; if(this._ready) this._drawMatrix(); },
+        buoyRef:(e)=>{ this._buoy=e; if(this._ready) this._drawBuoy(); },
+        trayRef:(e)=>{ this._tray=e; if(this._ready) this._drawTray(); },
+        gearRef:(e)=>{ this._gear=e; if(this._ready) this._drawGear(); },
+        deckRef:(e)=>{ this._deck=e; this._drawDeck(); },
+        planRef:(e)=>{ this._plan=e; this._drawPlan(); },
+        set:(p)=>()=>this.setState(p),
+        rotL:()=>this.setState({dir:(this.state.dir+7)%8}),
+        rotR:()=>this.setState({dir:(this.state.dir+1)%8}),
+        onStack:(e)=>this.setState({stackN:+e.target.value}),
+        onZoom:(e)=>this.setState({zoom:+e.target.value}),
+      };
+    }
+    const h=this._h;
+    const builds=T?T.BUILDS:[], cols=T?T.COLOURS[st.build]:[];
+    const border='1px solid #243137';
+    const tallies=(this._tally||[]).map(t=>({
+      hull:t.hull, dot:t.key==='lobsterBoat'?'#7fd6c9':'#c9a86a',
+      rows:[
+        { k:'STACKS',      v:t.stacks+' \u00d7 '+t.cap.deck+' high', border:'none' },
+        { k:'POTS ON DECK',v:String(t.potsDeck), border },
+        { k:'WASHBOARD',   v:t.potsWb+' pot'+(t.potsWb===1?'':'s')+' \u00b7 working + waiting', border },
+        { k:'TOTAL POTS',  v:String(t.potsDeck+t.potsWb), border },
+        { k:'WORK ALLEY',  v:t.alley.toFixed(1)+' m\u00b2 kept clear amidships', border },
+        { k:'WORK ZONE',   v:'hauler on the cap \u00b7 chop board \u00b7 bait \u00b7 banding \u00b7 2 totes \u00b7 2 tray columns', border },
+        { k:'SOLE',        v:t.free.toFixed(1)+' m\u00b2 spare of '+t.area.toFixed(1)+' m\u00b2', border },
+      ]}));
+    return {
+      trapRef:h.trapRef, matrixRef:h.matrixRef, buoyRef:h.buoyRef, trayRef:h.trayRef,
+      gearRef:h.gearRef, planRef:h.planRef, deckRef:h.deckRef,
+      deckLine:(st.deckDir===7?'STARBOARD QUARTER':st.deckDir===1?'PORT QUARTER':'ASTERN')
+        +' \u00b7 ELEV 40\u00b0 \u00b7 32 px = 1 m',
+      deckChips:[[7,'STBD QUARTER'],[0,'ASTERN'],[1,'PORT QUARTER']].map(
+        ([d,l])=>h.chip(l, h.set({deckDir:d}), st.deckDir===d)),
+      loop:[
+        { n:1, k:'HAUL',  v:'warp over the sheave, pot up the starboard side on the davit and snatch block' },
+        { n:2, k:'LAND',  v:'pot onto the washboard cap and opened \u2014 two pots is all the cap takes' },
+        { n:3, k:'BAND',  v:'keepers gauged and banded at the bench; shorts go back over the rail' },
+        { n:4, k:'GRADE', v:'banded lobster into the trays \u2014 empties nest, full ones stack clear of the catch' },
+        { n:5, k:'STOW',  v:'trays emptied into the totes; the totes are the trip' },
+        { n:6, k:'BAIT',  v:'herring off the chopping board, bagged from the salt barrel' },
+        { n:7, k:'SET',   v:'rebaited pot back over the rail \u2014 the stack aft is the next string, buoy on top' },
+      ],
+      compass:this.DIRS[st.dir], rotL:h.rotL, rotR:h.rotR,
+      stackN:st.stackN, onStack:h.onStack, zoom:st.zoom, onZoom:h.onZoom,
+      trapLine:this._label||'LOADING RIGS\u2026',
+      buildChips:builds.map(b=>h.chip(T.LABELS[b], h.set({build:b, colour:null}), st.build===b)),
+      colourChips:cols.map(k=>h.chip(T.CLABEL[k], h.set({colour:k}), this._colour(st.build)===k)),
+      stateChips:[
+        h.chip(st.wet?'WET \u25c9':'DRY \u25cb', h.set({wet:!st.wet}), st.wet),
+        h.chip('HAULED SET', h.set({fill:'full', mix:'mixed', wet:true}), st.wet&&st.mix==='mixed'),
+      ],
+      fillChips:['empty','few','half','full','brim'].map(f=>h.chip(f.toUpperCase(), h.set({fill:f}), st.fill===f)),
+      mixChips:(TC?TC.MIX_ORDER:[]).map(m=>h.chip(m.toUpperCase(), h.set({mix:m}), st.mix===m)),
+      trayChips:(R?R.CORDER:[]).map(k=>Object.assign(
+        h.chip(R.COLOURS[k].label, h.set({tray:k}), st.tray===k), { dot:R.COLOURS[k].ramp[3] })),
+      tallies,
+      spec:[
+        { k:'BUILDS', v:'wooden bow-top \u00b7 wire lobster \u00b7 wire crab pot \u00b7 conical rope crab pot', border:'none' },
+        { k:'CELL',   v:'72\u00d760, pivot (36,46) \u2014 all four builds share it, so swaps never drift', border },
+        { k:'VIEW',   v:'fleet turntable \u2014 8 dirs, elev 40\u00b0, 32 px = 1 m, dither, no AA', border },
+        { k:'RING',   v:'RINGLESS (ADR 0031) \u00b7 {keyline:true} kept as the live A/B', border },
+        { k:'FILLS',  v:'empty / few / half / full / brim \u00d7 8 mixes \u2014 seeded, monotonic', border },
+        { k:'INSIDE', v:'lobster, rock crab, jonah, shorts, sculpin, urchin, whelk, starfish, kelp, bait bag', border },
+        { k:'STACK',  v:'wood 0.40 \u00b7 wire 0.38 \u00b7 crab pot 0.30 \u00b7 cones NEST at 0.46 m a tier', border },
+        { k:'CAPS',   v:'lobster boat 5 high \u00b7 Cape Islander 3 \u00b7 washboard 2 \u00b7 wharf 6', border },
+        { k:'TRAY',   v:'0.72\u00d70.44\u00d70.25 m \u00b7 5 colours \u00b7 nest 0.075 / stack 0.25 m', border },
+        { k:'PLAN',   v:'deck + washboard polygons read live from the gameplay sidecars', border },
+        { k:'ON DECK',v:'props placed in boat metres \u2014 prop dir = 8 \u2212 hull dir \u2212 2\u00b7quarter turns', border },
+      ],
+      ramps:[
+        { name:'OAK LATH', cols:T?T.RAMPS.OAK:[] },
+        { name:'VINYL',    cols:T?T.RAMPS.VINYL:[] },
+        { name:'GALV',     cols:T?T.RAMPS.GALV:[] },
+        { name:'MANILA',   cols:T?T.RAMPS.MANIL:[] },
+        { name:'POLY',     cols:T?T.RAMPS.POLY:[] },
+        { name:'TARRED',   cols:T?T.RAMPS.NET:[] },
+        { name:'ROCKWEED', cols:T?T.RAMPS.WEED:[] },
+      ],
+      sheets:[
+        { label:'TRAP SHEET \u00b7 4 BUILDS \u00d7 8 DIRS', onClick:()=>this._dlTrap() },
+        { label:'BUOY SHEET \u00b7 8 SCHEMES \u00d7 8 DIRS',  onClick:()=>this._dlBuoy() },
+        { label:'TRAY SHEET \u00b7 5 COLOURS \u00d7 8 DIRS',  onClick:()=>this._dlTray() },
+        { label:'DECK GEAR SHEET \u00b7 5 \u00d7 8 DIRS',      onClick:()=>this._dlGear() },
+      ],
+      files:[
+        { href:'Art/isoSolid.js', file:'isoSolid.js' },
+        { href:'Art/trapIsoRig.js', file:'trapIsoRig.js' },
+        { href:'Art/trapFaunaRig.js', file:'trapFaunaRig.js' },
+        { href:'Art/buoyIsoRig.js', file:'buoyIsoRig.js' },
+        { href:'Art/trayIsoRig.js', file:'trayIsoRig.js' },
+        { href:'Art/deckGearRig.js', file:'deckGearRig.js' },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

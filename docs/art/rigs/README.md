@@ -37,6 +37,30 @@ The rigs do **not** share one facing convention.
 > renderer with a separate head rig in the projection path. Its clockwise claim is a **prior** until
 > `CharacterRigAzimuthProbe` measures it at bake time; the bake refuses on a mismatch.
 
+**CLOCKWISE, MEASURED (deck-loop kit, 2026-08-09)** — `deck-loop-kit/Art/isoSolid.js` and every rig
+that lathes against it: `deckGearRig` · `trapIsoRig` · `trayIsoRig` · `buoyIsoRig` (and
+`trapFaunaRig`, which has no facing axis at all). This kit rides **its own turntable**, not the
+fleet's, and it turns the **opposite way to the boats**. Measured against this repo's own
+registered-CounterClockwise reference (`iso-rig-pack/utility-iso`) in one harness with one sign
+convention — +X ground-plane bearing, depth un-squashed by `/sin 40°`:
+
+| family | +X ground step | +Y at `dir` 2 |
+|---|---:|---|
+| `iso-rig-pack/utility-iso` (registered CCW) | **+45°** | screen-WEST |
+| `deck-loop-kit` | **−45°** | screen-EAST |
+
+The kit's drop README declared CW and — unusually — **is correct**. Applying the fleet's CCW
+correction to this kit mirrors all eight cells of every piece.
+
+> ⚠️ **The −46.75°/step screen figure does not distinguish the two.** This kit's screen mean is
+> −46.75, the same number the iso-rig-pack contracts record for their *CounterClockwise* rigs,
+> because that mean is an alternating foreshortened quantity (see `iso-rig-pack/VERIFICATION.md`
+> §6). Only the **un-squashed ground-plane bearing** is a handedness test. Two families can share a
+> screen mean and turn opposite ways; these do.
+
+Re-measure any time with `node docs/art/rigs/deck-loop-kit/_verify.js`; details and the rest of the
+kit's measurements are in [`deck-loop-kit/IMPORT.md`](deck-loop-kit/IMPORT.md).
+
 **CLAIMED CLOCKWISE, UNVERIFIED (fishing kit, 2026-07-22)** — `fishIsoRig.js` · `fishToteRig.js`.
 Both carry `th = -dir*Math.PI/4` and the kit's contract declares 8 headings at 45° **CW** (fleet order
 N NE E SE S SW W NW). Per the correction above, the sign term is *not* proof — the baker must verify

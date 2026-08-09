@@ -1,0 +1,332 @@
+{
+  "kit": "deck-loop-kit",
+  "version": 1,
+  "generated": "measured from docs/art/rigs/deck-loop-kit/Art/*.js in a standalone V8 host at rig defaults",
+  "projection": {
+    "ppu": 32,
+    "elev": 40,
+    "depthScale": 0.6427876096865393,
+    "antialias": false,
+    "alpha": "binary",
+    "pivot": "ground under the centre of the footprint",
+    "cellRule": "pivot-INCLUSIVE union of the INK bbox across all facings on the fixed nativeW x nativeH buffer, seeded at the pivot. Same rule as wharfDecorRig / utilityIsoRig.",
+    "keyline": "ringless per ADR 0031; {keyline:true} is kept live on every kind as the A/B"
+  },
+  "azimuth": {
+    "convention": "clockwise",
+    "measured": "+X ground-plane bearing steps -45 deg per dir (depth un-squashed by /sin(40deg)). The repo's registered-CounterClockwise reference (iso-rig-pack/utility-iso) steps +45 in this same harness, so this kit is the OPPOSITE handedness to the fleet's boats. The kit's drop README declares CW and is CORRECT.",
+    "order": [
+      "N",
+      "NE",
+      "E",
+      "SE",
+      "S",
+      "SW",
+      "W",
+      "NW"
+    ],
+    "warning": "Do NOT apply the fleet CounterClockwise correction to this kit — it mirrors all eight cells."
+  },
+  "families": [
+    {
+      "key": "deckGear",
+      "global": "DeckGear",
+      "rig": "deckGearRig.js",
+      "facings": 8,
+      "nativeW": 80,
+      "nativeH": 76,
+      "nativePivotX": 40,
+      "nativePivotY": 60,
+      "cells": [
+        {
+          "key": "baitbin",
+          "cellW": 22,
+          "cellH": 33,
+          "pivotX": 11,
+          "pivotY": 28,
+          "distinctFacings": 4,
+          "selfSimilarityPct": 98.55,
+          "mirrorAgreementPct": 94.65
+        },
+        {
+          "key": "baitbox",
+          "cellW": 32,
+          "cellH": 31,
+          "pivotX": 16,
+          "pivotY": 22,
+          "distinctFacings": 8,
+          "selfSimilarityPct": 93.38,
+          "mirrorAgreementPct": 95.36
+        },
+        {
+          "key": "chopboard",
+          "cellW": 26,
+          "cellH": 36,
+          "pivotX": 13,
+          "pivotY": 28,
+          "distinctFacings": 8,
+          "selfSimilarityPct": 94.21,
+          "mirrorAgreementPct": 97.13
+        },
+        {
+          "key": "bandingtable",
+          "cellW": 36,
+          "cellH": 46,
+          "pivotX": 18,
+          "pivotY": 35,
+          "distinctFacings": 8,
+          "selfSimilarityPct": 89.35,
+          "mirrorAgreementPct": 95.94
+        },
+        {
+          "key": "haulerstation",
+          "cellW": 52,
+          "cellH": 60,
+          "pivotX": 26,
+          "pivotY": 44,
+          "distinctFacings": 8,
+          "selfSimilarityPct": 71.88,
+          "mirrorAgreementPct": 81.46
+        }
+      ]
+    },
+    {
+      "key": "trap",
+      "global": "TrapIso",
+      "rig": "trapIsoRig.js",
+      "facings": 8,
+      "nativeW": 72,
+      "nativeH": 60,
+      "nativePivotX": 36,
+      "nativePivotY": 46,
+      "cells": [
+        {
+          "key": "wood",
+          "cellW": 36,
+          "cellH": 36,
+          "pivotX": 18,
+          "pivotY": 24,
+          "distinctFacings": 8,
+          "selfSimilarityPct": 85.4,
+          "mirrorAgreementPct": 94.61
+        },
+        {
+          "key": "wire",
+          "cellW": 42,
+          "cellH": 35,
+          "pivotX": 21,
+          "pivotY": 23,
+          "distinctFacings": 8,
+          "selfSimilarityPct": 82.28,
+          "mirrorAgreementPct": 91.29
+        },
+        {
+          "key": "crabWire",
+          "cellW": 32,
+          "cellH": 27,
+          "pivotX": 16,
+          "pivotY": 18,
+          "distinctFacings": 8,
+          "selfSimilarityPct": 89.22,
+          "mirrorAgreementPct": 95.18
+        },
+        {
+          "key": "crabCone",
+          "cellW": 31,
+          "cellH": 41,
+          "pivotX": 16,
+          "pivotY": 32,
+          "distinctFacings": 8,
+          "selfSimilarityPct": 92.73,
+          "mirrorAgreementPct": 85.88
+        }
+      ]
+    },
+    {
+      "key": "tray",
+      "global": "FishTray2",
+      "rig": "trayIsoRig.js",
+      "facings": 8,
+      "nativeW": 48,
+      "nativeH": 44,
+      "nativePivotX": 24,
+      "nativePivotY": 34,
+      "cells": [
+        {
+          "key": "tray",
+          "cellW": 28,
+          "cellH": 21,
+          "pivotX": 14,
+          "pivotY": 15,
+          "distinctFacings": 8,
+          "selfSimilarityPct": 87.43,
+          "mirrorAgreementPct": 94.32
+        }
+      ]
+    },
+    {
+      "key": "buoy",
+      "global": "BuoyIso",
+      "rig": "buoyIsoRig.js",
+      "facings": 8,
+      "nativeW": 36,
+      "nativeH": 58,
+      "nativePivotX": 18,
+      "nativePivotY": 50,
+      "cells": [
+        {
+          "key": "Dory",
+          "cellW": 10,
+          "cellH": 32,
+          "pivotX": 5,
+          "pivotY": 30,
+          "distinctFacings": 8,
+          "selfSimilarityPct": 98.82,
+          "mirrorAgreementPct": 95.98
+        },
+        {
+          "key": "Punt",
+          "cellW": 10,
+          "cellH": 32,
+          "pivotX": 5,
+          "pivotY": 30,
+          "distinctFacings": 8,
+          "selfSimilarityPct": 99.01,
+          "mirrorAgreementPct": 96.61
+        },
+        {
+          "key": "CapeIslander",
+          "cellW": 10,
+          "cellH": 32,
+          "pivotX": 5,
+          "pivotY": 30,
+          "distinctFacings": 8,
+          "selfSimilarityPct": 98.84,
+          "mirrorAgreementPct": 96.11
+        },
+        {
+          "key": "LobsterBoat",
+          "cellW": 10,
+          "cellH": 32,
+          "pivotX": 5,
+          "pivotY": 30,
+          "distinctFacings": 8,
+          "selfSimilarityPct": 99.01,
+          "mirrorAgreementPct": 96.61
+        },
+        {
+          "key": "SideDragger",
+          "cellW": 10,
+          "cellH": 32,
+          "pivotX": 5,
+          "pivotY": 30,
+          "distinctFacings": 8,
+          "selfSimilarityPct": 98.82,
+          "mirrorAgreementPct": 95.98
+        },
+        {
+          "key": "SternTrawler",
+          "cellW": 10,
+          "cellH": 32,
+          "pivotX": 5,
+          "pivotY": 30,
+          "distinctFacings": 8,
+          "selfSimilarityPct": 98.84,
+          "mirrorAgreementPct": 96.11
+        },
+        {
+          "key": "CoastalPacket",
+          "cellW": 10,
+          "cellH": 32,
+          "pivotX": 5,
+          "pivotY": 30,
+          "distinctFacings": 8,
+          "selfSimilarityPct": 98.82,
+          "mirrorAgreementPct": 95.98
+        },
+        {
+          "key": "Tanker",
+          "cellW": 10,
+          "cellH": 32,
+          "pivotX": 5,
+          "pivotY": 30,
+          "distinctFacings": 8,
+          "selfSimilarityPct": 98.82,
+          "mirrorAgreementPct": 95.98
+        }
+      ]
+    },
+    {
+      "key": "trapFauna",
+      "global": "TrapFauna",
+      "rig": "trapFaunaRig.js",
+      "facings": 1,
+      "nativeW": 28,
+      "nativeH": 24,
+      "nativePivotX": 14,
+      "nativePivotY": 21,
+      "cells": [
+        {
+          "key": "urchin",
+          "cellW": 16,
+          "cellH": 13,
+          "pivotX": 8,
+          "pivotY": 10,
+          "distinctFacings": 1,
+          "selfSimilarityPct": null,
+          "mirrorAgreementPct": null
+        },
+        {
+          "key": "whelk",
+          "cellW": 11,
+          "cellH": 8,
+          "pivotX": 5,
+          "pivotY": 7,
+          "distinctFacings": 1,
+          "selfSimilarityPct": null,
+          "mirrorAgreementPct": null
+        },
+        {
+          "key": "starfish",
+          "cellW": 15,
+          "cellH": 12,
+          "pivotX": 7,
+          "pivotY": 9,
+          "distinctFacings": 1,
+          "selfSimilarityPct": null,
+          "mirrorAgreementPct": null
+        },
+        {
+          "key": "sculpin",
+          "cellW": 18,
+          "cellH": 14,
+          "pivotX": 4,
+          "pivotY": 11,
+          "distinctFacings": 1,
+          "selfSimilarityPct": null,
+          "mirrorAgreementPct": null
+        },
+        {
+          "key": "kelp",
+          "cellW": 18,
+          "cellH": 20,
+          "pivotX": 8,
+          "pivotY": 19,
+          "distinctFacings": 1,
+          "selfSimilarityPct": null,
+          "mirrorAgreementPct": null
+        },
+        {
+          "key": "baitbag",
+          "cellW": 11,
+          "cellH": 16,
+          "pivotX": 5,
+          "pivotY": 15,
+          "distinctFacings": 1,
+          "selfSimilarityPct": null,
+          "mirrorAgreementPct": null
+        }
+      ]
+    }
+  ]
+}
