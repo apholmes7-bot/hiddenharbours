@@ -28,6 +28,7 @@
     ],
     "warning": "Do NOT apply the fleet CounterClockwise correction to this kit — it mirrors all eight cells."
   },
+  "importSizeCap": 2048,
   "families": [
     {
       "key": "deckGear",
@@ -38,6 +39,19 @@
       "nativeH": 76,
       "nativePivotX": 40,
       "nativePivotY": 60,
+      "count": 5,
+      "worstSheet": {
+        "key": "haulerstation",
+        "w": 416,
+        "h": 60
+      },
+      "worstSheetByMaxDim": {
+        "key": "haulerstation",
+        "w": 416,
+        "h": 60,
+        "maxDim": 416,
+        "headroomToCap": 1632
+      },
       "cells": [
         {
           "key": "baitbin",
@@ -45,9 +59,16 @@
           "cellH": 33,
           "pivotX": 11,
           "pivotY": 28,
+          "pivotInsideInk": true,
           "distinctFacings": 4,
           "selfSimilarityPct": 98.55,
-          "mirrorAgreementPct": 94.65
+          "mirrorAgreementPct": 94.65,
+          "sheet": {
+            "cols": 8,
+            "rows": 1,
+            "sheetW": 176,
+            "sheetH": 33
+          }
         },
         {
           "key": "baitbox",
@@ -55,9 +76,16 @@
           "cellH": 31,
           "pivotX": 16,
           "pivotY": 22,
+          "pivotInsideInk": true,
           "distinctFacings": 8,
           "selfSimilarityPct": 93.38,
-          "mirrorAgreementPct": 95.36
+          "mirrorAgreementPct": 95.36,
+          "sheet": {
+            "cols": 8,
+            "rows": 1,
+            "sheetW": 256,
+            "sheetH": 31
+          }
         },
         {
           "key": "chopboard",
@@ -65,9 +93,16 @@
           "cellH": 36,
           "pivotX": 13,
           "pivotY": 28,
+          "pivotInsideInk": true,
           "distinctFacings": 8,
           "selfSimilarityPct": 94.21,
-          "mirrorAgreementPct": 97.13
+          "mirrorAgreementPct": 97.13,
+          "sheet": {
+            "cols": 8,
+            "rows": 1,
+            "sheetW": 208,
+            "sheetH": 36
+          }
         },
         {
           "key": "bandingtable",
@@ -75,9 +110,16 @@
           "cellH": 46,
           "pivotX": 18,
           "pivotY": 35,
+          "pivotInsideInk": true,
           "distinctFacings": 8,
           "selfSimilarityPct": 89.35,
-          "mirrorAgreementPct": 95.94
+          "mirrorAgreementPct": 95.94,
+          "sheet": {
+            "cols": 8,
+            "rows": 1,
+            "sheetW": 288,
+            "sheetH": 46
+          }
         },
         {
           "key": "haulerstation",
@@ -85,9 +127,16 @@
           "cellH": 60,
           "pivotX": 26,
           "pivotY": 44,
+          "pivotInsideInk": true,
           "distinctFacings": 8,
           "selfSimilarityPct": 71.88,
-          "mirrorAgreementPct": 81.46
+          "mirrorAgreementPct": 81.46,
+          "sheet": {
+            "cols": 8,
+            "rows": 1,
+            "sheetW": 416,
+            "sheetH": 60
+          }
         }
       ]
     },
@@ -100,6 +149,19 @@
       "nativeH": 60,
       "nativePivotX": 36,
       "nativePivotY": 46,
+      "count": 4,
+      "worstSheet": {
+        "key": "wire",
+        "w": 336,
+        "h": 35
+      },
+      "worstSheetByMaxDim": {
+        "key": "wire",
+        "w": 336,
+        "h": 35,
+        "maxDim": 336,
+        "headroomToCap": 1712
+      },
       "cells": [
         {
           "key": "wood",
@@ -107,9 +169,16 @@
           "cellH": 36,
           "pivotX": 18,
           "pivotY": 24,
+          "pivotInsideInk": true,
           "distinctFacings": 8,
           "selfSimilarityPct": 85.4,
-          "mirrorAgreementPct": 94.61
+          "mirrorAgreementPct": 94.61,
+          "sheet": {
+            "cols": 8,
+            "rows": 1,
+            "sheetW": 288,
+            "sheetH": 36
+          }
         },
         {
           "key": "wire",
@@ -117,9 +186,16 @@
           "cellH": 35,
           "pivotX": 21,
           "pivotY": 23,
+          "pivotInsideInk": true,
           "distinctFacings": 8,
           "selfSimilarityPct": 82.28,
-          "mirrorAgreementPct": 91.29
+          "mirrorAgreementPct": 91.29,
+          "sheet": {
+            "cols": 8,
+            "rows": 1,
+            "sheetW": 336,
+            "sheetH": 35
+          }
         },
         {
           "key": "crabWire",
@@ -127,9 +203,16 @@
           "cellH": 27,
           "pivotX": 16,
           "pivotY": 18,
+          "pivotInsideInk": true,
           "distinctFacings": 8,
           "selfSimilarityPct": 89.22,
-          "mirrorAgreementPct": 95.18
+          "mirrorAgreementPct": 95.18,
+          "sheet": {
+            "cols": 8,
+            "rows": 1,
+            "sheetW": 256,
+            "sheetH": 27
+          }
         },
         {
           "key": "crabCone",
@@ -137,9 +220,16 @@
           "cellH": 41,
           "pivotX": 16,
           "pivotY": 32,
+          "pivotInsideInk": true,
           "distinctFacings": 8,
           "selfSimilarityPct": 92.73,
-          "mirrorAgreementPct": 85.88
+          "mirrorAgreementPct": 85.88,
+          "sheet": {
+            "cols": 8,
+            "rows": 1,
+            "sheetW": 248,
+            "sheetH": 41
+          }
         }
       ]
     },
@@ -152,6 +242,19 @@
       "nativeH": 44,
       "nativePivotX": 24,
       "nativePivotY": 34,
+      "count": 1,
+      "worstSheet": {
+        "key": "tray",
+        "w": 224,
+        "h": 21
+      },
+      "worstSheetByMaxDim": {
+        "key": "tray",
+        "w": 224,
+        "h": 21,
+        "maxDim": 224,
+        "headroomToCap": 1824
+      },
       "cells": [
         {
           "key": "tray",
@@ -159,9 +262,16 @@
           "cellH": 21,
           "pivotX": 14,
           "pivotY": 15,
+          "pivotInsideInk": true,
           "distinctFacings": 8,
           "selfSimilarityPct": 87.43,
-          "mirrorAgreementPct": 94.32
+          "mirrorAgreementPct": 94.32,
+          "sheet": {
+            "cols": 8,
+            "rows": 1,
+            "sheetW": 224,
+            "sheetH": 21
+          }
         }
       ]
     },
@@ -174,6 +284,19 @@
       "nativeH": 58,
       "nativePivotX": 18,
       "nativePivotY": 50,
+      "count": 8,
+      "worstSheet": {
+        "key": "Dory",
+        "w": 80,
+        "h": 32
+      },
+      "worstSheetByMaxDim": {
+        "key": "Dory",
+        "w": 80,
+        "h": 32,
+        "maxDim": 80,
+        "headroomToCap": 1968
+      },
       "cells": [
         {
           "key": "Dory",
@@ -181,9 +304,16 @@
           "cellH": 32,
           "pivotX": 5,
           "pivotY": 30,
+          "pivotInsideInk": true,
           "distinctFacings": 8,
           "selfSimilarityPct": 98.82,
-          "mirrorAgreementPct": 95.98
+          "mirrorAgreementPct": 95.98,
+          "sheet": {
+            "cols": 8,
+            "rows": 1,
+            "sheetW": 80,
+            "sheetH": 32
+          }
         },
         {
           "key": "Punt",
@@ -191,9 +321,16 @@
           "cellH": 32,
           "pivotX": 5,
           "pivotY": 30,
+          "pivotInsideInk": true,
           "distinctFacings": 8,
           "selfSimilarityPct": 99.01,
-          "mirrorAgreementPct": 96.61
+          "mirrorAgreementPct": 96.61,
+          "sheet": {
+            "cols": 8,
+            "rows": 1,
+            "sheetW": 80,
+            "sheetH": 32
+          }
         },
         {
           "key": "CapeIslander",
@@ -201,9 +338,16 @@
           "cellH": 32,
           "pivotX": 5,
           "pivotY": 30,
+          "pivotInsideInk": true,
           "distinctFacings": 8,
           "selfSimilarityPct": 98.84,
-          "mirrorAgreementPct": 96.11
+          "mirrorAgreementPct": 96.11,
+          "sheet": {
+            "cols": 8,
+            "rows": 1,
+            "sheetW": 80,
+            "sheetH": 32
+          }
         },
         {
           "key": "LobsterBoat",
@@ -211,9 +355,16 @@
           "cellH": 32,
           "pivotX": 5,
           "pivotY": 30,
+          "pivotInsideInk": true,
           "distinctFacings": 8,
           "selfSimilarityPct": 99.01,
-          "mirrorAgreementPct": 96.61
+          "mirrorAgreementPct": 96.61,
+          "sheet": {
+            "cols": 8,
+            "rows": 1,
+            "sheetW": 80,
+            "sheetH": 32
+          }
         },
         {
           "key": "SideDragger",
@@ -221,9 +372,16 @@
           "cellH": 32,
           "pivotX": 5,
           "pivotY": 30,
+          "pivotInsideInk": true,
           "distinctFacings": 8,
           "selfSimilarityPct": 98.82,
-          "mirrorAgreementPct": 95.98
+          "mirrorAgreementPct": 95.98,
+          "sheet": {
+            "cols": 8,
+            "rows": 1,
+            "sheetW": 80,
+            "sheetH": 32
+          }
         },
         {
           "key": "SternTrawler",
@@ -231,9 +389,16 @@
           "cellH": 32,
           "pivotX": 5,
           "pivotY": 30,
+          "pivotInsideInk": true,
           "distinctFacings": 8,
           "selfSimilarityPct": 98.84,
-          "mirrorAgreementPct": 96.11
+          "mirrorAgreementPct": 96.11,
+          "sheet": {
+            "cols": 8,
+            "rows": 1,
+            "sheetW": 80,
+            "sheetH": 32
+          }
         },
         {
           "key": "CoastalPacket",
@@ -241,9 +406,16 @@
           "cellH": 32,
           "pivotX": 5,
           "pivotY": 30,
+          "pivotInsideInk": true,
           "distinctFacings": 8,
           "selfSimilarityPct": 98.82,
-          "mirrorAgreementPct": 95.98
+          "mirrorAgreementPct": 95.98,
+          "sheet": {
+            "cols": 8,
+            "rows": 1,
+            "sheetW": 80,
+            "sheetH": 32
+          }
         },
         {
           "key": "Tanker",
@@ -251,9 +423,16 @@
           "cellH": 32,
           "pivotX": 5,
           "pivotY": 30,
+          "pivotInsideInk": true,
           "distinctFacings": 8,
           "selfSimilarityPct": 98.82,
-          "mirrorAgreementPct": 95.98
+          "mirrorAgreementPct": 95.98,
+          "sheet": {
+            "cols": 8,
+            "rows": 1,
+            "sheetW": 80,
+            "sheetH": 32
+          }
         }
       ]
     },
@@ -266,6 +445,19 @@
       "nativeH": 24,
       "nativePivotX": 14,
       "nativePivotY": 21,
+      "count": 6,
+      "worstSheet": {
+        "key": "kelp",
+        "w": 18,
+        "h": 20
+      },
+      "worstSheetByMaxDim": {
+        "key": "kelp",
+        "w": 18,
+        "h": 20,
+        "maxDim": 20,
+        "headroomToCap": 2028
+      },
       "cells": [
         {
           "key": "urchin",
@@ -273,9 +465,16 @@
           "cellH": 13,
           "pivotX": 8,
           "pivotY": 10,
+          "pivotInsideInk": true,
           "distinctFacings": 1,
           "selfSimilarityPct": null,
-          "mirrorAgreementPct": null
+          "mirrorAgreementPct": null,
+          "sheet": {
+            "cols": 1,
+            "rows": 1,
+            "sheetW": 16,
+            "sheetH": 13
+          }
         },
         {
           "key": "whelk",
@@ -283,9 +482,16 @@
           "cellH": 8,
           "pivotX": 5,
           "pivotY": 7,
+          "pivotInsideInk": true,
           "distinctFacings": 1,
           "selfSimilarityPct": null,
-          "mirrorAgreementPct": null
+          "mirrorAgreementPct": null,
+          "sheet": {
+            "cols": 1,
+            "rows": 1,
+            "sheetW": 11,
+            "sheetH": 8
+          }
         },
         {
           "key": "starfish",
@@ -293,9 +499,16 @@
           "cellH": 12,
           "pivotX": 7,
           "pivotY": 9,
+          "pivotInsideInk": true,
           "distinctFacings": 1,
           "selfSimilarityPct": null,
-          "mirrorAgreementPct": null
+          "mirrorAgreementPct": null,
+          "sheet": {
+            "cols": 1,
+            "rows": 1,
+            "sheetW": 15,
+            "sheetH": 12
+          }
         },
         {
           "key": "sculpin",
@@ -303,9 +516,16 @@
           "cellH": 14,
           "pivotX": 4,
           "pivotY": 11,
+          "pivotInsideInk": true,
           "distinctFacings": 1,
           "selfSimilarityPct": null,
-          "mirrorAgreementPct": null
+          "mirrorAgreementPct": null,
+          "sheet": {
+            "cols": 1,
+            "rows": 1,
+            "sheetW": 18,
+            "sheetH": 14
+          }
         },
         {
           "key": "kelp",
@@ -313,9 +533,16 @@
           "cellH": 20,
           "pivotX": 8,
           "pivotY": 19,
+          "pivotInsideInk": true,
           "distinctFacings": 1,
           "selfSimilarityPct": null,
-          "mirrorAgreementPct": null
+          "mirrorAgreementPct": null,
+          "sheet": {
+            "cols": 1,
+            "rows": 1,
+            "sheetW": 18,
+            "sheetH": 20
+          }
         },
         {
           "key": "baitbag",
@@ -323,9 +550,16 @@
           "cellH": 16,
           "pivotX": 5,
           "pivotY": 15,
+          "pivotInsideInk": true,
           "distinctFacings": 1,
           "selfSimilarityPct": null,
-          "mirrorAgreementPct": null
+          "mirrorAgreementPct": null,
+          "sheet": {
+            "cols": 1,
+            "rows": 1,
+            "sheetW": 11,
+            "sheetH": 16
+          }
         }
       ]
     }

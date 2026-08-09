@@ -10,21 +10,22 @@ using UnityEngine;
 namespace HiddenHarbours.Art.Editor
 {
     /// <summary>
-    /// Grid-slicer for every sheet the ISO rig pack bakes — the wharf structure kit, the deck gear, the
-    /// village services and the shoreline finds. Mirrors <see cref="CharacterSheetSlicer"/>:
+    /// Grid-slicer for every sheet the ISO rig pack and its later kits bake — the wharf structure, its
+    /// dressing, the village services, the shoreline finds, the boatyard and the deck-loop kit's five
+    /// families. Mirrors <see cref="CharacterSheetSlicer"/>:
     /// <see cref="ArtImportPipeline"/> stamps the pixel-art import lock (PPU 32, Point, Uncompressed,
     /// Clamp, alphaIsTransparency) on first import, and this tool adds the Multiple-mode grid and the
     /// per-slice pivot that the postprocessor deliberately does not.
     ///
     /// <para><b>Every number here is READ FROM THE COMMITTED CONTRACT</b> — cell size, pivot, and the
     /// sheet's cols × rows. Nothing is derived from the pixels and nothing is hard-coded per file. The
-    /// four contracts are the same oracle the bakers assert against, so a sheet and its slice grid
+    /// contracts are the same oracle the bakers assert against, so a sheet and its slice grid
     /// cannot disagree unless the PNG on disk is stale — which is a dimension mismatch, and fails
     /// loudly below rather than slicing garbage.</para>
     ///
     /// <para><b>⚠️ THE CELL IS PER SHEET, NOT PER KIT.</b> Unlike the character sheets (one 64×92 cell
-    /// for everything) every piece in this pack has its own cell and its own pivot — 156 distinct cells
-    /// across the four families, from a 25×25 blue mussel to a 757×592 float set. There is no default to
+    /// for everything) every piece in this pack has its own cell and its own pivot — 205 distinct cells
+    /// across the ten families, from an 11×8 whelk to a 757×592 float set. There is no default to
     /// fall back on, so a sheet whose key is absent from its contract is not sliced at all.</para>
     ///
     /// <para><b>Pivot conversion, the easy silent mistake.</b> The contracts record the pivot in
@@ -36,7 +37,8 @@ namespace HiddenHarbours.Art.Editor
     /// <para><b>Slice names are GEOMETRIC:</b> <c>&lt;Stem&gt;_&lt;index&gt;</c>, row-major from the
     /// top-left cell, exactly as <see cref="SpriteSheetSlicer"/> names every other sheet in the repo. A
     /// name states WHICH CELL, never which way the piece looks — this lane has shipped mislabelled
-    /// compass art five times, and all three directional rigs here are counter-clockwise. What an index
+    /// compass art five times, and the families here do NOT share a handedness: five turn
+    /// counter-clockwise and the deck-loop kit's four directional ones turn clockwise. What an index
     /// MEANS is per family and lives in the remarks below, read from the contract, never from a name.</para>
     ///
     /// <list type="bullet">
@@ -51,6 +53,26 @@ namespace HiddenHarbours.Art.Editor
     ///         SLOT that is not a facing; <see cref="BuildRects"/> emits exactly <c>cells</c> rects and
     ///         leaves it alone. Keys also bake at DIFFERENT px/m (three sites step down to 16/12/8), so
     ///         two shipyard sheets do not share an atlas grid.</item>
+    ///   <item><b>deckGear · trap · fishTray2 · buoyIso</b> — 8 cells, <c>index = facing</c>, and
+    ///         <b>CLOCKWISE</b>: the first family in this file where cell <c>i</c> depicts heading
+    ///         <c>+45°·i</c> rather than <c>−45°·i</c>. Nothing in the SHEET distinguishes the two, so
+    ///         a reader must take the convention from the contract's <c>azimuth</c> (which is what
+    ///         <c>IsoPackSprites.FacingForHeading</c> does) and never from the fact that the other five
+    ///         families here turn the other way.
+    ///         <br/>The three families' key vocabularies differ (<c>DeckGear.KINDS</c>,
+    ///         <c>TrapIso.BUILDS</c>, <c>BuoyIso.FLEET</c>) but that is the BAKER's problem: to this
+    ///         slicer a key is a sheet stem, and <c>buoyIso</c>'s eight fleet colour schemes over one
+    ///         10×32 geometry are eight ordinary sheets — same cell, same grid, different paint.
+    ///         They are NOT collapsed into one sheet, though 98.8–99.0% of each scheme's pixels are
+    ///         shared with its own <c>dir</c> 0: a packer may collapse a near-symmetric row, a slicer
+    ///         may not assume one was.</item>
+    ///   <item><b>trapFauna</b> — <b>1 cell</b>, and the index is nothing at all. What a pot comes up
+    ///         holding is not directional (<c>render(kind, opts)</c> takes no <c>dir</c>), so the KIND
+    ///         is the sheet and the sheet is a single 1×1 cell. Its contract states <c>facings: 1</c>
+    ///         rather than omitting the axis, and <see cref="CellsPerSheet"/> reads it like any other
+    ///         facing count — an absent field would default to 0 and slice nothing. The six kinds are
+    ///         six different cell sizes (11×8 to 18×20), so they could not share one grid even if there
+    ///         were an axis to share it on.</item>
     /// </list>
     ///
     /// <para>Import + slicing ONLY. This builds no Def asset, no prefab and no presenter, and touches
@@ -58,20 +80,37 @@ namespace HiddenHarbours.Art.Editor
     /// </summary>
     public static class IsoPackSheetSlicer
     {
-        /// <summary>One family: where its sheets land and where its contract is committed.</summary>
+        /// <summary>
+        /// One family: where its sheets land, where its contract is committed, and — for a family that
+        /// shares a KIT contract with siblings — which section of that file is its own.
+        ///
+        /// <para>A section is not cosmetic. Five families registered against one file with no section
+        /// would each slice against the first family's cells: a real grid, a real pivot, and the wrong
+        /// ones, on every sheet.</para>
+        /// </summary>
         public readonly struct Family
         {
-            public readonly string Key, Folder, Contract;
+            public readonly string Key, Folder, ContractPath, Section;
 
+            /// <summary>A family whose contract sits beside its own sheets — the pack's original five.</summary>
             public Family(string key, string folder, string contract)
+                : this(key, folder, folder + contract, null) { }
+
+            /// <summary>A family whose contract lives elsewhere and/or holds more than one family.</summary>
+            public Family(string key, string folder, string contractPath, string section)
             {
-                Key = key; Folder = folder; Contract = contract;
+                Key = key; Folder = folder; ContractPath = contractPath; Section = section;
             }
 
-            public string ContractPath => Folder + Contract;
+            /// <summary>The contract file, for a log line — with the section when there is one.</summary>
+            public string ContractLabel =>
+                string.IsNullOrEmpty(Section) ? ContractPath : $"{ContractPath}#{Section}";
         }
 
         public const string SpritesRoot = "Assets/_Project/Art/Sprites/";
+
+        /// <summary>The deck-loop kit's one contract, governing five families in five folders.</summary>
+        public const string DeckLoopKitContract = SpritesRoot + "DeckGear/deckLoopKit.contract.json";
 
         public static readonly IReadOnlyList<Family> Families = new[]
         {
@@ -80,10 +119,20 @@ namespace HiddenHarbours.Art.Editor
             new Family("utilityIso", SpritesRoot + "Utility/",        "utilityIsoRig.contract.json"),
             new Family("shoreFinds", SpritesRoot + "Shore/FindsIso/", "shoreFindsRig.contract.json"),
             new Family("shipyardIso", SpritesRoot + "Shipyard/Iso/",  "shipyardIsoRig.contract.json"),
+
+            // ---- the deck-loop kit: five families, one contract, one folder each ------------------
+            // The folders are per family and NOT per contract: 24 sheets in a single folder would make
+            // every family's slice pass walk the other four's PNGs and warn about each one, and any
+            // future stem collision between two families would slice one against the other's grid.
+            new Family("deckGear",  SpritesRoot + "DeckGear/Gear/",  DeckLoopKitContract, "deckGear"),
+            new Family("trap",      SpritesRoot + "DeckGear/Traps/", DeckLoopKitContract, "trap"),
+            new Family("fishTray2", SpritesRoot + "DeckGear/Trays/", DeckLoopKitContract, "tray"),
+            new Family("buoyIso",   SpritesRoot + "DeckGear/Buoys/", DeckLoopKitContract, "buoy"),
+            new Family("trapFauna", SpritesRoot + "DeckGear/Fauna/", DeckLoopKitContract, "trapFauna"),
         };
 
         // ---- the contract, as JsonUtility sees it ---------------------------------------------------
-        // A second, minimal reader of the same four files that HiddenHarbours.Tools.RigBaking's
+        // A second, minimal reader of the same files that HiddenHarbours.Tools.RigBaking's
         // IsoPackContract reads. NOT an oversight: Tools.RigBaking.Editor references Art.Editor and not
         // the other way round, so the type cannot be shared without inverting that dependency. The rock
         // kit splits the same way (RockIsoCatalog here, RockIsoBaker there) — and per
@@ -110,6 +159,25 @@ namespace HiddenHarbours.Art.Editor
             // The contracts carry array-valued documentation as JSON STRINGS so JsonUtility can hold it.
             public string lieAngles, states;
             public List<Cell> cells;
+        }
+
+        // A KIT contract — one file, several families. Parsed by a SECOND reader rather than a widened
+        // `Contract`, because the shapes collide outright: `families` is a JSON string of names on
+        // wharfIso and an array of objects here, and JsonUtility does not tolerate that.
+        [Serializable]
+        private sealed class KitFamily
+        {
+            public string key;
+            public int facings, count;
+            public List<Cell> cells;
+        }
+
+        [Serializable]
+        private sealed class KitContract
+        {
+            public string kit;
+            public int importSizeCap;
+            public List<KitFamily> families;
         }
 
         /// <summary>
@@ -259,19 +327,54 @@ namespace HiddenHarbours.Art.Editor
                 return null;
             }
 
-            var c = JsonUtility.FromJson<Contract>(File.ReadAllText(path));
+            string json = File.ReadAllText(path);
+            Contract c = string.IsNullOrEmpty(fam.Section)
+                ? JsonUtility.FromJson<Contract>(json)
+                : ReadKitSection(json, fam);
+
             if (c?.cells == null || c.cells.Count == 0)
             {
-                Debug.LogError($"[IsoPackSheetSlicer] '{path}' parsed but carries no cells.");
+                Debug.LogError($"[IsoPackSheetSlicer] '{fam.ContractLabel}' parsed but carries no cells.");
                 return null;
             }
             if (c.cells.Count != c.count)
             {
-                Debug.LogError($"[IsoPackSheetSlicer] '{path}' declares count={c.count} but carries " +
-                               $"{c.cells.Count} cells — it is mid-edit. Not slicing against it.");
+                Debug.LogError($"[IsoPackSheetSlicer] '{fam.ContractLabel}' declares count={c.count} but " +
+                               $"carries {c.cells.Count} cells — it is mid-edit. Not slicing against it.");
                 return null;
             }
             return c;
+        }
+
+        /// <summary>
+        /// One family of a kit contract, flattened into the shape the rest of this file speaks. The
+        /// cap is the KIT's (the whole kit imports at one number, so a bake and an import cannot
+        /// disagree); the cells, the count and the facing axis are the FAMILY's.
+        /// </summary>
+        private static Contract ReadKitSection(string json, Family fam)
+        {
+            var kit = JsonUtility.FromJson<KitContract>(json);
+            var section = kit?.families?.FirstOrDefault(
+                f => string.Equals(f.key, fam.Section, StringComparison.Ordinal));
+
+            if (section == null)
+            {
+                Debug.LogError($"[IsoPackSheetSlicer] '{fam.ContractPath}' carries no family " +
+                               $"'{fam.Section}'. It has: " +
+                               string.Join(", ", kit?.families?.Select(f => f.key) ?? Enumerable.Empty<string>()) +
+                               ". Not slicing — an unresolved section would silently take the first " +
+                               "family's cells and slice every sheet against the wrong grid.");
+                return null;
+            }
+
+            return new Contract
+            {
+                rig = fam.Key,
+                importSizeCap = kit.importSizeCap,
+                count = section.count,
+                facings = section.facings,
+                cells = section.cells,
+            };
         }
 
         /// <summary>
@@ -311,7 +414,7 @@ namespace HiddenHarbours.Art.Editor
 
                 if (cell == null)
                 {
-                    Debug.LogWarning($"[IsoPackSheetSlicer] '{path}' matches no key in {fam.Contract} — " +
+                    Debug.LogWarning($"[IsoPackSheetSlicer] '{path}' matches no key in {fam.ContractLabel} — " +
                                      "leaving it alone. A sheet with no contract cell has no grid.");
                     continue;
                 }
@@ -319,7 +422,7 @@ namespace HiddenHarbours.Art.Editor
                 if (cell.sheet == null || cell.sheet.cols <= 0 || cell.sheet.rows <= 0)
                 {
                     Debug.LogError($"[IsoPackSheetSlicer] '{matched}' carries no sheet plan in " +
-                                   $"{fam.Contract}. Not slicing '{stem}'.");
+                                   $"{fam.ContractLabel}. Not slicing '{stem}'.");
                     continue;
                 }
 
@@ -346,7 +449,7 @@ namespace HiddenHarbours.Art.Editor
 
         // ---- the work -------------------------------------------------------------------------------
 
-        /// <summary>Slice every baked sheet in all four families.</summary>
+        /// <summary>Slice every baked sheet in every registered family.</summary>
         public static int SliceAll(out int skipped, out int failed)
         {
             skipped = 0;

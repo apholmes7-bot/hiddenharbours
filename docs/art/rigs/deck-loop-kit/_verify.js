@@ -90,18 +90,65 @@ function inkBox(buf, W, H) {
   return x1 < x0 ? null : { x0, y0, x1, y1 };
 }
 // The rule: pivot-INCLUSIVE union of the ink bbox over all facings on the fixed buffer.
+//
+// `pivotInsideInk` is emitted beside the cell because the seeding above is INVISIBLE when it is
+// true: a piece whose ink already spans its own pivot gets the same cell either way, and only the
+// pieces where it is FALSE prove the seeding is load-bearing (wharfDecor's wall-hung fireCabinet is
+// the pack's one). It is an OR across facings, matching IsoPropSheetBaker.MeasureCell, which
+// asserts the rendered value against this one before it writes a pixel.
 function cellOf(render, dirs, W, H, px, py) {
   let x0 = px, y0 = py, x1 = px, y1 = py;                    // seeded AT the pivot
+  let pivotInsideInk = false;
   for (let d = 0; d < dirs; d++) {
     const b = inkBox(render(d), W, H);
     if (!b) continue;
     x0 = Math.min(x0, b.x0); y0 = Math.min(y0, b.y0);
     x1 = Math.max(x1, b.x1); y1 = Math.max(y1, b.y1);
+    if (px >= b.x0 && px <= b.x1 && py >= b.y0 && py <= b.y1) pivotInsideInk = true;
   }
-  return { cellW: x1 - x0 + 1, cellH: y1 - y0 + 1, pivotX: px - x0, pivotY: py - y0 };
+  return { cellW: x1 - x0 + 1, cellH: y1 - y0 + 1, pivotX: px - x0, pivotY: py - y0, pivotInsideInk };
 }
 const sha = (b) => crypto.createHash('sha256')
   .update(Buffer.from(b.buffer ? new Uint8Array(b.buffer, b.byteOffset, b.byteLength) : b)).digest('hex');
+
+// ---- packing --------------------------------------------------------------
+// The import cap this kit's sheets are packed against. 2048 is Unity's DEFAULT importer cap, and
+// staying under it is what keeps the slicer from having to lift maxTextureSize at all — the lift
+// exists (IsoPackSheetSlicer raises it for the 3784 px iso-pack sheets) and simply never fires
+// here, because the biggest cell in the kit is haulerstation at 52x60.
+const IMPORT_SIZE_CAP = 2048;
+
+// THE PACKING RULE, restated here so the emitter and IsoPackContract.GridFor cannot drift: the
+// LARGEST DIVISOR of the cell count whose sheet fits the cap on BOTH sides. Divisors only — that
+// is why no sheet in this pack carries a ragged last row, and why the grid is a decision recorded
+// in the contract rather than something a baker re-derives per run.
+function planSheet(cellW, cellH, cells, cap) {
+  for (let cols = cells; cols >= 1; cols--) {
+    if (cells % cols !== 0) continue;
+    const rows = cells / cols;
+    if (cols * cellW <= cap && rows * cellH <= cap)
+      return { cols, rows, sheetW: cols * cellW, sheetH: rows * cellH };
+  }
+  throw new Error(`no divisor grid of ${cells} cells fits a ${cellW}x${cellH} cell under ${cap} px`);
+}
+
+// Worst sheet by LONGEST SIDE — the measure a texture cap actually binds on. Recorded beside the
+// worst by AREA because the two name different keys in two of the iso-rig-pack's families, and
+// sizing headroom off the area one reports slack that is not there. First-wins on a tie, which is
+// the same walk IsoPackContract.AssertWorstSheetByMaxDimRecorded makes when it re-checks this.
+function worstSheets(cells, cap) {
+  let byArea = null, byMax = null, area = 0, maxDim = 0;
+  for (const c of cells) {
+    const a = c.sheet.sheetW * c.sheet.sheetH, m = Math.max(c.sheet.sheetW, c.sheet.sheetH);
+    if (a > area) { area = a; byArea = c; }
+    if (m > maxDim) { maxDim = m; byMax = c; }
+  }
+  return {
+    worstSheet: { key: byArea.key, w: byArea.sheet.sheetW, h: byArea.sheet.sheetH },
+    worstSheetByMaxDim: { key: byMax.key, w: byMax.sheet.sheetW, h: byMax.sheet.sheetH,
+                          maxDim, headroomToCap: cap - maxDim },
+  };
+}
 
 // ---- the families ---------------------------------------------------------
 // `keys` is the artwork axis; `dirs` is measured, never taken from a nativeDirs field (#452:
@@ -173,11 +220,18 @@ function measure(g) {
         }
         mirrorPct = +(100 * same / tot).toFixed(2);
       }
+      // The sheet plan is a PACKING DECISION, not a measurement — but it is emitted from the
+      // measured cell in the same pass, because a plan that disagrees with the cell it was
+      // computed for is exactly the "plausible sheet, wrong on every key" failure the contract
+      // exists to make loud. One sheet per KEY: the fauna's six cells are six different sizes and
+      // could not share an atlas grid even if the axis existed.
       cells.push({ key: k, ...c, distinctFacings: seen.size, selfSimilarityPct: selfSim,
-                   mirrorAgreementPct: mirrorPct });
+                   mirrorAgreementPct: mirrorPct,
+                   sheet: planSheet(c.cellW, c.cellH, f.dirs, IMPORT_SIZE_CAP) });
     }
     out.families.push({ key: f.key, global: f.global, rig: f.rig, facings: f.dirs,
-                        nativeW: f.W, nativeH: f.H, nativePivotX: f.px, nativePivotY: f.py, cells });
+                        nativeW: f.W, nativeH: f.H, nativePivotX: f.px, nativePivotY: f.py,
+                        count: cells.length, ...worstSheets(cells, IMPORT_SIZE_CAP), cells });
   }
   return out;
 }
@@ -204,6 +258,9 @@ function buildContract(g, m) {
       order: ['N','NE','E','SE','S','SW','W','NW'],
       warning: 'Do NOT apply the fleet CounterClockwise correction to this kit — it mirrors all eight cells.',
     },
+    // The cap the sheets are packed against AND imported at — one number, so the bake and the
+    // import cannot disagree. See IMPORT_SIZE_CAP.
+    importSizeCap: IMPORT_SIZE_CAP,
     families: m.families,
   };
 }
@@ -253,11 +310,33 @@ else {
     for (const cell of fam.cells) {
       const cc = cf.cells.find(x => x.key === cell.key); n++;
       if (!cc) { bad++; fail(`${fam.key}.${cell.key} absent`); continue; }
-      for (const k of ['cellW','cellH','pivotX','pivotY','distinctFacings'])
+      for (const k of ['cellW','cellH','pivotX','pivotY','pivotInsideInk','distinctFacings'])
         if (cc[k] !== cell[k]) { bad++; fail(`${fam.key}.${cell.key}.${k} ${cc[k]} != measured ${cell[k]}`); }
+      // The PLAN, checked with the cell. A sheet packed to a plan that no longer matches its cell
+      // still satisfies the arithmetic and the cap on its own — it just lands every slice rect
+      // somewhere the art is not.
+      for (const k of ['cols','rows','sheetW','sheetH'])
+        if (!cc.sheet || cc.sheet[k] !== cell.sheet[k]) {
+          bad++; fail(`${fam.key}.${cell.key}.sheet.${k} ${cc.sheet && cc.sheet[k]} != planned ${cell.sheet[k]}`);
+        }
     }
+    if (cf.count !== fam.count) fail(`${fam.key}: count ${cf.count} != ${fam.count} cells`);
+    for (const w of ['worstSheet','worstSheetByMaxDim'])
+      if (JSON.stringify(cf[w]) !== JSON.stringify(fam[w]))
+        fail(`${fam.key}.${w} ${JSON.stringify(cf[w])} != ${JSON.stringify(fam[w])}`);
   }
+  (C.importSizeCap === IMPORT_SIZE_CAP ? ok : fail)(`importSizeCap ${C.importSizeCap}`);
   (bad === 0 ? ok : fail)(`${n - bad}/${n} committed cells reproduce exactly from the live rigs`);
+
+  // The cap-lift question, answered with a number rather than a claim. Unity's DEFAULT importer
+  // cap is 2048; a sheet over it imports SILENTLY DOWNSCALED with the sprite count still correct.
+  const worst = m.families.map(f => f.worstSheetByMaxDim)
+                          .reduce((a, b) => (b.maxDim > a.maxDim ? b : a));
+  note(`widest sheet in the kit: ${worst.key} ${worst.w}x${worst.h} (${worst.maxDim} px on the ` +
+       `longest side, ${worst.headroomToCap} px under the ${IMPORT_SIZE_CAP} px cap)`);
+  (worst.maxDim <= 2048 ? ok : fail)(
+    'every sheet fits Unity\'s DEFAULT 2048 importer cap, so the slicer\'s maxTextureSize lift ' +
+    'never fires for this kit');
 }
 
 console.log('\n[3] traps a README cannot tell you');

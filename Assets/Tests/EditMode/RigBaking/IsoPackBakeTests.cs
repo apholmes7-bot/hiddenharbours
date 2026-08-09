@@ -476,8 +476,18 @@ namespace HiddenHarbours.Tests.RigBaking
                 "the pivot sits outside the ink and a sign error is hardest to see.");
         }
 
+        /// <summary>
+        /// <b>THE REGISTRATION PARITY GUARD.</b> Three registries have to agree that a family exists —
+        /// the contract registry (what a baker asserts against), the slicer (what turns a PNG into
+        /// sprites) and the catalog (what rig to install) — and a family missing from any one of them
+        /// fails in a way nobody reads as a failure. #472 shipped exactly that omission.
+        ///
+        /// <para>Deliberately driven off the REGISTRIES rather than off this fixture's own
+        /// <c>AllFamilies</c> array: a family that is registered but forgotten here would be the same
+        /// omission one level up.</para>
+        /// </summary>
         [Test]
-        public void TheSlicerKnowsTheSameFourFamilies_AtTheSameContractPaths()
+        public void TheSlicerAndTheCatalogKnowTheSameFamilies_AtTheSameContractsAndFolders()
         {
             CollectionAssert.AreEquivalent(
                 IsoPackContract.Families.ToArray(),
@@ -486,8 +496,24 @@ namespace HiddenHarbours.Tests.RigBaking
                 "— which imports as spriteMode Multiple with EMPTY rects and loads as nothing.");
 
             foreach (var fam in IsoPackSheetSlicer.Families)
+            {
                 Assert.AreEqual(IsoPackContract.Paths[fam.Key], fam.ContractPath,
                     $"{fam.Key}: the slicer and the baker must read the SAME contract file.");
+
+                // One file may hold several families (the deck-loop kit's five do). Reading the same
+                // file but a different SECTION of it is a sheet sliced against another family's grid.
+                Assert.AreEqual(IsoPackContract.Registry[fam.Key].Section, fam.Section,
+                    $"{fam.Key}: the slicer and the baker must read the same section of it.");
+
+                Assert.AreEqual(IsoPackContract.SheetFolderFor(fam.Key) + "/", fam.Folder,
+                    $"{fam.Key}: the baker writes its sheets somewhere the slicer does not look.");
+            }
+
+            foreach (string key in IsoPackContract.Families)
+                Assert.IsTrue(RigCatalog.Entries.ContainsKey(key),
+                    $"'{key}' is registered as a contract family but is not in RigCatalog — there is no " +
+                    "rig source to install, so the bake cannot start. This is the shape of #472's " +
+                    $"omission. Catalog keys: {string.Join(", ", RigCatalog.Entries.Keys)}.");
         }
 
         [Test]
