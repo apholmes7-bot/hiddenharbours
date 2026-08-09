@@ -391,6 +391,21 @@ namespace HiddenHarbours.App.Editor
         // past its far tip and short of the scene edge.
         public static readonly Vector3 ToNineMileCreekPassagePos = new Vector3(-356f, 0f, 0f);
 
+        // --- ⭐ THE SEA DOOR: out west into THE WEST WATER (world-map-plan §6 step 1) -------------------
+        // The island's second way off, and its first BY BOAT. The bar at y = 0 is the WALK; this is the
+        // sail — 150 m north of the bar's centre-line, which puts it in open water on three counts at
+        // once: 150 m clear of the bar's 30 m half-width (so the band is never on the crossing, and never
+        // on ground that bares), 80 m clear of the island's northern reef apron, and squarely on the
+        // deep-harbour floor the west water borrows for its own lee shelf. A seam in featureless water
+        // clear of hazards, which is the rule the bay is being built to (world-map-plan §4.4).
+        //
+        // ⚠ NOT a full-height band like the west water's own doors. This is a LAND region: its west edge
+        // carries the crossing, and a band spanning the region would swallow the walk passage below it.
+        // 120 m tall leaves a 60 m gap between the two, which is more than a hull's width of daylight at
+        // the one place both could plausibly fire.
+        public static readonly Vector3 ToWestWaterPassagePos = new Vector3(-356f, 150f, 0f);
+        public static readonly Vector2 WestWaterPassageBandSize = new Vector2(6f, 120f);
+
         // --- THE VILLAGE (the authoring pass StartSpawnPos above was waiting for) ---------------------
         // ⭐ Every one of these used to sit within a few metres of (-40, 0) — the centre of the 44 m
         // greybox disc the island WAS before #328 rescaled it. #345 moved the village onto the (then
@@ -1412,6 +1427,39 @@ namespace HiddenHarbours.App.Editor
             var passage = passageGo.AddComponent<RegionPassage>();
             SetRef(passage, "_target", nineMileCreek);
             SetRef(passage, "_loader", loader);
+
+            // ⭐ THE SEA DOOR — out west into THE WEST WATER (world-map-plan §6 step 1), the island's
+            // first way off that is not the tide's to grant. Sail north round the island and west, and
+            // the bay's open-water scene takes over; the same trip on foot is the bar 150 m south of
+            // here, and only at low water.
+            //
+            // ⚠ THIS HALF IS ST PETERS' TO WIRE, and the other half is not. WestWaterBuilder authors the
+            // passage that brings a boat BACK — a region builder may not reach into another region's
+            // scene — so the two builders each own their own side, exactly as the crossing's two halves
+            // already do. Guarded on the west water's def existing: until it is built the island simply
+            // has no sea door, which is what it has today.
+            var westWater = AssetDatabase.LoadAssetAtPath<RegionDef>(
+                                DataRegions + "/" + WestWaterPlan.RegionAssetName + ".asset");
+            if (westWater != null)
+            {
+                var seaDoorGo = new GameObject("PassageToWestWater");
+                seaDoorGo.transform.position = ToWestWaterPassagePos;
+                var seaTrigger = seaDoorGo.AddComponent<BoxCollider2D>();
+                seaTrigger.isTrigger = true;
+                seaTrigger.size = WestWaterPassageBandSize;
+                var seaDoor = seaDoorGo.AddComponent<RegionPassage>();
+                // NAMED: the west water has two doors of equal standing, so it must be told which one
+                // this boat came in by (#456) or she lands at the far end of the run she just started.
+                seaDoor.Configure(westWater, loader, WestWaterPlan.FromStPetersArrivalKey);
+                SetRefArray(loader, "_regions", new Object[] { stPeters, nineMileCreek, westWater });
+                SetRefArray(registrar, "_regions", new Object[] { stPeters, nineMileCreek, westWater });
+            }
+            else
+            {
+                Debug.LogWarning("[StPetersBuilder] No West Water RegionDef at " + DataRegions + "/" +
+                                 WestWaterPlan.RegionAssetName + ".asset — the island has no sea door, so " +
+                                 "the only way off is the tidal bar. Re-run after building the west water.");
+            }
 
             // --- ST PETERS DOCK + ARRIVAL ANCHOR (the persistent rig binds here on the sail home) --------
             // St Peters' own board/dock geometry, mirroring the cove/Nine Mile Creek pattern. The persistent

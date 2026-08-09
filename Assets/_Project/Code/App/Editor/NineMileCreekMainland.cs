@@ -321,6 +321,29 @@ namespace HiddenHarbours.App.Editor
         /// </summary>
         public static readonly Vector3 WalkArrivalPos = new Vector3(350f, -200f, 0f);
 
+        // --- ⭐ THE SEA DOOR: out east into THE WEST WATER (world-map-plan §6 step 1) -------------------
+        // The wharf's way out to open water, and the half of the home arc that is not tide-gated: leave
+        // the basin, pass the breakwater head, hold east, and the bay's first open-water scene takes over.
+        //
+        // ON THE BEACON'S OWN LATITUDE, derived rather than typed. HarbourBeaconPos marks the breakwater
+        // head, which is the point every boat leaving this harbour actually rounds — so a door on that
+        // line is a door you reach by steering the way the harbour already steers you. It sits 24 m inside
+        // the region's east edge, 235 m clear of the tidal bar's nearest point (the bar comes ashore far
+        // to the south, y ≈ −199) and 172 m beyond the breakwater's own tip, which puts it in open bay on
+        // the flat −6 m floor — a seam in featureless water, clear of hazards (world-map-plan §4.4).
+        //
+        // ⚠ 120 m tall, not the full region: the east edge already carries the CROSSING's band at
+        // y = −200, and two doors on one edge must not overlap. The gap between them is 158 m.
+        //
+        // ⚠ EXPRESSION-BODIED, not `static readonly`, and it has to be: HarbourBeaconPos is declared
+        // further down this same file, and a static field initialiser reading a static field declared
+        // BELOW it binds to that field's default — this door would have silently landed on y = 0, in the
+        // middle of the region's east edge, with nothing failing. Same-file order is the one case the
+        // file-header warning about cross-type initialisation order does not already cover.
+        public static Vector3 ToWestWaterPassagePos =>
+            new Vector3(RegionWorldCenter.x + RegionWorldSize.x * 0.5f - 24f, HarbourBeaconPos.y, 0f);
+        public static readonly Vector2 WestWaterPassageBandSize = new Vector2(6f, 120f);
+
         /// <summary>The bar's total length across BOTH regions (m) — St Peters' half plus this one.
         /// Derived from the two builders rather than restated, so neither can move without the other
         /// noticing.</summary>

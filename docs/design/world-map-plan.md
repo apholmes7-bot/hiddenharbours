@@ -88,7 +88,7 @@ The bay partitions into **three water scenes**; the channel to the city and the 
 
 | Scene (working name) | Water | Character |
 |---|---|---|
-| **The west water** | the bar, St Peters' lee, the run up to Nine Mile Creek | The first sail. Sheltered, forgiving, the dory's water. |
+| **The west water** *(built 2026-08-09)* | the bar, St Peters' lee, the run up to Nine Mile Creek | The first sail. Sheltered, forgiving, the dory's water. **760 × 520 m** — 4:13 edge to edge in the rowed dory, against the bar's 3:23 walk, so the boat is the freedom and the tide stays the drama. Bed −6 m at the mainland end shoaling to the island's −4 m lee; the bar's own shoulder is its south edge. Id `region.west_water`; **name owed** (§7 Q4). |
 | **The mid-bay** | the home grounds around St Peters | Fish, mussels, lobster, crab — with **Governors Island** as its hazard. |
 | **The east water** | Governors Island across to East Point | The working run: longer, more exposed, the lobster boat's commute. |
 
@@ -169,9 +169,9 @@ Ordered by what blocks what.
 4. **Seams in featureless water.** Every seam in open water clear of hazards — never on a landfall
    or in a channel the player is threading. (Governors Island's rock fringe is exactly what a seam
    must stay away from.)
-5. **A water-scene builder template.** The three bay scenes are ~90 % identical (sea plane, height
-   data, region anchor, passages, camera bounds, weather). One parameterised builder, three small
-   plans.
+5. ~~**A water-scene builder template.**~~ **DONE** — shipped with the west water (2026-08-09):
+   `WaterSceneTemplate` + `WaterScenePlan` in the builders' editor assembly, and `WestWaterBuilder`
+   is a plan and a call. The mid-bay and the east water are each a `WaterScenePlan` away.
 6. **Set-a-course, eventually.** An M3 concern; the map graph (item 2) is its prerequisite.
 
 ---
@@ -190,7 +190,7 @@ directly. Canon names locked in `vision-and-pillars.md` §5.3, as amended:
 | The main city | **Finnigan's Landing** | **RULED 2026-08-07** |
 | The cross-strait cargo port | **New Scotland** | **RULED 2026-08-07** |
 | ~~Port Greywick~~ | — | **RETIRED 2026-08-07.** Historical mentions in ADRs and older docs stand as history; player-facing strings (`WorldStrings.OnboardBuyDory` / `OnboardRepairDory`, `OnboardingDirector`) are part of the already-flagged M2 onboarding rework; region ids stay stable (ADR 0009). |
-| The three water scenes | working names only (§2.2) | names owed when the scenes are built |
+| The three water scenes | working names only (§2.2) | names owed when the scenes are built. **The west water is built and its name is now owed** — it ships as *"The West Water (working name)"* under the stable id `region.west_water`; renaming it is one string on one asset (ADR 0009) |
 | Far-arc regions | canon names stand (Banks, Ironbound, Smother…) | geography unruled — §7 |
 
 ---
@@ -200,7 +200,7 @@ directly. Canon names locked in `vision-and-pillars.md` §5.3, as amended:
 | Step | What | Why here |
 |---|---|---|
 | **0** | Nine Mile Creek Phase B (wharf dressing from the ISO kits) + the owner's scene rebuild | The starter region has to be good before anything is copied from it |
-| **1** | **The west water** — the first water scene | Proves the water-scene template on the easiest case; it is the first sail, which the owner should play before more water is built |
+| ~~**1**~~ | ~~**The west water** — the first water scene~~ **DONE 2026-08-09** | Proved the water-scene template on the easiest case (§4.5). Run `Hidden Harbours ▸ Build West Water Scene`, then re-run the St Peters and Nine Mile Creek builders — each gains its own sea door, because a region builder may not reach into another region's scene |
 | **2** | **Owner plays the home arc** — St Peters → the bar → Nine Mile Creek → the west water | The go/no-go gate: is it *fun* (roadmap §6) |
 | **3** | **`MapGraph`** (§4.2) | Before the door count gets away from us |
 | **4** | **The mid-bay + the east water** — Governors Island, the home grounds, the run to East Point | The rest of the bay; the mussel fishery's water arrives with it |
@@ -222,5 +222,7 @@ directly. Canon names locked in `vision-and-pillars.md` §5.3, as amended:
 3. **East Point's berth depth** and how far its "almost mirrors Nine Mile Creek" goes — same kit,
    bigger fleet, or its own look?
 4. **The three water scenes' real names** — owed when they are built; the owner's PEI-variant style
-   applies.
+   applies. **⭐ THE FIRST ONE IS DUE NOW:** the west water is built (2026-08-09) and ships as
+   *"The West Water (working name)"*. The id `region.west_water` is append-only and never changes
+   whatever you pick, so the name costs one string on `Data/Regions/WestWater.asset`.
 5. **Winter** — deferred 2026-08-07 ("that can wait for now").
