@@ -205,7 +205,12 @@ namespace HiddenHarbours.Player
         private Material _occluderMaterial;
         private IBoatHullPresenter _occupiedHull;
         private float _occluderIdWritten;
+        private float _occluderTopWritten;
         private bool _occluderBlockValid;
+        /// <summary>The deck slot this rider holds on <see cref="_occupiedHull"/>, or -1. Claimed
+        /// once on boarding and held until they step off — not per frame, so nothing can shuffle
+        /// underneath them while they stand there.</summary>
+        private int _occupantSlot = -1;
 
         /// <summary>The shader property the occluding hull id is written to, and the shader that
         /// reads it. Named here rather than reached for through Art, which Player may not reference
@@ -213,6 +218,11 @@ namespace HiddenHarbours.Player
         /// this side of the seam.</summary>
         private const string OccludedSpriteShader = "HiddenHarbours/DeckOccludedSprite";
         private static readonly int DeckOccluderIdProperty = Shader.PropertyToID("_HHDeckOccluderId");
+        /// <summary>The top of the hull's fore-id block. The discard is a RANGE — an occupant is
+        /// hidden by every band nearer than their own — so writing the low id without this one
+        /// leaves an empty range and hides nobody.</summary>
+        private static readonly int DeckOccluderIdTopProperty =
+            Shader.PropertyToID("_HHDeckOccluderIdTop");
 
         /// <summary>The control mode this rider is presenting (set by the <see cref="ControlSwitcher"/>).</summary>
         public ControlMode Mode => _mode;
@@ -446,16 +456,33 @@ namespace HiddenHarbours.Player
             IBoatHullPresenter hull = LiveHull();
             if (_occupiedHull != null && !ReferenceEquals(_occupiedHull, hull)) ClearDeckOccupant();
 
-            float occluderId = 0f;
+            float occluderId = 0f, occluderTop = 0f;
             if (hull != null)
             {
-                Vector2 stand = _deckWalk != null ? _deckWalk.DeckLocalPosition : Vector2.zero;
-                float height = _deckWalk != null ? _deckWalk.DeckHeightMeters : 0f;
-                hull.SetDeckOccupant(new Vector3(stand.x, stand.y, height), true);
-                occluderId = hull.DeckOccluderId;
+                // PUBLISH THEN CONSULT, in that order and every frame. The id handed back depends on
+                // this rider's DEPTH RANK among everything else standing on the same deck — gear, a
+                // trap stack, a second hand — so it cannot be known until where they stand has been
+                // published. The claim itself is held, not retaken: only the first frame aboard pays.
+                //
+                // The claim is re-asserted every frame, and that is not waste: it is IDEMPOTENT (an
+                // owner who already holds a slot gets the same index back, at the cost of a dozen
+                // reference compares), and it is what makes the rider survive a hull being disabled
+                // and re-enabled under her — that empties every slot and takes a fresh id block, and
+                // a rider clinging to the index she was given before would go on writing into a slot
+                // that is no longer hers and quietly stop being hidden by anything.
+                IDeckOccupantSlots slots = hull.DeckOccupants;
+                _occupantSlot = slots.Claim(this);
+                if (_occupantSlot >= 0)
+                {
+                    Vector2 stand = _deckWalk != null ? _deckWalk.DeckLocalPosition : Vector2.zero;
+                    float height = _deckWalk != null ? _deckWalk.DeckHeightMeters : 0f;
+                    slots.Set(_occupantSlot, this, new Vector3(stand.x, stand.y, height), true);
+                    occluderId = slots.OccluderId(_occupantSlot);
+                    occluderTop = slots.OccluderIdTop;
+                }
                 _occupiedHull = hull;
             }
-            WriteOccluderId(occluderId);
+            WriteOccluderId(occluderId, occluderTop);
         }
 
         /// <summary>Tell whichever hull we last stood on that her deck is empty. Held as its own
@@ -465,7 +492,10 @@ namespace HiddenHarbours.Player
         private void ClearDeckOccupant()
         {
             if (_occupiedHull == null) return;
-            _occupiedHull.SetDeckOccupant(Vector3.zero, false);
+            // RELEASED, not just set inactive: a slot held by a rider who has gone is one the next
+            // thing to stand on that deck cannot have, and twelve boardings would exhaust the hull.
+            if (_occupantSlot >= 0) _occupiedHull.DeckOccupants.Release(_occupantSlot, this);
+            _occupantSlot = -1;
             _occupiedHull = null;
         }
 
@@ -473,16 +503,19 @@ namespace HiddenHarbours.Player
         /// renderer, no material instancing, no allocation after the first frame (rule 7). Skipped
         /// entirely while the value has not changed, which is every frame but the two either side of
         /// boarding.</summary>
-        private void WriteOccluderId(float occluderId)
+        private void WriteOccluderId(float occluderId, float occluderTop)
         {
             if (_riderRenderer == null) return;
-            if (_occluderIdWritten == occluderId && _occluderBlockValid) return;
+            if (_occluderIdWritten == occluderId && _occluderTopWritten == occluderTop
+                && _occluderBlockValid) return;
 
             _occluderBlock ??= new MaterialPropertyBlock();
             _riderRenderer.GetPropertyBlock(_occluderBlock);
             _occluderBlock.SetFloat(DeckOccluderIdProperty, occluderId);
+            _occluderBlock.SetFloat(DeckOccluderIdTopProperty, occluderTop);
             _riderRenderer.SetPropertyBlock(_occluderBlock);
             _occluderIdWritten = occluderId;
+            _occluderTopWritten = occluderTop;
             _occluderBlockValid = true;
         }
 
@@ -697,7 +730,7 @@ namespace HiddenHarbours.Player
             // go: a stale occupant would keep splitting a hull nobody is standing on, and a stale id
             // on the renderer would punch a boat-shaped hole in a fisher who is ashore.
             ClearDeckOccupant();
-            WriteOccluderId(0f);
+            WriteOccluderId(0f, 0f);
 
             _riding = false;
             _deckTracked = false;

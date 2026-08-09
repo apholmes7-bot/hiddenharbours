@@ -529,6 +529,9 @@ namespace HiddenHarbours.Tests.EditMode
             public void SetSorting(int sortingLayerId, int sortingOrder) { }
             public void SetDeckOccupant(Vector3 rigLocalMeters, bool active) { }
             public float DeckOccluderId => 0f;
+            // This double draws nothing, so it hides nobody — the refusing null object is the
+            // whole of its deck-occupant answer.
+            public IDeckOccupantSlots DeckOccupants => NoDeckOccupantSlots.Instance;
         }
 
         /// <summary>The real chain: <see cref="BoatWaveMotion"/> → <see cref="MeshHullDriver"/> →

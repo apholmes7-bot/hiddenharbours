@@ -139,6 +139,12 @@ namespace HiddenHarbours.Boats
         /// nothing is being split (no occupant set, or no mesh renderer at all).</summary>
         public float DeckOccluderId => _renderer != null ? _renderer.DeckOccluderId : 0f;
 
+        /// <summary>The hull's deck-occupant slots — where a rider, a trap stack or a piece of gear
+        /// claims its own depth. Never null: with no mesh renderer installed there is nothing that
+        /// can split an image, and the refusing null object says so without a branch here.</summary>
+        public HiddenHarbours.Core.IDeckOccupantSlots DeckOccupants
+            => _renderer != null ? _renderer.DeckOccupants : HiddenHarbours.Core.NoDeckOccupantSlots.Instance;
+
         /// <summary>The rig dir units currently being presented — the live turntable angle the
         /// anchors project through. Derived from the transform, so it is correct before the first
         /// LateUpdate, same as <see cref="DirectionalBoatSprite.CurrentFacingIndex"/>.</summary>

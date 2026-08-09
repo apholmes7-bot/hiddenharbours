@@ -7,10 +7,18 @@
 // the hull can answer that, and she already does — her facet pass runs against a private z-buffer.
 //
 // So the hull answers it there (HiddenHarboursIsoFacet.shader's deck-occupant split): geometry
-// NEARER the camera than the figure standing on her deck is written into the resolved screen
-// texture's alpha with that hull's SECOND id. This shader reads that alpha at its own screen pixel
-// and DISCARDS where it matches. The figure keeps her sorting slot, her Y-sort, her flip and her
-// tint; she simply is not drawn where the boat is genuinely in front of her.
+// NEARER the camera than a figure standing on her deck is written into the resolved screen
+// texture's alpha with one of that hull's FORE ids. This shader reads that alpha at its own screen
+// pixel and DISCARDS where it matches. The figure keeps her sorting slot, her Y-sort, her flip and
+// her tint; she simply is not drawn where the boat is genuinely in front of her.
+//
+// ⚠️ IT IS A RANGE, NOT AN ID, and that is what lets more than one thing stand on a deck. The hull
+// writes a BAND INDEX into her contiguous fore-id block — how many occupants each pixel is in front
+// of — so the pixels that hide an occupant of rank r are every band from r upward, i.e. the ids
+// [base + r - 1, block top]. The rank is the only per-occupant number, and it is the one the
+// publisher hands back: _HHDeckOccluderId is that occupant's LOW id and _HHDeckOccluderIdTop is the
+// hull's block top, which never moves. With a single occupant the range collapses onto the one id
+// the hull can write, so this is byte-for-byte the equality test it grew out of.
 //
 // ⚠️ EVERYTHING ELSE IS URP'S OWN Sprite-Unlit-Default, structurally verbatim — the same
 // Core2D/2DCommon includes, the same UnityFlipSprite and SetUpSpriteInstanceProperties, the same
@@ -35,9 +43,11 @@ Shader "HiddenHarbours/DeckOccludedSprite"
         _MainTex ("Sprite Texture", 2D) = "white" {}
         [MaterialToggle] _ZWrite("ZWrite", Float) = 0
 
-        // Written per renderer by DeckRiderVisual: the id of the hull geometry that hides this
-        // sprite, already divided by 255. 0 means nothing does.
-        [HideInInspector] _HHDeckOccluderId ("Deck occluder id over 255", Float) = 0
+        // Written per renderer by DeckRiderVisual: the LOWEST id of the hull geometry that hides
+        // this sprite, and the top of that hull's fore block, both already divided by 255. 0 means
+        // nothing hides it.
+        [HideInInspector] _HHDeckOccluderId ("Deck occluder low id over 255", Float) = 0
+        [HideInInspector] _HHDeckOccluderIdTop ("Deck occluder high id over 255", Float) = 0
 
         // Legacy properties, kept exactly as URP's own sprite shader keeps them, so a material using
         // this can gracefully fall back to the legacy sprite shader.
@@ -96,10 +106,11 @@ Shader "HiddenHarbours/DeckOccludedSprite"
                 half4 _Color;
             CBUFFER_END
 
-            // Per RENDERER (MaterialPropertyBlock), deliberately outside UnityPerMaterial: it is a
-            // genuine per-draw value and folding it into the batched block would share one fisher's
-            // occluder with every sprite on the material.
+            // Per RENDERER (MaterialPropertyBlock), deliberately outside UnityPerMaterial: they are
+            // genuine per-draw values and folding them into the batched block would share one
+            // fisher's occluder with every sprite on the material.
             float _HHDeckOccluderId;
+            float _HHDeckOccluderIdTop;
 
             Varyings UnlitVertex(Attributes input)
             {
@@ -114,15 +125,20 @@ Shader "HiddenHarbours/DeckOccludedSprite"
 
             half4 UnlitFragment(Varyings input) : SV_Target
             {
-                // THE OCCLUSION, and the only line that is not URP's. Hull ids are small integers
+                // THE OCCLUSION, and the only lines that are not URP's. Hull ids are small integers
                 // over 255, so the compare is done in id space with a half-step tolerance — the same
                 // rule the hull's own overlay quad uses, because 8-bit alpha rounding must not be
-                // what decides whether a fisher is visible. Guarded on the id being set at all, so
-                // an ordinary sprite never pays for a texture read it cannot use.
+                // what decides whether a fisher is visible. Guarded on the low id being set at all,
+                // so an ordinary sprite never pays for a texture read it cannot use.
+                //
+                // The top clamps the range to the OWNING hull's block: ids above it belong to
+                // another boat, and a fisher must never be cut out by a hull she is not standing on.
                 if (_HHDeckOccluderId > 0.0)
                 {
                     float hullAlpha = _HHHullScreenTex.Load(int3(int2(input.positionCS.xy), 0)).a;
-                    if (abs(hullAlpha - _HHDeckOccluderId) * 255.0 < 0.5) discard;
+                    float id = hullAlpha * 255.0;
+                    if (id > _HHDeckOccluderId * 255.0 - 0.5 &&
+                        id < _HHDeckOccluderIdTop * 255.0 + 0.5) discard;
                 }
 
                 return CommonUnlitFragment(input, input.color);

@@ -192,8 +192,24 @@ namespace HiddenHarbours.Boats
         /// divided by 255 for the shader — <b>0 whenever there is nothing to hide behind</b>: no
         /// occupant set, a sprite hull, a hull not live. Read every tick by whoever draws the
         /// figure; 0 leaves their shader inert.
+        ///
+        /// <para>⚠️ The SINGLE-OCCUPANT shim, with <see cref="SetDeckOccupant"/>. More than one thing
+        /// on a deck claims its own slot through <see cref="DeckOccupants"/> instead.</para>
         /// </summary>
         float DeckOccluderId { get; }
+
+        /// <summary>
+        /// <b>Everything standing on this deck</b> — the fixed slot array behind the per-pixel
+        /// occlusion, so gear, pots and a second hand can each be hidden at their OWN depth rather
+        /// than sharing one split plane (<see cref="HiddenHarbours.Core.IDeckOccupantSlots"/>).
+        ///
+        /// <para>Never null. A sprite hull hands back
+        /// <see cref="HiddenHarbours.Core.NoDeckOccupantSlots.Instance"/> for the same reason she
+        /// ignores <see cref="SetDeckOccupant"/> — a flat sheet has no depth to split — so a caller
+        /// needs no branch: every claim is refused and every id is 0, which draws exactly as before
+        /// any of this existed.</para>
+        /// </summary>
+        HiddenHarbours.Core.IDeckOccupantSlots DeckOccupants { get; }
 
         /// <summary>The visual child the hull is drawn into. Overlays parent here; nothing may re-parent it.</summary>
         Transform Visual { get; }

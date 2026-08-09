@@ -133,6 +133,10 @@ namespace HiddenHarbours.Boats
         public float DeckOccluderId => 0f;   // nothing to hide behind — see SetDeckOccupant
 
         /// <inheritdoc/>
+        public HiddenHarbours.Core.IDeckOccupantSlots DeckOccupants
+            => HiddenHarbours.Core.NoDeckOccupantSlots.Instance;   // and no slots either, same reason
+
+        /// <inheritdoc/>
         public Transform Visual => _anchors.Visual;
 
         /// <inheritdoc/>

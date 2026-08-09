@@ -28,14 +28,35 @@
 // whole-object sorting slot, so a wheelhouse in front of them can never cover them: sorting is per
 // OBJECT and the question is per PIXEL. This pass already holds the answer — it runs against a
 // private z-buffer, so every fragment knows its own view depth, and a figure standing on the deck
-// has ONE depth, their feet. So a hull carrying an occupant writes _HullIdFore into the facet alpha
+// has ONE depth, their feet. So a hull carrying an occupant writes a FORE id into the facet alpha
 // wherever her geometry is NEARER the camera than that figure, and _HullId everywhere else. It is a
 // PARTITION, never a duplication: every solid pixel still carries exactly one id, the overlay
-// re-composes both (so the hull's own picture is unchanged), and the FIGURE's shader discards where
-// it reads the fore id — covered exactly where the boat is genuinely in front of them.
+// re-composes them all (so the hull's own picture is unchanged), and the FIGURE's shader discards
+// where it reads a fore id — covered exactly where the boat is genuinely in front of them.
 //
-// _DeckOccupant.w = 0 — nobody aboard, and every hull most of the time — means the compare never
-// runs and the alpha is byte-identical to before this existed.
+// ⚠️ N OCCUPANTS, NOT ONE — AND THE ENCODING IS THE WHOLE TRICK. The stern-deck loop puts a
+// skipper, a sternman, four pieces of working furniture, two trap stacks and a carried tray on one
+// deck at once, all at DIFFERENT depths, and one split plane cannot be right for two of them: hull
+// geometry between two occupants is "in front" of the far one and "behind" the near one, and a
+// single id cannot say both. So the plane becomes a fixed ARRAY of planes, and the id becomes a
+// BAND INDEX.
+//
+// Per pixel: band = HOW MANY occupants this fragment is in front of. Since the occupants a pixel is
+// in front of are always the deepest ones (z < d is a prefix of the depth-sorted list), that COUNT
+// is all the information anyone needs, and counting is order-free — no sort on the GPU, no sort on
+// the CPU to feed it. Band 0 (behind everybody) writes _HullId exactly as before; band m > 0 writes
+// _HullIdFore + (m-1), the hull's fore ids being a CONTIGUOUS block reserved at registration. An
+// occupant of rank r (r = how many occupants stand at or deeper than they do) is then hidden
+// exactly where band >= r — a plain RANGE over that block, which is what the sprite shader tests.
+//
+// The nesting is why this is exact rather than approximate: the deeper occupant's fore region
+// strictly contains the nearer one's, and consecutive band ids reproduce that containment in a
+// single 8-bit channel.
+//
+// _DeckOccupantCount = 0 — nobody aboard, and every hull most of the time — means the loop never
+// runs and the alpha is byte-identical to before this existed. With exactly ONE occupant the band
+// can only be 0 or 1, so the pass writes _HullId / _HullIdFore, which is byte-for-byte the
+// single-plane split this grew out of.
 //
 // SHADER CAUTIONS honoured (this project lost hours to magenta shaders): no operator characters
 // in Property display strings; no [unroll] over runtime bounds; force-compiled headless by
@@ -66,6 +87,20 @@ Shader "HiddenHarbours/IsoFacet"
 
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
+            // ⚠️ THE SLOT COUNT, AND IT IS MEASURED, NOT GUESSED. The stern-deck loop's worst beat
+            // (deck-loop-kit README, the twelve-beat shift; TrapIso.CAPS) puts TEN things on a
+            // lobster boat's deck at once: two hands, four pieces of furniture, two trap stacks, the
+            // pot in play and the fish tray. Twelve is that plus two. The cost is the ID BUDGET —
+            // each hull reserves one base id plus this many contiguous fore ids out of 255, so
+            // twelve leaves 19 simultaneous mesh hulls against a roadmap whose largest scene is a
+            // harbour of a dozen. Raising it costs hulls; lowering it costs occupants, loudly (the
+            // registry refuses the surplus claim rather than dropping it silently).
+            //
+            // C# HOLDS THE SAME NUMBER (IsoFacetHullRenderer.DeckOccupantSlots) and the two are
+            // asserted equal by DeckOccupantSlotTests — this literal is the one a compiler sees, so
+            // it cannot be an expression.
+            #define HH_DECK_OCCUPANT_SLOTS 12
+
             // Palette lookups are integer Loads — never filtered, never mipped.
             Texture2D<float4> _RampTex;
             Texture2D<float4> _DarkRampTex;
@@ -84,12 +119,15 @@ Shader "HiddenHarbours/IsoFacet"
             // Per draw via MaterialPropertyBlock (IsoFacetHullRenderer.ApplyPose).
             float4 _HullOrigin;         // xy = world position of the rig origin (unheaved root)
             float  _HullId;             // hull id already divided by 255; the facet alpha
-            // THE DECK-OCCUPANT SPLIT (see the header). _HullIdFore is this hull's SECOND id,
-            // already divided by 255; _DeckOccupant.x is the occupant's view depth in the same
-            // world z the fragment carries, and .w is 1 only while somebody is actually standing
-            // there. Both default to 0, so a material nobody wrote to never splits.
+            // THE DECK-OCCUPANT SPLIT (see the header). _HullIdFore is the BASE of this hull's
+            // contiguous fore-id block, already divided by 255 — band m writes _HullIdFore + (m-1).
+            // _DeckOccupant[k].x is slot k's occupant's view depth in the same world z the fragment
+            // carries, and .w is 1 only while that slot is actually claimed and standing.
+            // _DeckOccupantCount is how many of them are live: 0 skips the whole thing. All default
+            // to 0, so a material nobody wrote to never splits.
             float  _HullIdFore;
-            float4 _DeckOccupant;
+            float4 _DeckOccupant[HH_DECK_OCCUPANT_SLOTS];
+            float  _DeckOccupantCount;
 
             struct Attributes
             {
@@ -161,13 +199,29 @@ Shader "HiddenHarbours/IsoFacet"
                 int idx = (int)fbase + ((i.fidx - fbase) > bay ? 1 : 0) + off;
                 idx = clamp(idx, 0, len - 1);
 
-                // WHICH OF THIS HULL'S TWO IDS THIS PIXEL CARRIES. Camera looks along +Z, so a
-                // SMALLER depth is nearer: hull geometry in front of the figure standing on the
-                // deck takes the FORE id and is composed over them. Strictly less-than, so the very
-                // planking under their feet (same depth) stays behind them. One branch on a uniform
-                // that is 0 for every hull with nobody aboard.
+                // WHICH OF THIS HULL'S IDS THIS PIXEL CARRIES. Camera looks along +Z, so a SMALLER
+                // depth is nearer: hull geometry in front of a figure standing on the deck takes a
+                // FORE id and is composed over them. Strictly less-than, so the very planking under
+                // their feet (same depth) stays behind them.
+                //
+                // The band is a COUNT of the occupants this pixel is in front of (see the header),
+                // so the slots need no ordering and the loop is order-free. The whole thing hangs
+                // off one uniform that is 0 for every hull with nobody aboard, which is nearly all
+                // of them nearly all of the time (rule 7); an unclaimed slot inside the loop costs
+                // exactly one compare that fails. Bound is a compile-time constant, so this unrolls
+                // without the [unroll] this file's cautions forbid over runtime bounds.
                 float hullId = _HullId;
-                if (_DeckOccupant.w > 0.5 && i.wpos.z < _DeckOccupant.x) hullId = _HullIdFore;
+                if (_DeckOccupantCount > 0.5)
+                {
+                    int band = 0;
+                    for (int k = 0; k < HH_DECK_OCCUPANT_SLOTS; k++)
+                    {
+                        if (_DeckOccupant[k].w > 0.5 && i.wpos.z < _DeckOccupant[k].x) band++;
+                    }
+                    // Band m takes the m-th id of the reserved block. 1/255 per step because every
+                    // id in this channel is already divided by 255.
+                    if (band > 0) hullId = _HullIdFore + (band - 1) * (1.0 / 255.0);
+                }
 
                 FragOut o;
                 o.facet = float4(_RampTex.Load(int3(idx, m, 0)).rgb, hullId);
