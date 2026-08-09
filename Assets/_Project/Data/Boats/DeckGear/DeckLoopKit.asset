@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71888c55cb944716b9b6bac763ae4736, type: 3}
+  m_Name: DeckLoopKit
+  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.DeckGearKitDef
+  Id: deckgearkit.deck_loop_kit
+  SourceRig: docs/art/rigs/deck-loop-kit/Art/deckGearRig.js
+  FacingCount: 8
+  FacingsAreCounterClockwise: 0
+  Entries:
+  - Kind: 0
+    StandLocalMeters: {x: 0, y: -0.54, z: 0}
+    Turn: 0
+    WorkZMeters: 0.865
+    ClearMeters: {x: 0.58, y: 0.56}
+    Facings: []
+  - Kind: 1
+    StandLocalMeters: {x: 0, y: -0.48, z: 0}
+    Turn: 0
+    WorkZMeters: 0.47
+    ClearMeters: {x: 0.58, y: 0.56}
+    Facings: []
+  - Kind: 2
+    StandLocalMeters: {x: 0, y: -0.46, z: 0}
+    Turn: 0
+    WorkZMeters: 0.775
+    ClearMeters: {x: 0.58, y: 0.56}
+    Facings: []
+  - Kind: 3
+    StandLocalMeters: {x: 0, y: -0.52, z: 0}
+    Turn: 0
+    WorkZMeters: 0.885
+    ClearMeters: {x: 0.62, y: 0.58}
+    Facings: []
+  - Kind: 4
+    StandLocalMeters: {x: -0.3, y: 0.44, z: 0}
+    Turn: 4
+    WorkZMeters: 1.05
+    ClearMeters: {x: 0.66, y: 0.6}
+    Facings: []

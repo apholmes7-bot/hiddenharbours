@@ -157,6 +157,76 @@ namespace HiddenHarbours.Fishing
         private const string NoticeNoBait = "No bait aboard";
         private const string NoticeNoRoom = "No room aboard — sell before banding more";
 
+        // ---- the deck BEAT (presentation only — published on change, never per frame) ---------------
+
+        // The last beat published, so a snapshot only goes out when something actually changed (rule 7).
+        // Seeded to a stage that is not None so the FIRST idle publish is not swallowed.
+        private DeckLoopState _lastBeat = new DeckLoopState((SternDeckStage)(-1), 0f, 0, false);
+
+        /// <summary>
+        /// <b>Which beat of the owner's gear cycle this deck is on</b>, derived from the state that already
+        /// exists — this adds no state machine of its own and decides nothing.
+        ///
+        /// <list type="bullet">
+        ///   <item>Animals still in her → <see cref="SternDeckStage.Emptying"/>, worked = picked/total.</item>
+        ///   <item>Keepers waiting on the deck → still <see cref="SternDeckStage.Emptying"/>: banding is the
+        ///   same bench task the rig authors one clip for.</item>
+        ///   <item>Picked empty and unbaited → <see cref="SternDeckStage.Baiting"/>.</item>
+        ///   <item>Baited and squared away → <see cref="SternDeckStage.Stacking"/>: she is off the hands
+        ///   and waiting to go over the side, which is what a stacked pot IS.</item>
+        /// </list>
+        ///
+        /// <para>A squared-away pot counts as ONE on the stack and is no longer "in play" — the two are
+        /// exclusive, so the deck never draws her twice.</para>
+        /// </summary>
+        public DeckLoopState CurrentBeat()
+        {
+            if (_pot == null) return DeckLoopState.Idle;
+
+            var look = new DeckPotLook(_pot.Trap != null ? _pot.Trap.TrapSprite : null,
+                                       _pot.Trap != null ? _pot.Trap.StackStepMeters : 0f,
+                                       _pot.Trap != null ? _pot.Trap.StackSlew : null,
+                                       _pot.Trap != null ? _pot.Trap.StackSlewMeters : -1f);
+
+            int total = _pot.Animals != null ? _pot.Animals.Count : 0;
+            int left = _pot.InPotCount + _pot.OnDeckCount;
+
+            if (left > 0)
+                return new DeckLoopState(SternDeckStage.Emptying,
+                                         SternDeckLoop.Worked01(total - left, total), 0, true, look);
+
+            if (_pot.NeedsBait)
+                return new DeckLoopState(SternDeckStage.Baiting, 0f, 0, true, look);
+
+            // Squared away: on the stack, out of the hands, waiting for the toss.
+            return new DeckLoopState(SternDeckStage.Stacking, 1f, 1, false, look);
+        }
+
+        /// <summary>Publish the beat, but only when it has actually CHANGED — a deck snapshot is a
+        /// picture, and a picture that has not changed is not news (rule 7). Public so a test can drive
+        /// the publish path without a play-mode loop.</summary>
+        public void PublishBeat()
+        {
+            DeckLoopState beat = CurrentBeat();
+            if (beat.Stage == _lastBeat.Stage
+                && Mathf.Approximately(beat.Worked01, _lastBeat.Worked01)
+                && beat.StackedPots == _lastBeat.StackedPots
+                && beat.PotInPlay == _lastBeat.PotInPlay) return;
+            _lastBeat = beat;
+            EventBus.Publish(new DeckLoopStateChanged(beat));
+        }
+
+        /// <summary>Publish an explicit stage the derived beat cannot express, because it is a MOMENT
+        /// rather than a state: the pot landing on the deck, and the pot going back over the rail. Both
+        /// are one-shots the deck plays and neither is readable from the pot afterwards — she is aboard
+        /// either way, and by the time she is set she is gone.</summary>
+        private void PublishMoment(SternDeckStage stage)
+        {
+            DeckLoopState beat = CurrentBeat();
+            _lastBeat = new DeckLoopState(stage, beat.Worked01, beat.StackedPots, beat.PotInPlay, beat.Pot);
+            EventBus.Publish(new DeckLoopStateChanged(_lastBeat));
+        }
+
         private Vector2 BoatPos => _boatRoot != null ? (Vector2)_boatRoot.position : (Vector2)transform.position;
         private Vector2 WorkerPos => _worker != null ? (Vector2)_worker.position : BoatPos;
         private Vector2 PotWorldPos => BoatPos + (_pot != null ? _pot.Def.PotDeckOffset : Vector2.zero);
@@ -244,6 +314,9 @@ namespace HiddenHarbours.Fishing
 
             if (!_taughtPick) { EventBus.Publish(new DevNotice(NoticePotAboard)); _taughtPick = true; }
             Debug.Log($"[DeckWork] Pot aboard with {catchItems.Count} in her — pick, sort, band, bait.");
+            // She's ON THE DECK — the moment the deck plays its one-shot for (canon M2-33's "trap aboard
+            // on the stern deck"). Presentation only; the catch inside her is untouched.
+            PublishMoment(SternDeckStage.Aboard);
             return true;
         }
 
@@ -251,10 +324,15 @@ namespace HiddenHarbours.Fishing
         /// water) — visuals away, state cleared. Idempotent.</summary>
         public void ClearPot()
         {
+            bool had = _pot != null;
             _pot = null;
             _holdVerb = DeckVerb.None;
             _holdSeconds = 0f;
             HideVisuals();
+            // Over the rail she goes — the last beat of the cycle. Published as a MOMENT because by the
+            // time this runs there is no pot left to read it off, and then the deck falls idle on the
+            // next real change. A deck that was already empty has nothing to toss.
+            if (had) PublishMoment(SternDeckStage.Setting);
         }
 
         /// <summary>
@@ -278,6 +356,9 @@ namespace HiddenHarbours.Fishing
             EventBus.Publish(new DevNotice(summary));
             Debug.Log($"[DeckWork] Auto-resolved the deck pot: {kept} kept, {returned} returned, {noRoom} no room.");
             ClearPot();
+            // The cozy square-away is not a toss: ClearPot published the moment, and this follows it with
+            // the honest idle so the deck does not sit showing a throw that nobody made.
+            PublishBeat();
         }
 
         // ---- the live work -------------------------------------------------------------------------
@@ -468,6 +549,7 @@ namespace HiddenHarbours.Fishing
             }
             RefreshPotSprite();
             MaybeTeachBait();
+            PublishBeat();   // one animal fewer in her — the bench's hands move with the QUANTITY worked
         }
 
         private void ResolveBand()
@@ -483,6 +565,7 @@ namespace HiddenHarbours.Fishing
             {
                 EventBus.Publish(new DevNotice(NoticeNoRoom));
             }
+            PublishBeat();
         }
 
         private void ResolveBait()
@@ -499,6 +582,7 @@ namespace HiddenHarbours.Fishing
             {
                 EventBus.Publish(new DevNotice(NoticeNoBait));
             }
+            PublishBeat();   // baited → squared away → on the stack, waiting for the toss
         }
 
         private void MaybeTeachBait()
