@@ -62,6 +62,23 @@ namespace HiddenHarbours.Fishing
                  "FavorsSpeciesIds soft-weight the Build 3 catch roll.")]
         public string RequiredBaitId = "bait.herring";
 
+        [Header("Stacking (how she piles on a deck — TrapIso.STACK, per BUILD)")]
+        [Tooltip("How far the next pot UP sits, in metres — the pot's own tier step. RIG DATA from " +
+                 "TrapIso.STACK[build].step_m: a wooden bow-top needs 0.40 where a wire pot takes 0.38 " +
+                 "and a crab CONE nests at 0.52 rather than its full 1.18 height. This rides the TRAP " +
+                 "and not the hull, because how far a pot nests is a fact about the pot: a hull's own " +
+                 "asset stating a step would be it lying about gear it has never carried. 0 = pots of " +
+                 "this kind do not stack.")]
+        [Min(0f)] public float StackStepMeters;
+        [Tooltip("The per-tier lateral JOG of a real stack, in tier order, from TrapIso.STACK[build].slew " +
+                 "— so a pile leans like one instead of being a perfect column. The pattern REPEATS when " +
+                 "a stack outgrows it. Empty = a dead-straight column, which is what a cone stack " +
+                 "actually is (its rig slew is all zeros).")]
+        public int[] StackSlew = System.Array.Empty<int>();
+        [Tooltip("What one step of the slew pattern is worth in metres. A shaping knob for the lean, not " +
+                 "a capacity: how MANY pots fit is the HULL's data (TrapIso.CAPS on BoatDeckGearDef).")]
+        [Min(0f)] public float StackSlewMeters = 0.04f;
+
         [Header("Deck work (Build 7 — the post-haul pick/sort/band/bait minigame)")]
         [Tooltip("The deck-work ruleset this pot uses once hauled aboard (pick / sort / band / bait — " +
                  "DeckWorkDef, data not code). Append-only opt-in: leave EMPTY and the haul lands the " +
