@@ -302,19 +302,32 @@ namespace HiddenHarbours.App.Editor
         }
 
         /// <summary>
-        /// The moving meadow: wind-reactive tufts over the ground the splat shader already paints as
-        /// grass. Same object shape as the owner's Grass Paint Tool makes (SpriteRenderer + Grass.mat +
-        /// YSortSprite) so painted and planted grass are the same thing — but every scale, variant and
-        /// tint here is HASHED, never rolled: the builder's grass must reproduce exactly (rule 5),
-        /// where the paint tool's jitter is the owner's live brush.
+        /// The moving meadow — <b>as a FIELD, not a crowd of GameObjects.</b> The ground is read exactly as
+        /// it always was (<see cref="StPetersGrass"/> decides where grass grows and what habitat each metre
+        /// is); what changed in 2026-08-09 is the OUTPUT. This bakes
+        /// <see cref="StPetersGrassField">a byte per candidate site</see> onto one
+        /// <see cref="GrassField"/> component, and the meadow is derived from it at load and drawn in
+        /// chunked meshes.
         ///
-        /// <para><b>⭐ THE ART COMES FROM THE LIBRARY, BY HABITAT TAG.</b> This method used to carry
-        /// three literal sprite paths index-aligned to a variant int, the same three
-        /// <c>GrassPaintTool</c> carried — so a new tuft meant editing both in lockstep. It now reads
-        /// <see cref="GrassLibraryCatalog"/> and asks for whatever is baked carrying the habitat the
-        /// scatter decided (dune by the sand, fringe at the splat boundary, wind-cropped headland,
-        /// lush sward inland). The scatter knows the GROUND and the library knows the ART, and neither
-        /// holds the other's list.</para>
+        /// <para><b>⭐ WHY THE SHAPE CHANGED: 114 MB.</b> A GameObject per tuft is GameObject + Transform +
+        /// SpriteRenderer + <see cref="YSortSprite"/>, about 3.1 KB of scene YAML each. At the density the
+        /// owner ratified that is ~27,000 tufts, and the rebuilt St Peters weighed <b>114 MB</b> against
+        /// main's 15.8 MB — GitHub's 100 MB limit is what actually stopped the commit, and rule 7 condemned
+        /// it regardless. None of those objects were authored: every one was already a deterministic
+        /// function of the painted ground, so the ground's ANSWER is the only thing worth storing. The field
+        /// is a few tens of kilobytes on one line, and <c>GrassField</c>'s chunks carry
+        /// <c>HideFlags.DontSave</c>, so grass cannot serialize into a scene again even by accident.</para>
+        ///
+        /// <para><b>⭐ THE ART STILL COMES FROM THE LIBRARY, BY HABITAT TAG</b> — and still only from here.
+        /// The pools are resolved ONCE at bake through the same <see cref="GrassArtChooser"/> (allies,
+        /// height classes, broad widths and all) and stored as plain sprite indices, because the library is
+        /// an editor-side manifest and the runtime must not need it. Adding a variant is still a bake, never
+        /// a code change; the scatter still knows the GROUND and the library still knows the ART.</para>
+        ///
+        /// <para><b>⚠ A variant whose PNG did not import keeps its slot in the pool with a null sprite.</b>
+        /// That looks wasteful and is not: the site's blade is <c>roll % pool.Length</c>, so dropping an
+        /// entry would re-roll every other tuft in that habitat. A null simply goes unplanted — exactly what
+        /// the object pass did when <c>LoadSprite</c> came back null.</para>
         /// </summary>
         static void PlantGrass(ITidalTerrain terrain, Result result)
         {
@@ -334,39 +347,87 @@ namespace HiddenHarbours.App.Editor
                 Debug.LogWarning($"[StPetersWoodsPlanter] {GrassMaterialPath} missing — the tufts will " +
                                  "stand still instead of swaying on the shared wind.");
 
-            var chooser = new GrassArtChooser(imported);
-
-            var root = new GameObject(GrassRootName);
-            foreach (var site in StPetersGrass.Scatter(terrain))
+            var baked = StPetersGrassField.BakeField(terrain);
+            if (baked.Sites == null || baked.Tufts == 0)
             {
-                var entry = chooser.Choose(site);
-                if (entry == null) continue;
-                var sprite = GrassLibraryCatalog.LoadSprite(entry);
-                if (sprite == null) continue;
-
-                var go = new GameObject(entry.Name);
-                go.transform.SetParent(root.transform, worldPositionStays: false);
-                go.transform.position = new Vector3(site.Position.x, site.Position.y, 0f);
-                go.transform.localScale = new Vector3(site.Scale, site.Scale, 1f);
-
-                var sr = go.AddComponent<SpriteRenderer>();
-                sr.sprite = sprite;
-                if (material != null) sr.sharedMaterial = material;
-                sr.sortingOrder = GrassSortingOrder;
-                // ⚠ flipX, never a negative localScale.x. A mirrored tuft is free variety — the pivot is
-                // bottom-CENTRE so it mirrors in place, the wind is world-space, and the shader's bend
-                // reads sprite uv.y, which a horizontal flip does not touch. A negative scale would do
-                // the same picture and quietly invert the winding for anything that later reads this
-                // transform.
-                sr.flipX = site.Mirror;
-                // Multiplied over the sprite's own gradient by the grass shader, so shading survives.
-                sr.color = site.Tint;
-                go.AddComponent<YSortSprite>();
-
-                result.GrassTufts++;
-                result.PerHabitat[site.Habitat] =
-                    result.PerHabitat.TryGetValue(site.Habitat, out int n) ? n + 1 : 1;
+                Debug.LogWarning("[StPetersWoodsPlanter] the grass field baked no sites — the island has " +
+                                 "no ground the meadow is allowed to plant on. Check the terrain is " +
+                                 "configured before the planter runs.");
+                return;
             }
+
+            var chooser = new GrassArtChooser(imported);
+            var pools = ResolveGrassPools(chooser, out Sprite[] variants);
+
+            // ⚠ FIND, then create. The old pass did `new GameObject(GrassRootName)` unconditionally, so a
+            // second run left TWO meadows in the scene. A field is written in place (ADR 0019).
+            var root = GameObject.Find("/" + GrassRootName) ?? new GameObject(GrassRootName);
+            var field = root.GetComponent<GrassField>() ?? root.AddComponent<GrassField>();
+
+            field.SetField(
+                new Vector2(baked.Layout.OriginX, baked.Layout.OriginY),
+                baked.Layout.CellSize, baked.Layout.JitterMetres, baked.Layout.SpreadMetres,
+                baked.Layout.CellsX, baked.Layout.CellsY, baked.Layout.Slots, baked.Layout.Seed,
+                baked.Sites,
+                baked.StrawCellSize, baked.StrawCellsX, baked.StrawCellsY, baked.Straw,
+                StPetersGrass.StrawTint,
+                variants, pools, material);
+
+            result.GrassTufts = baked.Tufts;
+            foreach (var kv in baked.PerHabitat) result.PerHabitat[kv.Key] = kv.Value;
+
+            Debug.Log(
+                $"[StPetersWoodsPlanter] Baked a grass FIELD of {baked.Tufts} tufts " +
+                $"({baked.HabitatSummary()}) into {field.PayloadCharacters:N0} characters of scene — " +
+                $"a {baked.Layout.CellsX}x{baked.Layout.CellsY} grid at {baked.Layout.CellSize} m, " +
+                $"{baked.Layout.Slots} sites per cell, seed {baked.Layout.Seed}. The tufts are DERIVED at " +
+                "load and drawn in chunked meshes; none of them is saved. Re-running this pass rewrites " +
+                "the same bytes — it cannot double the meadow.");
+        }
+
+        /// <summary>
+        /// Resolve every habitat's art pool ONCE, at bake, into plain sprite indices the runtime can read
+        /// without the library.
+        ///
+        /// <para>Order is preserved exactly as <see cref="GrassArtChooser"/> returns it, because a site's
+        /// blade is <c>roll % pool.Length</c> — re-ordering a pool would repaint the island.</para>
+        /// </summary>
+        static GrassField.HabitatPool[] ResolveGrassPools(GrassArtChooser chooser, out Sprite[] variants)
+        {
+            var palette = new List<Sprite>();
+            var indexOf = new Dictionary<string, int>();
+
+            int Index(GrassLibraryCatalog.Entry entry)
+            {
+                if (indexOf.TryGetValue(entry.Name, out int i)) return i;
+                i = palette.Count;
+                // May be null (LFS pointer, un-imported PNG). Kept anyway — see PlantGrass's remarks.
+                palette.Add(GrassLibraryCatalog.LoadSprite(entry));
+                indexOf[entry.Name] = i;
+                return i;
+            }
+
+            int[] Indices(List<GrassLibraryCatalog.Entry> entries)
+            {
+                var ids = new int[entries.Count];
+                for (int i = 0; i < entries.Count; i++) ids[i] = Index(entries[i]);
+                return ids;
+            }
+
+            var pools = new GrassField.HabitatPool[StPetersGrassField.HabitatIds.Length];
+            for (int i = 0; i < pools.Length; i++)
+            {
+                string habitat = StPetersGrassField.HabitatIds[i];
+                pools[i] = new GrassField.HabitatPool
+                {
+                    Name = habitat,
+                    Pool = Indices(chooser.For(habitat)),
+                    BroadPool = Indices(chooser.BroadFor(habitat)),
+                };
+            }
+
+            variants = palette.ToArray();
+            return pools;
         }
 
         // =====================================================================================

@@ -154,6 +154,13 @@ Three things make the grass feel alive, all automatic — nothing to wire:
 You won't see the *sway* in the **edit** view (it's a Play-mode effect) — press **Play** to watch it
 (the layering, though, is correct in edit mode as well).
 
+> **A note on the island's own meadow (not the grass you paint).** St Peters' grass is no longer
+> thousands of objects in the scene file — it is a compact **field** on one `IslandGrass` component,
+> and the tufts are grown from it when the scene loads and drawn in merged chunks. That's why you
+> won't find them in the hierarchy when the scene is closed, and why rebuilding the island twice
+> can't double the grass. Nothing changes about how it looks or how you paint your own on top. If
+> you're curious: `docs/architecture/grass-field.md`.
+
 ### Wildflowers (the PEI wildflowers)
 
 Eight wildflowers — **blue flag, buttercup, fireweed, goldenrod, lady slipper, oxeye daisy, Queen
