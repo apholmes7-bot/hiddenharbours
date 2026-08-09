@@ -92,6 +92,22 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         [Test]
+        public void DescribingAContractNeverThrows_EvenForTheNonDirectionalFamily()
+        {
+            // Found by this suite on its first run: ToString() interpolated `Facings`, which THROWS
+            // for shoreFinds by design. A ToString that throws takes out the log line, the debugger
+            // watch, and — worst — the message of whatever exception was being reported when someone
+            // interpolated the contract into it. The guard and the diagnostic must not fight.
+            foreach (string key in AllFamilies)
+            {
+                string described = null;
+                Assert.DoesNotThrow(() => described = C(key).ToString(), $"{key}.ToString()");
+                Assert.IsNotEmpty(described);
+                StringAssert.Contains(C(key).RigName, described);
+            }
+        }
+
+        [Test]
         public void EveryCommittedSheetPlanIsExact_AndUnderItsFamilyCap()
         {
             foreach (string key in AllFamilies)

@@ -526,8 +526,19 @@ namespace HiddenHarbours.Tools.RigBaking
                 AssertSheetFits(c.key, c.sheet.cols, c.sheet.rows, c.sheet.sheetW, c.sheet.sheetH);
         }
 
+        /// <summary>
+        /// ⚠️ Describes the sheet axes through <see cref="CellsPerSheet"/>, NOT through
+        /// <see cref="Facings"/>. Facings deliberately THROWS for <c>shoreFinds</c>, and a
+        /// <c>ToString</c> that throws takes out the log line, the debugger watch and — worst — the
+        /// message of whatever exception was being reported when someone interpolated the contract
+        /// into it.
+        /// </summary>
         public override string ToString() =>
-            $"{RigName} v{Version} — {Count} cells, {Facings} facings, rule {Rule}, cap {ImportSizeCap}" +
+            $"{RigName} v{Version} — {Count} cells, " +
+            (IsDirectional
+                ? $"{CellsPerSheet} facings"
+                : $"{LieAngleCount}×{Variants} = {CellsPerSheet} cells/sheet × {StateNames.Count} states") +
+            $", rule {Rule}, cap {ImportSizeCap}" +
             (WorstSheetByMaxDim == null
                 ? ""
                 : $", worst {WorstSheetByMaxDim.key} {WorstSheetByMaxDim.maxDim} px " +

@@ -224,18 +224,78 @@ Determinism: two independent harness runs from a cold V8 host produce byte-ident
 
 ---
 
+## 8. ⚠️ The committed sheet PLAN is not a grid any helper re-derives
+
+Found while writing the bakers, and it is the one finding here that was actively costing something.
+
+Both existing bakers chose their grid with `BuildingRigBaker.ChooseGrid` — the helper every other kit
+in this repo packs with. It does not reproduce the committed plans. **12 of 156 differ:**
+
+| family | plans ChooseGrid gets wrong |
+|---|---|
+| `wharfIso` | **7 / 17** |
+| `shoreFinds` | **5 / 36** — it would leave 8 padding cells in a 16×2 grid holding 24 |
+| `wharfDecor` · `utilityIso` | 0 — they agree today, which is exactly why this hid |
+
+The committed rule is *"the largest DIVISOR of the cell count that fits the cap"* (hence no ragged
+last row anywhere in the pack), plus **one ruled override**: `timberQuay`, repacked 4×2 by §2 above.
+
+**The worst case is §2 undoing itself.** ChooseGrid puts `timberQuay` back on ONE ROW at
+**4048 px** — 48 px under the cap, so `AssertSheetFits` passes, the sheet imports, and the repack
+that bought the family 312 px of headroom is silently gone. The old `AssertSheetFits` only checked
+`sheetW == cols·cellW` and the cap, and a differently-packed sheet satisfies both.
+
+**Fix:** `IsoPackContract.GridFor(key)` reads the committed plan and every baker packs from it;
+`AssertSheetFits` now also refuses a pack that disagrees with the plan.
+`IsoPackBakeTests.TimberQuayStaysFourByTwo_WhereAReDerivedGridWouldPutItBackOnOneRow` fails if
+anyone simplifies a baker back to ChooseGrid.
+
+---
+
+## 9. ✅ The gate landed, and the two contracts it moves are regenerated
+
+[#463](https://github.com/apholmes7-bot/hiddenharbours/pull/463) (`feffa39d`) shipped
+`KEYLINE_DEFAULT = false` on all four rigs and flipped `projection.keylineDefault` in all four
+contracts — **but it did not regenerate the cells.** That left `wharfDecor` and `utilityIso`
+internally inconsistent: 103 cells still carrying the ring-ON measurement against a rig that no
+longer draws the ring, so every one of them would have failed `AssertMatchesContract` at bake time.
+
+Re-measured against the gated rigs. §3's prediction reproduces exactly:
+
+| family | measured |
+|---|---|
+| `wharfDecor` | **61 / 61** move — cell (−2,−2), pivot (−1,−1) |
+| `utilityIso` | **42 / 42** move — cell (−2,−2), pivot (−1,−1) |
+| `wharfIso` | **0 / 17** — the cell is the BUFFER, sized before the ring pass runs |
+| `shoreFinds` | **0 / 36** — `cellOf()` is analytic and never rasterises |
+
+`pivotInsideInk` is unchanged on all 61, `fireCabinet` included. Sheet plans and both worst-sheet
+fields are recomputed; the worst KEYS do not change, only their sizes (`bunting` 912 → 896 px,
+`hFrame` 1520 → 1504 px).
+
+**⚠️ `_verify.js`'s `--gate` arm is now obsolete and should not be trusted.** It simulated the gate
+two ways that the shipped rigs defeat: it sets `KEYLINE_DEFAULT` as a **context global**, which the
+rigs' own inner `const KEYLINE_DEFAULT = false` now shadows, and it string-replaces the ring pass,
+which `shoreFindsRig` never matched. The live check moved to `IsoPackBakeTests`, which does the A/B
+through the rig's own `{outline: true}` option instead of patching its source — both arms, because
+zero-ring alone would also pass on a renderer that draws nothing. Measured there: default **0** ring
+pixels on all four families; forced on, `trapStack` 154, `powerPole` 710, `radioMast` 2615,
+`SoftshellClam` 22.
+
+---
+
 ## What the baker slice should do with this
 
-Two of the six are now done in the contracts themselves; four remain for the baker.
+All six are now done.
 
 | | |
 |---|---|
 | ✅ | **`timberQuay` repacked 4×2 and `worstSheetByMaxDim` added to all four contracts** (§2). |
 | ✅ | **`fireCabinet` fixed to 26×53 and `cellRule` recorded per family** (§5). |
-| ☐ | **Port the four cell rules from `_verify.js`** — do not re-derive, and do not assume one rule. They are also written into each contract's `projection.cellRule`. |
-| ☐ | **Take facings from the contract, not `nativeDirs`** — three of four rigs report 0 (§4). |
-| ☐ | **Regenerate contracts for decor + utility only** when the gated rigs land; wharf and finds are unaffected (§3). |
-| ☐ | **Gate the ring pass, never filter by colour** — 551 interior keyline pixels in `radioMast` alone (§3). |
+| ✅ | **The four cell rules are ported, not re-derived** — one per family, each in its baker's own `MeasureCell`, each pinned against all 156 committed cells by `IsoPackBakeTests`. |
+| ✅ | **Facings come from the contract** (§4). `IsoPackContract.Facings` THROWS for `shoreFinds` rather than answering 0, and the test asserts three of four rigs still report 0 native facings. |
+| ✅ | **Contracts regenerated for decor + utility only** (§9); wharf and finds untouched, as §3 predicted. |
+| ✅ | **The ring is gated as a PASS** — the rigs' own `KEYLINE_DEFAULT`, never a colour filter. `radioMast`'s 551 interior keyline pixels survive. |
 
 Size import headroom off `worstSheetByMaxDim`, never off `worstSheet` — and because the wharf cell is
 parametric (§7 trap 2), re-measure rather than trusting either field after an authoring change.
