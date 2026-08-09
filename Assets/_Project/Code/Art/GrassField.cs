@@ -521,9 +521,9 @@ namespace HiddenHarbours.Art
                 list.Add(b);
             }
 
-            int group = 0;
+            int textureGroup = 0;
             foreach (var kv in byTexture)
-                BuildChunkGroup(col, row, group++, kv.Key, kv.Value, rowHeight);
+                BuildChunkGroup(col, row, textureGroup++, kv.Key, kv.Value, rowHeight);
         }
 
         /// <summary>Destroy every chunk this component made. Meshes are destroyed too — an orphaned Mesh
@@ -544,7 +544,7 @@ namespace HiddenHarbours.Art
             if (Application.isPlaying) Destroy(o); else DestroyImmediate(o);
         }
 
-        void BuildChunkGroup(int col, int row, int group, Texture texture, List<Blade> blades,
+        void BuildChunkGroup(int col, int row, int textureGroup, Texture texture, List<Blade> blades,
                              float rowHeight)
         {
             // The chunk's own origin, so vertices are LOCAL and the chunk transform carries the world
@@ -562,7 +562,7 @@ namespace HiddenHarbours.Art
                 AppendSprite(_variants[blades[i].Variant], blades[i], origin, verts, uvs, colors, tris);
             if (verts.Count == 0) return;
 
-            var mesh = new Mesh { name = $"GrassChunk_c{col}_r{row}_t{group}", hideFlags = HideFlags.DontSave };
+            var mesh = new Mesh { name = $"GrassChunk_c{col}_r{row}_t{textureGroup}", hideFlags = HideFlags.DontSave };
             // 16-bit indices top out at 65,535 vertices. A dense chunk at a wide chunk width can pass that,
             // and the failure mode is silent corruption, so widen the format rather than hope.
             if (verts.Count > 65535) mesh.indexFormat = IndexFormat.UInt32;
@@ -579,7 +579,7 @@ namespace HiddenHarbours.Art
             bounds.Expand(_windBoundsMargin * 2f);
             mesh.bounds = bounds;
 
-            var go = new GameObject($"GrassChunk_c{col}_r{row}_t{group}") { hideFlags = HideFlags.DontSave };
+            var go = new GameObject($"GrassChunk_c{col}_r{row}_t{textureGroup}") { hideFlags = HideFlags.DontSave };
             go.transform.SetParent(transform, worldPositionStays: false);
             // ⚠ WORLD position, not local. The chunk key comes from the blades' WORLD coordinates (the
             // field's grid is in world space), so parking the chunk at that origin as a LOCAL offset would
@@ -613,8 +613,8 @@ namespace HiddenHarbours.Art
             // Mesh renderers do not compete with sprites on sortingOrder alone — they fall back to world z.
             // The SortingGroup ("sort as 2D") is the documented workaround this project already uses for
             // the splat ground, the displaced water and the rain (ADR 0023).
-            var group = go.AddComponent<SortingGroup>();
-            group.sortingOrder = order;
+            var sortingGroup = go.AddComponent<SortingGroup>();
+            sortingGroup.sortingOrder = order;
             mr.sortingOrder = order;
 
             _chunkObjects.Add(go);
