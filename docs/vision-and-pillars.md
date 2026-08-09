@@ -83,6 +83,28 @@ Every feature must serve at least one pillar. If it serves none, cut it.
 | 7 | **Ironbound** | Cold, storm-lashed outer islands; end-game grounds, dangerous weather, rare/legendary fish. | Weather-capable boat + skill |
 | ✦ | **The Smother** (late/optional) | Permanent fog bank; navigate by instrument and sound; eerie, cryptid fish. | Late-game instruments |
 | ⚓ | **The Shipping Lanes** (commerce layer) | Where freight/cargo gameplay and the big ships operate; routes to the mainland and wider markets. | Freighter tier + business unlocks |
+| 8 | **East Point** *(added 2026-08-07)* | The **commercial fishing port** on the east side of the home bay — the fleet, the fish trade at scale; a working shore that "almost mirrors Nine Mile Creek". **Takes the market-fleet job Port Greywick held; Port Greywick is retired as a place name** (region ids stay stable — ADR 0009). | Mid-game (lobster/Cape tier) |
+| 9 | **Finnigan's Landing** *(added 2026-08-07)* | The island's **main city**, up a channel inland off the bay's north shore — the commercial hub **all vessel sizes can reach**: business, buildings, the big money. A late-game destination the player may *glimpse* early without being granted it. | Late game; visitable early for flavour |
+| 10 | **New Scotland** *(added 2026-08-07)* | The **cargo destination across the strait to the south-east** — a long sail, used primarily by the larger cargo vessels; the freight game's far end. | Freighter/cargo tier |
+| · | **Governors Island** *(added 2026-08-07)* | **Uninhabited, rocks all around** — the rock-fringed hazard island in the middle of the home bay. Not a port; a place the sea keeps. | None — it gates itself |
+
+> **Canon amendment — owner-ratified 2026-08-07 (the Hillsborough Bay rulings).** The home world is
+> a variant of **Hillsborough Bay, PEI** (the owner's chart): St Peters Island in the bay with the
+> home fishing grounds (local fish, mussels, lobsters, crabs) to its north, east and south; Nine
+> Mile Creek on the west shore, north of St Peters, reached over the tide-gated bar; coves and
+> points along the north shore leading to the channel inland. **Port Greywick is retired**; its
+> jobs split across **East Point** (fishing port), **Finnigan's Landing** (commercial hub), and
+> **New Scotland** (cargo run). **Shipyards: one of varying sizes at each port** — boats are
+> bought, sold and upgraded at yards sized to their harbour (NMC small, East Point working-fleet,
+> Finnigan's Landing large). A yard is a **commercial business with a local name — the word
+> "shipwright" is not used in-world**; each has an interior and a working yard (boats on supports
+> under repair, perhaps boats for sale), and the old placeholder assets are ruled out
+> (`design/world-map-plan.md` §3). **Resolved (owner, 2026-08-09): NMC's small yard ABSORBS the
+> dory beat** — the 2026-07-25 "no shipwright stands in Nine Mile Creek" ruling is superseded; the
+> damaged dory is sold from, and repaired at, the town's small yard business (still never called
+> "a shipwright" in-world; the *put-her-right-by-hand* flavour survives as what the yard offers a
+> broke newcomer, not as the absence of a yard). Geography detail and the build order:
+> [`design/world-map-plan.md`](design/world-map-plan.md).
 
 ### 5.4 Boat ladder (LOCKED — "Dory to Dynasty"). Detail + stats in `design/boats-and-navigation.md`.
 Every tier defines: **length (m)**, **draught (m)** *(how shallow it can go before grounding — ties to tide!)*, **hold capacity**, **crew slots**, **range**, **seaworthiness** *(weather tolerance)*, **handling** *(wind/current vulnerability)*.
