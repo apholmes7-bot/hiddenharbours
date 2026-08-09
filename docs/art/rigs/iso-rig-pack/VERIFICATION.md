@@ -220,6 +220,15 @@ It is a stable, reproducible fingerprint, and as a cross-family fingerprint it d
 | 6 · all three turn CCW | **confirmed** by the repo's own probe; see §6 for what −46.75 actually is. |
 | 7 · utility spans are never baked | **confirmed.** 13 of 42 pieces export `ties()`; `powerPole.ties()` → `{wires, secondary, lamp}` in metres. Bake poles only, import ties beside the sheets. |
 
+> **⚠️ Rows 1 and 2 quote figures measured at the rig's ORIGINAL defaults (`tideRange` 1.8,
+> `clearance` 1.0).** Those measurements were correct and are left standing as the record; what moved
+> underneath them is the defaults. The wharf pack now bakes at **4.4 / 0.8** (#471's re-parameterisation
+> — Hillsborough Bay), which is trap 2 demonstrating itself: at the current defaults `sheetedPier` is
+> **473×470**, not 473×411, and the `floatSet` union is **1155×907** against a naive max of 677×615
+> (1.71×, still comfortably past the 1.5× the check asserts). Both are re-derived by
+> `node _verify.js` on every run — read that output, never this table, for what the pack measures
+> today.
+
 Determinism: two independent harness runs from a cold V8 host produce byte-identical output.
 
 ---

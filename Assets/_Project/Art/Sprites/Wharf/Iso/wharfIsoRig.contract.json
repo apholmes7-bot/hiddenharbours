@@ -1,7 +1,7 @@
 {
   "rig": "wharfIsoRig",
   "version": 1,
-  "generated": "measured from docs/art/rigs/iso-rig-pack/wharf-kit-iso/wharfIsoRig.js in a standalone V8 host at rig-default dimensions and tide",
+  "generated": "measured from docs/art/rigs/iso-rig-pack/wharf-kit-iso/wharfIsoRig.js in a standalone V8 host at rig-default dimensions, tide and clearance (tideRange 4.4, clearance 0.8 — Hillsborough Bay). The cell is PARAMETRIC: these numbers hold for a bake at the rig's defaults and for no other, so re-measure rather than trusting them after any authoring change.",
   "projection": {
     "ppu": 32,
     "elev": 40,
@@ -21,20 +21,25 @@
   "facings": 8,
   "importSizeCap": 4096,
   "tide": {
-    "baked": 0.9900000000000001,
-    "tideRange": 1.8,
+    "baked": 2.4200000000000004,
+    "tideRange": 4.4,
     "note": "tide is continuous in the rig and NOT a baked state axis; one water level is baked and the wet mask carries the rest"
+  },
+  "deck": {
+    "clearance": 0.8,
+    "deckZ": 5.2,
+    "note": "deckZ = tideRange + clearance, the height a FIXED family's deck stands at and therefore the height of the drawn quay face. Presets that pin deckZ themselves (lowPier, tallPier, sheetCell) ignore it — which is exactly why those three cells did not move. The same clearance sets a float's gangway abutment, so a ramp meets the deck rather than stepping above it."
   },
   "families": "[\"quay\",\"pier\",\"crib\",\"float\",\"gangway\",\"slipway\",\"riprap\"]",
   "worstSheet": {
     "key": "floatSet",
-    "w": 3028,
-    "h": 1184
+    "w": 2310,
+    "h": 3628
   },
   "worstSheetByMaxDim": {
     "key": "sheetedPier",
     "w": 3784,
-    "h": 411,
+    "h": 470,
     "maxDim": 3784,
     "headroomToCap": 312,
     "note": "A texture cap binds on the LONGEST SIDE, not on area — size import headroom off THIS, not off worstSheet (which is the worst by area). Cells are parametric, so re-measure rather than trusting either field after an authoring change."
@@ -70,183 +75,183 @@
     {
       "key": "sheetedPier",
       "cellW": 473,
-      "cellH": 411,
+      "cellH": 470,
       "pivotX": 236,
-      "pivotY": 225,
+      "pivotY": 284,
       "sheet": {
         "cols": 8,
         "rows": 1,
         "sheetW": 3784,
-        "sheetH": 411
+        "sheetH": 470
       }
     },
     {
       "key": "steelPier",
       "cellW": 470,
-      "cellH": 411,
+      "cellH": 470,
       "pivotX": 234,
-      "pivotY": 225,
+      "pivotY": 284,
       "sheet": {
         "cols": 8,
         "rows": 1,
         "sheetW": 3760,
-        "sheetH": 411
+        "sheetH": 470
       }
     },
     {
       "key": "concreteQuay",
       "cellW": 571,
-      "cellH": 465,
+      "cellH": 524,
       "pivotX": 285,
-      "pivotY": 251,
+      "pivotY": 310,
       "sheet": {
         "cols": 4,
         "rows": 2,
         "sheetW": 2284,
-        "sheetH": 930
+        "sheetH": 1048
       }
     },
     {
       "key": "torbayQuay",
       "cellW": 533,
-      "cellH": 453,
+      "cellH": 511,
       "pivotX": 266,
-      "pivotY": 246,
+      "pivotY": 304,
       "sheet": {
         "cols": 4,
         "rows": 2,
         "sheetW": 2132,
-        "sheetH": 906
+        "sheetH": 1022
       }
     },
     {
       "key": "timberQuay",
       "cellW": 506,
-      "cellH": 431,
+      "cellH": 490,
       "pivotX": 252,
-      "pivotY": 235,
+      "pivotY": 294,
       "sheet": {
         "cols": 4,
         "rows": 2,
         "sheetW": 2024,
-        "sheetH": 862
+        "sheetH": 980
       }
     },
     {
       "key": "logCrib",
       "cellW": 350,
-      "cellH": 327,
+      "cellH": 386,
       "pivotX": 174,
-      "pivotY": 183,
+      "pivotY": 242,
       "sheet": {
         "cols": 8,
         "rows": 1,
         "sheetW": 2800,
-        "sheetH": 327
+        "sheetH": 386
       }
     },
     {
       "key": "cappedCrib",
       "cellW": 350,
-      "cellH": 327,
+      "cellH": 386,
       "pivotX": 174,
-      "pivotY": 183,
+      "pivotY": 242,
       "sheet": {
         "cols": 8,
         "rows": 1,
         "sheetW": 2800,
-        "sheetH": 327
+        "sheetH": 386
       }
     },
     {
       "key": "timberFloat",
       "cellW": 300,
-      "cellH": 285,
+      "cellH": 348,
       "pivotX": 149,
-      "pivotY": 152,
+      "pivotY": 216,
       "sheet": {
         "cols": 8,
         "rows": 1,
         "sheetW": 2400,
-        "sheetH": 285
+        "sheetH": 348
       }
     },
     {
       "key": "plasticFloat",
       "cellW": 300,
-      "cellH": 285,
+      "cellH": 348,
       "pivotX": 149,
-      "pivotY": 152,
+      "pivotY": 216,
       "sheet": {
         "cols": 8,
         "rows": 1,
         "sheetW": 2400,
-        "sheetH": 285
+        "sheetH": 348
       }
     },
     {
       "key": "floatSet",
-      "cellW": 757,
-      "cellH": 592,
-      "pivotX": 378,
-      "pivotY": 313,
+      "cellW": 1155,
+      "cellH": 907,
+      "pivotX": 577,
+      "pivotY": 500,
       "sheet": {
-        "cols": 4,
-        "rows": 2,
-        "sheetW": 3028,
-        "sheetH": 1184
+        "cols": 2,
+        "rows": 4,
+        "sheetW": 2310,
+        "sheetH": 3628
       }
     },
     {
       "key": "plasticSet",
-      "cellW": 757,
-      "cellH": 592,
-      "pivotX": 378,
-      "pivotY": 313,
+      "cellW": 1155,
+      "cellH": 907,
+      "pivotX": 577,
+      "pivotY": 500,
       "sheet": {
-        "cols": 4,
-        "rows": 2,
-        "sheetW": 3028,
-        "sheetH": 1184
+        "cols": 2,
+        "rows": 4,
+        "sheetW": 2310,
+        "sheetH": 3628
       }
     },
     {
       "key": "graniteEdge",
-      "cellW": 416,
-      "cellH": 358,
-      "pivotX": 207,
-      "pivotY": 196,
+      "cellW": 414,
+      "cellH": 418,
+      "pivotX": 206,
+      "pivotY": 254,
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 3328,
-        "sheetH": 358
+        "sheetW": 3312,
+        "sheetH": 418
       }
     },
     {
       "key": "redEdge",
-      "cellW": 416,
-      "cellH": 358,
-      "pivotX": 207,
-      "pivotY": 196,
+      "cellW": 414,
+      "cellH": 418,
+      "pivotX": 206,
+      "pivotY": 254,
       "sheet": {
         "cols": 8,
         "rows": 1,
-        "sheetW": 3328,
-        "sheetH": 358
+        "sheetW": 3312,
+        "sheetH": 418
       }
     },
     {
       "key": "breakwater",
-      "cellW": 616,
-      "cellH": 478,
-      "pivotX": 307,
-      "pivotY": 262,
+      "cellW": 605,
+      "cellH": 525,
+      "pivotX": 302,
+      "pivotY": 313,
       "sheet": {
         "cols": 4,
         "rows": 2,
-        "sheetW": 2464,
-        "sheetH": 956
+        "sheetW": 2420,
+        "sheetH": 1050
       }
     },
     {

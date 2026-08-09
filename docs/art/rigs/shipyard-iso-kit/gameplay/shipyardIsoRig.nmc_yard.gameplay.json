@@ -2,7 +2,7 @@
  "schema": "hiddenharbours.gameplay.sidecar/1",
  "rig": "shipyardIsoRig.js",
  "exportSymbol": "ShipyardIso",
- "derivedFromRigSha256": "d52fafc4a9c2e95da1efd44fa692c4ee7cfc8ce9e2c9672ded6cd7ae856373b7",
+ "derivedFromRigSha256": "7f857dc3fdfb44beb7ecb1dcc27a3ad98619a9f9a5caa3bd36989a3b3959a7d1",
  "derivedFromRigSha256Note": "SHA-256 of docs/art/rigs/shipyard-iso-kit/shipyardIsoRig.js EXACTLY as committed (LF endings — this one hashes exactly, unlike the eight legacy CRLF sidecars flagged in ../../gameplay/README.md). Hash mismatch = the yard was re-laid-out and every polygon below must be re-checked before anything trusts it.",
  "catalogueKey": "shipyard.nmc_yard",
  "site": "smallYard",

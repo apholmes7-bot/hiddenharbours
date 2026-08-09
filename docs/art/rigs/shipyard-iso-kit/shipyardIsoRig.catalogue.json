@@ -15,8 +15,8 @@
  ],
  "azimuth": "counterClockwise — MEASURED, not inferred from the th = +dir*PI/4 sign (which the rig-lane README forbids as evidence). ShipyardIso.project() returns figures IDENTICAL to wharfIsoRig.project() to 4 dp at all 8 dirs, and wharfIsoRig is registered CounterClockwise; the shipyard therefore rides the same turntable and inherits the same convention. See VERIFICATION.md §2.",
  "light": "fixed upper-LEFT key, flat-facet, z-buffered, ordered dither, per-face uv texture, depth-edge darkening, no AA",
- "keylineDefault": true,
- "keylineNote": "⚠️ This rig bakes the 1 px keyline #1a1c22 UNCONDITIONALLY — there is no {outline:false} gate anywhere in the source. ADR 0031 retired the keyline as a default for the world-art style, and the four iso-rig-pack families carry KEYLINE_DEFAULT = false. This family arrived AFTER that ruling with the ring hard-on, so it does not yet honour it. Recorded as measured, NOT edited: rig sources are the art director's and a fix belongs upstream (see VERIFICATION.md §5, gap G3).",
+ "keylineDefault": false,
+ "keylineNote": "The 1 px keyline #1a1c22 is RETIRED BY DEFAULT (ADR 0031) and reachable with {outline:true}, in the same shape #463 gave the four iso-rig-pack families: KEYLINE_DEFAULT = false beside the colour, the ring pass gated on `s.outline === undefined ? KEYLINE_DEFAULT : s.outline !== false`, the constant exported. It is a PURE RING DELETION — the pass only ever writes empty neighbours of the silhouette, so no painted pixel changes and, because this family's cells measure the BUFFER (sized from the geometry before the pass runs), none of the 25 cells move. Verified byte-for-byte against the pre-gate rig over 9 keys (all 5 sites, 4 parts) x 23 facings: 0 of 18.2 M painted pixels changed, 0 buffer or pivot moves. Gap G3 in VERIFICATION.md is CLOSED.",
  "sheet": {
   "note": "no fixed sheet — cells size themselves from the projected bbox and the rig reports px,py per bake. Same tight-cell contract as wharfIsoRig; the measured cells and their under-cap sheet plans are in Assets/_Project/Art/Sprites/Shipyard/Iso/shipyardIsoRig.contract.json."
  },

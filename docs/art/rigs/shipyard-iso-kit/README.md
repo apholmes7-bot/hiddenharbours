@@ -8,8 +8,10 @@
 >    folder is refused wholesale. The repo's fleet rigs are one level up, at `../doryIsoRig.js` etc.,
 >    so `harness.html`'s `<script src="hulls/…">` tags need re-pointing before a browser run. The rig
 >    needs no hulls to bake.
-> 2. **"1 px keyline" is no longer canon.** ADR 0031 retired it; this rig bakes it unconditionally
->    with no `{outline:false}` gate. Recorded as a gap for an upstream fix, not patched here.
+> 2. ~~**"1 px keyline" is no longer canon.**~~ **Closed.** ADR 0031 retired it, and the rig now
+>    carries the `KEYLINE_DEFAULT = false` gate in #463's shape — the ring is off by default and
+>    reachable with `{outline:true}`. It is a pure ring deletion: no painted pixel changes and none
+>    of the 25 cells move. See VERIFICATION.md §5, G3.
 > 3. **There is no interior.** `ghost` x-rays the buildings — a massing aid, not a room. The NMC
 >    yard's interior gameplay data is authored in
 >    [`gameplay/shipyardIsoRig.nmc_yard.gameplay.json`](gameplay/shipyardIsoRig.nmc_yard.gameplay.json);
@@ -25,7 +27,8 @@
 
 The boatyard, as a **rig**: parts modelled in metres and named yards that assemble them around a hull.
 Baked through the **shared ¾ camera** (45° steps, elev 40°, upper-LEFT key, z-buffered, ordered dither,
-per-face uv texture, depth-edge darkening, 1 px keyline, no AA) at **32 px = 1 m** — the same projection
+per-face uv texture, depth-edge darkening, no AA; the 1 px keyline is retired by default per ADR 0031
+and reachable with `{outline:true}`) at **32 px = 1 m** — the same projection
 as `wharfIsoRig` / `doryIsoRig` / `lobsterBoatIsoRig` / `characterIsoRig`.
 
 One file, no dependencies, no build step, no DOM. An IIFE that attaches `globalThis.ShipyardIso` and

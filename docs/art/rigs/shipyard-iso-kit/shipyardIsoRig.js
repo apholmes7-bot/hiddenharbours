@@ -10,7 +10,8 @@
 
    REUSED FROM THE EXISTING RIGS, DELIBERATELY (this is a member of the same family, not a new look):
      · 32 px = 1 m, 3/4 camera, 45deg steps, elev 40deg, flat-facet shading from the fixed upper-LEFT
-       key, z-buffered, ordered dither, per-face uv texture, depth-edge darkening, 1 px keyline, no AA
+       key, z-buffered, ordered dither, per-face uv texture, depth-edge darkening, no AA; the 1px
+       keyline is RETIRED by default per ADR 0031 and reachable with `{outline:true}`
      · the wharf palettes (POLE / WOOD / PLANK / CONCRETE / GALV / IRON / STEEL / RUST / ROCK / ...)
      · the TIDAL FRAME and its growth bands — matAtZ / zSplit / bandedPile / bandedWall / weedFringe.
        A slipway, a railway and a basin wall all run through the tide, so they band exactly like a
@@ -73,6 +74,12 @@
   const TARP     = ['#2c3038','#3a3f49','#49505b','#5a626e','#6c7581','#7f8894'];
   const SHADE    = ['#0d1114','#11161a','#161c21','#1b2228','#20282f','#252e36']; // shed interior
   const KEY      = '#1a1c22';
+  // ADR 0031 — the outline is retired from world art; the silhouette is carried by the form's own
+  // dark side. The ring is not deleted: it is gated OFF by default and reachable with
+  // `{outline:true}`, mirroring the engine's own `GameConfig.HullKeylineFlood` so the owner keeps a
+  // one-flag A/B. Depth-edge darkening (the EDGE pass above the ring) is the separate INTERIOR rule
+  // ADR 0031 §2 keeps untouched — do not confuse the two.
+  const KEYLINE_DEFAULT = false;
 
   // ---- shading (identical recipe to wharfIsoRig) ----
   const GAIN = 3.1, BIAS = 2.55, EDGE = 0.16;
@@ -1214,10 +1221,18 @@
       if(n===0){ out[i]=null; rbuf[i]=null; nbuf[i]=null; } }
     const wet = new Uint8Array(N);
     for(let i=0;i<N;i++) if(nbuf[i] && /W$/.test(nbuf[i])) wet[i] = 1;
-    for(let y=0;y<H;y++) for(let x=0;x<W;x++){ const i=y*W+x; if(out[i]) continue; let best=Infinity;
-      for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){ const nx=x+dx, ny=y+dy;
-        if(nx>=0&&nx<W&&ny>=0&&ny<H&&rbuf[ny*W+nx]&&dep[ny*W+nx]<best) best=dep[ny*W+nx]; }
-      if(best<Infinity){ out[i] = KEY; dep[i] = best; } }        // keyline inherits its neighbour's depth
+    // KEYLINE — RETIRED BY DEFAULT (ADR 0031). Pure ring deletion: every pixel this pass writes is
+    // an EMPTY neighbour of the silhouette, so switching it off changes no painted pixel of the
+    // yard. What holds the edge instead is each form's own dark side.
+    // The `dep[i] = best` this pass also writes is only ever read back for pixels it painted — an
+    // empty pixel takes the `!c` branch below and is written transparent with dp = Infinity — so
+    // skipping the pass leaves the depth buffer as sound as it leaves the colour.
+    if(s.outline === undefined ? KEYLINE_DEFAULT : s.outline !== false){
+      for(let y=0;y<H;y++) for(let x=0;x<W;x++){ const i=y*W+x; if(out[i]) continue; let best=Infinity;
+        for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){ const nx=x+dx, ny=y+dy;
+          if(nx>=0&&nx<W&&ny>=0&&ny<H&&rbuf[ny*W+nx]&&dep[ny*W+nx]<best) best=dep[ny*W+nx]; }
+        if(best<Infinity){ out[i] = KEY; dep[i] = best; } }      // keyline inherits its neighbour's depth
+    }
     const data = new Uint8ClampedArray(N*4), dp = new Float32Array(N);
     for(let i=0;i<N;i++){ const c = out[i];
       if(!c || (s.clipBelowWater && wet[i])){ data[i*4+3] = 0; dp[i] = Infinity; continue; }
@@ -1429,7 +1444,7 @@
   function sites(){ return Object.keys(SITES); }
 
   root.ShipyardIso = { PX, DIRS:8, defaultElev:DEFAULT_ELEV, order:['N','NE','E','SE','S','SW','W','NW'],
-    PARTS, SITES, SHIPS, SURF, KEY, GROWTH_ALL,
+    PARTS, SITES, SHIPS, SURF, KEY, KEYLINE_DEFAULT, GROWTH_ALL,
     MATS: { WOOD, PLANK, POLE, IRON, GALV, ALUM, CONCRETE, ROCK, RUST, STEEL, GRASS, GRAVEL, DIRT, CORR, MESH, YEL },
     SHED_COLOURS: ['corr','galv','red','grn','buff','white'],
     SURFACES: ['gravel','conc','dirt','grass','ways'],
