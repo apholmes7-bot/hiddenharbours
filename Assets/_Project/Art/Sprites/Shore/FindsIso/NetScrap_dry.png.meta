@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: 5fb3d8642d644b9478103fb670084873
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 4728073535954428583
+    second: NetScrap_dry_0
+  - first:
+      213: 7087885298534108202
+    second: NetScrap_dry_1
+  - first:
+      213: -5613180398432929114
+    second: NetScrap_dry_2
+  - first:
+      213: 4493749933452298725
+    second: NetScrap_dry_3
+  - first:
+      213: -5730639474913288890
+    second: NetScrap_dry_4
+  - first:
+      213: -2923449230883175458
+    second: NetScrap_dry_5
+  - first:
+      213: 2635011462192106783
+    second: NetScrap_dry_6
+  - first:
+      213: -4269214924305965700
+    second: NetScrap_dry_7
+  - first:
+      213: -3227586121848166449
+    second: NetScrap_dry_8
+  - first:
+      213: 8767331364801337181
+    second: NetScrap_dry_9
+  - first:
+      213: 1968063829416095378
+    second: NetScrap_dry_10
+  - first:
+      213: -2862034119857569770
+    second: NetScrap_dry_11
+  - first:
+      213: 8182643413230935029
+    second: NetScrap_dry_12
+  - first:
+      213: -5536380586825143698
+    second: NetScrap_dry_13
+  - first:
+      213: 2870423992812597859
+    second: NetScrap_dry_14
+  - first:
+      213: 8045883371932026485
+    second: NetScrap_dry_15
+  - first:
+      213: -4208531520982035438
+    second: NetScrap_dry_16
+  - first:
+      213: 8470500518592460994
+    second: NetScrap_dry_17
+  - first:
+      213: -6276048330308710442
+    second: NetScrap_dry_18
+  - first:
+      213: 5670312921569076874
+    second: NetScrap_dry_19
+  - first:
+      213: -917245623906210805
+    second: NetScrap_dry_20
+  - first:
+      213: -8130821440130593690
+    second: NetScrap_dry_21
+  - first:
+      213: 3314551616972019965
+    second: NetScrap_dry_22
+  - first:
+      213: 3514744658328133818
+    second: NetScrap_dry_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: NetScrap_dry_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 53
+        height: 43
+      alignment: 9
+      pivot: {x: 0.509434, y: 0.4651163}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7a22d7e94dd7d9140800000000000000
+      internalID: 4728073535954428583
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NetScrap_dry_1
+      rect:
+        serializedVersion: 2
+        x: 53
+        y: 0
+        width: 53
+        height: 43
+      alignment: 9
+      pivot: {x: 0.509434, y: 0.4651163}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a2cc6d3302a3d5260800000000000000
+      internalID: 7087885298534108202
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NetScrap_dry_2
+      rect:
+        serializedVersion: 2
+        x: 106
+        y: 0
+        width: 53
+        height: 43
+      alignment: 9
+      pivot: {x: 0.509434, y: 0.4651163}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6aa3833ea2af912b0800000000000000
+      internalID: -5613180398432929114
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NetScrap_dry_3
+      rect:
+        serializedVersion: 2
+        x: 159
+        y: 0
+        width: 53
+        height: 43
+      alignment: 9
+      pivot: {x: 0.509434, y: 0.4651163}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5e90cdc61c10d5e30800000000000000
+      internalID: 4493749933452298725
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NetScrap_dry_4
+      rect:
+        serializedVersion: 2
+        x: 212
+        y: 0
+        width: 53
+        height: 43
+      alignment: 9
+      pivot: {x: 0.509434, y: 0.4651163}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 64d56f182cda870b0800000000000000
+      internalID: -5730639474913288890
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NetScrap_dry_5
+      rect:
+        serializedVersion: 2
+        x: 265
+        y: 0
+        width: 53
+        height: 43
+      alignment: 9
+      pivot: {x: 0.509434, y: 0.4651163}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ed3c152e962dd67d0800000000000000
+      internalID: -2923449230883175458
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NetScrap_dry_6
+      rect:
+        serializedVersion: 2
+        x: 318
+        y: 0
+        width: 53
+        height: 43
+      alignment: 9
+      pivot: {x: 0.509434, y: 0.4651163}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f1d0b07c6f0719420800000000000000
+      internalID: 2635011462192106783
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NetScrap_dry_7
+      rect:
+        serializedVersion: 2
+        x: 371
+        y: 0
+        width: 53
+        height: 43
+      alignment: 9
+      pivot: {x: 0.509434, y: 0.4651163}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c7d52f645a3b0c4c0800000000000000
+      internalID: -4269214924305965700
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NetScrap_dry_8
+      rect:
+        serializedVersion: 2
+        x: 424
+        y: 0
+        width: 53
+        height: 43
+      alignment: 9
+      pivot: {x: 0.509434, y: 0.4651163}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fc7624dc58f4533d0800000000000000
+      internalID: -3227586121848166449
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NetScrap_dry_9
+      rect:
+        serializedVersion: 2
+        x: 477
+        y: 0
+        width: 53
+        height: 43
+      alignment: 9
+      pivot: {x: 0.509434, y: 0.4651163}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d57df1bcc61dba970800000000000000
+      internalID: 8767331364801337181
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NetScrap_dry_10
+      rect:
+        serializedVersion: 2
+        x: 530
+        y: 0
+        width: 53
+        height: 43
+      alignment: 9
+      pivot: {x: 0.509434, y: 0.4651163}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 29e24a720a7ff4b10800000000000000
+      internalID: 1968063829416095378
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NetScrap_dry_11
+      rect:
+        serializedVersion: 2
+        x: 583
+        y: 0
+        width: 53
+        height: 43
+      alignment: 9
+      pivot: {x: 0.509434, y: 0.4651163}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 61087d6b1230848d0800000000000000
+      internalID: -2862034119857569770
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NetScrap_dry_12
+      rect:
+        serializedVersion: 2
+        x: 636
+        y: 0
+        width: 53
+        height: 43
+      alignment: 9
+      pivot: {x: 0.509434, y: 0.4651163}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5fbd151b4d69e8170800000000000000
+      internalID: 8182643413230935029
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NetScrap_dry_13
+      rect:
+        serializedVersion: 2
+        x: 689
+        y: 0
+        width: 53
+        height: 43
+      alignment: 9
+      pivot: {x: 0.509434, y: 0.4651163}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e6a2be47033da23b0800000000000000
+      internalID: -5536380586825143698
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NetScrap_dry_14
+      rect:
+        serializedVersion: 2
+        x: 742
+        y: 0
+        width: 53
+        height: 43
+      alignment: 9
+      pivot: {x: 0.509434, y: 0.4651163}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3627a5ec96bc5d720800000000000000
+      internalID: 2870423992812597859
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NetScrap_dry_15
+      rect:
+        serializedVersion: 2
+        x: 795
+        y: 0
+        width: 53
+        height: 43
+      alignment: 9
+      pivot: {x: 0.509434, y: 0.4651163}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5760b304c48b8af60800000000000000
+      internalID: 8045883371932026485
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NetScrap_dry_16
+      rect:
+        serializedVersion: 2
+        x: 848
+        y: 0
+        width: 53
+        height: 43
+      alignment: 9
+      pivot: {x: 0.509434, y: 0.4651163}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 214d4d121ea4895c0800000000000000
+      internalID: -4208531520982035438
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NetScrap_dry_17
+      rect:
+        serializedVersion: 2
+        x: 901
+        y: 0
+        width: 53
+        height: 43
+      alignment: 9
+      pivot: {x: 0.509434, y: 0.4651163}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2c83770d7534d8570800000000000000
+      internalID: 8470500518592460994
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NetScrap_dry_18
+      rect:
+        serializedVersion: 2
+        x: 954
+        y: 0
+        width: 53
+        height: 43
+      alignment: 9
+      pivot: {x: 0.509434, y: 0.4651163}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6df04c6ab4ff6e8a0800000000000000
+      internalID: -6276048330308710442
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NetScrap_dry_19
+      rect:
+        serializedVersion: 2
+        x: 1007
+        y: 0
+        width: 53
+        height: 43
+      alignment: 9
+      pivot: {x: 0.509434, y: 0.4651163}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a86ae6f3f8ff0be40800000000000000
+      internalID: 5670312921569076874
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NetScrap_dry_20
+      rect:
+        serializedVersion: 2
+        x: 1060
+        y: 0
+        width: 53
+        height: 43
+      alignment: 9
+      pivot: {x: 0.509434, y: 0.4651163}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b0ce94ff6f94543f0800000000000000
+      internalID: -917245623906210805
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NetScrap_dry_21
+      rect:
+        serializedVersion: 2
+        x: 1113
+        y: 0
+        width: 53
+        height: 43
+      alignment: 9
+      pivot: {x: 0.509434, y: 0.4651163}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 66cc2e8aaf4892f80800000000000000
+      internalID: -8130821440130593690
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NetScrap_dry_22
+      rect:
+        serializedVersion: 2
+        x: 1166
+        y: 0
+        width: 53
+        height: 43
+      alignment: 9
+      pivot: {x: 0.509434, y: 0.4651163}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: df850576227affd20800000000000000
+      internalID: 3314551616972019965
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NetScrap_dry_23
+      rect:
+        serializedVersion: 2
+        x: 1219
+        y: 0
+        width: 53
+        height: 43
+      alignment: 9
+      pivot: {x: 0.509434, y: 0.4651163}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ab0a9d315a1e6c030800000000000000
+      internalID: 3514744658328133818
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 8f6a7b774a64f034ba420e8131f6dc86
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      NetScrap_dry_0: 4728073535954428583
+      NetScrap_dry_1: 7087885298534108202
+      NetScrap_dry_10: 1968063829416095378
+      NetScrap_dry_11: -2862034119857569770
+      NetScrap_dry_12: 8182643413230935029
+      NetScrap_dry_13: -5536380586825143698
+      NetScrap_dry_14: 2870423992812597859
+      NetScrap_dry_15: 8045883371932026485
+      NetScrap_dry_16: -4208531520982035438
+      NetScrap_dry_17: 8470500518592460994
+      NetScrap_dry_18: -6276048330308710442
+      NetScrap_dry_19: 5670312921569076874
+      NetScrap_dry_2: -5613180398432929114
+      NetScrap_dry_20: -917245623906210805
+      NetScrap_dry_21: -8130821440130593690
+      NetScrap_dry_22: 3314551616972019965
+      NetScrap_dry_23: 3514744658328133818
+      NetScrap_dry_3: 4493749933452298725
+      NetScrap_dry_4: -5730639474913288890
+      NetScrap_dry_5: -2923449230883175458
+      NetScrap_dry_6: 2635011462192106783
+      NetScrap_dry_7: -4269214924305965700
+      NetScrap_dry_8: -3227586121848166449
+      NetScrap_dry_9: 8767331364801337181
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

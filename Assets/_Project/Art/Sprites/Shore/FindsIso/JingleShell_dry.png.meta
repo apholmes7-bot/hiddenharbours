@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: 9b907d46a224f5a43ab03f9b81e97dda
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 6020550019112733826
+    second: JingleShell_dry_0
+  - first:
+      213: -3115950657347207143
+    second: JingleShell_dry_1
+  - first:
+      213: -5082327774755594062
+    second: JingleShell_dry_2
+  - first:
+      213: -6587067003782499807
+    second: JingleShell_dry_3
+  - first:
+      213: -6655538231842051493
+    second: JingleShell_dry_4
+  - first:
+      213: 5488000215250733667
+    second: JingleShell_dry_5
+  - first:
+      213: -8502864968609213515
+    second: JingleShell_dry_6
+  - first:
+      213: -4789731136581029744
+    second: JingleShell_dry_7
+  - first:
+      213: 3414939738670371486
+    second: JingleShell_dry_8
+  - first:
+      213: -2889774645919087763
+    second: JingleShell_dry_9
+  - first:
+      213: 6434689131026845534
+    second: JingleShell_dry_10
+  - first:
+      213: -7606772266769699918
+    second: JingleShell_dry_11
+  - first:
+      213: 3271093628148585872
+    second: JingleShell_dry_12
+  - first:
+      213: -4210357763987225814
+    second: JingleShell_dry_13
+  - first:
+      213: -2629414821682412179
+    second: JingleShell_dry_14
+  - first:
+      213: 6004652504182753660
+    second: JingleShell_dry_15
+  - first:
+      213: 236658273710941624
+    second: JingleShell_dry_16
+  - first:
+      213: 7120407958331193983
+    second: JingleShell_dry_17
+  - first:
+      213: 4639411162544860889
+    second: JingleShell_dry_18
+  - first:
+      213: -6715133168818306286
+    second: JingleShell_dry_19
+  - first:
+      213: 5941432220132340258
+    second: JingleShell_dry_20
+  - first:
+      213: -6654062605391483055
+    second: JingleShell_dry_21
+  - first:
+      213: 6414533448520975055
+    second: JingleShell_dry_22
+  - first:
+      213: -7392338474391819664
+    second: JingleShell_dry_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: JingleShell_dry_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 21
+        height: 19
+      alignment: 9
+      pivot: {x: 0.52380955, y: 0.42105263}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 28c8fa9185a4d8350800000000000000
+      internalID: 6020550019112733826
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JingleShell_dry_1
+      rect:
+        serializedVersion: 2
+        x: 21
+        y: 0
+        width: 21
+        height: 19
+      alignment: 9
+      pivot: {x: 0.52380955, y: 0.42105263}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 910cc2bd26be1c4d0800000000000000
+      internalID: -3115950657347207143
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JingleShell_dry_2
+      rect:
+        serializedVersion: 2
+        x: 42
+        y: 0
+        width: 21
+        height: 19
+      alignment: 9
+      pivot: {x: 0.52380955, y: 0.42105263}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2b06791f0d1f779b0800000000000000
+      internalID: -5082327774755594062
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JingleShell_dry_3
+      rect:
+        serializedVersion: 2
+        x: 63
+        y: 0
+        width: 21
+        height: 19
+      alignment: 9
+      pivot: {x: 0.52380955, y: 0.42105263}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 122f8d7b5790694a0800000000000000
+      internalID: -6587067003782499807
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JingleShell_dry_4
+      rect:
+        serializedVersion: 2
+        x: 84
+        y: 0
+        width: 21
+        height: 19
+      alignment: 9
+      pivot: {x: 0.52380955, y: 0.42105263}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b5ae50e9d37c2a3a0800000000000000
+      internalID: -6655538231842051493
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JingleShell_dry_5
+      rect:
+        serializedVersion: 2
+        x: 105
+        y: 0
+        width: 21
+        height: 19
+      alignment: 9
+      pivot: {x: 0.52380955, y: 0.42105263}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 36a894d7e1b492c40800000000000000
+      internalID: 5488000215250733667
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JingleShell_dry_6
+      rect:
+        serializedVersion: 2
+        x: 126
+        y: 0
+        width: 21
+        height: 19
+      alignment: 9
+      pivot: {x: 0.52380955, y: 0.42105263}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5b35fe47c51cff980800000000000000
+      internalID: -8502864968609213515
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JingleShell_dry_7
+      rect:
+        serializedVersion: 2
+        x: 147
+        y: 0
+        width: 21
+        height: 19
+      alignment: 9
+      pivot: {x: 0.52380955, y: 0.42105263}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 090b57a88e4778db0800000000000000
+      internalID: -4789731136581029744
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JingleShell_dry_8
+      rect:
+        serializedVersion: 2
+        x: 168
+        y: 0
+        width: 21
+        height: 19
+      alignment: 9
+      pivot: {x: 0.52380955, y: 0.42105263}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e9210d4699d446f20800000000000000
+      internalID: 3414939738670371486
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JingleShell_dry_9
+      rect:
+        serializedVersion: 2
+        x: 189
+        y: 0
+        width: 21
+        height: 19
+      alignment: 9
+      pivot: {x: 0.52380955, y: 0.42105263}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d63001d254575e7d0800000000000000
+      internalID: -2889774645919087763
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JingleShell_dry_10
+      rect:
+        serializedVersion: 2
+        x: 210
+        y: 0
+        width: 21
+        height: 19
+      alignment: 9
+      pivot: {x: 0.52380955, y: 0.42105263}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e5f0ce61cab9c4950800000000000000
+      internalID: 6434689131026845534
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JingleShell_dry_11
+      rect:
+        serializedVersion: 2
+        x: 231
+        y: 0
+        width: 21
+        height: 19
+      alignment: 9
+      pivot: {x: 0.52380955, y: 0.42105263}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2bb26effce05f6690800000000000000
+      internalID: -7606772266769699918
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JingleShell_dry_12
+      rect:
+        serializedVersion: 2
+        x: 252
+        y: 0
+        width: 21
+        height: 19
+      alignment: 9
+      pivot: {x: 0.52380955, y: 0.42105263}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 09517d4e252456d20800000000000000
+      internalID: 3271093628148585872
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JingleShell_dry_13
+      rect:
+        serializedVersion: 2
+        x: 273
+        y: 0
+        width: 21
+        height: 19
+      alignment: 9
+      pivot: {x: 0.52380955, y: 0.42105263}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a23cb3ccbedc195c0800000000000000
+      internalID: -4210357763987225814
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JingleShell_dry_14
+      rect:
+        serializedVersion: 2
+        x: 294
+        y: 0
+        width: 21
+        height: 19
+      alignment: 9
+      pivot: {x: 0.52380955, y: 0.42105263}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d650972a621728bd0800000000000000
+      internalID: -2629414821682412179
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JingleShell_dry_15
+      rect:
+        serializedVersion: 2
+        x: 315
+        y: 0
+        width: 21
+        height: 19
+      alignment: 9
+      pivot: {x: 0.52380955, y: 0.42105263}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c79097773afc45350800000000000000
+      internalID: 6004652504182753660
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JingleShell_dry_16
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 0
+        width: 21
+        height: 19
+      alignment: 9
+      pivot: {x: 0.52380955, y: 0.42105263}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b5a2b13277c84300800000000000000
+      internalID: 236658273710941624
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JingleShell_dry_17
+      rect:
+        serializedVersion: 2
+        x: 357
+        y: 0
+        width: 21
+        height: 19
+      alignment: 9
+      pivot: {x: 0.52380955, y: 0.42105263}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f7af1340055c0d260800000000000000
+      internalID: 7120407958331193983
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JingleShell_dry_18
+      rect:
+        serializedVersion: 2
+        x: 378
+        y: 0
+        width: 21
+        height: 19
+      alignment: 9
+      pivot: {x: 0.52380955, y: 0.42105263}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9dee7762fdf726040800000000000000
+      internalID: 4639411162544860889
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JingleShell_dry_19
+      rect:
+        serializedVersion: 2
+        x: 399
+        y: 0
+        width: 21
+        height: 19
+      alignment: 9
+      pivot: {x: 0.52380955, y: 0.42105263}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 213442516fd0fc2a0800000000000000
+      internalID: -6715133168818306286
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JingleShell_dry_20
+      rect:
+        serializedVersion: 2
+        x: 420
+        y: 0
+        width: 21
+        height: 19
+      alignment: 9
+      pivot: {x: 0.52380955, y: 0.42105263}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2227c0a0025347250800000000000000
+      internalID: 5941432220132340258
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JingleShell_dry_21
+      rect:
+        serializedVersion: 2
+        x: 441
+        y: 0
+        width: 21
+        height: 19
+      alignment: 9
+      pivot: {x: 0.52380955, y: 0.42105263}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 15f2e6ca05508a3a0800000000000000
+      internalID: -6654062605391483055
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JingleShell_dry_22
+      rect:
+        serializedVersion: 2
+        x: 462
+        y: 0
+        width: 21
+        height: 19
+      alignment: 9
+      pivot: {x: 0.52380955, y: 0.42105263}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fc244fe8f20050950800000000000000
+      internalID: 6414533448520975055
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JingleShell_dry_23
+      rect:
+        serializedVersion: 2
+        x: 483
+        y: 0
+        width: 21
+        height: 19
+      alignment: 9
+      pivot: {x: 0.52380955, y: 0.42105263}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 07a2c66e253296990800000000000000
+      internalID: -7392338474391819664
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: af7084580e460c24a9014f138fcee00a
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      JingleShell_dry_0: 6020550019112733826
+      JingleShell_dry_1: -3115950657347207143
+      JingleShell_dry_10: 6434689131026845534
+      JingleShell_dry_11: -7606772266769699918
+      JingleShell_dry_12: 3271093628148585872
+      JingleShell_dry_13: -4210357763987225814
+      JingleShell_dry_14: -2629414821682412179
+      JingleShell_dry_15: 6004652504182753660
+      JingleShell_dry_16: 236658273710941624
+      JingleShell_dry_17: 7120407958331193983
+      JingleShell_dry_18: 4639411162544860889
+      JingleShell_dry_19: -6715133168818306286
+      JingleShell_dry_2: -5082327774755594062
+      JingleShell_dry_20: 5941432220132340258
+      JingleShell_dry_21: -6654062605391483055
+      JingleShell_dry_22: 6414533448520975055
+      JingleShell_dry_23: -7392338474391819664
+      JingleShell_dry_3: -6587067003782499807
+      JingleShell_dry_4: -6655538231842051493
+      JingleShell_dry_5: 5488000215250733667
+      JingleShell_dry_6: -8502864968609213515
+      JingleShell_dry_7: -4789731136581029744
+      JingleShell_dry_8: 3414939738670371486
+      JingleShell_dry_9: -2889774645919087763
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

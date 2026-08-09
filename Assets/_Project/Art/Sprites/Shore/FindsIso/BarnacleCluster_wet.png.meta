@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: 65d5a68ff949d3c4daa63fe182d7d99c
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -8425684882767582450
+    second: BarnacleCluster_wet_0
+  - first:
+      213: 6785151809989216792
+    second: BarnacleCluster_wet_1
+  - first:
+      213: 2437619636215310728
+    second: BarnacleCluster_wet_2
+  - first:
+      213: -8433652435668973412
+    second: BarnacleCluster_wet_3
+  - first:
+      213: -7519236910487287841
+    second: BarnacleCluster_wet_4
+  - first:
+      213: -5341925009553722560
+    second: BarnacleCluster_wet_5
+  - first:
+      213: -7439446029550869410
+    second: BarnacleCluster_wet_6
+  - first:
+      213: 5210583562423943434
+    second: BarnacleCluster_wet_7
+  - first:
+      213: 5222403451343777809
+    second: BarnacleCluster_wet_8
+  - first:
+      213: -143015550686967129
+    second: BarnacleCluster_wet_9
+  - first:
+      213: 8059504764477297911
+    second: BarnacleCluster_wet_10
+  - first:
+      213: -3885845731880935246
+    second: BarnacleCluster_wet_11
+  - first:
+      213: 5893360331542166540
+    second: BarnacleCluster_wet_12
+  - first:
+      213: 1735545039385501775
+    second: BarnacleCluster_wet_13
+  - first:
+      213: -3374196999532684095
+    second: BarnacleCluster_wet_14
+  - first:
+      213: 6864738024809779271
+    second: BarnacleCluster_wet_15
+  - first:
+      213: -3339202380725040156
+    second: BarnacleCluster_wet_16
+  - first:
+      213: -2162451885769133073
+    second: BarnacleCluster_wet_17
+  - first:
+      213: 1240545551559206887
+    second: BarnacleCluster_wet_18
+  - first:
+      213: 8951822146600926398
+    second: BarnacleCluster_wet_19
+  - first:
+      213: -3256310459335321048
+    second: BarnacleCluster_wet_20
+  - first:
+      213: 3295380329370555050
+    second: BarnacleCluster_wet_21
+  - first:
+      213: 192209590721879759
+    second: BarnacleCluster_wet_22
+  - first:
+      213: 7533929547365436151
+    second: BarnacleCluster_wet_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: BarnacleCluster_wet_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 35
+        height: 33
+      alignment: 9
+      pivot: {x: 0.51428574, y: 0.3939394}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e0b62458d34f11b80800000000000000
+      internalID: -8425684882767582450
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BarnacleCluster_wet_1
+      rect:
+        serializedVersion: 2
+        x: 35
+        y: 0
+        width: 35
+        height: 33
+      alignment: 9
+      pivot: {x: 0.51428574, y: 0.3939394}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 81a81853f93b92e50800000000000000
+      internalID: 6785151809989216792
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BarnacleCluster_wet_2
+      rect:
+        serializedVersion: 2
+        x: 70
+        y: 0
+        width: 35
+        height: 33
+      alignment: 9
+      pivot: {x: 0.51428574, y: 0.3939394}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8896122e42a24d120800000000000000
+      internalID: 2437619636215310728
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BarnacleCluster_wet_3
+      rect:
+        serializedVersion: 2
+        x: 105
+        y: 0
+        width: 35
+        height: 33
+      alignment: 9
+      pivot: {x: 0.51428574, y: 0.3939394}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c98c7dc0bc5a5fa80800000000000000
+      internalID: -8433652435668973412
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BarnacleCluster_wet_4
+      rect:
+        serializedVersion: 2
+        x: 140
+        y: 0
+        width: 35
+        height: 33
+      alignment: 9
+      pivot: {x: 0.51428574, y: 0.3939394}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fd746685edd46a790800000000000000
+      internalID: -7519236910487287841
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BarnacleCluster_wet_5
+      rect:
+        serializedVersion: 2
+        x: 175
+        y: 0
+        width: 35
+        height: 33
+      alignment: 9
+      pivot: {x: 0.51428574, y: 0.3939394}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 04376cca18badd5b0800000000000000
+      internalID: -5341925009553722560
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BarnacleCluster_wet_6
+      rect:
+        serializedVersion: 2
+        x: 210
+        y: 0
+        width: 35
+        height: 33
+      alignment: 9
+      pivot: {x: 0.51428574, y: 0.3939394}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e542ee28047c1c890800000000000000
+      internalID: -7439446029550869410
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BarnacleCluster_wet_7
+      rect:
+        serializedVersion: 2
+        x: 245
+        y: 0
+        width: 35
+        height: 33
+      alignment: 9
+      pivot: {x: 0.51428574, y: 0.3939394}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a01c4c6a426bf4840800000000000000
+      internalID: 5210583562423943434
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BarnacleCluster_wet_8
+      rect:
+        serializedVersion: 2
+        x: 280
+        y: 0
+        width: 35
+        height: 33
+      alignment: 9
+      pivot: {x: 0.51428574, y: 0.3939394}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 110be1ff444b97840800000000000000
+      internalID: 5222403451343777809
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BarnacleCluster_wet_9
+      rect:
+        serializedVersion: 2
+        x: 315
+        y: 0
+        width: 35
+        height: 33
+      alignment: 9
+      pivot: {x: 0.51428574, y: 0.3939394}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7aa42f74d18e30ef0800000000000000
+      internalID: -143015550686967129
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BarnacleCluster_wet_10
+      rect:
+        serializedVersion: 2
+        x: 350
+        y: 0
+        width: 35
+        height: 33
+      alignment: 9
+      pivot: {x: 0.51428574, y: 0.3939394}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7f4dc38d1ec19df60800000000000000
+      internalID: 8059504764477297911
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BarnacleCluster_wet_11
+      rect:
+        serializedVersion: 2
+        x: 385
+        y: 0
+        width: 35
+        height: 33
+      alignment: 9
+      pivot: {x: 0.51428574, y: 0.3939394}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2b0e44b15e3b21ac0800000000000000
+      internalID: -3885845731880935246
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BarnacleCluster_wet_12
+      rect:
+        serializedVersion: 2
+        x: 420
+        y: 0
+        width: 35
+        height: 33
+      alignment: 9
+      pivot: {x: 0.51428574, y: 0.3939394}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c0cf2f64ffb69c150800000000000000
+      internalID: 5893360331542166540
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BarnacleCluster_wet_13
+      rect:
+        serializedVersion: 2
+        x: 455
+        y: 0
+        width: 35
+        height: 33
+      alignment: 9
+      pivot: {x: 0.51428574, y: 0.3939394}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f40a34c9405e51810800000000000000
+      internalID: 1735545039385501775
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BarnacleCluster_wet_14
+      rect:
+        serializedVersion: 2
+        x: 490
+        y: 0
+        width: 35
+        height: 33
+      alignment: 9
+      pivot: {x: 0.51428574, y: 0.3939394}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1cc5aa8c4b17c21d0800000000000000
+      internalID: -3374196999532684095
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BarnacleCluster_wet_15
+      rect:
+        serializedVersion: 2
+        x: 525
+        y: 0
+        width: 35
+        height: 33
+      alignment: 9
+      pivot: {x: 0.51428574, y: 0.3939394}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 74057e4dcd2744f50800000000000000
+      internalID: 6864738024809779271
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BarnacleCluster_wet_16
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 0
+        width: 35
+        height: 33
+      alignment: 9
+      pivot: {x: 0.51428574, y: 0.3939394}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4ebceb76025c8a1d0800000000000000
+      internalID: -3339202380725040156
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BarnacleCluster_wet_17
+      rect:
+        serializedVersion: 2
+        x: 595
+        y: 0
+        width: 35
+        height: 33
+      alignment: 9
+      pivot: {x: 0.51428574, y: 0.3939394}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fe37bd0977d6df1e0800000000000000
+      internalID: -2162451885769133073
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BarnacleCluster_wet_18
+      rect:
+        serializedVersion: 2
+        x: 630
+        y: 0
+        width: 35
+        height: 33
+      alignment: 9
+      pivot: {x: 0.51428574, y: 0.3939394}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7e7a0604b9d473110800000000000000
+      internalID: 1240545551559206887
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BarnacleCluster_wet_19
+      rect:
+        serializedVersion: 2
+        x: 665
+        y: 0
+        width: 35
+        height: 33
+      alignment: 9
+      pivot: {x: 0.51428574, y: 0.3939394}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ebc7f9440d24b3c70800000000000000
+      internalID: 8951822146600926398
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BarnacleCluster_wet_20
+      rect:
+        serializedVersion: 2
+        x: 700
+        y: 0
+        width: 35
+        height: 33
+      alignment: 9
+      pivot: {x: 0.51428574, y: 0.3939394}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 82adde0d3e24fc2d0800000000000000
+      internalID: -3256310459335321048
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BarnacleCluster_wet_21
+      rect:
+        serializedVersion: 2
+        x: 735
+        y: 0
+        width: 35
+        height: 33
+      alignment: 9
+      pivot: {x: 0.51428574, y: 0.3939394}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aa211fb23fa8bbd20800000000000000
+      internalID: 3295380329370555050
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BarnacleCluster_wet_22
+      rect:
+        serializedVersion: 2
+        x: 770
+        y: 0
+        width: 35
+        height: 33
+      alignment: 9
+      pivot: {x: 0.51428574, y: 0.3939394}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fce9669ba9ddaa200800000000000000
+      internalID: 192209590721879759
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BarnacleCluster_wet_23
+      rect:
+        serializedVersion: 2
+        x: 805
+        y: 0
+        width: 35
+        height: 33
+      alignment: 9
+      pivot: {x: 0.51428574, y: 0.3939394}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7fa4981c105ed8860800000000000000
+      internalID: 7533929547365436151
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: b6f3eaee321ef6b4f9849919772f4fcd
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      BarnacleCluster_wet_0: -8425684882767582450
+      BarnacleCluster_wet_1: 6785151809989216792
+      BarnacleCluster_wet_10: 8059504764477297911
+      BarnacleCluster_wet_11: -3885845731880935246
+      BarnacleCluster_wet_12: 5893360331542166540
+      BarnacleCluster_wet_13: 1735545039385501775
+      BarnacleCluster_wet_14: -3374196999532684095
+      BarnacleCluster_wet_15: 6864738024809779271
+      BarnacleCluster_wet_16: -3339202380725040156
+      BarnacleCluster_wet_17: -2162451885769133073
+      BarnacleCluster_wet_18: 1240545551559206887
+      BarnacleCluster_wet_19: 8951822146600926398
+      BarnacleCluster_wet_2: 2437619636215310728
+      BarnacleCluster_wet_20: -3256310459335321048
+      BarnacleCluster_wet_21: 3295380329370555050
+      BarnacleCluster_wet_22: 192209590721879759
+      BarnacleCluster_wet_23: 7533929547365436151
+      BarnacleCluster_wet_3: -8433652435668973412
+      BarnacleCluster_wet_4: -7519236910487287841
+      BarnacleCluster_wet_5: -5341925009553722560
+      BarnacleCluster_wet_6: -7439446029550869410
+      BarnacleCluster_wet_7: 5210583562423943434
+      BarnacleCluster_wet_8: 5222403451343777809
+      BarnacleCluster_wet_9: -143015550686967129
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

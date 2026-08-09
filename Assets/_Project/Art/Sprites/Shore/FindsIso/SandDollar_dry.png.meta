@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: 9225601a163f5fe43bcb2281b9a4348c
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 1643544418482205199
+    second: SandDollar_dry_0
+  - first:
+      213: 7560112991458829363
+    second: SandDollar_dry_1
+  - first:
+      213: 1487533116342654824
+    second: SandDollar_dry_2
+  - first:
+      213: 1247608875844087886
+    second: SandDollar_dry_3
+  - first:
+      213: 1128975727982935621
+    second: SandDollar_dry_4
+  - first:
+      213: -5494034018634318338
+    second: SandDollar_dry_5
+  - first:
+      213: -1115666628053792161
+    second: SandDollar_dry_6
+  - first:
+      213: -7387308136881379805
+    second: SandDollar_dry_7
+  - first:
+      213: -8220632091349768517
+    second: SandDollar_dry_8
+  - first:
+      213: -4613484480869892963
+    second: SandDollar_dry_9
+  - first:
+      213: 8241530163256174308
+    second: SandDollar_dry_10
+  - first:
+      213: -6780653475956094412
+    second: SandDollar_dry_11
+  - first:
+      213: -7713582750333409190
+    second: SandDollar_dry_12
+  - first:
+      213: -4113795363036475581
+    second: SandDollar_dry_13
+  - first:
+      213: 8796237369024474946
+    second: SandDollar_dry_14
+  - first:
+      213: -7541939578473195978
+    second: SandDollar_dry_15
+  - first:
+      213: -8649500693792462176
+    second: SandDollar_dry_16
+  - first:
+      213: 8104228103057238454
+    second: SandDollar_dry_17
+  - first:
+      213: -2465738145145299885
+    second: SandDollar_dry_18
+  - first:
+      213: 2901542605664424258
+    second: SandDollar_dry_19
+  - first:
+      213: 2821117915984304739
+    second: SandDollar_dry_20
+  - first:
+      213: -2839299098409063696
+    second: SandDollar_dry_21
+  - first:
+      213: 2315546417459304595
+    second: SandDollar_dry_22
+  - first:
+      213: 4431200850729162444
+    second: SandDollar_dry_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: SandDollar_dry_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f023534d0fa0fc610800000000000000
+      internalID: 1643544418482205199
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_dry_1
+      rect:
+        serializedVersion: 2
+        x: 27
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 33428b5e5baeae860800000000000000
+      internalID: 7560112991458829363
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_dry_2
+      rect:
+        serializedVersion: 2
+        x: 54
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 867db3fec77c4a410800000000000000
+      internalID: 1487533116342654824
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_dry_3
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e40bf4799a5605110800000000000000
+      internalID: 1247608875844087886
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_dry_4
+      rect:
+        serializedVersion: 2
+        x: 108
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 54ef57a617deaaf00800000000000000
+      internalID: 1128975727982935621
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_dry_5
+      rect:
+        serializedVersion: 2
+        x: 135
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: efdb36f2b2541c3b0800000000000000
+      internalID: -5494034018634318338
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_dry_6
+      rect:
+        serializedVersion: 2
+        x: 162
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f5a8813ec1b5480f0800000000000000
+      internalID: -1115666628053792161
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_dry_7
+      rect:
+        serializedVersion: 2
+        x: 189
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 32625de93620b7990800000000000000
+      internalID: -7387308136881379805
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_dry_8
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bb6abedeaa27aed80800000000000000
+      internalID: -8220632091349768517
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_dry_9
+      rect:
+        serializedVersion: 2
+        x: 243
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d9cf8f4de4c99ffb0800000000000000
+      internalID: -4613484480869892963
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_dry_10
+      rect:
+        serializedVersion: 2
+        x: 270
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4e62d8a940ccf5270800000000000000
+      internalID: 8241530163256174308
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_dry_11
+      rect:
+        serializedVersion: 2
+        x: 297
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 43a8e9cc69746e1a0800000000000000
+      internalID: -6780653475956094412
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_dry_12
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a58ebcc5b59d3f490800000000000000
+      internalID: -7713582750333409190
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_dry_13
+      rect:
+        serializedVersion: 2
+        x: 351
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 34fcf83c9ecd8e6c0800000000000000
+      internalID: -4113795363036475581
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_dry_14
+      rect:
+        serializedVersion: 2
+        x: 378
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 24f68bc5843821a70800000000000000
+      internalID: 8796237369024474946
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_dry_15
+      rect:
+        serializedVersion: 2
+        x: 405
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 63655ab89e5a55790800000000000000
+      internalID: -7541939578473195978
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_dry_16
+      rect:
+        serializedVersion: 2
+        x: 432
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0aa610e22fcc6f780800000000000000
+      internalID: -8649500693792462176
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_dry_17
+      rect:
+        serializedVersion: 2
+        x: 459
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6b9e67d8580087070800000000000000
+      internalID: 8104228103057238454
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_dry_18
+      rect:
+        serializedVersion: 2
+        x: 486
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 35cdb759830f7cdd0800000000000000
+      internalID: -2465738145145299885
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_dry_19
+      rect:
+        serializedVersion: 2
+        x: 513
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2411a4770a9544820800000000000000
+      internalID: 2901542605664424258
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_dry_20
+      rect:
+        serializedVersion: 2
+        x: 540
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 36a1cb33ccf962720800000000000000
+      internalID: 2821117915984304739
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_dry_21
+      rect:
+        serializedVersion: 2
+        x: 567
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0faad346388c898d0800000000000000
+      internalID: -2839299098409063696
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_dry_22
+      rect:
+        serializedVersion: 2
+        x: 594
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3981799c239722020800000000000000
+      internalID: 2315546417459304595
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_dry_23
+      rect:
+        serializedVersion: 2
+        x: 621
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cc6de1c32b9ce7d30800000000000000
+      internalID: 4431200850729162444
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 1bd65a8d464a8584b9f0fba35e114088
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      SandDollar_dry_0: 1643544418482205199
+      SandDollar_dry_1: 7560112991458829363
+      SandDollar_dry_10: 8241530163256174308
+      SandDollar_dry_11: -6780653475956094412
+      SandDollar_dry_12: -7713582750333409190
+      SandDollar_dry_13: -4113795363036475581
+      SandDollar_dry_14: 8796237369024474946
+      SandDollar_dry_15: -7541939578473195978
+      SandDollar_dry_16: -8649500693792462176
+      SandDollar_dry_17: 8104228103057238454
+      SandDollar_dry_18: -2465738145145299885
+      SandDollar_dry_19: 2901542605664424258
+      SandDollar_dry_2: 1487533116342654824
+      SandDollar_dry_20: 2821117915984304739
+      SandDollar_dry_21: -2839299098409063696
+      SandDollar_dry_22: 2315546417459304595
+      SandDollar_dry_23: 4431200850729162444
+      SandDollar_dry_3: 1247608875844087886
+      SandDollar_dry_4: 1128975727982935621
+      SandDollar_dry_5: -5494034018634318338
+      SandDollar_dry_6: -1115666628053792161
+      SandDollar_dry_7: -7387308136881379805
+      SandDollar_dry_8: -8220632091349768517
+      SandDollar_dry_9: -4613484480869892963
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

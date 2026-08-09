@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: 40df0296926f5974b938d7c28c893299
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -3239967406091060388
+    second: TrapLath_wet_0
+  - first:
+      213: -7630151477911348078
+    second: TrapLath_wet_1
+  - first:
+      213: 2374353569769289762
+    second: TrapLath_wet_2
+  - first:
+      213: -6417896547106968666
+    second: TrapLath_wet_3
+  - first:
+      213: -7145587652622381859
+    second: TrapLath_wet_4
+  - first:
+      213: -3640386975048383297
+    second: TrapLath_wet_5
+  - first:
+      213: -5482908566778001906
+    second: TrapLath_wet_6
+  - first:
+      213: -8326816239619072089
+    second: TrapLath_wet_7
+  - first:
+      213: -1240996422283155663
+    second: TrapLath_wet_8
+  - first:
+      213: 5758606698274970748
+    second: TrapLath_wet_9
+  - first:
+      213: -2676026734709783760
+    second: TrapLath_wet_10
+  - first:
+      213: 7895081507513420524
+    second: TrapLath_wet_11
+  - first:
+      213: 6934850140955173250
+    second: TrapLath_wet_12
+  - first:
+      213: -8883256376677989480
+    second: TrapLath_wet_13
+  - first:
+      213: -4175305117746910468
+    second: TrapLath_wet_14
+  - first:
+      213: 7675228681219579494
+    second: TrapLath_wet_15
+  - first:
+      213: -2914649447003902740
+    second: TrapLath_wet_16
+  - first:
+      213: 3260093091678124968
+    second: TrapLath_wet_17
+  - first:
+      213: 1211405360934287135
+    second: TrapLath_wet_18
+  - first:
+      213: -6705894971704663378
+    second: TrapLath_wet_19
+  - first:
+      213: 1947273396539758693
+    second: TrapLath_wet_20
+  - first:
+      213: -8126218263480732778
+    second: TrapLath_wet_21
+  - first:
+      213: -4536379328452174018
+    second: TrapLath_wet_22
+  - first:
+      213: -4499770638442652711
+    second: TrapLath_wet_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: TrapLath_wet_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 74
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c5b391c6fc25903d0800000000000000
+      internalID: -3239967406091060388
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_wet_1
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 74
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 29c1ca838a14c1690800000000000000
+      internalID: -7630151477911348078
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_wet_2
+      rect:
+        serializedVersion: 2
+        x: 184
+        y: 74
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2287749edf563f020800000000000000
+      internalID: 2374353569769289762
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_wet_3
+      rect:
+        serializedVersion: 2
+        x: 276
+        y: 74
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6abab78081d0fe6a0800000000000000
+      internalID: -6417896547106968666
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_wet_4
+      rect:
+        serializedVersion: 2
+        x: 368
+        y: 74
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ddc860e83e5c5dc90800000000000000
+      internalID: -7145587652622381859
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_wet_5
+      rect:
+        serializedVersion: 2
+        x: 460
+        y: 74
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fb44843755fba7dc0800000000000000
+      internalID: -3640386975048383297
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_wet_6
+      rect:
+        serializedVersion: 2
+        x: 552
+        y: 74
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e06404d45bbc8e3b0800000000000000
+      internalID: -5482908566778001906
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_wet_7
+      rect:
+        serializedVersion: 2
+        x: 644
+        y: 74
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7af1d875fb4317c80800000000000000
+      internalID: -8326816239619072089
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_wet_8
+      rect:
+        serializedVersion: 2
+        x: 736
+        y: 74
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 137284a345817cee0800000000000000
+      internalID: -1240996422283155663
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_wet_9
+      rect:
+        serializedVersion: 2
+        x: 828
+        y: 74
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c7c5ddb184eaaef40800000000000000
+      internalID: 5758606698274970748
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_wet_10
+      rect:
+        serializedVersion: 2
+        x: 920
+        y: 74
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 033cc2cecd7dcdad0800000000000000
+      internalID: -2676026734709783760
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_wet_11
+      rect:
+        serializedVersion: 2
+        x: 1012
+        y: 74
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ceac7181dc6f09d60800000000000000
+      internalID: 7895081507513420524
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_wet_12
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2816336f5798d3060800000000000000
+      internalID: 6934850140955173250
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_wet_13
+      rect:
+        serializedVersion: 2
+        x: 92
+        y: 0
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8938263146558b480800000000000000
+      internalID: -8883256376677989480
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_wet_14
+      rect:
+        serializedVersion: 2
+        x: 184
+        y: 0
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cfa23dbfd165e06c0800000000000000
+      internalID: -4175305117746910468
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_wet_15
+      rect:
+        serializedVersion: 2
+        x: 276
+        y: 0
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 66e9bf902d3e38a60800000000000000
+      internalID: 7675228681219579494
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_wet_16
+      rect:
+        serializedVersion: 2
+        x: 368
+        y: 0
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cec2b8a35c51d87d0800000000000000
+      internalID: -2914649447003902740
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_wet_17
+      rect:
+        serializedVersion: 2
+        x: 460
+        y: 0
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8abfd28e46d2e3d20800000000000000
+      internalID: 3260093091678124968
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_wet_18
+      rect:
+        serializedVersion: 2
+        x: 552
+        y: 0
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f17fd79e1c6cfc010800000000000000
+      internalID: 1211405360934287135
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_wet_19
+      rect:
+        serializedVersion: 2
+        x: 644
+        y: 0
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ea227767d00efe2a0800000000000000
+      internalID: -6705894971704663378
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_wet_20
+      rect:
+        serializedVersion: 2
+        x: 736
+        y: 0
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 568125946da160b10800000000000000
+      internalID: 1947273396539758693
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_wet_21
+      rect:
+        serializedVersion: 2
+        x: 828
+        y: 0
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 69370fd3b8fd93f80800000000000000
+      internalID: -8126218263480732778
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_wet_22
+      rect:
+        serializedVersion: 2
+        x: 920
+        y: 0
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e3fde29190b8b01c0800000000000000
+      internalID: -4536379328452174018
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: TrapLath_wet_23
+      rect:
+        serializedVersion: 2
+        x: 1012
+        y: 0
+        width: 92
+        height: 74
+      alignment: 9
+      pivot: {x: 0.5, y: 0.45945945}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9db94e4f17a9d81c0800000000000000
+      internalID: -4499770638442652711
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: f19ef67d3a171a9419bb74d00645e04b
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      TrapLath_wet_0: -3239967406091060388
+      TrapLath_wet_1: -7630151477911348078
+      TrapLath_wet_10: -2676026734709783760
+      TrapLath_wet_11: 7895081507513420524
+      TrapLath_wet_12: 6934850140955173250
+      TrapLath_wet_13: -8883256376677989480
+      TrapLath_wet_14: -4175305117746910468
+      TrapLath_wet_15: 7675228681219579494
+      TrapLath_wet_16: -2914649447003902740
+      TrapLath_wet_17: 3260093091678124968
+      TrapLath_wet_18: 1211405360934287135
+      TrapLath_wet_19: -6705894971704663378
+      TrapLath_wet_2: 2374353569769289762
+      TrapLath_wet_20: 1947273396539758693
+      TrapLath_wet_21: -8126218263480732778
+      TrapLath_wet_22: -4536379328452174018
+      TrapLath_wet_23: -4499770638442652711
+      TrapLath_wet_3: -6417896547106968666
+      TrapLath_wet_4: -7145587652622381859
+      TrapLath_wet_5: -3640386975048383297
+      TrapLath_wet_6: -5482908566778001906
+      TrapLath_wet_7: -8326816239619072089
+      TrapLath_wet_8: -1240996422283155663
+      TrapLath_wet_9: 5758606698274970748
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

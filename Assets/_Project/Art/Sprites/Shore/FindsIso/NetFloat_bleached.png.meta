@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: 694f85dfd2d5df44bb1bcf10132f0e5d
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 4219871473829875651
+    second: NetFloat_bleached_0
+  - first:
+      213: 895971629870963544
+    second: NetFloat_bleached_1
+  - first:
+      213: 7032680916575091471
+    second: NetFloat_bleached_2
+  - first:
+      213: 8396098842252853612
+    second: NetFloat_bleached_3
+  - first:
+      213: 4649483563730155309
+    second: NetFloat_bleached_4
+  - first:
+      213: 3972590124551886481
+    second: NetFloat_bleached_5
+  - first:
+      213: 3966039015192532641
+    second: NetFloat_bleached_6
+  - first:
+      213: -772994602346343504
+    second: NetFloat_bleached_7
+  - first:
+      213: 4809291005163166572
+    second: NetFloat_bleached_8
+  - first:
+      213: 4163820547398074882
+    second: NetFloat_bleached_9
+  - first:
+      213: 4838507253482464026
+    second: NetFloat_bleached_10
+  - first:
+      213: 5224582630468274593
+    second: NetFloat_bleached_11
+  - first:
+      213: 5841823602311127268
+    second: NetFloat_bleached_12
+  - first:
+      213: -8838457197507286688
+    second: NetFloat_bleached_13
+  - first:
+      213: -7155121529832070606
+    second: NetFloat_bleached_14
+  - first:
+      213: 6517148292553840092
+    second: NetFloat_bleached_15
+  - first:
+      213: 496214806310699929
+    second: NetFloat_bleached_16
+  - first:
+      213: 3574344784806357721
+    second: NetFloat_bleached_17
+  - first:
+      213: 403256691590730745
+    second: NetFloat_bleached_18
+  - first:
+      213: -5382668867951688596
+    second: NetFloat_bleached_19
+  - first:
+      213: 7122411931490695082
+    second: NetFloat_bleached_20
+  - first:
+      213: 8848908643176197996
+    second: NetFloat_bleached_21
+  - first:
+      213: -3251853801790614122
+    second: NetFloat_bleached_22
+  - first:
+      213: -6325657120666590856
+    second: NetFloat_bleached_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: NetFloat_bleached_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 33
+        height: 41
+      alignment: 9
+      pivot: {x: 0.5151515, y: 0.31707317}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3cf0f636fbeff8a30800000000000000
+      internalID: 4219871473829875651
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NetFloat_bleached_1
+      rect:
+        serializedVersion: 2
+        x: 33
+        y: 0
+        width: 33
+        height: 41
+      alignment: 9
+      pivot: {x: 0.5151515, y: 0.31707317}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 85b594743712f6c00800000000000000
+      internalID: 895971629870963544
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NetFloat_bleached_2
+      rect:
+        serializedVersion: 2
+        x: 66
+        y: 0
+        width: 33
+        height: 41
+      alignment: 9
+      pivot: {x: 0.5151515, y: 0.31707317}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f0b702b680a199160800000000000000
+      internalID: 7032680916575091471
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NetFloat_bleached_3
+      rect:
+        serializedVersion: 2
+        x: 99
+        y: 0
+        width: 33
+        height: 41
+      alignment: 9
+      pivot: {x: 0.5151515, y: 0.31707317}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c61cc8f996fe48470800000000000000
+      internalID: 8396098842252853612
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NetFloat_bleached_4
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 0
+        width: 33
+        height: 41
+      alignment: 9
+      pivot: {x: 0.5151515, y: 0.31707317}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d27372dcaa8468040800000000000000
+      internalID: 4649483563730155309
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NetFloat_bleached_5
+      rect:
+        serializedVersion: 2
+        x: 165
+        y: 0
+        width: 33
+        height: 41
+      alignment: 9
+      pivot: {x: 0.5151515, y: 0.31707317}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 196d32caba9712730800000000000000
+      internalID: 3972590124551886481
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NetFloat_bleached_6
+      rect:
+        serializedVersion: 2
+        x: 198
+        y: 0
+        width: 33
+        height: 41
+      alignment: 9
+      pivot: {x: 0.5151515, y: 0.31707317}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1a614e9a8733a0730800000000000000
+      internalID: 3966039015192532641
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NetFloat_bleached_7
+      rect:
+        serializedVersion: 2
+        x: 231
+        y: 0
+        width: 33
+        height: 41
+      alignment: 9
+      pivot: {x: 0.5151515, y: 0.31707317}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0b31ad13185c545f0800000000000000
+      internalID: -772994602346343504
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NetFloat_bleached_8
+      rect:
+        serializedVersion: 2
+        x: 264
+        y: 0
+        width: 33
+        height: 41
+      alignment: 9
+      pivot: {x: 0.5151515, y: 0.31707317}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c6b5b3040b80eb240800000000000000
+      internalID: 4809291005163166572
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NetFloat_bleached_9
+      rect:
+        serializedVersion: 2
+        x: 297
+        y: 0
+        width: 33
+        height: 41
+      alignment: 9
+      pivot: {x: 0.5151515, y: 0.31707317}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 202822c1abcd8c930800000000000000
+      internalID: 4163820547398074882
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NetFloat_bleached_10
+      rect:
+        serializedVersion: 2
+        x: 330
+        y: 0
+        width: 33
+        height: 41
+      alignment: 9
+      pivot: {x: 0.5151515, y: 0.31707317}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a1329f626b4d52340800000000000000
+      internalID: 4838507253482464026
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NetFloat_bleached_11
+      rect:
+        serializedVersion: 2
+        x: 363
+        y: 0
+        width: 33
+        height: 41
+      alignment: 9
+      pivot: {x: 0.5151515, y: 0.31707317}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1a9ccbca832718840800000000000000
+      internalID: 5224582630468274593
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NetFloat_bleached_12
+      rect:
+        serializedVersion: 2
+        x: 396
+        y: 0
+        width: 33
+        height: 41
+      alignment: 9
+      pivot: {x: 0.5151515, y: 0.31707317}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4e06f307d93521150800000000000000
+      internalID: 5841823602311127268
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NetFloat_bleached_13
+      rect:
+        serializedVersion: 2
+        x: 429
+        y: 0
+        width: 33
+        height: 41
+      alignment: 9
+      pivot: {x: 0.5151515, y: 0.31707317}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 069651cc10e775580800000000000000
+      internalID: -8838457197507286688
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NetFloat_bleached_14
+      rect:
+        serializedVersion: 2
+        x: 462
+        y: 0
+        width: 33
+        height: 41
+      alignment: 9
+      pivot: {x: 0.5151515, y: 0.31707317}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2322c99c0e6e3bc90800000000000000
+      internalID: -7155121529832070606
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NetFloat_bleached_15
+      rect:
+        serializedVersion: 2
+        x: 495
+        y: 0
+        width: 33
+        height: 41
+      alignment: 9
+      pivot: {x: 0.5151515, y: 0.31707317}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cd5173eb7df817a50800000000000000
+      internalID: 6517148292553840092
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NetFloat_bleached_16
+      rect:
+        serializedVersion: 2
+        x: 528
+        y: 0
+        width: 33
+        height: 41
+      alignment: 9
+      pivot: {x: 0.5151515, y: 0.31707317}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 993407ebcb8e2e600800000000000000
+      internalID: 496214806310699929
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NetFloat_bleached_17
+      rect:
+        serializedVersion: 2
+        x: 561
+        y: 0
+        width: 33
+        height: 41
+      alignment: 9
+      pivot: {x: 0.5151515, y: 0.31707317}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9da2723e4af9a9130800000000000000
+      internalID: 3574344784806357721
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NetFloat_bleached_18
+      rect:
+        serializedVersion: 2
+        x: 594
+        y: 0
+        width: 33
+        height: 41
+      alignment: 9
+      pivot: {x: 0.5151515, y: 0.31707317}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9f3909f03d7a89500800000000000000
+      internalID: 403256691590730745
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NetFloat_bleached_19
+      rect:
+        serializedVersion: 2
+        x: 627
+        y: 0
+        width: 33
+        height: 41
+      alignment: 9
+      pivot: {x: 0.5151515, y: 0.31707317}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c648f26ee2bec45b0800000000000000
+      internalID: -5382668867951688596
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NetFloat_bleached_20
+      rect:
+        serializedVersion: 2
+        x: 660
+        y: 0
+        width: 33
+        height: 41
+      alignment: 9
+      pivot: {x: 0.5151515, y: 0.31707317}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aa7b1806ae3e7d260800000000000000
+      internalID: 7122411931490695082
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NetFloat_bleached_21
+      rect:
+        serializedVersion: 2
+        x: 693
+        y: 0
+        width: 33
+        height: 41
+      alignment: 9
+      pivot: {x: 0.5151515, y: 0.31707317}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c6fa6660783adca70800000000000000
+      internalID: 8848908643176197996
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NetFloat_bleached_22
+      rect:
+        serializedVersion: 2
+        x: 726
+        y: 0
+        width: 33
+        height: 41
+      alignment: 9
+      pivot: {x: 0.5151515, y: 0.31707317}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 69554c242381fd2d0800000000000000
+      internalID: -3251853801790614122
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NetFloat_bleached_23
+      rect:
+        serializedVersion: 2
+        x: 759
+        y: 0
+        width: 33
+        height: 41
+      alignment: 9
+      pivot: {x: 0.5151515, y: 0.31707317}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8716fbf0d50c638a0800000000000000
+      internalID: -6325657120666590856
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: f2fa50b61f452144388a47bacc03c3ad
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      NetFloat_bleached_0: 4219871473829875651
+      NetFloat_bleached_1: 895971629870963544
+      NetFloat_bleached_10: 4838507253482464026
+      NetFloat_bleached_11: 5224582630468274593
+      NetFloat_bleached_12: 5841823602311127268
+      NetFloat_bleached_13: -8838457197507286688
+      NetFloat_bleached_14: -7155121529832070606
+      NetFloat_bleached_15: 6517148292553840092
+      NetFloat_bleached_16: 496214806310699929
+      NetFloat_bleached_17: 3574344784806357721
+      NetFloat_bleached_18: 403256691590730745
+      NetFloat_bleached_19: -5382668867951688596
+      NetFloat_bleached_2: 7032680916575091471
+      NetFloat_bleached_20: 7122411931490695082
+      NetFloat_bleached_21: 8848908643176197996
+      NetFloat_bleached_22: -3251853801790614122
+      NetFloat_bleached_23: -6325657120666590856
+      NetFloat_bleached_3: 8396098842252853612
+      NetFloat_bleached_4: 4649483563730155309
+      NetFloat_bleached_5: 3972590124551886481
+      NetFloat_bleached_6: 3966039015192532641
+      NetFloat_bleached_7: -772994602346343504
+      NetFloat_bleached_8: 4809291005163166572
+      NetFloat_bleached_9: 4163820547398074882
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

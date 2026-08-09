@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: f539a28f04f084e49a5aa3d58141599f
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 3728527964422542837
+    second: WhelkEggMass_dry_0
+  - first:
+      213: 716584666519988180
+    second: WhelkEggMass_dry_1
+  - first:
+      213: -7286289207115674946
+    second: WhelkEggMass_dry_2
+  - first:
+      213: 4270986005847492719
+    second: WhelkEggMass_dry_3
+  - first:
+      213: -8785823677245426532
+    second: WhelkEggMass_dry_4
+  - first:
+      213: -268099247214070179
+    second: WhelkEggMass_dry_5
+  - first:
+      213: -7061934409059818437
+    second: WhelkEggMass_dry_6
+  - first:
+      213: 8012071293436337461
+    second: WhelkEggMass_dry_7
+  - first:
+      213: 8053469792512737492
+    second: WhelkEggMass_dry_8
+  - first:
+      213: 1302899325361844038
+    second: WhelkEggMass_dry_9
+  - first:
+      213: -374484331676480781
+    second: WhelkEggMass_dry_10
+  - first:
+      213: -6727779524320219314
+    second: WhelkEggMass_dry_11
+  - first:
+      213: 73670386064779798
+    second: WhelkEggMass_dry_12
+  - first:
+      213: -6686048017325348385
+    second: WhelkEggMass_dry_13
+  - first:
+      213: 3993601448813062788
+    second: WhelkEggMass_dry_14
+  - first:
+      213: -824376593204310472
+    second: WhelkEggMass_dry_15
+  - first:
+      213: 4484482895644339135
+    second: WhelkEggMass_dry_16
+  - first:
+      213: -8800195393599372923
+    second: WhelkEggMass_dry_17
+  - first:
+      213: -8216660488028119119
+    second: WhelkEggMass_dry_18
+  - first:
+      213: -7552278935426276329
+    second: WhelkEggMass_dry_19
+  - first:
+      213: 364320271165936693
+    second: WhelkEggMass_dry_20
+  - first:
+      213: -5735291430754025564
+    second: WhelkEggMass_dry_21
+  - first:
+      213: 82447005702568269
+    second: WhelkEggMass_dry_22
+  - first:
+      213: 4586654492914348073
+    second: WhelkEggMass_dry_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: WhelkEggMass_dry_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 39
+        height: 38
+      alignment: 9
+      pivot: {x: 0.51282054, y: 0.39473686}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5f51486dd646eb330800000000000000
+      internalID: 3728527964422542837
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WhelkEggMass_dry_1
+      rect:
+        serializedVersion: 2
+        x: 39
+        y: 0
+        width: 39
+        height: 38
+      alignment: 9
+      pivot: {x: 0.51282054, y: 0.39473686}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4d76a6325f1d1f900800000000000000
+      internalID: 716584666519988180
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WhelkEggMass_dry_2
+      rect:
+        serializedVersion: 2
+        x: 78
+        y: 0
+        width: 39
+        height: 38
+      alignment: 9
+      pivot: {x: 0.51282054, y: 0.39473686}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eba8b1f0296e1ea90800000000000000
+      internalID: -7286289207115674946
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WhelkEggMass_dry_3
+      rect:
+        serializedVersion: 2
+        x: 117
+        y: 0
+        width: 39
+        height: 38
+      alignment: 9
+      pivot: {x: 0.51282054, y: 0.39473686}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f684437c427954b30800000000000000
+      internalID: 4270986005847492719
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WhelkEggMass_dry_4
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 0
+        width: 39
+        height: 38
+      alignment: 9
+      pivot: {x: 0.51282054, y: 0.39473686}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c94f1923aeb721680800000000000000
+      internalID: -8785823677245426532
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WhelkEggMass_dry_5
+      rect:
+        serializedVersion: 2
+        x: 195
+        y: 0
+        width: 39
+        height: 38
+      alignment: 9
+      pivot: {x: 0.51282054, y: 0.39473686}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d567145b725874cf0800000000000000
+      internalID: -268099247214070179
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WhelkEggMass_dry_6
+      rect:
+        serializedVersion: 2
+        x: 234
+        y: 0
+        width: 39
+        height: 38
+      alignment: 9
+      pivot: {x: 0.51282054, y: 0.39473686}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b34a1e81218fefd90800000000000000
+      internalID: -7061934409059818437
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WhelkEggMass_dry_7
+      rect:
+        serializedVersion: 2
+        x: 273
+        y: 0
+        width: 39
+        height: 38
+      alignment: 9
+      pivot: {x: 0.51282054, y: 0.39473686}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 53d90604468903f60800000000000000
+      internalID: 8012071293436337461
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WhelkEggMass_dry_8
+      rect:
+        serializedVersion: 2
+        x: 312
+        y: 0
+        width: 39
+        height: 38
+      alignment: 9
+      pivot: {x: 0.51282054, y: 0.39473686}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4d08f007b1ca3cf60800000000000000
+      internalID: 8053469792512737492
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WhelkEggMass_dry_9
+      rect:
+        serializedVersion: 2
+        x: 351
+        y: 0
+        width: 39
+        height: 38
+      alignment: 9
+      pivot: {x: 0.51282054, y: 0.39473686}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 64fe94a8804d41210800000000000000
+      internalID: 1302899325361844038
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WhelkEggMass_dry_10
+      rect:
+        serializedVersion: 2
+        x: 390
+        y: 0
+        width: 39
+        height: 38
+      alignment: 9
+      pivot: {x: 0.51282054, y: 0.39473686}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3fa49740c709dcaf0800000000000000
+      internalID: -374484331676480781
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WhelkEggMass_dry_11
+      rect:
+        serializedVersion: 2
+        x: 429
+        y: 0
+        width: 39
+        height: 38
+      alignment: 9
+      pivot: {x: 0.51282054, y: 0.39473686}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e4f2fbdfa2022a2a0800000000000000
+      internalID: -6727779524320219314
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WhelkEggMass_dry_12
+      rect:
+        serializedVersion: 2
+        x: 468
+        y: 0
+        width: 39
+        height: 38
+      alignment: 9
+      pivot: {x: 0.51282054, y: 0.39473686}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 61a6bd763dab50100800000000000000
+      internalID: 73670386064779798
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WhelkEggMass_dry_13
+      rect:
+        serializedVersion: 2
+        x: 507
+        y: 0
+        width: 39
+        height: 38
+      alignment: 9
+      pivot: {x: 0.51282054, y: 0.39473686}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fd92e10a0c26633a0800000000000000
+      internalID: -6686048017325348385
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WhelkEggMass_dry_14
+      rect:
+        serializedVersion: 2
+        x: 546
+        y: 0
+        width: 39
+        height: 38
+      alignment: 9
+      pivot: {x: 0.51282054, y: 0.39473686}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 48aecf2db5f1c6730800000000000000
+      internalID: 3993601448813062788
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WhelkEggMass_dry_15
+      rect:
+        serializedVersion: 2
+        x: 585
+        y: 0
+        width: 39
+        height: 38
+      alignment: 9
+      pivot: {x: 0.51282054, y: 0.39473686}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 83e09e03bd93f84f0800000000000000
+      internalID: -824376593204310472
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WhelkEggMass_dry_16
+      rect:
+        serializedVersion: 2
+        x: 624
+        y: 0
+        width: 39
+        height: 38
+      alignment: 9
+      pivot: {x: 0.51282054, y: 0.39473686}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fbb223c0f651c3e30800000000000000
+      internalID: 4484482895644339135
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WhelkEggMass_dry_17
+      rect:
+        serializedVersion: 2
+        x: 663
+        y: 0
+        width: 39
+        height: 38
+      alignment: 9
+      pivot: {x: 0.51282054, y: 0.39473686}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5810b7a3aec6fd580800000000000000
+      internalID: -8800195393599372923
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WhelkEggMass_dry_18
+      rect:
+        serializedVersion: 2
+        x: 702
+        y: 0
+        width: 39
+        height: 38
+      alignment: 9
+      pivot: {x: 0.51282054, y: 0.39473686}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1bf9813e1de88fd80800000000000000
+      internalID: -8216660488028119119
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WhelkEggMass_dry_19
+      rect:
+        serializedVersion: 2
+        x: 741
+        y: 0
+        width: 39
+        height: 38
+      alignment: 9
+      pivot: {x: 0.51282054, y: 0.39473686}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7146049625ae03790800000000000000
+      internalID: -7552278935426276329
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WhelkEggMass_dry_20
+      rect:
+        serializedVersion: 2
+        x: 780
+        y: 0
+        width: 39
+        height: 38
+      alignment: 9
+      pivot: {x: 0.51282054, y: 0.39473686}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 534d15b3b535e0500800000000000000
+      internalID: 364320271165936693
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WhelkEggMass_dry_21
+      rect:
+        serializedVersion: 2
+        x: 819
+        y: 0
+        width: 39
+        height: 38
+      alignment: 9
+      pivot: {x: 0.51282054, y: 0.39473686}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4af7092a4d62860b0800000000000000
+      internalID: -5735291430754025564
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WhelkEggMass_dry_22
+      rect:
+        serializedVersion: 2
+        x: 858
+        y: 0
+        width: 39
+        height: 38
+      alignment: 9
+      pivot: {x: 0.51282054, y: 0.39473686}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d4932b76d19e42100800000000000000
+      internalID: 82447005702568269
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WhelkEggMass_dry_23
+      rect:
+        serializedVersion: 2
+        x: 897
+        y: 0
+        width: 39
+        height: 38
+      alignment: 9
+      pivot: {x: 0.51282054, y: 0.39473686}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 920fb9dc5f117af30800000000000000
+      internalID: 4586654492914348073
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: ee9cefc23618d92498d13f2615ab331b
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      WhelkEggMass_dry_0: 3728527964422542837
+      WhelkEggMass_dry_1: 716584666519988180
+      WhelkEggMass_dry_10: -374484331676480781
+      WhelkEggMass_dry_11: -6727779524320219314
+      WhelkEggMass_dry_12: 73670386064779798
+      WhelkEggMass_dry_13: -6686048017325348385
+      WhelkEggMass_dry_14: 3993601448813062788
+      WhelkEggMass_dry_15: -824376593204310472
+      WhelkEggMass_dry_16: 4484482895644339135
+      WhelkEggMass_dry_17: -8800195393599372923
+      WhelkEggMass_dry_18: -8216660488028119119
+      WhelkEggMass_dry_19: -7552278935426276329
+      WhelkEggMass_dry_2: -7286289207115674946
+      WhelkEggMass_dry_20: 364320271165936693
+      WhelkEggMass_dry_21: -5735291430754025564
+      WhelkEggMass_dry_22: 82447005702568269
+      WhelkEggMass_dry_23: 4586654492914348073
+      WhelkEggMass_dry_3: 4270986005847492719
+      WhelkEggMass_dry_4: -8785823677245426532
+      WhelkEggMass_dry_5: -268099247214070179
+      WhelkEggMass_dry_6: -7061934409059818437
+      WhelkEggMass_dry_7: 8012071293436337461
+      WhelkEggMass_dry_8: 8053469792512737492
+      WhelkEggMass_dry_9: 1302899325361844038
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

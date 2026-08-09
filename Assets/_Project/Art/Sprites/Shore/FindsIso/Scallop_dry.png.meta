@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: 1c5a3df83628b174592495a149552a87
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -839582656670925268
+    second: Scallop_dry_0
+  - first:
+      213: 8967733832902026262
+    second: Scallop_dry_1
+  - first:
+      213: 5863905280601218535
+    second: Scallop_dry_2
+  - first:
+      213: -8015537871236937884
+    second: Scallop_dry_3
+  - first:
+      213: -6095337656394665981
+    second: Scallop_dry_4
+  - first:
+      213: -8651412739521538632
+    second: Scallop_dry_5
+  - first:
+      213: -214540442611106383
+    second: Scallop_dry_6
+  - first:
+      213: 280308506446921814
+    second: Scallop_dry_7
+  - first:
+      213: 4622089226502286462
+    second: Scallop_dry_8
+  - first:
+      213: 163308933339113582
+    second: Scallop_dry_9
+  - first:
+      213: 7642973367481180226
+    second: Scallop_dry_10
+  - first:
+      213: 6167677223215901773
+    second: Scallop_dry_11
+  - first:
+      213: -30473136911198553
+    second: Scallop_dry_12
+  - first:
+      213: 5954029445011614452
+    second: Scallop_dry_13
+  - first:
+      213: -7046047629118693685
+    second: Scallop_dry_14
+  - first:
+      213: -5606676150150362321
+    second: Scallop_dry_15
+  - first:
+      213: -4845875029413258135
+    second: Scallop_dry_16
+  - first:
+      213: -699272199895007250
+    second: Scallop_dry_17
+  - first:
+      213: 2384009307326138626
+    second: Scallop_dry_18
+  - first:
+      213: 7318335065200914021
+    second: Scallop_dry_19
+  - first:
+      213: 1354433071207347895
+    second: Scallop_dry_20
+  - first:
+      213: 1099207410037823935
+    second: Scallop_dry_21
+  - first:
+      213: 1354231692627390071
+    second: Scallop_dry_22
+  - first:
+      213: -4089715641388141740
+    second: Scallop_dry_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Scallop_dry_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 31
+        height: 30
+      alignment: 9
+      pivot: {x: 0.516129, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c2efc85a5043954f0800000000000000
+      internalID: -839582656670925268
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scallop_dry_1
+      rect:
+        serializedVersion: 2
+        x: 31
+        y: 0
+        width: 31
+        height: 30
+      alignment: 9
+      pivot: {x: 0.516129, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 614a06e686ac37c70800000000000000
+      internalID: 8967733832902026262
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scallop_dry_2
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 0
+        width: 31
+        height: 30
+      alignment: 9
+      pivot: {x: 0.516129, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7edd5cec8c6c06150800000000000000
+      internalID: 5863905280601218535
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scallop_dry_3
+      rect:
+        serializedVersion: 2
+        x: 93
+        y: 0
+        width: 31
+        height: 30
+      alignment: 9
+      pivot: {x: 0.516129, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4674b3536c613c090800000000000000
+      internalID: -8015537871236937884
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scallop_dry_4
+      rect:
+        serializedVersion: 2
+        x: 124
+        y: 0
+        width: 31
+        height: 30
+      alignment: 9
+      pivot: {x: 0.516129, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 300b88c22b2096ba0800000000000000
+      internalID: -6095337656394665981
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scallop_dry_5
+      rect:
+        serializedVersion: 2
+        x: 155
+        y: 0
+        width: 31
+        height: 30
+      alignment: 9
+      pivot: {x: 0.516129, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b5978753f100f780800000000000000
+      internalID: -8651412739521538632
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scallop_dry_6
+      rect:
+        serializedVersion: 2
+        x: 186
+        y: 0
+        width: 31
+        height: 30
+      alignment: 9
+      pivot: {x: 0.516129, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1bdb538aa9cc50df0800000000000000
+      internalID: -214540442611106383
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scallop_dry_7
+      rect:
+        serializedVersion: 2
+        x: 217
+        y: 0
+        width: 31
+        height: 30
+      alignment: 9
+      pivot: {x: 0.516129, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6500a4af91bd3e300800000000000000
+      internalID: 280308506446921814
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scallop_dry_8
+      rect:
+        serializedVersion: 2
+        x: 248
+        y: 0
+        width: 31
+        height: 30
+      alignment: 9
+      pivot: {x: 0.516129, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e7c24d1a9a5f42040800000000000000
+      internalID: 4622089226502286462
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scallop_dry_9
+      rect:
+        serializedVersion: 2
+        x: 279
+        y: 0
+        width: 31
+        height: 30
+      alignment: 9
+      pivot: {x: 0.516129, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e6863501c90344200800000000000000
+      internalID: 163308933339113582
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scallop_dry_10
+      rect:
+        serializedVersion: 2
+        x: 310
+        y: 0
+        width: 31
+        height: 30
+      alignment: 9
+      pivot: {x: 0.516129, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 240ac7498cb411a60800000000000000
+      internalID: 7642973367481180226
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scallop_dry_11
+      rect:
+        serializedVersion: 2
+        x: 341
+        y: 0
+        width: 31
+        height: 30
+      alignment: 9
+      pivot: {x: 0.516129, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d4c2d0bb1cdf79550800000000000000
+      internalID: 6167677223215901773
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scallop_dry_12
+      rect:
+        serializedVersion: 2
+        x: 372
+        y: 0
+        width: 31
+        height: 30
+      alignment: 9
+      pivot: {x: 0.516129, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7a6573be7dcb39ff0800000000000000
+      internalID: -30473136911198553
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scallop_dry_13
+      rect:
+        serializedVersion: 2
+        x: 403
+        y: 0
+        width: 31
+        height: 30
+      alignment: 9
+      pivot: {x: 0.516129, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4fa22240c36f0a250800000000000000
+      internalID: 5954029445011614452
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scallop_dry_14
+      rect:
+        serializedVersion: 2
+        x: 434
+        y: 0
+        width: 31
+        height: 30
+      alignment: 9
+      pivot: {x: 0.516129, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bce95eb4309673e90800000000000000
+      internalID: -7046047629118693685
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scallop_dry_15
+      rect:
+        serializedVersion: 2
+        x: 465
+        y: 0
+        width: 31
+        height: 30
+      alignment: 9
+      pivot: {x: 0.516129, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f2b02a33fb51132b0800000000000000
+      internalID: -5606676150150362321
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scallop_dry_16
+      rect:
+        serializedVersion: 2
+        x: 496
+        y: 0
+        width: 31
+        height: 30
+      alignment: 9
+      pivot: {x: 0.516129, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 96c13e5d55effbcb0800000000000000
+      internalID: -4845875029413258135
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scallop_dry_17
+      rect:
+        serializedVersion: 2
+        x: 527
+        y: 0
+        width: 31
+        height: 30
+      alignment: 9
+      pivot: {x: 0.516129, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eefb3fb93afab46f0800000000000000
+      internalID: -699272199895007250
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scallop_dry_18
+      rect:
+        serializedVersion: 2
+        x: 558
+        y: 0
+        width: 31
+        height: 30
+      alignment: 9
+      pivot: {x: 0.516129, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 209466085d3b51120800000000000000
+      internalID: 2384009307326138626
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scallop_dry_19
+      rect:
+        serializedVersion: 2
+        x: 589
+        y: 0
+        width: 31
+        height: 30
+      alignment: 9
+      pivot: {x: 0.516129, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 56ee594b7f2ff8560800000000000000
+      internalID: 7318335065200914021
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scallop_dry_20
+      rect:
+        serializedVersion: 2
+        x: 620
+        y: 0
+        width: 31
+        height: 30
+      alignment: 9
+      pivot: {x: 0.516129, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7b6fa51c3b9ebc210800000000000000
+      internalID: 1354433071207347895
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scallop_dry_21
+      rect:
+        serializedVersion: 2
+        x: 651
+        y: 0
+        width: 31
+        height: 30
+      alignment: 9
+      pivot: {x: 0.516129, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fb918c9c05b214f00800000000000000
+      internalID: 1099207410037823935
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scallop_dry_22
+      rect:
+        serializedVersion: 2
+        x: 682
+        y: 0
+        width: 31
+        height: 30
+      alignment: 9
+      pivot: {x: 0.516129, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 77ea1a6ac823bc210800000000000000
+      internalID: 1354231692627390071
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scallop_dry_23
+      rect:
+        serializedVersion: 2
+        x: 713
+        y: 0
+        width: 31
+        height: 30
+      alignment: 9
+      pivot: {x: 0.516129, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 45373bada496e37c0800000000000000
+      internalID: -4089715641388141740
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: ad033d1141d286b4db746bdb60a198d1
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Scallop_dry_0: -839582656670925268
+      Scallop_dry_1: 8967733832902026262
+      Scallop_dry_10: 7642973367481180226
+      Scallop_dry_11: 6167677223215901773
+      Scallop_dry_12: -30473136911198553
+      Scallop_dry_13: 5954029445011614452
+      Scallop_dry_14: -7046047629118693685
+      Scallop_dry_15: -5606676150150362321
+      Scallop_dry_16: -4845875029413258135
+      Scallop_dry_17: -699272199895007250
+      Scallop_dry_18: 2384009307326138626
+      Scallop_dry_19: 7318335065200914021
+      Scallop_dry_2: 5863905280601218535
+      Scallop_dry_20: 1354433071207347895
+      Scallop_dry_21: 1099207410037823935
+      Scallop_dry_22: 1354231692627390071
+      Scallop_dry_23: -4089715641388141740
+      Scallop_dry_3: -8015537871236937884
+      Scallop_dry_4: -6095337656394665981
+      Scallop_dry_5: -8651412739521538632
+      Scallop_dry_6: -214540442611106383
+      Scallop_dry_7: 280308506446921814
+      Scallop_dry_8: 4622089226502286462
+      Scallop_dry_9: 163308933339113582
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

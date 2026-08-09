@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: e8ebeda57859a0844a5fe804ec9121e0
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -977677579732049740
+    second: Driftwood_dry_0
+  - first:
+      213: 6184271682205599911
+    second: Driftwood_dry_1
+  - first:
+      213: 8716646162009063065
+    second: Driftwood_dry_2
+  - first:
+      213: -7638980123262775652
+    second: Driftwood_dry_3
+  - first:
+      213: -2032470354662011776
+    second: Driftwood_dry_4
+  - first:
+      213: 6199635789718958202
+    second: Driftwood_dry_5
+  - first:
+      213: -3311059699589465594
+    second: Driftwood_dry_6
+  - first:
+      213: -2721424645978244655
+    second: Driftwood_dry_7
+  - first:
+      213: -2403976986618427193
+    second: Driftwood_dry_8
+  - first:
+      213: -1136121119967473968
+    second: Driftwood_dry_9
+  - first:
+      213: -7947094138224867729
+    second: Driftwood_dry_10
+  - first:
+      213: -1226632626352512589
+    second: Driftwood_dry_11
+  - first:
+      213: -8643769336548447764
+    second: Driftwood_dry_12
+  - first:
+      213: -5723144642486411755
+    second: Driftwood_dry_13
+  - first:
+      213: 9071107995997630073
+    second: Driftwood_dry_14
+  - first:
+      213: 6863339796770202514
+    second: Driftwood_dry_15
+  - first:
+      213: 6333066898013629153
+    second: Driftwood_dry_16
+  - first:
+      213: -777050100661527180
+    second: Driftwood_dry_17
+  - first:
+      213: -7207505545538603726
+    second: Driftwood_dry_18
+  - first:
+      213: 8902636356715938545
+    second: Driftwood_dry_19
+  - first:
+      213: 6906971936643878644
+    second: Driftwood_dry_20
+  - first:
+      213: 5866644078265442711
+    second: Driftwood_dry_21
+  - first:
+      213: -7976550835604408978
+    second: Driftwood_dry_22
+  - first:
+      213: -4247470379231059353
+    second: Driftwood_dry_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Driftwood_dry_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 121
+        width: 128
+        height: 121
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38842976}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4b02533db679e62f0800000000000000
+      internalID: -977677579732049740
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Driftwood_dry_1
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 121
+        width: 128
+        height: 121
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38842976}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7a84f5c4452f2d550800000000000000
+      internalID: 6184271682205599911
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Driftwood_dry_2
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 121
+        width: 128
+        height: 121
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38842976}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 99e7257608fb7f870800000000000000
+      internalID: 8716646162009063065
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Driftwood_dry_3
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 121
+        width: 128
+        height: 121
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38842976}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c9e07aa0d04ecf590800000000000000
+      internalID: -7638980123262775652
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Driftwood_dry_4
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 121
+        width: 128
+        height: 121
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38842976}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 08ccbdd1bf63bc3e0800000000000000
+      internalID: -2032470354662011776
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Driftwood_dry_5
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 121
+        width: 128
+        height: 121
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38842976}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a703ff657e7890650800000000000000
+      internalID: 6199635789718958202
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Driftwood_dry_6
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 121
+        width: 128
+        height: 121
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38842976}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 60abbd7feb0cc02d0800000000000000
+      internalID: -3311059699589465594
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Driftwood_dry_7
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 121
+        width: 128
+        height: 121
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38842976}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1d9397504be8b3ad0800000000000000
+      internalID: -2721424645978244655
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Driftwood_dry_8
+      rect:
+        serializedVersion: 2
+        x: 1024
+        y: 121
+        width: 128
+        height: 121
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38842976}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7c80560eaab53aed0800000000000000
+      internalID: -2403976986618427193
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Driftwood_dry_9
+      rect:
+        serializedVersion: 2
+        x: 1152
+        y: 121
+        width: 128
+        height: 121
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38842976}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0de058e5cdfab30f0800000000000000
+      internalID: -1136121119967473968
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Driftwood_dry_10
+      rect:
+        serializedVersion: 2
+        x: 1280
+        y: 121
+        width: 128
+        height: 121
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38842976}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f66848e9cff36b190800000000000000
+      internalID: -7947094138224867729
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Driftwood_dry_11
+      rect:
+        serializedVersion: 2
+        x: 1408
+        y: 121
+        width: 128
+        height: 121
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38842976}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3b1aa5410202afee0800000000000000
+      internalID: -1226632626352512589
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Driftwood_dry_12
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 128
+        height: 121
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38842976}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ce9ad96c5992b0880800000000000000
+      internalID: -8643769336548447764
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Driftwood_dry_13
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 128
+        height: 121
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38842976}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 51eda6a254e4390b0800000000000000
+      internalID: -5723144642486411755
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Driftwood_dry_14
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 128
+        height: 121
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38842976}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 97ee4ac59ac03ed70800000000000000
+      internalID: 9071107995997630073
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Driftwood_dry_15
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 0
+        width: 128
+        height: 121
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38842976}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2932a4f7e2b7f3f50800000000000000
+      internalID: 6863339796770202514
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Driftwood_dry_16
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 0
+        width: 128
+        height: 121
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38842976}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1ea23ea2ac293e750800000000000000
+      internalID: 6333066898013629153
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Driftwood_dry_17
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 0
+        width: 128
+        height: 121
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38842976}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 47d5369ec0d5735f0800000000000000
+      internalID: -777050100661527180
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Driftwood_dry_18
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 0
+        width: 128
+        height: 121
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38842976}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2357381b4ebc9fb90800000000000000
+      internalID: -7207505545538603726
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Driftwood_dry_19
+      rect:
+        serializedVersion: 2
+        x: 896
+        y: 0
+        width: 128
+        height: 121
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38842976}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1f2088629948c8b70800000000000000
+      internalID: 8902636356715938545
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Driftwood_dry_20
+      rect:
+        serializedVersion: 2
+        x: 1024
+        y: 0
+        width: 128
+        height: 121
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38842976}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4fe0045b16e7adf50800000000000000
+      internalID: 6906971936643878644
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Driftwood_dry_21
+      rect:
+        serializedVersion: 2
+        x: 1152
+        y: 0
+        width: 128
+        height: 121
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38842976}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 79129a4d4b18a6150800000000000000
+      internalID: 5866644078265442711
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Driftwood_dry_22
+      rect:
+        serializedVersion: 2
+        x: 1280
+        y: 0
+        width: 128
+        height: 121
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38842976}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e6534fec6499d4190800000000000000
+      internalID: -7976550835604408978
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Driftwood_dry_23
+      rect:
+        serializedVersion: 2
+        x: 1408
+        y: 0
+        width: 128
+        height: 121
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38842976}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 76260f3b134fd05c0800000000000000
+      internalID: -4247470379231059353
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5983f0040cae46e4aac61d1a21a402fa
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Driftwood_dry_0: -977677579732049740
+      Driftwood_dry_1: 6184271682205599911
+      Driftwood_dry_10: -7947094138224867729
+      Driftwood_dry_11: -1226632626352512589
+      Driftwood_dry_12: -8643769336548447764
+      Driftwood_dry_13: -5723144642486411755
+      Driftwood_dry_14: 9071107995997630073
+      Driftwood_dry_15: 6863339796770202514
+      Driftwood_dry_16: 6333066898013629153
+      Driftwood_dry_17: -777050100661527180
+      Driftwood_dry_18: -7207505545538603726
+      Driftwood_dry_19: 8902636356715938545
+      Driftwood_dry_2: 8716646162009063065
+      Driftwood_dry_20: 6906971936643878644
+      Driftwood_dry_21: 5866644078265442711
+      Driftwood_dry_22: -7976550835604408978
+      Driftwood_dry_23: -4247470379231059353
+      Driftwood_dry_3: -7638980123262775652
+      Driftwood_dry_4: -2032470354662011776
+      Driftwood_dry_5: 6199635789718958202
+      Driftwood_dry_6: -3311059699589465594
+      Driftwood_dry_7: -2721424645978244655
+      Driftwood_dry_8: -2403976986618427193
+      Driftwood_dry_9: -1136121119967473968
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: f957f673e90f4ed4789067405d97cf39
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8424713253538089327
+    second: SandDollar_wet_0
+  - first:
+      213: -8186767464132434754
+    second: SandDollar_wet_1
+  - first:
+      213: 1409244354977288050
+    second: SandDollar_wet_2
+  - first:
+      213: 8755682078131634236
+    second: SandDollar_wet_3
+  - first:
+      213: 4574116324662717162
+    second: SandDollar_wet_4
+  - first:
+      213: 7541287509830122960
+    second: SandDollar_wet_5
+  - first:
+      213: -3026273670897882980
+    second: SandDollar_wet_6
+  - first:
+      213: -7189427266143565616
+    second: SandDollar_wet_7
+  - first:
+      213: -4662767312459247126
+    second: SandDollar_wet_8
+  - first:
+      213: 8870365599110590180
+    second: SandDollar_wet_9
+  - first:
+      213: 425158472031801275
+    second: SandDollar_wet_10
+  - first:
+      213: 6036891035392928592
+    second: SandDollar_wet_11
+  - first:
+      213: 8276071005652692869
+    second: SandDollar_wet_12
+  - first:
+      213: -3160026314147779098
+    second: SandDollar_wet_13
+  - first:
+      213: -2010528031192392354
+    second: SandDollar_wet_14
+  - first:
+      213: 5149451425899320344
+    second: SandDollar_wet_15
+  - first:
+      213: -3030400639651459053
+    second: SandDollar_wet_16
+  - first:
+      213: 7360000755411517243
+    second: SandDollar_wet_17
+  - first:
+      213: -1363205462459122079
+    second: SandDollar_wet_18
+  - first:
+      213: -6108325632282273915
+    second: SandDollar_wet_19
+  - first:
+      213: 563904936312634026
+    second: SandDollar_wet_20
+  - first:
+      213: -2991205251804089617
+    second: SandDollar_wet_21
+  - first:
+      213: 1588835385386518914
+    second: SandDollar_wet_22
+  - first:
+      213: 4026735251893755903
+    second: SandDollar_wet_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: SandDollar_wet_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f69c9ab61189ae470800000000000000
+      internalID: 8424713253538089327
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_wet_1
+      rect:
+        serializedVersion: 2
+        x: 27
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eb429a1ed52c26e80800000000000000
+      internalID: -8186767464132434754
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_wet_2
+      rect:
+        serializedVersion: 2
+        x: 54
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 27f452c3644ae8310800000000000000
+      internalID: 1409244354977288050
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_wet_3
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c304a41e57e628970800000000000000
+      internalID: 8755682078131634236
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_wet_4
+      rect:
+        serializedVersion: 2
+        x: 108
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aea26d400968a7f30800000000000000
+      internalID: 4574116324662717162
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_wet_5
+      rect:
+        serializedVersion: 2
+        x: 135
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0ddb384e80908a860800000000000000
+      internalID: 7541287509830122960
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_wet_6
+      rect:
+        serializedVersion: 2
+        x: 162
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c98a30551248006d0800000000000000
+      internalID: -3026273670897882980
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_wet_7
+      rect:
+        serializedVersion: 2
+        x: 189
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0d8410f1ef50a3c90800000000000000
+      internalID: -7189427266143565616
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_wet_8
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ae1509e65d58a4fb0800000000000000
+      internalID: -4662767312459247126
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_wet_9
+      rect:
+        serializedVersion: 2
+        x: 243
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4eee4d2e38ed91b70800000000000000
+      internalID: 8870365599110590180
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_wet_10
+      rect:
+        serializedVersion: 2
+        x: 270
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bbf04b2b06776e500800000000000000
+      internalID: 425158472031801275
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_wet_11
+      rect:
+        serializedVersion: 2
+        x: 297
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 05be550796857c350800000000000000
+      internalID: 6036891035392928592
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_wet_12
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 58fa6db2bb28ad270800000000000000
+      internalID: 8276071005652692869
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_wet_13
+      rect:
+        serializedVersion: 2
+        x: 351
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6eda5505fc45524d0800000000000000
+      internalID: -3160026314147779098
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_wet_14
+      rect:
+        serializedVersion: 2
+        x: 378
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e5ddfc9686b2914e0800000000000000
+      internalID: -2010528031192392354
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_wet_15
+      rect:
+        serializedVersion: 2
+        x: 405
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8149bd4f9c6867740800000000000000
+      internalID: 5149451425899320344
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_wet_16
+      rect:
+        serializedVersion: 2
+        x: 432
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 310557a8caad1f5d0800000000000000
+      internalID: -3030400639651459053
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_wet_17
+      rect:
+        serializedVersion: 2
+        x: 459
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b3ff8ec21b9f32660800000000000000
+      internalID: 7360000755411517243
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_wet_18
+      rect:
+        serializedVersion: 2
+        x: 486
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 16e704ebadbe41de0800000000000000
+      internalID: -1363205462459122079
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_wet_19
+      rect:
+        serializedVersion: 2
+        x: 513
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 587d663633eda3ba0800000000000000
+      internalID: -6108325632282273915
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_wet_20
+      rect:
+        serializedVersion: 2
+        x: 540
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aaaf0084d8463d700800000000000000
+      internalID: 563904936312634026
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_wet_21
+      rect:
+        serializedVersion: 2
+        x: 567
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fe23febebaa1d76d0800000000000000
+      internalID: -2991205251804089617
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_wet_22
+      rect:
+        serializedVersion: 2
+        x: 594
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 289c8807d5dac0610800000000000000
+      internalID: 1588835385386518914
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SandDollar_wet_23
+      rect:
+        serializedVersion: 2
+        x: 621
+        y: 0
+        width: 27
+        height: 24
+      alignment: 9
+      pivot: {x: 0.5185185, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fff9ba58066d1e730800000000000000
+      internalID: 4026735251893755903
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: f58f1045554920f46a65eef60c9ebb7f
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      SandDollar_wet_0: 8424713253538089327
+      SandDollar_wet_1: -8186767464132434754
+      SandDollar_wet_10: 425158472031801275
+      SandDollar_wet_11: 6036891035392928592
+      SandDollar_wet_12: 8276071005652692869
+      SandDollar_wet_13: -3160026314147779098
+      SandDollar_wet_14: -2010528031192392354
+      SandDollar_wet_15: 5149451425899320344
+      SandDollar_wet_16: -3030400639651459053
+      SandDollar_wet_17: 7360000755411517243
+      SandDollar_wet_18: -1363205462459122079
+      SandDollar_wet_19: -6108325632282273915
+      SandDollar_wet_2: 1409244354977288050
+      SandDollar_wet_20: 563904936312634026
+      SandDollar_wet_21: -2991205251804089617
+      SandDollar_wet_22: 1588835385386518914
+      SandDollar_wet_23: 4026735251893755903
+      SandDollar_wet_3: 8755682078131634236
+      SandDollar_wet_4: 4574116324662717162
+      SandDollar_wet_5: 7541287509830122960
+      SandDollar_wet_6: -3026273670897882980
+      SandDollar_wet_7: -7189427266143565616
+      SandDollar_wet_8: -4662767312459247126
+      SandDollar_wet_9: 8870365599110590180
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

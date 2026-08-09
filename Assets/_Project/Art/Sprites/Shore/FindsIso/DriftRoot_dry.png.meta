@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: eceb2b73f3e096943ba5c66b3a0d42cb
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 3667112831666459723
+    second: DriftRoot_dry_0
+  - first:
+      213: 4276479655910520152
+    second: DriftRoot_dry_1
+  - first:
+      213: 6454425368239569886
+    second: DriftRoot_dry_2
+  - first:
+      213: 9154485670706259727
+    second: DriftRoot_dry_3
+  - first:
+      213: 2654058940602620415
+    second: DriftRoot_dry_4
+  - first:
+      213: -6818394953398820793
+    second: DriftRoot_dry_5
+  - first:
+      213: -5803487583808387275
+    second: DriftRoot_dry_6
+  - first:
+      213: 936464954241663230
+    second: DriftRoot_dry_7
+  - first:
+      213: -8351548041829857251
+    second: DriftRoot_dry_8
+  - first:
+      213: 8215588974290330355
+    second: DriftRoot_dry_9
+  - first:
+      213: 558260609231371881
+    second: DriftRoot_dry_10
+  - first:
+      213: -5977498968542211640
+    second: DriftRoot_dry_11
+  - first:
+      213: 5572300328414648183
+    second: DriftRoot_dry_12
+  - first:
+      213: -6744686343004853056
+    second: DriftRoot_dry_13
+  - first:
+      213: -2280263648218128298
+    second: DriftRoot_dry_14
+  - first:
+      213: -3411931028206870048
+    second: DriftRoot_dry_15
+  - first:
+      213: 2393386944163889909
+    second: DriftRoot_dry_16
+  - first:
+      213: -442459167779898623
+    second: DriftRoot_dry_17
+  - first:
+      213: -4926047644389811722
+    second: DriftRoot_dry_18
+  - first:
+      213: 6408793795987838692
+    second: DriftRoot_dry_19
+  - first:
+      213: 7132973956311093425
+    second: DriftRoot_dry_20
+  - first:
+      213: -1694016708979167179
+    second: DriftRoot_dry_21
+  - first:
+      213: -4606299386221447815
+    second: DriftRoot_dry_22
+  - first:
+      213: -3031342805372973682
+    second: DriftRoot_dry_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: DriftRoot_dry_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 101
+        width: 105
+        height: 101
+      alignment: 9
+      pivot: {x: 0.50476193, y: 0.38613862}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b4491c2f0b334e230800000000000000
+      internalID: 3667112831666459723
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftRoot_dry_1
+      rect:
+        serializedVersion: 2
+        x: 105
+        y: 101
+        width: 105
+        height: 101
+      alignment: 9
+      pivot: {x: 0.50476193, y: 0.38613862}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8553bbbd69b195b30800000000000000
+      internalID: 4276479655910520152
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftRoot_dry_2
+      rect:
+        serializedVersion: 2
+        x: 210
+        y: 101
+        width: 105
+        height: 101
+      alignment: 9
+      pivot: {x: 0.50476193, y: 0.38613862}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: edb7037eca9b29950800000000000000
+      internalID: 6454425368239569886
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftRoot_dry_3
+      rect:
+        serializedVersion: 2
+        x: 315
+        y: 101
+        width: 105
+        height: 101
+      alignment: 9
+      pivot: {x: 0.50476193, y: 0.38613862}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f07a9d707344b0f70800000000000000
+      internalID: 9154485670706259727
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftRoot_dry_4
+      rect:
+        serializedVersion: 2
+        x: 420
+        y: 101
+        width: 105
+        height: 101
+      alignment: 9
+      pivot: {x: 0.50476193, y: 0.38613862}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ff9919f6b8c15d420800000000000000
+      internalID: 2654058940602620415
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftRoot_dry_5
+      rect:
+        serializedVersion: 2
+        x: 525
+        y: 101
+        width: 105
+        height: 101
+      alignment: 9
+      pivot: {x: 0.50476193, y: 0.38613862}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 740e8505ae13061a0800000000000000
+      internalID: -6818394953398820793
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftRoot_dry_6
+      rect:
+        serializedVersion: 2
+        x: 630
+        y: 101
+        width: 105
+        height: 101
+      alignment: 9
+      pivot: {x: 0.50476193, y: 0.38613862}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 53706bc6aced57fa0800000000000000
+      internalID: -5803487583808387275
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftRoot_dry_7
+      rect:
+        serializedVersion: 2
+        x: 735
+        y: 101
+        width: 105
+        height: 101
+      alignment: 9
+      pivot: {x: 0.50476193, y: 0.38613862}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ef04d2e0aedfefc00800000000000000
+      internalID: 936464954241663230
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftRoot_dry_8
+      rect:
+        serializedVersion: 2
+        x: 840
+        y: 101
+        width: 105
+        height: 101
+      alignment: 9
+      pivot: {x: 0.50476193, y: 0.38613862}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d184f1aed47591c80800000000000000
+      internalID: -8351548041829857251
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftRoot_dry_9
+      rect:
+        serializedVersion: 2
+        x: 945
+        y: 101
+        width: 105
+        height: 101
+      alignment: 9
+      pivot: {x: 0.50476193, y: 0.38613862}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3f2e031e4a2a30270800000000000000
+      internalID: 8215588974290330355
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftRoot_dry_10
+      rect:
+        serializedVersion: 2
+        x: 1050
+        y: 101
+        width: 105
+        height: 101
+      alignment: 9
+      pivot: {x: 0.50476193, y: 0.38613862}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 96e3459f0175fb700800000000000000
+      internalID: 558260609231371881
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftRoot_dry_11
+      rect:
+        serializedVersion: 2
+        x: 1155
+        y: 101
+        width: 105
+        height: 101
+      alignment: 9
+      pivot: {x: 0.50476193, y: 0.38613862}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8c117c6bb58ab0da0800000000000000
+      internalID: -5977498968542211640
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftRoot_dry_12
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 105
+        height: 101
+      alignment: 9
+      pivot: {x: 0.50476193, y: 0.38613862}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 77792f810a9c45d40800000000000000
+      internalID: 5572300328414648183
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftRoot_dry_13
+      rect:
+        serializedVersion: 2
+        x: 105
+        y: 0
+        width: 105
+        height: 101
+      alignment: 9
+      pivot: {x: 0.50476193, y: 0.38613862}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0cc64c3818f0662a0800000000000000
+      internalID: -6744686343004853056
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftRoot_dry_14
+      rect:
+        serializedVersion: 2
+        x: 210
+        y: 0
+        width: 105
+        height: 101
+      alignment: 9
+      pivot: {x: 0.50476193, y: 0.38613862}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 650e8b51b40ea50e0800000000000000
+      internalID: -2280263648218128298
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftRoot_dry_15
+      rect:
+        serializedVersion: 2
+        x: 315
+        y: 0
+        width: 105
+        height: 101
+      alignment: 9
+      pivot: {x: 0.50476193, y: 0.38613862}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0e1a8999ec266a0d0800000000000000
+      internalID: -3411931028206870048
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftRoot_dry_16
+      rect:
+        serializedVersion: 2
+        x: 420
+        y: 0
+        width: 105
+        height: 101
+      alignment: 9
+      pivot: {x: 0.50476193, y: 0.38613862}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5f242f8beb4073120800000000000000
+      internalID: 2393386944163889909
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftRoot_dry_17
+      rect:
+        serializedVersion: 2
+        x: 525
+        y: 0
+        width: 105
+        height: 101
+      alignment: 9
+      pivot: {x: 0.50476193, y: 0.38613862}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 10b3ddc2bb11cd9f0800000000000000
+      internalID: -442459167779898623
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftRoot_dry_18
+      rect:
+        serializedVersion: 2
+        x: 630
+        y: 0
+        width: 105
+        height: 101
+      alignment: 9
+      pivot: {x: 0.50476193, y: 0.38613862}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6f9de7944c923abb0800000000000000
+      internalID: -4926047644389811722
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftRoot_dry_19
+      rect:
+        serializedVersion: 2
+        x: 735
+        y: 0
+        width: 105
+        height: 101
+      alignment: 9
+      pivot: {x: 0.50476193, y: 0.38613862}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4e61590900c90f850800000000000000
+      internalID: 6408793795987838692
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftRoot_dry_20
+      rect:
+        serializedVersion: 2
+        x: 840
+        y: 0
+        width: 105
+        height: 101
+      alignment: 9
+      pivot: {x: 0.50476193, y: 0.38613862}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1b0190a650a6df260800000000000000
+      internalID: 7132973956311093425
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftRoot_dry_21
+      rect:
+        serializedVersion: 2
+        x: 945
+        y: 0
+        width: 105
+        height: 101
+      alignment: 9
+      pivot: {x: 0.50476193, y: 0.38613862}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 53078b947c4ad78e0800000000000000
+      internalID: -1694016708979167179
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftRoot_dry_22
+      rect:
+        serializedVersion: 2
+        x: 1050
+        y: 0
+        width: 105
+        height: 101
+      alignment: 9
+      pivot: {x: 0.50476193, y: 0.38613862}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 975bb2b0d132310c0800000000000000
+      internalID: -4606299386221447815
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftRoot_dry_23
+      rect:
+        serializedVersion: 2
+        x: 1155
+        y: 0
+        width: 105
+        height: 101
+      alignment: 9
+      pivot: {x: 0.50476193, y: 0.38613862}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e8dce4d77c18ee5d0800000000000000
+      internalID: -3031342805372973682
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: b88bec6de104cbe4d9c83d0a0137f650
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      DriftRoot_dry_0: 3667112831666459723
+      DriftRoot_dry_1: 4276479655910520152
+      DriftRoot_dry_10: 558260609231371881
+      DriftRoot_dry_11: -5977498968542211640
+      DriftRoot_dry_12: 5572300328414648183
+      DriftRoot_dry_13: -6744686343004853056
+      DriftRoot_dry_14: -2280263648218128298
+      DriftRoot_dry_15: -3411931028206870048
+      DriftRoot_dry_16: 2393386944163889909
+      DriftRoot_dry_17: -442459167779898623
+      DriftRoot_dry_18: -4926047644389811722
+      DriftRoot_dry_19: 6408793795987838692
+      DriftRoot_dry_2: 6454425368239569886
+      DriftRoot_dry_20: 7132973956311093425
+      DriftRoot_dry_21: -1694016708979167179
+      DriftRoot_dry_22: -4606299386221447815
+      DriftRoot_dry_23: -3031342805372973682
+      DriftRoot_dry_3: 9154485670706259727
+      DriftRoot_dry_4: 2654058940602620415
+      DriftRoot_dry_5: -6818394953398820793
+      DriftRoot_dry_6: -5803487583808387275
+      DriftRoot_dry_7: 936464954241663230
+      DriftRoot_dry_8: -8351548041829857251
+      DriftRoot_dry_9: 8215588974290330355
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

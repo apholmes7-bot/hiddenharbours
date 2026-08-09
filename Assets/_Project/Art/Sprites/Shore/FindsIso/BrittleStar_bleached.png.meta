@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: 13746a4d4287fe6438b4208d0e17a34a
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -22825667206084828
+    second: BrittleStar_bleached_0
+  - first:
+      213: 7679951126411310154
+    second: BrittleStar_bleached_1
+  - first:
+      213: -5118957641600585318
+    second: BrittleStar_bleached_2
+  - first:
+      213: -8219643351091043362
+    second: BrittleStar_bleached_3
+  - first:
+      213: 5132713040950510955
+    second: BrittleStar_bleached_4
+  - first:
+      213: -8687403493491251192
+    second: BrittleStar_bleached_5
+  - first:
+      213: -9178947891707228672
+    second: BrittleStar_bleached_6
+  - first:
+      213: 2247433138259926055
+    second: BrittleStar_bleached_7
+  - first:
+      213: 8123975969628740250
+    second: BrittleStar_bleached_8
+  - first:
+      213: 6609237637422148957
+    second: BrittleStar_bleached_9
+  - first:
+      213: 1015326244942776462
+    second: BrittleStar_bleached_10
+  - first:
+      213: -7525898735637896252
+    second: BrittleStar_bleached_11
+  - first:
+      213: -3977190531356154256
+    second: BrittleStar_bleached_12
+  - first:
+      213: -5911159897904008428
+    second: BrittleStar_bleached_13
+  - first:
+      213: 8403641603812117794
+    second: BrittleStar_bleached_14
+  - first:
+      213: 2500679821136669924
+    second: BrittleStar_bleached_15
+  - first:
+      213: -8006358771817714892
+    second: BrittleStar_bleached_16
+  - first:
+      213: 6919166967016237231
+    second: BrittleStar_bleached_17
+  - first:
+      213: 2474594868261183648
+    second: BrittleStar_bleached_18
+  - first:
+      213: -1831310355952252339
+    second: BrittleStar_bleached_19
+  - first:
+      213: 6525626065160075214
+    second: BrittleStar_bleached_20
+  - first:
+      213: 2760842020561008065
+    second: BrittleStar_bleached_21
+  - first:
+      213: 8840326051244690745
+    second: BrittleStar_bleached_22
+  - first:
+      213: -8216345726451506056
+    second: BrittleStar_bleached_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: BrittleStar_bleached_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 37
+        height: 31
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.4516129}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4278b663d28eeaff0800000000000000
+      internalID: -22825667206084828
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BrittleStar_bleached_1
+      rect:
+        serializedVersion: 2
+        x: 37
+        y: 0
+        width: 37
+        height: 31
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.4516129}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a447b1efbdaa49a60800000000000000
+      internalID: 7679951126411310154
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BrittleStar_bleached_2
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 0
+        width: 37
+        height: 31
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.4516129}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a913028752fc5f8b0800000000000000
+      internalID: -5118957641600585318
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BrittleStar_bleached_3
+      rect:
+        serializedVersion: 2
+        x: 111
+        y: 0
+        width: 37
+        height: 31
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.4516129}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ed321d5fbe5fded80800000000000000
+      internalID: -8219643351091043362
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BrittleStar_bleached_4
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 0
+        width: 37
+        height: 31
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.4516129}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b65ced3015f0b3740800000000000000
+      internalID: 5132713040950510955
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BrittleStar_bleached_5
+      rect:
+        serializedVersion: 2
+        x: 185
+        y: 0
+        width: 37
+        height: 31
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.4516129}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 80867fdec84207780800000000000000
+      internalID: -8687403493491251192
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BrittleStar_bleached_6
+      rect:
+        serializedVersion: 2
+        x: 222
+        y: 0
+        width: 37
+        height: 31
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.4516129}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 00e48fe4683dd9080800000000000000
+      internalID: -9178947891707228672
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BrittleStar_bleached_7
+      rect:
+        serializedVersion: 2
+        x: 259
+        y: 0
+        width: 37
+        height: 31
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.4516129}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 72c9c66288c703f10800000000000000
+      internalID: 2247433138259926055
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BrittleStar_bleached_8
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 0
+        width: 37
+        height: 31
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.4516129}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a9ad7890a192eb070800000000000000
+      internalID: 8123975969628740250
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BrittleStar_bleached_9
+      rect:
+        serializedVersion: 2
+        x: 333
+        y: 0
+        width: 37
+        height: 31
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.4516129}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d5d60be2d9ab8bb50800000000000000
+      internalID: 6609237637422148957
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BrittleStar_bleached_10
+      rect:
+        serializedVersion: 2
+        x: 370
+        y: 0
+        width: 37
+        height: 31
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.4516129}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e8802f027d9271e00800000000000000
+      internalID: 1015326244942776462
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BrittleStar_bleached_11
+      rect:
+        serializedVersion: 2
+        x: 407
+        y: 0
+        width: 37
+        height: 31
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.4516129}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4c3edbe49f2ae8790800000000000000
+      internalID: -7525898735637896252
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BrittleStar_bleached_12
+      rect:
+        serializedVersion: 2
+        x: 444
+        y: 0
+        width: 37
+        height: 31
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.4516129}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0762876a84e2ec8c0800000000000000
+      internalID: -3977190531356154256
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BrittleStar_bleached_13
+      rect:
+        serializedVersion: 2
+        x: 481
+        y: 0
+        width: 37
+        height: 31
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.4516129}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 413b5ea346757fda0800000000000000
+      internalID: -5911159897904008428
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BrittleStar_bleached_14
+      rect:
+        serializedVersion: 2
+        x: 518
+        y: 0
+        width: 37
+        height: 31
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.4516129}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 22d4ae6a38bbf9470800000000000000
+      internalID: 8403641603812117794
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BrittleStar_bleached_15
+      rect:
+        serializedVersion: 2
+        x: 555
+        y: 0
+        width: 37
+        height: 31
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.4516129}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4eca6d35c0334b220800000000000000
+      internalID: 2500679821136669924
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BrittleStar_bleached_16
+      rect:
+        serializedVersion: 2
+        x: 592
+        y: 0
+        width: 37
+        height: 31
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.4516129}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 43be875dd13b3e090800000000000000
+      internalID: -8006358771817714892
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BrittleStar_bleached_17
+      rect:
+        serializedVersion: 2
+        x: 629
+        y: 0
+        width: 37
+        height: 31
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.4516129}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fa8ae9a72b1d50060800000000000000
+      internalID: 6919166967016237231
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BrittleStar_bleached_18
+      rect:
+        serializedVersion: 2
+        x: 666
+        y: 0
+        width: 37
+        height: 31
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.4516129}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0a066b5fbe6875220800000000000000
+      internalID: 2474594868261183648
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BrittleStar_bleached_19
+      rect:
+        serializedVersion: 2
+        x: 703
+        y: 0
+        width: 37
+        height: 31
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.4516129}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d4ac8f71fe0e596e0800000000000000
+      internalID: -1831310355952252339
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BrittleStar_bleached_20
+      rect:
+        serializedVersion: 2
+        x: 740
+        y: 0
+        width: 37
+        height: 31
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.4516129}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ec775eef45eaf8a50800000000000000
+      internalID: 6525626065160075214
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BrittleStar_bleached_21
+      rect:
+        serializedVersion: 2
+        x: 777
+        y: 0
+        width: 37
+        height: 31
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.4516129}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1c5b28ca03b705620800000000000000
+      internalID: 2760842020561008065
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BrittleStar_bleached_22
+      rect:
+        serializedVersion: 2
+        x: 814
+        y: 0
+        width: 37
+        height: 31
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.4516129}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 93d421f94b52faa70800000000000000
+      internalID: 8840326051244690745
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BrittleStar_bleached_23
+      rect:
+        serializedVersion: 2
+        x: 851
+        y: 0
+        width: 37
+        height: 31
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.4516129}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8742f07081da9fd80800000000000000
+      internalID: -8216345726451506056
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 4c00b75e932b40f4a951054be85944e1
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      BrittleStar_bleached_0: -22825667206084828
+      BrittleStar_bleached_1: 7679951126411310154
+      BrittleStar_bleached_10: 1015326244942776462
+      BrittleStar_bleached_11: -7525898735637896252
+      BrittleStar_bleached_12: -3977190531356154256
+      BrittleStar_bleached_13: -5911159897904008428
+      BrittleStar_bleached_14: 8403641603812117794
+      BrittleStar_bleached_15: 2500679821136669924
+      BrittleStar_bleached_16: -8006358771817714892
+      BrittleStar_bleached_17: 6919166967016237231
+      BrittleStar_bleached_18: 2474594868261183648
+      BrittleStar_bleached_19: -1831310355952252339
+      BrittleStar_bleached_2: -5118957641600585318
+      BrittleStar_bleached_20: 6525626065160075214
+      BrittleStar_bleached_21: 2760842020561008065
+      BrittleStar_bleached_22: 8840326051244690745
+      BrittleStar_bleached_23: -8216345726451506056
+      BrittleStar_bleached_3: -8219643351091043362
+      BrittleStar_bleached_4: 5132713040950510955
+      BrittleStar_bleached_5: -8687403493491251192
+      BrittleStar_bleached_6: -9178947891707228672
+      BrittleStar_bleached_7: 2247433138259926055
+      BrittleStar_bleached_8: 8123975969628740250
+      BrittleStar_bleached_9: 6609237637422148957
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

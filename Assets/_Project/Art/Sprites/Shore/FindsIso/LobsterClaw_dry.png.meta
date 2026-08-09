@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: 0b15b84390f3d9c4f857a0898cf9516b
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8690955185655457810
+    second: LobsterClaw_dry_0
+  - first:
+      213: 4633739484826254215
+    second: LobsterClaw_dry_1
+  - first:
+      213: -7538837422000027221
+    second: LobsterClaw_dry_2
+  - first:
+      213: 1074499576201084031
+    second: LobsterClaw_dry_3
+  - first:
+      213: -2252496941313006193
+    second: LobsterClaw_dry_4
+  - first:
+      213: -5899402900033882607
+    second: LobsterClaw_dry_5
+  - first:
+      213: -1740864899045380980
+    second: LobsterClaw_dry_6
+  - first:
+      213: -318151000768766140
+    second: LobsterClaw_dry_7
+  - first:
+      213: 8802170158045620482
+    second: LobsterClaw_dry_8
+  - first:
+      213: -6732050374574969464
+    second: LobsterClaw_dry_9
+  - first:
+      213: -611071566192687111
+    second: LobsterClaw_dry_10
+  - first:
+      213: 8085091058594814425
+    second: LobsterClaw_dry_11
+  - first:
+      213: -1108204982690553986
+    second: LobsterClaw_dry_12
+  - first:
+      213: 4947795451100872405
+    second: LobsterClaw_dry_13
+  - first:
+      213: -2956619077340313112
+    second: LobsterClaw_dry_14
+  - first:
+      213: 5836847349123561684
+    second: LobsterClaw_dry_15
+  - first:
+      213: 5622953189096206441
+    second: LobsterClaw_dry_16
+  - first:
+      213: 6045750190755091413
+    second: LobsterClaw_dry_17
+  - first:
+      213: 2148259538931518266
+    second: LobsterClaw_dry_18
+  - first:
+      213: 4794818135665134907
+    second: LobsterClaw_dry_19
+  - first:
+      213: 5620254143896019391
+    second: LobsterClaw_dry_20
+  - first:
+      213: 6149545417389892385
+    second: LobsterClaw_dry_21
+  - first:
+      213: -8665483210915223025
+    second: LobsterClaw_dry_22
+  - first:
+      213: 4850678872614258021
+    second: LobsterClaw_dry_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: LobsterClaw_dry_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.38297874}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 21825d7d1b97c9870800000000000000
+      internalID: 8690955185655457810
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterClaw_dry_1
+      rect:
+        serializedVersion: 2
+        x: 47
+        y: 0
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.38297874}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 78b35c6c2895e4040800000000000000
+      internalID: 4633739484826254215
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterClaw_dry_2
+      rect:
+        serializedVersion: 2
+        x: 94
+        y: 0
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.38297874}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ba94442ae4ba06790800000000000000
+      internalID: -7538837422000027221
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterClaw_dry_3
+      rect:
+        serializedVersion: 2
+        x: 141
+        y: 0
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.38297874}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f7cf5ceeba369ee00800000000000000
+      internalID: 1074499576201084031
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterClaw_dry_4
+      rect:
+        serializedVersion: 2
+        x: 188
+        y: 0
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.38297874}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f85626357f58db0e0800000000000000
+      internalID: -2252496941313006193
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterClaw_dry_5
+      rect:
+        serializedVersion: 2
+        x: 235
+        y: 0
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.38297874}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 116329c915c112ea0800000000000000
+      internalID: -5899402900033882607
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterClaw_dry_6
+      rect:
+        serializedVersion: 2
+        x: 282
+        y: 0
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.38297874}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c8c247a099437d7e0800000000000000
+      internalID: -1740864899045380980
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterClaw_dry_7
+      rect:
+        serializedVersion: 2
+        x: 329
+        y: 0
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.38297874}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 44f1e36b953b59bf0800000000000000
+      internalID: -318151000768766140
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterClaw_dry_8
+      rect:
+        serializedVersion: 2
+        x: 376
+        y: 0
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.38297874}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2096ad27f17972a70800000000000000
+      internalID: 8802170158045620482
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterClaw_dry_9
+      rect:
+        serializedVersion: 2
+        x: 423
+        y: 0
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.38297874}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 88d6c6d2ad3f292a0800000000000000
+      internalID: -6732050374574969464
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterClaw_dry_10
+      rect:
+        serializedVersion: 2
+        x: 470
+        y: 0
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.38297874}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9f74ebce5a90587f0800000000000000
+      internalID: -611071566192687111
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterClaw_dry_11
+      rect:
+        serializedVersion: 2
+        x: 517
+        y: 0
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.38297874}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9d91b3c2b73043070800000000000000
+      internalID: 8085091058594814425
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterClaw_dry_12
+      rect:
+        serializedVersion: 2
+        x: 564
+        y: 0
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.38297874}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e7f5964907dde90f0800000000000000
+      internalID: -1108204982690553986
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterClaw_dry_13
+      rect:
+        serializedVersion: 2
+        x: 611
+        y: 0
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.38297874}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5de392c8fb91aa440800000000000000
+      internalID: 4947795451100872405
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterClaw_dry_14
+      rect:
+        serializedVersion: 2
+        x: 658
+        y: 0
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.38297874}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8e9ccfe2d9af7f6d0800000000000000
+      internalID: -2956619077340313112
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterClaw_dry_15
+      rect:
+        serializedVersion: 2
+        x: 705
+        y: 0
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.38297874}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4d8b0b43db5a00150800000000000000
+      internalID: 5836847349123561684
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterClaw_dry_16
+      rect:
+        serializedVersion: 2
+        x: 752
+        y: 0
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.38297874}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 960bab0422eb80e40800000000000000
+      internalID: 5622953189096206441
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterClaw_dry_17
+      rect:
+        serializedVersion: 2
+        x: 799
+        y: 0
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.38297874}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5d315b844c1d6e350800000000000000
+      internalID: 6045750190755091413
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterClaw_dry_18
+      rect:
+        serializedVersion: 2
+        x: 846
+        y: 0
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.38297874}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a3b8b5f2ba620dd10800000000000000
+      internalID: 2148259538931518266
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterClaw_dry_19
+      rect:
+        serializedVersion: 2
+        x: 893
+        y: 0
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.38297874}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b3dcbeab0bd9a8240800000000000000
+      internalID: 4794818135665134907
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterClaw_dry_20
+      rect:
+        serializedVersion: 2
+        x: 940
+        y: 0
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.38297874}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fb1e652dd572ffd40800000000000000
+      internalID: 5620254143896019391
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterClaw_dry_21
+      rect:
+        serializedVersion: 2
+        x: 987
+        y: 0
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.38297874}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 123e7a5b9f2975550800000000000000
+      internalID: 6149545417389892385
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterClaw_dry_22
+      rect:
+        serializedVersion: 2
+        x: 1034
+        y: 0
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.38297874}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f0a694e6ee40eb780800000000000000
+      internalID: -8665483210915223025
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: LobsterClaw_dry_23
+      rect:
+        serializedVersion: 2
+        x: 1081
+        y: 0
+        width: 47
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.38297874}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5654aa11cb2115340800000000000000
+      internalID: 4850678872614258021
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 01d693ce48e2dbc43b616348893edc5f
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      LobsterClaw_dry_0: 8690955185655457810
+      LobsterClaw_dry_1: 4633739484826254215
+      LobsterClaw_dry_10: -611071566192687111
+      LobsterClaw_dry_11: 8085091058594814425
+      LobsterClaw_dry_12: -1108204982690553986
+      LobsterClaw_dry_13: 4947795451100872405
+      LobsterClaw_dry_14: -2956619077340313112
+      LobsterClaw_dry_15: 5836847349123561684
+      LobsterClaw_dry_16: 5622953189096206441
+      LobsterClaw_dry_17: 6045750190755091413
+      LobsterClaw_dry_18: 2148259538931518266
+      LobsterClaw_dry_19: 4794818135665134907
+      LobsterClaw_dry_2: -7538837422000027221
+      LobsterClaw_dry_20: 5620254143896019391
+      LobsterClaw_dry_21: 6149545417389892385
+      LobsterClaw_dry_22: -8665483210915223025
+      LobsterClaw_dry_23: 4850678872614258021
+      LobsterClaw_dry_3: 1074499576201084031
+      LobsterClaw_dry_4: -2252496941313006193
+      LobsterClaw_dry_5: -5899402900033882607
+      LobsterClaw_dry_6: -1740864899045380980
+      LobsterClaw_dry_7: -318151000768766140
+      LobsterClaw_dry_8: 8802170158045620482
+      LobsterClaw_dry_9: -6732050374574969464
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

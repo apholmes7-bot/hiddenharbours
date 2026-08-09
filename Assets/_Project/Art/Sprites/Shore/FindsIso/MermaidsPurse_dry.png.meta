@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: 7e479762b1bcecf42809ba764758d9d4
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -2547594465239902175
+    second: MermaidsPurse_dry_0
+  - first:
+      213: 8110062827292558122
+    second: MermaidsPurse_dry_1
+  - first:
+      213: -7674802902860324569
+    second: MermaidsPurse_dry_2
+  - first:
+      213: 1000498542166773988
+    second: MermaidsPurse_dry_3
+  - first:
+      213: 1392760847955083830
+    second: MermaidsPurse_dry_4
+  - first:
+      213: -2798471703846830934
+    second: MermaidsPurse_dry_5
+  - first:
+      213: -8390642779683193239
+    second: MermaidsPurse_dry_6
+  - first:
+      213: 8636929435867118424
+    second: MermaidsPurse_dry_7
+  - first:
+      213: -5026549511853685979
+    second: MermaidsPurse_dry_8
+  - first:
+      213: -397276846048911031
+    second: MermaidsPurse_dry_9
+  - first:
+      213: -4169432999220577055
+    second: MermaidsPurse_dry_10
+  - first:
+      213: -6415767910641604968
+    second: MermaidsPurse_dry_11
+  - first:
+      213: 1160170831572802681
+    second: MermaidsPurse_dry_12
+  - first:
+      213: 9020263010095061168
+    second: MermaidsPurse_dry_13
+  - first:
+      213: -5615209223069496432
+    second: MermaidsPurse_dry_14
+  - first:
+      213: 7400239796901889698
+    second: MermaidsPurse_dry_15
+  - first:
+      213: -7451482700198335450
+    second: MermaidsPurse_dry_16
+  - first:
+      213: -1183257415437463756
+    second: MermaidsPurse_dry_17
+  - first:
+      213: -128715882868823317
+    second: MermaidsPurse_dry_18
+  - first:
+      213: 2273479396697433431
+    second: MermaidsPurse_dry_19
+  - first:
+      213: -7482011474566935197
+    second: MermaidsPurse_dry_20
+  - first:
+      213: 3420035005251836008
+    second: MermaidsPurse_dry_21
+  - first:
+      213: -8722739169227996080
+    second: MermaidsPurse_dry_22
+  - first:
+      213: -4586780880491100245
+    second: MermaidsPurse_dry_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: MermaidsPurse_dry_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 34
+        height: 30
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 128df93e45025acd0800000000000000
+      internalID: -2547594465239902175
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MermaidsPurse_dry_1
+      rect:
+        serializedVersion: 2
+        x: 34
+        y: 0
+        width: 34
+        height: 30
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a238fd62c2bbc8070800000000000000
+      internalID: 8110062827292558122
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MermaidsPurse_dry_2
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 0
+        width: 34
+        height: 30
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 721afd53c6f9d7590800000000000000
+      internalID: -7674802902860324569
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MermaidsPurse_dry_3
+      rect:
+        serializedVersion: 2
+        x: 102
+        y: 0
+        width: 34
+        height: 30
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4e0952c8f1c72ed00800000000000000
+      internalID: 1000498542166773988
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MermaidsPurse_dry_4
+      rect:
+        serializedVersion: 2
+        x: 136
+        y: 0
+        width: 34
+        height: 30
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6324f6fac94145310800000000000000
+      internalID: 1392760847955083830
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MermaidsPurse_dry_5
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 0
+        width: 34
+        height: 30
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aac3a32ffc4d929d0800000000000000
+      internalID: -2798471703846830934
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MermaidsPurse_dry_6
+      rect:
+        serializedVersion: 2
+        x: 204
+        y: 0
+        width: 34
+        height: 30
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 96e79cfe8d27e8b80800000000000000
+      internalID: -8390642779683193239
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MermaidsPurse_dry_7
+      rect:
+        serializedVersion: 2
+        x: 238
+        y: 0
+        width: 34
+        height: 30
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 85b79febf898cd770800000000000000
+      internalID: 8636929435867118424
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MermaidsPurse_dry_8
+      rect:
+        serializedVersion: 2
+        x: 272
+        y: 0
+        width: 34
+        height: 30
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5234c0cc9db1e3ab0800000000000000
+      internalID: -5026549511853685979
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MermaidsPurse_dry_9
+      rect:
+        serializedVersion: 2
+        x: 306
+        y: 0
+        width: 34
+        height: 30
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 94164c930d69c7af0800000000000000
+      internalID: -397276846048911031
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MermaidsPurse_dry_10
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 0
+        width: 34
+        height: 30
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1ec7aae17c23326c0800000000000000
+      internalID: -4169432999220577055
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MermaidsPurse_dry_11
+      rect:
+        serializedVersion: 2
+        x: 374
+        y: 0
+        width: 34
+        height: 30
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8966bd4d31d96f6a0800000000000000
+      internalID: -6415767910641604968
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MermaidsPurse_dry_12
+      rect:
+        serializedVersion: 2
+        x: 408
+        y: 0
+        width: 34
+        height: 30
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 97c9aa67931c91010800000000000000
+      internalID: 1160170831572802681
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MermaidsPurse_dry_13
+      rect:
+        serializedVersion: 2
+        x: 442
+        y: 0
+        width: 34
+        height: 30
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0b8df419a696e2d70800000000000000
+      internalID: 9020263010095061168
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MermaidsPurse_dry_14
+      rect:
+        serializedVersion: 2
+        x: 476
+        y: 0
+        width: 34
+        height: 30
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 09b027756f4c212b0800000000000000
+      internalID: -5615209223069496432
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MermaidsPurse_dry_15
+      rect:
+        serializedVersion: 2
+        x: 510
+        y: 0
+        width: 34
+        height: 30
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2a6cb0b13eee2b660800000000000000
+      internalID: 7400239796901889698
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MermaidsPurse_dry_16
+      rect:
+        serializedVersion: 2
+        x: 544
+        y: 0
+        width: 34
+        height: 30
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 62ca5bcb6f3079890800000000000000
+      internalID: -7451482700198335450
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MermaidsPurse_dry_17
+      rect:
+        serializedVersion: 2
+        x: 578
+        y: 0
+        width: 34
+        height: 30
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 43fc00b56a9349fe0800000000000000
+      internalID: -1183257415437463756
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MermaidsPurse_dry_18
+      rect:
+        serializedVersion: 2
+        x: 612
+        y: 0
+        width: 34
+        height: 30
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bea27a42695b63ef0800000000000000
+      internalID: -128715882868823317
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MermaidsPurse_dry_19
+      rect:
+        serializedVersion: 2
+        x: 646
+        y: 0
+        width: 34
+        height: 30
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 755e15447750d8f10800000000000000
+      internalID: 2273479396697433431
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MermaidsPurse_dry_20
+      rect:
+        serializedVersion: 2
+        x: 680
+        y: 0
+        width: 34
+        height: 30
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 36d8a0d843e8a2890800000000000000
+      internalID: -7482011474566935197
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MermaidsPurse_dry_21
+      rect:
+        serializedVersion: 2
+        x: 714
+        y: 0
+        width: 34
+        height: 30
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 868df6797b7667f20800000000000000
+      internalID: 3420035005251836008
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MermaidsPurse_dry_22
+      rect:
+        serializedVersion: 2
+        x: 748
+        y: 0
+        width: 34
+        height: 30
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 05487cdc0fa92f680800000000000000
+      internalID: -8722739169227996080
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MermaidsPurse_dry_23
+      rect:
+        serializedVersion: 2
+        x: 782
+        y: 0
+        width: 34
+        height: 30
+      alignment: 9
+      pivot: {x: 0.5, y: 0.43333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ba746cb471b7850c0800000000000000
+      internalID: -4586780880491100245
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: ebe90d26aa45fb145832a8d70ff3a201
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      MermaidsPurse_dry_0: -2547594465239902175
+      MermaidsPurse_dry_1: 8110062827292558122
+      MermaidsPurse_dry_10: -4169432999220577055
+      MermaidsPurse_dry_11: -6415767910641604968
+      MermaidsPurse_dry_12: 1160170831572802681
+      MermaidsPurse_dry_13: 9020263010095061168
+      MermaidsPurse_dry_14: -5615209223069496432
+      MermaidsPurse_dry_15: 7400239796901889698
+      MermaidsPurse_dry_16: -7451482700198335450
+      MermaidsPurse_dry_17: -1183257415437463756
+      MermaidsPurse_dry_18: -128715882868823317
+      MermaidsPurse_dry_19: 2273479396697433431
+      MermaidsPurse_dry_2: -7674802902860324569
+      MermaidsPurse_dry_20: -7482011474566935197
+      MermaidsPurse_dry_21: 3420035005251836008
+      MermaidsPurse_dry_22: -8722739169227996080
+      MermaidsPurse_dry_23: -4586780880491100245
+      MermaidsPurse_dry_3: 1000498542166773988
+      MermaidsPurse_dry_4: 1392760847955083830
+      MermaidsPurse_dry_5: -2798471703846830934
+      MermaidsPurse_dry_6: -8390642779683193239
+      MermaidsPurse_dry_7: 8636929435867118424
+      MermaidsPurse_dry_8: -5026549511853685979
+      MermaidsPurse_dry_9: -397276846048911031
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

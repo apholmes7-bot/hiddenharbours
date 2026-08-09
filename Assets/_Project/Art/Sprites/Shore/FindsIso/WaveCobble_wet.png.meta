@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: ed28360aeee6f9048a3445486864b5e1
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -2586839288475115426
+    second: WaveCobble_wet_0
+  - first:
+      213: 8935911499720538418
+    second: WaveCobble_wet_1
+  - first:
+      213: -684720557483236309
+    second: WaveCobble_wet_2
+  - first:
+      213: 8520962119835821731
+    second: WaveCobble_wet_3
+  - first:
+      213: 2701603234248485918
+    second: WaveCobble_wet_4
+  - first:
+      213: -5122262613744084071
+    second: WaveCobble_wet_5
+  - first:
+      213: 3055389461770107523
+    second: WaveCobble_wet_6
+  - first:
+      213: 6809718343095060547
+    second: WaveCobble_wet_7
+  - first:
+      213: -3233287010243223556
+    second: WaveCobble_wet_8
+  - first:
+      213: 7653205597258642776
+    second: WaveCobble_wet_9
+  - first:
+      213: -4487627585662427082
+    second: WaveCobble_wet_10
+  - first:
+      213: 2551072159632656675
+    second: WaveCobble_wet_11
+  - first:
+      213: -8782104216196372395
+    second: WaveCobble_wet_12
+  - first:
+      213: 5832570740709872724
+    second: WaveCobble_wet_13
+  - first:
+      213: 8631624478129860084
+    second: WaveCobble_wet_14
+  - first:
+      213: 8984108651827273778
+    second: WaveCobble_wet_15
+  - first:
+      213: 5061382369910949374
+    second: WaveCobble_wet_16
+  - first:
+      213: -1105887393992647835
+    second: WaveCobble_wet_17
+  - first:
+      213: 1492145427979852218
+    second: WaveCobble_wet_18
+  - first:
+      213: -839671283063378268
+    second: WaveCobble_wet_19
+  - first:
+      213: -5385396641937770154
+    second: WaveCobble_wet_20
+  - first:
+      213: -5025724918536607747
+    second: WaveCobble_wet_21
+  - first:
+      213: 7260159185351327111
+    second: WaveCobble_wet_22
+  - first:
+      213: 7466591407608016040
+    second: WaveCobble_wet_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: WaveCobble_wet_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 37
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.33333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e50aa6f6f53b91cd0800000000000000
+      internalID: -2586839288475115426
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveCobble_wet_1
+      rect:
+        serializedVersion: 2
+        x: 37
+        y: 0
+        width: 37
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.33333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 239bb2d1a2cb20c70800000000000000
+      internalID: 8935911499720538418
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveCobble_wet_2
+      rect:
+        serializedVersion: 2
+        x: 74
+        y: 0
+        width: 37
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.33333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b24edc0e7426f76f0800000000000000
+      internalID: -684720557483236309
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveCobble_wet_3
+      rect:
+        serializedVersion: 2
+        x: 111
+        y: 0
+        width: 37
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.33333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3a6af59e6e9804670800000000000000
+      internalID: 8520962119835821731
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveCobble_wet_4
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 0
+        width: 37
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.33333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e1c6d6de3d50e7520800000000000000
+      internalID: 2701603234248485918
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveCobble_wet_5
+      rect:
+        serializedVersion: 2
+        x: 185
+        y: 0
+        width: 37
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.33333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 99b158daa411ae8b0800000000000000
+      internalID: -5122262613744084071
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveCobble_wet_6
+      rect:
+        serializedVersion: 2
+        x: 222
+        y: 0
+        width: 37
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.33333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 38a774ff68ce66a20800000000000000
+      internalID: 3055389461770107523
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveCobble_wet_7
+      rect:
+        serializedVersion: 2
+        x: 259
+        y: 0
+        width: 37
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.33333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 34884ace0caf08e50800000000000000
+      internalID: 6809718343095060547
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveCobble_wet_8
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 0
+        width: 37
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.33333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cff5199489e0123d0800000000000000
+      internalID: -3233287010243223556
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveCobble_wet_9
+      rect:
+        serializedVersion: 2
+        x: 333
+        y: 0
+        width: 37
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.33333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 855f1a931f5a53a60800000000000000
+      internalID: 7653205597258642776
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveCobble_wet_10
+      rect:
+        serializedVersion: 2
+        x: 370
+        y: 0
+        width: 37
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.33333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 630e850cc7eb8b1c0800000000000000
+      internalID: -4487627585662427082
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveCobble_wet_11
+      rect:
+        serializedVersion: 2
+        x: 407
+        y: 0
+        width: 37
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.33333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3290b4fec9a376320800000000000000
+      internalID: 2551072159632656675
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveCobble_wet_12
+      rect:
+        serializedVersion: 2
+        x: 444
+        y: 0
+        width: 37
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.33333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 558a725beb2bf1680800000000000000
+      internalID: -8782104216196372395
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveCobble_wet_13
+      rect:
+        serializedVersion: 2
+        x: 481
+        y: 0
+        width: 37
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.33333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4545957bf2471f050800000000000000
+      internalID: 5832570740709872724
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveCobble_wet_14
+      rect:
+        serializedVersion: 2
+        x: 518
+        y: 0
+        width: 37
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.33333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4fd2f750bb0b9c770800000000000000
+      internalID: 8631624478129860084
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveCobble_wet_15
+      rect:
+        serializedVersion: 2
+        x: 555
+        y: 0
+        width: 37
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.33333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 230adaf0837fdac70800000000000000
+      internalID: 8984108651827273778
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveCobble_wet_16
+      rect:
+        serializedVersion: 2
+        x: 592
+        y: 0
+        width: 37
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.33333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ef587f6f274ad3640800000000000000
+      internalID: 5061382369910949374
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveCobble_wet_17
+      rect:
+        serializedVersion: 2
+        x: 629
+        y: 0
+        width: 37
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.33333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 56b5c7f364917a0f0800000000000000
+      internalID: -1105887393992647835
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveCobble_wet_18
+      rect:
+        serializedVersion: 2
+        x: 666
+        y: 0
+        width: 37
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.33333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ab956fb6c5a25b410800000000000000
+      internalID: 1492145427979852218
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveCobble_wet_19
+      rect:
+        serializedVersion: 2
+        x: 703
+        y: 0
+        width: 37
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.33333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4ae29e4ba63e854f0800000000000000
+      internalID: -839671283063378268
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveCobble_wet_20
+      rect:
+        serializedVersion: 2
+        x: 740
+        y: 0
+        width: 37
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.33333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 659b7b6894a3345b0800000000000000
+      internalID: -5385396641937770154
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveCobble_wet_21
+      rect:
+        serializedVersion: 2
+        x: 777
+        y: 0
+        width: 37
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.33333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: df7ebc360d9014ab0800000000000000
+      internalID: -5025724918536607747
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveCobble_wet_22
+      rect:
+        serializedVersion: 2
+        x: 814
+        y: 0
+        width: 37
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.33333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 78db7a7205441c460800000000000000
+      internalID: 7260159185351327111
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaveCobble_wet_23
+      rect:
+        serializedVersion: 2
+        x: 851
+        y: 0
+        width: 37
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5135135, y: 0.33333334}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8aca5755359ae9760800000000000000
+      internalID: 7466591407608016040
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 56a7c01122c5dfd4d9ed05b25a6d787e
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      WaveCobble_wet_0: -2586839288475115426
+      WaveCobble_wet_1: 8935911499720538418
+      WaveCobble_wet_10: -4487627585662427082
+      WaveCobble_wet_11: 2551072159632656675
+      WaveCobble_wet_12: -8782104216196372395
+      WaveCobble_wet_13: 5832570740709872724
+      WaveCobble_wet_14: 8631624478129860084
+      WaveCobble_wet_15: 8984108651827273778
+      WaveCobble_wet_16: 5061382369910949374
+      WaveCobble_wet_17: -1105887393992647835
+      WaveCobble_wet_18: 1492145427979852218
+      WaveCobble_wet_19: -839671283063378268
+      WaveCobble_wet_2: -684720557483236309
+      WaveCobble_wet_20: -5385396641937770154
+      WaveCobble_wet_21: -5025724918536607747
+      WaveCobble_wet_22: 7260159185351327111
+      WaveCobble_wet_23: 7466591407608016040
+      WaveCobble_wet_3: 8520962119835821731
+      WaveCobble_wet_4: 2701603234248485918
+      WaveCobble_wet_5: -5122262613744084071
+      WaveCobble_wet_6: 3055389461770107523
+      WaveCobble_wet_7: 6809718343095060547
+      WaveCobble_wet_8: -3233287010243223556
+      WaveCobble_wet_9: 7653205597258642776
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

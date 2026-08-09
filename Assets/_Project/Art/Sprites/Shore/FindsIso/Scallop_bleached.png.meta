@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: 1a5c37a1fc791c44a86116d530dd3d7c
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -6321364542432531152
+    second: Scallop_bleached_0
+  - first:
+      213: 7724066160840141925
+    second: Scallop_bleached_1
+  - first:
+      213: -2455799447957156352
+    second: Scallop_bleached_2
+  - first:
+      213: 5335603656414207717
+    second: Scallop_bleached_3
+  - first:
+      213: 7950679779932513658
+    second: Scallop_bleached_4
+  - first:
+      213: 6243130509483773780
+    second: Scallop_bleached_5
+  - first:
+      213: -2582740282849192109
+    second: Scallop_bleached_6
+  - first:
+      213: -6223398651567173798
+    second: Scallop_bleached_7
+  - first:
+      213: -4753118338577986294
+    second: Scallop_bleached_8
+  - first:
+      213: 5231138837047765546
+    second: Scallop_bleached_9
+  - first:
+      213: 5507263221126166363
+    second: Scallop_bleached_10
+  - first:
+      213: -8592240609211982291
+    second: Scallop_bleached_11
+  - first:
+      213: 6598258332836752995
+    second: Scallop_bleached_12
+  - first:
+      213: -2494973398806259511
+    second: Scallop_bleached_13
+  - first:
+      213: -1820716823230593932
+    second: Scallop_bleached_14
+  - first:
+      213: -1759967385751196902
+    second: Scallop_bleached_15
+  - first:
+      213: -3120359928477017086
+    second: Scallop_bleached_16
+  - first:
+      213: -1105369020097418970
+    second: Scallop_bleached_17
+  - first:
+      213: -3052513923130554479
+    second: Scallop_bleached_18
+  - first:
+      213: -5124853421234341158
+    second: Scallop_bleached_19
+  - first:
+      213: -7961697410039568773
+    second: Scallop_bleached_20
+  - first:
+      213: -8272837231164050225
+    second: Scallop_bleached_21
+  - first:
+      213: 6231386551747807697
+    second: Scallop_bleached_22
+  - first:
+      213: -5689732545845169448
+    second: Scallop_bleached_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Scallop_bleached_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 31
+        height: 30
+      alignment: 9
+      pivot: {x: 0.516129, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 03d2f80d0700648a0800000000000000
+      internalID: -6321364542432531152
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scallop_bleached_1
+      rect:
+        serializedVersion: 2
+        x: 31
+        y: 0
+        width: 31
+        height: 30
+      alignment: 9
+      pivot: {x: 0.516129, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 56ced7adf35613b60800000000000000
+      internalID: 7724066160840141925
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scallop_bleached_2
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 0
+        width: 31
+        height: 30
+      alignment: 9
+      pivot: {x: 0.516129, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 00ec9e8d96f3bedd0800000000000000
+      internalID: -2455799447957156352
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scallop_bleached_3
+      rect:
+        serializedVersion: 2
+        x: 93
+        y: 0
+        width: 31
+        height: 30
+      alignment: 9
+      pivot: {x: 0.516129, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5ee18da914fdb0a40800000000000000
+      internalID: 5335603656414207717
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scallop_bleached_4
+      rect:
+        serializedVersion: 2
+        x: 124
+        y: 0
+        width: 31
+        height: 30
+      alignment: 9
+      pivot: {x: 0.516129, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a7522c5a22d765e60800000000000000
+      internalID: 7950679779932513658
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scallop_bleached_5
+      rect:
+        serializedVersion: 2
+        x: 155
+        y: 0
+        width: 31
+        height: 30
+      alignment: 9
+      pivot: {x: 0.516129, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 45f0f20fe1e04a650800000000000000
+      internalID: 6243130509483773780
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scallop_bleached_6
+      rect:
+        serializedVersion: 2
+        x: 186
+        y: 0
+        width: 31
+        height: 30
+      alignment: 9
+      pivot: {x: 0.516129, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3579ead8563482cd0800000000000000
+      internalID: -2582740282849192109
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scallop_bleached_7
+      rect:
+        serializedVersion: 2
+        x: 217
+        y: 0
+        width: 31
+        height: 30
+      alignment: 9
+      pivot: {x: 0.516129, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a5f81bd36eb02a9a0800000000000000
+      internalID: -6223398651567173798
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scallop_bleached_8
+      rect:
+        serializedVersion: 2
+        x: 248
+        y: 0
+        width: 31
+        height: 30
+      alignment: 9
+      pivot: {x: 0.516129, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a0d0aaddd08890eb0800000000000000
+      internalID: -4753118338577986294
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scallop_bleached_9
+      rect:
+        serializedVersion: 2
+        x: 279
+        y: 0
+        width: 31
+        height: 30
+      alignment: 9
+      pivot: {x: 0.516129, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a2a6bf87e0db89840800000000000000
+      internalID: 5231138837047765546
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scallop_bleached_10
+      rect:
+        serializedVersion: 2
+        x: 310
+        y: 0
+        width: 31
+        height: 30
+      alignment: 9
+      pivot: {x: 0.516129, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b577ccb88babd6c40800000000000000
+      internalID: 5507263221126166363
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scallop_bleached_11
+      rect:
+        serializedVersion: 2
+        x: 341
+        y: 0
+        width: 31
+        height: 30
+      alignment: 9
+      pivot: {x: 0.516129, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d2edb3780ba32c880800000000000000
+      internalID: -8592240609211982291
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scallop_bleached_12
+      rect:
+        serializedVersion: 2
+        x: 372
+        y: 0
+        width: 31
+        height: 30
+      alignment: 9
+      pivot: {x: 0.516129, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 36eeef0aef8b19b50800000000000000
+      internalID: 6598258332836752995
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scallop_bleached_13
+      rect:
+        serializedVersion: 2
+        x: 403
+        y: 0
+        width: 31
+        height: 30
+      alignment: 9
+      pivot: {x: 0.516129, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9c89a18a9e2106dd0800000000000000
+      internalID: -2494973398806259511
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scallop_bleached_14
+      rect:
+        serializedVersion: 2
+        x: 434
+        y: 0
+        width: 31
+        height: 30
+      alignment: 9
+      pivot: {x: 0.516129, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 47443c222b38bb6e0800000000000000
+      internalID: -1820716823230593932
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scallop_bleached_15
+      rect:
+        serializedVersion: 2
+        x: 465
+        y: 0
+        width: 31
+        height: 30
+      alignment: 9
+      pivot: {x: 0.516129, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a1be604ccf65397e0800000000000000
+      internalID: -1759967385751196902
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scallop_bleached_16
+      rect:
+        serializedVersion: 2
+        x: 496
+        y: 0
+        width: 31
+        height: 30
+      alignment: 9
+      pivot: {x: 0.516129, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 20c93cb6d2142b4d0800000000000000
+      internalID: -3120359928477017086
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scallop_bleached_17
+      rect:
+        serializedVersion: 2
+        x: 527
+        y: 0
+        width: 31
+        height: 30
+      alignment: 9
+      pivot: {x: 0.516129, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6292f539bb0f8a0f0800000000000000
+      internalID: -1105369020097418970
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scallop_bleached_18
+      rect:
+        serializedVersion: 2
+        x: 558
+        y: 0
+        width: 31
+        height: 30
+      alignment: 9
+      pivot: {x: 0.516129, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1978ed382ca43a5d0800000000000000
+      internalID: -3052513923130554479
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scallop_bleached_19
+      rect:
+        serializedVersion: 2
+        x: 589
+        y: 0
+        width: 31
+        height: 30
+      alignment: 9
+      pivot: {x: 0.516129, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: adab16d47fcd0e8b0800000000000000
+      internalID: -5124853421234341158
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scallop_bleached_20
+      rect:
+        serializedVersion: 2
+        x: 620
+        y: 0
+        width: 31
+        height: 30
+      alignment: 9
+      pivot: {x: 0.516129, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b76a171736e528190800000000000000
+      internalID: -7961697410039568773
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scallop_bleached_21
+      rect:
+        serializedVersion: 2
+        x: 651
+        y: 0
+        width: 31
+        height: 30
+      alignment: 9
+      pivot: {x: 0.516129, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fc437df9e5af03d80800000000000000
+      internalID: -8272837231164050225
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scallop_bleached_22
+      rect:
+        serializedVersion: 2
+        x: 682
+        y: 0
+        width: 31
+        height: 30
+      alignment: 9
+      pivot: {x: 0.516129, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1d90313bd055a7650800000000000000
+      internalID: 6231386551747807697
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Scallop_bleached_23
+      rect:
+        serializedVersion: 2
+        x: 713
+        y: 0
+        width: 31
+        height: 30
+      alignment: 9
+      pivot: {x: 0.516129, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8d27be125620a01b0800000000000000
+      internalID: -5689732545845169448
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 413615b5f57a93d408032a69408d6edd
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Scallop_bleached_0: -6321364542432531152
+      Scallop_bleached_1: 7724066160840141925
+      Scallop_bleached_10: 5507263221126166363
+      Scallop_bleached_11: -8592240609211982291
+      Scallop_bleached_12: 6598258332836752995
+      Scallop_bleached_13: -2494973398806259511
+      Scallop_bleached_14: -1820716823230593932
+      Scallop_bleached_15: -1759967385751196902
+      Scallop_bleached_16: -3120359928477017086
+      Scallop_bleached_17: -1105369020097418970
+      Scallop_bleached_18: -3052513923130554479
+      Scallop_bleached_19: -5124853421234341158
+      Scallop_bleached_2: -2455799447957156352
+      Scallop_bleached_20: -7961697410039568773
+      Scallop_bleached_21: -8272837231164050225
+      Scallop_bleached_22: 6231386551747807697
+      Scallop_bleached_23: -5689732545845169448
+      Scallop_bleached_3: 5335603656414207717
+      Scallop_bleached_4: 7950679779932513658
+      Scallop_bleached_5: 6243130509483773780
+      Scallop_bleached_6: -2582740282849192109
+      Scallop_bleached_7: -6223398651567173798
+      Scallop_bleached_8: -4753118338577986294
+      Scallop_bleached_9: 5231138837047765546
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

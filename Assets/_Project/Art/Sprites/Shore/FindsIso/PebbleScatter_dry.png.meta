@@ -1,0 +1,820 @@
+fileFormatVersion: 2
+guid: ae1d30e709b3c1c4fb622ef891187929
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -593852407580581875
+    second: PebbleScatter_dry_0
+  - first:
+      213: 295699139139056672
+    second: PebbleScatter_dry_1
+  - first:
+      213: 4240319448909458831
+    second: PebbleScatter_dry_2
+  - first:
+      213: -3047483149275334985
+    second: PebbleScatter_dry_3
+  - first:
+      213: -358053992498902028
+    second: PebbleScatter_dry_4
+  - first:
+      213: -2689476135739196466
+    second: PebbleScatter_dry_5
+  - first:
+      213: -774394243909820529
+    second: PebbleScatter_dry_6
+  - first:
+      213: 7199748312702729631
+    second: PebbleScatter_dry_7
+  - first:
+      213: 4884357533801623274
+    second: PebbleScatter_dry_8
+  - first:
+      213: -3781941907551941144
+    second: PebbleScatter_dry_9
+  - first:
+      213: 8094048281273635195
+    second: PebbleScatter_dry_10
+  - first:
+      213: 908779300924795226
+    second: PebbleScatter_dry_11
+  - first:
+      213: -3835570510149394895
+    second: PebbleScatter_dry_12
+  - first:
+      213: -3709490651825419318
+    second: PebbleScatter_dry_13
+  - first:
+      213: 3459993951753071904
+    second: PebbleScatter_dry_14
+  - first:
+      213: -8515738497868149785
+    second: PebbleScatter_dry_15
+  - first:
+      213: -5856741407137306336
+    second: PebbleScatter_dry_16
+  - first:
+      213: 8500918597310609121
+    second: PebbleScatter_dry_17
+  - first:
+      213: -2251426468400781937
+    second: PebbleScatter_dry_18
+  - first:
+      213: -2800280805623436866
+    second: PebbleScatter_dry_19
+  - first:
+      213: 6626670907678373251
+    second: PebbleScatter_dry_20
+  - first:
+      213: -6801222845029869486
+    second: PebbleScatter_dry_21
+  - first:
+      213: -8812619425242360
+    second: PebbleScatter_dry_22
+  - first:
+      213: -2460999051847765540
+    second: PebbleScatter_dry_23
+  - first:
+      213: 5823332098114269361
+    second: PebbleScatter_dry_24
+  - first:
+      213: 8862258441030281995
+    second: PebbleScatter_dry_25
+  - first:
+      213: -243765007669221227
+    second: PebbleScatter_dry_26
+  - first:
+      213: -3737525903349910648
+    second: PebbleScatter_dry_27
+  - first:
+      213: 1424011811419012683
+    second: PebbleScatter_dry_28
+  - first:
+      213: 5147092675751268516
+    second: PebbleScatter_dry_29
+  - first:
+      213: -3495980287511578705
+    second: PebbleScatter_dry_30
+  - first:
+      213: 5431715102883527299
+    second: PebbleScatter_dry_31
+  - first:
+      213: 4687132440289529075
+    second: PebbleScatter_dry_32
+  - first:
+      213: -4266924241603269356
+    second: PebbleScatter_dry_33
+  - first:
+      213: 3837838902267595093
+    second: PebbleScatter_dry_34
+  - first:
+      213: 9014610722200416342
+    second: PebbleScatter_dry_35
+  - first:
+      213: 3777203944218734766
+    second: PebbleScatter_dry_36
+  - first:
+      213: 9200510884849958696
+    second: PebbleScatter_dry_37
+  - first:
+      213: -5820556864903807863
+    second: PebbleScatter_dry_38
+  - first:
+      213: -6370338819346682019
+    second: PebbleScatter_dry_39
+  - first:
+      213: 3447093127979684352
+    second: PebbleScatter_dry_40
+  - first:
+      213: -1184857778957871726
+    second: PebbleScatter_dry_41
+  - first:
+      213: 3589765423373324885
+    second: PebbleScatter_dry_42
+  - first:
+      213: -5272788843873227157
+    second: PebbleScatter_dry_43
+  - first:
+      213: 838350317148648142
+    second: PebbleScatter_dry_44
+  - first:
+      213: -4940359178243500260
+    second: PebbleScatter_dry_45
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: PebbleScatter_dry_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 61
+        height: 53
+      alignment: 9
+      pivot: {x: 0.5081967, y: 0.43396226}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d002625b16632c7f0800000000000000
+      internalID: -593852407580581875
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PebbleScatter_dry_1
+      rect:
+        serializedVersion: 2
+        x: 61
+        y: 0
+        width: 61
+        height: 53
+      alignment: 9
+      pivot: {x: 0.5081967, y: 0.43396226}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 024b5c4ecc88a1400800000000000000
+      internalID: 295699139139056672
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PebbleScatter_dry_2
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 0
+        width: 61
+        height: 53
+      alignment: 9
+      pivot: {x: 0.5081967, y: 0.43396226}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f8dad669214a8da30800000000000000
+      internalID: 4240319448909458831
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PebbleScatter_dry_3
+      rect:
+        serializedVersion: 2
+        x: 183
+        y: 0
+        width: 61
+        height: 53
+      alignment: 9
+      pivot: {x: 0.5081967, y: 0.43396226}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7b67474d83a25b5d0800000000000000
+      internalID: -3047483149275334985
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PebbleScatter_dry_4
+      rect:
+        serializedVersion: 2
+        x: 244
+        y: 0
+        width: 61
+        height: 53
+      alignment: 9
+      pivot: {x: 0.5081967, y: 0.43396226}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4fb41b67acfe70bf0800000000000000
+      internalID: -358053992498902028
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PebbleScatter_dry_5
+      rect:
+        serializedVersion: 2
+        x: 305
+        y: 0
+        width: 61
+        height: 53
+      alignment: 9
+      pivot: {x: 0.5081967, y: 0.43396226}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ecbff5934bf0daad0800000000000000
+      internalID: -2689476135739196466
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PebbleScatter_dry_6
+      rect:
+        serializedVersion: 2
+        x: 366
+        y: 0
+        width: 61
+        height: 53
+      alignment: 9
+      pivot: {x: 0.5081967, y: 0.43396226}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f8fd5afb98cc045f0800000000000000
+      internalID: -774394243909820529
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PebbleScatter_dry_7
+      rect:
+        serializedVersion: 2
+        x: 427
+        y: 0
+        width: 61
+        height: 53
+      alignment: 9
+      pivot: {x: 0.5081967, y: 0.43396226}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f9d3ddac1f4aae360800000000000000
+      internalID: 7199748312702729631
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PebbleScatter_dry_8
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 0
+        width: 61
+        height: 53
+      alignment: 9
+      pivot: {x: 0.5081967, y: 0.43396226}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aeeaf3e6c49b8c340800000000000000
+      internalID: 4884357533801623274
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PebbleScatter_dry_9
+      rect:
+        serializedVersion: 2
+        x: 549
+        y: 0
+        width: 61
+        height: 53
+      alignment: 9
+      pivot: {x: 0.5081967, y: 0.43396226}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8ed04376fd7d38bc0800000000000000
+      internalID: -3781941907551941144
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PebbleScatter_dry_10
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 0
+        width: 61
+        height: 53
+      alignment: 9
+      pivot: {x: 0.5081967, y: 0.43396226}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b711d281706d35070800000000000000
+      internalID: 8094048281273635195
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PebbleScatter_dry_11
+      rect:
+        serializedVersion: 2
+        x: 671
+        y: 0
+        width: 61
+        height: 53
+      alignment: 9
+      pivot: {x: 0.5081967, y: 0.43396226}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a59a9d295f1ac9c00800000000000000
+      internalID: 908779300924795226
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PebbleScatter_dry_12
+      rect:
+        serializedVersion: 2
+        x: 732
+        y: 0
+        width: 61
+        height: 53
+      alignment: 9
+      pivot: {x: 0.5081967, y: 0.43396226}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 13ed49751f055cac0800000000000000
+      internalID: -3835570510149394895
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PebbleScatter_dry_13
+      rect:
+        serializedVersion: 2
+        x: 793
+        y: 0
+        width: 61
+        height: 53
+      alignment: 9
+      pivot: {x: 0.5081967, y: 0.43396226}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: acb4058e7ed358cc0800000000000000
+      internalID: -3709490651825419318
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PebbleScatter_dry_14
+      rect:
+        serializedVersion: 2
+        x: 854
+        y: 0
+        width: 61
+        height: 53
+      alignment: 9
+      pivot: {x: 0.5081967, y: 0.43396226}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 02ded33da2e540030800000000000000
+      internalID: 3459993951753071904
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PebbleScatter_dry_15
+      rect:
+        serializedVersion: 2
+        x: 915
+        y: 0
+        width: 61
+        height: 53
+      alignment: 9
+      pivot: {x: 0.5081967, y: 0.43396226}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7eb437a54f402d980800000000000000
+      internalID: -8515738497868149785
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PebbleScatter_dry_16
+      rect:
+        serializedVersion: 2
+        x: 976
+        y: 0
+        width: 61
+        height: 53
+      alignment: 9
+      pivot: {x: 0.5081967, y: 0.43396226}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 029624678bca8bea0800000000000000
+      internalID: -5856741407137306336
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PebbleScatter_dry_17
+      rect:
+        serializedVersion: 2
+        x: 1037
+        y: 0
+        width: 61
+        height: 53
+      alignment: 9
+      pivot: {x: 0.5081967, y: 0.43396226}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1e6f539ac6459f570800000000000000
+      internalID: 8500918597310609121
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PebbleScatter_dry_18
+      rect:
+        serializedVersion: 2
+        x: 1098
+        y: 0
+        width: 61
+        height: 53
+      alignment: 9
+      pivot: {x: 0.5081967, y: 0.43396226}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f852f093e8351c0e0800000000000000
+      internalID: -2251426468400781937
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PebbleScatter_dry_19
+      rect:
+        serializedVersion: 2
+        x: 1159
+        y: 0
+        width: 61
+        height: 53
+      alignment: 9
+      pivot: {x: 0.5081967, y: 0.43396226}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eb9687d91776329d0800000000000000
+      internalID: -2800280805623436866
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PebbleScatter_dry_20
+      rect:
+        serializedVersion: 2
+        x: 1220
+        y: 0
+        width: 61
+        height: 53
+      alignment: 9
+      pivot: {x: 0.5081967, y: 0.43396226}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 385b597b41aa6fb50800000000000000
+      internalID: 6626670907678373251
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PebbleScatter_dry_21
+      rect:
+        serializedVersion: 2
+        x: 1281
+        y: 0
+        width: 61
+        height: 53
+      alignment: 9
+      pivot: {x: 0.5081967, y: 0.43396226}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 25819bb5bd33d91a0800000000000000
+      internalID: -6801222845029869486
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PebbleScatter_dry_22
+      rect:
+        serializedVersion: 2
+        x: 1342
+        y: 0
+        width: 61
+        height: 53
+      alignment: 9
+      pivot: {x: 0.5081967, y: 0.43396226}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8032e9528f0b0eff0800000000000000
+      internalID: -8812619425242360
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PebbleScatter_dry_23
+      rect:
+        serializedVersion: 2
+        x: 1403
+        y: 0
+        width: 61
+        height: 53
+      alignment: 9
+      pivot: {x: 0.5081967, y: 0.43396226}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cd17a0ab666c8ddd0800000000000000
+      internalID: -2460999051847765540
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 8e78b4f7a41b05f48aa915f83862f19e
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      PebbleScatter_dry_0: -593852407580581875
+      PebbleScatter_dry_1: 295699139139056672
+      PebbleScatter_dry_10: 8094048281273635195
+      PebbleScatter_dry_11: 908779300924795226
+      PebbleScatter_dry_12: -3835570510149394895
+      PebbleScatter_dry_13: -3709490651825419318
+      PebbleScatter_dry_14: 3459993951753071904
+      PebbleScatter_dry_15: -8515738497868149785
+      PebbleScatter_dry_16: -5856741407137306336
+      PebbleScatter_dry_17: 8500918597310609121
+      PebbleScatter_dry_18: -2251426468400781937
+      PebbleScatter_dry_19: -2800280805623436866
+      PebbleScatter_dry_2: 4240319448909458831
+      PebbleScatter_dry_20: 6626670907678373251
+      PebbleScatter_dry_21: -6801222845029869486
+      PebbleScatter_dry_22: -8812619425242360
+      PebbleScatter_dry_23: -2460999051847765540
+      PebbleScatter_dry_3: -3047483149275334985
+      PebbleScatter_dry_4: -358053992498902028
+      PebbleScatter_dry_5: -2689476135739196466
+      PebbleScatter_dry_6: -774394243909820529
+      PebbleScatter_dry_7: 7199748312702729631
+      PebbleScatter_dry_8: 4884357533801623274
+      PebbleScatter_dry_9: -3781941907551941144
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

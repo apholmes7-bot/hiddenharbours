@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: dc873de0c3b8ef044a6dcaff9957138e
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 2700620465485916650
+    second: DriftBranch_wet_0
+  - first:
+      213: -8308830464017612289
+    second: DriftBranch_wet_1
+  - first:
+      213: -1219519861206775224
+    second: DriftBranch_wet_2
+  - first:
+      213: -5113757932185174496
+    second: DriftBranch_wet_3
+  - first:
+      213: 1115685044108335673
+    second: DriftBranch_wet_4
+  - first:
+      213: 4132829782135665543
+    second: DriftBranch_wet_5
+  - first:
+      213: -100622529222858801
+    second: DriftBranch_wet_6
+  - first:
+      213: 7572044093614012328
+    second: DriftBranch_wet_7
+  - first:
+      213: -6915120605738559165
+    second: DriftBranch_wet_8
+  - first:
+      213: -8408969678511927678
+    second: DriftBranch_wet_9
+  - first:
+      213: 3265913437135140821
+    second: DriftBranch_wet_10
+  - first:
+      213: -3655019740057310191
+    second: DriftBranch_wet_11
+  - first:
+      213: 523000714529675769
+    second: DriftBranch_wet_12
+  - first:
+      213: 8332651927995456392
+    second: DriftBranch_wet_13
+  - first:
+      213: 2257678941711968831
+    second: DriftBranch_wet_14
+  - first:
+      213: -1205892841396874912
+    second: DriftBranch_wet_15
+  - first:
+      213: 7880423369971965787
+    second: DriftBranch_wet_16
+  - first:
+      213: -7156623674252267799
+    second: DriftBranch_wet_17
+  - first:
+      213: 5228064556619422875
+    second: DriftBranch_wet_18
+  - first:
+      213: 10819151550990152
+    second: DriftBranch_wet_19
+  - first:
+      213: 6128939587232031646
+    second: DriftBranch_wet_20
+  - first:
+      213: -1594819110413861978
+    second: DriftBranch_wet_21
+  - first:
+      213: -8533961246434664588
+    second: DriftBranch_wet_22
+  - first:
+      213: 240659989562652557
+    second: DriftBranch_wet_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: DriftBranch_wet_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 84
+        width: 99
+        height: 84
+      alignment: 9
+      pivot: {x: 0.5050505, y: 0.42857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ae9207e31088a7520800000000000000
+      internalID: 2700620465485916650
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftBranch_wet_1
+      rect:
+        serializedVersion: 2
+        x: 99
+        y: 84
+        width: 99
+        height: 84
+      alignment: 9
+      pivot: {x: 0.5050505, y: 0.42857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ff1494d07ba11bc80800000000000000
+      internalID: -8308830464017612289
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftBranch_wet_2
+      rect:
+        serializedVersion: 2
+        x: 198
+        y: 84
+        width: 99
+        height: 84
+      alignment: 9
+      pivot: {x: 0.5050505, y: 0.42857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 84a8c34c525631fe0800000000000000
+      internalID: -1219519861206775224
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftBranch_wet_3
+      rect:
+        serializedVersion: 2
+        x: 297
+        y: 84
+        width: 99
+        height: 84
+      alignment: 9
+      pivot: {x: 0.5050505, y: 0.42857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 02e34c821484809b0800000000000000
+      internalID: -5113757932185174496
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftBranch_wet_4
+      rect:
+        serializedVersion: 2
+        x: 396
+        y: 84
+        width: 99
+        height: 84
+      alignment: 9
+      pivot: {x: 0.5050505, y: 0.42857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 93a1b4fe2a5bb7f00800000000000000
+      internalID: 1115685044108335673
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftBranch_wet_5
+      rect:
+        serializedVersion: 2
+        x: 495
+        y: 84
+        width: 99
+        height: 84
+      alignment: 9
+      pivot: {x: 0.5050505, y: 0.42857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 783f9594ac2ca5930800000000000000
+      internalID: 4132829782135665543
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftBranch_wet_6
+      rect:
+        serializedVersion: 2
+        x: 594
+        y: 84
+        width: 99
+        height: 84
+      alignment: 9
+      pivot: {x: 0.5050505, y: 0.42857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fc72541c7548a9ef0800000000000000
+      internalID: -100622529222858801
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftBranch_wet_7
+      rect:
+        serializedVersion: 2
+        x: 693
+        y: 84
+        width: 99
+        height: 84
+      alignment: 9
+      pivot: {x: 0.5050505, y: 0.42857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8a735771cfd451960800000000000000
+      internalID: 7572044093614012328
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftBranch_wet_8
+      rect:
+        serializedVersion: 2
+        x: 792
+        y: 84
+        width: 99
+        height: 84
+      alignment: 9
+      pivot: {x: 0.5050505, y: 0.42857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 34918fb627e8800a0800000000000000
+      internalID: -6915120605738559165
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftBranch_wet_9
+      rect:
+        serializedVersion: 2
+        x: 891
+        y: 84
+        width: 99
+        height: 84
+      alignment: 9
+      pivot: {x: 0.5050505, y: 0.42857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 28e044941a65d4b80800000000000000
+      internalID: -8408969678511927678
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftBranch_wet_10
+      rect:
+        serializedVersion: 2
+        x: 990
+        y: 84
+        width: 99
+        height: 84
+      alignment: 9
+      pivot: {x: 0.5050505, y: 0.42857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5d77d9fa7fad25d20800000000000000
+      internalID: 3265913437135140821
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftBranch_wet_11
+      rect:
+        serializedVersion: 2
+        x: 1089
+        y: 84
+        width: 99
+        height: 84
+      alignment: 9
+      pivot: {x: 0.5050505, y: 0.42857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 11ce7da59e2c64dc0800000000000000
+      internalID: -3655019740057310191
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftBranch_wet_12
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 99
+        height: 84
+      alignment: 9
+      pivot: {x: 0.5050505, y: 0.42857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9f911def062124700800000000000000
+      internalID: 523000714529675769
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftBranch_wet_13
+      rect:
+        serializedVersion: 2
+        x: 99
+        y: 0
+        width: 99
+        height: 84
+      alignment: 9
+      pivot: {x: 0.5050505, y: 0.42857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 88b942db7c683a370800000000000000
+      internalID: 8332651927995456392
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftBranch_wet_14
+      rect:
+        serializedVersion: 2
+        x: 198
+        y: 0
+        width: 99
+        height: 84
+      alignment: 9
+      pivot: {x: 0.5050505, y: 0.42857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f3a2f992903e45f10800000000000000
+      internalID: 2257678941711968831
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftBranch_wet_15
+      rect:
+        serializedVersion: 2
+        x: 297
+        y: 0
+        width: 99
+        height: 84
+      alignment: 9
+      pivot: {x: 0.5050505, y: 0.42857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0615a5f89dec34fe0800000000000000
+      internalID: -1205892841396874912
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftBranch_wet_16
+      rect:
+        serializedVersion: 2
+        x: 396
+        y: 0
+        width: 99
+        height: 84
+      alignment: 9
+      pivot: {x: 0.5050505, y: 0.42857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b5f9dde7d43ec5d60800000000000000
+      internalID: 7880423369971965787
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftBranch_wet_17
+      rect:
+        serializedVersion: 2
+        x: 495
+        y: 0
+        width: 99
+        height: 84
+      alignment: 9
+      pivot: {x: 0.5050505, y: 0.42857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9eeea098fa09eac90800000000000000
+      internalID: -7156623674252267799
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftBranch_wet_18
+      rect:
+        serializedVersion: 2
+        x: 594
+        y: 0
+        width: 99
+        height: 84
+      alignment: 9
+      pivot: {x: 0.5050505, y: 0.42857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b9c5c18c301dd8840800000000000000
+      internalID: 5228064556619422875
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftBranch_wet_19
+      rect:
+        serializedVersion: 2
+        x: 693
+        y: 0
+        width: 99
+        height: 84
+      alignment: 9
+      pivot: {x: 0.5050505, y: 0.42857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 847c7f406ff662000800000000000000
+      internalID: 10819151550990152
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftBranch_wet_20
+      rect:
+        serializedVersion: 2
+        x: 792
+        y: 0
+        width: 99
+        height: 84
+      alignment: 9
+      pivot: {x: 0.5050505, y: 0.42857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e936bc2051e5e0550800000000000000
+      internalID: 6128939587232031646
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftBranch_wet_21
+      rect:
+        serializedVersion: 2
+        x: 891
+        y: 0
+        width: 99
+        height: 84
+      alignment: 9
+      pivot: {x: 0.5050505, y: 0.42857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6abf6c208701ed9e0800000000000000
+      internalID: -1594819110413861978
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftBranch_wet_22
+      rect:
+        serializedVersion: 2
+        x: 990
+        y: 0
+        width: 99
+        height: 84
+      alignment: 9
+      pivot: {x: 0.5050505, y: 0.42857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 47fdf431677419980800000000000000
+      internalID: -8533961246434664588
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: DriftBranch_wet_23
+      rect:
+        serializedVersion: 2
+        x: 1089
+        y: 0
+        width: 99
+        height: 84
+      alignment: 9
+      pivot: {x: 0.5050505, y: 0.42857143}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d87f7854cfef65300800000000000000
+      internalID: 240659989562652557
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: d7f975092caac164b9971ab50ae8ebbd
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      DriftBranch_wet_0: 2700620465485916650
+      DriftBranch_wet_1: -8308830464017612289
+      DriftBranch_wet_10: 3265913437135140821
+      DriftBranch_wet_11: -3655019740057310191
+      DriftBranch_wet_12: 523000714529675769
+      DriftBranch_wet_13: 8332651927995456392
+      DriftBranch_wet_14: 2257678941711968831
+      DriftBranch_wet_15: -1205892841396874912
+      DriftBranch_wet_16: 7880423369971965787
+      DriftBranch_wet_17: -7156623674252267799
+      DriftBranch_wet_18: 5228064556619422875
+      DriftBranch_wet_19: 10819151550990152
+      DriftBranch_wet_2: -1219519861206775224
+      DriftBranch_wet_20: 6128939587232031646
+      DriftBranch_wet_21: -1594819110413861978
+      DriftBranch_wet_22: -8533961246434664588
+      DriftBranch_wet_23: 240659989562652557
+      DriftBranch_wet_3: -5113757932185174496
+      DriftBranch_wet_4: 1115685044108335673
+      DriftBranch_wet_5: 4132829782135665543
+      DriftBranch_wet_6: -100622529222858801
+      DriftBranch_wet_7: 7572044093614012328
+      DriftBranch_wet_8: -6915120605738559165
+      DriftBranch_wet_9: -8408969678511927678
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

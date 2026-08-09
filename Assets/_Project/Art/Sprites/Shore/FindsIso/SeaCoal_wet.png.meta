@@ -1,0 +1,796 @@
+fileFormatVersion: 2
+guid: e761682e94c11474b8322c27a5d27d51
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -4562735495755149786
+    second: SeaCoal_wet_0
+  - first:
+      213: -1371696853826355918
+    second: SeaCoal_wet_1
+  - first:
+      213: -277201181453941481
+    second: SeaCoal_wet_2
+  - first:
+      213: -4485326713646057834
+    second: SeaCoal_wet_3
+  - first:
+      213: 6303822683345917946
+    second: SeaCoal_wet_4
+  - first:
+      213: -5800356948909578625
+    second: SeaCoal_wet_5
+  - first:
+      213: 836383060749271720
+    second: SeaCoal_wet_6
+  - first:
+      213: 1998880678666072734
+    second: SeaCoal_wet_7
+  - first:
+      213: 8131890718383124380
+    second: SeaCoal_wet_8
+  - first:
+      213: 1102008458111251129
+    second: SeaCoal_wet_9
+  - first:
+      213: 7595881635835184174
+    second: SeaCoal_wet_10
+  - first:
+      213: 8191820636514745948
+    second: SeaCoal_wet_11
+  - first:
+      213: -8331838783825680659
+    second: SeaCoal_wet_12
+  - first:
+      213: -9108162846908748616
+    second: SeaCoal_wet_13
+  - first:
+      213: 2847202391013837356
+    second: SeaCoal_wet_14
+  - first:
+      213: 1318061495832387990
+    second: SeaCoal_wet_15
+  - first:
+      213: 995450294602980798
+    second: SeaCoal_wet_16
+  - first:
+      213: -9140257699704348122
+    second: SeaCoal_wet_17
+  - first:
+      213: 3361901182342878628
+    second: SeaCoal_wet_18
+  - first:
+      213: -2337864331047957280
+    second: SeaCoal_wet_19
+  - first:
+      213: 7403659675822603338
+    second: SeaCoal_wet_20
+  - first:
+      213: 7501160769951021180
+    second: SeaCoal_wet_21
+  - first:
+      213: -7813479232238504333
+    second: SeaCoal_wet_22
+  - first:
+      213: -6112303513015295387
+    second: SeaCoal_wet_23
+  - first:
+      213: -4739259564020748392
+    second: SeaCoal_wet_24
+  - first:
+      213: 115225402816037301
+    second: SeaCoal_wet_25
+  - first:
+      213: 8257888061064709419
+    second: SeaCoal_wet_26
+  - first:
+      213: -2149560027589648136
+    second: SeaCoal_wet_27
+  - first:
+      213: 6473114102172888837
+    second: SeaCoal_wet_28
+  - first:
+      213: -5161973610799486678
+    second: SeaCoal_wet_29
+  - first:
+      213: -3375789936621343187
+    second: SeaCoal_wet_30
+  - first:
+      213: 4787944552944863955
+    second: SeaCoal_wet_31
+  - first:
+      213: 2832741305102285540
+    second: SeaCoal_wet_32
+  - first:
+      213: 4135987248936287204
+    second: SeaCoal_wet_33
+  - first:
+      213: -3639185633316871334
+    second: SeaCoal_wet_34
+  - first:
+      213: 5348168251565679749
+    second: SeaCoal_wet_35
+  - first:
+      213: -7042903116878929100
+    second: SeaCoal_wet_36
+  - first:
+      213: 6516317722109478333
+    second: SeaCoal_wet_37
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: SeaCoal_wet_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 41
+        height: 37
+      alignment: 9
+      pivot: {x: 0.5121951, y: 0.4054054}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 62ec273bd38eda0c0800000000000000
+      internalID: -4562735495755149786
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaCoal_wet_1
+      rect:
+        serializedVersion: 2
+        x: 41
+        y: 0
+        width: 41
+        height: 37
+      alignment: 9
+      pivot: {x: 0.5121951, y: 0.4054054}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 23db820aaf0c6fce0800000000000000
+      internalID: -1371696853826355918
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaCoal_wet_2
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 0
+        width: 41
+        height: 37
+      alignment: 9
+      pivot: {x: 0.5121951, y: 0.4054054}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7158e108efe272cf0800000000000000
+      internalID: -277201181453941481
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaCoal_wet_3
+      rect:
+        serializedVersion: 2
+        x: 123
+        y: 0
+        width: 41
+        height: 37
+      alignment: 9
+      pivot: {x: 0.5121951, y: 0.4054054}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6967e834e1be0c1c0800000000000000
+      internalID: -4485326713646057834
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaCoal_wet_4
+      rect:
+        serializedVersion: 2
+        x: 164
+        y: 0
+        width: 41
+        height: 37
+      alignment: 9
+      pivot: {x: 0.5121951, y: 0.4054054}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: af712e7d45dab7750800000000000000
+      internalID: 6303822683345917946
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaCoal_wet_5
+      rect:
+        serializedVersion: 2
+        x: 205
+        y: 0
+        width: 41
+        height: 37
+      alignment: 9
+      pivot: {x: 0.5121951, y: 0.4054054}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f76a6c9261ef08fa0800000000000000
+      internalID: -5800356948909578625
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaCoal_wet_6
+      rect:
+        serializedVersion: 2
+        x: 246
+        y: 0
+        width: 41
+        height: 37
+      alignment: 9
+      pivot: {x: 0.5121951, y: 0.4054054}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8a24d1066fd6b9b00800000000000000
+      internalID: 836383060749271720
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaCoal_wet_7
+      rect:
+        serializedVersion: 2
+        x: 287
+        y: 0
+        width: 41
+        height: 37
+      alignment: 9
+      pivot: {x: 0.5121951, y: 0.4054054}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e92784003637dbb10800000000000000
+      internalID: 1998880678666072734
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaCoal_wet_8
+      rect:
+        serializedVersion: 2
+        x: 328
+        y: 0
+        width: 41
+        height: 37
+      alignment: 9
+      pivot: {x: 0.5121951, y: 0.4054054}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c9fa58516874ad070800000000000000
+      internalID: 8131890718383124380
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaCoal_wet_9
+      rect:
+        serializedVersion: 2
+        x: 369
+        y: 0
+        width: 41
+        height: 37
+      alignment: 9
+      pivot: {x: 0.5121951, y: 0.4054054}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9b2723d9ade1b4f00800000000000000
+      internalID: 1102008458111251129
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaCoal_wet_10
+      rect:
+        serializedVersion: 2
+        x: 410
+        y: 0
+        width: 41
+        height: 37
+      alignment: 9
+      pivot: {x: 0.5121951, y: 0.4054054}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e248ed36a1ef96960800000000000000
+      internalID: 7595881635835184174
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaCoal_wet_11
+      rect:
+        serializedVersion: 2
+        x: 451
+        y: 0
+        width: 41
+        height: 37
+      alignment: 9
+      pivot: {x: 0.5121951, y: 0.4054054}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c5efc2f77713fa170800000000000000
+      internalID: 8191820636514745948
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaCoal_wet_12
+      rect:
+        serializedVersion: 2
+        x: 492
+        y: 0
+        width: 41
+        height: 37
+      alignment: 9
+      pivot: {x: 0.5121951, y: 0.4054054}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: de66f3425cc5f5c80800000000000000
+      internalID: -8331838783825680659
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaCoal_wet_13
+      rect:
+        serializedVersion: 2
+        x: 533
+        y: 0
+        width: 41
+        height: 37
+      alignment: 9
+      pivot: {x: 0.5121951, y: 0.4054054}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8bce799d52e499180800000000000000
+      internalID: -9108162846908748616
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaCoal_wet_14
+      rect:
+        serializedVersion: 2
+        x: 574
+        y: 0
+        width: 41
+        height: 37
+      alignment: 9
+      pivot: {x: 0.5121951, y: 0.4054054}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c2ac5005d7b438720800000000000000
+      internalID: 2847202391013837356
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaCoal_wet_15
+      rect:
+        serializedVersion: 2
+        x: 615
+        y: 0
+        width: 41
+        height: 37
+      alignment: 9
+      pivot: {x: 0.5121951, y: 0.4054054}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 691a53372f1ba4210800000000000000
+      internalID: 1318061495832387990
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaCoal_wet_16
+      rect:
+        serializedVersion: 2
+        x: 656
+        y: 0
+        width: 41
+        height: 37
+      alignment: 9
+      pivot: {x: 0.5121951, y: 0.4054054}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ebd5e51d4cc80dd00800000000000000
+      internalID: 995450294602980798
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaCoal_wet_17
+      rect:
+        serializedVersion: 2
+        x: 697
+        y: 0
+        width: 41
+        height: 37
+      alignment: 9
+      pivot: {x: 0.5121951, y: 0.4054054}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 622e79d9c08472180800000000000000
+      internalID: -9140257699704348122
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaCoal_wet_18
+      rect:
+        serializedVersion: 2
+        x: 738
+        y: 0
+        width: 41
+        height: 37
+      alignment: 9
+      pivot: {x: 0.5121951, y: 0.4054054}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4a5538f205fd7ae20800000000000000
+      internalID: 3361901182342878628
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaCoal_wet_19
+      rect:
+        serializedVersion: 2
+        x: 779
+        y: 0
+        width: 41
+        height: 37
+      alignment: 9
+      pivot: {x: 0.5121951, y: 0.4054054}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0ec84d607cc3e8fd0800000000000000
+      internalID: -2337864331047957280
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaCoal_wet_20
+      rect:
+        serializedVersion: 2
+        x: 820
+        y: 0
+        width: 41
+        height: 37
+      alignment: 9
+      pivot: {x: 0.5121951, y: 0.4054054}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a4c3a47bf351fb660800000000000000
+      internalID: 7403659675822603338
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaCoal_wet_21
+      rect:
+        serializedVersion: 2
+        x: 861
+        y: 0
+        width: 41
+        height: 37
+      alignment: 9
+      pivot: {x: 0.5121951, y: 0.4054054}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c78b6083af9791860800000000000000
+      internalID: 7501160769951021180
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaCoal_wet_22
+      rect:
+        serializedVersion: 2
+        x: 902
+        y: 0
+        width: 41
+        height: 37
+      alignment: 9
+      pivot: {x: 0.5121951, y: 0.4054054}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 376388e2902f09390800000000000000
+      internalID: -7813479232238504333
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SeaCoal_wet_23
+      rect:
+        serializedVersion: 2
+        x: 943
+        y: 0
+        width: 41
+        height: 37
+      alignment: 9
+      pivot: {x: 0.5121951, y: 0.4054054}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 562e95bd65cbc2ba0800000000000000
+      internalID: -6112303513015295387
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: ab76b5b5c42228f4187370acaa8be361
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      SeaCoal_wet_0: -4562735495755149786
+      SeaCoal_wet_1: -1371696853826355918
+      SeaCoal_wet_10: 7595881635835184174
+      SeaCoal_wet_11: 8191820636514745948
+      SeaCoal_wet_12: -8331838783825680659
+      SeaCoal_wet_13: -9108162846908748616
+      SeaCoal_wet_14: 2847202391013837356
+      SeaCoal_wet_15: 1318061495832387990
+      SeaCoal_wet_16: 995450294602980798
+      SeaCoal_wet_17: -9140257699704348122
+      SeaCoal_wet_18: 3361901182342878628
+      SeaCoal_wet_19: -2337864331047957280
+      SeaCoal_wet_2: -277201181453941481
+      SeaCoal_wet_20: 7403659675822603338
+      SeaCoal_wet_21: 7501160769951021180
+      SeaCoal_wet_22: -7813479232238504333
+      SeaCoal_wet_23: -6112303513015295387
+      SeaCoal_wet_3: -4485326713646057834
+      SeaCoal_wet_4: 6303822683345917946
+      SeaCoal_wet_5: -5800356948909578625
+      SeaCoal_wet_6: 836383060749271720
+      SeaCoal_wet_7: 1998880678666072734
+      SeaCoal_wet_8: 8131890718383124380
+      SeaCoal_wet_9: 1102008458111251129
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

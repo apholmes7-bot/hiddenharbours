@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: da9f30c209efcc44e87d027d86ba5cf2
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 2844861964192093719
+    second: CrabMoult_dry_0
+  - first:
+      213: -535970349463482583
+    second: CrabMoult_dry_1
+  - first:
+      213: -5834556987617797113
+    second: CrabMoult_dry_2
+  - first:
+      213: -1031918584563887743
+    second: CrabMoult_dry_3
+  - first:
+      213: -6949313848996778146
+    second: CrabMoult_dry_4
+  - first:
+      213: -9182730808734601974
+    second: CrabMoult_dry_5
+  - first:
+      213: -5791206867500331940
+    second: CrabMoult_dry_6
+  - first:
+      213: 6472948540483690296
+    second: CrabMoult_dry_7
+  - first:
+      213: 8030194039656229035
+    second: CrabMoult_dry_8
+  - first:
+      213: 2275194641503383557
+    second: CrabMoult_dry_9
+  - first:
+      213: -7133559372658431345
+    second: CrabMoult_dry_10
+  - first:
+      213: -4795457564554139796
+    second: CrabMoult_dry_11
+  - first:
+      213: -5841562002801482067
+    second: CrabMoult_dry_12
+  - first:
+      213: 8839798647206514734
+    second: CrabMoult_dry_13
+  - first:
+      213: -6409011688660575078
+    second: CrabMoult_dry_14
+  - first:
+      213: 8846919719212981404
+    second: CrabMoult_dry_15
+  - first:
+      213: -8710498232880429038
+    second: CrabMoult_dry_16
+  - first:
+      213: 8617330080698557493
+    second: CrabMoult_dry_17
+  - first:
+      213: -6944939123057311664
+    second: CrabMoult_dry_18
+  - first:
+      213: -6727677418959109488
+    second: CrabMoult_dry_19
+  - first:
+      213: 1366465546640885711
+    second: CrabMoult_dry_20
+  - first:
+      213: -4242757036088578668
+    second: CrabMoult_dry_21
+  - first:
+      213: -987952047947363522
+    second: CrabMoult_dry_22
+  - first:
+      213: -4024303304058635879
+    second: CrabMoult_dry_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: CrabMoult_dry_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 47
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.4090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 71690ba32eafa7720800000000000000
+      internalID: 2844861964192093719
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CrabMoult_dry_1
+      rect:
+        serializedVersion: 2
+        x: 47
+        y: 0
+        width: 47
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.4090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 92f461e8ec9df88f0800000000000000
+      internalID: -535970349463482583
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CrabMoult_dry_2
+      rect:
+        serializedVersion: 2
+        x: 94
+        y: 0
+        width: 47
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.4090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 70c9443255d770fa0800000000000000
+      internalID: -5834556987617797113
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CrabMoult_dry_3
+      rect:
+        serializedVersion: 2
+        x: 141
+        y: 0
+        width: 47
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.4090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 18112f1c383eda1f0800000000000000
+      internalID: -1031918584563887743
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CrabMoult_dry_4
+      rect:
+        serializedVersion: 2
+        x: 188
+        y: 0
+        width: 47
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.4090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e5f28d59fd31f8f90800000000000000
+      internalID: -6949313848996778146
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CrabMoult_dry_5
+      rect:
+        serializedVersion: 2
+        x: 235
+        y: 0
+        width: 47
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.4090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a0da65d4bf2609080800000000000000
+      internalID: -9182730808734601974
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CrabMoult_dry_6
+      rect:
+        serializedVersion: 2
+        x: 282
+        y: 0
+        width: 47
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.4090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c5c07d1890081afa0800000000000000
+      internalID: -5791206867500331940
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CrabMoult_dry_7
+      rect:
+        serializedVersion: 2
+        x: 329
+        y: 0
+        width: 47
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.4090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 83fd9e4076884d950800000000000000
+      internalID: 6472948540483690296
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CrabMoult_dry_8
+      rect:
+        serializedVersion: 2
+        x: 376
+        y: 0
+        width: 47
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.4090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ba82b2beeeaf07f60800000000000000
+      internalID: 8030194039656229035
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CrabMoult_dry_9
+      rect:
+        serializedVersion: 2
+        x: 423
+        y: 0
+        width: 47
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.4090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5007ea1d87d139f10800000000000000
+      internalID: 2275194641503383557
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CrabMoult_dry_10
+      rect:
+        serializedVersion: 2
+        x: 470
+        y: 0
+        width: 47
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.4090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f8a2988bb81800d90800000000000000
+      internalID: -7133559372658431345
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CrabMoult_dry_11
+      rect:
+        serializedVersion: 2
+        x: 517
+        y: 0
+        width: 47
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.4090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c676a41a0cc137db0800000000000000
+      internalID: -4795457564554139796
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CrabMoult_dry_12
+      rect:
+        serializedVersion: 2
+        x: 564
+        y: 0
+        width: 47
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.4090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: da62991fe4a9eeea0800000000000000
+      internalID: -5841562002801482067
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CrabMoult_dry_13
+      rect:
+        serializedVersion: 2
+        x: 611
+        y: 0
+        width: 47
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.4090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e2019bcc8064daa70800000000000000
+      internalID: 8839798647206514734
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CrabMoult_dry_14
+      rect:
+        serializedVersion: 2
+        x: 658
+        y: 0
+        width: 47
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.4090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a9c5f0853dd9e07a0800000000000000
+      internalID: -6409011688660575078
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CrabMoult_dry_15
+      rect:
+        serializedVersion: 2
+        x: 705
+        y: 0
+        width: 47
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.4090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c9c96149c9296ca70800000000000000
+      internalID: 8846919719212981404
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CrabMoult_dry_16
+      rect:
+        serializedVersion: 2
+        x: 752
+        y: 0
+        width: 47
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.4090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2188e74e1081e1780800000000000000
+      internalID: -8710498232880429038
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CrabMoult_dry_17
+      rect:
+        serializedVersion: 2
+        x: 799
+        y: 0
+        width: 47
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.4090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 53463544d08e69770800000000000000
+      internalID: 8617330080698557493
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CrabMoult_dry_18
+      rect:
+        serializedVersion: 2
+        x: 846
+        y: 0
+        width: 47
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.4090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 050c477d9ae9e9f90800000000000000
+      internalID: -6944939123057311664
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CrabMoult_dry_19
+      rect:
+        serializedVersion: 2
+        x: 893
+        y: 0
+        width: 47
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.4090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 092868f380d72a2a0800000000000000
+      internalID: -6727677418959109488
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CrabMoult_dry_20
+      rect:
+        serializedVersion: 2
+        x: 940
+        y: 0
+        width: 47
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.4090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fc70751cc29a6f210800000000000000
+      internalID: 1366465546640885711
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CrabMoult_dry_21
+      rect:
+        serializedVersion: 2
+        x: 987
+        y: 0
+        width: 47
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.4090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 49da6ab64f2be15c0800000000000000
+      internalID: -4242757036088578668
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CrabMoult_dry_22
+      rect:
+        serializedVersion: 2
+        x: 1034
+        y: 0
+        width: 47
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.4090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e3b4af6c8d61a42f0800000000000000
+      internalID: -987952047947363522
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CrabMoult_dry_23
+      rect:
+        serializedVersion: 2
+        x: 1081
+        y: 0
+        width: 47
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5106383, y: 0.4090909}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9997725777dc628c0800000000000000
+      internalID: -4024303304058635879
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 585413f8f9b34314a80c230646bca753
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      CrabMoult_dry_0: 2844861964192093719
+      CrabMoult_dry_1: -535970349463482583
+      CrabMoult_dry_10: -7133559372658431345
+      CrabMoult_dry_11: -4795457564554139796
+      CrabMoult_dry_12: -5841562002801482067
+      CrabMoult_dry_13: 8839798647206514734
+      CrabMoult_dry_14: -6409011688660575078
+      CrabMoult_dry_15: 8846919719212981404
+      CrabMoult_dry_16: -8710498232880429038
+      CrabMoult_dry_17: 8617330080698557493
+      CrabMoult_dry_18: -6944939123057311664
+      CrabMoult_dry_19: -6727677418959109488
+      CrabMoult_dry_2: -5834556987617797113
+      CrabMoult_dry_20: 1366465546640885711
+      CrabMoult_dry_21: -4242757036088578668
+      CrabMoult_dry_22: -987952047947363522
+      CrabMoult_dry_23: -4024303304058635879
+      CrabMoult_dry_3: -1031918584563887743
+      CrabMoult_dry_4: -6949313848996778146
+      CrabMoult_dry_5: -9182730808734601974
+      CrabMoult_dry_6: -5791206867500331940
+      CrabMoult_dry_7: 6472948540483690296
+      CrabMoult_dry_8: 8030194039656229035
+      CrabMoult_dry_9: 2275194641503383557
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
