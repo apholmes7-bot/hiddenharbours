@@ -64,6 +64,15 @@
    head, which rises 0.07 m — pass 4's chin (1.028) sat BELOW its own collar (1.037), i.e. there was
    no neck at all. There is now ~1.5 px of one.
 
+   6.3 — append-only. THE DECK-WORK FAMILY, for the furniture in Art/deckGearRig.js. Five clips
+   (hauler, lift, place, bench, chop, toss) and a fifth carry stance (pot). Between them the
+   seven-step deck loop on the Deck Gear page has a figure for every step, where before it had one:
+   haul was a free heave on a line and everything else was drawn empty.
+   The one idea worth stating twice: THE WORK HEIGHT IS A WORLD METRE (opts.workZ), never a body
+   fraction, because a bench belongs to the deck and not to the person standing at it. It clamps to
+   the figure's own reach and says so. DeckGear.station() is the other half of the contract — it
+   says where to stand, which dir to face, what workZ to pass, and how much deck to reserve.
+
    Needs Art/headIsoRig3.js (six hats solved in rows above the eye) and Art/eyeIsoRig.js.
    Exposes globalThis.CharacterIso6 (and CharacterIso5 / CharacterIso if those are free). */
 (function (root) {
@@ -246,10 +255,16 @@
                   haul:{frames:8, ms:120},
                   /* 6.2 — append-only. ladderDown reads opts.rung / opts.ladderW (world metres,
                      defaulting to the wharf rig's own FIT.ladder) and LOOPS. */
-                  ladderDown:{frames:10, ms:110} };
+                  ladderDown:{frames:10, ms:110},
+                  /* 6.3 — append-only. The deck-work family. All five read opts.workZ (world
+                     metres — the surface the hands work at); DeckGear.station() supplies it. */
+                  hauler:{frames:8, ms:115}, bench:{frames:10, ms:130}, chop:{frames:8, ms:105},
+                  lift:{frames:8, ms:105, oneShot:true}, place:{frames:8, ms:110, oneShot:true},
+                  toss:{frames:8, ms:95, oneShot:true} };
   const GROUPS = { base:['idle','walk','run'], balance:['balance','stagger'],
                    fishing:['hold','cast','castBack','castRelease','bite','strike','reel','land'],
-                   boarding:['board','boardDown','ladderDown'], work:['dig','haul'] };
+                   boarding:['board','boardDown','ladderDown'], work:['dig','haul'],
+                   deck:['hauler','lift','place','bench','chop','toss'] };
   const CAST_W1 = 0.34, CAST_S1 = 0.50;
 
   /* ---------------- THE MOUNT CONTRACT (pass 6) ----------------
@@ -267,7 +282,14 @@
     board:'free', boardDown:'free', haul:'free',
     /* 'ladder' is neither free nor a tool: both hands are committed to the rungs, so no carry
        stance may ride this clip and no prop layer mounts on it. */
-    ladderDown:'ladder' };
+    ladderDown:'ladder',
+    /* 6.3. Four new layers, all answered by ONE call — workMount(dir,opts):
+         'warp'  -> handL + handR + sheave + out + tension   draw the rope through them
+         'bench' -> handL + handR + item                     pin the worked object to `item`
+         'load'  -> handL + handR + mid + hold + release     pin a trap/tote/tray to `mid`
+         'knife' -> tool(dir,opts), the rod/spade shape      pin a knife rig to grip */
+    hauler:'warp', bench:'bench', chop:'knife',
+    lift:'load', place:'load', toss:'load' };
   /* The four carry stances. anims = the animations each one may ride (a tool anim always wins:
      pose() ignores carry when a tool curve is active). */
   const CARRIES = {
@@ -275,8 +297,10 @@
     tray:   { label:'TRAY',   layer:'BucketIso (tier 3)',   pin:'mid',           anims:['idle','walk','run','board','boardDown'] },
     helm:   { label:'HELM',   layer:'wheel / tiller',       pin:'mid + handL/handR', anims:['idle','walk'] },
     oars:   { label:'OARS',   layer:'DoryIso / PuntIso oars', pin:'handL + handR', anims:['idle','walk'] },
+    /* 6.3: a pot is carried WIDE and LOW against the chest, and nobody runs with one. */
+    pot:    { label:'POT',    layer:'TrapIso (any build)',  pin:'mid',           anims:['idle','walk','board','boardDown'] },
   };
-  const CARRY_ORDER = ['buckets','tray','helm','oars'];
+  const CARRY_ORDER = ['buckets','tray','helm','oars','pot'];
   function rampOf(map, key, fb){ return Array.isArray(key) ? key : (map[key] || map[fb]); }
 
   /* VALUE SPANS. gain is the SPAN control: at ~10 px across, an 8-segment lathe gives every pixel
@@ -653,6 +677,151 @@
       twist: 4*sw };
   }
 
+  /* ==================== DECK WORK (6.3) ====================
+     Five clips for the furniture in Art/deckGearRig.js, plus the `pot` carry stance above. Between
+     them they close the seven-step deck loop: hauler (HAUL), lift/place (LAND, STOW), bench (BAND,
+     GRADE), chop (BAIT), toss (SET).
+
+     THE WORK HEIGHT IS A WORLD METRE. Every one of these clips works AT something — a bench top, a
+     chopping board, a washboard cap, a warp coming off a sheave — and that surface belongs to the
+     deck, not to the body. So workZ arrives off opts in world metres and is NOT scaled by build,
+     for exactly the reason railZ and rung are not: a child bands at the same bench an adult does.
+     It is soft-clamped to what the figure can actually reach and reports `clamped` when it could
+     not, the way boardCurve does with a tall rail. DeckGear.station() hands the right number over
+     per piece of furniture, so a consumer never types one in.
+
+     WHY THE HANDS ARE ABSOLUTE AND THE SHOULDERS ARE NOT. The arm targets return `wz` (world) and
+     `x` (body). Height is the surface's business; how far apart the hands sit is the figure's. Get
+     that backwards and a child either floats its hands above the bench or reaches through it. */
+  const WORKC = { hauler:1, bench:1, chop:1, lift:1, place:1, toss:1 };
+  const WORK_DEF = { hauler:1.05, bench:0.885, chop:0.775, lift:0.93, place:0.93, toss:0.93 };
+  const TOSS_REL = 0.52;
+  const wrapU = (t)=>((t%1)+1)%1;
+  function workOf(anim, o){
+    const v = (o && o.workZ!=null) ? +o.workZ : WORK_DEF[anim];
+    return isFinite(v) ? v : WORK_DEF[anim];
+  }
+
+  /* hauler — the operator stationed at the hydraulic drum. haul() is a free heave on a line and
+     stays that; this one has a FIXED warp in front of it, the body square to the rail, and the drum
+     doing the lifting — the hands are guiding and coiling, not out-pulling a winch. Left lags right
+     by a tenth of a cycle for the same reason haul's does: strict alternation reads as a wobble at
+     32 px/m. No tool layer — the rope is a runtime line from handR through handL to `sheave`. */
+  function haulerCurve(u, Z){
+    const at=(tr,t)=>kf(tr,wrapU(t));
+    const PULL=[[0,0],[0.22,0.10],[0.40,0.62],[0.56,1],[0.72,0.52],[0.88,0.12],[1,0]];
+    const HY  =[[0,0.300],[0.22,0.330],[0.56,0.055],[0.78,0.180],[1,0.300]];
+    const HZ  =[[0,0.085],[0.22,0.125],[0.56,-0.215],[0.78,-0.040],[1,0.085]];
+    const pull=at(PULL,u), lag=0.11;
+    return { kind:'hauler', Z, pull, tension:pull, turns:u,
+      R:{ x: 0.150, y: at(HY,u),            wz: Z + at(HZ,u) },
+      L:{ x:-0.055, y: at(HY,u-lag)-0.030,  wz: Z + at(HZ,u-lag) - 0.075 },
+      dip: 0.045*pull, lean: -(3 + 11*pull), twist: -5*pull, list: 1.5*pull,
+      F:{ R: 0.130, L: -0.150 } };
+  }
+
+  /* bench — banding, and every other two-hand bench job. A three-beat: the left hand holds a
+     lobster down on the top, the right brings the pliers in and closes, the left carries it away to
+     the tray and comes back. `band` gates the closing beat — drive the SFX and the band swap off
+     it — and `item` is where the animal is, so it can be a real TrapCatch sprite rather than paint
+     on the bench. Ten frames because a three-beat on eight has no hold at the close. */
+  function benchCurve(u, Z){
+    const at=(tr,t)=>kf(tr,wrapU(t));
+    const RX=[[0,0.165],[0.30,0.105],[0.55,0.058],[0.80,0.175],[1,0.165]];
+    const RY=[[0,0.250],[0.22,0.290],[0.50,0.232],[0.66,0.228],[0.86,0.272],[1,0.250]];
+    const RZ=[[0,0.085],[0.22,0.062],[0.50,0.030],[0.66,0.034],[0.86,0.095],[1,0.085]];
+    const LX=[[0,-0.070],[0.34,-0.062],[0.60,-0.056],[0.82,-0.190],[1,-0.070]];
+    const LY=[[0,0.243],[0.34,0.236],[0.60,0.232],[0.78,0.258],[0.90,0.276],[1,0.243]];
+    const LZ=[[0,0.032],[0.34,0.026],[0.60,0.029],[0.78,0.088],[0.90,0.052],[1,0.032]];
+    return { kind:'bench', Z,
+      band: at([[0,0],[0.44,0],[0.54,1],[0.66,1],[0.76,0],[1,0]],u),
+      R:{ x:at(RX,u), y:at(RY,u), wz:Z+at(RZ,u) },
+      L:{ x:at(LX,u), y:at(LY,u), wz:Z+at(LZ,u) },
+      item:{ x:at(LX,u), y:at(LY,u)-0.010, wz:Z+at(LZ,u)-0.014 },
+      dip: 0.014*(0.5+0.5*Math.cos(2*Math.PI*u)), lean: 10,
+      twist: 3*Math.sin(2*Math.PI*u), list: 0, F:{ R:0.055, L:-0.075 } };
+  }
+
+  /* chop — bait off the board. The only new clip that drives a PROP, and it drives it through the
+     EXISTING call: pose() fills P.tool from this curve, so tool(dir,opts) returns the same
+     {grip,wrist,pitch,yaw,bend} a rod or a spade gets and a knife rig needs no new contract. The
+     left hand feeds the herring forward and is never under the blade. `cut` spikes on contact. */
+  function chopCurve(u, Z){
+    const at=(tr,t)=>kf(tr,wrapU(t));
+    const lift=at([[0,0.10],[0.18,1],[0.42,0.94],[0.55,0.08],[0.64,0],[0.84,0.55],[1,0.10]],u);
+    const cut =at([[0,0],[0.50,0],[0.60,1],[0.74,0.30],[1,0]],u);
+    const feed=at([[0,0],[0.62,0],[0.78,1],[0.94,0.20],[1,0]],u);
+    return { kind:'chop', Z, cut, lift, feed,
+      R:{ x: 0.125,               y: 0.212 + 0.026*lift, wz: Z + 0.048 + 0.185*lift },
+      L:{ x:-0.085 - 0.045*feed,  y: 0.246 - 0.028*cut,  wz: Z + 0.052 + 0.030*feed },
+      pitch: -14 - 46*(1-lift), yaw: 10, bend: 0,
+      dip: 0.016*(1-lift), lean: 12 + 3*cut, twist: -4 + 7*lift, list: 0,
+      F:{ R:0.070, L:-0.080 } };
+  }
+
+  /* lift / place — a pot, a tote or a full tray between the deck and a surface at workZ.
+     A PLACE IS NOT A LIFT REVERSED, on exactly the grounds boardDown is not board reversed. Going
+     up the load leaves the deck before the hips have finished rising, because the legs do the work
+     and the arms only hold; coming down the hips lead, the load is set while the back is still
+     bent, and the body straightens after it is already out of the hands. Run one backwards and you
+     get a figure that lowers a full pot with its arms, which is how people hurt themselves.
+     `hold` is 1 while the load is in the hands — pin it to `mid` and drop it when hold goes 0. */
+  function liftCurve(u, Z){
+    const at=(tr,t)=>kf(tr,Math.max(0,Math.min(1,t)));
+    const rise=at([[0,0],[0.22,0.04],[0.46,0.55],[0.70,1],[1,1]],u);
+    const grip=at([[0,0],[0.16,1],[1,1]],u);
+    const deckZ=0.115, z=deckZ + (Z-deckZ)*rise, y=0.205 - 0.030*rise;
+    return { kind:'lift', Z, hold:grip, progress:rise,
+      phase: u<0.16 ? 'reach' : u<0.70 ? 'rise' : 'set',
+      R:{ x: 0.215, y, wz:z }, L:{ x:-0.215, y, wz:z }, mid:{ x:0, y, wz:z+0.055 },
+      dip: 0.235*(1-rise)*(0.35+0.65*grip), lean: 20 - 12*rise, twist: 0, list: 0,
+      F:{ R:0.115, L:-0.125 } };
+  }
+  function placeCurve(u, Z, hipBase){
+    const at=(tr,t)=>kf(tr,Math.max(0,Math.min(1,t)));
+    const down=at([[0,0],[0.20,0.16],[0.48,0.82],[0.60,1],[1,1]],u);
+    const back=at([[0,0],[0.66,0],[0.86,1],[1,1]],u);
+    const carryZ=hipBase + 0.300, z=carryZ + (Z + 0.030 - carryZ)*down;
+    const y=0.190 + 0.070*down - 0.090*back;
+    return { kind:'place', Z, progress:down,
+      hold: at([[0,1],[0.62,1],[0.74,0],[1,0]],u),
+      phase: u<0.60 ? 'lower' : u<0.74 ? 'release' : 'back',
+      R:{ x: 0.215 - 0.055*back, y, wz:z }, L:{ x:-0.215 + 0.055*back, y, wz:z },
+      mid:{ x:0, y, wz:z+0.055 },
+      dip: 0.075*down*(1-back), lean: 8 + 12*down - 14*back, twist: 0, list: 0,
+      F:{ R:0.100, L:-0.115 } };
+  }
+
+  /* toss — the set. Both hands take the load back and inboard, swing it out over the rail and let
+     go. `release` is the u the load leaves the hands and `out` is the direction it goes in body
+     metres, so an engine hands off to a projectile on one known frame instead of guessing where the
+     arc starts. Everything after release is follow-through with empty hands. */
+  function tossCurve(u, Z){
+    const at=(tr,t)=>kf(tr,Math.max(0,Math.min(1,t)));
+    const swing=at([[0,0],[0.18,-0.30],[0.34,-0.22],[0.52,1],[0.72,1.18],[1,0.55]],u);
+    const z=Z - 0.10 + 0.42*Math.max(0,swing), y=0.150 + 0.235*swing;
+    return { kind:'toss', Z, swing, release:TOSS_REL, hold: u<TOSS_REL ? 1 : 0, fired: u>=TOSS_REL,
+      R:{ x: 0.215 + 0.070*swing, y, wz:z }, L:{ x:-0.215 + 0.070*swing, y, wz:z },
+      mid:{ x: 0.070*swing, y, wz:z+0.050 }, out:[0.10, 1, 0.45],
+      dip: 0.075*Math.max(0,-swing),
+      lean: 6 + 22*Math.min(1,Math.max(0,swing)) + 26*Math.min(0,swing),
+      twist: -8*swing, list: 0, F:{ R:0.145, L:-0.150 } };
+  }
+
+  function workCurve(anim, u, o, hipBase, hS){
+    const req = workOf(anim, o);
+    const lo = hipBase - 0.30*hS, hi = hipBase + 0.64*hS;
+    const Z = Math.min(hi, Math.max(lo, req));
+    const C = anim==='hauler' ? haulerCurve(u, Z)
+            : anim==='bench'  ? benchCurve(u, Z)
+            : anim==='chop'   ? chopCurve(u, Z)
+            : anim==='lift'   ? liftCurve(u, Z)
+            : anim==='place'  ? placeCurve(u, Z, hipBase)
+            :                   tossCurve(u, Z);
+    C.requested = req; C.clamped = Math.abs(Z - req) > 1e-6;
+    return C;
+  }
+
   /* ============================ POSE ============================
      Built from the GROUND UP so age can change proportion without breaking contact with the floor:
        ankle -> leg (length scale) -> hip -> torso (length scale) -> collar -> neck -> head (size
@@ -672,6 +841,7 @@
     const brd = BOARDING[anim] ? boardCurve(anim, u, railOf(arguments[5]), hipBase) : null;
     const hl  = (anim==='haul') ? haulCurve(u) : null;
     const lad = LADDER[anim] ? ladderCurve(u, rungOf(arguments[5]), ladWOf(arguments[5]), hipBase, ankleZ) : null;
+    const wk  = WORKC[anim] ? workCurve(anim, u, arguments[5], hipBase, hS) : null;
     const hipZ0  = lad ? lad.hipZ : hipBase + (brd ? brd.rise : 0);
     const TS     = hS*PR.torsoK;
     const torsoC = hipZ0 + 0.280*TS;
@@ -686,7 +856,7 @@
     stride*=PR.legK; lift*=PR.legK;
     const TOOLS = { hold:1, cast:1, dig:1, bite:1, strike:1, reel:1, land:1, castBack:1, castRelease:1 };
     const tc = TOOLS[anim] ? toolCurve(anim,u,power) : null;
-    const carry = (!tc && (arguments.length>4)) ? arguments[4] : null;
+    const carry = (!tc && !wk && (arguments.length>4)) ? arguments[4] : null;
     const rock = arguments[5] || null;
     const bal = anim==='balance', stag = anim==='stagger';
     const tw=Math.sin(2*Math.PI*u);
@@ -696,9 +866,11 @@
     if(carry==='buckets') lean = lean*0.5;
     if(carry==='helm') lean = 6*DEG;
     if(carry==='oars') lean = 10*DEG;
+    if(carry==='pot')  lean = -7*DEG;
     if(brd) lean = brd.lean*DEG;
     if(hl)  lean = hl.lean*DEG;
     if(lad) lean = lad.lean*DEG;
+    if(wk)  lean = wk.lean*DEG;
     const senv = stag ? Math.exp(-2.4*u) : 0;
     if(stag) lean += (6*DEG)*senv*Math.sin(2*Math.PI*1.2*u);
     let list = 0;
@@ -706,6 +878,7 @@
     if(stag) list = (20*DEG)*senv*Math.sin(2*Math.PI*1.3*u);
     if(brd)  list = brd.list*DEG;
     if(lad)  list = lad.list*DEG;
+    if(wk)   list = (wk.list||0)*DEG;
     if(rock && rock.counter){ const c=counterLean(rock.roll||0, rock.pitch||0, rock.counter);
       list += c.list*DEG; lean += c.lean*DEG; }
     const breathe = calm ? 0.018*Math.sin(2*Math.PI*u)*hS : 0;
@@ -714,12 +887,13 @@
     if(tc) dip = tc.dip*hS;
     else if(brd||lad) dip = 0;
     else if(hl)  dip = hl.dip*hS;
+    else if(wk)  dip = wk.dip*hS;
     else if(idle) dip = 0;
     else if(bal)  dip = 0.010*hS*(0.5+0.5*Math.cos(4*Math.PI*u));
     else if(stag) dip = 0.060*hS*senv*(u<0.5?1:0.6);
     else dip = bob*hS*(0.5+0.5*Math.cos(4*Math.PI*u));
     const hipZ = hipZ0 - dip;
-    const twS = brd||hl||lad;
+    const twS = brd||hl||lad||wk;
     const yawS = tc ? tc.twist*DEG : twS ? twS.twist*DEG : yaw*tw,
           yawH = tc ? tc.twist*0.45*DEG : twS ? twS.twist*0.40*DEG : -0.6*yaw*tw;
 
@@ -739,7 +913,7 @@
     for(const [side, ph] of [['L',0],['R',0.5]]){
       const sgn = side==='L' ? -1 : 1;
       const p2=(u+ph)%1;
-      const braceX = (carry==='helm'||carry==='oars'||bal||stag||hl) ? 1.55 : 1;
+      const braceX = (carry==='helm'||carry==='oars'||carry==='pot'||bal||stag||hl||wk) ? 1.55 : 1;
       const hip0 = rotZ(yawH)([sgn*0.082*wS*PR.hipK*braceX, 0, 0]); hip0[0]+=swayX*0.5; hip0[2]=hipZ;
       let yF, zF;
       if(tc){ yF = sgn<0 ? (tc.dig?0.105:0.075) : (tc.dig?-0.085:-0.055); zF = ankleZ; }
@@ -747,6 +921,9 @@
       /* the ladder tracks are already absolute: z is the rung the sole is on, plus the ankle */
       else if(lad){ const LG=(side==='R'?lad.F.R:lad.F.L); yF = LG.y; zF = LG.z; }
       else if(hl){ yF = (side==='R') ? 0.115 : -0.135; zF = ankleZ; }
+      /* a work stance is BRACED, not walking: the stagger is authored per clip because a heave, a
+         bench job and a two-hand lift do not stand the same way. */
+      else if(wk){ yF = (side==='R') ? wk.F.R : wk.F.L; zF = ankleZ; }
       else if(idle){ yF = sgn*0.012; zF = ankleZ; }
       else if(bal||stag){ yF = sgn*0.02 + (stag?0.05*senv*Math.sin(2*Math.PI*1.3*u):0); zF = ankleZ; }
       else { yF = stride*Math.cos(2*Math.PI*p2); zF = ankleZ + lift*Math.max(0,-Math.sin(2*Math.PI*p2)); }
@@ -775,6 +952,7 @@
       else if(carry==='tray'){ tx = sgn*0.24; ty = 0.150 + (idle ? 0.006*Math.sin(2*Math.PI*u) : 0.012*Math.cos(4*Math.PI*u)); tz = 0.615*hS + breathe*0.5; }
       else if(carry==='helm'){ tx = sh[0]+sgn*0.005; ty = 0.150 + (idle?0.006*Math.sin(2*Math.PI*u):0.012*Math.cos(4*Math.PI*u)); tz = 0.72*hS + breathe*0.5; }
       else if(carry==='oars'){ tx = sh[0]+sgn*0.055; ty = 0.120 + (idle?0.014*Math.sin(2*Math.PI*u):0.02*Math.cos(4*Math.PI*u)); tz = 0.575*hS + breathe*0.5; }
+      else if(carry==='pot'){ tx = sgn*0.275; ty = 0.205 + (idle?0.007*Math.sin(2*Math.PI*u):0.014*Math.cos(4*Math.PI*u)); tz = 0.555*hS + breathe*0.5; }
       /* Boarding with a load: the carry branches sit ABOVE this one, so a pail or a tray keeps both
          hands and the clip still plays — the legs carry the whole read. Empty-handed, the left hand
          plants on the rail (handOn blends it between a body-relative rest and the rail's own
@@ -787,6 +965,11 @@
       }
       else if(hl){ const HH = side==='R' ? hl.R : hl.L;
         tx = sh[0] + sgn*0.028; ty = HH.y; tz = hipZ + HH.z*hS; }
+      /* 6.3: a work clip targets the WORLD. wz is an absolute metre — the bench top, the cap, the
+         warp at the drum — and rides no body scale; only x does, because how far apart the hands
+         sit is the figure's business and how high the bench is is the deck's. */
+      else if(wk){ const HH = side==='R' ? wk.R : wk.L;
+        tx = (HH.x!=null ? HH.x*wS : sh[0] + sgn*0.030); ty = HH.y; tz = HH.wz + breathe*0.5; }
       /* On the ladder the hands ride the STRINGERS: x sits over the rails at 0.42 of the ladder's
          own width and dz is an offset off the shoulder, so the grip slides instead of hopping. */
       else if(lad){ const HH = side==='R' ? lad.H.R : lad.H.L;
@@ -797,7 +980,7 @@
       /* Only the new clips move a hand far enough to out-reach the arm (the frozen fourteen were
          all authored inside it). ik2 clamps the ELBOW but the wrist is placed raw, so without this
          the hand detaches from the forearm the moment the shoulders climb past the rail. */
-      if(brd||hl||lad){ const mx=(upA+foA)*0.985, dy2=ty-sh[1], dz2=tz-sh[2], dd=Math.hypot(dy2,dz2);
+      if(brd||hl||lad||wk){ const mx=(upA+foA)*0.985, dy2=ty-sh[1], dz2=tz-sh[2], dd=Math.hypot(dy2,dz2);
         if(dd>mx){ const k=mx/dd; ty=sh[1]+dy2*k; tz=sh[2]+dz2*k; } }
       const [ey,ez]=ik2(sh[1],sh[2], ty, tz, upA, foA, -1);
       P.arms[side]={ sh, elbow:[sh[0]+sgn*0.01,ey,ez], wrist:[tx,ty,tz] };
@@ -811,8 +994,11 @@
     P.look = root.HeadIso
       ? root.HeadIso.look({ anim, u, t:(rock&&rock.t), expr:(b.expr||(rock&&rock.expr)), talk:(rock&&rock.talk) })
       : { gaze:[0,0], lid:(P.eyesClosed?1:0), brow:0, mouth:'neutral' };
-    P.tool = tc ? { pitch:tc.pitch*DEG, yaw:tc.yaw*DEG, bend:tc.bend } : null;
-    P.board = brd; P.haul = hl; P.ladder = lad; P.rise = brd ? brd.rise : 0;
+    /* chop mounts its knife on the SAME call the rod and the spade use, so P.tool is filled from
+       the work curve when that curve carries a blade angle. tool() needs no new branch. */
+    P.tool = tc ? { pitch:tc.pitch*DEG, yaw:tc.yaw*DEG, bend:tc.bend }
+           : (wk && wk.pitch!=null) ? { pitch:wk.pitch*DEG, yaw:wk.yaw*DEG, bend:wk.bend||0 } : null;
+    P.board = brd; P.haul = hl; P.ladder = lad; P.work = wk; P.rise = brd ? brd.rise : 0;
     return P;
   }
 
@@ -1199,7 +1385,7 @@
     const A = ANIMS[anim]||ANIMS.idle;
     const u = opts.u!=null ? opts.u : (((opts.frame||0)%A.frames+A.frames)%A.frames)/A.frames;
     const power = opts.power==='long' ? 'long' : 'short';
-    const carry = (['buckets','tray','helm','oars'].indexOf(opts.carry)>=0) ? opts.carry : null;
+    const carry = (['buckets','tray','helm','oars','pot'].indexOf(opts.carry)>=0) ? opts.carry : null;
     return { o:Object.assign({},opts,{dir}), b, anim, u, power, carry };
   }
   function render(dir, opts){
@@ -1247,10 +1433,10 @@
     const wl=P.arms.L.wrist, wr=P.arms.R.wrist, vl=pj(wl), vr=pj(wr);
     const A=(anim==='run'?15:anim==='walk'?9:1.6)*DEG, lag=0.9;
     const swingR=A*Math.sin(2*Math.PI*u-lag), swingL=A*Math.sin(2*Math.PI*(u+0.5)-lag);
-    if(c==='tray'){
+    if(c==='tray' || c==='pot'){
       const mid=pj([(wl[0]+wr[0])/2,(wl[1]+wr[1])/2,(wl[2]+wr[2])/2]);
-      return { mode:'tray', handL:{x:vl.sx,y:vl.sy}, handR:{x:vr.sx,y:vr.sy}, mid:{x:mid.sx,y:mid.sy},
-               swing:(anim==='idle'?0.8*Math.sin(2*Math.PI*u):2.0*Math.cos(4*Math.PI*u))*DEG,
+      return { mode:c, handL:{x:vl.sx,y:vl.sy}, handR:{x:vr.sx,y:vr.sy}, mid:{x:mid.sx,y:mid.sy},
+               swing:(anim==='idle'?0.8*Math.sin(2*Math.PI*u):2.0*Math.cos(4*Math.PI*u))*DEG*(c==='pot'?0.6:1),
                behind:B.ct>0.05 };
     }
     const beh=(wx)=>(wx*B.stt + 0.012*B.ct) > 0.001;
@@ -1316,6 +1502,54 @@
     return { handL:pt(wl), handR:pt(wr), mid:a, lead:'R',
              tension:P.haul.pull, out:{x:dx/m, y:dy/m} };
   }
+  /* Deck-work contract for the engine (6.3). ONE call for all five clips, because they differ in
+     what they pin, not in how they are mounted: read `layer` (= ANIM_MOUNT[anim]) and take the
+     fields that layer names. All clips play IN PLACE at a station — the ground never changes under
+     the figure, so there is no re-seat and no landing vector; DeckGear.station() says where to
+     stand and which dir to face.
+       warp  : handL, handR, sheave, out, tension, turns
+       bench : handL, handR, item, band
+       load  : handL, handR, mid, hold, phase, release, out
+       knife : this call for the hands, tool(dir,opts) for the blade
+     `workZ` is what the hands actually reached; `clamped` means the figure could not make the
+     surface it was given and the clip is working at its own limit instead. */
+  function workMount(dir, opts){
+    const {o,b,anim,u,power}=resolveOpts(dir,opts);
+    if(!WORKC[anim]) return null;
+    const P=pose(anim,u,b,power,null,o), B=camBasis(o), K=P.work, wS=P.wS;
+    const pt=(p)=>{ const v=projVert(p[0],p[1],p[2],B); return {x:v.sx, y:v.sy}; };
+    const local=(h)=>[ (h.x!=null?h.x*wS:0), h.y, h.wz ];
+    const wl=P.arms.L.wrist, wr=P.arms.R.wrist;
+    const R={ anim, layer:ANIM_MOUNT[anim], u, workZ:K.Z, requested:K.requested, clamped:K.clamped,
+              handL:pt(wl), handR:pt(wr),
+              hip:pt([P.swayX*0.5,0,P.hipZ]),
+              head:pt([P.headC[0],P.headC[1],P.headC[2]+0.17*P.PR.headK]),
+              /* every pinned layer here is held in FRONT of the chest, so it takes the same
+                 near/away test a carried tray does */
+              behind: B.ct > 0.05 };
+    if(K.mid) R.mid = pt(local(K.mid));
+    if(K.item) R.item = pt(local(K.item));
+    if(K.band!=null) R.band = K.band;
+    if(K.cut!=null){ R.cut = K.cut; R.lift = K.lift; }
+    if(K.hold!=null){ R.hold = K.hold; R.holding = K.hold > 0.5; R.phase = K.phase; R.progress = K.progress; }
+    if(anim==='toss'){
+      R.release = K.release; R.fired = K.fired;
+      const a=R.mid, f=pt([K.out[0], K.mid.y + K.out[1]*0.5, K.mid.wz + K.out[2]*0.5]);
+      const dx=f.x-a.x, dy=f.y-a.y, m=Math.hypot(dx,dy)||1;
+      R.out={ x:dx/m, y:dy/m };
+    }
+    if(anim==='hauler'){
+      R.tension=K.tension; R.turns=K.turns;
+      /* the sheave is the GEAR's, not the figure's — DeckGear.station() returns it. The default is
+         the drum on its own stanchion, so the rope reads before a consumer wires anything up. */
+      const sv = (o.sheave && o.sheave.length===3) ? o.sheave : [0.24, 0.34, K.Z + 0.26];
+      R.sheave = pt(sv); R.sheaveLocal = sv;
+      const dx=R.sheave.x-R.handL.x, dy=R.sheave.y-R.handL.y, m=Math.hypot(dx,dy)||1;
+      R.out={ x:dx/m, y:dy/m };
+      R.rope=[R.handR, R.handL, R.sheave];
+    }
+    return R;
+  }
   function projectLocal(dir, p, elev){
     const v=projVert(p[0],p[1],p[2],camBasis({dir, elev}));
     return { x:v.sx, y:v.sy };
@@ -1336,9 +1570,11 @@
     ANIM_MOUNT, CARRIES, CARRY_ORDER, BOARDING, RAIL_DEF, RAIL_MIN, RAIL_MAX, railOf,
     LADDER, RUNG_DEF, LADW_DEF, rungOf, ladWOf, ladderMount, ladderCurve,
     boardMount, haulGrip, boardCurve, haulCurve,
+    WORKC, WORK_DEF, TOSS_REL, workOf, workCurve, workMount,
+    haulerCurve, benchCurve, chopCurve, liftCurve, placeCurve, tossCurve,
     GROUPS, CAST_W1, CAST_S1, DEFAULT_BUILD,
     render, anchors, tool, carry, counter:counterLean, projectLocal, metrics, propsOf,
-    facesOf, pose, makeMats, lathe, arcLathe, limb, torsoProf, GAIN, BIAS, LN, BAYER, pass:6, revision:'6.2',
+    facesOf, pose, makeMats, lathe, arcLathe, limb, torsoProf, GAIN, BIAS, LN, BAYER, pass:6, revision:'6.3',
     get head(){ return root.HeadIso || null; } };
   root.CharacterIso6 = API;
   if(!root.CharacterIso5) root.CharacterIso5 = API;   // drop-in when pass 5 is not loaded

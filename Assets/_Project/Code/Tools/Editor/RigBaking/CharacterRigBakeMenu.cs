@@ -75,6 +75,17 @@ namespace HiddenHarbours.Tools.RigBaking
             // and no prop layer ride it. The bake needs no special case — MountOf says so and the
             // expansion already skips anything that is not free.
             new CharacterState("ladderDown"),
+            // the rev 6.3 DECK-WORK family (drop of 2026-08-09) — the working furniture's clips.
+            // Six sheets and no more: measured against the rig's own CARRIES table, NOT ONE carry
+            // stance rides any of these, because the deck clips pin their load through workMount's
+            // own layers (warp / bench / load / knife) rather than through a carry. So the carry
+            // expansion adds nothing here and the budget cost is exactly the six free-handed sheets.
+            //
+            // Each works AT a surface, and that surface's height is a WORLD METRE the rig will not
+            // guess: DeckGear.station() supplies workZ. Baking them does not choose it — the clip
+            // reads it at play time — but anything driving these must have a station to read.
+            new CharacterState("hauler"), new CharacterState("bench"), new CharacterState("chop"),
+            new CharacterState("lift"), new CharacterState("place"), new CharacterState("toss"),
         };
 
         /// <summary>

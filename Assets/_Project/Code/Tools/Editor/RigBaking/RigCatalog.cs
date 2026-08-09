@@ -281,6 +281,64 @@ namespace HiddenHarbours.Tools.RigBaking
                 // un-squash mistake this repo keeps making; the value is per family and measured.
                 ["shoreFinds"] = new RigEntry($"{RigFolder}/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
                                               "ShoreFinds", AzimuthConvention.CounterClockwise),
+
+                // ---- the deck-loop kit (drop of 2026-08-09) — the stern-deck working furniture ----
+                //
+                // ⚠️ CLOCKWISE, AND THAT IS MEASURED, NOT A PRIOR. This kit rides its OWN turntable
+                // (isoSolid.js) and turns the OPPOSITE WAY to every boat in this catalog. Measured
+                // against utility-iso (registered CounterClockwise) in one harness: utility's +X
+                // ground-plane bearing steps +45°/dir, this kit's steps −45°/dir. Its drop README
+                // declared CW and — unusually — is correct. Applying the fleet's CCW correction here
+                // mirrors all eight cells of every piece. See docs/art/rigs/deck-loop-kit/IMPORT.md,
+                // and re-measure with `node docs/art/rigs/deck-loop-kit/_verify.js`.
+                //
+                // ⚠️ The −46.75°/step SCREEN figure does not distinguish the two families — this kit
+                // shares it with the CCW pack. Only the un-squashed ground-plane bearing is a
+                // handedness test.
+                //
+                // isoSolid is the shared turntable, not a piece of art: no W/H/pivot triple, so it
+                // loads with InstallModule and is declared as everything else's prerequisite. A
+                // missing turntable does not throw — every rig here lathes against it.
+                ["deckIsoSolid"] = new RigEntry($"{RigFolder}/deck-loop-kit/Art/isoSolid.js", "IsoSolid",
+                                                AzimuthConvention.Clockwise),
+
+                // Five pieces of working furniture. station() is the crew contract — where to stand,
+                // which dir to face, and the WORLD-METRE workZ a clip must be handed; the hauler is
+                // the one station whose operator faces outboard (turn 4).
+                ["deckGear"] = new RigEntry($"{RigFolder}/deck-loop-kit/Art/deckGearRig.js", "DeckGear",
+                                            AzimuthConvention.Clockwise,
+                                            prerequisites: new[] { "deckIsoSolid" }),
+
+                // Four builds. CAPS carries the per-hull stack limits (lobsterBoat 5 deck / 2
+                // washboard, capeIslander 3 / 2, wharf 6 / 0) — those are rig DATA, not game
+                // constants, and the deck loop reads them from here.
+                ["trap"] = new RigEntry($"{RigFolder}/deck-loop-kit/Art/trapIsoRig.js", "TrapIso",
+                                        AzimuthConvention.Clockwise,
+                                        prerequisites: new[] { "deckIsoSolid" }),
+
+                // ⚠️ TWO GLOBALS IN ONE FILE, and the drop README names only the second. TrapFauna
+                // is the bakeable half: render(kind, opts) takes NO dir, because what a pot comes up
+                // holding is not directional. TrapCatch is a canvas FAÇADE — it calls
+                // document.createElement and cannot run in the bare host at all; bake through
+                // TrapFauna. Worse, TrapCatch delegates kinds it does not own to CatchKit and returns
+                // NULL when CatchKit is absent, so a bake that forgets that prerequisite comes up
+                // empty in silence rather than failing.
+                ["trapFauna"] = new RigEntry($"{RigFolder}/deck-loop-kit/Art/trapFaunaRig.js", "TrapFauna",
+                                             AzimuthConvention.Clockwise,
+                                             prerequisites: new[] { "deckIsoSolid" }),
+
+                // The banding/grading tray. Distinct from the top-level fishTrayRig.js — this is the
+                // kit's own FishTray2, with nest/stack steps in metres.
+                ["fishTray2"] = new RigEntry($"{RigFolder}/deck-loop-kit/Art/trayIsoRig.js", "FishTray2",
+                                             AzimuthConvention.Clockwise,
+                                             prerequisites: new[] { "deckIsoSolid" }),
+
+                // Eight fleet colour schemes over ONE spar-buoy geometry: every scheme measures the
+                // same 10×32 cell at the same pivot, and each turns barely at all (98.8–99.0% pixel
+                // agreement with dir 0). A packer may collapse those rows; a baker must not assume it.
+                ["buoyIso"] = new RigEntry($"{RigFolder}/deck-loop-kit/Art/buoyIsoRig.js", "BuoyIso",
+                                           AzimuthConvention.Clockwise,
+                                           prerequisites: new[] { "deckIsoSolid" }),
             };
 
         public static string RepoRoot =>

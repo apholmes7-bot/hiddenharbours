@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=IM+Fell+DW+Pica:ital@0;1&display=swap" rel="stylesheet">
+<script src="Art/isoSolid.js"></script>
+<script src="Art/eyeIsoRig.js"></script>
+<script src="Art/headIsoRig3.js"></script>
+<script src="Art/characterIsoRig6.js"></script>
+<script src="Art/deckGearRig.js"></script>
+<script src="Art/trapIsoRig.js"></script>
+<script src="Art/trayIsoRig.js"></script>
+<script src="Art/fishToteRig.js"></script>
+<style>
+  *{box-sizing:border-box;}
+  html,body{margin:0;background:#0b1216;}
+  canvas{image-rendering:pixelated;image-rendering:crisp-edges;display:block;}
+  a{color:#7fd6c9;text-decoration:none;}
+  a:hover{color:#a9e7dd;}
+  input[type=range]{-webkit-appearance:none;appearance:none;height:3px;background:#2a3b43;border-radius:2px;outline:none;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:16px;background:#c9d6d4;border:1px solid #0b1216;cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:12px;height:16px;background:#c9d6d4;border:1px solid #0b1216;cursor:pointer;border-radius:0;}
+</style>
+</helmet>
+<div style="min-height:100vh;background:#0b1216;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#aeb9bb;padding:30px 24px 60px;display:flex;flex-direction:column;align-items:center;gap:24px;">
+
+  <div style="width:100%;max-width:1000px;display:flex;align-items:flex-end;justify-content:space-between;border-bottom:1px solid #243137;padding-bottom:13px;gap:16px;flex-wrap:wrap;">
+    <div style="display:flex;flex-direction:column;gap:5px;">
+      <div style="font-family:'IM Fell English SC',serif;font-size:25px;color:#eef3f2;letter-spacing:0.5px;line-height:1;">Deck Work &middot; pass 6.3</div>
+      <div style="font-size:10.5px;letter-spacing:0.16em;color:#6f7e83;">HIDDEN&nbsp;HARBOURS&nbsp;&middot;&nbsp;SIX&nbsp;CLIPS&nbsp;&middot;&nbsp;ONE&nbsp;CARRY&nbsp;STANCE&nbsp;&middot;&nbsp;THE&nbsp;STATION&nbsp;CONTRACT</div>
+    </div>
+    <div style="font-family:'IM Fell DW Pica',serif;font-style:italic;font-size:13.5px;color:#c9a86a;max-width:430px;text-align:right;line-height:1.45;">The gear had nobody working it. Every clip here is stationed on a real piece of furniture at a real height, and the rig is told where to stand rather than a page guessing.</div>
+  </div>
+
+  <!-- STATION STAGE -->
+  <div style="width:100%;max-width:1000px;display:flex;flex-direction:column;gap:12px;align-items:center;">
+    <div style="position:relative;border:1px solid #243137;background:#0e181d;width:100%;">
+      <canvas ref="{{ stageRef }}" width="940" height="440" style="width:100%;height:auto;"></canvas>
+      <div style="position:absolute;left:11px;top:10px;font-size:10px;letter-spacing:0.14em;color:rgba(231,236,235,0.9);background:rgba(11,18,22,0.6);padding:3px 8px;">{{ stageLine }}</div>
+      <div style="position:absolute;right:11px;top:10px;font-size:10px;letter-spacing:0.12em;color:rgba(200,168,106,0.9);">{{ mountLine }}</div>
+    </div>
+    <div style="display:flex;gap:5px;justify-content:center;flex-wrap:wrap;">
+      <sc-for list="{{ clipChips }}" as="c" hint-placeholder-count="6">
+        <div onClick="{{ c.onClick }}" style="min-width:118px;text-align:center;padding:8px 14px;font-size:11px;letter-spacing:0.09em;cursor:pointer;user-select:none;color:{{ c.fg }};background:{{ c.bg }};border:1px solid {{ c.bd }};">{{ c.label }}</div>
+      </sc-for>
+    </div>
+    <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:center;">
+      <div onClick="{{ rotL }}" style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:17px;cursor:pointer;user-select:none;background:#1c2c33;border:1px solid #2f444c;color:#cfd6d4;">&#8634;</div>
+      <div style="width:70px;text-align:center;font-family:'IM Fell English SC',serif;font-size:23px;color:#eef3f2;">{{ compass }}</div>
+      <div onClick="{{ rotR }}" style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:17px;cursor:pointer;user-select:none;background:#1c2c33;border:1px solid #2f444c;color:#cfd6d4;">&#8635;</div>
+      <div onClick="{{ togglePlay }}" style="min-width:96px;text-align:center;padding:11px 14px;font-size:11px;letter-spacing:0.09em;cursor:pointer;user-select:none;color:{{ playFg }};background:{{ playBg }};border:1px solid {{ playBd }};">{{ playLabel }}</div>
+      <div style="display:flex;flex-direction:column;gap:4px;width:190px;">
+        <div style="display:flex;justify-content:space-between;font-size:9.5px;letter-spacing:0.1em;color:#6f7e83;"><span>FRAME</span><span style="color:#9aa6aa;">{{ frameLbl }}</span></div>
+        <input type="range" min="0" max="{{ frameMax }}" step="1" value="{{ frame }}" onInput="{{ onFrame }}" />
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px;width:150px;">
+        <div style="display:flex;justify-content:space-between;font-size:9.5px;letter-spacing:0.1em;color:#6f7e83;"><span>WORK Z</span><span style="color:{{ zFg }};">{{ workLbl }}</span></div>
+        <input type="range" min="40" max="140" step="1" value="{{ workPct }}" onInput="{{ onWork }}" />
+      </div>
+      <div onClick="{{ togglePins }}" style="min-width:92px;text-align:center;padding:11px 14px;font-size:10.5px;letter-spacing:0.09em;cursor:pointer;user-select:none;color:{{ pinFg }};background:{{ pinBg }};border:1px solid {{ pinBd }};">PINS</div>
+    </div>
+    <div style="font-size:9.5px;color:#5f6e73;letter-spacing:0.06em;text-align:center;max-width:800px;line-height:1.6;"><span style="color:#7fd6c9;">DeckGear.station(kind, dir)</span> returns the stand offset, the dir to render the figure at, the workZ to pass and the deck to reserve &middot; <span style="color:#7fd6c9;">CharacterIso6.workMount(dir, opts)</span> returns the pins for whichever layer that clip drives</div>
+  </div>
+
+  <!-- CONTRACT -->
+  <div style="width:100%;max-width:1000px;display:flex;flex-direction:column;gap:10px;border-top:1px solid #243137;padding-top:18px;">
+    <div style="font-size:11px;letter-spacing:0.14em;color:#6f7e83;">THE&nbsp;SIX&nbsp;CLIPS&nbsp;&middot;&nbsp;WHAT&nbsp;EACH&nbsp;ONE&nbsp;DRIVES</div>
+    <div style="border:1px solid #243137;display:grid;grid-template-columns:auto auto auto 1fr;font-size:11px;">
+      <sc-for list="{{ contract }}" as="row" hint-placeholder-count="6">
+        <div style="padding:6px 11px;color:#e7eceb;letter-spacing:0.08em;border-top:{{ row.border }};background:#0f191e;">{{ row.k }}</div>
+        <div style="padding:6px 11px;color:#c9a86a;border-top:{{ row.border }};border-left:1px solid #243137;">{{ row.layer }}</div>
+        <div style="padding:6px 11px;color:#7fd6c9;border-top:{{ row.border }};border-left:1px solid #243137;">{{ row.z }}</div>
+        <div style="padding:6px 11px;color:#8a969b;border-top:{{ row.border }};border-left:1px solid #243137;">{{ row.v }}</div>
+      </sc-for>
+    </div>
+  </div>
+
+  <!-- CLIP SHEET -->
+  <div style="width:100%;max-width:1000px;display:flex;flex-direction:column;gap:10px;border-top:1px solid #243137;padding-top:18px;">
+    <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;">
+      <div style="font-size:11px;letter-spacing:0.14em;color:#6f7e83;">EVERY&nbsp;FRAME&nbsp;&middot;&nbsp;THE&nbsp;CLIPS&nbsp;WITHOUT&nbsp;THEIR&nbsp;FURNITURE</div>
+      <div style="font-size:9.5px;color:#5f6e73;">64&times;92 cell, pivot (32,82) &mdash; the same cell the frozen fourteen bake into</div>
+    </div>
+    <div style="overflow-x:auto;border:1px solid #243137;background:#0e181d;padding:14px;">
+      <canvas ref="{{ sheetRef }}" width="940" height="470"></canvas>
+    </div>
+  </div>
+
+  <!-- CARRY -->
+  <div style="width:100%;max-width:1000px;display:flex;flex-direction:column;gap:10px;border-top:1px solid #243137;padding-top:18px;">
+    <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;">
+      <div style="font-size:11px;letter-spacing:0.14em;color:#6f7e83;">CARRY&nbsp;STANCES&nbsp;&middot;&nbsp;FOUR&nbsp;WERE&nbsp;THERE,&nbsp;THE&nbsp;FIFTH&nbsp;IS&nbsp;NEW</div>
+      <div style="font-size:9.5px;color:#5f6e73;">a pot is held wide and low against the chest, and nobody runs with one &mdash; POT rides idle, walk and both boarding clips</div>
+    </div>
+    <div style="overflow-x:auto;border:1px solid #243137;background:#0e181d;padding:14px;">
+      <canvas ref="{{ carryRef }}" width="940" height="200"></canvas>
+    </div>
+  </div>
+
+  <!-- TWO CREW -->
+  <div style="width:100%;max-width:1000px;display:flex;flex-direction:column;gap:10px;border-top:1px solid #243137;padding-top:18px;">
+    <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;">
+      <div style="font-size:11px;letter-spacing:0.14em;color:#6f7e83;">TWO&nbsp;HANDS&nbsp;WORKING&nbsp;&middot;&nbsp;A&nbsp;3.4&nbsp;&times;&nbsp;4.2&nbsp;m&nbsp;PATCH&nbsp;OF&nbsp;SOLE</div>
+      <div style="font-size:9.5px;color:#5f6e73;">drawn to scale on the lobster boat's own cockpit width &mdash; grid is one metre</div>
+    </div>
+    <div style="position:relative;border:1px solid #243137;background:#0e181d;">
+      <canvas ref="{{ crewRef }}" width="940" height="470" style="width:100%;height:auto;"></canvas>
+      <div style="position:absolute;left:11px;top:10px;font-size:10px;letter-spacing:0.14em;color:rgba(231,236,235,0.9);background:rgba(11,18,22,0.6);padding:3px 8px;">SKIPPER&nbsp;AT&nbsp;THE&nbsp;HAULER &middot; STERNMAN&nbsp;AT&nbsp;THE&nbsp;BENCH</div>
+    </div>
+    <div style="display:flex;gap:22px;flex-wrap:wrap;">
+      <sc-for list="{{ fit }}" as="t" hint-placeholder-count="2">
+        <div style="flex:1;min-width:300px;display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:{{ t.dot }};"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">{{ t.who }}</div></div>
+          <div style="border:1px solid #243137;display:grid;grid-template-columns:auto 1fr;font-size:11px;">
+            <sc-for list="{{ t.rows }}" as="row" hint-placeholder-count="5">
+              <div style="padding:6px 11px;color:#6f7e83;letter-spacing:0.08em;border-top:{{ row.border }};background:#0f191e;">{{ row.k }}</div>
+              <div style="padding:6px 11px;color:#c4cdcd;border-top:{{ row.border }};border-left:1px solid #243137;">{{ row.v }}</div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <!-- DOWNLOADS -->
+  <div style="width:100%;max-width:1000px;display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start;border-top:1px solid #243137;padding-top:18px;">
+    <div style="display:flex;flex-direction:column;gap:8px;flex:1;min-width:340px;">
+      <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#c9a86a;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Stations</div></div>
+      <div style="border:1px solid #243137;display:grid;grid-template-columns:auto auto 1fr;font-size:11px;">
+        <sc-for list="{{ stations }}" as="row" hint-placeholder-count="5">
+          <div style="padding:6px 11px;color:#e7eceb;letter-spacing:0.08em;border-top:{{ row.border }};background:#0f191e;">{{ row.k }}</div>
+          <div style="padding:6px 11px;color:#7fd6c9;border-top:{{ row.border }};border-left:1px solid #243137;">{{ row.a }}</div>
+          <div style="padding:6px 11px;color:#8a969b;border-top:{{ row.border }};border-left:1px solid #243137;">{{ row.v }}</div>
+        </sc-for>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;flex:1;min-width:300px;">
+      <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#2ba39a;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Downloads</div></div>
+      <div style="display:flex;flex-direction:column;gap:7px;">
+        <div onClick="{{ dlSheet }}" style="font-size:10.5px;letter-spacing:0.1em;padding:9px 15px;border:1px solid #2f6079;background:#122530;color:#7fd6c9;text-align:center;cursor:pointer;user-select:none;">&darr; DECK WORK SHEET &middot; 6 CLIPS &times; 8 DIRS</div>
+        <sc-for list="{{ files }}" as="f" hint-placeholder-count="2">
+          <a href="{{ f.href }}" download="{{ f.file }}" style="font-size:9.5px;letter-spacing:0.08em;padding:8px 8px;border:1px solid #243137;background:#0f191e;color:#8a969b;text-align:center;">&darr; {{ f.file }}</a>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 1040, &quot;height&quot;: 1400 },
+  &quot;clip&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;hauler&quot;, &quot;options&quot;: [&quot;hauler&quot;,&quot;lift&quot;,&quot;place&quot;,&quot;bench&quot;,&quot;chop&quot;,&quot;toss&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Stage&quot; },
+  &quot;pins&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Stage&quot; },
+  &quot;playing&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Stage&quot; }
+}">
+class Component extends DCLogic {
+  state = { clip:'hauler', dir:3, frame:0, playing:true, pins:true, workPct:100 };
+  DIRS = ['N','NE','E','SE','S','SW','W','NW'];
+  // clip -> the piece of gear it is stationed on (null = no furniture, the load is the point)
+  GEAR = { hauler:'haulerstation', bench:'bandingtable', chop:'chopboard',
+           lift:null, place:null, toss:null };
+  CREW = [
+    { who:'SKIPPER', preset:'skipper', kind:'haulerstation', x: 1.20, y: 0.55, dot:'#7fd6c9' },
+    { who:'STERNMAN', preset:'hand',   kind:'bandingtable',  x:-1.05, y: 0.10, dot:'#c9a86a' },
+  ];
+
+  componentDidMount(){
+    this._c = {};
+    this._wait = setInterval(()=>{
+      if (globalThis.CharacterIso6 && globalThis.DeckGear && globalThis.HeadIso
+          && globalThis.TrapIso && globalThis.FishTray2){
+        clearInterval(this._wait); this._ready = true; this._tick(); this._redraw(); this.forceUpdate();
+      }
+    }, 60);
+  }
+  componentWillUnmount(){ clearInterval(this._wait); clearInterval(this._t); }
+  componentDidUpdate(){ this._redraw(); }
+
+  _tick(){
+    clearInterval(this._t);
+    if(!this.state.playing) return;
+    const C=globalThis.CharacterIso6, A=C.ANIMS[this.state.clip];
+    this._t=setInterval(()=>this.setState(s=>({frame:(s.frame+1)%A.frames})), A.ms);
+  }
+  _redraw(){ if(!this._ready) return;
+    try { this._drawStage(); this._drawSheet(); this._drawCarry(); this._drawCrew(); }
+    catch(e){ if(!this._err){ this._err=true; console.error('deck work draw', e); } } }
+
+  _cv(rgba,w,h){ const cv=document.createElement('canvas'); cv.width=w; cv.height=h;
+    cv.getContext('2d').putImageData(new ImageData(rgba,w,h),0,0); return cv; }
+  _mem(k, fn){ if(!this._c[k]) this._c[k]=fn(); return this._c[k]; }
+  _off(cv, z){
+    const ow=Math.ceil(cv.width/z), oh=Math.ceil(cv.height/z), k='off'+cv.width+'x'+cv.height+'|'+z;
+    if(!this[k] || this[k].width!==ow || this[k].height!==oh){
+      this[k]=document.createElement('canvas'); this[k].width=ow; this[k].height=oh; }
+    return this[k];
+  }
+  _blit(cv, off, z){ const ctx=cv.getContext('2d'); ctx.imageSmoothingEnabled=false;
+    ctx.clearRect(0,0,cv.width,cv.height);
+    ctx.drawImage(off, 0,0,off.width,off.height, 0,0,off.width*z,off.height*z); }
+  _floor(c, ow, oh){
+    c.fillStyle='#1d2127'; c.fillRect(0,0,ow,oh);
+    for(let y=0;y<oh;y+=7){ c.fillStyle=(y/7)%2?'#22262d':'#1d2127'; c.fillRect(0,y,ow,7);
+      c.fillStyle='#14171c'; c.fillRect(0,y,ow,1); }
+  }
+
+  _charOpts(clip, frame, preset, workZ){
+    const o={ anim:clip, frame, build:{preset:preset||'fisher'} };
+    if(workZ!=null) o.workZ=workZ;
+    return o;
+  }
+  _char(c, gx, gy, dir, clip, frame, preset, workZ, carry){
+    const C=globalThis.CharacterIso6;
+    const o=this._charOpts(clip, frame, preset, workZ);
+    if(carry) o.carry=carry;
+    const k='c|'+clip+'|'+dir+'|'+frame+'|'+(preset||'f')+'|'+(workZ==null?'-':workZ.toFixed(3))+'|'+(carry||'');
+    c.drawImage(this._mem(k, ()=>this._cv(C.render(dir,o), C.W, C.H)), gx-C.pivot.x, gy-C.pivot.y);
+  }
+  _gearCv(kind, dir){
+    const G=globalThis.DeckGear;
+    return this._mem('g|'+kind+'|'+dir, ()=>this._cv(G.render(kind,dir,{}), G.W, G.H));
+  }
+  _shadow(c, gx, gy, rx){ c.fillStyle='rgba(5,12,16,0.32)';
+    c.beginPath(); c.ellipse(gx, gy+1, rx||8, (rx||8)*0.36, 0, 0, 7); c.fill(); }
+
+  // ---- STATION STAGE --------------------------------------------------------
+  _drawStage(){
+    const cv=this._stage; if(!cv) return;
+    const C=globalThis.CharacterIso6, G=globalThis.DeckGear, st=this.state, z=4;
+    const off=this._off(cv,z), c=off.getContext('2d'); c.imageSmoothingEnabled=false;
+    const ow=off.width, oh=off.height;
+    this._floor(c, ow, oh);
+    const kind=this.GEAR[st.clip], gy=Math.round(oh*0.78), gx=Math.round(ow*0.50);
+    const S = kind ? G.station(kind, st.dir) : null;
+    const workZ = S ? S.workZ*(st.workPct/100)
+                    : C.WORK_DEF[st.clip]*(st.workPct/100);
+    const cdir = S ? S.dir : st.dir;
+    const cxp = gx + (S?S.dx:0), cyp = gy + (S?S.dy:0);
+    const drawGear=()=>{ if(!kind) return;
+      this._shadow(c, gx, gy, 13);
+      c.drawImage(this._gearCv(kind, st.dir), gx-G.pivot.x, gy-G.pivot.y); };
+    const drawChar=()=>{ this._shadow(c, cxp, cyp, 7);
+      this._char(c, cxp, cyp, cdir, st.clip, st.frame, 'skipper', workZ); };
+    // the operator's own depth against the gear's origin decides the order — no guessing
+    if(S && S.depth > 0){ drawChar(); drawGear(); } else { drawGear(); drawChar(); }
+    // the load, on the clips that carry one
+    const M = C.workMount(cdir, this._charOpts(st.clip, st.frame, 'skipper', workZ));
+    /* the sheave belongs to the GEAR, so take the station's own pin over the clip's fallback —
+       both are cell px, one off the gear pivot and one off the figure's, so it is a subtraction */
+    if(M && S && S.sheave){
+      M.sheave={ x:S.sheave.dx - S.dx + C.pivot.x, y:S.sheave.dy - S.dy + C.pivot.y };
+      M.rope=[M.handR, M.handL, M.sheave];
+    }
+    if(M && M.holding && M.mid){
+      const T=globalThis.TrapIso;
+      const pot=this._mem('p|'+cdir, ()=>this._cv(T.render('wire',cdir,{colour:T.COLOURS.wire[0]}),T.W,T.H));
+      c.drawImage(pot, cxp+M.mid.x-C.pivot.x-T.pivot.x+16, cyp+M.mid.y-C.pivot.y-T.pivot.y+8);
+    }
+    this._blit(cv, off, z);
+    // pins, drawn in screen space over the blit
+    const ctx=cv.getContext('2d');
+    if(st.pins && M){
+      const P=(p)=>({ x:(cxp + p.x - C.pivot.x)*z, y:(cyp + p.y - C.pivot.y)*z });
+      const dot=(p,col,r)=>{ const q=P(p); ctx.beginPath(); ctx.arc(q.x,q.y,r||4,0,7);
+        ctx.fillStyle='rgba(11,18,22,0.7)'; ctx.fill(); ctx.lineWidth=1.4; ctx.strokeStyle=col; ctx.stroke(); };
+      if(M.rope){ ctx.beginPath();
+        M.rope.forEach((p,i)=>{ const q=P(p); i?ctx.lineTo(q.x,q.y):ctx.moveTo(q.x,q.y); });
+        ctx.lineWidth=2; ctx.strokeStyle='rgba(201,168,106,0.85)'; ctx.stroke();
+        dot(M.sheave,'#c9a86a',5); }
+      dot(M.handL,'#7fd6c9'); dot(M.handR,'#7fd6c9');
+      if(M.item) dot(M.item,'#e0836a',5);
+      if(M.mid && M.holding) dot(M.mid,'#e0836a',5);
+    }
+    const line = (kind?G.LABELS[kind]:'NO FURNITURE') + ' \u00b7 ' + st.clip.toUpperCase()
+      + ' \u00b7 FRAME ' + (st.frame+1) + '/' + C.ANIMS[st.clip].frames;
+    const mnt = 'LAYER ' + (C.ANIM_MOUNT[st.clip]||'\u2014').toUpperCase()
+      + ' \u00b7 WORK Z ' + (M?M.workZ.toFixed(3):'\u2014') + ' m'
+      + (M&&M.clamped ? ' \u00b7 CLAMPED FROM '+M.requested.toFixed(3) : '');
+    if(line!==this._line || mnt!==this._mnt){ this._line=line; this._mnt=mnt; this._clamped=!!(M&&M.clamped); this.forceUpdate(); }
+  }
+
+  // ---- CLIP SHEET -----------------------------------------------------------
+  _drawSheet(){
+    const cv=this._sheet; if(!cv) return;
+    const C=globalThis.CharacterIso6, z=2, c=cv.getContext('2d');
+    c.imageSmoothingEnabled=false; c.clearRect(0,0,cv.width,cv.height);
+    const off=this._off(cv,z), oc=off.getContext('2d'); oc.imageSmoothingEnabled=false;
+    oc.clearRect(0,0,off.width,off.height);
+    const rows=C.GROUPS.deck, dir=this.state.dir;
+    rows.forEach((clip,r)=>{
+      const A=C.ANIMS[clip], gy=Math.round((r+0.86)*(off.height-8)/rows.length);
+      for(let f=0;f<A.frames;f++){
+        const gx=Math.round(58/z + (f+0.5)*(off.width-58/z)/12);
+        this._char(oc, gx, gy, dir, clip, f, 'fisher', null);
+      }
+    });
+    this._blit(cv, off, z);
+    c.font='10px ui-monospace, Menlo, monospace'; c.textAlign='left';
+    rows.forEach((clip,r)=>{
+      const y=(r+0.86)*(cv.height-16)/rows.length;
+      c.fillStyle='#9aa6aa'; c.fillText(clip.toUpperCase(), 6, y);
+      c.fillStyle='#5f6e73'; c.fillText(C.ANIMS[clip].frames+'f', 6, y+13);
+      c.strokeStyle='#1b262c'; c.beginPath();
+      c.moveTo(4, (r+1)*(cv.height-16)/rows.length + 8); c.lineTo(cv.width-4, (r+1)*(cv.height-16)/rows.length + 8); c.stroke();
+    });
+  }
+
+  // ---- CARRY ----------------------------------------------------------------
+  _drawCarry(){
+    const cv=this._carry; if(!cv) return;
+    const C=globalThis.CharacterIso6, z=3, c=cv.getContext('2d');
+    c.imageSmoothingEnabled=false; c.clearRect(0,0,cv.width,cv.height);
+    const off=this._off(cv,z), oc=off.getContext('2d'); oc.imageSmoothingEnabled=false;
+    oc.clearRect(0,0,off.width,off.height);
+    const list=C.CARRY_ORDER, gy=Math.round(off.height*0.84), dir=this.state.dir, f=this.state.frame%6;
+    list.forEach((k,i)=>{
+      const gx=Math.round((i+0.5)*off.width/list.length);
+      this._shadow(oc, gx, gy, 7);
+      this._char(oc, gx, gy, dir, 'idle', f, 'fisher', null, k);
+    });
+    this._blit(cv, off, z);
+    c.font='9px ui-monospace, Menlo, monospace'; c.textAlign='center';
+    list.forEach((k,i)=>{ const x=(i+0.5)*cv.width/list.length;
+      c.fillStyle = k==='pot' ? '#7fd6c9' : '#6f7e83';
+      c.fillText(C.CARRIES[k].label + (k==='pot'?' \u00b7 NEW':''), x, cv.height-16);
+      c.fillStyle='#4d595e'; c.fillText(C.CARRIES[k].pin, x, cv.height-5); });
+    c.textAlign='left';
+  }
+
+  // ---- TWO CREW -------------------------------------------------------------
+  // a flat patch of sole, projected on the same turntable, so the spacing is metres and not taste
+  _drawCrew(){
+    const cv=this._crew; if(!cv) return;
+    const C=globalThis.CharacterIso6, G=globalThis.DeckGear, R=globalThis.FishTray2, z=3;
+    const dir=this.state.dir, frame=this.state.frame;
+    const off=this._off(cv,z), c=off.getContext('2d'); c.imageSmoothingEnabled=false;
+    c.clearRect(0,0,off.width,off.height);
+    c.fillStyle='#0e181d'; c.fillRect(0,0,off.width,off.height);
+    const B=globalThis.IsoSolid.camBasis({dir});
+    const ox=Math.round(off.width*0.50), oy=Math.round(off.height*0.62);
+    const pj=(x,y,z2)=>globalThis.IsoSolid.proj(x,y,z2||0,B,ox,oy);
+    const HW=1.70, HL=2.10;                             // the patch: 3.4 x 4.2 m
+    const path=(pts)=>{ c.beginPath(); pts.forEach((p,i)=>{ const q=pj(p[0],p[1]);
+      i?c.lineTo(q.sx,q.sy):c.moveTo(q.sx,q.sy); }); c.closePath(); };
+    path([[-HW,-HL],[HW,-HL],[HW,HL],[-HW,HL]]);
+    c.fillStyle='#1d2127'; c.fill(); c.strokeStyle='#31454e'; c.stroke();
+    c.strokeStyle='rgba(174,185,187,0.13)'; c.lineWidth=1;
+    for(let x=-1;x<=1;x++){ const a=pj(x,-HL), b2=pj(x,HL);
+      c.beginPath(); c.moveTo(a.sx,a.sy); c.lineTo(b2.sx,b2.sy); c.stroke(); }
+    for(let y=-2;y<=2;y++){ const a=pj(-HW,y), b2=pj(HW,y);
+      c.beginPath(); c.moveTo(a.sx,a.sy); c.lineTo(b2.sx,b2.sy); c.stroke(); }
+    // the work alley the deck planner keeps clear, 0.80 m amidships
+    c.save(); c.setLineDash([4,3]); c.strokeStyle='rgba(174,185,187,0.5)';
+    path([[-0.40,-HL],[0.40,-HL],[0.40,HL],[-0.40,HL]]); c.stroke(); c.restore();
+
+    const items=[];
+    this.CREW.forEach(w=>{
+      const S=G.station(w.kind, dir), q=pj(w.x, w.y);
+      items.push({ kind:'gear', g:w.kind, sx:q.sx, sy:q.sy, d:q.d });
+      items.push({ kind:'crew', w, S, sx:q.sx+S.dx, sy:q.sy+S.dy, d:q.d - 0.28 });
+    });
+    // a tote and a tray column between them, so the alley reads as an alley
+    const tq=pj(-0.02,-1.35); items.push({ kind:'tray', sx:tq.sx, sy:tq.sy, d:tq.d });
+    items.sort((a,b2)=>b2.d-a.d).forEach(it=>{
+      const gx=Math.round(it.sx), gy=Math.round(it.sy);
+      if(it.kind==='gear'){ this._shadow(c, gx, gy, 12);
+        c.drawImage(this._gearCv(it.g, dir), gx-G.pivot.x, gy-G.pivot.y); }
+      else if(it.kind==='tray'){
+        for(let i=0;i<4;i++) c.drawImage(
+          this._mem('y|'+dir+'|grey', ()=>this._cv(R.render(dir,{colour:'grey'}),R.W,R.H)),
+          gx-R.pivot.x, gy-i*R.nestStep()-R.pivot.y); }
+      else { this._shadow(c, gx, gy, 7);
+        this._char(c, gx, gy, it.S.dir, it.S.anim, frame % globalThis.CharacterIso6.ANIMS[it.S.anim].frames,
+          it.w.preset, it.S.workZ); }
+    });
+    this._blit(cv, off, z);
+    // the reserved footprints, labelled, over the blit
+    const ctx=cv.getContext('2d');
+    ctx.font='10px ui-monospace, Menlo, monospace'; ctx.textAlign='center';
+    this.CREW.forEach(w=>{
+      const S=G.station(w.kind, dir), cl=S.clear;
+      // axis-aligned on the deck, like every rect the planner packs against
+      const local=[[-cl[0]/2,-cl[1]/2],[cl[0]/2,-cl[1]/2],[cl[0]/2,cl[1]/2],[-cl[0]/2,cl[1]/2]];
+      ctx.beginPath();
+      local.forEach((p,i)=>{ const q=pj(w.x+S.stand[0]+p[0], w.y+S.stand[1]+p[1]);
+        const X=q.sx*z, Y=q.sy*z; i?ctx.lineTo(X,Y):ctx.moveTo(X,Y); });
+      ctx.closePath();
+      ctx.fillStyle=w.dot+'22'; ctx.fill();
+      ctx.lineWidth=1.3; ctx.strokeStyle=w.dot; ctx.stroke();
+      const lq=pj(w.x+S.stand[0], w.y+S.stand[1]);
+      ctx.fillStyle=w.dot; ctx.fillText(w.who, lq.sx*z, lq.sy*z+14);
+    });
+    ctx.fillStyle='rgba(174,185,187,0.7)';
+    const aq=pj(0,HL-0.30); ctx.fillText('0.80 m ALLEY', aq.sx*z, aq.sy*z+12);
+    ctx.textAlign='left';
+  }
+
+  _dlSheet(){
+    const C=globalThis.CharacterIso6, rows=C.GROUPS.deck;
+    const maxF=Math.max(...rows.map(k=>C.ANIMS[k].frames));
+    const cv=document.createElement('canvas');
+    cv.width=C.W*maxF; cv.height=C.H*rows.length*8;
+    const c=cv.getContext('2d');
+    rows.forEach((clip,r)=>{ const A=C.ANIMS[clip];
+      for(let d=0;d<8;d++) for(let f=0;f<A.frames;f++)
+        c.putImageData(new ImageData(C.render(d,{anim:clip, frame:f, build:{preset:'fisher'}}),C.W,C.H),
+          f*C.W, (r*8+d)*C.H); });
+    const a=document.createElement('a'); a.download='DeckWork.png'; a.href=cv.toDataURL('image/png'); a.click();
+  }
+
+  renderVals(){
+    const C=globalThis.CharacterIso6, G=globalThis.DeckGear, st=this.state;
+    if(!this._h){
+      const chip=(label,on,active)=>({ label, onClick:on,
+        fg:active?'#7fd6c9':'#8a969b', bg:active?'#122530':'#0f191e', bd:active?'#2f6079':'#243137' });
+      this._h={ chip,
+        stageRef:(e)=>{ this._stage=e; if(this._ready) this._drawStage(); },
+        sheetRef:(e)=>{ this._sheet=e; if(this._ready) this._drawSheet(); },
+        carryRef:(e)=>{ this._carry=e; if(this._ready) this._drawCarry(); },
+        crewRef:(e)=>{ this._crew=e; if(this._ready) this._drawCrew(); },
+        set:(p)=>()=>this.setState(p),
+        rotL:()=>this.setState({dir:(this.state.dir+7)%8}),
+        rotR:()=>this.setState({dir:(this.state.dir+1)%8}),
+        onFrame:(e)=>this.setState({frame:+e.target.value, playing:false}, ()=>this._tick()),
+        onWork:(e)=>this.setState({workPct:+e.target.value}),
+        togglePlay:()=>this.setState(s=>({playing:!s.playing}), ()=>this._tick()),
+        togglePins:()=>this.setState(s=>({pins:!s.pins})),
+        pick:(k)=>()=>this.setState({clip:k, frame:0, workPct:100}, ()=>this._tick()),
+        dlSheet:()=>this._dlSheet(),
+      };
+    }
+    const h=this._h, border='1px solid #243137';
+    const clips = C ? C.GROUPS.deck : ['hauler','lift','place','bench','chop','toss'];
+    const A = C ? C.ANIMS[st.clip] : {frames:8};
+    const kind = this.GEAR[st.clip];
+    const base = C ? C.WORK_DEF[st.clip] : 0.9;
+    const CN = [
+      ['hauler','warp','1.05 m','stationed at the drum \u2014 rope is a runtime line handR \u2192 handL \u2192 sheave, tension 0..1'],
+      ['lift','load','0.93 m','deck to surface. Legs do the work, the load leaves the deck before the hips finish'],
+      ['place','load','0.93 m','hips lead, load is set while the back is still bent, body straightens after. hold \u2192 0'],
+      ['bench','bench','0.885 m','three-beat: hold, band, carry away. `band` gates the close, `item` is the animal'],
+      ['chop','knife','0.775 m','drives a knife on tool() \u2014 the same call the rod and the spade use. `cut` spikes on contact'],
+      ['toss','load','0.93 m','over the rail. `release` is the u the load leaves the hands, `out` is where it goes'],
+    ];
+    const SN = G && G.STATIONS ? Object.keys(G.STATIONS) : [];
+    return {
+      stageRef:h.stageRef, sheetRef:h.sheetRef, carryRef:h.carryRef, crewRef:h.crewRef,
+      compass:this.DIRS[st.dir], rotL:h.rotL, rotR:h.rotR,
+      stageLine:this._line||'LOADING RIGS\u2026', mountLine:this._mnt||'\u2014',
+      clipChips:clips.map(k=>h.chip(k.toUpperCase(), h.pick(k), st.clip===k)),
+      frame:st.frame, frameMax:A.frames-1, frameLbl:(st.frame+1)+' / '+A.frames, onFrame:h.onFrame,
+      workPct:st.workPct, onWork:h.onWork,
+      workLbl:(base*st.workPct/100).toFixed(2)+' m',
+      zFg:this._clamped?'#e0836a':'#9aa6aa',
+      playLabel:st.playing?'\u25a0 PAUSE':'\u25b6 PLAY',
+      playFg:st.playing?'#7fd6c9':'#8a969b', playBg:st.playing?'#122530':'#0f191e', playBd:st.playing?'#2f6079':'#243137',
+      pinFg:st.pins?'#7fd6c9':'#8a969b', pinBg:st.pins?'#122530':'#0f191e', pinBd:st.pins?'#2f6079':'#243137',
+      togglePlay:h.togglePlay, togglePins:h.togglePins, dlSheet:h.dlSheet,
+      contract:CN.map((r,i)=>({ k:r[0].toUpperCase(), layer:r[1], z:r[2], v:r[3], border:i?border:'none' })),
+      stations:SN.map((k,i)=>{ const S=G.STATIONS[k];
+        return { k:G.LABELS[k], a:S.anim, border:i?border:'none',
+          v:'stand ['+S.stand[0].toFixed(2)+', '+S.stand[1].toFixed(2)+'] \u00b7 turn '+S.turn
+            +' \u00b7 workZ '+S.workZ.toFixed(3)+' \u00b7 clear '+S.clear[0].toFixed(2)+'\u00d7'+S.clear[1].toFixed(2)+' m' }; }),
+      fit:[
+        { who:'SKIPPER \u00b7 hauler, starboard', dot:'#7fd6c9', rows:[
+          { k:'STANDS', v:'inboard of the washboard, facing the rail \u2014 station turn 4', border:'none' },
+          { k:'HANDS',  v:'1.05 m, on the warp between the sheave and the coil', border },
+          { k:'CLEARS', v:'0.66 \u00d7 0.60 m reserved before any pot is packed', border },
+          { k:'REACH',  v:'an adult makes 1.05 m; a child clamps at 0.875 and the clip says so', border },
+        ]},
+        { who:'STERNMAN \u00b7 bench, port', dot:'#c9a86a', rows:[
+          { k:'STANDS', v:'0.52 m off the bench, facing it \u2014 station turn 0', border:'none' },
+          { k:'HANDS',  v:'0.885 m, the banding table\u2019s own scrubbed top', border },
+          { k:'CLEARS', v:'0.62 \u00d7 0.58 m', border },
+          { k:'GAP',    v:'2.25 m between the two stations \u2014 the 0.80 m alley runs clear between them', border },
+        ]},
+      ],
+      files:[
+        { href:'Art/characterIsoRig6.js', file:'characterIsoRig6.js' },
+        { href:'Art/deckGearRig.js', file:'deckGearRig.js' },
+      ],
+    };
+  }
+}
+
+</script>
+</body>
+</html>

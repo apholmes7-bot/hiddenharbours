@@ -1,0 +1,14 @@
+# The three .dc.html viewer pages expect these ten rigs beside them, but they already live at
+# docs/art/rigs/*.js and are BYTE-IDENTICAL there. A second copy is the drift the repo's no-edit
+# rule exists to prevent, so materialising them locally (see ../IMPORT.md) must never be committed.
+catchKit.js
+crustaceanRig.js
+eyeIsoRig.js
+fishIsoRig.js
+fishToteRig.js
+headIsoRig3.js
+lobsterRig.js
+rockCrabRig.js
+shellfishRig.js
+lobsterBoatIsoRig.js
+capeIslanderIsoRig.js

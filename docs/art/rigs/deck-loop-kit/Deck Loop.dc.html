@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=IM+Fell+DW+Pica:ital@0;1&display=swap" rel="stylesheet">
+<script src="Art/isoSolid.js"></script>
+<script src="Art/eyeIsoRig.js"></script>
+<script src="Art/headIsoRig3.js"></script>
+<script src="Art/characterIsoRig6.js"></script>
+<script src="Art/deckGearRig.js"></script>
+<script src="Art/trapIsoRig.js"></script>
+<script src="Art/trayIsoRig.js"></script>
+<script src="Art/fishToteRig.js"></script>
+<script src="Art/buoyIsoRig.js"></script>
+<script src="Art/lobsterBoatIsoRig.js"></script>
+<script src="Art/capeIslanderIsoRig.js"></script>
+<style>
+  *{box-sizing:border-box;}
+  html,body{margin:0;background:#0b1216;}
+  canvas{image-rendering:pixelated;image-rendering:crisp-edges;display:block;}
+  a{color:#7fd6c9;text-decoration:none;}
+  a:hover{color:#a9e7dd;}
+  input[type=range]{-webkit-appearance:none;appearance:none;height:3px;background:#2a3b43;border-radius:2px;outline:none;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:16px;background:#c9d6d4;border:1px solid #0b1216;cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:12px;height:16px;background:#c9d6d4;border:1px solid #0b1216;cursor:pointer;border-radius:0;}
+</style>
+</helmet>
+<div style="min-height:100vh;background:#0b1216;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#aeb9bb;padding:30px 24px 60px;display:flex;flex-direction:column;align-items:center;gap:24px;">
+
+  <div style="width:100%;max-width:1000px;display:flex;align-items:flex-end;justify-content:space-between;border-bottom:1px solid #243137;padding-bottom:13px;gap:16px;flex-wrap:wrap;">
+    <div style="display:flex;flex-direction:column;gap:5px;">
+      <div style="font-family:'IM Fell English SC',serif;font-size:25px;color:#eef3f2;letter-spacing:0.5px;line-height:1;">Deck Loop &middot; pass 1</div>
+      <div style="font-size:10.5px;letter-spacing:0.16em;color:#6f7e83;">HIDDEN&nbsp;HARBOURS&nbsp;&middot;&nbsp;TWELVE&nbsp;BEATS&nbsp;&middot;&nbsp;TWO&nbsp;HANDS&nbsp;&middot;&nbsp;BOTH&nbsp;HULLS&nbsp;&middot;&nbsp;EIGHT&nbsp;HEADINGS</div>
+    </div>
+    <div style="font-family:'IM Fell DW Pica',serif;font-style:italic;font-size:13.5px;color:#c9a86a;max-width:430px;text-align:right;line-height:1.45;">Every clip had a station and no shift to work. This is the whole shift: gaff, haul, land, empty, cull, bait, lift, stack, set &mdash; on the real sole, riding the real swell.</div>
+  </div>
+
+  <!-- STAGE -->
+  <div style="width:100%;max-width:1000px;display:flex;flex-direction:column;gap:12px;align-items:center;">
+    <div style="position:relative;border:1px solid #243137;background:#0e181d;width:100%;">
+      <canvas ref="{{ stageRef }}" width="940" height="560" style="width:100%;height:auto;"></canvas>
+      <div style="position:absolute;left:11px;top:10px;font-size:10px;letter-spacing:0.14em;color:rgba(231,236,235,0.9);background:rgba(11,18,22,0.6);padding:3px 8px;">{{ hudLeft }}</div>
+      <div style="position:absolute;right:11px;top:10px;font-size:10px;letter-spacing:0.12em;color:rgba(200,168,106,0.9);background:rgba(11,18,22,0.6);padding:3px 8px;">{{ hudRight }}</div>
+      <div style="position:absolute;left:11px;bottom:10px;font-size:10px;letter-spacing:0.1em;color:rgba(127,214,201,0.92);">{{ hudA }}</div>
+      <div style="position:absolute;right:11px;bottom:10px;font-size:10px;letter-spacing:0.1em;color:rgba(201,168,106,0.92);">{{ hudB }}</div>
+    </div>
+
+    <!-- BEAT STRIP -->
+    <div style="width:100%;display:grid;grid-template-columns:repeat(12,1fr);gap:3px;">
+      <sc-for list="{{ beatChips }}" as="b" hint-placeholder-count="12">
+        <div onClick="{{ b.onClick }}" style="padding:7px 3px 8px;text-align:center;cursor:pointer;user-select:none;background:{{ b.bg }};border:1px solid {{ b.bd }};display:flex;flex-direction:column;gap:3px;">
+          <div style="font-size:9.5px;letter-spacing:0.07em;color:{{ b.fg }};">{{ b.label }}</div>
+          <div style="height:2px;background:{{ b.bar }};"></div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:center;">
+      <div style="display:flex;gap:4px;">
+        <sc-for list="{{ boatChips }}" as="t" hint-placeholder-count="2">
+          <div onClick="{{ t.onClick }}" style="min-width:132px;text-align:center;padding:10px 14px;font-size:10.5px;letter-spacing:0.09em;cursor:pointer;user-select:none;color:{{ t.fg }};background:{{ t.bg }};border:1px solid {{ t.bd }};">{{ t.label }}</div>
+        </sc-for>
+      </div>
+      <div onClick="{{ rotL }}" style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:17px;cursor:pointer;user-select:none;background:#1c2c33;border:1px solid #2f444c;color:#cfd6d4;">&#8634;</div>
+      <div style="width:60px;text-align:center;font-family:'IM Fell English SC',serif;font-size:23px;color:#eef3f2;">{{ compass }}</div>
+      <div onClick="{{ rotR }}" style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:17px;cursor:pointer;user-select:none;background:#1c2c33;border:1px solid #2f444c;color:#cfd6d4;">&#8635;</div>
+      <div onClick="{{ togglePlay }}" style="min-width:96px;text-align:center;padding:11px 14px;font-size:11px;letter-spacing:0.09em;cursor:pointer;user-select:none;color:{{ playFg }};background:{{ playBg }};border:1px solid {{ playBd }};">{{ playLabel }}</div>
+      <div style="display:flex;flex-direction:column;gap:4px;width:230px;">
+        <div style="display:flex;justify-content:space-between;font-size:9.5px;letter-spacing:0.1em;color:#6f7e83;"><span>LOOP</span><span style="color:#9aa6aa;">{{ tickLbl }}</span></div>
+        <input type="range" min="0" max="{{ tickMax }}" step="1" value="{{ tick }}" onInput="{{ onTick }}" />
+      </div>
+      <div onClick="{{ toggleRock }}" style="min-width:96px;text-align:center;padding:11px 14px;font-size:10.5px;letter-spacing:0.09em;cursor:pointer;user-select:none;color:{{ rockFg }};background:{{ rockBg }};border:1px solid {{ rockBd }};">{{ rockLabel }}</div>
+      <div onClick="{{ toggleLabels }}" style="min-width:88px;text-align:center;padding:11px 14px;font-size:10.5px;letter-spacing:0.09em;cursor:pointer;user-select:none;color:{{ labFg }};background:{{ labBg }};border:1px solid {{ labBd }};">TAGS</div>
+    </div>
+    <div style="font-size:9.5px;color:#5f6e73;letter-spacing:0.06em;text-align:center;max-width:840px;line-height:1.6;">One tick table drives both hands, the pot, the tray and the stacks &middot; every position is boat-local metres, so the swell moves the crew and the gear with the hull instead of sliding them across it</div>
+  </div>
+
+  <!-- EIGHT HEADINGS -->
+  <div style="width:100%;max-width:1000px;display:flex;flex-direction:column;gap:10px;border-top:1px solid #243137;padding-top:18px;">
+    <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;">
+      <div style="font-size:11px;letter-spacing:0.14em;color:#6f7e83;">THE&nbsp;SAME&nbsp;TICK&nbsp;&middot;&nbsp;ALL&nbsp;EIGHT&nbsp;HEADINGS</div>
+      <div style="font-size:9.5px;color:#5f6e73;">1:1 pixels, cropped to the cockpit &mdash; scroll for the far side</div>
+    </div>
+    <div style="overflow-x:auto;border:1px solid #243137;background:#0e181d;">
+      <canvas ref="{{ ringRef }}" width="1920" height="300"></canvas>
+    </div>
+  </div>
+
+  <!-- CYCLE TABLE -->
+  <div style="width:100%;max-width:1000px;display:flex;flex-direction:column;gap:10px;border-top:1px solid #243137;padding-top:18px;">
+    <div style="font-size:11px;letter-spacing:0.14em;color:#6f7e83;">THE&nbsp;TWELVE&nbsp;BEATS&nbsp;&middot;&nbsp;WHO&nbsp;DOES&nbsp;WHAT,&nbsp;AND&nbsp;WHERE&nbsp;THE&nbsp;POT&nbsp;IS</div>
+    <div style="border:1px solid #243137;display:grid;grid-template-columns:auto auto 1fr 1fr auto;font-size:11px;">
+      <sc-for list="{{ cycle }}" as="row" hint-placeholder-count="12">
+        <div onClick="{{ row.onClick }}" style="padding:6px 11px;color:{{ row.kfg }};letter-spacing:0.08em;border-top:{{ row.border }};background:{{ row.kbg }};cursor:pointer;">{{ row.k }}</div>
+        <div style="padding:6px 11px;color:#5f6e73;border-top:{{ row.border }};border-left:1px solid #243137;">{{ row.t }}</div>
+        <div style="padding:6px 11px;color:#7fd6c9;border-top:{{ row.border }};border-left:1px solid #243137;">{{ row.a }}</div>
+        <div style="padding:6px 11px;color:#c9a86a;border-top:{{ row.border }};border-left:1px solid #243137;">{{ row.b }}</div>
+        <div style="padding:6px 11px;color:#8a969b;border-top:{{ row.border }};border-left:1px solid #243137;">{{ row.p }}</div>
+      </sc-for>
+    </div>
+  </div>
+
+  <!-- HULL FIT -->
+  <div style="width:100%;max-width:1000px;display:flex;gap:22px;flex-wrap:wrap;border-top:1px solid #243137;padding-top:18px;">
+    <sc-for list="{{ fit }}" as="t" hint-placeholder-count="2">
+      <div style="flex:1;min-width:330px;display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:{{ t.dot }};"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">{{ t.who }}</div></div>
+        <div style="border:1px solid #243137;display:grid;grid-template-columns:auto 1fr;font-size:11px;">
+          <sc-for list="{{ t.rows }}" as="row" hint-placeholder-count="5">
+            <div style="padding:6px 11px;color:#6f7e83;letter-spacing:0.08em;border-top:{{ row.border }};background:#0f191e;">{{ row.k }}</div>
+            <div style="padding:6px 11px;color:#c4cdcd;border-top:{{ row.border }};border-left:1px solid #243137;">{{ row.v }}</div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+
+  <!-- DOWNLOADS -->
+  <div style="width:100%;max-width:1000px;display:flex;flex-direction:column;gap:8px;border-top:1px solid #243137;padding-top:18px;">
+    <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#2ba39a;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Downloads</div></div>
+    <div style="display:flex;gap:7px;flex-wrap:wrap;">
+      <div onClick="{{ dlStrip }}" style="flex:1;min-width:260px;font-size:10.5px;letter-spacing:0.1em;padding:9px 15px;border:1px solid #2f6079;background:#122530;color:#7fd6c9;text-align:center;cursor:pointer;user-select:none;">&darr; LOOP CONTACT SHEET &middot; 12 BEATS &times; 8 HEADINGS</div>
+      <a href="Art/characterIsoRig6.js" download="characterIsoRig6.js" style="flex:1;min-width:180px;font-size:9.5px;letter-spacing:0.08em;padding:9px 8px;border:1px solid #243137;background:#0f191e;color:#8a969b;text-align:center;">&darr; characterIsoRig6.js</a>
+      <a href="Art/deckGearRig.js" download="deckGearRig.js" style="flex:1;min-width:180px;font-size:9.5px;letter-spacing:0.08em;padding:9px 8px;border:1px solid #243137;background:#0f191e;color:#8a969b;text-align:center;">&darr; deckGearRig.js</a>
+    </div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 1040, &quot;height&quot;: 1500 },
+  &quot;boat&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;lobsterBoat&quot;, &quot;options&quot;: [&quot;lobsterBoat&quot;,&quot;capeIslander&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Stage&quot; },
+  &quot;rock&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Stage&quot; },
+  &quot;labels&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Stage&quot; },
+  &quot;playing&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Stage&quot; }
+}">
+class Component extends DCLogic {
+  state = { boat:'lobsterBoat', dir:3, tick:0, playing:true, rock:true, labels:true };
+  DIRS = ['N','NE','E','SE','S','SW','W','NW'];
+  TICK_MS = 115;
+
+  /* Boat-local layout, metres. x starboard+, y bow+, z off the keel. Everything the loop
+     touches lives here, so a second hull is a table and not a second page. */
+  LAY = {
+    lobsterBoat: { rig:'LobsterBoatIso', label:'LOBSTER BOAT', file:'lobsterBoatIsoRig',
+      sole:0.50, haulY:-2.30, portX:-1.12, crewX:-0.56, benchY:-2.15, chopY:-3.30, baitY:-4.25,
+      toteX:0.36, toteY:-2.70, tote2Y:-3.90, stack:[-0.66,-5.00], wait:[0.78,-4.95],
+      nest:[0.20,-5.25], transom:{y:-5.70,z:1.18,hx:1.40}, camY:-2.9 },
+    capeIslander: { rig:'CapeIslanderIso', label:'CAPE ISLANDER', file:'capeIslanderIsoRig',
+      sole:0.72, haulY:-2.55, portX:-1.06, crewX:-0.52, benchY:-2.40, chopY:-3.55, baitY:-4.50,
+      toteX:0.34, toteY:-2.95, tote2Y:-4.15, stack:[-0.62,-5.35], wait:[0.74,-5.30],
+      nest:[0.18,-5.62], transom:{y:-6.08,z:1.39,hx:1.34}, camY:-3.1 },
+  };
+
+  /* The shift. ticks are frames at TICK_MS; a task is a station, a walk between two, or a spot.
+     `z:'cap'` hands the clip the washboard cap as its work height instead of the station's own. */
+  BEATS = [
+    { k:'GAFF',   t:10, a:{stn:'hauler', clip:'hauler'},              b:{go:['stack','bench'], clip:'walk'},
+      pot:'water',  note:'buoy gaffed, warp on the drum' },
+    { k:'HAUL',   t:10, a:{stn:'hauler', clip:'hauler'},              b:{stn:'bench', clip:'bench'},
+      pot:'rising', note:'pot comes up the side' },
+    { k:'LAND',   t:8,  a:{stn:'hauler', clip:'place', z:'cap'},      b:{stn:'bench', clip:'bench'},
+      pot:'landing',note:'onto the washboard cap' },
+    { k:'EMPTY',  t:10, a:{stn:'hauler', clip:'bench', z:'cap'},      b:{go:['bench','chop'], clip:'walk'},
+      pot:'cap',    note:'catch out into the tray' },
+    { k:'CULL',   t:8,  a:{stn:'hauler', clip:'lift', z:'cap'},       b:{stn:'chop', clip:'chop'},
+      pot:'cap',    note:'tray off the cap' },
+    { k:'PASS',   t:12, a:{go:['hauler','bench'], clip:'walk', carry:'tray'}, b:{stn:'chop', clip:'chop'},
+      pot:'cap',    note:'catch walked to the bench' },
+    { k:'TIP',    t:8,  a:{stn:'bench', clip:'place'},                b:{stn:'chop', clip:'chop'},
+      pot:'cap',    note:'tipped into the tote' },
+    { k:'BAIT',   t:12, a:{go:['bench','hauler'], clip:'walk', carry:'tray'}, b:{go:['chop','haulaux'], clip:'walk'},
+      pot:'cap',    note:'bait carried to the pot' },
+    { k:'REBAIT', t:10, a:{stn:'hauler', clip:'bench', z:'cap'},      b:{spot:'haulaux', clip:'place', z:'cap'},
+      pot:'cap',    note:'bait bag in, door closed' },
+    { k:'LIFT',   t:8,  a:{stn:'hauler', clip:'lift', z:'cap'},       b:{go:['haulaux','wait'], clip:'walk'},
+      pot:'lift',   note:'pot off the cap' },
+    { k:'MOVE',   t:12, a:{go:['hauler','stack'], clip:'walk', carry:'pot'}, b:{spot:'wait', clip:'idle'},
+      pot:'carry',  note:'walked aft on the carry stance' },
+    { k:'SET',    t:10, a:{spot:'stack', clip:'place'},               b:{spot:'wait', clip:'toss'},
+      pot:'stack',  note:'stacked aft, one goes back over' },
+  ];
+
+  componentDidMount(){
+    this._c = {};
+    this._wait = setInterval(()=>{
+      if (globalThis.CharacterIso6 && globalThis.DeckGear && globalThis.HeadIso && globalThis.TrapIso
+          && globalThis.FishTray2 && globalThis.FishTote && globalThis.LobsterBoatIso
+          && globalThis.CapeIslanderIso){
+        clearInterval(this._wait); this._ready=true; this._run(); this._redraw(); this.forceUpdate(); }
+    }, 60);
+    Promise.all(Object.keys(this.LAY).map(k=>
+      fetch('Art/gameplay/'+this.LAY[k].file+'.gameplay.json').then(r=>r.json()).catch(()=>null)))
+      .then(list=>{ this._side={}; Object.keys(this.LAY).forEach((k,i)=>{ this._side[k]=list[i]; });
+        this._redraw(); this.forceUpdate(); });
+  }
+  componentWillUnmount(){ clearInterval(this._wait); clearInterval(this._t); }
+  componentDidUpdate(){ this._redraw(); }
+
+  _run(){ clearInterval(this._t); if(!this.state.playing) return;
+    this._t=setInterval(()=>this.setState(s=>({tick:(s.tick+1)%this._total()})), this.TICK_MS); }
+  _total(){ return this.BEATS.reduce((a,b)=>a+b.t,0); }
+  _redraw(){ if(!this._ready) return;
+    try { this._drawStage(); this._drawRing(); }
+    catch(e){ if(!this._err){ this._err=true; console.error('deck loop draw', e); } } }
+
+  // ---- canvas plumbing ------------------------------------------------------
+  _cv(rgba,w,h){ const cv=document.createElement('canvas'); cv.width=w; cv.height=h;
+    cv.getContext('2d').putImageData(new ImageData(rgba,w,h),0,0); return cv; }
+  _mem(k,fn){ if(!this._c[k]) this._c[k]=fn(); return this._c[k]; }
+  _off(cv,z){ const ow=Math.ceil(cv.width/z), oh=Math.ceil(cv.height/z), k='off'+cv.width+'x'+cv.height+'|'+z;
+    if(!this[k] || this[k].width!==ow || this[k].height!==oh){
+      this[k]=document.createElement('canvas'); this[k].width=ow; this[k].height=oh; }
+    return this[k]; }
+  _blit(cv,off,z){ const ctx=cv.getContext('2d'); ctx.imageSmoothingEnabled=false;
+    ctx.clearRect(0,0,cv.width,cv.height);
+    ctx.drawImage(off,0,0,off.width,off.height,0,0,off.width*z,off.height*z); }
+
+  // ---- boat space -----------------------------------------------------------
+  /* The hull rig's own projVert, so the deck load rides exactly the geometry the hull is
+     painted from: roll about the fore-and-aft axis, then pitch, then the turntable. */
+  _B(dir, R){ const th=dir*Math.PI/4, e=40*Math.PI/180, D=Math.PI/180;
+    const roll=(R?R.roll:0)*D, pitch=(R?R.pitch:0)*D;
+    return { ct:Math.cos(th), st:Math.sin(th), se:Math.sin(e), ce:Math.cos(e),
+             cr:Math.cos(roll), sr:Math.sin(roll), cq:Math.cos(pitch), sq:Math.sin(pitch),
+             heave:(R?R.heave:0) }; }
+  _bp(x,y,z,B,ox,oy){
+    const x1=x*B.cr+z*B.sr, z1=-x*B.sr+z*B.cr;
+    const y2=y*B.cq-z1*B.sq, z2=y*B.sq+z1*B.cq;
+    const xr=x1*B.ct-y2*B.st, yr=x1*B.st+y2*B.ct;
+    return { sx:ox+xr*32, sy:oy-(yr*B.se+z2*B.ce)*32-B.heave, d:yr*B.ce-z2*B.se }; }
+  _rockAt(tick){ const L=this.LAY[this.state.boat], R=globalThis[L.rig];
+    if(!this.state.rock) return {roll:0,pitch:0,heave:0};
+    const per=(R.ROCK.period||3.4)*1000/this.TICK_MS;
+    return R.rock(tick*R.ROCK.frames/per); }
+  // a prop square to the boat at q quarter turns; a figure on boat heading h eighths
+  _pd(q){ return ((8-this.state.dir-2*(q||0))%8+8)%8; }
+  _hd(h){ return ((8-this.state.dir-h)%8+8)%8; }
+  _wb(){ const s=this._side&&this._side[this.state.boat]; return s&&(s.WASHBOARD||[])[0]; }
+  // washboard cap centre x and cap height z at a station, straight off the sidecar
+  _cap(y){ const wb=this._wb(), L=this.LAY[this.state.boat];
+    if(!wb||!wb.outer_edge) return { x:1.60, z:L.sole+0.69 };
+    const oe=wb.outer_edge;
+    for(let i=0;i<oe.length-1;i++){ const a=oe[i], b=oe[i+1];
+      if((y-a[1])*(y-b[1])<=0){ const t=(y-a[1])/((b[1]-a[1])||1);
+        return { x:a[0]+(b[0]-a[0])*t-wb.width_m/2, z:a[2]+(b[2]-a[2])*t }; } }
+    const l=oe[oe.length-1]; return { x:l[0]-wb.width_m/2, z:l[2] }; }
+  // everything on the sole is seen through the near rim: transom coaming plus the near washboard
+  _rimPath(B,ox,oy){ const wb=this._wb(), L=this.LAY[this.state.boat]; if(!wb) return null;
+    const s=Math.sin(this.state.dir*Math.PI/4), T=L.transom;
+    const pts=[ this._bp(-T.hx,T.y,T.z,B,ox,oy), this._bp(T.hx,T.y,T.z,B,ox,oy) ];
+    if(Math.abs(s)>1e-6 && wb.outer_edge){ const sg=s<0?1:-1;
+      wb.outer_edge.forEach(p=>pts.push(this._bp(sg*(p[0]-wb.width_m),p[1],p[2],B,ox,oy))); }
+    pts.sort((a,b)=>a.sx-b.sx);
+    const P=new Path2D(); P.moveTo(-4000,-4000); P.lineTo(-4000,pts[0].sy);
+    pts.forEach(p=>P.lineTo(p.sx,p.sy));
+    P.lineTo(4000,pts[pts.length-1].sy); P.lineTo(4000,-4000); P.closePath(); return P; }
+  _hullPath(B,ox,oy){ const wb=this._wb();
+    if(!wb||!wb.outer_edge||Math.sin(this.state.dir*Math.PI/4)>=-1e-6) return null;
+    const pts=wb.outer_edge.map(p=>this._bp(p[0],p[1],p[2],B,ox,oy)).sort((a,b)=>a.sx-b.sx);
+    const P=new Path2D(); P.moveTo(-4000,-4000); P.lineTo(-4000,pts[0].sy);
+    pts.forEach(p=>P.lineTo(p.sx,p.sy));
+    P.lineTo(4000,pts[pts.length-1].sy); P.lineTo(4000,-4000); P.closePath(); return P; }
+
+  // ---- the shift ------------------------------------------------------------
+  _beat(tick){ const T=this._total(); let t=((tick%T)+T)%T;
+    for(let i=0;i<this.BEATS.length;i++){ const b=this.BEATS[i];
+      if(t<b.t) return { i, b, u:t/b.t, tin:t }; t-=b.t; }
+    const b=this.BEATS[this.BEATS.length-1]; return { i:this.BEATS.length-1, b, u:0.999, tin:0 }; }
+  // named spots on the sole, boat-local. Crew stand points are authored, not inferred.
+  _spots(){ const L=this.LAY[this.state.boat], cap=this._cap(L.haulY);
+    return {
+      hauler:  { x:cap.x-0.92, y:L.haulY,      h:6, gear:'haulerstation', gx:cap.x-0.26, gy:L.haulY, q:1, wz:1.05 },
+      haulaux: { x:cap.x-0.92, y:L.haulY-0.88, h:6, wz:1.05 },
+      bench:   { x:L.crewX,    y:L.benchY,     h:2, gear:'bandingtable',  gx:L.portX, gy:L.benchY, q:3, wz:0.885 },
+      chop:    { x:L.crewX,    y:L.chopY,      h:2, gear:'chopboard',     gx:L.portX, gy:L.chopY,  q:3, wz:0.775 },
+      bait:    { x:L.crewX,    y:L.baitY,      h:2, gear:'baitbin',       gx:L.portX, gy:L.baitY,  q:3, wz:0.865 },
+      stack:   { x:L.stack[0]+0.62, y:L.stack[1]+0.30, h:5, wz:0.93 },
+      wait:    { x:L.wait[0]-0.60,  y:L.wait[1]-0.34,  h:7, wz:0.93 },
+    }; }
+  _hOf(dx,dy){ return ((Math.round(Math.atan2(-dx,dy)/(Math.PI/4))%8)+8)%8; }
+  /* One crew member resolved for a tick: where the feet are, which way they face, which clip
+     and frame, what the hands are holding. Walk beats interpolate the stand points. */
+  _actor(task, ph, tick){
+    const S=this._spots(), L=this.LAY[this.state.boat], C=globalThis.CharacterIso6;
+    const cap=this._cap(L.haulY);
+    let p, h, clip=task.clip, carry=task.carry||null;
+    if(task.go){ const a=S[task.go[0]], b=S[task.go[1]];
+      const e=ph.u<0.12?ph.u/0.12:ph.u>0.88?(1-ph.u)/0.12:1;      // ease the ends of a walk
+      const s=ph.u<0.12?ph.u*ph.u/0.24:ph.u>0.88?1-(1-ph.u)*(1-ph.u)/0.24:ph.u;
+      p={ x:a.x+(b.x-a.x)*s, y:a.y+(b.y-a.y)*s };
+      h=this._hOf(b.x-a.x, b.y-a.y);
+      if(e<0.25 && ph.u>0.88) { clip='idle'; h=b.h!=null?b.h:h; }
+    } else { const s=S[task.stn||task.spot]; p={x:s.x,y:s.y}; h=s.h; }
+    const wz = task.z==='cap' ? (cap.z-L.sole)
+             : (task.stn||task.spot) ? (S[task.stn||task.spot].wz||null) : null;
+    const A=C.ANIMS[clip], frames=A.frames;
+    const frame = A.oneShot ? Math.min(frames-1, Math.floor(ph.u*frames)) : (tick%frames);
+    return { x:p.x, y:p.y, z:L.sole, dir:this._hd(h), h, clip, frame, carry, workZ:wz, u:ph.u };
+  }
+  _state(tick){
+    const ph=this._beat(tick), L=this.LAY[this.state.boat], cap=this._cap(L.haulY), S=this._spots();
+    const A=this._actor(ph.b.a, ph, tick), B=this._actor(ph.b.b, ph, tick);
+    A.preset='skipper'; A.who='SKIPPER'; B.preset='hand'; B.who='STERNMAN';
+    // the working pot
+    const k=ph.b.pot; let pot=null;
+    if(k==='water')   pot={ x:cap.x+0.40, y:L.haulY, z:L.sole-1.05+0.55*ph.u, vis:ph.u>0.30, warp:true };
+    else if(k==='rising') pot={ x:cap.x+0.40, y:L.haulY, z:L.sole-0.50+(cap.z+0.06-(L.sole-0.50))*ph.u, vis:true, warp:true };
+    else if(k==='landing'){ const s=ph.u*ph.u*(3-2*ph.u);
+      pot={ x:cap.x+0.40+(0-0.40)*s, y:L.haulY, z:cap.z+0.06-0.06*s, vis:true, warp:ph.u<0.5 }; pot.x=cap.x+0.40*(1-s); }
+    else if(k==='cap') pot={ x:cap.x, y:L.haulY, z:cap.z, vis:true };
+    else if(k==='lift') pot={ held:'a', vis:true };
+    else if(k==='carry') pot={ held:'a', vis:true };
+    else if(k==='stack'){ const s=Math.min(1,ph.u/0.62);
+      if(ph.u<0.62) pot={ held:'a', vis:true };
+      else pot={ x:L.stack[0], y:L.stack[1], z:L.sole+3*this._step(), vis:true, tier:true }; }
+    // the tray of catch: cap -> A's hands -> the tote -> back to the cap
+    const tf = ph.i===3 ? (ph.u>0.55?'half':ph.u>0.25?'few':'empty') : (ph.i>=4 && ph.i<=5) ? 'full'
+             : ph.i===6 ? (ph.u>0.55?'empty':'full') : 'empty';
+    let tray = { x:cap.x, y:L.haulY-0.62, z:cap.z, fill:tf, vis:true };
+    if(ph.i===4) tray={ held:'a', fill:tf, vis:true, lift:true };
+    if(ph.i===5||ph.i===7) tray={ held:'a', fill:tf, vis:true };
+    if(ph.i===6) tray={ held:'a', fill:tf, vis:true, lift:true };
+    // the pot going back over the rail on the last beat
+    let flying=null;
+    if(ph.i===11 && ph.u>0.52){ const s=(ph.u-0.52)/0.48;
+      flying={ x:S.wait.x+0.30+1.5*s, y:S.wait.y-0.20-0.5*s, z:L.sole+0.95+0.55*s-2.6*s*s, vis:true }; }
+    return { ph, A, B, pot, tray, flying, cap };
+  }
+  _step(){ return globalThis.TrapIso.STACK.wire.step_m; }
+
+  // ---- drawing --------------------------------------------------------------
+  _char(c, gx, gy, a){
+    const C=globalThis.CharacterIso6;
+    const o={ anim:a.clip, frame:a.frame, build:{preset:a.preset} };
+    if(a.workZ!=null) o.workZ=a.workZ;
+    if(a.carry) o.carry=a.carry;
+    const k='c|'+a.clip+'|'+a.dir+'|'+a.frame+'|'+a.preset+'|'+(a.workZ==null?'-':a.workZ.toFixed(2))+'|'+(a.carry||'');
+    c.drawImage(this._mem(k, ()=>this._cv(C.render(a.dir,o),C.W,C.H)), gx-C.pivot.x, gy-C.pivot.y);
+  }
+  _mount(a){ const C=globalThis.CharacterIso6;
+    const o={ anim:a.clip, frame:a.frame, build:{preset:a.preset} };
+    if(a.workZ!=null) o.workZ=a.workZ;
+    if(a.carry){ o.carry=a.carry; return C.carry(a.dir,o); }
+    return C.workMount(a.dir,o); }
+  _potCv(dir){ const T=globalThis.TrapIso;
+    return this._mem('p|'+dir, ()=>this._cv(T.render('wire',dir,{colour:'black'}),T.W,T.H)); }
+  _trayCv(dir,fill){ const R=globalThis.FishTray2;
+    return this._mem('y|'+dir+'|'+fill, ()=>this._cv(R.render(dir,{colour:'grey',fill}),R.W,R.H)); }
+  _shadow(c,gx,gy,rx,ry){ c.fillStyle='rgba(5,12,16,0.32)';
+    c.beginPath(); c.ellipse(gx,gy+1,rx,ry||rx*0.36,0,0,7); c.fill(); }
+
+  _items(st){
+    const L=this.LAY[this.state.boat], T=globalThis.TrapIso, cap=this._cap(L.haulY);
+    const step=T.stackStep('wire'), slew=T.STACK.wire.slew, out=[];
+    const put=(o)=>out.push(o);
+    put({ k:'gear', kind:'haulerstation', x:cap.x-0.26, y:L.haulY, z:L.sole, q:1 });
+    put({ k:'gear', kind:'bandingtable', x:L.portX, y:L.benchY, z:L.sole, q:3 });
+    put({ k:'gear', kind:'chopboard',    x:L.portX, y:L.chopY,  z:L.sole, q:3 });
+    put({ k:'gear', kind:'baitbin', lid:'off', x:L.portX, y:L.baitY, z:L.sole, q:3 });
+    put({ k:'tray', x:L.portX, y:L.chopY, z:L.sole+0.775, q:3, fill:'few' });     // the bait tray, always on the board
+    put({ k:'tote', x:L.toteX, y:L.toteY,  z:L.sole, q:0, lid:'off', colour:'navy', fill:'half' });
+    put({ k:'tote', x:L.toteX, y:L.tote2Y, z:L.sole, q:0, lid:'on',  colour:'teal', fill:'empty' });
+    put({ k:'nest', x:L.nest[0], y:L.nest[1], z:L.sole, q:0, n:4 });
+    put({ k:'stack', x:L.stack[0], y:L.stack[1], z:L.sole, q:0, n:3, step, slew });
+    put({ k:'stack', x:L.wait[0],  y:L.wait[1],  z:L.sole, q:0, n:3, step, slew });
+    put({ k:'buoy', x:L.wait[0], y:L.wait[1], z:L.sole+3*T.STACK.wire.step_m });
+    // the two hands
+    [st.A, st.B].forEach(a=>put({ k:'crew', a, x:a.x, y:a.y, z:L.sole, bias:0.24 }));
+    // the working pot, the tray, the pot in flight
+    if(st.pot && st.pot.vis && !st.pot.held)
+      put({ k:'pot', x:st.pot.x, y:st.pot.y, z:st.pot.z, cap:st.pot.z>L.sole+0.35 && !st.pot.tier,
+            tier:st.pot.tier, step, slew, warp:st.pot.warp });
+    if(st.tray && st.tray.vis && !st.tray.held)
+      put({ k:'tray', x:st.tray.x, y:st.tray.y, z:st.tray.z, q:0, fill:st.tray.fill, cap:true });
+    if(st.flying) put({ k:'pot', x:st.flying.x, y:st.flying.y, z:st.flying.z, cap:true, step, slew });
+    return out;
+  }
+  _drawItem(c, it, st){
+    const G=globalThis.DeckGear, T=globalThis.TrapIso, R=globalThis.FishTray2,
+          F=globalThis.FishTote, BY=globalThis.BuoyIso;
+    const gx=Math.round(it.sx), gy=Math.round(it.sy), d=this._pd(it.q);
+    if(it.k==='gear'){
+      this._shadow(c,gx,gy,12);
+      c.drawImage(this._mem('g|'+it.kind+(it.lid||'')+'|'+d,
+        ()=>this._cv(G.render(it.kind,d,{lid:it.lid}),G.W,G.H)), gx-G.pivot.x, gy-G.pivot.y);
+    } else if(it.k==='tote'){
+      this._shadow(c,gx,gy,11);
+      c.drawImage(this._mem('o|'+d+'|'+it.colour+'|'+it.lid+'|'+it.fill,
+        ()=>this._cv(F.render(d,{colour:it.colour,lid:it.lid,fill:it.fill}),F.W,F.H)), gx-F.pivot.x, gy-F.pivot.y);
+    } else if(it.k==='tray'){
+      c.drawImage(this._trayCv(d,it.fill), gx-R.pivot.x, gy-R.pivot.y);
+    } else if(it.k==='nest'){
+      this._shadow(c,gx,gy,9);
+      for(let i=0;i<it.n;i++) c.drawImage(this._trayCv(d,'empty'), gx-R.pivot.x, gy-i*R.nestStep()-R.pivot.y);
+    } else if(it.k==='stack'){
+      this._shadow(c,gx,gy,17,6);
+      for(let i=0;i<it.n;i++) c.drawImage(this._potCv(d), gx+it.slew[i%it.slew.length]-T.pivot.x, gy-i*it.step-T.pivot.y);
+    } else if(it.k==='pot'){
+      if(it.tier){ const n=3; c.drawImage(this._potCv(d), gx+it.slew[n%it.slew.length]-T.pivot.x, gy-n*it.step-T.pivot.y); }
+      else { if(it.z<=0.01) this._shadow(c,gx,gy,15,5); c.drawImage(this._potCv(d), gx-T.pivot.x, gy-T.pivot.y); }
+    } else if(it.k==='buoy'){
+      c.drawImage(this._mem('b|'+d, ()=>this._cv(BY.render('LobsterBoat',d),BY.W,BY.H)), gx-BY.pivot.x, gy-BY.pivot.y);
+    } else if(it.k==='crew'){
+      const a=it.a, T2=globalThis.TrapIso, M=this._mount(a);
+      this._shadow(c,gx,gy,7);
+      const held = (st.pot&&st.pot.held==='a'&&a.who==='SKIPPER') ? 'pot'
+                 : (st.tray&&st.tray.held==='a'&&a.who==='SKIPPER') ? 'tray' : null;
+      const behind = M && M.behind;
+      const drawHeld=()=>{
+        if(!held||!M) return;
+        const pin = M.mid || M.item || M.handR; if(!pin) return;
+        if(held==='pot') c.drawImage(this._potCv(a.dir), gx+pin.x-T2.pivot.x, gy+pin.y-T2.pivot.y-10);
+        else c.drawImage(this._trayCv(a.dir, (st.tray&&st.tray.fill)||'empty'),
+          gx+pin.x-globalThis.FishTray2.pivot.x, gy+pin.y-globalThis.FishTray2.pivot.y-4);
+      };
+      if(behind) drawHeld();
+      this._char(c,gx,gy,a);
+      if(!behind) drawHeld();
+    }
+  }
+  _drawScene(c, dir, tick, ox, oy){
+    const L=this.LAY[this.state.boat], RIG=globalThis[L.rig];
+    const Rk=this._rockAt(tick), B=this._B(dir,Rk);
+    c.drawImage(this._mem('h|'+this.state.boat+'|'+dir+'|'+(this.state.rock?Math.round(Rk.roll*10)+'_'+Math.round(Rk.pitch*10):'0'),
+      ()=>this._cv(RIG.render(dir,{roll:Rk.roll,pitch:Rk.pitch,heave:Rk.heave}),RIG.W,RIG.H)),
+      ox-RIG.pivot.x, oy-RIG.pivot.y);
+    const st=this._state(tick);
+    const rim=this._rimPath(B,ox,oy), hull=this._hullPath(B,ox,oy);
+    const items=this._items(st).map(it=>{
+      const q=this._bp(it.x,it.y,it.z,B,ox,oy);
+      return Object.assign({},it,q,{ d:q.d-(it.bias||0) }); }).sort((a,b)=>b.d-a.d);
+    // the warp: sheave -> pot, and sheave -> the skipper's hands
+    const sh=this._bp(st.cap.x-0.10, L.haulY, L.sole+1.31, B, ox, oy);
+    items.forEach(it=>{
+      const mask = it.cap ? hull : rim;
+      if(mask){ c.save(); c.clip(mask); }
+      this._drawItem(c,it,st);
+      if(mask) c.restore();
+      if(it.k==='pot' && it.warp){
+        c.save(); if(rim) c.clip(rim);
+        c.strokeStyle='rgba(201,168,106,0.8)'; c.lineWidth=1;
+        c.beginPath(); c.moveTo(sh.sx,sh.sy); c.lineTo(it.sx, it.sy-14); c.stroke(); c.restore();
+      }
+    });
+    return { st, B, sh };
+  }
+  _drawStage(){
+    const cv=this._stage; if(!cv||!this._side) return;
+    const Z=2, off=this._off(cv,Z), c=off.getContext('2d');
+    c.imageSmoothingEnabled=false; c.clearRect(0,0,off.width,off.height);
+    c.fillStyle='#0e181d'; c.fillRect(0,0,off.width,off.height);
+    const L=this.LAY[this.state.boat], dir=this.state.dir, tick=this.state.tick;
+    const RIG=globalThis[L.rig], Rk=this._rockAt(tick), B0=this._B(dir,Rk);
+    // keep the cockpit centred whichever way she lies
+    const probe=this._bp(0,L.camY,L.sole,B0,0,0);
+    const ox=Math.round(off.width*0.50-probe.sx), oy=Math.round(off.height*0.62-probe.sy);
+    c.fillStyle='rgba(5,12,16,0.26)';
+    c.beginPath(); c.ellipse(ox+probe.sx, oy+probe.sy+16, 150, 40, 0, 0, 7); c.fill();
+    const {st,B}=this._drawScene(c, dir, tick, ox, oy);
+    this._blit(cv,off,Z);
+    if(this.state.labels){
+      const ctx=cv.getContext('2d');
+      ctx.font='bold 10px ui-monospace, Menlo, monospace'; ctx.textAlign='center'; ctx.textBaseline='middle';
+      [[st.A,'#7fd6c9'],[st.B,'#c9a86a']].forEach(([a,col])=>{
+        const q=this._bp(a.x,a.y,L.sole+2.06,B,ox,oy), X=q.sx*Z, Y=q.sy*Z;
+        const w=ctx.measureText(a.who).width+12;
+        ctx.fillStyle='rgba(11,18,22,0.82)'; ctx.fillRect(X-w/2,Y-9,w,17);
+        ctx.strokeStyle=col; ctx.lineWidth=1; ctx.strokeRect(X-w/2,Y-9,w,17);
+        ctx.fillStyle=col; ctx.fillText(a.who,X,Y);
+      });
+      ctx.textBaseline='alphabetic'; ctx.textAlign='left';
+    }
+    const ph=st.ph;
+    const line=L.label+' \u00b7 BEAT '+(ph.i+1)+'/12 \u00b7 '+ph.b.k+' \u00b7 '+ph.b.note;
+    const right='HEADING '+this.DIRS[this.state.dir]+' \u00b7 ROLL '
+      +(this._rockAt(this.state.tick).roll).toFixed(1)+'\u00b0 \u00b7 TICK '+(this.state.tick+1)+'/'+this._total();
+    const la='SKIPPER \u00b7 '+st.A.clip.toUpperCase()+(st.A.carry?' + '+st.A.carry.toUpperCase():'')
+      +(st.A.workZ!=null?' \u00b7 '+st.A.workZ.toFixed(2)+' m':'');
+    const lb='STERNMAN \u00b7 '+st.B.clip.toUpperCase()+(st.B.carry?' + '+st.B.carry.toUpperCase():'')
+      +(st.B.workZ!=null?' \u00b7 '+st.B.workZ.toFixed(2)+' m':'');
+    if(line!==this._l1||right!==this._l2||la!==this._l3||lb!==this._l4){
+      this._l1=line; this._l2=right; this._l3=la; this._l4=lb; this._bi=ph.i; this.forceUpdate(); }
+  }
+  _drawRing(){
+    const cv=this._ring; if(!cv||!this._side) return;
+    const c=cv.getContext('2d'); c.imageSmoothingEnabled=false;
+    c.clearRect(0,0,cv.width,cv.height);
+    c.fillStyle='#0e181d'; c.fillRect(0,0,cv.width,cv.height);
+    const L=this.LAY[this.state.boat], keep=this.state.dir, cw=cv.width/8;
+    for(let d=0;d<8;d++){
+      this.state.dir=d;
+      const Rk=this._rockAt(this.state.tick), B=this._B(d,Rk);
+      const probe=this._bp(0,L.camY,L.sole,B,0,0);
+      const ox=Math.round(cw*(d+0.5)-probe.sx), oy=Math.round(cv.height*0.66-probe.sy);
+      c.save(); c.beginPath(); c.rect(d*cw,0,cw,cv.height); c.clip();
+      this._drawScene(c, d, this.state.tick, ox, oy);
+      c.restore();
+      c.strokeStyle='#1b262c'; c.beginPath(); c.moveTo(d*cw,0); c.lineTo(d*cw,cv.height); c.stroke();
+      c.font='10px ui-monospace, Menlo, monospace'; c.textAlign='center';
+      c.fillStyle=d===keep?'#7fd6c9':'#5f6e73'; c.fillText(this.DIRS[d], d*cw+cw/2, 16);
+    }
+    this.state.dir=keep; c.textAlign='left';
+  }
+  _dlStrip(){
+    const L=this.LAY[this.state.boat], RIG=globalThis[L.rig], keep=this.state.dir, kt=this.state.tick;
+    const cw=300, ch=340, cv=document.createElement('canvas');
+    cv.width=cw*8; cv.height=ch*12;
+    const c=cv.getContext('2d'); c.imageSmoothingEnabled=false;
+    c.fillStyle='#0e181d'; c.fillRect(0,0,cv.width,cv.height);
+    let t0=0;
+    this.BEATS.forEach((b,r)=>{
+      const tick=t0+Math.floor(b.t*0.5); t0+=b.t;
+      for(let d=0;d<8;d++){
+        this.state.dir=d; this.state.tick=tick;
+        const Rk=this._rockAt(tick), B=this._B(d,Rk);
+        const probe=this._bp(0,L.camY,L.sole,B,0,0);
+        c.save(); c.beginPath(); c.rect(d*cw,r*ch,cw,ch); c.clip();
+        this._drawScene(c, d, tick, Math.round(d*cw+cw/2-probe.sx), Math.round(r*ch+ch*0.66-probe.sy));
+        c.restore();
+      }
+    });
+    this.state.dir=keep; this.state.tick=kt;
+    const a=document.createElement('a'); a.download='DeckLoop-'+L.file+'.png';
+    a.href=cv.toDataURL('image/png'); a.click();
+  }
+
+  renderVals(){
+    const st=this.state, L=this.LAY[st.boat], border='1px solid #243137';
+    if(!this._h){
+      this._h={
+        stageRef:(e)=>{ this._stage=e; if(this._ready) this._drawStage(); },
+        ringRef:(e)=>{ this._ring=e; if(this._ready) this._drawRing(); },
+        rotL:()=>this.setState({dir:(this.state.dir+7)%8}),
+        rotR:()=>this.setState({dir:(this.state.dir+1)%8}),
+        onTick:(e)=>this.setState({tick:+e.target.value, playing:false},()=>this._run()),
+        togglePlay:()=>this.setState(s=>({playing:!s.playing}),()=>this._run()),
+        toggleRock:()=>this.setState(s=>({rock:!s.rock})),
+        toggleLabels:()=>this.setState(s=>({labels:!s.labels})),
+        pickBoat:(k)=>()=>this.setState({boat:k}),
+        jump:(i)=>()=>{ let t=0; for(let n=0;n<i;n++) t+=this.BEATS[n].t;
+          this.setState({tick:t, playing:false},()=>this._run()); },
+        dlStrip:()=>this._dlStrip(),
+      };
+    }
+    const h=this._h, cur=this._bi||0;
+    const chip=(label,on,active)=>({ label, onClick:on,
+      fg:active?'#7fd6c9':'#8a969b', bg:active?'#122530':'#0f191e', bd:active?'#2f6079':'#243137' });
+    const say=(t)=>{
+      if(!t) return '\u2014';
+      if(t.go) return t.clip+' \u2192 '+t.go[1]+(t.carry?' ('+t.carry+')':'');
+      return t.clip+' @ '+(t.stn||t.spot)+(t.z==='cap'?' \u00b7 cap':'');
+    };
+    return {
+      stageRef:h.stageRef, ringRef:h.ringRef,
+      compass:this.DIRS[st.dir], rotL:h.rotL, rotR:h.rotR,
+      hudLeft:this._l1||'LOADING HULL\u2026', hudRight:this._l2||'\u2014',
+      hudA:this._l3||'', hudB:this._l4||'',
+      boatChips:Object.keys(this.LAY).map(k=>chip(this.LAY[k].label, h.pickBoat(k), st.boat===k)),
+      beatChips:this.BEATS.map((b,i)=>({ label:b.k, onClick:h.jump(i),
+        fg:i===cur?'#eef3f2':'#7d8a8f', bg:i===cur?'#173039':'#0f191e',
+        bd:i===cur?'#2f6079':'#1c272c', bar:i===cur?'#7fd6c9':'#22323a' })),
+      tick:st.tick, tickMax:this._total()-1, onTick:h.onTick,
+      tickLbl:(st.tick+1)+' / '+this._total()+' \u00b7 '+((this._total()*this.TICK_MS)/1000).toFixed(1)+'s',
+      playLabel:st.playing?'\u25a0 PAUSE':'\u25b6 PLAY', togglePlay:h.togglePlay,
+      playFg:st.playing?'#7fd6c9':'#8a969b', playBg:st.playing?'#122530':'#0f191e', playBd:st.playing?'#2f6079':'#243137',
+      rockLabel:st.rock?'ROCK ON':'ROCK OFF', toggleRock:h.toggleRock,
+      rockFg:st.rock?'#7fd6c9':'#8a969b', rockBg:st.rock?'#122530':'#0f191e', rockBd:st.rock?'#2f6079':'#243137',
+      toggleLabels:h.toggleLabels,
+      labFg:st.labels?'#7fd6c9':'#8a969b', labBg:st.labels?'#122530':'#0f191e', labBd:st.labels?'#2f6079':'#243137',
+      dlStrip:h.dlStrip,
+      cycle:this.BEATS.map((b,i)=>({ k:b.k, t:b.t+'f', a:say(b.a), b:say(b.b), p:b.note,
+        border:i?border:'none', onClick:h.jump(i),
+        kfg:i===cur?'#eef3f2':'#e7eceb', kbg:i===cur?'#173039':'#0f191e' })),
+      fit:[
+        { who:'SKIPPER \u00b7 starboard, the hauler', dot:'#7fd6c9', rows:[
+          { k:'WORKS',  v:'the drum, the cap, the tray and the stack \u2014 nine of the twelve beats', border:'none' },
+          { k:'CAP',    v:'washboard cap sits '+((this._cap(L.haulY).z-L.sole)).toFixed(2)+' m over the sole on this hull', border },
+          { k:'CARRIES',v:'tray on PASS and BAIT, pot on MOVE \u2014 both on the carry stances', border },
+          { k:'CLEARS', v:'0.66 \u00d7 0.60 m at the hauler, reserved before any pot packs', border },
+        ]},
+        { who:'STERNMAN \u00b7 port, the bench', dot:'#c9a86a', rows:[
+          { k:'WORKS',  v:'banding bench, chopping board, then aft to set', border:'none' },
+          { k:'CROSSES',v:'bench \u2192 chop \u2192 the cap \u2192 the stack, clear of the 0.80 m alley', border },
+          { k:'HEIGHTS',v:'0.885 m at the bench, 0.775 m at the board, cap height at the pot', border },
+          { k:'SETS',   v:'TOSS puts one back over the rail as the skipper stacks the last one', border },
+        ]},
+      ],
+    };
+  }
+}
+
+</script>
+</body>
+</html>
