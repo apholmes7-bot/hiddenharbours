@@ -1,6 +1,7 @@
 /* Hidden Harbours — DECK GEAR: the working furniture the catch passes through, on the
    fleet turntable (Art/isoSolid.js — 45deg CW, elev 40, 32 px = 1 m, dither, no AA).
-   RINGLESS (ADR 0031); {keyline:true} kept as the A/B.
+   RINGLESS (ADR 0031), gated by the exported KEYLINE_DEFAULT; {keyline:true} — or {outline:true},
+   the spelling the rest of the repo uses — kept as the A/B.
 
      baitbin        salt-bait barrel, lid on/off, herring showing
      baitbox        square bait bin — the one that lives under the washboard
@@ -18,6 +19,16 @@
   const K = root.IsoSolid;
   const W = 80, H = 76, cx = 40, cy = 60;
   const KEY = '#0f1614';
+  // ADR 0031 — the ring is retired; the silhouette is carried by the form's own dark side.
+  // BORROWED, NOT COPIED: isoSolid.paint owns the only ring pass this kit has, so a second
+  // `false` declared here could drift away from the pass it claims to gate. The guard keeps the
+  // turntable optional at load, as it is today (a missing IsoSolid renders wrong, it does not throw).
+  const KEYLINE_DEFAULT = K ? K.KEYLINE_DEFAULT : false;
+  // The A/B arm. `keyline` is this kit's name for it; `outline` is the name every OTHER gated rig
+  // in the repo uses (#463, #477), and a caller reaching for the familiar one used to get a
+  // silently ringless render. Both are accepted. Returns undefined when neither is given, so the
+  // one default lives at the pass rather than being re-decided here.
+  const keylineOpt = (o) => o.keyline!=null ? o.keyline : (o.outline!=null ? o.outline : undefined);
 
   const R = {
     PLAST:['#152234','#1b2b42','#22384f','#2d4c71','#3a5f89','#4a76a3','#5b8cbd'],
@@ -144,7 +155,7 @@
     if (opts.colour && R[opts.colour.toUpperCase()]) MATS.PLAST={ramp:R[opts.colour.toUpperCase()],off:0};
     return K.paint(facesOf(KINDS.indexOf(kind)>=0?kind:'baitbox', opts), {
       W,H,cx,cy, dir, elev:opts.elev, MATS, key:KEY,
-      keyline: opts.keyline!=null?opts.keyline:false });
+      keyline: keylineOpt(opts) });
   }
   // where things land ON a piece of gear (bench top, board, washboard cap)
   const TOPS = { bandingtable:{z:0.885,hx:0.40,hy:0.22}, chopboard:{z:0.775,hx:0.28,hy:0.18},
@@ -193,6 +204,7 @@
     const v=K.proj(opts.ox||0, opts.oy||0, T.z, B, cx, cy);
     return { dx:Math.round(v.sx-cx), dy:Math.round(v.sy-cy), z:T.z, hx:T.hx, hy:T.hy };
   }
-  root.DeckGear = { W,H, pivot:{x:cx,y:cy}, KEY, KINDS, LABELS, FOOTPRINT, RAMPS:R, TOPS, STATIONS,
+  root.DeckGear = { W,H, pivot:{x:cx,y:cy}, KEY, KEYLINE_DEFAULT, KINDS, LABELS, FOOTPRINT,
+    RAMPS:R, TOPS, STATIONS,
     defaultElev:K.DEFAULT_ELEV, render, surface, station };
 })(typeof globalThis!=='undefined'?globalThis:window);

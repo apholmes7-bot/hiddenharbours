@@ -191,7 +191,9 @@ function buildContract(g, m) {
       pivot: 'ground under the centre of the footprint',
       cellRule: 'pivot-INCLUSIVE union of the INK bbox across all facings on the fixed nativeW x nativeH ' +
                 'buffer, seeded at the pivot. Same rule as wharfDecorRig / utilityIsoRig.',
-      keyline: 'ringless per ADR 0031; {keyline:true} is kept live on every kind as the A/B',
+      keyline: 'ringless per ADR 0031; {keyline:true} — or {outline:true}, the name the rest of the ' +
+               'repo uses — is kept live on every kind as the A/B',
+      keylineDefault: false,
     },
     azimuth: {
       convention: m.convention,
@@ -290,6 +292,27 @@ console.log('\n[3] traps a README cannot tell you');
     'TrapCatch delegates unknown kinds to CatchKit and returns null when it is absent — ' +
     'load catchKit.js + crustaceanRig.js beside it or the mixes come up empty, silently');
 
+  // 3c-bis. …and the BAKEABLE half refuses those same kinds rather than substituting one. Before
+  // the refusal landed, every unowned kind fell through to `DRAW[kind]||drawUrchin` and rendered a
+  // byte-identical urchin — worse than TrapCatch's silent null, because a sheet of plausible
+  // urchins is not a failure anyone reads as one.
+  {
+    let refused = 0;
+    const DELEGATED = ['lobster', 'crab', 'jonah', 'short', 'nonsense'];
+    for (const kind of DELEGATED) {
+      try { g.TrapFauna.render(kind, {}); }
+      catch (e) { if (/not one of this rig's kinds/.test(String(e && e.message))) refused++; }
+    }
+    (refused === DELEGATED.length ? ok : fail)(
+      `TrapFauna.render refuses all ${DELEGATED.length} delegated/unknown kinds loudly ` +
+      `(${refused} refused) — a bake cannot come up urchin-in-silence`);
+    let drewAll = 0;
+    for (const k of g.TrapFauna.KINDS) { try { g.TrapFauna.render(k, {}); drewAll++; } catch (e) {} }
+    (drewAll === g.TrapFauna.KINDS.length ? ok : fail)(
+      `…and still draws all ${g.TrapFauna.KINDS.length} kinds it DOES own — the refusal is a guard, ` +
+      'not a rig that has stopped rendering');
+  }
+
   // 3d. the work height is a world metre and DeckGear.station() is the only source of it.
   const st = g.DeckGear.station('haulerstation', 0, {});
   (st && st.workZ > 0 && st.turn === 4 ? ok : fail)(
@@ -302,7 +325,58 @@ console.log('\n[3] traps a README cannot tell you');
     `TrapIso.CAPS carries per-hull stack limits: ${Object.keys(caps).map(k=>`${k} deck${caps[k].deck}/wb${caps[k].washboard}`).join(', ')}`);
 }
 
-console.log('\n[4] determinism — two cold V8 hosts must agree byte-for-byte');
+console.log('\n[4] the KEYLINE_DEFAULT gate — what a bake mechanically refuses without');
+{
+  // IsoPackContract.AssertKeylineGated probes `<Global>.KEYLINE_DEFAULT` on the RIG's own global,
+  // not on the turntable, and refuses the whole family when it is absent. The shipyard kit landed
+  // that way and could not bake until #477 added one. All five of this kit's globals were in the
+  // same state — and, unlike the shipyard's, their DEFAULT render was already ringless, because
+  // each rig passed an explicit `keyline:false` to the shared pass. So the gap here was the
+  // exported constant, not the behaviour: a missing declaration, mechanically indistinguishable
+  // from ringed art.
+  for (const nm of ['DeckGear', 'TrapIso', 'FishTray2', 'BuoyIso', 'TrapFauna']) {
+    const v = g[nm] && g[nm].KEYLINE_DEFAULT;
+    (typeof v !== 'undefined' && v === false ? ok : fail)(
+      `${nm}.KEYLINE_DEFAULT === false (the bake gate reads the RIG's global, not IsoSolid's)`);
+  }
+  // The ring must still be reachable, or "0 ring pixels" would also pass on a renderer that had
+  // simply stopped drawing. Both arms are required — the #477 shape.
+  const ARMS = [
+    { nm: 'deckGear', r: (o) => g.DeckGear.render('haulerstation', 0, o) },
+    { nm: 'trap',     r: (o) => g.TrapIso.render('wood', 0, o) },
+    { nm: 'tray',     r: (o) => g.FishTray2.render(0, o) },
+    { nm: 'buoy',     r: (o) => g.BuoyIso.render('LobsterBoat', 0, o) },
+  ];
+  const opaque = (a) => { let n = 0; for (let i = 3; i < a.length; i += 4) if (a[i] !== 0) n++; return n; };
+  for (const arm of ARMS) {
+    const off = arm.r({}), on = arm.r({ keyline: true });
+    (opaque(on) > opaque(off) ? ok : fail)(
+      `${arm.nm}: the ring is a GATE, not a renderer that stopped — ${opaque(off)} px default, ` +
+      `${opaque(on)} px with {keyline:true}`);
+    // pure ring deletion: every pixel the ring adds was TRANSPARENT by default, so switching it
+    // off cannot change a painted pixel of any piece.
+    let painted = 0;
+    for (let i = 0; i < off.length; i += 4)
+      if (off[i+3] !== 0 && !(off[i]===on[i] && off[i+1]===on[i+1] && off[i+2]===on[i+2] && off[i+3]===on[i+3]))
+        painted++;
+    (painted === 0 ? ok : fail)(`${arm.nm}: pure ring deletion — ${painted} painted px differ`);
+    // …and {outline:true}, the name #463/#477 use, must reach the SAME pass. It used to be
+    // ignored here, so an A/B driven with the repo-standard name came back silently ringless.
+    const alias = arm.r({ outline: true });
+    let same = alias.length === on.length;
+    for (let i = 0; same && i < alias.length; i++) if (alias[i] !== on[i]) same = false;
+    (same ? ok : fail)(`${arm.nm}: {outline:true} is a live alias of {keyline:true}, byte for byte`);
+  }
+  // trapFauna has no ring pass at all — it is a flat 2D plotter. Forcing the arm must be a no-op,
+  // which is what makes its exported `false` an honest statement rather than a copied one.
+  {
+    const off = g.TrapFauna.render('urchin', {}), on = g.TrapFauna.render('urchin', { keyline: true });
+    let diff = 0; for (let i = 0; i < off.length; i++) if (off[i] !== on[i]) diff++;
+    (diff === 0 ? ok : fail)('trapFauna is ringless BY CONSTRUCTION — no ring pass exists to gate');
+  }
+}
+
+console.log('\n[5] determinism — two cold V8 hosts must agree byte-for-byte');
 {
   const a = loadKit(), b = loadKit();
   let n = 0, diff = 0;

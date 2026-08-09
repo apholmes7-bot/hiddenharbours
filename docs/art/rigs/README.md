@@ -61,6 +61,23 @@ correction to this kit mirrors all eight cells of every piece.
 Re-measure any time with `node docs/art/rigs/deck-loop-kit/_verify.js`; details and the rest of the
 kit's measurements are in [`deck-loop-kit/IMPORT.md`](deck-loop-kit/IMPORT.md).
 
+> ✅ **The keyline gate has landed on all five bakeable rigs, so this kit bakes.** Its gap was the
+> *opposite shape* to the shipyard's, and the difference is worth knowing before auditing the next
+> kit. The shipyard arrived drawing the ring; **this kit's default render was already ringless** —
+> every rig passed an explicit `keyline:false` into the shared `isoSolid.paint`. What was missing was
+> the **exported declaration** `AssertKeylineGated` probes, and a missing declaration is mechanically
+> indistinguishable from ringed art, so the gate refused five families of already-compliant work.
+> **Audit the export, not the pixels.** The gate binds `KEYLINE_DEFAULT` to the turntable's own
+> constant rather than re-declaring `false` per rig — `isoSolid.paint` owns the only ring pass this
+> kit has, and a second copy could drift from the pass it claims to gate. `trapFaunaRig` is the
+> exception: a flat 2D plotter with no ring pass at all, so its `false` is local and means "ringless
+> by construction". Nothing moved — 24/24 cells reproduce, 0 painted pixels changed.
+>
+> ⚠️ **This kit spells the A/B arm `{keyline:true}`; the rest of the repo spells it `{outline:true}`**
+> (#463, #477). Both now work on every rig here. Before they did, an A/B driven with the
+> repo-standard name was **silently ignored** and came back ringless — indistinguishable from a
+> successful gate-off render, which is the failure the positive-control arm exists to catch.
+
 **CLAIMED CLOCKWISE, UNVERIFIED (fishing kit, 2026-07-22)** — `fishIsoRig.js` · `fishToteRig.js`.
 Both carry `th = -dir*Math.PI/4` and the kit's contract declares 8 headings at 45° **CW** (fleet order
 N NE E SE S SW W NW). Per the correction above, the sign term is *not* proof — the baker must verify

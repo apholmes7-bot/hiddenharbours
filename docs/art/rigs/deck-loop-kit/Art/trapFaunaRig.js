@@ -10,7 +10,12 @@
 
    Exposes globalThis.TrapFauna (the new plots) and globalThis.TrapCatch — the wrapper
    CatchKit-shaped façade the containers actually call: item(kind), fillItems(mix, fill,
-   seed, count), MIXES (what a trap of each sort comes up holding). */
+   seed, count), MIXES (what a trap of each sort comes up holding).
+
+   ⚠️ TrapFauna is the BAKEABLE half — TrapCatch is canvas-bound and cannot run in a bare host.
+   TrapFauna.render REFUSES a kind it does not own (see the note above render()); the six in KINDS
+   are the whole of what this rig draws. Everything else in MIXES belongs to CatchKit or
+   Crustacean, which TrapCatch delegates to and returns NULL for when they are absent. */
 (function (root) {
   const W=28, H=24, PX=14, PY=21;
 
@@ -27,6 +32,14 @@
     CREAM:['#9c7f57','#b49a74','#cdb890','#e0d2b2','#ece0c8'],
   };
   const KINDS=['urchin','whelk','starfish','sculpin','kelp','baitbag'];
+  // ADR 0031. Unlike the four turntable rigs of this kit, this one is ringless BY CONSTRUCTION:
+  // it is a flat 2D plotter with no ring pass to gate at all (forcing the A/B on the others moves
+  // 14,536 px; here it moves 0). The constant is exported anyway so "this family is ringless" is
+  // machine-checkable by the bake gate rather than a claim in a header comment.
+  const KEYLINE_DEFAULT = false;
+  // What TrapCatch hands to ANOTHER rig instead of drawing here — named so the refusal below can
+  // say which rig owns the kind, not merely that this one does not.
+  const DELEGATES={ jonah:'Crustacean (crustaceanRig.js)', short:'Crustacean (crustaceanRig.js)' };
 
   // ---- tiny plotter (2D, ringless) -----------------------------------------
   function buf(){ return { c:new Array(W*H).fill(null), s:new Array(W*H).fill(0) }; }
@@ -135,9 +148,22 @@
   const DRAW={ urchin:drawUrchin, whelk:drawWhelk, starfish:drawStar,
                sculpin:drawSculpin, kelp:drawKelp, baitbag:drawBag };
 
+  // REFUSES a kind it does not own, rather than substituting one. The old `DRAW[kind]||drawUrchin`
+  // fallback made every unowned kind — lobster, crab, jonah, short, anything — render as a
+  // byte-identical URCHIN, and a sheet full of plausible urchins is not a failure anyone reads as
+  // one. It is the same trap as TrapCatch's, one step worse: TrapCatch delegates these kinds to
+  // CatchKit / Crustacean and returns NULL when the prerequisite is absent, so a bake that forgets
+  // it comes up empty in silence; here it came up WRONG in silence. Loud is the only safe default
+  // for the bakeable half.
   function render(kind, opts){
+    const draw=DRAW[kind];
+    if(!draw) throw new Error(
+      `TrapFauna.render: '${kind}' is not one of this rig's kinds (${KINDS.join(', ')}). It is drawn `+
+      `by ${DELEGATES[kind]||'CatchKit (catchKit.js)'} — the rig TrapCatch DELEGATES it to, and which `+
+      `TrapCatch returns null for when that prerequisite is absent. Bake a delegated kind through `+
+      `its own rig; this one refuses rather than quietly drawing an urchin in its place.`);
     opts=opts||{}; const v=opts.variant||0, S=opts.scale||1;
-    const b=buf(); (DRAW[kind]||drawUrchin)(b, v, S);
+    const b=buf(); draw(b, v, S);
     const out=new Uint8ClampedArray(W*H*4);
     const h2=(h)=>[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];
     for(let i=0;i<W*H;i++){
@@ -147,7 +173,7 @@
     }
     return out;
   }
-  root.TrapFauna = { W,H,pivot:{x:PX,y:PY}, KINDS, RAMP, render };
+  root.TrapFauna = { W,H,pivot:{x:PX,y:PY}, KEYLINE_DEFAULT, KINDS, RAMP, render };
 
   // ---- TrapCatch: the CatchKit-shaped façade the containers call -------------
   const JONAH=[0.86,0.72,1.02];                     // jonah = rock crab, cooler & bigger

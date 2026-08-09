@@ -73,6 +73,16 @@ Worth recording because it looks like drift and is not. The repo's sidecars stam
 the tripwire is armed and currently **green**. The drop's sidecars stamp the **LF** hash instead —
 a convention difference, not a drift signal. **No re-stamping was required or done.**
 
+**Still true after the KEYLINE_DEFAULT gate (2026-08-09), and re-swept rather than assumed.** The
+gate changed the bytes of all five bakeable rigs — `deckGearRig.js` · `trapIsoRig.js` ·
+`trapFaunaRig.js` · `trayIsoRig.js` · `buoyIsoRig.js` (`isoSolid.js` is untouched) — and a sidecar's
+hash is of the bytes, not the layout, so the shipyard's gate needed a re-stamp for exactly this
+reason (#477). **Not here: nothing stamps any of the five.** Both sidecars on both sides of the
+import stamp *hull* rigs (`lobsterBoatIsoRig.js`, `capeIslanderIsoRig.js`), which this change does
+not touch, and no test hashes a deck-loop rig. Re-sweep with
+`grep -rl 'deckGearRig\|trapIsoRig\|trapFaunaRig\|trayIsoRig\|buoyIsoRig' --include=*.json` — the
+only hit is the kit contract, which is regenerated in the same commit.
+
 ## `characterIsoRig6.js` 6.3 — the append-only claim, checked
 
 The drop calls 6.3 "append-only on 6.2: six clips and a fifth carry stance, nothing else in
