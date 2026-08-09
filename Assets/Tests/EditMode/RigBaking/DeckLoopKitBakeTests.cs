@@ -256,8 +256,12 @@ namespace HiddenHarbours.Tests.RigBaking
         ///
         /// <para>The second half of this test is the part worth reading: it shows what the fleet's
         /// correction WOULD have done to this kit, so the claim "do not apply it" is a number rather
-        /// than a warning comment. Cells 1–7 come out reversed and cell 0 does not move, which is why
-        /// a spot-check of the first facing would have found nothing.</para>
+        /// than a warning comment. Six of the eight cells come out reversed — and <b>two do not</b>.
+        /// Reversing an 8-step compass is <c>(8 − i) mod 8</c>, which fixes <c>i = 0</c> and
+        /// <c>i = 4</c>: <b>N and S</b>. Those are precisely the two facings a human spot-checks, so
+        /// eyeballing the kit head-on or stern-on would have shown a mirrored bake looking perfectly
+        /// correct. (This suite found that itself: the first version of this test asserted cell 0 was
+        /// the only fixed point and failed on cell 4.)</para>
         /// </summary>
         [Test]
         public void TheKitTakesNoFacingCorrection_AndTheCatalogAndContractSayTheSameThing()
@@ -273,6 +277,10 @@ namespace HiddenHarbours.Tests.RigBaking
                     $"{key}: the bake's own cross-check must pass");
             }
 
+            // N and S are the mirror's fixed points: (8 − i) mod 8 maps 0→0 and 4→4.
+            var fixedPoints = new[] { 0, 4 };
+            int moved = 0;
+
             for (int cell = 0; cell < 8; cell++)
             {
                 Assert.AreEqual(cell, RigBaker.DirForCell(cell, 8, AzimuthConvention.Clockwise), 1e-9,
@@ -280,12 +288,25 @@ namespace HiddenHarbours.Tests.RigBaking
 
                 double corrected = RigBaker.DirForCell(cell, 8, AzimuthConvention.CounterClockwise);
                 Assert.AreEqual((8 - cell) % 8, corrected, 1e-9);
-                if (cell != 0)
+
+                if (fixedPoints.Contains(cell))
+                    Assert.AreEqual(cell, corrected, 1e-9,
+                        $"cell {cell} is a FIXED POINT of the mirror — it bakes the same dir either " +
+                        "way. That is why eyeballing the kit is not a check: 0 and 4 are N and S, the " +
+                        "two facings anyone would look at first.");
+                else
+                {
+                    moved++;
                     Assert.AreNotEqual(cell, corrected,
-                        $"cell {cell} would bake dir {corrected} under the fleet's correction. That is " +
-                        "the mirror this kit must not receive — and cell 0 is unmoved by it, so " +
-                        "checking one facing would not have caught it.");
+                        $"cell {cell} would bake dir {corrected} under the fleet's correction — the " +
+                        "mirror this kit must not receive.");
+                }
             }
+
+            Assert.AreEqual(6, moved,
+                "six of the eight facings move under the fleet's correction and two do not. If that " +
+                "count ever changes, the mirror's fixed points moved with it and the argument above " +
+                "for why a visual check is insufficient no longer holds.");
         }
 
         /// <summary>
