@@ -614,6 +614,23 @@ namespace HiddenHarbours.App.Editor
             // build so it cannot go quiet.
             NineMileCreekDressing.Place(terrain);
 
+            // --- THE PHOTOGRAPH PASS: the lots along Wharf Road, and the fleet at the berths -----------
+            // ⭐ THE LOTS. The owner's satellite view (2026-08-10) shows a cluster of buildings behind the
+            // basin, not one shed: bait sheds, a boatyard, a restaurant, and a shed per boat-owner. Harris
+            // & Sons is DRAWN from the baked shipyard kit at the smallYard tier he ruled; everything else
+            // is a NAMED RESERVED LOT, because no rig bakes a bait shed or a restaurant and a kit building
+            // standing in for one would look finished while being wrong. NineMileCreekLots reports the
+            // gap on every build so the art-director's ask cannot go quiet.
+            var creekOwners = NineMileCreekMooredFleet.LoadOwners();
+            NineMileCreekLots.Place(terrain, creekOwners);
+
+            // ⭐ THE FLEET. One MooredBoat per owner at their berth, carrying their Def. It places and
+            // does NOT draw — the mesh path is runtime-owned (see NineMileCreekMooredFleet's class note),
+            // so a builder that skinned the hulls here would bake the sprite fallback into the committed
+            // scene and the fleet would never be mesh. The berth the player docks in is derived and left
+            // clear.
+            NineMileCreekMooredFleet.Place();
+
             // --- (NO SHORELINE FENCE — the coast is the terrain now) -------------------------
             // The region used to trace a hand-made EdgeCollider2D at x = -4 that dipped around the wharf,
             // because a rectangular quay standing on a flat -6 m dredged floor gave a hull nothing to

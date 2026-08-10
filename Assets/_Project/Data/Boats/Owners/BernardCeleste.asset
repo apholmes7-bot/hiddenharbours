@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b7c1e94a2f04d1e9c8a5f2d6b147a30, type: 3}
+  m_Name: BernardCeleste
+  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.BoatOwnerDef
+  Id: owner.bernard_celeste
+  DisplayName: Celeste Bernard
+  Boat: {fileID: 11400000, guid: a8c40dd2a5c54e4b9cd4096747fa151c, type: 2}
+  BuoyScheme: Tanker
+  Prosperity: 1
+  ShedFootprintMetres: 6.0
+  LotIndex: 5
+  BerthIndex: 9
+  Skipper: {fileID: 11400000, guid: 3e7e6cd365b6b544795d580d1bddaf6f, type: 2}

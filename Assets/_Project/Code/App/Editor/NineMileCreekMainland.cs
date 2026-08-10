@@ -1,4 +1,5 @@
 #if UNITY_EDITOR
+using System.Collections.Generic;
 using UnityEngine;
 using HiddenHarbours.World;
 
@@ -420,10 +421,26 @@ namespace HiddenHarbours.App.Editor
         public static readonly MainlandZone HarbourShoalFill =
             new MainlandZone(new Vector2(134f, 64f), new Vector2(58f, 30f), BasinBedElevation, 16f);
 
-        /// <summary>The made ground: 104 × 44 m of red-earth yard carrying the shanty row, the trap
-        /// stacks, the parking and the buyers' trucks. Its west end runs back into the natural shore.</summary>
+        /// <summary>
+        /// The made ground: 132 × 44 m of red-earth yard carrying the shanty row, the trap stacks, the
+        /// parking, the buyers' trucks and — since the photograph pass — the boatyard. Its west end runs
+        /// back into the natural shore.
+        ///
+        /// <para>⚠ <b>IT GREW 28 m EAST, and the reason is arithmetic rather than taste.</b> The owner's
+        /// ruling puts Harris &amp; Sons on this yard at the shipyard kit's <c>smallYard</c> tier, and that
+        /// tier's own contract measures 1230 × 953 px at 32 px/m — a 38.4 m DRAWN width, which at the
+        /// pack's iso projection is a ground square of about 27 m a side. There was no 27 m of clear
+        /// ground on the authored 104 × 44 m spit: every siting collided with the fish store, the trap
+        /// store, the shanty row or Wharf Road's own 3 m corridor. Growing the made ground east onto the
+        /// harbour shoal (which already reaches x = 192) is what the photograph shows anyway — the yard
+        /// there is a compound of its own beside the wharf, not a shed squeezed between the others.</para>
+        ///
+        /// <para>East only, and deliberately: growing it NORTH would push made ground into the beach and
+        /// dune sectors the coast plan authors at y &gt; 140, which is a coastline change and a different
+        /// argument. The east edge stops at x = 185, inside the shoal's own 192.</para>
+        /// </summary>
         public static readonly MainlandZone SpitFill =
-            new MainlandZone(new Vector2(105f, 118f), new Vector2(52f, 22f), SpitYardElevation, 8f);
+            new MainlandZone(new Vector2(119f, 118f), new Vector2(66f, 22f), SpitYardElevation, 8f);
 
         /// <summary>The NORTH WALL: 84 × 10 m of deck. The fleet moors along its SOUTH face
         /// (y = 87) — the owner's arrangement, and the one edge the kit gives a tall face to.</summary>
@@ -509,6 +526,232 @@ namespace HiddenHarbours.App.Editor
         /// <summary>The ground a wharf shed reserves, as a radius — the kit's biggest preset plus a
         /// working margin. Anything asking "is one of these in the way?" asks this.</summary>
         public const float WharfShedRadius = 5f;
+
+        // =================================================================================================
+        //  8b. WHAT THE PHOTOGRAPH SHOWS THAT THE PLAN DID NOT — floats, slipway, armour, lots
+        // =================================================================================================
+        // ⭐ THE SCALE, DERIVED RATHER THAN FELT (owner's satellite view, 2026-08-10). The moored hulls in
+        // the basin are lobster boats, and this repo's own LobsterBoat.asset says a lobster boat is 12 m.
+        // Measured in the close aerial (1271 × 865 px) a moored hull spans ~51 px stem to stern, so the
+        // photograph runs at ≈ 4.25 px/m (the hulls read 48–55 px, so call it ±8 %). Against that:
+        //
+        //     the main quay arm ...... ~365 px → 86 m        the float run .......... ~200 px → 47 m
+        //     the basin's water ...... ~370 × 325 px → 87 × 76 m
+        //     the slipway ............ ~90 px wide → 21 m    Bait Masters' shed ..... ~125 × 95 px → 29 × 22 m
+        //
+        // ⭐ THE CHECK THAT MATTERS: the authored north wall is 84 m and the photograph's main arm is 86 —
+        // within 2 %. The wharf's PRIMARY dimension was already right and does not move.
+        //
+        // ⚠ AND THE ONE FINDING THE PLAN DOES NOT ACT ON. The photograph's basin is ~76 m deep against the
+        // authored 45 m. Deepening it means moving the breakwater south from y = 34 to about y = 15 — and
+        // HarbourBeaconPos stands on the breakwater head, with ToWestWaterPassagePos deriving its whole
+        // latitude from HarbourBeaconPos.y. So a deeper basin MOVES THE SEA DOOR, and the standing
+        // constraint on this pass is that the bar and every passage stay put. The basin therefore keeps
+        // its authored depth, the extra 30 m is REPORTED rather than taken, and everything below is fitted
+        // INSIDE the existing envelope. The visible cost is real and named: the photograph shows two float
+        // runs in the basin and this plan has room for one.
+
+        /// <summary>
+        /// THE FLOATING DOCK — the photograph's finger run inside the basin, where the small craft lie.
+        /// One run, not the photograph's two: see the basin-depth finding above.
+        ///
+        /// <para>It hangs off the APRON, which is what the photograph shows and what the wharf already
+        /// wants: the west wall is the service end (the fuel pump and the oil tank are both on it), and a
+        /// float reached from the working mooring face would put a gangway across the fleet's own
+        /// landing.</para>
+        /// </summary>
+        public static readonly float FloatRunY = 70f;
+        /// <inheritdoc cref="FloatRunY"/>
+        public static readonly float FloatRunWestX = 104f;
+        /// <inheritdoc cref="FloatRunY"/>
+        public const float FloatRunLengthMetres = 48f;
+        /// <summary>The run's east end — derived, so lengthening it moves one number.</summary>
+        public static float FloatRunEastX => FloatRunWestX + FloatRunLengthMetres;
+
+        /// <summary>Where the gangway leaves the fixed wharf: the apron's east face, on the float's own
+        /// latitude. DERIVED from the wall rather than typed, so re-siting the apron takes the brow with
+        /// it instead of leaving it reaching for a wall that moved.</summary>
+        public static Vector2 GangwayShoreEnd =>
+            new Vector2(WestWallFill.Center.x + WestWallFill.HalfSize.x, FloatRunY);
+
+        /// <summary>…and where it lands: the float run's west end.</summary>
+        public static Vector2 GangwayFloatEnd => new Vector2(FloatRunWestX, FloatRunY);
+
+        /// <summary>
+        /// THE SLIPWAY — the photograph's broad ramp at the basin's landward corner, and the boatyard's
+        /// way of getting a hull out of the water.
+        ///
+        /// <para>It runs EAST off the apron's face into the basin. 20 m of ramp falling the 4.6 m from the
+        /// +3.0 m deck to the −1.6 m shoal is about 1:4.3 — steep for a real slipway (1:8 is the trade's
+        /// number) and the honest consequence of a basin only 45 m deep. Flagged with the basin finding
+        /// above rather than hidden by pretending the ramp is longer than the water allows.</para>
+        /// </summary>
+        public static Vector2 SlipwayHeadPos =>
+            new Vector2(WestWallFill.Center.x + WestWallFill.HalfSize.x, 52f);
+        /// <inheritdoc cref="SlipwayHeadPos"/>
+        public static Vector2 SlipwayToePos => new Vector2(SlipwayHeadPos.x + 20f, SlipwayHeadPos.y);
+        /// <summary>How wide the ramp is — a hull's beam plus her cradle, either side of the centre line.</summary>
+        public const float SlipwayHalfWidthMetres = 4f;
+
+        /// <summary>
+        /// THE ROCK ARMOUR — the rubble line the photograph shows wherever made ground meets open water.
+        /// Two runs, and only two, because those are the only faces of this wharf that are EXPOSED: the
+        /// wharf head at the north wall's east end, and the spit's own east edge behind it. Everything
+        /// else is either sheltered by the breakwater (which carries its own crib armour already) or is
+        /// landward of the yard.
+        ///
+        /// <para>Each run is a pair of points, read as a line the armour is laid along — the same shape
+        /// <c>NineMileCreekWharf.BreakwaterPoints</c> uses, and blocked out at the same cell width.</para>
+        /// </summary>
+        public static Vector2[] WharfHeadArmour => new[]
+        {
+            new Vector2(NorthWallFill.Center.x + NorthWallFill.HalfSize.x,
+                        NorthWallFill.Center.y - NorthWallFill.HalfSize.y),
+            new Vector2(NorthWallFill.Center.x + NorthWallFill.HalfSize.x,
+                        NorthWallFill.Center.y + NorthWallFill.HalfSize.y),
+        };
+
+        /// <inheritdoc cref="WharfHeadArmour"/>
+        public static Vector2[] SpitEastArmour => new[]
+        {
+            new Vector2(SpitFill.Center.x + SpitFill.HalfSize.x, SpitFill.Center.y - SpitFill.HalfSize.y),
+            new Vector2(SpitFill.Center.x + SpitFill.HalfSize.x, SpitFill.Center.y + SpitFill.HalfSize.y),
+        };
+
+        // --- the lots the photograph puts along Wharf Road ---------------------------------------------
+        // ⚠ NAMED RESERVED LOTS, NOT BUILDINGS, for the two types no kit bakes. The standing ruling is
+        // that a building type with no kit gets a reserved lot and a reported gap — never a placeholder
+        // asset, because a clapboard house standing in for a bait shed looks FINISHED while being wrong
+        // (NineMileCreekFlavour's own argument, applied to the same problem one pass later). The BOATYARD
+        // is the exception and is drawn: the shipyard kit is baked, 25 sheets.
+
+        /// <summary>
+        /// HARRIS &amp; SONS — the boatyard, at the owner's ruled <c>smallYard</c> tier. On the spit's new
+        /// eastern ground, beside the wharf head, which is the only 27 m of clear yard the region has (see
+        /// <see cref="SpitFill"/> for why it had to be made).
+        /// </summary>
+        /// <para>⚠ At y = 112 rather than 110, and the two metres are load-bearing: a 27 m square centred
+        /// at 110 reaches down to y = 96.5 and the north wall's deck reaches up to y = 97, so the yard
+        /// stood half a metre ON THE QUAY. Caught by
+        /// <c>TheBoatyardStandsOnMadeGround_ClearOfTheRoadAndTheQuay</c>.</para>
+        public static readonly Vector3 ShipyardPos = new Vector3(168f, 112f, 0f);
+
+        /// <summary>The ground the yard occupies, a side of the square in metres — the shipyard kit's
+        /// <c>smallYard</c> cell (1230 px at 32 px/m = 38.4 m drawn) read back through the pack's iso
+        /// projection to the ground square that drew it. A RECTANGLE rather than the circle a shed gets,
+        /// because at this size the difference is 8 m of yard and the road is 19 m away.</summary>
+        public const float ShipyardSideMetres = 27f;
+
+        /// <summary>The yard's footprint, for anything asking "is this in the boatyard?".</summary>
+        public static Rect ShipyardFootprint() => new Rect(
+            ShipyardPos.x - ShipyardSideMetres * 0.5f, ShipyardPos.y - ShipyardSideMetres * 0.5f,
+            ShipyardSideMetres, ShipyardSideMetres);
+
+        /// <summary>THE RESTAURANT — the photograph's one non-working building on the wharf front, near
+        /// where the road arrives so it catches whoever comes down it. ⚠ NO KIT BAKES ONE; this is a
+        /// reserved lot and a reported art-director gap.</summary>
+        public static readonly Vector3 RestaurantLotPos = new Vector3(112f, 102f, 0f);
+
+        /// <summary>
+        /// THE BAIT SHEDS — the photograph's cluster, of which the plan already had one
+        /// (<see cref="BaitShedPos"/>). These are the other two.
+        ///
+        /// <para>⚠ On the yard's SOUTH strip, not on the shed row: sited on the row they landed two metres
+        /// off the owners' own shed lots at x = 164 and 178, which is the same building drawn twice. The
+        /// south strip between the quay and Wharf Road is the last genuinely clear ground on this spit —
+        /// clear of the road's corridor, of the boatyard's west edge, of the fish store and of the quay
+        /// deck. <b>That is the wharf full</b>: the photograph shows more sheds than this yard has room
+        /// for, and the remaining ones are the shanty row, the bait shed and the trap store the plan
+        /// already had.</para>
+        ///
+        /// <para>⚠ Reserved lots: <c>wharfBuildingRig</c> has never been baked (M2-40/46).</para>
+        /// </summary>
+        public static readonly Vector3[] BaitShedCluster =
+        {
+            new Vector3(132f, 104f, 0f),
+            new Vector3(146f, 104f, 0f),
+        };
+
+        // --- the owners' shed lots, DERIVED rather than listed ------------------------------------------
+
+        /// <summary>How far apart the owners' sheds stand along the row.</summary>
+        public const float OwnerShedSpacingMetres = 14f;
+
+        /// <summary>The row the owners' sheds stand on — the shanty row's own latitude, because that IS
+        /// the row of sheds in the photograph and a second row beside it would be a second wharf.</summary>
+        public static float OwnerShedRowY => ShantyRow[0].y;
+
+        /// <summary>
+        /// The shed lot belonging to owner <paramref name="index"/>.
+        ///
+        /// <para><b>⭐ A RULE, NOT A TABLE.</b> The lots march east along the shed row from the shanty
+        /// row's west end at <see cref="OwnerShedSpacingMetres"/>, and a step that would land inside a
+        /// working site's reserved ground is SKIPPED rather than nudged — so the row cannot collide with
+        /// the bait shed, the trap store or anything else the plan already put on the yard, and adding a
+        /// working site later re-flows the row instead of silently overlapping it.</para>
+        ///
+        /// <para><b>⚠ THE YARD AFFORDS SEVEN, AND THAT IS WHAT SIZES THE REGISTER.</b> Walked, the row
+        /// yields the shanty row's own five and two more east of the trap store: the bait shed and the
+        /// trap store each eat a step, and the spit's east edge stops the walk. The buoy kit's eight paint
+        /// schemes are therefore NOT the binding cap here — the ground is — and
+        /// <c>NineMileCreekPhotographTests.TheRegisterFitsTheLotsTheYardAffords</c> measures the walk
+        /// rather than trusting this paragraph, because the day a working site is added the row loses a
+        /// lot and the last owner would otherwise fall to the clamp below and be drawn on a neighbour.</para>
+        ///
+        /// <para>Lots 0–4 land exactly on <see cref="ShantyRow"/>, and that is the intent rather than a
+        /// coincidence: the photograph's shed row IS the shanty row, so an owner's shed and the shanty
+        /// drawn there are one building.</para>
+        /// </summary>
+        public static Vector2 OwnerShedLot(int index)
+        {
+            var row = OwnerShedLots();
+            if (row.Count == 0) return new Vector2(ShantyRow[0].x, OwnerShedRowY);
+            return row[Mathf.Clamp(index, 0, row.Count - 1)];
+        }
+
+        /// <summary>
+        /// How many shed lots this yard actually affords — the walk, counted.
+        ///
+        /// <para><b>⭐ THE REGISTER MAY NOT OUTGROW IT, and that is a real cap rather than a formality.</b>
+        /// Walked today the row yields SEVEN: the shanty row's five, then east past the bait shed and the
+        /// trap store (each of which eats a step) to the spit's east edge. An eighth owner's
+        /// <c>LotIndex</c> clamps onto the seventh and the two sheds are drawn in one place — which is
+        /// exactly what happened on the first pass, and is why
+        /// <c>NineMileCreekPhotographTests.TheRegisterFitsTheLotsTheYardAffords</c> measures this rather
+        /// than trusting the number in this paragraph.</para>
+        /// </summary>
+        public static int OwnerShedLotCount => OwnerShedLots().Count;
+
+        /// <summary>The whole row, walked once. See <see cref="OwnerShedLot"/> for the rule.</summary>
+        public static List<Vector2> OwnerShedLots()
+        {
+            var row = new List<Vector2>();
+            float y = OwnerShedRowY;
+            float west = ShantyRow[0].x;
+            float east = SpitFill.Center.x + SpitFill.HalfSize.x - WharfShedRadius;
+
+            for (int step = 0; step < 64; step++)
+            {
+                var candidate = new Vector2(west + step * OwnerShedSpacingMetres, y);
+                if (candidate.x > east) break;                       // off the made ground
+                if (IsWorkingSiteInTheWay(candidate)) continue;      // step around, never nudge
+                row.Add(candidate);
+            }
+            return row;
+        }
+
+        /// <summary>Is one of the plan's own working sites standing on <paramref name="p"/>? The sites a
+        /// shed row has to give way to, at the radius each of them reserves.</summary>
+        public static bool IsWorkingSiteInTheWay(Vector2 p)
+        {
+            foreach (var site in new[] { BaitShedPos, TrapStorePos, FishStorePos, ParkingPos, FishBuyerPos })
+                if (Vector2.Distance(p, new Vector2(site.x, site.y)) < WharfShedRadius * 2f) return true;
+            // …and the boatyard, which is a rectangle rather than a circle.
+            Rect yard = ShipyardFootprint();
+            if (p.x > yard.xMin - WharfShedRadius && p.x < yard.xMax + WharfShedRadius &&
+                p.y > yard.yMin - WharfShedRadius && p.y < yard.yMax + WharfShedRadius) return true;
+            return false;
+        }
 
         // =================================================================================================
         //  9. THE ROADS — blob-47 kit; these are the ROUTES, the tiles are the builder's

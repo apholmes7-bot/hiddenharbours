@@ -279,3 +279,57 @@ town handles money.
    straight onto a quay full of strangers — is more dramatic and less kind.
 4. **Which armour for the breakwater?** §3 recommends `crib` from the reference photo. `riprap` is the
    cheaper-looking, older option; `sheet` should be saved for Greywick.
+
+---
+
+## 8. The photograph pass (owner's rulings, 2026-08-10)
+
+The owner supplied the real Nine Mile Creek wharf from the satellite view and ruled that the region
+matches it. What that pass built, and the two findings it reported rather than acted on:
+
+**Built.** The floating dock inside the basin (with its gangway off the apron's face and a cleat run
+along it), the slipway off the service wall, rock armour on the two faces of made ground the
+photograph shows exposed, the building lots along Wharf Road — the bait-shed cluster, a restaurant,
+and one shed per boat-owner — and **Harris & Sons**, the boatyard, drawn from the baked shipyard kit
+at the `smallYard` tier. The moored fleet lies at the berths as floating mesh hulls presented from
+data, each with her skipper standing on deck.
+
+**The scale.** Derived, not felt: the moored hulls in the photograph are lobster boats and this
+repo's own `LobsterBoat.asset` says a lobster boat is 12 m, so the close aerial runs at ≈ 4.25 px/m.
+The photograph's main quay arm measures 86 m against the region's authored 84 — within 2 %, so the
+wharf's primary dimension was already right and did not move.
+
+**⚠ Finding 1 — the basin is shallower than the photograph's.** The real basin is ~76 m deep; the
+authored one is 45. Deepening it means moving the breakwater south, and `HarbourBeaconPos` stands on
+the breakwater head with `ToWestWaterPassagePos` deriving its whole latitude from it — so a deeper
+basin **moves the sea door**. The basin therefore keeps its authored depth. The visible cost is
+named: the photograph shows two float runs in the basin and the plan has room for one.
+
+**⚠ Finding 2 — the register is capped at eight by the buoy art.** A boat owner's buoy paint scheme
+is their ownership mark, and the deck-loop kit bakes exactly eight. A ninth fisher cannot be told
+apart from one of the first eight, so eight is the ceiling until the kit is re-baked. This is the
+real constraint on the ~16-boat vision below, and it is an **art** ask, not a data one.
+
+### 9. Captains and crews — VISION, phase-gated, build nothing
+
+Owner, 2026-08-10: *"Captains/crews with full routines (fishing, returning home, days off) are
+LATER."* Amended the same day to: the ambient fleet uses the mesh assets **with NPC workers and
+captains** — figures aboard, no behaviour.
+
+So what ships today is the figure and not the life: a skipper stands on each moored deck, rides the
+hull as she breathes on the shared wave field, and is hidden by her own wheelhouse through the
+deck-occupant seam. Nothing moves. What is deferred, in the owner's own terms:
+
+1. **Routines** — a captain who leaves on the tide, works his gear, and comes home. The ambient
+   fleet system (`AmbientFleetDef` and friends) already sails NPC boats, sets buoys and hauls them;
+   the arc is joining that behaviour to these owners rather than writing it fresh.
+2. **Days off** — a wharf that is fuller on a Sunday and emptier at four in the morning. Wants the
+   register to carry a work rhythm, which is one more field on `BoatOwnerDef`.
+3. **A second figure on deck.** Blocked on a Core seam rather than on effort: placing a figure at an
+   arbitrary deck point means projecting a rig-local metre through the hull's own iso projection, and
+   `IHullMeshRenderer` publishes `SetDeckOccupant` but no way to read the projected point back.
+   Re-deriving that projection in Boats would be a second copy of the one thing this repo has already
+   paid for twice. Wants an accessor on the Core seam — lead-architect's call.
+
+Cross-referenced: the ~16 lobster boats and the new mussel-boat class remain vision (§ the NMC fleet
+note); nothing in this pass builds toward them beyond leaving the register extensible.

@@ -212,6 +212,83 @@ namespace HiddenHarbours.App.Editor
             return list;
         }
 
+        // =====================================================================================
+        //  THE FLOATING DOCK — positioned here, BUILT when the tide can carry it
+        // =====================================================================================
+
+        /// <summary>
+        /// Where the floating dock's fittings go — a cleat run along it at the berth spacing, from half a
+        /// pitch in so the first one is not hanging off the end. Pure and public, so the layout can be
+        /// asserted without a scene.
+        ///
+        /// <para><b>⚠ DELIBERATELY NOT IN <see cref="Fittings"/>, AND NOT PLACED.</b> Everything in that
+        /// table is a QUAY fitting: it stands on one of the two walls, its cleat is registered at the
+        /// deck's MEASURED elevation, and <c>EveryFitting_StandsOnTheQuay_NotOverTheBasin</c> holds it to
+        /// exactly that. A float is none of those things — <b>its deck height is the TIDE's</b>, rising
+        /// 4.4 m over the cycle, and both <see cref="HiddenHarbours.World.StandablePlatform"/> and
+        /// <see cref="HiddenHarbours.World.ShoreCleat"/> take ONE fixed elevation. Registering either at
+        /// any single height would put the player standing two metres over the water at low tide, or a
+        /// rope made fast two metres under it at high — a wrong number that nothing would fail on.</para>
+        ///
+        /// <para>So this pass DRAWS the dock and positions its fittings, and builds neither the walk onto
+        /// it nor the tie-off. That is the same "Phase A positions what Phase B builds" arrangement the
+        /// rest of this region already runs on: when a tide-following surface lands (a Core change, and
+        /// lead-architect's call) the layout is already authored and tested here.</para>
+        /// </summary>
+        public static List<Vector2> FloatCleatPositions()
+        {
+            var list = new List<Vector2>();
+            float spacing = NineMileCreekMainland.BerthSpacingMetres;
+            float run = NineMileCreekMainland.FloatRunLengthMetres;
+            int count = Mathf.Max(1, Mathf.FloorToInt(run / spacing));
+            for (int i = 0; i < count; i++)
+                list.Add(new Vector2(NineMileCreekMainland.FloatRunWestX + spacing * (i + 0.5f),
+                                     NineMileCreekMainland.FloatRunY));
+            return list;
+        }
+
+        // =====================================================================================
+        //  THE ROCK ARMOUR — the photograph's rubble line where made ground meets open water
+        // =====================================================================================
+
+        /// <summary>
+        /// The armour blocks along one exposed run, laid the same way the breakwater's are: centres, from
+        /// the run's start PLUS half a block, so a top-centre-pivoted sheet does not put half a crib on
+        /// the beach. Pure.
+        /// </summary>
+        public static List<Piece> ArmourRun(Vector2 from, Vector2 to)
+        {
+            var list = new List<Piece>();
+            float run = Vector2.Distance(from, to);
+            int count = Mathf.Max(1, Mathf.FloorToInt(run / ArmourWidthMetres));
+            if (run <= 1e-3f) return list;
+
+            Vector2 along = (to - from) / run;
+            for (int i = 0; i < count; i++)
+            {
+                string variant = i == count - 1 ? "end" : "straight";
+                list.Add(new Piece
+                {
+                    Name = variant,
+                    Position = from + along * (ArmourWidthMetres * (i + 0.5f)),
+                });
+            }
+            return list;
+        }
+
+        /// <summary>Every armour block on the region's two exposed faces — the wharf head and the spit's
+        /// east edge. The breakwater keeps its own run (<see cref="BreakwaterBlocks"/>): it is a structure
+        /// in its own right rather than an edge of made ground.</summary>
+        public static List<Piece> ShoreArmourBlocks()
+        {
+            var list = new List<Piece>();
+            list.AddRange(ArmourRun(NineMileCreekMainland.WharfHeadArmour[0],
+                                    NineMileCreekMainland.WharfHeadArmour[1]));
+            list.AddRange(ArmourRun(NineMileCreekMainland.SpitEastArmour[0],
+                                    NineMileCreekMainland.SpitEastArmour[1]));
+            return list;
+        }
+
         /// <summary>How many of the fittings are things a rope may be made fast to — the kit decides, not
         /// this file (<see cref="WharfKitCatalog.IsMooringFitting"/>).</summary>
         public static int MooringFittingCount() => Fittings().Count(f => WharfKitCatalog.IsMooringFitting(f.Name));
@@ -316,6 +393,7 @@ namespace HiddenHarbours.App.Editor
             // once the ebb has dropped the boat below the planks, and that must not depend on art either.
             int ladders = PlaceLadders(root, deckElevation);
             int armour = PlaceBreakwater(root);
+            int shoreArmour = PlaceShoreArmour(root);
 
             Debug.Log(
                 $"[NineMileCreekWharf] Built the squared-U quay as GROUND: the north wall " +
@@ -327,7 +405,9 @@ namespace HiddenHarbours.App.Editor
                 $"bollard you see IS the bollard you tie to) and {ladders} real climbable ladder(s) at " +
                 $"deck +{deckElevation:0.00} m (the ladder you see IS the ladder you climb). " +
                 $"{armour} block(s) of '{BreakwaterArmour}' " +
-                $"breakwater along y={BreakwaterY:0.#}. THE DRAWN QUAY IS PHASE B's, from the ISO wharf " +
+                $"breakwater along y={BreakwaterY:0.#}, and {shoreArmour} block(s) of shore armour on the " +
+                "two faces of made ground the photograph shows exposed (the wharf head and the spit's " +
+                "east edge). THE DRAWN QUAY IS PHASE B's, from the ISO wharf " +
                 "pack — the old tile kit does not scale to an 84 m wall and is ruled for migration.");
             return cleats;
         }
@@ -473,6 +553,45 @@ namespace HiddenHarbours.App.Editor
                 var sr = go.AddComponent<SpriteRenderer>();
                 sr.sprite = sprite;
                 sr.sortingOrder = BreakwaterSortingOrder;
+                placed++;
+            }
+            return placed;
+        }
+
+        /// <summary>
+        /// Lay the shore armour. Same sheet and same top-centre pivot as the breakwater's, so the two runs
+        /// are one material — which is what the photograph shows and what a community wharf can afford.
+        ///
+        /// <para>No collider: unlike the breakwater, these blocks armour an edge of ground the terrain
+        /// already stands up. A hull is stopped there by DEPTH against the authored height field (the
+        /// region's whole no-fence argument), and a second hand-laid line along ground that already stops
+        /// her would be the duplicate coastline this recreation exists to remove.</para>
+        /// </summary>
+        static int PlaceShoreArmour(GameObject root)
+        {
+            var blocks = ShoreArmourBlocks();
+            if (blocks.Count == 0) return 0;
+
+            var sprites = LoadIndexedSheet(WharfKitCatalog.BreakwatersPath);
+            if (sprites.Count == 0) return 0;   // the breakwater already warned about this sheet
+
+            var armRoot = new GameObject("ShoreArmour");
+            armRoot.transform.SetParent(root.transform, worldPositionStays: false);
+
+            int placed = 0;
+            foreach (var block in blocks)
+            {
+                int index = WharfKitCatalog.BreakwaterIndex(BreakwaterArmour, block.Name);
+                if (!sprites.TryGetValue(index, out Sprite sprite) || sprite == null) continue;
+
+                var go = new GameObject($"Armour_{block.Position.x:0.#}_{block.Position.y:0.#}");
+                go.transform.SetParent(armRoot.transform, worldPositionStays: false);
+                go.transform.position = new Vector3(block.Position.x, block.Position.y, 0f);
+                var sr = go.AddComponent<SpriteRenderer>();
+                sr.sprite = sprite;
+                // Armour is something you walk past on the yard's edge, so it layers by world Y with the
+                // rest of the world rather than taking the breakwater's fixed order out in the water.
+                go.AddComponent<YSortSprite>();
                 placed++;
             }
             return placed;
