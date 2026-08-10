@@ -133,14 +133,28 @@ mapping every Y-sorted sprite uses, so no order is hand-picked. The row height i
 `RowOrderSteps / SortingBands.OrdersPerMetre` metres, **derived, never chosen** (rule 6), and it is
 also exactly the worst-case sorting error against the player.
 
-> **⚠ The row mapping is `round`, not `floor`, and the anchor is the row's lattice point, not its
-> centre.** `OrderFor` is `round(base − y·perUnit)`, so the bands of world Y it collapses onto one
-> order are centred on the lattice `y = k/perUnit` — their *edges* fall half a step off the multiples
-> of that step. Bucketing rows with `floor` puts the row edges on the multiples instead, exactly half
-> a row out of phase. The first CI run measured the cost of getting this wrong: **a floor-bucketed
-> row disagreed with `OrderFor` on 50% of world-Y positions.** `GrassField.RowOf` / `RowAnchorY` are
-> the one definition, and `TheRowMapping_AgreesWithTheBandAcrossAWholeRegionOfWorldY` sweeps 240 m of
-> world Y rather than sampling, because the fixture only caught it by luck.
+> **⚠ The row decision ASKS the band; it does not restate it.** `GrassField.RowOf` calls
+> `YSortSprite.OrderFor`, turns the answer into an order index below `DecorBase`, and groups
+> `RowOrderSteps` of those indices into one row. Whatever `OrderFor` decides, the row inherits.
+>
+> This went wrong **twice**, and both times because the rounding was recomputed here instead:
+>
+> 1. **floor vs round.** Rows were bucketed with `floor` and anchored at the row *centre*. `OrderFor`
+>    is `round(base − y·perUnit)`, so the world-Y bands it collapses onto one order are centred on the
+>    lattice `y = k/perUnit` — their *edges* fall half a step off the multiples. Measured: **50% of
+>    world-Y positions disagreed.**
+> 2. **An exact float32 tie.** Round-bucketing fixed the phase but still worked the answer out
+>    independently, and the two arithmetics don't lose precision in the same places. At
+>    `y = −30.12501` the true `base − y·perUnit` is 1322.50004, but float32 near 1322 is spaced
+>    ~0.000122 apart — so the 0.00004 that decides the rounding vanishes and the subtraction lands on
+>    exactly 1322.5, where `Mathf.RoundToInt` breaks the tie toward even. The row's own arithmetic is
+>    exact and never sees the tie, so the two answered differently on **2 positions out of ~328,000.**
+>
+> Routing through `OrderFor` closes both permanently. At one order step per row the chunk's order is
+> now *exactly* the order the tuft had as a sprite, ties included — 0 disagreements across a
+> region-wide sweep — and at N steps the error is bounded by N/2 orders, half a row, symmetric.
+> `TheRowMapping_AgreesWithTheBandAcrossAWholeRegionOfWorldY` sweeps rather than samples, and
+> `ACoarserRow_StaysInsideHalfItsOwnHeight` pins the bound at the other end of the knob.
 
 `RowOrderSteps` is the single knob, and it makes the trade legible:
 

@@ -286,11 +286,10 @@ namespace HiddenHarbours.Tests.Art.EditMode
         [Test]
         public void EveryChunkRidesTheDecorBand_ThroughYSortSpritesOwnMapping()
         {
-            // ADR 0032: no hand-picked orders. A chunk's order must be the band's own answer for the row's
-            // centre, and must sit inside the band — a chunk below DecorFloor would draw under the wharf
-            // deck and the sea.
+            // ADR 0032: no hand-picked orders. A chunk's order must be the band's own answer for its
+            // row's ANCHOR, and must sit inside the band — a chunk below DecorFloor would draw under the
+            // wharf deck and the sea.
             var field = MakeField(rowOrderSteps: 4);
-            float rowHeight = field.RowHeightMetres;
 
             foreach (var mf in field.GetComponentsInChildren<MeshFilter>())
             {
@@ -302,9 +301,9 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 Assert.AreEqual(group.sortingOrder, mr.sortingOrder,
                     "a chunk's SortingGroup and MeshRenderer disagree about its order");
 
-                int row = GrassField.RowOf(mf.transform.position.y, rowHeight);
+                int row = GrassField.RowOf(mf.transform.position.y, field.RowOrderSteps);
                 int expected = YSortSprite.OrderFor(
-                    GrassField.RowAnchorY(row, rowHeight),
+                    GrassField.RowAnchorY(row, field.RowOrderSteps),
                     SortingBands.DecorBase, SortingBands.OrdersPerMetre,
                     SortingBands.DecorFloor, SortingBands.DecorCeiling);
 
@@ -325,12 +324,12 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // and the error is bounded by the row height — which is why the knob is expressed in ORDER
             // STEPS rather than metres.
             //
-            // ⚠ This caught a real convention bug on its first run. Rows were bucketed with `floor` and
-            // anchored at the row CENTRE, which sits half a step out of phase with the rounding
-            // OrderFor already does — measured over 100 m of world Y, that disagreed with the sprite
-            // order on 50% of positions, and the fixture happened to land one tuft on the wrong side.
-            // The row mapping is now GrassField.RowOf / RowAnchorY, derived from the band rather than
-            // restated, and this test asks for it by name so the two cannot drift apart again.
+            // ⚠ This caught two convention slips on its first two runs, both from the row mapping
+            // computing the band's rounding itself rather than asking for it (floor-vs-round phase, then
+            // an exact float32 tie). GrassField.RowOf now routes through YSortSprite.OrderFor, and this
+            // test asks for it by name so the two cannot drift apart again. The whole-region sweep in
+            // TheRowMapping_AgreesWithTheBandAcrossAWholeRegionOfWorldY is the thorough version; this one
+            // pins it on the tufts a real field actually grows.
             var field = MakeField(rowOrderSteps: 1);
             float rowHeight = field.RowHeightMetres;
             Assert.AreEqual(1f / SortingBands.OrdersPerMetre, rowHeight, 1e-6f,
@@ -342,7 +341,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             var chunkOrderAt = new Dictionary<int, int>();
             foreach (var mf in field.GetComponentsInChildren<MeshFilter>())
             {
-                int row = GrassField.RowOf(mf.transform.position.y, rowHeight);
+                int row = GrassField.RowOf(mf.transform.position.y, field.RowOrderSteps);
                 chunkOrderAt[row] = mf.GetComponent<MeshRenderer>().sortingOrder;
             }
 
@@ -351,7 +350,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 int asSprite = YSortSprite.OrderFor(
                     b.Position.y, SortingBands.DecorBase, SortingBands.OrdersPerMetre,
                     SortingBands.DecorFloor, SortingBands.DecorCeiling);
-                int row = GrassField.RowOf(b.Position.y, rowHeight);
+                int row = GrassField.RowOf(b.Position.y, field.RowOrderSteps);
                 Assert.IsTrue(chunkOrderAt.TryGetValue(row, out int asChunk),
                     $"a tuft at y={b.Position.y} fell in row {row}, which no chunk covers");
                 Assert.AreEqual(asSprite, asChunk,
@@ -360,33 +359,70 @@ namespace HiddenHarbours.Tests.Art.EditMode
             }
         }
 
+        static int OrderAt(float worldY) => YSortSprite.OrderFor(
+            worldY, SortingBands.DecorBase, SortingBands.OrdersPerMetre,
+            SortingBands.DecorFloor, SortingBands.DecorCeiling);
+
         [Test]
         public void TheRowMapping_AgreesWithTheBandAcrossAWholeRegionOfWorldY()
         {
-            // The claim above, swept rather than sampled: at one order step per row, EVERY world Y in a
-            // region-sized span must take the order its row's anchor takes. This is the test that would
-            // have caught the floor/centre convention bug immediately — the fixture only found it because
-            // one tuft happened to fall on the wrong side of a row edge.
-            float rowHeight = 1f / SortingBands.OrdersPerMetre;
-            int mismatches = 0;
-            float worstAt = 0f;
+            // ⭐ THE FIDELITY CLAIM, SWEPT RATHER THAN SAMPLED — and EXACT, with no excuses in it.
+            //
+            // This test has now caught two separate convention slips, and both came from the row mapping
+            // computing the band's answer ITSELF instead of asking for it:
+            //   1. floor-bucketing + a centre anchor was half a row out of phase — 50% of positions wrong;
+            //   2. round-bucketing fixed the phase but still worked it out independently, and the two
+            //      arithmetics lose float32 precision in different places, so an exact .5 tie split them.
+            // GrassField.RowOf now routes through YSortSprite.OrderFor, so at one order step per row the
+            // chunk inherits whatever the band decided — ties and all. Anything less than 0 is a
+            // regression, so this asserts 0 and nothing softer.
+            int swept = 0, mismatches = 0;
+            float firstAt = float.NaN;
 
             for (float y = -120f; y <= 120f; y += 0.0007311f)   // an irrational-ish step: no lattice bias
             {
-                int asSprite = YSortSprite.OrderFor(
-                    y, SortingBands.DecorBase, SortingBands.OrdersPerMetre,
-                    SortingBands.DecorFloor, SortingBands.DecorCeiling);
-                int asChunk = YSortSprite.OrderFor(
-                    GrassField.RowAnchorY(GrassField.RowOf(y, rowHeight), rowHeight),
-                    SortingBands.DecorBase, SortingBands.OrdersPerMetre,
-                    SortingBands.DecorFloor, SortingBands.DecorCeiling);
-                if (asSprite != asChunk) { mismatches++; if (worstAt == 0f) worstAt = y; }
+                swept++;
+                int asSprite = OrderAt(y);
+                int asChunk = OrderAt(GrassField.RowAnchorY(GrassField.RowOf(y, 1), 1));
+                if (asSprite == asChunk) continue;
+                mismatches++;
+                if (float.IsNaN(firstAt)) firstAt = y;
             }
 
             Assert.AreEqual(0, mismatches,
-                $"{mismatches} world-Y positions sort differently as a chunk row than as a sprite (first " +
-                $"at y={worstAt}). The row mapping is out of phase with the band's own rounding — see " +
-                "GrassField.RowOf.");
+                $"{mismatches} of {swept} world-Y positions sort differently as a chunk row than as a " +
+                $"sprite (first at y={firstAt}). At one order step per row the chunk must inherit the " +
+                "band's own answer exactly — if this is non-zero, GrassField.RowOf has gone back to " +
+                "computing the rounding itself instead of asking YSortSprite.OrderFor for it.");
+
+            Debug.Log($"[GrassFieldWindParity] row mapping swept {swept} world-Y positions across a " +
+                      "region: 0 disagreements with the band at one order step per row.");
+        }
+
+        [Test]
+        public void ACoarserRow_StaysInsideHalfItsOwnHeight()
+        {
+            // The other end of the knob. Grouping N orders into a row cannot be exact — that is the whole
+            // trade — but the error must be bounded by HALF the row, symmetrically, which is what
+            // RowHeightMetres promises the reader. An off-centre grouping would still "work" and would
+            // quietly double the worst case on one side.
+            foreach (int steps in new[] { 2, 4, 8 })
+            {
+                int worst = 0;
+                float worstAt = 0f;
+                for (float y = -120f; y <= 120f; y += 0.0007311f)
+                {
+                    int gap = Mathf.Abs(OrderAt(y) -
+                                        OrderAt(GrassField.RowAnchorY(GrassField.RowOf(y, steps), steps)));
+                    if (gap > worst) { worst = gap; worstAt = y; }
+                }
+
+                float rowHeight = steps / SortingBands.OrdersPerMetre;
+                Assert.LessOrEqual(worst, steps / 2,
+                    $"at {steps} order steps per row ({rowHeight:F2} m) a tuft at y={worstAt} sorts " +
+                    $"{worst} orders away from where it would have as a sprite — more than the half-row " +
+                    $"({steps / 2} orders) the row height promises. The grouping has gone off-centre.");
+            }
         }
 
         [Test]

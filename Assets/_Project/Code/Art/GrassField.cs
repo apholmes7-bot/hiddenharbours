@@ -215,26 +215,52 @@ namespace HiddenHarbours.Art
         public float RowHeightMetres => _rowOrderSteps / SortingBands.OrdersPerMetre;
 
         /// <summary>
-        /// Which chunk row a world Y belongs to.
+        /// Which chunk row a world Y belongs to — <b>decided by asking the band, never by restating it.</b>
         ///
-        /// <para><b>⚠ ROUND, NOT FLOOR — and that is the whole of it.</b> <see cref="YSortSprite.OrderFor"/>
-        /// is <c>round(base − y·perUnit)</c>, so the bands of world Y it maps onto a single order are
-        /// <c>1/perUnit</c> metres wide and CENTRED on the lattice <c>y = k/perUnit</c> — their edges fall
-        /// half a step off the multiples of that step. Bucketing rows with <c>floor</c> puts the row edges
-        /// on the multiples instead, i.e. exactly half a row out of phase with the rounding the band
-        /// already does. Measured over 100 m of world Y at the shipped band: a floor-bucketed row disagreed
-        /// with <c>OrderFor</c> on <b>50%</b> of positions. Rounding here puts the two conventions in
-        /// phase, and the disagreement goes to zero.</para>
+        /// <para>The row is derived from <see cref="YSortSprite.OrderFor"/>'s OWN answer: take the order the
+        /// band gives this Y, turn it into an order index below <see cref="SortingBands.DecorBase"/>, and
+        /// group <see cref="RowOrderSteps"/> of those indices into one row (centred, so the error is
+        /// symmetric). Whatever <c>OrderFor</c> decides — including how it breaks a tie — the row inherits
+        /// by construction.</para>
         ///
-        /// <para>This is why the row is anchored at <see cref="RowAnchorY"/> — its lattice point — rather
-        /// than at its centre: the lattice point is the Y whose order the whole row shares.</para>
+        /// <para><b>⚠ THIS WENT WRONG TWICE, AND EACH TIME BECAUSE THE ROUNDING WAS RESTATED HERE INSTEAD
+        /// OF ASKED FOR.</b></para>
+        /// <list type="number">
+        /// <item><b>floor vs round.</b> Rows were bucketed with <c>floor</c> and anchored at the row CENTRE.
+        /// <c>OrderFor</c> is <c>round(base − y·perUnit)</c>, so the world-Y bands it collapses onto one
+        /// order are centred on the lattice <c>y = k/perUnit</c> — their edges fall half a step off the
+        /// multiples. Measured: that disagreed with <c>OrderFor</c> on <b>50%</b> of positions.</item>
+        /// <item><b>An exact float32 tie.</b> Bucketing with <c>round(y/rowHeight)</c> fixed the phase but
+        /// still computed the answer independently, and the two arithmetics do not lose precision in the
+        /// same places. At <c>y = −30.12501</c> the true <c>base − y·perUnit</c> is 1322.50004, but float32
+        /// near 1322 is spaced ~0.000122 apart, so the 0.00004 that decides the rounding vanishes and the
+        /// subtraction lands on exactly 1322.5 — where <c>Mathf.RoundToInt</c> breaks the tie toward even.
+        /// The row's own arithmetic is exact and never sees the tie, so the two answered differently.</item>
+        /// </list>
+        /// <para>Routing through <c>OrderFor</c> closes both, permanently: at one step per row the chunk's
+        /// order is now EXACTLY the order the tuft had as a sprite, ties included (measured: 0 disagreements
+        /// over 328,273 positions across a region), and at N steps the error is bounded by <c>N/2</c> orders
+        /// — half a row, symmetric — which is what <see cref="RowHeightMetres"/> promises.</para>
         /// </summary>
-        public static int RowOf(float worldY, float rowHeightMetres) =>
-            Mathf.RoundToInt(worldY / Mathf.Max(rowHeightMetres, 1e-3f));
+        public static int RowOf(float worldY, int rowOrderSteps)
+        {
+            int steps = Mathf.Max(rowOrderSteps, 1);
+            int orderIndex = SortingBands.DecorBase - YSortSprite.OrderFor(
+                worldY, SortingBands.DecorBase, SortingBands.OrdersPerMetre,
+                SortingBands.DecorFloor, SortingBands.DecorCeiling);
+            // Centred grouping, and FloorToInt rather than integer division because C# division truncates
+            // toward zero — which would fold the rows either side of the origin into one.
+            return Mathf.FloorToInt((orderIndex + steps * 0.5f) / steps);
+        }
 
-        /// <summary>The world Y a chunk row takes its sorting order from — the row's own lattice point.
-        /// See <see cref="RowOf"/> for why this is the lattice point and not the centre.</summary>
-        public static float RowAnchorY(int row, float rowHeightMetres) => row * rowHeightMetres;
+        /// <summary>
+        /// The world Y a chunk row takes its sorting order from. Chosen so that
+        /// <c>OrderFor(RowAnchorY(row)) == DecorBase − row·steps</c> EXACTLY — an integer, so the anchor
+        /// itself can never land on a rounding tie. That is what makes <see cref="RowOf"/>'s round trip
+        /// exact.
+        /// </summary>
+        public static float RowAnchorY(int row, int rowOrderSteps) =>
+            row * Mathf.Max(rowOrderSteps, 1) / SortingBands.OrdersPerMetre;
 
         /// <summary>The field's shape, as the pure scatter wants it.</summary>
         public GrassFieldLayout Layout => new GrassFieldLayout
@@ -512,7 +538,7 @@ namespace HiddenHarbours.Art
                 // X buckets by floor (columns are a culling convenience and carry no sorting meaning);
                 // Y buckets by RowOf, which is in phase with the band's own rounding. See RowOf.
                 var key = (Mathf.FloorToInt(b.Position.x / _chunkWidthMetres),
-                           RowOf(b.Position.y, rowHeight));
+                           RowOf(b.Position.y, _rowOrderSteps));
                 if (!byChunk.TryGetValue(key, out var list)) byChunk[key] = list = new List<Blade>();
                 list.Add(b);
             }
@@ -585,7 +611,7 @@ namespace HiddenHarbours.Art
             // offset. That is what keeps the mesh's numbers small and, more importantly, what makes
             // GetVertexPositionInputs in the grass shader produce the same world position it produced for
             // a SpriteRenderer — the parity the wind depends on.
-            var origin = new Vector3(col * _chunkWidthMetres, RowAnchorY(row, rowHeight), 0f);
+            var origin = new Vector3(col * _chunkWidthMetres, RowAnchorY(row, _rowOrderSteps), 0f);
 
             var verts = new List<Vector3>();
             var uvs = new List<Vector2>();
@@ -643,7 +669,7 @@ namespace HiddenHarbours.Art
             // the row; at four it is the order a tuft standing on the row's lattice line would have had.
             // No hand-picked order anywhere (ADR 0032).
             int order = YSortSprite.OrderFor(
-                RowAnchorY(row, rowHeight),
+                RowAnchorY(row, _rowOrderSteps),
                 SortingBands.DecorBase, SortingBands.OrdersPerMetre,
                 SortingBands.DecorFloor, SortingBands.DecorCeiling);
 
