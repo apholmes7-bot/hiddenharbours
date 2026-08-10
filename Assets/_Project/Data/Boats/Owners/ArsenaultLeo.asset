@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b7c1e94a2f04d1e9c8a5f2d6b147a30, type: 3}
+  m_Name: ArsenaultLeo
+  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.BoatOwnerDef
+  Id: owner.arsenault_leo
+  DisplayName: Leo Arsenault
+  Boat: {fileID: 11400000, guid: f9a11a1cb8419244bb13983a2862c52f, type: 2}
+  BuoyScheme: LobsterBoat
+  Prosperity: 3
+  ShedFootprintMetres: 10.0
+  LotIndex: 0
+  BerthIndex: 1
+  Skipper: {fileID: 11400000, guid: d9524c99b3334ef45b8fddc702972736, type: 2}
