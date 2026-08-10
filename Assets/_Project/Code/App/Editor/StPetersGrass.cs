@@ -509,10 +509,46 @@ namespace HiddenHarbours.App.Editor
         // the scatter
         // =====================================================================================
 
+        /// <summary>
+        /// The field's SHAPE for this island — where the scatter grid sits, how fine it is, and how far a
+        /// site may wander off it. Handed to <see cref="HiddenHarbours.Art.GrassFieldScatter"/>, which owns
+        /// the arithmetic that turns a cell index into a world point.
+        ///
+        /// <para><b>⚠ The grid is the RUNTIME's, not a private one.</b> The bake gates each site at exactly
+        /// the point the renderer will later draw it, because both ask the same function. A twinned copy of
+        /// the jitter on this side would be a second definition of the meadow, and the first re-tune would
+        /// put grass on a footpath this pass believed it had kept clear.</para>
+        /// </summary>
+        public static HiddenHarbours.Art.GrassFieldLayout FieldLayout(int seed = 0)
+        {
+            float minX = StPetersBuilder.IslandCenter.x - StPetersBuilder.IslandRadius;
+            float maxX = StPetersBuilder.IslandCenter.x + StPetersBuilder.IslandRadius;
+            float minY = StPetersBuilder.IslandCenter.y - StPetersBuilder.IslandRadiusY;
+            float maxY = StPetersBuilder.IslandCenter.y + StPetersBuilder.IslandRadiusY;
+
+            return new HiddenHarbours.Art.GrassFieldLayout
+            {
+                OriginX = minX,
+                OriginY = minY,
+                CellSize = GrassStep,
+                JitterMetres = GrassJitter,
+                SpreadMetres = TuftSpreadMetres,
+                CellsX = Mathf.Max(1, Mathf.CeilToInt((maxX - minX) / GrassStep)),
+                CellsY = Mathf.Max(1, Mathf.CeilToInt((maxY - minY) / GrassStep)),
+                Slots = MaxTuftsPerCell,
+                Seed = seed,
+            };
+        }
+
         /// <summary>One planted tuft: where, what KIND of ground it is on, how big, and its tint.</summary>
         public struct GrassTuftSite
         {
             public Vector2 Position;
+
+            /// <summary>Which grid cell and which of that cell's sites this is. Carried so the FIELD bake
+            /// can put this site's byte in the right place without walking the island a second time — one
+            /// definition of the meadow, not two.</summary>
+            public int CellX, CellY, Slot;
 
             /// <summary>A habitat TAG (<see cref="HabitatAt"/>), not a sprite index. The planter picks
             /// art carrying this tag from the grass library, so adding a variant is a bake and never a
@@ -544,27 +580,20 @@ namespace HiddenHarbours.App.Editor
         /// on the pier or across the crossing's approach) with the GRASS BAND's own floor — the ground
         /// the splat shader already paints green is exactly the ground that gets blades.
         /// </summary>
-        public static List<GrassTuftSite> Scatter(ITidalTerrain terrain)
+        public static List<GrassTuftSite> Scatter(ITidalTerrain terrain, int seed = 0)
         {
             var sites = new List<GrassTuftSite>();
             if (terrain == null) return sites;
 
-            float minX = StPetersBuilder.IslandCenter.x - StPetersBuilder.IslandRadius;
-            float maxX = StPetersBuilder.IslandCenter.x + StPetersBuilder.IslandRadius;
-            float minY = StPetersBuilder.IslandCenter.y - StPetersBuilder.IslandRadiusY;
-            float maxY = StPetersBuilder.IslandCenter.y + StPetersBuilder.IslandRadiusY;
+            // ⚠ THE POSITIONS COME FROM THE RUNTIME SCATTER, not from arithmetic restated here. This walk
+            // and GrassField's derive-at-load must agree about where every blade stands or the bake gates
+            // one point and the renderer draws another; asking one function is how they cannot disagree.
+            var layout = FieldLayout(seed);
 
-            int nx = Mathf.Max(1, Mathf.CeilToInt((maxX - minX) / GrassStep));
-            int ny = Mathf.Max(1, Mathf.CeilToInt((maxY - minY) / GrassStep));
-
-            for (int ix = 0; ix < nx; ix++)
-            for (int iy = 0; iy < ny; iy++)
+            for (int ix = 0; ix < layout.CellsX; ix++)
+            for (int iy = 0; iy < layout.CellsY; iy++)
             {
-                float cx = minX + (ix + 0.5f) * GrassStep
-                           + (StPetersShoreMap.Hash01(ix, iy, 163) * 2f - 1f) * GrassJitter;
-                float cy = minY + (iy + 0.5f) * GrassStep
-                           + (StPetersShoreMap.Hash01(ix, iy, 167) * 2f - 1f) * GrassJitter;
-                var p = new Vector2(cx, cy);
+                var p = HiddenHarbours.Art.GrassFieldScatter.CellCentre(layout, ix, iy);
 
                 // The MEADOW's own clearings (see IsPlantableMeadow) — the buildings, the wharf and the
                 // walked tread. The floor inside it is the grass BAND's, not the tree line: the shrub
@@ -579,26 +608,27 @@ namespace HiddenHarbours.App.Editor
                 if (StPetersShoreMap.Hash01(ix, iy, 173) > chance) continue;
 
                 int tufts = TuftsAt(p, StPetersShoreMap.Hash01(ix, iy, 179));
-                for (int t = 0; t < tufts; t++)
+                for (int t = 0; t < tufts && t < layout.Slots; t++)
                 {
-                    // Sub-tuft offsets hashed on (cell, tuft-index) via distinct salts, inside a ring
-                    // small enough that the cluster reads as one clump of growth.
-                    var q = p + new Vector2(
-                        (StPetersShoreMap.Hash01(ix * 3 + t, iy, 181) * 2f - 1f) * TuftSpreadMetres,
-                        (StPetersShoreMap.Hash01(ix, iy * 3 + t, 191) * 2f - 1f) * TuftSpreadMetres);
+                    // Sub-site offsets hashed on (cell, site-index), inside a ring small enough that the
+                    // cluster reads as one clump of growth.
+                    var q = HiddenHarbours.Art.GrassFieldScatter.SlotPosition(layout, ix, iy, t);
 
                     // The offset can spill across a clearing edge or under the band floor — each tuft
                     // re-passes the gate itself, so the invariants hold per BLADE, not per cell.
                     if (!IsPlantableMeadow(terrain, q)) continue;
 
-                    float h = StPetersShoreMap.Hash01(ix * 5 + t, iy * 7 + t, 193);
+                    float h = HiddenHarbours.Art.GrassFieldScatter.ShapeRoll(layout, ix, iy, t);
                     sites.Add(new GrassTuftSite
                     {
                         Position = q,
+                        CellX = ix,
+                        CellY = iy,
+                        Slot = t,
                         Habitat = HabitatAt(terrain, q),
-                        Roll = (int)(StPetersShoreMap.Hash01(ix, iy, 197 + t) * 1024f),
+                        Roll = HiddenHarbours.Art.GrassFieldScatter.VariantRoll(layout, ix, iy, t),
                         Broad = BroadAt(q, StPetersShoreMap.Hash01(ix * 11 + t, iy, 199)),
-                        Mirror = StPetersShoreMap.Hash01(ix, iy * 13 + t, 211) < 0.5f,
+                        Mirror = HiddenHarbours.Art.GrassFieldScatter.Mirrored(layout, ix, iy, t),
                         Scale = Mathf.Lerp(ScaleMin, ScaleMax, h),
                         Tint = TintAt(q, h),
                     });
