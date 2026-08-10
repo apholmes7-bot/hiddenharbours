@@ -167,7 +167,17 @@ namespace HiddenHarbours.Art
 
         readonly List<GameObject> _chunkObjects = new List<GameObject>();
         readonly List<Mesh> _chunkMeshes = new List<Mesh>();
-        readonly MaterialPropertyBlock _mpb = new MaterialPropertyBlock();
+
+        /// <summary>
+        /// ⚠ Declared bare and created LAZILY, never as a field initializer. Unity throws
+        /// <c>CreateImpl is not allowed to be called from a MonoBehaviour constructor (or instance field
+        /// initializer)</c> for anything engine-backed built at construction — so
+        /// <c>= new MaterialPropertyBlock()</c> here leaves the field null and every chunk then dies on a
+        /// NullReferenceException. The same shape <see cref="TerrainSplatSurface"/> and
+        /// <see cref="SpriteLightBinder"/> already use.
+        /// </summary>
+        MaterialPropertyBlock _mpb;
+
         int _builtTufts;
         int _builtVertices;
 
@@ -593,6 +603,7 @@ namespace HiddenHarbours.Art
             // alternative — a Material instance per texture — is 29 materials that drift apart the first
             // time somebody tunes a sway value, which is exactly what the shared Grass.mat exists to stop.
             mr.sharedMaterial = _material;
+            _mpb ??= new MaterialPropertyBlock();
             _mpb.Clear();
             _mpb.SetTexture(IdMainTex, texture);
             mr.SetPropertyBlock(_mpb);
