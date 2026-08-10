@@ -128,10 +128,19 @@ renderer per tuft and therefore every order it wanted. A chunk covering a band o
 one, and every tuft in the band takes it.
 
 **Decision: (a) row-sliced chunks riding ADR 0032's band.** A chunk is
-`column × row × texture`; the row's order is `YSortSprite.OrderFor(rowCentreY, …)` — the *same*
+`column × row × texture`; the row's order is `YSortSprite.OrderFor(RowAnchorY(row), …)` — the *same*
 mapping every Y-sorted sprite uses, so no order is hand-picked. The row height is
 `RowOrderSteps / SortingBands.OrdersPerMetre` metres, **derived, never chosen** (rule 6), and it is
 also exactly the worst-case sorting error against the player.
+
+> **⚠ The row mapping is `round`, not `floor`, and the anchor is the row's lattice point, not its
+> centre.** `OrderFor` is `round(base − y·perUnit)`, so the bands of world Y it collapses onto one
+> order are centred on the lattice `y = k/perUnit` — their *edges* fall half a step off the multiples
+> of that step. Bucketing rows with `floor` puts the row edges on the multiples instead, exactly half
+> a row out of phase. The first CI run measured the cost of getting this wrong: **a floor-bucketed
+> row disagreed with `OrderFor` on 50% of world-Y positions.** `GrassField.RowOf` / `RowAnchorY` are
+> the one definition, and `TheRowMapping_AgreesWithTheBandAcrossAWholeRegionOfWorldY` sweeps 240 m of
+> world Y rather than sampling, because the fixture only caught it by luck.
 
 `RowOrderSteps` is the single knob, and it makes the trade legible:
 

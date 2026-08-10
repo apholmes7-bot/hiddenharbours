@@ -214,6 +214,28 @@ namespace HiddenHarbours.Art
         /// ADR 0032's band, never picked (rule 6). Also the worst-case sorting error against the player.</summary>
         public float RowHeightMetres => _rowOrderSteps / SortingBands.OrdersPerMetre;
 
+        /// <summary>
+        /// Which chunk row a world Y belongs to.
+        ///
+        /// <para><b>⚠ ROUND, NOT FLOOR — and that is the whole of it.</b> <see cref="YSortSprite.OrderFor"/>
+        /// is <c>round(base − y·perUnit)</c>, so the bands of world Y it maps onto a single order are
+        /// <c>1/perUnit</c> metres wide and CENTRED on the lattice <c>y = k/perUnit</c> — their edges fall
+        /// half a step off the multiples of that step. Bucketing rows with <c>floor</c> puts the row edges
+        /// on the multiples instead, i.e. exactly half a row out of phase with the rounding the band
+        /// already does. Measured over 100 m of world Y at the shipped band: a floor-bucketed row disagreed
+        /// with <c>OrderFor</c> on <b>50%</b> of positions. Rounding here puts the two conventions in
+        /// phase, and the disagreement goes to zero.</para>
+        ///
+        /// <para>This is why the row is anchored at <see cref="RowAnchorY"/> — its lattice point — rather
+        /// than at its centre: the lattice point is the Y whose order the whole row shares.</para>
+        /// </summary>
+        public static int RowOf(float worldY, float rowHeightMetres) =>
+            Mathf.RoundToInt(worldY / Mathf.Max(rowHeightMetres, 1e-3f));
+
+        /// <summary>The world Y a chunk row takes its sorting order from — the row's own lattice point.
+        /// See <see cref="RowOf"/> for why this is the lattice point and not the centre.</summary>
+        public static float RowAnchorY(int row, float rowHeightMetres) => row * rowHeightMetres;
+
         /// <summary>The field's shape, as the pure scatter wants it.</summary>
         public GrassFieldLayout Layout => new GrassFieldLayout
         {
@@ -487,8 +509,10 @@ namespace HiddenHarbours.Art
             for (int i = 0; i < blades.Count; i++)
             {
                 var b = blades[i];
+                // X buckets by floor (columns are a culling convenience and carry no sorting meaning);
+                // Y buckets by RowOf, which is in phase with the band's own rounding. See RowOf.
                 var key = (Mathf.FloorToInt(b.Position.x / _chunkWidthMetres),
-                           Mathf.FloorToInt(b.Position.y / rowHeight));
+                           RowOf(b.Position.y, rowHeight));
                 if (!byChunk.TryGetValue(key, out var list)) byChunk[key] = list = new List<Blade>();
                 list.Add(b);
             }
@@ -561,7 +585,7 @@ namespace HiddenHarbours.Art
             // offset. That is what keeps the mesh's numbers small and, more importantly, what makes
             // GetVertexPositionInputs in the grass shader produce the same world position it produced for
             // a SpriteRenderer — the parity the wind depends on.
-            var origin = new Vector3(col * _chunkWidthMetres, row * rowHeight, 0f);
+            var origin = new Vector3(col * _chunkWidthMetres, RowAnchorY(row, rowHeight), 0f);
 
             var verts = new List<Vector3>();
             var uvs = new List<Vector2>();
@@ -614,10 +638,12 @@ namespace HiddenHarbours.Art
             mr.allowOcclusionWhenDynamic = false;
 
             // THE ROW'S PLACE IN THE BAND. Derived through the very mapping every Y-sorted sprite uses, at
-            // the row's centre — so a chunk sorts against the player exactly as a tuft standing in the
-            // middle of that row would have. No hand-picked order anywhere (ADR 0032).
+            // the row's own LATTICE POINT — the Y whose order the whole row shares (see RowOf). At one
+            // order step per row that reproduces the old sprite-per-tuft meadow's order for every tuft in
+            // the row; at four it is the order a tuft standing on the row's lattice line would have had.
+            // No hand-picked order anywhere (ADR 0032).
             int order = YSortSprite.OrderFor(
-                (row + 0.5f) * rowHeight,
+                RowAnchorY(row, rowHeight),
                 SortingBands.DecorBase, SortingBands.OrdersPerMetre,
                 SortingBands.DecorFloor, SortingBands.DecorCeiling);
 

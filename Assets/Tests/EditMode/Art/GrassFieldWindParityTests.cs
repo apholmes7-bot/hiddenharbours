@@ -128,21 +128,35 @@ namespace HiddenHarbours.Tests.Art.EditMode
 
             // What the OLD path drew: sprite.vertices, scaled, mirrored about the bottom-centre pivot, and
             // translated to the tuft's world position — a SpriteRenderer submits exactly this, already in
-            // world space.
-            var expected = new HashSet<string>();
+            // world space with an identity object-to-world matrix.
+            var expected = new List<(Vector2 world, Vector2 uv)>();
             foreach (var b in blades)
             {
                 var sprite = field.Variants[b.Variant];
                 var sv = sprite.vertices;
                 float mirror = b.Mirror ? -1f : 1f;
                 for (int v = 0; v < sv.Length; v++)
-                    expected.Add(Key(new Vector2(b.Position.x + sv[v].x * b.Scale * mirror,
-                                                 b.Position.y + sv[v].y * b.Scale),
-                                     sprite.uv[v]));
+                    expected.Add((new Vector2(b.Position.x + sv[v].x * b.Scale * mirror,
+                                              b.Position.y + sv[v].y * b.Scale),
+                                  sprite.uv[v]));
             }
 
-            var got = new HashSet<string>();
-            int vertices = 0;
+            // Bucket the expected vertices so each batched one only tests its own neighbourhood — the
+            // fixture is a few hundred vertices, but the island is millions and a quadratic scan here
+            // would be the reason somebody deletes this test.
+            var buckets = new Dictionary<(int, int), List<int>>();
+            for (int i = 0; i < expected.Count; i++)
+            {
+                var k = Cell(expected[i].world);
+                if (!buckets.TryGetValue(k, out var list)) buckets[k] = list = new List<int>();
+                list.Add(i);
+            }
+
+            var matched = new bool[expected.Count];
+            int vertices = 0, unmatched = 0;
+            float worstGap = 0f;
+            string worstNote = null;
+
             foreach (var mf in field.GetComponentsInChildren<MeshFilter>())
             {
                 var mesh = mf.sharedMesh;
@@ -152,27 +166,80 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 Assert.AreEqual(verts.Length, uvs.Length,
                     "a chunk has a uv per vertex mismatch — the shader bends by uv.y, so a missing uv is a " +
                     "tuft that does not bend");
+
                 for (int i = 0; i < verts.Length; i++)
                 {
-                    Vector3 world = mf.transform.TransformPoint(verts[i]);
-                    got.Add(Key(new Vector2(world.x, world.y), uvs[i]));
+                    Vector3 wp = mf.transform.TransformPoint(verts[i]);
+                    var world = new Vector2(wp.x, wp.y);
                     vertices++;
+
+                    int best = -1;
+                    float bestGap = float.MaxValue;
+                    var c = Cell(world);
+                    for (int dx = -1; dx <= 1; dx++)
+                    for (int dy = -1; dy <= 1; dy++)
+                    {
+                        if (!buckets.TryGetValue((c.Item1 + dx, c.Item2 + dy), out var near)) continue;
+                        foreach (int e in near)
+                        {
+                            if (matched[e]) continue;
+                            if ((expected[e].uv - uvs[i]).sqrMagnitude > UvTolerance * UvTolerance) continue;
+                            float gap = (expected[e].world - world).magnitude;
+                            if (gap < bestGap) { bestGap = gap; best = e; }
+                        }
+                    }
+
+                    if (best >= 0 && bestGap <= PositionTolerance)
+                    {
+                        matched[best] = true;
+                        if (bestGap > worstGap) worstGap = bestGap;
+                    }
+                    else
+                    {
+                        unmatched++;
+                        if (worstNote == null)
+                            worstNote = $"first unmatched batched vertex at {world} uv {uvs[i]}; " +
+                                        (best >= 0
+                                            ? $"nearest sprite-path vertex with the same uv was {bestGap:F4} m away"
+                                            : "no sprite-path vertex within a metre carried the same uv");
+                    }
                 }
             }
 
             Assert.Greater(vertices, 0, "the batched path built no geometry at all");
-            Assert.IsTrue(got.SetEquals(expected),
+            Assert.AreEqual(expected.Count, vertices,
+                "The batched path built a different NUMBER of vertices than the sprite path would have.");
+            Assert.AreEqual(0, unmatched,
                 "A batched tuft is not standing where its SpriteRenderer stood, or is not carrying the " +
                 "sprite's own uv. The grass shader reads exactly those two things — the vertex's world " +
                 "position and uv.y — so anything else here means the wind and the footstep bend have " +
-                "quietly changed shape. " +
-                $"(batched {got.Count} distinct vertices, sprite path {expected.Count})");
+                $"quietly changed shape. {worstNote}\n" +
+                "⚠ Read the DISTANCE before assuming a tolerance problem: a sub-millimetre gap is float " +
+                "re-association (the chunk stores vertices relative to its origin and adds it back), while " +
+                "anything near a sprite width is a real divergence — mirroring is the usual first suspect.");
+
+            Debug.Log($"[GrassFieldWindParity] {vertices} batched vertices all matched the sprite path; " +
+                      $"worst position gap {worstGap * 1000f:F4} mm (tolerance {PositionTolerance * 1000f:F1} mm).");
         }
 
-        static string Key(Vector2 world, Vector2 uv) =>
-            // Quantised to a hundredth of a millimetre: float-exact equality across two different code
-            // paths is a promise neither path can keep, and a 1e-5 m disagreement is not a bend change.
-            $"{world.x:F5}|{world.y:F5}|{uv.x:F5}|{uv.y:F5}";
+        /// <summary>
+        /// How far a batched vertex may sit from where the sprite path would have put it. <b>0.1 mm</b> —
+        /// a three-hundredth of a PIXEL at PPU 32, so it cannot hide a geometry change, but it survives the
+        /// float re-association that is unavoidable here: the chunk stores <c>(p − origin)</c> and the
+        /// transform adds <c>origin</c> back, and <c>(p − c) + c</c> is not bit-identical to <c>p</c> in
+        /// float32. The failure message prints the actual worst gap, so a real divergence cannot pass
+        /// itself off as rounding.
+        /// </summary>
+        const float PositionTolerance = 1e-4f;
+
+        /// <summary>uv must match far more tightly — it is a 0..1 coordinate copied verbatim, with no
+        /// arithmetic done to it at all.</summary>
+        const float UvTolerance = 1e-6f;
+
+        /// <summary>A 1 m bucket for the neighbourhood search — comfortably wider than the tolerance, so a
+        /// match is never missed by falling in the next cell.</summary>
+        static (int, int) Cell(Vector2 world) =>
+            (Mathf.FloorToInt(world.x), Mathf.FloorToInt(world.y));
 
         [Test]
         public void AChunkCarriesOnlyTheChannelsASpriteRendererSubmits()
@@ -235,9 +302,9 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 Assert.AreEqual(group.sortingOrder, mr.sortingOrder,
                     "a chunk's SortingGroup and MeshRenderer disagree about its order");
 
-                int row = Mathf.RoundToInt(mf.transform.position.y / rowHeight);
+                int row = GrassField.RowOf(mf.transform.position.y, rowHeight);
                 int expected = YSortSprite.OrderFor(
-                    (row + 0.5f) * rowHeight,
+                    GrassField.RowAnchorY(row, rowHeight),
                     SortingBands.DecorBase, SortingBands.OrdersPerMetre,
                     SortingBands.DecorFloor, SortingBands.DecorCeiling);
 
@@ -257,8 +324,16 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // the row gets the order it had as a sprite. Coarser rows trade that fidelity for draw calls,
             // and the error is bounded by the row height — which is why the knob is expressed in ORDER
             // STEPS rather than metres.
+            //
+            // ⚠ This caught a real convention bug on its first run. Rows were bucketed with `floor` and
+            // anchored at the row CENTRE, which sits half a step out of phase with the rounding
+            // OrderFor already does — measured over 100 m of world Y, that disagreed with the sprite
+            // order on 50% of positions, and the fixture happened to land one tuft on the wrong side.
+            // The row mapping is now GrassField.RowOf / RowAnchorY, derived from the band rather than
+            // restated, and this test asks for it by name so the two cannot drift apart again.
             var field = MakeField(rowOrderSteps: 1);
-            Assert.AreEqual(1f / SortingBands.OrdersPerMetre, field.RowHeightMetres, 1e-6f,
+            float rowHeight = field.RowHeightMetres;
+            Assert.AreEqual(1f / SortingBands.OrdersPerMetre, rowHeight, 1e-6f,
                 "a one-step row is no longer one order step tall");
 
             var blades = field.DeriveBlades();
@@ -267,7 +342,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
             var chunkOrderAt = new Dictionary<int, int>();
             foreach (var mf in field.GetComponentsInChildren<MeshFilter>())
             {
-                int row = Mathf.RoundToInt(mf.transform.position.y / field.RowHeightMetres);
+                int row = GrassField.RowOf(mf.transform.position.y, rowHeight);
                 chunkOrderAt[row] = mf.GetComponent<MeshRenderer>().sortingOrder;
             }
 
@@ -276,13 +351,42 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 int asSprite = YSortSprite.OrderFor(
                     b.Position.y, SortingBands.DecorBase, SortingBands.OrdersPerMetre,
                     SortingBands.DecorFloor, SortingBands.DecorCeiling);
-                int row = Mathf.FloorToInt(b.Position.y / field.RowHeightMetres);
+                int row = GrassField.RowOf(b.Position.y, rowHeight);
                 Assert.IsTrue(chunkOrderAt.TryGetValue(row, out int asChunk),
                     $"a tuft at y={b.Position.y} fell in row {row}, which no chunk covers");
                 Assert.AreEqual(asSprite, asChunk,
                     $"at one order step per row a tuft at y={b.Position.y} sorts differently batched " +
                     "than it did as a sprite — the fidelity end of the knob is broken");
             }
+        }
+
+        [Test]
+        public void TheRowMapping_AgreesWithTheBandAcrossAWholeRegionOfWorldY()
+        {
+            // The claim above, swept rather than sampled: at one order step per row, EVERY world Y in a
+            // region-sized span must take the order its row's anchor takes. This is the test that would
+            // have caught the floor/centre convention bug immediately — the fixture only found it because
+            // one tuft happened to fall on the wrong side of a row edge.
+            float rowHeight = 1f / SortingBands.OrdersPerMetre;
+            int mismatches = 0;
+            float worstAt = 0f;
+
+            for (float y = -120f; y <= 120f; y += 0.0007311f)   // an irrational-ish step: no lattice bias
+            {
+                int asSprite = YSortSprite.OrderFor(
+                    y, SortingBands.DecorBase, SortingBands.OrdersPerMetre,
+                    SortingBands.DecorFloor, SortingBands.DecorCeiling);
+                int asChunk = YSortSprite.OrderFor(
+                    GrassField.RowAnchorY(GrassField.RowOf(y, rowHeight), rowHeight),
+                    SortingBands.DecorBase, SortingBands.OrdersPerMetre,
+                    SortingBands.DecorFloor, SortingBands.DecorCeiling);
+                if (asSprite != asChunk) { mismatches++; if (worstAt == 0f) worstAt = y; }
+            }
+
+            Assert.AreEqual(0, mismatches,
+                $"{mismatches} world-Y positions sort differently as a chunk row than as a sprite (first " +
+                $"at y={worstAt}). The row mapping is out of phase with the band's own rounding — see " +
+                "GrassField.RowOf.");
         }
 
         [Test]
