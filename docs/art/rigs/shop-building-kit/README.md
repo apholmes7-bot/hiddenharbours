@@ -123,6 +123,57 @@ per cell and a door's **ground bearing decreases** as the cell index rises. Read
 anchors out of the sidecar JSON (`Shopfront_<key>.json` → `anchors[].door`) rather than deriving it,
 and un-squash screen y by `sin 40° ≈ 0.643` before taking any angle.
 
+## Fixtures as standalone sprites (added 2026-08-12)
+
+`ShopInterior.renderItem(name, dir, opts)` bakes any one of the 32 fixtures on its own ground point,
+with no room around it. That is its own family in the engine — **Hidden Harbours ▸ Art ▸ Bake Shop
+Fixtures**, then **▸ Slice Shop Fixture Sheets** — landing in
+`Assets/_Project/Art/Sprites/Buildings/Shops/Fixtures/` beside a generated
+`shopFixtures.contract.json`. Layout is **columns = facings, one row**. Scope is the table in
+`ShopFixtureKit.Builds`; today it is one row, the general store's counter.
+
+**Five things measuring it turned up that this kit's docs did not say.**
+
+1. **An unknown fixture name renders a SILENT EMPTY SHEET.** `placeItem` opens
+   `const P=FIXTURES[name]; if(!P) return;`, so `renderItem('countr', …)` returns a full-size, fully
+   transparent buffer and does not throw. Baked, that is a valid sheet of nothing that slices into
+   the right number of empty sprites. An unknown *trade* is worse — `resolve()` falls through to
+   `generalStore`, so it bakes a real, plausible fixture under another trade's file name.
+
+2. **`rot` is exactly redundant with `dir`.** `rot` turns the fixture in the world in 90° steps,
+   `dir` turns the camera in 45° steps, and `rot = r` at `dir 0` is **byte-identical** to `rot = 0`
+   at `dir = 2r` for all four r. One angular axis; a `rot` column would ship four exact duplicates.
+
+3. **The load-order divergences do NOT reach a fixture.** `dims({type:'generalStore',
+   room:'salesFloor'})` really does return the whole 8.00 × 10.00 m shell without `ShopBuilding`
+   loaded and the planned 8.00 × 7.09 m room with it — and the counter renders byte-for-byte the
+   same in both, at every facing, because `renderItem` never calls `build()`. The fixture baker
+   installs `shopInterior` alone on the strength of that measurement, and a test pins it.
+
+4. **These sheets fit 2048, so this family does NOT inherit the kit's 4096 cap.** All 32 fixtures at
+   8 facings, union-cropped: the largest is the **bar at 864 × 123**, the counter is **760 × 93**,
+   and the whole catalog would be 4.25 MB at RGBA32. A shell is a building and a fixture is
+   furniture — that is the whole difference.
+
+5. **The knobs that move a fixture's pixels are `type`, `size`, `stock`, `weather`, `night`,
+   `seed`, `rot` and `elev`** — measured, and all eight are passed explicitly and recorded in the
+   contract. Everything about the room is inert (`room`, `floor`, `wall` paper, `trimTone`,
+   `storey`, `shell`, `dividers`, `beams`, windows, storefront, the item list), because there is no
+   shell. ⚠️ `size` is not only a footprint dial: it seeds the weather speckle in the post pass, so
+   a fixture and its building must bake at the same one.
+
+**Which way the cells turn — same answer as the shells, re-measured on a fixture.** The service face
+steps **−45.00° per baked cell** on the un-squashed ground plane (−360.0° over a full turn), and it
+is on **+y** at cell 0 (the rig's `anchors()` puts the customer queue at `+dv` and the keeper's
+station at `−dv`). The contract carries the per-facing service-face anchors in the same shape as a
+shell's door anchors, so `BuildingFacing` aims a counter with the code that aims a door.
+
+**The pivot is the fixture's GROUND CENTRE.** `renderItem` places it at world (0,0) and the
+projection of the origin does not move with the camera — measured 0.0000 px over all eight facings.
+Normalised bottom-origin y is `(cellH − pivotY)/cellH` (ADR 0026). ⚠️ Not bottom-centre: under the ¾
+camera the near half of the footprint projects *below* the ground centre, so a bottom-centre pivot
+sinks the fixture into the floor silently.
+
 ## Demo pages (in the main project, not this kit)
 
 `Shopfront Iso.dc.html` · `Shop Interior Iso.dc.html` · `Shop Building Iso.dc.html` — live builders

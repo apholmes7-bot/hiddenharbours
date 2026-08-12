@@ -9,7 +9,8 @@
         "HiddenHarbours.Art",
         "HiddenHarbours.Art.Editor",
         "HiddenHarbours.Core",
-        "HiddenHarbours.Boats"
+        "HiddenHarbours.Boats",
+        "Unity.2D.Sprite.Editor"
     ],
     "includePlatforms": [
         "Editor"
