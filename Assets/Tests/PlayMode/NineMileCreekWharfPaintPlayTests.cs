@@ -73,6 +73,17 @@ namespace HiddenHarbours.Tests.PlayMode
         [UnityTest]
         public IEnumerator TheMooredFleetWakesAndEachBoatDrawsHerOwnersPaint()
         {
+            // ⚠️ CI has NO graphics device: under the Null GfxDevice, Capture()'s cam.Render() +
+            // ReadPixels errors on every frame of the coroutine and the editor dies with exit 1 —
+            // not a red test, a DEAD RUN that takes the whole PlayMode suite's results XML with it
+            // (proven on this fixture's first CI run, 2026-08-12). Same convention as every GPU
+            // EditMode acceptance: skip loudly.
+            if (SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.Null)
+                Assert.Ignore(
+                    "SKIPPED, NOT VERIFIED — no graphics device (Null Device), so nothing can render " +
+                    "and ReadPixels would kill the editor. Expected on CI; the wharf proof needs a " +
+                    "GPU — run locally (RTX 4060) where this fixture asserts and writes the proof image.");
+
             // The scene logs a 9-slice error from a decor sprite that has nothing to do with paint;
             // it is not this fixture's to fix and must not decide its result.
             LogAssert.ignoreFailingMessages = true;
