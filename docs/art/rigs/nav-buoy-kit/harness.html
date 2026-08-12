@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Nav Buoy Rig Kit — harness</title>
+<style>
+  body{margin:0;background:#0b1216;color:#c8d4d7;font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;padding:18px;}
+  h1{font-size:14px;letter-spacing:.16em;text-transform:uppercase;color:#c9a86a;margin:0 0 4px;}
+  p.note{color:#6f7e83;margin:0 0 16px;max-width:78ch;}
+  p.note b{color:#c8d4d7;font-weight:400;}
+  .row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:10px;}
+  .row > span.lbl{color:#6f7e83;letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;width:74px;flex:none;}
+  button{font:inherit;font-size:12px;padding:4px 9px;border-radius:3px;border:1px solid #2a3b43;background:#132025;color:#93a4a8;cursor:pointer;}
+  button.on{border-color:#c9a86a;background:#2a2317;color:#e6d2a4;}
+  button.act{border-color:#2f6079;background:#122530;color:#7fd6c9;}
+  #stage{border:1px solid #243137;background:#0e181d;margin:12px 0;overflow:auto;}
+  canvas{display:block;image-rendering:pixelated;}
+  pre{border:1px solid #243137;background:#0e181d;padding:11px 13px;margin:0;white-space:pre-wrap;color:#8fa3a8;font-size:12px;}
+  b{color:#c8d4d7;font-weight:400;}
+</style>
+</head>
+<body>
+<h1>Nav Buoy Rig Kit — harness</h1>
+<p class="note">Standalone: no build, no deps. Bakes any mark / size / wear / facing, runs the live sea
+solver against it, and asserts the pivot and the waterline hold across all eight facings.
+<b>Nothing occludes the hull:</b> every cell is baked dry, keel included, and the waterline is drawn as
+a guide <i>under</i> the sprite — never as water painted back over it. Your engine owns that clip.</p>
+
+<div class="row"><span class="lbl">mark</span><span id="types" style="display:flex;gap:6px;flex-wrap:wrap;"></span></div>
+<div class="row"><span class="lbl">size</span><span id="sizes" style="display:flex;gap:6px;flex-wrap:wrap;"></span></div>
+<div class="row"><span class="lbl">wear</span><span id="wears" style="display:flex;gap:6px;"></span>
+  <span style="width:14px;"></span><span class="lbl">facing</span><span id="dirs" style="display:flex;gap:6px;"></span></div>
+<div class="row"><span class="lbl">sea</span><span id="seas" style="display:flex;gap:6px;flex-wrap:wrap;"></span></div>
+<div class="row"><span class="lbl">show</span>
+  <button id="run">run the sea</button>
+  <button id="lit">light</button>
+  <button id="riser">riser</button>
+  <button id="guide">waterline guide</button>
+  <button id="zoom">zoom ×1</button>
+</div>
+<div class="row"><span class="lbl">export</span>
+  <button class="act" id="strip">bake 8-dir strip ↓</button>
+  <button class="act" id="wearstrip">bake wear strip ↓</button>
+  <button class="act" id="check">run asserts</button>
+</div>
+
+<div id="stage"><canvas id="cv" width="420" height="420"></canvas></div>
+<pre id="log">loading rig…</pre>
+
+<script src="isoSolid.js"></script>
+<script src="navBuoyRig.js"></script>
+<script>
+(function(){
+  var FACE = ['N','NE','E','SE','S','SW','W','NW'];
+  var N = window.NavBuoy, S = 32, CE = Math.cos(40*Math.PI/180);
+  var cv = document.getElementById('cv'), ctx = cv.getContext('2d'), out = document.getElementById('log');
+  if(!N || !window.IsoSolid){ out.textContent = 'rig did not load — isoSolid.js must come before navBuoyRig.js.'; return; }
+
+  var st = { type:'CardinalW', size:'s20', wear:'fresh', dir:3, sea:'working',
+             run:false, lit:true, riser:false, guide:true, zoom:1, t:0 };
+
+  function chips(host, list, isOn, pick){
+    host.innerHTML = '';
+    list.forEach(function(it){
+      var b = document.createElement('button');
+      b.textContent = it[1]; b.className = isOn(it[0]) ? 'on' : '';
+      b.onclick = function(){ pick(it[0]); };
+      host.appendChild(b);
+    });
+  }
+  function toggle(id, on){ document.getElementById(id).className = on ? 'on' : ''; }
+  function ui(){
+    chips(document.getElementById('types'), N.TYPE_IDS.map(function(t){ return [t, t]; }),
+      function(t){ return t===st.type; }, function(t){ st.type=t; frame(); });
+    chips(document.getElementById('sizes'), N.SIZES.map(function(s){ return [s.id, s.label]; }),
+      function(s){ return s===st.size; }, function(s){ st.size=s; frame(); });
+    chips(document.getElementById('wears'), N.WEAR.map(function(w){ return [w, w]; }),
+      function(w){ return w===st.wear; }, function(w){ st.wear=w; frame(); });
+    chips(document.getElementById('dirs'), FACE.map(function(f,i){ return [i,f]; }),
+      function(i){ return i===st.dir; }, function(i){ st.dir=i; frame(); });
+    chips(document.getElementById('seas'), N.SEA_IDS.map(function(s){ return [s, N.SEAS[s].label]; }),
+      function(s){ return s===st.sea; }, function(s){ st.sea=s; frame(); });
+    toggle('run', st.run); toggle('lit', st.lit); toggle('riser', st.riser); toggle('guide', st.guide);
+    document.getElementById('zoom').textContent = 'zoom ×' + st.zoom;
+  }
+
+  // one cell, baked whole — the hull is never cut
+  function bake(dir, m){
+    var c = N.cell(st.type, st.size);
+    var o = { size:st.size, wear:st.wear, lit:st.lit && !!N.TYPES[st.type].light };
+    if(m){ o.roll = m.roll; o.pitch = m.pitch; o.yaw = m.yaw*0.35; }
+    return { rgba:N.render(st.type, dir, o), W:c.W, H:c.H, pivot:{x:c.cx, y:c.cy} };
+  }
+  // TRUE painted extents: the alpha bounding box, union over the 8 facings. Model-space z
+  // (__zHi/__zLo) is the PAINT extent only — the tower, topmark and skirt live outside it, so
+  // it must never be published as a sheet row.
+  var _bb = {};
+  function measured(type, size, wear){
+    var key = type + '|' + size + '|' + wear;
+    if(_bb[key]) return _bb[key];
+    var c = N.cell(type, size), top = 1e9, bot = -1, left = 1e9, right = -1, perDir = [];
+    for(var d=0; d<8; d++){
+      var a = N.render(type, d, { size:size, wear:wear }), dt = 1e9, db = -1;
+      for(var y=0; y<c.H; y++){
+        var row = false;
+        for(var x=0; x<c.W; x++) if(a[(y*c.W+x)*4+3] > 0){ row = true; if(x<left) left=x; if(x>right) right=x; }
+        if(row){ if(y<dt) dt=y; db=y; }
+      }
+      perDir[d] = { top:dt, bottom:db };
+      if(dt<top) top=dt; if(db>bot) bot=db;
+    }
+    return (_bb[key] = { top:top, bottom:bot, left:left, right:right, perDir:perDir });
+  }
+
+  var buf = document.createElement('canvas'), bctx = buf.getContext('2d');
+  function blit(target, b, x, y){
+    if(buf.width!==b.W || buf.height!==b.H){ buf.width=b.W; buf.height=b.H; }
+    bctx.clearRect(0,0,b.W,b.H);
+    bctx.putImageData(new ImageData(new Uint8ClampedArray(b.rgba), b.W, b.H), 0, 0);
+    target.drawImage(buf, x, y);
+  }
+
+  function frame(){
+    ui();
+    var M = N.meta(st.type, st.size), c = N.cell(st.type, st.size), F = N.facesOf(st.type, st.size, 'fresh');
+    var m = st.run ? N.motion(st.type, st.size, { sea:st.sea, t:st.t, x:0, y:0, waveDeg:210, depth:9, current:0.35 }) : null;
+    var pad = 26, z = st.zoom;
+    var W = (c.W + pad*2) * z, H = (c.H + pad*2) * z;
+    if(cv.width!==W || cv.height!==H){ cv.width=W; cv.height=H; }
+    ctx.setTransform(1,0,0,1,0,0);
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle = '#0e181d'; ctx.fillRect(0,0,W,H);
+    ctx.imageSmoothingEnabled = false;
+    ctx.setTransform(z,0,0,z,0,0);
+
+    var ox = pad, oy = pad;                       // cell origin inside the canvas
+    var pvx = ox + c.cx, pvy = oy + c.cy;         // pivot = still waterline, model origin
+    var heaveY = m ? m.heavePx : 0;               // sprite rides the bob
+    var surfY  = pvy + (m ? m.etaPx : 0);         // local free surface, for the guide only
+
+    // cell bounds
+    ctx.strokeStyle = '#1b2b32'; ctx.lineWidth = 1;
+    ctx.strokeRect(ox+0.5, oy+0.5, c.W-1, c.H-1);
+
+    // ---- guides FIRST, so the sprite lands on top of every one of them ----------------
+    if(st.guide){
+      ctx.strokeStyle = '#2f6079'; ctx.setLineDash([4,4]);
+      ctx.beginPath(); ctx.moveTo(ox, Math.round(surfY)+0.5); ctx.lineTo(ox+c.W, Math.round(surfY)+0.5); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#2f6079'; ctx.font = '9px ui-monospace,monospace';
+      ctx.fillText('water', ox+2, Math.round(surfY)-3);
+    }
+    if(st.riser){
+      var rp = N.riserPath(st.type, st.size, st.dir, { depth:9, scope:1.45, current:0.35, leadDeg:30,
+                                                       heave:m ? m.heave : 0 });
+      for(var i=0;i<rp.pts.length-1;i++){
+        var p = rp.pts[i], q = rp.pts[i+1];
+        ctx.globalAlpha = Math.max(0.14, 0.8 - p.t*0.62);
+        ctx.strokeStyle = rp.ramp[1]; ctx.lineWidth = Math.max(1, 3.2 - p.t*2.2);
+        ctx.beginPath(); ctx.moveTo(ox+p.x, oy+p.y); ctx.lineTo(ox+q.x, oy+q.y); ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    // ---- the sprite, whole -------------------------------------------------------------
+    var b = bake(st.dir, m);
+    blit(ctx, b, ox, oy + Math.round(heaveY));
+
+    // pivot cross-hair (1 px marker, not a fill)
+    ctx.fillStyle = '#7fd6c9';
+    ctx.fillRect(pvx-4, pvy, 9, 1); ctx.fillRect(pvx, pvy-4, 1, 9);
+
+    var bb = measured(st.type, st.size, st.wear);
+    var keelY = bb.bottom, topY = bb.top, below = keelY - c.cy;
+    var L = N.TYPES[st.type].light, LT = L ? N.LIGHTS[L] : null;
+    var r = N.respond(st.type, st.size, st.sea);
+    out.innerHTML = '<b>' + st.type + ' · ' + N.SIZE_BY[st.size].label + ' · ' + st.wear + ' · ' + FACE[st.dir]
+      + '</b>  ' + N.TYPES[st.type].name + '\n'
+      + 'cell ' + c.W + '×' + c.H + ' px · pivot ' + c.cx + ',' + c.cy + ' (cross-hair) · waterline row ' + c.cy
+      + '\npainted bbox (measured over all 8 facings) · top row ' + topY + ' · keel row ' + keelY
+      + ' · x ' + bb.left + '..' + bb.right + '\n'
+      + '<b>' + below + ' px of hull sit BELOW the waterline in the sheet and are fully painted</b> — clip at '
+      + 'pivot.y + waterPx if you want it in water, or leave it whole.\n'
+      + 'hull ' + M.D.toFixed(2) + ' m ⌀ · draft ' + M.draft.toFixed(2) + ' m · freeboard ' + M.freeboard.toFixed(2)
+      + ' m · GM ' + M.GM.toFixed(2) + ' · follow ' + M.follow.toFixed(3)
+      + ' · T_heave ' + M.Th.toFixed(2) + ' s · T_roll ' + M.Tr.toFixed(2) + ' s · ' + M.disp.toFixed(1) + ' t\n'
+      + N.SEAS[st.sea].label + ' (Hs ' + N.SEAS[st.sea].Hs + ' m, Tp ' + N.SEAS[st.sea].Tp + ' s) → peak tilt '
+      + r.tilt.toFixed(1) + '° · heave range ' + r.heave.toFixed(2) + ' m · overtopped ' + (r.submerged*100).toFixed(0) + '%\n'
+      + (LT ? 'light ' + LT.txt + ' (' + LT.col + ')' : 'unlit mark')
+      + (m ? '  ·  t ' + st.t.toFixed(2) + ' s · roll ' + m.roll.toFixed(1) + '° pitch ' + m.pitch.toFixed(1)
+             + '° heave ' + m.heave.toFixed(2) + ' m · sink ' + m.sink.toFixed(2) + ' m' : '');
+  }
+
+  var last = 0;
+  function loop(ts){
+    if(st.run){ if(last) st.t += Math.min(0.05, (ts-last)/1000); last = ts; frame(); }
+    else last = 0;
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+
+  document.getElementById('run').onclick   = function(){ st.run = !st.run; frame(); };
+  document.getElementById('lit').onclick   = function(){ st.lit = !st.lit; frame(); };
+  document.getElementById('riser').onclick = function(){ st.riser = !st.riser; frame(); };
+  document.getElementById('guide').onclick = function(){ st.guide = !st.guide; frame(); };
+  document.getElementById('zoom').onclick  = function(){ st.zoom = st.zoom>=3 ? 1 : st.zoom+1; frame(); };
+
+  function download(canvas, name){
+    canvas.toBlob(function(bl){
+      var u = URL.createObjectURL(bl), a = document.createElement('a');
+      a.href = u; a.download = name; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(function(){ URL.revokeObjectURL(u); }, 2000);
+    });
+  }
+  document.getElementById('strip').onclick = function(){
+    var c = N.cell(st.type, st.size), s = document.createElement('canvas');
+    s.width = c.W*8; s.height = c.H;
+    var sx = s.getContext('2d');
+    for(var d=0;d<8;d++) blit(sx, bake(d, null), d*c.W, 0);
+    download(s, 'navbuoy-' + st.type + '-' + st.size + '-' + st.wear + '-8dir.png');
+  };
+  document.getElementById('wearstrip').onclick = function(){
+    var c = N.cell(st.type, st.size), s = document.createElement('canvas'), keep = st.wear;
+    s.width = c.W*3; s.height = c.H;
+    var sx = s.getContext('2d');
+    N.WEAR.forEach(function(w, i){ st.wear = w; blit(sx, bake(st.dir, null), i*c.W, 0); });
+    st.wear = keep; frame();
+    download(s, 'navbuoy-' + st.type + '-' + st.size + '-wear.png');
+  };
+
+  document.getElementById('check').onclick = function(){
+    var G = {}, order = [], fails = 0;
+    function assert(g, ok, msg){
+      if(!G[g]){ G[g] = {n:0, bad:[]}; order.push(g); }
+      G[g].n++; if(!ok){ G[g].bad.push(msg); fails++; }
+    }
+    assert('load', !!window.IsoSolid && !!N, 'both files loaded, isoSolid first');
+
+    // cell + pivot hold across the 8 facings for the SELECTED mark; the table maths below
+    // runs across all 14 × 5.
+    var c0 = N.cell(st.type, st.size), same = true;
+    for(var d=0;d<8;d++) if(N.render(st.type, d, { size:st.size, wear:st.wear }).length !== c0.W*c0.H*4) same = false;
+    assert('sheet', same, st.type + '/' + st.size + ': cell size drifts across the 8 facings');
+
+    // NO-OCCLUSION + honest extents, on every size of the selected mark and every wear state.
+    N.SIZES.forEach(function(s){
+      var c = N.cell(st.type, s.id);
+      N.WEAR.forEach(function(w){
+        var bb = measured(st.type, s.id, w), hit = 0, over = 0;
+        bb.perDir.forEach(function(p){
+          if(p.bottom <= c.cy) over++;                       // a facing with no hull under water
+          if(p.bottom === bb.bottom) hit++;                  // the reported keel row is real
+          if(p.bottom > bb.bottom || p.top < bb.top) over++;  // outside the published bbox
+        });
+        assert('dry bake', over === 0, st.type + '/' + s.id + '/' + w + ': a facing is cut at the water or falls outside the published bbox');
+        assert('dry bake', hit > 0, st.type + '/' + s.id + '/' + w + ': keel row ' + bb.bottom + ' is not the true lowest painted row in any facing');
+        assert('dry bake', bb.top >= 0 && bb.bottom < c.H && bb.left >= 0 && bb.right < c.W,
+          st.type + '/' + s.id + '/' + w + ': painted pixels touch or leave the cell edge — the sheet is clipping');
+        assert('dry bake', bb.bottom - c.cy > 0, st.type + '/' + s.id + '/' + w + ': nothing painted below the waterline row');
+      });
+      // the trap the first cut of this kit fell into: model-space z is NOT a sheet row
+      var F = N.facesOf(st.type, s.id, 'fresh'), bbf = measured(st.type, s.id, 'fresh');
+      assert('dry bake', bbf.bottom >= Math.round(c.cy - F.__zLo*S*CE) && bbf.top <= Math.round(c.cy - F.__zHi*S*CE),
+        st.type + '/' + s.id + ': paint-extent z is outside the painted bbox — publish the bbox, not zHi/zLo');
+    });
+
+    N.TYPE_IDS.forEach(function(t){
+      var T = N.TYPES[t];
+      assert('vocab', !!T.name && !!T.gloss, t + ': no name/gloss');
+      assert('vocab', !T.light || !!N.LIGHTS[T.light], t + ': unknown light ' + T.light);
+      assert('vocab', !!(T.bands || T.stripes), t + ': neither bands nor stripes');
+      (T.bands||[]).forEach(function(b){ assert('vocab', b[0] >= 0 && b[1] <= 1 && b[1] > b[0],
+        t + ': band [' + b[0] + ',' + b[1] + '] out of 0..1'); });
+
+      N.SIZES.forEach(function(s){
+        var c = N.cell(t, s.id), M = N.meta(t, s.id), F = N.facesOf(t, s.id, 'fresh');
+        assert('cell', c.W < 3200 && c.H < 3200, t + '/' + s.id + ': cell hits the 3200 px clamp');
+        assert('cell', c.cx === Math.round(c.W/2), t + '/' + s.id + ': pivot x is not the cell centre');
+        // the waterline IS the pivot row, and the model straddles it (model space, metres)
+        assert('waterline', F.__zLo < 0 && F.__zHi > 0, t + '/' + s.id + ': model does not straddle z = 0');
+        assert('waterline', Math.abs(-F.__zLo - (M.draft + M.D*0.10)) < 0.02,
+          t + '/' + s.id + ': paint bottom ' + (-F.__zLo).toFixed(2) + ' m does not match draft + skirt ' + (M.draft + M.D*0.10).toFixed(2) + ' m');
+        assert('waterline', c.cy > 0 && c.cy < c.H, t + '/' + s.id + ': waterline row ' + c.cy + ' is outside the cell');
+        // physics stays inside its own bounds
+        assert('hull', M.GM > 0, t + '/' + s.id + ': non-positive GM');
+        assert('hull', M.follow > 0 && M.follow < 1, t + '/' + s.id + ': follow share ' + M.follow.toFixed(3) + ' outside 0..1');
+        assert('hull', M.Th > 0 && M.Tr > 0, t + '/' + s.id + ': non-positive natural period');
+      });
+    });
+
+    // the model's whole argument: a spar stands up, a can rolls; chop tilts, swell heaves
+    var spar = N.meta('Spar','s18').follow, can = N.meta('PortCan','s18').follow;
+    assert('model', spar < can*0.2, 'spar follow ' + spar.toFixed(3) + ' is not far below the can ' + can.toFixed(3));
+    N.SIZES.forEach(function(s){
+      var ch = N.respond('PortCan', s.id, 'chop'), sw = N.respond('PortCan', s.id, 'swell');
+      assert('model', ch.tilt > sw.tilt, s.id + ': chop tilts ' + ch.tilt.toFixed(1) + '° vs swell ' + sw.tilt.toFixed(1) + '° — chop must tilt harder');
+      assert('model', sw.heave > ch.heave, s.id + ': swell heaves ' + sw.heave.toFixed(2) + ' m vs chop ' + ch.heave.toFixed(2) + ' m — swell must heave more');
+    });
+    var small = N.respond('PortCan','s12','chop').tilt, big = N.respond('PortCan','s30','chop').tilt;
+    assert('model', small > big, 'the 1.2 m hull (' + small.toFixed(1) + '°) does not out-tilt the 3.0 m (' + big.toFixed(1) + '°) in chop — waterplane averaging is not biting');
+
+    // the light table
+    Object.keys(N.LIGHTS).forEach(function(k){
+      var L = N.LIGHTS[k], onSum = 0, ok = true;
+      L.on.forEach(function(p){ if(p[1] <= p[0] || p[1] > L.period) ok = false; onSum += p[1]-p[0]; });
+      assert('lights', ok, k + ': on-interval outside 0..period');
+      assert('lights', onSum < L.period, k + ': light is on for the whole period');
+      var lit = 0, steps = 200;
+      for(var i=0;i<steps;i++) if(N.lightOn(k, i*L.period/steps)) lit++;
+      assert('lights', lit > 0 && lit < steps, k + ': lightOn never toggles');
+    });
+
+    // the riser leaves the shackle at the hull and reaches the seabed
+    var rp = N.riserPath(st.type, st.size, st.dir, { depth:12, scope:1.45 });
+    assert('riser', rp.pts.length > 2, 'riser returned no polyline');
+    assert('riser', Math.abs(rp.sinker.depth - 12) < 0.6, 'riser ends at ' + rp.sinker.depth.toFixed(1) + ' m, not the 12 m seabed');
+    assert('riser', rp.shackle.depth < N.meta(st.type, st.size).draft + 0.05, 'riser does not start at the hull');
+
+    var lines = order.map(function(g){
+      var q = G[g], head = (q.bad.length ? ' FAIL ' : '  ok  ') + g + '  (' + (q.n - q.bad.length) + '/' + q.n + ')';
+      return q.bad.length ? head + '\n        ' + q.bad.slice(0,8).join('\n        ') : head;
+    });
+    out.innerHTML = '<b>' + (fails ? fails + ' assert(s) FAILED' : 'all asserts pass') + '</b>  ·  '
+      + N.TYPE_IDS.length + ' marks × ' + N.SIZES.length + ' sizes, 8-facing + dry-bake check on '
+      + st.type + '/' + st.size + '\n' + lines.join('\n');
+  };
+
+  frame();
+})();
+</script>
+</body>
+</html>

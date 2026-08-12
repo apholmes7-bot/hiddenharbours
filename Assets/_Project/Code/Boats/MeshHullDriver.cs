@@ -46,6 +46,7 @@ namespace HiddenHarbours.Boats
         private float _rockPhaseDegrees;
         private int _rockFrame = MountedRockPoseMath.LevelRockFrame;
         private float _displacedHeaveMeters;
+        private float _drawnRideMeters;
 
         // The storm rock channel (ADR 0018 B2.5) — written by BoatWaveMotion through the presenter
         // seam each tick. Scale 1 / extras 0 is the exact neutral (the calm byte-identity), so a
@@ -108,6 +109,23 @@ namespace HiddenHarbours.Boats
         /// ride together, and the flat-water pose stays byte-identical (the A/B contract).
         /// </summary>
         public void SetDisplacedHeaveMeters(float heaveMeters) => _displacedHeaveMeters = heaveMeters;
+
+        /// <summary>
+        /// <b>The ride this driver ACTUALLY APPLIED on its last <see cref="Drive"/></b>, in world
+        /// metres — the sea's lift less this hull's settle sink, gated on
+        /// <see cref="DisplacedSea.IsActive"/>, i.e. exactly <c>RidePixels / PxPerMetre</c>. The
+        /// presenter seam's <see cref="IBoatHullPresenter.DrawnRideMeters"/>, and the number anything
+        /// standing on this deck must move with (owner, 2026-08-11).
+        ///
+        /// <para>Reported by the DRIVER rather than by <see cref="BoatWaveMotion"/> because the driver
+        /// is the applier: it owns the sink and it owns the gate, so a mesh hull with no wave motion
+        /// wired at all still reports the waterline she is genuinely drawn at instead of claiming to
+        /// be level. Same reason the sink lives here in the first place.</para>
+        ///
+        /// <para>Stored rather than recomputed on read, and stored ONLY here: it is the very float
+        /// that went into the renderer, so the two cannot drift.</para>
+        /// </summary>
+        public float DrawnRideMeters => _drawnRideMeters;
 
         /// <summary>
         /// The storm rock channel (ADR 0018 B2.5 —
@@ -180,6 +198,7 @@ namespace HiddenHarbours.Boats
             _rockFrame = MountedRockPoseMath.LevelRockFrame;
             VisualTiltDegrees = 0f;
             _displacedHeaveMeters = 0f;
+            _drawnRideMeters = 0f;   // a re-skinned hull draws no ride until she is next driven
             _stormAmplitudeScale = 1f;
             _stormExtraRollDegrees = 0f;
             _stormExtraPitchDegrees = 0f;
@@ -239,12 +258,18 @@ namespace HiddenHarbours.Boats
             // HullSettleMath inverts the projection off the def's own ElevationDeg, so the number an
             // owner types is the number the sea draws.
             float ride = 0f;
+            float rideMeters = 0f;
             if (DisplacedSea.IsActive)
             {
                 float sink = HullSettleMath.AppliedSinkMeters(_designWaterlineMeters, _elevationDegrees);
-                ride = (_displacedHeaveMeters - sink) * _pxPerMetre;
+                rideMeters = _displacedHeaveMeters - sink;
+                ride = rideMeters * _pxPerMetre;
                 heave += ride;
             }
+            // Published for her PASSENGERS, from the one place that knows it (see DrawnRideMeters).
+            // Written unconditionally, so the sea going off puts a rider back down rather than
+            // leaving them held at the last crest.
+            _drawnRideMeters = rideMeters;
 
             _renderer.RollDegrees = roll + VisualTiltDegrees + _stormExtraRollDegrees;
             _renderer.PitchDegrees = pitch + _stormExtraPitchDegrees;

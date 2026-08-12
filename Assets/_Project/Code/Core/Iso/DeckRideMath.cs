@@ -122,6 +122,44 @@ namespace HiddenHarbours.Core
         }
 
         /// <summary>
+        /// <b>…AND THE DECK IS ALSO GOING UP AND DOWN.</b> <see cref="Ride"/> describes the ROCK CYCLE
+        /// — the in-place roll/heave/pitch a hull's own art draws, a pixel or two of heave at most. On a
+        /// displaced sea (ADR 0023 — the default sea) the whole boat is ALSO translated bodily by the
+        /// water's real lift under her, tens of times larger, and on any real sea that translation IS
+        /// the motion of the deck. A body standing on it takes the whole of it.
+        ///
+        /// <para><b>The lift ADDS; the lean does not change.</b> A world translation moves a deck
+        /// without tilting it, so <paramref name="hullRideMeters"/> touches
+        /// <see cref="DeckRidePose.LiftMeters"/> alone. There is no bracing fraction on it either:
+        /// bracing is what a body does about the TILT of a deck, and no amount of it keeps a fisher at
+        /// one altitude while the planking under their boots rises a metre.</para>
+        ///
+        /// <para><b>It must be the ride the hull APPLIED, never one recomputed here.</b> The storm
+        /// heave filter is a stateful spring-damper (<c>StormRockMath.StepHeaveWeight</c> — hulls
+        /// unweight and fall at g over a sharpened crest), and a stateful smoother agrees only with
+        /// itself: a second instance fed the same sea diverges within a few frames, and it diverges
+        /// hardest exactly when the sea is worst. The caller reads what the hull published having
+        /// drawn; this function only composes it.</para>
+        ///
+        /// <para>A non-finite ride parks the rider rather than launching them — the same discipline
+        /// <see cref="IsRocking"/> keeps for the phase.</para>
+        /// </summary>
+        /// <param name="deckPose">The rock-cycle pose from <see cref="Ride"/> (or
+        /// <see cref="DeckRidePose.Level"/> on a hull drawing no cycle at all).</param>
+        /// <param name="hullRideMeters">The world-vertical metres the hull's drawn image is riding at
+        /// right now, as the hull itself reports having applied them.</param>
+        /// <param name="strength">Scale on this term alone. 0 returns <paramref name="deckPose"/>
+        /// unchanged — exactly the picture before the ride was added (rule 6's A/B).</param>
+        public static DeckRidePose RidingHull(in DeckRidePose deckPose, float hullRideMeters,
+                                              float strength)
+        {
+            if (strength <= 0f || hullRideMeters == 0f) return deckPose;
+            if (float.IsNaN(hullRideMeters) || float.IsInfinity(hullRideMeters)) return deckPose;
+            return new DeckRidePose(deckPose.RollDegrees,
+                                    deckPose.LiftMeters + hullRideMeters * strength);
+        }
+
+        /// <summary>
         /// The phase a hull drawing baked rock FRAME <paramref name="rockFrame"/> is at:
         /// <c>a = i·(360/frameCount)</c>, so the shipped 8-frame sheet puts the crest on frame 2 (90°) and
         /// the trough on frame 6 (270°). The frame-space twin of <c>DoryOarMath.RockPhaseDegrees</c>,

@@ -112,6 +112,23 @@ namespace HiddenHarbours.Boats
         }
 
         /// <inheritdoc/>
+        // …and BECAUSE BoatWaveMotion applies it itself, this is the half of the channel a sprite
+        // hull does answer: it publishes back the lift it just wrote, for whoever is standing on it.
+        //
+        // ⚠️ Held on the COMPONENT, not in this object. A SpriteHullPresenter is a POCO that callers
+        // construct freely — BoatHullPresenterHost.Resolve builds a fresh wrapper on every resolve for
+        // a scene-serialised rig — so the applier and the reader are routinely holding two different
+        // wrappers of the same hull. State parked in a wrapper would be written to one and read from
+        // the other, and the fisher would ride a hull that always reported 0.
+        public float DrawnRideMeters => _directional != null ? _directional.DrawnRideMeters : 0f;
+
+        /// <inheritdoc/>
+        public void SetDrawnRideMeters(float rideMeters)
+        {
+            if (_directional != null) _directional.DrawnRideMeters = rideMeters;
+        }
+
+        /// <inheritdoc/>
         public void SetStormRock(float amplitudeScale, float extraRollDegrees, float extraPitchDegrees)
         {
             // Deliberately a no-op, exactly like SetRockPhaseDegrees: a sprite hull's rock is a

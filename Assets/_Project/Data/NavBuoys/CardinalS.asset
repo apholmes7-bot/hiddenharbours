@@ -1,0 +1,97 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54bf015eaa6d0d74e86ec91b96de49f0, type: 3}
+  m_Name: CardinalS
+  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.NavBuoyDef
+  Id: buoy.cardinal_south
+  MarkType: CardinalS
+  DisplayName: South cardinal
+  Gloss: Yellow over black. Safe water to the SOUTH.
+  LightCharacter: Q6LFl
+  LightText: Q(6) + LFl 15s
+  Sizes:
+  - SizeId: s12
+    DiameterMeters: 1.2
+    RatedWater: "0\u201310 m"
+    Facings:
+    - {fileID: 3746989953097611152, guid: 8d257e21dac4b4a4c93d4d45bf78b73d, type: 3}
+    - {fileID: 1059746745, guid: 8d257e21dac4b4a4c93d4d45bf78b73d, type: 3}
+    - {fileID: -1353683322, guid: 8d257e21dac4b4a4c93d4d45bf78b73d, type: 3}
+    - {fileID: 412521452, guid: 8d257e21dac4b4a4c93d4d45bf78b73d, type: 3}
+    - {fileID: 1321005400, guid: 8d257e21dac4b4a4c93d4d45bf78b73d, type: 3}
+    - {fileID: 1190913067, guid: 8d257e21dac4b4a4c93d4d45bf78b73d, type: 3}
+    - {fileID: -216534375, guid: 8d257e21dac4b4a4c93d4d45bf78b73d, type: 3}
+    - {fileID: 1871172129, guid: 8d257e21dac4b4a4c93d4d45bf78b73d, type: 3}
+    SpriteHeightMeters: 3.875
+    FloatLineFraction: 0.18548387
+    SlopeFollow: 0.30254135
+  - SizeId: s18
+    DiameterMeters: 1.75
+    RatedWater: "5\u201320 m"
+    Facings:
+    - {fileID: -8344970175116150000, guid: 9013ea8398ae6274db56df4a645beb07, type: 3}
+    - {fileID: -140482120, guid: 9013ea8398ae6274db56df4a645beb07, type: 3}
+    - {fileID: -2141738765, guid: 9013ea8398ae6274db56df4a645beb07, type: 3}
+    - {fileID: -514999664, guid: 9013ea8398ae6274db56df4a645beb07, type: 3}
+    - {fileID: -1178656702, guid: 9013ea8398ae6274db56df4a645beb07, type: 3}
+    - {fileID: -840779566, guid: 9013ea8398ae6274db56df4a645beb07, type: 3}
+    - {fileID: -1819108871, guid: 9013ea8398ae6274db56df4a645beb07, type: 3}
+    - {fileID: -1409754152, guid: 9013ea8398ae6274db56df4a645beb07, type: 3}
+    SpriteHeightMeters: 5.65625
+    FloatLineFraction: 0.1878453
+    SlopeFollow: 0.30551675
+  - SizeId: s20
+    DiameterMeters: 2
+    RatedWater: "10\u201330 m"
+    Facings:
+    - {fileID: 1548040932522566243, guid: 9d26e2b84e7041a4f9a51cbe569ff2ee, type: 3}
+    - {fileID: -8629799008623138057, guid: 9d26e2b84e7041a4f9a51cbe569ff2ee, type: 3}
+    - {fileID: 6942681841904115400, guid: 9d26e2b84e7041a4f9a51cbe569ff2ee, type: 3}
+    - {fileID: -5174316932730750942, guid: 9d26e2b84e7041a4f9a51cbe569ff2ee, type: 3}
+    - {fileID: -6127519721278700649, guid: 9d26e2b84e7041a4f9a51cbe569ff2ee, type: 3}
+    - {fileID: 1422745402, guid: 9d26e2b84e7041a4f9a51cbe569ff2ee, type: 3}
+    - {fileID: 1661938718, guid: 9d26e2b84e7041a4f9a51cbe569ff2ee, type: 3}
+    - {fileID: -1432299457, guid: 9d26e2b84e7041a4f9a51cbe569ff2ee, type: 3}
+    SpriteHeightMeters: 6.5625
+    FloatLineFraction: 0.2
+    SlopeFollow: 0.28821766
+  - SizeId: s24
+    DiameterMeters: 2.4
+    RatedWater: "10\u201340 m"
+    Facings:
+    - {fileID: 7828628691891078558, guid: fc8457666f0080c4d945a122fa0a070b, type: 3}
+    - {fileID: 1524475920, guid: fc8457666f0080c4d945a122fa0a070b, type: 3}
+    - {fileID: 252929625, guid: fc8457666f0080c4d945a122fa0a070b, type: 3}
+    - {fileID: -361287286, guid: fc8457666f0080c4d945a122fa0a070b, type: 3}
+    - {fileID: -1275660667, guid: fc8457666f0080c4d945a122fa0a070b, type: 3}
+    - {fileID: -1844727653, guid: fc8457666f0080c4d945a122fa0a070b, type: 3}
+    - {fileID: -335184692, guid: fc8457666f0080c4d945a122fa0a070b, type: 3}
+    - {fileID: -1489904418, guid: fc8457666f0080c4d945a122fa0a070b, type: 3}
+    SpriteHeightMeters: 7.9375
+    FloatLineFraction: 0.20866142
+    SlopeFollow: 0.2708498
+  - SizeId: s30
+    DiameterMeters: 3
+    RatedWater: "20\u2013100 m"
+    Facings:
+    - {fileID: -6622314924578246161, guid: 138cd8e589543ad40acea53760af18cd, type: 3}
+    - {fileID: -933012631, guid: 138cd8e589543ad40acea53760af18cd, type: 3}
+    - {fileID: -1807262496, guid: 138cd8e589543ad40acea53760af18cd, type: 3}
+    - {fileID: -1583682793, guid: 138cd8e589543ad40acea53760af18cd, type: 3}
+    - {fileID: 801262161, guid: 138cd8e589543ad40acea53760af18cd, type: 3}
+    - {fileID: 1738234356, guid: 138cd8e589543ad40acea53760af18cd, type: 3}
+    - {fileID: -2144011454, guid: 138cd8e589543ad40acea53760af18cd, type: 3}
+    - {fileID: 672558643, guid: 138cd8e589543ad40acea53760af18cd, type: 3}
+    SpriteHeightMeters: 10.09375
+    FloatLineFraction: 0.21981424
+    SlopeFollow: 0.2538071
+  DefaultSizeIndex: 1
