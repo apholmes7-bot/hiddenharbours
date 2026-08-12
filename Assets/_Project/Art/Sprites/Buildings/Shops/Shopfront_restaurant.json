@@ -1,0 +1,32 @@
+{
+  "sheet": "Shopfront_restaurant.png",
+  "rig": "shopfront",
+  "build": "wharfDiner",
+  "facings": 8,
+  "cols": 6,
+  "rows": 2,
+  "cellW": 650,
+  "cellH": 584,
+  "pivotNote": "cell px from the cell's TOP-LEFT; Unity wants (x/cellW, (cellH-y)/cellH)",
+  "pivotX": 325,
+  "pivotY": 375,
+  "nativeCellW": 1320,
+  "nativeCellH": 1180,
+  "cropX": 335,
+  "cropY": 425,
+  "convention": "CounterClockwise",
+  "conventionNote": "MEASURED at bake time from the door anchor; the correction is already applied, so cell i genuinely depicts +45*i",
+  "footprintWd": 9,
+  "footprintLn": 11.5,
+  "stackKey": "stacks",
+  "anchors": [
+    { "cell": 0, "door": {"x": 244.36, "y": 244.4704}, "ridge": {"x": 325, "y": 127.0467}, "stacks": [{"x": 264.52, "y": 91.5023}] },
+    { "cell": 1, "door": {"x": 398.0866, "y": 242.4593}, "ridge": {"x": 325, "y": 127.0467}, "stacks": [{"x": 282.2342, "y": 64.0129}] },
+    { "cell": 2, "door": {"x": 509, "y": 310.9089}, "ridge": {"x": 325, "y": 127.0467}, "stacks": [{"x": 325, "y": 52.6265}] },
+    { "cell": 3, "door": {"x": 512.1287, "y": 409.7224}, "ridge": {"x": 325, "y": 127.0467}, "stacks": [{"x": 367.7658, "y": 64.0129}] },
+    { "cell": 4, "door": {"x": 405.64, "y": 481.0162}, "ridge": {"x": 325, "y": 127.0467}, "stacks": [{"x": 385.48, "y": 91.5023}] },
+    { "cell": 5, "door": {"x": 251.9134, "y": 483.0273}, "ridge": {"x": 325, "y": 127.0467}, "stacks": [{"x": 367.7658, "y": 118.9916}] },
+    { "cell": 6, "door": {"x": 141, "y": 414.5777}, "ridge": {"x": 325, "y": 127.0467}, "stacks": [{"x": 325, "y": 130.3781}] },
+    { "cell": 7, "door": {"x": 137.8713, "y": 315.7642}, "ridge": {"x": 325, "y": 127.0467}, "stacks": [{"x": 282.2342, "y": 118.9916}] }
+  ]
+}

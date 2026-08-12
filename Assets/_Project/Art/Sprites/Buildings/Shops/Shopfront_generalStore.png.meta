@@ -1,0 +1,338 @@
+fileFormatVersion: 2
+guid: 539fac5a1c397564a80c15d47ba4103b
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8676992394424331100
+    second: Shopfront_generalStore_0
+  - first:
+      213: 5609454292234924325
+    second: Shopfront_generalStore_1
+  - first:
+      213: 1861182050058849744
+    second: Shopfront_generalStore_2
+  - first:
+      213: 6812904172280613199
+    second: Shopfront_generalStore_3
+  - first:
+      213: -8254994082533387373
+    second: Shopfront_generalStore_4
+  - first:
+      213: 8045696243041516649
+    second: Shopfront_generalStore_5
+  - first:
+      213: 6436435335120821985
+    second: Shopfront_generalStore_6
+  - first:
+      213: 1300353177986248521
+    second: Shopfront_generalStore_7
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Shopfront_generalStore_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 517
+        width: 554
+        height: 517
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34622824}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4b16373e3b9929547b26e007659bf7df
+      internalID: 2016167866
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shopfront_generalStore_d1
+      rect:
+        serializedVersion: 2
+        x: 554
+        y: 517
+        width: 554
+        height: 517
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34622824}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ec43c627bd785c44ab74902288e9413d
+      internalID: 1407102303
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shopfront_generalStore_d2
+      rect:
+        serializedVersion: 2
+        x: 1108
+        y: 517
+        width: 554
+        height: 517
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34622824}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 63eaa1e210896e94c8171286fe24e5da
+      internalID: 1951903452
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shopfront_generalStore_d3
+      rect:
+        serializedVersion: 2
+        x: 1662
+        y: 517
+        width: 554
+        height: 517
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34622824}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d14d13d463d0d5b4287abfbbaa665417
+      internalID: 1058277287
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shopfront_generalStore_d4
+      rect:
+        serializedVersion: 2
+        x: 2216
+        y: 517
+        width: 554
+        height: 517
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34622824}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6fa4c2d5f3a98b643a31fd745d8c934c
+      internalID: 795394115
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shopfront_generalStore_d5
+      rect:
+        serializedVersion: 2
+        x: 2770
+        y: 517
+        width: 554
+        height: 517
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34622824}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e10988880abe48448b1b305159be94ae
+      internalID: 1596251339
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shopfront_generalStore_d6
+      rect:
+        serializedVersion: 2
+        x: 3324
+        y: 517
+        width: 554
+        height: 517
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34622824}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b7c33735e3a3d7e43b58b39f11e03324
+      internalID: -945819209
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shopfront_generalStore_d7
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 554
+        height: 517
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34622824}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 728c39ba4d4aaf44f9c5f2a5ed88716b
+      internalID: -482282222
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 53c6b2b2ccb0b774baa426033c4f49a8
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Shopfront_generalStore_d0: 2016167866
+      Shopfront_generalStore_d1: 1407102303
+      Shopfront_generalStore_d2: 1951903452
+      Shopfront_generalStore_d3: 1058277287
+      Shopfront_generalStore_d4: 795394115
+      Shopfront_generalStore_d5: 1596251339
+      Shopfront_generalStore_d6: -945819209
+      Shopfront_generalStore_d7: -482282222
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

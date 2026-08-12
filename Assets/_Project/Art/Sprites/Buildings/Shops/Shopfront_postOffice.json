@@ -1,0 +1,32 @@
+{
+  "sheet": "Shopfront_postOffice.png",
+  "rig": "shopfront",
+  "build": "villagePost",
+  "facings": 8,
+  "cols": 8,
+  "rows": 1,
+  "cellW": 498,
+  "cellH": 477,
+  "pivotNote": "cell px from the cell's TOP-LEFT; Unity wants (x/cellW, (cellH-y)/cellH)",
+  "pivotX": 249,
+  "pivotY": 317,
+  "nativeCellW": 1320,
+  "nativeCellH": 1180,
+  "cropX": 411,
+  "cropY": 483,
+  "convention": "CounterClockwise",
+  "conventionNote": "MEASURED at bake time from the door anchor; the correction is already applied, so cell i genuinely depicts +45*i",
+  "footprintWd": 7,
+  "footprintLn": 8.5,
+  "stackKey": "stacks",
+  "anchors": [
+    { "cell": 0, "door": {"x": 195.24, "y": 214.8728}, "ridge": {"x": 249, "y": 110.1067}, "stacks": [] },
+    { "cell": 1, "door": {"x": 307.1525, "y": 216.0423}, "ridge": {"x": 249, "y": 110.1067}, "stacks": [] },
+    { "cell": 2, "door": {"x": 385, "y": 267.7357}, "ridge": {"x": 249, "y": 110.1067}, "stacks": [] },
+    { "cell": 3, "door": {"x": 383.1806, "y": 339.6716}, "ridge": {"x": 249, "y": 110.1067}, "stacks": [] },
+    { "cell": 4, "door": {"x": 302.76, "y": 389.7111}, "ridge": {"x": 249, "y": 110.1067}, "stacks": [] },
+    { "cell": 5, "door": {"x": 190.8475, "y": 388.5416}, "ridge": {"x": 249, "y": 110.1067}, "stacks": [] },
+    { "cell": 6, "door": {"x": 113, "y": 336.8482}, "ridge": {"x": 249, "y": 110.1067}, "stacks": [] },
+    { "cell": 7, "door": {"x": 114.8194, "y": 264.9123}, "ridge": {"x": 249, "y": 110.1067}, "stacks": [] }
+  ]
+}
