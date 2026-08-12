@@ -33,6 +33,7 @@ namespace HiddenHarbours.Tests.PlayMode
     public class DeckRiderPlayTests
     {
         private readonly List<Object> _spawned = new();
+        private readonly object _seaOwner = new();
 
         [SetUp]
         public void SetUp()
@@ -46,6 +47,7 @@ namespace HiddenHarbours.Tests.PlayMode
         [TearDown]
         public void TearDown()
         {
+            DisplacedSea.Clear(_seaOwner);   // never leak an active sea into another fixture
             EventBus.Clear<ControlModeChanged>();
             EventBus.Clear<ActiveBoatChanged>();
             InteractionGate.Reset();
@@ -373,6 +375,107 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.AreEqual(0f, r.Rider.Pose.RollDegrees, 1e-4f, "and her passenger stands square again");
             Assert.AreEqual(0f, Quaternion.Angle(r.RiderSr.transform.localRotation, Quaternion.identity),
                             1e-3f, "with nothing frozen on the child transform");
+        }
+
+        // ---- THE DECK GOES UP AND DOWN, AND SO DOES SHE (owner, 2026-08-11) ------------------------
+        //
+        // "The character stays static in space with a rock animation but is not fixed to the same point
+        // on the bobbing boat deck." The rock CYCLE reached her (that is everything above); the
+        // DISPLACED RIDE — the sea lifting the whole boat, metres of it against the cycle's pixel or
+        // two — did not reach her at all, so she held her physics-root altitude while the drawn deck
+        // travelled past her. The laws live in EditMode (DeckRiderDisplacedRideTests, against a real
+        // mesh chain and a scripted sea); what these two prove is the same thing over the LIVE loop —
+        // that the hull's publication and the rider's read land in the right order in a real frame,
+        // and that a sprite hull publishes the transform lift she applied herself.
+
+        /// <summary>Give the rig a wave-coupled SPRITE hull on a live sea: a real rock grid (so
+        /// BoatWaveMotion drives the frame path the shipped dory uses) and a real BoatWaveMotion
+        /// wired through the presenter seam.</summary>
+        private BoatWaveMotion GiveHerASeaToRideOn(Rig r)
+        {
+            GameServices.Environment = new RoughSea();
+            r.Hull.ConfigureRock(new Sprite[8 * 8], 8);
+            Assert.IsTrue(r.Hull.HasRockGrid, "harness: the rock grid must gate ON");
+            var wave = r.Boat.gameObject.AddComponent<BoatWaveMotion>();
+            wave.Configure(r.HullVisual, new SpriteHullPresenter(r.Hull));
+            return wave;
+        }
+
+        /// <summary>The rider's lift, split into the two channels it is made of — the rock cycle
+        /// recomputed from the phase the hull published (pure, stateless maths, pinned by
+        /// <c>DeckRideMathTests</c>), and the DISPLACED RIDE read straight off the hull. Both are read
+        /// after a frame has been drawn, so all three numbers belong to the same LateUpdate.</summary>
+        private static void SplitTheLift(Rig r, BoatWaveMotion wave, out float rock, out float ride)
+        {
+            rock = DeckRideMath.Ride(wave.RockPhaseDegrees, 5f, 1.6f, 0.02f, 32f, 0.6f, 1f).LiftMeters;
+            ride = r.Rider.HullDrawnRideMeters;
+        }
+
+        [UnityTest]
+        public IEnumerator OnDeck_TheFisherRidesTheHullsDisplacedHEAVE_NotOnlyItsRock()
+        {
+            // THE DEFECT, over the live loop. Pre-fix the rider's lift is the rock term alone and the
+            // ride term is simply absent from it, however far the boat heaves.
+            var r = NewRig(rowed: true, helmReach: 0.1f);      // tight reach: stay ON THE DECK
+            var wave = GiveHerASeaToRideOn(r);
+            DisplacedSea.Publish(_seaOwner, new DisplacedSeaState(1.5f, 0.6f));
+            yield return null;
+
+            r.Rider.ConfigureRide(rideStrength: 1f, deckRollDegrees: 5f, deckHeavePixels: 1.6f,
+                                  deckPitchLiftMeters: 0.02f, pixelsPerUnit: 32f, footing: 0.6f,
+                                  hullRide: 1f);
+            Assert.IsTrue(r.Switcher.TryInteract(), "board");
+            Assert.AreEqual(ControlMode.OnDeck, r.Switcher.Mode);
+
+            // Bounded by the SEA, not by a frame count (headless frames are not wall time): sail until
+            // she is genuinely riding, and say so if the harness never made her.
+            int riding = 0;
+            for (int f = 0; f < 400 && riding < 20; f++)
+            {
+                yield return null;
+                SplitTheLift(r, wave, out float rock, out float ride);
+
+                Assert.AreEqual(rock + ride, r.Rider.Pose.LiftMeters, 1e-3f,
+                    "the fisher's lift is the deck's rock PLUS the ride the hull reports having drawn " +
+                    "— read from the hull, never sampled a second time");
+                Assert.AreEqual(r.Rider.Pose.LiftMeters, r.RiderSr.transform.localPosition.y, 1e-3f,
+                    "…and it reaches the CHILD transform that is actually drawn");
+
+                if (Mathf.Abs(ride) > 0.05f) riding++;
+            }
+            Assert.GreaterOrEqual(riding, 20,
+                "the harness never lifted the boat more than 5 cm, so the identity above was vacuous — " +
+                "check the displaced sea is published and the sea state is rough enough.");
+        }
+
+        [UnityTest]
+        public IEnumerator OnDeck_WithNoDisplacedSea_TheFisherIsExactlyAsBefore()
+        {
+            // The negative control, live: with nothing published there is no ride to take, the hull
+            // reports exactly 0, and the rider's lift is the rock cycle and nothing else — the picture
+            // that shipped before any of this.
+            var r = NewRig(rowed: true, helmReach: 0.1f);
+            var wave = GiveHerASeaToRideOn(r);                // …but NO DisplacedSea.Publish
+            yield return null;
+
+            r.Rider.ConfigureRide(rideStrength: 1f, deckRollDegrees: 5f, deckHeavePixels: 1.6f,
+                                  deckPitchLiftMeters: 0.02f, pixelsPerUnit: 32f, footing: 0.6f,
+                                  hullRide: 1f);
+            Assert.IsTrue(r.Switcher.TryInteract(), "board");
+
+            bool rocked = false;
+            for (int f = 0; f < 200; f++)
+            {
+                yield return null;
+                SplitTheLift(r, wave, out float rock, out float ride);
+                Assert.AreEqual(0f, ride, 0f,
+                    "displaced sea OFF: the hull draws no ride, so she publishes exactly 0");
+                Assert.AreEqual(rock, r.Rider.Pose.LiftMeters, 1e-3f,
+                    "…and her passenger's lift is the rock cycle, untouched");
+                rocked |= wave.IsRocking && Mathf.Abs(rock) > 1e-5f;
+            }
+            Assert.IsTrue(rocked,
+                "harness: the hull never rocked at all, so 'the rock cycle is untouched' proved nothing");
         }
 
         // ---- ORIENTATION: the hull turns, the figure does not spin (owner playtest 2026-08-07) ------

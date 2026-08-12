@@ -153,6 +153,46 @@ namespace HiddenHarbours.Boats
         void SetDisplacedHeaveMeters(float heaveMeters);
 
         /// <summary>
+        /// <b>The displaced ride this hull is ACTUALLY DRAWING right now</b> — world-vertical metres
+        /// her whole image is translated by, <i>as applied</i>: post storm weight-filter, post settle
+        /// sink, post whichever gate the drawing path keeps. Exactly 0 with the displaced sea off on
+        /// every path, so a reader adds nothing to the A/B's off side.
+        ///
+        /// <para><b>Why the seam carries the OUTPUT and not only the input</b> (owner, 2026-08-11: a
+        /// character on deck <i>"stays static in space with a rock animation but is not fixed to the
+        /// same point on the bobbing boat deck"</i>). <see cref="SetDisplacedHeaveMeters"/> carries the
+        /// SEA'S LIFT inward, and what the hull then draws is not that number: a mesh hull subtracts
+        /// her settle sink inside <see cref="MeshHullDriver"/>, and draws nothing at all with the sea
+        /// off. Anything that must stay ON this deck — the fisher standing on it first — needs the
+        /// number the picture moved by, and exactly one thing knows it: whoever moved the picture.
+        /// Re-deriving it instead would mean a second copy of a STATEFUL spring
+        /// (<see cref="StormRockMath.StepHeaveWeight"/>), which agrees only with itself.</para>
+        ///
+        /// <para><b>Who writes it.</b> The MESH path OWNS it: <see cref="MeshHullDriver"/> computes the
+        /// ride as it folds it into the renderer's heave channel, so a mesh hull with no
+        /// <see cref="BoatWaveMotion"/> at all still reports the waterline sink she is genuinely
+        /// drawing — and <see cref="SetDrawnRideMeters"/> is ignored there. The SPRITE paths are the
+        /// other way round: the ride is a transform write <see cref="BoatWaveMotion"/> makes itself, so
+        /// it publishes what it wrote. Same split, and the same reason, as the sink's two application
+        /// sites in <see cref="HullSettleMath"/>.</para>
+        ///
+        /// <para>⚠️ It is the RIDE only — never the rock CYCLE (a rider draws that from
+        /// <see cref="BoatWaveMotion.RockPhaseDegrees"/> at its own amplitudes, and adding both would
+        /// double it) and never the B2.5 sprite SURGE, which belongs to that hull's storm rock
+        /// language rather than to the sea moving her bodily.</para>
+        /// </summary>
+        float DrawnRideMeters { get; }
+
+        /// <summary>
+        /// Publish the displaced ride just applied to this hull's visual — see
+        /// <see cref="DrawnRideMeters"/>. Called by <see cref="BoatWaveMotion"/> on the paths where IT
+        /// is the applier (the sprite hulls); <b>ignored by a mesh presenter</b>, deliberately and in
+        /// the same family as a sprite presenter ignoring <see cref="SetRockPhaseDegrees"/> — the mesh
+        /// driver applies its own ride and must be the one to report it.
+        /// </summary>
+        void SetDrawnRideMeters(float rideMeters);
+
+        /// <summary>
         /// The STORM ROCK channel (ADR 0018 B2.5), written by <see cref="BoatWaveMotion"/> every tick:
         /// <paramref name="amplitudeScale"/> multiplies the hull's own canned rock amplitudes (1 =
         /// the tuned calm cycle, exactly), and the extras are REAL additional attitude degrees from

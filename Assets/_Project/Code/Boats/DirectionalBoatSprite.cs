@@ -122,6 +122,20 @@ namespace HiddenHarbours.Boats
         /// </summary>
         public float VisualTiltDegrees { get; set; }
 
+        /// <summary>
+        /// The displaced-sea RIDE (world metres) <see cref="BoatWaveMotion"/> has lifted this hull's
+        /// visual by this tick — the seam's <see cref="IBoatHullPresenter.DrawnRideMeters"/>, read by
+        /// whoever is standing on her deck so they travel with the planking instead of holding station
+        /// while the boat bobs under them (owner, 2026-08-11). 0 (the default) with the displaced sea
+        /// off, which is the A/B's off side exactly.
+        ///
+        /// <para>It lives on the COMPONENT, next to <see cref="VisualTiltDegrees"/> and for the same
+        /// reason: the presenter that writes it and the presenter that reads it are POCO wrappers
+        /// built on demand, and are routinely not the same object. The component is the one thing both
+        /// ends are guaranteed to share.</para>
+        /// </summary>
+        public float DrawnRideMeters { get; set; }
+
         /// <summary>The mode this prototype is currently presenting. Settable so the harness can toggle it live.</summary>
         public RotationMode Mode
         {
