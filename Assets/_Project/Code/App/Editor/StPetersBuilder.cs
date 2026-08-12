@@ -498,6 +498,65 @@ namespace HiddenHarbours.App.Editor
             }
         }
 
+        /// <summary>
+        /// Dresses the general store's counter in the REAL baked fixture, turned so its service face
+        /// meets the customer walking up from <see cref="VillageGreen"/>.
+        ///
+        /// <para><b>The art only. Nothing here moves the counter.</b> Its position is
+        /// <see cref="GeneralStoreCounterPos"/> and the five vendors, the market, the buyer and the sell
+        /// point are all components on that one GameObject — so the stand-point every one of them is
+        /// reached at is the transform this method is handed, and this method never touches it. The
+        /// fixture's pivot is its GROUND CENTRE, which is why no offset is needed and why adding one
+        /// would sink it: under the ¾ camera the near half of the footprint projects below that point.</para>
+        ///
+        /// <para><b>The facing is derived, never typed.</b> <c>ShopFixtureCatalog.FacingToward</c> reads
+        /// the bake's own per-facing service-face anchors through <c>BuildingFacing</c> — the same call
+        /// that aims every shop door and every village house, and the reason there is one piece of sign
+        /// reasoning in the repo instead of two. A counter that faced the wrong way would read as an art
+        /// bug, and the arithmetic version of this got a schoolhouse 92° wrong before #495 measured it.</para>
+        ///
+        /// <para>Falls back to the tinted placeholder, loudly, when the fixture has not been baked or
+        /// sliced — a checkout that has not run the bake still gets a village it can trade in.</para>
+        /// </summary>
+        static void PlaceStoreCounterArt(GameObject counterGo, Sprite fallbackSprite)
+        {
+            var fixture = HiddenHarbours.Art.Editor.ShopFixtureCatalog.Find("counter", "generalStore");
+            if (fixture.IsValid)
+            {
+                int facing = HiddenHarbours.Art.Editor.ShopFixtureCatalog.FacingToward(
+                    fixture, counterGo.transform.position, VillageGreen);
+                Sprite baked = HiddenHarbours.Art.Editor.ShopFixtureCatalog.LoadFacing(fixture, facing);
+                if (baked != null)
+                {
+                    // Configure pins unit scale, identity rotation, a white tint (this REPLACES a tinted
+                    // placeholder — a leftover tint would multiply through the baked art) and YSortSprite.
+                    HiddenHarbours.Art.Editor.ShopFixtureCatalog.Configure(counterGo, fixture, baked);
+                    return;
+                }
+
+                Debug.LogWarning(
+                    $"[StPetersBuilder] the store counter's facing {facing} has no sprite — its sheet is " +
+                    $"missing or unsliced ({fixture.SheetPath}). Standing the placeholder instead. " +
+                    "⚠️ A sheet can be Multiple-mode and still not be sliced this kit's way: run " +
+                    "Hidden Harbours ▸ Art ▸ Bake Shop Fixtures, then ▸ Slice Shop Fixture Sheets.");
+            }
+            else
+            {
+                Debug.LogWarning(
+                    "[StPetersBuilder] no baked counter in the shop-fixture contract, so the store is " +
+                    "trading over a tinted rectangle. Run Hidden Harbours ▸ Art ▸ Bake Shop Fixtures.");
+            }
+
+            var sr = counterGo.GetComponent<SpriteRenderer>();
+            if (sr == null) sr = counterGo.AddComponent<SpriteRenderer>();
+            sr.sprite = fallbackSprite;
+            sr.color = new Color(0.55f, 0.42f, 0.28f);   // a shop counter in oiled wood, until art lands
+            sr.sortingOrder = HiddenHarbours.Art.Editor.ShopFixtureCatalog.SortingOrder;
+            counterGo.transform.localScale = new Vector3(1.6f, 0.9f, 1f);
+            if (counterGo.GetComponent<YSortSprite>() == null)
+                counterGo.AddComponent<YSortSprite>();   // walk-up prop: layers by world Y (see the freezer)
+        }
+
         // --- St Peters DOCK / mooring geometry (the persistent rig binds here; mirrors the cove pattern) ---
         // ⭐ THE DOCK IS ON THE EAST END, opposite the sandbar (§5.1a, ruled 2026-07-23): you walk out the
         // west and you come home under power to the east. The arrival point sits within DockZoneRadius of
@@ -1262,12 +1321,7 @@ namespace HiddenHarbours.App.Editor
             // in the first hour instead of explained in a tooltip.
             var storeCounter = new GameObject("GeneralStoreCounter");
             storeCounter.transform.position = GeneralStoreCounterPos;
-            var counterSr = storeCounter.AddComponent<SpriteRenderer>();
-            counterSr.sprite = waterSprite;
-            counterSr.color = new Color(0.55f, 0.42f, 0.28f);   // a shop counter in oiled wood, until art lands
-            counterSr.sortingOrder = 3;   // pre-Play default only; the YSortSprite below OWNS the order
-            storeCounter.transform.localScale = new Vector3(1.6f, 0.9f, 1f);
-            storeCounter.AddComponent<YSortSprite>();   // walk-up prop: layers by world Y (see the freezer)
+            PlaceStoreCounterArt(storeCounter, waterSprite);
 
             // The wallet is the persistent services root's (St Peters IS the start scene, so it is in this
             // scene rather than behind a proxy — the cove's pattern, not the creek's).
