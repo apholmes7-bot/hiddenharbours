@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 825beb7e63856174e8e43fc81e6c248c, type: 3}
+  m_Name: bulk_s25k_diesel
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.FuelContainerDef
+  Id: fuelstore.diesel_bulk_s25k
+  DisplayName: 25 kL Diesel Bulk Tank
+  VesselType: bulk
+  SizeKey: s25k
+  Grade: diesel
+  LevelRead: board
+  Carriable: 0
+  CapacityLitres: 25000
+  TareKg: 3100
+  FullKg: 24100
+  Facings: 4
+  FillFractions:
+  - 0
+  - 0.25
+  - 0.5
+  - 0.75
+  - 1
+  Frames:
+  - {fileID: 1010416706, guid: 00a7a6817e4511b40b2798d2f41afc88, type: 3}
+  - {fileID: 417637960, guid: 00a7a6817e4511b40b2798d2f41afc88, type: 3}
+  - {fileID: 481855060, guid: 00a7a6817e4511b40b2798d2f41afc88, type: 3}
+  - {fileID: 2010599723, guid: 00a7a6817e4511b40b2798d2f41afc88, type: 3}
+  - {fileID: 224286029, guid: 00a7a6817e4511b40b2798d2f41afc88, type: 3}
+  - {fileID: -1749248035, guid: 00a7a6817e4511b40b2798d2f41afc88, type: 3}
+  - {fileID: -2033639174, guid: 00a7a6817e4511b40b2798d2f41afc88, type: 3}
+  - {fileID: 1760524386, guid: 00a7a6817e4511b40b2798d2f41afc88, type: 3}
+  - {fileID: -1099233697, guid: 00a7a6817e4511b40b2798d2f41afc88, type: 3}
+  - {fileID: -1962930745, guid: 00a7a6817e4511b40b2798d2f41afc88, type: 3}
+  - {fileID: 1649957287, guid: 00a7a6817e4511b40b2798d2f41afc88, type: 3}
+  - {fileID: -576021598, guid: 00a7a6817e4511b40b2798d2f41afc88, type: 3}
+  - {fileID: 1837799481, guid: 00a7a6817e4511b40b2798d2f41afc88, type: 3}
+  - {fileID: 1091088192, guid: 00a7a6817e4511b40b2798d2f41afc88, type: 3}
+  - {fileID: -279534829, guid: 00a7a6817e4511b40b2798d2f41afc88, type: 3}
+  - {fileID: 758260274, guid: 00a7a6817e4511b40b2798d2f41afc88, type: 3}
+  - {fileID: -1911304949, guid: 00a7a6817e4511b40b2798d2f41afc88, type: 3}
+  - {fileID: 321451442, guid: 00a7a6817e4511b40b2798d2f41afc88, type: 3}
+  - {fileID: -1502569599, guid: 00a7a6817e4511b40b2798d2f41afc88, type: 3}
+  - {fileID: 222986327, guid: 00a7a6817e4511b40b2798d2f41afc88, type: 3}

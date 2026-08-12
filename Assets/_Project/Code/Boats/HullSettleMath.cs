@@ -24,19 +24,35 @@ namespace HiddenHarbours.Boats
     /// honest, unclamped <c>zHeave = H</c>):</para>
     ///
     /// <code>
-    ///   water covers a face at rig height r  ⟺  r·(cos²E + sinE) &lt; L·(cosE + sinE) − H·sinE − H·cosE
-    ///   ⇒  the drawn waterline sits at   r_wl = (L − H) · (cosE + sinE) / (cos²E + sinE)
+    ///   water covers a face at rig height r  ⟺  r / sinE  &lt;  L·(cosE + sinE) − H·sinE − H·cosE
+    ///   ⇒  the drawn waterline sits at   r_wl = (L − H) · sinE · (cosE + sinE)
     /// </code>
     ///
     /// <para>L is the sea's lift under her, H is her own screen ride, E is the rig's bake elevation
     /// (40° for every boat rig in the fleet). The bracket <c>(L − H)</c> is exactly the sink the
-    /// driver applied — so the water is drawn climbing <b>1.1457 rig-metres of planking for every
+    /// driver applied — so the water is drawn climbing <b>0.9056 rig-metres of planking for every
     /// metre the hull was sunk</b>. <c>HullMeshDef.RestingDraftMeters</c> is documented as
     /// "how deep this hull's design waterline sits above the rig origin" and was applied raw, so
-    /// every mesh hull in the fleet has been drawing her waterline <b>14.57 % deeper than her own
-    /// datum says</b>: +16 mm on the dory, +73 mm on the lobster boat, +231 mm on a stern trawler,
-    /// +360 mm on the tanker. Constant, per-hull, and squarely a MEAN-level error — it does not
-    /// average out, because it is not a wobble.</para>
+    /// every mesh hull in the fleet drew her waterline at the wrong depth until the gain was
+    /// inverted out — the defect this file exists to close.</para>
+    ///
+    /// <para><b>⚠️ RE-DERIVED UNDER ADR 0033, and the number moved.</b> The law's first line used to
+    /// read <c>r·(cos²E + sinE) &lt; …</c>, giving a gain of <c>(cos+sin)/(cos²+sin) = 1.1457</c>.
+    /// That coefficient was never a fact about flotation: it was the hull's depth ramp being
+    /// 1/sin(E) too steep (#491), the same unit error that put a north-sailing stern 1.64 m in front
+    /// of the sea. ADR 0033's y→z shear lands the height axis on the true iso relation
+    /// <c>1/sin(E)</c> — the derivation is written out on
+    /// <c>DisplacedWaterMath.WatertightZHeaveMeters</c>, of which this is the <c>ry = 0</c> case —
+    /// so the gain becomes <c>sinE·(cosE + sinE) = 0.9056</c> at 40°.</para>
+    ///
+    /// <para><b>What that does and does not change for the fleet.</b> The gain is INVERTED by
+    /// <see cref="AppliedSinkMeters"/>, so the drawn waterline is <c>W</c> exactly, before and
+    /// after — no <c>RestingDraftMeters</c> in any def needs re-typing, and that identity is the
+    /// thing to check first when reading the fleet table. What moves is the applied sink, from
+    /// <c>0.8728·W</c> to <c>1.1043·W</c> (×1.2652): every mesh hull now sits <c>0.2315·W</c> metres
+    /// lower on screen — 25 mm on the dory, 116 mm on the lobster boat, 572 mm on the tanker — which
+    /// is the visible half of this change and is why the whole fleet's flotation was re-rendered
+    /// rather than re-tuned.</para>
     ///
     /// <para><b>The fix is to invert the projection, not to re-tune the data.</b>
     /// <see cref="AppliedSinkMeters"/> pre-divides the datum by the gain, so
@@ -68,29 +84,51 @@ namespace HiddenHarbours.Boats
         public const float DefaultBakeElevationDegrees = 40f;
 
         /// <summary>
-        /// <b>How much drawn waterline one metre of sink buys</b> — <c>(cosE + sinE)/(cos²E + sinE)</c>,
-        /// the projection gain solved out of the shared z-buffer's own law (see the class doc).
-        /// 1.14574 at the fleet's 40° bake.
+        /// The shallowest bake elevation the shared depth contract is willing to draw through — a
+        /// GUARD, not a tunable, and new with ADR 0033 (see <see cref="IsoWaterlineGain"/> for why
+        /// the old law needed none).
         ///
-        /// <para>Well-conditioned across the whole legal range: the denominator
-        /// <c>cos²E + sinE</c> never drops below 1 on [0°, 90°] (it is exactly 1 at both ends and
-        /// peaks at 1.25 around 30°), so there is no singularity to guard, and the gain returns
-        /// smoothly to exactly 1 at a degenerate side-on (0°) or plan (90°) bake. The gain itself
-        /// peaks at ≈1.2257 near 63°. An elevation outside the range is a broken def, not a pose,
-        /// and falls back to <see cref="DefaultBakeElevationDegrees"/>.</para>
+        /// <para>Derived from where the gain's <c>sinE</c> stops being a scale and starts being a
+        /// singularity: at 10° the gain is 0.201, so a hull sinks ~5× her datum — already a broken
+        /// picture, but bounded; at 5° it is 12×, at 1° it is 57× and climbing hyperbolically. No
+        /// rig in the fleet bakes anywhere near it (every one is 40°), so nothing shipped moves —
+        /// this only decides what a CORRUPTED elevation field does, and falling back to the fleet's
+        /// bake is strictly better than drawing a boat fifty draughts under the sea.</para>
+        /// </summary>
+        public const float MinBakeElevationDegrees = 10f;
+
+        /// <summary>
+        /// <b>How much drawn waterline one metre of sink buys</b> — <c>sinE·(cosE + sinE)</c>, the
+        /// projection gain solved out of the shared z-buffer's own law (see the class doc).
+        /// 0.90558 at the fleet's 40° bake.
+        ///
+        /// <para><b>⚠️ It is no longer well-conditioned, and that is why
+        /// <see cref="MinBakeElevationDegrees"/> exists.</b> The old gain
+        /// <c>(cos+sin)/(cos²+sin)</c> sat on a denominator that never dropped below 1, so it
+        /// returned smoothly to exactly 1 at both degenerate bakes and needed no guard. This one
+        /// carries a bare <c>sinE</c> — it is 0 at a side-on (0°) bake and 1 at a plan (90°) one,
+        /// peaking at ≈1.2071 near 67.5° — and <see cref="AppliedSinkMeters"/> DIVIDES by it. At 1°
+        /// that would sink a hull 57× her own draft, clean out of sight under the sea. The vanishing
+        /// is not this function's alone: ADR 0033's whole depth contract carries a <c>1/sin</c> (the
+        /// shear itself is <c>cos(1−sin)/sin</c>), so a near-side-on bake is degenerate for the
+        /// render, not merely awkward here.</para>
+        ///
+        /// <para>An elevation outside <c>[<see cref="MinBakeElevationDegrees"/>, 90°]</c> is a
+        /// broken def, not a pose, and falls back to <see cref="DefaultBakeElevationDegrees"/>.</para>
         /// </summary>
         public static float IsoWaterlineGain(float bakeElevationDegrees)
         {
             float e = SaneElevationDegrees(bakeElevationDegrees) * Mathf.Deg2Rad;
             float c = Mathf.Cos(e);
             float s = Mathf.Sin(e);
-            return (c + s) / (c * c + s);
+            return s * (c + s);
         }
 
         /// <summary>
         /// <b>The sink to apply so the sea draws the waterline exactly at
         /// <paramref name="designWaterlineMeters"/></b> — the datum divided by
-        /// <see cref="IsoWaterlineGain"/>. 0.8728 × the datum at 40°.
+        /// <see cref="IsoWaterlineGain"/>. 1.1043 × the datum at 40° (0.8728 × it before ADR 0033 —
+        /// the drawn waterline is <c>W</c> either way; what moved is how deep she must sit to draw it).
         ///
         /// <para>A hull with no waterline (0 — an unset def, or a sprite whose pivot already IS her
         /// waterline) sinks by exactly 0, which is bit-identical to the pre-fix path: the A/B
@@ -148,7 +186,7 @@ namespace HiddenHarbours.Boats
         /// (the <c>GameConfig</c> zero-fill class of defect) rather than silently drawing a hull
         /// through a degenerate projection.</summary>
         private static float SaneElevationDegrees(float bakeElevationDegrees)
-            => bakeElevationDegrees > 0f && bakeElevationDegrees <= 90f
+            => bakeElevationDegrees >= MinBakeElevationDegrees && bakeElevationDegrees <= 90f
                 ? bakeElevationDegrees
                 : DefaultBakeElevationDegrees;
     }

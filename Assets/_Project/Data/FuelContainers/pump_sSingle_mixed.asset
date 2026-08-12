@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 825beb7e63856174e8e43fc81e6c248c, type: 3}
+  m_Name: pump_sSingle_mixed
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.FuelContainerDef
+  Id: fuelstore.mixed_pump_ssingle
+  DisplayName: Mixed Dispenser
+  VesselType: pump
+  SizeKey: sSingle
+  Grade: mixed
+  LevelRead: none
+  Carriable: 0
+  CapacityLitres: 0
+  TareKg: 95
+  FullKg: 95
+  Facings: 4
+  FillFractions:
+  - 0
+  Frames:
+  - {fileID: 1836515857, guid: 45a97c88022f2a84593b00666a05e861, type: 3}
+  - {fileID: -1012338345, guid: 45a97c88022f2a84593b00666a05e861, type: 3}
+  - {fileID: 613290362, guid: 45a97c88022f2a84593b00666a05e861, type: 3}
+  - {fileID: 976341954, guid: 45a97c88022f2a84593b00666a05e861, type: 3}

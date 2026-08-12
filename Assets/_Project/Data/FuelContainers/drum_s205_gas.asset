@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 825beb7e63856174e8e43fc81e6c248c, type: 3}
+  m_Name: drum_s205_gas
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.FuelContainerDef
+  Id: fuelstore.gas_drum_s205
+  DisplayName: 205 L Gas Drum
+  VesselType: drum
+  SizeKey: s205
+  Grade: gas
+  LevelRead: tube
+  Carriable: 0
+  CapacityLitres: 205
+  TareKg: 18
+  FullKg: 170.72
+  Facings: 4
+  FillFractions:
+  - 0
+  - 0.25
+  - 0.5
+  - 0.75
+  - 1
+  Frames:
+  - {fileID: -1666589071, guid: 79687ae1e52498a4dba663e9a4ce247b, type: 3}
+  - {fileID: 26207313, guid: 79687ae1e52498a4dba663e9a4ce247b, type: 3}
+  - {fileID: 76764057, guid: 79687ae1e52498a4dba663e9a4ce247b, type: 3}
+  - {fileID: -409016506, guid: 79687ae1e52498a4dba663e9a4ce247b, type: 3}
+  - {fileID: 666775001, guid: 79687ae1e52498a4dba663e9a4ce247b, type: 3}
+  - {fileID: -935926773, guid: 79687ae1e52498a4dba663e9a4ce247b, type: 3}
+  - {fileID: -685817312, guid: 79687ae1e52498a4dba663e9a4ce247b, type: 3}
+  - {fileID: 1220870750, guid: 79687ae1e52498a4dba663e9a4ce247b, type: 3}
+  - {fileID: -672262349, guid: 79687ae1e52498a4dba663e9a4ce247b, type: 3}
+  - {fileID: 1256281275, guid: 79687ae1e52498a4dba663e9a4ce247b, type: 3}
+  - {fileID: 809011498, guid: 79687ae1e52498a4dba663e9a4ce247b, type: 3}
+  - {fileID: -1225160713, guid: 79687ae1e52498a4dba663e9a4ce247b, type: 3}
+  - {fileID: -1762634841, guid: 79687ae1e52498a4dba663e9a4ce247b, type: 3}
+  - {fileID: 1693814503, guid: 79687ae1e52498a4dba663e9a4ce247b, type: 3}
+  - {fileID: 510087346, guid: 79687ae1e52498a4dba663e9a4ce247b, type: 3}
+  - {fileID: 1525384242, guid: 79687ae1e52498a4dba663e9a4ce247b, type: 3}
+  - {fileID: 989405197, guid: 79687ae1e52498a4dba663e9a4ce247b, type: 3}
+  - {fileID: -1632260587, guid: 79687ae1e52498a4dba663e9a4ce247b, type: 3}
+  - {fileID: -1277088717, guid: 79687ae1e52498a4dba663e9a4ce247b, type: 3}
+  - {fileID: 2147177044, guid: 79687ae1e52498a4dba663e9a4ce247b, type: 3}

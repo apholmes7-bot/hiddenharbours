@@ -97,7 +97,8 @@ namespace HiddenHarbours.Boats
         /// <summary>The DESIGN WATERLINE (metres above the keel) of the def being presented — how far
         /// up her planking the sea stands at rest (<see cref="HullMeshDef.RestingDraftMeters"/>).
         /// <b>Not the sink</b>: <see cref="HullSettleMath.AppliedSinkMeters"/> turns it into one, and
-        /// the two differ by the iso projection's 1.1457 gain at the fleet's 40° bake.</summary>
+        /// the two differ by the iso projection's gain — 0.9056 at the fleet's 40° bake (ADR 0033;
+        /// 1.1457 before it).</summary>
         public float DesignWaterlineMeters => _designWaterlineMeters;
 
         /// <summary>
@@ -250,11 +251,12 @@ namespace HiddenHarbours.Boats
             //
             // ⚠️ THE SINK IS NOT THE WATERLINE (owner playtest 2026-08-07, "generally they should
             // level out at the boats water line"). This line used to subtract the def's waterline
-            // RAW, and the shared z-buffer then drew the sea climbing (cos+sin)/(cos²+sin) = 1.1457
-            // rig-metres of planking for every metre of sink — so the whole fleet floated 14.57%
-            // deeper than its own data said, from the dory's +16 mm to the tanker's +360 mm. It is a
-            // pure MEAN-level error: a constant, not a wobble, so no amount of heave averages it
-            // out, and every test stayed green because they all pinned this line against itself.
+            // RAW, and the shared z-buffer then drew the sea climbing a PROJECTION GAIN of planking
+            // for every metre of sink — so the whole fleet floated at a multiple of what its own
+            // data said. It is a pure MEAN-level error: a constant, not a wobble, so no amount of
+            // heave averages it out, and every test stayed green because they all pinned this line
+            // against itself. (The gain is sin·(cos+sin) = 0.9056 at the fleet's 40° bake since
+            // ADR 0033 re-derived it out of the same z-test law; it was 1.1457 before.)
             // HullSettleMath inverts the projection off the def's own ElevationDeg, so the number an
             // owner types is the number the sea draws.
             float ride = 0f;

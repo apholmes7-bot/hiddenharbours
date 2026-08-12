@@ -1,0 +1,650 @@
+fileFormatVersion: 2
+guid: 9ac16488706df81498cf97a5ac6b1e24
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -3033540844239169751
+    second: skid_s500_gas_0
+  - first:
+      213: -8717741024336799087
+    second: skid_s500_gas_1
+  - first:
+      213: 5207042254546268744
+    second: skid_s500_gas_2
+  - first:
+      213: 5011925695519751112
+    second: skid_s500_gas_3
+  - first:
+      213: -587205908951270073
+    second: skid_s500_gas_4
+  - first:
+      213: -7500259017563970688
+    second: skid_s500_gas_5
+  - first:
+      213: -4125562827333597447
+    second: skid_s500_gas_6
+  - first:
+      213: 1798406386037032060
+    second: skid_s500_gas_7
+  - first:
+      213: -6426563273014493208
+    second: skid_s500_gas_8
+  - first:
+      213: 2366128889413134288
+    second: skid_s500_gas_9
+  - first:
+      213: 2006898211009938924
+    second: skid_s500_gas_10
+  - first:
+      213: -6561304902421872997
+    second: skid_s500_gas_11
+  - first:
+      213: 4970508516302505936
+    second: skid_s500_gas_12
+  - first:
+      213: 5229721250452489180
+    second: skid_s500_gas_13
+  - first:
+      213: 8918075481383578685
+    second: skid_s500_gas_14
+  - first:
+      213: -5995906085784327804
+    second: skid_s500_gas_15
+  - first:
+      213: 8090001342078942859
+    second: skid_s500_gas_16
+  - first:
+      213: -5676694486966890525
+    second: skid_s500_gas_17
+  - first:
+      213: 3480796208379313555
+    second: skid_s500_gas_18
+  - first:
+      213: -6438080478293117444
+    second: skid_s500_gas_19
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: skid_s500_gas_f0_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 204
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5ce4fa8cc8a000e4e8d84c83ecc856b9
+      internalID: 1510645301
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_gas_f0_d1
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 204
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5fdedf1f2f6f21f42b46fbbcf0da500e
+      internalID: -1730875490
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_gas_f0_d2
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 204
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: daaecaf51c426b248880953122e37a96
+      internalID: -930791742
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_gas_f0_d3
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 204
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0b5151bc4c14bd84498c3f42e25e59f0
+      internalID: 565479262
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_gas_f1_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 153
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f8ed1592a13a1ec42972416b8b2ea6f1
+      internalID: -205009901
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_gas_f1_d1
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 153
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 91d8117d6bc08274886d320fbcaa1e88
+      internalID: 1162802712
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_gas_f1_d2
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 153
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 169d40af15e19cb4eaef9c384dde3e15
+      internalID: 46577390
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_gas_f1_d3
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 153
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 817d7457840bb024da9b4322f0ca40d4
+      internalID: -735625994
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_gas_f2_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 102
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 64871c6ecd1587e4aa06c7aca381ad49
+      internalID: 1896132282
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_gas_f2_d1
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 102
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ffc7de8b018a9024a95044c6afb00807
+      internalID: -971199997
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_gas_f2_d2
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 102
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ebcaf1a877b6ab34ebde37c7ca327232
+      internalID: -533568661
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_gas_f2_d3
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 102
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b629ccb37a31da845848e121724dd946
+      internalID: 2025802990
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_gas_f3_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 51
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c7ad71fcacf2c9d4e8763d59beeab747
+      internalID: -1046460245
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_gas_f3_d1
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 51
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 196b4ff3c66de98479e93f7af0994165
+      internalID: -1417795603
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_gas_f3_d2
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 51
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 57b7180e330d4b54b88cdb7fa30583f5
+      internalID: 2144951847
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_gas_f3_d3
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 51
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0235e9d8d0dc56b45a0d2b09d1b6be77
+      internalID: -787026463
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_gas_f4_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3b84e6556a6627145aed9096abcabd6e
+      internalID: 1034715330
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_gas_f4_d1
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 0
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f75795394a7593d44ae33cbfd2601c39
+      internalID: -1138415954
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_gas_f4_d2
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 0
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 84419b19689d18c449a8f60497b8ca78
+      internalID: 934885539
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_gas_f4_d3
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 0
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3074e9484c57dcd4e9d05a86d2e7b1e5
+      internalID: -1163732248
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: e97aabe5f9711834fb8668f966050082
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      skid_s500_gas_f0_d0: 1510645301
+      skid_s500_gas_f0_d1: -1730875490
+      skid_s500_gas_f0_d2: -930791742
+      skid_s500_gas_f0_d3: 565479262
+      skid_s500_gas_f1_d0: -205009901
+      skid_s500_gas_f1_d1: 1162802712
+      skid_s500_gas_f1_d2: 46577390
+      skid_s500_gas_f1_d3: -735625994
+      skid_s500_gas_f2_d0: 1896132282
+      skid_s500_gas_f2_d1: -971199997
+      skid_s500_gas_f2_d2: -533568661
+      skid_s500_gas_f2_d3: 2025802990
+      skid_s500_gas_f3_d0: -1046460245
+      skid_s500_gas_f3_d1: -1417795603
+      skid_s500_gas_f3_d2: 2144951847
+      skid_s500_gas_f3_d3: -787026463
+      skid_s500_gas_f4_d0: 1034715330
+      skid_s500_gas_f4_d1: -1138415954
+      skid_s500_gas_f4_d2: 934885539
+      skid_s500_gas_f4_d3: -1163732248
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

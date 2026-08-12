@@ -100,9 +100,11 @@ namespace HiddenHarbours.Core
                  "THIS NUMBER IS NOW DRAWN EXACTLY (owner playtest 2026-08-07: 'generally they " +
                  "should level out at the boats water line'). It used to be subtracted from the " +
                  "hull's ride RAW, and the shared z-buffer's iso projection then drew the water " +
-                 "climbing 1.1457 rig-metres of planking per metre of sink — so every hull in the " +
-                 "fleet floated 14.57% deeper than this field claimed, always. HullSettleMath now " +
-                 "pre-divides by that gain (derived from ElevationDeg below), so what is typed here " +
+                 "climbing a PROJECTION GAIN of planking per metre of sink (0.9056 at the fleet's " +
+                 "40 degree bake since ADR 0033 re-derived it; 1.1457 before) — so every hull in " +
+                 "the fleet floated at a multiple of what this field claimed, always. " +
+                 "HullSettleMath now pre-divides by that gain (derived from ElevationDeg below), " +
+                 "so what is typed here " +
                  "is what the sea draws. Raise it to float her deeper, lower it for more freeboard " +
                  "— one number, one hull, no code.\n\n" +
                  "Applied ONLY while the displaced sea is active — with the flat water the render " +

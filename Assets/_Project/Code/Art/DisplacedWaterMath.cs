@@ -104,19 +104,98 @@ namespace HiddenHarbours.Art
         ///
         /// <code>z = BaseZ + (hullWorldY − ReferenceY) · CosElev − heaveMeters · SinElev</code>
         ///
-        /// Applied as ONE constant translation of the whole hull frame (never per vertex), so the
-        /// rig's intra-hull depth convention (<c>ry·cos − rz·sin</c>, the golden-master truth) is
-        /// bit-preserved; only the hull-vs-water comparison changes. At the contact line the
-        /// ground terms of hull and adjacent water cancel and the z-test reduces to
-        /// <c>heightAboveStillWater vs surfaceLift</c> — water truthfully covers exactly the
-        /// planking below the lifted surface, and a rising surface climbs the planking
-        /// ≈(cos+sin)/(cos²+sin) ≈ 1.15 rig-metres per metre of lift at the fleet's 40°.
+        /// Applied as ONE constant translation of the whole hull frame, so the hull's ROOT LINE
+        /// lands exactly in the sea. ⚠️ A constant cancels a GRADIENT at one line only, which is
+        /// the whole of ADR 0033: see <see cref="HullDepthShear"/> for the y→z shear that carries
+        /// the rest of the hull, and <see cref="HullShearCompensation"/> for the term that keeps
+        /// this calibration exact once the shear is live.
         /// </summary>
         public static float HullDepthBias(float hullWorldY, float heaveMeters,
                                           in WaterIsoDepthFrame frame)
             => frame.BaseZ
                + (hullWorldY - frame.ReferenceY) * frame.CosElev
                - heaveMeters * frame.SinElev;
+
+        // ==== ADR 0033: ONE DEPTH UNIT — the hull frame's y→z shear ==================================
+        //
+        // The defect this cures, measured in #491: hull and water were reading "ground y" in two
+        // different units. The hull's vertices carry the RIG projection
+        // (IsoFacetMath.RigToWorld: screen y = ry·sin + rz·cos, depth = ry·cos − rz·sin), so one rig
+        // ground metre aft is sin(elev) of screen travel but cos(elev) of depth. The water's depth
+        // (HullDepthBias above, the C# reference of the shader's vertex stage) advances at cos(elev)
+        // per WORLD y — and a flat water quad's world y IS its screen y. So along its own fore-aft
+        // axis the hull's depth ramp ran 1/sin(elev) = 1.556× too steep, and HullDepthBias's single
+        // constant could only cancel that at the root line. Everywhere else the two drifted by
+        // Δy_rigGround·cos·(1−sin): −1.64 m of false depth at a 12 m lobster boat's stern sailing
+        // north (no wave could ever reach that planking), sign-flipped sailing south (the sea drew
+        // over a dry stern), exactly zero east/west. Two owner reports ten months apart, one
+        // mechanism.
+
+        /// <summary>
+        /// <b>The y→z shear that puts the hull frame in the water's depth unit</b> (ADR 0033).
+        /// <c>g = cos(elev)·(1 − sin(elev)) / sin(elev)</c> — 0.42571 at the fleet's 40° bake.
+        ///
+        /// <para>Applied by the facet shader's vertex stage as
+        /// <c>z −= (worldY − referenceY)·g</c> (see <see cref="ShearedDepth"/>, of which the HLSL is
+        /// a one-line transcription). It is EXACT, not a correction factor: it zeroes the ground
+        /// term at every facing and lands the height term on the true iso relation
+        /// <c>−h/sin(elev)</c>, because <c>g + cos = cos/sin = cot(elev)</c> and
+        /// <c>sin + cos²/sin = 1/sin</c>. After it, the shared z-test asks only the question the
+        /// composite exists to ask — <i>is this bit of hull above or below the water?</i> — with no
+        /// heading term left in it.</para>
+        ///
+        /// <para><b>Why a shear is free where "ONE constant per hull" was thought necessary.</b>
+        /// Under the ortho camera two fragments sharing a pixel share a world y, so they take the
+        /// IDENTICAL shift — and because the reference is the water's own
+        /// <see cref="WaterIsoDepthFrame.ReferenceY"/> rather than anything per-hull, that holds
+        /// across hulls and fittings too, not merely within one hull. Hull self-occlusion, the
+        /// deck-occupant band encoding (#481), fitting-vs-hull occlusion and the golden masters'
+        /// intra-hull ordering are therefore invariant by construction.</para>
+        ///
+        /// <para><b>Elevation comes from the hull's own bake</b> (<c>HullMeshDef.ElevationDeg</c> via
+        /// the setup), never a hard-coded 40 — a hull re-baked at another elevation is right for
+        /// free (rule 6). ⚠️ It presumes hull and water share the one iso convention, which they do:
+        /// the frame's cos/sin are the water's <c>_WaterIsoDepth</c>, the same 40°. Were they ever
+        /// to diverge the exact form is <c>cot(elevHull) − cos(elevWater)</c>, which this reduces to
+        /// when they agree. Degenerate elevations return 0 (no shear) rather than a division by a
+        /// vanishing sine.</para>
+        /// </summary>
+        public static float HullDepthShear(float bakeElevationDegrees)
+        {
+            if (bakeElevationDegrees <= 0f || bakeElevationDegrees > 90f) return 0f;
+            float e = bakeElevationDegrees * Mathf.Deg2Rad;
+            float s = Mathf.Sin(e);
+            if (s <= 1e-4f) return 0f;
+            return Mathf.Cos(e) * (1f - s) / s;
+        }
+
+        /// <summary>
+        /// The sheared depth of one hull vertex — <c>z − (worldY − referenceY)·shear</c>, the C#
+        /// reference of the facet shader's vertex-stage line (<c>HiddenHarboursIsoFacet.shader</c>,
+        /// <c>vert()</c>). A WORLD-space function of world y alone, which is exactly what makes the
+        /// shift identical for any two fragments sharing a pixel (see <see cref="HullDepthShear"/>).
+        /// <paramref name="shear"/> 0 returns <paramref name="depthZ"/> unchanged — the no-displaced-sea
+        /// A/B contract, byte-identical.
+        /// </summary>
+        public static float ShearedDepth(float worldY, float depthZ, float referenceY, float shear)
+            => depthZ - (worldY - referenceY) * shear;
+
+        /// <summary>
+        /// <b>What the shear will subtract at this hull's own drawn root</b>, added back into her
+        /// per-hull constant so <see cref="HullDepthBias"/>'s calibration survives the shear
+        /// untouched: <c>(rootWorldY + heave − referenceY)·shear</c>.
+        ///
+        /// <para>The reference is the hull's <b>drawn</b> (heaved) root, not her unheaved one, and
+        /// that is load-bearing rather than tidy. The heave/lift channel is already exact — the
+        /// hull's <c>−heave·sin</c> and the water's <c>−lift·sin</c> cancel term for term when she
+        /// floats on the sea she is riding — so the shear must not touch it. Referencing the
+        /// unheaved root instead leaves a residual of <c>−heave·g</c>: 0.6 m of false depth on a
+        /// 1.4 m crest, which would rebuild the very defect ADR 0033 exists to close, this time
+        /// modulated by the wave rather than by the heading.</para>
+        /// </summary>
+        public static float HullShearCompensation(float hullWorldY, float heaveMeters, float shear,
+                                                  in WaterIsoDepthFrame frame)
+            => (hullWorldY + heaveMeters - frame.ReferenceY) * shear;
 
         // ==== The WATERTIGHT clamp (owner playtest 2026-07-23: "water enters hull on the mesh
         // models") ====================================================================================
@@ -187,22 +266,56 @@ namespace HiddenHarbours.Art
         /// that NO interior face — any hull height ≥ <paramref name="deckHeightMeters"/> above
         /// the keel — can lose the shared z-test to the CURRENT displaced surface.
         ///
-        /// <para><b>The per-point law (measured into shape in pixels, 2026-07-23).</b> Solve the
-        /// shared z-buffer's pixel-share fight between a hull face at rig height r on ground
-        /// line ry (screen y rises at cos(elev) per metre of height and sin(elev) per metre of
-        /// ground; depth falls at sin(elev) / rises at cos(elev)) and the displaced water
-        /// (screen y rises at 1 per metre of lift — the vertex stage's <c>ws.y += lift</c>):
-        /// a water sample at ground offset Δ from the hull's ROOT line with lift L fights, on
-        /// EACH ground line ry, exactly the height
-        /// <c>r(ry) = r_f − tan(elev)·ry</c> where <c>r_f = (Δ + L)/cos</c>, and wins iff
-        /// <c>r(ry)·(cos²+sin) &lt; L·(cos+sin) − zHeave·sin + ry·cos·(1−sin)</c> (the last
-        /// term is §24's beam residual, now EXACT instead of a data shave). Keeping every
-        /// interior face (r ≥ deckHeight, |ry| ≤ halfBeam) dry therefore demands, per sample,
+        /// <para><b>The per-point law (measured into shape in pixels, 2026-07-23; re-derived under
+        /// the shear, ADR 0033).</b> Solve the shared z-buffer's pixel-share fight between a hull
+        /// face at rig height r on ground line ry (screen y rises at cos(elev) per metre of height
+        /// and sin(elev) per metre of ground; depth falls at sin(elev) / rises at cos(elev), and
+        /// ADR 0033's shear then takes <c>g·(screen y travelled)</c> back off it) and the displaced
+        /// water (screen y rises at 1 per metre of lift — the vertex stage's <c>ws.y += lift</c>).
+        /// A water sample at ground offset Δ from the hull's ROOT line with lift L fights, on EACH
+        /// ground line ry, exactly the height <c>r(ry) = r_f − tan(elev)·ry</c> where
+        /// <c>r_f = (Δ + L − H)/cos</c> — the shear moves no vertex on screen, so WHICH face is
+        /// fought is unchanged — and wins iff</para>
+        ///
+        /// <code>
+        /// r·(sin + cos·g) + r_f·cos²  &lt;  L·(cos+sin) − zHeave·sin − H·cos + ry·(cos − sin·g)
+        /// </code>
+        ///
+        /// <para>and <b>that is where the two coefficients this law was built on come apart.</b>
+        /// Substituting <c>g = cos·(1−sin)/sin</c> and <c>r_f = r + tan·ry</c>:</para>
+        ///
+        /// <code>
+        /// sin + cos·g + cos²  =  (sin² + cos²·sin + cos² − cos²·sin)/sin  =  1/sin
+        /// cos − sin·g − sin·cos  =  cos − cos·(1−sin) − sin·cos  =  0
+        /// </code>
+        ///
+        /// <para>The protected height's coefficient <c>(cos²+sin) = 1.2296</c> becomes
+        /// <c>1/sin = 1.5557</c> — the true iso relation — and <b>§24's beam residual
+        /// <c>ry·cos·(1−sin)</c> cancels to EXACTLY ZERO</b>. It was never a shave to be tightened;
+        /// it was the unit error, and the shear is what pays it off. (Which is why ADR 0033 forbids
+        /// shipping the shear without this file: delete the term blind and the clamp keeps its old
+        /// over-demand, shoving hulls toward the camera to cure a residual that no longer exists.)
+        /// So the law collapses to <c>r/sin &lt; L·(cos+sin) − zHeave·sin − H·cos</c> — no ry at
+        /// all — and keeping every interior face (r ≥ deckHeight, |ry| ≤ halfBeam) dry demands,
+        /// per sample,</para>
         ///
         /// <code>
         /// ry* = min(halfBeam, (r_f − deckHeight)/tan(elev))   // the worst far-side line fought at/above the deck
-        /// zHeave ≥ (L·(cos+sin) − (r_f − tan·ry*)·(cos²+sin) + ry*·cos·(1−sin)) / sin
+        /// zHeave ≥ (L·(cos+sin) − (r_f − tan·ry*)/sin − H·cos) / sin
         /// </code>
+        ///
+        /// <para>⚠️ <b>ry* still matters, though it no longer appears as its own term.</b> It picks
+        /// WHICH height on the fought line is the worst one at or above the deck; only the residual
+        /// that used to be charged for standing on that line has gone. Net effect: the clamp demands
+        /// strictly LESS heave than it did (the protected height buys 1.5557 instead of 1.2296, and
+        /// the added residual is zero), so a hull is shoved toward the camera less — never more, so
+        /// this cannot newly flood one.</para>
+        ///
+        /// <para>⚠️ <b>The clamp governs hulls the shear has NOT re-baked out from under, and it is
+        /// the fallback wherever the per-face interior mask does not apply</b> — but every hull the
+        /// clamp still runs for is drawn through <c>IsoFacetHullRenderer</c> and therefore IS
+        /// sheared, which is why this re-derivation ships in the same PR as the shear and not later.
+        /// Legacy SPRITE hulls never enter the facet z-buffer and never reach this function at all.</para>
         ///
         /// gated on <c>r_f ≥ deckHeight</c> — samples fighting only the open planking BELOW the
         /// deck line demand NOTHING, so the exterior waterline keeps every centimetre of
@@ -302,8 +415,12 @@ namespace HiddenHarbours.Art
                     float ryStar = Mathf.Min(halfBeamMeters,
                                              (foughtR - deckHeightMeters) / tanE);
                     float protectedR = foughtR - tanE * ryStar;
-                    float need = (lift * (c + s) - protectedR * (c * c + s)
-                                  + ryStar * c * (1f - s) - heaveMeters * c) / s;
+                    // ADR 0033, the re-derived law (see the doc above): the protected height buys
+                    // 1/sin instead of (cos²+sin), and §24's beam residual ry*·cos·(1−sin) is gone
+                    // — it cancelled to exactly zero against the shear. The frame's cos/sin are the
+                    // water's, and the collapse presumes hull and water share the one iso
+                    // convention — the same presumption HullDepthShear documents, and the same 40°.
+                    float need = (lift * (c + s) - protectedR / s - heaveMeters * c) / s;
                     if (need > demand) demand = need;
                 }
             }

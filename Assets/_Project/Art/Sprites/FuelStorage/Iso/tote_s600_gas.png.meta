@@ -1,0 +1,608 @@
+fileFormatVersion: 2
+guid: 4270f2382c4f6be458c89ace096fa5c9
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 1244591984654375781
+    second: tote_s600_gas_0
+  - first:
+      213: 3847785546090622687
+    second: tote_s600_gas_1
+  - first:
+      213: -4524982912506844985
+    second: tote_s600_gas_2
+  - first:
+      213: -2493357479769554105
+    second: tote_s600_gas_3
+  - first:
+      213: -6167324148363367136
+    second: tote_s600_gas_4
+  - first:
+      213: -7475656472985458690
+    second: tote_s600_gas_5
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: tote_s600_gas_f0_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 176
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20454545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7bffdb91c228ed24e94bab73dcdbd7ec
+      internalID: -108167124
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s600_gas_f0_d1
+      rect:
+        serializedVersion: 2
+        x: 34
+        y: 176
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20454545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a957ac779fe90b844adbc7d815ec64ba
+      internalID: 938890590
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s600_gas_f0_d2
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 176
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20454545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d38d8c60a90215544a4d1f0adf26fb3e
+      internalID: 1093697626
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s600_gas_f0_d3
+      rect:
+        serializedVersion: 2
+        x: 102
+        y: 176
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20454545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a39858856decfe64f9daa7c97899f57e
+      internalID: -1270292536
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s600_gas_f1_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 132
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20454545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bd6ed381a59512640b080c1afb204834
+      internalID: -1744379326
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s600_gas_f1_d1
+      rect:
+        serializedVersion: 2
+        x: 34
+        y: 132
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20454545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 95a0e0fd6dd083049a56fd57e02a59b6
+      internalID: 30134280
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s600_gas_f1_d2
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 132
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20454545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 86def06d8a5024044ae27ffc40d68cc1
+      internalID: 797020912
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s600_gas_f1_d3
+      rect:
+        serializedVersion: 2
+        x: 102
+        y: 132
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20454545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 35658b7e6b8603f4eab8cce1a58162a0
+      internalID: 1679573533
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s600_gas_f2_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 88
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20454545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a23a02c5e06773a47b4b8426b0ffcb2c
+      internalID: -1723555196
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s600_gas_f2_d1
+      rect:
+        serializedVersion: 2
+        x: 34
+        y: 88
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20454545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6d7c1098ceb142b4ea07d5768141b26b
+      internalID: -1911553588
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s600_gas_f2_d2
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 88
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20454545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9b4909ebd9ddc3440a6edf64df11548e
+      internalID: 883064229
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s600_gas_f2_d3
+      rect:
+        serializedVersion: 2
+        x: 102
+        y: 88
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20454545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7bdab637d3688924794d7309f0de1443
+      internalID: -1997906598
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s600_gas_f3_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 44
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20454545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a04e875f77c524247af4e45660860ff7
+      internalID: -167028136
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s600_gas_f3_d1
+      rect:
+        serializedVersion: 2
+        x: 34
+        y: 44
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20454545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 61d04a73799a6a84888b6b8957d64ad5
+      internalID: 832727852
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s600_gas_f3_d2
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 44
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20454545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f91390043cdbfbf4287373be58929345
+      internalID: 965397231
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s600_gas_f3_d3
+      rect:
+        serializedVersion: 2
+        x: 102
+        y: 44
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20454545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ac298b6c70dc34c4f8fbe7a4241365a9
+      internalID: 739685236
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s600_gas_f4_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20454545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 339ec227f8ec0314b881a54a33933b2a
+      internalID: -1322051292
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s600_gas_f4_d1
+      rect:
+        serializedVersion: 2
+        x: 34
+        y: 0
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20454545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4559c063ebb0713409fe3140cb26e6bd
+      internalID: 103586310
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s600_gas_f4_d2
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 0
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20454545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f86377f4d2e7996489103f590cf7b162
+      internalID: 527084790
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s600_gas_f4_d3
+      rect:
+        serializedVersion: 2
+        x: 102
+        y: 0
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20454545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5ca32422236d7aa4c9a826376da1739e
+      internalID: 1303197657
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: a707a5b8810106a4ba8d73cc805e3ffa
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      tote_s600_gas_f0_d0: -108167124
+      tote_s600_gas_f0_d1: 938890590
+      tote_s600_gas_f0_d2: 1093697626
+      tote_s600_gas_f0_d3: -1270292536
+      tote_s600_gas_f1_d0: -1744379326
+      tote_s600_gas_f1_d1: 30134280
+      tote_s600_gas_f1_d2: 797020912
+      tote_s600_gas_f1_d3: 1679573533
+      tote_s600_gas_f2_d0: -1723555196
+      tote_s600_gas_f2_d1: -1911553588
+      tote_s600_gas_f2_d2: 883064229
+      tote_s600_gas_f2_d3: -1997906598
+      tote_s600_gas_f3_d0: -167028136
+      tote_s600_gas_f3_d1: 832727852
+      tote_s600_gas_f3_d2: 965397231
+      tote_s600_gas_f3_d3: 739685236
+      tote_s600_gas_f4_d0: -1322051292
+      tote_s600_gas_f4_d1: 103586310
+      tote_s600_gas_f4_d2: 527084790
+      tote_s600_gas_f4_d3: 1303197657
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

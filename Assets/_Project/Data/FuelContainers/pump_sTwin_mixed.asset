@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 825beb7e63856174e8e43fc81e6c248c, type: 3}
+  m_Name: pump_sTwin_mixed
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.FuelContainerDef
+  Id: fuelstore.mixed_pump_stwin
+  DisplayName: Mixed Dispenser
+  VesselType: pump
+  SizeKey: sTwin
+  Grade: mixed
+  LevelRead: none
+  Carriable: 0
+  CapacityLitres: 0
+  TareKg: 140
+  FullKg: 140
+  Facings: 4
+  FillFractions:
+  - 0
+  Frames:
+  - {fileID: 2006335491, guid: 254b2dc8421061c4e8c73abb3774b7ea, type: 3}
+  - {fileID: 1171044692, guid: 254b2dc8421061c4e8c73abb3774b7ea, type: 3}
+  - {fileID: -434887099, guid: 254b2dc8421061c4e8c73abb3774b7ea, type: 3}
+  - {fileID: -901070281, guid: 254b2dc8421061c4e8c73abb3774b7ea, type: 3}

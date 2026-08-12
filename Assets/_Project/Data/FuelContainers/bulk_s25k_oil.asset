@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 825beb7e63856174e8e43fc81e6c248c, type: 3}
+  m_Name: bulk_s25k_oil
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.FuelContainerDef
+  Id: fuelstore.oil_bulk_s25k
+  DisplayName: 25 kL Oil Bulk Tank
+  VesselType: bulk
+  SizeKey: s25k
+  Grade: oil
+  LevelRead: board
+  Carriable: 0
+  CapacityLitres: 25000
+  TareKg: 3100
+  FullKg: 25225
+  Facings: 4
+  FillFractions:
+  - 0
+  - 0.25
+  - 0.5
+  - 0.75
+  - 1
+  Frames:
+  - {fileID: -165797725, guid: e41a0bf773ee8d548b61a6fc5c334cab, type: 3}
+  - {fileID: -1504351127, guid: e41a0bf773ee8d548b61a6fc5c334cab, type: 3}
+  - {fileID: -1741907522, guid: e41a0bf773ee8d548b61a6fc5c334cab, type: 3}
+  - {fileID: -656307677, guid: e41a0bf773ee8d548b61a6fc5c334cab, type: 3}
+  - {fileID: -473342091, guid: e41a0bf773ee8d548b61a6fc5c334cab, type: 3}
+  - {fileID: 1286458835, guid: e41a0bf773ee8d548b61a6fc5c334cab, type: 3}
+  - {fileID: 772983295, guid: e41a0bf773ee8d548b61a6fc5c334cab, type: 3}
+  - {fileID: -1795575387, guid: e41a0bf773ee8d548b61a6fc5c334cab, type: 3}
+  - {fileID: 752580952, guid: e41a0bf773ee8d548b61a6fc5c334cab, type: 3}
+  - {fileID: -1686915694, guid: e41a0bf773ee8d548b61a6fc5c334cab, type: 3}
+  - {fileID: 408234059, guid: e41a0bf773ee8d548b61a6fc5c334cab, type: 3}
+  - {fileID: 526884071, guid: e41a0bf773ee8d548b61a6fc5c334cab, type: 3}
+  - {fileID: 1622116510, guid: e41a0bf773ee8d548b61a6fc5c334cab, type: 3}
+  - {fileID: -1974512477, guid: e41a0bf773ee8d548b61a6fc5c334cab, type: 3}
+  - {fileID: 714302940, guid: e41a0bf773ee8d548b61a6fc5c334cab, type: 3}
+  - {fileID: -1109743690, guid: e41a0bf773ee8d548b61a6fc5c334cab, type: 3}
+  - {fileID: 272234827, guid: e41a0bf773ee8d548b61a6fc5c334cab, type: 3}
+  - {fileID: 910395860, guid: e41a0bf773ee8d548b61a6fc5c334cab, type: 3}
+  - {fileID: -995762805, guid: e41a0bf773ee8d548b61a6fc5c334cab, type: 3}
+  - {fileID: -746732479, guid: e41a0bf773ee8d548b61a6fc5c334cab, type: 3}

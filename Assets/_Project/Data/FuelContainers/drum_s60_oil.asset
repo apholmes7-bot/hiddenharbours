@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 825beb7e63856174e8e43fc81e6c248c, type: 3}
+  m_Name: drum_s60_oil
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.FuelContainerDef
+  Id: fuelstore.oil_drum_s60
+  DisplayName: 60 L Oil Drum
+  VesselType: drum
+  SizeKey: s60
+  Grade: oil
+  LevelRead: tube
+  Carriable: 0
+  CapacityLitres: 60
+  TareKg: 8
+  FullKg: 61.1
+  Facings: 4
+  FillFractions:
+  - 0
+  - 0.25
+  - 0.5
+  - 0.75
+  - 1
+  Frames:
+  - {fileID: 551652857, guid: 681530bc6a3a004488e83a9581c9c404, type: 3}
+  - {fileID: 1704731603, guid: 681530bc6a3a004488e83a9581c9c404, type: 3}
+  - {fileID: -514396730, guid: 681530bc6a3a004488e83a9581c9c404, type: 3}
+  - {fileID: 2105499021, guid: 681530bc6a3a004488e83a9581c9c404, type: 3}
+  - {fileID: -1173660689, guid: 681530bc6a3a004488e83a9581c9c404, type: 3}
+  - {fileID: -867607078, guid: 681530bc6a3a004488e83a9581c9c404, type: 3}
+  - {fileID: -1621531969, guid: 681530bc6a3a004488e83a9581c9c404, type: 3}
+  - {fileID: 1270247645, guid: 681530bc6a3a004488e83a9581c9c404, type: 3}
+  - {fileID: 101422447, guid: 681530bc6a3a004488e83a9581c9c404, type: 3}
+  - {fileID: 525546168, guid: 681530bc6a3a004488e83a9581c9c404, type: 3}
+  - {fileID: 460769071, guid: 681530bc6a3a004488e83a9581c9c404, type: 3}
+  - {fileID: 1080127922, guid: 681530bc6a3a004488e83a9581c9c404, type: 3}
+  - {fileID: -1878219846, guid: 681530bc6a3a004488e83a9581c9c404, type: 3}
+  - {fileID: 155704948, guid: 681530bc6a3a004488e83a9581c9c404, type: 3}
+  - {fileID: -171371716, guid: 681530bc6a3a004488e83a9581c9c404, type: 3}
+  - {fileID: -1411213519, guid: 681530bc6a3a004488e83a9581c9c404, type: 3}
+  - {fileID: -1336098531, guid: 681530bc6a3a004488e83a9581c9c404, type: 3}
+  - {fileID: -24668238, guid: 681530bc6a3a004488e83a9581c9c404, type: 3}
+  - {fileID: 1973498731, guid: 681530bc6a3a004488e83a9581c9c404, type: 3}
+  - {fileID: 1868978911, guid: 681530bc6a3a004488e83a9581c9c404, type: 3}

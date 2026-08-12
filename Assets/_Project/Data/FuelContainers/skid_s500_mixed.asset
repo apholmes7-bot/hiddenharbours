@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 825beb7e63856174e8e43fc81e6c248c, type: 3}
+  m_Name: skid_s500_mixed
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.FuelContainerDef
+  Id: fuelstore.mixed_skid_s500
+  DisplayName: 500 L Mixed Skid Tank
+  VesselType: skid
+  SizeKey: s500
+  Grade: mixed
+  LevelRead: tube
+  Carriable: 0
+  CapacityLitres: 500
+  TareKg: 90
+  FullKg: 466
+  Facings: 4
+  FillFractions:
+  - 0
+  - 0.25
+  - 0.5
+  - 0.75
+  - 1
+  Frames:
+  - {fileID: -513873525, guid: ee15547354b08874c9a57bae71878f7e, type: 3}
+  - {fileID: 73212804, guid: ee15547354b08874c9a57bae71878f7e, type: 3}
+  - {fileID: -1672444015, guid: ee15547354b08874c9a57bae71878f7e, type: 3}
+  - {fileID: 1570952151, guid: ee15547354b08874c9a57bae71878f7e, type: 3}
+  - {fileID: 1778376912, guid: ee15547354b08874c9a57bae71878f7e, type: 3}
+  - {fileID: 1493009943, guid: ee15547354b08874c9a57bae71878f7e, type: 3}
+  - {fileID: 1276068828, guid: ee15547354b08874c9a57bae71878f7e, type: 3}
+  - {fileID: -1972043606, guid: ee15547354b08874c9a57bae71878f7e, type: 3}
+  - {fileID: 345931971, guid: ee15547354b08874c9a57bae71878f7e, type: 3}
+  - {fileID: 1208415239, guid: ee15547354b08874c9a57bae71878f7e, type: 3}
+  - {fileID: 559668726, guid: ee15547354b08874c9a57bae71878f7e, type: 3}
+  - {fileID: -1041248194, guid: ee15547354b08874c9a57bae71878f7e, type: 3}
+  - {fileID: -1455285154, guid: ee15547354b08874c9a57bae71878f7e, type: 3}
+  - {fileID: 1025157635, guid: ee15547354b08874c9a57bae71878f7e, type: 3}
+  - {fileID: -392501428, guid: ee15547354b08874c9a57bae71878f7e, type: 3}
+  - {fileID: 1476750302, guid: ee15547354b08874c9a57bae71878f7e, type: 3}
+  - {fileID: -19391206, guid: ee15547354b08874c9a57bae71878f7e, type: 3}
+  - {fileID: 1846848601, guid: ee15547354b08874c9a57bae71878f7e, type: 3}
+  - {fileID: -22079195, guid: ee15547354b08874c9a57bae71878f7e, type: 3}
+  - {fileID: -1433909881, guid: ee15547354b08874c9a57bae71878f7e, type: 3}

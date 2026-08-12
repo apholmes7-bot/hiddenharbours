@@ -1,0 +1,512 @@
+{
+ "S": 32,
+ "elev": 40,
+ "dirs": [
+  "N",
+  "NE",
+  "E",
+  "SE",
+  "S",
+  "SW",
+  "W",
+  "NW"
+ ],
+ "keyline": false,
+ "fuels": {
+  "gas": {
+   "label": "GASOLINE",
+   "dens": 0.745,
+   "hex": "#b2402c"
+  },
+  "diesel": {
+   "label": "DIESEL",
+   "dens": 0.84,
+   "hex": "#ad8a28"
+  },
+  "mixed": {
+   "label": "MIXED 50:1",
+   "dens": 0.752,
+   "hex": "#286f8c"
+  },
+  "oil": {
+   "label": "MOTOR OIL",
+   "dens": 0.885,
+   "hex": "#2d573a"
+  }
+ },
+ "types": {
+  "jug": {
+   "label": "OIL JUG",
+   "kind": "carry",
+   "read": "body",
+   "shape": "box",
+   "sizes": {
+    "s1": {
+     "label": "1 L",
+     "litres": 1,
+     "tare": 0.07,
+     "cell": {
+      "W": 11,
+      "H": 12
+     },
+     "pivot": {
+      "x": 5,
+      "y": 3
+     },
+     "mode": "carry",
+     "rest": {
+      "cell": {
+       "W": 9,
+       "H": 12
+      },
+      "pivot": {
+       "x": 4,
+       "y": 8
+      }
+     },
+     "fullKg": 0.9
+    },
+    "s4": {
+     "label": "4 L",
+     "litres": 4,
+     "tare": 0.24,
+     "cell": {
+      "W": 17,
+      "H": 18
+     },
+     "pivot": {
+      "x": 8,
+      "y": 7
+     },
+     "mode": "carry",
+     "rest": {
+      "cell": {
+       "W": 12,
+       "H": 15
+      },
+      "pivot": {
+       "x": 6,
+       "y": 10
+      }
+     },
+     "fullKg": 3.6
+    },
+    "s10": {
+     "label": "10 L",
+     "litres": 10,
+     "tare": 0.55,
+     "cell": {
+      "W": 21,
+      "H": 21
+     },
+     "pivot": {
+      "x": 10,
+      "y": 9
+     },
+     "mode": "carry",
+     "rest": {
+      "cell": {
+       "W": 14,
+       "H": 18
+      },
+      "pivot": {
+       "x": 7,
+       "y": 12
+      }
+     },
+     "fullKg": 9
+    }
+   }
+  },
+  "jerry": {
+   "label": "JERRY CAN",
+   "kind": "carry",
+   "read": "body",
+   "shape": "box",
+   "sizes": {
+    "s5": {
+     "label": "5 L",
+     "litres": 5,
+     "tare": 0.8,
+     "cell": {
+      "W": 16,
+      "H": 20
+     },
+     "pivot": {
+      "x": 8,
+      "y": 6
+     },
+     "mode": "carry",
+     "rest": {
+      "cell": {
+       "W": 13,
+       "H": 19
+      },
+      "pivot": {
+       "x": 6,
+       "y": 14
+      }
+     },
+     "fullKg": 5
+    },
+    "s10": {
+     "label": "10 L",
+     "litres": 10,
+     "tare": 1.3,
+     "cell": {
+      "W": 19,
+      "H": 23
+     },
+     "pivot": {
+      "x": 9,
+      "y": 7
+     },
+     "mode": "carry",
+     "rest": {
+      "cell": {
+       "W": 15,
+       "H": 22
+      },
+      "pivot": {
+       "x": 7,
+       "y": 16
+      }
+     },
+     "fullKg": 9.7
+    },
+    "s20": {
+     "label": "20 L",
+     "litres": 20,
+     "tare": 2.2,
+     "cell": {
+      "W": 22,
+      "H": 26
+     },
+     "pivot": {
+      "x": 11,
+      "y": 7
+     },
+     "mode": "carry",
+     "rest": {
+      "cell": {
+       "W": 17,
+       "H": 25
+      },
+      "pivot": {
+       "x": 8,
+       "y": 19
+      }
+     },
+     "fullKg": 19
+    },
+    "s25": {
+     "label": "25 L",
+     "litres": 25,
+     "tare": 2.7,
+     "cell": {
+      "W": 23,
+      "H": 27
+     },
+     "pivot": {
+      "x": 11,
+      "y": 7
+     },
+     "mode": "carry",
+     "rest": {
+      "cell": {
+       "W": 18,
+       "H": 26
+      },
+      "pivot": {
+       "x": 9,
+       "y": 20
+      }
+     },
+     "fullKg": 23.7
+    }
+   }
+  },
+  "nozzle": {
+   "label": "FUEL NOZZLE",
+   "kind": "carry",
+   "read": "none",
+   "shape": "box",
+   "sizes": {
+    "sAuto": {
+     "label": "AUTO",
+     "litres": 0,
+     "tare": 1.4,
+     "cell": {
+      "W": 21,
+      "H": 19
+     },
+     "pivot": {
+      "x": 10,
+      "y": 9
+     },
+     "mode": "carry",
+     "rest": {
+      "cell": {
+       "W": 17,
+       "H": 14
+      },
+      "pivot": {
+       "x": 8,
+       "y": 6
+      }
+     }
+    },
+    "sHigh": {
+     "label": "HIGH-FLOW",
+     "litres": 0,
+     "tare": 2.6,
+     "cell": {
+      "W": 25,
+      "H": 22
+     },
+     "pivot": {
+      "x": 12,
+      "y": 10
+     },
+     "mode": "carry",
+     "rest": {
+      "cell": {
+       "W": 20,
+       "H": 16
+      },
+      "pivot": {
+       "x": 10,
+       "y": 7
+      }
+     }
+    }
+   }
+  },
+  "drum": {
+   "label": "STEEL DRUM",
+   "kind": "store",
+   "read": "tube",
+   "shape": "vcyl",
+   "sizes": {
+    "s60": {
+     "label": "60 L",
+     "litres": 60,
+     "tare": 8,
+     "cell": {
+      "W": 22,
+      "H": 29
+     },
+     "pivot": {
+      "x": 11,
+      "y": 22
+     },
+     "mode": "rest",
+     "fullKg": 58.4
+    },
+    "s205": {
+     "label": "205 L",
+     "litres": 205,
+     "tare": 18,
+     "cell": {
+      "W": 28,
+      "H": 39
+     },
+     "pivot": {
+      "x": 14,
+      "y": 30
+     },
+     "mode": "rest",
+     "fullKg": 190.2
+    }
+   }
+  },
+  "tote": {
+   "label": "IBC TOTE",
+   "kind": "store",
+   "read": "body",
+   "shape": "box",
+   "sizes": {
+    "s600": {
+     "label": "600 L",
+     "litres": 600,
+     "tare": 48,
+     "cell": {
+      "W": 48,
+      "H": 54
+     },
+     "pivot": {
+      "x": 24,
+      "y": 39
+     },
+     "mode": "rest",
+     "fullKg": 552
+    },
+    "s1000": {
+     "label": "1000 L",
+     "litres": 1000,
+     "tare": 62,
+     "cell": {
+      "W": 57,
+      "H": 65
+     },
+     "pivot": {
+      "x": 28,
+      "y": 48
+     },
+     "mode": "rest",
+     "fullKg": 902
+    }
+   }
+  },
+  "skid": {
+   "label": "SKID TANK",
+   "kind": "store",
+   "read": "tube",
+   "shape": "hcyl",
+   "sizes": {
+    "s500": {
+     "label": "500 L",
+     "litres": 500,
+     "tare": 90,
+     "cell": {
+      "W": 53,
+      "H": 59
+     },
+     "pivot": {
+      "x": 26,
+      "y": 42
+     },
+     "mode": "rest",
+     "fullKg": 510
+    },
+    "s1200": {
+     "label": "1200 L",
+     "litres": 1200,
+     "tare": 170,
+     "cell": {
+      "W": 67,
+      "H": 74
+     },
+     "pivot": {
+      "x": 33,
+      "y": 54
+     },
+     "mode": "rest",
+     "fullKg": 1178
+    },
+    "s2500": {
+     "label": "2500 L",
+     "litres": 2500,
+     "tare": 310,
+     "cell": {
+      "W": 82,
+      "H": 91
+     },
+     "pivot": {
+      "x": 41,
+      "y": 66
+     },
+     "mode": "rest",
+     "fullKg": 2410
+    }
+   }
+  },
+  "bulk": {
+   "label": "BULK TANK",
+   "kind": "store",
+   "read": "board",
+   "shape": "vcyl",
+   "sizes": {
+    "s10k": {
+     "label": "10 kL",
+     "litres": 10000,
+     "tare": 1400,
+     "cell": {
+      "W": 139,
+      "H": 133
+     },
+     "pivot": {
+      "x": 69,
+      "y": 87
+     },
+     "mode": "rest",
+     "fullKg": 9800
+    },
+    "s25k": {
+     "label": "25 kL",
+     "litres": 25000,
+     "tare": 3100,
+     "cell": {
+      "W": 170,
+      "H": 177
+     },
+     "pivot": {
+      "x": 85,
+      "y": 121
+     },
+     "mode": "rest",
+     "fullKg": 24100
+    },
+    "s50k": {
+     "label": "50 kL",
+     "litres": 50000,
+     "tare": 5400,
+     "cell": {
+      "W": 191,
+      "H": 233
+     },
+     "pivot": {
+      "x": 95,
+      "y": 170
+     },
+     "mode": "rest",
+     "fullKg": 47400
+    }
+   }
+  },
+  "pump": {
+   "label": "DISPENSER",
+   "kind": "store",
+   "read": "none",
+   "shape": "box",
+   "sizes": {
+    "sSingle": {
+     "label": "SINGLE",
+     "litres": 0,
+     "tare": 95,
+     "cell": {
+      "W": 34,
+      "H": 57
+     },
+     "pivot": {
+      "x": 17,
+      "y": 45
+     },
+     "mode": "rest"
+    },
+    "sTwin": {
+     "label": "TWIN",
+     "litres": 0,
+     "tare": 140,
+     "cell": {
+      "W": 39,
+      "H": 62
+     },
+     "pivot": {
+      "x": 19,
+      "y": 48
+     },
+     "mode": "rest"
+    }
+   }
+  }
+ },
+ "generated": "2026-08-11",
+ "reads": {
+  "body": "translucent HDPE — the wall tints below the surface",
+  "tube": "external sight glass on a graduated plate",
+  "board": "float-and-tape gauge board with a travelling pointer",
+  "none": "no stored volume"
+ },
+ "mirrored": "every gauge is duplicated on both long sides; a single gauge is hidden on 3 of 8 facings"
+}
