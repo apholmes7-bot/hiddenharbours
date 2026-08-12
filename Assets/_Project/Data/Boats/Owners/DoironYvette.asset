@@ -16,6 +16,7 @@ MonoBehaviour:
   DisplayName: Yvette Doiron
   Boat: {fileID: 11400000, guid: f9a11a1cb8419244bb13983a2862c52f, type: 2}
   BuoyScheme: CoastalPacket
+  HullPaint: {fileID: 11400000, guid: 6c45d6175789ee84bb8acc2a7ed52311, type: 2}
   Prosperity: 2
   ShedFootprintMetres: 8.0
   LotIndex: 3

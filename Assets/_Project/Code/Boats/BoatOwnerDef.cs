@@ -67,6 +67,22 @@ namespace HiddenHarbours.Boats
                  "class note): two fishers painting the same is two fishers you cannot tell apart.")]
         public string BuoyScheme = "";
 
+        [Tooltip("The paint on her HULL — a baked ramp table for the hull mesh her Visual draws " +
+                 "(HullPaintSchemeDef). NULL is the contract, not a gap: an owner with no scheme keeps " +
+                 "the hull in the colours her def already ships, byte for byte, which is what every " +
+                 "boat in the game looked like before paint existed.\n\n" +
+                 "⚠ THIS IS A SEPARATE AXIS FROM BuoyScheme AND MUST STAY ONE. The buoy scheme is an " +
+                 "OWNERSHIP MARK and is scarce — eight exist, one owner each, and telling two fishers " +
+                 "apart on the water is its whole job. Hull paint is not scarce and marks nothing: two " +
+                 "owners may both keep a navy boat, and a real harbour is full of hulls whose paint " +
+                 "says nothing about whose gear is in the water. Tying the two together would spend " +
+                 "the scarce thing to buy the cheap one.\n\n" +
+                 "A scheme baked for a DIFFERENT hull is refused at install with a log and the hull " +
+                 "draws in her own colours — a wrong repaint costs the paint, never the boat. So an " +
+                 "owner who trades her lobster boat for a punt does not need this field cleared in " +
+                 "the same edit; she just stops being painted until a punt scheme is baked.")]
+        public HullPaintSchemeDef HullPaint;
+
         [Header("Standing on the wharf")]
         [Tooltip("How well they are doing. A LABEL — what it buys is the ordering the content tests hold " +
                  "ShedFootprintMetres to, never a size computed from it.")]

@@ -129,8 +129,18 @@ namespace HiddenHarbours.Boats
             // SkipWaveMotion stays FALSE — see the class note. SkipOars is true because there is no
             // controller to animate them from: an oar overlay with nobody pulling it reads as a fault,
             // and a moored boat has her oars shipped anyway.
+            //
+            // PaintScheme is where the register's colour reaches the water. It is read off the OWNER,
+            // not off the boat def: every lobster boat on this wharf shares one BoatVisualDef and one
+            // mesh, so a scheme on the visual would paint the whole fleet the same and there would be
+            // nothing to tell them apart by. Null is the shipped look, so an owner with no scheme is
+            // not a special case anywhere below.
             _rig = BoatHullSkinner.Apply(gameObject, _owner.Boat.Visual, boat: null,
-                                         new BoatHullSkinner.Options { SkipOars = true });
+                                         new BoatHullSkinner.Options
+                                         {
+                                             SkipOars = true,
+                                             PaintScheme = _owner.HullPaint,
+                                         });
 
             if (!_rig.Skinned)
             {
