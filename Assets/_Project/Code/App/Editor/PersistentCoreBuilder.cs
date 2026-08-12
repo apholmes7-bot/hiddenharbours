@@ -480,6 +480,19 @@ namespace HiddenHarbours.App.Editor
             var deckRider = playerGo.AddComponent<DeckRiderVisual>();
             deckRider.Configure(riderSr, playerSr, isoSkin);
 
+            // THE FISHER'S HANDS (M2-39's first real consumer): what lets her pick a fuel can up, walk with
+            // it and set it down. It binds NO key — the press arrives through the interact verb, which is
+            // the whole reason that seam exists — so adding carrying to the game cost zero letters of the
+            // exhausted A–Z ledger. Built with nothing in hand; it is inert until something is lifted.
+            //
+            // Wired here rather than left to a scene so the hands are part of what a PLAYER IS, not a
+            // per-region dressing decision: a carried can must survive region travel with the persistent
+            // core, and it does that by hanging off this GameObject. It resolves the body renderer, the iso
+            // skin and the walk controller off this same object in its own Resolve(), so there is nothing
+            // to hand it — the three sources of the DRAWN heading it derives a carried facing from are all
+            // already here.
+            playerGo.AddComponent<CarryHands>();
+
             // THE HAUL ANIMATION (owner's PlayerHaul sheet): while a trap haul is live the deck-walking
             // fisher plays the hand-over-hand cycle as line comes in, the STRAIN frame while the rope
             // fights back, the EASE frame while the pawl holds — all read off the Core TrapHaulStateChanged
