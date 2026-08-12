@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 825beb7e63856174e8e43fc81e6c248c, type: 3}
+  m_Name: tote_s1000_diesel
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.FuelContainerDef
+  Id: fuelstore.diesel_tote_s1000
+  DisplayName: 1 kL Diesel Tote
+  VesselType: tote
+  SizeKey: s1000
+  Grade: diesel
+  LevelRead: body
+  Carriable: 0
+  CapacityLitres: 1000
+  TareKg: 62
+  FullKg: 902
+  Facings: 4
+  FillFractions:
+  - 0
+  - 0.25
+  - 0.5
+  - 0.75
+  - 1
+  Frames:
+  - {fileID: -289183548, guid: 1da04a378c691e6439c161891bb62a08, type: 3}
+  - {fileID: -835793509, guid: 1da04a378c691e6439c161891bb62a08, type: 3}
+  - {fileID: -63049592, guid: 1da04a378c691e6439c161891bb62a08, type: 3}
+  - {fileID: 130299848, guid: 1da04a378c691e6439c161891bb62a08, type: 3}
+  - {fileID: 1484130914, guid: 1da04a378c691e6439c161891bb62a08, type: 3}
+  - {fileID: 767498197, guid: 1da04a378c691e6439c161891bb62a08, type: 3}
+  - {fileID: -314093983, guid: 1da04a378c691e6439c161891bb62a08, type: 3}
+  - {fileID: -270369775, guid: 1da04a378c691e6439c161891bb62a08, type: 3}
+  - {fileID: 878707603, guid: 1da04a378c691e6439c161891bb62a08, type: 3}
+  - {fileID: 1120385907, guid: 1da04a378c691e6439c161891bb62a08, type: 3}
+  - {fileID: 151762064, guid: 1da04a378c691e6439c161891bb62a08, type: 3}
+  - {fileID: -1338848653, guid: 1da04a378c691e6439c161891bb62a08, type: 3}
+  - {fileID: 895791307, guid: 1da04a378c691e6439c161891bb62a08, type: 3}
+  - {fileID: -1600677125, guid: 1da04a378c691e6439c161891bb62a08, type: 3}
+  - {fileID: -2136998494, guid: 1da04a378c691e6439c161891bb62a08, type: 3}
+  - {fileID: 1818624286, guid: 1da04a378c691e6439c161891bb62a08, type: 3}
+  - {fileID: 706392273, guid: 1da04a378c691e6439c161891bb62a08, type: 3}
+  - {fileID: 875019365, guid: 1da04a378c691e6439c161891bb62a08, type: 3}
+  - {fileID: 91109075, guid: 1da04a378c691e6439c161891bb62a08, type: 3}
+  - {fileID: -1414557481, guid: 1da04a378c691e6439c161891bb62a08, type: 3}

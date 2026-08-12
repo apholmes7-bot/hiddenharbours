@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 825beb7e63856174e8e43fc81e6c248c, type: 3}
+  m_Name: nozzle_sHigh_oil
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.FuelContainerDef
+  Id: fuelstore.oil_nozzle_shigh
+  DisplayName: Oil Nozzle
+  VesselType: nozzle
+  SizeKey: sHigh
+  Grade: oil
+  LevelRead: none
+  Carriable: 1
+  CapacityLitres: 0
+  TareKg: 2.6
+  FullKg: 2.6
+  Facings: 8
+  FillFractions:
+  - 0
+  Frames:
+  - {fileID: -1984701109, guid: 1187a809a24f92e49bc713667b634416, type: 3}
+  - {fileID: -955739857, guid: 1187a809a24f92e49bc713667b634416, type: 3}
+  - {fileID: -101345332, guid: 1187a809a24f92e49bc713667b634416, type: 3}
+  - {fileID: -1920096679, guid: 1187a809a24f92e49bc713667b634416, type: 3}
+  - {fileID: -1038463995, guid: 1187a809a24f92e49bc713667b634416, type: 3}
+  - {fileID: -1098850804, guid: 1187a809a24f92e49bc713667b634416, type: 3}
+  - {fileID: -1972857027, guid: 1187a809a24f92e49bc713667b634416, type: 3}
+  - {fileID: 962649822, guid: 1187a809a24f92e49bc713667b634416, type: 3}

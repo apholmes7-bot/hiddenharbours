@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 825beb7e63856174e8e43fc81e6c248c, type: 3}
+  m_Name: skid_s500_diesel
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.FuelContainerDef
+  Id: fuelstore.diesel_skid_s500
+  DisplayName: 500 L Diesel Skid Tank
+  VesselType: skid
+  SizeKey: s500
+  Grade: diesel
+  LevelRead: tube
+  Carriable: 0
+  CapacityLitres: 500
+  TareKg: 90
+  FullKg: 510
+  Facings: 4
+  FillFractions:
+  - 0
+  - 0.25
+  - 0.5
+  - 0.75
+  - 1
+  Frames:
+  - {fileID: -983970175, guid: 93df8a6fb07e2f64ab94fd76a2a066ae, type: 3}
+  - {fileID: 491280049, guid: 93df8a6fb07e2f64ab94fd76a2a066ae, type: 3}
+  - {fileID: -78282817, guid: 93df8a6fb07e2f64ab94fd76a2a066ae, type: 3}
+  - {fileID: -1216710520, guid: 93df8a6fb07e2f64ab94fd76a2a066ae, type: 3}
+  - {fileID: -11708433, guid: 93df8a6fb07e2f64ab94fd76a2a066ae, type: 3}
+  - {fileID: 1468278075, guid: 93df8a6fb07e2f64ab94fd76a2a066ae, type: 3}
+  - {fileID: -1199781321, guid: 93df8a6fb07e2f64ab94fd76a2a066ae, type: 3}
+  - {fileID: 829685178, guid: 93df8a6fb07e2f64ab94fd76a2a066ae, type: 3}
+  - {fileID: 2045311392, guid: 93df8a6fb07e2f64ab94fd76a2a066ae, type: 3}
+  - {fileID: -51974045, guid: 93df8a6fb07e2f64ab94fd76a2a066ae, type: 3}
+  - {fileID: 1912531444, guid: 93df8a6fb07e2f64ab94fd76a2a066ae, type: 3}
+  - {fileID: -1116215274, guid: 93df8a6fb07e2f64ab94fd76a2a066ae, type: 3}
+  - {fileID: -172853662, guid: 93df8a6fb07e2f64ab94fd76a2a066ae, type: 3}
+  - {fileID: 1338047487, guid: 93df8a6fb07e2f64ab94fd76a2a066ae, type: 3}
+  - {fileID: -1379285587, guid: 93df8a6fb07e2f64ab94fd76a2a066ae, type: 3}
+  - {fileID: 554777967, guid: 93df8a6fb07e2f64ab94fd76a2a066ae, type: 3}
+  - {fileID: -1353689670, guid: 93df8a6fb07e2f64ab94fd76a2a066ae, type: 3}
+  - {fileID: 422094007, guid: 93df8a6fb07e2f64ab94fd76a2a066ae, type: 3}
+  - {fileID: -983242960, guid: 93df8a6fb07e2f64ab94fd76a2a066ae, type: 3}
+  - {fileID: 122191257, guid: 93df8a6fb07e2f64ab94fd76a2a066ae, type: 3}
