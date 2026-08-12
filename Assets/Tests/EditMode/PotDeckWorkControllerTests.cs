@@ -500,5 +500,120 @@ namespace HiddenHarbours.Tests.EditMode
             Work(deck, 1.0f);
             Assert.AreEqual(1, deck.Pot.OnDeckCount, "back on deck, the pick works exactly as before");
         }
+
+        // ---- (6) CONSERVATION: the pot is counted once, and the bait is spent once ------------------
+
+        /// <summary>The pot aboard must be counted EXACTLY once — in the hands or on the stack, never
+        /// both (the deck would draw her twice) and never neither (she would vanish from the picture
+        /// while still aboard).</summary>
+        private static void AssertPotCountedExactlyOnce(PotDeckWorkController deck, string when)
+        {
+            DeckLoopState beat = deck.CurrentBeat();
+            Assert.IsFalse(beat.PotInPlay && beat.StackedPots > 0,
+                $"{when}: in the hands AND on the stack — the deck would draw the same pot twice");
+            Assert.AreEqual(1, beat.StackedPots + (beat.PotInPlay ? 1 : 0),
+                $"{when}: a pot is aboard, so the beat must account for her exactly once");
+        }
+
+        /// <summary>
+        /// <b>CONSERVATION: one pot aboard is one pot in the beat, at every step of the cycle.</b>
+        ///
+        /// <para>The in-play pot and the stacked pot are exclusive by design — <c>CurrentBeat</c> says so
+        /// in as many words — and the cycle crosses between them at the moment she is squared away, then
+        /// drops her entirely at the toss. Those two crossings are where a count can go missing (drawn
+        /// twice) or go unconsumed (drawn after she is over the side), and neither shows up in a
+        /// single-step test. This walks the whole cycle and checks the ledger after each verb.</para>
+        ///
+        /// <para>It also pins the SHAPE of the count that reaches the drawer: the only producer of
+        /// <see cref="DeckLoopStateChanged"/> works one pot at a time, so <c>StackedPots</c> is 0 or 1
+        /// here and nothing else. Widening that is what would first exercise the multi-tier stack path,
+        /// and this test is where the assumption is written down.</para>
+        /// </summary>
+        [Test]
+        public void TheBeat_CountsThePotExactlyOnce_AtEveryStepOfTheCycle()
+        {
+            GrantBait(2);
+            var svc = MakeService();
+            svc.PlaceTrap(_trap, _bait, new Vector2(1f, 1f), "region.st_peters");   // consumes 1 → 1 left
+            _clock.Seconds = PlaceTime + SoakSpan;
+
+            var haul = MakeHaul(svc, new FakeHold(), new Vector2(1f, 1f));
+            HaulToSurface(haul);
+            var deck = DeckOf(haul);
+            deck.OnControlModeChanged(new ControlModeChanged(ControlMode.OnDeck));
+
+            AssertPotCountedExactlyOnce(deck, "aboard, still full");
+            Assert.IsTrue(deck.CurrentBeat().PotInPlay, "a full pot is in the hands, not on the stack");
+
+            Work(deck, 1.0f);                                  // PICK
+            AssertPotCountedExactlyOnce(deck, "picked, the keeper waiting");
+
+            Work(deck, 1.0f);                                  // BAND
+            AssertPotCountedExactlyOnce(deck, "banded, the pot empty and unbaited");
+            Assert.AreEqual(SternDeckStage.Baiting, deck.CurrentBeat().Stage);
+
+            Work(deck, 1.2f);                                  // BAIT → squared away
+            AssertPotCountedExactlyOnce(deck, "baited and squared away");
+
+            DeckLoopState squared = deck.CurrentBeat();
+            Assert.AreEqual(SternDeckStage.Stacking, squared.Stage,
+                "squared away IS stacked — off the hands, waiting to go over the side");
+            Assert.AreEqual(1, squared.StackedPots, "and she is the one pot on the stack");
+            Assert.IsFalse(squared.PotInPlay, "…so she is no longer in play: the two are exclusive");
+
+            deck.ClearPot();                                   // THE TOSS — she goes over the rail
+
+            DeckLoopState gone = deck.CurrentBeat();
+            Assert.AreEqual(0, gone.StackedPots + (gone.PotInPlay ? 1 : 0),
+                "over the side is counted NOWHERE — a stack that keeps her is the unconsumed count");
+            Assert.AreEqual(SternDeckStage.None, gone.Stage, "and the deck falls honestly idle");
+            Assert.IsFalse(deck.HasPotAboard);
+        }
+
+        /// <summary>
+        /// <b>CONSERVATION: the re-bait spends exactly one bait, and only once.</b>
+        ///
+        /// <para>Baiting is the one verb in the cycle that consumes a durable, saved resource, so it is
+        /// the one that can go wrong in both directions: a hold that charged twice would quietly drain
+        /// the locker, and a squared-away pot that could be baited again would let one pot eat the whole
+        /// stock. Both are the same question — does the verb consume once and then stop being available
+        /// — so the test holds over her repeatedly after she is already baited.</para>
+        /// </summary>
+        [Test]
+        public void TheRebait_SpendsExactlyOneBait_AndABaitedPotCannotSpendAnother()
+        {
+            GrantBait(3);
+            var svc = MakeService();
+            svc.PlaceTrap(_trap, _bait, new Vector2(1f, 1f), "region.st_peters");   // consumes 1 → 2 left
+            Assert.AreEqual(2, BaitCount(_save, _bait.Id), "the placement charged exactly one");
+            _clock.Seconds = PlaceTime + SoakSpan;
+
+            var haul = MakeHaul(svc, new FakeHold(), new Vector2(1f, 1f));
+            HaulToSurface(haul);
+            var deck = DeckOf(haul);
+            deck.OnControlModeChanged(new ControlModeChanged(ControlMode.OnDeck));
+
+            Work(deck, 1.0f);                                  // PICK
+            Work(deck, 1.0f);                                  // BAND
+            Assert.AreEqual(2, BaitCount(_save, _bait.Id),
+                "picking and banding are not consumables — nothing spent before the bait verb");
+
+            Work(deck, 1.2f);                                  // BAIT
+            Assert.IsTrue(deck.Pot.Baited, "she is baited");
+            Assert.AreEqual(1, BaitCount(_save, _bait.Id), "and it cost exactly one from the locker");
+
+            // Hold over her again, twice. There is no verb left to perform on a squared-away pot, and a
+            // second charge here is the defect this test exists to catch.
+            Work(deck, 1.2f);
+            Work(deck, 1.2f);
+            Assert.AreEqual(1, BaitCount(_save, _bait.Id),
+                "a baited pot cannot be baited again — the locker is untouched by the extra holds");
+            Assert.AreEqual(PotDeckWorkController.DeckSetState.Ready, deck.SetState,
+                "…and she is still simply ready to set");
+
+            // And the toss spends nothing either: the bait rode into the water with her.
+            deck.ClearPot();
+            Assert.AreEqual(1, BaitCount(_save, _bait.Id), "setting her charges no further bait");
+        }
     }
 }
