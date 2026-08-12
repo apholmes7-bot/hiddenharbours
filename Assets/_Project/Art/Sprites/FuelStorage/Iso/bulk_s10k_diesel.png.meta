@@ -1,0 +1,593 @@
+fileFormatVersion: 2
+guid: 8ebc11521a9963a4aacde914508b5896
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -7324633376560004415
+    second: bulk_s10k_diesel_0
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: bulk_s10k_diesel_f0_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 516
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 89601c3185d18a947ad8e3999d0bc5aa
+      internalID: -1069883838
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_diesel_f0_d1
+      rect:
+        serializedVersion: 2
+        x: 134
+        y: 516
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4c902f97c4bd647438f7f7dda71f5b98
+      internalID: -1939470363
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_diesel_f0_d2
+      rect:
+        serializedVersion: 2
+        x: 268
+        y: 516
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 775273f3e06294f488c1851f69412a72
+      internalID: -201284573
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_diesel_f0_d3
+      rect:
+        serializedVersion: 2
+        x: 402
+        y: 516
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4f35cb64bd1e68a44bc6b926df299d86
+      internalID: -1595930714
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_diesel_f1_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 387
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2d631c0a9cb8d0b4ca62d5468ba4bf3c
+      internalID: 1225357079
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_diesel_f1_d1
+      rect:
+        serializedVersion: 2
+        x: 134
+        y: 387
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2c9b8c48fc8d02741aa1ab52de4e1060
+      internalID: -138172003
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_diesel_f1_d2
+      rect:
+        serializedVersion: 2
+        x: 268
+        y: 387
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1778d173a091880409ff0c148096a38e
+      internalID: 1434321815
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_diesel_f1_d3
+      rect:
+        serializedVersion: 2
+        x: 402
+        y: 387
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 25c8bc9b61d2969408b62a2ce1ab0ff9
+      internalID: 101102338
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_diesel_f2_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 258
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a07337183d7b5b248a474338c2447472
+      internalID: 997808157
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_diesel_f2_d1
+      rect:
+        serializedVersion: 2
+        x: 134
+        y: 258
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 816276f6ef2fef4409024c81915c6121
+      internalID: 2014064671
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_diesel_f2_d2
+      rect:
+        serializedVersion: 2
+        x: 268
+        y: 258
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e3266c4a97bba334eb3ef41a48a9712e
+      internalID: 1979673613
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_diesel_f2_d3
+      rect:
+        serializedVersion: 2
+        x: 402
+        y: 258
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d7e6371febbda1349882bf203207dd9a
+      internalID: -1222953815
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_diesel_f3_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 129
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 44fe00a2ea18fc24cb4f7e944a6bb10c
+      internalID: 2122573426
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_diesel_f3_d1
+      rect:
+        serializedVersion: 2
+        x: 134
+        y: 129
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0382497a80d9b9c48bede44756d485e8
+      internalID: -1436929467
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_diesel_f3_d2
+      rect:
+        serializedVersion: 2
+        x: 268
+        y: 129
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bd51a543b83e73a43ae4de93e3459831
+      internalID: -700026171
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_diesel_f3_d3
+      rect:
+        serializedVersion: 2
+        x: 402
+        y: 129
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c5cce9c1fe0eddb41ada6f5098009014
+      internalID: -106635257
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_diesel_f4_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5598e740d1e429542960c7780256c334
+      internalID: -592908714
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_diesel_f4_d1
+      rect:
+        serializedVersion: 2
+        x: 134
+        y: 0
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 63414bd0e65730e4daed9a34fae580f6
+      internalID: -2006366666
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_diesel_f4_d2
+      rect:
+        serializedVersion: 2
+        x: 268
+        y: 0
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eefd98017c22eee41b58fde534dce826
+      internalID: 1683806463
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_diesel_f4_d3
+      rect:
+        serializedVersion: 2
+        x: 402
+        y: 0
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 37c0d88beaa7f4d43aeaa3662db9a452
+      internalID: -2063586276
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e29e48e03f24e24d869cbca6e4576f5
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      bulk_s10k_diesel_f0_d0: -1069883838
+      bulk_s10k_diesel_f0_d1: -1939470363
+      bulk_s10k_diesel_f0_d2: -201284573
+      bulk_s10k_diesel_f0_d3: -1595930714
+      bulk_s10k_diesel_f1_d0: 1225357079
+      bulk_s10k_diesel_f1_d1: -138172003
+      bulk_s10k_diesel_f1_d2: 1434321815
+      bulk_s10k_diesel_f1_d3: 101102338
+      bulk_s10k_diesel_f2_d0: 997808157
+      bulk_s10k_diesel_f2_d1: 2014064671
+      bulk_s10k_diesel_f2_d2: 1979673613
+      bulk_s10k_diesel_f2_d3: -1222953815
+      bulk_s10k_diesel_f3_d0: 2122573426
+      bulk_s10k_diesel_f3_d1: -1436929467
+      bulk_s10k_diesel_f3_d2: -700026171
+      bulk_s10k_diesel_f3_d3: -106635257
+      bulk_s10k_diesel_f4_d0: -592908714
+      bulk_s10k_diesel_f4_d1: -2006366666
+      bulk_s10k_diesel_f4_d2: 1683806463
+      bulk_s10k_diesel_f4_d3: -2063586276
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

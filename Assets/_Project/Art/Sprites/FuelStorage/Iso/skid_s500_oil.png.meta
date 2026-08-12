@@ -1,0 +1,650 @@
+fileFormatVersion: 2
+guid: dcec2dce285bcfd43a3cc367da8b6aed
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -6745684230149774511
+    second: skid_s500_oil_0
+  - first:
+      213: -4933451632654974110
+    second: skid_s500_oil_1
+  - first:
+      213: 4083372870662555475
+    second: skid_s500_oil_2
+  - first:
+      213: -6424787314499164799
+    second: skid_s500_oil_3
+  - first:
+      213: 4676871417550975093
+    second: skid_s500_oil_4
+  - first:
+      213: 2479500128978793425
+    second: skid_s500_oil_5
+  - first:
+      213: -5829993241666152132
+    second: skid_s500_oil_6
+  - first:
+      213: 2500018427154785780
+    second: skid_s500_oil_7
+  - first:
+      213: 5380876693477632514
+    second: skid_s500_oil_8
+  - first:
+      213: 5827175951379277581
+    second: skid_s500_oil_9
+  - first:
+      213: -7063649712897236715
+    second: skid_s500_oil_10
+  - first:
+      213: 1626412437086693625
+    second: skid_s500_oil_11
+  - first:
+      213: -8986333309571203992
+    second: skid_s500_oil_12
+  - first:
+      213: 4499066480752563678
+    second: skid_s500_oil_13
+  - first:
+      213: 2729370135394901248
+    second: skid_s500_oil_14
+  - first:
+      213: 3738728503246418811
+    second: skid_s500_oil_15
+  - first:
+      213: -4402626148873903344
+    second: skid_s500_oil_16
+  - first:
+      213: -1862460074699950403
+    second: skid_s500_oil_17
+  - first:
+      213: -1441685021401583222
+    second: skid_s500_oil_18
+  - first:
+      213: -5067439862513168726
+    second: skid_s500_oil_19
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: skid_s500_oil_f0_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 204
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eb4bff0aafb2ede449f0cbdbc4a6d152
+      internalID: 419745940
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_oil_f0_d1
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 204
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 27142d2ae8572784c98fcf841953c2e9
+      internalID: 1244252505
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_oil_f0_d2
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 204
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5665f7c056aa39749b878dee74457c48
+      internalID: -237648338
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_oil_f0_d3
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 204
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 64584e1a34e44294da602a3a3c489eee
+      internalID: 19285943
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_oil_f1_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 153
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a54a25777806239409a8f2fe1650c7c0
+      internalID: 224232428
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_oil_f1_d1
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 153
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 55f8b180a8cf5ea4ea7424cdc98a951b
+      internalID: 1030341345
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_oil_f1_d2
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 153
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b48a52b844209774fb1f60b60af3d9b0
+      internalID: 1719427408
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_oil_f1_d3
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 153
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 92b6133fa1add7445bf449eb9bdf939d
+      internalID: -52522681
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_oil_f2_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 102
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bd7a367ea6752e7408966be5aab1b4f2
+      internalID: -1312530537
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_oil_f2_d1
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 102
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f4c0a5aad5e095947821567a6dd5237b
+      internalID: 885495963
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_oil_f2_d2
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 102
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 74647fb9e4da3b247a3ab829a2b3be08
+      internalID: 941352660
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_oil_f2_d3
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 102
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2055ab02893e1434a99b5e1d5224b6cc
+      internalID: 1458834213
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_oil_f3_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 51
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6b5360f14f0d23549a810e219c6f968e
+      internalID: -1538909530
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_oil_f3_d1
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 51
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a53d73d133d0f1946afa75aa80c5ca32
+      internalID: 1865782279
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_oil_f3_d2
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 51
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6954e661ed28e494e9f501c9ec4edafe
+      internalID: -52992632
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_oil_f3_d3
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 51
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3555198261a553c488266e80640d9f73
+      internalID: 929909543
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_oil_f4_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f8f5b089680802e47806c7d3a429c720
+      internalID: -1179853692
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_oil_f4_d1
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 0
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 637dac0096ee1c448af117440a5373b6
+      internalID: 162971079
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_oil_f4_d2
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 0
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 78aad8aa9639c684c98092d18b8707b4
+      internalID: -1461093466
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_oil_f4_d3
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 0
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 00be0fd69310ed2498ef57fb850c9fa8
+      internalID: -2119238236
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 72c0520e5173a6d4c8354de0bf42ec35
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      skid_s500_oil_f0_d0: 419745940
+      skid_s500_oil_f0_d1: 1244252505
+      skid_s500_oil_f0_d2: -237648338
+      skid_s500_oil_f0_d3: 19285943
+      skid_s500_oil_f1_d0: 224232428
+      skid_s500_oil_f1_d1: 1030341345
+      skid_s500_oil_f1_d2: 1719427408
+      skid_s500_oil_f1_d3: -52522681
+      skid_s500_oil_f2_d0: -1312530537
+      skid_s500_oil_f2_d1: 885495963
+      skid_s500_oil_f2_d2: 941352660
+      skid_s500_oil_f2_d3: 1458834213
+      skid_s500_oil_f3_d0: -1538909530
+      skid_s500_oil_f3_d1: 1865782279
+      skid_s500_oil_f3_d2: -52992632
+      skid_s500_oil_f3_d3: 929909543
+      skid_s500_oil_f4_d0: -1179853692
+      skid_s500_oil_f4_d1: 162971079
+      skid_s500_oil_f4_d2: -1461093466
+      skid_s500_oil_f4_d3: -2119238236
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

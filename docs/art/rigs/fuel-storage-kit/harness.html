@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Hidden Harbours — Fuel Rig harness</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;background:#0b1216;color:#aeb9bb;font:12px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace;padding:26px 22px 60px}
+  canvas{image-rendering:pixelated;image-rendering:crisp-edges;display:block}
+  h1{font-size:16px;color:#eef3f1;font-weight:400;letter-spacing:.04em;margin:0 0 4px}
+  .sub{font-size:11px;color:#5f6f74;letter-spacing:.1em;margin-bottom:18px}
+  .panel{background:#111a1f;border:1px solid #23323a;padding:14px;margin-bottom:16px}
+  .hd{font-size:11px;color:#8a979b;letter-spacing:.08em;margin-bottom:10px}
+  .frame{border:1px solid #23323a;background:#0e161b;overflow:auto}
+  .ctl{display:flex;gap:18px;row-gap:16px;flex-wrap:wrap;align-items:flex-start;margin-top:12px}
+  .grp{display:flex;flex-direction:column;gap:6px;max-width:420px}
+  .lbl{font-size:10px;letter-spacing:.14em;color:#5f6f74}
+  .btns{display:flex;gap:5px;flex-wrap:wrap}
+  .b{padding:5px 10px;font-size:11px;letter-spacing:.06em;cursor:pointer;user-select:none;border:1px solid #2f444c;color:#aeb9bb;background:#16232a}
+  .b.on{background:#c8d2d0;color:#0b1216}
+  input[type=range]{accent-color:#c9704f;width:280px}
+  table{border-collapse:collapse;font-size:11px;width:100%}
+  td,th{border:1px solid #23323a;padding:5px 8px;text-align:left;font-weight:400}
+  th{color:#8a979b;background:#111a1f}
+  td{color:#c8d2d0;background:#0e161b}
+  .note{font-size:11px;color:#6f7e83;margin-top:10px;max-width:980px}
+  b{color:#c8d2d0}
+</style>
+</head>
+<body>
+<h1>Fuel Storage &amp; Dispensing Rig — bake harness</h1>
+<div class="sub">8 VESSELS &middot; 4 GRADES &middot; 21 SIZES &middot; 8 DIRS &middot; CONTINUOUS FILL &middot; NO BUILD, NO DEPS</div>
+
+<div class="panel">
+  <div class="hd">EIGHT HEADINGS &mdash; <span id="selName"></span></div>
+  <div class="frame"><canvas id="dirs" width="1180" height="250"></canvas></div>
+  <div class="ctl">
+    <div class="grp"><div class="lbl">VESSEL</div><div class="btns" id="typeBtns"></div></div>
+    <div class="grp"><div class="lbl">SIZE</div><div class="btns" id="sizeBtns"></div></div>
+    <div class="grp"><div class="lbl">GRADE</div><div class="btns" id="fuelBtns"></div></div>
+    <div class="grp"><div class="lbl">WEAR</div><div class="btns" id="wearBtns"></div></div>
+    <div class="grp"><div class="lbl">FILL &mdash; <span id="fillPct"></span> BY VOLUME</div><input id="fill" type="range" min="0" max="100" value="62"></div>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="hd">FILL RAMP &mdash; nine volume fractions, one facing. The level is continuous; these are samples.</div>
+  <div class="frame"><canvas id="ramp" width="1180" height="230"></canvas></div>
+  <div class="note" id="rampNote"></div>
+</div>
+
+<div class="panel">
+  <div class="hd">THE WHOLE KIT &mdash; every vessel at every size, true relative scale, current grade and fill</div>
+  <div class="frame"><canvas id="all" width="1180" height="640"></canvas></div>
+</div>
+
+<div class="panel">
+  <div class="hd">GAUGE &mdash; <span id="gaugeName"></span></div>
+  <table id="tbl"></table>
+  <div class="note"><b>fill is a volume fraction.</b> The rig solves the surface height from it. On the skid tank &mdash; a horizontal cylinder &mdash; those are different numbers, and the sight glass shows the real one.</div>
+</div>
+
+<script src="isoSolid.js"></script>
+<script src="fuelRig.js"></script>
+<script>
+const F = globalThis.FuelIso;
+const S = { type:'jerry', size:'s20', fuel:'gas', fill:0.62, wear:'working' };
+const ZOOM = { jug:5, jerry:4, nozzle:5, drum:3, tote:2, skid:2, bulk:1, pump:3 };
+const scratch = {};
+function buf(w,h){ const k=w+'x'+h; if(!scratch[k]){ const c=document.createElement('canvas'); c.width=w; c.height=h; scratch[k]=c; } return scratch[k]; }
+function blit(g, type, dir, opts, x, y, z){
+  const c = F.cell(type, opts.size, opts), px = F.render(type, dir, opts);
+  const b = buf(c.W, c.H);
+  b.getContext('2d').putImageData(new ImageData(px, c.W, c.H), 0, 0);
+  g.imageSmoothingEnabled = false;
+  g.drawImage(b, Math.round(x - c.cx*z), Math.round(y - c.cy*z), c.W*z, c.H*z);
+  return c;
+}
+function shadow(g,x,y,rx){ g.save(); g.fillStyle='rgba(6,11,13,0.42)'; g.beginPath(); g.ellipse(x,y,rx,rx*0.3,0,0,6.3); g.fill(); g.restore(); }
+function tag(g,x,y,t,c){ g.save(); g.font='10px ui-monospace,Menlo,monospace'; g.textAlign='center'; g.fillStyle=c||'#5f6f74'; g.fillText(t,x,y); g.restore(); }
+function ctx(id){ const c=document.getElementById(id); const g=c.getContext('2d'); g.imageSmoothingEnabled=false; g.clearRect(0,0,c.width,c.height); return g; }
+const O = (x) => Object.assign({ fuel:S.fuel, fill:S.fill, wear:S.wear, rest:true }, x||{});
+
+function drawDirs(){
+  const g = ctx('dirs'), z = ZOOM[S.type], span = 1180/8, gy = 212;
+  for (let d=0; d<8; d++){
+    const x = span*(d+0.5), c = F.cell(S.type, S.size, O({size:S.size}));
+    shadow(g, x, gy+2, Math.max(8, c.W*z*0.36));
+    blit(g, S.type, d, O({ size:S.size }), x, gy, z);
+    tag(g, x, gy+24, F.order[d], '#8a979b');
+  }
+  const c = F.cell(S.type, S.size, O({size:S.size}));
+  tag(g, 590, 20, 'CELL ' + c.W + '\u00d7' + c.H + '  \u00b7  PIVOT ' + c.cx + ',' + c.cy + '  \u00b7  DRAWN AT ' + z + '\u00d7', '#3f4d52');
+}
+function drawRamp(){
+  const g = ctx('ramp'), z = ZOOM[S.type], gy = 190, n = 9, span = 1180/n;
+  const T = F.TYPES[S.type], has = T.read !== 'none';
+  for (let i=0; i<n; i++){
+    const f = i/(n-1), x = span*(i+0.5);
+    const c = F.cell(S.type, S.size, O({size:S.size}));
+    shadow(g, x, gy+2, Math.max(8, c.W*z*0.36));
+    blit(g, S.type, 3, O({ size:S.size, fill: has ? f : S.fill }), x, gy, z);
+    const L = F.level(S.type, S.size, f, { fuel:S.fuel });
+    tag(g, x, gy+22, has ? Math.round(f*100)+'%' : '\u2014', '#8a979b');
+    tag(g, x, gy+34, has ? L.litres+' L' : '', '#5f6f74');
+  }
+  document.getElementById('rampNote').innerHTML = has
+    ? 'Read mechanism: <b>' + T.read.toUpperCase() + '</b> &mdash; ' + ({body:'the translucent wall tints below the surface',tube:'an external sight glass on a graduated plate, mirrored on both long sides',board:'a float-and-tape gauge board with a travelling pointer, mirrored on both long sides'})[T.read] + '.'
+    : 'This vessel stores nothing, so it has no level. It carries the grade colour and its mount points instead.';
+}
+function drawAll(){
+  const g = ctx('all');
+  let x = 0, rowY = 168, maxH = 0;
+  F.TYPE_ORDER.forEach((t) => {
+    const z = ZOOM[t];
+    F.sizesOf(t).forEach((s) => {
+      const c = F.cell(t, s, O({ size:s }));
+      const w = Math.max(58, c.W*z + 16);
+      if (x + w > 1180){ x = 0; rowY += maxH + 46; maxH = 0; }
+      const cx = x + w/2;
+      shadow(g, cx, rowY+2, Math.max(8, c.W*z*0.34));
+      blit(g, t, 3, O({ size:s, pump: t==='drum' && s==='s205', grade2:'diesel' }), cx, rowY, z);
+      tag(g, cx, rowY+16, F.TYPES[t].sizes[s].label, '#c8d2d0');
+      tag(g, cx, rowY+28, F.TYPES[t].label, '#4d5b60');
+      maxH = Math.max(maxH, c.H*z);
+      x += w;
+    });
+  });
+}
+function drawTable(){
+  const T = F.TYPES[S.type];
+  document.getElementById('gaugeName').textContent = T.label + ' \u00b7 ' + F.FUELS[S.fuel].label + ' \u00b7 ' + Math.round(S.fill*100) + '%';
+  let h = '<tr><th>SIZE</th><th>CAPACITY</th><th>IN IT NOW</th><th>SURFACE DEPTH</th><th>TOTAL MASS</th><th>CELL</th><th>PIVOT</th></tr>';
+  F.sizesOf(S.type).forEach((s) => {
+    const L = F.level(S.type, s, S.fill, { fuel:S.fuel }), c = F.cell(S.type, s, O({size:s}));
+    h += '<tr><td>'+L.label+'</td><td>'+(L.capacity?L.capacity+' L':'\u2014')+'</td><td>'+(L.capacity?L.litres+' L':'\u2014')
+      + '</td><td>'+(L.capacity?Math.round(L.heightFrac*100)+'%':'\u2014')+'</td><td>'+L.kg+' kg</td><td>'+c.W+'\u00d7'+c.H+'</td><td>'+c.cx+','+c.cy+'</td></tr>';
+  });
+  document.getElementById('tbl').innerHTML = h;
+}
+function btns(id, list, cur, on, label){
+  const el = document.getElementById(id); el.innerHTML = '';
+  list.forEach((k) => {
+    const d = document.createElement('div');
+    d.className = 'b' + (k === cur ? ' on' : '');
+    d.textContent = label ? label(k) : k.toUpperCase();
+    d.onclick = () => { on(k); redraw(); };
+    el.appendChild(d);
+  });
+}
+function redraw(){
+  document.getElementById('selName').textContent = F.TYPES[S.type].label + ' \u00b7 ' + F.TYPES[S.type].sizes[S.size].label;
+  document.getElementById('fillPct').textContent = Math.round(S.fill*100) + '%';
+  btns('typeBtns', F.TYPE_ORDER, S.type, (k)=>{ S.type=k; S.size=F.resolveSize(k, null); }, (k)=>F.TYPES[k].label);
+  btns('sizeBtns', F.sizesOf(S.type), S.size, (k)=>{ S.size=k; }, (k)=>F.TYPES[S.type].sizes[k].label);
+  btns('fuelBtns', F.FUEL_ORDER, S.fuel, (k)=>{ S.fuel=k; }, (k)=>F.FUELS[k].short);
+  btns('wearBtns', ['fresh','working','derelict'], S.wear, (k)=>{ S.wear=k; });
+  drawDirs(); drawRamp(); drawAll(); drawTable();
+}
+document.getElementById('fill').oninput = (e) => { S.fill = +e.target.value/100; redraw(); };
+redraw();
+</script>
+</body>
+</html>
