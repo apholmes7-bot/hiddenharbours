@@ -27,10 +27,20 @@ namespace HiddenHarbours.World
     /// facings — half of them — it would be visibly wrong.</para>
     ///
     /// <para><b>The model frame is the ROOM's</b>, matching what the owner sees in the room art:
-    /// <c>+x</c> is across the room to the right, <c>+y</c> is toward the BACK wall (the hearth), and
-    /// the DOORWAY is at <c>(0, −Ln/2)</c>. That is the interior rig's own frame — its exterior shell
-    /// puts its door on <c>+Y</c> instead, which is exactly why the two sheets are shown at facings
-    /// <c>InteriorKit.ExteriorFacingOffset</c> apart.</para>
+    /// <c>+x</c> is across the room to the right and <c>+y</c> is toward the far wall. For the HOUSE
+    /// family the doorway is at <c>(0, −Ln/2)</c> — <c>interiorIsoRig</c>'s own frame, whose door is on
+    /// <c>−Y</c> while its exterior shell's is on <c>+Y</c>, which is exactly why the two sheets are
+    /// shown <c>InteriorKit.ExteriorFacingOffset</c> facings apart.</para>
+    ///
+    /// <para><b>⚠️ THE DOOR IS NOT ALWAYS ON −Y, AND IT IS NOT ALWAYS CENTRED.</b> The SHOP kit's room
+    /// is its shopfront seen from inside, so its street door is on <c>+Y</c> — the opposite wall — and
+    /// on two of its three trades it sits well off centre (the post office's is 1.68 m left of the wall
+    /// centre, the restaurant's 2.52 m). Both facts are MEASURED from the bake's own per-facing door
+    /// anchors, not read off a README. <see cref="DoorSign"/> and <see cref="DoorAcrossMetres"/> carry
+    /// them, and both default to the house's answer so nothing that already stands moves.</para>
+    ///
+    /// <para>Getting either wrong is silent in the worst way: the room draws perfectly, and the gap the
+    /// player can walk through is somewhere other than the doorway they can see.</para>
     /// </summary>
     public readonly struct InteriorFootprint
     {
@@ -50,8 +60,18 @@ namespace HiddenHarbours.World
         /// <c>sin(camera elevation)</c>, 0.643 at the shared 40°.</summary>
         public readonly float DepthScale;
 
+        /// <summary>Which model-frame wall the doorway is in: <c>−1</c> for the <c>−y</c> wall (the
+        /// house family, and the default) or <c>+1</c> for <c>+y</c> (the shop family). Never 0 — a
+        /// building with no door is not a building this struct can describe.</summary>
+        public readonly float DoorSign;
+
+        /// <summary>How far along that wall the doorway sits, in metres from the wall's centre,
+        /// <c>+x</c> to the right. 0 for a centred door, which is every house.</summary>
+        public readonly float DoorAcrossMetres;
+
         public InteriorFootprint(Vector2 centre, float widthMetres, float lengthMetres,
-                                 int facing, int facings, float depthScale)
+                                 int facing, int facings, float depthScale,
+                                 float doorSign = -1f, float doorAcrossMetres = 0f)
         {
             Centre = centre;
             WidthMetres = widthMetres;
@@ -59,6 +79,12 @@ namespace HiddenHarbours.World
             Facing = facing;
             Facings = Mathf.Max(1, facings);
             DepthScale = depthScale;
+            DoorSign = doorSign >= 0f ? 1f : -1f;
+
+            // Clamped so a mis-measured anchor cannot push the doorway off the end of its own wall and
+            // leave the room sealed — the one failure here that would look like a physics bug.
+            float halfWidth = Mathf.Max(0f, widthMetres * 0.5f);
+            DoorAcrossMetres = Mathf.Clamp(doorAcrossMetres, -halfWidth, halfWidth);
         }
 
         /// <summary>
@@ -112,10 +138,12 @@ namespace HiddenHarbours.World
             return Mathf.Abs(m.x) <= hw && Mathf.Abs(m.y) <= hl;
         }
 
-        /// <summary>The doorway, in world units: the middle of the front (<c>−y</c>) wall, on the
-        /// floor. The threshold the player crosses, and the point the bake's own door anchor lands
-        /// on.</summary>
-        public Vector2 DoorWorld => ModelToWorld(new Vector2(0f, -LengthMetres * 0.5f));
+        /// <summary>The doorway in world units — the threshold the player crosses, and the point the
+        /// bake's own door anchor lands on. Reads <see cref="DoorSign"/> for which wall and
+        /// <see cref="DoorAcrossMetres"/> for where along it, so it is the DRAWN door and not the
+        /// centre of a wall that happens to have one.</summary>
+        public Vector2 DoorWorld =>
+            ModelToWorld(new Vector2(DoorAcrossMetres, DoorSign * LengthMetres * 0.5f));
 
         /// <summary>The room's four corners in world units, front-left first, going round. A
         /// parallelogram at every facing except the four orthogonal ones.</summary>
@@ -153,15 +181,27 @@ namespace HiddenHarbours.World
         {
             float hw = WidthMetres * 0.5f, hl = LengthMetres * 0.5f;
             float t = Mathf.Clamp(thickness, 0.01f, Mathf.Min(hw, hl));
-            float hd = Mathf.Clamp(doorwayWidth, 0f, WidthMetres) * 0.5f;
+            float half = Mathf.Clamp(doorwayWidth, 0f, WidthMetres) * 0.5f;
+
+            // The gap goes where the DOOR is, not at the middle of the wall — and it is kept inside the
+            // wall's own ends, so an off-centre door near a corner narrows its opening rather than
+            // opening the corner itself.
+            float gap0 = Mathf.Clamp(DoorAcrossMetres - half, -hw, hw);
+            float gap1 = Mathf.Clamp(DoorAcrossMetres + half, -hw, hw);
+
+            // The doorway wall is at DoorSign·hl; the solid one opposite it.
+            float doorOuter = DoorSign * hl;
+            float doorInner = DoorSign * (hl - t);
+            float backOuter = -doorOuter;
+            float backInner = -doorInner;
 
             return new[]
             {
-                Quad(-hw, hw, hl - t, hl),            // BACK  (+y) — the hearth wall, full width
+                Quad(-hw, hw, Mathf.Min(backInner, backOuter), Mathf.Max(backInner, backOuter)),
                 Quad(-hw, -hw + t, -hl + t, hl - t),  // LEFT  (−x), between the other two
                 Quad(hw - t, hw, -hl + t, hl - t),    // RIGHT (+x), between the other two
-                Quad(-hw, -hd, -hl, -hl + t),         // FRONT, left of the doorway
-                Quad(hd, hw, -hl, -hl + t),           // FRONT, right of the doorway
+                Quad(-hw, gap0, Mathf.Min(doorInner, doorOuter), Mathf.Max(doorInner, doorOuter)),
+                Quad(gap1, hw, Mathf.Min(doorInner, doorOuter), Mathf.Max(doorInner, doorOuter)),
             };
         }
 

@@ -193,6 +193,45 @@ namespace HiddenHarbours.Tests.EditMode
         /// <para>The buildings pivot at their footprint CENTRE and the owner may re-face one, so the
         /// number that has to be covered is the largest HALF-DIAGONAL, not the largest width.</para>
         /// </summary>
+        /// <summary>
+        /// 🔴 <b>EVERY PLACED BUILDING HAS A CLEARING, and this is the test that did not exist when the
+        /// post office was placed without one.</b>
+        ///
+        /// <para><c>StPetersGrass.BuildingSites</c> is a hand-maintained list, and a site missing from it
+        /// fails in total silence: the meadow grows through the building's ground, and because a room's
+        /// floor sorts at <c>ShopCatalog.RoomSortingOrder</c> (1) — BELOW the Y-sort band the tufts live
+        /// in — the grass draws OVER the floor. From outside the building is perfect. It took rendering
+        /// the interior reveal and finding the post office had vanished into the meadow to see it.</para>
+        ///
+        /// <para>So the list is checked against the two things that actually place buildings on this
+        /// island, rather than against itself.</para>
+        /// </summary>
+        [Test]
+        public void EveryPlacedBuilding_HasAGrassClearing()
+        {
+            foreach (var house in StPetersVillage.Sites)
+                AssertCleared(house.Key, house.Position);
+
+            foreach (var shop in StPetersShops.Sites)
+                AssertCleared(shop.Key, shop.Position);
+
+            // Ginny's cottage is its own sprite rather than a kit entry, and is just as capable of being
+            // forgotten.
+            AssertCleared("cottage", StPetersBuilder.CottagePos);
+
+            void AssertCleared(string key, Vector2 at)
+            {
+                bool cleared = false;
+                foreach (var site in StPetersGrass.BuildingSites)
+                    if (Vector2.Distance(site, at) < 0.01f) { cleared = true; break; }
+
+                Assert.IsTrue(cleared,
+                    $"'{key}' stands at {at} and StPetersGrass.BuildingSites has no clearing for it, so " +
+                    "the meadow grows through its ground — and OVER its floor once you are inside. Add " +
+                    "its site constant to that list.");
+            }
+        }
+
         [Test]
         public void TheMeadowsBuildingClearance_CoversTheBiggestFootprintTheKitDeclares()
         {
@@ -207,6 +246,20 @@ namespace HiddenHarbours.Tests.EditMode
                 Vector2 f = p.FootprintMetres;
                 float halfDiagonal = 0.5f * Mathf.Sqrt(f.x * f.x + f.y * f.y);
                 if (halfDiagonal > worst) { worst = halfDiagonal; worstKey = p.Entry.label; }
+            }
+
+            // ⚠️ AND THE SHOPS, which are a DIFFERENT KIT and are now the bigger buildings. Scanning
+            // only the village kit was right until 2026-08-11 and stopped being right the moment the
+            // general store became an 8.00 × 10.00 m shell instead of a 7.08 × 8.89 m house — silently,
+            // because this test would have gone on measuring the farmhouse and passing. Only the shops
+            // this island actually places: the restaurant is Nine Mile Creek's.
+            foreach (var site in StPetersShops.Sites)
+            {
+                var shell = HiddenHarbours.Art.Editor.ShopCatalog.FindShell(site.Key);
+                if (!shell.IsValid) continue;
+
+                float halfDiagonal = HiddenHarbours.Art.Editor.ShopCatalog.FootprintRadiusMetres(shell);
+                if (halfDiagonal > worst) { worst = halfDiagonal; worstKey = shell.Entry.label; }
             }
 
             Assert.GreaterOrEqual(StPetersGrass.BuildingClearanceMetres, worst,

@@ -2,6 +2,7 @@ using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
 using HiddenHarbours.App.Editor;
+using HiddenHarbours.Art;                 // SpriteLightMath — the shared bake camera's squash
 using HiddenHarbours.Art.Editor;
 using HiddenHarbours.World;
 
@@ -207,17 +208,22 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.GreaterOrEqual(facing, 0);
                 Assert.Less(facing, p.Entry.facings, "a facing the sheet does not have is a blank sprite");
 
-                // Invert the derivation: what direction does the CHOSEN facing point? The front facing
-                // points at the camera (−Y, i.e. −90° in atan2 terms) and each cell is one turn CCW.
+                // 🔴 MEASURED FROM THE BAKE'S OWN DOOR ANCHORS, not re-derived from the formula the
+                // placer used. This test used to restate that formula —
+                // `−90 + (facing − FrontFacing)·perCell` — so it and the implementation agreed with each
+                // other and with nothing else, and both were wrong: cell i is baked at
+                // RigBaker.DirForCell, so a door's ground bearing DECREASES as the index rises. Every
+                // door in this region and in St Peters was mirrored about the north–south axis and this
+                // assert reported 0°. It also took its angle in the SQUASHED world plane, which is out
+                // by up to 20° on top of that.
                 float perCell = 360f / p.Entry.facings;
-                float chosen = -90f + (facing - VillageBuildingKit.FrontFacing(p.Entry)) * perCell;
+                float error = BuildingFacing.DoorErrorDegrees(
+                    p.Entry.doorY, p.Entry.pivotY, p.Entry.facings, SpriteLightMath.GroundDepthScale,
+                    house.Position, NineMileCreekFlavour.FacingTarget, facing);
 
-                Vector2 d = NineMileCreekFlavour.FacingTarget - house.Position;
-                float wanted = Mathf.Atan2(d.y, d.x) * Mathf.Rad2Deg;
-
-                Assert.LessOrEqual(Mathf.Abs(Mathf.DeltaAngle(chosen, wanted)), perCell * 0.5f + 1e-3f,
-                    $"{house.Key}'s door is turned {Mathf.DeltaAngle(chosen, wanted):0.#}° away from the " +
-                    "quay, which is more than the kit's own resolution — it is pointing at a wall");
+                Assert.LessOrEqual(error, perCell * 0.5f + 1e-3f,
+                    $"{house.Key}'s door is turned {error:0.#}° away from the quay, which is more than " +
+                    "the kit's own resolution — it is pointing at a wall");
             }
         }
 
