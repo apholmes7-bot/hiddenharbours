@@ -295,6 +295,10 @@ namespace HiddenHarbours.Boats
             {
                 hull.SetDisplacedHeaveMeters(0f);   // never a frozen ride either (draft is the driver's own gate)
                 hull.SetStormRock(1f, 0f, 0f);      // …and never a frozen storm pose (1/0/0 = the exact neutral)
+                // …and nobody left standing on a crest that is gone. A MESH hull ignores this by
+                // contract and goes on reporting the waterline her driver still draws her at, which
+                // is right: her picture did not move just because this component stopped ticking.
+                hull.SetDrawnRideMeters(0f);
             }
             _heaveWeight = default;
             RestoreVisual();
@@ -327,6 +331,7 @@ namespace HiddenHarbours.Boats
                 {
                     offHull.SetDisplacedHeaveMeters(0f);   // off = no ride either (the whole read is off)
                     offHull.SetStormRock(1f, 0f, 0f);      // off = no storm pose either (the exact neutral)
+                    offHull.SetDrawnRideMeters(0f);        // off = a passenger stands where they were
                 }
                 _heaveWeight = default;
                 RestoreVisual();      // 0 = off, and the visual sits exactly where it was built
@@ -742,7 +747,20 @@ namespace HiddenHarbours.Boats
             // split into hulls that settle and hulls that surf. Every shipped compass carries 0
             // (the art is already drawn at her waterline), and a 0 datum sinks by exactly 0, so
             // this line is byte-identical for today's assets.
-            ApplyRide(SettleRideMeters(rideMeters, hull) + surge, squash);
+            float drawnRide = SettleRideMeters(rideMeters, hull);
+
+            // …AND PUBLISHED, because on this path THIS component is the applier (a mesh hull's
+            // driver publishes its own — see IBoatHullPresenter.DrawnRideMeters). It is what the
+            // fisher standing on this deck moves by, so it is the number that went into the
+            // transform write below and not a re-derivation of it.
+            //
+            // The RIDE only, deliberately: the storm SURGE is part of this hull's rock language —
+            // her passengers draw the rock from the published PHASE at their own amplitudes, and
+            // adding the surge here would give them a share of it twice. Displaced sea off ⇒ ride
+            // 0 ⇒ published exactly 0 (the A/B contract reaches her passengers too).
+            hull.SetDrawnRideMeters(drawnRide);
+
+            ApplyRide(drawnRide + surge, squash);
 
             if (calm)
             {
@@ -804,6 +822,12 @@ namespace HiddenHarbours.Boats
             if (hull != null)
             {
                 hull.VisualTiltDegrees = rollDegrees;   // composed after the hull's rotation reset
+                // The DISPLACED term of the offset written below, published for her passengers —
+                // this component is the applier on the transform path too, and a fisher on a hull
+                // that draws no rock cycle at all still has to ride the sea under her. Only the
+                // displaced term: the legacy bob/pitch gains ARE this hull's rock, drawn as a
+                // translation, and the rider takes its share of that from the tilt hook.
+                hull.SetDrawnRideMeters(rideActive ? bob : 0f);
             }
             else
             {
@@ -839,11 +863,18 @@ namespace HiddenHarbours.Boats
             _applied = true;
         }
 
-        /// <summary>Put the visual back exactly as built (and zero the tilt hook). Idempotent.</summary>
+        /// <summary>Put the visual back exactly as built (and zero the tilt hook, and the ride the
+        /// visual is no longer carrying — a picture at base is riding nothing, and her passengers
+        /// must be told so). Idempotent. A MESH hull ignores the ride clear by contract: her image is
+        /// moved by her driver, not by this transform.</summary>
         private void RestoreVisual()
         {
             var hull = Hull;
-            if (hull != null) hull.VisualTiltDegrees = 0f;
+            if (hull != null)
+            {
+                hull.VisualTiltDegrees = 0f;
+                hull.SetDrawnRideMeters(0f);
+            }
             if (!_applied) return;
             _applied = false;
             if (_visual == null || !_baseCached) return;

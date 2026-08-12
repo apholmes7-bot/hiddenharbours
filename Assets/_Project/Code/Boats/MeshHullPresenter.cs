@@ -107,6 +107,20 @@ namespace HiddenHarbours.Boats
         }
 
         /// <inheritdoc/>
+        // A dead presenter draws nothing, so it is riding nothing — 0 is the honest answer, and the
+        // one that leaves a passenger standing where they were rather than launched.
+        public float DrawnRideMeters => _driver != null ? _driver.DrawnRideMeters : 0f;
+
+        /// <inheritdoc/>
+        public void SetDrawnRideMeters(float rideMeters)
+        {
+            // Deliberately a no-op: the MESH driver applies the ride (it owns the settle sink and the
+            // displaced-sea gate), so it is also the one that reports it. Taking a caller's word for
+            // it here would let a hull with no wave motion wired claim to be level while she is drawn
+            // sitting at her waterline — see the interface member's contract.
+        }
+
+        /// <inheritdoc/>
         public void SetStormRock(float amplitudeScale, float extraRollDegrees, float extraPitchDegrees)
         {
             if (_driver != null) _driver.SetStormRock(amplitudeScale, extraRollDegrees, extraPitchDegrees);
