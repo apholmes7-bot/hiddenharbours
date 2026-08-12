@@ -1,0 +1,4866 @@
+{
+  "kit": "nav-buoy-rig",
+  "rig": "globalThis.NavBuoy",
+  "requires": "globalThis.IsoSolid",
+  "camera": {
+    "pxPerM": 32,
+    "elevDeg": 40,
+    "steps": 8,
+    "stepDeg": 45,
+    "order": [
+      "N",
+      "NE",
+      "E",
+      "SE",
+      "S",
+      "SW",
+      "W",
+      "NW"
+    ],
+    "keyline": false,
+    "aa": false,
+    "dither": "ordered 4×4 bayer",
+    "alpha": "binary"
+  },
+  "bake": {
+    "waterline": "z = 0 = still waterline = pivot row",
+    "occlusion": "none — the whole hull is baked, keel included; the sheet is never cut at the water",
+    "clipRule": "engine clips at pivot.y + motion().waterPx, or leaves it whole for a dry buoy",
+    "rows": "topY / keelY / bbox are MEASURED painted rows — the union of the alpha bounding box over the 8 facings, fresh and derelict. zHiModel / zLoModel are model-space z in metres (paint extents), NOT sheet rows: the tower and topmark rise above zHiModel and the skirt hangs below zLoModel.",
+    "crop": "crop and pack from bbox, never from zHiModel/zLoModel"
+  },
+  "tiltAllowanceDeg": 16,
+  "types": {
+    "PortCan": {
+      "name": "Port hand",
+      "gloss": "Keep on your LEFT going upstream. Odd numbers. The SHAPE is the mark.",
+      "shape": "can",
+      "topmark": null,
+      "light": "FlG4",
+      "bands": [
+        [
+          0,
+          1,
+          "green"
+        ]
+      ],
+      "stripes": null
+    },
+    "StbdNun": {
+      "name": "Starboard hand",
+      "gloss": "Keep on your RIGHT going upstream. Even numbers.",
+      "shape": "nun",
+      "topmark": null,
+      "light": "FlR4",
+      "bands": [
+        [
+          0,
+          1,
+          "red"
+        ]
+      ],
+      "stripes": null
+    },
+    "PortLit": {
+      "name": "Port hand, lighted",
+      "gloss": "The steel one. Channel edge in the shipping lane.",
+      "shape": "steel",
+      "topmark": "can",
+      "light": "FlG4",
+      "bands": [
+        [
+          0,
+          1,
+          "green"
+        ]
+      ],
+      "stripes": null
+    },
+    "StbdLit": {
+      "name": "Starboard hand, lighted",
+      "gloss": "The steel one, other side.",
+      "shape": "steel",
+      "topmark": "cone",
+      "light": "FlR4",
+      "bands": [
+        [
+          0,
+          1,
+          "red"
+        ]
+      ],
+      "stripes": null
+    },
+    "CardinalN": {
+      "name": "North cardinal",
+      "gloss": "Black over yellow. Safe water to the NORTH.",
+      "shape": "pillar",
+      "topmark": "NN",
+      "light": "Q",
+      "bands": [
+        [
+          0,
+          0.5,
+          "yellow"
+        ],
+        [
+          0.5,
+          1,
+          "black"
+        ]
+      ],
+      "stripes": null
+    },
+    "CardinalS": {
+      "name": "South cardinal",
+      "gloss": "Yellow over black. Safe water to the SOUTH.",
+      "shape": "pillar",
+      "topmark": "SS",
+      "light": "Q6LFl",
+      "bands": [
+        [
+          0,
+          0.5,
+          "black"
+        ],
+        [
+          0.5,
+          1,
+          "yellow"
+        ]
+      ],
+      "stripes": null
+    },
+    "CardinalE": {
+      "name": "East cardinal",
+      "gloss": "Black-yellow-black. Safe water to the EAST.",
+      "shape": "pillar",
+      "topmark": "EE",
+      "light": "Q3",
+      "bands": [
+        [
+          0,
+          0.34,
+          "black"
+        ],
+        [
+          0.34,
+          0.66,
+          "yellow"
+        ],
+        [
+          0.66,
+          1,
+          "black"
+        ]
+      ],
+      "stripes": null
+    },
+    "CardinalW": {
+      "name": "West cardinal",
+      "gloss": "Yellow-black-yellow. Safe water to the WEST.",
+      "shape": "pillar",
+      "topmark": "WW",
+      "light": "Q9",
+      "bands": [
+        [
+          0,
+          0.34,
+          "yellow"
+        ],
+        [
+          0.34,
+          0.66,
+          "black"
+        ],
+        [
+          0.66,
+          1,
+          "yellow"
+        ]
+      ],
+      "stripes": null
+    },
+    "Isolated": {
+      "name": "Isolated danger",
+      "gloss": "Black with a red band. A rock, with water all round it.",
+      "shape": "pillar",
+      "topmark": "BB",
+      "light": "Fl2W5",
+      "bands": [
+        [
+          0,
+          0.38,
+          "black"
+        ],
+        [
+          0.38,
+          0.6,
+          "red"
+        ],
+        [
+          0.6,
+          1,
+          "black"
+        ]
+      ],
+      "stripes": null
+    },
+    "SafeWater": {
+      "name": "Safe water",
+      "gloss": "Red and white stripes. Fairway — pass either side.",
+      "shape": "pillar",
+      "topmark": "B",
+      "light": "MoA",
+      "bands": null,
+      "stripes": [
+        "red",
+        "white"
+      ]
+    },
+    "Special": {
+      "name": "Special purpose",
+      "gloss": "All yellow, saltire on top. Cables, spoil, races.",
+      "shape": "pillar",
+      "topmark": "X",
+      "light": "FlY4",
+      "bands": [
+        [
+          0,
+          1,
+          "yellow"
+        ]
+      ],
+      "stripes": null
+    },
+    "Regulatory": {
+      "name": "Regulatory",
+      "gloss": "White with orange bands. The shape on it is the rule.",
+      "shape": "can",
+      "topmark": "mark",
+      "light": "FlY4",
+      "bands": [
+        [
+          0,
+          0.16,
+          "orange"
+        ],
+        [
+          0.16,
+          0.86,
+          "white"
+        ],
+        [
+          0.86,
+          1,
+          "orange"
+        ]
+      ],
+      "stripes": null
+    },
+    "Mooring": {
+      "name": "Mooring",
+      "gloss": "White with a blue band. Tie up here.",
+      "shape": "sphere",
+      "topmark": null,
+      "light": null,
+      "bands": [
+        [
+          0,
+          0.5,
+          "white"
+        ],
+        [
+          0.5,
+          0.64,
+          "blue"
+        ],
+        [
+          0.64,
+          1,
+          "white"
+        ]
+      ],
+      "stripes": null
+    },
+    "Spar": {
+      "name": "Spar / winter buoy",
+      "gloss": "What replaces the steel ones before the ice comes.",
+      "shape": "spar",
+      "topmark": null,
+      "light": null,
+      "bands": [
+        [
+          0,
+          0.62,
+          "green"
+        ],
+        [
+          0.62,
+          1,
+          "black"
+        ]
+      ],
+      "stripes": null
+    }
+  },
+  "sizes": [
+    {
+      "id": "s12",
+      "label": "1.2 m",
+      "dia": 1.2,
+      "draft": 0.52,
+      "water": "0–10 m",
+      "role": "harbour, creek mouths, private channels",
+      "i": 0
+    },
+    {
+      "id": "s18",
+      "label": "1.8 m",
+      "dia": 1.75,
+      "draft": 0.78,
+      "water": "5–20 m",
+      "role": "the working default — most of the marks in a bay",
+      "i": 1
+    },
+    {
+      "id": "s20",
+      "label": "2.0 m",
+      "dia": 2,
+      "draft": 0.98,
+      "water": "10–30 m",
+      "role": "main channel, exposed approaches",
+      "i": 2
+    },
+    {
+      "id": "s24",
+      "label": "2.4 m",
+      "dia": 2.4,
+      "draft": 1.3,
+      "water": "10–40 m",
+      "role": "shipping channel, lit, radar-fitted",
+      "i": 3
+    },
+    {
+      "id": "s30",
+      "label": "3.0 m",
+      "dia": 3,
+      "draft": 1.8,
+      "water": "20–100 m",
+      "role": "landfall and offshore — the ones you see from the ferry",
+      "i": 4
+    }
+  ],
+  "wear": [
+    "fresh",
+    "working",
+    "derelict"
+  ],
+  "seas": {
+    "calm": {
+      "id": "calm",
+      "label": "Glass calm",
+      "Hs": 0.06,
+      "Tp": 3.4,
+      "spread": 26,
+      "gust": 0,
+      "ripple": 0.004,
+      "note": "Harbour at dawn. The chain is what moves."
+    },
+    "chop": {
+      "id": "chop",
+      "label": "Harbour chop",
+      "Hs": 0.38,
+      "Tp": 2.4,
+      "spread": 34,
+      "gust": 0.35,
+      "ripple": 0.016,
+      "note": "Short and steep. Tilts as hard as a gale and heaves almost nothing."
+    },
+    "working": {
+      "id": "working",
+      "label": "Working sea",
+      "Hs": 1.05,
+      "Tp": 4.6,
+      "spread": 30,
+      "gust": 0.55,
+      "ripple": 0.024,
+      "note": "A day you can still haul in."
+    },
+    "rough": {
+      "id": "rough",
+      "label": "Rough",
+      "Hs": 2.6,
+      "Tp": 6.6,
+      "spread": 38,
+      "gust": 0.85,
+      "ripple": 0.034,
+      "note": "The small hulls go green over and the chain snubs hard."
+    },
+    "swell": {
+      "id": "swell",
+      "label": "Swell, no wind",
+      "Hs": 1.6,
+      "Tp": 11.5,
+      "spread": 14,
+      "gust": 0.1,
+      "ripple": 0.009,
+      "note": "Long and low. Big slow heave, barely any tilt — nothing else does this."
+    }
+  },
+  "lights": {
+    "FlG4": {
+      "col": "green",
+      "period": 4,
+      "on": [
+        [
+          0,
+          0.6
+        ]
+      ],
+      "txt": "Fl G 4s"
+    },
+    "FlR4": {
+      "col": "red",
+      "period": 4,
+      "on": [
+        [
+          0,
+          0.6
+        ]
+      ],
+      "txt": "Fl R 4s"
+    },
+    "FlY4": {
+      "col": "yellow",
+      "period": 4,
+      "on": [
+        [
+          0,
+          0.6
+        ]
+      ],
+      "txt": "Fl Y 4s"
+    },
+    "Q": {
+      "col": "white",
+      "period": 1,
+      "on": [
+        [
+          0,
+          0.32
+        ]
+      ],
+      "txt": "Q"
+    },
+    "Q3": {
+      "col": "white",
+      "period": 10,
+      "on": [
+        [
+          0,
+          0.32
+        ],
+        [
+          1,
+          1.32
+        ],
+        [
+          2,
+          2.32
+        ]
+      ],
+      "txt": "Q(3) 10s"
+    },
+    "Q6LFl": {
+      "col": "white",
+      "period": 15,
+      "on": [
+        [
+          0,
+          0.32
+        ],
+        [
+          1,
+          1.32
+        ],
+        [
+          2,
+          2.32
+        ],
+        [
+          3,
+          3.32
+        ],
+        [
+          4,
+          4.32
+        ],
+        [
+          5,
+          5.32
+        ],
+        [
+          6.4,
+          8.4
+        ]
+      ],
+      "txt": "Q(6) + LFl 15s"
+    },
+    "Q9": {
+      "col": "white",
+      "period": 15,
+      "on": [
+        [
+          0,
+          0.32
+        ],
+        [
+          1,
+          1.32
+        ],
+        [
+          2,
+          2.32
+        ],
+        [
+          3,
+          3.32
+        ],
+        [
+          4,
+          4.32
+        ],
+        [
+          5,
+          5.32
+        ],
+        [
+          6,
+          6.32
+        ],
+        [
+          7,
+          7.32
+        ],
+        [
+          8,
+          8.32
+        ]
+      ],
+      "txt": "Q(9) 15s"
+    },
+    "Fl2W5": {
+      "col": "white",
+      "period": 5,
+      "on": [
+        [
+          0,
+          0.4
+        ],
+        [
+          1,
+          1.4
+        ]
+      ],
+      "txt": "Fl(2) W 5s"
+    },
+    "MoA": {
+      "col": "white",
+      "period": 6,
+      "on": [
+        [
+          0,
+          0.4
+        ],
+        [
+          1,
+          2.4
+        ]
+      ],
+      "txt": "Mo(A) W 6s"
+    }
+  },
+  "shapes": {
+    "can": "flat cylinder",
+    "nun": "cone",
+    "steel": "ballasted steel hull + tower",
+    "pillar": "pillar + tower",
+    "sphere": "spherical mooring buoy",
+    "spar": "slender spar"
+  },
+  "cells": {
+    "PortCan|s12": {
+      "W": 64,
+      "H": 96,
+      "pivot": {
+        "x": 32,
+        "y": 54
+      },
+      "waterlineY": 54,
+      "topY": 14,
+      "keelY": 76,
+      "D": 1.2,
+      "R": 0.6,
+      "draft": 0.52,
+      "freeboard": 1.14,
+      "zTop": 1.14,
+      "focal": 1.026,
+      "GM": 0.2831,
+      "BM": 0.1731,
+      "BG": 0.11,
+      "Th": 1.447,
+      "Tr": 1.252,
+      "follow": 0.6114,
+      "disp": 0.603,
+      "shape": "can",
+      "water": "0–10 m",
+      "bbox": {
+        "top": 14,
+        "bottom": 76,
+        "left": 13,
+        "right": 50
+      },
+      "belowWaterPx": 22,
+      "aboveWaterPx": 40,
+      "zHiModel": 1.14,
+      "zLoModel": -0.64
+    },
+    "PortCan|s18": {
+      "W": 92,
+      "H": 136,
+      "pivot": {
+        "x": 46,
+        "y": 77
+      },
+      "waterlineY": 77,
+      "topY": 19,
+      "keelY": 109,
+      "D": 1.75,
+      "R": 0.875,
+      "draft": 0.78,
+      "freeboard": 1.662,
+      "zTop": 1.662,
+      "focal": 1.496,
+      "GM": 0.3829,
+      "BM": 0.2454,
+      "BG": 0.1375,
+      "Th": 1.772,
+      "Tr": 1.584,
+      "follow": 0.6409,
+      "disp": 1.923,
+      "shape": "can",
+      "water": "5–20 m",
+      "bbox": {
+        "top": 19,
+        "bottom": 109,
+        "left": 18,
+        "right": 73
+      },
+      "belowWaterPx": 32,
+      "aboveWaterPx": 58,
+      "zHiModel": 1.6625,
+      "zLoModel": -0.955
+    },
+    "PortCan|s20": {
+      "W": 104,
+      "H": 158,
+      "pivot": {
+        "x": 52,
+        "y": 88
+      },
+      "waterlineY": 88,
+      "topY": 22,
+      "keelY": 127,
+      "D": 2,
+      "R": 1,
+      "draft": 0.98,
+      "freeboard": 1.9,
+      "zTop": 1.9,
+      "focal": 1.71,
+      "GM": 0.4051,
+      "BM": 0.2551,
+      "BG": 0.15,
+      "Th": 1.986,
+      "Tr": 1.815,
+      "follow": 0.6297,
+      "disp": 3.156,
+      "shape": "can",
+      "water": "10–30 m",
+      "bbox": {
+        "top": 22,
+        "bottom": 127,
+        "left": 20,
+        "right": 83
+      },
+      "belowWaterPx": 39,
+      "aboveWaterPx": 66,
+      "zHiModel": 1.9,
+      "zLoModel": -1.18
+    },
+    "PortCan|s24": {
+      "W": 122,
+      "H": 190,
+      "pivot": {
+        "x": 61,
+        "y": 104
+      },
+      "waterlineY": 104,
+      "topY": 24,
+      "keelY": 155,
+      "D": 2.4,
+      "R": 1.2,
+      "draft": 1.3,
+      "freeboard": 2.28,
+      "zTop": 2.28,
+      "focal": 2.052,
+      "GM": 0.4469,
+      "BM": 0.2769,
+      "BG": 0.17,
+      "Th": 2.287,
+      "Tr": 2.149,
+      "follow": 0.6196,
+      "disp": 6.028,
+      "shape": "can",
+      "water": "10–40 m",
+      "bbox": {
+        "top": 24,
+        "bottom": 155,
+        "left": 22,
+        "right": 99
+      },
+      "belowWaterPx": 51,
+      "aboveWaterPx": 80,
+      "zHiModel": 2.28,
+      "zLoModel": -1.54
+    },
+    "PortCan|s30": {
+      "W": 152,
+      "H": 240,
+      "pivot": {
+        "x": 76,
+        "y": 130
+      },
+      "waterlineY": 130,
+      "topY": 31,
+      "keelY": 198,
+      "D": 3,
+      "R": 1.5,
+      "draft": 1.8,
+      "freeboard": 2.85,
+      "zTop": 2.85,
+      "focal": 2.565,
+      "GM": 0.5125,
+      "BM": 0.3125,
+      "BG": 0.2,
+      "Th": 2.691,
+      "Tr": 2.606,
+      "follow": 0.6098,
+      "disp": 13.042,
+      "shape": "can",
+      "water": "20–100 m",
+      "bbox": {
+        "top": 31,
+        "bottom": 198,
+        "left": 28,
+        "right": 123
+      },
+      "belowWaterPx": 68,
+      "aboveWaterPx": 99,
+      "zHiModel": 2.85,
+      "zLoModel": -2.1
+    },
+    "StbdNun|s12": {
+      "W": 72,
+      "H": 112,
+      "pivot": {
+        "x": 36,
+        "y": 67
+      },
+      "waterlineY": 67,
+      "topY": 26,
+      "keelY": 89,
+      "D": 1.2,
+      "R": 0.6,
+      "draft": 0.52,
+      "freeboard": 1.5,
+      "zTop": 1.5,
+      "focal": 1.35,
+      "GM": 0.2951,
+      "BM": 0.1731,
+      "BG": 0.122,
+      "Th": 1.447,
+      "Tr": 1.567,
+      "follow": 0.5865,
+      "disp": 0.603,
+      "shape": "nun",
+      "water": "0–10 m",
+      "bbox": {
+        "top": 26,
+        "bottom": 89,
+        "left": 17,
+        "right": 54
+      },
+      "belowWaterPx": 22,
+      "aboveWaterPx": 41,
+      "zHiModel": 1.5,
+      "zLoModel": -0.64
+    },
+    "StbdNun|s18": {
+      "W": 102,
+      "H": 160,
+      "pivot": {
+        "x": 51,
+        "y": 96
+      },
+      "waterlineY": 96,
+      "topY": 37,
+      "keelY": 128,
+      "D": 1.75,
+      "R": 0.875,
+      "draft": 0.78,
+      "freeboard": 2.188,
+      "zTop": 2.188,
+      "focal": 1.969,
+      "GM": 0.4004,
+      "BM": 0.2454,
+      "BG": 0.155,
+      "Th": 1.772,
+      "Tr": 1.976,
+      "follow": 0.6129,
+      "disp": 1.923,
+      "shape": "nun",
+      "water": "5–20 m",
+      "bbox": {
+        "top": 37,
+        "bottom": 128,
+        "left": 23,
+        "right": 78
+      },
+      "belowWaterPx": 32,
+      "aboveWaterPx": 59,
+      "zHiModel": 2.1875,
+      "zLoModel": -0.955
+    },
+    "StbdNun|s20": {
+      "W": 116,
+      "H": 182,
+      "pivot": {
+        "x": 58,
+        "y": 109
+      },
+      "waterlineY": 109,
+      "topY": 42,
+      "keelY": 148,
+      "D": 2,
+      "R": 1,
+      "draft": 0.98,
+      "freeboard": 2.5,
+      "zTop": 2.5,
+      "focal": 2.25,
+      "GM": 0.4251,
+      "BM": 0.2551,
+      "BG": 0.17,
+      "Th": 1.986,
+      "Tr": 2.249,
+      "follow": 0.6001,
+      "disp": 3.156,
+      "shape": "nun",
+      "water": "10–30 m",
+      "bbox": {
+        "top": 42,
+        "bottom": 148,
+        "left": 26,
+        "right": 89
+      },
+      "belowWaterPx": 39,
+      "aboveWaterPx": 67,
+      "zHiModel": 2.5,
+      "zLoModel": -1.18
+    },
+    "StbdNun|s24": {
+      "W": 138,
+      "H": 220,
+      "pivot": {
+        "x": 69,
+        "y": 130
+      },
+      "waterlineY": 130,
+      "topY": 50,
+      "keelY": 181,
+      "D": 2.4,
+      "R": 1.2,
+      "draft": 1.3,
+      "freeboard": 3,
+      "zTop": 3,
+      "focal": 2.7,
+      "GM": 0.4709,
+      "BM": 0.2769,
+      "BG": 0.194,
+      "Th": 2.287,
+      "Tr": 2.64,
+      "follow": 0.588,
+      "disp": 6.028,
+      "shape": "nun",
+      "water": "10–40 m",
+      "bbox": {
+        "top": 50,
+        "bottom": 181,
+        "left": 30,
+        "right": 107
+      },
+      "belowWaterPx": 51,
+      "aboveWaterPx": 80,
+      "zHiModel": 3,
+      "zLoModel": -1.54
+    },
+    "StbdNun|s30": {
+      "W": 170,
+      "H": 278,
+      "pivot": {
+        "x": 85,
+        "y": 162
+      },
+      "waterlineY": 162,
+      "topY": 62,
+      "keelY": 230,
+      "D": 3,
+      "R": 1.5,
+      "draft": 1.8,
+      "freeboard": 3.75,
+      "zTop": 3.75,
+      "focal": 3.375,
+      "GM": 0.5425,
+      "BM": 0.3125,
+      "BG": 0.23,
+      "Th": 2.691,
+      "Tr": 3.174,
+      "follow": 0.576,
+      "disp": 13.042,
+      "shape": "nun",
+      "water": "20–100 m",
+      "bbox": {
+        "top": 62,
+        "bottom": 230,
+        "left": 37,
+        "right": 132
+      },
+      "belowWaterPx": 68,
+      "aboveWaterPx": 100,
+      "zHiModel": 3.75,
+      "zLoModel": -2.1
+    },
+    "PortLit|s12": {
+      "W": 106,
+      "H": 180,
+      "pivot": {
+        "x": 53,
+        "y": 123
+      },
+      "waterlineY": 123,
+      "topY": 30,
+      "keelY": 146,
+      "D": 1.2,
+      "R": 0.6,
+      "draft": 0.598,
+      "freeboard": 2.46,
+      "zTop": 2.46,
+      "focal": 2.312,
+      "GM": 1.0405,
+      "BM": 0.1505,
+      "BG": 0.89,
+      "Th": 1.551,
+      "Tr": 1.443,
+      "follow": 0.1446,
+      "disp": 0.693,
+      "shape": "steel",
+      "water": "0–10 m",
+      "bbox": {
+        "top": 30,
+        "bottom": 146,
+        "left": 34,
+        "right": 71
+      },
+      "belowWaterPx": 23,
+      "aboveWaterPx": 93,
+      "zHiModel": 2.64,
+      "zLoModel": -0.718
+    },
+    "PortLit|s18": {
+      "W": 152,
+      "H": 260,
+      "pivot": {
+        "x": 76,
+        "y": 178
+      },
+      "waterlineY": 178,
+      "topY": 42,
+      "keelY": 213,
+      "D": 1.75,
+      "R": 0.875,
+      "draft": 0.897,
+      "freeboard": 3.587,
+      "zTop": 3.587,
+      "focal": 3.372,
+      "GM": 1.4884,
+      "BM": 0.2134,
+      "BG": 1.275,
+      "Th": 1.9,
+      "Tr": 1.77,
+      "follow": 0.1434,
+      "disp": 2.211,
+      "shape": "steel",
+      "water": "5–20 m",
+      "bbox": {
+        "top": 42,
+        "bottom": 213,
+        "left": 48,
+        "right": 103
+      },
+      "belowWaterPx": 35,
+      "aboveWaterPx": 136,
+      "zHiModel": 3.85,
+      "zLoModel": -1.072
+    },
+    "PortLit|s20": {
+      "W": 172,
+      "H": 298,
+      "pivot": {
+        "x": 86,
+        "y": 203
+      },
+      "waterlineY": 203,
+      "topY": 48,
+      "keelY": 246,
+      "D": 2,
+      "R": 1,
+      "draft": 1.127,
+      "freeboard": 4.1,
+      "zTop": 4.1,
+      "focal": 3.854,
+      "GM": 1.6718,
+      "BM": 0.2218,
+      "BG": 1.45,
+      "Th": 2.13,
+      "Tr": 1.946,
+      "follow": 0.1327,
+      "disp": 3.629,
+      "shape": "steel",
+      "water": "10–30 m",
+      "bbox": {
+        "top": 48,
+        "bottom": 246,
+        "left": 54,
+        "right": 117
+      },
+      "belowWaterPx": 43,
+      "aboveWaterPx": 155,
+      "zHiModel": 4.4,
+      "zLoModel": -1.327
+    },
+    "PortLit|s24": {
+      "W": 206,
+      "H": 360,
+      "pivot": {
+        "x": 103,
+        "y": 243
+      },
+      "waterlineY": 243,
+      "topY": 57,
+      "keelY": 298,
+      "D": 2.4,
+      "R": 1.2,
+      "draft": 1.495,
+      "freeboard": 4.92,
+      "zTop": 4.92,
+      "focal": 4.625,
+      "GM": 1.9708,
+      "BM": 0.2408,
+      "BG": 1.73,
+      "Th": 2.453,
+      "Tr": 2.2,
+      "follow": 0.1222,
+      "disp": 6.932,
+      "shape": "steel",
+      "water": "10–40 m",
+      "bbox": {
+        "top": 57,
+        "bottom": 298,
+        "left": 64,
+        "right": 141
+      },
+      "belowWaterPx": 55,
+      "aboveWaterPx": 186,
+      "zHiModel": 5.28,
+      "zLoModel": -1.735
+    },
+    "PortLit|s30": {
+      "W": 256,
+      "H": 452,
+      "pivot": {
+        "x": 128,
+        "y": 303
+      },
+      "waterlineY": 303,
+      "topY": 70,
+      "keelY": 377,
+      "D": 3,
+      "R": 1.5,
+      "draft": 2.07,
+      "freeboard": 6.15,
+      "zTop": 6.15,
+      "focal": 5.781,
+      "GM": 2.4217,
+      "BM": 0.2717,
+      "BG": 2.15,
+      "Th": 2.886,
+      "Tr": 2.543,
+      "follow": 0.1122,
+      "disp": 14.998,
+      "shape": "steel",
+      "water": "20–100 m",
+      "bbox": {
+        "top": 70,
+        "bottom": 377,
+        "left": 80,
+        "right": 175
+      },
+      "belowWaterPx": 74,
+      "aboveWaterPx": 233,
+      "zHiModel": 6.6,
+      "zLoModel": -2.37
+    },
+    "StbdLit|s12": {
+      "W": 108,
+      "H": 184,
+      "pivot": {
+        "x": 54,
+        "y": 126
+      },
+      "waterlineY": 126,
+      "topY": 36,
+      "keelY": 149,
+      "D": 1.2,
+      "R": 0.6,
+      "draft": 0.598,
+      "freeboard": 2.46,
+      "zTop": 2.46,
+      "focal": 2.312,
+      "GM": 1.0405,
+      "BM": 0.1505,
+      "BG": 0.89,
+      "Th": 1.551,
+      "Tr": 1.443,
+      "follow": 0.1446,
+      "disp": 0.693,
+      "shape": "steel",
+      "water": "0–10 m",
+      "bbox": {
+        "top": 36,
+        "bottom": 149,
+        "left": 35,
+        "right": 72
+      },
+      "belowWaterPx": 23,
+      "aboveWaterPx": 90,
+      "zHiModel": 2.64,
+      "zLoModel": -0.718
+    },
+    "StbdLit|s18": {
+      "W": 154,
+      "H": 264,
+      "pivot": {
+        "x": 77,
+        "y": 182
+      },
+      "waterlineY": 182,
+      "topY": 51,
+      "keelY": 217,
+      "D": 1.75,
+      "R": 0.875,
+      "draft": 0.897,
+      "freeboard": 3.587,
+      "zTop": 3.587,
+      "focal": 3.372,
+      "GM": 1.4884,
+      "BM": 0.2134,
+      "BG": 1.275,
+      "Th": 1.9,
+      "Tr": 1.77,
+      "follow": 0.1434,
+      "disp": 2.211,
+      "shape": "steel",
+      "water": "5–20 m",
+      "bbox": {
+        "top": 51,
+        "bottom": 217,
+        "left": 49,
+        "right": 104
+      },
+      "belowWaterPx": 35,
+      "aboveWaterPx": 131,
+      "zHiModel": 3.85,
+      "zLoModel": -1.072
+    },
+    "StbdLit|s20": {
+      "W": 176,
+      "H": 304,
+      "pivot": {
+        "x": 88,
+        "y": 208
+      },
+      "waterlineY": 208,
+      "topY": 59,
+      "keelY": 251,
+      "D": 2,
+      "R": 1,
+      "draft": 1.127,
+      "freeboard": 4.1,
+      "zTop": 4.1,
+      "focal": 3.854,
+      "GM": 1.6718,
+      "BM": 0.2218,
+      "BG": 1.45,
+      "Th": 2.13,
+      "Tr": 1.946,
+      "follow": 0.1327,
+      "disp": 3.629,
+      "shape": "steel",
+      "water": "10–30 m",
+      "bbox": {
+        "top": 59,
+        "bottom": 251,
+        "left": 56,
+        "right": 119
+      },
+      "belowWaterPx": 43,
+      "aboveWaterPx": 149,
+      "zHiModel": 4.4,
+      "zLoModel": -1.327
+    },
+    "StbdLit|s24": {
+      "W": 210,
+      "H": 368,
+      "pivot": {
+        "x": 105,
+        "y": 249
+      },
+      "waterlineY": 249,
+      "topY": 70,
+      "keelY": 304,
+      "D": 2.4,
+      "R": 1.2,
+      "draft": 1.495,
+      "freeboard": 4.92,
+      "zTop": 4.92,
+      "focal": 4.625,
+      "GM": 1.9708,
+      "BM": 0.2408,
+      "BG": 1.73,
+      "Th": 2.453,
+      "Tr": 2.2,
+      "follow": 0.1222,
+      "disp": 6.932,
+      "shape": "steel",
+      "water": "10–40 m",
+      "bbox": {
+        "top": 70,
+        "bottom": 304,
+        "left": 66,
+        "right": 143
+      },
+      "belowWaterPx": 55,
+      "aboveWaterPx": 179,
+      "zHiModel": 5.28,
+      "zLoModel": -1.735
+    },
+    "StbdLit|s30": {
+      "W": 260,
+      "H": 462,
+      "pivot": {
+        "x": 130,
+        "y": 310
+      },
+      "waterlineY": 310,
+      "topY": 86,
+      "keelY": 384,
+      "D": 3,
+      "R": 1.5,
+      "draft": 2.07,
+      "freeboard": 6.15,
+      "zTop": 6.15,
+      "focal": 5.781,
+      "GM": 2.4217,
+      "BM": 0.2717,
+      "BG": 2.15,
+      "Th": 2.886,
+      "Tr": 2.543,
+      "follow": 0.1122,
+      "disp": 14.998,
+      "shape": "steel",
+      "water": "20–100 m",
+      "bbox": {
+        "top": 86,
+        "bottom": 384,
+        "left": 82,
+        "right": 177
+      },
+      "belowWaterPx": 74,
+      "aboveWaterPx": 224,
+      "zHiModel": 6.6,
+      "zLoModel": -2.37
+    },
+    "CardinalN|s12": {
+      "W": 112,
+      "H": 188,
+      "pivot": {
+        "x": 56,
+        "y": 131
+      },
+      "waterlineY": 131,
+      "topY": 37,
+      "keelY": 153,
+      "D": 1.2,
+      "R": 0.6,
+      "draft": 0.546,
+      "freeboard": 1.944,
+      "zTop": 1.944,
+      "focal": 1.555,
+      "GM": 0.5448,
+      "BM": 0.1648,
+      "BG": 0.38,
+      "Th": 1.482,
+      "Tr": 1.556,
+      "follow": 0.3025,
+      "disp": 0.633,
+      "shape": "pillar",
+      "water": "0–10 m",
+      "bbox": {
+        "top": 37,
+        "bottom": 153,
+        "left": 37,
+        "right": 74
+      },
+      "belowWaterPx": 22,
+      "aboveWaterPx": 94,
+      "zHiModel": 2.304,
+      "zLoModel": -0.666
+    },
+    "CardinalN|s18": {
+      "W": 160,
+      "H": 272,
+      "pivot": {
+        "x": 80,
+        "y": 190
+      },
+      "waterlineY": 190,
+      "topY": 53,
+      "keelY": 223,
+      "D": 1.75,
+      "R": 0.875,
+      "draft": 0.819,
+      "freeboard": 2.835,
+      "zTop": 2.835,
+      "focal": 2.268,
+      "GM": 0.765,
+      "BM": 0.2337,
+      "BG": 0.5313,
+      "Th": 1.815,
+      "Tr": 1.928,
+      "follow": 0.3055,
+      "disp": 2.019,
+      "shape": "pillar",
+      "water": "5–20 m",
+      "bbox": {
+        "top": 53,
+        "bottom": 223,
+        "left": 52,
+        "right": 107
+      },
+      "belowWaterPx": 33,
+      "aboveWaterPx": 137,
+      "zHiModel": 3.36,
+      "zLoModel": -0.994
+    },
+    "CardinalN|s20": {
+      "W": 180,
+      "H": 312,
+      "pivot": {
+        "x": 90,
+        "y": 216
+      },
+      "waterlineY": 216,
+      "topY": 60,
+      "keelY": 257,
+      "D": 2,
+      "R": 1,
+      "draft": 1.029,
+      "freeboard": 3.24,
+      "zTop": 3.24,
+      "focal": 2.592,
+      "GM": 0.843,
+      "BM": 0.243,
+      "BG": 0.6,
+      "Th": 2.035,
+      "Tr": 2.145,
+      "follow": 0.2882,
+      "disp": 3.314,
+      "shape": "pillar",
+      "water": "10–30 m",
+      "bbox": {
+        "top": 60,
+        "bottom": 257,
+        "left": 58,
+        "right": 121
+      },
+      "belowWaterPx": 41,
+      "aboveWaterPx": 156,
+      "zHiModel": 3.84,
+      "zLoModel": -1.229
+    },
+    "CardinalN|s24": {
+      "W": 216,
+      "H": 376,
+      "pivot": {
+        "x": 108,
+        "y": 259
+      },
+      "waterlineY": 259,
+      "topY": 71,
+      "keelY": 311,
+      "D": 2.4,
+      "R": 1.2,
+      "draft": 1.365,
+      "freeboard": 3.888,
+      "zTop": 3.888,
+      "focal": 3.11,
+      "GM": 0.9737,
+      "BM": 0.2637,
+      "BG": 0.71,
+      "Th": 2.344,
+      "Tr": 2.456,
+      "follow": 0.2708,
+      "disp": 6.329,
+      "shape": "pillar",
+      "water": "10–40 m",
+      "bbox": {
+        "top": 71,
+        "bottom": 311,
+        "left": 69,
+        "right": 146
+      },
+      "belowWaterPx": 52,
+      "aboveWaterPx": 188,
+      "zHiModel": 4.608,
+      "zLoModel": -1.605
+    },
+    "CardinalN|s30": {
+      "W": 268,
+      "H": 472,
+      "pivot": {
+        "x": 134,
+        "y": 323
+      },
+      "waterlineY": 323,
+      "topY": 89,
+      "keelY": 393,
+      "D": 3,
+      "R": 1.5,
+      "draft": 1.89,
+      "freeboard": 4.86,
+      "zTop": 4.86,
+      "focal": 3.888,
+      "GM": 1.1726,
+      "BM": 0.2976,
+      "BG": 0.875,
+      "Th": 2.758,
+      "Tr": 2.876,
+      "follow": 0.2538,
+      "disp": 13.694,
+      "shape": "pillar",
+      "water": "20–100 m",
+      "bbox": {
+        "top": 89,
+        "bottom": 393,
+        "left": 86,
+        "right": 181
+      },
+      "belowWaterPx": 70,
+      "aboveWaterPx": 234,
+      "zHiModel": 5.76,
+      "zLoModel": -2.19
+    },
+    "CardinalS|s12": {
+      "W": 112,
+      "H": 188,
+      "pivot": {
+        "x": 56,
+        "y": 131
+      },
+      "waterlineY": 131,
+      "topY": 30,
+      "keelY": 153,
+      "D": 1.2,
+      "R": 0.6,
+      "draft": 0.546,
+      "freeboard": 1.944,
+      "zTop": 1.944,
+      "focal": 1.555,
+      "GM": 0.5448,
+      "BM": 0.1648,
+      "BG": 0.38,
+      "Th": 1.482,
+      "Tr": 1.556,
+      "follow": 0.3025,
+      "disp": 0.633,
+      "shape": "pillar",
+      "water": "0–10 m",
+      "bbox": {
+        "top": 30,
+        "bottom": 153,
+        "left": 37,
+        "right": 74
+      },
+      "belowWaterPx": 22,
+      "aboveWaterPx": 101,
+      "zHiModel": 2.304,
+      "zLoModel": -0.666
+    },
+    "CardinalS|s18": {
+      "W": 160,
+      "H": 272,
+      "pivot": {
+        "x": 80,
+        "y": 190
+      },
+      "waterlineY": 190,
+      "topY": 43,
+      "keelY": 223,
+      "D": 1.75,
+      "R": 0.875,
+      "draft": 0.819,
+      "freeboard": 2.835,
+      "zTop": 2.835,
+      "focal": 2.268,
+      "GM": 0.765,
+      "BM": 0.2337,
+      "BG": 0.5313,
+      "Th": 1.815,
+      "Tr": 1.928,
+      "follow": 0.3055,
+      "disp": 2.019,
+      "shape": "pillar",
+      "water": "5–20 m",
+      "bbox": {
+        "top": 43,
+        "bottom": 223,
+        "left": 52,
+        "right": 107
+      },
+      "belowWaterPx": 33,
+      "aboveWaterPx": 147,
+      "zHiModel": 3.36,
+      "zLoModel": -0.994
+    },
+    "CardinalS|s20": {
+      "W": 180,
+      "H": 312,
+      "pivot": {
+        "x": 90,
+        "y": 216
+      },
+      "waterlineY": 216,
+      "topY": 48,
+      "keelY": 257,
+      "D": 2,
+      "R": 1,
+      "draft": 1.029,
+      "freeboard": 3.24,
+      "zTop": 3.24,
+      "focal": 2.592,
+      "GM": 0.843,
+      "BM": 0.243,
+      "BG": 0.6,
+      "Th": 2.035,
+      "Tr": 2.145,
+      "follow": 0.2882,
+      "disp": 3.314,
+      "shape": "pillar",
+      "water": "10–30 m",
+      "bbox": {
+        "top": 48,
+        "bottom": 257,
+        "left": 58,
+        "right": 121
+      },
+      "belowWaterPx": 41,
+      "aboveWaterPx": 168,
+      "zHiModel": 3.84,
+      "zLoModel": -1.229
+    },
+    "CardinalS|s24": {
+      "W": 216,
+      "H": 376,
+      "pivot": {
+        "x": 108,
+        "y": 259
+      },
+      "waterlineY": 259,
+      "topY": 58,
+      "keelY": 311,
+      "D": 2.4,
+      "R": 1.2,
+      "draft": 1.365,
+      "freeboard": 3.888,
+      "zTop": 3.888,
+      "focal": 3.11,
+      "GM": 0.9737,
+      "BM": 0.2637,
+      "BG": 0.71,
+      "Th": 2.344,
+      "Tr": 2.456,
+      "follow": 0.2708,
+      "disp": 6.329,
+      "shape": "pillar",
+      "water": "10–40 m",
+      "bbox": {
+        "top": 58,
+        "bottom": 311,
+        "left": 69,
+        "right": 146
+      },
+      "belowWaterPx": 52,
+      "aboveWaterPx": 201,
+      "zHiModel": 4.608,
+      "zLoModel": -1.605
+    },
+    "CardinalS|s30": {
+      "W": 268,
+      "H": 472,
+      "pivot": {
+        "x": 134,
+        "y": 323
+      },
+      "waterlineY": 323,
+      "topY": 71,
+      "keelY": 393,
+      "D": 3,
+      "R": 1.5,
+      "draft": 1.89,
+      "freeboard": 4.86,
+      "zTop": 4.86,
+      "focal": 3.888,
+      "GM": 1.1726,
+      "BM": 0.2976,
+      "BG": 0.875,
+      "Th": 2.758,
+      "Tr": 2.876,
+      "follow": 0.2538,
+      "disp": 13.694,
+      "shape": "pillar",
+      "water": "20–100 m",
+      "bbox": {
+        "top": 71,
+        "bottom": 393,
+        "left": 86,
+        "right": 181
+      },
+      "belowWaterPx": 70,
+      "aboveWaterPx": 252,
+      "zHiModel": 5.76,
+      "zLoModel": -2.19
+    },
+    "CardinalE|s12": {
+      "W": 110,
+      "H": 184,
+      "pivot": {
+        "x": 55,
+        "y": 127
+      },
+      "waterlineY": 127,
+      "topY": 36,
+      "keelY": 149,
+      "D": 1.2,
+      "R": 0.6,
+      "draft": 0.546,
+      "freeboard": 1.944,
+      "zTop": 1.944,
+      "focal": 1.555,
+      "GM": 0.5448,
+      "BM": 0.1648,
+      "BG": 0.38,
+      "Th": 1.482,
+      "Tr": 1.556,
+      "follow": 0.3025,
+      "disp": 0.633,
+      "shape": "pillar",
+      "water": "0–10 m",
+      "bbox": {
+        "top": 36,
+        "bottom": 149,
+        "left": 36,
+        "right": 73
+      },
+      "belowWaterPx": 22,
+      "aboveWaterPx": 91,
+      "zHiModel": 2.304,
+      "zLoModel": -0.666
+    },
+    "CardinalE|s18": {
+      "W": 156,
+      "H": 266,
+      "pivot": {
+        "x": 78,
+        "y": 184
+      },
+      "waterlineY": 184,
+      "topY": 52,
+      "keelY": 217,
+      "D": 1.75,
+      "R": 0.875,
+      "draft": 0.819,
+      "freeboard": 2.835,
+      "zTop": 2.835,
+      "focal": 2.268,
+      "GM": 0.765,
+      "BM": 0.2337,
+      "BG": 0.5313,
+      "Th": 1.815,
+      "Tr": 1.928,
+      "follow": 0.3055,
+      "disp": 2.019,
+      "shape": "pillar",
+      "water": "5–20 m",
+      "bbox": {
+        "top": 52,
+        "bottom": 217,
+        "left": 50,
+        "right": 105
+      },
+      "belowWaterPx": 33,
+      "aboveWaterPx": 132,
+      "zHiModel": 3.36,
+      "zLoModel": -0.994
+    },
+    "CardinalE|s20": {
+      "W": 178,
+      "H": 304,
+      "pivot": {
+        "x": 89,
+        "y": 210
+      },
+      "waterlineY": 210,
+      "topY": 59,
+      "keelY": 251,
+      "D": 2,
+      "R": 1,
+      "draft": 1.029,
+      "freeboard": 3.24,
+      "zTop": 3.24,
+      "focal": 2.592,
+      "GM": 0.843,
+      "BM": 0.243,
+      "BG": 0.6,
+      "Th": 2.035,
+      "Tr": 2.145,
+      "follow": 0.2882,
+      "disp": 3.314,
+      "shape": "pillar",
+      "water": "10–30 m",
+      "bbox": {
+        "top": 59,
+        "bottom": 251,
+        "left": 57,
+        "right": 120
+      },
+      "belowWaterPx": 41,
+      "aboveWaterPx": 151,
+      "zHiModel": 3.84,
+      "zLoModel": -1.229
+    },
+    "CardinalE|s24": {
+      "W": 212,
+      "H": 366,
+      "pivot": {
+        "x": 106,
+        "y": 251
+      },
+      "waterlineY": 251,
+      "topY": 70,
+      "keelY": 303,
+      "D": 2.4,
+      "R": 1.2,
+      "draft": 1.365,
+      "freeboard": 3.888,
+      "zTop": 3.888,
+      "focal": 3.11,
+      "GM": 0.9737,
+      "BM": 0.2637,
+      "BG": 0.71,
+      "Th": 2.344,
+      "Tr": 2.456,
+      "follow": 0.2708,
+      "disp": 6.329,
+      "shape": "pillar",
+      "water": "10–40 m",
+      "bbox": {
+        "top": 70,
+        "bottom": 303,
+        "left": 67,
+        "right": 144
+      },
+      "belowWaterPx": 52,
+      "aboveWaterPx": 181,
+      "zHiModel": 4.608,
+      "zLoModel": -1.605
+    },
+    "CardinalE|s30": {
+      "W": 262,
+      "H": 460,
+      "pivot": {
+        "x": 131,
+        "y": 313
+      },
+      "waterlineY": 313,
+      "topY": 86,
+      "keelY": 383,
+      "D": 3,
+      "R": 1.5,
+      "draft": 1.89,
+      "freeboard": 4.86,
+      "zTop": 4.86,
+      "focal": 3.888,
+      "GM": 1.1726,
+      "BM": 0.2976,
+      "BG": 0.875,
+      "Th": 2.758,
+      "Tr": 2.876,
+      "follow": 0.2538,
+      "disp": 13.694,
+      "shape": "pillar",
+      "water": "20–100 m",
+      "bbox": {
+        "top": 86,
+        "bottom": 383,
+        "left": 83,
+        "right": 178
+      },
+      "belowWaterPx": 70,
+      "aboveWaterPx": 227,
+      "zHiModel": 5.76,
+      "zLoModel": -2.19
+    },
+    "CardinalW|s12": {
+      "W": 110,
+      "H": 184,
+      "pivot": {
+        "x": 55,
+        "y": 127
+      },
+      "waterlineY": 127,
+      "topY": 29,
+      "keelY": 149,
+      "D": 1.2,
+      "R": 0.6,
+      "draft": 0.546,
+      "freeboard": 1.944,
+      "zTop": 1.944,
+      "focal": 1.555,
+      "GM": 0.5448,
+      "BM": 0.1648,
+      "BG": 0.38,
+      "Th": 1.482,
+      "Tr": 1.556,
+      "follow": 0.3025,
+      "disp": 0.633,
+      "shape": "pillar",
+      "water": "0–10 m",
+      "bbox": {
+        "top": 29,
+        "bottom": 149,
+        "left": 36,
+        "right": 73
+      },
+      "belowWaterPx": 22,
+      "aboveWaterPx": 98,
+      "zHiModel": 2.304,
+      "zLoModel": -0.666
+    },
+    "CardinalW|s18": {
+      "W": 156,
+      "H": 266,
+      "pivot": {
+        "x": 78,
+        "y": 184
+      },
+      "waterlineY": 184,
+      "topY": 42,
+      "keelY": 217,
+      "D": 1.75,
+      "R": 0.875,
+      "draft": 0.819,
+      "freeboard": 2.835,
+      "zTop": 2.835,
+      "focal": 2.268,
+      "GM": 0.765,
+      "BM": 0.2337,
+      "BG": 0.5313,
+      "Th": 1.815,
+      "Tr": 1.928,
+      "follow": 0.3055,
+      "disp": 2.019,
+      "shape": "pillar",
+      "water": "5–20 m",
+      "bbox": {
+        "top": 42,
+        "bottom": 217,
+        "left": 50,
+        "right": 105
+      },
+      "belowWaterPx": 33,
+      "aboveWaterPx": 142,
+      "zHiModel": 3.36,
+      "zLoModel": -0.994
+    },
+    "CardinalW|s20": {
+      "W": 178,
+      "H": 304,
+      "pivot": {
+        "x": 89,
+        "y": 210
+      },
+      "waterlineY": 210,
+      "topY": 47,
+      "keelY": 251,
+      "D": 2,
+      "R": 1,
+      "draft": 1.029,
+      "freeboard": 3.24,
+      "zTop": 3.24,
+      "focal": 2.592,
+      "GM": 0.843,
+      "BM": 0.243,
+      "BG": 0.6,
+      "Th": 2.035,
+      "Tr": 2.145,
+      "follow": 0.2882,
+      "disp": 3.314,
+      "shape": "pillar",
+      "water": "10–30 m",
+      "bbox": {
+        "top": 47,
+        "bottom": 251,
+        "left": 57,
+        "right": 120
+      },
+      "belowWaterPx": 41,
+      "aboveWaterPx": 163,
+      "zHiModel": 3.84,
+      "zLoModel": -1.229
+    },
+    "CardinalW|s24": {
+      "W": 212,
+      "H": 366,
+      "pivot": {
+        "x": 106,
+        "y": 251
+      },
+      "waterlineY": 251,
+      "topY": 56,
+      "keelY": 303,
+      "D": 2.4,
+      "R": 1.2,
+      "draft": 1.365,
+      "freeboard": 3.888,
+      "zTop": 3.888,
+      "focal": 3.11,
+      "GM": 0.9737,
+      "BM": 0.2637,
+      "BG": 0.71,
+      "Th": 2.344,
+      "Tr": 2.456,
+      "follow": 0.2708,
+      "disp": 6.329,
+      "shape": "pillar",
+      "water": "10–40 m",
+      "bbox": {
+        "top": 56,
+        "bottom": 303,
+        "left": 67,
+        "right": 144
+      },
+      "belowWaterPx": 52,
+      "aboveWaterPx": 195,
+      "zHiModel": 4.608,
+      "zLoModel": -1.605
+    },
+    "CardinalW|s30": {
+      "W": 262,
+      "H": 460,
+      "pivot": {
+        "x": 131,
+        "y": 313
+      },
+      "waterlineY": 313,
+      "topY": 69,
+      "keelY": 383,
+      "D": 3,
+      "R": 1.5,
+      "draft": 1.89,
+      "freeboard": 4.86,
+      "zTop": 4.86,
+      "focal": 3.888,
+      "GM": 1.1726,
+      "BM": 0.2976,
+      "BG": 0.875,
+      "Th": 2.758,
+      "Tr": 2.876,
+      "follow": 0.2538,
+      "disp": 13.694,
+      "shape": "pillar",
+      "water": "20–100 m",
+      "bbox": {
+        "top": 69,
+        "bottom": 383,
+        "left": 83,
+        "right": 178
+      },
+      "belowWaterPx": 70,
+      "aboveWaterPx": 244,
+      "zHiModel": 5.76,
+      "zLoModel": -2.19
+    },
+    "Isolated|s12": {
+      "W": 112,
+      "H": 190,
+      "pivot": {
+        "x": 56,
+        "y": 132
+      },
+      "waterlineY": 132,
+      "topY": 36,
+      "keelY": 154,
+      "D": 1.2,
+      "R": 0.6,
+      "draft": 0.546,
+      "freeboard": 1.944,
+      "zTop": 1.944,
+      "focal": 1.555,
+      "GM": 0.5448,
+      "BM": 0.1648,
+      "BG": 0.38,
+      "Th": 1.482,
+      "Tr": 1.556,
+      "follow": 0.3025,
+      "disp": 0.633,
+      "shape": "pillar",
+      "water": "0–10 m",
+      "bbox": {
+        "top": 36,
+        "bottom": 154,
+        "left": 37,
+        "right": 74
+      },
+      "belowWaterPx": 22,
+      "aboveWaterPx": 96,
+      "zHiModel": 2.304,
+      "zLoModel": -0.666
+    },
+    "Isolated|s18": {
+      "W": 160,
+      "H": 272,
+      "pivot": {
+        "x": 80,
+        "y": 190
+      },
+      "waterlineY": 190,
+      "topY": 49,
+      "keelY": 223,
+      "D": 1.75,
+      "R": 0.875,
+      "draft": 0.819,
+      "freeboard": 2.835,
+      "zTop": 2.835,
+      "focal": 2.268,
+      "GM": 0.765,
+      "BM": 0.2337,
+      "BG": 0.5313,
+      "Th": 1.815,
+      "Tr": 1.928,
+      "follow": 0.3055,
+      "disp": 2.019,
+      "shape": "pillar",
+      "water": "5–20 m",
+      "bbox": {
+        "top": 49,
+        "bottom": 223,
+        "left": 52,
+        "right": 107
+      },
+      "belowWaterPx": 33,
+      "aboveWaterPx": 141,
+      "zHiModel": 3.36,
+      "zLoModel": -0.994
+    },
+    "Isolated|s20": {
+      "W": 182,
+      "H": 312,
+      "pivot": {
+        "x": 91,
+        "y": 217
+      },
+      "waterlineY": 217,
+      "topY": 56,
+      "keelY": 258,
+      "D": 2,
+      "R": 1,
+      "draft": 1.029,
+      "freeboard": 3.24,
+      "zTop": 3.24,
+      "focal": 2.592,
+      "GM": 0.843,
+      "BM": 0.243,
+      "BG": 0.6,
+      "Th": 2.035,
+      "Tr": 2.145,
+      "follow": 0.2882,
+      "disp": 3.314,
+      "shape": "pillar",
+      "water": "10–30 m",
+      "bbox": {
+        "top": 56,
+        "bottom": 258,
+        "left": 59,
+        "right": 122
+      },
+      "belowWaterPx": 41,
+      "aboveWaterPx": 161,
+      "zHiModel": 3.84,
+      "zLoModel": -1.229
+    },
+    "Isolated|s24": {
+      "W": 216,
+      "H": 378,
+      "pivot": {
+        "x": 108,
+        "y": 260
+      },
+      "waterlineY": 260,
+      "topY": 67,
+      "keelY": 312,
+      "D": 2.4,
+      "R": 1.2,
+      "draft": 1.365,
+      "freeboard": 3.888,
+      "zTop": 3.888,
+      "focal": 3.11,
+      "GM": 0.9737,
+      "BM": 0.2637,
+      "BG": 0.71,
+      "Th": 2.344,
+      "Tr": 2.456,
+      "follow": 0.2708,
+      "disp": 6.329,
+      "shape": "pillar",
+      "water": "10–40 m",
+      "bbox": {
+        "top": 67,
+        "bottom": 312,
+        "left": 69,
+        "right": 146
+      },
+      "belowWaterPx": 52,
+      "aboveWaterPx": 193,
+      "zHiModel": 4.608,
+      "zLoModel": -1.605
+    },
+    "Isolated|s30": {
+      "W": 268,
+      "H": 474,
+      "pivot": {
+        "x": 134,
+        "y": 324
+      },
+      "waterlineY": 324,
+      "topY": 83,
+      "keelY": 394,
+      "D": 3,
+      "R": 1.5,
+      "draft": 1.89,
+      "freeboard": 4.86,
+      "zTop": 4.86,
+      "focal": 3.888,
+      "GM": 1.1726,
+      "BM": 0.2976,
+      "BG": 0.875,
+      "Th": 2.758,
+      "Tr": 2.876,
+      "follow": 0.2538,
+      "disp": 13.694,
+      "shape": "pillar",
+      "water": "20–100 m",
+      "bbox": {
+        "top": 83,
+        "bottom": 394,
+        "left": 86,
+        "right": 181
+      },
+      "belowWaterPx": 70,
+      "aboveWaterPx": 241,
+      "zHiModel": 5.76,
+      "zLoModel": -2.19
+    },
+    "SafeWater|s12": {
+      "W": 100,
+      "H": 164,
+      "pivot": {
+        "x": 50,
+        "y": 111
+      },
+      "waterlineY": 111,
+      "topY": 31,
+      "keelY": 133,
+      "D": 1.2,
+      "R": 0.6,
+      "draft": 0.546,
+      "freeboard": 1.944,
+      "zTop": 1.944,
+      "focal": 1.555,
+      "GM": 0.5448,
+      "BM": 0.1648,
+      "BG": 0.38,
+      "Th": 1.482,
+      "Tr": 1.556,
+      "follow": 0.3025,
+      "disp": 0.633,
+      "shape": "pillar",
+      "water": "0–10 m",
+      "bbox": {
+        "top": 31,
+        "bottom": 133,
+        "left": 31,
+        "right": 68
+      },
+      "belowWaterPx": 22,
+      "aboveWaterPx": 80,
+      "zHiModel": 2.304,
+      "zLoModel": -0.666
+    },
+    "SafeWater|s18": {
+      "W": 142,
+      "H": 238,
+      "pivot": {
+        "x": 71,
+        "y": 161
+      },
+      "waterlineY": 161,
+      "topY": 45,
+      "keelY": 194,
+      "D": 1.75,
+      "R": 0.875,
+      "draft": 0.819,
+      "freeboard": 2.835,
+      "zTop": 2.835,
+      "focal": 2.268,
+      "GM": 0.765,
+      "BM": 0.2337,
+      "BG": 0.5313,
+      "Th": 1.815,
+      "Tr": 1.928,
+      "follow": 0.3055,
+      "disp": 2.019,
+      "shape": "pillar",
+      "water": "5–20 m",
+      "bbox": {
+        "top": 45,
+        "bottom": 194,
+        "left": 43,
+        "right": 98
+      },
+      "belowWaterPx": 33,
+      "aboveWaterPx": 116,
+      "zHiModel": 3.36,
+      "zLoModel": -0.994
+    },
+    "SafeWater|s20": {
+      "W": 162,
+      "H": 272,
+      "pivot": {
+        "x": 81,
+        "y": 183
+      },
+      "waterlineY": 183,
+      "topY": 50,
+      "keelY": 224,
+      "D": 2,
+      "R": 1,
+      "draft": 1.029,
+      "freeboard": 3.24,
+      "zTop": 3.24,
+      "focal": 2.592,
+      "GM": 0.843,
+      "BM": 0.243,
+      "BG": 0.6,
+      "Th": 2.035,
+      "Tr": 2.145,
+      "follow": 0.2882,
+      "disp": 3.314,
+      "shape": "pillar",
+      "water": "10–30 m",
+      "bbox": {
+        "top": 50,
+        "bottom": 224,
+        "left": 49,
+        "right": 112
+      },
+      "belowWaterPx": 41,
+      "aboveWaterPx": 133,
+      "zHiModel": 3.84,
+      "zLoModel": -1.229
+    },
+    "SafeWater|s24": {
+      "W": 192,
+      "H": 328,
+      "pivot": {
+        "x": 96,
+        "y": 219
+      },
+      "waterlineY": 219,
+      "topY": 60,
+      "keelY": 271,
+      "D": 2.4,
+      "R": 1.2,
+      "draft": 1.365,
+      "freeboard": 3.888,
+      "zTop": 3.888,
+      "focal": 3.11,
+      "GM": 0.9737,
+      "BM": 0.2637,
+      "BG": 0.71,
+      "Th": 2.344,
+      "Tr": 2.456,
+      "follow": 0.2708,
+      "disp": 6.329,
+      "shape": "pillar",
+      "water": "10–40 m",
+      "bbox": {
+        "top": 60,
+        "bottom": 271,
+        "left": 57,
+        "right": 134
+      },
+      "belowWaterPx": 52,
+      "aboveWaterPx": 159,
+      "zHiModel": 4.608,
+      "zLoModel": -1.605
+    },
+    "SafeWater|s30": {
+      "W": 238,
+      "H": 414,
+      "pivot": {
+        "x": 119,
+        "y": 273
+      },
+      "waterlineY": 273,
+      "topY": 74,
+      "keelY": 343,
+      "D": 3,
+      "R": 1.5,
+      "draft": 1.89,
+      "freeboard": 4.86,
+      "zTop": 4.86,
+      "focal": 3.888,
+      "GM": 1.1726,
+      "BM": 0.2976,
+      "BG": 0.875,
+      "Th": 2.758,
+      "Tr": 2.876,
+      "follow": 0.2538,
+      "disp": 13.694,
+      "shape": "pillar",
+      "water": "20–100 m",
+      "bbox": {
+        "top": 74,
+        "bottom": 343,
+        "left": 71,
+        "right": 166
+      },
+      "belowWaterPx": 70,
+      "aboveWaterPx": 199,
+      "zHiModel": 5.76,
+      "zLoModel": -2.19
+    },
+    "Special|s12": {
+      "W": 102,
+      "H": 170,
+      "pivot": {
+        "x": 51,
+        "y": 116
+      },
+      "waterlineY": 116,
+      "topY": 28,
+      "keelY": 138,
+      "D": 1.2,
+      "R": 0.6,
+      "draft": 0.546,
+      "freeboard": 1.944,
+      "zTop": 1.944,
+      "focal": 1.555,
+      "GM": 0.5448,
+      "BM": 0.1648,
+      "BG": 0.38,
+      "Th": 1.482,
+      "Tr": 1.556,
+      "follow": 0.3025,
+      "disp": 0.633,
+      "shape": "pillar",
+      "water": "0–10 m",
+      "bbox": {
+        "top": 28,
+        "bottom": 138,
+        "left": 32,
+        "right": 69
+      },
+      "belowWaterPx": 22,
+      "aboveWaterPx": 88,
+      "zHiModel": 2.304,
+      "zLoModel": -0.666
+    },
+    "Special|s18": {
+      "W": 146,
+      "H": 244,
+      "pivot": {
+        "x": 73,
+        "y": 167
+      },
+      "waterlineY": 167,
+      "topY": 39,
+      "keelY": 200,
+      "D": 1.75,
+      "R": 0.875,
+      "draft": 0.819,
+      "freeboard": 2.835,
+      "zTop": 2.835,
+      "focal": 2.268,
+      "GM": 0.765,
+      "BM": 0.2337,
+      "BG": 0.5313,
+      "Th": 1.815,
+      "Tr": 1.928,
+      "follow": 0.3055,
+      "disp": 2.019,
+      "shape": "pillar",
+      "water": "5–20 m",
+      "bbox": {
+        "top": 39,
+        "bottom": 200,
+        "left": 45,
+        "right": 100
+      },
+      "belowWaterPx": 33,
+      "aboveWaterPx": 128,
+      "zHiModel": 3.36,
+      "zLoModel": -0.994
+    },
+    "Special|s20": {
+      "W": 166,
+      "H": 280,
+      "pivot": {
+        "x": 83,
+        "y": 190
+      },
+      "waterlineY": 190,
+      "topY": 43,
+      "keelY": 231,
+      "D": 2,
+      "R": 1,
+      "draft": 1.029,
+      "freeboard": 3.24,
+      "zTop": 3.24,
+      "focal": 2.592,
+      "GM": 0.843,
+      "BM": 0.243,
+      "BG": 0.6,
+      "Th": 2.035,
+      "Tr": 2.145,
+      "follow": 0.2882,
+      "disp": 3.314,
+      "shape": "pillar",
+      "water": "10–30 m",
+      "bbox": {
+        "top": 43,
+        "bottom": 231,
+        "left": 51,
+        "right": 114
+      },
+      "belowWaterPx": 41,
+      "aboveWaterPx": 147,
+      "zHiModel": 3.84,
+      "zLoModel": -1.229
+    },
+    "Special|s24": {
+      "W": 196,
+      "H": 338,
+      "pivot": {
+        "x": 98,
+        "y": 227
+      },
+      "waterlineY": 227,
+      "topY": 51,
+      "keelY": 279,
+      "D": 2.4,
+      "R": 1.2,
+      "draft": 1.365,
+      "freeboard": 3.888,
+      "zTop": 3.888,
+      "focal": 3.11,
+      "GM": 0.9737,
+      "BM": 0.2637,
+      "BG": 0.71,
+      "Th": 2.344,
+      "Tr": 2.456,
+      "follow": 0.2708,
+      "disp": 6.329,
+      "shape": "pillar",
+      "water": "10–40 m",
+      "bbox": {
+        "top": 51,
+        "bottom": 279,
+        "left": 59,
+        "right": 136
+      },
+      "belowWaterPx": 52,
+      "aboveWaterPx": 176,
+      "zHiModel": 4.608,
+      "zLoModel": -1.605
+    },
+    "Special|s30": {
+      "W": 244,
+      "H": 424,
+      "pivot": {
+        "x": 122,
+        "y": 283
+      },
+      "waterlineY": 283,
+      "topY": 63,
+      "keelY": 353,
+      "D": 3,
+      "R": 1.5,
+      "draft": 1.89,
+      "freeboard": 4.86,
+      "zTop": 4.86,
+      "focal": 3.888,
+      "GM": 1.1726,
+      "BM": 0.2976,
+      "BG": 0.875,
+      "Th": 2.758,
+      "Tr": 2.876,
+      "follow": 0.2538,
+      "disp": 13.694,
+      "shape": "pillar",
+      "water": "20–100 m",
+      "bbox": {
+        "top": 63,
+        "bottom": 353,
+        "left": 74,
+        "right": 169
+      },
+      "belowWaterPx": 70,
+      "aboveWaterPx": 220,
+      "zHiModel": 5.76,
+      "zLoModel": -2.19
+    },
+    "Regulatory|s12": {
+      "W": 86,
+      "H": 138,
+      "pivot": {
+        "x": 43,
+        "y": 90
+      },
+      "waterlineY": 90,
+      "topY": 29,
+      "keelY": 112,
+      "D": 1.2,
+      "R": 0.6,
+      "draft": 0.52,
+      "freeboard": 1.14,
+      "zTop": 1.14,
+      "focal": 1.026,
+      "GM": 0.2831,
+      "BM": 0.1731,
+      "BG": 0.11,
+      "Th": 1.447,
+      "Tr": 1.252,
+      "follow": 0.6114,
+      "disp": 0.603,
+      "shape": "can",
+      "water": "0–10 m",
+      "bbox": {
+        "top": 29,
+        "bottom": 112,
+        "left": 24,
+        "right": 61
+      },
+      "belowWaterPx": 22,
+      "aboveWaterPx": 61,
+      "zHiModel": 1.14,
+      "zLoModel": -0.64
+    },
+    "Regulatory|s18": {
+      "W": 124,
+      "H": 200,
+      "pivot": {
+        "x": 62,
+        "y": 130
+      },
+      "waterlineY": 130,
+      "topY": 42,
+      "keelY": 162,
+      "D": 1.75,
+      "R": 0.875,
+      "draft": 0.78,
+      "freeboard": 1.662,
+      "zTop": 1.662,
+      "focal": 1.496,
+      "GM": 0.3829,
+      "BM": 0.2454,
+      "BG": 0.1375,
+      "Th": 1.772,
+      "Tr": 1.584,
+      "follow": 0.6409,
+      "disp": 1.923,
+      "shape": "can",
+      "water": "5–20 m",
+      "bbox": {
+        "top": 42,
+        "bottom": 162,
+        "left": 34,
+        "right": 89
+      },
+      "belowWaterPx": 32,
+      "aboveWaterPx": 88,
+      "zHiModel": 1.6625,
+      "zLoModel": -0.955
+    },
+    "Regulatory|s20": {
+      "W": 140,
+      "H": 230,
+      "pivot": {
+        "x": 70,
+        "y": 148
+      },
+      "waterlineY": 148,
+      "topY": 47,
+      "keelY": 187,
+      "D": 2,
+      "R": 1,
+      "draft": 0.98,
+      "freeboard": 1.9,
+      "zTop": 1.9,
+      "focal": 1.71,
+      "GM": 0.4051,
+      "BM": 0.2551,
+      "BG": 0.15,
+      "Th": 1.986,
+      "Tr": 1.815,
+      "follow": 0.6297,
+      "disp": 3.156,
+      "shape": "can",
+      "water": "10–30 m",
+      "bbox": {
+        "top": 47,
+        "bottom": 187,
+        "left": 38,
+        "right": 101
+      },
+      "belowWaterPx": 39,
+      "aboveWaterPx": 101,
+      "zHiModel": 1.9,
+      "zLoModel": -1.18
+    },
+    "Regulatory|s24": {
+      "W": 166,
+      "H": 276,
+      "pivot": {
+        "x": 83,
+        "y": 177
+      },
+      "waterlineY": 177,
+      "topY": 57,
+      "keelY": 228,
+      "D": 2.4,
+      "R": 1.2,
+      "draft": 1.3,
+      "freeboard": 2.28,
+      "zTop": 2.28,
+      "focal": 2.052,
+      "GM": 0.4469,
+      "BM": 0.2769,
+      "BG": 0.17,
+      "Th": 2.287,
+      "Tr": 2.149,
+      "follow": 0.6196,
+      "disp": 6.028,
+      "shape": "can",
+      "water": "10–40 m",
+      "bbox": {
+        "top": 57,
+        "bottom": 228,
+        "left": 44,
+        "right": 121
+      },
+      "belowWaterPx": 51,
+      "aboveWaterPx": 120,
+      "zHiModel": 2.28,
+      "zLoModel": -1.54
+    },
+    "Regulatory|s30": {
+      "W": 206,
+      "H": 348,
+      "pivot": {
+        "x": 103,
+        "y": 221
+      },
+      "waterlineY": 221,
+      "topY": 71,
+      "keelY": 289,
+      "D": 3,
+      "R": 1.5,
+      "draft": 1.8,
+      "freeboard": 2.85,
+      "zTop": 2.85,
+      "focal": 2.565,
+      "GM": 0.5125,
+      "BM": 0.3125,
+      "BG": 0.2,
+      "Th": 2.691,
+      "Tr": 2.606,
+      "follow": 0.6098,
+      "disp": 13.042,
+      "shape": "can",
+      "water": "20–100 m",
+      "bbox": {
+        "top": 71,
+        "bottom": 289,
+        "left": 55,
+        "right": 150
+      },
+      "belowWaterPx": 68,
+      "aboveWaterPx": 150,
+      "zHiModel": 2.85,
+      "zLoModel": -2.1
+    },
+    "Mooring|s12": {
+      "W": 64,
+      "H": 90,
+      "pivot": {
+        "x": 32,
+        "y": 49
+      },
+      "waterlineY": 49,
+      "topY": 24,
+      "keelY": 69,
+      "D": 1.2,
+      "R": 0.6,
+      "draft": 0.468,
+      "freeboard": 1.2,
+      "zTop": 1.2,
+      "focal": 1.08,
+      "GM": 0.2783,
+      "BM": 0.1923,
+      "BG": 0.086,
+      "Th": 1.372,
+      "Tr": 1.205,
+      "follow": 0.691,
+      "disp": 0.543,
+      "shape": "sphere",
+      "water": "0–10 m",
+      "bbox": {
+        "top": 24,
+        "bottom": 69,
+        "left": 12,
+        "right": 51
+      },
+      "belowWaterPx": 20,
+      "aboveWaterPx": 25,
+      "zHiModel": 1.2,
+      "zLoModel": -0.588
+    },
+    "Mooring|s18": {
+      "W": 90,
+      "H": 128,
+      "pivot": {
+        "x": 45,
+        "y": 71
+      },
+      "waterlineY": 71,
+      "topY": 35,
+      "keelY": 102,
+      "D": 1.75,
+      "R": 0.875,
+      "draft": 0.702,
+      "freeboard": 1.75,
+      "zTop": 1.75,
+      "focal": 1.575,
+      "GM": 0.3752,
+      "BM": 0.2727,
+      "BG": 0.1025,
+      "Th": 1.681,
+      "Tr": 1.526,
+      "follow": 0.7268,
+      "disp": 1.731,
+      "shape": "sphere",
+      "water": "5–20 m",
+      "bbox": {
+        "top": 35,
+        "bottom": 102,
+        "left": 15,
+        "right": 74
+      },
+      "belowWaterPx": 31,
+      "aboveWaterPx": 36,
+      "zHiModel": 1.75,
+      "zLoModel": -0.877
+    },
+    "Mooring|s20": {
+      "W": 102,
+      "H": 148,
+      "pivot": {
+        "x": 51,
+        "y": 80
+      },
+      "waterlineY": 80,
+      "topY": 39,
+      "keelY": 117,
+      "D": 2,
+      "R": 1,
+      "draft": 0.882,
+      "freeboard": 2,
+      "zTop": 2,
+      "focal": 1.8,
+      "GM": 0.3934,
+      "BM": 0.2834,
+      "BG": 0.11,
+      "Th": 1.884,
+      "Tr": 1.751,
+      "follow": 0.7204,
+      "disp": 2.84,
+      "shape": "sphere",
+      "water": "10–30 m",
+      "bbox": {
+        "top": 39,
+        "bottom": 117,
+        "left": 17,
+        "right": 84
+      },
+      "belowWaterPx": 37,
+      "aboveWaterPx": 41,
+      "zHiModel": 2,
+      "zLoModel": -1.082
+    },
+    "Mooring|s24": {
+      "W": 120,
+      "H": 178,
+      "pivot": {
+        "x": 60,
+        "y": 95
+      },
+      "waterlineY": 95,
+      "topY": 45,
+      "keelY": 142,
+      "D": 2.4,
+      "R": 1.2,
+      "draft": 1.17,
+      "freeboard": 2.4,
+      "zTop": 2.4,
+      "focal": 2.16,
+      "GM": 0.4297,
+      "BM": 0.3077,
+      "BG": 0.122,
+      "Th": 2.17,
+      "Tr": 2.076,
+      "follow": 0.7161,
+      "disp": 5.425,
+      "shape": "sphere",
+      "water": "10–40 m",
+      "bbox": {
+        "top": 45,
+        "bottom": 142,
+        "left": 19,
+        "right": 100
+      },
+      "belowWaterPx": 47,
+      "aboveWaterPx": 50,
+      "zHiModel": 2.4,
+      "zLoModel": -1.41
+    },
+    "Mooring|s30": {
+      "W": 148,
+      "H": 224,
+      "pivot": {
+        "x": 74,
+        "y": 118
+      },
+      "waterlineY": 118,
+      "topY": 56,
+      "keelY": 181,
+      "D": 3,
+      "R": 1.5,
+      "draft": 1.62,
+      "freeboard": 3,
+      "zTop": 3,
+      "focal": 2.7,
+      "GM": 0.4872,
+      "BM": 0.3472,
+      "BG": 0.14,
+      "Th": 2.553,
+      "Tr": 2.523,
+      "follow": 0.7127,
+      "disp": 11.737,
+      "shape": "sphere",
+      "water": "20–100 m",
+      "bbox": {
+        "top": 56,
+        "bottom": 181,
+        "left": 23,
+        "right": 124
+      },
+      "belowWaterPx": 63,
+      "aboveWaterPx": 62,
+      "zHiModel": 3,
+      "zLoModel": -1.92
+    },
+    "Spar|s12": {
+      "W": 78,
+      "H": 142,
+      "pivot": {
+        "x": 39,
+        "y": 76
+      },
+      "waterlineY": 76,
+      "topY": 27,
+      "keelY": 112,
+      "D": 1.2,
+      "R": 0.204,
+      "draft": 1.352,
+      "freeboard": 1.86,
+      "zTop": 1.86,
+      "focal": 1.674,
+      "GM": 1.5577,
+      "BM": 0.0077,
+      "BG": 1.55,
+      "Th": 2.333,
+      "Tr": 1.136,
+      "follow": 0.0049,
+      "disp": 0.181,
+      "shape": "spar",
+      "water": "0–10 m",
+      "bbox": {
+        "top": 27,
+        "bottom": 112,
+        "left": 20,
+        "right": 57
+      },
+      "belowWaterPx": 36,
+      "aboveWaterPx": 49,
+      "zHiModel": 1.86,
+      "zLoModel": -1.472
+    },
+    "Spar|s18": {
+      "W": 112,
+      "H": 206,
+      "pivot": {
+        "x": 56,
+        "y": 110
+      },
+      "waterlineY": 110,
+      "topY": 38,
+      "keelY": 164,
+      "D": 1.75,
+      "R": 0.298,
+      "draft": 2.028,
+      "freeboard": 2.712,
+      "zTop": 2.712,
+      "focal": 2.441,
+      "GM": 2.2484,
+      "BM": 0.0109,
+      "BG": 2.2375,
+      "Th": 2.857,
+      "Tr": 1.395,
+      "follow": 0.0049,
+      "disp": 0.578,
+      "shape": "spar",
+      "water": "5–20 m",
+      "bbox": {
+        "top": 38,
+        "bottom": 164,
+        "left": 28,
+        "right": 83
+      },
+      "belowWaterPx": 54,
+      "aboveWaterPx": 72,
+      "zHiModel": 2.7125,
+      "zLoModel": -2.203
+    },
+    "Spar|s20": {
+      "W": 126,
+      "H": 240,
+      "pivot": {
+        "x": 63,
+        "y": 125
+      },
+      "waterlineY": 125,
+      "topY": 43,
+      "keelY": 192,
+      "D": 2,
+      "R": 0.34,
+      "draft": 2.548,
+      "freeboard": 3.1,
+      "zTop": 3.1,
+      "focal": 2.79,
+      "GM": 2.5613,
+      "BM": 0.0113,
+      "BG": 2.55,
+      "Th": 3.202,
+      "Tr": 1.558,
+      "follow": 0.0044,
+      "disp": 0.948,
+      "shape": "spar",
+      "water": "10–30 m",
+      "bbox": {
+        "top": 43,
+        "bottom": 192,
+        "left": 31,
+        "right": 94
+      },
+      "belowWaterPx": 67,
+      "aboveWaterPx": 82,
+      "zHiModel": 3.1,
+      "zLoModel": -2.748
+    },
+    "Spar|s24": {
+      "W": 150,
+      "H": 292,
+      "pivot": {
+        "x": 75,
+        "y": 149
+      },
+      "waterlineY": 149,
+      "topY": 51,
+      "keelY": 238,
+      "D": 2.4,
+      "R": 0.408,
+      "draft": 3.38,
+      "freeboard": 3.72,
+      "zTop": 3.72,
+      "focal": 3.348,
+      "GM": 3.0623,
+      "BM": 0.0123,
+      "BG": 3.05,
+      "Th": 3.688,
+      "Tr": 1.791,
+      "follow": 0.004,
+      "disp": 1.812,
+      "shape": "spar",
+      "water": "10–40 m",
+      "bbox": {
+        "top": 51,
+        "bottom": 238,
+        "left": 36,
+        "right": 113
+      },
+      "belowWaterPx": 89,
+      "aboveWaterPx": 98,
+      "zHiModel": 3.72,
+      "zLoModel": -3.62
+    },
+    "Spar|s30": {
+      "W": 188,
+      "H": 376,
+      "pivot": {
+        "x": 94,
+        "y": 186
+      },
+      "waterlineY": 186,
+      "topY": 63,
+      "keelY": 308,
+      "D": 3,
+      "R": 0.51,
+      "draft": 4.68,
+      "freeboard": 4.65,
+      "zTop": 4.65,
+      "focal": 4.185,
+      "GM": 3.8139,
+      "BM": 0.0139,
+      "BG": 3.8,
+      "Th": 4.34,
+      "Tr": 2.108,
+      "follow": 0.0036,
+      "disp": 3.92,
+      "shape": "spar",
+      "water": "20–100 m",
+      "bbox": {
+        "top": 63,
+        "bottom": 308,
+        "left": 45,
+        "right": 142
+      },
+      "belowWaterPx": 122,
+      "aboveWaterPx": 123,
+      "zHiModel": 4.65,
+      "zLoModel": -4.98
+    }
+  },
+  "respond": {
+    "PortCan|s12|calm": {
+      "tilt": 1.64,
+      "heave": 0.105,
+      "submerged": 0
+    },
+    "PortCan|s12|chop": {
+      "tilt": 15.94,
+      "heave": 0.728,
+      "submerged": 0
+    },
+    "PortCan|s12|working": {
+      "tilt": 11.81,
+      "heave": 1.551,
+      "submerged": 0
+    },
+    "PortCan|s12|rough": {
+      "tilt": 14.69,
+      "heave": 3.071,
+      "submerged": 0.302
+    },
+    "PortCan|s12|swell": {
+      "tilt": 3.48,
+      "heave": 1.98,
+      "submerged": 0
+    },
+    "PortCan|s18|calm": {
+      "tilt": 1.49,
+      "heave": 0.111,
+      "submerged": 0
+    },
+    "PortCan|s18|chop": {
+      "tilt": 20.35,
+      "heave": 0.73,
+      "submerged": 0
+    },
+    "PortCan|s18|working": {
+      "tilt": 10.13,
+      "heave": 1.766,
+      "submerged": 0
+    },
+    "PortCan|s18|rough": {
+      "tilt": 12.4,
+      "heave": 3.276,
+      "submerged": 0
+    },
+    "PortCan|s18|swell": {
+      "tilt": 2.64,
+      "heave": 2.135,
+      "submerged": 0
+    },
+    "PortCan|s20|calm": {
+      "tilt": 1.43,
+      "heave": 0.115,
+      "submerged": 0
+    },
+    "PortCan|s20|chop": {
+      "tilt": 16.76,
+      "heave": 0.703,
+      "submerged": 0
+    },
+    "PortCan|s20|working": {
+      "tilt": 9.01,
+      "heave": 1.849,
+      "submerged": 0
+    },
+    "PortCan|s20|rough": {
+      "tilt": 10.56,
+      "heave": 3.446,
+      "submerged": 0
+    },
+    "PortCan|s20|swell": {
+      "tilt": 2.11,
+      "heave": 2.257,
+      "submerged": 0
+    },
+    "PortCan|s24|calm": {
+      "tilt": 1.65,
+      "heave": 0.119,
+      "submerged": 0
+    },
+    "PortCan|s24|chop": {
+      "tilt": 15.01,
+      "heave": 0.677,
+      "submerged": 0
+    },
+    "PortCan|s24|working": {
+      "tilt": 9.37,
+      "heave": 1.937,
+      "submerged": 0
+    },
+    "PortCan|s24|rough": {
+      "tilt": 9.72,
+      "heave": 3.721,
+      "submerged": 0
+    },
+    "PortCan|s24|swell": {
+      "tilt": 1.81,
+      "heave": 2.395,
+      "submerged": 0
+    },
+    "PortCan|s30|calm": {
+      "tilt": 1.38,
+      "heave": 0.117,
+      "submerged": 0
+    },
+    "PortCan|s30|chop": {
+      "tilt": 11.37,
+      "heave": 0.59,
+      "submerged": 0
+    },
+    "PortCan|s30|working": {
+      "tilt": 12.36,
+      "heave": 2.031,
+      "submerged": 0
+    },
+    "PortCan|s30|rough": {
+      "tilt": 9.94,
+      "heave": 4.155,
+      "submerged": 0
+    },
+    "PortCan|s30|swell": {
+      "tilt": 1.73,
+      "heave": 2.437,
+      "submerged": 0
+    },
+    "StbdNun|s12|calm": {
+      "tilt": 1.45,
+      "heave": 0.105,
+      "submerged": 0
+    },
+    "StbdNun|s12|chop": {
+      "tilt": 20.08,
+      "heave": 0.728,
+      "submerged": 0
+    },
+    "StbdNun|s12|working": {
+      "tilt": 9.96,
+      "heave": 1.551,
+      "submerged": 0
+    },
+    "StbdNun|s12|rough": {
+      "tilt": 12.11,
+      "heave": 3.071,
+      "submerged": 0
+    },
+    "StbdNun|s12|swell": {
+      "tilt": 2.7,
+      "heave": 1.98,
+      "submerged": 0
+    },
+    "StbdNun|s18|calm": {
+      "tilt": 1.54,
+      "heave": 0.111,
+      "submerged": 0
+    },
+    "StbdNun|s18|chop": {
+      "tilt": 15.71,
+      "heave": 0.73,
+      "submerged": 0
+    },
+    "StbdNun|s18|working": {
+      "tilt": 8.87,
+      "heave": 1.766,
+      "submerged": 0
+    },
+    "StbdNun|s18|rough": {
+      "tilt": 10.07,
+      "heave": 3.276,
+      "submerged": 0
+    },
+    "StbdNun|s18|swell": {
+      "tilt": 1.98,
+      "heave": 2.135,
+      "submerged": 0
+    },
+    "StbdNun|s20|calm": {
+      "tilt": 1.7,
+      "heave": 0.115,
+      "submerged": 0
+    },
+    "StbdNun|s20|chop": {
+      "tilt": 15.34,
+      "heave": 0.703,
+      "submerged": 0
+    },
+    "StbdNun|s20|working": {
+      "tilt": 9.43,
+      "heave": 1.849,
+      "submerged": 0
+    },
+    "StbdNun|s20|rough": {
+      "tilt": 9.6,
+      "heave": 3.446,
+      "submerged": 0
+    },
+    "StbdNun|s20|swell": {
+      "tilt": 1.78,
+      "heave": 2.257,
+      "submerged": 0
+    },
+    "StbdNun|s24|calm": {
+      "tilt": 1.36,
+      "heave": 0.119,
+      "submerged": 0
+    },
+    "StbdNun|s24|chop": {
+      "tilt": 11.07,
+      "heave": 0.677,
+      "submerged": 0
+    },
+    "StbdNun|s24|working": {
+      "tilt": 12.35,
+      "heave": 1.937,
+      "submerged": 0
+    },
+    "StbdNun|s24|rough": {
+      "tilt": 9.74,
+      "heave": 3.721,
+      "submerged": 0
+    },
+    "StbdNun|s24|swell": {
+      "tilt": 1.7,
+      "heave": 2.395,
+      "submerged": 0
+    },
+    "StbdNun|s30|calm": {
+      "tilt": 1.18,
+      "heave": 0.117,
+      "submerged": 0
+    },
+    "StbdNun|s30|chop": {
+      "tilt": 6.49,
+      "heave": 0.59,
+      "submerged": 0
+    },
+    "StbdNun|s30|working": {
+      "tilt": 14.72,
+      "heave": 2.031,
+      "submerged": 0
+    },
+    "StbdNun|s30|rough": {
+      "tilt": 10.94,
+      "heave": 4.155,
+      "submerged": 0
+    },
+    "StbdNun|s30|swell": {
+      "tilt": 1.71,
+      "heave": 2.437,
+      "submerged": 0
+    },
+    "PortLit|s12|calm": {
+      "tilt": 0.39,
+      "heave": 0.108,
+      "submerged": 0
+    },
+    "PortLit|s12|chop": {
+      "tilt": 4.67,
+      "heave": 0.749,
+      "submerged": 0
+    },
+    "PortLit|s12|working": {
+      "tilt": 2.71,
+      "heave": 1.617,
+      "submerged": 0
+    },
+    "PortLit|s12|rough": {
+      "tilt": 3.35,
+      "heave": 3.135,
+      "submerged": 0
+    },
+    "PortLit|s12|swell": {
+      "tilt": 0.77,
+      "heave": 2.028,
+      "submerged": 0
+    },
+    "PortLit|s18|calm": {
+      "tilt": 0.33,
+      "heave": 0.113,
+      "submerged": 0
+    },
+    "PortLit|s18|chop": {
+      "tilt": 4.12,
+      "heave": 0.727,
+      "submerged": 0
+    },
+    "PortLit|s18|working": {
+      "tilt": 2.1,
+      "heave": 1.826,
+      "submerged": 0
+    },
+    "PortLit|s18|rough": {
+      "tilt": 2.49,
+      "heave": 3.377,
+      "submerged": 0
+    },
+    "PortLit|s18|swell": {
+      "tilt": 0.51,
+      "heave": 2.207,
+      "submerged": 0
+    },
+    "PortLit|s20|calm": {
+      "tilt": 0.32,
+      "heave": 0.118,
+      "submerged": 0
+    },
+    "PortLit|s20|chop": {
+      "tilt": 3.35,
+      "heave": 0.705,
+      "submerged": 0
+    },
+    "PortLit|s20|working": {
+      "tilt": 1.9,
+      "heave": 1.899,
+      "submerged": 0
+    },
+    "PortLit|s20|rough": {
+      "tilt": 2.16,
+      "heave": 3.574,
+      "submerged": 0
+    },
+    "PortLit|s20|swell": {
+      "tilt": 0.42,
+      "heave": 2.348,
+      "submerged": 0
+    },
+    "PortLit|s24|calm": {
+      "tilt": 0.33,
+      "heave": 0.12,
+      "submerged": 0
+    },
+    "PortLit|s24|chop": {
+      "tilt": 2.99,
+      "heave": 0.662,
+      "submerged": 0
+    },
+    "PortLit|s24|working": {
+      "tilt": 1.89,
+      "heave": 1.987,
+      "submerged": 0
+    },
+    "PortLit|s24|rough": {
+      "tilt": 1.92,
+      "heave": 3.895,
+      "submerged": 0
+    },
+    "PortLit|s24|swell": {
+      "tilt": 0.36,
+      "heave": 2.412,
+      "submerged": 0
+    },
+    "PortLit|s30|calm": {
+      "tilt": 0.27,
+      "heave": 0.119,
+      "submerged": 0
+    },
+    "PortLit|s30|chop": {
+      "tilt": 2.23,
+      "heave": 0.557,
+      "submerged": 0
+    },
+    "PortLit|s30|working": {
+      "tilt": 2.17,
+      "heave": 2.076,
+      "submerged": 0
+    },
+    "PortLit|s30|rough": {
+      "tilt": 1.81,
+      "heave": 4.393,
+      "submerged": 0
+    },
+    "PortLit|s30|swell": {
+      "tilt": 0.32,
+      "heave": 2.462,
+      "submerged": 0
+    },
+    "StbdLit|s12|calm": {
+      "tilt": 0.39,
+      "heave": 0.108,
+      "submerged": 0
+    },
+    "StbdLit|s12|chop": {
+      "tilt": 4.67,
+      "heave": 0.749,
+      "submerged": 0
+    },
+    "StbdLit|s12|working": {
+      "tilt": 2.71,
+      "heave": 1.617,
+      "submerged": 0
+    },
+    "StbdLit|s12|rough": {
+      "tilt": 3.35,
+      "heave": 3.135,
+      "submerged": 0
+    },
+    "StbdLit|s12|swell": {
+      "tilt": 0.77,
+      "heave": 2.028,
+      "submerged": 0
+    },
+    "StbdLit|s18|calm": {
+      "tilt": 0.33,
+      "heave": 0.113,
+      "submerged": 0
+    },
+    "StbdLit|s18|chop": {
+      "tilt": 4.12,
+      "heave": 0.727,
+      "submerged": 0
+    },
+    "StbdLit|s18|working": {
+      "tilt": 2.1,
+      "heave": 1.826,
+      "submerged": 0
+    },
+    "StbdLit|s18|rough": {
+      "tilt": 2.49,
+      "heave": 3.377,
+      "submerged": 0
+    },
+    "StbdLit|s18|swell": {
+      "tilt": 0.51,
+      "heave": 2.207,
+      "submerged": 0
+    },
+    "StbdLit|s20|calm": {
+      "tilt": 0.32,
+      "heave": 0.118,
+      "submerged": 0
+    },
+    "StbdLit|s20|chop": {
+      "tilt": 3.35,
+      "heave": 0.705,
+      "submerged": 0
+    },
+    "StbdLit|s20|working": {
+      "tilt": 1.9,
+      "heave": 1.899,
+      "submerged": 0
+    },
+    "StbdLit|s20|rough": {
+      "tilt": 2.16,
+      "heave": 3.574,
+      "submerged": 0
+    },
+    "StbdLit|s20|swell": {
+      "tilt": 0.42,
+      "heave": 2.348,
+      "submerged": 0
+    },
+    "StbdLit|s24|calm": {
+      "tilt": 0.33,
+      "heave": 0.12,
+      "submerged": 0
+    },
+    "StbdLit|s24|chop": {
+      "tilt": 2.99,
+      "heave": 0.662,
+      "submerged": 0
+    },
+    "StbdLit|s24|working": {
+      "tilt": 1.89,
+      "heave": 1.987,
+      "submerged": 0
+    },
+    "StbdLit|s24|rough": {
+      "tilt": 1.92,
+      "heave": 3.895,
+      "submerged": 0
+    },
+    "StbdLit|s24|swell": {
+      "tilt": 0.36,
+      "heave": 2.412,
+      "submerged": 0
+    },
+    "StbdLit|s30|calm": {
+      "tilt": 0.27,
+      "heave": 0.119,
+      "submerged": 0
+    },
+    "StbdLit|s30|chop": {
+      "tilt": 2.23,
+      "heave": 0.557,
+      "submerged": 0
+    },
+    "StbdLit|s30|working": {
+      "tilt": 2.17,
+      "heave": 2.076,
+      "submerged": 0
+    },
+    "StbdLit|s30|rough": {
+      "tilt": 1.81,
+      "heave": 4.393,
+      "submerged": 0
+    },
+    "StbdLit|s30|swell": {
+      "tilt": 0.32,
+      "heave": 2.462,
+      "submerged": 0
+    },
+    "CardinalN|s12|calm": {
+      "tilt": 0.75,
+      "heave": 0.106,
+      "submerged": 0
+    },
+    "CardinalN|s12|chop": {
+      "tilt": 10.34,
+      "heave": 0.737,
+      "submerged": 0
+    },
+    "CardinalN|s12|working": {
+      "tilt": 5.18,
+      "heave": 1.573,
+      "submerged": 0
+    },
+    "CardinalN|s12|rough": {
+      "tilt": 6.3,
+      "heave": 3.092,
+      "submerged": 0
+    },
+    "CardinalN|s12|swell": {
+      "tilt": 1.41,
+      "heave": 1.996,
+      "submerged": 0
+    },
+    "CardinalN|s18|calm": {
+      "tilt": 0.74,
+      "heave": 0.112,
+      "submerged": 0
+    },
+    "CardinalN|s18|chop": {
+      "tilt": 7.93,
+      "heave": 0.73,
+      "submerged": 0
+    },
+    "CardinalN|s18|working": {
+      "tilt": 4.4,
+      "heave": 1.798,
+      "submerged": 0
+    },
+    "CardinalN|s18|rough": {
+      "tilt": 5.06,
+      "heave": 3.31,
+      "submerged": 0
+    },
+    "CardinalN|s18|swell": {
+      "tilt": 1,
+      "heave": 2.159,
+      "submerged": 0
+    },
+    "CardinalN|s20|calm": {
+      "tilt": 0.79,
+      "heave": 0.116,
+      "submerged": 0
+    },
+    "CardinalN|s20|chop": {
+      "tilt": 7.25,
+      "heave": 0.701,
+      "submerged": 0
+    },
+    "CardinalN|s20|working": {
+      "tilt": 4.34,
+      "heave": 1.866,
+      "submerged": 0
+    },
+    "CardinalN|s20|rough": {
+      "tilt": 4.61,
+      "heave": 3.488,
+      "submerged": 0
+    },
+    "CardinalN|s20|swell": {
+      "tilt": 0.87,
+      "heave": 2.287,
+      "submerged": 0
+    },
+    "CardinalN|s24|calm": {
+      "tilt": 0.71,
+      "heave": 0.119,
+      "submerged": 0
+    },
+    "CardinalN|s24|chop": {
+      "tilt": 6.14,
+      "heave": 0.673,
+      "submerged": 0
+    },
+    "CardinalN|s24|working": {
+      "tilt": 4.94,
+      "heave": 1.954,
+      "submerged": 0
+    },
+    "CardinalN|s24|rough": {
+      "tilt": 4.36,
+      "heave": 3.779,
+      "submerged": 0
+    },
+    "CardinalN|s24|swell": {
+      "tilt": 0.78,
+      "heave": 2.4,
+      "submerged": 0
+    },
+    "CardinalN|s30|calm": {
+      "tilt": 0.53,
+      "heave": 0.118,
+      "submerged": 0
+    },
+    "CardinalN|s30|chop": {
+      "tilt": 3.59,
+      "heave": 0.579,
+      "submerged": 0
+    },
+    "CardinalN|s30|working": {
+      "tilt": 6.13,
+      "heave": 2.048,
+      "submerged": 0
+    },
+    "CardinalN|s30|rough": {
+      "tilt": 4.41,
+      "heave": 4.235,
+      "submerged": 0
+    },
+    "CardinalN|s30|swell": {
+      "tilt": 0.73,
+      "heave": 2.445,
+      "submerged": 0
+    },
+    "CardinalS|s12|calm": {
+      "tilt": 0.75,
+      "heave": 0.106,
+      "submerged": 0
+    },
+    "CardinalS|s12|chop": {
+      "tilt": 10.34,
+      "heave": 0.737,
+      "submerged": 0
+    },
+    "CardinalS|s12|working": {
+      "tilt": 5.18,
+      "heave": 1.573,
+      "submerged": 0
+    },
+    "CardinalS|s12|rough": {
+      "tilt": 6.3,
+      "heave": 3.092,
+      "submerged": 0
+    },
+    "CardinalS|s12|swell": {
+      "tilt": 1.41,
+      "heave": 1.996,
+      "submerged": 0
+    },
+    "CardinalS|s18|calm": {
+      "tilt": 0.74,
+      "heave": 0.112,
+      "submerged": 0
+    },
+    "CardinalS|s18|chop": {
+      "tilt": 7.93,
+      "heave": 0.73,
+      "submerged": 0
+    },
+    "CardinalS|s18|working": {
+      "tilt": 4.4,
+      "heave": 1.798,
+      "submerged": 0
+    },
+    "CardinalS|s18|rough": {
+      "tilt": 5.06,
+      "heave": 3.31,
+      "submerged": 0
+    },
+    "CardinalS|s18|swell": {
+      "tilt": 1,
+      "heave": 2.159,
+      "submerged": 0
+    },
+    "CardinalS|s20|calm": {
+      "tilt": 0.79,
+      "heave": 0.116,
+      "submerged": 0
+    },
+    "CardinalS|s20|chop": {
+      "tilt": 7.25,
+      "heave": 0.701,
+      "submerged": 0
+    },
+    "CardinalS|s20|working": {
+      "tilt": 4.34,
+      "heave": 1.866,
+      "submerged": 0
+    },
+    "CardinalS|s20|rough": {
+      "tilt": 4.61,
+      "heave": 3.488,
+      "submerged": 0
+    },
+    "CardinalS|s20|swell": {
+      "tilt": 0.87,
+      "heave": 2.287,
+      "submerged": 0
+    },
+    "CardinalS|s24|calm": {
+      "tilt": 0.71,
+      "heave": 0.119,
+      "submerged": 0
+    },
+    "CardinalS|s24|chop": {
+      "tilt": 6.14,
+      "heave": 0.673,
+      "submerged": 0
+    },
+    "CardinalS|s24|working": {
+      "tilt": 4.94,
+      "heave": 1.954,
+      "submerged": 0
+    },
+    "CardinalS|s24|rough": {
+      "tilt": 4.36,
+      "heave": 3.779,
+      "submerged": 0
+    },
+    "CardinalS|s24|swell": {
+      "tilt": 0.78,
+      "heave": 2.4,
+      "submerged": 0
+    },
+    "CardinalS|s30|calm": {
+      "tilt": 0.53,
+      "heave": 0.118,
+      "submerged": 0
+    },
+    "CardinalS|s30|chop": {
+      "tilt": 3.59,
+      "heave": 0.579,
+      "submerged": 0
+    },
+    "CardinalS|s30|working": {
+      "tilt": 6.13,
+      "heave": 2.048,
+      "submerged": 0
+    },
+    "CardinalS|s30|rough": {
+      "tilt": 4.41,
+      "heave": 4.235,
+      "submerged": 0
+    },
+    "CardinalS|s30|swell": {
+      "tilt": 0.73,
+      "heave": 2.445,
+      "submerged": 0
+    },
+    "CardinalE|s12|calm": {
+      "tilt": 0.75,
+      "heave": 0.106,
+      "submerged": 0
+    },
+    "CardinalE|s12|chop": {
+      "tilt": 10.34,
+      "heave": 0.737,
+      "submerged": 0
+    },
+    "CardinalE|s12|working": {
+      "tilt": 5.18,
+      "heave": 1.573,
+      "submerged": 0
+    },
+    "CardinalE|s12|rough": {
+      "tilt": 6.3,
+      "heave": 3.092,
+      "submerged": 0
+    },
+    "CardinalE|s12|swell": {
+      "tilt": 1.41,
+      "heave": 1.996,
+      "submerged": 0
+    },
+    "CardinalE|s18|calm": {
+      "tilt": 0.74,
+      "heave": 0.112,
+      "submerged": 0
+    },
+    "CardinalE|s18|chop": {
+      "tilt": 7.93,
+      "heave": 0.73,
+      "submerged": 0
+    },
+    "CardinalE|s18|working": {
+      "tilt": 4.4,
+      "heave": 1.798,
+      "submerged": 0
+    },
+    "CardinalE|s18|rough": {
+      "tilt": 5.06,
+      "heave": 3.31,
+      "submerged": 0
+    },
+    "CardinalE|s18|swell": {
+      "tilt": 1,
+      "heave": 2.159,
+      "submerged": 0
+    },
+    "CardinalE|s20|calm": {
+      "tilt": 0.79,
+      "heave": 0.116,
+      "submerged": 0
+    },
+    "CardinalE|s20|chop": {
+      "tilt": 7.25,
+      "heave": 0.701,
+      "submerged": 0
+    },
+    "CardinalE|s20|working": {
+      "tilt": 4.34,
+      "heave": 1.866,
+      "submerged": 0
+    },
+    "CardinalE|s20|rough": {
+      "tilt": 4.61,
+      "heave": 3.488,
+      "submerged": 0
+    },
+    "CardinalE|s20|swell": {
+      "tilt": 0.87,
+      "heave": 2.287,
+      "submerged": 0
+    },
+    "CardinalE|s24|calm": {
+      "tilt": 0.71,
+      "heave": 0.119,
+      "submerged": 0
+    },
+    "CardinalE|s24|chop": {
+      "tilt": 6.14,
+      "heave": 0.673,
+      "submerged": 0
+    },
+    "CardinalE|s24|working": {
+      "tilt": 4.94,
+      "heave": 1.954,
+      "submerged": 0
+    },
+    "CardinalE|s24|rough": {
+      "tilt": 4.36,
+      "heave": 3.779,
+      "submerged": 0
+    },
+    "CardinalE|s24|swell": {
+      "tilt": 0.78,
+      "heave": 2.4,
+      "submerged": 0
+    },
+    "CardinalE|s30|calm": {
+      "tilt": 0.53,
+      "heave": 0.118,
+      "submerged": 0
+    },
+    "CardinalE|s30|chop": {
+      "tilt": 3.59,
+      "heave": 0.579,
+      "submerged": 0
+    },
+    "CardinalE|s30|working": {
+      "tilt": 6.13,
+      "heave": 2.048,
+      "submerged": 0
+    },
+    "CardinalE|s30|rough": {
+      "tilt": 4.41,
+      "heave": 4.235,
+      "submerged": 0
+    },
+    "CardinalE|s30|swell": {
+      "tilt": 0.73,
+      "heave": 2.445,
+      "submerged": 0
+    },
+    "CardinalW|s12|calm": {
+      "tilt": 0.75,
+      "heave": 0.106,
+      "submerged": 0
+    },
+    "CardinalW|s12|chop": {
+      "tilt": 10.34,
+      "heave": 0.737,
+      "submerged": 0
+    },
+    "CardinalW|s12|working": {
+      "tilt": 5.18,
+      "heave": 1.573,
+      "submerged": 0
+    },
+    "CardinalW|s12|rough": {
+      "tilt": 6.3,
+      "heave": 3.092,
+      "submerged": 0
+    },
+    "CardinalW|s12|swell": {
+      "tilt": 1.41,
+      "heave": 1.996,
+      "submerged": 0
+    },
+    "CardinalW|s18|calm": {
+      "tilt": 0.74,
+      "heave": 0.112,
+      "submerged": 0
+    },
+    "CardinalW|s18|chop": {
+      "tilt": 7.93,
+      "heave": 0.73,
+      "submerged": 0
+    },
+    "CardinalW|s18|working": {
+      "tilt": 4.4,
+      "heave": 1.798,
+      "submerged": 0
+    },
+    "CardinalW|s18|rough": {
+      "tilt": 5.06,
+      "heave": 3.31,
+      "submerged": 0
+    },
+    "CardinalW|s18|swell": {
+      "tilt": 1,
+      "heave": 2.159,
+      "submerged": 0
+    },
+    "CardinalW|s20|calm": {
+      "tilt": 0.79,
+      "heave": 0.116,
+      "submerged": 0
+    },
+    "CardinalW|s20|chop": {
+      "tilt": 7.25,
+      "heave": 0.701,
+      "submerged": 0
+    },
+    "CardinalW|s20|working": {
+      "tilt": 4.34,
+      "heave": 1.866,
+      "submerged": 0
+    },
+    "CardinalW|s20|rough": {
+      "tilt": 4.61,
+      "heave": 3.488,
+      "submerged": 0
+    },
+    "CardinalW|s20|swell": {
+      "tilt": 0.87,
+      "heave": 2.287,
+      "submerged": 0
+    },
+    "CardinalW|s24|calm": {
+      "tilt": 0.71,
+      "heave": 0.119,
+      "submerged": 0
+    },
+    "CardinalW|s24|chop": {
+      "tilt": 6.14,
+      "heave": 0.673,
+      "submerged": 0
+    },
+    "CardinalW|s24|working": {
+      "tilt": 4.94,
+      "heave": 1.954,
+      "submerged": 0
+    },
+    "CardinalW|s24|rough": {
+      "tilt": 4.36,
+      "heave": 3.779,
+      "submerged": 0
+    },
+    "CardinalW|s24|swell": {
+      "tilt": 0.78,
+      "heave": 2.4,
+      "submerged": 0
+    },
+    "CardinalW|s30|calm": {
+      "tilt": 0.53,
+      "heave": 0.118,
+      "submerged": 0
+    },
+    "CardinalW|s30|chop": {
+      "tilt": 3.59,
+      "heave": 0.579,
+      "submerged": 0
+    },
+    "CardinalW|s30|working": {
+      "tilt": 6.13,
+      "heave": 2.048,
+      "submerged": 0
+    },
+    "CardinalW|s30|rough": {
+      "tilt": 4.41,
+      "heave": 4.235,
+      "submerged": 0
+    },
+    "CardinalW|s30|swell": {
+      "tilt": 0.73,
+      "heave": 2.445,
+      "submerged": 0
+    },
+    "Isolated|s12|calm": {
+      "tilt": 0.75,
+      "heave": 0.106,
+      "submerged": 0
+    },
+    "Isolated|s12|chop": {
+      "tilt": 10.34,
+      "heave": 0.737,
+      "submerged": 0
+    },
+    "Isolated|s12|working": {
+      "tilt": 5.18,
+      "heave": 1.573,
+      "submerged": 0
+    },
+    "Isolated|s12|rough": {
+      "tilt": 6.3,
+      "heave": 3.092,
+      "submerged": 0
+    },
+    "Isolated|s12|swell": {
+      "tilt": 1.41,
+      "heave": 1.996,
+      "submerged": 0
+    },
+    "Isolated|s18|calm": {
+      "tilt": 0.74,
+      "heave": 0.112,
+      "submerged": 0
+    },
+    "Isolated|s18|chop": {
+      "tilt": 7.93,
+      "heave": 0.73,
+      "submerged": 0
+    },
+    "Isolated|s18|working": {
+      "tilt": 4.4,
+      "heave": 1.798,
+      "submerged": 0
+    },
+    "Isolated|s18|rough": {
+      "tilt": 5.06,
+      "heave": 3.31,
+      "submerged": 0
+    },
+    "Isolated|s18|swell": {
+      "tilt": 1,
+      "heave": 2.159,
+      "submerged": 0
+    },
+    "Isolated|s20|calm": {
+      "tilt": 0.79,
+      "heave": 0.116,
+      "submerged": 0
+    },
+    "Isolated|s20|chop": {
+      "tilt": 7.25,
+      "heave": 0.701,
+      "submerged": 0
+    },
+    "Isolated|s20|working": {
+      "tilt": 4.34,
+      "heave": 1.866,
+      "submerged": 0
+    },
+    "Isolated|s20|rough": {
+      "tilt": 4.61,
+      "heave": 3.488,
+      "submerged": 0
+    },
+    "Isolated|s20|swell": {
+      "tilt": 0.87,
+      "heave": 2.287,
+      "submerged": 0
+    },
+    "Isolated|s24|calm": {
+      "tilt": 0.71,
+      "heave": 0.119,
+      "submerged": 0
+    },
+    "Isolated|s24|chop": {
+      "tilt": 6.14,
+      "heave": 0.673,
+      "submerged": 0
+    },
+    "Isolated|s24|working": {
+      "tilt": 4.94,
+      "heave": 1.954,
+      "submerged": 0
+    },
+    "Isolated|s24|rough": {
+      "tilt": 4.36,
+      "heave": 3.779,
+      "submerged": 0
+    },
+    "Isolated|s24|swell": {
+      "tilt": 0.78,
+      "heave": 2.4,
+      "submerged": 0
+    },
+    "Isolated|s30|calm": {
+      "tilt": 0.53,
+      "heave": 0.118,
+      "submerged": 0
+    },
+    "Isolated|s30|chop": {
+      "tilt": 3.59,
+      "heave": 0.579,
+      "submerged": 0
+    },
+    "Isolated|s30|working": {
+      "tilt": 6.13,
+      "heave": 2.048,
+      "submerged": 0
+    },
+    "Isolated|s30|rough": {
+      "tilt": 4.41,
+      "heave": 4.235,
+      "submerged": 0
+    },
+    "Isolated|s30|swell": {
+      "tilt": 0.73,
+      "heave": 2.445,
+      "submerged": 0
+    },
+    "SafeWater|s12|calm": {
+      "tilt": 0.75,
+      "heave": 0.106,
+      "submerged": 0
+    },
+    "SafeWater|s12|chop": {
+      "tilt": 10.34,
+      "heave": 0.737,
+      "submerged": 0
+    },
+    "SafeWater|s12|working": {
+      "tilt": 5.18,
+      "heave": 1.573,
+      "submerged": 0
+    },
+    "SafeWater|s12|rough": {
+      "tilt": 6.3,
+      "heave": 3.092,
+      "submerged": 0
+    },
+    "SafeWater|s12|swell": {
+      "tilt": 1.41,
+      "heave": 1.996,
+      "submerged": 0
+    },
+    "SafeWater|s18|calm": {
+      "tilt": 0.74,
+      "heave": 0.112,
+      "submerged": 0
+    },
+    "SafeWater|s18|chop": {
+      "tilt": 7.93,
+      "heave": 0.73,
+      "submerged": 0
+    },
+    "SafeWater|s18|working": {
+      "tilt": 4.4,
+      "heave": 1.798,
+      "submerged": 0
+    },
+    "SafeWater|s18|rough": {
+      "tilt": 5.06,
+      "heave": 3.31,
+      "submerged": 0
+    },
+    "SafeWater|s18|swell": {
+      "tilt": 1,
+      "heave": 2.159,
+      "submerged": 0
+    },
+    "SafeWater|s20|calm": {
+      "tilt": 0.79,
+      "heave": 0.116,
+      "submerged": 0
+    },
+    "SafeWater|s20|chop": {
+      "tilt": 7.25,
+      "heave": 0.701,
+      "submerged": 0
+    },
+    "SafeWater|s20|working": {
+      "tilt": 4.34,
+      "heave": 1.866,
+      "submerged": 0
+    },
+    "SafeWater|s20|rough": {
+      "tilt": 4.61,
+      "heave": 3.488,
+      "submerged": 0
+    },
+    "SafeWater|s20|swell": {
+      "tilt": 0.87,
+      "heave": 2.287,
+      "submerged": 0
+    },
+    "SafeWater|s24|calm": {
+      "tilt": 0.71,
+      "heave": 0.119,
+      "submerged": 0
+    },
+    "SafeWater|s24|chop": {
+      "tilt": 6.14,
+      "heave": 0.673,
+      "submerged": 0
+    },
+    "SafeWater|s24|working": {
+      "tilt": 4.94,
+      "heave": 1.954,
+      "submerged": 0
+    },
+    "SafeWater|s24|rough": {
+      "tilt": 4.36,
+      "heave": 3.779,
+      "submerged": 0
+    },
+    "SafeWater|s24|swell": {
+      "tilt": 0.78,
+      "heave": 2.4,
+      "submerged": 0
+    },
+    "SafeWater|s30|calm": {
+      "tilt": 0.53,
+      "heave": 0.118,
+      "submerged": 0
+    },
+    "SafeWater|s30|chop": {
+      "tilt": 3.59,
+      "heave": 0.579,
+      "submerged": 0
+    },
+    "SafeWater|s30|working": {
+      "tilt": 6.13,
+      "heave": 2.048,
+      "submerged": 0
+    },
+    "SafeWater|s30|rough": {
+      "tilt": 4.41,
+      "heave": 4.235,
+      "submerged": 0
+    },
+    "SafeWater|s30|swell": {
+      "tilt": 0.73,
+      "heave": 2.445,
+      "submerged": 0
+    },
+    "Special|s12|calm": {
+      "tilt": 0.75,
+      "heave": 0.106,
+      "submerged": 0
+    },
+    "Special|s12|chop": {
+      "tilt": 10.34,
+      "heave": 0.737,
+      "submerged": 0
+    },
+    "Special|s12|working": {
+      "tilt": 5.18,
+      "heave": 1.573,
+      "submerged": 0
+    },
+    "Special|s12|rough": {
+      "tilt": 6.3,
+      "heave": 3.092,
+      "submerged": 0
+    },
+    "Special|s12|swell": {
+      "tilt": 1.41,
+      "heave": 1.996,
+      "submerged": 0
+    },
+    "Special|s18|calm": {
+      "tilt": 0.74,
+      "heave": 0.112,
+      "submerged": 0
+    },
+    "Special|s18|chop": {
+      "tilt": 7.93,
+      "heave": 0.73,
+      "submerged": 0
+    },
+    "Special|s18|working": {
+      "tilt": 4.4,
+      "heave": 1.798,
+      "submerged": 0
+    },
+    "Special|s18|rough": {
+      "tilt": 5.06,
+      "heave": 3.31,
+      "submerged": 0
+    },
+    "Special|s18|swell": {
+      "tilt": 1,
+      "heave": 2.159,
+      "submerged": 0
+    },
+    "Special|s20|calm": {
+      "tilt": 0.79,
+      "heave": 0.116,
+      "submerged": 0
+    },
+    "Special|s20|chop": {
+      "tilt": 7.25,
+      "heave": 0.701,
+      "submerged": 0
+    },
+    "Special|s20|working": {
+      "tilt": 4.34,
+      "heave": 1.866,
+      "submerged": 0
+    },
+    "Special|s20|rough": {
+      "tilt": 4.61,
+      "heave": 3.488,
+      "submerged": 0
+    },
+    "Special|s20|swell": {
+      "tilt": 0.87,
+      "heave": 2.287,
+      "submerged": 0
+    },
+    "Special|s24|calm": {
+      "tilt": 0.71,
+      "heave": 0.119,
+      "submerged": 0
+    },
+    "Special|s24|chop": {
+      "tilt": 6.14,
+      "heave": 0.673,
+      "submerged": 0
+    },
+    "Special|s24|working": {
+      "tilt": 4.94,
+      "heave": 1.954,
+      "submerged": 0
+    },
+    "Special|s24|rough": {
+      "tilt": 4.36,
+      "heave": 3.779,
+      "submerged": 0
+    },
+    "Special|s24|swell": {
+      "tilt": 0.78,
+      "heave": 2.4,
+      "submerged": 0
+    },
+    "Special|s30|calm": {
+      "tilt": 0.53,
+      "heave": 0.118,
+      "submerged": 0
+    },
+    "Special|s30|chop": {
+      "tilt": 3.59,
+      "heave": 0.579,
+      "submerged": 0
+    },
+    "Special|s30|working": {
+      "tilt": 6.13,
+      "heave": 2.048,
+      "submerged": 0
+    },
+    "Special|s30|rough": {
+      "tilt": 4.41,
+      "heave": 4.235,
+      "submerged": 0
+    },
+    "Special|s30|swell": {
+      "tilt": 0.73,
+      "heave": 2.445,
+      "submerged": 0
+    },
+    "Regulatory|s12|calm": {
+      "tilt": 1.64,
+      "heave": 0.105,
+      "submerged": 0
+    },
+    "Regulatory|s12|chop": {
+      "tilt": 15.94,
+      "heave": 0.728,
+      "submerged": 0
+    },
+    "Regulatory|s12|working": {
+      "tilt": 11.81,
+      "heave": 1.551,
+      "submerged": 0
+    },
+    "Regulatory|s12|rough": {
+      "tilt": 14.69,
+      "heave": 3.071,
+      "submerged": 0.302
+    },
+    "Regulatory|s12|swell": {
+      "tilt": 3.48,
+      "heave": 1.98,
+      "submerged": 0
+    },
+    "Regulatory|s18|calm": {
+      "tilt": 1.49,
+      "heave": 0.111,
+      "submerged": 0
+    },
+    "Regulatory|s18|chop": {
+      "tilt": 20.35,
+      "heave": 0.73,
+      "submerged": 0
+    },
+    "Regulatory|s18|working": {
+      "tilt": 10.13,
+      "heave": 1.766,
+      "submerged": 0
+    },
+    "Regulatory|s18|rough": {
+      "tilt": 12.4,
+      "heave": 3.276,
+      "submerged": 0
+    },
+    "Regulatory|s18|swell": {
+      "tilt": 2.64,
+      "heave": 2.135,
+      "submerged": 0
+    },
+    "Regulatory|s20|calm": {
+      "tilt": 1.43,
+      "heave": 0.115,
+      "submerged": 0
+    },
+    "Regulatory|s20|chop": {
+      "tilt": 16.76,
+      "heave": 0.703,
+      "submerged": 0
+    },
+    "Regulatory|s20|working": {
+      "tilt": 9.01,
+      "heave": 1.849,
+      "submerged": 0
+    },
+    "Regulatory|s20|rough": {
+      "tilt": 10.56,
+      "heave": 3.446,
+      "submerged": 0
+    },
+    "Regulatory|s20|swell": {
+      "tilt": 2.11,
+      "heave": 2.257,
+      "submerged": 0
+    },
+    "Regulatory|s24|calm": {
+      "tilt": 1.65,
+      "heave": 0.119,
+      "submerged": 0
+    },
+    "Regulatory|s24|chop": {
+      "tilt": 15.01,
+      "heave": 0.677,
+      "submerged": 0
+    },
+    "Regulatory|s24|working": {
+      "tilt": 9.37,
+      "heave": 1.937,
+      "submerged": 0
+    },
+    "Regulatory|s24|rough": {
+      "tilt": 9.72,
+      "heave": 3.721,
+      "submerged": 0
+    },
+    "Regulatory|s24|swell": {
+      "tilt": 1.81,
+      "heave": 2.395,
+      "submerged": 0
+    },
+    "Regulatory|s30|calm": {
+      "tilt": 1.38,
+      "heave": 0.117,
+      "submerged": 0
+    },
+    "Regulatory|s30|chop": {
+      "tilt": 11.37,
+      "heave": 0.59,
+      "submerged": 0
+    },
+    "Regulatory|s30|working": {
+      "tilt": 12.36,
+      "heave": 2.031,
+      "submerged": 0
+    },
+    "Regulatory|s30|rough": {
+      "tilt": 9.94,
+      "heave": 4.155,
+      "submerged": 0
+    },
+    "Regulatory|s30|swell": {
+      "tilt": 1.73,
+      "heave": 2.437,
+      "submerged": 0
+    },
+    "Mooring|s12|calm": {
+      "tilt": 1.76,
+      "heave": 0.103,
+      "submerged": 0
+    },
+    "Mooring|s12|chop": {
+      "tilt": 17.01,
+      "heave": 0.709,
+      "submerged": 0
+    },
+    "Mooring|s12|working": {
+      "tilt": 12.9,
+      "heave": 1.508,
+      "submerged": 0
+    },
+    "Mooring|s12|rough": {
+      "tilt": 15.97,
+      "heave": 3.028,
+      "submerged": 0.299
+    },
+    "Mooring|s12|swell": {
+      "tilt": 3.77,
+      "heave": 1.949,
+      "submerged": 0
+    },
+    "Mooring|s18|calm": {
+      "tilt": 1.71,
+      "heave": 0.109,
+      "submerged": 0
+    },
+    "Mooring|s18|chop": {
+      "tilt": 22.76,
+      "heave": 0.726,
+      "submerged": 0
+    },
+    "Mooring|s18|working": {
+      "tilt": 11.93,
+      "heave": 1.7,
+      "submerged": 0
+    },
+    "Mooring|s18|rough": {
+      "tilt": 14.73,
+      "heave": 3.21,
+      "submerged": 0
+    },
+    "Mooring|s18|swell": {
+      "tilt": 3.18,
+      "heave": 2.087,
+      "submerged": 0
+    },
+    "Mooring|s20|calm": {
+      "tilt": 1.63,
+      "heave": 0.112,
+      "submerged": 0
+    },
+    "Mooring|s20|chop": {
+      "tilt": 20.26,
+      "heave": 0.708,
+      "submerged": 0
+    },
+    "Mooring|s20|working": {
+      "tilt": 10.42,
+      "heave": 1.815,
+      "submerged": 0
+    },
+    "Mooring|s20|rough": {
+      "tilt": 12.34,
+      "heave": 3.36,
+      "submerged": 0
+    },
+    "Mooring|s20|swell": {
+      "tilt": 2.5,
+      "heave": 2.196,
+      "submerged": 0
+    },
+    "Mooring|s24|calm": {
+      "tilt": 1.83,
+      "heave": 0.117,
+      "submerged": 0
+    },
+    "Mooring|s24|chop": {
+      "tilt": 17.26,
+      "heave": 0.68,
+      "submerged": 0
+    },
+    "Mooring|s24|working": {
+      "tilt": 10.54,
+      "heave": 1.899,
+      "submerged": 0
+    },
+    "Mooring|s24|rough": {
+      "tilt": 11.24,
+      "heave": 3.606,
+      "submerged": 0
+    },
+    "Mooring|s24|swell": {
+      "tilt": 2.12,
+      "heave": 2.373,
+      "submerged": 0
+    },
+    "Mooring|s30|calm": {
+      "tilt": 1.71,
+      "heave": 0.117,
+      "submerged": 0
+    },
+    "Mooring|s30|chop": {
+      "tilt": 14.46,
+      "heave": 0.61,
+      "submerged": 0
+    },
+    "Mooring|s30|working": {
+      "tilt": 13.58,
+      "heave": 1.994,
+      "submerged": 0
+    },
+    "Mooring|s30|rough": {
+      "tilt": 11.43,
+      "heave": 3.997,
+      "submerged": 0
+    },
+    "Mooring|s30|swell": {
+      "tilt": 2.01,
+      "heave": 2.421,
+      "submerged": 0
+    },
+    "Spar|s12|calm": {
+      "tilt": 0.01,
+      "heave": 0.124,
+      "submerged": 0
+    },
+    "Spar|s12|chop": {
+      "tilt": 0.12,
+      "heave": 0.762,
+      "submerged": 0
+    },
+    "Spar|s12|working": {
+      "tilt": 0.1,
+      "heave": 1.991,
+      "submerged": 0
+    },
+    "Spar|s12|rough": {
+      "tilt": 0.12,
+      "heave": 3.79,
+      "submerged": 0
+    },
+    "Spar|s12|swell": {
+      "tilt": 0.03,
+      "heave": 2.411,
+      "submerged": 0
+    },
+    "Spar|s18|calm": {
+      "tilt": 0.01,
+      "heave": 0.128,
+      "submerged": 0
+    },
+    "Spar|s18|chop": {
+      "tilt": 0.16,
+      "heave": 0.666,
+      "submerged": 0
+    },
+    "Spar|s18|working": {
+      "tilt": 0.1,
+      "heave": 2.133,
+      "submerged": 0
+    },
+    "Spar|s18|rough": {
+      "tilt": 0.12,
+      "heave": 4.378,
+      "submerged": 0
+    },
+    "Spar|s18|swell": {
+      "tilt": 0.03,
+      "heave": 2.468,
+      "submerged": 0
+    },
+    "Spar|s20|calm": {
+      "tilt": 0.01,
+      "heave": 0.127,
+      "submerged": 0
+    },
+    "Spar|s20|chop": {
+      "tilt": 0.16,
+      "heave": 0.585,
+      "submerged": 0
+    },
+    "Spar|s20|working": {
+      "tilt": 0.08,
+      "heave": 2.188,
+      "submerged": 0
+    },
+    "Spar|s20|rough": {
+      "tilt": 0.1,
+      "heave": 4.786,
+      "submerged": 0
+    },
+    "Spar|s20|swell": {
+      "tilt": 0.02,
+      "heave": 2.513,
+      "submerged": 0
+    },
+    "Spar|s24|calm": {
+      "tilt": 0.01,
+      "heave": 0.119,
+      "submerged": 0
+    },
+    "Spar|s24|chop": {
+      "tilt": 0.13,
+      "heave": 0.48,
+      "submerged": 0
+    },
+    "Spar|s24|working": {
+      "tilt": 0.06,
+      "heave": 2.199,
+      "submerged": 0
+    },
+    "Spar|s24|rough": {
+      "tilt": 0.07,
+      "heave": 5.044,
+      "submerged": 0
+    },
+    "Spar|s24|swell": {
+      "tilt": 0.02,
+      "heave": 2.587,
+      "submerged": 0
+    },
+    "Spar|s30|calm": {
+      "tilt": 0.01,
+      "heave": 0.101,
+      "submerged": 0
+    },
+    "Spar|s30|chop": {
+      "tilt": 0.1,
+      "heave": 0.371,
+      "submerged": 0
+    },
+    "Spar|s30|working": {
+      "tilt": 0.06,
+      "heave": 2.088,
+      "submerged": 0
+    },
+    "Spar|s30|rough": {
+      "tilt": 0.06,
+      "heave": 5.309,
+      "submerged": 0
+    },
+    "Spar|s30|swell": {
+      "tilt": 0.01,
+      "heave": 2.702,
+      "submerged": 0
+    }
+  }
+}
