@@ -136,6 +136,18 @@ namespace HiddenHarbours.Player
                  "are in front of. 0 makes the vault a flat slide.")]
         [SerializeField, Min(0f)] private float _boardVaultHopMeters = 0.35f;
 
+        [Header("The one interact VERB (M2-39 — the seam, not a new key)")]
+        [Tooltip("Offer the registered-candidate verb at all. Off restores the pre-seam behaviour exactly " +
+                 "(E is only board / helm / step ashore), which is both the A/B and the escape hatch. It " +
+                 "makes no difference whatever with an empty registry: the verb is consulted LAST, so " +
+                 "nothing it does can displace a transition the switcher would have made.")]
+        [SerializeField] private bool _interactVerb = true;
+        [Tooltip("Full width, in degrees, of the forward arc used for candidates that require facing — " +
+                 "180 means the half-plane you are looking at. Only candidates that ask for facing are " +
+                 "affected; a fixture you operate by standing at it ignores this entirely.")]
+        [SerializeField, Range(0f, 360f)] private float _interactArcDegrees =
+            InteractResolver.DefaultFacingArcDegrees;
+
         public ControlMode Mode { get; private set; } = ControlMode.OnFoot;
 
         private Text _hint;
@@ -350,7 +362,65 @@ namespace HiddenHarbours.Player
             if (Mode == ControlMode.OnDeck && !WithinHelmReach() && CanStepAshore()
                 && BeginBoardingMove(BoardingMoveKind.Disembarking)) return true;
 
-            return TryInteract();
+            if (TryInteract()) return true;
+
+            // ...and only then, the registry (M2-39). See TryInteractCandidate for why LAST.
+            return TryInteractCandidate();
+        }
+
+        // ---- the one interact VERB (M2-39) --------------------------------------------------
+
+        /// <summary>
+        /// Hand the press to the nearest/highest-priority registered <see cref="IInteractable"/>, if there
+        /// is one. This is where the M2-39 seam actually meets a key.
+        ///
+        /// <para><b>Why the verb is consulted LAST, after every branch above.</b> The alternative — resolve
+        /// candidates first — is more expressive and it is what the seam should eventually become, but it
+        /// can silently take the press away from boarding, taking the helm, or stepping ashore, and those
+        /// are the three things the player cannot afford to lose. Consulting last makes the change
+        /// provably non-regressive: <b>every</b> transition the switcher would have made, it still makes,
+        /// on the same press, before the registry is even looked at. What the verb gets is the presses
+        /// that used to do nothing at all.</para>
+        ///
+        /// <para><b>The cost of that choice, stated plainly.</b> Standing at a registered candidate with a
+        /// boardable boat inside <see cref="_boardReach"/>, E boards rather than working the candidate —
+        /// step a metre off the boat and it is yours again. That is legible, but it is a policy call and
+        /// not obviously the right one for a thing lying at your feet; the correct end state is that
+        /// boarding registers as a candidate too and the resolver arbitrates it against the rest by
+        /// distance, priority and FACING, which is what a facing-aware verb is for. Flagged for
+        /// lead-architect: <see cref="InteractPriority"/> already carries the ladder that ordering would
+        /// need, and the switcher's own reach/priority would be its rung.</para>
+        ///
+        /// <para><b>At the helm, nothing can resolve.</b> <see cref="TryInteract"/>'s default arm always
+        /// returns true (E at the helm steps back onto the deck, unconditionally), so this is unreachable
+        /// in <see cref="ControlMode.Aboard"/>. <see cref="InteractContext.AtHelm"/> exists in the contract
+        /// so the enum stays append-only when that changes; today a candidate declaring it can never be
+        /// reached and should not expect to be.</para>
+        /// </summary>
+        private bool TryInteractCandidate()
+            => _interactVerb && InteractVerb.TryPerform(ActorNow(), _interactArcDegrees);
+
+        /// <summary>
+        /// The actor, as Core sees it: where the player is standing, which way they face, and which of the
+        /// three places they are in.
+        ///
+        /// <para><b>Facing is reported ONLY on foot, and that is deliberate.</b> The four-way facing lives
+        /// on <see cref="PlayerWalkController"/>, which is disabled while aboard — on deck the fisher is
+        /// driven by <see cref="DeckWalkController"/>, which carries no facing at all. Rather than hand
+        /// back a stale heading from a disabled component (which would make deck candidates unreachable
+        /// from whichever direction the fisher happened to be facing when she boarded), we report
+        /// <see cref="Vector2.zero"/> — the contract's "unknown", under which the arc test is skipped and
+        /// every direction is forward. Deck candidates therefore behave as proximity-only until the deck
+        /// walker grows a facing; that is honest, and it fails open rather than closed.</para>
+        /// </summary>
+        private InteractActor ActorNow()
+        {
+            Transform p = Player;
+            Vector2 pos = p != null ? (Vector2)p.position : Vector2.zero;
+            Vector2 facing = _playerWalk != null && Mode == ControlMode.OnFoot
+                ? PlayerWalkController.FacingUnitVector(_playerWalk.CurrentFacing)
+                : Vector2.zero;
+            return InteractActor.For(pos, facing, Mode);
         }
 
         // ---- rope: hold / root (the mooring mechanic — the owner's refinement) --------------
@@ -1276,6 +1346,15 @@ namespace HiddenHarbours.Player
             _helmReach = helmReach;
         }
 
+        /// <summary>Tune the one interact VERB in one call (tests / editor feel sessions). Passing
+        /// <paramref name="enabled"/> false restores the pre-M2-39 behaviour exactly — E is board / helm /
+        /// step ashore and nothing else, whatever is registered.</summary>
+        public void ConfigureInteractVerb(bool enabled, float arcDegrees)
+        {
+            _interactVerb = enabled;
+            _interactArcDegrees = Mathf.Clamp(arcDegrees, 0f, 360f);
+        }
+
         /// <summary>Tune the boarding MOVE in one call (tests / editor feel sessions). Passing
         /// <paramref name="enabled"/> false restores the instant reposition exactly, which is both the
         /// owner's A/B and the shape every pre-move caller of <see cref="TryInteract"/> still gets.</summary>
@@ -1308,8 +1387,13 @@ namespace HiddenHarbours.Player
 
         /// <summary>Torn down mid-move (scene teardown, a disabled rig): call the move off so it can hand
         /// back the interact key. A held <see cref="InteractionGate"/> outliving its holder is the one way
-        /// this could wedge interaction off for the whole game.</summary>
-        private void OnDisable() => CancelBoardingMove(restorePosition: true);
+        /// this could wedge interaction off for the whole game. The interact candidate goes with it, for
+        /// the same reason — nothing else republishes it, so a highlight would simply stay lit.</summary>
+        private void OnDisable()
+        {
+            CancelBoardingMove(restorePosition: true);
+            InteractVerb.ClearCandidate();
+        }
 
         /// <summary>
         /// <b>THE PLAYER IS SCREEN-UPRIGHT WHENEVER THEY RIDE A BOAT</b> — in every mode, not only while
@@ -1357,7 +1441,9 @@ namespace HiddenHarbours.Player
             // The SHELL is holding the world — the title page is up, or the pause menu is (M1 §7.8).
             // Stronger than the interaction gate below: time itself is stopped, so the controls are parked
             // rather than merely deaf. A pause you can sail through is not a pause.
-            if (ApplyShellInputBlock()) return;
+            // Every early-out below drops the interact candidate as well as the hint: a diegetic highlight
+            // left burning on a thing you can no longer act on teaches the player a lie (M2-39).
+            if (ApplyShellInputBlock()) { InteractVerb.ClearCandidate(); return; }
 
             // A boarding move owns the frame while it runs, and is ticked BEFORE the gate check because
             // it is holding that gate itself (see the boarding-move block above). Scaled time, so a pause
@@ -1365,6 +1451,7 @@ namespace HiddenHarbours.Player
             if (IsBoardingMove)
             {
                 if (_hint != null && _hint.enabled) _hint.enabled = false;
+                InteractVerb.ClearCandidate();
                 TickBoardingMove(Time.deltaTime);
                 return;
             }
@@ -1375,6 +1462,7 @@ namespace HiddenHarbours.Player
             if (InteractionGate.IsBlocked)
             {
                 if (_hint != null && _hint.enabled) _hint.enabled = false;
+                InteractVerb.ClearCandidate();
                 return;
             }
 
@@ -1383,6 +1471,11 @@ namespace HiddenHarbours.Player
             // Q holds/roots the rope of a moored boat you're standing by (the mooring interaction).
             if (kb != null && kb.qKey.wasPressedThisFrame) ToggleMooring();
             UpdateHint();
+
+            // What the verb WOULD act on, republished only when it changes — the signal the diegetic
+            // outline rides (M2-39; no screen-space prompt). Resolved after the press so the highlight
+            // reflects the world the press left behind, not the one it found.
+            if (_interactVerb) InteractVerb.PublishCandidate(ActorNow(), _interactArcDegrees);
         }
 
         // ---- the shell's hold on the world (M1 §7.8) ----------------------------------------

@@ -150,6 +150,22 @@ namespace HiddenHarbours.Player
         }
 
         /// <summary>
+        /// The facing as a world-space UNIT VECTOR — the form the interact verb's forward-arc test needs
+        /// (<see cref="InteractResolver"/>), where <see cref="Facing"/> the enum means nothing.
+        ///
+        /// <para>Screen axes, matching the enum's own meaning and the sheet rows it selects: Down is −Y,
+        /// Up is +Y. Kept here rather than in Core because the four-way facing is this controller's model
+        /// of the fisher, and Core may not name it (rule 4) — Core is handed the vector, not the enum.</para>
+        /// </summary>
+        public static Vector2 FacingUnitVector(Facing facing) => facing switch
+        {
+            Facing.Up => Vector2.up,
+            Facing.Left => Vector2.left,
+            Facing.Right => Vector2.right,
+            _ => Vector2.down,   // Down is the enum's default and the sheet's row 0.
+        };
+
+        /// <summary>
         /// Which SHEET ROW a facing draws from. Down/Up have their own rows (0, 1); Left and Right BOTH
         /// draw the single Side row (2) — Right is the mirror (see <see cref="FlipXFor"/>). This is what
         /// lets the art carry only three facings while the screen shows four.
