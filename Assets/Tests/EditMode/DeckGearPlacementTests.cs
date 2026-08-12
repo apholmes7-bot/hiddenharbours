@@ -63,8 +63,44 @@ namespace HiddenHarbours.Tests.EditMode
 
             // and it still tracks the deck
             Assert.AreEqual(270f, DeckGearPlacement.OperatorHeading(90f, 0, HaulerStation), Tol);
-            Assert.AreEqual(225f, DeckGearPlacement.OperatorHeading(0f, gearDir: 1, HaulerStation), Tol,
-                "the gear's own step composes with the turn: (1 + 4) steps × 45° = 225°");
+            Assert.AreEqual(135f, DeckGearPlacement.OperatorHeading(0f, gearDir: 1, HaulerStation), Tol,
+                "the gear's own step composes with the turn, and the facing term is SUBTRACTED so the " +
+                "bearing turns the same way RotateOnDeck turns an offset: −(1 + 4) steps × 45° = 135°");
+        }
+
+        /// <summary>
+        /// <b>One <c>dir</c>, one direction: the stand offset and the operator's bearing turn the SAME
+        /// way.</b> They used not to. <see cref="DeckGearPlacement.RotateOnDeck"/> is a counter-clockwise
+        /// rotation of the ground plane and a compass bearing runs clockwise from North, so while
+        /// <see cref="DeckGearPlacement.OperatorHeading"/> ADDED its facing term the two were mirror
+        /// images about the fore-and-aft axis — the same <c>dir</c> that swung a stand to port pointed
+        /// its operator to starboard.
+        ///
+        /// <para>This is the property test for the corrected sign, and it is worth having as well as the
+        /// worked hauler case below because it cannot be satisfied by a lucky constant: it walks all
+        /// eight bearings and checks the offset a station stands at agrees, in direction, with the
+        /// bearing the same station's operator is given.</para>
+        /// </summary>
+        [Test]
+        public void TheStandOffsetAndTheOperatorBearingTurnTheSameWay()
+        {
+            // A station standing forward of its gear and facing it — turn 4, so the operator's bearing
+            // and the direction from operator to gear are one and the same thing at every dir.
+            var st = new DeckGearPlacement.Station(new Vector3(0f, 0.5f, 0f), 4, 1f, new Vector2(0.6f, 0.6f));
+            Vector3 mount = new Vector3(2f, -1f, 0.5f);
+
+            for (int dir = 0; dir < DeckGearPlacement.Facings; dir++)
+            {
+                Vector3 stand = DeckGearPlacement.OperatorStand(mount, dir, st);
+
+                // Where the gear actually is, as seen from the feet — a compass bearing, so atan2(x, y).
+                Vector2 toGear = new Vector2(mount.x - stand.x, mount.y - stand.y);
+                float wanted = DeckGearPlacement.Wrap360(Mathf.Atan2(toGear.x, toGear.y) * Mathf.Rad2Deg);
+
+                Assert.AreEqual(wanted, DeckGearPlacement.OperatorHeading(0f, dir, st), 1e-3f,
+                    $"dir {dir}: the operator must be pointed at the gear they were placed beside. A " +
+                    "mismatch here is the two rotations disagreeing in handedness again.");
+            }
         }
 
         [Test]
