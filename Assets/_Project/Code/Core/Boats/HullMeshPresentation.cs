@@ -157,8 +157,19 @@ namespace HiddenHarbours.Core
         /// Install (or re-configure in place) a mesh-hull renderer on <paramref name="host"/> from a
         /// baked def. Returns null — with a logged reason — when the def is unusable, so the caller
         /// can fall back to the sprite path rather than field an invisible boat.
+        ///
+        /// <para><paramref name="scheme"/> repaints her: a baked ramp table that stands in for the
+        /// def's own, leaving the mesh, the silhouette and the draw call untouched (see
+        /// <see cref="HullPaintSchemeDef"/>). <b>Null is the contract, not an omission</b> — no
+        /// scheme means the def's own ramps, byte for byte, so an unpainted boat renders exactly as
+        /// she did before paint existed. An unusable scheme is REFUSED with a log and the def's ramps
+        /// stand; a wrong repaint must never cost the hull.</para>
+        ///
+        /// <para>Defaulted rather than overloaded so the many callers that have no opinion about
+        /// paint keep their two-argument call, and the one that does (the skinner, from the boat's
+        /// own visual) passes a third.</para>
         /// </summary>
-        IHullMeshRenderer Install(GameObject host, HullMeshDef def);
+        IHullMeshRenderer Install(GameObject host, HullMeshDef def, HullPaintSchemeDef scheme = null);
 
         /// <summary>
         /// Bolt an articulated fitting onto a hull already installed on <paramref name="host"/>.

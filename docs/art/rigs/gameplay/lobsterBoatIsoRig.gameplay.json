@@ -1,6 +1,6 @@
 {
   "rig": "lobsterBoatIsoRig.js",
-  "derivedFromRigSha256": "fd3ab95c98b1105103d6554ef78b4a6445001d6c9a9b15ace1e395146772e5fc",
+  "derivedFromRigSha256": "08278a2017993c2d2c3ea5fbede808b39359440aafb51fa28eef4ecc3d853bd5",
   "generated": "2026-07-22",
   "frame": {
     "units": "m",
@@ -80,6 +80,8 @@
     "hauling block + roller (line 320-322) \u2014 hauling gear, not a tie-off"
   ],
   "_notes": [
-    "cockpit obstructions (not modelled as polygon holes): flush deck hatches (line 196-205) are walk-over; hardtop posts land on the washboard caps at y=-1.43 (line 290-293)"
+    "cockpit obstructions (not modelled as polygon holes): flush deck hatches (line 196-205) are walk-over; hardtop posts land on the washboard caps at y=-1.43 (line 290-293)",
+    "2026-08-12 paint kit: derivedFromRigSha256 re-pinned fd3ab95c98b1 -> 08278a201799. PROVENANCE ONLY — not one number below changed, and that was measured before the pin was moved, not assumed from the drop's README. Against the pre-paint rig, in the repo's own ClearScript V8: the 676-face list is byte-identical including every vertex to 1e-9; HELM, HAULER and TUBS are identical; helmSeat/haulerMount/tubMounts/navMounts return identical values at all 8 facings; and all 8 rendered facings are byte-identical at 456x420x4. The kit adds a paint axis (12 schemes) and paint moves no vertex, so every input this sidecar is derived from is unchanged.",
+    "⚠️ THIS PIN IS OF THE WORKING-TREE BYTES, NOT THE GIT BLOB. No .gitattributes rule covers *.js and core.autocrlf is true on Windows, so the file is stored LF and checked out CRLF — and the guard hashes what is on disk. The same file is therefore 08278a201799 here and 5316f053bc6e on an LF checkout. The previous pin fd3ab95c98b1 was likewise the CRLF form, so this follows the established convention rather than changing it. If you re-pin from a hash you computed on an LF copy (a zip, a download, git show), the guard will trip on every Windows checkout: take the hash from the file after `git checkout`, not before."
   ]
 }

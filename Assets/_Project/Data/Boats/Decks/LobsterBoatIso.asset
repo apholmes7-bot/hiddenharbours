@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: deck.lobster_boat_iso
   SourceSidecar: docs/art/rigs/gameplay/lobsterBoatIsoRig.gameplay.json
   SourceRig: docs/art/rigs/lobsterBoatIsoRig.js
-  DerivedFromRigSha256: fd3ab95c98b1105103d6554ef78b4a6445001d6c9a9b15ace1e395146772e5fc
+  DerivedFromRigSha256: 08278a2017993c2d2c3ea5fbede808b39359440aafb51fa28eef4ecc3d853bd5
   LoaMeters: 12
   Areas:
   - Id: cockpit_sole
@@ -57,8 +57,8 @@ MonoBehaviour:
     - {x: -0.958, y: 4.702}
     - {x: -1.091, y: 4.277}
     - {x: -1.224, y: 3.85}
-    HeightPlane: {x: 0, y: 0.24903126, z: 1.1590879}
-    HeightResidualMax: 0.0075326487
+    HeightPlane: {x: 0, y: 0.24903125, z: 1.1590879}
+    HeightResidualMax: 0.007532835
     Bounds: {x: -1.224, y: 3.85, z: 1.224, w: 6.318}
   - Id: washboard_port
     Kind: 1
@@ -73,28 +73,28 @@ MonoBehaviour:
     - {x: -1.81, y: 2.4}
     - {x: -1.474, y: 3.6}
     - {x: -1.0502958, y: 3.4813628}
-    - {x: -1.3810401, y: 2.3020542}
+    - {x: -1.38104, y: 2.3020542}
     - {x: -1.58635, y: 1.1382829}
-    - {x: -1.7107899, y: -0.026352609}
-    - {x: -1.7260007, y: -1.1992667}
-    - {x: -1.7062693, y: -2.3846095}
+    - {x: -1.7107899, y: -0.026352573}
+    - {x: -1.7260005, y: -1.1992667}
+    - {x: -1.7062691, y: -2.3846095}
     - {x: -1.6433438, y: -3.5656385}
-    - {x: -1.5221505, y: -4.7397075}
-    - {x: -1.3164644, y: -5.924854}
-    HeightPlane: {x: 0.30481058, y: 0.09457934, z: 2.0889137}
-    HeightResidualMax: 0.18198083
+    - {x: -1.5221504, y: -4.7397075}
+    - {x: -1.3164645, y: -5.924854}
+    HeightPlane: {x: 0.30481064, y: 0.09457934, z: 2.088914}
+    HeightResidualMax: 0.18198073
     Bounds: {x: -2.166, y: -6, z: -1.0502958, w: 3.6}
   - Id: washboard_starboard
     Kind: 1
     Outline:
-    - {x: 1.3164644, y: -5.924854}
-    - {x: 1.5221505, y: -4.7397075}
+    - {x: 1.3164645, y: -5.924854}
+    - {x: 1.5221504, y: -4.7397075}
     - {x: 1.6433438, y: -3.5656385}
-    - {x: 1.7062693, y: -2.3846095}
-    - {x: 1.7260007, y: -1.1992667}
-    - {x: 1.7107899, y: -0.026352609}
+    - {x: 1.7062691, y: -2.3846095}
+    - {x: 1.7260005, y: -1.1992667}
+    - {x: 1.7107899, y: -0.026352573}
     - {x: 1.58635, y: 1.1382829}
-    - {x: 1.3810401, y: 2.3020542}
+    - {x: 1.38104, y: 2.3020542}
     - {x: 1.0502958, y: 3.4813628}
     - {x: 1.474, y: 3.6}
     - {x: 1.81, y: 2.4}
@@ -105,8 +105,8 @@ MonoBehaviour:
     - {x: 2.082, y: -3.6}
     - {x: 1.958, y: -4.8}
     - {x: 1.75, y: -6}
-    HeightPlane: {x: -0.30481058, y: 0.09457934, z: 2.0889137}
-    HeightResidualMax: 0.18198083
+    HeightPlane: {x: -0.30481064, y: 0.09457934, z: 2.088914}
+    HeightResidualMax: 0.18198073
     Bounds: {x: 1.0502958, y: -6, z: 2.166, w: 3.6}
   Cleats:
   - Id: bow_1
@@ -118,5 +118,5 @@ MonoBehaviour:
   - Id: stern_star
     Type: cleat
     PositionMeters: {x: 1.58, y: -5.72, z: 1.22}
-  WalkCenter: {x: 0, y: 0.159}
+  WalkCenter: {x: 0, y: 0.15899992}
   WalkHalfExtents: {x: 1.747, y: 6.159}

@@ -74,6 +74,18 @@ namespace HiddenHarbours.Tools.RigBaking
                                         AzimuthConvention.CounterClockwise),
 
                 // The reason Phase 1 exists: Tier 3, ~12.0 m LOA, and no baked art anywhere.
+                //
+                // ⚠️ SHE CARRIES A PAINT AXIS (kit drop 2026-08-12). Twelve named schemes, and her
+                // `MATS` is no longer a const — it is `matsFor(id)`, so the mesh extractor reads her
+                // table through a Reconstructions entry (`matsFor('gelcoat').MATS`), exactly as it
+                // does for the punt and the console. Still ONE file and NO prerequisites: the paint
+                // is generated inside her own closure (OKLCH), not delegated to another rig, so
+                // nothing has to be loaded before her and load order cannot go silently wrong here.
+                //
+                // The convention below is unchanged, and was RE-MEASURED rather than inherited: her
+                // 8 facings render byte-identical to the pre-paint rig (456×420×4, V8 harness), so
+                // any measurement over her pixels — the azimuth probe included — necessarily returns
+                // the answer it returned before paint existed.
                 ["lobsterBoat"] = new RigEntry($"{RigFolder}/lobsterBoatIsoRig.js", "LobsterBoatIso",
                                                AzimuthConvention.CounterClockwise),
 

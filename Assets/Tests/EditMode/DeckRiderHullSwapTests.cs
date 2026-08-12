@@ -84,7 +84,8 @@ namespace HiddenHarbours.Tests.EditMode
         private sealed class FakeService : IHullMeshPresentationService
         {
             public readonly FakeRenderer Renderer = new FakeRenderer();
-            public IHullMeshRenderer Install(GameObject host, HullMeshDef def) => Renderer;
+            public IHullMeshRenderer Install(GameObject host, HullMeshDef def,
+                                             HullPaintSchemeDef scheme = null) => Renderer;
             public IHullPropRenderer AttachProp(GameObject host, HullPropMeshDef def, string slot) => null;
             public void DetachProps(GameObject host) { }
             public void DetachProp(GameObject host, string slot) { }

@@ -29,7 +29,7 @@ namespace HiddenHarbours.Art
         }
 
         /// <inheritdoc/>
-        public IHullMeshRenderer Install(GameObject host, HullMeshDef def)
+        public IHullMeshRenderer Install(GameObject host, HullMeshDef def, HullPaintSchemeDef scheme = null)
         {
             if (host == null) return null;
             if (def == null || !def.IsUsable())
@@ -41,9 +41,18 @@ namespace HiddenHarbours.Art
                 return null;
             }
 
+            // A refused repaint costs the paint, never the boat: log it and stand on the def's own
+            // ramps, which are a complete, shipped look on their own.
+            if (scheme != null && !scheme.IsUsableFor(def))
+            {
+                Debug.LogError($"[IsoFacetHullPresentationService] '{host.name}': paint scheme refused — " +
+                               $"{scheme.ExplainUnusableFor(def)}. Drawing '{def.Id}' in her own colours.");
+                scheme = null;
+            }
+
             var renderer = host.GetComponent<IsoFacetHullRenderer>();
             if (renderer == null) renderer = host.AddComponent<IsoFacetHullRenderer>();
-            renderer.Configure(ToSetup(def));
+            renderer.Configure(ToSetup(def, scheme));
             MakeReflective(renderer);
             MakeChurn(host, def);
             return renderer;
@@ -240,15 +249,25 @@ namespace HiddenHarbours.Art
             if (group != null) Destroy(group);
         }
 
-        /// <summary>The def, converted to the renderer's runtime setup — plain copies, no rescaling.</summary>
-        public static IsoFacetHullSetup ToSetup(HullMeshDef def)
+        /// <summary>
+        /// The def, converted to the renderer's runtime setup — plain copies, no rescaling.
+        ///
+        /// <para><paramref name="scheme"/>, when given and usable, supplies the ramp table INSTEAD of
+        /// the def's. That is the entire repaint: everything else on the setup — mesh, light, gain,
+        /// bias, dither, keyline, cell — comes from the def either way, because a scheme is a colour
+        /// and nothing else. A null or unusable scheme yields a setup byte-identical to the
+        /// one-argument call, which is the A/B contract <c>HullPaintSchemeApplicationTests</c> pins.</para>
+        /// </summary>
+        public static IsoFacetHullSetup ToSetup(HullMeshDef def, HullPaintSchemeDef scheme = null)
         {
-            var ramps = new Color32[def.Ramps.Length][];
-            var offsets = new int[def.Ramps.Length];
-            for (int m = 0; m < def.Ramps.Length; m++)
+            var table = scheme != null && scheme.IsUsableFor(def) ? scheme.Ramps : def.Ramps;
+
+            var ramps = new Color32[table.Length][];
+            var offsets = new int[table.Length];
+            for (int m = 0; m < table.Length; m++)
             {
-                ramps[m] = def.Ramps[m].Colors;
-                offsets[m] = def.Ramps[m].Offset;
+                ramps[m] = table[m].Colors;
+                offsets[m] = table[m].Offset;
             }
 
             return new IsoFacetHullSetup

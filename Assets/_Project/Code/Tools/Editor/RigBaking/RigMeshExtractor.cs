@@ -305,6 +305,35 @@ namespace HiddenHarbours.Tools.RigBaking
                     ["MATS"] = "palette({}).mats",
                 },
 
+                // ---- the lobster boat's paint kit (drop of 2026-08-12) ---------------------------
+                // The third hull to lose its `MATS` const to a paint axis, and the first where the
+                // swap was adjudicated in pixels BEFORE it landed. Her rig now carries 12 named
+                // schemes and derives the table per render (`matsFor(id)` → {MATS, RINDEX}), so the
+                // ordinary `MATS:MATS` widening fails exactly as it did on the punt and the console
+                // ("MATS is not defined") and the first mesh hull in the game stops baking.
+                //
+                // `matsFor('gelcoat')` is the rig's own resolver at its own `defaultPaint`, so this
+                // pins the bake to the WHITE GELCOAT scheme and reads the table the rig itself would
+                // use — the same move as the two above, not a transcription.
+                //
+                // MEASURED, not argued (V8 harness, 2026-08-12, against the pre-paint rig):
+                //   · `matsFor('gelcoat').MATS` ≡ the old `MATS` const — all 11 entries, same KEY
+                //     ORDER (hull,boot,cream,deck,grip,glas,blue,steel,iron,blk,dark), same ramps,
+                //     same offsets (blk −1, dark −2). Order is load-bearing here: the face packer
+                //     resolves an unknown material to index 0.
+                //   · Her 676-face list is byte-identical with and without paint — vertices to 1e-9.
+                //     Paint moves no vertex, so one mesh serves every scheme.
+                //   · All 8 facings render byte-identical to the pre-paint rig at 456×420×4.
+                //   · The committed LobsterBoatIsoHullMesh.asset already holds exactly these 11
+                //     ramps, so re-baking her is a no-op on every baker-written field.
+                // That chain is what makes "unset scheme = today's boat" a fact rather than a hope;
+                // HullPaintSchemeBakeTests pins it, and the scheme assets are baked THROUGH this
+                // same resolver so no ramp is ever transcribed into C#.
+                ["lobsterBoatIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
+                {
+                    ["MATS"] = "matsFor('gelcoat').MATS",
+                },
+
                 // The skiff motor is a LAYER, not a hull, so its export omits two things every hull
                 // rig publishes and the extractor reads unconditionally: the pixel scale and the bake
                 // elevation. Both exist under the rig's own names (`S`, `DEFAULT_ELEV`) — this is a
