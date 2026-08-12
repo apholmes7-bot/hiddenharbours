@@ -148,6 +148,44 @@ namespace HiddenHarbours.Boats
             _baseCached = false;
         }
 
+        /// <summary>
+        /// Re-seat the FLOAT GEOMETRY for a hull that is not the 1 m lobster float this component was
+        /// first tuned for.
+        ///
+        /// <para>⚠️ <b>Added so the navigation marks could reuse this bob rather than grow a second
+        /// one</b> (<see cref="NavBuoyDef"/>). The defaults above describe a 16×32 cork; a lit steel
+        /// cardinal is 6.6 m tall, pivots ON its waterline rather than at its centre, and — per the
+        /// kit's own hydrostatics — follows the wave slope about a fifth as much. Left on the cork's
+        /// numbers a nav mark bobs like a toy and puts its waterline through the middle of its tower.
+        /// Every value here is DERIVED from the bake or the rig, never eyeballed.</para>
+        ///
+        /// <para>Call after <see cref="Configure"/> and before the first <c>LateUpdate</c>; the
+        /// response tunables (swamp mode, tint, foam) are deliberately untouched, so a nav buoy still
+        /// ducks under a crest the way the trap buoys do.</para>
+        /// </summary>
+        /// <param name="spriteHeightMeters">Total painted height of the sprite in metres — what the
+        /// crest climb is measured against.</param>
+        /// <param name="floatLineFraction">Where the still waterline sits up the sprite (0 base ..
+        /// 1 top). For the nav sheets this is the sprite's own normalised pivot y.</param>
+        /// <param name="slopeFollow">The rig's <c>BM/(BM+BG)</c> for this hull: how much of the wave
+        /// the body actually follows. Scales the bob off the cork's default.</param>
+        public void ConfigureFloatGeometry(float spriteHeightMeters, float floatLineFraction,
+                                           float slopeFollow)
+        {
+            _buoyHeightMeters = Mathf.Max(0.05f, spriteHeightMeters);
+            _floatLineFrac = Mathf.Clamp01(floatLineFraction);
+
+            // The cork's _bobPerMeter is authored for a can-like follow (~0.63). Scale off that so a
+            // stiff steel hull rises less, and clamp the lift to the hull's own freeboard rather than
+            // the cork's 0.6 — a 3 m mark may legitimately lift further than a pot float.
+            const float CorkFollow = 0.63f;
+            float follow = Mathf.Clamp01(slopeFollow <= 0f ? CorkFollow : slopeFollow);
+            _bobPerMeter = _bobPerMeter * (follow / CorkFollow);
+            _maxBob = Mathf.Max(_maxBob, spriteHeightMeters * 0.25f);
+
+            _baseCached = false;
+        }
+
         private void Reset() => _renderer = GetComponentInChildren<SpriteRenderer>();
 
         private void Awake()
