@@ -1,0 +1,10 @@
+# The drop shipped its own copy of the shared turntable, and `harness.html` expects it beside
+# fuelRig.js. It is BYTE-IDENTICAL to docs/art/rigs/deck-loop-kit/Art/isoSolid.js (LF-normalised
+# sha256 f7fc9db510b0346dea568c43dc7378f1a12fd71ee8f5a7653e78377812b792bd on both; the 216-byte
+# size difference is one \r per line, repo CRLF vs drop LF).
+#
+# A second copy of a REGISTERED global's source is exactly the drift the repo's no-edit rule exists
+# to prevent — edit one and the other silently keeps rendering the old art. So the catalog points
+# at the deck-loop copy and declares it as this kit's prerequisite, and materialising this one
+# locally to open harness.html (see IMPORT.md) must never be committed.
+isoSolid.js

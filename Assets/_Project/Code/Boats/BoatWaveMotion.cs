@@ -122,6 +122,53 @@ namespace HiddenHarbours.Boats
         [Tooltip("Hard cap on the squash (fraction of the visual's base y-scale). Owner feel pass: doubled from 0.06 — past ~0.15 the sprite visibly 'breathes'.")]
         [SerializeField] private float _maxPitchSquash = 0.12f;
 
+        // ---- the MESH hull's ordinary-sea head-sea pitch (owner report 2026-08-11: "the fore/aft
+        // rocking reads as minimal") ------------------------------------------------------------
+        //
+        // The four knobs ABOVE are the SPRITE path's: a screen-vertical offset plus a squash, applied
+        // to the transform. A mesh hull never sees them — DriveRockFrame stops applying the transform
+        // roll/pitch/bob entirely ("the hull owns the rock"), so its whole ordinary-sea pitch is the
+        // rig's CANNED cycle, and that cycle has two properties the owner is reading:
+        //
+        //   1. It is roll-DOMINANT by authorship. Every rig declares pitchA ≈ 0.55–0.60 × rollA
+        //      (dory 3.0/5.0, punt 2.4/4.2, sport skiff 2.2/3.8, lobster boat 1.6/2.8, side dragger
+        //      1.1/2.0, tanker 0.40/0.85). At the fleet's 40° bake a dory's 3° over her 2.25 m
+        //      half-length lifts the stem 2.25·sin3°·cos40° ≈ 0.090 m ≈ 2.9 px; the lobster boat's
+        //      1.6° over 6.0 m ≈ 4.1 px. A ~6–8 px see-saw on a hull 150–370 px long.
+        //   2. It is heading-BLIND. RockPose is roll = rollA·sin(θ), pitch = pitchA·cos(θ) — a fixed
+        //      corkscrew that draws the same pitch bows-on to the swell as beam-on to it.
+        //
+        // The honest heading-decomposed attitude the sea deserves DOES exist (the B2.5 storm extras
+        // below, at MeshStormPitchDegreesPerSlope) — but it is multiplied by StormBlend01, which is
+        // exactly 0 below StormStartSeaState01 = 0.4. So in ordinary seas it never reaches the pose.
+        //
+        // These two fields open that channel below the storm gate, and NOTHING ELSE: the term rides
+        // cos() of the very phase the canned pitch is already posed at, so the sum is pure AMPLITUDE
+        // modulation of the existing waveform — no new frequency content for the smoothness pins to
+        // catch (MeshRockSmoothness), which is the trap the first B2.5 cut fell into by driving the
+        // extras from a different frequency mix.
+        //
+        // ⚠️ The rig's own RockPitchDegrees is NOT the knob to turn: HullMeshDef files it under
+        // "Pose facts (per-artwork; measured or read off the rig — NEVER tuned)". Raising it would
+        // falsify the transcription the golden master is built on. Per-hull scaling instead comes
+        // from SeakeepingResponse.Response (BoatHullDef's own liveliness/mass factor, already in
+        // DriveRockFrame's hand) — a dory answers, a laden trader shrugs.
+        [Header("Mesh pitch (head sea → the hull's bow rides the face, below the storm gate)")]
+        [Tooltip("Degrees of MESH-hull pitch per unit of bow-axis wave slope, in ORDINARY seas — the " +
+                 "half the canned rock cycle cannot draw, because the cycle is heading-blind.\n\n" +
+                 "0 = OFF, and off is byte-identical to before this existed: the decomposition is not " +
+                 "even computed, and the pose is the canned cycle alone. That is the owner's A/B — " +
+                 "set it to 0 and the fleet pitches exactly as it shipped.\n\n" +
+                 "Scale: the shipped field's dominant slope runs ~0.1 in a working sea and ~0.5–1 in " +
+                 "a gale, so 14 (the storm channel's own tuned degrees-per-slope) adds ≈1.4° bows-on " +
+                 "to a moderate swell — roughly doubling a lobster boat's 1.6° canned pitch and making " +
+                 "it answer the heading. Scaled per hull by SeakeepingResponse and clamped below.")]
+        [SerializeField, Min(0f)] private float _meshHeadSeaPitchDegreesPerSlope = 0f;
+        [Tooltip("Hard cap on the ordinary-sea mesh pitch (degrees), before the storm extras add on " +
+                 "top. Caps the AMPLITUDE, never the instantaneous value — clipping the wave itself " +
+                 "would flat-top it and the smoothness metrics would read the harmonics as a pop.")]
+        [SerializeField, Min(0f)] private float _maxMeshHeadSeaPitchDegrees = 4f;
+
         [Header("Bob (the crest lifts the whole boat)")]
         [Tooltip("Screen-vertical lift (world units) per metre of wave height under the hull. The Default field's envelope tops out ~1.5 m in a full gale. Owner feel pass: doubled from 0.06.")]
         [SerializeField] private float _bobPerHeightMeter = 0.12f;
@@ -295,6 +342,10 @@ namespace HiddenHarbours.Boats
             {
                 hull.SetDisplacedHeaveMeters(0f);   // never a frozen ride either (draft is the driver's own gate)
                 hull.SetStormRock(1f, 0f, 0f);      // …and never a frozen storm pose (1/0/0 = the exact neutral)
+                // …and nobody left standing on a crest that is gone. A MESH hull ignores this by
+                // contract and goes on reporting the waterline her driver still draws her at, which
+                // is right: her picture did not move just because this component stopped ticking.
+                hull.SetDrawnRideMeters(0f);
             }
             _heaveWeight = default;
             RestoreVisual();
@@ -327,6 +378,7 @@ namespace HiddenHarbours.Boats
                 {
                     offHull.SetDisplacedHeaveMeters(0f);   // off = no ride either (the whole read is off)
                     offHull.SetStormRock(1f, 0f, 0f);      // off = no storm pose either (the exact neutral)
+                    offHull.SetDrawnRideMeters(0f);        // off = a passenger stands where they were
                 }
                 _heaveWeight = default;
                 RestoreVisual();      // 0 = off, and the visual sits exactly where it was built
@@ -661,7 +713,14 @@ namespace HiddenHarbours.Boats
                 {
                     phaseDegrees = DrawnDominantPhaseDegrees((Vector2)transform.position)
                                  + _crestFrameCalibrationDegrees;
-                    if (stormBlend > 0f)
+                    // THE ORDINARY-SEA HEAD-SEA PITCH (owner report 2026-08-11) rides the SAME
+                    // decomposition the storm extras do — so the block below now runs when EITHER
+                    // channel is live. At the shipped default (_meshHeadSeaPitchDegreesPerSlope 0)
+                    // the condition reduces to the old `stormBlend > 0f` exactly, so a calm sea
+                    // computes nothing it did not compute before (rule 7) and the pose is
+                    // bit-identical to before this existed.
+                    bool headSeaPitch = _meshHeadSeaPitchDegreesPerSlope > 0f;
+                    if (stormBlend > 0f || headSeaPitch)
                     {
                         WaveTrain dominant = field.Dominant;
                         float freqScale = DisplacedSea.TryGet(out DisplacedSeaState sea)
@@ -688,9 +747,26 @@ namespace HiddenHarbours.Boats
                             slopeEnvelope * bowShare * storm.MeshStormPitchDegreesPerSlope * hullScale,
                             -storm.MeshStormMaxPitchDegrees, storm.MeshStormMaxPitchDegrees);
 
+                        // The ordinary-sea head-sea pitch: the same slope × bow-share × per-hull
+                        // response the storm channel uses, on its OWN serialized degrees-per-slope
+                        // and cap, and — the point — NOT multiplied by stormBlend. So a hull answers
+                        // the swell she is actually pointing into at every sea state, and keeps
+                        // answering as the storm channel fades up on top of her.
+                        //
+                        // It is an AMPLITUDE, added to a pitch that already rides cos(phaseDegrees):
+                        // MeshHullDriver poses the canned cycle as RockPitchDegrees·cos(phase) and
+                        // adds this straight onto it, so the drawn pitch stays one clean cycle whose
+                        // envelope grew. Clamped like its storm twin — the cap bounds the amplitude,
+                        // never the instantaneous value.
+                        float headSeaPitchAmp = headSeaPitch
+                            ? Mathf.Clamp(
+                                slopeEnvelope * bowShare * _meshHeadSeaPitchDegreesPerSlope * hullScale,
+                                -_maxMeshHeadSeaPitchDegrees, _maxMeshHeadSeaPitchDegrees)
+                            : 0f;
+
                         float slopeWave = Mathf.Cos(phaseDegrees * Mathf.Deg2Rad);
                         extraRoll = rollAmp * slopeWave * stormBlend;
-                        extraPitch = pitchAmp * slopeWave * stormBlend;
+                        extraPitch = (pitchAmp * stormBlend + headSeaPitchAmp) * slopeWave;
                     }
                 }
 
@@ -742,7 +818,20 @@ namespace HiddenHarbours.Boats
             // split into hulls that settle and hulls that surf. Every shipped compass carries 0
             // (the art is already drawn at her waterline), and a 0 datum sinks by exactly 0, so
             // this line is byte-identical for today's assets.
-            ApplyRide(SettleRideMeters(rideMeters, hull) + surge, squash);
+            float drawnRide = SettleRideMeters(rideMeters, hull);
+
+            // …AND PUBLISHED, because on this path THIS component is the applier (a mesh hull's
+            // driver publishes its own — see IBoatHullPresenter.DrawnRideMeters). It is what the
+            // fisher standing on this deck moves by, so it is the number that went into the
+            // transform write below and not a re-derivation of it.
+            //
+            // The RIDE only, deliberately: the storm SURGE is part of this hull's rock language —
+            // her passengers draw the rock from the published PHASE at their own amplitudes, and
+            // adding the surge here would give them a share of it twice. Displaced sea off ⇒ ride
+            // 0 ⇒ published exactly 0 (the A/B contract reaches her passengers too).
+            hull.SetDrawnRideMeters(drawnRide);
+
+            ApplyRide(drawnRide + surge, squash);
 
             if (calm)
             {
@@ -804,6 +893,12 @@ namespace HiddenHarbours.Boats
             if (hull != null)
             {
                 hull.VisualTiltDegrees = rollDegrees;   // composed after the hull's rotation reset
+                // The DISPLACED term of the offset written below, published for her passengers —
+                // this component is the applier on the transform path too, and a fisher on a hull
+                // that draws no rock cycle at all still has to ride the sea under her. Only the
+                // displaced term: the legacy bob/pitch gains ARE this hull's rock, drawn as a
+                // translation, and the rider takes its share of that from the tilt hook.
+                hull.SetDrawnRideMeters(rideActive ? bob : 0f);
             }
             else
             {
@@ -839,11 +934,18 @@ namespace HiddenHarbours.Boats
             _applied = true;
         }
 
-        /// <summary>Put the visual back exactly as built (and zero the tilt hook). Idempotent.</summary>
+        /// <summary>Put the visual back exactly as built (and zero the tilt hook, and the ride the
+        /// visual is no longer carrying — a picture at base is riding nothing, and her passengers
+        /// must be told so). Idempotent. A MESH hull ignores the ride clear by contract: her image is
+        /// moved by her driver, not by this transform.</summary>
         private void RestoreVisual()
         {
             var hull = Hull;
-            if (hull != null) hull.VisualTiltDegrees = 0f;
+            if (hull != null)
+            {
+                hull.VisualTiltDegrees = 0f;
+                hull.SetDrawnRideMeters(0f);
+            }
             if (!_applied) return;
             _applied = false;
             if (_visual == null || !_baseCached) return;
