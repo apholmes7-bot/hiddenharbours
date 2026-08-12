@@ -1,0 +1,9 @@
+# The drop shipped its own isoSolid.js. It is CHARACTER-IDENTICAL to the deck-loop kit's copy at
+# docs/art/rigs/deck-loop-kit/Art/isoSolid.js, which is already registered as `deckIsoSolid` and
+# installs the same globalThis.IsoSolid. A second copy of a registered global's source is the drift
+# the repo's no-edit rule exists to prevent — whichever loaded last would silently win for BOTH
+# kits — so it is deliberately not committed. Same treatment as deck-loop-kit/Art/.gitignore.
+#
+# To run harness.html locally, materialise it first:
+#     cp ../deck-loop-kit/Art/isoSolid.js .
+isoSolid.js
