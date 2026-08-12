@@ -123,6 +123,37 @@ namespace HiddenHarbours.Tests.PlayMode
                 Assert.GreaterOrEqual(painted.Length, 2,
                     "Fewer than two painted boats at the wharf — nothing to tell apart.");
 
+                // 3a. The small-craft drop's claim, made in the REAL scene rather than against a
+                //     double: the paint at this wharf now comes off more than ONE mesh. Before the
+                //     drop all four painted boats were lobster boats, so a fixture asserting only
+                //     "two or more are painted" passed while three berths sat in gelcoat.
+                //
+                //     ⚠️ Two meshes, not three, and the third is not an art gap: the console skiff's
+                //     nine schemes are baked and proven, but nobody at this wharf owns a boat drawn
+                //     from hullmesh.console_iso — Celeste Bernard's boat.fishing_skiff resolves to
+                //     visual.fishing_boat, a legacy SPRITE-only visual. Paint lives on the mesh path,
+                //     so it cannot reach her at all. See the PR body; it is a world-content call.
+                Assert.AreEqual(moored.Length - 2, painted.Length,
+                    $"{painted.Length} of {moored.Length} boats at the wharf wear paint. TWO are " +
+                    "expected to be plain — Marie Gallant (no paint axis in her rig) and Celeste " +
+                    "Bernard (no hull mesh on her boat at all). Unpainted: [" +
+                    string.Join(", ", moored.Where(m => m.Owner.HullPaint == null)
+                                            .Select(m => m.Owner.Id)) + "]");
+
+                var meshes = painted
+                    .Where(m => m.Owner.Boat != null && m.Owner.Boat.Visual != null
+                                && m.Owner.Boat.Visual.HullMesh != null)
+                    .Select(m => m.Owner.Boat.Visual.HullMesh.Id)
+                    .Distinct()
+                    .OrderBy(s => s)
+                    .ToArray();
+                Assert.GreaterOrEqual(meshes.Length, 2,
+                    "The painted boats at this wharf come off fewer than two distinct hull meshes — " +
+                    $"found [{string.Join(", ", meshes)}]. The lobster boat and the punt both have " +
+                    "owners and paint axes; if one is missing, a bake or an assignment was lost.");
+                Debug.Log($"[wharf-proof] paint spans {meshes.Length} hull meshes: " +
+                          string.Join(", ", meshes));
+
                 var means = painted.ToDictionary(
                     m => m.Owner.Id,
                     m => MeanColour(shot, cam, m.transform.position));

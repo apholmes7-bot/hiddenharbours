@@ -41,9 +41,9 @@ namespace HiddenHarbours.Tools.RigBaking
         public const string SchemeFolder = "Assets/_Project/Data/Boats/PaintSchemes";
 
         /// <summary>
-        /// A hull whose rig carries a paint axis. Deliberately a list of one: the lobster boat is the
-        /// only hull whose rig has schemes today, and the day a second lands it is a line here, not a
-        /// new baker. <see cref="AssetPrefix"/> keeps two hulls' tables from colliding on disk, and
+        /// A hull whose rig carries a paint axis. Three of them now, across TWO different paint APIs
+        /// — which is the design working: a second and third hull cost a line each and no new baker.
+        /// <see cref="AssetPrefix"/> keeps two hulls' tables from colliding on disk, and
         /// <see cref="IdPrefix"/> keeps their ids apart (ids are append-only and stable, CLAUDE.md §5).
         /// </summary>
         public readonly struct PaintedHull
@@ -65,7 +65,13 @@ namespace HiddenHarbours.Tools.RigBaking
 
             /// <summary>JS returning the schemes in swatch order as <c>[id, label, note]</c> triples.
             /// One expression rather than an id list plus fallbacks, so a rig that labels its schemes
-            /// differently needs no branch here.</summary>
+            /// differently needs no branch here.
+            ///
+            /// <para>⚠️ Only the HEAD of these expressions is prefixed with the rig's global. Inside a
+            /// callback a bare <c>SCHEMES</c> is a reference to a global that does not exist — the rig
+            /// keeps it in its closure — and the bake dies with <c>ReferenceError: SCHEMES is not
+            /// defined</c>. Write <c>{G}</c> for the global name anywhere the expression needs to
+            /// reach back into the rig's exports; <see cref="Expand"/> substitutes it.</para></summary>
             public readonly string SchemeListExpr;
 
             /// <summary>JS returning the rig's own default scheme id — the one the mesh bake is
@@ -95,15 +101,41 @@ namespace HiddenHarbours.Tools.RigBaking
                             defaultSchemeExpr: "defaultPaint",
                             shimSymbols: new[] { "matsFor" }),
 
-            // NOT YET, and deliberately: the punt and the console skiff have carried a paint axis
-            // since the 2026-07-25 small-craft kit and already EXPORT theirs (`SCHEMES`, `schemeIds`,
-            // `defaultScheme`, `palette`), so they would need no shim at all —
-            //   new PaintedHull("punt", "hullmesh.punt_iso", "PuntIso", "paint.punt_",
-            //                   "palette({scheme:{0}}).mats",
-            //                   "schemeIds.map(function(id){return [id,'',''];})", "defaultScheme")
-            // — but their mesh bakes are currently PINNED to 'harbour-white' and flipping them is a
-            // second hull's worth of A/B, not a free line. The Cape Islander has no paint axis at all
-            // (a plain `MATS` const), so she cannot join until the art director gives her one.
+            // The two small craft, whose axis has existed since the 2026-07-25 kit and is only now
+            // wired. They need NO shim: both export `SCHEMES`, `schemeIds`, `defaultScheme` and
+            // `palette` from their own literal, which is why these are one line each.
+            //
+            // The second paint API in the repo, and the reason MatsExpr is a parameter: this kit
+            // resolves `palette({scheme:id}).mats` where the lobster's resolves `matsFor(id).MATS`.
+            // Both are the rig's OWN resolver at its own scheme — neither is a transcription.
+            //
+            // ⚠️ `palette({})` — the expression RigMeshSymbols.Reconstructions bakes the MESH from —
+            // is the same call with no colourway, which each rig resolves to its own DEFAULT_SCHEME
+            // ('harbour-white' on both). MEASURED equal to `palette({scheme:'harbour-white'}).mats`,
+            // material for material and in the same KEY ORDER, which is what makes "unset scheme =
+            // today's boat" a fact here as it is for the lobster. See the PR body's A/B tables.
+            //
+            // The label and note come from the rig's own SCHEMES block rather than being left blank —
+            // they are the art director's words for what each colourway IS ("never finished, always
+            // working"), and they are what an assignment gets argued from.
+            new PaintedHull("punt", "hullmesh.punt_iso", "PuntIso", "paint.punt_",
+                            matsExpr: "palette({scheme:{0}}).mats",
+                            schemeListExpr: "schemeIds.map(function(id){var s={G}.SCHEMES[id];" +
+                                            "return [id,s.name||'',s.note||''];})",
+                            defaultSchemeExpr: "defaultScheme"),
+
+            // 'console', not 'skiff': the fleet holds THREE skiff rigs (console, sport, skiffMotor)
+            // and this table is hull-specific, so a `paint.skiff_` id would be ambiguous the day the
+            // sport skiff gets an axis — and ids are append-only, so it could not be fixed then.
+            // Matches her every other identifier: consoleSkiff / ConsoleIso / hullmesh.console_iso.
+            new PaintedHull("consoleSkiff", "hullmesh.console_iso", "ConsoleIso", "paint.console_",
+                            matsExpr: "palette({scheme:{0}}).mats",
+                            schemeListExpr: "schemeIds.map(function(id){var s={G}.SCHEMES[id];" +
+                                            "return [id,s.name||'',s.note||''];})",
+                            defaultSchemeExpr: "defaultScheme"),
+
+            // The Cape Islander has no paint axis at all (a plain `MATS` const), so she cannot join
+            // until the art director gives her one. That is a rig change, not a line here.
         };
 
         [MenuItem("Hidden Harbours/Dev/3D Hulls/Bake hull PAINT SCHEMES…", priority = 41)]
@@ -127,41 +159,73 @@ namespace HiddenHarbours.Tools.RigBaking
         }
 
         /// <summary>
+        /// The fleet entry whose MESH these schemes repaint — and therefore the rig they must be
+        /// read from.
+        ///
+        /// <para>⚠️ Resolved through <see cref="HullMeshFleet"/>, NOT <see cref="RigCatalog"/>, and
+        /// that is load-bearing. <c>RigMeshAssetBaker</c> bakes the hull mesh from
+        /// <c>FleetHull.ScriptPath</c>/<c>GlobalName</c>; if the paint bake read a different table
+        /// the two could point at different files and "unset scheme = today's boat" would be
+        /// comparing a scheme against a mesh baked from something else. One table, so they cannot
+        /// drift. (It is also the only table the console skiff is in — she has no
+        /// <see cref="RigCatalog"/> entry, because the catalog registers rigs that need an azimuth
+        /// DECLARATION and her mesh bake never needed one.)</para>
+        /// </summary>
+        public static FleetHull RigFor(in PaintedHull hull)
+        {
+            // Copied out of the `in` parameter first: a readonly-ref cannot be captured by the lambda.
+            string rigKey = hull.RigKey, meshId = hull.HullMeshId;
+
+            var fleet = HullMeshFleet.Hulls.FirstOrDefault(h => h.Key == rigKey);
+            if (string.IsNullOrEmpty(fleet.Key))
+                throw new ArgumentException(
+                    $"No hull '{rigKey}' in HullMeshFleet. Known: " +
+                    $"{string.Join(", ", HullMeshFleet.Hulls.Select(h => h.Key))}.");
+
+            if (fleet.MeshId != meshId)
+                throw new InvalidOperationException(
+                    $"'{rigKey}' says it repaints '{meshId}' but HullMeshFleet bakes " +
+                    $"'{fleet.MeshId}' from that rig. A scheme table is matched to a hull BY INDEX, " +
+                    "so pointing these two at different meshes recolours the wrong materials.");
+            return fleet;
+        }
+
+        /// <summary>
         /// Bakes every scheme the hull's rig declares. Returns how many assets were written.
         /// </summary>
         public static int Bake(in PaintedHull hull, StringBuilder log)
         {
             if (!Directory.Exists(SchemeFolder)) Directory.CreateDirectory(SchemeFolder);
 
-            var entry = RigCatalog.Get(hull.RigKey);
-            string g = entry.GlobalName;
+            var fleet = RigFor(hull);
+            string g = fleet.GlobalName;
 
             using IRigScriptHost host = RigScriptHostFactory.Create();
 
             // The lobster rig exports PAINTS and paintRamps but keeps its resolver private, so widen
             // exactly the symbols this hull declares — the same in-memory, never-written shim the mesh
-            // extractor uses. (The punt and the console export theirs and would declare none.)
+            // extractor uses. (The punt and the console export theirs and declare none.)
             // Reading paintRamps and rebuilding the material table here would be a transcription of
             // the rig's role mapping — which ramp is 'hull', which is 'blue', where the negative
             // offsets go — and that is the class of claim this pipeline does not make.
-            string source = RigCatalog.ReadSource(entry);
+            string source = ReadRigSource(fleet.ScriptPath);
             host.Execute(hull.ShimSymbols.Length == 0
                 ? source
-                : RigMeshExtractor.WidenExportedLiteral(source, g, hull.ShimSymbols, entry.ScriptPath));
+                : RigMeshExtractor.WidenExportedLiteral(source, g, hull.ShimSymbols, fleet.ScriptPath));
 
             if (!host.EvaluateBool($"typeof {g} === 'object' && {g} !== null"))
                 throw new InvalidOperationException(
-                    $"Rig '{entry.ScriptPath}' ran but did not install globalThis.{g}.");
+                    $"Rig '{fleet.ScriptPath}' ran but did not install globalThis.{g}.");
 
             var schemes = ReadPaintList(host, g, hull);
             string defaultPaint = host.EvaluateString($"String({g}.{hull.DefaultSchemeExpr} || '')");
             if (string.IsNullOrEmpty(defaultPaint))
                 throw new InvalidOperationException(
-                    $"'{entry.ScriptPath}' declares no default scheme ({hull.DefaultSchemeExpr}). The " +
+                    $"'{fleet.ScriptPath}' declares no default scheme ({hull.DefaultSchemeExpr}). The " +
                     "default is what the mesh bake is pinned to, so without it 'unset scheme = " +
                     "today's boat' cannot be checked.");
 
-            log.AppendLine($"{hull.RigKey}: {schemes.Count} schemes from {entry.ScriptPath} " +
+            log.AppendLine($"{hull.RigKey}: {schemes.Count} schemes from {fleet.ScriptPath} " +
                            $"(default '{defaultPaint}')");
 
             int written = 0;
@@ -181,7 +245,7 @@ namespace HiddenHarbours.Tools.RigBaking
                 def.Label = s.Label;
                 def.Note = s.Note;
                 def.HullMeshId = hull.HullMeshId;
-                def.SourceRigPath = entry.ScriptPath;
+                def.SourceRigPath = fleet.ScriptPath;
                 def.RigPaintId = s.Id;
                 def.Ramps = ramps;
 
@@ -211,7 +275,7 @@ namespace HiddenHarbours.Tools.RigBaking
             // Unit separator between fields, record separator between entries — a label or note is
             // free text ("PEARL & GOLD", notes with commas and dashes) and must not need escaping.
             string blob = host.EvaluateString(
-                $"(function(){{var L={g}.{hull.SchemeListExpr};" +
+                $"(function(){{var L={g}.{Expand(hull.SchemeListExpr, g)};" +
                 "return L.map(function(t){return [t[0],t[1]||'',t[2]||''].join('\\u001f');})" +
                 ".join('\\u001e');})()");
 
@@ -224,10 +288,12 @@ namespace HiddenHarbours.Tools.RigBaking
                 if (rec.Length == 0) continue;
                 string[] f = rec.Split(US);
                 if (f.Length != 3)
-                    throw new InvalidOperationException($"PAINTS entry '{rec}' is not id/label/note.");
+                    throw new InvalidOperationException(
+                        $"{g}.{Expand(hull.SchemeListExpr, g)} entry '{rec}' is not id/label/note.");
                 outp.Add(new PaintListing(f[0], f[1], f[2]));
             }
-            if (outp.Count == 0) throw new InvalidOperationException($"{g}.PAINTS is empty.");
+            if (outp.Count == 0)
+                throw new InvalidOperationException($"{g}.{Expand(hull.SchemeListExpr, g)} is empty.");
             return outp;
         }
 
@@ -235,7 +301,8 @@ namespace HiddenHarbours.Tools.RigBaking
         /// One scheme's material table, in the rig's own key order.
         ///
         /// <para>⚠️ The JS below is <c>RigMeshExtractor.ReadMaterials</c>'s expression with
-        /// <c>MATS</c> swapped for <c>matsFor(id).MATS</c>. Keeping the two the same shape is what
+        /// <c>MATS</c> swapped for the hull's own <see cref="PaintedHull.MatsExpr"/>
+        /// (<c>matsFor(id).MATS</c>, or <c>palette({scheme:id}).mats</c>). Keeping the two the same shape is what
         /// makes the baked scheme table index-compatible with the hull def's — ramps are matched to
         /// materials positionally, so an order that differed by one would repaint the glass with the
         /// boot-top. <c>HullPaintSchemeBakeTests</c> pins the two orders against each other.</para>
@@ -244,7 +311,7 @@ namespace HiddenHarbours.Tools.RigBaking
                                                            in PaintedHull hull, string paintId)
         {
             string blob = host.EvaluateString(
-                $"(function(){{var M={g}.{Mats(hull, paintId)},o=[];for(var k in M)" +
+                $"(function(){{var M={g}.{Mats(hull, paintId, g)},o=[];for(var k in M)" +
                 "o.push(k+'|'+(M[k].off||0)+'|'+M[k].ramp.join(','));return o.join(';');})()");
 
             var ramps = new List<HullMeshDef.Ramp>();
@@ -253,7 +320,7 @@ namespace HiddenHarbours.Tools.RigBaking
                 string[] f = part.Split('|');
                 if (f.Length != 3)
                     throw new InvalidOperationException(
-                        $"matsFor('{paintId}').MATS entry '{part}' is not name|off|ramp.");
+                        $"{g}.{Mats(hull, paintId, g)} entry '{part}' is not name|off|ramp.");
                 string[] hex = f[2].Split(',');
                 ramps.Add(new HullMeshDef.Ramp
                 {
@@ -263,10 +330,10 @@ namespace HiddenHarbours.Tools.RigBaking
             }
 
             if (ramps.Count == 0)
-                throw new InvalidOperationException($"matsFor('{paintId}').MATS is empty.");
+                throw new InvalidOperationException($"{g}.{Mats(hull, paintId, g)} is empty.");
             if (ramps.Count > 16)
                 throw new InvalidOperationException(
-                    $"matsFor('{paintId}').MATS has {ramps.Count} materials; the facet shader's " +
+                    $"{g}.{Mats(hull, paintId, g)} has {ramps.Count} materials; the facet shader's " +
                     "_RampMeta holds 16.");
             return ramps.ToArray();
         }
@@ -277,14 +344,31 @@ namespace HiddenHarbours.Tools.RigBaking
                                                  in PaintedHull hull, string paintId)
         {
             string blob = host.EvaluateString(
-                $"(function(){{var M={g}.{Mats(hull, paintId)},o=[];for(var k in M)" +
+                $"(function(){{var M={g}.{Mats(hull, paintId, g)},o=[];for(var k in M)" +
                 "o.push(k);return o.join(',');})()");
             return blob.Split(',');
         }
 
         /// <summary>The hull's material-table expression with the scheme id substituted in, quoted.</summary>
-        static string Mats(in PaintedHull hull, string paintId) =>
-            hull.MatsExpr.Replace("{0}", Quote(paintId));
+        static string Mats(in PaintedHull hull, string paintId, string g) =>
+            Expand(hull.MatsExpr.Replace("{0}", Quote(paintId)), g);
+
+        /// <summary>Substitutes the rig's global name for <c>{G}</c>. Needed because only the HEAD of
+        /// a hull's expression is prefixed with the global — anything inside a callback has to name it
+        /// itself, and a bare closure symbol there is a <c>ReferenceError</c> at bake time.</summary>
+        static string Expand(string expr, string g) => expr.Replace("{G}", g);
+
+        /// <summary>The rig source, UNMODIFIED (ADR 0021 §5) — the same read
+        /// <see cref="RigCatalog.ReadSource"/> does, by path, because a hull's rig is named by
+        /// <see cref="HullMeshFleet"/> rather than by a catalog entry.</summary>
+        public static string ReadRigSource(string scriptPath)
+        {
+            string full = Path.Combine(RigCatalog.RepoRoot, scriptPath);
+            if (!File.Exists(full))
+                throw new FileNotFoundException(
+                    $"Rig source missing at {full}. The rigs are committed under docs/art/rigs/.", full);
+            return File.ReadAllText(full);
+        }
 
         // ---- small helpers ---------------------------------------------------------------------
 

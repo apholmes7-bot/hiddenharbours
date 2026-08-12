@@ -1,0 +1,169 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee76649f87a8cfd4890261ca9a64ffa3, type: 3}
+  m_Name: PuntIso_TarBlack
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.HullPaintSchemeDef
+  Id: paint.punt_tar_black
+  Label: Tar Black
+  Note: tarred topsides, teal rail
+  HullMeshId: hullmesh.punt_iso
+  SourceRigPath: docs/art/rigs/puntIsoRig.js
+  RigPaintId: tar-black
+  Ramps:
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4280557595
+    - serializedVersion: 2
+      rgba: 4280820767
+    - serializedVersion: 2
+      rgba: 4281018146
+    - serializedVersion: 2
+      rgba: 4281215525
+    - serializedVersion: 2
+      rgba: 4281412904
+    - serializedVersion: 2
+      rgba: 4282597434
+    - serializedVersion: 2
+      rgba: 4286281586
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4283518723
+    - serializedVersion: 2
+      rgba: 4285361683
+    - serializedVersion: 2
+      rgba: 4286941459
+    - serializedVersion: 2
+      rgba: 4288324395
+    - serializedVersion: 2
+      rgba: 4290628466
+    Offset: -1
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4278476638
+    - serializedVersion: 2
+      rgba: 4281373863
+    - serializedVersion: 2
+      rgba: 4286566129
+    Offset: -3
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4283518723
+    - serializedVersion: 2
+      rgba: 4285361683
+    - serializedVersion: 2
+      rgba: 4286941459
+    - serializedVersion: 2
+      rgba: 4288324395
+    - serializedVersion: 2
+      rgba: 4290628466
+    Offset: -1
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279969587
+    - serializedVersion: 2
+      rgba: 4280759879
+    - serializedVersion: 2
+      rgba: 4281353822
+    - serializedVersion: 2
+      rgba: 4281683819
+    - serializedVersion: 2
+      rgba: 4282935946
+    - serializedVersion: 2
+      rgba: 4283660442
+    - serializedVersion: 2
+      rgba: 4283597737
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279969587
+    - serializedVersion: 2
+      rgba: 4280759879
+    - serializedVersion: 2
+      rgba: 4281353822
+    - serializedVersion: 2
+      rgba: 4281683819
+    - serializedVersion: 2
+      rgba: 4282935946
+    - serializedVersion: 2
+      rgba: 4283660442
+    - serializedVersion: 2
+      rgba: 4283597737
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279179296
+    - serializedVersion: 2
+      rgba: 4279509034
+    - serializedVersion: 2
+      rgba: 4280036410
+    Offset: -2
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279702288
+    - serializedVersion: 2
+      rgba: 4280754461
+    - serializedVersion: 2
+      rgba: 4282004011
+    - serializedVersion: 2
+      rgba: 4283319613
+    - serializedVersion: 2
+      rgba: 4284701778
+    - serializedVersion: 2
+      rgba: 4286281323
+    - serializedVersion: 2
+      rgba: 4288255114
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279702288
+    - serializedVersion: 2
+      rgba: 4280754461
+    - serializedVersion: 2
+      rgba: 4282004011
+    - serializedVersion: 2
+      rgba: 4283319613
+    - serializedVersion: 2
+      rgba: 4284701778
+    - serializedVersion: 2
+      rgba: 4286281323
+    - serializedVersion: 2
+      rgba: 4288255114
+    Offset: -2
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279111754
+    - serializedVersion: 2
+      rgba: 4279573116
+    - serializedVersion: 2
+      rgba: 4279968936
+    - serializedVersion: 2
+      rgba: 4280694479
+    - serializedVersion: 2
+      rgba: 4282144738
+    Offset: -1
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4285557341
+    - serializedVersion: 2
+      rgba: 4287663230
+    - serializedVersion: 2
+      rgba: 4289835171
+    - serializedVersion: 2
+      rgba: 4291481026
+    - serializedVersion: 2
+      rgba: 4292863453
+    - serializedVersion: 2
+      rgba: 4293587182
+    - serializedVersion: 2
+      rgba: 4294179063
+    Offset: 0

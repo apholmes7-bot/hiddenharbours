@@ -29,7 +29,7 @@ namespace HiddenHarbours.Tests.RigBaking
         const string HullMeshAssetPath =
             "Assets/_Project/Data/Boats/HullMeshes/LobsterBoatIsoHullMesh.asset";
 
-        HullMeshDef _hull;
+        static HullMeshDef _hull;
 
         [SetUp]
         public void SetUp()
@@ -38,18 +38,34 @@ namespace HiddenHarbours.Tests.RigBaking
             Assert.IsNotNull(_hull, $"No hull mesh def at {HullMeshAssetPath}.");
         }
 
+        /// <summary>
+        /// The schemes baked for THIS hull, and only this hull.
+        ///
+        /// <para>⚠️ Scoped by <see cref="HullPaintSchemeDef.HullMeshId"/> since the small-craft drop.
+        /// The folder now holds 27 tables across three hulls, and this whole fixture applies them to
+        /// one <see cref="_hull"/> — so an unfiltered read handed the lobster boat the punt's and the
+        /// console skiff's tables, which the renderer correctly REFUSES and falls back from, and
+        /// <c>EveryBakedSchemeExceptTheDefaultChangesHer</c> then reported them as schemes that "draw
+        /// exactly the unpainted hull". A true red for a false reason.</para>
+        ///
+        /// <para>Filtered on PROVENANCE (which hull it was baked for), not on
+        /// <see cref="HullPaintSchemeDef.IsUsableFor"/> — filtering on usability would quietly skip a
+        /// scheme of this hull's that had become unusable, which is the exact defect these tests
+        /// exist to catch.</para>
+        /// </summary>
         static HullPaintSchemeDef[] Schemes() => AssetDatabase
             .FindAssets($"t:{nameof(HullPaintSchemeDef)}", new[] { HullPaintSchemeBaker.SchemeFolder })
             .Select(AssetDatabase.GUIDToAssetPath)
             .Select(AssetDatabase.LoadAssetAtPath<HullPaintSchemeDef>)
-            .Where(s => s != null)
+            .Where(s => s != null && s.HullMeshId == _hull.Id)
             .OrderBy(s => s.Id)
             .ToArray();
 
         static HullPaintSchemeDef Scheme(string rigPaintId)
         {
             var s = Schemes().FirstOrDefault(x => x.RigPaintId == rigPaintId);
-            Assert.IsNotNull(s, $"No baked scheme for the rig's '{rigPaintId}'. Bake the paint schemes.");
+            Assert.IsNotNull(s, $"No baked scheme for the rig's '{rigPaintId}' on '{_hull.Id}'. " +
+                                "Bake the paint schemes.");
             return s;
         }
 

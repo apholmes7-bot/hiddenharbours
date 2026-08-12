@@ -1,0 +1,197 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee76649f87a8cfd4890261ca9a64ffa3, type: 3}
+  m_Name: ConsoleIso_SandCanvas
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.HullPaintSchemeDef
+  Id: paint.console_sand_canvas
+  Label: Sand Canvas
+  Note: "skiff only \u2014 navy sheer under a sand awning"
+  HullMeshId: hullmesh.console_iso
+  SourceRigPath: docs/art/rigs/consoleIsoRig.js
+  RigPaintId: sand-canvas
+  Ramps:
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4285823349
+    - serializedVersion: 2
+      rgba: 4287731346
+    - serializedVersion: 2
+      rgba: 4289376428
+    - serializedVersion: 2
+      rgba: 4290955461
+    - serializedVersion: 2
+      rgba: 4292534493
+    - serializedVersion: 2
+      rgba: 4293718512
+    - serializedVersion: 2
+      rgba: 4294047476
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4281671693
+    - serializedVersion: 2
+      rgba: 4282198037
+    - serializedVersion: 2
+      rgba: 4282658588
+    - serializedVersion: 2
+      rgba: 4283053346
+    - serializedVersion: 2
+      rgba: 4287659367
+    Offset: -1
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4278476638
+    - serializedVersion: 2
+      rgba: 4281373863
+    - serializedVersion: 2
+      rgba: 4286566129
+    Offset: -3
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4281671693
+    - serializedVersion: 2
+      rgba: 4282198037
+    - serializedVersion: 2
+      rgba: 4282658588
+    - serializedVersion: 2
+      rgba: 4283053346
+    - serializedVersion: 2
+      rgba: 4287659367
+    Offset: -1
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4285823349
+    - serializedVersion: 2
+      rgba: 4287731346
+    - serializedVersion: 2
+      rgba: 4289376428
+    - serializedVersion: 2
+      rgba: 4290955461
+    - serializedVersion: 2
+      rgba: 4292534493
+    - serializedVersion: 2
+      rgba: 4293718512
+    - serializedVersion: 2
+      rgba: 4294047476
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279969587
+    - serializedVersion: 2
+      rgba: 4280759879
+    - serializedVersion: 2
+      rgba: 4281353822
+    - serializedVersion: 2
+      rgba: 4281683819
+    - serializedVersion: 2
+      rgba: 4282935946
+    - serializedVersion: 2
+      rgba: 4283660442
+    - serializedVersion: 2
+      rgba: 4283597737
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4285823349
+    - serializedVersion: 2
+      rgba: 4287731346
+    - serializedVersion: 2
+      rgba: 4289376428
+    - serializedVersion: 2
+      rgba: 4290955461
+    - serializedVersion: 2
+      rgba: 4292534493
+    - serializedVersion: 2
+      rgba: 4293718512
+    - serializedVersion: 2
+      rgba: 4294047476
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4281952100
+    - serializedVersion: 2
+      rgba: 4284320911
+    - serializedVersion: 2
+      rgba: 4286426295
+    - serializedVersion: 2
+      rgba: 4288530907
+    - serializedVersion: 2
+      rgba: 4290174187
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279969587
+    - serializedVersion: 2
+      rgba: 4280759879
+    - serializedVersion: 2
+      rgba: 4281353822
+    - serializedVersion: 2
+      rgba: 4281683819
+    - serializedVersion: 2
+      rgba: 4282935946
+    - serializedVersion: 2
+      rgba: 4283660442
+    - serializedVersion: 2
+      rgba: 4283597737
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4282135318
+    - serializedVersion: 2
+      rgba: 4284108836
+    - serializedVersion: 2
+      rgba: 4286608954
+    - serializedVersion: 2
+      rgba: 4289110879
+    - serializedVersion: 2
+      rgba: 4291086735
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279179296
+    - serializedVersion: 2
+      rgba: 4279509034
+    - serializedVersion: 2
+      rgba: 4280036410
+    Offset: -2
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279702288
+    - serializedVersion: 2
+      rgba: 4280754461
+    - serializedVersion: 2
+      rgba: 4282004011
+    - serializedVersion: 2
+      rgba: 4283319613
+    - serializedVersion: 2
+      rgba: 4284701778
+    - serializedVersion: 2
+      rgba: 4286281323
+    - serializedVersion: 2
+      rgba: 4288255114
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279702288
+    - serializedVersion: 2
+      rgba: 4280754461
+    - serializedVersion: 2
+      rgba: 4282004011
+    - serializedVersion: 2
+      rgba: 4283319613
+    - serializedVersion: 2
+      rgba: 4284701778
+    - serializedVersion: 2
+      rgba: 4286281323
+    - serializedVersion: 2
+      rgba: 4288255114
+    Offset: -2
