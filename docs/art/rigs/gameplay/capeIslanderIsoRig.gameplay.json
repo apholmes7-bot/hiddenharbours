@@ -1,7 +1,8 @@
 {
   "rig": "capeIslanderIsoRig.js",
-  "derivedFromRigSha256": "fe9130fe67dd41fa0f4e0e4865aace4f21e1a710c9a854f7727e8fa0cc5cab1c",
+  "derivedFromRigSha256": "425ff37ddd1046bb971471da90d9fe77fe908ba76821fb0b8e13ea8c8c7b7d33",
   "generated": "2026-07-22",
+  "_repin": "2026-08-12 (paint axis). The hash moved because the FILE moved \u2014 the rig gained SCHEMES/palette() and every line citation below shifted by ~140 lines \u2014 and NOT because any number here changed. Measured in the V8 harness against the pre-paint rig at bcbadf75, 105/105 checks: the 509-face list is byte-identical (every vertex, bias and depth bias); W/H/PX/DIRS/pivot/defaultElev/order identical; HELM, HAULER, TUBS, ROCK and rock(i) for all 8 frames identical; helmSeat, haulerMount, tubMounts and navMounts identical at all 8 facings AND under each of the 8 rock poses; all 8 facings render byte-identical at 456x420x4. Every DECK/WASHBOARD/CLEATS number below derives from L, TH, DECK, SOLE_U, WB, HX, DROP and station(), none of which the paint axis touches. \u26a0 The pin is the WORKING-TREE (CRLF) hash, as the previous one was: *.js is stored LF in git and checked out CRLF on Windows, so the LF hash (92c3061b69fb5e29...) would go green locally and red on the next pull.",
   "frame": {
     "units": "m",
     "scale_px_per_m": 32,
@@ -25,8 +26,8 @@
           [-1.629, -0.48], [-1.657, -1.664], [-1.626, -2.848], [-1.546, -4.032],
           [-1.404, -5.216], [-1.186, -6.4]
         ],
-      "_derivation": "wood sole, half-width dw(u)=(lerp(wb,ws,dfrac(st))-TH)*0.96 at z=DECK=0.72 (capeIslanderIsoRig.js:31,77,168-175); sampled u=0 (transom, y=-6.4) to u=SOLE_U=0.74 (foredeck bulkhead, y=3.072)",
-      "_ruled": "was _confirm: forward extent: the sole runs full width to u=0.74, PAST the wheelhouse (HX=1.32, y 0.5..2.9, line 137) \u2014 the ~0.3 m sole strips alongside the house were the only route to the whaleback while the washboards stopped at the house front. RULED: ACCEPTED (owner, 2026-07-22) \u2014 the sole strips count as walkable; and with the washboards now extended to the foredeck (ruling #4, same date) BOTH routes to the whaleback exist: sole strips at deck level, washboards at sheer level."
+      "_derivation": "wood sole, half-width dw(u)=(lerp(wb,ws,dfrac(st))-TH)*0.96 at z=DECK=0.72 (capeIslanderIsoRig.js:42,215,306-313); sampled u=0 (transom, y=-6.4) to u=SOLE_U=0.74 (foredeck bulkhead, y=3.072)",
+      "_ruled": "was _confirm: forward extent: the sole runs full width to u=0.74, PAST the wheelhouse (HX=1.32, y 0.5..2.9, line 275) \u2014 the ~0.3 m sole strips alongside the house were the only route to the whaleback while the washboards stopped at the house front. RULED: ACCEPTED (owner, 2026-07-22) \u2014 the sole strips count as walkable; and with the washboards now extended to the foredeck (ruling #4, same date) BOTH routes to the whaleback exist: sole strips at deck level, washboards at sheer level."
     },
     {
       "id": "foredeck",
@@ -37,7 +38,7 @@
           [-0.49, 5.685, 2.997], [-0.814, 5.163, 2.769], [-1.091, 4.64, 2.559], [-1.259, 4.117, 2.392],
           [-1.428, 3.595, 2.226], [-1.574, 3.072, 2.074]
         ],
-      "_derivation": "whaleback foredeck, u=SOLE_U..FCAP=0.74..0.985: x=\u00b1fw(u)=\u00b1(ws-TH)*0.92, y=station.y (no bow rake in this rig), z=fz(u)=kz+dep-DROP, DROP=0.05 \u2014 VERIFIED at capeIslanderIsoRig.js:198 (previously a _confirm; now closed). Owner-ruled BOARDABLE."
+      "_derivation": "whaleback foredeck, u=SOLE_U..FCAP=0.74..0.985: x=\u00b1fw(u)=\u00b1(ws-TH)*0.92, y=station.y (no bow rake in this rig), z=fz(u)=kz+dep-DROP, DROP=0.05 \u2014 VERIFIED at capeIslanderIsoRig.js:336 (previously a _confirm; now closed). Owner-ruled BOARDABLE."
     }
   ],
   "WASHBOARD": [
@@ -49,8 +50,8 @@
           [-1.999, -2.611, 1.429], [-2.047, -1.664, 1.477], [-2.05, -0.717, 1.546], [-2.036, 0.23, 1.629],
           [-1.976, 1.178, 1.747], [-1.865, 2.125, 1.908], [-1.711, 3.072, 2.104]
         ],
-      "_derivation": "side decks at z=kz+dep-0.02, outer edge x=-(ws-TH), inboard width WB=0.42 m (capeIslanderIsoRig.js:176-190, WB line 178); strips run the FULL sheer u=0 (transom, y=-6.4) to u=SOLE_U=0.74 (foredeck bulkhead, y=3.072), meeting the whaleback foredeck",
-      "_note": "alongside/forward of the wheelhouse (y>HY0-0.05=0.45) the inner edge is clamped clear of the house wall: x_in=max(ws-TH-WB, HX+0.02)=\u00b11.34 (clamp line 182, HX=1.32 line 137). The clamp bites from y\u22482.77 forward, narrowing the strip from 0.42 m to 0.371 m at the bulkhead (ws-TH-WB=1.2908 < 1.34 at u=0.74)",
+      "_derivation": "side decks at z=kz+dep-0.02, outer edge x=-(ws-TH), inboard width WB=0.42 m (capeIslanderIsoRig.js:314-328, WB line 316); strips run the FULL sheer u=0 (transom, y=-6.4) to u=SOLE_U=0.74 (foredeck bulkhead, y=3.072), meeting the whaleback foredeck",
+      "_note": "alongside/forward of the wheelhouse (y>HY0-0.05=0.45) the inner edge is clamped clear of the house wall: x_in=max(ws-TH-WB, HX+0.02)=\u00b11.34 (clamp line 320, HX=1.32 line 275). The clamp bites from y\u22482.77 forward, narrowing the strip from 0.42 m to 0.371 m at the bulkhead (ws-TH-WB=1.2908 < 1.34 at u=0.74)",
       "_ruled": "was _confirm: the rig's washboards ended at the house front, but the boarding ruling expects the foredeck reached 'via the washboards'. RULED: RIG CHANGE ORDERED (owner, 2026-07-22) \u2014 'capes washboards go all the way to foredeck'. Applied in the same PR: the washboards now run transom to foredeck bulkhead both sides, following the sheer, inner edge clamped clear of the house wall."
     },
     {
@@ -63,25 +64,25 @@
       "id": "bow_1",
       "type": "bow_bitt",
       "pos": [0, 5.55, 3.164],
-      "provenance": "capeIslanderIsoRig.js:208 \u2014 boxF([0, 5.55, fz(0.965)+0.05], [0.05,0.13,0.05]); pos = box centre; fz per line 199 (DROP=0.05)"
+      "provenance": "capeIslanderIsoRig.js:346 \u2014 boxF([0, 5.55, fz(0.965)+0.05], [0.05,0.13,0.05]); pos = box centre; fz per line 337 (DROP=0.05)"
     },
     {
       "id": "stern_port",
       "type": "cleat",
       "pos": [-1.33, -6.05, 1.42],
-      "provenance": "capeIslanderIsoRig.js:213 \u2014 x=\u00b1(station(0).ws-0.22), y=-6.05, z=station(0).kz+station(0).dep+0.03; pos = box centre"
+      "provenance": "capeIslanderIsoRig.js:351 \u2014 x=\u00b1(station(0).ws-0.22), y=-6.05, z=station(0).kz+station(0).dep+0.03; pos = box centre"
     },
     {
       "id": "stern_star",
       "type": "cleat",
       "pos": [1.33, -6.05, 1.42],
-      "provenance": "capeIslanderIsoRig.js:213 (starboard of the same pair)"
+      "provenance": "capeIslanderIsoRig.js:351 (starboard of the same pair)"
     }
   ],
   "_excluded": [
-    "hauling block + roller (line 251-253) \u2014 hauling gear, not a tie-off"
+    "hauling block + roller (line 389-390) \u2014 hauling gear, not a tie-off"
   ],
   "_notes": [
-    "cockpit obstructions (not modelled as polygon holes): engine box amidships x\u00b10.62, y -1.97..-0.53, to z 1.15 (line 210-211); exhaust stack at [0.86, 0.34] (line 244)"
+    "cockpit obstructions (not modelled as polygon holes): engine box amidships x\u00b10.62, y -1.97..-0.53, to z 1.15 (line 348-349); exhaust stack at [0.86, 0.34] (line 382)"
   ]
 }

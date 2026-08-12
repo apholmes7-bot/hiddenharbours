@@ -128,15 +128,17 @@ namespace HiddenHarbours.Tests.PlayMode
                 //     drop all four painted boats were lobster boats, so a fixture asserting only
                 //     "two or more are painted" passed while three berths sat in gelcoat.
                 //
-                //     ⚠️ Two meshes, not three, and the third is not an art gap: the console skiff's
+                //     ⚠️ ONE berth is still plain, and it is not an art gap: the console skiff's
                 //     nine schemes are baked and proven, but nobody at this wharf owns a boat drawn
                 //     from hullmesh.console_iso — Celeste Bernard's boat.fishing_skiff resolves to
                 //     visual.fishing_boat, a legacy SPRITE-only visual. Paint lives on the mesh path,
                 //     so it cannot reach her at all. See the PR body; it is a world-content call.
-                Assert.AreEqual(moored.Length - 2, painted.Length,
-                    $"{painted.Length} of {moored.Length} boats at the wharf wear paint. TWO are " +
-                    "expected to be plain — Marie Gallant (no paint axis in her rig) and Celeste " +
-                    "Bernard (no hull mesh on her boat at all). Unpainted: [" +
+                //     The Cape Islander's paint axis (2026-08-12) closed the other gap, so this count
+                //     moved from -2 to -1 and Marie Gallant is in `painted` for the first time.
+                Assert.AreEqual(moored.Length - 1, painted.Length,
+                    $"{painted.Length} of {moored.Length} boats at the wharf wear paint. Exactly ONE " +
+                    "is expected to be plain — Celeste Bernard, whose boat has no hull mesh at all, " +
+                    "so paint cannot reach her. Unpainted: [" +
                     string.Join(", ", moored.Where(m => m.Owner.HullPaint == null)
                                             .Select(m => m.Owner.Id)) + "]");
 
@@ -147,10 +149,14 @@ namespace HiddenHarbours.Tests.PlayMode
                     .Distinct()
                     .OrderBy(s => s)
                     .ToArray();
-                Assert.GreaterOrEqual(meshes.Length, 2,
-                    "The painted boats at this wharf come off fewer than two distinct hull meshes — " +
-                    $"found [{string.Join(", ", meshes)}]. The lobster boat and the punt both have " +
-                    "owners and paint axes; if one is missing, a bake or an assignment was lost.");
+                CollectionAssert.AreEqual(
+                    new[] { "hullmesh.cape_islander_iso", "hullmesh.lobster_boat_iso", "hullmesh.punt_iso" },
+                    meshes,
+                    "The hull meshes wearing paint at this wharf have moved — found " +
+                    $"[{string.Join(", ", meshes)}]. The lobster boat, the punt and the Cape Islander " +
+                    "all have owners and paint axes; if one is missing, a bake or an assignment was " +
+                    "lost. Pinned as a SET rather than a floor because a >= 2 would have gone on " +
+                    "passing through the very drop that added the third.");
                 Debug.Log($"[wharf-proof] paint spans {meshes.Length} hull meshes: " +
                           string.Join(", ", meshes));
 

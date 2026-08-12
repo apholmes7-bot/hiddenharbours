@@ -1,0 +1,161 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee76649f87a8cfd4890261ca9a64ffa3, type: 3}
+  m_Name: CapeIslanderIso_SlipwayBlack
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.HullPaintSchemeDef
+  Id: paint.cape_slipway_black
+  Label: Slipway Black
+  Note: "tarred topsides, red bottom, white cove \u2014 the hard-used one"
+  HullMeshId: hullmesh.cape_islander_iso
+  SourceRigPath: docs/art/rigs/capeIslanderIsoRig.js
+  RigPaintId: slipway-black
+  Ramps:
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4280557595
+    - serializedVersion: 2
+      rgba: 4280820767
+    - serializedVersion: 2
+      rgba: 4281018146
+    - serializedVersion: 2
+      rgba: 4281215525
+    - serializedVersion: 2
+      rgba: 4281412904
+    - serializedVersion: 2
+      rgba: 4282597434
+    - serializedVersion: 2
+      rgba: 4286281586
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279500884
+    - serializedVersion: 2
+      rgba: 4280162154
+    - serializedVersion: 2
+      rgba: 4280626300
+    - serializedVersion: 2
+      rgba: 4281089932
+    - serializedVersion: 2
+      rgba: 4285169863
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4285823349
+    - serializedVersion: 2
+      rgba: 4287731346
+    - serializedVersion: 2
+      rgba: 4289376428
+    - serializedVersion: 2
+      rgba: 4290955461
+    - serializedVersion: 2
+      rgba: 4292534493
+    - serializedVersion: 2
+      rgba: 4293718512
+    - serializedVersion: 2
+      rgba: 4294047476
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4281023050
+    - serializedVersion: 2
+      rgba: 4281615962
+    - serializedVersion: 2
+      rgba: 4283458671
+    - serializedVersion: 2
+      rgba: 4283396992
+    - serializedVersion: 2
+      rgba: 4284450452
+    - serializedVersion: 2
+      rgba: 4287080371
+    - serializedVersion: 2
+      rgba: 4288987853
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4280425748
+    - serializedVersion: 2
+      rgba: 4282003490
+    - serializedVersion: 2
+      rgba: 4283253299
+    - serializedVersion: 2
+      rgba: 4286211142
+    - serializedVersion: 2
+      rgba: 4288712810
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4284117358
+    - serializedVersion: 2
+      rgba: 4287078304
+    - serializedVersion: 2
+      rgba: 4289775565
+    - serializedVersion: 2
+      rgba: 4292143858
+    Offset: -1
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279704084
+    - serializedVersion: 2
+      rgba: 4280232224
+    - serializedVersion: 2
+      rgba: 4281482543
+    - serializedVersion: 2
+      rgba: 4283061571
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279702288
+    - serializedVersion: 2
+      rgba: 4280754461
+    - serializedVersion: 2
+      rgba: 4282004011
+    - serializedVersion: 2
+      rgba: 4283319613
+    - serializedVersion: 2
+      rgba: 4284701778
+    - serializedVersion: 2
+      rgba: 4286281323
+    - serializedVersion: 2
+      rgba: 4288255114
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279702288
+    - serializedVersion: 2
+      rgba: 4280754461
+    - serializedVersion: 2
+      rgba: 4282004011
+    - serializedVersion: 2
+      rgba: 4283319613
+    - serializedVersion: 2
+      rgba: 4284701778
+    - serializedVersion: 2
+      rgba: 4286281323
+    - serializedVersion: 2
+      rgba: 4288255114
+    Offset: -2
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279702288
+    - serializedVersion: 2
+      rgba: 4280754461
+    - serializedVersion: 2
+      rgba: 4282004011
+    - serializedVersion: 2
+      rgba: 4283319613
+    - serializedVersion: 2
+      rgba: 4284701778
+    - serializedVersion: 2
+      rgba: 4286281323
+    - serializedVersion: 2
+      rgba: 4288255114
+    Offset: -3

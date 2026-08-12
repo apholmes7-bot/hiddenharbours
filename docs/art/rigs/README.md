@@ -247,6 +247,21 @@ wired to nothing**:
 `DEFAULT_SCHEME` (**`harbour-white`** on both). Choosing a colourway at runtime, and the console's new
 per-material `dith` weight, are **not** modelled — see the note on that reconstruction.
 
+⚠️ **…and on the Cape Islander (2026-08-12), authored in-repo rather than imported.** She takes the same
+API — `SCHEMES` / `schemeIds` / `defaultScheme` / `palette(opts)`, the same OKLCH envelope, no shim — so
+she needed one `Reconstructions` line (`palette({}).mats`, pinned to `DEFAULT_SCHEME` **`sage-green`**)
+and one row in `HullPaintSchemeBaker.Fleet`. **Eight schemes over four painted roles** (hull 7 steps /
+boot 5 / house 7 / cove 4); sole, washboards, glass, iron and mast metal stay shared.
+The pass-1 KTC ramps ride as literals on the default, so an unset colourway is the shipped boat byte for
+byte — measured pre-vs-post in the V8 harness: table identical entry for entry and in key order,
+509-face list byte-identical, all 8 facings 0 bytes apart, committed hull mesh a no-op.
+Her `dith` weight is deliberately **not** ported either: adding it would have moved those pixels.
+
+⚠️ **`Art/Boats/CapeIslanderIso.png` is STALE** — baked in #224, before #247 ran her washboards out to the
+foredeck. It differs from her own renderer by 1,767 px (0.56% of opaque), in a band forward of amidships
+where the sheet still shows the bulwark liner and the rig now draws washboard. Pre-existing, and the paint
+axis moved it by 0 px. Same family as the stale PuntIso/ConsoleIso sheets; the re-bake is its own drop.
+
 ⚠️ **The dory's `'oars'` build is NOT "unchanged pixel-for-pixel"** as the drop's README claims. Measured
 across 192 cells / 4.79 M px: 96 of 96 hull cells differ, 34,703 px, because four additions landed in the
 shared face list and the two rowing thwarts were resized 131–145 mm narrower per side. Her oar layer and

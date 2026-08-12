@@ -14,8 +14,19 @@
    are baked from day one: helmSeat(dir,opts) -> wheelhouse operator; haulerMount(dir,opts) -> starboard
    hauling block; tubMounts(dir,opts) -> cockpit tote anchors; navMounts(dir,opts) -> {port,star,stern,
    mast} nav-light points for the night bake. Pass the hull's rock(i) values so overlays ride the wave.
+
+   PASS 2 — COLOURWAYS. Paint is data, not baked pixels, exactly as on the punt and the console skiff.
+   render(dir,{scheme:'…'}) picks a named preset; render(dir,{paint:{hull,boot,house,cove}}) mixes any
+   base colours. rampFrom(hex,n) derives the ramp in OKLCH (locked lightness curve, chroma capped at
+   C_CAP, shadows rotated cool / highlights warm) so a free colour choice cannot go off-model;
+   chipWall() is the legal swatch grid a picker offers. FOUR painted roles and no more — hull, boot,
+   house, cove — everything else (sole, washboards, glass, iron, mast metal) is shared by every scheme.
+   The DEFAULT scheme 'sage-green' carries the pass-1 ramps as literals, so an unset colourway is the
+   shipped boat byte for byte; that is the A/B control the whole kit rests on.
+
    Exposes globalThis.CapeIslanderIso = { W,H,PX,DIRS,pivot,order,ROCK,rock(i),render(dir,opts),
    helmSeat,HELM, haulerMount,HAULER, tubMounts,TUBS, navMounts,
+   SCHEMES,schemeIds,defaultScheme,palette,rampFrom,chipWall,C_CAP,
    HULL,BOOT,CREAM,WOOD,GLAS,GOLD,IRON,MOTO,KEY }. */
 (function (root) {
   const PX = 32, S = 32;
@@ -41,10 +52,137 @@
   const IRON  = ['#141a17','#20291f','#2f3d32','#43554a'];                                 // dark green-black fittings
   const MOTO  = ['#101317','#1d2127','#2b323a','#3d454e','#525c63','#6b767b','#8a9499'];  // mast, stack, metal
   const KEY   = '#0f1712';
-  const MATS = { hull:{ramp:HULL,off:0}, boot:{ramp:BOOT,off:0}, cream:{ramp:CREAM,off:0},
-                 wood:{ramp:WOOD,off:0}, glas:{ramp:GLAS,off:0}, gold:{ramp:GOLD,off:-1},
-                 iron:{ramp:IRON,off:0}, moto:{ramp:MOTO,off:0}, blk:{ramp:MOTO,off:-2}, dark:{ramp:MOTO,off:-3} };
-  const RINDEX = {}; [HULL,BOOT,CREAM,WOOD,GLAS,GOLD,IRON,MOTO].forEach(r=>r.forEach((c,i)=>{ RINDEX[c]={r,i}; }));
+  // ---- paint mixer (OKLCH): any base colour -> a fleet-legal ramp -------------------------------
+  // The envelope is puntIsoRig.js / consoleIsoRig.js's, unchanged — same lightness curve, same chroma
+  // ceiling, same hue rotations. That is not a copy for its own sake: she shares their rasteriser
+  // constants EXACTLY (GAIN 3.0, BIAS 2.7, the same LN key vector, the same 4x4 Bayer), so a ramp
+  // that is fleet-legal on the skiff is fleet-legal on her, and a harbour of mixed boats stays one
+  // harbour. The rig owns the ramp SHAPE; the caller only picks base colours.
+  const clamp01=(v)=>v<0?0:v>1?1:v;
+  const s2l=(c)=>c<=0.04045?c/12.92:Math.pow((c+0.055)/1.055,2.4);
+  const l2s=(c)=>c<=0.0031308?c*12.92:1.055*Math.pow(c,1/2.4)-0.055;
+  function hex2oklch(hex){
+    const R=s2l(parseInt(hex.slice(1,3),16)/255), G=s2l(parseInt(hex.slice(3,5),16)/255), B=s2l(parseInt(hex.slice(5,7),16)/255);
+    const l=Math.cbrt(0.4122214708*R+0.5363325363*G+0.0514459929*B);
+    const m=Math.cbrt(0.2119034982*R+0.6806995451*G+0.1073969566*B);
+    const s=Math.cbrt(0.0883024619*R+0.2817188376*G+0.6299787005*B);
+    const Lo=0.2104542553*l+0.7936177850*m-0.0040720468*s;
+    const A=1.9779984951*l-2.4285922050*m+0.4505937099*s;
+    const Bb=0.0259040371*l+0.7827717662*m-0.8086757660*s;
+    return { L:Lo, C:Math.hypot(A,Bb), h:(Math.atan2(Bb,A)*180/Math.PI+360)%360 };
+  }
+  function _lin(L2,C,h){
+    const a=C*Math.cos(h*DEG), b=C*Math.sin(h*DEG);
+    const l_=L2+0.3963377774*a+0.2158037573*b, m_=L2-0.1055613458*a-0.0638541728*b, s_=L2-0.0894841775*a-1.2914855480*b;
+    const l=l_*l_*l_, m=m_*m_*m_, s=s_*s_*s_;
+    return [ 4.0767416621*l-3.3077115913*m+0.2309699292*s,
+            -1.2684380046*l+2.6097574011*m-0.3413193965*s,
+            -0.0041960863*l-0.7034186147*m+1.7076147010*s ];
+  }
+  function oklch2hex(L2,C,h){                 // gamut-fit by walking chroma down, so hue/value survive
+    let c=C;
+    for(let i=0;i<14;i++){ const v=_lin(L2,c,h); if(v.every(x=>x>=-0.002&&x<=1.002)) break; c*=0.9; }
+    const v=_lin(L2,c,h).map(x=>('0'+Math.round(clamp01(l2s(x))*255).toString(16)).slice(-2));
+    return '#'+v.join('');
+  }
+  const HUE_WARM=92, HUE_COOL=258;           // key light / sky fill — every ramp in the fleet leans these ways
+  const C_CAP=0.115;                         // saturation ceiling: no neon paint in this harbour
+  function rotToward(h,t,amt){ const d=((t-h+540)%360)-180; return (h+d*amt+360)%360; }
+  function rampFrom(hex, n, o){
+    o=o||{};
+    const anchor=o.anchor!=null?o.anchor:0.78, g=o.gamma||0.88, b=hex2oklch(hex);
+    const C0=Math.min(b.C, o.cap!=null?o.cap:C_CAP);
+    const Ldk=Math.max(0.24, b.L*(o.floor!=null?o.floor:0.60));
+    const Lhi=Math.min(0.985, b.L+(1-b.L)*(o.ceil!=null?o.ceil:0.38));
+    const out=[];
+    for(let i=0;i<n;i++){
+      const t=i/(n-1), k=t-anchor;
+      let Lv = t<anchor ? Ldk+(b.L-Ldk)*Math.pow(t/anchor,g) : b.L+(Lhi-b.L)*((t-anchor)/(1-anchor));
+      const C = Math.max(0.003, C0*(k<0 ? 1+0.10*(-k) : 1-0.55*k));
+      const h = rotToward(b.h, k<0?HUE_COOL:HUE_WARM, Math.min(0.14, Math.abs(k)*0.20));
+      let hx = oklch2hex(Lv,C,h);
+      for(let s=0; s<6 && out.length && hx===out[out.length-1]; s++){ Lv=Math.min(0.99,Lv+0.022); hx=oklch2hex(Lv,C,h); }
+      out.push(hx);
+    }
+    return out;
+  }
+  // the legal swatch grid a picker offers: chroma peaks midtone, neutral column first
+  const CHIP_HUES=[null,22,48,84,132,172,196,232,268,318];
+  const CHIP_L=[0.30,0.44,0.57,0.70,0.83,0.94];
+  function chipWall(){
+    return CHIP_L.map(Lv=>CHIP_HUES.map(h=>{
+      if(h==null) return oklch2hex(Lv,0.006,236);
+      const env=Math.sin(Math.PI*clamp01((Lv-0.10)/0.88));
+      return oklch2hex(Lv, Math.min(C_CAP, 0.018+0.098*env), h);
+    }));
+  }
+
+  // ---- colourways: presets are just base colours; the mixer derives the ramps -------------------
+  // FOUR painted roles on this hull and no more:
+  //   hull  = topsides (7 steps)          boot  = boot-top + bottom (5)
+  //   house = wheelhouse + bulwark liner (7)   cove = the cove line / brass (4)
+  // Everything else — the wood sole, washboards and covering board, the glass, the iron fittings,
+  // the mast/stack metal, and the two MOTO-derived darks (blk, dark) — is paint-INDEPENDENT and
+  // shared by every scheme. That is what keeps eight repaints reading as one boat in eight colours
+  // rather than as eight boats, and it is the same split the lobster kit and the small craft use.
+  //
+  // ⚠️ The default carries its ramps as LITERALS. 'sage-green' IS the pass-1 KTC bake — the same four
+  // arrays that were the MATS const before paint existed — so an unset colourway resolves to the
+  // shipped boat exactly, not to the mixer's nearest guess at it. Its `hull`/`boot`/`house`/`cove`
+  // hexes below are the step each ramp's own anchor (t=0.78) lands on, quoted so `palette().base`
+  // reports something honest; they are never used to derive anything while `ramps` is present.
+  const SCHEMES = {
+    'sage-green':    { name:'Sage Green', hull:'#98b8a3', boot:'#2d4738', house:'#efe9d7', cove:'#d9a838',
+                       ramps:{ hull:HULL, boot:BOOT, house:CREAM, cove:GOLD },   // pass-1 KTC bake, kept exact
+                       note:'the boat off the slice — sage topsides, dark-green boot, gold cove, cream house' },
+    'banks-white':   { name:'Banks White',    hull:'#eef0ea', boot:'#2d4738', house:'#e6ddc6', cove:'#e0b13a',
+                       note:'white topsides over her own green boot — half a Cape Island wharf in one scheme' },
+    'bottle-green':  { name:'Bottle Green',   hull:'#31694c', boot:'#16281d', house:'#efe9d7', cove:'#e0b13a',
+                       note:'deep bottle topsides, cream house, gold cove — a boat with money kept in her' },
+    'wharf-teal':    { name:'Wharf Teal',     hull:'#2ba39a', boot:'#22354a', house:'#eef0ea', cove:'#e0b13a',
+                       note:'the fleet teal carried up onto a big hull, white house standing over it' },
+    'salt-cod':      { name:'Salt Cod',       hull:'#e3d1a4', boot:'#8f3527', house:'#f6f1e3', cove:'#3b3a33',
+                       note:'buff topsides over an oxblood bottom, dark cove — a dory scheme grown up' },
+    'slipway-black': { name:'Slipway Black',  hull:'#2a2f33', boot:'#8c3f2c', house:'#eef0ea', cove:'#e6ddc6',
+                       note:'tarred topsides, red bottom, white cove — the hard-used one' },
+    'mackerel':      { name:'Mackerel',       hull:'#42848c', boot:'#1b2c33', house:'#d5cfb7', cove:'#e0b13a',
+                       note:'blue-green topsides the colour of a mackerel’s back, buff house' },
+    'herring-gull':  { name:'Herring Gull',   hull:'#c8ccc6', boot:'#1e2124', house:'#f6f1e3', cove:'#a8452f',
+                       note:'gull-grey topsides, near-black bottom, a red cove line' },
+  };
+  const DEFAULT_SCHEME='sage-green';
+
+  const _pal={}; let _palOrder=[];
+  function palette(o){
+    o=o||{};
+    const DF=SCHEMES[DEFAULT_SCHEME];
+    const base = o.paint || SCHEMES[o.scheme] || DF;
+    const hull=base.hull||DF.hull, boot=base.boot||DF.boot,
+          house=base.house||DF.house, cove=base.cove||DF.cove;
+    const key=[hull,boot,house,cove,base.ramps?'baked':'mix'].join('|');
+    if(_pal[key]) return _pal[key];
+    const R=base.ramps||{};
+    const hullR=R.hull||rampFrom(hull,7), bootR=R.boot||rampFrom(boot,5,{anchor:0.75}),
+          houseR=R.house||rampFrom(house,7), coveR=R.cove||rampFrom(cove,4,{anchor:0.85});
+    // ⚠️ KEY ORDER IS LOAD-BEARING and this is the pre-paint MATS order, entry for entry: the face
+    // packer resolves an unknown material name to index 0, and the baked scheme tables are matched to
+    // the hull mesh's materials POSITIONALLY. Reordering this line repaints the glass with the boot.
+    const mats = { hull:{ramp:hullR,off:0}, boot:{ramp:bootR,off:0}, cream:{ramp:houseR,off:0},
+                   wood:{ramp:WOOD,off:0}, glas:{ramp:GLAS,off:0}, gold:{ramp:coveR,off:-1},
+                   iron:{ramp:IRON,off:0}, moto:{ramp:MOTO,off:0}, blk:{ramp:MOTO,off:-2}, dark:{ramp:MOTO,off:-3} };
+    // ⚠️ LAST write wins, and the ramp order is the pre-paint RINDEX's, unchanged. This table is only
+    // read by the keyline edge pass (it darkens the far side of a depth step by two ramp steps), so a
+    // first-wins rule or a reordered list would move pixels wherever two ramps share a colour.
+    const rindex={};
+    [hullR,bootR,houseR,WOOD,GLAS,coveR,IRON,MOTO].forEach(r=>r.forEach((c,i)=>{ rindex[c]={r,i}; }));
+    const out={ key, id:o.paint?'custom':(SCHEMES[o.scheme]?o.scheme:DEFAULT_SCHEME), name:base.name||'Custom',
+                base:{hull,boot,house,cove}, note:base.note||'',
+                ramps:{hull:hullR,boot:bootR,house:houseR,cove:coveR}, mats, rindex };
+    _pal[key]=out; _palOrder.push(key);
+    if(_palOrder.length>24){ delete _pal[_palOrder.shift()]; }
+    return out;
+  }
+
   const GAIN = 3.0, BIAS = 2.7;
   const LN = (() => { const v=[-0.42,0.72,0.52]; const m=Math.hypot(...v); return v.map(c=>c/m); })();
   const BAYER = [[0,8,2,10],[12,4,14,6],[3,11,1,9],[15,7,13,5]].map(r=>r.map(v=>(v+0.5)/16));
@@ -278,6 +416,7 @@
   }
   function _paint(faces, opts, doEdge, G){
     const PW=G?G.W:W, PH=G?G.H:H;
+    const pal=palette(opts), MATS=pal.mats, RINDEX=pal.rindex;   // colour resolves per render, not per rig
     const B=camBasis(opts);
     const zbuf=new Float32Array(PW*PH).fill(Infinity);
     const col=new Array(PW*PH).fill(null);
@@ -390,5 +529,6 @@
 
   root.CapeIslanderIso = { W, H, PX, DIRS:8, pivot:{x:cx,y:cy}, defaultElev:DEFAULT_ELEV,
     order:['N','NE','E','SE','S','SW','W','NW'], HULL, BOOT, CREAM, WOOD, GLAS, GOLD, IRON, MOTO, KEY,
-    render, ROCK, rock:rockMotion, helmSeat, HELM, haulerMount, HAULER, tubMounts, TUBS, navMounts };
+    render, ROCK, rock:rockMotion, helmSeat, HELM, haulerMount, HAULER, tubMounts, TUBS, navMounts,
+    SCHEMES, schemeIds:Object.keys(SCHEMES), defaultScheme:DEFAULT_SCHEME, palette, rampFrom, chipWall, C_CAP };
 })(typeof globalThis!=='undefined'?globalThis:window);
