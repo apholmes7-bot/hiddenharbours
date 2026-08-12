@@ -16,6 +16,7 @@ MonoBehaviour:
   DisplayName: Dan Peters
   Boat: {fileID: 11400000, guid: 56763855233000b49ba3a133ea0de86f, type: 2}
   BuoyScheme: Punt
+  HullPaint: {fileID: 11400000, guid: 7128dba98a7a3e1479bbe9aa70bc261c, type: 2}
   Prosperity: 0
   ShedFootprintMetres: 4.5
   LotIndex: 6

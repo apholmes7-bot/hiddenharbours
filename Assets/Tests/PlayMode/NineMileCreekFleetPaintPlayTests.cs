@@ -121,29 +121,94 @@ namespace HiddenHarbours.Tests.PlayMode
                 $"'{plain.Id}' wears no paint but the seam was handed '{_service.LastScheme?.Id}'.");
         }
 
-        /// <summary>Two owners, two schemes, one shared mesh — the property the wharf actually needs,
-        /// asserted directly rather than inferred from a screenshot.</summary>
+        /// <summary>
+        /// Two owners, two schemes, one shared mesh — the property the wharf actually needs, asserted
+        /// directly rather than inferred from a screenshot.
+        ///
+        /// <para><b>⚠️ The pair is now SELECTED for a shared mesh instead of assumed to have one.</b>
+        /// This test used to take the first two painted owners by id and close by asserting they
+        /// shared a hull — guaranteed only while every painted boat in the register was a lobster
+        /// boat, which stopped being true when the punt gained an owner.
+        ///
+        /// <para>It is NOT red today, and only by luck of the alphabet: the two lowest painted ids
+        /// (<c>arsenault_leo</c>, <c>campbell_hughie</c>) are both lobster boats. It DID go red
+        /// mid-branch, when a second small-craft owner was briefly in the register, which is how the
+        /// latent assumption surfaced. Selecting the pair states the premise instead of relying on
+        /// it, and the cross-hull case this can no longer cover gets its own test below.</para>
+        /// </summary>
         [UnityTest]
         public IEnumerator TwoOwnersWakeInTwoDifferentPaints()
         {
-            var painted = Owners().Where(o => o.HullPaint != null && o.IsPresentable()).Take(2).ToArray();
-            if (painted.Length < 2) Assert.Ignore("Fewer than two painted owners in the register.");
+            var pair = Owners()
+                .Where(o => o.HullPaint != null && o.IsPresentable() && o.Boat.Visual.HullMesh != null)
+                .GroupBy(o => o.Boat.Visual.HullMesh)
+                .FirstOrDefault(grp => grp.Count() >= 2)
+                ?.Take(2).ToArray();
+            if (pair == null)
+                Assert.Ignore("No two painted owners in the register share a hull mesh.");
 
-            Wake(painted[0], "MooredA");
+            Wake(pair[0], "MooredA");
             yield return null;
             var first = _service.LastScheme;
 
-            Wake(painted[1], "MooredB");
+            Wake(pair[1], "MooredB");
             yield return null;
             var second = _service.LastScheme;
 
             Assert.AreEqual(2, _service.Installs, "Both boats must have drawn.");
-            Assert.AreSame(painted[0].HullPaint, first, $"'{painted[0].Id}' got the wrong table.");
-            Assert.AreSame(painted[1].HullPaint, second, $"'{painted[1].Id}' got the wrong table.");
+            Assert.AreSame(pair[0].HullPaint, first, $"'{pair[0].Id}' got the wrong table.");
+            Assert.AreSame(pair[1].HullPaint, second, $"'{pair[1].Id}' got the wrong table.");
             Assert.AreNotSame(first, second,
                 "Both owners were handed the same ramp table — they would lie at the wharf identical.");
-            Assert.AreSame(painted[0].Boat.Visual.HullMesh, painted[1].Boat.Visual.HullMesh,
-                "This fixture is only interesting while both boats share ONE mesh; they no longer do.");
+            Assert.AreSame(pair[0].Boat.Visual.HullMesh, pair[1].Boat.Visual.HullMesh,
+                "The pair was selected for a shared mesh, so this cannot fail without the selection " +
+                "above being wrong.");
+        }
+
+        /// <summary>
+        /// The other half, and the one the small-craft drop makes possible: two owners on DIFFERENT
+        /// meshes each get their own table, and neither table would be accepted by the other's hull.
+        ///
+        /// <para>Worth its own test because the failure mode is specific and silent. A scheme is a ramp
+        /// table matched to a hull BY INDEX, and the punt and the lobster boat both have exactly ELEVEN
+        /// materials — so a mix-up between those two passes every arity check the renderer makes and
+        /// simply draws the wrong colours on the wrong panels. With one painted hull in the register
+        /// that could not happen; with three it can, and only the hull id stands in the way.</para>
+        /// </summary>
+        [UnityTest]
+        public IEnumerator OwnersOnDifferentHullsEachGetTheirOwnTable()
+        {
+            var byMesh = Owners()
+                .Where(o => o.HullPaint != null && o.IsPresentable() && o.Boat.Visual.HullMesh != null)
+                .GroupBy(o => o.Boat.Visual.HullMesh)
+                .Select(grp => grp.First())
+                .Take(2).ToArray();
+            if (byMesh.Length < 2)
+                Assert.Ignore("The register's painted boats all come off one hull mesh.");
+
+            Wake(byMesh[0], "MooredHullA");
+            yield return null;
+            var first = _service.LastScheme;
+
+            Wake(byMesh[1], "MooredHullB");
+            yield return null;
+            var second = _service.LastScheme;
+
+            Assert.AreEqual(2, _service.Installs, "Both boats must have drawn.");
+            Assert.AreNotSame(byMesh[0].Boat.Visual.HullMesh, byMesh[1].Boat.Visual.HullMesh,
+                "These two were selected off different meshes.");
+            Assert.AreSame(byMesh[0].HullPaint, first,
+                $"'{byMesh[0].Id}' ({byMesh[0].Boat.Visual.HullMesh.Id}) got the wrong table.");
+            Assert.AreSame(byMesh[1].HullPaint, second,
+                $"'{byMesh[1].Id}' ({byMesh[1].Boat.Visual.HullMesh.Id}) got the wrong table.");
+
+            Assert.IsTrue(first.IsUsableFor(byMesh[0].Boat.Visual.HullMesh),
+                $"'{first.Id}' cannot repaint its own hull: " +
+                first.ExplainUnusableFor(byMesh[0].Boat.Visual.HullMesh));
+            Assert.IsFalse(first.IsUsableFor(byMesh[1].Boat.Visual.HullMesh),
+                $"'{first.Id}' was baked for '{byMesh[0].Boat.Visual.HullMesh.Id}' but is accepted by " +
+                $"'{byMesh[1].Boat.Visual.HullMesh.Id}'. Ramps match by INDEX and these two hulls can " +
+                "have equal material counts, so this is the check that stops a silent miscolour.");
         }
 
         // ---- doubles ------------------------------------------------------------------------------
@@ -162,10 +227,40 @@ namespace HiddenHarbours.Tests.PlayMode
                 return _renderer;
             }
 
-            public IHullPropRenderer AttachProp(GameObject host, HullPropMeshDef def, string slot) => null;
+            /// <summary>
+            /// ⚠️ Returns a renderer, not null — null is the REFUSAL contract, and this double is not
+            /// refusing anything.
+            ///
+            /// <para>It used to return null and no test noticed, because the only painted hull in the
+            /// register was the lobster boat and she carries no articulated fitting. Dan Peters's punt
+            /// does: <c>BoatHullSkinner</c> asks for her outboard, reads the null as "the presentation
+            /// service refused it", and logs <c>[Error] Visual 'visual.punt_iso_basic' is a MESH hull
+            /// whose outboard could not be attached … Removing the engine</c> — which fails the test on
+            /// an unhandled error message. The defect was in the double, not the boat: the real service
+            /// attaches fittings, so the stand-in must too. Silencing the log instead would have
+            /// suppressed a genuine error channel these fixtures rely on.</para>
+            /// </summary>
+            public IHullPropRenderer AttachProp(GameObject host, HullPropMeshDef def, string slot)
+            {
+                PropsAttached++;
+                return _prop;
+            }
+
+            public int PropsAttached;
+            readonly FakePropRenderer _prop = new FakePropRenderer();
+
             public void DetachProps(GameObject host) { }
             public void DetachProp(GameObject host, string slot) { }
             public void Remove(GameObject host) { }
+        }
+
+        sealed class FakePropRenderer : IHullPropRenderer
+        {
+            public Quaternion LocalRotation { get; set; } = Quaternion.identity;
+            public float LateralOffsetMeters { get; set; }
+            public Vector3 FitmentOffsetMeters { get; set; }
+            public bool Visible { get; set; } = true;
+            public bool IsConfigured => true;
         }
 
         sealed class FakeRenderer : IHullMeshRenderer, IDeckOccupantSlots

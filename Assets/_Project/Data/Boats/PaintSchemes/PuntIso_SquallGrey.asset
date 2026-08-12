@@ -1,0 +1,169 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee76649f87a8cfd4890261ca9a64ffa3, type: 3}
+  m_Name: PuntIso_SquallGrey
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.HullPaintSchemeDef
+  Id: paint.punt_squall_grey
+  Label: Squall Grey
+  Note: workaday grey-blue, deck-grey interior
+  HullMeshId: hullmesh.punt_iso
+  SourceRigPath: docs/art/rigs/puntIsoRig.js
+  RigPaintId: squall-grey
+  Ramps:
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4283648829
+    - serializedVersion: 2
+      rgba: 4284964432
+    - serializedVersion: 2
+      rgba: 4286017376
+    - serializedVersion: 2
+      rgba: 4287070064
+    - serializedVersion: 2
+      rgba: 4288122496
+    - serializedVersion: 2
+      rgba: 4289372819
+    - serializedVersion: 2
+      rgba: 4291215537
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4281671693
+    - serializedVersion: 2
+      rgba: 4282198037
+    - serializedVersion: 2
+      rgba: 4282658588
+    - serializedVersion: 2
+      rgba: 4283053346
+    - serializedVersion: 2
+      rgba: 4287659367
+    Offset: -1
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4284507745
+    - serializedVersion: 2
+      rgba: 4288521632
+    - serializedVersion: 2
+      rgba: 4292403421
+    Offset: -3
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279369801
+    - serializedVersion: 2
+      rgba: 4280031069
+    - serializedVersion: 2
+      rgba: 4280494445
+    - serializedVersion: 2
+      rgba: 4280957564
+    - serializedVersion: 2
+      rgba: 4285169083
+    Offset: -1
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4283190593
+    - serializedVersion: 2
+      rgba: 4284506710
+    - serializedVersion: 2
+      rgba: 4285690984
+    - serializedVersion: 2
+      rgba: 4286809465
+    - serializedVersion: 2
+      rgba: 4287928203
+    - serializedVersion: 2
+      rgba: 4289244064
+    - serializedVersion: 2
+      rgba: 4290691511
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279969587
+    - serializedVersion: 2
+      rgba: 4280759879
+    - serializedVersion: 2
+      rgba: 4281353822
+    - serializedVersion: 2
+      rgba: 4281683819
+    - serializedVersion: 2
+      rgba: 4282935946
+    - serializedVersion: 2
+      rgba: 4283660442
+    - serializedVersion: 2
+      rgba: 4283597737
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279179296
+    - serializedVersion: 2
+      rgba: 4279509034
+    - serializedVersion: 2
+      rgba: 4280036410
+    Offset: -2
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279702288
+    - serializedVersion: 2
+      rgba: 4280754461
+    - serializedVersion: 2
+      rgba: 4282004011
+    - serializedVersion: 2
+      rgba: 4283319613
+    - serializedVersion: 2
+      rgba: 4284701778
+    - serializedVersion: 2
+      rgba: 4286281323
+    - serializedVersion: 2
+      rgba: 4288255114
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279702288
+    - serializedVersion: 2
+      rgba: 4280754461
+    - serializedVersion: 2
+      rgba: 4282004011
+    - serializedVersion: 2
+      rgba: 4283319613
+    - serializedVersion: 2
+      rgba: 4284701778
+    - serializedVersion: 2
+      rgba: 4286281323
+    - serializedVersion: 2
+      rgba: 4288255114
+    Offset: -2
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279111754
+    - serializedVersion: 2
+      rgba: 4279573116
+    - serializedVersion: 2
+      rgba: 4279968936
+    - serializedVersion: 2
+      rgba: 4280694479
+    - serializedVersion: 2
+      rgba: 4282144738
+    Offset: -1
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4285557341
+    - serializedVersion: 2
+      rgba: 4287663230
+    - serializedVersion: 2
+      rgba: 4289835171
+    - serializedVersion: 2
+      rgba: 4291481026
+    - serializedVersion: 2
+      rgba: 4292863453
+    - serializedVersion: 2
+      rgba: 4293587182
+    - serializedVersion: 2
+      rgba: 4294179063
+    Offset: 0
