@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 825beb7e63856174e8e43fc81e6c248c, type: 3}
+  m_Name: skid_s1200_diesel
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.FuelContainerDef
+  Id: fuelstore.diesel_skid_s1200
+  DisplayName: 1.2 kL Diesel Skid Tank
+  VesselType: skid
+  SizeKey: s1200
+  Grade: diesel
+  LevelRead: tube
+  Carriable: 0
+  CapacityLitres: 1200
+  TareKg: 170
+  FullKg: 1178
+  Facings: 4
+  FillFractions:
+  - 0
+  - 0.25
+  - 0.5
+  - 0.75
+  - 1
+  Frames:
+  - {fileID: 1414661803, guid: abaf733fc763560409ce99a52c9e646a, type: 3}
+  - {fileID: 1384875484, guid: abaf733fc763560409ce99a52c9e646a, type: 3}
+  - {fileID: 1512516604, guid: abaf733fc763560409ce99a52c9e646a, type: 3}
+  - {fileID: 260380250, guid: abaf733fc763560409ce99a52c9e646a, type: 3}
+  - {fileID: 145564706, guid: abaf733fc763560409ce99a52c9e646a, type: 3}
+  - {fileID: 996072448, guid: abaf733fc763560409ce99a52c9e646a, type: 3}
+  - {fileID: -635660818, guid: abaf733fc763560409ce99a52c9e646a, type: 3}
+  - {fileID: -463230382, guid: abaf733fc763560409ce99a52c9e646a, type: 3}
+  - {fileID: -908096331, guid: abaf733fc763560409ce99a52c9e646a, type: 3}
+  - {fileID: 813922613, guid: abaf733fc763560409ce99a52c9e646a, type: 3}
+  - {fileID: -2019327029, guid: abaf733fc763560409ce99a52c9e646a, type: 3}
+  - {fileID: 1204634472, guid: abaf733fc763560409ce99a52c9e646a, type: 3}
+  - {fileID: 360557560, guid: abaf733fc763560409ce99a52c9e646a, type: 3}
+  - {fileID: -1736949856, guid: abaf733fc763560409ce99a52c9e646a, type: 3}
+  - {fileID: -58752607, guid: abaf733fc763560409ce99a52c9e646a, type: 3}
+  - {fileID: 778595565, guid: abaf733fc763560409ce99a52c9e646a, type: 3}
+  - {fileID: -1777715772, guid: abaf733fc763560409ce99a52c9e646a, type: 3}
+  - {fileID: 1634246098, guid: abaf733fc763560409ce99a52c9e646a, type: 3}
+  - {fileID: -1910760264, guid: abaf733fc763560409ce99a52c9e646a, type: 3}
+  - {fileID: 1870149837, guid: abaf733fc763560409ce99a52c9e646a, type: 3}

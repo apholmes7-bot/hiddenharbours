@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 825beb7e63856174e8e43fc81e6c248c, type: 3}
+  m_Name: tote_s1000_gas
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.FuelContainerDef
+  Id: fuelstore.gas_tote_s1000
+  DisplayName: 1 kL Gas Tote
+  VesselType: tote
+  SizeKey: s1000
+  Grade: gas
+  LevelRead: body
+  Carriable: 0
+  CapacityLitres: 1000
+  TareKg: 62
+  FullKg: 807
+  Facings: 4
+  FillFractions:
+  - 0
+  - 0.25
+  - 0.5
+  - 0.75
+  - 1
+  Frames:
+  - {fileID: 354614550, guid: bf9a8e2057110da49b9763edd414e03a, type: 3}
+  - {fileID: -90221711, guid: bf9a8e2057110da49b9763edd414e03a, type: 3}
+  - {fileID: -825585508, guid: bf9a8e2057110da49b9763edd414e03a, type: 3}
+  - {fileID: -1476238021, guid: bf9a8e2057110da49b9763edd414e03a, type: 3}
+  - {fileID: 1387025847, guid: bf9a8e2057110da49b9763edd414e03a, type: 3}
+  - {fileID: -1691248323, guid: bf9a8e2057110da49b9763edd414e03a, type: 3}
+  - {fileID: -1856739228, guid: bf9a8e2057110da49b9763edd414e03a, type: 3}
+  - {fileID: 1905112024, guid: bf9a8e2057110da49b9763edd414e03a, type: 3}
+  - {fileID: 640494651, guid: bf9a8e2057110da49b9763edd414e03a, type: 3}
+  - {fileID: 203515361, guid: bf9a8e2057110da49b9763edd414e03a, type: 3}
+  - {fileID: -1533870173, guid: bf9a8e2057110da49b9763edd414e03a, type: 3}
+  - {fileID: 1895795208, guid: bf9a8e2057110da49b9763edd414e03a, type: 3}
+  - {fileID: -1340652574, guid: bf9a8e2057110da49b9763edd414e03a, type: 3}
+  - {fileID: 526716331, guid: bf9a8e2057110da49b9763edd414e03a, type: 3}
+  - {fileID: 581411524, guid: bf9a8e2057110da49b9763edd414e03a, type: 3}
+  - {fileID: -944404186, guid: bf9a8e2057110da49b9763edd414e03a, type: 3}
+  - {fileID: 962546514, guid: bf9a8e2057110da49b9763edd414e03a, type: 3}
+  - {fileID: -526918248, guid: bf9a8e2057110da49b9763edd414e03a, type: 3}
+  - {fileID: 129773909, guid: bf9a8e2057110da49b9763edd414e03a, type: 3}
+  - {fileID: -414770670, guid: bf9a8e2057110da49b9763edd414e03a, type: 3}

@@ -1,0 +1,72 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 825beb7e63856174e8e43fc81e6c248c, type: 3}
+  m_Name: jerry_s25_oil
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.FuelContainerDef
+  Id: fuelstore.oil_jerry_s25
+  DisplayName: 25 L Oil Can
+  VesselType: jerry
+  SizeKey: s25
+  Grade: oil
+  LevelRead: body
+  Carriable: 1
+  CapacityLitres: 25
+  TareKg: 2.7
+  FullKg: 24.82
+  Facings: 8
+  FillFractions:
+  - 0
+  - 0.25
+  - 0.5
+  - 0.75
+  - 1
+  Frames:
+  - {fileID: -959724728, guid: 467838a4cc8dbbc40b136bb231b8f360, type: 3}
+  - {fileID: -1760368477, guid: 467838a4cc8dbbc40b136bb231b8f360, type: 3}
+  - {fileID: -149655095, guid: 467838a4cc8dbbc40b136bb231b8f360, type: 3}
+  - {fileID: 1485197112, guid: 467838a4cc8dbbc40b136bb231b8f360, type: 3}
+  - {fileID: -197362722, guid: 467838a4cc8dbbc40b136bb231b8f360, type: 3}
+  - {fileID: -1935771658, guid: 467838a4cc8dbbc40b136bb231b8f360, type: 3}
+  - {fileID: -320901265, guid: 467838a4cc8dbbc40b136bb231b8f360, type: 3}
+  - {fileID: -1415655152, guid: 467838a4cc8dbbc40b136bb231b8f360, type: 3}
+  - {fileID: 1175706516, guid: 467838a4cc8dbbc40b136bb231b8f360, type: 3}
+  - {fileID: -56333635, guid: 467838a4cc8dbbc40b136bb231b8f360, type: 3}
+  - {fileID: 1661941497, guid: 467838a4cc8dbbc40b136bb231b8f360, type: 3}
+  - {fileID: 2055899549, guid: 467838a4cc8dbbc40b136bb231b8f360, type: 3}
+  - {fileID: -835860530, guid: 467838a4cc8dbbc40b136bb231b8f360, type: 3}
+  - {fileID: -2090111410, guid: 467838a4cc8dbbc40b136bb231b8f360, type: 3}
+  - {fileID: 142066390, guid: 467838a4cc8dbbc40b136bb231b8f360, type: 3}
+  - {fileID: 1352726164, guid: 467838a4cc8dbbc40b136bb231b8f360, type: 3}
+  - {fileID: 1880102548, guid: 467838a4cc8dbbc40b136bb231b8f360, type: 3}
+  - {fileID: 1924683763, guid: 467838a4cc8dbbc40b136bb231b8f360, type: 3}
+  - {fileID: -552056106, guid: 467838a4cc8dbbc40b136bb231b8f360, type: 3}
+  - {fileID: 1380999380, guid: 467838a4cc8dbbc40b136bb231b8f360, type: 3}
+  - {fileID: -1628415031, guid: 467838a4cc8dbbc40b136bb231b8f360, type: 3}
+  - {fileID: 730933704, guid: 467838a4cc8dbbc40b136bb231b8f360, type: 3}
+  - {fileID: 1848496375, guid: 467838a4cc8dbbc40b136bb231b8f360, type: 3}
+  - {fileID: 875645157, guid: 467838a4cc8dbbc40b136bb231b8f360, type: 3}
+  - {fileID: -1243884714, guid: 467838a4cc8dbbc40b136bb231b8f360, type: 3}
+  - {fileID: 1131431866, guid: 467838a4cc8dbbc40b136bb231b8f360, type: 3}
+  - {fileID: 1423581330, guid: 467838a4cc8dbbc40b136bb231b8f360, type: 3}
+  - {fileID: 1039759271, guid: 467838a4cc8dbbc40b136bb231b8f360, type: 3}
+  - {fileID: -1438565365, guid: 467838a4cc8dbbc40b136bb231b8f360, type: 3}
+  - {fileID: -366615781, guid: 467838a4cc8dbbc40b136bb231b8f360, type: 3}
+  - {fileID: 855991991, guid: 467838a4cc8dbbc40b136bb231b8f360, type: 3}
+  - {fileID: 975453790, guid: 467838a4cc8dbbc40b136bb231b8f360, type: 3}
+  - {fileID: -1722325872, guid: 467838a4cc8dbbc40b136bb231b8f360, type: 3}
+  - {fileID: -1822721913, guid: 467838a4cc8dbbc40b136bb231b8f360, type: 3}
+  - {fileID: 96572134, guid: 467838a4cc8dbbc40b136bb231b8f360, type: 3}
+  - {fileID: -971771194, guid: 467838a4cc8dbbc40b136bb231b8f360, type: 3}
+  - {fileID: -1100533256, guid: 467838a4cc8dbbc40b136bb231b8f360, type: 3}
+  - {fileID: 43143422, guid: 467838a4cc8dbbc40b136bb231b8f360, type: 3}
+  - {fileID: 969459250, guid: 467838a4cc8dbbc40b136bb231b8f360, type: 3}
+  - {fileID: -2140631022, guid: 467838a4cc8dbbc40b136bb231b8f360, type: 3}
