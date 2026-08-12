@@ -1,0 +1,593 @@
+fileFormatVersion: 2
+guid: f0009f4ab9fe65547b49e0ad31269511
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -3295073161921664555
+    second: bulk_s10k_gas_0
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: bulk_s10k_gas_f0_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 516
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f661c98d600605b4fa7c0f1e0f13399b
+      internalID: 492214918
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_gas_f0_d1
+      rect:
+        serializedVersion: 2
+        x: 134
+        y: 516
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9a186bd45cf8a1e45a510bf11e452e22
+      internalID: 501581264
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_gas_f0_d2
+      rect:
+        serializedVersion: 2
+        x: 268
+        y: 516
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7baa6ac22a3bab14896883a41163eb94
+      internalID: 1554287480
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_gas_f0_d3
+      rect:
+        serializedVersion: 2
+        x: 402
+        y: 516
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9d3106b7e1f68df478dcf93ca8650431
+      internalID: -1344951950
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_gas_f1_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 387
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c9486ea0ac142904ca3ecbb8bf21f16d
+      internalID: -203997791
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_gas_f1_d1
+      rect:
+        serializedVersion: 2
+        x: 134
+        y: 387
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ff9e50e0116a32f4d8bcdd3ae27f8ed7
+      internalID: -583976539
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_gas_f1_d2
+      rect:
+        serializedVersion: 2
+        x: 268
+        y: 387
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c0443c33db140d04db4a7c3a4b090f48
+      internalID: 1653395940
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_gas_f1_d3
+      rect:
+        serializedVersion: 2
+        x: 402
+        y: 387
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b8eb7e1958bd5a945b45130912974986
+      internalID: -367226006
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_gas_f2_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 258
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1f9f93afff627974eae5b62b0cd907f3
+      internalID: -1382700124
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_gas_f2_d1
+      rect:
+        serializedVersion: 2
+        x: 134
+        y: 258
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 329f6da07975b2849a7505373f5d2675
+      internalID: -1925441386
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_gas_f2_d2
+      rect:
+        serializedVersion: 2
+        x: 268
+        y: 258
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 30b2386eb0fa1ce4db2420822784ac7b
+      internalID: 1648684543
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_gas_f2_d3
+      rect:
+        serializedVersion: 2
+        x: 402
+        y: 258
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aecce001548376745b2af5465e21e6f2
+      internalID: -2122438637
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_gas_f3_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 129
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f0969e8e4ea7eaa42a3347e6ef9c46e8
+      internalID: -455980805
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_gas_f3_d1
+      rect:
+        serializedVersion: 2
+        x: 134
+        y: 129
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 82183538415d32544872f9850c772bab
+      internalID: 452719112
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_gas_f3_d2
+      rect:
+        serializedVersion: 2
+        x: 268
+        y: 129
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 025f8f35457612b4fa2402f2920259ec
+      internalID: -219693082
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_gas_f3_d3
+      rect:
+        serializedVersion: 2
+        x: 402
+        y: 129
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 534b50f7f5f1f9143b7af130d7335913
+      internalID: 812188188
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_gas_f4_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c8cd95d2ed175d746a9ab0a3b4767c6e
+      internalID: -675757561
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_gas_f4_d1
+      rect:
+        serializedVersion: 2
+        x: 134
+        y: 0
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fe54c0d74c170b44bbd1bb4e71916fd2
+      internalID: 78138647
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_gas_f4_d2
+      rect:
+        serializedVersion: 2
+        x: 268
+        y: 0
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 34be2f19f959c7d4b9a26aedad84acdf
+      internalID: -1950477571
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_gas_f4_d3
+      rect:
+        serializedVersion: 2
+        x: 402
+        y: 0
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 50e1b7b69f1cae148b1031f31a01b9d6
+      internalID: 1395833665
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 779ea5ab9286a2e4fa608de2b18762de
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      bulk_s10k_gas_f0_d0: 492214918
+      bulk_s10k_gas_f0_d1: 501581264
+      bulk_s10k_gas_f0_d2: 1554287480
+      bulk_s10k_gas_f0_d3: -1344951950
+      bulk_s10k_gas_f1_d0: -203997791
+      bulk_s10k_gas_f1_d1: -583976539
+      bulk_s10k_gas_f1_d2: 1653395940
+      bulk_s10k_gas_f1_d3: -367226006
+      bulk_s10k_gas_f2_d0: -1382700124
+      bulk_s10k_gas_f2_d1: -1925441386
+      bulk_s10k_gas_f2_d2: 1648684543
+      bulk_s10k_gas_f2_d3: -2122438637
+      bulk_s10k_gas_f3_d0: -455980805
+      bulk_s10k_gas_f3_d1: 452719112
+      bulk_s10k_gas_f3_d2: -219693082
+      bulk_s10k_gas_f3_d3: 812188188
+      bulk_s10k_gas_f4_d0: -675757561
+      bulk_s10k_gas_f4_d1: 78138647
+      bulk_s10k_gas_f4_d2: -1950477571
+      bulk_s10k_gas_f4_d3: 1395833665
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

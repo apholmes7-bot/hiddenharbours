@@ -1,0 +1,650 @@
+fileFormatVersion: 2
+guid: 93df8a6fb07e2f64ab94fd76a2a066ae
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -6786286842666404445
+    second: skid_s500_diesel_0
+  - first:
+      213: 7442849270770272108
+    second: skid_s500_diesel_1
+  - first:
+      213: 9156442290425959317
+    second: skid_s500_diesel_2
+  - first:
+      213: -1771682432758812169
+    second: skid_s500_diesel_3
+  - first:
+      213: -7859698012826016115
+    second: skid_s500_diesel_4
+  - first:
+      213: 7561517633878044563
+    second: skid_s500_diesel_5
+  - first:
+      213: 8591923824438728706
+    second: skid_s500_diesel_6
+  - first:
+      213: 1901148528206977489
+    second: skid_s500_diesel_7
+  - first:
+      213: -235564149181227021
+    second: skid_s500_diesel_8
+  - first:
+      213: 6958763129481036291
+    second: skid_s500_diesel_9
+  - first:
+      213: 2705159933576950826
+    second: skid_s500_diesel_10
+  - first:
+      213: -3827101556509051365
+    second: skid_s500_diesel_11
+  - first:
+      213: 2243432057121524072
+    second: skid_s500_diesel_12
+  - first:
+      213: 3373431037064276416
+    second: skid_s500_diesel_13
+  - first:
+      213: 7622396125741160851
+    second: skid_s500_diesel_14
+  - first:
+      213: -4205038409552205320
+    second: skid_s500_diesel_15
+  - first:
+      213: -1725969185782698250
+    second: skid_s500_diesel_16
+  - first:
+      213: -7009785659508998441
+    second: skid_s500_diesel_17
+  - first:
+      213: 4581734888301837908
+    second: skid_s500_diesel_18
+  - first:
+      213: 5669084513862021728
+    second: skid_s500_diesel_19
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: skid_s500_diesel_f0_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 204
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 814952f463931284ab54c960d1c7621f
+      internalID: -983970175
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_diesel_f0_d1
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 204
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cd13cfa97c502f4479ab223992f5a84d
+      internalID: 491280049
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_diesel_f0_d2
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 204
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 110ed26d8a7abed4bacb6c3ad2c09127
+      internalID: -78282817
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_diesel_f0_d3
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 204
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0688e88953a2d514189513018178fc35
+      internalID: -1216710520
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_diesel_f1_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 153
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cfca721b4c30dee42bfac61bdf707121
+      internalID: -11708433
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_diesel_f1_d1
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 153
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 84c3596be8fc9414fa640d366f9bbf7a
+      internalID: 1468278075
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_diesel_f1_d2
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 153
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ae9fa182b3e70d34ead765e08983f3cd
+      internalID: -1199781321
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_diesel_f1_d3
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 153
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 488e1a8b93a603c4b86bd8f000fc699c
+      internalID: 829685178
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_diesel_f2_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 102
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d26f7dc1db92ac94e836ef602cbd5fd1
+      internalID: 2045311392
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_diesel_f2_d1
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 102
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 248ba0cbbfab558459acd79dbb16cead
+      internalID: -51974045
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_diesel_f2_d2
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 102
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8663051df098a4941974592a6fc02a6f
+      internalID: 1912531444
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_diesel_f2_d3
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 102
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d6db34c1aab387f46837d286bd6663ba
+      internalID: -1116215274
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_diesel_f3_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 51
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b66565aed5fb08f42892c25aa813b695
+      internalID: -172853662
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_diesel_f3_d1
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 51
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 227ca3394a779044dac5368805fa915b
+      internalID: 1338047487
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_diesel_f3_d2
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 51
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 61f91e387522ea44eaf6f46f2f20c2f0
+      internalID: -1379285587
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_diesel_f3_d3
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 51
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 24cc68c4a410aa94a91dead7da57f7da
+      internalID: 554777967
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_diesel_f4_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0a238d3a9d1c0ff48b8ff0cd3c58933c
+      internalID: -1353689670
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_diesel_f4_d1
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 0
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 370152f0f389eb34188543f9202ca329
+      internalID: 422094007
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_diesel_f4_d2
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 0
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cb6591e9c1f85c54aa3450df28686e23
+      internalID: -983242960
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s500_diesel_f4_d3
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 0
+        width: 48
+        height: 51
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21568628}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5462891e65bcc15418002a28bf9a7a4d
+      internalID: 122191257
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: d2595f47b8c5f3244baa7ef514eca991
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      skid_s500_diesel_f0_d0: -983970175
+      skid_s500_diesel_f0_d1: 491280049
+      skid_s500_diesel_f0_d2: -78282817
+      skid_s500_diesel_f0_d3: -1216710520
+      skid_s500_diesel_f1_d0: -11708433
+      skid_s500_diesel_f1_d1: 1468278075
+      skid_s500_diesel_f1_d2: -1199781321
+      skid_s500_diesel_f1_d3: 829685178
+      skid_s500_diesel_f2_d0: 2045311392
+      skid_s500_diesel_f2_d1: -51974045
+      skid_s500_diesel_f2_d2: 1912531444
+      skid_s500_diesel_f2_d3: -1116215274
+      skid_s500_diesel_f3_d0: -172853662
+      skid_s500_diesel_f3_d1: 1338047487
+      skid_s500_diesel_f3_d2: -1379285587
+      skid_s500_diesel_f3_d3: 554777967
+      skid_s500_diesel_f4_d0: -1353689670
+      skid_s500_diesel_f4_d1: 422094007
+      skid_s500_diesel_f4_d2: -983242960
+      skid_s500_diesel_f4_d3: 122191257
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

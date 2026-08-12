@@ -1,0 +1,593 @@
+fileFormatVersion: 2
+guid: 5601dba6388591f4dbad4a1e00fde190
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -6065167608428014262
+    second: bulk_s10k_oil_0
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: bulk_s10k_oil_f0_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 516
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b48845050155f5b4c84edfdcbdac1694
+      internalID: 1603673864
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_oil_f0_d1
+      rect:
+        serializedVersion: 2
+        x: 134
+        y: 516
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0419c4bf21db5fb4ea367dc34d5e37bd
+      internalID: -1926353312
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_oil_f0_d2
+      rect:
+        serializedVersion: 2
+        x: 268
+        y: 516
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cdb42446f95b4434f968dddf8b104efc
+      internalID: -924749360
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_oil_f0_d3
+      rect:
+        serializedVersion: 2
+        x: 402
+        y: 516
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eb47fdc597445f84c9cb3c2ad569b519
+      internalID: -1550661666
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_oil_f1_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 387
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8ae29d6d6b7ffb043b0ba12b4998f02e
+      internalID: -812898939
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_oil_f1_d1
+      rect:
+        serializedVersion: 2
+        x: 134
+        y: 387
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e7b7d565d6bb9ba4288726e03bef6f80
+      internalID: 835153434
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_oil_f1_d2
+      rect:
+        serializedVersion: 2
+        x: 268
+        y: 387
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1b839a3c1bb150e438ac5a909566d224
+      internalID: -1454696822
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_oil_f1_d3
+      rect:
+        serializedVersion: 2
+        x: 402
+        y: 387
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 297074fc1d9b28c43bb03fd0f913b2cc
+      internalID: 456198723
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_oil_f2_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 258
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 70f99ba514c07aa4dabe759c96b01035
+      internalID: 560295834
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_oil_f2_d1
+      rect:
+        serializedVersion: 2
+        x: 134
+        y: 258
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c6ca7fa7f1630a1458294d0b9313ed03
+      internalID: -1069503965
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_oil_f2_d2
+      rect:
+        serializedVersion: 2
+        x: 268
+        y: 258
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bf313f822f75c4248a6c376f23fa9f26
+      internalID: 1460513279
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_oil_f2_d3
+      rect:
+        serializedVersion: 2
+        x: 402
+        y: 258
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 556170caeb9930d4883f116972df886a
+      internalID: -1585616632
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_oil_f3_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 129
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2eb9f709d74dd4f45a357ef99b1bb8fd
+      internalID: -2006815009
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_oil_f3_d1
+      rect:
+        serializedVersion: 2
+        x: 134
+        y: 129
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c8b8f28694112ac4ba2296d29c713cbb
+      internalID: -350541573
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_oil_f3_d2
+      rect:
+        serializedVersion: 2
+        x: 268
+        y: 129
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 793fa062d164f6447bc55d01a88e3c0f
+      internalID: -1623933057
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_oil_f3_d3
+      rect:
+        serializedVersion: 2
+        x: 402
+        y: 129
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6ffab6be4870a1449a98514ee0c54d95
+      internalID: 1293560017
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_oil_f4_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9bd8be73963e8bb42bc254ced634a6ab
+      internalID: -720479813
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_oil_f4_d1
+      rect:
+        serializedVersion: 2
+        x: 134
+        y: 0
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cfbe7b35729ceaa4aa2ab325ecbcda14
+      internalID: -2143057841
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_oil_f4_d2
+      rect:
+        serializedVersion: 2
+        x: 268
+        y: 0
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5e8d4234618f4d84db1a942b5c71433a
+      internalID: 2081325499
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bulk_s10k_oil_f4_d3
+      rect:
+        serializedVersion: 2
+        x: 402
+        y: 0
+        width: 134
+        height: 129
+      alignment: 9
+      pivot: {x: 0.5, y: 0.34108528}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3452fd34d351c424096c8127dc4385a1
+      internalID: 1994819159
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 665c5d95d82ab494d95e1d3055102953
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      bulk_s10k_oil_f0_d0: 1603673864
+      bulk_s10k_oil_f0_d1: -1926353312
+      bulk_s10k_oil_f0_d2: -924749360
+      bulk_s10k_oil_f0_d3: -1550661666
+      bulk_s10k_oil_f1_d0: -812898939
+      bulk_s10k_oil_f1_d1: 835153434
+      bulk_s10k_oil_f1_d2: -1454696822
+      bulk_s10k_oil_f1_d3: 456198723
+      bulk_s10k_oil_f2_d0: 560295834
+      bulk_s10k_oil_f2_d1: -1069503965
+      bulk_s10k_oil_f2_d2: 1460513279
+      bulk_s10k_oil_f2_d3: -1585616632
+      bulk_s10k_oil_f3_d0: -2006815009
+      bulk_s10k_oil_f3_d1: -350541573
+      bulk_s10k_oil_f3_d2: -1623933057
+      bulk_s10k_oil_f3_d3: 1293560017
+      bulk_s10k_oil_f4_d0: -720479813
+      bulk_s10k_oil_f4_d1: -2143057841
+      bulk_s10k_oil_f4_d2: 2081325499
+      bulk_s10k_oil_f4_d3: 1994819159
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
