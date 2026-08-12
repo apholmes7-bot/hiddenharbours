@@ -84,9 +84,10 @@ namespace HiddenHarbours.Boats
     /// that heaving out of the water is normal and wanted, and B2.5's loft is untouched. What was
     /// wrong was the LEVEL she returns to, in two independent ways, both of them MEAN errors that no
     /// amount of heave averages away. (1) The sink was applied raw, but the shared z-buffer draws the
-    /// sea climbing <c>(cos+sin)/(cos²+sin)</c> = 1.1457 rig-metres of planking per metre of sink at
-    /// the fleet's 40° bake, so every hull floated 14.57 % deeper than her own data claimed —
-    /// <see cref="HullSettleMath"/> inverts the projection. (2) This component ticked its OWN
+    /// sea climbing a PROJECTION GAIN of planking per metre of sink (<c>sin·(cos+sin)</c> = 0.9056
+    /// at the fleet's 40° bake since ADR 0033 re-derived it; <c>(cos+sin)/(cos²+sin)</c> = 1.1457
+    /// before that), so every hull floated at a multiple of what her own data claimed —
+    /// <see cref="HullSettleMath"/> inverts the projection, whichever the gain is. (2) This component ticked its OWN
     /// <see cref="WaveFieldAnimator"/>, whose accumulated travel phase starts at zero on ITS wake
     /// while the water's starts at zero on the bridge's, so the hull heaved on a sea correct in every
     /// respect except WHEN — it now reads the published field through

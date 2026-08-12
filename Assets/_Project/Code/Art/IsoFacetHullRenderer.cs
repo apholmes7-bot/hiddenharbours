@@ -186,6 +186,29 @@ namespace HiddenHarbours.Art
         public int HullId => _hullId;
 
         /// <summary>
+        /// <b>This hull's y→z shear, as the facet shader wants it</b> (ADR 0033): x = the shear
+        /// <c>g = cos(elev)(1−sin(elev))/sin(elev)</c> from her OWN bake elevation, y = the world y
+        /// it is referenced to. All-zero while no displaced sea is live — no sea, no shear, exactly
+        /// as there is no depth bias.
+        ///
+        /// <para>Computed on demand rather than cached from the last <see cref="ApplyPose"/> because
+        /// a bolted-on fitting reads it from its own <c>LateUpdate</c>, and the two components'
+        /// execution order is not fixed: a cached value would leave a fitting drawn through last
+        /// frame's gradient on the frame a sea appears. Costs a static struct read (rule 7).</para>
+        /// </summary>
+        public Vector4 DepthShear
+        {
+            get
+            {
+                if (_setup == null ||
+                    !DisplacedWaterRegistry.TryGetIsoDepthFrame(out WaterIsoDepthFrame frame))
+                    return Vector4.zero;
+                return new Vector4(DisplacedWaterMath.HullDepthShear(_setup.ElevationDeg),
+                                   frame.ReferenceY, 0f, 0f);
+            }
+        }
+
+        /// <summary>
         /// <b>The number of deck occupants one hull can hide at once, and it is MEASURED.</b>
         ///
         /// <para>The stern-deck loop's worst beat — the deck-loop kit's own twelve-beat shift table,
@@ -501,14 +524,24 @@ namespace HiddenHarbours.Art
             // tracks the ROOT's world y, which changes as the boat sails without touching the
             // pose fields.
             Vector3 offset = IsoFacetMath.HeaveOffset(_heavePixels, _setup.PxPerMetre);
+            // Read ONCE and used twice below — for the compensation term and for the shader — so
+            // the constant this hull's root is placed by and the gradient her vertices are drawn
+            // through can never come from two different reads of the registry.
+            Vector4 depthShear = DepthShear;
             // ADR 0023 phase 3 (the waterline): while a displaced sea is live, translate the
             // whole hull frame into the shared private z-buffer's calibrated iso-depth convention
             // (z = baseZ + (groundY − refY)·cosElev − heaveMetres·sinElev — the water's own
             // vertex-stage depth, applied to this hull's ground anchor and heave), so planking
             // below the lifted surface truthfully loses the z-test to the water drawn before it.
-            // ONE constant per hull: intra-hull depth relations (facet self-occlusion, the deck
-            // contract, keyline darkening) are bit-preserved. No displaced sea ⇒ no frame ⇒
-            // z stays 0 and the render is byte-identical to before phase 3 (the A/B contract).
+            // ⚠️ It used to be ONE CONSTANT PER HULL, on the belief that a constant was the only
+            // thing that could preserve intra-hull depth relations. ADR 0033 showed the constant
+            // was also the defect (a constant cancels a gradient at one line) and that a world-space
+            // y→z SHEAR preserves those relations just as completely — two fragments sharing a pixel
+            // share a world y under the ortho camera, so they take the identical shift. Facet
+            // self-occlusion, the deck-occupant bands and the keyline darkening are all still exact;
+            // the last two do not even see the shear (the facet shader keeps the rig's own depth for
+            // them). No displaced sea ⇒ no frame ⇒ no bias AND no shear, and the render is
+            // byte-identical to before phase 3 (the A/B contract).
             if (DisplacedWaterRegistry.TryGetIsoDepthFrame(out WaterIsoDepthFrame isoFrame))
             {
                 Vector3 root = transform.position;
@@ -539,7 +572,18 @@ namespace HiddenHarbours.Art
                         new Vector2(root.x, root.y), _footprintRadiusMeters,
                         in field, in isoFrame);
                 }
+                // ADR 0033 — ONE DEPTH UNIT. The bias above lands this hull's ROOT LINE exactly in
+                // the sea, and a constant can do no more than that: her own vertices carry the
+                // rig's depth convention, whose ramp along the fore-aft axis runs 1/sin(elev)
+                // = 1.556× steeper than the water's, so every line but the root drifted by
+                // Δy·cos·(1−sin) — the stern of a north-sailing lobster boat by 1.64 m, which is
+                // more false freeboard than a dory has real freeboard (#491). The shear carries the
+                // rest of the hull: the shader takes (worldY − ReferenceY)·g off every vertex, and
+                // the compensation here adds back what it will take at THIS hull's drawn root, so
+                // the calibration above survives untouched and only the gradient changes.
                 offset.z = DisplacedWaterMath.HullDepthBias(root.y, zHeaveMeters, in isoFrame)
+                           + DisplacedWaterMath.HullShearCompensation(
+                                 root.y, heaveMeters, depthShear.x, in isoFrame)
                            - root.z;
             }
             if (_meshChild.localPosition != offset)
@@ -584,6 +628,7 @@ namespace HiddenHarbours.Art
             // reproduces only when the origin excludes the heave offset.
             Vector3 p = transform.position;
             _props.SetVector(IsoFacetShaderIds.HullOrigin, new Vector4(p.x, p.y, 0f, 0f));
+            _props.SetVector(IsoFacetShaderIds.HullShear, depthShear);
             _props.SetFloat(IsoFacetShaderIds.HullId, _hullId / 255f);
             _props.SetFloat(IsoFacetShaderIds.HullIdFore, _foreHullId / 255f);
             _props.SetFloat(IsoFacetShaderIds.HullIdForeSpan, DeckOccupantSlots);
