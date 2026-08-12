@@ -1,0 +1,32 @@
+{
+  "sheet": "Shopfront_generalStore.png",
+  "rig": "shopfront",
+  "build": "harbourStore",
+  "facings": 8,
+  "cols": 7,
+  "rows": 2,
+  "cellW": 554,
+  "cellH": 517,
+  "pivotNote": "cell px from the cell's TOP-LEFT; Unity wants (x/cellW, (cellH-y)/cellH)",
+  "pivotX": 277,
+  "pivotY": 338,
+  "nativeCellW": 1320,
+  "nativeCellH": 1180,
+  "cropX": 383,
+  "cropY": 462,
+  "convention": "CounterClockwise",
+  "conventionNote": "MEASURED at bake time from the door anchor; the correction is already applied, so cell i genuinely depicts +45*i",
+  "footprintWd": 8,
+  "footprintLn": 10,
+  "stackKey": "stacks",
+  "anchors": [
+    { "cell": 0, "door": {"x": 277, "y": 221.6716}, "ridge": {"x": 277, "y": 121.7916}, "stacks": [] },
+    { "cell": 1, "door": {"x": 390.1371, "y": 251.7945}, "ridge": {"x": 277, "y": 121.7916}, "stacks": [] },
+    { "cell": 2, "door": {"x": 437, "y": 324.5176}, "ridge": {"x": 277, "y": 121.7916}, "stacks": [] },
+    { "cell": 3, "door": {"x": 390.1371, "y": 397.2407}, "ridge": {"x": 277, "y": 121.7916}, "stacks": [] },
+    { "cell": 4, "door": {"x": 277, "y": 427.3636}, "ridge": {"x": 277, "y": 121.7916}, "stacks": [] },
+    { "cell": 5, "door": {"x": 163.8629, "y": 397.2407}, "ridge": {"x": 277, "y": 121.7916}, "stacks": [] },
+    { "cell": 6, "door": {"x": 117, "y": 324.5176}, "ridge": {"x": 277, "y": 121.7916}, "stacks": [] },
+    { "cell": 7, "door": {"x": 163.8629, "y": 251.7945}, "ridge": {"x": 277, "y": 121.7916}, "stacks": [] }
+  ]
+}

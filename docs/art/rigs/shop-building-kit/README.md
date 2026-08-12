@@ -80,6 +80,49 @@ One formula produces the numbers all three rigs use, so a trade's rooms fit insi
 - One plan per trade. Room rects are authored in `PLANS`; anything else is a new entry, not an option.
 - The upper level is constrained to the main block — wings are single-storey by construction.
 
+## In-engine bake (added after the first real bake, 2026-08-11)
+
+The kit is baked by **Hidden Harbours ▸ Art ▸ Bake Shops (shells + interiors)** and then sliced by
+**Hidden Harbours ▸ Art ▸ Import (after a new drop) ▸ Slice Shop Sheets**. Both steps are required,
+and the second is not optional dressing — see below. Sheets land in
+`Assets/_Project/Art/Sprites/Buildings/Shops/` beside `shops.contract.json`, which is generated: do
+not hand-edit it, re-bake.
+
+**Three things the first real bake measured that this kit's own docs did not say.**
+
+1. **Slicing is a separate step, and skipping it does not look like skipping it.** Left to Unity,
+   these sheets get automatic alpha-island slicing: eight rects on an eight-facing sheet, named
+   `_0…_7`, which reads exactly like a correct slice. They are alpha-trimmed boxes of different
+   sizes (340×393 next to 442×455 on one sheet) with every pivot at `(0,0)`.
+
+2. **The sheets pass 2048, so the texture import cap must be LIFTED — and lifting it in code does
+   nothing until the asset is reimported.** Measured: `Shopfront_generalStore` read back
+   **2048×546** against its 3878×1034 sheet. `ShopSheetSlicer` reimports before it reads.
+
+3. **The build that forces the 4096 cap is the restaurant's GROUND PLAN, not its shell.** Baked
+   cells, against the best grid that fits 2048:
+
+   | build | shell cell | fits 2048? | ground-plan cell | fits 2048? |
+   | --- | --- | --- | --- | --- |
+   | general store | 554×517 | ✔ 3×3 = 1662×1551 | 412×347 | ✔ 4×2 = 1648×694 |
+   | post office | 498×477 | ✔ 4×2 = 1992×954 | 354×307 | ✔ 4×2 = 1416×614 |
+   | restaurant | 650×584 | ✔ 3×3 = 1950×1752 | **696×559** | ✘ 3×3 = 2088 wide, over by **40 px** |
+
+   The plan out-measures the elevation because the restaurant's kitchen **wing** projects past the
+   shell. `ShopKit.ImportSizeCap` is the one number the pack, the importer and the verify all read.
+
+**Registration is measured every bake, and it is 0.** `ShopRegistrationProbe` reports that
+`Shopfront` and `ShopBuilding` project identically at all 8 facings (worst disagreement 0.0000 px)
+and that both put the street door on the **+Y** gable (door.y travels +205.7 px from dir 0 to dir 4),
+so a level stands under its shell at the *same* facing. ⚠️ The house kit's answer is **4**, because
+`interiorIsoRig` puts its door on −Y. The two kits differ, both figures are measurements, and neither
+may be carried across.
+
+**Which way the doors turn.** Cell `i` is rendered at `dir = (8 − i) mod 8`, so the model turns −45°
+per cell and a door's **ground bearing decreases** as the cell index rises. Read the per-cell door
+anchors out of the sidecar JSON (`Shopfront_<key>.json` → `anchors[].door`) rather than deriving it,
+and un-squash screen y by `sin 40° ≈ 0.643` before taking any angle.
+
 ## Demo pages (in the main project, not this kit)
 
 `Shopfront Iso.dc.html` · `Shop Interior Iso.dc.html` · `Shop Building Iso.dc.html` — live builders

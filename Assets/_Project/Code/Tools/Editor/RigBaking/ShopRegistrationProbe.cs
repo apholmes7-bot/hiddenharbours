@@ -178,6 +178,80 @@ namespace HiddenHarbours.Tools.RigBaking
         }
 
         // =================================================================================
+        //  layer 2b — which WAY does the door go round?
+        // =================================================================================
+
+        /// <summary>
+        /// How far up the screen one metre of northward GROUND travel draws — <c>sin 40°</c> at the shared
+        /// bake camera. Needed because a screen-space angle is not a ground bearing.
+        /// </summary>
+        public const double GroundDepthScale = 0.6427876;
+
+        /// <summary>
+        /// The rotation sense of a rig's door anchor about its pivot as <c>dir</c> rises:
+        /// <c>+1</c> counter-clockwise on the ground, <c>−1</c> clockwise. <paramref name="meanStepDeg"/>
+        /// is the average signed step.
+        ///
+        /// <para><b>⭐ WHY THIS EXISTS, AND IT IS THE HOLE <see cref="DoorGable"/> CANNOT SEE.</b> The
+        /// gable test reads <c>door.y(4) − door.y(0)</c>. Dir 0 and dir 4 are exactly the two facings a
+        /// mirror image leaves alone, so a rig — or a BAKE — that turns the wrong way passes it with the
+        /// same number. That is not hypothetical: this kit's level sheets shipped mirrored relative to its
+        /// shells, six facings out of eight wrong, and every check in this file said the registration was
+        /// perfect. This is the check that sees it.</para>
+        ///
+        /// <para><b>⚠️ Un-squash before taking any angle.</b> The anchors are SCREEN offsets and the world
+        /// XY plane is the squashed ground plane, so <c>atan2</c> on raw screen px is not a bearing. It
+        /// would not flip the sign here, but it moves each step by up to 20° and makes "45° per dir"
+        /// unprovable — which is the whole content of the measurement.</para>
+        ///
+        /// <para><b>⚠️ Accurate for a FLOOR anchor; approximate for a wall one.</b> A door anchor a metre
+        /// up a wall carries a constant vertical term that does not rotate, and un-squashing amplifies it
+        /// by 1/0.643 — measured, that wobbles a shell's per-step figure by ±5° while the level's floor
+        /// anchors step exactly 45°. The SENSE survives either way, which is all this returns.</para>
+        /// </summary>
+        public static int DoorRotationSense(IRigScriptHost host, string anchorsExpr, string pivotExpr,
+                                            int facings, out double meanStepDeg, out string report)
+        {
+            double pivX = host.EvaluateNumber($"({pivotExpr}).x");
+            double pivY = host.EvaluateNumber($"({pivotExpr}).y");
+
+            var bearing = new double[facings];
+            for (int d = 0; d < facings; d++)
+            {
+                string a = anchorsExpr.Replace("$DIR", d.ToString(CultureInfo.InvariantCulture));
+                double dx = host.EvaluateNumber($"{a}.door.x") - pivX;
+                double dyGround = -(host.EvaluateNumber($"{a}.door.y") - pivY) / GroundDepthScale;
+                bearing[d] = Math.Atan2(dyGround, dx) * 180.0 / Math.PI;
+            }
+
+            double total = 0;
+            for (int d = 0; d < facings; d++)
+                total += Delta(bearing[d], bearing[(d + 1) % facings]);
+            meanStepDeg = total / facings;
+
+            int sense = total > 0 ? +1 : -1;
+            report = $"door anchor turns {(sense > 0 ? "COUNTER-CLOCKWISE" : "CLOCKWISE")} on the ground " +
+                     $"as dir rises ({meanStepDeg:+0.0;-0.0}° per dir, {total:+0.0;-0.0}° over a full turn)";
+
+            if (Math.Abs(Math.Abs(total) - 360.0) > 1.0)
+                throw new InvalidOperationException(
+                    $"SHOP REGISTRATION PROBE REFUSED: '{anchorsExpr}' door anchor sweeps {total:F1}° over " +
+                    $"{facings} dirs, not one full turn. It is not a rigid rotation about the pivot, so " +
+                    "its rotation sense is not measurable and nothing may be inferred from it.");
+
+            return sense;
+        }
+
+        /// <summary>Signed shortest angular difference b − a, in degrees.</summary>
+        static double Delta(double a, double b)
+        {
+            double d = (b - a) % 360.0;
+            if (d > 180.0) d -= 360.0;
+            if (d < -180.0) d += 360.0;
+            return d;
+        }
+
+        // =================================================================================
         //  layer 3 — the registration
         // =================================================================================
 
@@ -248,6 +322,24 @@ namespace HiddenHarbours.Tools.RigBaking
             sb.AppendLine($"  door gable (level): {(lGable > 0 ? "+Y" : "−Y")} " +
                           $"(door.y travels {lTravel:+0.0;-0.0} px from dir 0 to dir 4)");
 
+            // ---- 3b. and which WAY they go round ---------------------------------------------------
+            // The gable test above compares dir 0 with dir 4, the two facings a mirror leaves alone, so
+            // it cannot see a handedness disagreement. This can.
+            int sSense = DoorRotationSense(host, shellAnchors, shellPivot, facings,
+                                           out double sStep, out string sSenseReport);
+            int lSense = DoorRotationSense(host, levelAnchors, levelPivot, facings,
+                                           out double lStep, out string lSenseReport);
+            sb.AppendLine($"  rotation (shell) : {sSenseReport}");
+            sb.AppendLine($"  rotation (level) : {lSenseReport}");
+
+            if (sSense != lSense)
+                throw new InvalidOperationException(
+                    "SHOP REGISTRATION REFUSED: the shell's door goes round one way and the level's the " +
+                    $"other ({sStep:+0.0;-0.0}°/dir against {lStep:+0.0;-0.0}°/dir).\n\n" + sb +
+                    "\nThe two rigs are supposed to share one turntable, and layer 1 says they project " +
+                    "identically — so a disagreement here means one of them re-seated its anchors. Six " +
+                    "facings out of eight would be mirrored and only dir 0 and dir 4 would look right.");
+
             // ---- 4. the one offset that lines all eight up ----------------------------------------
             double sPivX = host.EvaluateNumber($"({shellPivot}).x"), sPivY = host.EvaluateNumber($"({shellPivot}).y");
             double lPivX = host.EvaluateNumber($"({levelPivot}).x"), lPivY = host.EvaluateNumber($"({levelPivot}).y");
@@ -295,13 +387,19 @@ namespace HiddenHarbours.Tools.RigBaking
                     "than shipping a shop you enter at the front and appear at the back of.");
             }
 
-            sb.AppendLine($"  ⇒ level facing = (shell facing + {found}) mod {facings}; the door anchors " +
-                          $"then share a screen-x at every facing and sit a constant {gap:F1} px apart " +
+            sb.AppendLine($"  ⇒ level DIR = (shell DIR + {found}) mod {facings}; the door anchors then " +
+                          $"share a screen-x at every facing and sit a constant {gap:F1} px apart " +
                           "vertically (the shell's anchor is up its wall, the plan's is on the floor).");
             if (found == 0)
                 sb.AppendLine("     0 — MEASURED, not inherited. The house family's answer is 4 because " +
                               "interiorIsoRig's door is on −Y; both of this kit's doors are on +Y, so " +
                               "nothing needs turning.");
+            sb.AppendLine(
+                "  ⚠ THIS OFFSET IS IN THE RIGS' OWN dir UNITS, NOT IN BAKED CELLS. A baker maps cell → " +
+                "dir through RigBaker.DirForCell, which INVERTS the order for a counter-clockwise rig — " +
+                "so two rigs that agree perfectly here still produce mirrored SHEETS if their two bakers " +
+                "apply different corrections. That is not a hypothetical: it is what this kit shipped on " +
+                "its first bake. ShopBakeMenu re-checks the same registration in the baked-cell frame.");
 
             return new Registration(found, sGable, lGable, lWd, lLn, gap, sb.ToString());
         }

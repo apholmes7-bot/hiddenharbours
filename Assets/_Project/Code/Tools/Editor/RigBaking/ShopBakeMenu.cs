@@ -123,6 +123,12 @@ namespace HiddenHarbours.Tools.RigBaking
 
             if (shells.Count > 0 && levels.Count > 0)
             {
+                // 🔴 THE CHECK IN THE FRAME THAT SHIPS. Everything ShopRegistrationProbe measures is in
+                // the RIGS' dir units; the sheets are in CELL units, and the two bakers each apply their
+                // own cell → dir correction. On this kit's first bake they applied different ones and
+                // every rig-frame check passed. This compares the anchors the two bakes actually WROTE.
+                AssertBakedCellsRegister(shells, levels, log);
+
                 string path = WriteContract(shells, levels, ppu, convention, out int offset);
                 log.AppendLine();
                 log.AppendLine($"  contract: {path} — {shells.Count} shell(s), {levels.Count} level(s), " +
@@ -214,6 +220,72 @@ namespace HiddenHarbours.Tools.RigBaking
             throw new InvalidOperationException(
                 $"'{level}' is not a level. The rig knows '{ShopKit.GroundLevel}' and " +
                 $"'{ShopKit.UpperLevel}'.");
+        }
+
+        /// <summary>
+        /// Screen-px slack when matching a baked level cell's door anchor to its shell's. Both are the
+        /// same projected ground point written by two different bakers, so this is rounding margin plus
+        /// the one pixel of pad each crop carries.
+        /// </summary>
+        public const double BakedRegistrationTolerancePx = 1.5;
+
+        /// <summary>
+        /// Every level's baked door anchor must sit at the same screen-x as its shell's, CELL BY CELL.
+        ///
+        /// <para><b>Why this is not a duplicate of <see cref="ShopRegistrationProbe.Measure"/>.</b> That
+        /// probe reads the two RIGS through <c>anchors(dir, …)</c> and answers a question about rig dirs.
+        /// A baker sits between the rig and the sheet and maps cell → dir through
+        /// <see cref="RigBaker.DirForCell"/>, which inverts the order for a counter-clockwise rig. Two
+        /// rigs can agree perfectly in dir units and still produce mirrored SHEETS if their bakers
+        /// disagree — which is precisely what this kit shipped on its first bake (shells corrected,
+        /// levels not), with every rig-frame check green.</para>
+        ///
+        /// <para>Screen-x only. The y gap is real and constant by design — the shell's door anchor sits up
+        /// its wall and the plan's on the floor — and the probe already checks that it is constant.
+        /// A mirror shows up in x as a sign flip at the six non-axial cells, which is unmissable here and
+        /// invisible everywhere else.</para>
+        /// </summary>
+        static void AssertBakedCellsRegister(List<ShopKit.Entry> shells, List<ShopKit.Entry> levels,
+                                             StringBuilder log)
+        {
+            foreach (var level in levels)
+            {
+                ShopKit.Entry shell = shells.Find(s => string.Equals(s.key, level.key,
+                                                                     StringComparison.Ordinal));
+                if (shell?.doorX == null || level.doorX == null) continue;
+                if (shell.doorX.Length != level.doorX.Length) continue;
+
+                double worst = 0;
+                int worstCell = -1;
+                for (int cell = 0; cell < shell.doorX.Length; cell++)
+                {
+                    double sx = shell.doorX[cell] - shell.pivotX;
+                    double lx = level.doorX[cell] - level.pivotX;
+                    double d = Math.Abs(sx - lx);
+                    if (d > worst) { worst = d; worstCell = cell; }
+                }
+
+                if (worst > BakedRegistrationTolerancePx)
+                {
+                    var detail = new StringBuilder();
+                    for (int cell = 0; cell < shell.doorX.Length; cell++)
+                        detail.AppendLine(
+                            $"      cell {cell}: shell x={shell.doorX[cell] - shell.pivotX:+0.0;-0.0}   " +
+                            $"level x={level.doorX[cell] - level.pivotX:+0.0;-0.0}");
+
+                    throw new InvalidOperationException(
+                        $"[shops] BAKED REGISTRATION FAILED for '{level.key}/{level.level}': the level's " +
+                        $"door anchor is {worst:F1} px from its shell's at cell {worstCell}, measured from " +
+                        "each sheet's own pivot.\n" + detail +
+                        "\nIf the x offsets are equal and opposite, the two sheets are MIRRORED — one " +
+                        "baker applied the cell → dir azimuth correction and the other did not. Cells 0 " +
+                        "and 4 will look perfect and the other six will be a half-turn's worth of wrong. " +
+                        "Refusing to write a contract for it.");
+                }
+
+                log.AppendLine($"    ✓ {level.key}: shell and {level.level} agree cell-for-cell " +
+                               $"(worst door-x disagreement {worst:F2} px).");
+            }
         }
 
         // =================================================================================

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using UnityEditor;
 using UnityEngine;
 
 namespace HiddenHarbours.Art.Editor
@@ -39,24 +40,34 @@ namespace HiddenHarbours.Art.Editor
         /// Over the cap Unity downscales and the sprite COUNT still comes out right, so only a cell-size
         /// or pivot assert catches it (<c>ShopKitTests</c> is that assert).
         ///
-        /// <para><b>⚠️ 4096, and this kit is the first to need it — so here is the measurement.</b>
-        /// <see cref="InteriorKit.ImportSizeCap"/> declines to lift on principle (a 4096 texture is the
-        /// first thing a later mobile port has to undo, CLAUDE.md rule 7) and says the union crop is what
-        /// makes 2048 hold. It does hold, for two of the three shops:</para>
+        /// <para><b>⚠️ 4096, and this kit is the first to need it — so here is the measurement, FROM A
+        /// REAL BAKE.</b> <see cref="InteriorKit.ImportSizeCap"/> declines to lift on principle (a 4096
+        /// texture is the first thing a later mobile port has to undo, CLAUDE.md rule 7) and says the
+        /// union crop is what makes 2048 hold. Every cell below is what <c>Bake Shops</c> actually wrote,
+        /// not what a harness predicted — and <b>the bake moved the argument</b>. The pre-bake estimate
+        /// had the restaurant's SHELL as the binding build at a 716×605 crop; the shell in fact crops to
+        /// 650×584 and packs 3×3 at 1950×1752, <i>inside</i> 2048. The sheet that actually needs the cap
+        /// is its GROUND FLOOR PLAN, which nothing had measured:</para>
         /// <list type="bullet">
-        ///   <item>general store (<c>harbourStore</c>, 8.00 × 10.00 m) — crop 552×515, packs 3×3 at 1656×1545 ✔</item>
-        ///   <item>fish market (<c>coopFishHouse</c>, 7.50 × 8.50 m) — crop 508×409, packs 4×2 at 2032×818 ✔</item>
-        ///   <item>restaurant (<c>wharfDiner</c>, 9.00 × 11.50 m) — crop 716×605, <b>no grid fits 2048</b>:
-        ///         4×2 is 2864 wide, 3×3 is 2148 wide, 2×4 is 2420 tall.</item>
+        ///   <item>general store shell 554×517 → 3×3 = 1662×1551 ✔ · ground plan 412×347 → 4×2 = 1648×694 ✔</item>
+        ///   <item>post office shell 498×477 → 4×2 = 1992×954 ✔ · ground plan 354×307 → 4×2 = 1416×614 ✔</item>
+        ///   <item>restaurant shell 650×584 → 3×3 = 1950×1752 ✔ ·
+        ///         <b>ground plan 696×559 — no grid fits 2048</b>: 3×3 is 2088 wide (over by <b>40 px</b>),
+        ///         4×2 is 2784 wide, 2×4 is 2236 tall.</item>
         /// </list>
         /// <para>The restaurant is simply a bigger building than anything the village kit holds — a dining
-        /// room, a bar and a kitchen wing under one roof, against a cottage. <b>The alternative was measured
-        /// too</b>, so it is a choice and not a shrug: at <c>size 0.48</c> (9.00 × 11.00 m — half a metre
-        /// shorter) the shell packs 3×3 at 2046×1746 and fits. That is <b>two pixels</b> of margin on a
-        /// 2048 cap, and a margin of two pixels is not one — the next rig drop that thickens an awning
-        /// breaks the bake, and it breaks it as a silent downscale. So the cap moves and the art keeps its
-        /// size. The trade is recorded in the PR for the owner, who can spend it the other way by dialling
-        /// <see cref="Restaurant"/>'s size to 0.48 and dropping this back to 2048.</para>
+        /// room, a bar and a kitchen wing under one roof, against a cottage — and its floor plan carries a
+        /// kitchen WING that projects past the shell, which is why the plan out-measures the elevation.
+        /// Forty pixels is a margin somebody will be tempted to close by dialling the size to 0.48; the
+        /// owner ruled on 2026-08-11 that the restaurant ships at 0.50, so the cap moves and the art keeps
+        /// its size. Spending it the other way is one line here and one on
+        /// <see cref="ShopSet"/>'s restaurant.</para>
+        ///
+        /// <para><b>⚠️ Lifting the cap is not the same as honouring it, and the difference is silent.</b>
+        /// <c>maxTextureSize</c> is a power-of-two ceiling that Unity defaults to 2048, and writing the
+        /// field does nothing until an asset is REIMPORTED. Measured on this kit's first slice:
+        /// <c>Shopfront_generalStore</c> read back <b>2048×546</b> against a 3878×1034 sheet.
+        /// <c>ShopSheetSlicer</c> is where that is handled, and why it reimports before it reads.</para>
         ///
         /// <para>ONE number: the pack, the import lock and the verify assert all read it, because two
         /// numbers that have to agree is the bug #352 recorded.</para>
@@ -77,6 +88,65 @@ namespace HiddenHarbours.Art.Editor
         public static string ShellSpriteNameFor(string key, int facing) => $"{ShellStemFor(key)}_d{facing}";
         public static string LevelSpriteNameFor(string key, string level, int facing) =>
             $"{LevelStemFor(key, level)}_d{facing}";
+
+        /// <summary>
+        /// A contract entry's sheet stem. <b>The entry's own <c>level</c> is what tells the two families
+        /// apart</b> — a shell carries the empty string, a level carries <c>ground</c>/<c>upper</c> — so
+        /// nothing downstream has to remember which list it pulled an entry out of. That mattering is not
+        /// hypothetical: shells and levels share the folder, and a stem built with the wrong prefix names
+        /// a sheet that exists, so the slicer would happily cut a shell against an interior's cell.
+        /// </summary>
+        public static string StemFor(Entry e) =>
+            e == null ? null
+                      : string.IsNullOrEmpty(e.level) ? ShellStemFor(e.key)
+                                                      : LevelStemFor(e.key, e.level);
+
+        public static string SheetPathFor(Entry e) => e == null ? null : ShopsRoot + StemFor(e) + ".png";
+
+        public static string SpriteNameFor(Entry e, int facing) =>
+            e == null ? null : $"{StemFor(e)}_d{facing}";
+
+        /// <summary>Every entry the contract carries, shells then levels — one sequence, because every
+        /// consumer that walks the kit has to walk both and forgetting one is silent.</summary>
+        public static IEnumerable<Entry> AllEntries(Contract c)
+        {
+            if (c?.shells != null) foreach (var e in c.shells) yield return e;
+            if (c?.levels != null) foreach (var e in c.levels) yield return e;
+        }
+
+        /// <summary>The entry a sheet stem belongs to, or null. Matches on the stem the contract itself
+        /// would produce, never on a parse of the file name — <c>ShopLevel_generalStore_ground</c> splits
+        /// three ways and only one of them is right.</summary>
+        public static Entry EntryForStem(Contract c, string stem)
+        {
+            foreach (var e in AllEntries(c))
+                if (string.Equals(stem, StemFor(e), StringComparison.Ordinal)) return e;
+            return null;
+        }
+
+        /// <summary>The pivot in cell px from the rect's own BOTTOM-left, which is what
+        /// <c>Sprite.pivot</c> reports back. The contract stores it top-left (see
+        /// <see cref="Entry.pivotX"/>), so this is the one flip and it lives here.</summary>
+        public static Vector2 PivotPixels(Entry e) =>
+            e == null ? Vector2.zero : new Vector2(e.pivotX, e.cellH - e.pivotY);
+
+        /// <summary>
+        /// How many rows of art sit BELOW the ground centre — exactly how far a bottom-centre pivot would
+        /// sink this building. The <c>/buildings/</c> import default IS bottom-centre
+        /// (<c>ArtImportPipeline.PivotFor</c>), so this is the size of the mistake the slicer overrides.
+        /// </summary>
+        public static int BelowGroundPad(Entry e) =>
+            e == null ? 0 : Mathf.Max(0, e.cellH - Mathf.RoundToInt(e.pivotY));
+
+        /// <summary>sRGB lives on <see cref="TextureImporterSettings"/> rather than on the importer —
+        /// the same indirection <c>VillageBuildingKit.SRgbOf</c> records, restated because Art.Editor
+        /// kits do not reference each other.</summary>
+        public static bool SRgbOf(TextureImporter importer)
+        {
+            var s = new TextureImporterSettings();
+            importer.ReadTextureSettings(s);
+            return s.sRGBTexture;
+        }
 
         // =================================================================================
         //  the builds
@@ -148,10 +218,19 @@ namespace HiddenHarbours.Art.Editor
         /// The shops St Peters opens, in the order they read walking up the lane.
         ///
         /// <para><b>Three of the kit's nine, and the other six are deliberately not built.</b> The owner
-        /// asked for "shop/store/restaurant"; the kit ships nine trades because it is a kit. Importing
-        /// source is not a licence to wire content (CLAUDE.md rule 8) — a chandlery and a tavern in a
-        /// five-building village would be scope, not scenery. All nine remain one <see cref="Build"/>
-        /// away, and the bake path, contract and tests are written against the set rather than these three.</para>
+        /// ruled the set on 2026-08-11: general store, post office, restaurant. The kit ships nine trades
+        /// because it is a kit. Importing source is not a licence to wire content (CLAUDE.md rule 8) —
+        /// a chandlery and a tavern in a five-building village would be scope, not scenery. All nine
+        /// remain one <see cref="Build"/> away, and the bake path, contract and tests are written against
+        /// the set rather than against these three.</para>
+        ///
+        /// <para><b>The fish market was here and is not any more.</b> Part 1 read the owner's
+        /// "shop/store/restaurant" as general store + fish market + restaurant; the market was the
+        /// inference and he replaced it with the post office rather than confirm it. Its measurements
+        /// survive in <see cref="ImportSizeCap"/>'s note and in
+        /// <c>ShopKitBakeTests.TradesWithoutAnUpperStoreyReturnTheGroundPlanForOne</c>, which still pins
+        /// the kit's no-upper table against the rig — that is a fact about the KIT and does not depend
+        /// on which trades this slice happens to bake.</para>
         ///
         /// <para><b>GROUND LEVELS ONLY in this slice.</b> Every one of these trades has a <c>flat</c>
         /// above the shop and the rig bakes it — but the stair between them is a level change, which is
@@ -168,12 +247,16 @@ namespace HiddenHarbours.Art.Editor
                       "world-and-regions §6: basic gear, the clam licence, gas in a can — and the first " +
                       "door the player has a reason to open"),
 
-            // P3, the working coast: the place the catch goes that is not a stall on the wharf. Its plan
-            // is the one that reads as a trade rather than a shop — counter, cutting room, ice house.
-            new Build("fishMarket", "Fish market", "fishMarket", "coopFishHouse", 0.45,
+            // The owner's second call of 2026-08-11, replacing this slice's fish market. The market was
+            // part 1's INFERENCE from P3 and he did not ask for it; the post office he did. It is also
+            // the cheaper building by a distance — 6 × 9 units at size 0.30 against the market's 6 × 8 at
+            // 0.45 — and the one whose two rooms (a public lobby, a sorting room behind the wicket) read
+            // as a service the player has a reason to walk into on day one.
+            new Build("postOffice", "Post office", "postOffice", "villagePost", 0.30,
                       new[] { GroundLevel },
-                      "the co-op fish house — P3's working coast, and the one plan in the kit with an " +
-                      "ice house wing"),
+                      "the owner's 2026-08-11 ruling: a post office, not the market — P3's working " +
+                      "coast is a place with services, and the market is one Build away when a " +
+                      "placement asks for it"),
 
             // The owner named it. Also the kit's largest plan, which is why it is the build the import
             // cap was solved against (see ImportSizeCap).

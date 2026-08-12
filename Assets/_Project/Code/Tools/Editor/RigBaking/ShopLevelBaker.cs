@@ -108,18 +108,55 @@ namespace HiddenHarbours.Tools.RigBaking
                         "cells disagree about where the ground is.");
             }
 
+            // ---- the azimuth correction, MEASURED ----------------------------------------------------
+            // 🔴 THE BUG THIS BLOCK EXISTS TO CLOSE. This baker used to render `render(cell, opts)` — the
+            // CELL INDEX handed straight in as the rig's dir, with no correction — while the SHELL goes
+            // through BuildingRigBaker, which maps cell → dir via RigBaker.DirForCell and INVERTS the
+            // order for a counter-clockwise rig. The two families therefore came out MIRRORED: measured
+            // on the first real bake, the shells' door bearings stepped −45° per cell and the levels' +45°,
+            // so six facings in eight had the interior turned the wrong way inside its own shell.
+            //
+            // ⚠️ AND EVERY EXISTING CHECK PASSED. ShopRegistrationProbe compares the two rigs in their own
+            // dir units, where they genuinely agree (offset 0), and its gable test reads dir 0 against
+            // dir 4 — the two facings a mirror leaves alone. The contract then reported "level facing =
+            // shell facing + 0", which was true of DIRS and false of CELLS. Nothing renders wrong and
+            // nothing throws; the player simply walks in the door and comes out facing the wrong way.
+            //
+            // So: measure the rig's rotation sense from its own door anchors, cross-check the catalog's
+            // declaration, and REFUSE on a mismatch — the rule RigBaker.Bake already follows.
+            int sense = ShopRegistrationProbe.DoorRotationSense(
+                host, $"{g}.anchors($DIR,{opts})", $"{g}.anchors(0,{opts}).pivot", facings,
+                out double meanStepDeg, out string senseReport);
+
+            AzimuthConvention measured = sense > 0
+                ? AzimuthConvention.CounterClockwise
+                : AzimuthConvention.Clockwise;
+
+            if (measured != entry.DeclaredConvention)
+                throw new InvalidOperationException(
+                    $"[shops] AZIMUTH MISMATCH on '{g}' for {trade}/{level}.\n" +
+                    $"  RigCatalog declares : {entry.DeclaredConvention}\n" +
+                    $"  the anchors say     : {measured} ({senseReport})\n\n" +
+                    "The bake is refusing rather than guessing. A silent guess here is how this mislabel " +
+                    "shipped defects in five kits — and how this kit's own levels shipped mirrored.");
+
+            Debug.Log($"[shops] {trade}/{level}: {senseReport} ({meanStepDeg:+0.0;-0.0}°/dir) " +
+                      $"⇒ {measured}, so cell i renders at dir (facings − i) mod {facings}.");
+
             // ---- render ------------------------------------------------------------------------------
             var render = Stopwatch.StartNew();
             var cells = new byte[facings][];
-            for (int d = 0; d < facings; d++)
+            for (int cell = 0; cell < facings; cell++)
             {
+                string d = Dir(cell, facings, measured);
+
                 // .rgba: this rig returns an object, unlike the house rigs' bare buffer.
-                cells[d] = host.EvaluateBytes($"{g}.render({d},{opts}).rgba");
+                cells[cell] = host.EvaluateBytes($"{g}.render({d},{opts}).rgba");
                 int expect = nativeW * nativeH * 4;
-                if (cells[d] == null || cells[d].Length != expect)
+                if (cells[cell] == null || cells[cell].Length != expect)
                     throw new InvalidOperationException(
-                        $"[shops] {trade}/{level} dir {d}: render returned " +
-                        $"{(cells[d] == null ? "null" : cells[d].Length.ToString())} bytes, expected " +
+                        $"[shops] {trade}/{level} cell {cell} (dir {d}): render returned " +
+                        $"{(cells[cell] == null ? "null" : cells[cell].Length.ToString())} bytes, expected " +
                         $"{expect} for a {nativeW}×{nativeH} RGBA cell.");
             }
             render.Stop();
@@ -184,21 +221,28 @@ namespace HiddenHarbours.Tools.RigBaking
                 UnityEngine.Object.DestroyImmediate(tex);
             }
 
-            // ---- anchors, per facing, in CROPPED cell px ---------------------------------------------
+            // ---- anchors, per CELL, in CROPPED cell px -----------------------------------------------
+            // ⚠️ INDEXED BY CELL AND READ AT THE CELL'S DIR. These arrays are what every consumer uses to
+            // find the door of the sprite it just loaded, so they have to be in the SHEET's frame, not the
+            // rig's. Reading them at the raw index — which is what this did while the render was
+            // uncorrected — describes a cell the sheet does not contain, and the two mistakes cancel
+            // exactly, which is why the anchors looked self-consistent while the art was mirrored.
             result.DoorX = new double[facings]; result.DoorY = new double[facings];
             result.BackDoorX = new double[facings]; result.BackDoorY = new double[facings];
-            for (int d = 0; d < facings; d++)
+            for (int cell = 0; cell < facings; cell++)
             {
-                result.DoorX[d] = host.EvaluateNumber($"{g}.anchors({d},{opts}).door.x") - cropX;
-                result.DoorY[d] = host.EvaluateNumber($"{g}.anchors({d},{opts}).door.y") - cropY;
+                string d = Dir(cell, facings, measured);
+
+                result.DoorX[cell] = host.EvaluateNumber($"{g}.anchors({d},{opts}).door.x") - cropX;
+                result.DoorY[cell] = host.EvaluateNumber($"{g}.anchors({d},{opts}).door.y") - cropY;
 
                 // NaN where the plan has no back door: zero is a legal coordinate, so a missing anchor
                 // written as zero puts a doorway in the corner and nothing complains.
                 bool hasBack = host.EvaluateBool(
                     $"(function(){{var a={g}.anchors({d},{opts});return !!(a.backDoor);}})()");
-                result.BackDoorX[d] = hasBack
+                result.BackDoorX[cell] = hasBack
                     ? host.EvaluateNumber($"{g}.anchors({d},{opts}).backDoor.x") - cropX : double.NaN;
-                result.BackDoorY[d] = hasBack
+                result.BackDoorY[cell] = hasBack
                     ? host.EvaluateNumber($"{g}.anchors({d},{opts}).backDoor.y") - cropY : double.NaN;
             }
 
@@ -206,6 +250,14 @@ namespace HiddenHarbours.Tools.RigBaking
             result.TotalMilliseconds = total.Elapsed.TotalMilliseconds;
             return result;
         }
+
+        /// <summary>
+        /// The rig <c>dir</c> that baked CELL <paramref name="cell"/> depicts, as a JS number literal.
+        /// One definition, used by both the render and the anchor read, so the sheet and the contract
+        /// cannot describe different facings — which is exactly how the mirror above hid itself.
+        /// </summary>
+        public static string Dir(int cell, int facings, AzimuthConvention convention) =>
+            RigBaker.DirForCell(cell, facings, convention).ToString("R", CultureInfo.InvariantCulture);
 
         /// <summary>
         /// The options literal for a level bake. Invariant culture throughout — a comma decimal separator
