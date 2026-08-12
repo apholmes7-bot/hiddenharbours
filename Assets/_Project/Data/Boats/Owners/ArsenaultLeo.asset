@@ -16,6 +16,7 @@ MonoBehaviour:
   DisplayName: Leo Arsenault
   Boat: {fileID: 11400000, guid: f9a11a1cb8419244bb13983a2862c52f, type: 2}
   BuoyScheme: LobsterBoat
+  HullPaint: {fileID: 11400000, guid: be961eee8bbedf240bf5dfcbf6049cc8, type: 2}
   Prosperity: 3
   ShedFootprintMetres: 10.0
   LotIndex: 0
