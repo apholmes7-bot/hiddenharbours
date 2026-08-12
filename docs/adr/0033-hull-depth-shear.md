@@ -1,8 +1,8 @@
 # ADR 0033 — One depth unit: the hull frame takes a y→z shear, and three laws re-derive with it
 
-- **Status: ACCEPTED (2026-08-12)** — lead-architect decision, commissioned by the owner after
-  #491's diagnosis. This ADR ratifies the depth-contract change; the implementation ships as its
-  own PR against the acceptance criteria below.
+- **Status: IMPLEMENTED (2026-08-12)** — lead-architect decision, commissioned by the owner after
+  #491's diagnosis. Ratified in #493; implemented in #498 (`e231ef2d`), same day, all four
+  acceptance criteria met. Decision item 3 carries a post-implementation amendment (see below).
 - **Date:** 2026-08-12
 - **Decision owner:** lead-architect (the contract + this ADR); art-pipeline (the shear, the
   re-derivations, the sweeps); gameplay-systems (flotation re-check sign-off on `BoatHullDef`
@@ -82,6 +82,18 @@ the wrong relation; correcting it without them would trade one lie for three:
    `g/PPU = 0.013 m` — 4.4 % of its 0.30 m threshold. Re-verify the golden-mastered pass;
    marginal edges that flip get re-baselined **knowingly**, with before/after crops in the PR,
    never silently.
+
+   > **AMENDED 2026-08-12 (lead-architect ruling on #498, the implementing PR): the measured
+   > shift is ZERO, by design.** The shipped shear applies to `positionCS` only — the facet
+   > shader keeps the rig's own unsheared depth in `wpos.z`, which is what feeds `_HHDepthTex`
+   > (the resolve's only consumer) and the #481 deck-occupant band. Both are intra-hull
+   > questions asked in the rig's frame; neither involves the water, so neither owed the
+   > water's unit any reconciliation. Feeding the resolve the sheared depth would add a
+   > screen-row gradient of 0.013 m/px of structured noise to an edge detector and would turn
+   > the occupant compare into a different geometric question from the one #481 validated.
+   > This item's obligation ("re-verify; enumerate what flips") was met with an empty
+   > enumeration: zero goldens moved, zero re-baselined. The prediction above assumed the
+   > shear would land in the shared depth reads; the implementation defines that away.
 
 **Golden masters:** any that move, move because the depth contract moved — re-baseline them in
 the implementing PR with the flip named in the PR body. A silent re-baseline is a defect.
