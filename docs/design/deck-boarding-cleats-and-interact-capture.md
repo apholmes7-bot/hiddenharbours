@@ -181,14 +181,47 @@ tuning, and the worked St Peters numbers. In brief:
   climb. **This is the same verb M2-37/38 consume** — build it first among the three.
 - No screen-space prompts, labels, or icons by default. No per-frame allocation in the detector.
 
+#### The gameplay half — **LANDED** (the seam; the shader is still art-pipeline's)
+
+**The pressure that finally forced it:** the dev key ledger is spent. Every letter A–Z is claimed,
+across four different binding styles (`Key.X` enums, `.xKey` named properties, `.inputactions`
+bindings, and numeric `Key` overrides serialized into `StPeters.unity`), so a feature that wants a
+button has nowhere left to go. The verb is the pressure valve: **you register a candidate, you do
+not bind a key.**
+
+| Piece | Where | What it is |
+|---|---|---|
+| `IInteractable` | `Core/Interaction` | Id · live world position · own reach · priority · contexts · requires-facing · own availability gate · `Interact()` |
+| `Interactables` | `Core/Interaction` | Scene-scoped registry, register-on-enable / relinquish-on-disable — the `MooringCleats` / `StandableSurfaces` mould |
+| `InteractResolver` | `Core/Interaction` | The **pure** selection rule: filters (context → availability → reach → arc), then priority → distance → id ordinal |
+| `InteractVerb` | `Core/Interaction` | Dispatch on a press edge; publishes `InteractPerformed`, and `InteractCandidateChanged` **on change only** |
+| `InteractActionClaim` | `Core/Interaction` | Transitional: an older direct reader of the key (`WorldInteractor`) stands the verb down by proximity. Dies when NPCs become candidates |
+| driver | `ControlSwitcher` | Reads no new key: `BeginInteract()` consults the registry **after** board / helm / step-ashore |
+
+- **No new binding.** The verb generalises the key the game already calls Interact (E). Nothing E
+  did before it changed; the verb takes only the presses that used to do nothing.
+- **The arc is the affordance, not a label.** `InteractCandidateChanged` carries the id of the one
+  thing the press would act on — that is the signal `outline-interaction-language.md` §4.3 asks for
+  ("if the interaction layer would let the player act on it right now, it outlines"). Nothing
+  screen-space was added.
+- **Migrated as proof:** `WetBucketPoint` (the seawater spot). Same 4 m reach, same on-foot gate,
+  still omnidirectional — its `F` key and its private `Update()` are gone.
+- **Open ordering question, flagged for lead-architect:** the verb is consulted LAST, so boarding
+  keeps the press where both would apply. That is provably non-regressive but it is not obviously
+  right for a thing at your feet; the end state is boarding registering as a candidate too, and the
+  resolver arbitrating it by distance, priority and **facing**.
+- **Not built here:** the outline shader itself (art-pipeline), the fuel-container carry, shop
+  counters, and the migration of boarding / NPCs / `MooringController`'s proximity read onto the seam.
+
 ## 4. Phasing
 
 | When | What |
 |---|---|
 | ~~**Now (rides ADR 0022)**~~ **LANDED** | Add `DECK`/`WASHBOARD`/`CLEATS` to the art-director export ask; extractor pass-through to Def data. Additive, small. — **done**: the eleven sidecars import to `BoatDeckDef` assets (`DeckSidecarImporter`) and the on-deck player is clamped to each hull's own polygons instead of the one-size rectangle. `CLEATS` and `WASHBOARD` ride along as data; no rope gameplay and no Space climb yet. |
 | ~~**The boarding MOVE**~~ **LANDED** (owner ask, 2026-08-06) | *"You push E and get teleported; the character should jump/climb/whatever to get onto the boat."* E now plays a MOVE: the fisher walks to the nearest point on that hull's own rail — her `DECK` outline, with `WASHBOARD` strips opened to the clamp on the hulls whose data carries them — vaults it, and lands where boarding always seated them. Stepping ashore is the same move mirrored. `ControlSwitcher` only; the state machine, the E-verb, the reach and the repair gate are all untouched — the move changes WHEN the same transition lands (at the far end of the arc, when the feet meet the deck), never WHETHER it may. **No new art**: the arc is built from the shipped walk frames, which the character's sprite driver selects from measured speed. A bespoke `board`/climb clip from the art-director is the open follow-up, and the owner's call. |
-| **M2, in order** | M2-39 (the interact verb — the other two consume it) → M2-37 (boarding) → M2-38 (ropes). Alongside M2-33, which shares the leave-the-helm/moving-deck substrate. **M2-37's own `Space` deck↔washboard climb is still to build** — the boarding move above consumes the same polygons but is a different verb (E, boat↔shore) and does not promote you onto a washboard to stand there. — **M2-38 done** (2026-08-06): it did not in fact need M2-39 first, because the rope rides the CAST flick rather than the interact verb. When M2-39 lands, the "grab a rope" beat becomes an `IInteractable` candidate and `MooringController`'s proximity read is what it replaces. |
-| **Owner's call** | M2-39 is a strong candidate to pull forward earlier (it improves the existing bucket/rod/trap interactions on its own). Raise, don't sneak. |
+| ~~**The interact VERB**~~ **LANDED** (M2-39 gameplay half) | The `IInteractable` seam, its registry, the pure resolver and the press dispatch — see §3 above. **No new key**: the verb generalises E and is consulted after board / helm / step-ashore, so with an empty registry the interact key behaves bit-for-bit as it did. `WetBucketPoint` migrated onto it as proof and gave up its `F`. The **outline shader** (the other half of M2-39) is art-pipeline's and rides `InteractCandidateChanged`; nothing draws a highlight yet. |
+| **M2, in order** | M2-39 (the interact verb — the other two consume it) → M2-37 (boarding) → M2-38 (ropes). Alongside M2-33, which shares the leave-the-helm/moving-deck substrate. **M2-37's own `Space` deck↔washboard climb is still to build** — the boarding move above consumes the same polygons but is a different verb (E, boat↔shore) and does not promote you onto a washboard to stand there. — **M2-38 done** (2026-08-06): it did not in fact need M2-39 first, because the rope rides the CAST flick rather than the interact verb. **M2-39's seam is now in** (2026-08-12): the "grab a rope" beat can become an `IInteractable` candidate whenever `MooringController`'s proximity read is retired onto it — not done here, deliberately, because that read is load-bearing for the cast-flick arbitration. |
+| **Owner's call** | ~~M2-39 is a strong candidate to pull forward earlier~~ — pulled forward and landed (seam only). What is still the owner's to call: whether a thing **at your feet** should outrank **boarding** for the same press (today boarding wins), and what the outline actually looks like. |
 
 ## 5. What these symbols do NOT do — occlusion (owner follow-up, 2026-07-21)
 

@@ -129955,11 +129955,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d6b7b3204ca44c4ac7660ade6cb3c0f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: HiddenHarbours.Player::HiddenHarbours.Player.WetBucketPoint
-  _interactKey: 20
-  _reach:
-    _player: {fileID: 0}
-    _playerObjectName: Player
-    _range: 4
+  _id: fixture.st_peters.wet_bucket
+  _reachMeters: 4
+  _requiresFacing: 0
 --- !u!212 &1784269491
 SpriteRenderer:
   serializedVersion: 3

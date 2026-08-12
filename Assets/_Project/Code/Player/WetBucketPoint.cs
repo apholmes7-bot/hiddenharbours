@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using HiddenHarbours.Core;
 using HiddenHarbours.Economy;
 
@@ -8,37 +7,77 @@ namespace HiddenHarbours.Player
 {
     /// <summary>
     /// THE WET BUCKET (M1 §7.3) — keeping shellfish ALIVE: time, free, but species-limited. A
-    /// seawater spot at the shore; press the key with your pail and the SHELLFISH in it are wetted
-    /// (<see cref="StorageMode.Live"/> — arrested at the M1 policy). Press again to tip the water
+    /// seawater spot at the shore; interact with your pail and the SHELLFISH in it are wetted
+    /// (<see cref="StorageMode.Live"/> — arrested at the M1 policy). Interact again to tip the water
     /// out (back to ambient). Finfish are never affected — a wet bucket keeps a clam alive, it does
     /// nothing for a mackerel; that species limit is exactly what makes ice worth buying (§7.3's
     /// table of what each cold buys).
     ///
     /// <para>Mode changes settle first (<see cref="Freshness.WithMode"/>), so the walk to the water
-    /// is banked, never undone. Proximity + on-foot gating is the stall pattern
-    /// (<see cref="StallReach"/>); New Input System only; <see cref="DevNotice"/> narrates.</para>
+    /// is banked, never undone. <see cref="DevNotice"/> narrates.</para>
+    ///
+    /// <para><b>The first citizen of the one interact verb (M2-39).</b> This used to own a private
+    /// <c>Update()</c> reading <c>F</c>, with a comment conceding the key was shared with the freezer and
+    /// only safe because "the ranges don't overlap" — an invariant asserted in prose and checked by
+    /// nobody. It now registers as an <see cref="IInteractable"/> and the press arrives through
+    /// <see cref="InteractVerb"/> instead: no keyboard read here, no key of its own, and the
+    /// don't-overlap question answered by <see cref="InteractResolver"/> rather than by hand.</para>
+    ///
+    /// <para><b>What that changed, exactly.</b> The gate is the same rule it always was — ON FOOT and
+    /// within 4 m, inclusive — because <see cref="InteractContext.OnFoot"/> is what <c>StallReach</c>'s
+    /// on-foot test was, and <see cref="ReachMeters"/> is what its range was. Facing is deliberately NOT
+    /// required (<see cref="_requiresFacing"/> defaults off), so a spot you operate by standing at it stays
+    /// operable from any angle, as before. The one real difference is the binding: <c>F</c> is gone and the
+    /// verb rides the interact key, which the switcher answers first — so with a boardable boat inside its
+    /// board reach, that press boards instead. Step a metre off the boat and the spot is yours again.</para>
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class WetBucketPoint : MonoBehaviour
+    public sealed class WetBucketPoint : MonoBehaviour, IInteractable
     {
-        [Tooltip("Interact key (proximity-disjoint from the freezer's — the WorldInteractor precedent).")]
-        [SerializeField] private Key _interactKey = Key.F;
+        [Tooltip("Stable id — the art highlight matches on it, and it is the resolver's last tie-break. " +
+                 "Must be unique among live interactables (a second seawater spot needs its own).")]
+        [SerializeField] private string _id = "fixture.st_peters.wet_bucket";
 
-        [Tooltip("On-foot + in-range gate (the DevSellInput stall pattern).")]
-        [SerializeField] private StallReach _reach = new StallReach();
+        [Tooltip("How close (m) the on-foot player must stand to work the spot. Was StallGate's 4 m " +
+                 "default and stays it — a forgiving step-up distance (P5 cozy).")]
+        [SerializeField, Min(0f)] private float _reachMeters = StallGate.DefaultRange;
+
+        [Tooltip("Require the player to be FACING the spot. Off (the pre-verb behaviour): being in reach " +
+                 "is enough, which is right for something you operate by standing at it.")]
+        [SerializeField] private bool _requiresFacing;
 
         private ClamBucket _bucket;
 
-        private void OnEnable() => _reach.Enable();
-        private void OnDisable() => _reach.Disable();
+        // ---- the interact seam (M2-39) -------------------------------------------------------
 
-        private void Update()
-        {
-            var kb = Keyboard.current;   // New Input System only
-            if (kb == null || !kb[_interactKey].wasPressedThisFrame) return;
-            if (!_reach.CanInteract(transform.position)) return;
-            Toggle();
-        }
+        /// <inheritdoc/>
+        public string Id => _id;
+
+        /// <inheritdoc/>
+        public Vector2 WorldPosition => transform.position;
+
+        /// <inheritdoc/>
+        public float ReachMeters => _reachMeters;
+
+        /// <inheritdoc/>
+        public int Priority => InteractPriority.Fixture;
+
+        /// <inheritdoc/>
+        public InteractContext Contexts => InteractContext.OnFoot;
+
+        /// <inheritdoc/>
+        public bool RequiresFacing => _requiresFacing;
+
+        /// <summary>Always available. An empty pail does NOT make the spot un-interactable: pressing with
+        /// nothing to keep answers "Nothing in the bucket to keep." and that cozy refusal (P5) is exactly
+        /// what the pre-verb F-key path did. See <see cref="IInteractable.IsAvailable"/>.</summary>
+        public bool IsAvailable => true;
+
+        /// <inheritdoc/>
+        public void Interact(in InteractActor actor) => Toggle();
+
+        private void OnEnable() => Interactables.Register(this);
+        private void OnDisable() => Interactables.Unregister(this);
 
         /// <summary>Wet the shellfish (Live) or tip the water out (Ambient) — whichever applies.
         /// Public so tests drive it without input.</summary>

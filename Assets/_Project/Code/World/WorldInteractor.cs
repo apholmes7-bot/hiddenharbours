@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using HiddenHarbours.Core;
 
 namespace HiddenHarbours.World
 {
@@ -58,15 +59,39 @@ namespace HiddenHarbours.World
             // While a conversation is up, the key advances it (and no prompt shows).
             if (_presenter != null && _presenter.IsShowing)
             {
+                Claim(true);
                 if (interact) _presenter.Advance();
                 ShowPrompt(null);
                 return;
             }
 
             _nearest = FindNearest();
+            Claim(_nearest != null);
             ShowPrompt(_nearest);
             if (_nearest != null && interact) Begin(_nearest);
         }
+
+        /// <summary>
+        /// Tell the M2-39 interact verb that this press is already spoken for
+        /// (<see cref="InteractActionClaim"/>) — raised by PROXIMITY, every frame, from the answer this
+        /// component has already computed, never by the press itself.
+        ///
+        /// <para><b>Why the claim, when the header above says the ranges don't overlap.</b> Because at St
+        /// Peters they now demonstrably do: Aunt Ginny stands 1.80 m from her freezer against this
+        /// component's 1.8 m radius, and the seawater spot's 4 m reach overlaps Junior Poirier's. Those
+        /// were harmless while the fixtures were on their own key (F); with the interact verb they land on
+        /// E, and one press would both start a conversation AND work the fixture. This closes that by
+        /// construction instead of by assertion — and it is why the coordination point this file's header
+        /// flagged for gameplay-systems is finally a mechanism rather than a comment.</para>
+        ///
+        /// <para>Exactly ONE claimant today (this component). The flag is transitional and dies when NPCs
+        /// become <c>IInteractable</c> candidates and the resolver arbitrates them like everything else —
+        /// see <see cref="InteractActionClaim"/>. Released on disable so a torn-down region cannot leave
+        /// the verb wedged off.</para>
+        /// </summary>
+        private void Claim(bool hasTarget) => InteractActionClaim.IsClaimed = hasTarget;
+
+        private void OnDisable() => InteractActionClaim.Reset();
 
         // ---- interaction --------------------------------------------------------------------
 

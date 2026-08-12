@@ -307,6 +307,17 @@ That matters twice over:
 outlines; otherwise it does not.* One source of truth, and it cannot drift from the verb surface
 because it **is** the verb surface.
 
+> ✅ **The signal now exists** (M2-39 gameplay half, 2026-08-12). `InteractVerb` publishes
+> **`InteractCandidateChanged`** — the `IInteractable.Id` of the one thing the interact press would
+> act on, or null for none — **on change only**, never per frame. That struct *is* the recommended
+> rule, computed by the pure `InteractResolver` rather than by a second opinion about it, and it goes
+> out empty whenever the press cannot reach anything (modal dialogue up, paused, mid-boarding-move),
+> so an outline can never outlive its own actionability. An art-side presenter subscribes and matches
+> its own registrant by id — the `SpriteLightBinder`/`TreeTrunkAnchor` mould, and the interaction lane
+> still names no renderer. **Nothing draws a highlight yet**; the shader is this document's §4.4
+> question and is art-pipeline's to answer. Note the position is deliberately NOT on the signal (a
+> moving candidate would force a per-frame publish): the presenter already owns the thing it draws.
+
 ⚠ **This will visibly conflict with the floating prompt** (`WorldInteractor.ShowPrompt` draws a
 `Text` + `Outline` above the target). The diegetic-UI vision wants that gone. Whether the outline
 *replaces* the prompt or ships alongside it first is an owner call, and it belongs in the same
