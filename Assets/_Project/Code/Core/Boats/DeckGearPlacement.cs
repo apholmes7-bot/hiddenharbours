@@ -80,9 +80,31 @@ namespace HiddenHarbours.Core
         /// lesson. <paramref name="deckHeadingDegrees"/> is the hull's current heading as drawn (not
         /// a target, not a last-known value); <paramref name="gearDir"/> is the gear's own facing
         /// step on the deck; the station's turn is the operator's offset from it.</para>
+        ///
+        /// <para><b>⚠️ Why the facing term is SUBTRACTED, and why that is not a typo.</b> A
+        /// <c>dir</c> step is one thing, but the two frames it is read into run opposite ways:
+        /// <see cref="RotateOnDeck"/> turns an offset COUNTER-CLOCKWISE in the (x, y) ground plane,
+        /// while a compass bearing runs CLOCKWISE from North (the project's convention — see
+        /// <c>DeckWalkController.WorldToDeckFrame</c>). Adding the facing term therefore turned
+        /// POSITIONS one way and HEADINGS the other: the same <c>dir</c> that swung a stand offset to
+        /// port pointed its operator to starboard, a mirror about the fore-and-aft axis. Subtracting
+        /// it makes the bearing turn WITH the offset, so one <c>dir</c> now means one direction
+        /// everywhere in this class.</para>
+        ///
+        /// <para>What it cost while they disagreed: a station offset ACROSS its gear — the hauler's,
+        /// the only one — could be given a <c>dir</c> that stood its operator inboard of the rail, or
+        /// one that faced them outboard over it, but never both. Every other station's stand is
+        /// straight fore-and-aft, where the beam mirror is invisible, which is why nothing caught it
+        /// for so long.</para>
+        ///
+        /// <para><b>No station data moves.</b> The sign only bites on the facing STEP, and every
+        /// <c>turn</c> the kit ships is 0 (face the gear) or 4 (a half turn) — both of which negate to
+        /// themselves mod 8. So a gear at <c>dir</c> 0 reads exactly as before, and the shipped
+        /// hauler's <c>dir</c> 2 becomes right in both senses at once: its operator already stood
+        /// inboard, and now also faces outboard, where the warp comes up.</para>
         /// </summary>
         public static float OperatorHeading(float deckHeadingDegrees, int gearDir, in Station station)
-            => Wrap360(deckHeadingDegrees + (WrapFacing(gearDir + station.Turn) * DegreesPerFacing));
+            => Wrap360(deckHeadingDegrees - (WrapFacing(gearDir + station.Turn) * DegreesPerFacing));
 
         /// <summary>
         /// Where the operator's feet land, in hull-local metres.

@@ -251,38 +251,36 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(1f, SternDeckLoop.Worked01(9, 4), Tol, "over-worked clamps rather than overruns");
         }
 
-        // ---- ⚠️ KNOWN OPEN: the seam's two rotations disagree in handedness -------------------------
+        // ---- CLOSED: the seam's two rotations now agree in handedness -------------------------------
 
         /// <summary>
-        /// <b>⚠️ FINDING, pinned so it cannot be lost: <see cref="DeckGearPlacement"/> turns POSITIONS one
-        /// way and HEADINGS the other.</b>
+        /// <b>✅ CLOSED (was: the two rotations turn opposite ways). The hauler can now stand its operator
+        /// inboard AND face them outboard — at the very <c>dir</c> the data ships.</b>
         ///
-        /// <para><see cref="DeckGearPlacement.RotateOnDeck"/> is a standard counter-clockwise rotation of
-        /// the (x, y) plane, while <see cref="DeckGearPlacement.OperatorHeading"/> advances a compass
-        /// bearing, which is clockwise from North (the project's convention —
+        /// <para><b>What was wrong.</b> <see cref="DeckGearPlacement.RotateOnDeck"/> is a standard
+        /// counter-clockwise rotation of the (x, y) plane, while <see cref="DeckGearPlacement.OperatorHeading"/>
+        /// advanced a compass bearing, which is clockwise from North (the project's convention —
         /// <c>DeckWalkController.WorldToDeckFrame</c> states it). So for one and the same <c>dir</c>, an
-        /// offset that rotates to PORT is paired with a heading that points to STARBOARD. They are mirror
-        /// images about the fore-and-aft axis.</para>
+        /// offset that rotated to PORT was paired with a heading that pointed to STARBOARD: mirror images
+        /// about the fore-and-aft axis. A station whose stand is offset ACROSS the gear — the hauler's, the
+        /// only one — could be given a <c>dir</c> that stood its operator inboard, or one that faced them
+        /// outboard, but never both, because the two sets were disjoint at all eight bearings. Every other
+        /// station's stand is straight fore-and-aft, where the beam mirror is invisible, which is why
+        /// nothing caught it for so long.</para>
         ///
-        /// <para><b>What it costs.</b> A station whose stand is offset ACROSS the gear — the hauler's, the
-        /// only one — can be given a <c>dir</c> that stands its operator inboard, or one that faces them
-        /// outboard, but never both. This test enumerates all eight and shows the sets are disjoint. Every
-        /// other station's stand is straight fore-and-aft, and the beam mirror leaves those alone, which is
-        /// why nothing has caught it before.</para>
+        /// <para><b>The fix</b> was one sign in Core: <see cref="DeckGearPlacement.OperatorHeading"/> now
+        /// SUBTRACTS its facing term, so a bearing turns the way <c>RotateOnDeck</c> turns an offset.
+        /// <c>RotateOnDeck</c> was deliberately left alone — correcting that end would have moved every
+        /// stand point in the game, which is the wrong end to pull.</para>
         ///
-        /// <para><b>The fix is one sign, and it belongs to whoever owns Core</b> — not to a presentation
-        /// slice, and not while <c>DeckGearPlacementTests</c> pins the current behaviour. Correcting
-        /// <see cref="DeckGearPlacement.OperatorHeading"/> to turn with the rotation rather than against it
-        /// makes the two agree, and the shipped hauler <c>dir</c> of 2 becomes right in BOTH senses at
-        /// once: the operator already stands inboard, and would then also face outboard. Correcting
-        /// <c>RotateOnDeck</c> instead would move every stand point, which is the wrong end to pull.</para>
-        ///
-        /// <para>Until then the shipped data is chosen on POSITION, because where the crew physically
-        /// stands is the half that is load-bearing today: the deck-work clips are not baked yet, so no
-        /// operator is drawn at any heading at all.</para>
+        /// <para><b>So this test now pins the AGREEMENT</b>, which is the thing that must not regress: the
+        /// two sets intersect, and they intersect at the shipped hauler <c>dir</c> of 2. It is written as
+        /// the same enumeration over all eight bearings that once proved them disjoint, so a re-flipped
+        /// sign fails here first and loudest. No station data moved to close it: every <c>turn</c> the kit
+        /// ships is 0 or 4, and both negate to themselves mod 8.</para>
         /// </summary>
         [Test]
-        public void KnownOpen_TheStandRotationAndTheHeadingTurnOppositeWays()
+        public void TheStandRotationAndTheHeadingTurnTheSameWay()
         {
             var hauler = new DeckGearPlacement.Station(new Vector3(-0.30f, 0.44f, 0f), 4, 1.05f,
                                                        new Vector2(0.66f, 0.60f));
@@ -301,17 +299,22 @@ namespace HiddenHarbours.Tests.EditMode
 
             CollectionAssert.IsNotEmpty(standsInboard, "some bearing must stand the worker inboard");
             CollectionAssert.IsNotEmpty(facesOutboard, "some bearing must face the worker outboard");
-            foreach (int dir in standsInboard)
-                CollectionAssert.DoesNotContain(facesOutboard, dir,
-                    $"dir {dir}: the seam should allow standing inboard AND facing outboard. That the two " +
-                    "sets are disjoint at every bearing IS the handedness defect — when OperatorHeading is " +
-                    "corrected to turn with RotateOnDeck, this assertion is what must be deleted.");
 
-            // The concrete case the shipped data uses, spelled out so the fix is checkable by hand.
+            // THE closed finding: the sets overlap at all, and they overlap where the data lives.
+            var both = standsInboard.FindAll(facesOutboard.Contains);
+            CollectionAssert.IsNotEmpty(both,
+                "the seam must allow standing inboard AND facing outboard at the same bearing. Two " +
+                "disjoint sets here is the handedness defect back: OperatorHeading has stopped turning " +
+                "the way RotateOnDeck turns an offset.");
+            CollectionAssert.Contains(both, 2,
+                "dir 2 is the bearing the shipped hauler data uses — it is the one that must satisfy both");
+
+            // The concrete case the shipped data uses, spelled out so it stays checkable by hand.
             Assert.Less(DeckGearPlacement.OperatorStand(mount, 2, hauler).x, mount.x,
                 "dir 2 stands the hauler's operator inboard of the rail — correct, and why it is shipped");
-            Assert.AreEqual(270f, DeckGearPlacement.OperatorHeading(0f, 2, hauler), Tol,
-                "…and today faces them INBOARD (270°). After the sign fix this reads 90° — outboard.");
+            Assert.AreEqual(90f, DeckGearPlacement.OperatorHeading(0f, 2, hauler), Tol,
+                "…and now faces them OUTBOARD (90° = East = over a starboard rail), where the warp comes " +
+                "up. This read 270° — dead inboard, at the same stand point — before the sign was fixed.");
         }
 
         // ---- the slot budget -----------------------------------------------------------------------
