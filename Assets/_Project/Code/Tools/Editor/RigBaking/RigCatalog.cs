@@ -350,6 +350,48 @@ namespace HiddenHarbours.Tools.RigBaking
                                            AzimuthConvention.Clockwise,
                                            prerequisites: new[] { "deckIsoSolid" }),
 
+                // ---- the NAVIGATION BUOY kit (drop of 2026-08-11) — the aids to navigation --------
+                //
+                // ⚠️ THE SECOND BUOY FAMILY. `buoyIso` above is the LOBSTER SPAR FLOAT — 1.2 m of foam
+                // in a fisher's colours on a 10×32 cell, baked to DeckLoopSheets/Buoys for the trap
+                // loop. THIS is the channel furniture: 14 IALA Region B marks (4 cardinals, 4 laterals,
+                // isolated danger, safe water, special, regulatory, mooring, spar) × 5 hull diameters
+                // × 3 wear states, up to 6.6 m tall and made of steel. Different global, different
+                // sheet folder (Art/Sprites/NavBuoys/Iso), different consumer. Nothing about this entry
+                // touches the trap-loop buoys.
+                //
+                // ⚠️ IT RIDES deckIsoSolid, AND THAT IS NOT A SUBSTITUTION OF CONVENIENCE. The drop
+                // shipped its own isoSolid.js; it is CHARACTER-IDENTICAL to the deck-loop kit's
+                // already-registered copy (same sha256 once CRLF is normalised — the repo's copy is
+                // CRLF, the drop's LF, which is the whole 216-byte difference). Committing a second
+                // copy of a registered global's source is the drift docs/art/rigs/README.md's no-edit
+                // rule exists to prevent — whichever loaded last would silently win for BOTH kits — so
+                // the kit's copy is gitignored and this entry declares the existing turntable instead.
+                //
+                // The substitution is proven at PIXEL level, not by file hash: loaded against
+                // deckIsoSolid, this rig reproduces all four of the drop's own reference sheets
+                // BYTE-FOR-BYTE (PortCan|s18 working · CardinalW|s20 fresh+lit · StbdLit|s24
+                // working+lit · Spar|s12 working). See docs/art/rigs/nav-buoy-kit/IMPORT.md.
+                //
+                // ⚠️ CLOCKWISE, MEASURED: the +X ground-plane bearing steps −45°/dir with the depth
+                // un-squashed by /sin 40° — same turntable as the deck-loop kit, OPPOSITE to every
+                // boat here. The SCREEN mean is −46.7525°, numerically identical to the figure the
+                // iso-rig-pack records for its COUNTER-clockwise rigs, and is therefore not a
+                // handedness test. NavBuoyRegistrationProbe re-measures from the live rig at bake time
+                // and the bake refuses on a mismatch, same as every sibling.
+                //
+                // ⚠️ Loads with InstallModule, never Install: no W/H/pivot/DIRS/defaultElev globals at
+                // all (measured — all five are `undefined`). Cell geometry is per type+size, from
+                // cell(type,size) → {W,H,cx,cy}, and FACINGS come from the contract, never a DIRS field.
+                //
+                // ⚠️ A missing turntable here THROWS ("Cannot read properties of undefined (reading
+                // 'tube')") rather than rendering wrong art — measured, and a happier failure mode than
+                // the pass-6 character body's silent fallback. The prerequisite is still declared: a
+                // loud failure at bake time is not a reason to leave the dependency to each caller.
+                ["navBuoy"] = new RigEntry($"{RigFolder}/nav-buoy-kit/navBuoyRig.js", "NavBuoy",
+                                           AzimuthConvention.Clockwise,
+                                           prerequisites: new[] { "deckIsoSolid" }),
+
                 // The boatyard: 20 parts in metres and 5 named SITES that assemble them around a
                 // hull, sized by the boat each yard serves. Tight cells like wharfIso — it reports
                 // px,py per bake and declares no pivot global, so it loads with InstallModule.
@@ -397,6 +439,47 @@ namespace HiddenHarbours.Tools.RigBaking
                 ["fuel"] = new RigEntry($"{RigFolder}/fuel-storage-kit/fuelRig.js", "FuelIso",
                                         AzimuthConvention.Clockwise,
                                         prerequisites: new[] { "deckIsoSolid" }),
+
+                // ---- THE COMMERCIAL BLOCK (the 2026-08-06 shop kit) ------------------------------
+                // Nine trades — general store, fish market, chandlery, bakery, restaurant, tavern,
+                // post office, takeout stand, gift shop — across three rigs that share ONE camera, one
+                // palette and one footprint formula. Measured rather than read off the header: all
+                // three project identically to 0.0000 px at every facing, and all three turn the same
+                // way as houseIsoRig and the fleet.
+                //
+                // ⭐ ALL THREE PUT THE DOOR ON +Y — which is why this family does NOT inherit the
+                // interiorIsoRig trap two entries up. THAT rig's door is on −Y, so a room stands a
+                // half-turn from its shell and the offset must be measured and carried. The shop kit's
+                // room is the shopfront seen from inside (its own README: "the +Y wall is the street
+                // elevation from the inside"), so shell and room register at the SAME facing.
+                // ShopRegistrationProbe measures that at bake time and writes the working into the
+                // contract. It is not declared here, and it must not be assumed to be 4 by analogy.
+                //
+                // ⚠️ THE LOAD ORDER IS LOAD-BEARING AND EVERY ONE OF ITS FAILURES IS SILENT. Measured:
+                //   · Shopfront ALONE resolves restaurant 8.90 × 11.25 m; with ShopInterior loaded,
+                //     9.00 × 11.50. The 0.5 m cell SNAP lives in the interior rig and the other two
+                //     read it back — so a shell baked without it is a shell its own interior cannot fit.
+                //   · ShopInterior.dims({room:'kitchen'}) without ShopBuilding returns the WHOLE SHELL
+                //     (9.00 × 11.50, planned=false) instead of the kitchen (6.09 × 5.09): the same call,
+                //     3.5× the area, no error. The rig reports which happened as dims().planned, and
+                //     ShopRigBaker asserts it rather than trusting the load set.
+                //   · shopBuildingRig's README says it "throws without ShopInterior". It does NOT — it
+                //     installs cleanly and fails later, at render. Do not lean on that guard.
+                // Declaring the dependency here is what stops every caller having to remember it.
+                ["shopInterior"] = new RigEntry($"{RigFolder}/shop-building-kit/shopInteriorRig.js",
+                                                "ShopInterior", AzimuthConvention.CounterClockwise),
+
+                ["shopfront"] = new RigEntry($"{RigFolder}/shop-building-kit/shopfrontRig.js",
+                                             "Shopfront", AzimuthConvention.CounterClockwise,
+                                             new[] { "shopInterior" }),
+
+                // Depth-first in this order installs shopInterior, then shopfront, then this — the whole
+                // kit in one host, the only configuration in which every number above is right. NOT a
+                // cycle: shopInterior needs nothing loaded to install, and its plan-adoption use of
+                // ShopBuilding resolves at CALL time (measured), so the graph stays acyclic.
+                ["shopBuilding"] = new RigEntry($"{RigFolder}/shop-building-kit/shopBuildingRig.js",
+                                                "ShopBuilding", AzimuthConvention.CounterClockwise,
+                                                new[] { "shopInterior", "shopfront" }),
             };
 
         public static string RepoRoot =>

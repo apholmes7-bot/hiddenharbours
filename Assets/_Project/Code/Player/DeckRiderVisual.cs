@@ -36,14 +36,29 @@ namespace HiddenHarbours.Player
     ///   and the stance is released, so the ashore fisher is byte-identical to before this existed.</item>
     /// </list>
     ///
-    /// <para><b>How the ride is read.</b> The hull publishes the wave phase it is DRAWING its rock at
-    /// (<see cref="BoatWaveMotion.RockPhaseDegrees"/> — quantised to the baked frame on a sprite hull,
-    /// continuous on a mesh one), and <see cref="DeckRideMath"/> turns that into a lean and a lift with
-    /// this component's own tuned amplitudes. That is the established shape:
-    /// <see cref="DoryOarLayer"/> rides the same rock the same way. A hull still on the LEGACY transform
-    /// rock publishes no phase — there is no cycle to publish — so the rider falls back to the exact tilt
-    /// that hull is applying to its visual (<see cref="IBoatHullPresenter.VisualTiltDegrees"/>): a lean
-    /// with no heave, which is honest rather than invented.</para>
+    /// <para><b>How the ride is read — TWO channels, because a deck moves in two ways.</b></para>
+    /// <list type="number">
+    ///   <item><b>The ROCK CYCLE.</b> The hull publishes the wave phase it is DRAWING its rock at
+    ///   (<see cref="BoatWaveMotion.RockPhaseDegrees"/> — quantised to the baked frame on a sprite hull,
+    ///   continuous on a mesh one), and <see cref="DeckRideMath.Ride"/> turns that into a lean and a
+    ///   small lift with this component's own tuned amplitudes. That is the established shape:
+    ///   <see cref="DoryOarLayer"/> rides the same rock the same way. A hull still on the LEGACY
+    ///   transform rock publishes no phase — there is no cycle to publish — so the rider falls back to
+    ///   the exact tilt that hull is applying to its visual
+    ///   (<see cref="IBoatHullPresenter.VisualTiltDegrees"/>): a lean with no heave, honest rather than
+    ///   invented.</item>
+    ///   <item><b>The DISPLACED RIDE</b> (owner, 2026-08-11: the fisher <i>"stays static in space with a
+    ///   rock animation but is not fixed to the same point on the bobbing boat deck"</i>). On a
+    ///   displaced sea (ADR 0023 — the default) the whole boat is translated bodily by the water's lift
+    ///   under her: metres, against the rock cycle's pixel or two, and therefore nearly all of what the
+    ///   deck actually does. It was never in the read at all, so the fisher held her physics-root
+    ///   altitude while the drawn deck bobbed past her. She now adds the hull's own
+    ///   <see cref="IBoatHullPresenter.DrawnRideMeters"/> — <b>read, not recomputed</b>: the number the
+    ///   hull reports having APPLIED, past the storm weight-filter (a stateful spring-damper — a second
+    ///   instance here would agree only with itself, worst exactly when the sea is worst) and past her
+    ///   own waterline settle, whose sink lives inside <see cref="MeshHullDriver"/> where this component
+    ///   cannot see it. One sea, one sample, one spring, two riders.</item>
+    /// </list>
     ///
     /// <para><b>Why the lean lands on the feet.</b> The child sits at localPosition zero and the character
     /// sheets are baked with the pivot on GROUND CONTACT, so a z-rotation of the child rotates the figure
@@ -158,6 +173,22 @@ namespace HiddenHarbours.Player
                  "for the rig's own counterLean, which needs a re-bake to draw properly.")]
         [SerializeField, Range(0f, 1f)] private float _footing = 0.6f;
 
+        [Tooltip("How much of the hull's DISPLACED RIDE the character takes — the sea lifting the whole " +
+                 "boat bodily, which on any real sea is by far the biggest thing the deck does (the rock " +
+                 "cycle above is a pixel or two of heave; this is metres).\n\n" +
+                 "1 = their feet stay on the same plank, which is what a body standing on a deck does, and " +
+                 "the tuned default. 0 = they hold station in space while the boat bobs under them — the " +
+                 "owner's 2026-08-11 report, kept as the A/B for this term alone.\n\n" +
+                 "It MULTIPLIES with Ride Strength above, so master 0 still restores the exact pre-rider " +
+                 "picture. There is no bracing fraction on it: bracing is what a body does about the TILT " +
+                 "of a deck, and no amount of it keeps a fisher at one altitude while the planking under " +
+                 "their boots rises a metre.\n\n" +
+                 "The value itself is never computed here — it is read back off the hull, which reports " +
+                 "the ride she actually drew (post storm weight-filter, post waterline settle). " +
+                 "Recomputing it would put a second copy of a stateful spring on the deck, and two " +
+                 "springs agree only with themselves.")]
+        [SerializeField, Min(0f)] private float _hullRideStrength = 1f;
+
         [Header("Facing (which way the figure looks while aboard)")]
         [Tooltip("Deck-frame speed (m/s) below which a step is treated as noise and the fisher's DECK " +
                  "BEARING is held — so someone who stops keeps looking where they were going instead of " +
@@ -247,6 +278,19 @@ namespace HiddenHarbours.Player
         /// a presenter cached across a hull swap silently pins to north. For tests / tooling.</summary>
         public float HullDrawnHeadingDegrees => DrawnHeadingDegrees();
 
+        /// <summary>The displaced ride the hull under this fisher reports she is DRAWING right now
+        /// (world metres) — the term their lift carries on top of the rock cycle. Read off the same
+        /// live presenter <see cref="ReadRide"/> uses, so a test comparing the two is comparing the
+        /// rider against the hull rather than against a second opinion. For tests / tooling.</summary>
+        public float HullDrawnRideMeters
+        {
+            get
+            {
+                IBoatHullPresenter hull = LiveHull();
+                return hull != null ? hull.DrawnRideMeters : 0f;
+            }
+        }
+
         /// <summary>True when a rider child is wired at all. A rig without one is legal and inert.</summary>
         public bool HasRider => _riderRenderer != null;
 
@@ -264,9 +308,12 @@ namespace HiddenHarbours.Player
             EnsureOccludableMaterial();
         }
 
-        /// <summary>Tune the ride in one call (tests / editor feel sessions).</summary>
+        /// <summary>Tune the ride in one call (tests / editor feel sessions). <paramref name="hullRide"/>
+        /// is the DISPLACED-RIDE share and defaults to the shipped 1 (feet on the plank); pass 0 for the
+        /// A/B that isolates the rock cycle.</summary>
         public void ConfigureRide(float rideStrength, float deckRollDegrees, float deckHeavePixels,
-                                  float deckPitchLiftMeters, float pixelsPerUnit, float footing)
+                                  float deckPitchLiftMeters, float pixelsPerUnit, float footing,
+                                  float hullRide = 1f)
         {
             _rideStrength = Mathf.Max(0f, rideStrength);
             _deckRollDegrees = deckRollDegrees;
@@ -274,6 +321,7 @@ namespace HiddenHarbours.Player
             _deckPitchLiftMeters = deckPitchLiftMeters;
             _pixelsPerUnit = Mathf.Max(1f, pixelsPerUnit);
             _footing = Mathf.Clamp01(footing);
+            _hullRideStrength = Mathf.Max(0f, hullRide);
         }
 
         /// <summary>
@@ -769,18 +817,34 @@ namespace HiddenHarbours.Player
         {
             if (_rideStrength <= 0f) return DeckRidePose.Level;
 
-            if (_wave != null && _wave.IsRocking)
-                return DeckRideMath.Ride(_wave.RockPhaseDegrees, _deckRollDegrees, _deckHeavePixels,
-                                         _deckPitchLiftMeters, _pixelsPerUnit, _footing, _rideStrength);
+            // The LIVE hull, for both reads below — the two must be about the same boat, and the
+            // presenter is the one thing a re-skin swaps out under the player's feet (see LiveHull).
+            IBoatHullPresenter hull = LiveHull();
 
-            if (_hull != null)
+            // (1) THE ROCK CYCLE — the in-place lean and heave the hull's own art draws.
+            DeckRidePose pose = DeckRidePose.Level;
+            if (_wave != null && _wave.IsRocking)
             {
-                float tilt = _hull.VisualTiltDegrees;
+                pose = DeckRideMath.Ride(_wave.RockPhaseDegrees, _deckRollDegrees, _deckHeavePixels,
+                                         _deckPitchLiftMeters, _pixelsPerUnit, _footing, _rideStrength);
+            }
+            else if (hull != null)
+            {
+                float tilt = hull.VisualTiltDegrees;
                 if (tilt != 0f)
-                    return new DeckRidePose(tilt * Mathf.Clamp01(_footing) * _rideStrength, 0f);
+                    pose = new DeckRidePose(tilt * Mathf.Clamp01(_footing) * _rideStrength, 0f);
             }
 
-            return DeckRidePose.Level;
+            // (2) THE DISPLACED RIDE — the whole boat going up and down on the sea, which is the
+            // dominant motion of any deck afloat and was missing entirely (owner, 2026-08-11: the
+            // fisher "stays static in space with a rock animation but is not fixed to the same point
+            // on the bobbing boat deck"). READ, never recomputed: the hull reports the metres she
+            // actually drew, past a stateful storm spring and her own waterline settle, and a second
+            // spring on this side would agree only with itself. 0 with the displaced sea off, so the
+            // A/B's off side is untouched.
+            return DeckRideMath.RidingHull(pose,
+                                           hull != null ? hull.DrawnRideMeters : 0f,
+                                           _hullRideStrength * _rideStrength);
         }
 
         /// <summary>Find the boat's rock, helm and skin — once per binding, never on the hot path. Plain

@@ -1,0 +1,338 @@
+fileFormatVersion: 2
+guid: 3f94f74ecdf05ce47b739125e8f9a75a
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 7582152036362579278
+    second: Shopfront_restaurant_0
+  - first:
+      213: 7730701893215681850
+    second: Shopfront_restaurant_1
+  - first:
+      213: -185339688059883760
+    second: Shopfront_restaurant_2
+  - first:
+      213: 3154584408685094532
+    second: Shopfront_restaurant_3
+  - first:
+      213: 8475734431547771371
+    second: Shopfront_restaurant_4
+  - first:
+      213: -3908303156144378308
+    second: Shopfront_restaurant_5
+  - first:
+      213: 2975126003218274135
+    second: Shopfront_restaurant_6
+  - first:
+      213: 1151586138346337859
+    second: Shopfront_restaurant_7
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Shopfront_restaurant_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 584
+        width: 650
+        height: 584
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35787672}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d31aa0928b2acf945bfa63a3da242248
+      internalID: -1284152299
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shopfront_restaurant_d1
+      rect:
+        serializedVersion: 2
+        x: 650
+        y: 584
+        width: 650
+        height: 584
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35787672}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8f83f95c6cf40414dae0c1ae59eb8cda
+      internalID: -300314246
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shopfront_restaurant_d2
+      rect:
+        serializedVersion: 2
+        x: 1300
+        y: 584
+        width: 650
+        height: 584
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35787672}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c51c7f8c8f4751d42b1952e3902c7aa6
+      internalID: -1951685769
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shopfront_restaurant_d3
+      rect:
+        serializedVersion: 2
+        x: 1950
+        y: 584
+        width: 650
+        height: 584
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35787672}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 128a24684d3d55f449f5e5f239c3b3b6
+      internalID: -2068832274
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shopfront_restaurant_d4
+      rect:
+        serializedVersion: 2
+        x: 2600
+        y: 584
+        width: 650
+        height: 584
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35787672}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1c13ac374a5de19448d48d76edbb57b9
+      internalID: -1125073725
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shopfront_restaurant_d5
+      rect:
+        serializedVersion: 2
+        x: 3250
+        y: 584
+        width: 650
+        height: 584
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35787672}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5bbcde01c9259324b84cfe06a67f6116
+      internalID: 1027934000
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shopfront_restaurant_d6
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 650
+        height: 584
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35787672}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 281aad8163383a54c97c00fbec175e39
+      internalID: 752176238
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shopfront_restaurant_d7
+      rect:
+        serializedVersion: 2
+        x: 650
+        y: 0
+        width: 650
+        height: 584
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35787672}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9e7d5a44c695f1749b888f11abe3a6b3
+      internalID: 822539414
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: bae6aed8636a3da4484bbbeeee5ea3af
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Shopfront_restaurant_d0: -1284152299
+      Shopfront_restaurant_d1: -300314246
+      Shopfront_restaurant_d2: -1951685769
+      Shopfront_restaurant_d3: -2068832274
+      Shopfront_restaurant_d4: -1125073725
+      Shopfront_restaurant_d5: 1027934000
+      Shopfront_restaurant_d6: 752176238
+      Shopfront_restaurant_d7: 822539414
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

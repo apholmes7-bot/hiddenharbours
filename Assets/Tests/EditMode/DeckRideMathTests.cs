@@ -245,5 +245,80 @@ namespace HiddenHarbours.Tests.EditMode
                                    "under three pixels of travel at the shipped amplitudes");
             }
         }
+
+        // ---- the DISPLACED RIDE composed on top (owner, 2026-08-11) --------------------------------
+        //
+        // Everything above is the rock CYCLE — what the hull's art draws in place, a couple of pixels of
+        // it. On a displaced sea the whole boat is ALSO translated bodily by the water's lift, metres of
+        // it, and that was missing from the read entirely: the fisher held her physics-root altitude
+        // while the drawn deck bobbed past her ("not fixed to the same point on the bobbing boat deck").
+        // RidingHull is that composition, and its whole job is to be boring — add to the lift, touch
+        // nothing else.
+
+        [Test]
+        public void TheHullsRide_AddsToTheLift_AndLeavesTheLeanAlone()
+        {
+            // A world translation moves a deck without tilting it. If the ride ever reached the roll
+            // channel, a heaving boat would lay her crew over on flat water.
+            var rock = RideAt(37f);
+            var ridden = DeckRideMath.RidingHull(rock, 0.8f, 1f);
+
+            Assert.AreEqual(rock.RollDegrees, ridden.RollDegrees, 0f,
+                            "the lean is the DECK's tilt and nothing else — exactly unchanged");
+            Assert.AreEqual(rock.LiftMeters + 0.8f, ridden.LiftMeters, 1e-6f,
+                            "and the ride adds to the lift, whole: their boots are on the planking");
+        }
+
+        [Test]
+        public void TheHullsRide_IsNOTBraced_BecauseBracingIsAboutTiltNotAltitude()
+        {
+            // Footing scales the LEAN (a fisher braces against a tilting deck). It must not touch the
+            // ride: no amount of bracing keeps a body at one altitude while the deck under it rises a
+            // metre — that IS the defect, not the fix.
+            var braced = DeckRideMath.RidingHull(RideAt(90f, footing: 0f), 1.3f, 1f);
+            var rigid = DeckRideMath.RidingHull(RideAt(90f, footing: 1f), 1.3f, 1f);
+
+            Assert.AreEqual(RideAt(90f, footing: 0f).LiftMeters + 1.3f, braced.LiftMeters, 1e-6f);
+            Assert.AreEqual(RideAt(90f, footing: 1f).LiftMeters + 1.3f, rigid.LiftMeters, 1e-6f);
+            Assert.AreEqual(0f, braced.RollDegrees, 1e-6f, "footing 0 still stands perfectly upright");
+        }
+
+        [Test]
+        public void TheHullsRide_ScalesWithItsOwnStrength_AndZeroIsTheExactOldPicture()
+        {
+            var rock = RideAt(210f);
+            Assert.AreEqual(rock.LiftMeters, DeckRideMath.RidingHull(rock, 2.5f, 0f).LiftMeters, 0f,
+                            "strength 0 is the owner's A/B for THIS term: bit-identical to before it existed");
+            Assert.AreEqual(rock.LiftMeters, DeckRideMath.RidingHull(rock, 2.5f, -1f).LiftMeters, 0f,
+                            "a negative strength is OFF, never inverted");
+            Assert.AreEqual(rock.LiftMeters + 1.25f,
+                            DeckRideMath.RidingHull(rock, 2.5f, 0.5f).LiftMeters, 1e-6f);
+        }
+
+        [Test]
+        public void ANonFiniteHullRide_ParksTheRider_RatherThanLaunchingThem()
+        {
+            // Same discipline as the phase guard above. A NaN reaching a transform does not merely look
+            // wrong — Unity refuses the write and the figure is stuck there for the rest of the voyage.
+            var rock = RideAt(120f);
+            foreach (float bad in new[] { float.NaN, float.PositiveInfinity, float.NegativeInfinity })
+            {
+                var pose = DeckRideMath.RidingHull(rock, bad, 1f);
+                Assert.AreEqual(rock.LiftMeters, pose.LiftMeters, 0f, $"{bad} must leave the pose alone");
+                Assert.AreEqual(rock.RollDegrees, pose.RollDegrees, 0f);
+            }
+        }
+
+        [Test]
+        public void ARideOnALevelDeck_IsStillARide()
+        {
+            // A hull can be riding a metre of swell while drawing NO rock cycle at all: glass-calm
+            // amplitudes, a hull with no rock grid, a hull sunk to her waterline on a still sea. The lift
+            // must survive the level pose — an early-out on "not rocking" would drop exactly the term
+            // that matters most.
+            var pose = DeckRideMath.RidingHull(DeckRidePose.Level, 0.9f, 1f);
+            Assert.AreEqual(0.9f, pose.LiftMeters, 1e-6f);
+            Assert.AreEqual(0f, pose.RollDegrees, 0f, "…and still perfectly level under their boots");
+        }
     }
 }
