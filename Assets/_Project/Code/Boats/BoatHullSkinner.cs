@@ -77,6 +77,19 @@ namespace HiddenHarbours.Boats
             /// player's boat leaves it clear. Default (a == 0) = untinted white.</summary>
             public Color Tint;
 
+            /// <summary>
+            /// <b>Her paint — the MESH path's answer to <see cref="Tint"/>.</b> A baked ramp table
+            /// that stands in for the hull def's, so two boats off one mesh can lie at one wharf in
+            /// two different colours (<see cref="HullPaintSchemeDef"/>).
+            ///
+            /// <para>Null (the default) = the def's own ramps, byte for byte — an unpainted boat
+            /// renders exactly as she did before paint existed, which is the A/B contract and is
+            /// pinned by test. Ignored on the SPRITE path, where colour is baked into the cells and
+            /// <see cref="Tint"/> is all there is; a sprite-variant hull carrying a scheme is not an
+            /// error, it just cannot show it.</para>
+            /// </summary>
+            public HullPaintSchemeDef PaintScheme;
+
             /// <summary>Install <see cref="BoatWaveMotion"/> so the hull rides the shared wave field
             /// (ADR 0018 B2). Default (false) installs it — the field is inverted so <c>default</c> is the
             /// shipped rig.</summary>
@@ -399,7 +412,8 @@ namespace HiddenHarbours.Boats
                                  "fittings) and wire it, as the dory's oars are.");
 
             // The facet renderer, through the Core seam. Install is idempotent (a re-skin reconfigures).
-            var renderer = HullMeshPresentation.Service.Install(child.gameObject, visual.HullMesh);
+            var renderer = HullMeshPresentation.Service.Install(child.gameObject, visual.HullMesh,
+                                                                options.PaintScheme);
             if (renderer == null)
             {
                 // The service refused (unusable def caught late). Fall back to the sprite path if the

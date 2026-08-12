@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lobster Boat Iso — paint harness</title>
+<script src="lobsterBoatIsoRig.js"></script>
+<style>
+  html,body{margin:0;background:#0b1418;color:#c8d2d4;
+    font:12px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;}
+  main{padding:28px 32px 64px;}
+  h1{font-size:15px;letter-spacing:.16em;text-transform:uppercase;margin:0 0 6px;color:#e6edee;}
+  p.sub{margin:0 0 22px;color:#7f9096;max-width:70ch;}
+  .check{border:1px solid #243137;padding:10px 14px;margin:0 0 26px;display:inline-block;}
+  .pass{color:#7fd6c9;} .fail{color:#e08a7a;}
+  h2{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#7f9096;
+    margin:34px 0 14px;padding-bottom:6px;border-bottom:1px solid #1b262b;}
+  .grid{display:flex;flex-wrap:wrap;gap:18px;}
+  figure{margin:0;background:#0e181d;border:1px solid #1b262b;padding:10px;}
+  figcaption{margin-top:8px;display:flex;flex-direction:column;gap:4px;}
+  .lbl{color:#e6edee;letter-spacing:.1em;}
+  .id{color:#5f7379;}
+  .note{color:#7f9096;max-width:34ch;text-wrap:pretty;}
+  .ramp{display:flex;gap:2px;margin-top:4px;}
+  .ramp i{width:11px;height:11px;display:block;}
+  canvas{image-rendering:pixelated;display:block;}
+  .row{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;}
+  .dir{display:flex;flex-direction:column;gap:6px;align-items:center;color:#5f7379;}
+  label{color:#7f9096;letter-spacing:.12em;text-transform:uppercase;}
+  select{background:#0e181d;color:#e6edee;border:1px solid #243137;padding:5px 8px;
+    font:12px/1.4 ui-monospace,Menlo,monospace;}
+</style>
+</head>
+<body>
+<main>
+  <h1>Lobster Boat Iso — paint harness</h1>
+  <p class="sub">The canonical 12.0 m Tier-3 hull (456 × 420 cell, pivot 228,258, elev 40°, 32 px = 1 m),
+  baked once per paint scheme. No build, no deps: open this file.</p>
+
+  <div class="check" id="check">baking…</div>
+
+  <h2>12 schemes · heading SE</h2>
+  <div class="grid" id="grid"></div>
+
+  <h2>8 headings · <label for="pick" style="display:inline">scheme</label>
+    <select id="pick"></select></h2>
+  <div class="row" id="dirs"></div>
+</main>
+
+<script>
+(function(){
+  const R = globalThis.LobsterBoatIso;
+  const DIRS = R.order;
+  const cache = {};
+
+  function bake(paint, dir){
+    const k = paint + '|' + dir;
+    if(!cache[k]) cache[k] = R.render(dir, {paint});
+    return cache[k];
+  }
+  function alphaBox(rgba){
+    let x0=1e9,y0=1e9,x1=-1,y1=-1;
+    for(let y=0;y<R.H;y++) for(let x=0;x<R.W;x++){
+      if(rgba[(y*R.W+x)*4+3]){ if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; }
+    }
+    return {x0,y0,w:x1-x0+1,h:y1-y0+1};
+  }
+  function draw(rgba, box, zoom){
+    const cv = document.createElement('canvas');
+    cv.width = box.w; cv.height = box.h;
+    cv.style.width = (box.w*zoom)+'px'; cv.style.height = (box.h*zoom)+'px';
+    const full = document.createElement('canvas');
+    full.width = R.W; full.height = R.H;
+    full.getContext('2d').putImageData(new ImageData(rgba, R.W, R.H), 0, 0);
+    const c = cv.getContext('2d');
+    c.imageSmoothingEnabled = false;
+    c.drawImage(full, box.x0, box.y0, box.w, box.h, 0, 0, box.w, box.h);
+    return cv;
+  }
+
+  // ---- silhouette check: paint must never move a vertex, so every scheme shares one alpha mask ----
+  const base = bake('gelcoat', 3);
+  const box = alphaBox(base);
+  let painted = 0;
+  for(let i=0;i<R.W*R.H;i++) if(base[i*4+3]) painted++;
+  const bad = [];
+  for(const p of R.PAINTS){
+    const a = bake(p.id, 3);
+    for(let i=0;i<R.W*R.H;i++){
+      if(!!a[i*4+3] !== !!base[i*4+3]){ bad.push(p.id); break; }
+    }
+  }
+  const el = document.getElementById('check');
+  el.innerHTML = bad.length
+    ? '<span class="fail">FAIL</span> silhouette drifts on: ' + bad.join(', ')
+    : '<span class="pass">PASS</span> one silhouette across all ' + R.PAINTS.length +
+      ' schemes — ' + painted.toLocaleString() + ' painted px, bbox ' + box.w + '\u00d7' + box.h +
+      ' at (' + box.x0 + ',' + box.y0 + '). Paint swaps ramps only.';
+
+  // ---- the 12 ----
+  const grid = document.getElementById('grid');
+  for(const p of R.PAINTS){
+    const ramps = R.paintRamps(p.id);
+    const fig = document.createElement('figure');
+    fig.appendChild(draw(bake(p.id, 3), box, 1));
+    const cap = document.createElement('figcaption');
+    const strip = (arr)=>'<div class="ramp">' + arr.map(c=>'<i style="background:'+c+'"></i>').join('') + '</div>';
+    cap.innerHTML = '<span class="lbl">' + p.label + '</span><span class="id">' + p.id + '</span>' +
+      '<span class="note">' + p.note + '</span>' +
+      strip(ramps.top) + strip(ramps.boot) + strip(ramps.stripe) + strip(ramps.house);
+    fig.appendChild(cap);
+    grid.appendChild(fig);
+  }
+
+  // ---- turntable ----
+  const pick = document.getElementById('pick'), dirs = document.getElementById('dirs');
+  R.PAINTS.forEach(p=>{ const o=document.createElement('option'); o.value=p.id; o.textContent=p.label; pick.appendChild(o); });
+  pick.value = 'harbour';
+  // heading DOES move geometry, so the turntable crops to the union of all 8 alpha boxes
+  const dirBox = (function(){
+    let x0=1e9,y0=1e9,x1=-1,y1=-1;
+    for(let d=0;d<R.DIRS;d++){
+      const b = alphaBox(bake('gelcoat', d));
+      x0=Math.min(x0,b.x0); y0=Math.min(y0,b.y0);
+      x1=Math.max(x1,b.x0+b.w-1); y1=Math.max(y1,b.y0+b.h-1);
+    }
+    return {x0,y0,w:x1-x0+1,h:y1-y0+1};
+  })();
+  function turntable(){
+    dirs.textContent = '';
+    for(let d=0;d<R.DIRS;d++){
+      const wrap = document.createElement('div');
+      wrap.className = 'dir';
+      wrap.appendChild(draw(bake(pick.value, d), dirBox, 1));
+      const t = document.createElement('span'); t.textContent = DIRS[d];
+      wrap.appendChild(t);
+      dirs.appendChild(wrap);
+    }
+  }
+  pick.addEventListener('change', turntable);
+  turntable();
+})();
+</script>
+</body>
+</html>

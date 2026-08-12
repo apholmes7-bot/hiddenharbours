@@ -79,10 +79,14 @@ namespace HiddenHarbours.Tests.EditMode
             public int PropAttaches, PropDetaches;
             public bool RefuseProps;
 
-            public IHullMeshRenderer Install(GameObject host, HullMeshDef def)
+            /// <summary>The scheme the last install was asked for — null when nobody painted her.</summary>
+            public HullPaintSchemeDef InstalledScheme;
+
+            public IHullMeshRenderer Install(GameObject host, HullMeshDef def,
+                                             HullPaintSchemeDef scheme = null)
             {
                 if (RefuseInstall) return null;
-                Installs++; InstalledOn = host; return Renderer;
+                Installs++; InstalledOn = host; InstalledScheme = scheme; return Renderer;
             }
 
             public IHullPropRenderer AttachProp(GameObject host, HullPropMeshDef def, string slot)
