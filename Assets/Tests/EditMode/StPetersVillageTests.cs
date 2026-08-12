@@ -5,6 +5,7 @@ using UnityEngine;
 using HiddenHarbours.Core;
 using HiddenHarbours.World;
 using HiddenHarbours.App.Editor;
+using HiddenHarbours.Art;                 // SpriteLightMath — the shared bake camera's squash
 using HiddenHarbours.Art.Editor;
 
 namespace HiddenHarbours.Tests.EditMode
@@ -399,11 +400,25 @@ namespace HiddenHarbours.Tests.EditMode
         public void TheVillageIsTheFiveBuildingsTheDocsAskFor_AndTheyAreAllBaked()
         {
             // §5.1: "three clapboard houses, a one-room school, and a general store."
-            Assert.AreEqual(5, Sites.Count, "five buildings: three houses, a school, a store");
+            //
+            // ⭐ FIVE BUILDINGS, TWO KITS, since the owner's 2026-08-11 ruling. The store used to be the
+            // fifth HOUSE — houseIsoRig with a bay window standing in for a shop, because the shop kit
+            // did not exist. It does now, so the real shell replaces the stand-in AT THE SAME SITE and
+            // the store moved to StPetersShops. The docs' count is unchanged; which kit each building
+            // comes from is what moved, and that is what this asserts.
+            Assert.AreEqual(4, Sites.Count, "four houses: three clapboard houses and the school");
             CollectionAssert.AreEquivalent(
-                new[] { "school", "generalStore", "whiteFarmhouse", "redSaltbox", "sageCottage" },
+                new[] { "school", "whiteFarmhouse", "redSaltbox", "sageCottage" },
                 Sites.Select(s => s.Key).ToArray(),
-                "the village's buildings drifted from the kit's M1 set");
+                "the village's houses drifted from the kit's M1 set");
+
+            CollectionAssert.DoesNotContain(Sites.Select(s => s.Key).ToArray(), "generalStore",
+                "the general store is a SHOP now (StPetersShops). A village carrying both would stand " +
+                "two general stores on one site — the stand-in and the real one.");
+
+            Assert.AreEqual(5, Sites.Count + StPetersShops.Sites.Count - 1,
+                "§5.1 asks for five buildings; the two kits together are the four houses plus the store " +
+                "and the post office, and the post office is the sixth the owner added on 2026-08-11.");
 
             foreach (var site in Sites)
             {
@@ -630,7 +645,12 @@ namespace HiddenHarbours.Tests.EditMode
                 var coarse = new VillageBuildingKit.Entry
                 {
                     key = real.key, facings = 4,
-                    doorY = new[] { 0f, 0f, 1f, 0f },      // front = cell 2 at this count
+                    // The door is ABOVE the pivot on screen at cell 0, which is what puts it on the +Y
+                    // gable — the side both exterior rigs actually use. (Screen y grows downward, so
+                    // "above" is the smaller number.) At 4 facings the front is then cell 2.
+                    pivotY = 100f,
+                    doorX = new[] { 0f, 0f, 0f, 0f },
+                    doorY = new[] { 0f, 0f, 0f, 0f },
                     footprintWidthMetres = real.footprintWidthMetres,
                     footprintLengthMetres = real.footprintLengthMetres,
                 };
@@ -644,16 +664,26 @@ namespace HiddenHarbours.Tests.EditMode
                       $" — all turned toward the green at {green}.");
         }
 
-        /// <summary>How far off, in degrees, a facing points a building's door from the target.</summary>
+        /// <summary>
+        /// How far off, in degrees, a facing points a building's door from the target.
+        ///
+        /// <para><b>🔴 THIS USED TO BE THE ALGEBRAIC INVERSE OF THE IMPLEMENTATION, AND THAT IS WHY IT
+        /// REPORTED 0° FOR A VILLAGE WHOSE DOORS WERE ALL MIRRORED.</b> It restated
+        /// <c>StPetersVillage.FacingToward</c>'s own formula —
+        /// <c>−90 + (facing − FrontFacing)·perCell</c> — so the pair agreed with each other and with
+        /// nothing else. The method's sign was wrong (cell <c>i</c> is baked at
+        /// <c>RigBaker.DirForCell</c>, so a door's bearing DECREASES as the index rises), the
+        /// schoolhouse door pointed ~92° away from the green, and this test passed.</para>
+        ///
+        /// <para>It now goes through <see cref="BuildingFacing"/>, which reads the bake's own per-facing
+        /// door anchors — so a wrong answer would have to be wrong in the baked pixels. It also
+        /// un-squashes the target direction, which the old one did not: the world XY plane is the
+        /// squashed ground plane and an angle taken raw off it is out by up to 20°.</para>
+        /// </summary>
         static float DoorErrorDegrees(VillageBuildingCatalog.Placement p, Vector2 from, Vector2 target,
-                                      int facing)
-        {
-            float perCell = 360f / p.Entry.facings;
-            // Inverse of StPetersVillage.FacingToward: the front facing points at the camera (−90°).
-            float doorDegrees = -90f + (facing - VillageBuildingKit.FrontFacing(p.Entry)) * perCell;
-            Vector2 d = target - from;
-            return Mathf.Abs(Mathf.DeltaAngle(doorDegrees, Mathf.Atan2(d.y, d.x) * Mathf.Rad2Deg));
-        }
+                                      int facing) =>
+            BuildingFacing.DoorErrorDegrees(p.Entry.doorY, p.Entry.pivotY, p.Entry.facings,
+                                            SpriteLightMath.GroundDepthScale, from, target, facing);
 
         [Test]
         public void EveryBuildingSpriteThePlacerAsksFor_ExistsOnTheCommittedSheet_OnTheContractsPivot()

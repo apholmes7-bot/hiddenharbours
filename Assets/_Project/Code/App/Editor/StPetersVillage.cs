@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using HiddenHarbours.Art.Editor;          // VillageBuildingCatalog, VillageBuildingKit
+using HiddenHarbours.Art;                 // SpriteLightMath — the shared bake camera's squash
+using HiddenHarbours.Art.Editor;          // VillageBuildingCatalog, VillageBuildingKit, BuildingFacing
 using HiddenHarbours.Core;                // ITidalTerrain
 
 namespace HiddenHarbours.App.Editor
@@ -84,15 +85,19 @@ namespace HiddenHarbours.App.Editor
         /// (<c>VillageBuildingKit.M1Set</c>) and are never camel-cased from a label — the same rule the
         /// shrub kit's keys taught: a stem that cannot be matched to a build fails silently.
         /// </summary>
+        /// <para><b>⭐ THE GENERAL STORE IS NOT IN THIS LIST ANY MORE.</b> It stood here as
+        /// <c>houseIsoRig</c> with a bay window doing duty as a storefront (#353) because the shop kit
+        /// did not exist yet. It does now, so the owner ruled on 2026-08-11 that the real shell replaces
+        /// the stand-in <b>at the same authored site</b> — <see cref="StPetersBuilder.GeneralStorePos"/>
+        /// is unmoved and the storekeeper, her dooryard and the counter all still derive from it.
+        /// <see cref="StPetersShops"/> places it. Keeping both would have put two general stores in a
+        /// six-building village.</para>
         public static IReadOnlyList<Site> Sites => new[]
         {
             new Site("school", StPetersBuilder.SchoolPos,
                      "west end of the lane — a schoolhouse stands a little apart from the houses"),
-            new Site("generalStore", StPetersBuilder.GeneralStorePos,
-                     "the lane's centre, where the path up from the spawn meets it: the first door you " +
-                     "have a reason to open"),
             new Site("whiteFarmhouse", StPetersBuilder.WhiteFarmhousePos,
-                     "closing the lane's east end — the biggest of the five, so it anchors that end"),
+                     "closing the lane's east end — the biggest of them, so it anchors that end"),
             new Site("redSaltbox", StPetersBuilder.RedSaltboxPos,
                      "the green's east side, facing back across it"),
             new Site("sageCottage", StPetersBuilder.SageCottagePos,
@@ -115,36 +120,39 @@ namespace HiddenHarbours.App.Editor
             p.IsValid ? FootprintRadiusMetres(p.Entry) : 0f;
 
         /// <summary>
-        /// Which facing turns <paramref name="entry"/>'s door toward <paramref name="target"/>.
+        /// Which facing turns <paramref name="entry"/>'s door toward <paramref name="target"/> —
+        /// delegated to <see cref="BuildingFacing"/>, which reads the bake's own per-facing door anchors.
         ///
         /// <para><b>⭐ FACING-COUNT AGNOSTIC ON PURPOSE.</b> The kit ships 8 today and the owner may halve
-        /// it — a re-bake, not a code change — so this works in TURNS of a circle rather than in cells:
-        /// it takes the bearing from the building to its target, measures it against the facing whose door
-        /// already faces the camera (<see cref="VillageBuildingKit.FrontFacing"/>, which the bake MEASURED
-        /// from the door anchors rather than declaring), and rounds to the nearest of however many facings
-        /// exist. With four facings the doors land on the nearest quarter-turn instead of silently
-        /// pointing at a wall.</para>
+        /// it — a re-bake, not a code change — so nothing here counts in cells. With four facings the
+        /// doors land on the nearest quarter-turn instead of silently pointing at a wall.</para>
         ///
-        /// <para>The contract's own <c>conventionNote</c> is the other half: the azimuth probe measured the
-        /// rig at bake time and the correction is already applied to the sheet, so <b>cell i genuinely
-        /// depicts +45°·i</b> — counter-clockwise, and already un-mislabelled. This is the one kit in the
-        /// repo where that has been settled at the bake, which is why nothing here compensates for it.</para>
+        /// <para><b>🔴 THIS USED TO HAVE ITS SIGN THE WRONG WAY ROUND, AND THE DOORS OF ALL FIVE
+        /// BUILDINGS WERE MIRRORED ABOUT THE NORTH–SOUTH AXIS.</b> It computed
+        /// <c>FrontFacing + round(turnFromSouth / perCell)</c>. Cell <c>i</c> is baked at
+        /// <c>RigBaker.DirForCell</c>, which for a counter-clockwise rig hands the rig
+        /// <c>dir = (facings − i) mod facings</c> — so the model turns −45° per cell and a door's ground
+        /// bearing DECREASES as the index rises. Measured against this kit's own baked anchors, the
+        /// SCHOOLHOUSE door pointed <b>~92°</b> away from the green it exists to face; the store and the
+        /// saltbox, whose targets are near due south, happened to land right. It also took its angle in
+        /// the SQUASHED world plane, which moves a bearing by up to 20° on top of that.</para>
+        ///
+        /// <para><b>Why no test caught it, which is the part worth keeping.</b>
+        /// <c>StPetersVillageTests.DoorErrorDegrees</c> was written as the algebraic inverse of this
+        /// method, so the pair agreed with each other and with nothing else and reported 0° of error for
+        /// every building. The replacement measures from the anchors instead, so a wrong sign would have
+        /// to be a wrong sign in the baked pixels.</para>
+        ///
+        /// <para>⚠️ Re-running the builder therefore RE-FACES the five existing buildings. That is the
+        /// fix landing, not a regression — but it is a visible change to a banked scene and the owner
+        /// should see it before it is banked.</para>
         /// </summary>
         public static int FacingToward(VillageBuildingKit.Entry entry, Vector2 from, Vector2 target)
         {
             if (entry == null || entry.facings <= 0) return 0;
 
-            Vector2 d = target - from;
-            if (d.sqrMagnitude < 1e-6f) return VillageBuildingKit.FrontFacing(entry);
-
-            // The front facing points at the camera, i.e. −Y, i.e. −90° in atan2 terms. Measure the
-            // desired door direction as a turn CCW from there.
-            float degrees = Mathf.Atan2(d.y, d.x) * Mathf.Rad2Deg;
-            float fromFront = Mathf.DeltaAngle(-90f, degrees);
-            float perCell = 360f / entry.facings;
-
-            int facing = VillageBuildingKit.FrontFacing(entry) + Mathf.RoundToInt(fromFront / perCell);
-            return ((facing % entry.facings) + entry.facings) % entry.facings;   // C# % keeps the sign
+            return BuildingFacing.FacingToward(entry.doorY, entry.pivotY, entry.facings,
+                                               SpriteLightMath.GroundDepthScale, from, target);
         }
 
         /// <summary>The facing a site is placed at — its door turned toward

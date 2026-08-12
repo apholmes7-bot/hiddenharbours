@@ -89,6 +89,18 @@ namespace HiddenHarbours.World
                  "line up on to the pixel is not cozy. The colliders are built from this same value.")]
         [SerializeField, Min(0f)] private float _doorwayWidthMetres = 1.4f;
 
+        [Tooltip("Which model-frame wall the doorway is in: OFF = the −y wall (interiorIsoRig, the " +
+                 "house family), ON = +y (the shop kit, whose room is its shopfront seen from " +
+                 "inside). The two kits genuinely differ and both are MEASURED — do not carry one " +
+                 "across. Off by default so nothing already standing moves.")]
+        [SerializeField] private bool _doorOnPlusY;
+
+        [Tooltip("How far along that wall the doorway sits, in metres from the wall's centre, +x to " +
+                 "the right. 0 for a centred door — every house — but MEASURED and non-zero on two of " +
+                 "the three shops (post office −1.68 m, restaurant −2.52 m). A centred gap under an " +
+                 "off-centre door blocks the doorway and opens a wall.")]
+        [SerializeField] private float _doorAcrossMetres;
+
         /// <summary>Whether the occupant is currently inside. Read-only to everyone else — the only way
         /// in is through the door.</summary>
         public bool IsInside { get; private set; }
@@ -98,7 +110,8 @@ namespace HiddenHarbours.World
         /// editor and a stale cache would keep the old walls.</summary>
         public InteriorFootprint Footprint =>
             new InteriorFootprint(transform.position, _widthMetres, _lengthMetres,
-                                  _facing, _facings, _groundDepthScale);
+                                  _facing, _facings, _groundDepthScale,
+                                  _doorOnPlusY ? 1f : -1f, _doorAcrossMetres);
 
         /// <summary>The doorway in world units — the threshold, and where a spawn or a "you are here"
         /// marker belongs.</summary>
@@ -110,7 +123,8 @@ namespace HiddenHarbours.World
         public void Configure(SpriteRenderer shell, SpriteRenderer room, Transform props,
                               float widthMetres, float lengthMetres, int facing, int facings,
                               float groundDepthScale, float wallThicknessMetres,
-                              float doorwayWidthMetres)
+                              float doorwayWidthMetres,
+                              bool doorOnPlusY = false, float doorAcrossMetres = 0f)
         {
             _shell = shell;
             _room = room;
@@ -122,6 +136,8 @@ namespace HiddenHarbours.World
             _groundDepthScale = groundDepthScale;
             _wallThicknessMetres = wallThicknessMetres;
             _doorwayWidthMetres = doorwayWidthMetres;
+            _doorOnPlusY = doorOnPlusY;
+            _doorAcrossMetres = doorAcrossMetres;
 
             // ⚠️ Apply immediately, and this matters in the EDITOR specifically. OnEnable fires the
             // moment AddComponent runs — BEFORE this call — when every reference is still null, so it

@@ -295,6 +295,32 @@ namespace HiddenHarbours.Tests.EditMode
             }
         }
 
+        /// <summary>
+        /// The same test for the SHOPS, and it is not a copy for its own sake. The general store left
+        /// <c>StPetersVillage.Sites</c> for <c>StPetersShops.Sites</c> on 2026-08-11, and its real shell
+        /// is <b>8.00 × 10.00 m</b> against the house stand-in's 7.08 × 8.89 — a footprint radius of
+        /// <b>6.40 m</b> where it used to be 5.68. Marguerite stands at that building's dooryard. Had
+        /// this loop not followed her building into the other kit, the one person whose clearance
+        /// actually got tighter would have quietly stopped being checked.
+        /// </summary>
+        [Test]
+        public void NobodyStandsInsideAShop()
+        {
+            foreach (var person in People)
+            foreach (var site in StPetersShops.Sites)
+            {
+                var shell = ShopCatalog.FindShell(site.Key);
+                if (!shell.IsValid) continue;
+
+                float radius = ShopCatalog.FootprintRadiusMetres(shell);
+                float d = Vector2.Distance(person.Position, site.Position);
+                Assert.Greater(d, radius,
+                    $"{person.AssetName} at {person.Position} is inside the {site.Key} footprint " +
+                    $"({d:0.00} m from its centre, radius {radius:0.00} m — the SHOP shell, which is " +
+                    "bigger than the house that used to stand there)");
+            }
+        }
+
         [Test]
         public void NobodyIsStandingOnAnybodyElse_IncludingTheOpeningCastAndTheProps()
         {
