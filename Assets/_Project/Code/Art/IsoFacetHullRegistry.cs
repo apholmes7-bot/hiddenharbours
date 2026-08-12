@@ -201,6 +201,14 @@ namespace HiddenHarbours.Art
         public static readonly int PixelsPerMetre = Shader.PropertyToID("_PixelsPerMetre");
         public static readonly int HullId = Shader.PropertyToID("_HullId");
 
+        /// <summary>ADR 0033 — the hull frame's y→z shear: x = <c>g = cos(elev)(1−sin(elev))/sin(elev)</c>,
+        /// y = the world y it is referenced to (the water's <see cref="WaterIsoDepthFrame.ReferenceY"/>).
+        /// Written every frame by <c>IsoFacetHullRenderer.ApplyPose</c> and copied onto every bolted-on
+        /// fitting by <c>IsoFacetPropRenderer</c>, so hull and fittings shear as one body. All-zero —
+        /// which is what a material nobody wrote to carries, and what every hull carries while no
+        /// displaced sea is live — leaves the depth byte-identical to before ADR 0033.</summary>
+        public static readonly int HullShear = Shader.PropertyToID("_HullShear");
+
         /// <summary>The BASE of a hull's contiguous FORE BLOCK (already /255) — the deck-occupant
         /// split. Geometry nearer the camera than the occupants standing on her deck is written with
         /// <c>base + band - 1</c> instead of <see cref="HullId"/>, the band being how many of them

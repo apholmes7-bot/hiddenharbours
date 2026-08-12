@@ -208,7 +208,7 @@ namespace HiddenHarbours.Art
         }
 
         /// <summary>
-        /// <b>The two uniforms that belong to the BOAT, not to the part</b>, written per frame into a
+        /// <b>The uniforms that belong to the BOAT, not to the part</b>, written per frame into a
         /// property block exactly as <see cref="IsoFacetHullRenderer"/> writes them for the hull.
         ///
         /// <para><b>Why a fitting needs them at all.</b> The facet shader derives its ordered-dither
@@ -230,6 +230,14 @@ namespace HiddenHarbours.Art
             _props ??= new MaterialPropertyBlock();
             Vector3 p = _hull.transform.position;
             _props.SetVector(IsoFacetShaderIds.HullOrigin, new Vector4(p.x, p.y, 0f, 0f));
+            // ⚠️ AND THE SHEAR (ADR 0033), for the same reason the dither origin is the hull's and
+            // not the part's: a fitting IS hull geometry, so it must be drawn through the hull's
+            // depth gradient. Left unset it would keep the rig's unsheared ramp while the hull she
+            // is bolted to took the corrected one, and the two would drift apart by
+            // (worldY − ReferenceY)·g down the length of the boat — an oar blade fighting the sea
+            // in the old unit, and an outboard leg no longer sinking into the transom it is clamped
+            // to. Read FROM the hull rather than re-derived here, so one law serves both.
+            _props.SetVector(IsoFacetShaderIds.HullShear, _hull.DepthShear);
             _props.SetFloat(IsoFacetShaderIds.HullId, _hull.HullId / 255f);
             _meshRenderer.SetPropertyBlock(_props);
             // ⚠️ AND THE BOLTED HALF (owner playtest 2026-07-25). Its renderer used to be discarded
