@@ -6,6 +6,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 using HiddenHarbours.Art;
+using HiddenHarbours.Boats;
 using HiddenHarbours.Core;
 using HiddenHarbours.Tools.RigBaking;
 using Debug = UnityEngine.Debug;
@@ -266,12 +267,21 @@ namespace HiddenHarbours.Tests.RigBaking
         /// against an independent reconstruction over the reference sea's packed field: a water
         /// sample at ground offset Δ with lift L fights the height <c>r_f − tan(elev)·ry</c> on
         /// EACH ground line ry, so every fight reaching the boat's INSIDE (root-line fought
-        /// height r_f = (Δ+L)/cos ≥ deckHeight) demands protection of the WORST line within the
-        /// half-beam — <c>ry* = min(halfBeam, (r_f − deckHeight)/tan)</c> — including the beam
-        /// residual term <c>ry*·cos·(1−sin)</c>, now exact; fights against the open planking
-        /// demand NOTHING (the climb keeps every truthful centimetre the interior allows).
+        /// height r_f = (Δ+L−H)/cos ≥ deckHeight) demands protection of the WORST line within the
+        /// half-beam — <c>ry* = min(halfBeam, (r_f − deckHeight)/tan)</c>; fights against the open
+        /// planking demand NOTHING (the climb keeps every truthful centimetre the interior allows).
         /// Measured lineage 2026-07-23: 1:1 cut flooded the cockpit; blanket-max cut dry-docked
-        /// the dragger; root-line-only per-point cut re-flooded the far rail.</summary>
+        /// the dragger; root-line-only per-point cut re-flooded the far rail.
+        ///
+        /// <para>⚠️ <b>RE-DERIVED UNDER ADR 0033 and the shape of the law changed.</b> The protected
+        /// height's coefficient <c>(cos²+sin)</c> became <c>1/sin</c>, and the explicit beam residual
+        /// <c>ry*·cos·(1−sin)</c> — "§24's beam residual" — <b>cancelled to exactly zero</b> against
+        /// the y→z shear. It was never a shave to be tightened: it was the unit error that put a
+        /// north-sailing stern 1.64 m in front of the sea (#491), and the shear pays it off at the
+        /// beam as well as fore-and-aft. ry* still chooses WHICH height on the fought line is worst;
+        /// only the charge for standing on that line has gone. Net: the clamp demands strictly LESS
+        /// heave than before, so it shoves a hull toward the camera less — never more, so this
+        /// cannot newly flood one.</para>
         [Test]
         public void WatertightZHeave_IsThePerPointFootprintLaw()
         {
@@ -321,8 +331,7 @@ namespace HiddenHarbours.Tests.RigBaking
                         if (foughtR < deckH) continue;
                         float ryStar = Mathf.Min(halfBeam, (foughtR - deckH) / tan);
                         float protectedR = foughtR - tan * ryStar;
-                        float need = (lift * (c + s) - protectedR * (c * c + s)
-                                      + ryStar * c * (1f - s) - H * c) / s;
+                        float need = (lift * (c + s) - protectedR / s - H * c) / s;
                         if (need > demand) demand = need;
                     }
                     // The engagement-ramped safety, mirrored (zero at the boundary, full when binding).
@@ -489,6 +498,247 @@ namespace HiddenHarbours.Tests.RigBaking
                 "OFF — phase 3 must ride ONLY while the surface is active (the byte-identity " +
                 "contract of the owner's A/B).");
         }
+
+        // ------------------------------------------------------ ADR 0033: the 8-facing sweep (GPU)
+
+        /// <summary>
+        /// <b>THE OWNER'S COMPLAINT, ADJUDICATED AT EVERY HEADING</b> (ADR 0033 acceptance §2;
+        /// reports 2026-08-11 "the boat is visually in front of the water when sailing north" and
+        /// 2026-07-25 "when the bow faces south you see water at the stern").
+        ///
+        /// <para><b>Why this test did not exist before, and that is the lesson.</b> Every GPU
+        /// acceptance in this file poses the hull at <c>headingDirUnits: 2</c> — beam-on, "the
+        /// longest planking run". Beam-on is the ONE facing where the fore-aft depth residual is
+        /// exactly zero (the hull's keel lies along screen x, so her half-length buys no world-y
+        /// offset). The suite was framed on the only heading at which the defect is invisible, which
+        /// is why ten months of green runs never saw it. The sweep is the fix for the suite as much
+        /// as the shear is the fix for the render.</para>
+        ///
+        /// <para><b>What each facing must show.</b> Rig +Y is the bow, so at dir 0 (north) the stern
+        /// is the hull's DEEPEST screen row — exactly where <see cref="Measure"/> starts its
+        /// bottom-contiguous run, so the run median IS the stern's waterline there. Unsheared, that
+        /// stern carried −1.64 m of false depth: it won the z-test against any wave at any tide and
+        /// any phase, so the run could never be anything but 0. At dir 4 (south) the sign flips, the
+        /// stern is up-screen, and the sea paints planking that is out of the water — which lands in
+        /// <see cref="WaterlineMeasure.BoardedPx"/>, covered pixels detached from the waterline run.
+        /// So the two assertions below are the owner's two sentences, one each.</para>
+        ///
+        /// <para><b>Tide and sea state.</b> A floating hull rides the tide, so the only thing a tide
+        /// can change about her waterline is WHERE ON THE SHARED DEPTH RAMP she is calibrated — the
+        /// scene is therefore built at two world-y positions 40 m apart while the sea's ground-y
+        /// reference stays put, and the answer must be the same at both. Two sea states run the
+        /// same sweep at a moderate and a calm swell, and <see cref="Waterline_ClimbsThePlanking_AsTheReferenceSwellPasses"/>
+        /// carries the displaced-OFF byte-identity control.</para>
+        ///
+        /// <para><b>The sea under test is FLAT, and that is the whole design of the metric.</b> A
+        /// wave sea cannot adjudicate this: the water sharing a pixel with a bow-on hull's stern is
+        /// the water four metres AFT of her, which at a 10 m wavelength is most of a wave away from
+        /// the crest that lifted her — so a per-heading run measured on a swell is dominated by
+        /// which part of the wave each end of the boat happens to be standing in. (That confound is
+        /// real, wanted, and is the waterline BREATHING; it is just not a depth-contract signal.)
+        /// A flat sea with the hull sunk by her own design waterline makes the answer pure geometry:
+        /// the sea must cover the planking below a FIXED rig height, and it must do so identically
+        /// whichever way she is pointing. The wave seas below run for the owner's eye and for the
+        /// trough-dry check, not for the bar.</para>
+        ///
+        /// <para>Set <c>HH_WATERLINE_DUMP</c> to a directory to get the whole sweep as PNGs — that
+        /// is the owner-facing artefact this test exists to produce.</para>
+        /// </summary>
+        [Test]
+        public void Waterline_AtEveryFacing_TheSeaReachesHerPlanking_AndStaysOutsideHer()
+        {
+            RequireAGraphicsDevice();
+            EnsureLobster();
+
+            // (tide label, world y). 40 m apart: far enough that a depth ramp that failed to cancel
+            // its ground-y reference would be screaming, close enough to stay in one wave field.
+            var tides = new[] { ("lowtide", 0f), ("hightide", 40f) };
+            const float DesignWaterlineMeters = 0.5f;    // the committed lobster boat's datum
+            float sink = HullSettleMath.AppliedSinkMeters(DesignWaterlineMeters, 40f);
+
+            var failures = new System.Collections.Generic.List<string>();
+            var report = new System.Text.StringBuilder(
+                "[adr-0033 sweep] lobster boat, flat sea, sunk by her design waterline\n");
+            var deepCovered = new System.Collections.Generic.List<float>();
+            var submergedFrac = new System.Collections.Generic.List<float>();
+
+            foreach ((string tideName, float worldY) in tides)
+            for (int dir = 0; dir < 8; dir++)
+            {
+                using var scene = new WaterlineScene(s_Lobster, s_LobsterMesh,
+                                                     worldYMeters: worldY);
+                scene.SetPose(dir, heavePixels: -sink * s_Lobster.PxPerMetre);
+                byte[] baseline = scene.Render();               // hull only, this heading
+
+                scene.AttachWater(sabotageIsoDepthSign: false);
+                WaveFieldBridge.PublishGlobals(PackedWaveField.Empty);   // a dead flat sea
+                byte[] flat = scene.Render();
+
+                var m = Measure(baseline, flat, s_Lobster.W, s_Lobster.H);
+                float deep = DeepestPlankingCoveredFraction(baseline, flat, s_Lobster.W, s_Lobster.H,
+                                                            out int inked);
+                float frac = m.SubmergedPx / (float)Mathf.Max(1, inked);
+                deepCovered.Add(deep);
+                submergedFrac.Add(frac);
+
+                string tag = $"{tideName}_flat_dir{dir}";
+                report.Append($"  {tag,-24} deepest-planking covered {deep * 100f,5:F1}%  " +
+                              $"submerged {m.SubmergedPx,6}px of {inked,6} inked ({frac * 100f,4:F1}%)  " +
+                              $"run med {m.RunMedianPx,3}px\n");
+                DumpEvidence($"adr0033_{tag}_baseline", baseline, s_Lobster);
+                DumpEvidence($"adr0033_{tag}_flat", flat, s_Lobster);
+
+                // THE OWNER'S TWO SENTENCES, one assertion. On a flat sea standing above her keel,
+                // the DEEPEST planking on screen is under water by construction — at every heading,
+                // because "deepest on screen" is a statement about the same projection the water is
+                // drawn through. Unsheared, at dir 0 the deepest planking IS the stern, carrying
+                // −1.64 m of false depth: it won the z-test against any sea at any level, so this
+                // read ~0 % and no wave could ever have reached it. At dir 4 the sign flips and the
+                // sea instead climbs planking that is out of the water, which shows as a submerged
+                // FRACTION far above the beam-on facings.
+                if (deep < SweepMinDeepestCovered)
+                    failures.Add($"{tag}: only {deep * 100f:F1}% of her deepest planking is under a " +
+                                 $"flat sea standing above her keel (bar {SweepMinDeepestCovered * 100f:F0}%) " +
+                                 "— the hull reads NEARER than the water that should be lapping it " +
+                                 "(the owner's 2026-08-11 report)");
+            }
+
+            // AND THE HEADING-INDEPENDENCE ITSELF: the residual was a pure function of how much of
+            // her fore-aft axis lay along world y, so a surviving one shows up as a SPREAD across
+            // the eight facings — north starved, south drowned, east/west correct. One number.
+            float lo = Mathf.Min(submergedFrac.ToArray()), hi = Mathf.Max(submergedFrac.ToArray());
+            report.Append($"  submerged fraction across all facings: {lo * 100f:F1}% .. {hi * 100f:F1}% " +
+                          $"(spread {(hi - lo) * 100f:F1} points, bar {SweepMaxSubmergedSpread * 100f:F0})\n");
+            Debug.Log(report.ToString());
+
+            if (hi - lo > SweepMaxSubmergedSpread)
+                failures.Add($"the submerged fraction spans {(hi - lo) * 100f:F1} points across the " +
+                             $"eight facings (bar {SweepMaxSubmergedSpread * 100f:F0}) — the waterline " +
+                             "still depends on which way she is pointing, which is the defect itself");
+
+            Assert.IsEmpty(failures,
+                "ADR 0033's 8-facing sweep failed:\n  " + string.Join("\n  ", failures));
+        }
+
+        /// <summary>
+        /// The owner-facing sweep on REAL seas: eight headings × calm and moderate × two tides, at
+        /// the crest and the trough, dumped as PNGs for his eye (<c>HH_WATERLINE_DUMP</c>). The one
+        /// thing asserted here is the property a wave sea CAN adjudicate without phase confounds —
+        /// at a trough below her keel she must be bone dry, at every heading. A heading-dependent
+        /// depth bias shows there first, because there is no wave to hide behind.
+        /// </summary>
+        [Test]
+        public void Waterline_AtEveryFacing_TheTroughStillBaresHer_AndTheSweepIsDumped()
+        {
+            RequireAGraphicsDevice();
+            EnsureLobster();
+
+            var tides = new[] { ("lowtide", 0f), ("hightide", 40f) };
+            var seas = new[] { ("moderate", ReferenceSeaState), ("calm", 0.28f) };
+            var failures = new System.Collections.Generic.List<string>();
+            var report = new System.Text.StringBuilder("[adr-0033 sweep] real seas, lobster boat\n");
+
+            foreach ((string tideName, float worldY) in tides)
+            foreach ((string seaName, float seaState) in seas)
+            {
+                WaveTrains trains = WaveMath.TrainsFrom(ReferenceWind, seaState,
+                                                        WaveFieldSettings.Default);
+                for (int dir = 0; dir < 8; dir++)
+                {
+                    using var scene = new WaterlineScene(s_Lobster, s_LobsterMesh,
+                                                         worldYMeters: worldY);
+                    scene.SetPose(dir);
+                    byte[] baseline = scene.Render();
+
+                    FindReferencePhases(scene.HullWorldPos, in trains,
+                                        out double tHigh, out double tLow,
+                                        out float hHigh, out float hLow);
+                    scene.AttachWater(sabotageIsoDepthSign: false);
+
+                    PublishSea(in trains, tHigh);
+                    byte[] high = scene.Render();
+                    PublishSea(in trains, tLow);
+                    byte[] low = scene.Render();
+
+                    var mHigh = Measure(baseline, high, s_Lobster.W, s_Lobster.H);
+                    var mLow = Measure(baseline, low, s_Lobster.W, s_Lobster.H);
+
+                    string tag = $"{tideName}_{seaName}_dir{dir}";
+                    report.Append($"  {tag,-28} crest h={hHigh,5:F2}m sub {mHigh.SubmergedPx,6}px " +
+                                  $"run med {mHigh.RunMedianPx,3}px | trough h={hLow,5:F2}m " +
+                                  $"sub {mLow.SubmergedPx,6}px\n");
+                    DumpEvidence($"adr0033_{tag}_crest", high, s_Lobster);
+                    DumpEvidence($"adr0033_{tag}_trough", low, s_Lobster);
+
+                    if (mLow.SubmergedPx > SweepMaxTroughSubmergedPx)
+                        failures.Add($"{tag}: {mLow.SubmergedPx}px covered at a trough {hLow:F2} m " +
+                                     $"below still water (bar {SweepMaxTroughSubmergedPx}px) — the " +
+                                     "surface is under her keel there, so covering anything means " +
+                                     "the depth ramp carries a heading-dependent bias");
+                }
+            }
+
+            Debug.Log(report.ToString());
+            Assert.IsEmpty(failures,
+                "ADR 0033's real-sea sweep failed:\n  " + string.Join("\n  ", failures));
+        }
+
+        /// <summary>What fraction of the hull's DEEPEST planking pixels the sea has taken. "Deepest"
+        /// is per column — the lowest inked pixel of each inked column — so it follows the silhouette
+        /// at any heading instead of assuming one. That is the whole waterline question reduced to a
+        /// number that does not care what shape the boat presents.</summary>
+        static float DeepestPlankingCoveredFraction(byte[] baseline, byte[] composed, int w, int h,
+                                                    out int inkedPx)
+        {
+            int deepest = 0, covered = 0;
+            inkedPx = 0;
+            for (int x = 0; x < w; x++)
+            {
+                int bottom = -1;
+                for (int y = 0; y < h; y++)
+                    if (baseline[(y * w + x) * 4 + 3] > 0) { bottom = y; inkedPx++; }
+                if (bottom < 0) continue;
+                deepest++;
+                int i = (bottom * w + x) * 4;
+                bool same = composed[i] == baseline[i] && composed[i + 1] == baseline[i + 1] &&
+                            composed[i + 2] == baseline[i + 2];
+                if (!same) covered++;
+            }
+            return deepest == 0 ? 0f : covered / (float)deepest;
+        }
+
+        /// <summary>
+        /// The sweep's bars. ⚠️ <b>MEASURED on the RTX 4060 (D3D12) both ways</b> — with the shear
+        /// live and with <c>DisplacedWaterMath.HullDepthShear</c> forced to 0 — and set so the
+        /// sheared render clears them and the unsheared one does not. That A/B is the whole reason
+        /// they are numbers and not opinions:
+        ///
+        /// <code>
+        /// deepest planking covered, flat sea, sunk to her datum   no shear  →  sheared
+        ///   dir 0  NORTH  (the 2026-08-11 report)                    0.0 %  →   72.2 %
+        ///   dir 1 / 7                                               47.0 %  →   95.5 %
+        ///   dir 2 / 6  EAST-WEST (the control)                      97.5 %  →   97.3 %
+        ///   dir 3 / 5                                               64.1 %  →   95.7 %
+        ///   dir 4  SOUTH  (the 2026-07-25 report)                    0.0 %  →   23.6 %
+        ///   submerged fraction, spread across the eight facings     20.7 pt →    6.0 pt
+        /// </code>
+        ///
+        /// <para>Read the two ends of that table together and it is the diagnosis, in pixels: at
+        /// NORTH the sea could not touch her deepest planking AT ALL — not "rarely", zero — while
+        /// EAST-WEST, the one pair with no fore-aft component along world y, does not move at all
+        /// (97.5 → 97.3, the half-beam term). SOUTH is the same defect wearing the other sign: 22.9 %
+        /// of a bow-on silhouette drowned on a flat sea at half a metre of draft, now 2.8 %.</para>
+        ///
+        /// <para><b>Why the deepest-covered bar sits at 15 % and not at 90 %.</b> "The deepest
+        /// planking on screen" is a shape fact as well as a depth fact: bow-on (dir 4) a lobster
+        /// boat shows her stem, which rises, so most columns' lowest visible pixel is genuinely
+        /// ABOVE her waterline and 23.6 % is the correct answer. The bar has to clear the honest
+        /// shape floor while still being infinitely above the unsheared 0.0 %, and the SPREAD bar is
+        /// what guards the six facings in between.</para>
+        /// </summary>
+        const float SweepMinDeepestCovered = 0.15f;
+        const float SweepMaxSubmergedSpread = 0.10f;
+        const int SweepMaxTroughSubmergedPx = 200;
 
         // ------------------------------------------------------------- sabotage (GPU)
 
@@ -1039,24 +1289,35 @@ namespace HiddenHarbours.Tests.RigBaking
             Mesh _overlayQuad;
             Texture2D _blackHeight;
             bool _warm;
+            readonly float _worldY;
 
-            public Vector2 HullWorldPos => Vector2.zero;
+            public Vector2 HullWorldPos => new Vector2(0f, _worldY);
 
             /// <param name="watertightDeckHeightMeters">The watertight line driven through the
             /// production setup (0 = unclamped, the pre-fix state — what the #263 reference
             /// scenes deliberately run; the storm tests drive the committed def's values).</param>
             /// <param name="watertightHalfBeamMeters">The clamp's half-beam reach (the exact
             /// far-rail residual term), from the committed def.</param>
+            /// <param name="worldYMeters">Where in the WORLD this scene sits — hull and camera
+            /// together, the water rect following the camera. The sea's own ground-y reference
+            /// (<c>_HeightWorldMin</c>) does NOT move with them, so this walks the whole depth ramp
+            /// <c>(y − refY)·cos</c> to a different place on it. That is what "at low and high tide"
+            /// means for a floating hull: she rides the level, so the only thing a tide can change
+            /// about her waterline is which part of the shared depth ramp she is calibrated on —
+            /// and the answer must be "nothing" (ADR 0033's sweep).</param>
             public WaterlineScene(RigMeshData data, Mesh mesh,
                                   float watertightDeckHeightMeters = 0f,
-                                  float watertightHalfBeamMeters = 0f)
+                                  float watertightHalfBeamMeters = 0f,
+                                  float worldYMeters = 0f)
             {
                 _data = data;
+                _worldY = worldYMeters;
 
                 _hullGo = new GameObject("WaterlineTestHull");
                 _hull = _hullGo.AddComponent<IsoFacetHullRenderer>();
                 _hull.Configure(SetupFrom(data, mesh, watertightDeckHeightMeters,
                                           watertightHalfBeamMeters));
+                _hullGo.transform.position = new Vector3(0f, worldYMeters, 0f);
                 SetLayerRecursive(_hullGo.transform, ProbeLayer);
 
                 float ppu = data.PxPerMetre;
@@ -1066,7 +1327,7 @@ namespace HiddenHarbours.Tests.RigBaking
                 _cam = _camGo.AddComponent<Camera>();
                 _cam.orthographic = true;
                 _cam.orthographicSize = data.H / (2f * ppu);
-                _cam.transform.position = new Vector3(-ox, -oy, -100f);
+                _cam.transform.position = new Vector3(-ox, -oy + worldYMeters, -100f);
                 _cam.nearClipPlane = 1f;
                 _cam.farClipPlane = 400f;
                 _cam.clearFlags = CameraClearFlags.SolidColor;
@@ -1082,12 +1343,12 @@ namespace HiddenHarbours.Tests.RigBaking
                 _cam.targetTexture = _rt;
             }
 
-            public void SetPose(float headingDirUnits)
+            public void SetPose(float headingDirUnits, float heavePixels = 0f)
             {
                 _hull.HeadingDirUnits = headingDirUnits;
                 _hull.RollDegrees = 0f;
                 _hull.PitchDegrees = 0f;
-                _hull.HeavePixels = 0f;
+                _hull.HeavePixels = heavePixels;
                 _hull.ApplyPose();
             }
 

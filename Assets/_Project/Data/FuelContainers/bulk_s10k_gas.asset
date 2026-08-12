@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 825beb7e63856174e8e43fc81e6c248c, type: 3}
+  m_Name: bulk_s10k_gas
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.FuelContainerDef
+  Id: fuelstore.gas_bulk_s10k
+  DisplayName: 10 kL Gas Bulk Tank
+  VesselType: bulk
+  SizeKey: s10k
+  Grade: gas
+  LevelRead: board
+  Carriable: 0
+  CapacityLitres: 10000
+  TareKg: 1400
+  FullKg: 8850
+  Facings: 4
+  FillFractions:
+  - 0
+  - 0.25
+  - 0.5
+  - 0.75
+  - 1
+  Frames:
+  - {fileID: 492214918, guid: f0009f4ab9fe65547b49e0ad31269511, type: 3}
+  - {fileID: 501581264, guid: f0009f4ab9fe65547b49e0ad31269511, type: 3}
+  - {fileID: 1554287480, guid: f0009f4ab9fe65547b49e0ad31269511, type: 3}
+  - {fileID: -1344951950, guid: f0009f4ab9fe65547b49e0ad31269511, type: 3}
+  - {fileID: -203997791, guid: f0009f4ab9fe65547b49e0ad31269511, type: 3}
+  - {fileID: -583976539, guid: f0009f4ab9fe65547b49e0ad31269511, type: 3}
+  - {fileID: 1653395940, guid: f0009f4ab9fe65547b49e0ad31269511, type: 3}
+  - {fileID: -367226006, guid: f0009f4ab9fe65547b49e0ad31269511, type: 3}
+  - {fileID: -1382700124, guid: f0009f4ab9fe65547b49e0ad31269511, type: 3}
+  - {fileID: -1925441386, guid: f0009f4ab9fe65547b49e0ad31269511, type: 3}
+  - {fileID: 1648684543, guid: f0009f4ab9fe65547b49e0ad31269511, type: 3}
+  - {fileID: -2122438637, guid: f0009f4ab9fe65547b49e0ad31269511, type: 3}
+  - {fileID: -455980805, guid: f0009f4ab9fe65547b49e0ad31269511, type: 3}
+  - {fileID: 452719112, guid: f0009f4ab9fe65547b49e0ad31269511, type: 3}
+  - {fileID: -219693082, guid: f0009f4ab9fe65547b49e0ad31269511, type: 3}
+  - {fileID: 812188188, guid: f0009f4ab9fe65547b49e0ad31269511, type: 3}
+  - {fileID: -675757561, guid: f0009f4ab9fe65547b49e0ad31269511, type: 3}
+  - {fileID: 78138647, guid: f0009f4ab9fe65547b49e0ad31269511, type: 3}
+  - {fileID: -1950477571, guid: f0009f4ab9fe65547b49e0ad31269511, type: 3}
+  - {fileID: 1395833665, guid: f0009f4ab9fe65547b49e0ad31269511, type: 3}

@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 825beb7e63856174e8e43fc81e6c248c, type: 3}
+  m_Name: skid_s500_gas
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.FuelContainerDef
+  Id: fuelstore.gas_skid_s500
+  DisplayName: 500 L Gas Skid Tank
+  VesselType: skid
+  SizeKey: s500
+  Grade: gas
+  LevelRead: tube
+  Carriable: 0
+  CapacityLitres: 500
+  TareKg: 90
+  FullKg: 462.5
+  Facings: 4
+  FillFractions:
+  - 0
+  - 0.25
+  - 0.5
+  - 0.75
+  - 1
+  Frames:
+  - {fileID: 1510645301, guid: 9ac16488706df81498cf97a5ac6b1e24, type: 3}
+  - {fileID: -1730875490, guid: 9ac16488706df81498cf97a5ac6b1e24, type: 3}
+  - {fileID: -930791742, guid: 9ac16488706df81498cf97a5ac6b1e24, type: 3}
+  - {fileID: 565479262, guid: 9ac16488706df81498cf97a5ac6b1e24, type: 3}
+  - {fileID: -205009901, guid: 9ac16488706df81498cf97a5ac6b1e24, type: 3}
+  - {fileID: 1162802712, guid: 9ac16488706df81498cf97a5ac6b1e24, type: 3}
+  - {fileID: 46577390, guid: 9ac16488706df81498cf97a5ac6b1e24, type: 3}
+  - {fileID: -735625994, guid: 9ac16488706df81498cf97a5ac6b1e24, type: 3}
+  - {fileID: 1896132282, guid: 9ac16488706df81498cf97a5ac6b1e24, type: 3}
+  - {fileID: -971199997, guid: 9ac16488706df81498cf97a5ac6b1e24, type: 3}
+  - {fileID: -533568661, guid: 9ac16488706df81498cf97a5ac6b1e24, type: 3}
+  - {fileID: 2025802990, guid: 9ac16488706df81498cf97a5ac6b1e24, type: 3}
+  - {fileID: -1046460245, guid: 9ac16488706df81498cf97a5ac6b1e24, type: 3}
+  - {fileID: -1417795603, guid: 9ac16488706df81498cf97a5ac6b1e24, type: 3}
+  - {fileID: 2144951847, guid: 9ac16488706df81498cf97a5ac6b1e24, type: 3}
+  - {fileID: -787026463, guid: 9ac16488706df81498cf97a5ac6b1e24, type: 3}
+  - {fileID: 1034715330, guid: 9ac16488706df81498cf97a5ac6b1e24, type: 3}
+  - {fileID: -1138415954, guid: 9ac16488706df81498cf97a5ac6b1e24, type: 3}
+  - {fileID: 934885539, guid: 9ac16488706df81498cf97a5ac6b1e24, type: 3}
+  - {fileID: -1163732248, guid: 9ac16488706df81498cf97a5ac6b1e24, type: 3}

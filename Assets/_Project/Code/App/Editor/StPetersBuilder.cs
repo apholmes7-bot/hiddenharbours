@@ -1236,6 +1236,13 @@ namespace HiddenHarbours.App.Editor
             // diorama, which is why it is handed in here rather than searched for at runtime.
             int villageBuildings = StPetersVillage.Place(terrain, core.PlayerGo.transform);
 
+            // --- THE SHOPS (the owner's 2026-08-11 rulings) -----------------------------------------------
+            // The general store stops being a house with a bay window and becomes a shop, at the SAME
+            // authored site — so the storekeeper's dooryard and the counter below still derive from one
+            // coordinate and nothing had to be copied. The post office is new. Both get a walkable ground
+            // floor: EVERY building gets an interior is canon now, not a per-building choice.
+            int shopBuildings = StPetersShops.Place(terrain, core.PlayerGo.transform);
+
             // --- THE STORE'S COUNTER (§7.5's other half: the placement) -----------------------------------
             // #356 built the island general store's ECONOMY — the StPetersStore market channel that pays a
             // worse price level than the creek, the clam licence, the counted bait/ice stock — and said so
@@ -1492,8 +1499,8 @@ namespace HiddenHarbours.App.Editor
 
             Debug.Log($"[StPetersBuilder] THE ISLAND IS DRESSED: {woods.Trees} trees + {woods.Shrubs} shrubs + " +
                       $"{woods.Flowers} wildflowers by habitat, the one dock at the east berth, and a village " +
-                      $"of {villageBuildings} buildings — the school, the store and the houses — standing " +
-                      "round the green beside the start spawn.");
+                      $"of {villageBuildings} houses + {shopBuildings} shop(s) — the school, the houses, the " +
+                      "general store and the post office — standing round the green beside the start spawn.");
             Debug.Log($"[StPetersBuilder] THE COAST IS PAINTED: {coast.GroundTiles:N0} shoreline-ISO ground " +
                       $"tiles + {coast.FringeTiles:N0} fringe overlays + {coast.Rocks} rocks on the reef " +
                       $"({coast.MaterialSummary()}). The island paints at its re-ruled 240 x 140 m " +

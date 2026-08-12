@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 825beb7e63856174e8e43fc81e6c248c, type: 3}
+  m_Name: drum_s205_oil
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.FuelContainerDef
+  Id: fuelstore.oil_drum_s205
+  DisplayName: 205 L Oil Drum
+  VesselType: drum
+  SizeKey: s205
+  Grade: oil
+  LevelRead: tube
+  Carriable: 0
+  CapacityLitres: 205
+  TareKg: 18
+  FullKg: 199.43
+  Facings: 4
+  FillFractions:
+  - 0
+  - 0.25
+  - 0.5
+  - 0.75
+  - 1
+  Frames:
+  - {fileID: 846041991, guid: 8a68abc16f9b84e45a44d407f55e6089, type: 3}
+  - {fileID: 1554950701, guid: 8a68abc16f9b84e45a44d407f55e6089, type: 3}
+  - {fileID: 2143436844, guid: 8a68abc16f9b84e45a44d407f55e6089, type: 3}
+  - {fileID: -1651897696, guid: 8a68abc16f9b84e45a44d407f55e6089, type: 3}
+  - {fileID: 1263491538, guid: 8a68abc16f9b84e45a44d407f55e6089, type: 3}
+  - {fileID: -2079184285, guid: 8a68abc16f9b84e45a44d407f55e6089, type: 3}
+  - {fileID: -840639998, guid: 8a68abc16f9b84e45a44d407f55e6089, type: 3}
+  - {fileID: -453487403, guid: 8a68abc16f9b84e45a44d407f55e6089, type: 3}
+  - {fileID: -1397849623, guid: 8a68abc16f9b84e45a44d407f55e6089, type: 3}
+  - {fileID: -140374853, guid: 8a68abc16f9b84e45a44d407f55e6089, type: 3}
+  - {fileID: -546739263, guid: 8a68abc16f9b84e45a44d407f55e6089, type: 3}
+  - {fileID: -1298097308, guid: 8a68abc16f9b84e45a44d407f55e6089, type: 3}
+  - {fileID: 264930282, guid: 8a68abc16f9b84e45a44d407f55e6089, type: 3}
+  - {fileID: -1541455621, guid: 8a68abc16f9b84e45a44d407f55e6089, type: 3}
+  - {fileID: -760892671, guid: 8a68abc16f9b84e45a44d407f55e6089, type: 3}
+  - {fileID: -1389872245, guid: 8a68abc16f9b84e45a44d407f55e6089, type: 3}
+  - {fileID: -515458450, guid: 8a68abc16f9b84e45a44d407f55e6089, type: 3}
+  - {fileID: 820948402, guid: 8a68abc16f9b84e45a44d407f55e6089, type: 3}
+  - {fileID: 1878557843, guid: 8a68abc16f9b84e45a44d407f55e6089, type: 3}
+  - {fileID: 1302087675, guid: 8a68abc16f9b84e45a44d407f55e6089, type: 3}

@@ -1,0 +1,1113 @@
+fileFormatVersion: 2
+guid: e389d77655439f445b5b892c25c45a1b
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 329390242447975774
+    second: jerry_s5_mixed_0
+  - first:
+      213: -8464786875876198987
+    second: jerry_s5_mixed_1
+  - first:
+      213: 6102620750499603651
+    second: jerry_s5_mixed_2
+  - first:
+      213: 2742556516734810419
+    second: jerry_s5_mixed_3
+  - first:
+      213: 8877882639169526523
+    second: jerry_s5_mixed_4
+  - first:
+      213: 7653989187412120940
+    second: jerry_s5_mixed_5
+  - first:
+      213: 4375871095705693751
+    second: jerry_s5_mixed_6
+  - first:
+      213: -4528970456648192629
+    second: jerry_s5_mixed_7
+  - first:
+      213: -3449905698158373597
+    second: jerry_s5_mixed_8
+  - first:
+      213: -3598671023882290634
+    second: jerry_s5_mixed_9
+  - first:
+      213: 7820451287867627736
+    second: jerry_s5_mixed_10
+  - first:
+      213: -270767383348706992
+    second: jerry_s5_mixed_11
+  - first:
+      213: -7601000956210626608
+    second: jerry_s5_mixed_12
+  - first:
+      213: 8402870384921934063
+    second: jerry_s5_mixed_13
+  - first:
+      213: 1903140809902306089
+    second: jerry_s5_mixed_14
+  - first:
+      213: 81791749768873671
+    second: jerry_s5_mixed_15
+  - first:
+      213: -8252055083388232998
+    second: jerry_s5_mixed_16
+  - first:
+      213: 6495651025162577385
+    second: jerry_s5_mixed_17
+  - first:
+      213: 9039257828194964812
+    second: jerry_s5_mixed_18
+  - first:
+      213: 5641061703775209504
+    second: jerry_s5_mixed_19
+  - first:
+      213: 7440533463481922559
+    second: jerry_s5_mixed_20
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: jerry_s5_mixed_f0_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 56
+        width: 8
+        height: 14
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5d3fe166776726841a0aecd05391a396
+      internalID: 325821110
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s5_mixed_f0_d1
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 56
+        width: 8
+        height: 14
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 01e17d5f8dbec72459c39af528cb3ee4
+      internalID: -1145378341
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s5_mixed_f0_d2
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 56
+        width: 8
+        height: 14
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eae36971e1f6abe4cb8dd3ae54c0a5e2
+      internalID: -1392911423
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s5_mixed_f0_d3
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 56
+        width: 8
+        height: 14
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 62973338fa00bea41aa6257b5f76dd74
+      internalID: 1573160841
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s5_mixed_f0_d4
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 56
+        width: 8
+        height: 14
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7af67c9314f3ada4b94920ba16a253a0
+      internalID: 1836465460
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s5_mixed_f0_d5
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 56
+        width: 8
+        height: 14
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cfbbf698de32a93409f7e55578601daa
+      internalID: -77501026
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s5_mixed_f0_d6
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 56
+        width: 8
+        height: 14
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d508435526693404b96c257606019161
+      internalID: 1072649684
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s5_mixed_f0_d7
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 56
+        width: 8
+        height: 14
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8eb7783a523213b4f8e086d18911293e
+      internalID: 97861334
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s5_mixed_f1_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 42
+        width: 8
+        height: 14
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 497e3feb31addb54f80fda5aa37466fe
+      internalID: -560972434
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s5_mixed_f1_d1
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 42
+        width: 8
+        height: 14
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ad19c3800ebdf0944bdb9a82ae87dcb2
+      internalID: 2116144908
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s5_mixed_f1_d2
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 42
+        width: 8
+        height: 14
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cfecc15b8be41e34da21d59aab8f95bd
+      internalID: 1190538383
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s5_mixed_f1_d3
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 42
+        width: 8
+        height: 14
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8db16e990fa2c0c43a862ab4bb7243cf
+      internalID: -549987724
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s5_mixed_f1_d4
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 42
+        width: 8
+        height: 14
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 12ba18205d1282644a2af5a1aadac9f6
+      internalID: 224228262
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s5_mixed_f1_d5
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 42
+        width: 8
+        height: 14
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7b49fbb62cc4d97488b71172b2be18f8
+      internalID: -909795342
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s5_mixed_f1_d6
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 42
+        width: 8
+        height: 14
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1fd970b06d6ef7f48b710d207c8c39ba
+      internalID: -413003732
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s5_mixed_f1_d7
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 42
+        width: 8
+        height: 14
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3b8556d2d100524438997be2fe16ff36
+      internalID: -1333454878
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s5_mixed_f2_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 28
+        width: 8
+        height: 14
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 220b6a77e4d51f043a1ef70475d747cc
+      internalID: -674011188
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s5_mixed_f2_d1
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 28
+        width: 8
+        height: 14
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ba07e93593526c744950af5cf2b59b62
+      internalID: -1423524307
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s5_mixed_f2_d2
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 28
+        width: 8
+        height: 14
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0aa48a6503781de4e8e910663c2cdee2
+      internalID: -1984186875
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s5_mixed_f2_d3
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 28
+        width: 8
+        height: 14
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5d6ed532957263d4fb67227239bcaf05
+      internalID: 2090117624
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s5_mixed_f2_d4
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 28
+        width: 8
+        height: 14
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8fb82fce38556164fb2e99020b47848d
+      internalID: -576459440
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s5_mixed_f2_d5
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 28
+        width: 8
+        height: 14
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 469664a50b0ef3f4ca02522ee56ef121
+      internalID: -1201868602
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s5_mixed_f2_d6
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 28
+        width: 8
+        height: 14
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a5ddf36edec9a824ca6b7650459bdc29
+      internalID: 1364569095
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s5_mixed_f2_d7
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 28
+        width: 8
+        height: 14
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a60b19a34c0a56e4d964eec5e05d6ba6
+      internalID: -643716391
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s5_mixed_f3_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 14
+        width: 8
+        height: 14
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bb4e19ff30036a043afe091c6f8a6892
+      internalID: 1534336213
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s5_mixed_f3_d1
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 14
+        width: 8
+        height: 14
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 28977d5a36b687b498d77f52b5b7fae9
+      internalID: 1027558375
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s5_mixed_f3_d2
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 14
+        width: 8
+        height: 14
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 460d60fc5cd99644db37a272e8aec9b5
+      internalID: -1876467794
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s5_mixed_f3_d3
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 14
+        width: 8
+        height: 14
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6d3d60f4993fb3f439fd8b7d21c6160c
+      internalID: -1600791814
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s5_mixed_f3_d4
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 14
+        width: 8
+        height: 14
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: abc7499ab7bc5ec4288e85030fb2cb17
+      internalID: 1437021051
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s5_mixed_f3_d5
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 14
+        width: 8
+        height: 14
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9ad3e5837a8217b48b0685700e3b68fb
+      internalID: -1668811542
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s5_mixed_f3_d6
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 14
+        width: 8
+        height: 14
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 387e15bc796ee2848afe0457598d947b
+      internalID: 894747629
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s5_mixed_f3_d7
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 14
+        width: 8
+        height: 14
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b7b4aa9cfce7e5d428871e6fe04b705b
+      internalID: 1286745476
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s5_mixed_f4_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 8
+        height: 14
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 992da38dd5deb124d8238c3cfa9d4ff2
+      internalID: 135094302
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s5_mixed_f4_d1
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 0
+        width: 8
+        height: 14
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 926f79d9e80649d4c9fc98279f32b2dd
+      internalID: -1533144290
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s5_mixed_f4_d2
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 0
+        width: 8
+        height: 14
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 094fe0c774a944a4f97ac6b505b8a1c8
+      internalID: 1350179060
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s5_mixed_f4_d3
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 0
+        width: 8
+        height: 14
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 78c4c56a32b7d4e499c887d3319c7586
+      internalID: -1600322274
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s5_mixed_f4_d4
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 0
+        width: 8
+        height: 14
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bd212353bc809e34092c34f351d26032
+      internalID: -105273135
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s5_mixed_f4_d5
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 0
+        width: 8
+        height: 14
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 667c888fe36dada4e9f1fa37463ad094
+      internalID: -1372229742
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s5_mixed_f4_d6
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 0
+        width: 8
+        height: 14
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5f1df7eadd5380a459e3fba7efbc8291
+      internalID: -11184405
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s5_mixed_f4_d7
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 0
+        width: 8
+        height: 14
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 36491cdbaac89594a8ed62105ca6611b
+      internalID: 1866357026
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: dfa5a89618aa11241b9dcdfd8f70748e
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      jerry_s5_mixed_f0_d0: 325821110
+      jerry_s5_mixed_f0_d1: -1145378341
+      jerry_s5_mixed_f0_d2: -1392911423
+      jerry_s5_mixed_f0_d3: 1573160841
+      jerry_s5_mixed_f0_d4: 1836465460
+      jerry_s5_mixed_f0_d5: -77501026
+      jerry_s5_mixed_f0_d6: 1072649684
+      jerry_s5_mixed_f0_d7: 97861334
+      jerry_s5_mixed_f1_d0: -560972434
+      jerry_s5_mixed_f1_d1: 2116144908
+      jerry_s5_mixed_f1_d2: 1190538383
+      jerry_s5_mixed_f1_d3: -549987724
+      jerry_s5_mixed_f1_d4: 224228262
+      jerry_s5_mixed_f1_d5: -909795342
+      jerry_s5_mixed_f1_d6: -413003732
+      jerry_s5_mixed_f1_d7: -1333454878
+      jerry_s5_mixed_f2_d0: -674011188
+      jerry_s5_mixed_f2_d1: -1423524307
+      jerry_s5_mixed_f2_d2: -1984186875
+      jerry_s5_mixed_f2_d3: 2090117624
+      jerry_s5_mixed_f2_d4: -576459440
+      jerry_s5_mixed_f2_d5: -1201868602
+      jerry_s5_mixed_f2_d6: 1364569095
+      jerry_s5_mixed_f2_d7: -643716391
+      jerry_s5_mixed_f3_d0: 1534336213
+      jerry_s5_mixed_f3_d1: 1027558375
+      jerry_s5_mixed_f3_d2: -1876467794
+      jerry_s5_mixed_f3_d3: -1600791814
+      jerry_s5_mixed_f3_d4: 1437021051
+      jerry_s5_mixed_f3_d5: -1668811542
+      jerry_s5_mixed_f3_d6: 894747629
+      jerry_s5_mixed_f3_d7: 1286745476
+      jerry_s5_mixed_f4_d0: 135094302
+      jerry_s5_mixed_f4_d1: -1533144290
+      jerry_s5_mixed_f4_d2: 1350179060
+      jerry_s5_mixed_f4_d3: -1600322274
+      jerry_s5_mixed_f4_d4: -105273135
+      jerry_s5_mixed_f4_d5: -1372229742
+      jerry_s5_mixed_f4_d6: -11184405
+      jerry_s5_mixed_f4_d7: 1866357026
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

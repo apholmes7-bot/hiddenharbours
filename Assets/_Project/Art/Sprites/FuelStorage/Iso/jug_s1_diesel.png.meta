@@ -1,0 +1,1059 @@
+fileFormatVersion: 2
+guid: c32ce5f68fde9d74a8dd1aa665532131
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -5966550886548379937
+    second: jug_s1_diesel_0
+  - first:
+      213: -8504815463982786095
+    second: jug_s1_diesel_1
+  - first:
+      213: -4162064690819222513
+    second: jug_s1_diesel_2
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: jug_s1_diesel_f0_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 28
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6267e40367da0fb4cb65d1978c802b1e
+      internalID: -2012045060
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_diesel_f0_d1
+      rect:
+        serializedVersion: 2
+        x: 4
+        y: 28
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9924481b83054f243b29ab6e759d6896
+      internalID: -1494920395
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_diesel_f0_d2
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 28
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: df8ec80da7ac82747b8d800c50357ac1
+      internalID: 1964201781
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_diesel_f0_d3
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 28
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 856ed4474e5126d4fa584c713eff9e03
+      internalID: 916029188
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_diesel_f0_d4
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 28
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9ffa06f5944a8e84da01932e419aa2e8
+      internalID: 2010837257
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_diesel_f0_d5
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 28
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 26c6a18b26afd9c4d88a1960d3744481
+      internalID: 1338531084
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_diesel_f0_d6
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 28
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0f98b52f563067c4f8995e99a6480d66
+      internalID: -1791501908
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_diesel_f0_d7
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 28
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 877c9311d42a8c742accf27a5f5e997f
+      internalID: 1437395362
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_diesel_f1_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 21
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 91cd6d2066e1ae9489e15a8eb48a9c3f
+      internalID: 2066745624
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_diesel_f1_d1
+      rect:
+        serializedVersion: 2
+        x: 4
+        y: 21
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 76d3495bcff7f874ca7e3388314598ae
+      internalID: -944118312
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_diesel_f1_d2
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 21
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 14e792408c19c2b4d8d2e55e46734b72
+      internalID: -985615432
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_diesel_f1_d3
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 21
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6b068d01d4e5bb4418e0652ac57e0b04
+      internalID: -909355902
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_diesel_f1_d4
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 21
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e230e8593ae5a0e4b9ef69b6b0664702
+      internalID: -459287703
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_diesel_f1_d5
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 21
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 65d482b86298f8042a9c6aeca391f001
+      internalID: -13781688
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_diesel_f1_d6
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 21
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a7abdf18c62e1d3489eb1778ff9ba3f7
+      internalID: 665205817
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_diesel_f1_d7
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 21
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4d36a2510655f4c4cbe0af9172c7d0d8
+      internalID: 23646703
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_diesel_f2_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 14
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 52902308cd893774fab3ea68a713687f
+      internalID: 2061214532
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_diesel_f2_d1
+      rect:
+        serializedVersion: 2
+        x: 4
+        y: 14
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1eb724827ebf625448f7e7e153d2e245
+      internalID: 2029253755
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_diesel_f2_d2
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 14
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3861470ee28eaef47942fc0bc10bab14
+      internalID: 453742054
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_diesel_f2_d3
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 14
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4373ac2c3e1a2324ea86509df9ad0ab7
+      internalID: -1349297618
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_diesel_f2_d4
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 14
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5f5521f84d4998545b6824fd3fe0526c
+      internalID: 930422071
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_diesel_f2_d5
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 14
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 978fc97f1a2e0ae46a2a5d630664f84a
+      internalID: -620410614
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_diesel_f2_d6
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 14
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b3b446ff0e45b594fae250863f52143f
+      internalID: -1289059585
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_diesel_f2_d7
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 14
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4a122d9700a5ce046aa987e8063fdf1e
+      internalID: 721046554
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_diesel_f3_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 7
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4f9b128fb4dfe0c4da4254c48587dd61
+      internalID: 1092722350
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_diesel_f3_d1
+      rect:
+        serializedVersion: 2
+        x: 4
+        y: 7
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5e6da641da35c2e409a0c2f905ef48f7
+      internalID: -1914736564
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_diesel_f3_d2
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 7
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d2f22dc1cf8ac00498bc39de0ffe59e8
+      internalID: -715387480
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_diesel_f3_d3
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 7
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2a47875589981c34e834b558576d53c8
+      internalID: -742867119
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_diesel_f3_d4
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 7
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 53508683b498c854cb2595cace1fa321
+      internalID: -812948262
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_diesel_f3_d5
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 7
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7acadac1a3cf2a7438fc6e4de2f000f6
+      internalID: -15004072
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_diesel_f3_d6
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 7
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 061913eeca6c978459ccba34efe6fb87
+      internalID: -1109728309
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_diesel_f3_d7
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 7
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e1dd7ac362c21e443a16876b3d4c47c5
+      internalID: -1110573580
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_diesel_f4_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 42dc47271f4456c44ac55a0ccd5d2026
+      internalID: 2089835357
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_diesel_f4_d1
+      rect:
+        serializedVersion: 2
+        x: 4
+        y: 0
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4c8692f295ef65148a1866f930e90c90
+      internalID: -468335890
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_diesel_f4_d2
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 0
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f2ecf269ab91d4f4eaa0d21928ce3191
+      internalID: 1878925485
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_diesel_f4_d3
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 0
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 095e50587417fe04fbb5f03cdf9d3a71
+      internalID: -1243461639
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_diesel_f4_d4
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 0
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 216140e3bb907174b85c373ccfeac525
+      internalID: -1810987806
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_diesel_f4_d5
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 0
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bdca30eeaa6270e4785d19317d618d0c
+      internalID: 1983951593
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_diesel_f4_d6
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 0
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8da5d9ab9b6e5e7449ef18370e862723
+      internalID: -1790177563
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_diesel_f4_d7
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 0
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e7afac2412efb6f46aafd1abec572363
+      internalID: 1251440087
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 96ffd6419ad809f418cfc4c3433ea3d3
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      jug_s1_diesel_f0_d0: -2012045060
+      jug_s1_diesel_f0_d1: -1494920395
+      jug_s1_diesel_f0_d2: 1964201781
+      jug_s1_diesel_f0_d3: 916029188
+      jug_s1_diesel_f0_d4: 2010837257
+      jug_s1_diesel_f0_d5: 1338531084
+      jug_s1_diesel_f0_d6: -1791501908
+      jug_s1_diesel_f0_d7: 1437395362
+      jug_s1_diesel_f1_d0: 2066745624
+      jug_s1_diesel_f1_d1: -944118312
+      jug_s1_diesel_f1_d2: -985615432
+      jug_s1_diesel_f1_d3: -909355902
+      jug_s1_diesel_f1_d4: -459287703
+      jug_s1_diesel_f1_d5: -13781688
+      jug_s1_diesel_f1_d6: 665205817
+      jug_s1_diesel_f1_d7: 23646703
+      jug_s1_diesel_f2_d0: 2061214532
+      jug_s1_diesel_f2_d1: 2029253755
+      jug_s1_diesel_f2_d2: 453742054
+      jug_s1_diesel_f2_d3: -1349297618
+      jug_s1_diesel_f2_d4: 930422071
+      jug_s1_diesel_f2_d5: -620410614
+      jug_s1_diesel_f2_d6: -1289059585
+      jug_s1_diesel_f2_d7: 721046554
+      jug_s1_diesel_f3_d0: 1092722350
+      jug_s1_diesel_f3_d1: -1914736564
+      jug_s1_diesel_f3_d2: -715387480
+      jug_s1_diesel_f3_d3: -742867119
+      jug_s1_diesel_f3_d4: -812948262
+      jug_s1_diesel_f3_d5: -15004072
+      jug_s1_diesel_f3_d6: -1109728309
+      jug_s1_diesel_f3_d7: -1110573580
+      jug_s1_diesel_f4_d0: 2089835357
+      jug_s1_diesel_f4_d1: -468335890
+      jug_s1_diesel_f4_d2: 1878925485
+      jug_s1_diesel_f4_d3: -1243461639
+      jug_s1_diesel_f4_d4: -1810987806
+      jug_s1_diesel_f4_d5: 1983951593
+      jug_s1_diesel_f4_d6: -1790177563
+      jug_s1_diesel_f4_d7: 1251440087
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

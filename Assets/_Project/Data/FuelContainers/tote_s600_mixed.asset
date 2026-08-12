@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 825beb7e63856174e8e43fc81e6c248c, type: 3}
+  m_Name: tote_s600_mixed
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.FuelContainerDef
+  Id: fuelstore.mixed_tote_s600
+  DisplayName: 600 L Mixed Tote
+  VesselType: tote
+  SizeKey: s600
+  Grade: mixed
+  LevelRead: body
+  Carriable: 0
+  CapacityLitres: 600
+  TareKg: 48
+  FullKg: 499.2
+  Facings: 4
+  FillFractions:
+  - 0
+  - 0.25
+  - 0.5
+  - 0.75
+  - 1
+  Frames:
+  - {fileID: 308581479, guid: f0c86d8771580cf46a816aa192f9c060, type: 3}
+  - {fileID: 638477416, guid: f0c86d8771580cf46a816aa192f9c060, type: 3}
+  - {fileID: 1785095566, guid: f0c86d8771580cf46a816aa192f9c060, type: 3}
+  - {fileID: 811337786, guid: f0c86d8771580cf46a816aa192f9c060, type: 3}
+  - {fileID: -655560807, guid: f0c86d8771580cf46a816aa192f9c060, type: 3}
+  - {fileID: 1881443144, guid: f0c86d8771580cf46a816aa192f9c060, type: 3}
+  - {fileID: 2025337370, guid: f0c86d8771580cf46a816aa192f9c060, type: 3}
+  - {fileID: -71102133, guid: f0c86d8771580cf46a816aa192f9c060, type: 3}
+  - {fileID: -307964360, guid: f0c86d8771580cf46a816aa192f9c060, type: 3}
+  - {fileID: 1205765845, guid: f0c86d8771580cf46a816aa192f9c060, type: 3}
+  - {fileID: -1730203915, guid: f0c86d8771580cf46a816aa192f9c060, type: 3}
+  - {fileID: 1516101309, guid: f0c86d8771580cf46a816aa192f9c060, type: 3}
+  - {fileID: -461046542, guid: f0c86d8771580cf46a816aa192f9c060, type: 3}
+  - {fileID: 505366235, guid: f0c86d8771580cf46a816aa192f9c060, type: 3}
+  - {fileID: -461113625, guid: f0c86d8771580cf46a816aa192f9c060, type: 3}
+  - {fileID: -923186230, guid: f0c86d8771580cf46a816aa192f9c060, type: 3}
+  - {fileID: 40734201, guid: f0c86d8771580cf46a816aa192f9c060, type: 3}
+  - {fileID: -759973862, guid: f0c86d8771580cf46a816aa192f9c060, type: 3}
+  - {fileID: 409591497, guid: f0c86d8771580cf46a816aa192f9c060, type: 3}
+  - {fileID: 1442214746, guid: f0c86d8771580cf46a816aa192f9c060, type: 3}

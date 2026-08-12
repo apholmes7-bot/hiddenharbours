@@ -1,0 +1,1059 @@
+fileFormatVersion: 2
+guid: c96c8e087981341409fcc84f52890472
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -1756898061017464580
+    second: jug_s1_oil_0
+  - first:
+      213: 5550078233269141453
+    second: jug_s1_oil_1
+  - first:
+      213: -5106511567551251458
+    second: jug_s1_oil_2
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: jug_s1_oil_f0_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 28
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f91548e20cbd92748b7550b15c3d8df1
+      internalID: -882910842
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_oil_f0_d1
+      rect:
+        serializedVersion: 2
+        x: 4
+        y: 28
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 462efa3db5757614593fc614cccd1d40
+      internalID: -2126888494
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_oil_f0_d2
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 28
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4e761cc5c6dc9ed44b99a53b3975ef55
+      internalID: -1815728209
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_oil_f0_d3
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 28
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e9e30918d86b68c4e962c931d25250c9
+      internalID: 1291341168
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_oil_f0_d4
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 28
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aae1e7f2fab680747953de98538101e7
+      internalID: -304076397
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_oil_f0_d5
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 28
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5fd2d1172c433954db94fc8d8f54e46c
+      internalID: 1266942042
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_oil_f0_d6
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 28
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bbec424d856befb4e8514aba993ef60f
+      internalID: -569686808
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_oil_f0_d7
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 28
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a44d9bd89c532ef4ab094908612fb7e2
+      internalID: 1389941415
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_oil_f1_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 21
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8aadc5d4da584fd4a98687ddbfc0057c
+      internalID: 742977988
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_oil_f1_d1
+      rect:
+        serializedVersion: 2
+        x: 4
+        y: 21
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: de17353695983944299c3321c0d19e91
+      internalID: -1727760362
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_oil_f1_d2
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 21
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7b845f48463694e49b0aa59612210fef
+      internalID: 386795315
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_oil_f1_d3
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 21
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3165602c2c12ab047a5432a2aad7ce75
+      internalID: -266291020
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_oil_f1_d4
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 21
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 993e193dd161ab549bf1108a7a3ec5ff
+      internalID: -9320470
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_oil_f1_d5
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 21
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ba3e83f43c70d084da6a297deab83751
+      internalID: -885675981
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_oil_f1_d6
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 21
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f61e442ea90024f4db2f3d3cb5138253
+      internalID: -776514525
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_oil_f1_d7
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 21
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 24107c584b479604c9219efc12ba5b53
+      internalID: 164542243
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_oil_f2_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 14
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5d69a189e70b5904c8208b6de47d4adc
+      internalID: -1551937171
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_oil_f2_d1
+      rect:
+        serializedVersion: 2
+        x: 4
+        y: 14
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1e7b34f531205bb42a2bfb79fe8617e0
+      internalID: 8489371
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_oil_f2_d2
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 14
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8db41dfd6da0b56458b6d3e6d873542b
+      internalID: 1210530746
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_oil_f2_d3
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 14
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 068f30a076f62c344af56b44f0dba4a5
+      internalID: -1267106948
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_oil_f2_d4
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 14
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: edeffa26a77988a4ba1f59cfd43529a8
+      internalID: -873760074
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_oil_f2_d5
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 14
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ccc425d2541e410418df490c3a76ac3d
+      internalID: -1914715945
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_oil_f2_d6
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 14
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7c663fd6281fb6d4bb0b33db8cdb33e2
+      internalID: 890286510
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_oil_f2_d7
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 14
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 445730beb49fe8143a7d2aacf80389dc
+      internalID: 1049049951
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_oil_f3_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 7
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 68dc2826eb981ec4d97b5292e702a890
+      internalID: -1287971145
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_oil_f3_d1
+      rect:
+        serializedVersion: 2
+        x: 4
+        y: 7
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 93a4e0692d8aa4546b5246284bdda526
+      internalID: -1279124371
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_oil_f3_d2
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 7
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cc976356d5054154a83da68ae408ead6
+      internalID: 692638613
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_oil_f3_d3
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 7
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 435e85fba842ece43b8d29a780e1caee
+      internalID: -1054196439
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_oil_f3_d4
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 7
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5ff85e8414033e3418fbdbb260ec6e02
+      internalID: 3840571
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_oil_f3_d5
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 7
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8317917620752554caa05839ddddbf8a
+      internalID: -340598917
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_oil_f3_d6
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 7
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d329e6ed8e37d044884201c01a6d9ac0
+      internalID: -1235760112
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_oil_f3_d7
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 7
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 669528889f1418d42a67bcb442beb4aa
+      internalID: 568942481
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_oil_f4_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ba6117d1a0a641347b0077f400613e90
+      internalID: -925133858
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_oil_f4_d1
+      rect:
+        serializedVersion: 2
+        x: 4
+        y: 0
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 37fa0f0d4b91b264195ae23afcdee172
+      internalID: -1109917615
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_oil_f4_d2
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 0
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e41042cfa4b84b14fadd383ac4012ba3
+      internalID: 446888459
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_oil_f4_d3
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 0
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 419754e7b7530e748a2f21faf4195495
+      internalID: 23557456
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_oil_f4_d4
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 0
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9719e211d25f441499fc0e596ba4c8cd
+      internalID: -638322293
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_oil_f4_d5
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 0
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3dcdf4e547c4bad488532bc3a5bffb72
+      internalID: 368079993
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_oil_f4_d6
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 0
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 05126713c4f9e0c4ea6223d3cdd9f907
+      internalID: -1656031034
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_oil_f4_d7
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 0
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f255e405c1045f448a490b97419ea160
+      internalID: 704081547
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 558fd5e8dc8728044ba6811996b2350b
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      jug_s1_oil_f0_d0: -882910842
+      jug_s1_oil_f0_d1: -2126888494
+      jug_s1_oil_f0_d2: -1815728209
+      jug_s1_oil_f0_d3: 1291341168
+      jug_s1_oil_f0_d4: -304076397
+      jug_s1_oil_f0_d5: 1266942042
+      jug_s1_oil_f0_d6: -569686808
+      jug_s1_oil_f0_d7: 1389941415
+      jug_s1_oil_f1_d0: 742977988
+      jug_s1_oil_f1_d1: -1727760362
+      jug_s1_oil_f1_d2: 386795315
+      jug_s1_oil_f1_d3: -266291020
+      jug_s1_oil_f1_d4: -9320470
+      jug_s1_oil_f1_d5: -885675981
+      jug_s1_oil_f1_d6: -776514525
+      jug_s1_oil_f1_d7: 164542243
+      jug_s1_oil_f2_d0: -1551937171
+      jug_s1_oil_f2_d1: 8489371
+      jug_s1_oil_f2_d2: 1210530746
+      jug_s1_oil_f2_d3: -1267106948
+      jug_s1_oil_f2_d4: -873760074
+      jug_s1_oil_f2_d5: -1914715945
+      jug_s1_oil_f2_d6: 890286510
+      jug_s1_oil_f2_d7: 1049049951
+      jug_s1_oil_f3_d0: -1287971145
+      jug_s1_oil_f3_d1: -1279124371
+      jug_s1_oil_f3_d2: 692638613
+      jug_s1_oil_f3_d3: -1054196439
+      jug_s1_oil_f3_d4: 3840571
+      jug_s1_oil_f3_d5: -340598917
+      jug_s1_oil_f3_d6: -1235760112
+      jug_s1_oil_f3_d7: 568942481
+      jug_s1_oil_f4_d0: -925133858
+      jug_s1_oil_f4_d1: -1109917615
+      jug_s1_oil_f4_d2: 446888459
+      jug_s1_oil_f4_d3: 23557456
+      jug_s1_oil_f4_d4: -638322293
+      jug_s1_oil_f4_d5: 368079993
+      jug_s1_oil_f4_d6: -1656031034
+      jug_s1_oil_f4_d7: 704081547
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

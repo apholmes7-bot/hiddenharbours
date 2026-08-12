@@ -1,0 +1,1059 @@
+fileFormatVersion: 2
+guid: ce71f3255d7749540845753751ec86db
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 7472218210149644440
+    second: jug_s1_mixed_0
+  - first:
+      213: 3844104204374316498
+    second: jug_s1_mixed_1
+  - first:
+      213: -3951778644723269031
+    second: jug_s1_mixed_2
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: jug_s1_mixed_f0_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 28
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 95bd8ec73423e36428b43c7c17699e10
+      internalID: -1718450963
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_mixed_f0_d1
+      rect:
+        serializedVersion: 2
+        x: 4
+        y: 28
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d5555c213e0d4ea468f558dc399c425c
+      internalID: -922354665
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_mixed_f0_d2
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 28
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d65d598590c5d6f49b062511f987e962
+      internalID: 2063707258
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_mixed_f0_d3
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 28
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 40ccce357ca78c0428f045136cf4c9fc
+      internalID: 887027991
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_mixed_f0_d4
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 28
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3def32fa9aa429344a10461ca71de325
+      internalID: 821668160
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_mixed_f0_d5
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 28
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3e18743896365e249acf00e0312a5aa8
+      internalID: 2099048352
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_mixed_f0_d6
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 28
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a96d2ef1b3f28184c81ef0f356067156
+      internalID: -1937945120
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_mixed_f0_d7
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 28
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3b997cb3caedd684dbacc6df10cc5c0e
+      internalID: -1398906405
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_mixed_f1_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 21
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2efbdffffb80988458834a07c8366253
+      internalID: -1101291592
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_mixed_f1_d1
+      rect:
+        serializedVersion: 2
+        x: 4
+        y: 21
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eb0fb5c254704414080504fb3cbed3e2
+      internalID: -1388383848
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_mixed_f1_d2
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 21
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8fbac02cdad5554419ed8dab8eeb6fcd
+      internalID: -957092664
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_mixed_f1_d3
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 21
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4ee1e88d43419d84aaf3bab3426bc431
+      internalID: 570929190
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_mixed_f1_d4
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 21
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9bedcd622f8918e4cbddfa3fa25d9dbd
+      internalID: -1995999103
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_mixed_f1_d5
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 21
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 110c68a2eca0a134eab9cc1e78a1e34d
+      internalID: 1230391426
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_mixed_f1_d6
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 21
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 072bb819ca1006145b032c71cd71ed49
+      internalID: -2001976743
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_mixed_f1_d7
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 21
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 21a3fb225e82ab748a1f09f2bdb4e51b
+      internalID: 1434954420
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_mixed_f2_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 14
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d0682d37e73c80d4c9875fb6c9e22b4a
+      internalID: -1211193065
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_mixed_f2_d1
+      rect:
+        serializedVersion: 2
+        x: 4
+        y: 14
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: acf8a0fb7b1435f4ab5a9c4e3d354742
+      internalID: -960224612
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_mixed_f2_d2
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 14
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 353385b521729a3438f422576a55e7ca
+      internalID: 1028121180
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_mixed_f2_d3
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 14
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 72bd1e8b0126e334c93304db85e0d3c4
+      internalID: -694314737
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_mixed_f2_d4
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 14
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8490afaeaeb209240973108c07c9f58c
+      internalID: 1136124722
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_mixed_f2_d5
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 14
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b01d26751e11eae4bae41c327df6f519
+      internalID: 1513154766
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_mixed_f2_d6
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 14
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 207d889029d8bc541b00ac882a10543c
+      internalID: 2116554407
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_mixed_f2_d7
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 14
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a5ff63933ab477244aa9f52ca19645a6
+      internalID: 2086654239
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_mixed_f3_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 7
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ef99a81d22f12a24981eaf669edd1272
+      internalID: 1614796592
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_mixed_f3_d1
+      rect:
+        serializedVersion: 2
+        x: 4
+        y: 7
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 05b524bf1eab91342b2a54c5d60cafab
+      internalID: 497669934
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_mixed_f3_d2
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 7
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6e402e07533036f46bf4fd0458c90d80
+      internalID: -1678379568
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_mixed_f3_d3
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 7
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6d270c33017f7c047ba3e485b1b8056a
+      internalID: -1547511466
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_mixed_f3_d4
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 7
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 47ec9f48a19a34c4fb7c4230f2810f47
+      internalID: 2086279210
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_mixed_f3_d5
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 7
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 28e2ed697d2967040b633522e63c7a2c
+      internalID: 1751428587
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_mixed_f3_d6
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 7
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1059a2d0e3ad4b54e9a207639371af1f
+      internalID: 37334988
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_mixed_f3_d7
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 7
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 436e41225ed4c5949a401d4d36b55389
+      internalID: 383866231
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_mixed_f4_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cddb982d90ecd8745b3cd31b6f443176
+      internalID: 1653366322
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_mixed_f4_d1
+      rect:
+        serializedVersion: 2
+        x: 4
+        y: 0
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ead11bbbf48ace8429328719f7eea972
+      internalID: -1201454316
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_mixed_f4_d2
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 0
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 16fef3f9811c9bc4386e3370a643e5fc
+      internalID: -1982098912
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_mixed_f4_d3
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 0
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ee3b764b61e3bfc4fbe4e8769ff4a672
+      internalID: -121038902
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_mixed_f4_d4
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 0
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 66001bd83d04c0146b1fb75fa938ca32
+      internalID: -1186945479
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_mixed_f4_d5
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 0
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a4945293b1b96d5439606bda6c002121
+      internalID: -1303530280
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_mixed_f4_d6
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 0
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c7db5788f2566954f8925b87b733d1da
+      internalID: 1978833683
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jug_s1_mixed_f4_d7
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 0
+        width: 4
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 0.14285715}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b4cb7ed587678bb4bb6a8dcefe114af1
+      internalID: -1204063009
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5591efc9766622b4e84828d3bdbf05de
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      jug_s1_mixed_f0_d0: -1718450963
+      jug_s1_mixed_f0_d1: -922354665
+      jug_s1_mixed_f0_d2: 2063707258
+      jug_s1_mixed_f0_d3: 887027991
+      jug_s1_mixed_f0_d4: 821668160
+      jug_s1_mixed_f0_d5: 2099048352
+      jug_s1_mixed_f0_d6: -1937945120
+      jug_s1_mixed_f0_d7: -1398906405
+      jug_s1_mixed_f1_d0: -1101291592
+      jug_s1_mixed_f1_d1: -1388383848
+      jug_s1_mixed_f1_d2: -957092664
+      jug_s1_mixed_f1_d3: 570929190
+      jug_s1_mixed_f1_d4: -1995999103
+      jug_s1_mixed_f1_d5: 1230391426
+      jug_s1_mixed_f1_d6: -2001976743
+      jug_s1_mixed_f1_d7: 1434954420
+      jug_s1_mixed_f2_d0: -1211193065
+      jug_s1_mixed_f2_d1: -960224612
+      jug_s1_mixed_f2_d2: 1028121180
+      jug_s1_mixed_f2_d3: -694314737
+      jug_s1_mixed_f2_d4: 1136124722
+      jug_s1_mixed_f2_d5: 1513154766
+      jug_s1_mixed_f2_d6: 2116554407
+      jug_s1_mixed_f2_d7: 2086654239
+      jug_s1_mixed_f3_d0: 1614796592
+      jug_s1_mixed_f3_d1: 497669934
+      jug_s1_mixed_f3_d2: -1678379568
+      jug_s1_mixed_f3_d3: -1547511466
+      jug_s1_mixed_f3_d4: 2086279210
+      jug_s1_mixed_f3_d5: 1751428587
+      jug_s1_mixed_f3_d6: 37334988
+      jug_s1_mixed_f3_d7: 383866231
+      jug_s1_mixed_f4_d0: 1653366322
+      jug_s1_mixed_f4_d1: -1201454316
+      jug_s1_mixed_f4_d2: -1982098912
+      jug_s1_mixed_f4_d3: -121038902
+      jug_s1_mixed_f4_d4: -1186945479
+      jug_s1_mixed_f4_d5: -1303530280
+      jug_s1_mixed_f4_d6: 1978833683
+      jug_s1_mixed_f4_d7: -1204063009
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

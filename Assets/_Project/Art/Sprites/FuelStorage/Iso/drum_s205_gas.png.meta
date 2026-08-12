@@ -1,0 +1,602 @@
+fileFormatVersion: 2
+guid: 79687ae1e52498a4dba663e9a4ce247b
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 4157132655657458852
+    second: drum_s205_gas_0
+  - first:
+      213: 7234717460541046936
+    second: drum_s205_gas_1
+  - first:
+      213: 8803365759516642465
+    second: drum_s205_gas_2
+  - first:
+      213: -4847665601003454798
+    second: drum_s205_gas_3
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: drum_s205_gas_f0_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 136
+        width: 24
+        height: 34
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1764706}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f5b04a46dd69d814e9b57fd59fd73c05
+      internalID: -1666589071
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: drum_s205_gas_f0_d1
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 136
+        width: 24
+        height: 34
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1764706}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 463aa38f1d81e774897b5b2b49e0119e
+      internalID: 26207313
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: drum_s205_gas_f0_d2
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 136
+        width: 24
+        height: 34
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1764706}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8108310c07f633d49b2df93b4c2fad05
+      internalID: 76764057
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: drum_s205_gas_f0_d3
+      rect:
+        serializedVersion: 2
+        x: 72
+        y: 136
+        width: 24
+        height: 34
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1764706}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8fdc1178e9b42e04ead0f0a66263fc0b
+      internalID: -409016506
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: drum_s205_gas_f1_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 102
+        width: 24
+        height: 34
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1764706}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a2aa90d0d5101894095cd77ce55f835a
+      internalID: 666775001
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: drum_s205_gas_f1_d1
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 102
+        width: 24
+        height: 34
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1764706}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 039c886c21799cd4c9845b5452d2a14d
+      internalID: -935926773
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: drum_s205_gas_f1_d2
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 102
+        width: 24
+        height: 34
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1764706}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9ec4742980c92874fb0dde61ee2119be
+      internalID: -685817312
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: drum_s205_gas_f1_d3
+      rect:
+        serializedVersion: 2
+        x: 72
+        y: 102
+        width: 24
+        height: 34
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1764706}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c01f6e71ef5db094fa64d804f84edece
+      internalID: 1220870750
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: drum_s205_gas_f2_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 68
+        width: 24
+        height: 34
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1764706}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 320c49803e07c6745a733cffe83a2284
+      internalID: -672262349
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: drum_s205_gas_f2_d1
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 68
+        width: 24
+        height: 34
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1764706}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0ab9b2e6eb7164b41b2b610a07227e06
+      internalID: 1256281275
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: drum_s205_gas_f2_d2
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 68
+        width: 24
+        height: 34
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1764706}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9690823a10eeae6468d688fa07f6efd7
+      internalID: 809011498
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: drum_s205_gas_f2_d3
+      rect:
+        serializedVersion: 2
+        x: 72
+        y: 68
+        width: 24
+        height: 34
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1764706}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 88e2cb8c0197dc448826d1d672c8333d
+      internalID: -1225160713
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: drum_s205_gas_f3_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 34
+        width: 24
+        height: 34
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1764706}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1ab5b19e83eb5f94a93cde8d8262427c
+      internalID: -1762634841
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: drum_s205_gas_f3_d1
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 34
+        width: 24
+        height: 34
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1764706}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8a5b7a10e1a098d42b9cf30cbd06b403
+      internalID: 1693814503
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: drum_s205_gas_f3_d2
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 34
+        width: 24
+        height: 34
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1764706}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2297bc739525b064298ad8413a250d39
+      internalID: 510087346
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: drum_s205_gas_f3_d3
+      rect:
+        serializedVersion: 2
+        x: 72
+        y: 34
+        width: 24
+        height: 34
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1764706}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 66dca978c8d69834faabf5a232628a5e
+      internalID: 1525384242
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: drum_s205_gas_f4_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 24
+        height: 34
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1764706}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ea185aadd85b51b4d83721527692521b
+      internalID: 989405197
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: drum_s205_gas_f4_d1
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 0
+        width: 24
+        height: 34
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1764706}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f8ad68a3e054ee74da897eb716a260e2
+      internalID: -1632260587
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: drum_s205_gas_f4_d2
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 0
+        width: 24
+        height: 34
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1764706}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 07410c7a6779e4540bc69d21593a9d56
+      internalID: -1277088717
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: drum_s205_gas_f4_d3
+      rect:
+        serializedVersion: 2
+        x: 72
+        y: 0
+        width: 24
+        height: 34
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1764706}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6bb3cce53cb867247a3235cb2b474cee
+      internalID: 2147177044
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 42c870b98882e104599494a44fbdb880
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      drum_s205_gas_f0_d0: -1666589071
+      drum_s205_gas_f0_d1: 26207313
+      drum_s205_gas_f0_d2: 76764057
+      drum_s205_gas_f0_d3: -409016506
+      drum_s205_gas_f1_d0: 666775001
+      drum_s205_gas_f1_d1: -935926773
+      drum_s205_gas_f1_d2: -685817312
+      drum_s205_gas_f1_d3: 1220870750
+      drum_s205_gas_f2_d0: -672262349
+      drum_s205_gas_f2_d1: 1256281275
+      drum_s205_gas_f2_d2: 809011498
+      drum_s205_gas_f2_d3: -1225160713
+      drum_s205_gas_f3_d0: -1762634841
+      drum_s205_gas_f3_d1: 1693814503
+      drum_s205_gas_f3_d2: 510087346
+      drum_s205_gas_f3_d3: 1525384242
+      drum_s205_gas_f4_d0: 989405197
+      drum_s205_gas_f4_d1: -1632260587
+      drum_s205_gas_f4_d2: -1277088717
+      drum_s205_gas_f4_d3: 2147177044
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

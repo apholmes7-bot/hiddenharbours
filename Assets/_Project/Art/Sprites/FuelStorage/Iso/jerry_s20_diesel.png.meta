@@ -1,0 +1,1113 @@
+fileFormatVersion: 2
+guid: fe42284147ae7b940a9c12b3971c2b43
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 4085503119317675536
+    second: jerry_s20_diesel_0
+  - first:
+      213: 2167399618750134853
+    second: jerry_s20_diesel_1
+  - first:
+      213: -5848196783647481309
+    second: jerry_s20_diesel_2
+  - first:
+      213: -6246296703330714682
+    second: jerry_s20_diesel_3
+  - first:
+      213: 99816443130826759
+    second: jerry_s20_diesel_4
+  - first:
+      213: -5918926941055046186
+    second: jerry_s20_diesel_5
+  - first:
+      213: 2381984772864140864
+    second: jerry_s20_diesel_6
+  - first:
+      213: -6116372937789234294
+    second: jerry_s20_diesel_7
+  - first:
+      213: 1101359097040865206
+    second: jerry_s20_diesel_8
+  - first:
+      213: -7019772127810730518
+    second: jerry_s20_diesel_9
+  - first:
+      213: 9031299833184417537
+    second: jerry_s20_diesel_10
+  - first:
+      213: -2638098025178886251
+    second: jerry_s20_diesel_11
+  - first:
+      213: 6005809983005333547
+    second: jerry_s20_diesel_12
+  - first:
+      213: -2441180805497930269
+    second: jerry_s20_diesel_13
+  - first:
+      213: 2701875976565320348
+    second: jerry_s20_diesel_14
+  - first:
+      213: 4565429230480780139
+    second: jerry_s20_diesel_15
+  - first:
+      213: 8095520632505671953
+    second: jerry_s20_diesel_16
+  - first:
+      213: 2670631546291046682
+    second: jerry_s20_diesel_17
+  - first:
+      213: 8249199251021668050
+    second: jerry_s20_diesel_18
+  - first:
+      213: -506040565648127512
+    second: jerry_s20_diesel_19
+  - first:
+      213: -2007606397728263587
+    second: jerry_s20_diesel_20
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: jerry_s20_diesel_f0_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 80
+        width: 12
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1e049f9823d3f7e46b1b40dd1284f9a9
+      internalID: -227922048
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s20_diesel_f0_d1
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 80
+        width: 12
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d712f949dcac95b49a0b97d824857ed4
+      internalID: 907586315
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s20_diesel_f0_d2
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 80
+        width: 12
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9ab3df1b184453b4a80509acb9678619
+      internalID: 2043443501
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s20_diesel_f0_d3
+      rect:
+        serializedVersion: 2
+        x: 36
+        y: 80
+        width: 12
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e0d79a7b922c8774caa87cf81e55677d
+      internalID: 1245703250
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s20_diesel_f0_d4
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 80
+        width: 12
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 03b84f7780ff8d94fbfa9f8cfcf17335
+      internalID: -2109881804
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s20_diesel_f0_d5
+      rect:
+        serializedVersion: 2
+        x: 60
+        y: 80
+        width: 12
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0d60aa7841f04484aaa83444972e6767
+      internalID: -2006934017
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s20_diesel_f0_d6
+      rect:
+        serializedVersion: 2
+        x: 72
+        y: 80
+        width: 12
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4e413508f34ba6d45afe175d6b597784
+      internalID: -1804853580
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s20_diesel_f0_d7
+      rect:
+        serializedVersion: 2
+        x: 84
+        y: 80
+        width: 12
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 621f65ffa113ea84ea3263a5dcf17b01
+      internalID: -1103202417
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s20_diesel_f1_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 60
+        width: 12
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d2d8e61294610154f844b5f129b8677e
+      internalID: -848502063
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s20_diesel_f1_d1
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 60
+        width: 12
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 86919b78dc07a894f9e869915dc81257
+      internalID: 1692851859
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s20_diesel_f1_d2
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 60
+        width: 12
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 410d7ebdcfc0b3c4399a2b1ff7e80ff2
+      internalID: -2006472336
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s20_diesel_f1_d3
+      rect:
+        serializedVersion: 2
+        x: 36
+        y: 60
+        width: 12
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4d264313685919d4eaff06a48342bfd7
+      internalID: -1243155364
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s20_diesel_f1_d4
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 60
+        width: 12
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a25e6b6a54094554585b7f117db7443b
+      internalID: -1402570767
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s20_diesel_f1_d5
+      rect:
+        serializedVersion: 2
+        x: 60
+        y: 60
+        width: 12
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4a74f7f8bca9b6646a86195af4ef0c04
+      internalID: -385532546
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s20_diesel_f1_d6
+      rect:
+        serializedVersion: 2
+        x: 72
+        y: 60
+        width: 12
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7d7089c05bfc6174ba1af427de778561
+      internalID: 357338724
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s20_diesel_f1_d7
+      rect:
+        serializedVersion: 2
+        x: 84
+        y: 60
+        width: 12
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 072787586a5a3c54b83b1e0329a97575
+      internalID: 1592017027
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s20_diesel_f2_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 40
+        width: 12
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 048dd4ef13a34d846915e4d522d0df1a
+      internalID: 1313636109
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s20_diesel_f2_d1
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 40
+        width: 12
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ed408b35fae3df84a87ee252c156d388
+      internalID: 141473999
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s20_diesel_f2_d2
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 40
+        width: 12
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 30f1445806e009d4c901a37860749c6a
+      internalID: -1242621731
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s20_diesel_f2_d3
+      rect:
+        serializedVersion: 2
+        x: 36
+        y: 40
+        width: 12
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7ee72ba357e3bd2498c6cb579b67ac49
+      internalID: -1946620854
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s20_diesel_f2_d4
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 40
+        width: 12
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d7f6d426d2e4aee448599c1f989a6727
+      internalID: -1661961751
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s20_diesel_f2_d5
+      rect:
+        serializedVersion: 2
+        x: 60
+        y: 40
+        width: 12
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8850b301e9309b24c95bcd06d5dbc1c0
+      internalID: -1120627801
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s20_diesel_f2_d6
+      rect:
+        serializedVersion: 2
+        x: 72
+        y: 40
+        width: 12
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5520d6a2af7727e4e95fb8b4cae38f1e
+      internalID: 1663981137
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s20_diesel_f2_d7
+      rect:
+        serializedVersion: 2
+        x: 84
+        y: 40
+        width: 12
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 31d46204fef4cd4469a9449bed36a448
+      internalID: 1746229896
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s20_diesel_f3_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 20
+        width: 12
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6556fda56897dc34a8e0e4fae4fd94e1
+      internalID: -1033974652
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s20_diesel_f3_d1
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 20
+        width: 12
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: af87f710f8ec1404b874c9da25b7b7e1
+      internalID: 1289427128
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s20_diesel_f3_d2
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 20
+        width: 12
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 57178e98cbee8ed49b033fbf763f51da
+      internalID: 584856183
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s20_diesel_f3_d3
+      rect:
+        serializedVersion: 2
+        x: 36
+        y: 20
+        width: 12
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 565dcd0a2376a5e44acba18868e22f1a
+      internalID: -1140806863
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s20_diesel_f3_d4
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 20
+        width: 12
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2d59b434fb1f75948b717d4fd8b4fb52
+      internalID: -553021416
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s20_diesel_f3_d5
+      rect:
+        serializedVersion: 2
+        x: 60
+        y: 20
+        width: 12
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ec1bf8363cc6cb14fb22c648899f7e58
+      internalID: 342683182
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s20_diesel_f3_d6
+      rect:
+        serializedVersion: 2
+        x: 72
+        y: 20
+        width: 12
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7f4477f85abc91a4f9b26cbb660ac737
+      internalID: 187451219
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s20_diesel_f3_d7
+      rect:
+        serializedVersion: 2
+        x: 84
+        y: 20
+        width: 12
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8193c086fa19bd84fa151e012b5146cf
+      internalID: 1233948934
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s20_diesel_f4_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 12
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8a11b324b339b4b4fa85e7a4e26974d7
+      internalID: -1539463178
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s20_diesel_f4_d1
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 0
+        width: 12
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b2e10c1baeb4bc143b3e60ca39f7f86f
+      internalID: 811413145
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s20_diesel_f4_d2
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 0
+        width: 12
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fa20dba2154cf1740bcae5436ef58ea5
+      internalID: -457124844
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s20_diesel_f4_d3
+      rect:
+        serializedVersion: 2
+        x: 36
+        y: 0
+        width: 12
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0ed105581532fd742b0bee8f10056cb6
+      internalID: 338425986
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s20_diesel_f4_d4
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 0
+        width: 12
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 04f61a68b0cf1704285d3f1f7fdd5d36
+      internalID: -593213154
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s20_diesel_f4_d5
+      rect:
+        serializedVersion: 2
+        x: 60
+        y: 0
+        width: 12
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 33ea600ff46da6b47a1832569fb3cc89
+      internalID: -1282300886
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s20_diesel_f4_d6
+      rect:
+        serializedVersion: 2
+        x: 72
+        y: 0
+        width: 12
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 03d92c5d7fb723f49bdd670917e48298
+      internalID: -1516336117
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: jerry_s20_diesel_f4_d7
+      rect:
+        serializedVersion: 2
+        x: 84
+        y: 0
+        width: 12
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5, y: 0.15}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 84dc63b86f7e9d547b3f5e23e0b6d2d2
+      internalID: 1425838387
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 7a258d895dddda845914fe5414924002
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      jerry_s20_diesel_f0_d0: -227922048
+      jerry_s20_diesel_f0_d1: 907586315
+      jerry_s20_diesel_f0_d2: 2043443501
+      jerry_s20_diesel_f0_d3: 1245703250
+      jerry_s20_diesel_f0_d4: -2109881804
+      jerry_s20_diesel_f0_d5: -2006934017
+      jerry_s20_diesel_f0_d6: -1804853580
+      jerry_s20_diesel_f0_d7: -1103202417
+      jerry_s20_diesel_f1_d0: -848502063
+      jerry_s20_diesel_f1_d1: 1692851859
+      jerry_s20_diesel_f1_d2: -2006472336
+      jerry_s20_diesel_f1_d3: -1243155364
+      jerry_s20_diesel_f1_d4: -1402570767
+      jerry_s20_diesel_f1_d5: -385532546
+      jerry_s20_diesel_f1_d6: 357338724
+      jerry_s20_diesel_f1_d7: 1592017027
+      jerry_s20_diesel_f2_d0: 1313636109
+      jerry_s20_diesel_f2_d1: 141473999
+      jerry_s20_diesel_f2_d2: -1242621731
+      jerry_s20_diesel_f2_d3: -1946620854
+      jerry_s20_diesel_f2_d4: -1661961751
+      jerry_s20_diesel_f2_d5: -1120627801
+      jerry_s20_diesel_f2_d6: 1663981137
+      jerry_s20_diesel_f2_d7: 1746229896
+      jerry_s20_diesel_f3_d0: -1033974652
+      jerry_s20_diesel_f3_d1: 1289427128
+      jerry_s20_diesel_f3_d2: 584856183
+      jerry_s20_diesel_f3_d3: -1140806863
+      jerry_s20_diesel_f3_d4: -553021416
+      jerry_s20_diesel_f3_d5: 342683182
+      jerry_s20_diesel_f3_d6: 187451219
+      jerry_s20_diesel_f3_d7: 1233948934
+      jerry_s20_diesel_f4_d0: -1539463178
+      jerry_s20_diesel_f4_d1: 811413145
+      jerry_s20_diesel_f4_d2: -457124844
+      jerry_s20_diesel_f4_d3: 338425986
+      jerry_s20_diesel_f4_d4: -593213154
+      jerry_s20_diesel_f4_d5: -1282300886
+      jerry_s20_diesel_f4_d6: -1516336117
+      jerry_s20_diesel_f4_d7: 1425838387
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

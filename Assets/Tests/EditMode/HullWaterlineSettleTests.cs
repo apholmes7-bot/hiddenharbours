@@ -21,9 +21,11 @@ namespace HiddenHarbours.Tests.EditMode
     /// that cannot fail on the pre-fix code is not a regression guard, it is a decoration):</para>
     /// <list type="number">
     ///   <item><b>The iso projection gain.</b> The shared z-buffer draws the sea climbing
-    ///   <c>(cos+sin)/(cos²+sin)</c> = 1.1457 rig-metres of planking per metre of applied sink at the
-    ///   fleet's 40° bake, and the driver used to apply the datum RAW — so every hull floated 14.57 %
-    ///   deeper than her own data claimed. <see cref="TheGain_IsWhatTheSharedZTestActuallyDraws"/>
+    ///   <c>sin·(cos+sin)</c> = 0.9056 rig-metres of planking per metre of applied sink at the
+    ///   fleet's 40° bake (ADR 0033 re-derived it from <c>(cos+sin)/(cos²+sin)</c> = 1.1457 when the
+    ///   y→z shear landed the height axis on the true iso relation <c>1/sin</c>), and the driver used
+    ///   to apply the datum RAW — so every hull floated at a multiple of what her own data claimed.
+    ///   <see cref="TheGain_IsWhatTheSharedZTestActuallyDraws"/>
     ///   re-derives the gain from the shipped inequality by bisection rather than restating the
     ///   formula, and <see cref="EveryCommittedHull_DrawsHerWaterlineAtHerDatum"/> walks the fleet.</item>
     ///   <item><b>The hull rode a phase-decorrelated sea.</b> Every <c>BoatWaveMotion</c> ticked its
@@ -90,10 +92,15 @@ namespace HiddenHarbours.Tests.EditMode
         /// <summary>
         /// The gain is not a number someone chose — it is the solution of the shipped z-test. This
         /// re-derives it from <c>DisplacedWaterMath</c>'s own inequality
-        /// (<c>r(c²+s) &lt; L(c+s) − zHeave·s + ry·c(1−s) − H·c</c> at the root line <c>ry = 0</c>
-        /// with the honest <c>zHeave = H</c>) by bisecting for the tallest hull height the water
-        /// still covers, and checks <see cref="HullSettleMath.IsoWaterlineGain"/> against it. A
-        /// re-typed formula would agree with itself; this agrees with the thing that draws.
+        /// (<c>r/s &lt; L(c+s) − zHeave·s − H·c</c> at the root line <c>ry = 0</c> with the honest
+        /// <c>zHeave = H</c>) by bisecting for the tallest hull height the water still covers, and
+        /// checks <see cref="HullSettleMath.IsoWaterlineGain"/> against it. A re-typed formula would
+        /// agree with itself; this agrees with the thing that draws.
+        ///
+        /// <para>⚠️ Both the left side and the gain moved with ADR 0033: the coefficient used to be
+        /// <c>(c²+s)</c> and there was a <c>+ ry·c(1−s)</c> beam-residual term, and BOTH were the
+        /// hull's depth ramp being <c>1/sin</c> too steep rather than facts about flotation. Under
+        /// the shear the residual cancels to exactly zero and the coefficient becomes <c>1/s</c>.</para>
         /// </summary>
         [Test]
         public void TheGain_IsWhatTheSharedZTestActuallyDraws()
@@ -111,7 +118,7 @@ namespace HiddenHarbours.Tests.EditMode
                 for (int i = 0; i < 200; i++)
                 {
                     float mid = 0.5f * (lo + hi);
-                    bool waterWins = mid * (c * c + s) < lift * (c + s) - hullRide * s - hullRide * c;
+                    bool waterWins = mid / s < lift * (c + s) - hullRide * s - hullRide * c;
                     if (waterWins) lo = mid; else hi = mid;
                 }
                 float measured = 0.5f * (lo + hi) / (lift - hullRide);
@@ -122,8 +129,10 @@ namespace HiddenHarbours.Tests.EditMode
                     "because that is the thing the player looks at.");
             }
 
-            Assert.AreEqual(1.145754f, HullSettleMath.IsoWaterlineGain(RigElevation), 1e-5f,
-                "the fleet's 40° bake — the number this whole fix is about");
+            Assert.AreEqual(0.905580f, HullSettleMath.IsoWaterlineGain(RigElevation), 1e-5f,
+                "the fleet's 40° bake — the number this whole fix is about (1.145754 before ADR 0033 " +
+                "re-derived it under the y→z shear; the DRAWN waterline is the datum either way, " +
+                "because AppliedSinkMeters inverts whatever the gain is)");
         }
 
         /// <summary>The sink is exactly the datum through the gain, both ways, and an absent datum

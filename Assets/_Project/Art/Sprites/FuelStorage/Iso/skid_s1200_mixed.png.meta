@@ -1,0 +1,650 @@
+fileFormatVersion: 2
+guid: 53dfe44a99a942a42a8331fee7bfe40b
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 2897350295368266908
+    second: skid_s1200_mixed_0
+  - first:
+      213: 4449378296360871666
+    second: skid_s1200_mixed_1
+  - first:
+      213: 1390739096698726096
+    second: skid_s1200_mixed_2
+  - first:
+      213: -8384171648658963282
+    second: skid_s1200_mixed_3
+  - first:
+      213: 7993093424489083081
+    second: skid_s1200_mixed_4
+  - first:
+      213: -2525604437461866501
+    second: skid_s1200_mixed_5
+  - first:
+      213: -8939806556148927550
+    second: skid_s1200_mixed_6
+  - first:
+      213: -7460230105081343994
+    second: skid_s1200_mixed_7
+  - first:
+      213: -5840647496173571988
+    second: skid_s1200_mixed_8
+  - first:
+      213: -527325512110109812
+    second: skid_s1200_mixed_9
+  - first:
+      213: -149116751324885410
+    second: skid_s1200_mixed_10
+  - first:
+      213: 7239322784752683856
+    second: skid_s1200_mixed_11
+  - first:
+      213: -6285095579591052209
+    second: skid_s1200_mixed_12
+  - first:
+      213: -8163454971602180190
+    second: skid_s1200_mixed_13
+  - first:
+      213: -882667733290108324
+    second: skid_s1200_mixed_14
+  - first:
+      213: 9208567502737736513
+    second: skid_s1200_mixed_15
+  - first:
+      213: 7097735810644285156
+    second: skid_s1200_mixed_16
+  - first:
+      213: -6030099888728889513
+    second: skid_s1200_mixed_17
+  - first:
+      213: 6591048685722181818
+    second: skid_s1200_mixed_18
+  - first:
+      213: 2320607847997746064
+    second: skid_s1200_mixed_19
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: skid_s1200_mixed_f0_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 264
+        width: 62
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21212122}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 81d5d575a2675ad4ab34dd06e793477c
+      internalID: -1507564178
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s1200_mixed_f0_d1
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 264
+        width: 62
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21212122}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 82c89c50c75b3884ba819909f57e0ae8
+      internalID: -1399154724
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s1200_mixed_f0_d2
+      rect:
+        serializedVersion: 2
+        x: 124
+        y: 264
+        width: 62
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21212122}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d5eaa7aa9e1fd9946b9c350e79af71af
+      internalID: -434211719
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s1200_mixed_f0_d3
+      rect:
+        serializedVersion: 2
+        x: 186
+        y: 264
+        width: 62
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21212122}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8ae2ec6b6244ae94c8e263a848d22b43
+      internalID: 479496470
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s1200_mixed_f1_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 198
+        width: 62
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21212122}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0b76c520a026c404f9ce32bd1bd2f5fd
+      internalID: 1054278776
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s1200_mixed_f1_d1
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 198
+        width: 62
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21212122}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 39c1a8091d7bf454089ee2193cab0ab6
+      internalID: -1704750251
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s1200_mixed_f1_d2
+      rect:
+        serializedVersion: 2
+        x: 124
+        y: 198
+        width: 62
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21212122}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 40dfa720f2f8f394291b199cf7e4c68b
+      internalID: 77238550
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s1200_mixed_f1_d3
+      rect:
+        serializedVersion: 2
+        x: 186
+        y: 198
+        width: 62
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21212122}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d314292158376db48af16b945aad5966
+      internalID: 871784785
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s1200_mixed_f2_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 132
+        width: 62
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21212122}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b9087165a3d37694b94612f052998e83
+      internalID: -1988730921
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s1200_mixed_f2_d1
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 132
+        width: 62
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21212122}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e4644c21851f14843a306e04276019c1
+      internalID: 816419331
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s1200_mixed_f2_d2
+      rect:
+        serializedVersion: 2
+        x: 124
+        y: 132
+        width: 62
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21212122}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4e9411e0297fb7b42bab1222dd3e6cb4
+      internalID: 2119827729
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s1200_mixed_f2_d3
+      rect:
+        serializedVersion: 2
+        x: 186
+        y: 132
+        width: 62
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21212122}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bc9f807d06d7c604988916d79ba4900f
+      internalID: -902476453
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s1200_mixed_f3_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 66
+        width: 62
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21212122}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bc8cd52c300655c4882c79d39281701d
+      internalID: 1010291949
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s1200_mixed_f3_d1
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 66
+        width: 62
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21212122}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d7819c6bdd348c3489d09fbca2d7d9c3
+      internalID: 1963984534
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s1200_mixed_f3_d2
+      rect:
+        serializedVersion: 2
+        x: 124
+        y: 66
+        width: 62
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21212122}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c480c61d071e8b648b6e96d4a1aaffba
+      internalID: -1299145682
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s1200_mixed_f3_d3
+      rect:
+        serializedVersion: 2
+        x: 186
+        y: 66
+        width: 62
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21212122}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1005383b4f7ee954dbffc604dbaa9c91
+      internalID: 121346437
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s1200_mixed_f4_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 62
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21212122}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d7f5a56630ac2a14bbca80eafc507fe9
+      internalID: 1374007258
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s1200_mixed_f4_d1
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 0
+        width: 62
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21212122}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 83876734a8dbef2499d2a19c0c8a837d
+      internalID: -2033394601
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s1200_mixed_f4_d2
+      rect:
+        serializedVersion: 2
+        x: 124
+        y: 0
+        width: 62
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21212122}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 13ab6370101c8094380da8d09376fc3b
+      internalID: 408679354
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skid_s1200_mixed_f4_d3
+      rect:
+        serializedVersion: 2
+        x: 186
+        y: 0
+        width: 62
+        height: 66
+      alignment: 9
+      pivot: {x: 0.5, y: 0.21212122}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 268f51880ee70584f9e979cfe93ece2e
+      internalID: -1927102601
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 4707de1985547294b81f37ec4ff47b7c
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      skid_s1200_mixed_f0_d0: -1507564178
+      skid_s1200_mixed_f0_d1: -1399154724
+      skid_s1200_mixed_f0_d2: -434211719
+      skid_s1200_mixed_f0_d3: 479496470
+      skid_s1200_mixed_f1_d0: 1054278776
+      skid_s1200_mixed_f1_d1: -1704750251
+      skid_s1200_mixed_f1_d2: 77238550
+      skid_s1200_mixed_f1_d3: 871784785
+      skid_s1200_mixed_f2_d0: -1988730921
+      skid_s1200_mixed_f2_d1: 816419331
+      skid_s1200_mixed_f2_d2: 2119827729
+      skid_s1200_mixed_f2_d3: -902476453
+      skid_s1200_mixed_f3_d0: 1010291949
+      skid_s1200_mixed_f3_d1: 1963984534
+      skid_s1200_mixed_f3_d2: -1299145682
+      skid_s1200_mixed_f3_d3: 121346437
+      skid_s1200_mixed_f4_d0: 1374007258
+      skid_s1200_mixed_f4_d1: -2033394601
+      skid_s1200_mixed_f4_d2: 408679354
+      skid_s1200_mixed_f4_d3: -1927102601
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

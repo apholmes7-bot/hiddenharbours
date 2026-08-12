@@ -1,0 +1,608 @@
+fileFormatVersion: 2
+guid: 661bb4da9f940d640b76a8703ea959a3
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 4688987896099972832
+    second: tote_s1000_oil_0
+  - first:
+      213: 46620262703174301
+    second: tote_s1000_oil_1
+  - first:
+      213: 5868983771881090249
+    second: tote_s1000_oil_2
+  - first:
+      213: -7831961188398609274
+    second: tote_s1000_oil_3
+  - first:
+      213: 4269739719953018747
+    second: tote_s1000_oil_4
+  - first:
+      213: 2505097242006289428
+    second: tote_s1000_oil_5
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: tote_s1000_oil_f0_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 208
+        width: 40
+        height: 52
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1923077}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cfb8517f1bb31764eb21943bf7c7c490
+      internalID: 1423056068
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s1000_oil_f0_d1
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 208
+        width: 40
+        height: 52
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1923077}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1bdcaa3d5d2f82b4582bb1926fbd5676
+      internalID: 978893023
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s1000_oil_f0_d2
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 208
+        width: 40
+        height: 52
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1923077}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c0eafeea7eaa65044bfd11e1102614d1
+      internalID: 1714015758
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s1000_oil_f0_d3
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 208
+        width: 40
+        height: 52
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1923077}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 46c8b48778c85024f8c88196561615f6
+      internalID: 1868280189
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s1000_oil_f1_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 156
+        width: 40
+        height: 52
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1923077}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b95a1934aa647244ca25108d494a4005
+      internalID: 1533169837
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s1000_oil_f1_d1
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 156
+        width: 40
+        height: 52
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1923077}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3deafaaff2ce5d749809917b37a431cd
+      internalID: 831886862
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s1000_oil_f1_d2
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 156
+        width: 40
+        height: 52
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1923077}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d67eacf3c35928b4c86415dc37b71b40
+      internalID: -989224598
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s1000_oil_f1_d3
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 156
+        width: 40
+        height: 52
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1923077}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ec41b9ccad981e44da46b8e5607b5ecd
+      internalID: -404187813
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s1000_oil_f2_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 104
+        width: 40
+        height: 52
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1923077}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d06929c6b5c8d7747a3355f6bda6c440
+      internalID: 1036886226
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s1000_oil_f2_d1
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 104
+        width: 40
+        height: 52
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1923077}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f0d3eaa1641a53c49954924d7506f562
+      internalID: 389469487
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s1000_oil_f2_d2
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 104
+        width: 40
+        height: 52
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1923077}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 971d434a285c31e4cbc243bc51c4d11d
+      internalID: -360532594
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s1000_oil_f2_d3
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 104
+        width: 40
+        height: 52
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1923077}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a46bc19757b842a49b5ce1d9140cac3f
+      internalID: -1648966773
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s1000_oil_f3_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 52
+        width: 40
+        height: 52
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1923077}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9d188fc6d9c4eb74697a08e86251937a
+      internalID: 226130928
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s1000_oil_f3_d1
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 52
+        width: 40
+        height: 52
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1923077}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bd17c5e452966f841af5594ba4c49c4e
+      internalID: 2077283709
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s1000_oil_f3_d2
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 52
+        width: 40
+        height: 52
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1923077}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b0ea659b27d475d40b9569cbe24bdeaf
+      internalID: 51978491
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s1000_oil_f3_d3
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 52
+        width: 40
+        height: 52
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1923077}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cf81ce5e7fb08ec47a06c17479c4dfda
+      internalID: -1321302417
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s1000_oil_f4_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 40
+        height: 52
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1923077}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fbbcd6f42ec04534a9569536a463852e
+      internalID: -1376761583
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s1000_oil_f4_d1
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 0
+        width: 40
+        height: 52
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1923077}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6779f95d4514b3240a81d394158d4d01
+      internalID: -1643680181
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s1000_oil_f4_d2
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 0
+        width: 40
+        height: 52
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1923077}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dd8a6d19c73daf2458304cb4781047dc
+      internalID: 946080435
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s1000_oil_f4_d3
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 0
+        width: 40
+        height: 52
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1923077}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6ce7fb607b8817248a0ff36b1eb3858e
+      internalID: 636370312
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5fc5e93b15902f6429b268d8d0cbed63
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      tote_s1000_oil_f0_d0: 1423056068
+      tote_s1000_oil_f0_d1: 978893023
+      tote_s1000_oil_f0_d2: 1714015758
+      tote_s1000_oil_f0_d3: 1868280189
+      tote_s1000_oil_f1_d0: 1533169837
+      tote_s1000_oil_f1_d1: 831886862
+      tote_s1000_oil_f1_d2: -989224598
+      tote_s1000_oil_f1_d3: -404187813
+      tote_s1000_oil_f2_d0: 1036886226
+      tote_s1000_oil_f2_d1: 389469487
+      tote_s1000_oil_f2_d2: -360532594
+      tote_s1000_oil_f2_d3: -1648966773
+      tote_s1000_oil_f3_d0: 226130928
+      tote_s1000_oil_f3_d1: 2077283709
+      tote_s1000_oil_f3_d2: 51978491
+      tote_s1000_oil_f3_d3: -1321302417
+      tote_s1000_oil_f4_d0: -1376761583
+      tote_s1000_oil_f4_d1: -1643680181
+      tote_s1000_oil_f4_d2: 946080435
+      tote_s1000_oil_f4_d3: 636370312
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

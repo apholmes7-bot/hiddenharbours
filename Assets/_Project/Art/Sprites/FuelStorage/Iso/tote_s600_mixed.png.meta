@@ -1,0 +1,608 @@
+fileFormatVersion: 2
+guid: f0c86d8771580cf46a816aa192f9c060
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 756365726421236438
+    second: tote_s600_mixed_0
+  - first:
+      213: 2198767538079314004
+    second: tote_s600_mixed_1
+  - first:
+      213: -527379319549772171
+    second: tote_s600_mixed_2
+  - first:
+      213: -2175171224325412369
+    second: tote_s600_mixed_3
+  - first:
+      213: 2777754014006848160
+    second: tote_s600_mixed_4
+  - first:
+      213: 701259036424861700
+    second: tote_s600_mixed_5
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: tote_s600_mixed_f0_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 176
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20454545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 761358dd51a21d44495f9a87d3899d3f
+      internalID: 308581479
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s600_mixed_f0_d1
+      rect:
+        serializedVersion: 2
+        x: 34
+        y: 176
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20454545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eb38ab5b7355a7e4baefafa86900b4f4
+      internalID: 638477416
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s600_mixed_f0_d2
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 176
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20454545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9a99f8e35dc28094da01f5417886be55
+      internalID: 1785095566
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s600_mixed_f0_d3
+      rect:
+        serializedVersion: 2
+        x: 102
+        y: 176
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20454545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fcf9777a5f6d3d341a14d0789ef355f7
+      internalID: 811337786
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s600_mixed_f1_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 132
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20454545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 366c24e4c5e784c488f4a843231ae805
+      internalID: -655560807
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s600_mixed_f1_d1
+      rect:
+        serializedVersion: 2
+        x: 34
+        y: 132
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20454545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cbe5c8ae8c9a4384eb9f367ba02cff2b
+      internalID: 1881443144
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s600_mixed_f1_d2
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 132
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20454545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3d0328cef1b79aa4c925e793e9f3dde3
+      internalID: 2025337370
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s600_mixed_f1_d3
+      rect:
+        serializedVersion: 2
+        x: 102
+        y: 132
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20454545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e404defe5c0c1b04bb614c3a7f65831e
+      internalID: -71102133
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s600_mixed_f2_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 88
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20454545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a1782b14cc708ac4ca480d69a960e013
+      internalID: -307964360
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s600_mixed_f2_d1
+      rect:
+        serializedVersion: 2
+        x: 34
+        y: 88
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20454545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 711e3880c851f1642b7a930e06f41026
+      internalID: 1205765845
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s600_mixed_f2_d2
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 88
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20454545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5b4f063f0fec0664cb4befbd8cfe482a
+      internalID: -1730203915
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s600_mixed_f2_d3
+      rect:
+        serializedVersion: 2
+        x: 102
+        y: 88
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20454545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bb46055ef4ab3a84a8295a39f8454452
+      internalID: 1516101309
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s600_mixed_f3_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 44
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20454545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 86282ac7500a34145b179a36edcaab33
+      internalID: -461046542
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s600_mixed_f3_d1
+      rect:
+        serializedVersion: 2
+        x: 34
+        y: 44
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20454545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 474df6098f751de459d0e907ef6d7ebb
+      internalID: 505366235
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s600_mixed_f3_d2
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 44
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20454545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a7cee123020a95f42817f384fa88272b
+      internalID: -461113625
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s600_mixed_f3_d3
+      rect:
+        serializedVersion: 2
+        x: 102
+        y: 44
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20454545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5fc5ef2c5c3710249a3884e63e4fdd8e
+      internalID: -923186230
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s600_mixed_f4_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20454545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3d1b3b4758b274b4892544c239e81d96
+      internalID: 40734201
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s600_mixed_f4_d1
+      rect:
+        serializedVersion: 2
+        x: 34
+        y: 0
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20454545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b71ae60d4efec9046bcde3d8f07cc680
+      internalID: -759973862
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s600_mixed_f4_d2
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 0
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20454545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 32ed6d6bda0ee26449353690739a9d5a
+      internalID: 409591497
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: tote_s600_mixed_f4_d3
+      rect:
+        serializedVersion: 2
+        x: 102
+        y: 0
+        width: 34
+        height: 44
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20454545}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1bf077d5505e55341ae7a402fb19c3fe
+      internalID: 1442214746
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: e7915ca8b85423c439729a758e0a1c0e
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      tote_s600_mixed_f0_d0: 308581479
+      tote_s600_mixed_f0_d1: 638477416
+      tote_s600_mixed_f0_d2: 1785095566
+      tote_s600_mixed_f0_d3: 811337786
+      tote_s600_mixed_f1_d0: -655560807
+      tote_s600_mixed_f1_d1: 1881443144
+      tote_s600_mixed_f1_d2: 2025337370
+      tote_s600_mixed_f1_d3: -71102133
+      tote_s600_mixed_f2_d0: -307964360
+      tote_s600_mixed_f2_d1: 1205765845
+      tote_s600_mixed_f2_d2: -1730203915
+      tote_s600_mixed_f2_d3: 1516101309
+      tote_s600_mixed_f3_d0: -461046542
+      tote_s600_mixed_f3_d1: 505366235
+      tote_s600_mixed_f3_d2: -461113625
+      tote_s600_mixed_f3_d3: -923186230
+      tote_s600_mixed_f4_d0: 40734201
+      tote_s600_mixed_f4_d1: -759973862
+      tote_s600_mixed_f4_d2: 409591497
+      tote_s600_mixed_f4_d3: 1442214746
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

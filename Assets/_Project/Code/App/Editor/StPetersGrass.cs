@@ -366,9 +366,15 @@ namespace HiddenHarbours.App.Editor
         /// <para>The buildings pivot at their footprint CENTRE, so this has to cover the largest
         /// footprint's HALF-DIAGONAL — the owner may re-face a building and a quarter-turned one is
         /// deeper than a face-on one, the same argument the village's own spacing is solved against.
-        /// The M1 kit's largest is the white farmhouse at 7.68 × 9.94 m → 6.28 m of half-diagonal, so
-        /// 7 m clears it with a little to spare and <c>StPetersDecorTests</c> re-derives that from
-        /// <c>Buildings.json</c> rather than trusting this sentence.</para>
+        /// <c>StPetersDecorTests</c> re-derives it from the kits' own contracts rather than trusting
+        /// this sentence.</para>
+        ///
+        /// <para><b>⚠ THE LARGEST BUILDING ON THIS ISLAND IS NO LONGER A HOUSE.</b> It was the white
+        /// farmhouse at 7.68 × 9.94 m → 6.28 m of half-diagonal. Since the owner's 2026-08-11 ruling the
+        /// general store is a SHOP rather than a house standing in for one, and its shell is
+        /// 8.00 × 10.00 m → <b>6.40 m</b>. 7 m still clears it, with 0.60 m of margin where it had 0.72
+        /// — so this number sits nearer its bound than it reads, and the next kit with a bigger shell
+        /// moves it.</para>
         ///
         /// <para>⚠ It does NOT need to cover the drawn art, only the ground the building stands on.
         /// A tuft in front of a wall draws IN FRONT of it (lower world Y ⇒ higher sorting order) and
@@ -376,17 +382,27 @@ namespace HiddenHarbours.App.Editor
         /// </summary>
         public const float BuildingClearanceMetres = 7f;
 
-        /// <summary>Every authored building site on the island — the five kit buildings plus Ginny's
-        /// cottage, which is its own sprite rather than a kit entry. Taken from
-        /// <see cref="StPetersBuilder"/>'s own constants so moving a house moves its clearing.</summary>
+        /// <summary>
+        /// Every authored building site on the island — the kit houses, the two SHOPS, and Ginny's
+        /// cottage, which is its own sprite rather than a kit entry. Taken from the builders' own
+        /// constants so moving a building moves its clearing.
+        ///
+        /// <para><b>🔴 A SITE MISSING FROM THIS LIST IS SILENT, AND IT SWALLOWED A BUILDING.</b> The post
+        /// office was placed on 2026-08-11 and not added here, so the meadow grew straight through its
+        /// site — and because a room's floor sits at <c>ShopCatalog.RoomSortingOrder</c> (1), BELOW the
+        /// Y-sort band the tufts live in, the grass drew OVER the floor. From outside the shop looked
+        /// perfect. The only thing that showed it was rendering the interior reveal and finding the
+        /// building had vanished into the meadow. Anything placed on this island gets a row here.</para>
+        /// </summary>
         public static readonly Vector2[] BuildingSites =
         {
             StPetersBuilder.CottagePos,
             StPetersBuilder.SchoolPos,
-            StPetersBuilder.GeneralStorePos,
+            StPetersBuilder.GeneralStorePos,          // a SHOP since 2026-08-11, at the same site
             StPetersBuilder.WhiteFarmhousePos,
             StPetersBuilder.RedSaltboxPos,
             StPetersBuilder.SageCottagePos,
+            StPetersShops.PostOfficePos,
         };
 
         /// <summary>

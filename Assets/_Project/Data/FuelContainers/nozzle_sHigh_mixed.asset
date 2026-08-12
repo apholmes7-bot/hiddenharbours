@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 825beb7e63856174e8e43fc81e6c248c, type: 3}
+  m_Name: nozzle_sHigh_mixed
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.FuelContainerDef
+  Id: fuelstore.mixed_nozzle_shigh
+  DisplayName: Mixed Nozzle
+  VesselType: nozzle
+  SizeKey: sHigh
+  Grade: mixed
+  LevelRead: none
+  Carriable: 1
+  CapacityLitres: 0
+  TareKg: 2.6
+  FullKg: 2.6
+  Facings: 8
+  FillFractions:
+  - 0
+  Frames:
+  - {fileID: 1205845980, guid: b78bdaddd4afa7a47a028ece61daac37, type: 3}
+  - {fileID: 1847081019, guid: b78bdaddd4afa7a47a028ece61daac37, type: 3}
+  - {fileID: -1227774493, guid: b78bdaddd4afa7a47a028ece61daac37, type: 3}
+  - {fileID: -513085452, guid: b78bdaddd4afa7a47a028ece61daac37, type: 3}
+  - {fileID: -1274923612, guid: b78bdaddd4afa7a47a028ece61daac37, type: 3}
+  - {fileID: 912332902, guid: b78bdaddd4afa7a47a028ece61daac37, type: 3}
+  - {fileID: -648662162, guid: b78bdaddd4afa7a47a028ece61daac37, type: 3}
+  - {fileID: -418113731, guid: b78bdaddd4afa7a47a028ece61daac37, type: 3}

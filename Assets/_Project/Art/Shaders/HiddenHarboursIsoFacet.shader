@@ -128,6 +128,12 @@ Shader "HiddenHarbours/IsoFacet"
             float  _HullIdFore;
             float4 _DeckOccupant[HH_DECK_OCCUPANT_SLOTS];
             float  _DeckOccupantCount;
+            // ADR 0033 — ONE DEPTH UNIT. x = the y→z shear g = cos(elev)(1−sin(elev))/sin(elev),
+            // y = the world y it is referenced to (the water's own _HeightWorldMin.y). C# reference:
+            // DisplacedWaterMath.ShearedDepth, of which the vert() line below is a transcription.
+            // Defaults to 0, so a material nobody wrote to — and every hull while no displaced sea
+            // is live — is byte-identical to before ADR 0033 (the A/B contract).
+            float4 _HullShear;
 
             struct Attributes
             {
@@ -175,7 +181,27 @@ Shader "HiddenHarbours/IsoFacet"
 
                 o.fidx = sh * _Gain + _Bias + v.attrs.y;
                 o.mat  = v.attrs.x;
+                // ⚠️ TWO DEPTHS, AND THE SPLIT IS THE DESIGN (ADR 0033).
+                //
+                // o.wpos.z stays the RIG's own depth (ry·cos − rz·sin, unsheared) because the two
+                // things that read it are INTRA-HULL questions asked in the rig's frame: the
+                // deck-occupant band (is this planking in front of the figure standing on it?) and
+                // the keyline resolve's adjacent-pixel edge test, which is a transcription of the
+                // art director's own post-pass over the rig's own z-buffer. Shearing either would
+                // answer a different question with a worse number — the shear's gradient is a pure
+                // function of screen row, so it would charge a flat surface 0.013 m of false depth
+                // per pixel against the resolve's 0.30 m threshold, and would ask the occupant test
+                // to compare depths taken about two different world y. Both are byte-identical
+                // through this change, which is what keeps the #481 occupant suites and the golden
+                // masters untouched.
+                //
+                // positionCS DOES take the shear, because the private z-buffer is the ONE place
+                // where the hull meets water that was recorded in a different unit. Referenced to
+                // the water's own ReferenceY (never anything per-hull), so any two fragments
+                // sharing a pixel — same hull, another hull, or a bolted-on fitting — take the
+                // identical shift and every ordering among them is preserved.
                 o.wpos = wp;                     // camera looks along +Z; larger z = further
+                wp.z  -= (wp.y - _HullShear.y) * _HullShear.x;   // ADR 0033: the y→z shear
                 wp.z  -= v.attrs.z;              // f.db pulls the face toward the camera
                 o.positionCS = TransformWorldToHClip(wp);
                 return o;

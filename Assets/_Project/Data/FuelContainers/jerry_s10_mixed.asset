@@ -1,0 +1,72 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 825beb7e63856174e8e43fc81e6c248c, type: 3}
+  m_Name: jerry_s10_mixed
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.FuelContainerDef
+  Id: fuelstore.mixed_jerry_s10
+  DisplayName: 10 L Mixed Can
+  VesselType: jerry
+  SizeKey: s10
+  Grade: mixed
+  LevelRead: body
+  Carriable: 1
+  CapacityLitres: 10
+  TareKg: 1.3
+  FullKg: 8.82
+  Facings: 8
+  FillFractions:
+  - 0
+  - 0.25
+  - 0.5
+  - 0.75
+  - 1
+  Frames:
+  - {fileID: 1919342676, guid: 20865928aa8f6b24389cf479d48a9d2e, type: 3}
+  - {fileID: 1811860572, guid: 20865928aa8f6b24389cf479d48a9d2e, type: 3}
+  - {fileID: 1680652687, guid: 20865928aa8f6b24389cf479d48a9d2e, type: 3}
+  - {fileID: 132792521, guid: 20865928aa8f6b24389cf479d48a9d2e, type: 3}
+  - {fileID: 2029764921, guid: 20865928aa8f6b24389cf479d48a9d2e, type: 3}
+  - {fileID: -8010804, guid: 20865928aa8f6b24389cf479d48a9d2e, type: 3}
+  - {fileID: -1473596813, guid: 20865928aa8f6b24389cf479d48a9d2e, type: 3}
+  - {fileID: 1615184659, guid: 20865928aa8f6b24389cf479d48a9d2e, type: 3}
+  - {fileID: -1294281891, guid: 20865928aa8f6b24389cf479d48a9d2e, type: 3}
+  - {fileID: -1971827596, guid: 20865928aa8f6b24389cf479d48a9d2e, type: 3}
+  - {fileID: -1527176767, guid: 20865928aa8f6b24389cf479d48a9d2e, type: 3}
+  - {fileID: 1986200729, guid: 20865928aa8f6b24389cf479d48a9d2e, type: 3}
+  - {fileID: 614788229, guid: 20865928aa8f6b24389cf479d48a9d2e, type: 3}
+  - {fileID: 795745835, guid: 20865928aa8f6b24389cf479d48a9d2e, type: 3}
+  - {fileID: -383175276, guid: 20865928aa8f6b24389cf479d48a9d2e, type: 3}
+  - {fileID: 948745589, guid: 20865928aa8f6b24389cf479d48a9d2e, type: 3}
+  - {fileID: -304997880, guid: 20865928aa8f6b24389cf479d48a9d2e, type: 3}
+  - {fileID: -1981333473, guid: 20865928aa8f6b24389cf479d48a9d2e, type: 3}
+  - {fileID: 2414426, guid: 20865928aa8f6b24389cf479d48a9d2e, type: 3}
+  - {fileID: -484574690, guid: 20865928aa8f6b24389cf479d48a9d2e, type: 3}
+  - {fileID: -1473724766, guid: 20865928aa8f6b24389cf479d48a9d2e, type: 3}
+  - {fileID: -1658908852, guid: 20865928aa8f6b24389cf479d48a9d2e, type: 3}
+  - {fileID: -638410316, guid: 20865928aa8f6b24389cf479d48a9d2e, type: 3}
+  - {fileID: -955320299, guid: 20865928aa8f6b24389cf479d48a9d2e, type: 3}
+  - {fileID: 541410216, guid: 20865928aa8f6b24389cf479d48a9d2e, type: 3}
+  - {fileID: -224593785, guid: 20865928aa8f6b24389cf479d48a9d2e, type: 3}
+  - {fileID: 1631756706, guid: 20865928aa8f6b24389cf479d48a9d2e, type: 3}
+  - {fileID: 1221535941, guid: 20865928aa8f6b24389cf479d48a9d2e, type: 3}
+  - {fileID: -1758623281, guid: 20865928aa8f6b24389cf479d48a9d2e, type: 3}
+  - {fileID: 1093484777, guid: 20865928aa8f6b24389cf479d48a9d2e, type: 3}
+  - {fileID: 804776564, guid: 20865928aa8f6b24389cf479d48a9d2e, type: 3}
+  - {fileID: 494737812, guid: 20865928aa8f6b24389cf479d48a9d2e, type: 3}
+  - {fileID: 1377135914, guid: 20865928aa8f6b24389cf479d48a9d2e, type: 3}
+  - {fileID: -925444402, guid: 20865928aa8f6b24389cf479d48a9d2e, type: 3}
+  - {fileID: -884896486, guid: 20865928aa8f6b24389cf479d48a9d2e, type: 3}
+  - {fileID: 1642943282, guid: 20865928aa8f6b24389cf479d48a9d2e, type: 3}
+  - {fileID: -1386227192, guid: 20865928aa8f6b24389cf479d48a9d2e, type: 3}
+  - {fileID: 69850420, guid: 20865928aa8f6b24389cf479d48a9d2e, type: 3}
+  - {fileID: 1089326041, guid: 20865928aa8f6b24389cf479d48a9d2e, type: 3}
+  - {fileID: 1044340366, guid: 20865928aa8f6b24389cf479d48a9d2e, type: 3}
