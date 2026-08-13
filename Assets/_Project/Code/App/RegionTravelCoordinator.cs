@@ -32,8 +32,61 @@ namespace HiddenHarbours.App
         [Tooltip("The persistent hold (injected into each region's wharf hold proxy so selling hits the real hold).")]
         [SerializeField] private ShipHold _hold;
 
-        private void OnEnable() => SceneManager.activeSceneChanged += OnActiveSceneChanged;
+        private void OnEnable()
+        {
+            SceneManager.activeSceneChanged += OnActiveSceneChanged;
+            PublishPlayer();
+        }
+
         private void OnDisable() => SceneManager.activeSceneChanged -= OnActiveSceneChanged;
+
+        /// <summary>
+        /// Take the player registration back — <b>on DESTROY, deliberately not on disable</b>, which is
+        /// the lifetime hook <c>GameRoot.OnDestroy</c> uses for exactly the same "whoever registers,
+        /// unregisters" symmetry.
+        ///
+        /// <para><b>Why the distinction is load-bearing rather than stylistic.</b> Being disabled is not
+        /// the same as being gone, and this component in particular gets switched off by things that
+        /// are not teardown — it is a root object like any other, and root toggling is how a region hop
+        /// works. Clearing on disable made a coordinator that was momentarily deactivated wipe a
+        /// registration that was still true, and the symptom was every door in the game silently
+        /// sealing: the interiors fall back to this relay, so a null here is indistinguishable from "no
+        /// player exists". Caught by <c>InteriorTravelPlayTests</c>; pinned by
+        /// <c>ADisabledCoordinator_KeepsTheRelay</c>.</para>
+        ///
+        /// <para>Clear only if we STILL OWN it: a shell restart stands a second core up before the old
+        /// one finishes tearing down, and that new core has already published its own player, so an
+        /// unconditional clear would wipe a live registration on the way out.</para>
+        ///
+        /// <para><b>⚠ `==` here, NOT the `ReferenceEquals` GameRoot uses</b> — because unlike those
+        /// slots, this accessor LAUNDERS fake-null. Read back on a destroyed player it returns a real
+        /// null, so `ReferenceEquals` would be false against our own dead registration and we would
+        /// never clean it up; Unity's overload sees through that. Its one divergence (two different
+        /// destroyed transforms comparing equal) is harmless — a destroyed registration already reads
+        /// as null to every consumer, so there is nothing there to protect.</para>
+        /// </summary>
+        private void OnDestroy()
+        {
+            if (GameServices.PlayerTransform == _player) GameServices.PlayerTransform = null;
+        }
+
+        /// <summary>
+        /// Publish the persistent player on the Core relay (<see cref="GameServices.PlayerTransform"/>),
+        /// so REGION content can find the person walking the world without referencing App (rule 4).
+        ///
+        /// <para><b>Published once, on enable — not per arrival — and that is the whole point.</b> The
+        /// player this rig carries is <c>DontDestroyOnLoad</c>: it is the SAME transform before, during
+        /// and after every hop, so there is nothing for a travel event to re-bind. What actually changes
+        /// across a hop is which region's content is asking, and that content resolves the relay itself
+        /// when it needs it. One publication at boot therefore covers boot, every crossing, and every
+        /// return trip.</para>
+        /// </summary>
+        private void PublishPlayer()
+        {
+            // ⚠️ Explicit `!= null` (UnityEngine.Object's overload), never `??`: publishing a destroyed
+            // transform would hand every consumer a fake-null that their own null checks would pass.
+            if (_player != null) GameServices.PlayerTransform = _player;
+        }
 
         // ---- pure logic (unit-testable) -----------------------------------------------------
 
@@ -149,6 +202,11 @@ namespace HiddenHarbours.App
         public void Configure(Transform player, Transform boat, ControlSwitcher switcher, ShipHold hold)
         {
             _player = player; _boat = boat; _switcher = switcher; _hold = hold;
+
+            // Re-publish when wired AFTER we were already enabled. The builder and the test rigs both
+            // configure while inactive and enable afterwards (so OnEnable does it), but a caller that
+            // configures a live coordinator would otherwise leave the relay holding the previous player.
+            if (isActiveAndEnabled) PublishPlayer();
         }
     }
 }

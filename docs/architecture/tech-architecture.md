@@ -95,6 +95,23 @@ Two additive Core pieces, both deterministic (recomputed from `(worldSeed, gameT
   and the future **water depth-gradient shader** read it through Core, never referencing World. **Null =
   open water** (everywhere submerged / no walkable ground) — callers null-check rather than throw. Closes
   ADR 0009's "within-region elevation source" open question; world + gameplay can now build in parallel.
+- **`GameServices.PlayerTransform`** — the **on-foot player's transform**, the mirror image of
+  `TidalTerrain`: **App** registers (the persistent, `DontDestroyOnLoad` player, published by
+  `RegionTravelCoordinator` on enable) and **World** reads, so region content can find the person walking
+  it without referencing App (rule 4). It exists because a region scene is authored and **saved long
+  before the player it will host exists**, and Unity does not serialize references across scenes at all —
+  so region content physically *cannot* be wired to the persistent player at build time, and must resolve
+  it at runtime. Published **once per core, not per arrival**: the carried player is the same transform
+  before, during and after every hop, so there is nothing for an arrival event to re-bind. Optional and
+  NOT part of `Ready` (null in EditMode, in a bare art scene, and in a region played directly with no
+  persistent core) — consumers null-check, and "nobody published a player" means *carry on*, never a
+  throw. **⚠ The getter launders Unity fake-null into a real null**, so a consumer's plain `!= null` is
+  correct and a destroyed player can never be handed out as live; that matters because the reference this
+  seam replaces is one that gets *destroyed*. `RegionTravelCoordinator.OnDisable` takes it back under the
+  "whoever registers, unregisters" law below — guarded on `==` rather than `ReferenceEquals` precisely
+  *because* the accessor launders, so `ReferenceEquals` could not recognise its own dead registration.
+  First consumer: `World.BuildingInterior`, whose rooms opened only in the start scene before this.
+  Pinned by `PlayerTransformRelayTests` + `InteriorTravelPlayTests`.
 - **`Core.IFishSchools` + `Core.FishSchool`/`FishMark` + `GameServices.FishSchools`** — the **fish-school**
   seam (ADR 0025 S3): where "there are fish here" is asked and answered. A `FishSchool` is an *area*
   (centre + `RadiusMetres`) at a *depth in metres*, for a *while* (`[Start, End)` game seconds), carrying a

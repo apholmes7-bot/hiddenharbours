@@ -897,19 +897,19 @@ namespace HiddenHarbours.App.Editor
             // the market is B2's proposal. Sites, and the arithmetic that chose them, live in
             // NineMileCreekShops and NineMileCreekMainland.
             //
-            // ⚠️ PLACED HERE, AFTER THE DEV CORE, AND THE ORDER IS THE POINT — a BuildingInterior needs an
-            // OCCUPANT to watch, and the only one this scene can name is the dev player above. Nothing
-            // else in the region has a transform to give it: the real player arrives with the persistent
-            // core from another scene, and there is no runtime re-binder for BuildingInterior anywhere in
-            // the repo (grep SetOccupant — only builders call it).
+            // ⚠️ PLACED HERE, AFTER THE DEV CORE, AND THE ORDER IS THE POINT — a BuildingInterior takes an
+            // OCCUPANT, and the only one this scene can name is the dev player above. Nothing else in the
+            // region has a transform to give it: the real player arrives with the persistent core from
+            // another scene, and Unity does not serialize a reference across scenes at all.
             //
-            // ⚠️ SO SAY WHAT THIS DOES NOT COVER. Play NineMileCreek.unity directly and the shops open,
-            // which is how this scene is reviewed. TRAVEL in from St Peters and they do not: the dev core
-            // is destroyed by DevRegionBootstrap and _occupant goes fake-null, so BuildingInterior's
-            // Update returns on its first line and the roof stays on. That is a pre-existing seam this
-            // slice found rather than made — it is true of every interior in every region scene that is
-            // not the start scene — and closing it is a Core/travel change (an occupant re-bind on
-            // RegionTravelCoordinator's arrival), not a shop change. Flagged, not smuggled.
+            // The dev player is now the REVIEW occupant only, and handing it over is no longer what makes
+            // these shops enterable on a live arrival. Travel was fixed after this slice flagged it: the
+            // dev core is still destroyed by DevRegionBootstrap, _occupant still goes fake-null, and
+            // BuildingInterior now falls through to Core's GameServices.PlayerTransform — published by
+            // RegionTravelCoordinator, resolved lazily, so a room needs no arrival event at all. Play
+            // NineMileCreek.unity directly and the shops open for the dev player (the serialized
+            // reference wins while it is alive); sail in from St Peters and they open for the fisher who
+            // actually arrived. Driven end to end by InteriorTravelPlayTests.
             NineMileCreekShops.Place(terrain, devPlayer);
 
             // --- TREE DECOR (greybox dressing; world-content) ------------------------------------------
