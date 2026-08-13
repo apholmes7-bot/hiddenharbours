@@ -19,7 +19,7 @@
   const S = 32, DEG = Math.PI/180, DEFAULT_ELEV = 40;
   const MG = { W:272, H:216, cx:136, cy:120 };
   const MOTOR = { steerFrames:9, maxSteer:30, tiltMax:40, behind:[3,4,5],
-    parts:['upper','lower'], variants:['work','sport'],
+    parts:['upper','lower'], variants:['work','sport','guard'],
     W:MG.W, H:MG.H, pivot:{x:MG.cx, y:MG.cy},
     angle:(f)=>-30 + (60*f)/8,                 // sheet col f (0..8) -> steer degrees, col 4 dead ahead
     mounts:{ single:[0], dual:[-0.34, 0.34] },
@@ -33,10 +33,14 @@
   const TRIM  = ['#0d3f3c','#14554e','#1c7367','#2ba39a','#49b8aa'];
   const STEEL = ['#3a4148','#565f66','#7a858c','#9fabb1','#c3ced2','#e6edee'];
   const MOTO  = ['#101317','#1d2127','#2b323a','#3d454e','#525c63','#6b767b','#8a9499'];
+  // 'guard' livery: the rescue-orange band that goes with zodiacIsoRig.js. Deliberately outside the
+  // fleet's chroma ceiling — a service boat is meant to be the loudest thing on the water.
+  const ORNG  = ['#6a2610','#903414','#b8461a','#d75e26','#ee7c3e'];
   const KEY   = '#101a19';
   const MATS = { paint:{ramp:PAINT,off:0}, trim:{ramp:TRIM,off:-1}, steel:{ramp:STEEL,off:0},
+                 orng:{ramp:ORNG,off:0},
                  moto:{ramp:MOTO,off:0}, blk:{ramp:MOTO,off:-2} };
-  const RINDEX = {}; [PAINT,TRIM,STEEL,MOTO].forEach(r=>r.forEach((c,i)=>{ RINDEX[c]={r,i}; }));
+  const RINDEX = {}; [PAINT,TRIM,STEEL,MOTO,ORNG].forEach(r=>r.forEach((c,i)=>{ RINDEX[c]={r,i}; }));
   const GAIN = 3.0, BIAS = 2.7;
   const LN = (() => { const v=[-0.42,0.72,0.52]; const m=Math.hypot(...v); return v.map(c=>c/m); })();
   const BAYER = [[0,8,2,10],[12,4,14,6],[3,11,1,9],[15,7,13,5]].map(r=>r.map(v=>(v+0.5)/16));
@@ -76,7 +80,7 @@
     return [[hx,-hy*ky],[hx,hy*ky],[hx*kx,hy],[-hx*kx,hy],[-hx,hy*ky],[-hx,-hy*ky],[-hx*kx,-hy],[hx*kx,-hy]]
       .map(([x,y])=>[x, y+yc, z]);
   }
-  function cowlFaces(X, sport){
+  function cowlFaces(X, sport, band){
     const prof = [
       [0.680,0.195,0.230,-0.165],
       [0.735,0.205,0.240,-0.165],
@@ -87,8 +91,8 @@
       [1.065,0.080,0.094,-0.205],
     ];
     const bands = sport
-      ? [['blk',-0.35],['blk',-0.15],['trim',0.25],['paint',0.15],['paint',0.30],['paint',0.44]]
-      : [['blk',-0.35],['blk',-0.15],['trim',0.22],['moto',0.10],['moto',0.24],['moto',0.38]];
+      ? [['blk',-0.35],['blk',-0.15],[band,0.25],['paint',0.15],['paint',0.30],['paint',0.44]]
+      : [['blk',-0.35],['blk',-0.15],[band,0.22],['moto',0.10],['moto',0.24],['moto',0.38]];
     const cap = sport ? ['paint',0.52] : ['moto',0.45];
     const rings = prof.map(s=>ringOf(s).map(X));
     const fs=[];
@@ -101,14 +105,14 @@
     const topZ = prof[prof.length-1][0];
     return fs.concat(box([0,-0.175,topZ+0.015],[0.06,0.045,0.015], sport?'paint':'moto', 0.25, -0.02, X)); // lift handle
   }
-  function cowlDecals(X, sport){
+  function cowlDecals(X, sport, band){
     const fs=[], q=(x0,y0,z0,y1,z1,mat,b)=>{
       const v = x0<0 ? [[x0,y1,z0],[x0,y0,z0],[x0,y0,z1],[x0,y1,z1]] : [[x0,y0,z0],[x0,y1,z0],[x0,y1,z1],[x0,y0,z1]];
       fs.push({v:v.map(X),mat,b,db:-0.02});
     };
     if(sport){
-      q( 0.190,-0.300,0.860,-0.085,0.915,'trim',0.35);   // teal side flash in the white band
-      q(-0.190,-0.300,0.860,-0.085,0.915,'trim',0.35);
+      q( 0.190,-0.300,0.860,-0.085,0.915,band,0.35);     // side flash in the white band
+      q(-0.190,-0.300,0.860,-0.085,0.915,band,0.35);
     } else {
       q( 0.190,-0.290,0.855,-0.105,0.905,'steel',0.45);  // brushed badge plate
       q(-0.190,-0.290,0.855,-0.105,0.905,'steel',0.40);
@@ -117,13 +121,15 @@
   }
   function motorFaces(opts){
     const X=mxform(opts), mx=opts.mx||0, I=(p)=>[mx+p[0], YA+p[1], p[2]];
-    const sport = opts.variant==='sport';
+    const guard = opts.variant==='guard';
+    const sport = guard || opts.variant==='sport';
+    const band = guard ? 'orng' : 'trim';
     const part=opts.part||'all', up=part!=='lower', lo=part!=='upper';
     let fs=[];
     if(up){
       fs=fs.concat(box([0,0.06,0.575],[0.11,0.115,0.075],'steel',-0.2,0,I));      // clamp bracket (fixed to transom)
       fs=fs.concat(box([0,0.045,0.66],[0.055,0.06,0.02],'blk',-0.35,0,I));        // tilt tube cap
-      fs=fs.concat(cowlFaces(X,sport)).concat(cowlDecals(X,sport));
+      fs=fs.concat(cowlFaces(X,sport,band)).concat(cowlDecals(X,sport,band));
     }
     if(lo){
       const legM = sport?'blk':'moto';
@@ -132,6 +138,7 @@
       fs=fs.concat(box([0,-0.20,0.028],[0.020,0.095,0.055],legM,-0.4,0,X));       // skeg
       fs=fs.concat(box([0,-0.285,0.095],[0.015,0.055,0.058],'steel',0.5,0,X));    // stainless prop
       fs=fs.concat(box([0,-0.235,0.30],[0.016,0.005,0.04],legM,0.25,-0.02,X));    // anode strip
+      if(guard) fs=fs.concat(box([0,-0.16,0.60],[0.064,0.077,0.028],'orng',0.2,-0.02,X));  // band carried onto the leg
     }
     return fs;
   }
@@ -226,5 +233,5 @@
     return { x:p.sx, y:p.sy };
   }
 
-  root.SkiffMotor = { MOTOR, renderMotor, clampPoint, PAINT, TRIM, STEEL, MOTO, KEY };
+  root.SkiffMotor = { MOTOR, renderMotor, clampPoint, PAINT, TRIM, STEEL, MOTO, ORNG, KEY };
 })(typeof globalThis!=='undefined'?globalThis:window);
