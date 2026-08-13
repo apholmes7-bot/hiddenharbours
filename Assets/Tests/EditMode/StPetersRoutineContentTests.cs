@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using NUnit.Framework;
 using UnityEngine;
 using HiddenHarbours.App.Editor;
+using HiddenHarbours.Art;                 // GrassFootstep, YSortSprite
 using HiddenHarbours.Core;                // GameConfig
 using HiddenHarbours.World;               // RoutineDef, RoutineSchedule, RoutineLaneTree
 
@@ -510,6 +511,54 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(checkedLegs.Count, Is.GreaterThan(5),
                         "this test has to actually check some legs, or it passes vacuously: " +
                         string.Join(", ", checkedLegs));
+        }
+
+        // ---- the living-grass wiring -------------------------------------------------------------
+
+        /// <summary>
+        /// ⭐ EVERY WALKING VILLAGER TREADS THE GRASS — AND NONE OF THEM OUTRANKS THE PLAYER. The trail is
+        /// a pool of <see cref="GrassFootstep.MaxWalkers"/> slots (#517) and eviction is strictly-below
+        /// priority, so a villager built at the ambient default 0 can lose their trail to the player
+        /// (cosmetic) but can never cost the player theirs. A villager built AT
+        /// <see cref="GrassFootstep.PlayerPriority"/> would — which is exactly the mistake this pins out.
+        /// (Scene-wired is not builder-wired: this pins the builder pass; the shipped scene needs the
+        /// owner's next Build St Peters click to carry it.)
+        /// </summary>
+        [Test]
+        public void WireLivingGrass_MakesTheMeadowAnswerAVillager_AtTheRankBelowThePlayer()
+        {
+            var go = new GameObject("TestVillager");
+            try
+            {
+                go.AddComponent<SpriteRenderer>();
+                var ysort = go.AddComponent<YSortSprite>();
+
+                StPetersRoutines.WireLivingGrass(go);
+
+                var footstep = go.GetComponent<GrassFootstep>();
+                Assert.That(footstep, Is.Not.Null,
+                            "a villager on a routine walks the green — the grass has to answer them");
+                Assert.That(footstep.Priority, Is.EqualTo(0),
+                            "ambient walkers stay at the default rank: eviction is strictly-below, so 0 " +
+                            "can never evict the player's PlayerPriority claim, and equals never churn " +
+                            "each other");
+                Assert.That(footstep.Priority, Is.LessThan(GrassFootstep.PlayerPriority),
+                            "a villager who ranked at or above the player could cost them their trodden " +
+                            "path on a region hop");
+                Assert.That(ysort.Dynamic, Is.True,
+                            "a walking villager re-sorts by Y as they go, or they draw in front of the " +
+                            "house they just walked behind");
+
+                // Idempotent: the owner rebuilds the region repeatedly, and a second pass must not stack
+                // a second component (a duplicate would claim a second pool slot for the same walker).
+                StPetersRoutines.WireLivingGrass(go);
+                Assert.That(go.GetComponents<GrassFootstep>().Length, Is.EqualTo(1),
+                            "re-running the builder must reuse the component, not stack another");
+            }
+            finally
+            {
+                Object.DestroyImmediate(go);
+            }
         }
 
         /// <summary>Which lane node a station hangs off — mirrored from the builder's own table, and only

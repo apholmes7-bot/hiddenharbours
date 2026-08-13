@@ -668,9 +668,11 @@ namespace HiddenHarbours.App.Editor
         /// <c>routine.Npc.name</c> IS the object to find. Matching on the def rather than on a hard-coded
         /// list is what makes adding the next person's day an asset and not a code change (rule 2).</para>
         ///
-        /// <para><b>Their Y-sort goes DYNAMIC.</b> An anchored islander sorted once on enable and stood its
-        /// dispatch down, which was right while nobody walked; a villager who crosses the green has to
-        /// re-sort as they go or they would draw in front of the house they just walked behind.</para>
+        /// <para><b>Their Y-sort goes DYNAMIC, and they tread the grass.</b> An anchored islander sorted
+        /// once on enable and stood its dispatch down, which was right while nobody walked; a villager who
+        /// crosses the green has to re-sort as they go or they would draw in front of the house they just
+        /// walked behind. And a walker who crosses the green should part it — see
+        /// <see cref="WireLivingGrass"/>.</para>
         /// </summary>
         static int WireVillagers(RoutineStations stations, RoutineLanes lanes)
         {
@@ -714,8 +716,7 @@ namespace HiddenHarbours.App.Editor
                 if (villager == null) villager = go.AddComponent<VillagerRoutine>();
                 villager.Configure(routine, stations, lanes, go.GetComponent<SpriteRenderer>());
 
-                var ysort = go.GetComponent<YSortSprite>();
-                if (ysort != null) ysort.Dynamic = true;
+                WireLivingGrass(go);
 
                 // Report the day the way the owner will read it, and check that every walk fits inside the
                 // block it has to happen in — the one authoring error the runtime cannot recover from
@@ -767,6 +768,24 @@ namespace HiddenHarbours.App.Editor
                     "anchored spot they had before — a visible absence rather than an invisible one.");
 
             return living;
+        }
+
+        /// <summary>
+        /// The LIVING-GRASS hooks a walking villager needs, in one idempotent pass (the owner rebuilds the
+        /// region repeatedly): the Y-sort goes DYNAMIC (see <see cref="WireVillagers"/>), and a
+        /// <see cref="GrassFootstep"/> makes the meadow answer them — the trail is a POOL of
+        /// <see cref="GrassFootstep.MaxWalkers"/> slots now (#517), so a villager's trail no longer erases
+        /// the player's. Left at the default <see cref="GrassFootstep.Priority"/> 0: the player is built at
+        /// <see cref="GrassFootstep.PlayerPriority"/> and eviction is strictly-below, so a full pool drops a
+        /// villager's trail (cosmetic), never the player's — and equals never churn each other.
+        /// </summary>
+        public static void WireLivingGrass(GameObject go)
+        {
+            var ysort = go.GetComponent<YSortSprite>();
+            if (ysort != null) ysort.Dynamic = true;
+
+            if (go.GetComponent<GrassFootstep>() == null)
+                go.AddComponent<GrassFootstep>();
         }
 
         /// <summary>
