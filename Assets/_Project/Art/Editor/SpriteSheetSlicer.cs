@@ -354,23 +354,13 @@ namespace HiddenHarbours.Art.Editor
             new SheetSpec(Root + "Tilesets/ShorelineIso2/gfx/Dune.png",     9, 2, 32, 32, SpriteAlignment.Center, Centre),
             new SheetSpec(Root + "Tilesets/ShorelineIso2/gfx/Contact.png",  5, 1, 32, 32, SpriteAlignment.Center, Centre),
 
-            // ---- Road / path / sidewalk kit: flat 32×32 NEAR-PLAN ground tiles that sit IN the ground
-            //      plane exactly like Grass.png/Dirt.png, so they register with the iso houses, the wharf
-            //      deck and the shoreline flats. One pre-baked reference atlas per surface at `new` wear
-            //      over a grass verge, no markings; wear states, other verges, markings and whole painted
-            //      maps all bake from roadPathRig.js.
+            // ---- Road / path / sidewalk kit: NOT SLICED HERE ANY MORE.
             //
-            // 12 cols × 4 rows = 48 cells holding the canonical 47-tile blob autotiler set (isolated ·
-            // caps · straights · bends · tees · crosses), sorted by neighbour mask — so the LAST cell
-            // (index 47) is spare padding, not a tile. Index → neighbour mask is RoadKit.BLOB47's order;
-            // ShorelineIsoCatalog.RoadBlobCount names the 47 so nothing indexes the 48th by accident.
-            new SheetSpec(Root + "Tilesets/Roads/RoadIso_dirt_new_blob47.png",     12, 4, 32, 32, SpriteAlignment.Center, Centre),
-            new SheetSpec(Root + "Tilesets/Roads/RoadIso_gravel_new_blob47.png",   12, 4, 32, 32, SpriteAlignment.Center, Centre),
-            new SheetSpec(Root + "Tilesets/Roads/RoadIso_concrete_new_blob47.png", 12, 4, 32, 32, SpriteAlignment.Center, Centre),
-            new SheetSpec(Root + "Tilesets/Roads/RoadIso_asphalt_new_blob47.png",  12, 4, 32, 32, SpriteAlignment.Center, Centre),
-            new SheetSpec(Root + "Tilesets/Roads/RoadIso_cobble_new_blob47.png",   12, 4, 32, 32, SpriteAlignment.Center, Centre),
-            new SheetSpec(Root + "Tilesets/Roads/RoadIso_sand_new_blob47.png",     12, 4, 32, 32, SpriteAlignment.Center, Centre),
-            new SheetSpec(Root + "Tilesets/Roads/RoadIso_brick_new_blob47.png",    12, 4, 32, 32, SpriteAlignment.Center, Centre),
+            // v1's seven flat 32×32 atlases were sliced by this uniform grid until the v3 drop retired
+            // them. v3's cell is 32×64 and each cell yields TWO sprites — a top and a skirt — because
+            // its south faces and contact shadows hang below the plan square and must be drawn in a
+            // second pass, in front of the neighbour to the south. A uniform grid cannot express that,
+            // so the kit has its own slicer: see RoadKitSlicer, and RoadKitV3 for why the split exists.
 
             // ---- Wharf / dock tile kit: the working waterfront's deck. Near-plan 32×32 tiles that sit in
             //      the ground plane like Grass.png, but on a TALLER cell — because the camera looks from

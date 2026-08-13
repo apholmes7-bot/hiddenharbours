@@ -31,7 +31,6 @@ namespace HiddenHarbours.Art.Editor
     {
         public const string TilesetRoot = "Assets/_Project/Art/Tilesets";
         public const string ShorelineIsoDir = TilesetRoot + "/ShorelineIso";
-        public const string RoadsDir = TilesetRoot + "/Roads";
 
         /// <summary>The kit's contract sidecar, shipped beside the sheets. The lists below mirror it.</summary>
         public const string ContractPath = ShorelineIsoDir + "/ShorelineIso.json";
@@ -135,35 +134,14 @@ namespace HiddenHarbours.Art.Editor
         /// </summary>
         public static readonly string[] RockSprites = { "reef", "s", "m", "l", "bs", "bm", "bl" };
 
-        // ---- RoadIso_<surface>_new_blob47.png — 12 cols × 4 rows ----------------------------------
-
-        /// <summary>
-        /// The seven road/path surfaces, one pre-baked atlas each at <c>new</c> wear over a grass verge
-        /// with no markings. <c>worn</c>/<c>cracked</c> wear, dirt/sand verges and lane markings are all
-        /// live in <c>roadPathRig.js</c> — re-bake rather than hand-editing a sheet.
-        /// </summary>
-        public static readonly string[] RoadSurfaces =
-            { "dirt", "gravel", "concrete", "asphalt", "cobble", "sand", "brick" };
-
-        /// <summary>Atlas columns/rows: 12 × 4 = 48 cells holding 47 tiles + one spare.</summary>
-        public const int RoadCols = 12;
-        public const int RoadRows = 4;
-
-        /// <summary>
-        /// The canonical blob-autotiler set is 47 tiles, but the atlas is a 12×4 = 48-cell rectangle,
-        /// so cell index 47 is PADDING and not a road tile. Anything walking the atlas must stop here.
-        /// </summary>
-        public const int RoadBlobCount = 47;
-
-        /// <summary>
-        /// Asset path of a surface's pre-baked blob-47 atlas. Throws on an unknown surface rather than
-        /// handing back a path that silently doesn't exist.
-        /// </summary>
-        public static string RoadAtlasPath(string surface)
-        {
-            IndexOfOrThrow(RoadSurfaces, surface, "road surface");
-            return $"{RoadsDir}/RoadIso_{surface}_new_blob47.png";
-        }
+        // ---- ROADS: retired here, superseded by RoadKitV3 -----------------------------------------
+        //
+        // v1's seven 32x32 road atlases and their catalog entries lived here until the v3 drop. v3 is
+        // not an extension of them: it re-bases the family's vertical from 12 px/m to the turntable's
+        // 24.5 px/m, so its cell is 32x64 with a skirt and the two cannot share a slicer, a pivot or a
+        // tilemap. Two road families at different vertical scales in one village is a defect only the
+        // eye would ever catch, and v1 had NO consumer -- nothing painted with it -- so it was retired
+        // rather than left as a trap. See RoadKitV3; docs/art/rigs/roadPathRig.js stays as history.
 
         // ---- shared helpers -----------------------------------------------------------------------
 

@@ -1,4 +1,15 @@
-# Hidden Harbours — Road / Path / Sidewalk Kit
+# Hidden Harbours — Road / Path / Sidewalk Kit (v1 — SUPERSEDED)
+
+> ⚠️ **This kit is retired. Use `docs/art/rigs/road-path-kit-v3/`.**
+>
+> v3 re-bases the family's vertical from this kit's 12 px/m to the turntable's 24.5 px/m — the ruler
+> every building wall and ShoreIso2 cliff band uses — so its cell is 32×64 with a skirt of drop
+> faces and contact shadows, and it ships 11 surfaces rather than 7. The two cannot share a slicer,
+> a pivot or a tilemap, and two road families at different vertical scales in one village is a
+> defect only the eye would ever catch. v1's atlases were deleted when v3 landed; nothing had ever
+> painted with them. `docs/art/rigs/roadPathRig.js` is kept as history.
+>
+> This file stays as the record of what v1 was. Everything below describes v1.
 
 Flat **32×32 near-plan** ground tiles that sit IN the ground plane exactly like `Grass.png` /
 `Dirt.png`, so they auto-register with the iso houses, the wharf deck and the shoreline flats.

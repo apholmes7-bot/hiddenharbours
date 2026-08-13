@@ -9,9 +9,12 @@ using HiddenHarbours.Art.Editor;
 namespace HiddenHarbours.Tests.Art.EditMode
 {
     /// <summary>
-    /// Guards the import of the two TERRAIN kits — the shoreline-ISO tile kit under
-    /// <c>Art/Tilesets/ShorelineIso/</c> and the road/path blob-47 atlases under
-    /// <c>Art/Tilesets/Roads/</c>.
+    /// Guards the import of the shoreline-ISO tile kit under <c>Art/Tilesets/ShorelineIso/</c>.
+    ///
+    /// <para>The road/path blob-47 atlases were guarded here too until the v3 drop retired them: v3's
+    /// cell is 32×64 rather than 32×32 and slices two sprites per cell, so it needs its own dimension
+    /// table and its own reproduction proof. Those live in <c>RoadKitV3Tests</c> and
+    /// <c>RoadKitBakeTests</c>.</para>
     ///
     /// <para>Both kits are 32×32 cells at 32 px = 1 m, and the shoreline kit is baked to the SAME
     /// camera as the boat turntables (¾ from the south at 40°) so land and hull sit in one space.
@@ -36,11 +39,9 @@ namespace HiddenHarbours.Tests.Art.EditMode
     public class ShorelineIsoKitSliceTests
     {
         private const string ShoreDir = "Assets/_Project/Art/Tilesets/ShorelineIso/";
-        private const string RoadDir  = "Assets/_Project/Art/Tilesets/Roads/";
         private const string SidecarPath = ShoreDir + "ShoreIsoSprites.json";
         private const string ContractPath = ShoreDir + "ShorelineIso.json";
         private const string ShoreRigPath = "docs/art/rigs/shoreIsoKitRig.js";
-        private const string RoadRigPath  = "docs/art/rigs/roadPathRig.js";
 
         /// <summary>The kit grid: one cell is 32 px is 1 m at the locked PPU (ADR 0006/0022).</summary>
         private const int Cell = 32;
@@ -56,14 +57,6 @@ namespace HiddenHarbours.Tests.Art.EditMode
             [ShoreDir + "ShoreIsoCliff.png"]  = new Vector2Int(10, 3),  // 320×96
             [ShoreDir + "ShoreIsoDune.png"]   = new Vector2Int(9, 1),   // 288×32
 
-            // Road / path — one pre-baked blob-47 atlas per surface, 12×4 = 48 cells (47 + 1 spare).
-            [RoadDir + "RoadIso_dirt_new_blob47.png"]     = new Vector2Int(12, 4),
-            [RoadDir + "RoadIso_gravel_new_blob47.png"]   = new Vector2Int(12, 4),
-            [RoadDir + "RoadIso_concrete_new_blob47.png"] = new Vector2Int(12, 4),
-            [RoadDir + "RoadIso_asphalt_new_blob47.png"]  = new Vector2Int(12, 4),
-            [RoadDir + "RoadIso_cobble_new_blob47.png"]   = new Vector2Int(12, 4),
-            [RoadDir + "RoadIso_sand_new_blob47.png"]     = new Vector2Int(12, 4),
-            [RoadDir + "RoadIso_brick_new_blob47.png"]    = new Vector2Int(12, 4),
         };
 
         /// <summary>Ground rows, top to bottom, from <c>ShorelineIso.json</c>.</summary>
@@ -90,10 +83,6 @@ namespace HiddenHarbours.Tests.Art.EditMode
             "faceS", "cornSW", "cornSE", "sideW", "sideE",
             "innSW", "innSE", "diagSW", "diagSE", "caveToe",
         };
-
-        /// <summary>The seven road surfaces the kit bakes.</summary>
-        private static readonly string[] RoadSurfaces =
-            { "dirt", "gravel", "concrete", "asphalt", "cobble", "sand", "brick" };
 
         /// <summary>
         /// The packed rock sheet's items, verbatim from <c>ShoreIsoSprites.json</c> as delivered:
@@ -160,12 +149,13 @@ namespace HiddenHarbours.Tests.Art.EditMode
         }
 
         [Test]
-        public void BothRigSources_AreVersionedInTheRepo()
+        public void TheRigSource_IsVersionedInTheRepo()
         {
-            // The rigs are the bake source of truth (ADR 0021): the PNGs are one bake of them, and any
-            // re-bake — other wear states, other verges, a taller cliff — runs from these files.
+            // The rig is the bake source of truth (ADR 0021): the PNGs are one bake of it, and any
+            // re-bake — other wear states, other verges, a taller cliff — runs from this file.
+            // (The road kit's rig is guarded by RoadKitV3Tests, which pins its hash as well as its
+            // existence — this one only checks that the file is there.)
             Assert.IsTrue(File.Exists(RepoPath(ShoreRigPath)), $"'{ShoreRigPath}' is missing.");
-            Assert.IsTrue(File.Exists(RepoPath(RoadRigPath)),  $"'{RoadRigPath}' is missing.");
         }
 
         // ---- the live sidecar still says what the literals above say --------------------------
@@ -248,7 +238,6 @@ namespace HiddenHarbours.Tests.Art.EditMode
             CollectionAssert.AreEqual(FringeCols,  ShorelineIsoCatalog.FringePieces,    "fringe columns");
             CollectionAssert.AreEqual(CliffRows,   ShorelineIsoCatalog.CliffBands,      "cliff rows");
             CollectionAssert.AreEqual(CliffCols,   ShorelineIsoCatalog.CliffPieces,     "cliff columns");
-            CollectionAssert.AreEqual(RoadSurfaces, ShorelineIsoCatalog.RoadSurfaces,   "road surfaces");
 
             // The dune is the cliff's nine landform pieces WITHOUT the cave — a dune has no arch.
             CollectionAssert.AreEqual(CliffCols.Take(9).ToArray(), ShorelineIsoCatalog.DunePieces,
@@ -287,18 +276,8 @@ namespace HiddenHarbours.Tests.Art.EditMode
             Assert.Throws<System.ArgumentOutOfRangeException>(() => ShorelineIsoCatalog.GroundIndex("foam"));
             Assert.Throws<System.ArgumentOutOfRangeException>(() => ShorelineIsoCatalog.CliffIndex("mid", "faceN"));
             Assert.Throws<System.ArgumentOutOfRangeException>(() => ShorelineIsoCatalog.DuneIndex("caveToe"));
-            Assert.Throws<System.ArgumentOutOfRangeException>(() => ShorelineIsoCatalog.RoadAtlasPath("tarmac"));
         }
 
-        [Test]
-        public void Catalog_StopsAtTheBlobSet_NotTheAtlasRectangle()
-        {
-            // 12×4 = 48 cells hold 47 blob tiles, so the last cell is padding. Anything that walked the
-            // atlas by its rectangle would paint that spare cell as a road.
-            Assert.AreEqual(47, ShorelineIsoCatalog.RoadBlobCount);
-            Assert.AreEqual(48, ShorelineIsoCatalog.RoadCols * ShorelineIsoCatalog.RoadRows,
-                            "the atlas is one cell larger than the blob set — that is the padding cell");
-        }
 
         // ---- once the sheets are sliced, the slice must match the grid -------------------------
 
