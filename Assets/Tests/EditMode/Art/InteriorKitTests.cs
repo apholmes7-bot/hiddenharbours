@@ -18,9 +18,13 @@ namespace HiddenHarbours.Tests.Art.EditMode
     ///   nothing and says nothing, so the only defence is greping the rig source for the option's own
     ///   resolve call. The worked example is <c>winD</c> (an internal field) versus <c>winDensity</c>
     ///   (the option): both strings appear in the rig, so the grep has to look for the CALL.</item>
-    ///   <item><see cref="ThePilotRoomIsTheSameSizeAsTheShellItGoesInside"/> — the 1:1 registration rests
-    ///   on both rigs resolving one footprint from one <c>size</c>, and the bake refuses if they do not.
-    ///   Catching it here means finding out before a five-minute bake instead of after.</item>
+    ///   <item><see cref="EveryRoomIsTrueToTheFootprintOfTheShellItGoesInside"/> — the 1:1 registration
+    ///   rests on both rigs resolving one footprint from one <c>size</c>, and the bake refuses if they
+    ///   do not. Catching it here means finding out before a five-minute bake instead of after.</item>
+    ///   <item><see cref="EveryRoomsShellDrawsItsDoorOnTheGableTheRoomOpensOnto"/> — a room registers
+    ///   its doorway to a door anchor the house rig DECLARES rather than measures, so a shell can draw
+    ///   its door on another wall entirely and nothing downstream notices. Three of this village's four
+    ///   houses did exactly that until 2026-08-12.</item>
     /// </list>
     /// </summary>
     public class InteriorKitTests
@@ -143,7 +147,7 @@ namespace HiddenHarbours.Tests.Art.EditMode
         // =============================================================================
 
         [Test]
-        public void ThePilotRoomIsTheSameSizeAsTheShellItGoesInside()
+        public void EveryRoomIsTrueToTheFootprintOfTheShellItGoesInside()
         {
             foreach (var room in InteriorKit.RoomSet)
             {
@@ -159,11 +163,149 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 Assert.IsTrue(TryGetSize(exterior.Value.Dialled, out double shellSize),
                               $"shell '{exteriorKey}' must dial an explicit size");
 
-                Assert.AreEqual(shellSize, roomSize, 1e-9,
-                                $"'{room.Key}' is dialled at size {roomSize} but its shell at " +
-                                $"{shellSize}. Both rigs compute Wd = 6 + size*2.4 and Ln = 7 + " +
-                                "size*4.2, so a mismatch is a room that does not fit its house — and " +
-                                "it draws perfectly either way.");
+                // The metres, not just the dial. Same arithmetic in both rigs (interiorIsoRig.js:279
+                // and houseIsoRig.js:250), stated here so the failure reads in the unit the canon is
+                // written in — "true to its footprint" is a claim about metres of floor.
+                (double roomWd, double roomLn) = Footprint(roomSize);
+                (double shellWd, double shellLn) = Footprint(shellSize);
+
+                Assert.AreEqual(shellWd, roomWd, 1e-9,
+                                $"'{room.Key}' is {roomWd:0.00} m across but the '{exteriorKey}' shell " +
+                                $"it stands inside is {shellWd:0.00} m. A room may not be a different " +
+                                "size from its house — true-to-footprint is canon (owner, 2026-07-30), " +
+                                "and both draw perfectly either way.");
+                Assert.AreEqual(shellLn, roomLn, 1e-9,
+                                $"'{room.Key}' is {roomLn:0.00} m front-to-back but the '{exteriorKey}' " +
+                                $"shell it stands inside is {shellLn:0.00} m. A room may not be a " +
+                                "different size from its house — true-to-footprint is canon (owner, " +
+                                "2026-07-30), and both draw perfectly either way.");
+            }
+        }
+
+        /// <summary>The footprint both rigs derive from one <c>size</c>, in metres. Mirrored from
+        /// <c>interiorIsoRig.js:279-280</c> and <c>houseIsoRig.js:250-251</c>, which carry the identical
+        /// pair — and the BAKE is what catches the two drifting apart, by resolving the footprint out of
+        /// each rig and refusing on a mismatch. This copy exists so the assertion above can fail in
+        /// metres without a JS engine.</summary>
+        static (double Wd, double Ln) Footprint(double size) => (6 + size * 2.4, 7 + size * 4.2);
+
+        // =============================================================================
+        //  ⭐ the shell has to DRAW its door where the room opens
+        // =============================================================================
+
+        [Test]
+        public void EveryRoomsShellDrawsItsDoorOnTheGableTheRoomOpensOnto()
+        {
+            // 🔴 houseIsoRig.anchors() returns the +Y gable centre for EVERY shape and porch, and a
+            // room's doorway registers to that anchor. Measured 2026-08-12: three of this village's
+            // four houses drew their door somewhere else entirely — the school's and the saltbox's on
+            // the +X eave wall (90° out), the farmhouse's on its ell wing (1.21 m across and 4.17 m
+            // beyond the room's footprint). Every one of them still drew beautifully; the only symptom
+            // was a visible door you cannot walk through and a gap in a blank wall that you can.
+            foreach (var room in InteriorKit.RoomSet)
+            {
+                var exterior = VillageBuildingKit.FindBuild(room.Key);
+                Assert.IsNotNull(exterior, $"'{room.Key}' has no shell");
+
+                bool ok = VillageBuildingKit.DrawsDoorOnGable(exterior.Value, out string why);
+                Assert.IsTrue(ok,
+                              $"'{room.Key}' has a baked room, but its shell does not draw its door on " +
+                              $"the gable the room opens onto.\n  {why}\n\nThe room's doorway is cut " +
+                              "where anchors() claims the door is, so this ships a house whose visible " +
+                              "door is solid wall and whose walk-in gap is blank clapboard. Re-dial the " +
+                              "shell (porch 'front'/'wrap', shape not 'ell'/'cape', no bay) or drop the " +
+                              "room.");
+            }
+        }
+
+        [Test]
+        public void TheRigStillRoutesItsDoorTheWayTheGableRuleAssumes()
+        {
+            // The negative control on the rule above. DrawsDoorOnGable mirrors four lines of
+            // houseIsoRig; if art-director re-routes the door, the mirror goes quietly stale and the
+            // guard starts approving builds it should reject. So assert the rig still says what the
+            // mirror was written against — a re-route then fails HERE, pointing at the predicate.
+            string source = RigSource("houseIsoRig.js");
+
+            StringAssert.Contains("const eaveDoor = isCape || (!hasPorch && b.shape!=='ell')", source,
+                                  "houseIsoRig no longer routes the eave door the way " +
+                                  "VillageBuildingKit.DrawsDoorOnGable mirrors it");
+            StringAssert.Contains("const gableDoor = hasPorch && b.shape!=='ell'", source,
+                                  "houseIsoRig no longer routes the gable door the way " +
+                                  "VillageBuildingKit.DrawsDoorOnGable mirrors it");
+            StringAssert.Contains("const bayFrontOn = !!bayKind && b.shape!=='ell'", source,
+                                  "houseIsoRig no longer cancels the porch on a bay — which is the " +
+                                  "least obvious clause in the rule and the one worth pinning");
+            StringAssert.Contains("door:pj(0,b.Ln/2,b.fH+1.0)", source,
+                                  "houseIsoRig's door ANCHOR is no longer the unconditional +Y gable " +
+                                  "centre. If it now follows where the door is drawn, that is good news " +
+                                  "— delete DrawsDoorOnGable and register rooms to the honest anchor.");
+        }
+
+        [Test]
+        public void DoorModelMetres_FallsBackToTheHOUSEFamilysWall_NotToZero()
+        {
+            // The caller picks the wall with `door.y >= 0 ? +1 : -1`, so a Vector2.zero fallback would
+            // read as "+y" — the SHOP family's answer — and cut the doorway in the back wall of every
+            // house, silently, on any contract baked before the anchors existed.
+            var noAnchors = new InteriorCatalog.Placement(
+                new InteriorKit.Entry { key = "test", facings = 8, cellW = 100, cellH = 100 },
+                isProp: false);
+
+            Vector2 door = InteriorCatalog.DoorModelMetres(noAnchors);
+            Assert.Less(door.y, 0f,
+                        "with no baked anchors the doorway must fall back to interiorIsoRig's own −y " +
+                        "gable, not to zero — zero reads as the shop kit's +y wall");
+
+            Assert.Less(InteriorCatalog.DoorModelMetres(default).y, 0f,
+                        "and the same for an invalid placement");
+        }
+
+        [Test]
+        public void ARoomThatDialsAPaperColourActuallyGetsWallpaper()
+        {
+            // A second face of the silent-option trap, and one the key-grep above cannot see: `paper`
+            // IS a key the rig reads, so the grep passes — but the rig only selects the paper material
+            // on the 'wallpaper' finish (interiorIsoRig.js:249):
+            //
+            //     const mat = F0==='wallpaper'?'paper' : F0==='board'?'wood' : ... : 'plaster';
+            //
+            // The saltbox was dialled plaster + blue and baked out cream, reading as a second copy of
+            // the cottage. Nothing failed; the colour simply never reached a surface.
+            // Scoped to a NON-DEFAULT colour on purpose. The rig falls back to 'cream'
+            // (interiorIsoRig.js:267), so `paper: 'cream'` under plaster is a no-op either way and
+            // both the shipped cottage and the schoolroom dial it harmlessly alongside a finish that
+            // suits them. What is never harmless is naming a colour the finish cannot show.
+            const string rigDefaultPaper = "cream";
+
+            foreach (var room in InteriorKit.RoomSet)
+            {
+                if (room.Dialled == null || !room.Dialled.TryGetValue("paper", out object paper)) continue;
+                if (string.Equals(paper as string, rigDefaultPaper, StringComparison.Ordinal)) continue;
+
+                room.Dialled.TryGetValue("wall", out object wall);
+                Assert.AreEqual("wallpaper", wall as string,
+                                $"room '{room.Key}' dials paper '{paper}' but wall '{wall}', and the rig " +
+                                "reaches the paper material only on the 'wallpaper' finish — so that " +
+                                "colour draws NOTHING and the room bakes out cream. Either dial " +
+                                "wallpaper or drop the paper key.");
+            }
+        }
+
+        [Test]
+        public void NoRoomDialsADividerWhileTheCollisionModelHasNoPartitions()
+        {
+            // interiorIsoRig draws a divider as a full-width partition with its own 1.15 m doorway gap
+            // (interiorIsoRig.js:382-396), but InteriorFootprint.WallQuads builds the four outer walls
+            // and nothing else. A room dialled with dividers therefore draws walls the player walks
+            // straight through — the exact class of silent defect this kit's guards exist for.
+            foreach (var room in InteriorKit.RoomSet)
+            {
+                if (room.Dialled == null || !room.Dialled.TryGetValue("dividers", out object v)) continue;
+                Assert.AreEqual(0, Convert.ToInt32(v),
+                                $"room '{room.Key}' dials {v} divider(s), but InteriorFootprint has no " +
+                                "partition quads — the drawn wall would have no collider and the player " +
+                                "would walk through it. Give InteriorFootprint partitions first.");
             }
         }
 

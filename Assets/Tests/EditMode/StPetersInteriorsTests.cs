@@ -176,39 +176,122 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void NoFurnishingStandsInsideAWallOrTheDoorway()
         {
-            const float halfWidth = 6.6f * 0.5f, halfLength = 8.05f * 0.5f;
+            // ⚠️ Every room, at ITS OWN dimensions. This used to hard-code the cottage's 6.6 × 8.05 m
+            // and read only the cottage's list, so the moment a second room was furnished it was
+            // silently checking three rooms' worth of nothing — and a chair in the schoolroom's wall
+            // would have passed. The rooms differ by 1.3 m of width and 2.3 m of length across the set.
             float wall = StPetersInteriors.WallThicknessMetres;
             float halfDoor = StPetersInteriors.DoorwayWidthMetres * 0.5f;
 
-            foreach (var f in StPetersInteriors.FurnishingsFor("sageCottage"))
+            foreach (var room in InteriorKit.RoomSet)
             {
-                Assert.Less(Mathf.Abs(f.RoomMetres.x), halfWidth - wall,
-                            $"'{f.PropKey}' is inside a side wall");
-                Assert.Less(Mathf.Abs(f.RoomMetres.y), halfLength - wall,
-                            $"'{f.PropKey}' is inside the front or back wall");
+                (float halfWidth, float halfLength) = HalfFootprint(room);
+                var furnishings = StPetersInteriors.FurnishingsFor(room.Key);
 
-                // ⭐ The doorway lane. A prop parked in the threshold is a prop you cannot get past, and
-                // its collider closes the ONE gap in the house — you would be locked out of your own
-                // cottage by a chair.
-                bool inDoorLane = Mathf.Abs(f.RoomMetres.x) < halfDoor + 0.5f &&
-                                  f.RoomMetres.y < -halfLength + 2.0f;
-                Assert.IsFalse(inDoorLane, $"'{f.PropKey}' is parked in the doorway");
+                foreach (var f in furnishings)
+                {
+                    Assert.Less(Mathf.Abs(f.RoomMetres.x), halfWidth - wall,
+                                $"'{room.Key}': '{f.PropKey}' at {f.RoomMetres} is inside a side wall " +
+                                $"(the room is {halfWidth * 2:0.00} m across)");
+                    Assert.Less(Mathf.Abs(f.RoomMetres.y), halfLength - wall,
+                                $"'{room.Key}': '{f.PropKey}' at {f.RoomMetres} is inside the front or " +
+                                $"back wall (the room is {halfLength * 2:0.00} m deep)");
+
+                    // ⭐ The doorway lane. A prop parked in the threshold is a prop you cannot get past,
+                    // and its collider closes the ONE gap in the house — you would be locked out of
+                    // your own cottage by a chair.
+                    bool inDoorLane = Mathf.Abs(f.RoomMetres.x) < halfDoor + 0.5f &&
+                                      f.RoomMetres.y < -halfLength + 2.0f;
+                    Assert.IsFalse(inDoorLane,
+                                   $"'{room.Key}': '{f.PropKey}' at {f.RoomMetres} is parked in the " +
+                                   "doorway");
+                }
+            }
+        }
+
+        [Test]
+        public void NoFurnishingSTICKSOUTOFTheHouse_ItsFootprintCounts_NotJustItsCentre()
+        {
+            // The centre test above is not enough: a bed is 1.50 × 2.05 m, so a centre that clears the
+            // wall by 0.2 m still puts three quarters of a metre of bed past it. The prop's own
+            // footprint comes from the bake's contract, which is also the rectangle its collider is
+            // built from — so this is what the player actually bumps into.
+            //
+            // ⚠️ THE BOUND IS THE WALL'S OUTER FACE, NOT ITS INNER ONE, and that is deliberate.
+            // Furniture is SUPPOSED to sit flush: the shipped cottage's bed reaches 3.10 m in a room
+            // whose inner face is at 3.00 m, i.e. 100 mm into the wall's thickness — which is what
+            // "against the wall" looks like, and it has always drawn correctly. Asserting the inner
+            // face would fail the owner's own approved arrangement. What is never acceptable is a prop
+            // protruding through the wall into the open air outside the house.
+            InteriorKit.Contract contract = InteriorKit.Load();
+            if (contract?.props == null || contract.props.Length == 0)
+                Assert.Ignore("no baked interior contract — nothing to read prop footprints from");
+
+            foreach (var room in InteriorKit.RoomSet)
+            {
+                (float halfWidth, float halfLength) = HalfFootprint(room);
+
+                foreach (var f in StPetersInteriors.FurnishingsFor(room.Key))
+                {
+                    InteriorKit.Entry prop = InteriorKit.FindProp(contract, f.PropKey);
+                    if (prop == null) continue;             // covered by EveryFurnishingNamesAProp…
+
+                    // ⚠️ A FacingOffset is a 45° step, not a 90° one. Only 2 and 6 present the prop's
+                    // depth across and its width along; 0 and 4 leave it square to the room; and the
+                    // four ODD offsets stand it on the diagonal, where the honest bound is the
+                    // half-diagonal in both axes.
+                    float w = prop.propFootprintWidth, d = prop.propFootprintDepth;
+                    int q = ((f.FacingOffset % 8) + 8) % 8;
+                    float across, along;
+                    if (q % 2 != 0) across = along = Mathf.Sqrt(w * w + d * d);
+                    else if (q == 2 || q == 6) { across = d; along = w; }
+                    else { across = w; along = d; }
+
+                    Assert.LessOrEqual(Mathf.Abs(f.RoomMetres.x) + across * 0.5f, halfWidth + 1e-3f,
+                                       $"'{room.Key}': '{f.PropKey}' at {f.RoomMetres} is " +
+                                       $"{across:0.00} m across, so it reaches " +
+                                       $"{Mathf.Abs(f.RoomMetres.x) + across * 0.5f:0.00} m and sticks " +
+                                       $"out through the side wall of a {halfWidth * 2:0.00} m room");
+                    Assert.LessOrEqual(Mathf.Abs(f.RoomMetres.y) + along * 0.5f, halfLength + 1e-3f,
+                                       $"'{room.Key}': '{f.PropKey}' at {f.RoomMetres} is " +
+                                       $"{along:0.00} m deep, so it reaches " +
+                                       $"{Mathf.Abs(f.RoomMetres.y) + along * 0.5f:0.00} m and sticks " +
+                                       $"out through the front or back wall of a " +
+                                       $"{halfLength * 2:0.00} m room");
+                }
             }
         }
 
         [Test]
         public void TheFurnishingsDoNotAllPileUpOnOnePoint()
         {
-            var seen = new List<Vector2>();
-            foreach (var f in StPetersInteriors.FurnishingsFor("sageCottage"))
+            foreach (var room in InteriorKit.RoomSet)
             {
-                foreach (Vector2 other in seen)
-                    Assert.Greater(Vector2.Distance(f.RoomMetres, other), 0.3f,
-                                   "two pieces of furniture on top of each other read as one, and " +
-                                   "their colliders merge into a blob");
-                seen.Add(f.RoomMetres);
+                var seen = new List<Vector2>();
+                foreach (var f in StPetersInteriors.FurnishingsFor(room.Key))
+                {
+                    foreach (Vector2 other in seen)
+                        Assert.Greater(Vector2.Distance(f.RoomMetres, other), 0.3f,
+                                       $"'{room.Key}': two pieces of furniture on top of each other " +
+                                       "read as one, and their colliders merge into a blob");
+                    seen.Add(f.RoomMetres);
+                }
+                Assert.GreaterOrEqual(seen.Count, 4,
+                                      $"'{room.Key}' is baked but barely furnished — a room the player " +
+                                      "can walk into should look lived in, not like a rehearsal space");
             }
-            Assert.GreaterOrEqual(seen.Count, 4, "the pilot furnishes the room honestly");
+        }
+
+        /// <summary>Half the room's footprint in metres, from its own dialled <c>size</c>. Both rigs
+        /// derive <c>Wd = 6 + size*2.4</c> and <c>Ln = 7 + size*4.2</c> from it (mirrored in
+        /// <c>InteriorKitTests.Footprint</c>, which is where the shell/room agreement is pinned).</summary>
+        static (float HalfWidth, float HalfLength) HalfFootprint(InteriorKit.Build room)
+        {
+            Assert.IsNotNull(room.Dialled, $"room '{room.Key}' must be dialled to have a size");
+            Assert.IsTrue(room.Dialled.TryGetValue("size", out object v),
+                          $"room '{room.Key}' must dial an explicit size");
+            float size = System.Convert.ToSingle(v);
+            return ((6f + size * 2.4f) * 0.5f, (7f + size * 4.2f) * 0.5f);
         }
 
         [Test]
@@ -246,14 +329,26 @@ namespace HiddenHarbours.Tests.EditMode
         public void StandingOnABuildingWithNoBakedRoomChangesNothing()
         {
             AllowTheMissingContractError();
-            var building = Spawn("school");
+
+            // ⚠️ Derived, not named. This used to say "school", which was a building with no room right
+            // up until the school got one — and then the test failed for the best possible reason
+            // while still claiming "four of the five have no room baked". Ask the kit instead.
+            string unroomed = null;
+            foreach (var b in VillageBuildingKit.M1Set)
+                if (InteriorKit.FindRoom(b.Key) == null) { unroomed = b.Key; break; }
+
+            if (unroomed == null)
+                Assert.Ignore("every village building now has a baked room — there is no un-roomed " +
+                              "case left to exercise, which is a good problem");
+
+            var building = Spawn(unroomed);
             var shell = building.AddComponent<SpriteRenderer>();
 
-            bool stood = StPetersInteriors.Stand(building, shell, "school", 4, null);
+            bool stood = StPetersInteriors.Stand(building, shell, unroomed, 4, null);
 
-            Assert.IsFalse(stood, "four of the five village buildings have no room baked for them");
+            Assert.IsFalse(stood, $"'{unroomed}' has no room baked for it");
             Assert.AreEqual(0, building.transform.childCount);
-            Assert.IsTrue(shell.enabled, "and their shells are left exactly as the village placed them");
+            Assert.IsTrue(shell.enabled, "and its shell is left exactly as the village placed it");
         }
 
         // =============================================================================

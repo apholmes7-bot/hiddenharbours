@@ -184,8 +184,13 @@ namespace HiddenHarbours.Art.Editor
         {
             // ---- the one-room school: the opening's teaching anchor -----------------------------
             // Small enough to read as ONE room (size 0.15 → 6.4 × 7.6 m), white clapboard, and mostly
-            // windows — a schoolroom is lit from the sides. One chimney for the stove, no porch, no
-            // dormers. The rig has no belfry axis, so it does not pretend to one.
+            // windows — a schoolroom is lit from the sides. One chimney for the stove, no dormers.
+            // The rig has no belfry axis, so it does not pretend to one.
+            //
+            // ⚠️ THE PORCH IS LOAD-BEARING HERE, NOT DECORATION — see <see cref="GableDoorAxes"/>.
+            // porch 'none' routes this rig's door to the +X EAVE wall while anchors() goes on
+            // claiming the +Y gable centre, and a room registers its doorway to that anchor. With no
+            // porch the walk-in gap lands on blank gable clapboard and the drawn door is solid wall.
             Build.FromDialled("school", "One-room school", "house", new Dictionary<string, object>
             {
                 ["era"] = "colonial",
@@ -197,7 +202,9 @@ namespace HiddenHarbours.Art.Editor
                 ["windows"] = "sixOverSix",
                 ["winDensity"] = 0.85,
                 ["attic"] = "gable",
-                ["porch"] = "none",
+                // ⭐ was 'none'. A schoolhouse step out of the weather — and the axis that puts the
+                // door on the gable its room opens onto.
+                ["porch"] = "front",
                 ["dormers"] = 0,
                 ["chimneys"] = 1,
                 ["bay"] = false,
@@ -228,12 +235,59 @@ namespace HiddenHarbours.Art.Editor
                "gas in a can over its counter"),
 
             // ---- the three clapboard houses -----------------------------------------------------
+            //
+            // ⚠️ THE FARMHOUSE AND THE SALTBOX WERE PRESET BUILDS AND ARE NOW DIALLED. Neither preset
+            // can be entered: `redSaltbox` carries porch 'none' (→ eave door) and `whiteFarmhouse`
+            // carries shape 'ell' (→ a door on the forward wing, 1.21 m across and 4.17 m beyond the
+            // footprint the room occupies). Both are dialled from the preset's own values — proved
+            // byte-identical to the preset spread at all eight facings before a single axis moved —
+            // so the ONLY differences from the shipped art are the ones called out below.
 
-            Build.FromPreset("whiteFarmhouse", "White farmhouse", "house", "whiteFarmhouse",
-                "the biggest of the three — an ell with a wrap porch, the one with a family in it"),
+            // The biggest of the three. It KEEPS its wrap porch, metal roof, dormer and size (7.7 ×
+            // 9.9 m of footprint, so its site and clearances are untouched); it loses the ell wing
+            // and the bay window.
+            //
+            // Why both: an `ell` can never take a gable door (`gableDoor = hasPorch && shape!=='ell'`),
+            // and a bay silently KILLS the porch (`bayFrontOn = !!bayKind && shape!=='ell'`, and
+            // `hasPorch` requires `!bayFrontOn`) — so with the ell dropped, leaving `bay:true` would
+            // have put the door straight back on the eave. Measured, not reasoned.
+            Build.FromDialled("whiteFarmhouse", "White farmhouse", "house", new Dictionary<string, object>
+            {
+                ["era"] = "colonial",
+                ["shape"] = "gable",          // ⭐ was 'ell' — an ell cannot take a gable door
+                ["siding"] = "clapboard",
+                ["body"] = "white",
+                ["roof"] = "metal",
+                ["size"] = 0.7,               // unchanged: the footprint must not move
+                ["windows"] = "sixOverSix",
+                ["winDensity"] = 0.60,
+                ["attic"] = "gable",
+                ["porch"] = "wrap",
+                ["dormers"] = 1,
+                ["chimneys"] = 1,
+                ["bay"] = false,              // ⭐ was true — a bay cancels the porch, and the door with it
+                ["weather"] = 0.10,
+            }, "the biggest of the three — a wrap porch and a dormer, the one with a family in it"),
 
-            Build.FromPreset("redSaltbox", "Red saltbox", "house", "redSaltbox",
-                "the plainest — red clapboard, no porch, the long north roof of a saltbox"),
+            // The plainest. Red clapboard and the saltbox's long north roof are both kept; it gains
+            // the front step it needs to be a house you can walk into.
+            Build.FromDialled("redSaltbox", "Red saltbox", "house", new Dictionary<string, object>
+            {
+                ["era"] = "modern",
+                ["shape"] = "saltbox",
+                ["siding"] = "clapboard",
+                ["body"] = "red",
+                ["roof"] = "asphaltGrey",
+                ["size"] = 0.4,               // unchanged: the footprint must not move
+                ["windows"] = "twoOverTwo",
+                ["winDensity"] = 0.60,
+                ["attic"] = "none",
+                ["porch"] = "front",          // ⭐ was 'none' — which put the door on the eave wall
+                ["dormers"] = 0,
+                ["chimneys"] = 1,
+                ["bay"] = false,
+                ["weather"] = 0.20,
+            }, "the plainest — red clapboard and the long north roof of a saltbox"),
 
             // The third house has no clapboard preset to take, so it is dialled: the smallest and the
             // most weathered of the three, so the row reads as houses of different ages.
@@ -255,6 +309,98 @@ namespace HiddenHarbours.Art.Editor
                 ["weather"] = 0.55,
             }, "the third clapboard house the canon asks for; no rig preset is clapboard AND small"),
         };
+
+        // =================================================================================
+        //  ⚠️ CAN THIS BUILDING BE ENTERED AT ALL? — the axes that decide where the door DRAWS
+        // =================================================================================
+
+        /// <summary>
+        /// <b>🔴 <c>houseIsoRig.anchors()</c> DOES NOT REPORT WHERE THE DOOR IS DRAWN.</b> It returns
+        /// <c>door: pj(0, Ln/2, fH+1)</c> — the <c>+Y</c> gable centre — for <i>every</i> shape and
+        /// every porch, unconditionally (<c>houseIsoRig.js:898</c>). Where the door actually goes is
+        /// decided three hundred lines earlier by axes the anchor never consults:
+        ///
+        /// <code>
+        ///   :747  bayFrontOn = !!bayKind &amp;&amp; shape !== 'ell'
+        ///   :748  hasPorch   = (porch === 'front' || porch === 'wrap') &amp;&amp; !bayFrontOn &amp;&amp; !isCape
+        ///   :750  eaveDoor   = isCape || (!hasPorch &amp;&amp; shape !== 'ell')   → door on the +X EAVE wall
+        ///   :772  gableDoor  = hasPorch &amp;&amp; shape !== 'ell'               → door on the +Y GABLE centre
+        ///   :739  shape 'ell'                                            → door on the forward WING
+        /// </code>
+        ///
+        /// <para><b>Why this matters more than it looks.</b> A room's doorway registers to the ANCHOR
+        /// (<c>InteriorKit.InteriorFacingFor</c> lines the two door anchors up, and
+        /// <c>InteriorFootprint</c> cuts the gap in the wall there). So when the anchor and the drawn
+        /// door disagree, the gap you can walk through is somewhere other than the door you can see —
+        /// and BOTH draw perfectly. Measured on this set 2026-08-12: the school's and the saltbox's
+        /// doors were 90° away on the eave wall, and the farmhouse's was on its ell wing, 1.21 m
+        /// across and 4.17 m beyond the footprint its room occupies.</para>
+        ///
+        /// <para><b>It also silently defeated the facing pass.</b> <c>BuildingFacing</c> reasons that
+        /// "a wrong sign would have to be a wrong sign in the baked pixels" — true of the cell
+        /// ORDER, which it measures, but not of WHICH WALL, which it takes from the same declared
+        /// anchor. So <c>StPetersVillage.FacingToward</c> has been turning the school's and the
+        /// saltbox's blank gable toward the green while their real doors face 90° away. Left alone
+        /// deliberately (re-facing is a visible change to banked buildings and wants its own drop);
+        /// recorded here so the next reader does not re-derive it.</para>
+        ///
+        /// <para><b>The rule this leaves.</b> Any build the interior kit bakes a room for must draw
+        /// its door on the gable — porch <c>front</c>/<c>wrap</c>, shape neither <c>ell</c> nor
+        /// <c>cape</c>, and no bay (a bay cancels the porch via <c>bayFrontOn</c>, taking the door
+        /// with it). <c>VillageBuildingSetTests</c> enforces it and greps the rig's own routing lines
+        /// so the predicate below cannot drift away from them in silence.</para>
+        /// </summary>
+        public static bool DrawsDoorOnGable(Build build, out string why)
+        {
+            if (build.IsPreset)
+            {
+                why = $"'{build.Key}' is a PRESET build, so its porch/shape/bay live in the rig's " +
+                      "own table and cannot be read here. Dial it instead — a build that a room " +
+                      "stands inside has to be checkable from the kit.";
+                return false;
+            }
+
+            string porch = Value(build, "porch") as string ?? "none";
+            string shape = Value(build, "shape") as string ?? "gable";
+            object bay = Value(build, "bay");
+
+            // A bay resolves to a kind for `true` as well as for the two named kinds, and any kind
+            // sets bayFrontOn (given shape != 'ell'), which cancels hasPorch — and the door with it.
+            bool hasBay = bay is bool b ? b : bay is string s && s.Length > 0 && s != "none";
+
+            if (shape == "ell")
+            {
+                why = $"'{build.Key}' is shape 'ell': the rig draws its door on the forward WING " +
+                      "(houseIsoRig.js:739), which stands outside the footprint the room occupies.";
+                return false;
+            }
+            if (shape == "cape")
+            {
+                why = $"'{build.Key}' is shape 'cape': the rig always routes a cape's entry to the " +
+                      "long +X eave face (houseIsoRig.js:750, `isCape ||`), whatever the porch says.";
+                return false;
+            }
+            if (porch != "front" && porch != "wrap")
+            {
+                why = $"'{build.Key}' has porch '{porch}': with no porch the rig routes the door to " +
+                      "the +X EAVE wall (houseIsoRig.js:750), 90° from the gable its room opens onto.";
+                return false;
+            }
+            if (hasBay)
+            {
+                why = $"'{build.Key}' has a bay: bayFrontOn cancels hasPorch (houseIsoRig.js:747-748), " +
+                      "so the porch stops carrying the door and it falls back to the eave wall.";
+                return false;
+            }
+
+            why = $"'{build.Key}': porch '{porch}', shape '{shape}', no bay → gableDoor, so the drawn " +
+                  "door sits on the +Y gable centre where anchors() claims it and where a room's " +
+                  "doorway is cut.";
+            return true;
+        }
+
+        static object Value(Build build, string key) =>
+            build.Dialled != null && build.Dialled.TryGetValue(key, out object v) ? v : null;
 
         /// <summary>The build with this key, or null.</summary>
         public static Build? FindBuild(string key)

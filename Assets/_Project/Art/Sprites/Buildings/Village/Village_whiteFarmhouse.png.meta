@@ -138,11 +138,11 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 1156
-        width: 646
-        height: 578
+        y: 481
+        width: 508
+        height: 481
       alignment: 9
-      pivot: {x: 0.5, y: 0.3615917}
+      pivot: {x: 0.5, y: 0.32016632}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -159,12 +159,12 @@ TextureImporter:
       name: Village_whiteFarmhouse_d1
       rect:
         serializedVersion: 2
-        x: 646
-        y: 1156
-        width: 646
-        height: 578
+        x: 508
+        y: 481
+        width: 508
+        height: 481
       alignment: 9
-      pivot: {x: 0.5, y: 0.3615917}
+      pivot: {x: 0.5, y: 0.32016632}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -181,12 +181,12 @@ TextureImporter:
       name: Village_whiteFarmhouse_d2
       rect:
         serializedVersion: 2
-        x: 1292
-        y: 1156
-        width: 646
-        height: 578
+        x: 1016
+        y: 481
+        width: 508
+        height: 481
       alignment: 9
-      pivot: {x: 0.5, y: 0.3615917}
+      pivot: {x: 0.5, y: 0.32016632}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -203,12 +203,12 @@ TextureImporter:
       name: Village_whiteFarmhouse_d3
       rect:
         serializedVersion: 2
-        x: 0
-        y: 578
-        width: 646
-        height: 578
+        x: 1524
+        y: 481
+        width: 508
+        height: 481
       alignment: 9
-      pivot: {x: 0.5, y: 0.3615917}
+      pivot: {x: 0.5, y: 0.32016632}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -225,12 +225,12 @@ TextureImporter:
       name: Village_whiteFarmhouse_d4
       rect:
         serializedVersion: 2
-        x: 646
-        y: 578
-        width: 646
-        height: 578
+        x: 0
+        y: 0
+        width: 508
+        height: 481
       alignment: 9
-      pivot: {x: 0.5, y: 0.3615917}
+      pivot: {x: 0.5, y: 0.32016632}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -247,12 +247,12 @@ TextureImporter:
       name: Village_whiteFarmhouse_d5
       rect:
         serializedVersion: 2
-        x: 1292
-        y: 578
-        width: 646
-        height: 578
+        x: 508
+        y: 0
+        width: 508
+        height: 481
       alignment: 9
-      pivot: {x: 0.5, y: 0.3615917}
+      pivot: {x: 0.5, y: 0.32016632}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -269,12 +269,12 @@ TextureImporter:
       name: Village_whiteFarmhouse_d6
       rect:
         serializedVersion: 2
-        x: 0
+        x: 1016
         y: 0
-        width: 646
-        height: 578
+        width: 508
+        height: 481
       alignment: 9
-      pivot: {x: 0.5, y: 0.3615917}
+      pivot: {x: 0.5, y: 0.32016632}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -291,12 +291,12 @@ TextureImporter:
       name: Village_whiteFarmhouse_d7
       rect:
         serializedVersion: 2
-        x: 646
+        x: 1524
         y: 0
-        width: 646
-        height: 578
+        width: 508
+        height: 481
       alignment: 9
-      pivot: {x: 0.5, y: 0.3615917}
+      pivot: {x: 0.5, y: 0.32016632}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []

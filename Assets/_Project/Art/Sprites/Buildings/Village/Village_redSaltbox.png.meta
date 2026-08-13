@@ -141,11 +141,11 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 404
-        width: 386
-        height: 404
+        y: 427
+        width: 462
+        height: 427
       alignment: 9
-      pivot: {x: 0.5, y: 0.28960395}
+      pivot: {x: 0.5, y: 0.32786885}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -162,12 +162,12 @@ TextureImporter:
       name: Village_redSaltbox_d1
       rect:
         serializedVersion: 2
-        x: 386
-        y: 404
-        width: 386
-        height: 404
+        x: 462
+        y: 427
+        width: 462
+        height: 427
       alignment: 9
-      pivot: {x: 0.5, y: 0.28960395}
+      pivot: {x: 0.5, y: 0.32786885}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -184,12 +184,12 @@ TextureImporter:
       name: Village_redSaltbox_d2
       rect:
         serializedVersion: 2
-        x: 772
-        y: 404
-        width: 386
-        height: 404
+        x: 924
+        y: 427
+        width: 462
+        height: 427
       alignment: 9
-      pivot: {x: 0.5, y: 0.28960395}
+      pivot: {x: 0.5, y: 0.32786885}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -206,12 +206,12 @@ TextureImporter:
       name: Village_redSaltbox_d3
       rect:
         serializedVersion: 2
-        x: 1158
-        y: 404
-        width: 386
-        height: 404
+        x: 1386
+        y: 427
+        width: 462
+        height: 427
       alignment: 9
-      pivot: {x: 0.5, y: 0.28960395}
+      pivot: {x: 0.5, y: 0.32786885}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -228,12 +228,12 @@ TextureImporter:
       name: Village_redSaltbox_d4
       rect:
         serializedVersion: 2
-        x: 1544
-        y: 404
-        width: 386
-        height: 404
+        x: 0
+        y: 0
+        width: 462
+        height: 427
       alignment: 9
-      pivot: {x: 0.5, y: 0.28960395}
+      pivot: {x: 0.5, y: 0.32786885}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -250,12 +250,12 @@ TextureImporter:
       name: Village_redSaltbox_d5
       rect:
         serializedVersion: 2
-        x: 0
+        x: 462
         y: 0
-        width: 386
-        height: 404
+        width: 462
+        height: 427
       alignment: 9
-      pivot: {x: 0.5, y: 0.28960395}
+      pivot: {x: 0.5, y: 0.32786885}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -272,12 +272,12 @@ TextureImporter:
       name: Village_redSaltbox_d6
       rect:
         serializedVersion: 2
-        x: 386
+        x: 924
         y: 0
-        width: 386
-        height: 404
+        width: 462
+        height: 427
       alignment: 9
-      pivot: {x: 0.5, y: 0.28960395}
+      pivot: {x: 0.5, y: 0.32786885}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -294,12 +294,12 @@ TextureImporter:
       name: Village_redSaltbox_d7
       rect:
         serializedVersion: 2
-        x: 772
+        x: 1386
         y: 0
-        width: 386
-        height: 404
+        width: 462
+        height: 427
       alignment: 9
-      pivot: {x: 0.5, y: 0.28960395}
+      pivot: {x: 0.5, y: 0.32786885}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
