@@ -144,10 +144,12 @@ grass reads the shared wind automatically. The footstep bend is a **fading trail
 walker takes (a footprint-sized disturbance per recent position), so the grass reads as trodden-down
 rather than a halo orbiting them.
 
-**Villagers on routines** now want the same component. With the pool above, adding a `GrassFootstep`
-alongside the `YSortSprite.Dynamic = true` that `StPetersRoutines.WireVillagers` already sets is enough
-for the meadow to answer them, and it no longer costs the player their path. Leave villagers at the
-default `Priority` of 0 — that is exactly what keeps the player's `PlayerPriority` claim above them.
+**Villagers on routines** carry the same component: `StPetersRoutines.WireLivingGrass` (called per
+villager by `WireVillagers`) adds a `GrassFootstep` alongside the `YSortSprite.Dynamic = true` it already
+set, so the meadow answers them — and with the pool above it no longer costs the player their path.
+Villagers stay at the default `Priority` of 0, which is exactly what keeps the player's `PlayerPriority`
+claim above them (pinned by `StPetersRoutineContentTests`). The wiring lands in the scene on the owner's
+next **Build St Peters** click.
 
 ## ⚠️ The bend curve requires a tessellated sprite (measured 2026-07-25)
 
