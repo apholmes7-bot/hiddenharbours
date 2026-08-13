@@ -217,20 +217,22 @@ namespace HiddenHarbours.Art.Editor
         /// <summary>
         /// The shops St Peters opens, in the order they read walking up the lane.
         ///
-        /// <para><b>Three of the kit's nine, and the other six are deliberately not built.</b> The owner
-        /// ruled the set on 2026-08-11: general store, post office, restaurant. The kit ships nine trades
-        /// because it is a kit. Importing source is not a licence to wire content (CLAUDE.md rule 8) —
-        /// a chandlery and a tavern in a five-building village would be scope, not scenery. All nine
-        /// remain one <see cref="Build"/> away, and the bake path, contract and tests are written against
-        /// the set rather than against these three.</para>
+        /// <para><b>Four of the kit's nine, and the other five are deliberately not built.</b> The owner
+        /// ruled the first three on 2026-08-11 (general store, post office, restaurant); the fish market
+        /// joined them when B2 placed one at Nine Mile Creek. The kit ships nine trades because it is a
+        /// kit. Importing source is not a licence to wire content (CLAUDE.md rule 8) — a chandlery and a
+        /// tavern nobody has sited would be scope, not scenery. All nine remain one <see cref="Build"/>
+        /// away, and the bake path, contract and tests are written against the set rather than against
+        /// whichever trades happen to be in it.</para>
         ///
-        /// <para><b>The fish market was here and is not any more.</b> Part 1 read the owner's
-        /// "shop/store/restaurant" as general store + fish market + restaurant; the market was the
-        /// inference and he replaced it with the post office rather than confirm it. Its measurements
-        /// survive in <see cref="ImportSizeCap"/>'s note and in
-        /// <c>ShopKitBakeTests.TradesWithoutAnUpperStoreyReturnTheGroundPlanForOne</c>, which still pins
-        /// the kit's no-upper table against the rig — that is a fact about the KIT and does not depend
-        /// on which trades this slice happens to bake.</para>
+        /// <para><b>⚠️ THE SET IS DRIVEN BY PLACEMENTS, AND THE FISH MARKET IS THE WORKED EXAMPLE.</b> It
+        /// was in part 1's set as an INFERENCE from P3 — the owner had asked for "shop/store/restaurant"
+        /// — and he replaced it with the post office rather than confirm it. Its measurements survived in
+        /// <see cref="ImportSizeCap"/>'s note and in
+        /// <c>ShopKitBakeTests.TradesWithoutAnUpperStoreyReturnTheGroundPlanForOne</c> (a fact about the
+        /// KIT, independent of the set). It is back now because a REGION asked: Nine Mile Creek is the
+        /// working wharf, and the ask arrived with ground under it. That is the order this table wants —
+        /// a placement, then a build — and not the other way round.</para>
         ///
         /// <para><b>GROUND LEVELS ONLY in this slice.</b> Every one of these trades has a <c>flat</c>
         /// above the shop and the rig bakes it — but the stair between them is a level change, which is
@@ -263,6 +265,19 @@ namespace HiddenHarbours.Art.Editor
             new Build("restaurant", "Restaurant", "restaurant", "wharfDiner", 0.50,
                       new[] { GroundLevel },
                       "the owner's 2026-08-06 ask, and P2's other half: somewhere the money goes"),
+
+            // ⭐ THE FISH MARKET IS BACK, and it is Nine Mile Creek's rather than St Peters'. Part 1
+            // inferred a market for the island, the owner replaced it with the post office (see the note
+            // on the post office above) — and then the wharf asked for one, which is a different
+            // building in a different place for a reason nobody had to infer: a fish wharf sells fish.
+            // ⚠ NO UPPER STOREY, and that is the kit's plan table rather than this slice's taste —
+            // HasUpper('fishMarket') is false, and asking the rig for one bakes a second copy of the
+            // ground floor half a metre in the air with nothing reporting it.
+            new Build("fishMarket", "Fish market", "fishMarket", "coopFishHouse", 0.45,
+                      new[] { GroundLevel },
+                      "B2: Nine Mile Creek is the working wharf, and P3's living coast is a place where " +
+                      "what the fleet lands is sold — the trade the kit has always carried, asked for at " +
+                      "last by a placement"),
         };
 
         public static Build? FindBuild(string key)
