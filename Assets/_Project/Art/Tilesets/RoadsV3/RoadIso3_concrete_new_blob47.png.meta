@@ -1,0 +1,2331 @@
+fileFormatVersion: 2
+guid: 45dd9da3616e25b4c9d25807ed18b4d8
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8293421138061816020
+    second: RoadIso3_concrete_new_blob47_0
+  - first:
+      213: 4721223871884645842
+    second: RoadIso3_concrete_new_blob47_1
+  - first:
+      213: -7713231735721957533
+    second: RoadIso3_concrete_new_blob47_2
+  - first:
+      213: -8589027215968815306
+    second: RoadIso3_concrete_new_blob47_3
+  - first:
+      213: -555291825863151772
+    second: RoadIso3_concrete_new_blob47_4
+  - first:
+      213: 6278013532366190816
+    second: RoadIso3_concrete_new_blob47_5
+  - first:
+      213: -7917168234892806957
+    second: RoadIso3_concrete_new_blob47_6
+  - first:
+      213: 792007172600228489
+    second: RoadIso3_concrete_new_blob47_7
+  - first:
+      213: -7412466668750690757
+    second: RoadIso3_concrete_new_blob47_8
+  - first:
+      213: -4339942948723293490
+    second: RoadIso3_concrete_new_blob47_9
+  - first:
+      213: 2506441937998218529
+    second: RoadIso3_concrete_new_blob47_10
+  - first:
+      213: -683305109729703571
+    second: RoadIso3_concrete_new_blob47_11
+  - first:
+      213: 8892501414224856082
+    second: RoadIso3_concrete_new_blob47_12
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 512
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_0_top
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 214
+        width: 32
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: af6b1676481ce7f4e8cf38c79cbf8394
+      internalID: 1112561337
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_0_skirt
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 192
+        width: 32
+        height: 22
+      alignment: 9
+      pivot: {x: 0.5, y: 1.7272727}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bdf8212959478a14ba20c76ef7a29c03
+      internalID: 1333748970
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_1_top
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 214
+        width: 32
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 89209f372e33eb04e9448d5837a50fd4
+      internalID: -385916433
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_1_skirt
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 192
+        width: 32
+        height: 22
+      alignment: 9
+      pivot: {x: 0.5, y: 1.7272727}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 870923f5f661b3343be670cbbb1881e2
+      internalID: -1594779293
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_2_top
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 214
+        width: 32
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 471205624d185274595c691037fa7ba7
+      internalID: -680820142
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_2_skirt
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 192
+        width: 32
+        height: 22
+      alignment: 9
+      pivot: {x: 0.5, y: 1.7272727}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0cda44dcf1e69e848b29af61699a7d26
+      internalID: 409614713
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_3_top
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 214
+        width: 32
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 741ca4292e7045d48a76ce676c521699
+      internalID: 707824239
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_3_skirt
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 192
+        width: 32
+        height: 22
+      alignment: 9
+      pivot: {x: 0.5, y: 1.7272727}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c8fd16a26eb69e041ab0a8b6c3eed9fe
+      internalID: -1192017845
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_4_top
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 214
+        width: 32
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: def8b57126461fc46a75611699f86cf1
+      internalID: 855719724
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_4_skirt
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 192
+        width: 32
+        height: 22
+      alignment: 9
+      pivot: {x: 0.5, y: 1.7272727}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e4a42e4bf90101c449b4acd106fdb5b2
+      internalID: -1464469331
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_5_top
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 214
+        width: 32
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5dfcaa1d9f2c44047a3069a5626ab27e
+      internalID: -296510779
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_5_skirt
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 192
+        width: 32
+        height: 22
+      alignment: 9
+      pivot: {x: 0.5, y: 1.7272727}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2f62756c69611674790fd45ce7b28113
+      internalID: -1942755711
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_6_top
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 214
+        width: 32
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ac59bf5b81f02f04f8ec5f31759cab18
+      internalID: -31371346
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_6_skirt
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 192
+        width: 32
+        height: 22
+      alignment: 9
+      pivot: {x: 0.5, y: 1.7272727}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0cc37c4a1c53d824d99d12536f0b9e64
+      internalID: -1271291866
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_7_top
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 214
+        width: 32
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b1253686ad07f814493ecfeb7f2f70ea
+      internalID: 1190149670
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_7_skirt
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 192
+        width: 32
+        height: 22
+      alignment: 9
+      pivot: {x: 0.5, y: 1.7272727}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2349c3c095aa82f428c7e46b9f7553ef
+      internalID: -1997005496
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_8_top
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 214
+        width: 32
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7411bb14880f25f4bba905f20006f0cd
+      internalID: 1506766300
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_8_skirt
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 192
+        width: 32
+        height: 22
+      alignment: 9
+      pivot: {x: 0.5, y: 1.7272727}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 76734c3d2183b7d42beb2ed860e95020
+      internalID: -1532680451
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_9_top
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 214
+        width: 32
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3b8dcfd7c72d2f24287891921b963e08
+      internalID: 1921363512
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_9_skirt
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 192
+        width: 32
+        height: 22
+      alignment: 9
+      pivot: {x: 0.5, y: 1.7272727}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2a8b083e1b350094fbf997b039ba9227
+      internalID: -1773446685
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_10_top
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 214
+        width: 32
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4f5d18b89183c2f4d8a046ec1c86bf5e
+      internalID: -893614971
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_10_skirt
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 192
+        width: 32
+        height: 22
+      alignment: 9
+      pivot: {x: 0.5, y: 1.7272727}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3081ea88a9dc3384680198af9a83a37e
+      internalID: 579209146
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_11_top
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 214
+        width: 32
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8126e8054913929449db8a4ce5391ef2
+      internalID: 1155818582
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_11_skirt
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 192
+        width: 32
+        height: 22
+      alignment: 9
+      pivot: {x: 0.5, y: 1.7272727}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 734c798850e7f354da7b5ae57b2226eb
+      internalID: 1181897640
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_12_top
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 150
+        width: 32
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 510c8406c576d364eaa8bd1cbc15d7cc
+      internalID: 1171261904
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_12_skirt
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 128
+        width: 32
+        height: 22
+      alignment: 9
+      pivot: {x: 0.5, y: 1.7272727}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 99d9a3df69f56f44a8d4d71cfab6a194
+      internalID: -306677322
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_13_top
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 150
+        width: 32
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d4ab4469670ea20479a7866282ab9a9c
+      internalID: -731273828
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_13_skirt
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 128
+        width: 32
+        height: 22
+      alignment: 9
+      pivot: {x: 0.5, y: 1.7272727}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e79e218726545ad47a0dd3277b33b277
+      internalID: 201897280
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_14_top
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 150
+        width: 32
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1cebefd802b36ca4385baddfa3f86792
+      internalID: -2018086088
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_14_skirt
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 128
+        width: 32
+        height: 22
+      alignment: 9
+      pivot: {x: 0.5, y: 1.7272727}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e0c567754caa5614f825dde43ce6cbe7
+      internalID: 479214274
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_15_top
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 150
+        width: 32
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b98f843297475c845936c9b19d0846e8
+      internalID: 1792335718
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_15_skirt
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 128
+        width: 32
+        height: 22
+      alignment: 9
+      pivot: {x: 0.5, y: 1.7272727}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bfed2cb9cda9f3b4cab45d9318f31cd0
+      internalID: 2011134126
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_16_top
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 150
+        width: 32
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fb429a6f147487646ba88a84b5bfa296
+      internalID: 1330895383
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_16_skirt
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 128
+        width: 32
+        height: 22
+      alignment: 9
+      pivot: {x: 0.5, y: 1.7272727}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 29b112841fb9cb641a004fc444df44a1
+      internalID: 927653538
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_17_top
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 150
+        width: 32
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2b53110604bcdf4469c14212016f64bb
+      internalID: -238923692
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_17_skirt
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 128
+        width: 32
+        height: 22
+      alignment: 9
+      pivot: {x: 0.5, y: 1.7272727}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fa1804b803243614b8ed8d09a2d02213
+      internalID: 1510610982
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_18_top
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 150
+        width: 32
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3c3650aa31748c94d91eaea59b1dab3b
+      internalID: -1185221092
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_18_skirt
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 128
+        width: 32
+        height: 22
+      alignment: 9
+      pivot: {x: 0.5, y: 1.7272727}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9fea81d11b96ec14e930e5daec7c187c
+      internalID: -2056138084
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_19_top
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 150
+        width: 32
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fd89cb652e5e48f4193d873837aa58c4
+      internalID: -1972741873
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_19_skirt
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 128
+        width: 32
+        height: 22
+      alignment: 9
+      pivot: {x: 0.5, y: 1.7272727}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0efe90a9740b9db42b9be412ff4a102c
+      internalID: -315530678
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_20_top
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 150
+        width: 32
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 661d5839dfc7eee4fae91a2172de987e
+      internalID: -1349789025
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_20_skirt
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 128
+        width: 32
+        height: 22
+      alignment: 9
+      pivot: {x: 0.5, y: 1.7272727}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c9a60f86ad9312b468da7328f91382af
+      internalID: 1878048583
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_21_top
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 150
+        width: 32
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 64a6745733408d445a64fad79a3d4ea3
+      internalID: 522355493
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_21_skirt
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 128
+        width: 32
+        height: 22
+      alignment: 9
+      pivot: {x: 0.5, y: 1.7272727}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3090c4577e980b94ba6d18e78570c1f4
+      internalID: 178317879
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_22_top
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 150
+        width: 32
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1517109344bba154da481bc6bb377fa2
+      internalID: 933245107
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_22_skirt
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 128
+        width: 32
+        height: 22
+      alignment: 9
+      pivot: {x: 0.5, y: 1.7272727}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e9ffdb725b86f8740bb4dd4e623214f4
+      internalID: -700898979
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_23_top
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 150
+        width: 32
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3c7cf83d2e1ca664f8e82f64ce83e49d
+      internalID: 2064756634
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_23_skirt
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 128
+        width: 32
+        height: 22
+      alignment: 9
+      pivot: {x: 0.5, y: 1.7272727}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bd5688d9aefcc4e499428d1e72a5a2c6
+      internalID: -1562022417
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_24_top
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 86
+        width: 32
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0db585408c4a9844195fb8d5c14f15e9
+      internalID: 348111177
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_24_skirt
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 64
+        width: 32
+        height: 22
+      alignment: 9
+      pivot: {x: 0.5, y: 1.7272727}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 49a964629a3b80c4e8582debfce899a4
+      internalID: 233944276
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_25_top
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 86
+        width: 32
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 376dbb8bcb514cc4c949de221129abb9
+      internalID: 1341542342
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_25_skirt
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 64
+        width: 32
+        height: 22
+      alignment: 9
+      pivot: {x: 0.5, y: 1.7272727}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f4f61da6dc906a1478c722c4880826fe
+      internalID: 2055974837
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_26_top
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 86
+        width: 32
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7ccbf43c43836d247a1025060013fff8
+      internalID: -788419340
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_26_skirt
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 64
+        width: 32
+        height: 22
+      alignment: 9
+      pivot: {x: 0.5, y: 1.7272727}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 532af35ab081be949a8e709fb41280cf
+      internalID: -1657299116
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_27_top
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 86
+        width: 32
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7724b4d6acd101741bace528e0d05218
+      internalID: 275629122
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_27_skirt
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 64
+        width: 32
+        height: 22
+      alignment: 9
+      pivot: {x: 0.5, y: 1.7272727}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bba3968d02e65a5488cee87d7b86fe8c
+      internalID: -167396440
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_28_top
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 86
+        width: 32
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 94273cf9e9d3b0b409a19d1c1141fcca
+      internalID: -1824553694
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_28_skirt
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 64
+        width: 32
+        height: 22
+      alignment: 9
+      pivot: {x: 0.5, y: 1.7272727}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 98d06af697ba0934283e128c17b974dc
+      internalID: 1100857079
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_29_top
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 86
+        width: 32
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0c2218e09df1ffd478d2a0e3b21006fa
+      internalID: 537606257
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_29_skirt
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 64
+        width: 32
+        height: 22
+      alignment: 9
+      pivot: {x: 0.5, y: 1.7272727}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7efe9e101e946c548baee864337d5947
+      internalID: -1882863471
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_30_top
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 86
+        width: 32
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 47f9ef55f8b232a4cbf5052a57c5fe3f
+      internalID: -1348050494
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_30_skirt
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 64
+        width: 32
+        height: 22
+      alignment: 9
+      pivot: {x: 0.5, y: 1.7272727}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5eb3e7a4b7046dc458ebf96531354862
+      internalID: 152744376
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_31_top
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 86
+        width: 32
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0576120edd4a2744ba981a0e70f73b4d
+      internalID: -793182115
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_31_skirt
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 64
+        width: 32
+        height: 22
+      alignment: 9
+      pivot: {x: 0.5, y: 1.7272727}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 81847cfbf8b64904c9965f5df4c56b25
+      internalID: 1778563748
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_32_top
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 86
+        width: 32
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: df6eab13b63127c49970799e7f44b00b
+      internalID: -555125120
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_32_skirt
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 64
+        width: 32
+        height: 22
+      alignment: 9
+      pivot: {x: 0.5, y: 1.7272727}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a61e151283f714241a8a2aea02b040d6
+      internalID: 1320963895
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_33_top
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 86
+        width: 32
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 197a125cd654dff4bbae034910d48c3d
+      internalID: 1541541198
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_33_skirt
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 64
+        width: 32
+        height: 22
+      alignment: 9
+      pivot: {x: 0.5, y: 1.7272727}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 33b83eb0ef9279943a5a09e4e0a30736
+      internalID: -204038032
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_34_top
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 86
+        width: 32
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 04b75f818498c2a4c9d5e1c37238bb46
+      internalID: 1706371907
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_34_skirt
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 64
+        width: 32
+        height: 22
+      alignment: 9
+      pivot: {x: 0.5, y: 1.7272727}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 778629e8f4c36d640be53ca36b034452
+      internalID: -1938801982
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_35_top
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 86
+        width: 32
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f324426f34a462a4aba96e2313454e1e
+      internalID: -1422962381
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_35_skirt
+      rect:
+        serializedVersion: 2
+        x: 352
+        y: 64
+        width: 32
+        height: 22
+      alignment: 9
+      pivot: {x: 0.5, y: 1.7272727}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 39815cb64f8c9b9479357e5f598864ee
+      internalID: 277158629
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_36_top
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 22
+        width: 32
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ddce6c9a6c947424daab7092d34ecc24
+      internalID: 684372731
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_36_skirt
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 32
+        height: 22
+      alignment: 9
+      pivot: {x: 0.5, y: 1.7272727}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b2c77194c641e0341860fb55e8d80a17
+      internalID: -926925024
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_37_top
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 22
+        width: 32
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2c01542f4fefee747846dd927fdb5509
+      internalID: 959363306
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_37_skirt
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 0
+        width: 32
+        height: 22
+      alignment: 9
+      pivot: {x: 0.5, y: 1.7272727}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 26e8949a466ae7d4d8c808af25861510
+      internalID: 1954969565
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_38_top
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 22
+        width: 32
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9e7f572a18d8bc0488360c475a01496c
+      internalID: 223558521
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_38_skirt
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 32
+        height: 22
+      alignment: 9
+      pivot: {x: 0.5, y: 1.7272727}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ee1030b5b4cab2440a7834ecbf5a6139
+      internalID: 1239884734
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_39_top
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 22
+        width: 32
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9c8793031dd27d044a252c9640dad59b
+      internalID: -1442904332
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_39_skirt
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 0
+        width: 32
+        height: 22
+      alignment: 9
+      pivot: {x: 0.5, y: 1.7272727}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4fd637c87d0105242969cf35507a148d
+      internalID: 1880456900
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_40_top
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 22
+        width: 32
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f6849ad154029134386906594582794e
+      internalID: 2088187933
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_40_skirt
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 32
+        height: 22
+      alignment: 9
+      pivot: {x: 0.5, y: 1.7272727}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 215c878f88ed60849ae0d1f4effcdf58
+      internalID: 470957129
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_41_top
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 22
+        width: 32
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1ea276d752bc84943b0dcb4c86c7c41e
+      internalID: -2145892553
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_41_skirt
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 0
+        width: 32
+        height: 22
+      alignment: 9
+      pivot: {x: 0.5, y: 1.7272727}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3098f2ceda6d549409ed7ce617caca94
+      internalID: 1639742363
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_42_top
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 22
+        width: 32
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cda2eb90cbecf8344a86ebcc94a54ab2
+      internalID: 1266969645
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_42_skirt
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 32
+        height: 22
+      alignment: 9
+      pivot: {x: 0.5, y: 1.7272727}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 97f0de72676066e4a864869babb1b3fc
+      internalID: -1424854621
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_43_top
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 22
+        width: 32
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2494e7307b67e3a4b971a5498b5bbe9b
+      internalID: 1206782802
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_43_skirt
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 0
+        width: 32
+        height: 22
+      alignment: 9
+      pivot: {x: 0.5, y: 1.7272727}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f2538de628246df4689533de835562fb
+      internalID: -619700905
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_44_top
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 22
+        width: 32
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 41030dd26d84bae4e9d5594379bd4847
+      internalID: -588991949
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_44_skirt
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 32
+        height: 22
+      alignment: 9
+      pivot: {x: 0.5, y: 1.7272727}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2eb20f553fdee2d48ad1ce9553768880
+      internalID: 1154649228
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_45_top
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 22
+        width: 32
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0ae3a080a2e92d840a0e822007d23c34
+      internalID: -2049410358
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_45_skirt
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 0
+        width: 32
+        height: 22
+      alignment: 9
+      pivot: {x: 0.5, y: 1.7272727}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aa279b759a7f13c44b3c7550e566b551
+      internalID: 151210913
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_46_top
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 22
+        width: 32
+        height: 42
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3809524}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 54205e03ef067d34985adf4a547c371c
+      internalID: 141475831
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: RoadIso3_concrete_new_blob47_46_skirt
+      rect:
+        serializedVersion: 2
+        x: 320
+        y: 0
+        width: 32
+        height: 22
+      alignment: 9
+      pivot: {x: 0.5, y: 1.7272727}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 518d5f0bf99c6ab4681cfd83fe79ba76
+      internalID: 1374271135
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: ecf1a5cc5f317ce40ab23191fb1c1d16
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      RoadIso3_concrete_new_blob47_0_skirt: 1333748970
+      RoadIso3_concrete_new_blob47_0_top: 1112561337
+      RoadIso3_concrete_new_blob47_10_skirt: 579209146
+      RoadIso3_concrete_new_blob47_10_top: -893614971
+      RoadIso3_concrete_new_blob47_11_skirt: 1181897640
+      RoadIso3_concrete_new_blob47_11_top: 1155818582
+      RoadIso3_concrete_new_blob47_12_skirt: -306677322
+      RoadIso3_concrete_new_blob47_12_top: 1171261904
+      RoadIso3_concrete_new_blob47_13_skirt: 201897280
+      RoadIso3_concrete_new_blob47_13_top: -731273828
+      RoadIso3_concrete_new_blob47_14_skirt: 479214274
+      RoadIso3_concrete_new_blob47_14_top: -2018086088
+      RoadIso3_concrete_new_blob47_15_skirt: 2011134126
+      RoadIso3_concrete_new_blob47_15_top: 1792335718
+      RoadIso3_concrete_new_blob47_16_skirt: 927653538
+      RoadIso3_concrete_new_blob47_16_top: 1330895383
+      RoadIso3_concrete_new_blob47_17_skirt: 1510610982
+      RoadIso3_concrete_new_blob47_17_top: -238923692
+      RoadIso3_concrete_new_blob47_18_skirt: -2056138084
+      RoadIso3_concrete_new_blob47_18_top: -1185221092
+      RoadIso3_concrete_new_blob47_19_skirt: -315530678
+      RoadIso3_concrete_new_blob47_19_top: -1972741873
+      RoadIso3_concrete_new_blob47_1_skirt: -1594779293
+      RoadIso3_concrete_new_blob47_1_top: -385916433
+      RoadIso3_concrete_new_blob47_20_skirt: 1878048583
+      RoadIso3_concrete_new_blob47_20_top: -1349789025
+      RoadIso3_concrete_new_blob47_21_skirt: 178317879
+      RoadIso3_concrete_new_blob47_21_top: 522355493
+      RoadIso3_concrete_new_blob47_22_skirt: -700898979
+      RoadIso3_concrete_new_blob47_22_top: 933245107
+      RoadIso3_concrete_new_blob47_23_skirt: -1562022417
+      RoadIso3_concrete_new_blob47_23_top: 2064756634
+      RoadIso3_concrete_new_blob47_24_skirt: 233944276
+      RoadIso3_concrete_new_blob47_24_top: 348111177
+      RoadIso3_concrete_new_blob47_25_skirt: 2055974837
+      RoadIso3_concrete_new_blob47_25_top: 1341542342
+      RoadIso3_concrete_new_blob47_26_skirt: -1657299116
+      RoadIso3_concrete_new_blob47_26_top: -788419340
+      RoadIso3_concrete_new_blob47_27_skirt: -167396440
+      RoadIso3_concrete_new_blob47_27_top: 275629122
+      RoadIso3_concrete_new_blob47_28_skirt: 1100857079
+      RoadIso3_concrete_new_blob47_28_top: -1824553694
+      RoadIso3_concrete_new_blob47_29_skirt: -1882863471
+      RoadIso3_concrete_new_blob47_29_top: 537606257
+      RoadIso3_concrete_new_blob47_2_skirt: 409614713
+      RoadIso3_concrete_new_blob47_2_top: -680820142
+      RoadIso3_concrete_new_blob47_30_skirt: 152744376
+      RoadIso3_concrete_new_blob47_30_top: -1348050494
+      RoadIso3_concrete_new_blob47_31_skirt: 1778563748
+      RoadIso3_concrete_new_blob47_31_top: -793182115
+      RoadIso3_concrete_new_blob47_32_skirt: 1320963895
+      RoadIso3_concrete_new_blob47_32_top: -555125120
+      RoadIso3_concrete_new_blob47_33_skirt: -204038032
+      RoadIso3_concrete_new_blob47_33_top: 1541541198
+      RoadIso3_concrete_new_blob47_34_skirt: -1938801982
+      RoadIso3_concrete_new_blob47_34_top: 1706371907
+      RoadIso3_concrete_new_blob47_35_skirt: 277158629
+      RoadIso3_concrete_new_blob47_35_top: -1422962381
+      RoadIso3_concrete_new_blob47_36_skirt: -926925024
+      RoadIso3_concrete_new_blob47_36_top: 684372731
+      RoadIso3_concrete_new_blob47_37_skirt: 1954969565
+      RoadIso3_concrete_new_blob47_37_top: 959363306
+      RoadIso3_concrete_new_blob47_38_skirt: 1239884734
+      RoadIso3_concrete_new_blob47_38_top: 223558521
+      RoadIso3_concrete_new_blob47_39_skirt: 1880456900
+      RoadIso3_concrete_new_blob47_39_top: -1442904332
+      RoadIso3_concrete_new_blob47_3_skirt: -1192017845
+      RoadIso3_concrete_new_blob47_3_top: 707824239
+      RoadIso3_concrete_new_blob47_40_skirt: 470957129
+      RoadIso3_concrete_new_blob47_40_top: 2088187933
+      RoadIso3_concrete_new_blob47_41_skirt: 1639742363
+      RoadIso3_concrete_new_blob47_41_top: -2145892553
+      RoadIso3_concrete_new_blob47_42_skirt: -1424854621
+      RoadIso3_concrete_new_blob47_42_top: 1266969645
+      RoadIso3_concrete_new_blob47_43_skirt: -619700905
+      RoadIso3_concrete_new_blob47_43_top: 1206782802
+      RoadIso3_concrete_new_blob47_44_skirt: 1154649228
+      RoadIso3_concrete_new_blob47_44_top: -588991949
+      RoadIso3_concrete_new_blob47_45_skirt: 151210913
+      RoadIso3_concrete_new_blob47_45_top: -2049410358
+      RoadIso3_concrete_new_blob47_46_skirt: 1374271135
+      RoadIso3_concrete_new_blob47_46_top: 141475831
+      RoadIso3_concrete_new_blob47_4_skirt: -1464469331
+      RoadIso3_concrete_new_blob47_4_top: 855719724
+      RoadIso3_concrete_new_blob47_5_skirt: -1942755711
+      RoadIso3_concrete_new_blob47_5_top: -296510779
+      RoadIso3_concrete_new_blob47_6_skirt: -1271291866
+      RoadIso3_concrete_new_blob47_6_top: -31371346
+      RoadIso3_concrete_new_blob47_7_skirt: -1997005496
+      RoadIso3_concrete_new_blob47_7_top: 1190149670
+      RoadIso3_concrete_new_blob47_8_skirt: -1532680451
+      RoadIso3_concrete_new_blob47_8_top: 1506766300
+      RoadIso3_concrete_new_blob47_9_skirt: -1773446685
+      RoadIso3_concrete_new_blob47_9_top: 1921363512
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
