@@ -1,4 +1,5 @@
 using UnityEngine;
+using HiddenHarbours.Core;   // IsoGround — world XY is the squashed ground plane
 
 namespace HiddenHarbours.World
 {
@@ -233,6 +234,13 @@ namespace HiddenHarbours.World
         /// at the FIRST frame of a leg too: a villager who spawns mid-stride on region load has no previous
         /// position to difference, and one drawn facing North on her first frame would visibly snap round.
         /// Returns <paramref name="fallback"/> for a degenerate slice.</para>
+        ///
+        /// <para><b>A GROUND bearing</b> (<see cref="IsoGround.BearingDegrees(Vector2)"/>), because the
+        /// waypoints are world positions and world XY is the squashed ground plane, while the facing row it
+        /// picks depicts a ground bearing. It must also be the same arithmetic
+        /// <see cref="IsoCharacterMath.GroundHeadingFor"/> applies to the measured step, or a stated
+        /// heading and a walked one would disagree by up to 12.56° and the villager would turn on
+        /// arrival — the very seam this function exists to close.</para>
         /// </summary>
         public static float HeadingAlong(Vector2[] points, int start, int count, float distance,
                                         float fallback)
@@ -247,8 +255,7 @@ namespace HiddenHarbours.World
                 if (len <= 0f) continue;
                 if (remaining <= len || i == start + count - 2)
                 {
-                    Vector2 d = b - a;
-                    return Mathf.Atan2(d.x, d.y) * Mathf.Rad2Deg;   // the project's bearing convention
+                    return IsoGround.BearingDegrees(a, b);   // ground bearing, not the raw world-XY angle
                 }
                 remaining -= len;
             }

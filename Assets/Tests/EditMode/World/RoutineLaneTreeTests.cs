@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using UnityEngine;
+using HiddenHarbours.Core;   // IsoCharacterMath — the measured-step twin of a stated leg heading
 using HiddenHarbours.World;
 
 namespace HiddenHarbours.Tests.World.EditMode
@@ -301,6 +302,22 @@ namespace HiddenHarbours.Tests.World.EditMode
             Assert.That(RoutineLaneTree.HeadingAlong(line, 0, 3, 4f, 180f), Is.EqualTo(90f).Within(1e-3f));
             // North up the second.
             Assert.That(RoutineLaneTree.HeadingAlong(line, 0, 3, 13f, 180f), Is.EqualTo(0f).Within(1e-3f));
+        }
+
+        [Test]
+        public void HeadingAlong_IsAGroundBearing_SoAWalkedLegAgreesWithTheMeasuredStep()
+        {
+            // The waypoints are world positions and world XY is the squashed ground plane, while the row
+            // this picks depicts a GROUND bearing (ADR 0034). A diagonal leg must therefore read 32.7°,
+            // and must read exactly what the presenter reads off the same step — otherwise the villager
+            // is drawn one facing off for the whole leg and then snaps when she arrives.
+            var diagonal = new[] { Vector2.zero, new Vector2(10f, 10f) };
+            Assert.That(RoutineLaneTree.HeadingAlong(diagonal, 0, 2, 5f, 180f),
+                        Is.EqualTo(32.73f).Within(0.02f));
+            Assert.That(RoutineLaneTree.HeadingAlong(diagonal, 0, 2, 5f, 180f),
+                        Is.EqualTo(IsoCharacterMath.GroundHeadingFor(new Vector2(10f, 10f), 0.01f, 999f))
+                          .Within(1e-3f),
+                        "one plane, one answer — the stated leg and the measured step");
         }
 
         [Test]

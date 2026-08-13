@@ -65,11 +65,19 @@ un-squashes first.**
    bearing. Core references nothing, so it cannot read `SpriteLightMath`; it carries the number and an
    EditMode test pins the two together — the `BuildingInterior` precedent, chosen over a serialized field
    so no existing scene can deserialize a zero into it.
-2. **`IsoCharacterMath.GroundHeadingFor`** is what reads a world-space velocity. All four call sites that
-   derived a character facing from a world-space vector are corrected: `IsoCharacterSprite` (its own
-   motion), `PlayerHaulAnimator.HeadingToBuoy` (fisher → buoy),
-   `PlayerFishingAnimMath.FacingRowFor` (angler → fish / cast aim), and
-   `ControlSwitcher.HeadingBetween` (the vault and ladder clip legs).
+2. **`IsoCharacterMath.GroundHeadingFor`** is what reads a world-space velocity. Every call site that
+   turned a world-space vector into a character facing is corrected — the four that **measure** one:
+   `IsoCharacterSprite` (its own motion), `PlayerHaulAnimator.HeadingToBuoy` (fisher → buoy),
+   `PlayerFishingAnimMath.FacingRowFor` (angler → fish / cast aim), `ControlSwitcher.HeadingBetween`
+   (the vault and ladder clip legs) — and the two that **state** one for the NPC routines:
+   `StPetersRoutines.HeadingTo` (a villager's stand heading at a station) and
+   `RoutineLaneTree.HeadingAlong` (the heading of the lane segment she is walking).
+
+   Those last two matter as a PAIR with the first: the routine layer had deliberately chosen plain
+   world XY *so that a stated stance and a measured walk would agree*, which was the right goal read
+   off the wrong plane. Both sides move together here, so they still agree — and now they agree with
+   the artwork rather than only with each other. Each has a test asserting it equals what
+   `GroundHeadingFor` answers for the same vector, so the two can never drift apart again.
 3. **`IsoCharacterMath.HeadingFor` is kept, unchanged, for planes that are NOT squashed** — and its only
    remaining caller is one: `DeckRiderFacingMath.DeckBearing`, whose frame is metres of real deck on both
    axes. Un-squashing a deck step would introduce the very error this ADR removes. The test is not "is it

@@ -370,6 +370,20 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void HeadingTo_IsAGroundBearing_SoAStatedStanceAgreesWithAWalkedApproach()
+        {
+            // World XY is the SQUASHED ground plane and the baked character rows are ground bearings
+            // (ADR 0034), so this must un-squash — and must un-squash by exactly the same arithmetic the
+            // presenter applies to the step it measures, or a villager would turn on arrival.
+            var target = new Vector2(5f, 5f);
+            Assert.That(StPetersRoutines.HeadingTo(Vector2.zero, target),
+                        Is.EqualTo(IsoCharacterMath.GroundHeadingFor(target, 0.01f, 999f)).Within(1e-3f),
+                        "a stated stance and a measured walk must be the same number");
+            Assert.That(StPetersRoutines.HeadingTo(Vector2.zero, target), Is.EqualTo(32.73f).Within(0.02f),
+                        "a world-XY diagonal is 32.7° of ground bearing, not 45°");
+        }
+
+        [Test]
         public void GinnysGarden_StaysInsideHerOwnDooryard()
         {
             // Her whole day is deliberately the smallest on the island: she is the onboarding gate, and the
