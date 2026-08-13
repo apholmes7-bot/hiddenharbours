@@ -11,12 +11,21 @@
 //       for). A steady lean (holds the blades leaned in a strong wind) PLUS a travelling gust ripple that moves
 //       DOWNWIND across the field, decorrelated per-tuft so the field never sways in lockstep.
 //
-//   (2) FOOTSTEP TRAIL — the grass parts along the player's recent PATH and springs back behind them, a trodden
-//       trail rather than a halo circling the player. HiddenHarbours.Art.GrassFootstep uploads the last N world
-//       positions into the GLOBAL array _GrassTrail (xy = pos, z = recency 0..1, w = the heading angle the player
+//   (2) FOOTSTEP TRAIL — the grass parts along a walker's recent PATH and springs back behind them, a trodden
+//       trail rather than a halo circling them. HiddenHarbours.Art.GrassFootstep uploads the last POINTS_N world
+//       positions into the GLOBAL array _GrassTrail (xy = pos, z = recency 0..1, w = the heading angle the walker
 //       was moving when the footprint was laid); each disturbs only a footprint-sized _FootRadius, fades by
-//       recency, and (while moving, via the global _PlayerMoving) bends only grass BEHIND the heading — grass
-//       ahead stays upright until trodden. No per-blade state is stored (CLAUDE.md rule 5).
+//       recency, and (while that walker moves) bends only grass BEHIND the heading — grass ahead stays upright
+//       until trodden. No per-blade state is stored (CLAUDE.md rule 5).
+//
+//       ⚠️ MANY WALKERS, NOT ONE (2026-08-13). _GrassTrail is a POOL: WALKERS_N segments of POINTS_N points, one
+//       segment per GrassFootstep. It used to be a single 24-point array every instance wrote, so a second walker
+//       did not add a second trail — it ERASED the first every frame (last writer wins), which is why the village
+//       routines had to leave the component off the villagers. The companion global _GrassWalkers carries one
+//       record per segment: xy = the bounding-circle centre of that walker's live trail, z = its radius (NEGATIVE
+//       marks an unclaimed slot), w = that walker's 0..1 speed factor for the behind-only gate (this replaces the
+//       old scalar _PlayerMoving, which could only ever describe one walker). The circle lets a blade skip a
+//       whole segment it cannot be reached by — pure optimisation, since a culled point's falloff is already 0.
 //
 // The bend weight is the sprite UV.y (0 at the root -> 1 at the tip), squared so the base stays planted and the
 // tip moves most. EVERY amplitude / speed / radius is a material or global property (rule 6). Pixel-art faithful:
@@ -25,8 +34,10 @@
 //
 // SHADER CAUTIONS honoured (this project lost hours to a magenta shader): NO '+' or other operator characters in
 // ANY [Header(...)] label or Property display string (ShaderLab parse error -> magenta); NO [unroll] over a
-// runtime loop bound (this shader has no loops). The grass material's shipped variant is force-compiled headless
-// by Assets/Tests/EditMode/Art/GrassShaderCompileGuardTests.cs so a broken grass shader fails CI red.
+// runtime loop bound (both footstep bounds are compile-time #defines — the inner one is [unroll]ed, the outer
+// walker sweep is deliberately [loop]ed so the early-out actually skips work instead of being unrolled flat).
+// The grass material's shipped variant is force-compiled headless by
+// Assets/Tests/EditMode/Art/GrassShaderCompileGuardTests.cs so a broken grass shader fails CI red.
 Shader "HiddenHarbours/GrassWind"
 {
     Properties
@@ -59,15 +70,16 @@ Shader "HiddenHarbours/GrassWind"
         // blade folding over rather than stretching. Small.
         _BendY ("Bend foreshorten (0..1)", Range(0, 1)) = 0.25
 
-        [Header(Footstep trail (the player treads a path the grass springs back from))]
-        // A footprint-sized disturbance (NOT a wide halo): each point of the player's recent PATH parts the
-        // grass within this radius. Keep it near the player's footprint so only grass actually walked over reacts.
+        [Header(Footstep trail (walkers tread paths the grass springs back from))]
+        // A footprint-sized disturbance (NOT a wide halo): each point of a walker's recent PATH parts the grass
+        // within this radius. Keep it near a walker's footprint so only grass actually walked over reacts. It is
+        // also the slack on the per-walker cull circle, so a bigger radius costs a little more work.
         _FootRadius ("Footstep radius (m)", Float) = 0.5
         _FootStrength ("Footstep push strength (m)", Float) = 0.4
-        // Directional gate: while the player is MOVING, only grass BEHIND each footprint (relative to the
-        // direction the player was heading when they made it) bends — grass AHEAD of the foot stays upright until
-        // it is actually trodden, so the parting trails the walk instead of bulging ahead of it. This is the
-        // transition width (m) of that front-to-back cut. When the player is still, the gate relaxes to symmetric.
+        // Directional gate: while a walker is MOVING, only grass BEHIND each of their footprints (relative to the
+        // direction they were heading when they made it) bends — grass AHEAD of the foot stays upright until it
+        // is actually trodden, so the parting trails the walk instead of bulging ahead of it. This is the
+        // transition width (m) of that front-to-back cut. When a walker is still, their gate relaxes to symmetric.
         _FootDirSoftness ("Footstep behind only softness (m)", Float) = 0.12
     }
 
@@ -111,16 +123,23 @@ Shader "HiddenHarbours/GrassWind"
             // GLOBAL sim/player inputs (set by the bridges; not per-material, so OUTSIDE the per-material CBUFFER).
             // _WindWorld = wind dir * normalized strength (0..1). Default (0,0,0,0): no wind.
             float4 _WindWorld;
-            // _GrassTrail = the player's recent PATH (GrassFootstep, via SetGlobalVectorArray): xy = world pos,
-            // z = recency 0..1 (1 just stepped, fading to 0 as the grass springs back), w = the heading ANGLE
-            // (radians) the player was moving when this footprint was laid (so the bend can be gated to BEHIND the
-            // direction of travel). All z = 0 by default → no bend until the player actually walks. TRAIL_N is a
-            // COMPILE-TIME constant so the [unroll] below has a fixed bound (never an [unroll] over a runtime count).
-            #define TRAIL_N 24
+            // _GrassTrail = the walkers' recent PATHS (GrassFootstep, via SetGlobalVectorArray), as WALKERS_N
+            // fixed-stride SEGMENTS of POINTS_N points. Per point: xy = world pos, z = recency 0..1 (1 just
+            // stepped, fading to 0 as the grass springs back), w = the heading ANGLE (radians) that walker was
+            // moving when this footprint was laid (so the bend can be gated to BEHIND the direction of travel).
+            // All z = 0 by default → no bend until someone actually walks.
+            // _GrassWalkers = one record per segment: xy = the bounding-circle CENTRE of that walker's live trail,
+            // z = its RADIUS in metres (NEGATIVE = the slot is unclaimed), w = that walker's 0..1 speed factor, so
+            // the directional behind-only gate fades in while THAT walker is moving and relaxes to symmetric when
+            // they stand still (grass underfoot still parts when idle). One gate per walker, not one for the scene.
+            // WALKERS_N / POINTS_N are COMPILE-TIME constants (so the [unroll] below has a fixed bound — never an
+            // [unroll] over a runtime count) and MUST match GrassFootstep.MaxWalkers / PointsPerWalker; the pair is
+            // pinned across C# and BOTH shaders by Assets/Tests/EditMode/Art/GrassTrailPoolTests.cs.
+            #define WALKERS_N 8
+            #define POINTS_N 24
+            #define TRAIL_N (WALKERS_N * POINTS_N)
             float4 _GrassTrail[TRAIL_N];
-            // _PlayerMoving (0..1): how fast the player is travelling, so the directional behind-only gate fades in
-            // while walking and relaxes to symmetric when standing still (grass underfoot still parts when idle).
-            float _PlayerMoving;
+            float4 _GrassWalkers[WALKERS_N];
 
             CBUFFER_START(UnityPerMaterial)
                 float4 _Color;
@@ -188,35 +207,55 @@ Shader "HiddenHarbours/GrassWind"
                 float2 windOffset = wdir * ((lean + gust * _GustStrength) * swayMag);
 
                 // ---- FOOTSTEP TRAIL ----
-                // Bend away from the player's recent PATH, not a single point: each _GrassTrail point disturbs only
-                // a footprint-sized radius (_FootRadius) and fades by its recency (z), so the grass parts ALONG the
-                // path the player walked and recovers behind them — a trodden trail, not a halo circling the player.
-                // BEHIND-ONLY: while moving (_PlayerMoving), gate each footprint so it bends grass only BEHIND the
-                // heading it was laid with (w = that heading angle) — grass AHEAD of the foot stays upright until
-                // trodden. The gate relaxes to symmetric when the player is still. Take the STRONGEST nearby point
-                // (max, not sum) so overlapping footprints don't stack into a bulge.
+                // Bend away from each walker's recent PATH, not a single point: every _GrassTrail point disturbs
+                // only a footprint-sized radius (_FootRadius) and fades by its recency (z), so the grass parts
+                // ALONG the path that was walked and recovers behind — a trodden trail, not a halo circling anyone.
+                // BEHIND-ONLY: while a walker moves (their _GrassWalkers record's w), gate each of THEIR footprints
+                // so it bends grass only BEHIND the heading it was laid with (the point's w) — grass AHEAD of the
+                // foot stays upright until trodden. The gate relaxes to symmetric when that walker is still. Take
+                // the STRONGEST nearby point across ALL walkers (max, not sum) so overlapping footprints — one
+                // walker's or two walkers' — never stack into a bulge.
+                //
+                // The outer sweep is [loop] (NOT unrolled) so its early-out is worth having: one bounding-circle
+                // test per walker skips that walker's whole POINTS_N segment. That cull can only ever discard
+                // points whose falloff is already 0, so it changes cost, never picture — and it makes a lone
+                // walker in a big region CHEAPER per blade than the old single un-culled 24-point loop.
                 float  bestFp  = 0.0;
                 float2 bestDir = float2(0.0, 1.0);
-                [unroll]
-                for (int ti = 0; ti < TRAIL_N; ti++)
+                float  foot    = max(_FootRadius, 1e-3);
+                [loop]
+                for (int wi = 0; wi < WALKERS_N; wi++)
                 {
-                    float2 to = wp.xy - _GrassTrail[ti].xy;       // footprint -> blade
-                    float  d  = length(to);
-                    float  reach = (1.0 - smoothstep(0.0, max(_FootRadius, 1e-3), d)) * saturate(_GrassTrail[ti].z);
+                    float4 wk = _GrassWalkers[wi];
+                    if (wk.z < 0.0) continue;                 // unclaimed slot
+                    float2 toC  = wp.xy - wk.xy;              // trail centre -> blade
+                    float  cull = wk.z + foot;                // no point of this walker can reach further
+                    if (dot(toC, toC) > cull * cull) continue;
 
-                    // directional gate: ahead = component of `to` along the player's heading at this footprint.
-                    // Blades ahead (ahead > 0) are cut out; blades behind (ahead <= 0) bend fully. Blended toward
-                    // 1 (symmetric) by (1 - _PlayerMoving) so a standing player still flattens the grass underfoot.
-                    float2 fwd = float2(cos(_GrassTrail[ti].w), sin(_GrassTrail[ti].w));
-                    float  ahead = dot(to, fwd);
-                    float  behind = 1.0 - smoothstep(0.0, max(_FootDirSoftness, 1e-4), ahead);
-                    float  gate = lerp(1.0, behind, saturate(_PlayerMoving));
-
-                    float fp = reach * gate;
-                    if (fp > bestFp)
+                    int   pBase  = wi * POINTS_N;
+                    float moving = saturate(wk.w);
+                    [unroll]
+                    for (int pi = 0; pi < POINTS_N; pi++)
                     {
-                        bestFp  = fp;
-                        bestDir = d > 1e-4 ? to / d : float2(0.0, 1.0);
+                        float4 tp = _GrassTrail[pBase + pi];
+                        float2 to = wp.xy - tp.xy;            // footprint -> blade
+                        float  d  = length(to);
+                        float  reach = (1.0 - smoothstep(0.0, foot, d)) * saturate(tp.z);
+
+                        // directional gate: ahead = component of `to` along the walker's heading at this footprint.
+                        // Blades ahead (ahead > 0) are cut out; blades behind (ahead <= 0) bend fully. Blended
+                        // toward 1 (symmetric) by (1 - moving) so a standing walker still flattens grass underfoot.
+                        float2 fwd = float2(cos(tp.w), sin(tp.w));
+                        float  ahead = dot(to, fwd);
+                        float  behind = 1.0 - smoothstep(0.0, max(_FootDirSoftness, 1e-4), ahead);
+                        float  gate = lerp(1.0, behind, moving);
+
+                        float fp = reach * gate;
+                        if (fp > bestFp)
+                        {
+                            bestFp  = fp;
+                            bestDir = d > 1e-4 ? to / d : float2(0.0, 1.0);
+                        }
                     }
                 }
                 float2 footOffset = bestDir * (bestFp * _FootStrength);

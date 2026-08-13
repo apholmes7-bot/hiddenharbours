@@ -88,6 +88,21 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreEqual(new Vector3(-40f, -2f, 0f), _core.PlayerGo.transform.position, "spawned at the START spawn");
         }
 
+        [Test]
+        public void Build_GivesThePlayersGrassTrail_TheRankThatOutranksAVillage()
+        {
+            // The grass trail is a POOL of GrassFootstep.MaxWalkers slots that the village's villagers claim
+            // too, and the persistent-core root TOGGLES on a region hop — so the player's component re-claims
+            // AFTER the arriving region's NPCs. Built at the ambient default it would be the one left without a
+            // trodden path in a busy village. (Scene-wired is not builder-wired: this pins the builder, and the
+            // shipped scene needs a rebuild to carry it.)
+            var footstep = _core.PlayerGo.GetComponent<HiddenHarbours.Art.GrassFootstep>();
+            Assert.IsNotNull(footstep, "the Player carries a GrassFootstep so the meadow answers them");
+            Assert.AreEqual(
+                HiddenHarbours.Art.GrassFootstep.PlayerPriority, footstep.Priority,
+                "the player must outrank the ambient walkers that share the trail pool");
+        }
+
         // ---- the moored dory exists but is static at start ----------------------------------
 
         [Test]

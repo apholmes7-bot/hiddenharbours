@@ -117,6 +117,11 @@ There was never any per-tuft state to fit. `AChunkCarriesOnlyTheChannelsASpriteR
 checks that literally: a chunk carries position, uv0 and colour — the three channels a
 `SpriteRenderer` submits — and no fourth.
 
+That still holds now `_GrassTrail` is a **pool** of walker segments with a companion `_GrassWalkers`
+record array (2026-08-13 — see [the design doc](../design/grass-wind-and-footstep.md#the-trail-pool--many-walkers-not-one-2026-08-13)).
+Both are shader **globals** read off world position, so a batched chunk needs no extra channel for a
+second walker any more than it did for the first.
+
 ### The lit-sprite shared path — untouched
 
 Grass is on its own unlit wind shader and always was. Nothing here forks a third lighting path.

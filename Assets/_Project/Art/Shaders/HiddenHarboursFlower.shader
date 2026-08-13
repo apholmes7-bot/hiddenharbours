@@ -43,7 +43,8 @@
 //
 // SHADER CAUTIONS honoured (this project lost hours to a magenta shader): NO operator characters in ANY
 // [Header(...)] label or Property display string (ShaderLab parse error -> magenta); NO [unroll] over a RUNTIME
-// loop bound (the footstep loop's TRAIL_N is a compile-time #define); helpers declared BEFORE use; globals OUTSIDE
+// loop bound (the footstep loop's POINTS_N is a compile-time #define, and the outer walker sweep is [loop]ed on
+// purpose so its bounding-circle early-out can skip a segment); helpers declared BEFORE use; globals OUTSIDE
 // the CBUFFER and tunables INSIDE it. Pixel-art faithful: the bend offset is SNAPPED to the PPU grid, point
 // sampled, PPU 32. Visual-only: drives no sim, saves nothing (rule 5). Every amplitude, speed and radius is a
 // material property (rule 6). The three shipped Flower_*.mat variants are force-compiled headless by
@@ -101,9 +102,9 @@ Shader "HiddenHarbours/FlowerWind"
         _PhaseScale ("Phase noise scale (per m)", Float) = 0.5
         _BendY ("Bend foreshorten (0..1)", Range(0, 1)) = 0.2
 
-        [Header(Footstep trail (the player brushes past and the flowers give))]
-        // Same trail the grass reads (GrassFootstep on the player publishes it). Tested at the flower ROOT, so a
-        // flower gives as a whole rather than folding in half.
+        [Header(Footstep trail (a walker brushes past and the flowers give))]
+        // Same shared trail pool the grass reads (every GrassFootstep publishes into its own segment of it).
+        // Tested at the flower ROOT, so a flower gives as a whole rather than folding in half.
         _FootRadius ("Footstep radius (m)", Float) = 0.5
         _FootStrength ("Footstep push strength (m)", Float) = 0.35
         _FootDirSoftness ("Footstep behind only softness (m)", Float) = 0.12
@@ -148,12 +149,19 @@ Shader "HiddenHarbours/FlowerWind"
             // GLOBAL sim/player inputs (set by the bridges; not per-material, so OUTSIDE the per-material CBUFFER).
             // _WindWorld = wind dir * normalized strength (0..1). Default (0,0,0,0): no wind.
             float4 _WindWorld;
-            // _GrassTrail = the player's recent PATH (GrassFootstep, via SetGlobalVectorArray): xy = world pos,
-            // z = recency 0..1, w = the heading angle (radians) the player was moving when the footprint was laid.
-            // TRAIL_N is a COMPILE-TIME constant so the [unroll] below has a fixed bound.
-            #define TRAIL_N 24
+            // _GrassTrail = the walkers' recent PATHS (GrassFootstep, via SetGlobalVectorArray), as WALKERS_N
+            // fixed-stride SEGMENTS of POINTS_N points: xy = world pos, z = recency 0..1, w = the heading angle
+            // (radians) that walker was moving when the footprint was laid. _GrassWalkers = one record per
+            // segment: xy = the bounding-circle centre of that walker's live trail, z = its radius (NEGATIVE =
+            // unclaimed slot), w = that walker's 0..1 speed factor for the behind-only gate. (That w replaces the
+            // old scalar _PlayerMoving; the pool replaces the single 24-point array a second walker used to
+            // overwrite.) WALKERS_N / POINTS_N are COMPILE-TIME constants so the [unroll] below has a fixed bound,
+            // and MUST match GrassFootstep.MaxWalkers / PointsPerWalker — pinned by GrassTrailPoolTests.
+            #define WALKERS_N 8
+            #define POINTS_N 24
+            #define TRAIL_N (WALKERS_N * POINTS_N)
             float4 _GrassTrail[TRAIL_N];
-            float _PlayerMoving;
+            float4 _GrassWalkers[WALKERS_N];
 
             #define TAU 6.2831853
 
@@ -249,27 +257,44 @@ Shader "HiddenHarbours/FlowerWind"
 
                 // ---- FOOTSTEP TRAIL ----
                 // Tested at the flower's ROOT (not per vertex) so a flower gives as a whole. Take the STRONGEST
-                // nearby footprint (max, not sum) so overlapping prints don't stack into a bulge. Bends only
-                // BEHIND the heading each print was laid with while the player moves; symmetric when they stand.
+                // nearby footprint across ALL walkers (max, not sum) so overlapping prints — one walker's or
+                // two walkers' — don't stack into a bulge. Bends only BEHIND the heading each print was laid
+                // with while THAT walker moves; symmetric when they stand. The outer sweep is [loop] (not
+                // unrolled) so its bounding-circle early-out can skip a whole walker's segment; the cull only
+                // ever discards points whose falloff is already 0, so it changes cost, never picture.
                 float  bestFp  = 0.0;
                 float2 bestDir = float2(0.0, 1.0);
-                [unroll]
-                for (int ti = 0; ti < TRAIL_N; ti++)
+                float  foot    = max(_FootRadius, 1e-3);
+                [loop]
+                for (int wi = 0; wi < WALKERS_N; wi++)
                 {
-                    float2 to = root - _GrassTrail[ti].xy;        // footprint -> flower root
-                    float  d  = length(to);
-                    float  reach = (1.0 - smoothstep(0.0, max(_FootRadius, 1e-3), d)) * saturate(_GrassTrail[ti].z);
+                    float4 wk = _GrassWalkers[wi];
+                    if (wk.z < 0.0) continue;                 // unclaimed slot
+                    float2 toC  = root - wk.xy;               // trail centre -> flower root
+                    float  cull = wk.z + foot;
+                    if (dot(toC, toC) > cull * cull) continue;
 
-                    float2 fwd = float2(cos(_GrassTrail[ti].w), sin(_GrassTrail[ti].w));
-                    float  ahead = dot(to, fwd);
-                    float  behind = 1.0 - smoothstep(0.0, max(_FootDirSoftness, 1e-4), ahead);
-                    float  gate = lerp(1.0, behind, saturate(_PlayerMoving));
-
-                    float fp = reach * gate;
-                    if (fp > bestFp)
+                    int   pBase  = wi * POINTS_N;
+                    float moving = saturate(wk.w);
+                    [unroll]
+                    for (int pi = 0; pi < POINTS_N; pi++)
                     {
-                        bestFp  = fp;
-                        bestDir = d > 1e-4 ? to / d : float2(0.0, 1.0);
+                        float4 tp = _GrassTrail[pBase + pi];
+                        float2 to = root - tp.xy;             // footprint -> flower root
+                        float  d  = length(to);
+                        float  reach = (1.0 - smoothstep(0.0, foot, d)) * saturate(tp.z);
+
+                        float2 fwd = float2(cos(tp.w), sin(tp.w));
+                        float  ahead = dot(to, fwd);
+                        float  behind = 1.0 - smoothstep(0.0, max(_FootDirSoftness, 1e-4), ahead);
+                        float  gate = lerp(1.0, behind, moving);
+
+                        float fp = reach * gate;
+                        if (fp > bestFp)
+                        {
+                            bestFp  = fp;
+                            bestDir = d > 1e-4 ? to / d : float2(0.0, 1.0);
+                        }
                     }
                 }
                 float2 footOffset = bestDir * (bestFp * _FootStrength);
