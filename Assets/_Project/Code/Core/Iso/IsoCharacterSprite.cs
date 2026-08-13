@@ -26,9 +26,13 @@ namespace HiddenHarbours.Core
     /// <para><b>The heading→row rule is not re-implemented here.</b> It is
     /// <see cref="CharacterVisualDef.FacingRowFor"/> → the shared, tested
     /// <see cref="IsoFacing.HeadingToFacingIndex"/>, carrying the def's own bake facts — including
-    /// <see cref="CharacterVisualDef.FacingsAreCounterClockwise"/>, because the shipped character rigs bake
-    /// their rows counter-clockwise while labelling them clockwise. That is DATA on the artwork, never a
-    /// constant here: a corrected re-bake is an asset edit, not a code change.</para>
+    /// <see cref="CharacterVisualDef.FacingsAreCounterClockwise"/>, which is DATA on the artwork and never
+    /// a constant here. That has already paid for itself once: the character rigs DID bake their rows
+    /// counter-clockwise while labelling them clockwise, the rig was corrected at source and all twelve
+    /// body sheets re-baked, and the fix was an asset edit with no code change — this component never knew.
+    /// The shipped character defs now declare <c>false</c>; the iso BOAT kits were not re-baked and still
+    /// declare <c>true</c>, which is exactly why the fact belongs to each artwork rather than to this
+    /// class.</para>
     ///
     /// <para><b>Facing is held when stopped</b> — a character that stops keeps looking where it was going
     /// rather than snapping to North. <b>Feet stay planted</b> — the sheets' pivot IS ground contact, so
