@@ -23,7 +23,10 @@ namespace HiddenHarbours.Tests.PlayMode
     ///
     /// <para><b>Two loaded scenes, not one.</b> The coordinator DEACTIVATES the roots of the scene it
     /// leaves, so a test that travelled out of the test runner's own scene would switch the runner off
-    /// mid-assert. Both ends of the hop are therefore scenes this test creates and owns.</para>
+    /// mid-assert. Both ends of the hop are therefore scenes this test creates and owns — and the
+    /// coordinator itself rides the RUNNER's scene, the way the real one rides the DontDestroyOnLoad
+    /// core, so its own root-toggling can never switch it off (the RegionWaterBakePlayTests lesson,
+    /// pinned here by <see cref="AThereAndBackAndOutAgain_EveryCrossingIsHandled"/>).</para>
     ///
     /// <para><b>No frame-count-as-time assertions.</b> The single <c>yield return null</c> is there to let
     /// the scene event flush, not to measure anything — headless frames are nowhere near real ones.</para>
@@ -82,8 +85,16 @@ namespace HiddenHarbours.Tests.PlayMode
             // the crossing under test rather than our own setup.
             SceneManager.SetActiveScene(_source);
 
+            // ⚠ THE COORDINATOR LIVES OUTSIDE BOTH REGION SCENES, exactly as the real one does — it rides
+            // the persistent core and is DontDestroyOnLoad. Left in a region scene it deactivates ITSELF
+            // on the first crossing (its own handler switches off the roots of the scene it is leaving,
+            // and it is one of them), OnDisable unsubscribes, and every crossing after the first is
+            // silently unhandled. A fixture that travels once cannot see this — which is how this one
+            // shipped with the coordinator in the source scene, and why
+            // AThereAndBackAndOutAgain_EveryCrossingIsHandled travels three times.
             _coordinatorGo = new GameObject("RegionTravelCoordinator");
             _coordinatorGo.SetActive(false);
+            SceneManager.MoveGameObjectToScene(_coordinatorGo, _origin);
             var coordinator = _coordinatorGo.AddComponent<RegionTravelCoordinator>();
             coordinator.Configure(_player.transform, _boat.transform, null, null);
             _coordinatorGo.SetActive(true);               // OnEnable subscribes
@@ -121,18 +132,21 @@ namespace HiddenHarbours.Tests.PlayMode
                         $"{because}\n  expected {expected}, was {actual}");
 
         /// <summary>A passage in the source scene, wired to cross into the destination region.</summary>
-        private RegionPassage MakePassage(string arrivalKey)
+        private RegionPassage MakePassage(string arrivalKey) => MakePassage(_source, _destRegion, arrivalKey);
+
+        /// <summary>A passage in <paramref name="from"/>, wired to cross into <paramref name="to"/>.</summary>
+        private static RegionPassage MakePassage(Scene from, RegionDef to, string arrivalKey)
         {
             var loaderGo = new GameObject("RegionSceneLoader");
-            loaderGo.SetActive(false);                    // so Awake reads the SOURCE scene's name…
-            SceneManager.MoveGameObjectToScene(loaderGo, _source);
+            loaderGo.SetActive(false);                    // so Awake reads the FROM scene's name…
+            SceneManager.MoveGameObjectToScene(loaderGo, from);
             var loader = loaderGo.AddComponent<RegionSceneLoader>();
             loaderGo.SetActive(true);                     // …not the test runner's
 
             var passageGo = new GameObject("Passage");
-            SceneManager.MoveGameObjectToScene(passageGo, _source);
+            SceneManager.MoveGameObjectToScene(passageGo, from);
             var passage = passageGo.AddComponent<RegionPassage>();
-            passage.Configure(_destRegion, loader, arrivalKey);
+            passage.Configure(to, loader, arrivalKey);
             return passage;
         }
 
@@ -215,6 +229,62 @@ namespace HiddenHarbours.Tests.PlayMode
                     "next arrival in the game would be steered by a crossing that never happened");
             }
             finally { Object.DestroyImmediate(alreadyHere); }
+        }
+
+        /// <summary>
+        /// ⭐ THE HAZARD PIN — a coordinator that was created in a region scene deactivates ITSELF on the
+        /// first crossing (its handler switches off the departed scene's roots, and it is one of them),
+        /// <c>OnDisable</c> unsubscribes, and every crossing after the first goes silently unhandled. This
+        /// fixture shipped exactly that way and stayed green, because every test travelled exactly once.
+        /// Three crossings, asserting the coordinator's OWN work after each, keep it honest: the middle
+        /// assertion (the departed region's roots are OFF) and the last (the fisher landed at the named
+        /// arrival) both go red with a coordinator that died on crossing one.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator AThereAndBackAndOutAgain_EveryCrossingIsHandled()
+        {
+            // Crossing 1: out through the front door.
+            MakePassage("").Activate();
+            yield return null;
+            Assert.AreEqual(DestSceneName, SceneManager.GetActiveScene().name,
+                "precondition: the first crossing happened");
+            AssertAt(WharfDeck, _player.transform.position, "the first crossing was handled");
+
+            var backHome = ScriptableObject.CreateInstance<RegionDef>();
+            try
+            {
+                backHome.Id = "region.per_passage_source";
+                backHome.SceneName = SourceSceneName;
+
+                // Crossing 2: back the way we came. The return passage lives in the DESTINATION — the
+                // region we are standing in — which is precisely the scene a self-deactivated coordinator
+                // would have left switched on behind it.
+                MakePassage(_dest, backHome, "").Activate();
+                yield return null;
+
+                Assert.AreEqual(SourceSceneName, SceneManager.GetActiveScene().name,
+                    "precondition: the second crossing happened (the loader raises this even with a dead " +
+                    "coordinator — it is the assertions below that see the difference)");
+                foreach (var root in _dest.GetRootGameObjects())
+                    Assert.IsFalse(root.activeSelf,
+                        $"'{root.name}' in the departed region is still active: the SECOND crossing went " +
+                        "unhandled. A coordinator created inside a region scene switches itself off on the " +
+                        "first crossing and never hears another one");
+
+                // Crossing 3: out again, this time over the bar — the named arrival proves the coordinator
+                // is not just toggling roots but still carrying the key and placing the rig.
+                MakePassage(BarKey).Activate();
+                yield return null;
+
+                Assert.AreEqual(DestSceneName, SceneManager.GetActiveScene().name,
+                    "precondition: the third crossing happened");
+                AssertAt(BarLanding, _player.transform.position,
+                    "the third crossing must place the fisher exactly as the first did — a fisher still " +
+                    "standing at the wharf means the coordinator stopped listening somewhere on the way");
+                Assert.IsNull(GameServices.PendingArrivalKey,
+                    "…and the key is still consume-once on a crossing after the first");
+            }
+            finally { Object.DestroyImmediate(backHome); }
         }
     }
 }

@@ -35,6 +35,8 @@ namespace HiddenHarbours.Tests.PlayMode
     ///
     /// <para><b>Two loaded scenes, not one</b> — the coordinator deactivates the roots of the scene it
     /// leaves, so a test travelling out of the runner's own scene would switch the runner off mid-assert.
+    /// The coordinator itself rides the RUNNER's scene, as the real one rides the DontDestroyOnLoad core —
+    /// in a region scene it would switch ITSELF off on the first crossing.
     /// <b>No frame-count-as-time assertions</b> — the single <c>yield return null</c> lets the scene event
     /// flush, it does not measure anything.</para>
     /// </summary>
@@ -100,8 +102,15 @@ namespace HiddenHarbours.Tests.PlayMode
             // crossing under test rather than our own setup.
             SceneManager.SetActiveScene(_harbour);
 
+            // ⚠ THE COORDINATOR LIVES OUTSIDE BOTH REGION SCENES, exactly as the real one does — it rides
+            // the persistent core and is DontDestroyOnLoad. Left in a region scene it deactivates ITSELF
+            // on the first crossing (its own handler switches off the roots of the scene it is leaving,
+            // and it is one of them), OnDisable unsubscribes, and every crossing after the first goes
+            // silently unhandled — see PerPassageArrivalPlayTests.AThereAndBackAndOutAgain_EveryCrossingIsHandled,
+            // which pins that hazard for both fixtures.
             _coordinatorGo = new GameObject("RegionTravelCoordinator");
             _coordinatorGo.SetActive(false);
+            SceneManager.MoveGameObjectToScene(_coordinatorGo, _origin);
             var coordinator = _coordinatorGo.AddComponent<RegionTravelCoordinator>();
             coordinator.Configure(_player.transform, _boat.transform, null, null);
             _coordinatorGo.SetActive(true);               // OnEnable subscribes
