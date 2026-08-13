@@ -145,6 +145,47 @@ namespace HiddenHarbours.Core
         public static ITidalTerrain TidalTerrain { get; set; }
 
         /// <summary>
+        /// The ON-FOOT PLAYER's transform — "where the person walking this world actually is". The
+        /// <b>App</b> travel rig is the writer (<c>RegionTravelCoordinator</c> holds the persistent,
+        /// DontDestroyOnLoad player and publishes it for that player's whole lifetime); <b>World</b>
+        /// content that has to react to where the player is standing reads it here WITHOUT referencing
+        /// App (rule 4) — the same Core-mediated indirection as <see cref="TidalTerrain"/>, pointing the
+        /// other way.
+        ///
+        /// <para><b>Why this must be a relay and not a serialized reference.</b> A region scene is
+        /// authored and SAVED long before the player it will host exists, and Unity does not serialize
+        /// references across scenes at all — so region content physically cannot be wired to the
+        /// persistent player at build time. A scene builder can only name a transform inside its own
+        /// scene, which for a region is at best a dev stand-in that the travel path then destroys.
+        /// Anything in a region that needs the player must therefore RESOLVE it at runtime, and this is
+        /// where it resolves. (The defect that produced this seam: every <c>BuildingInterior</c> outside
+        /// the start scene watched a stand-in that travel had destroyed, so no door in any region you
+        /// sailed to ever opened.)</para>
+        ///
+        /// <para><b>⚠ The getter launders Unity's FAKE-NULL.</b> A destroyed transform compares equal to
+        /// null through <c>UnityEngine.Object</c>'s overloaded <c>==</c> but is not a real null
+        /// reference, so a <c>??</c>/<c>?.</c> at a call site would sail straight past it and throw
+        /// <c>MissingReferenceException</c> — compile-clean, runtime-red. The Unity-aware check is done
+        /// once, HERE, and a REAL null is handed back, so consumers may write a plain <c>!= null</c> and
+        /// be right. (Same discipline as <see cref="FishSchools"/>/<see cref="RadarContacts"/>, which
+        /// substitute an empty model; there is no sensible empty transform, so this one returns null.)</para>
+        ///
+        /// <para>OPTIONAL and NOT part of <see cref="Ready"/>: null in EditMode, in a bare art scene, and
+        /// in a region scene played directly with no persistent core. Consumers must null-check, and
+        /// "nobody published a player" must mean "carry on" — never a throw.</para>
+        /// FLAG lead-architect: new Core contract (the travel-aware occupant seam).
+        /// </summary>
+        public static UnityEngine.Transform PlayerTransform
+        {
+            // ⚠️ `!= null` is UnityEngine.Object's overload doing the destroyed-object check; returning
+            // the literal `null` is what converts a fake-null into a real one for every caller.
+            get => _playerTransform != null ? _playerTransform : null;
+            set => _playerTransform = value;
+        }
+
+        private static UnityEngine.Transform _playerTransform;
+
+        /// <summary>
         /// The stable id of the region the player is CURRENTLY in (e.g. <c>"region.st_peters"</c>) —
         /// the travel-aware read gameplay resolves per-region content against (which fish bite HERE,
         /// now). The <b>App</b> travel rig is the writer (the active region's anchor reports itself;
@@ -458,6 +499,7 @@ namespace HiddenHarbours.Core
             RadarContacts = null;        // → EmptyRadarSea.Instance; likewise never null
             Save = null;
             TidalTerrain = null;
+            PlayerTransform = null;
             CurrentRegionId = null;
             PendingArrivalKey = null;
             CurrentRegionBounds = default;

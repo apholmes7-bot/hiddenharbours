@@ -1,4 +1,5 @@
 using UnityEngine;
+using HiddenHarbours.Core;
 
 namespace HiddenHarbours.World
 {
@@ -35,6 +36,12 @@ namespace HiddenHarbours.World
     /// front of it. Rooms never move, so their props park themselves the way the rest of the decor
     /// does.</para>
     ///
+    /// <para><b>Who it watches is resolved, not just wired.</b> The occupant is the builder's own
+    /// reference where there is one and Core's <see cref="GameServices.PlayerTransform"/> where there
+    /// is not — see <see cref="ResolveOccupant"/>. A region scene is saved long before the persistent
+    /// player exists (and Unity will not serialize a reference across scenes anyway), so a room that
+    /// could only be wired at build time was a room that opened in the start scene and nowhere else.</para>
+    ///
     /// <para>Visual + collision only: no sim, no save, no allocation per frame (rule 5, rule 7).</para>
     /// </summary>
     [DisallowMultipleComponent]
@@ -51,8 +58,10 @@ namespace HiddenHarbours.World
         [SerializeField] private Transform _props;
 
         [Header("Who can be inside")]
-        [Tooltip("The on-foot player. Serialized rather than searched for, the same way WorldInteractor " +
-                 "takes its player — the builder knows it and this module must not reference Player.")]
+        [Tooltip("The on-foot player, AS THIS SCENE'S BUILDER KNEW THEM. Serialized rather than searched " +
+                 "for, the same way WorldInteractor takes its player. OPTIONAL: a region scene has no " +
+                 "persistent player to name at build time, so leaving this empty is valid — the occupant " +
+                 "is then resolved from Core at runtime. See ResolveOccupant.")]
         [SerializeField] private Transform _occupant;
 
         [Header("The footprint (metres, as the rig reports it)")]
@@ -153,8 +162,46 @@ namespace HiddenHarbours.World
         public float DoorwayWidthMetres => _doorwayWidthMetres;
 
         /// <summary>The on-foot player, handed in by whoever built the scene. Mirrors
-        /// <c>WorldInteractor.SetPlayer</c> so the World module never reaches into Player.</summary>
+        /// <c>WorldInteractor.SetPlayer</c> so the World module never reaches into Player. OPTIONAL —
+        /// a room with no occupant wired resolves one from Core instead (<see cref="ResolveOccupant"/>),
+        /// which is how every region scene works.</summary>
         public void SetOccupant(Transform occupant) => _occupant = occupant;
+
+        /// <summary>
+        /// Who this room is watching, RIGHT NOW — the builder's own reference while it is alive, and
+        /// otherwise whoever Core says is walking the world
+        /// (<see cref="GameServices.PlayerTransform"/>). Null when there is nobody to watch at all.
+        ///
+        /// <para><b>Why the serialized reference wins.</b> It is the more specific answer and it is
+        /// right wherever it exists: in the START scene it names the real persistent player (the builder
+        /// stands the core up in that same scene), and in a region scene played DIRECTLY for review it
+        /// names that scene's dev stand-in, who is the only player there is. Preferring it means this
+        /// change cannot perturb either path — where the old code worked, it still resolves the same
+        /// transform on the same frame.</para>
+        ///
+        /// <para><b>Why the fallback has to exist.</b> A region scene cannot name the persistent player
+        /// at build time — it does not exist yet, and Unity will not serialize a reference across
+        /// scenes regardless. So a region's rooms are wired either to nothing or to a dev stand-in that
+        /// <c>DevRegionBootstrap</c> DESTROYS the moment you actually travel in. Both cases land here,
+        /// and before this fallback existed both meant the same thing: <c>Update</c> returned on its
+        /// first line forever and the door never opened in any region you sailed to.</para>
+        ///
+        /// <para><b>Resolved per tick, never cached.</b> Two <c>UnityEngine.Object</c> null checks and a
+        /// static read, no allocation (rule 7) — and staying stateless is what keeps a room correct
+        /// across a shell restart, which replaces the persistent player with a different transform. A
+        /// cache would hold the dead one.</para>
+        ///
+        /// <para><b>⚠ Explicit <c>!= null</c>, never <c>??</c>/<c>?.</c>.</b> The reference this method
+        /// exists to survive is a DESTROYED one, and a destroyed <c>UnityEngine.Object</c> is fake-null:
+        /// the null-propagating operators bypass the overloaded <c>==</c> and sail straight past it. An
+        /// <c>_occupant ?? GameServices.PlayerTransform</c> here would compile clean, never take the
+        /// fallback, and throw on the next dereference.</para>
+        /// </summary>
+        Transform ResolveOccupant()
+        {
+            if (_occupant != null) return _occupant;
+            return GameServices.PlayerTransform;   // already laundered to a REAL null by the accessor
+        }
 
         void OnEnable()
         {
@@ -166,7 +213,8 @@ namespace HiddenHarbours.World
 
         void Update()
         {
-            if (_occupant == null) return;
+            Transform occupant = ResolveOccupant();
+            if (occupant == null) return;
 
             // Hysteresis on the way out only: the inner rectangle is the entry line, and leaving takes
             // a little more than arriving at it, so a player standing in the doorway does not strobe the
@@ -175,7 +223,7 @@ namespace HiddenHarbours.World
                 ? _wallThicknessMetres - _hysteresisMetres
                 : _wallThicknessMetres;
 
-            bool inside = Footprint.Contains(_occupant.position, inset);
+            bool inside = Footprint.Contains(occupant.position, inset);
             if (inside == IsInside) return;
 
             IsInside = inside;
