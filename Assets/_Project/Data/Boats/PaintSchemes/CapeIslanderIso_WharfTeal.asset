@@ -1,0 +1,161 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee76649f87a8cfd4890261ca9a64ffa3, type: 3}
+  m_Name: CapeIslanderIso_WharfTeal
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.HullPaintSchemeDef
+  Id: paint.cape_wharf_teal
+  Label: Wharf Teal
+  Note: the fleet teal carried up onto a big hull, white house standing over it
+  HullMeshId: hullmesh.cape_islander_iso
+  SourceRigPath: docs/art/rigs/capeIslanderIsoRig.js
+  RigPaintId: wharf-teal
+  Ramps:
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4283518723
+    - serializedVersion: 2
+      rgba: 4284900352
+    - serializedVersion: 2
+      rgba: 4285888004
+    - serializedVersion: 2
+      rgba: 4286875405
+    - serializedVersion: 2
+      rgba: 4287797522
+    - serializedVersion: 2
+      rgba: 4288851263
+    - serializedVersion: 2
+      rgba: 4290694000
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4281671693
+    - serializedVersion: 2
+      rgba: 4282198037
+    - serializedVersion: 2
+      rgba: 4282658588
+    - serializedVersion: 2
+      rgba: 4283053346
+    - serializedVersion: 2
+      rgba: 4287659367
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4285823349
+    - serializedVersion: 2
+      rgba: 4287731346
+    - serializedVersion: 2
+      rgba: 4289376428
+    - serializedVersion: 2
+      rgba: 4290955461
+    - serializedVersion: 2
+      rgba: 4292534493
+    - serializedVersion: 2
+      rgba: 4293718512
+    - serializedVersion: 2
+      rgba: 4294047476
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4281023050
+    - serializedVersion: 2
+      rgba: 4281615962
+    - serializedVersion: 2
+      rgba: 4283458671
+    - serializedVersion: 2
+      rgba: 4283396992
+    - serializedVersion: 2
+      rgba: 4284450452
+    - serializedVersion: 2
+      rgba: 4287080371
+    - serializedVersion: 2
+      rgba: 4288987853
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4280425748
+    - serializedVersion: 2
+      rgba: 4282003490
+    - serializedVersion: 2
+      rgba: 4283253299
+    - serializedVersion: 2
+      rgba: 4286211142
+    - serializedVersion: 2
+      rgba: 4288712810
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4278476638
+    - serializedVersion: 2
+      rgba: 4279797135
+    - serializedVersion: 2
+      rgba: 4282753983
+    - serializedVersion: 2
+      rgba: 4286566129
+    Offset: -1
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279704084
+    - serializedVersion: 2
+      rgba: 4280232224
+    - serializedVersion: 2
+      rgba: 4281482543
+    - serializedVersion: 2
+      rgba: 4283061571
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279702288
+    - serializedVersion: 2
+      rgba: 4280754461
+    - serializedVersion: 2
+      rgba: 4282004011
+    - serializedVersion: 2
+      rgba: 4283319613
+    - serializedVersion: 2
+      rgba: 4284701778
+    - serializedVersion: 2
+      rgba: 4286281323
+    - serializedVersion: 2
+      rgba: 4288255114
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279702288
+    - serializedVersion: 2
+      rgba: 4280754461
+    - serializedVersion: 2
+      rgba: 4282004011
+    - serializedVersion: 2
+      rgba: 4283319613
+    - serializedVersion: 2
+      rgba: 4284701778
+    - serializedVersion: 2
+      rgba: 4286281323
+    - serializedVersion: 2
+      rgba: 4288255114
+    Offset: -2
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279702288
+    - serializedVersion: 2
+      rgba: 4280754461
+    - serializedVersion: 2
+      rgba: 4282004011
+    - serializedVersion: 2
+      rgba: 4283319613
+    - serializedVersion: 2
+      rgba: 4284701778
+    - serializedVersion: 2
+      rgba: 4286281323
+    - serializedVersion: 2
+      rgba: 4288255114
+    Offset: -3

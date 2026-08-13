@@ -114,13 +114,18 @@ namespace HiddenHarbours.Tests.EditMode
         /// drop every painted boat at the wharf was a lobster boat off one mesh, so "the register
         /// wears its colours" was true of four berths and silently false of three.
         ///
-        /// <para><b>Two, not three, and the missing third is not an art gap.</b> The console skiff's
-        /// nine schemes ARE baked and proven, but no owner at Nine Mile Creek keeps a boat drawn from
-        /// <c>hullmesh.console_iso</c>: Celeste Bernard's <c>boat.fishing_skiff</c> resolves to
-        /// <c>visual.fishing_boat</c>, a legacy SPRITE-only visual (eight hand-drawn top-down facings,
-        /// no hull mesh), and paint exists only on the mesh path. <c>boat.console_skiff</c> is a
-        /// separate def that nobody on this wharf owns. Which boat Celeste Bernard keeps is a
-        /// world-content call, not an art one — see the PR body.</para>
+        /// <para><b>Three hulls now, and the one that is still missing is not an art gap.</b> The
+        /// console skiff's nine schemes ARE baked and proven, but no owner at Nine Mile Creek keeps a
+        /// boat drawn from <c>hullmesh.console_iso</c>: Celeste Bernard's <c>boat.fishing_skiff</c>
+        /// resolves to <c>visual.fishing_boat</c>, a legacy SPRITE-only visual (eight hand-drawn
+        /// top-down facings, no hull mesh), and paint exists only on the mesh path.
+        /// <c>boat.console_skiff</c> is a separate def that nobody on this wharf owns. Which boat
+        /// Celeste Bernard keeps is a world-content call, not an art one — see the PR body.</para>
+        ///
+        /// <para><b>⚠️ It pins the SET, not a floor, for the reason its sibling below spells out.</b>
+        /// A <c>GreaterOrEqual(2)</c> would have gone on passing when the Cape Islander gained her
+        /// axis and Marie Gallant put paint on — i.e. it would have survived the very change it
+        /// exists to notice. The set moves the moment a hull gains or loses a painted keeper.</para>
         /// </summary>
         [Test]
         public void ThePaintedRegisterSpansMoreThanOneHull()
@@ -132,11 +137,13 @@ namespace HiddenHarbours.Tests.EditMode
                 .OrderBy(s => s)
                 .ToArray();
 
-            Assert.GreaterOrEqual(hulls.Length, 2,
-                "Fewer than two distinct hull meshes wear paint at Nine Mile Creek — found " +
-                $"[{string.Join(", ", hulls)}]. The lobster boat and the punt both have owners and " +
-                "both have paint axes; if one has stopped being drawn painted, a bake or an " +
-                "assignment was lost.");
+            CollectionAssert.AreEqual(
+                new[] { "hullmesh.cape_islander_iso", "hullmesh.lobster_boat_iso", "hullmesh.punt_iso" },
+                hulls,
+                "The set of hull meshes wearing paint at Nine Mile Creek has moved — found " +
+                $"[{string.Join(", ", hulls)}]. The lobster boat, the punt and the Cape Islander all " +
+                "have owners and all have paint axes; if one has stopped being drawn painted, a bake " +
+                "or an assignment was lost. If a fourth hull just gained a painted keeper, add it here.");
         }
 
         /// <summary>A scheme is a table of ramps matched to a hull's materials BY INDEX, so one baked
@@ -170,14 +177,20 @@ namespace HiddenHarbours.Tests.EditMode
         /// identity, both of which move the moment another hull gains an axis or another owner
         /// joins the register.</para>
         ///
-        /// <para><b>TWO owners are unpainted, for two DIFFERENT reasons, and conflating them is how
-        /// this stays broken quietly.</b> Marie Gallant's Cape Islander has a hull mesh but her RIG
-        /// has no paint axis (a plain <c>MATS</c> const) — an art gap. Celeste Bernard's
-        /// <c>boat.fishing_skiff</c> resolves to <c>visual.fishing_boat</c>, a legacy SPRITE-only
-        /// visual with no hull mesh at all — so paint, which exists only on the mesh path, can never
-        /// reach her whatever the art director draws. Her console-skiff schemes ARE baked; nobody on
-        /// this wharf owns a boat that uses them. Each reason is asserted separately so that fixing
-        /// one cannot make the other look fixed.</para>
+        /// <para><b>ONE owner is unpainted now, and the reason is the only one this kit cannot
+        /// answer.</b> Celeste Bernard's <c>boat.fishing_skiff</c> resolves to
+        /// <c>visual.fishing_boat</c>, a legacy SPRITE-only visual with no hull mesh at all — so
+        /// paint, which exists only on the mesh path, can never reach her whatever the art director
+        /// draws. Her console-skiff schemes ARE baked; nobody on this wharf owns a boat that uses
+        /// them. Which boat she keeps is a world-content ruling, not an art one.</para>
+        ///
+        /// <para><b>⚠️ The Cape Islander's half of this test was the reason it was written, and it
+        /// has now fired.</b> Marie Gallant was the OTHER unpainted owner, for a different reason:
+        /// her hull had a mesh but her rig had no paint axis (a plain <c>MATS</c> const) — an art
+        /// gap, and the last one at this wharf. The gap is closed, so the list below is one name
+        /// shorter and the Cape Islander's own assertion has flipped from "she is unpainted BECAUSE
+        /// nothing is baked for her" to "she is painted, off a hull that has schemes". Six of seven
+        /// berths wear colours; the seventh needs a boat, not a paint job.</para>
         /// </summary>
         [Test]
         public void TheUnpaintedOwnersAreUnpaintedForStatedReasons()
@@ -195,26 +208,32 @@ namespace HiddenHarbours.Tests.EditMode
             }
 
             CollectionAssert.AreEqual(
-                new[] { "owner.bernard_celeste", "owner.gallant_marie" },
+                new[] { "owner.bernard_celeste" },
                 unpainted.Select(o => o.Id).ToArray(),
-                "The unpainted set has moved. Expected exactly Celeste Bernard (her boat is drawn " +
-                "from a sprite visual with NO hull mesh, so paint cannot reach her at all) and Marie " +
-                "Gallant (her Cape Islander rig has no paint axis to bake). Found: [" +
+                "The unpainted set has moved. Expected exactly Celeste Bernard, whose boat is drawn " +
+                "from a sprite visual with NO hull mesh, so paint cannot reach her at all. Found: [" +
                 string.Join(", ", unpainted.Select(o => o.Id)) + "]. If a hull just gained an axis, " +
                 "paint her keeper and update this list; if an owner joined the register unpainted, " +
                 "say in the PR why.");
-
-            // The two reasons, pinned apart. Gallant HAS a mesh; Bernard has none.
-            var gallant = unpainted.Single(o => o.Id == "owner.gallant_marie");
-            Assert.IsNotNull(gallant.Boat.Visual.HullMesh,
-                "Marie Gallant's boat has lost its hull mesh. Her reason for being unpainted is " +
-                "supposed to be a missing paint AXIS on a mesh hull, not a missing mesh.");
 
             var bernard = unpainted.Single(o => o.Id == "owner.bernard_celeste");
             Assert.IsNull(bernard.Boat.Visual.HullMesh,
                 $"'{bernard.Boat.Visual.Id}' now HAS a hull mesh — so Celeste Bernard's boat is on " +
                 "the mesh path and can wear paint. That was the whole thing blocking her: assign " +
                 "her a scheme baked for that hull and move her out of this list.");
+
+            // The other direction, and the half that just flipped: Marie Gallant's Cape Islander had
+            // a mesh all along and was held out only by a missing paint AXIS. Asserted positively so
+            // that losing the axis again cannot show up merely as "the list grew".
+            var gallant = Owners().Single(o => o.Id == "owner.gallant_marie");
+            Assert.IsNotNull(gallant.Boat.Visual.HullMesh, "Marie Gallant's boat has lost its hull mesh.");
+            Assert.IsNotEmpty(SchemesFor(gallant.Boat.Visual.HullMesh),
+                "No paint schemes are baked for Marie Gallant's Cape Islander. Her rig gained an axis " +
+                "(capeIslanderIsoRig.js SCHEMES); if this is empty the bake was lost — run Hidden " +
+                "Harbours ▸ Dev ▸ 3D Hulls ▸ Bake hull PAINT SCHEMES…");
+            Assert.IsNotNull(gallant.HullPaint,
+                "Marie Gallant keeps the best Cape Islander on this wall and her hull now HAS schemes, " +
+                "yet she wears none — she is back in the same stock sage as any other Cape Islander.");
         }
 
         // ---- the builder path ---------------------------------------------------------------

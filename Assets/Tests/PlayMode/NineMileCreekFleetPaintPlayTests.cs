@@ -104,13 +104,29 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         /// <summary>The other direction — and it asserts the install happened FIRST, so it cannot pass
-        /// by drawing nothing at all.</summary>
+        /// by drawing nothing at all.
+        ///
+        /// <para>⚠️ <b>The subject is now BUILT, not found, and that is the Cape Islander drop's
+        /// doing.</b> This used to pick the first unpainted mesh-hulled owner out of the register and
+        /// <c>Assert.Ignore</c> if there was none. Giving Marie Gallant a paint axis made "none" the
+        /// actual state of the register — six of seven berths painted, and the seventh has no hull
+        /// mesh to install at all — so the fixture would have gone quietly yellow and stopped
+        /// checking that an unpainted owner hands the seam NOTHING. An ignored test is a lost test.
+        /// Cloning a painted owner in memory and clearing her paint states the premise instead of
+        /// hunting for it, keeps the assertion live at 7-of-7, and touches no shipped asset (the
+        /// clone is destroyed in TearDown).</para></summary>
         [UnityTest]
         public IEnumerator AnUnpaintedOwnerStillDrawsButHandsNoScheme()
         {
-            var plain = Owners().FirstOrDefault(
-                o => o.HullPaint == null && o.IsPresentable() && o.Boat.Visual.HasHullMesh());
-            if (plain == null) Assert.Ignore("Every mesh-hulled owner in the register is painted.");
+            var source = Owners().FirstOrDefault(
+                o => o.IsPresentable() && o.Boat.Visual.HasHullMesh());
+            if (source == null) Assert.Ignore("No mesh-hulled owner in the register (editor-only fixture).");
+
+            var plain = Object.Instantiate(source);
+            _spawned.Add(plain);
+            plain.HullPaint = null;
+            Assert.IsTrue(plain.IsPresentable() && plain.Boat.Visual.HasHullMesh(),
+                "The cloned owner lost her boat, so 'she drew but handed nothing' would prove nothing.");
 
             Wake(plain, "MooredPlainProbe");
             yield return null;

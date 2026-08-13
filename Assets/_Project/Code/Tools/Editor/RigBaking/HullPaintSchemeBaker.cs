@@ -41,8 +41,10 @@ namespace HiddenHarbours.Tools.RigBaking
         public const string SchemeFolder = "Assets/_Project/Data/Boats/PaintSchemes";
 
         /// <summary>
-        /// A hull whose rig carries a paint axis. Three of them now, across TWO different paint APIs
-        /// — which is the design working: a second and third hull cost a line each and no new baker.
+        /// A hull whose rig carries a paint axis. FOUR of them now, across TWO different paint APIs
+        /// — which is the design working: the second, third and fourth hulls cost a line each and no
+        /// new baker. (Three of the four share one line verbatim; the lobster's differs only because
+        /// her kit predates the small craft's and keeps its resolver private.)
         /// <see cref="AssetPrefix"/> keeps two hulls' tables from colliding on disk, and
         /// <see cref="IdPrefix"/> keeps their ids apart (ids are append-only and stable, CLAUDE.md §5).
         /// </summary>
@@ -134,8 +136,21 @@ namespace HiddenHarbours.Tools.RigBaking
                                             "return [id,s.name||'',s.note||''];})",
                             defaultSchemeExpr: "defaultScheme"),
 
-            // The Cape Islander has no paint axis at all (a plain `MATS` const), so she cannot join
-            // until the art director gives her one. That is a rig change, not a line here.
+            // The Cape Islander, who until now had no paint axis at all — the last hull at Nine Mile
+            // Creek that could gain one. She takes the small craft's API verbatim (she is their
+            // sibling on this pipeline, and her rasteriser constants are theirs exactly), so this is
+            // the third identical line and the design's own claim tested a third time: a new painted
+            // hull costs a row, not a baker.
+            //
+            // 'cape' is hull-qualified like the rest even though there is only ONE Cape Islander rig.
+            // Ids are append-only, so a prefix cannot be narrowed later — and her TABLE is
+            // hull-specific (10 materials, where the punt and lobster hold 11 and the console 13),
+            // which is the whole reason the prefixes exist.
+            new PaintedHull("capeIslander", "hullmesh.cape_islander_iso", "CapeIslanderIso", "paint.cape_",
+                            matsExpr: "palette({scheme:{0}}).mats",
+                            schemeListExpr: "schemeIds.map(function(id){var s={G}.SCHEMES[id];" +
+                                            "return [id,s.name||'',s.note||''];})",
+                            defaultSchemeExpr: "defaultScheme"),
         };
 
         [MenuItem("Hidden Harbours/Dev/3D Hulls/Bake hull PAINT SCHEMES…", priority = 41)]

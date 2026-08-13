@@ -334,6 +334,40 @@ namespace HiddenHarbours.Tools.RigBaking
                     ["MATS"] = "matsFor('gelcoat').MATS",
                 },
 
+                // ---- the Cape Islander's paint axis (drop of 2026-08-12) -------------------------
+                // The FOURTH hull to lose its `MATS` const to a paint axis, and the last one at Nine
+                // Mile Creek that could gain one — after her, only a boat with no hull mesh at all is
+                // unpaintable. She takes the small craft's API rather than the lobster's, because she
+                // is their sibling on this pipeline (her own header says so) and because that API is
+                // already exported: `palette({})` needs NO shim, which is why her line in
+                // HullPaintSchemeBaker.Fleet is one line.
+                //
+                // MEASURED, not argued (V8 harness, 2026-08-12, pre-paint rig at bcbadf75 against
+                // post-paint, 92/92 checks):
+                //   · `palette({}).mats` ≡ the old `MATS` const — all 10 entries, same KEY ORDER
+                //     (hull,boot,cream,wood,glas,gold,iron,moto,blk,dark), same ramps, same offsets
+                //     (gold −1, blk −2, dark −3). Order is load-bearing: the face packer resolves an
+                //     unknown material to index 0, and her `_paint` still falls back to `MATS.hull`.
+                //   · `palette({})` ≡ `palette({scheme:'sage-green'})`, so the mesh bake and the
+                //     default scheme asset are pinned to one table, not two that happen to agree.
+                //   · Her 509-face list is byte-identical with and without paint — every vertex, bias
+                //     and depth bias — and does not move after rendering two other colourways. One
+                //     mesh serves all eight schemes.
+                //   · All 8 facings render byte-identical to the pre-paint rig at 456×420×4: 0 bytes
+                //     differ, through the unset default, the named default, AND an unknown scheme id.
+                //   · The keyline's reverse ramp index (46 distinct colours, LAST-write-wins over the
+                //     same 8 ramps in the same order) is unchanged — that table is what darkens the
+                //     far side of a depth step, so a first-wins rewrite would have moved pixels.
+                //   · The committed CapeIslanderIsoHullMesh.asset already holds exactly these 10
+                //     ramps, so re-baking her is a no-op on every baker-written field.
+                // Sabotage-proved: nudging ONE ramp step by 1/255 reddens 128–3,497 bytes per facing,
+                // and swapping two keys in the table reddens the order oracle while leaving the
+                // pixels alone — which is exactly why the order is asserted separately from them.
+                ["capeIslanderIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
+                {
+                    ["MATS"] = "palette({}).mats",
+                },
+
                 // The skiff motor is a LAYER, not a hull, so its export omits two things every hull
                 // rig publishes and the extractor reads unconditionally: the pixel scale and the bake
                 // elevation. Both exist under the rig's own names (`S`, `DEFAULT_ELEV`) — this is a
