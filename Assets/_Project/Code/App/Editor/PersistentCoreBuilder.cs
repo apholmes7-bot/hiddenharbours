@@ -358,7 +358,12 @@ namespace HiddenHarbours.App.Editor
             // (dynamic) re-sorts the player by world Y each frame so grass/trees IN FRONT draw over the player and
             // those BEHIND draw under — automatic ¾ layering, no per-piece tuning. (The order 10 above is just the
             // pre-Play default; YSortSprite recomputes it from Y on the same scale grass/trees use.)
-            playerGo.AddComponent<HiddenHarbours.Art.GrassFootstep>();
+            // The trail pool holds GrassFootstep.MaxWalkers walkers and the village's villagers claim slots too.
+            // The player's component re-claims on every region hop (the persistent-core root toggles), i.e. AFTER
+            // the arriving region's NPCs — so it claims at PlayerPriority, which outranks the ambient default and
+            // evicts a villager rather than leaving the player without a trodden path.
+            var playerFootstep = playerGo.AddComponent<HiddenHarbours.Art.GrassFootstep>();
+            SetInt(playerFootstep, "_priority", HiddenHarbours.Art.GrassFootstep.PlayerPriority);
             var playerYSort = playerGo.AddComponent<HiddenHarbours.Art.YSortSprite>();
             SetBool(playerYSort, "_dynamic", true);
             var prb = playerGo.AddComponent<Rigidbody2D>();
@@ -736,6 +741,15 @@ namespace HiddenHarbours.App.Editor
             if (prop != null && prop.propertyType == SerializedPropertyType.Boolean)
             { prop.boolValue = value; so.ApplyModifiedPropertiesWithoutUndo(); }
             else Debug.LogWarning($"[PersistentCoreBuilder] {c.GetType().Name} has no bool field '{field}'.");
+        }
+
+        static void SetInt(Component c, string field, int value)
+        {
+            var so = new SerializedObject(c);
+            var prop = so.FindProperty(field);
+            if (prop != null && prop.propertyType == SerializedPropertyType.Integer)
+            { prop.intValue = value; so.ApplyModifiedPropertiesWithoutUndo(); }
+            else Debug.LogWarning($"[PersistentCoreBuilder] {c.GetType().Name} has no int field '{field}'.");
         }
 
         static void SetFloat(Component c, string field, float value)
