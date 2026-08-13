@@ -223,6 +223,37 @@ namespace HiddenHarbours.Art
             _config = config;
         }
 
+        /// <summary>
+        /// <inheritdoc cref="Configure(Vector2, Vector2, Material, GameConfig)"/>
+        ///
+        /// <para><paramref name="maxShoreGradient"/> is how steeply THIS coast shelves, and it is per-region
+        /// TERRAIN DATA rather than world policy — which is why it stays on the component while the
+        /// exaggeration and the band coefficient live in <see cref="GameConfig"/>. The serialized default
+        /// (0.5) is St Peters' softly-shelving island; a region whose coast plan stands cliffs up out of the
+        /// bay shelves an order of magnitude harder, and the field's own tooltip says which way the error
+        /// hurts — overestimating only widens the fade band, underestimating risks a tear at the shoreline.
+        /// Derive it from the region's authored profile; do not type a number you like.</para>
+        /// </summary>
+        public void Configure(Vector2 meshWorldCenter, Vector2 meshWorldSize, Material overlayMaterial,
+                              GameConfig config, float maxShoreGradient)
+        {
+            Configure(meshWorldCenter, meshWorldSize, overlayMaterial, config);
+            _maxShoreGradient = Mathf.Max(0f, maxShoreGradient);
+        }
+
+        /// <summary>The coast steepness this surface was configured with — read by the builder tests, so
+        /// "the region's own gradient reached the component" is asserted against the component rather than
+        /// against the number the builder meant to send.</summary>
+        public float MaxShoreGradient => _maxShoreGradient;
+
+        /// <summary>The world rect the displaced mesh covers. Must be the SAME rect as the flat plane and
+        /// the height bake — a displaced sea over a different rectangle is a sea with two different edges —
+        /// which is what the builder tests read these to check. <inheritdoc cref="MaxShoreGradient"/></summary>
+        public Vector2 MeshWorldCenter => _meshWorldCenter;
+
+        /// <inheritdoc cref="MeshWorldCenter"/>
+        public Vector2 MeshWorldSize => _meshWorldSize;
+
         private void Awake()
         {
             _flatRenderer = GetComponent<Renderer>();

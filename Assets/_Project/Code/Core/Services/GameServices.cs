@@ -141,8 +141,54 @@ namespace HiddenHarbours.Core
         /// scene-scoped: NOT part of <see cref="Ready"/>, and null before a region wires itself (EditMode,
         /// pre-first-scene boot). <b>A null terrain means "open water"</b> — consumers treat the absence of
         /// a height map as everywhere-submerged / no walkable ground rather than throwing.
+        ///
+        /// <para><b>⚠ Assigning raises <see cref="TidalTerrainChanged"/>.</b> Most consumers ASK this
+        /// accessor whenever they need an elevation, so they never care when the answer changed. One
+        /// consumer cannot: anything that <b>pre-computes</b> from the terrain — the water shader's
+        /// seabed bake — is a snapshot, and a snapshot taken while this was null is wrong for the whole
+        /// visit. See <see cref="TidalTerrainChanged"/>.</para>
         /// </summary>
-        public static ITidalTerrain TidalTerrain { get; set; }
+        public static ITidalTerrain TidalTerrain
+        {
+            get => _tidalTerrain;
+            set
+            {
+                // Reference equality, and it must stay that way: the raise is what re-does downstream
+                // WORK, so a self-assignment that re-raised would re-bake a seabed for nothing.
+                if (ReferenceEquals(_tidalTerrain, value)) return;
+                _tidalTerrain = value;
+                TidalTerrainChanged?.Invoke();
+            }
+        }
+
+        private static ITidalTerrain _tidalTerrain;
+
+        /// <summary>
+        /// Raised whenever <see cref="TidalTerrain"/> starts pointing at a different terrain (including
+        /// at null on teardown). For consumers that PRE-COMPUTE from the height map rather than asking
+        /// it per query.
+        ///
+        /// <para><b>Why this exists — the ordering trap it closes.</b> A region's terrain registers itself
+        /// in <c>OnEnable</c> and the region's water bakes the seabed in <c>OnEnable</c>, and under the
+        /// root-toggle travel model (a region's roots are switched on one at a time, in hierarchy order)
+        /// which of those two runs first is decided by nothing more durable than the order two objects
+        /// happen to sit in the Hierarchy window. Bake first and the water samples a terrain that is not
+        /// there yet, silently falls back to its distance-to-land estimate, and — in a region that
+        /// authors no land tilemap/collider/fence, which is every analytic region — that estimate is a
+        /// CONSTANT: a flat seabed, no coast reveal, no depth gradient, no foam following the shore. It
+        /// fails silently and it looks like a rendering bug.</para>
+        ///
+        /// <para>Three separate comments in the region builders declare "create the terrain BEFORE the
+        /// sea" load-bearing, which is the tell: a rule that has to be restated in every builder is not
+        /// enforced anywhere. This event enforces it instead — a late registration re-does the bake, so
+        /// the order stops mattering and cannot regress by a drag in the Hierarchy.</para>
+        ///
+        /// <para><b>Subscribers must unsubscribe</b> (this is a static event; a MonoBehaviour that
+        /// subscribes in <c>OnEnable</c> unsubscribes in <c>OnDisable</c>). <see cref="Reset"/>
+        /// deliberately does NOT clear the list: it clears service STATE between scenes and tests, and
+        /// wiping live subscribers there would silently unhook components that are still enabled.</para>
+        /// </summary>
+        public static event System.Action TidalTerrainChanged;
 
         /// <summary>
         /// The ON-FOOT PLAYER's transform — "where the person walking this world actually is". The

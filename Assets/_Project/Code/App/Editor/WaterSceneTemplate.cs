@@ -61,6 +61,13 @@ namespace HiddenHarbours.App.Editor
         const string ArtWaterStormMood = ArtWaterPresets + "/Water_StormGrey.mat";
         const string ArtWaterFogMood   = ArtWaterPresets + "/Water_FoggySmother.mat";
 
+        /// <summary>The displaced surface's in-scene face (ADR 0023 phase 2).</summary>
+        public const string ArtWaterOverlayMat = "Assets/_Project/Art/Materials/WaterOverlay.mat";
+
+        /// <summary>The one shared <see cref="GameConfig"/> every region's water reads its owner-tuned
+        /// knobs from.</summary>
+        public const string GameConfigAsset = DataConfig + "/GameConfig.asset";
+
         /// <summary>The scene asset path for a water region's scene name.</summary>
         public static string ScenePathFor(string sceneName) => $"{Scenes}/{sceneName}.unity";
 
@@ -288,6 +295,120 @@ namespace HiddenHarbours.App.Editor
             SetObj(so, "_stormMoodMaterial", stormMood);
             SetObj(so, "_fogMoodMaterial", fogMood);
             so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        // =============================================================================================
+        //  THE LAND REGIONS' SEA — one wiring, called by both land builders
+        // =============================================================================================
+
+        /// <summary>
+        /// Everything a LAND region's sea plane carries, applied to a Sea <paramref name="water"/> object the
+        /// caller already built: the height-bake rect and elevation range, the owner's
+        /// <see cref="GameConfig"/>, the weather palette anchors, and the <b>displaced surface</b>.
+        ///
+        /// <para><b>Why this is one call and not four.</b> The displaced sea has been the game's water since
+        /// 2026-08-05 (<c>GameConfig.DisplacedWater.DefaultOn</c>), but the wiring that gives a region one
+        /// existed in exactly ONE builder — so St Peters got the displaced sea and Nine Mile Creek got the
+        /// pre-displacement flat face, and the owner sailed from one into the other. A second hand-rolled
+        /// copy would have drifted the same way; this is the copy there is.</para>
+        ///
+        /// <para><b>The <see cref="GameConfig"/> is loaded HERE, from disk, rather than taken as a
+        /// parameter.</b> Both land builders passed an instance they had loaded earlier in their run and both
+        /// banked scenes carry <c>_config: {fileID: 0}</c> for the WaterSurface — the reference did not
+        /// survive, which is the very hazard those builders' own "reload assets from disk before wiring
+        /// refs" comments warn about (an intervening import invalidates an in-memory instance, and
+        /// <c>SerializedProperty.objectReferenceValue</c> takes an invalid one as null). Loading it at the
+        /// moment of writing removes the ordering question rather than restating it, and
+        /// <see cref="SetRefChecked"/> makes a failure say so instead of leaving the owner's salience knobs
+        /// silently unwired.</para>
+        ///
+        /// <para>Null-tolerant throughout: a checkout without <c>WaterOverlay.mat</c> warns and leaves the
+        /// flat face, rather than failing the build (the greybox rule).</para>
+        /// </summary>
+        /// <param name="maxShoreGradient">How steeply THIS region's coast shelves — see
+        /// <c>DisplacedWaterSurface.Configure</c>. Derive it from the region's authored profile.</param>
+        public static void ConfigureLandRegionWater(GameObject water,
+                                                    Vector2 worldCenter, Vector2 worldSize,
+                                                    int bakeResolution, float heightMin, float heightMax,
+                                                    float maxShoreGradient)
+        {
+            if (water == null) return;
+            var surface = water.GetComponent<HiddenHarbours.Art.WaterSurface>();
+            if (surface == null)
+            {
+                Debug.LogWarning("[WaterSceneTemplate] ConfigureLandRegionWater called on an object with no " +
+                                 "WaterSurface — the caller must apply Water.mat and add the surface first.");
+                return;
+            }
+
+            var config = AssetDatabase.LoadAssetAtPath<GameConfig>(GameConfigAsset);
+
+            ConfigureWaterSurface(surface, worldCenter, worldSize, bakeResolution, heightMin, heightMax);
+            // (ADR 0023 arc step 3) The owner's salience knobs — how loudly the big wave is marked.
+            SetRefChecked(surface, "_config", config);
+            // (ADR 0017) base = null ON PURPOSE: the live Water.mat is the calm baseline, never a frozen
+            // preset copy, so the owner's Water.mat tuning always flows through the calm sea.
+            ConfigureWeatherPalette(
+                surface,
+                /*baseMood*/ null,
+                AssetDatabase.LoadAssetAtPath<Material>(ArtWaterCalmMood),
+                AssetDatabase.LoadAssetAtPath<Material>(ArtWaterStormMood),
+                AssetDatabase.LoadAssetAtPath<Material>(ArtWaterFogMood));
+
+            AddDisplacedSurface(water, worldCenter, worldSize, config, maxShoreGradient);
+        }
+
+        /// <summary>
+        /// (ADR 0023 phase 2) Hang the <c>DisplacedWaterSurface</c> beside the flat one on the same object,
+        /// covering the SAME world rect as the sea plane and the height bake — the sea as a real
+        /// vertex-displaced mesh, which is the look every region has drawn since the 2026-08-05 retirement
+        /// of the flat face.
+        ///
+        /// <para>Idempotent: a re-run configures the surface that is already there rather than adding a
+        /// second one (the component is <c>[DisallowMultipleComponent]</c>, so a blind Add would throw on a
+        /// builder that ever stopped starting from an empty scene).</para>
+        /// </summary>
+        public static HiddenHarbours.Art.DisplacedWaterSurface AddDisplacedSurface(
+            GameObject water, Vector2 worldCenter, Vector2 worldSize,
+            GameConfig config, float maxShoreGradient)
+        {
+            if (water == null) return null;
+
+            var overlay = AssetDatabase.LoadAssetAtPath<Material>(ArtWaterOverlayMat);
+            if (overlay == null)
+                Debug.LogWarning($"[WaterSceneTemplate] WaterOverlay.mat not found at {ArtWaterOverlayMat} — " +
+                                 "the displaced sea will fall back to Shader.Find at runtime. Re-run after " +
+                                 "the material imports.");
+
+            // ⚠️ An explicit `== null`, never `??`: `??` bypasses UnityEngine.Object's equality overload, so
+            // a component on an object being torn down would come back fake-null-but-not-C#-null and we
+            // would configure a corpse instead of adding a live one.
+            var displaced = water.GetComponent<HiddenHarbours.Art.DisplacedWaterSurface>();
+            if (displaced == null) displaced = water.AddComponent<HiddenHarbours.Art.DisplacedWaterSurface>();
+            displaced.Configure(worldCenter, worldSize, overlay, config, maxShoreGradient);
+            EditorUtility.SetDirty(displaced);
+            return displaced;
+        }
+
+        /// <summary>
+        /// <see cref="SetRef"/> that READS THE REFERENCE BACK and says so when it did not take.
+        ///
+        /// <para>A silent no-op here is the worst kind: the builder reports success, the scene saves, and
+        /// the field is simply null forever — which is exactly how both land regions' seas ended up with no
+        /// <c>GameConfig</c> and nobody noticed. <c>SerializedProperty.objectReferenceValue</c> quietly
+        /// stores null when handed a destroyed or unpersisted object, so "I assigned it" is not evidence
+        /// that it is assigned.</para>
+        /// </summary>
+        public static void SetRefChecked(Component c, string field, Object value)
+        {
+            SetRef(c, field, value);
+            if (value == null) return;   // a deliberate null is not a failure
+
+            var read = new SerializedObject(c).FindProperty(field);
+            if (read != null && read.objectReferenceValue == null)
+                Debug.LogWarning($"[WaterSceneTemplate] '{field}' on {c.GetType().Name} did not take the " +
+                                 $"reference it was handed ('{value.name}'). The instance is most likely " +
+                                 "stale — re-load the asset from disk immediately before wiring it.", c);
         }
 
         // =============================================================================================

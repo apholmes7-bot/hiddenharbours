@@ -161,6 +161,56 @@ Drownded Lands flats and Sunkers tide-pools work the same way.
 > **Why this matters:** decoupling a "visual seabed" from a "physics seabed" is exactly the drift ADR
 > 0009 exists to prevent. One height map, three consumers, one equation.
 
+### 4.1 ⚠ The shader is the one consumer that PRE-COMPUTES — and that is where it broke
+
+Two of the three consumers above **ask** for an elevation whenever they need one, so they cannot be
+wrong about *when* they asked. The shader cannot: it needs the whole field as a texture, so
+`WaterSurface` **bakes** `ITidalTerrain.ElevationAt` over the region rect **once, in `OnEnable`**. A
+bake is a snapshot, and a snapshot taken at the wrong moment is wrong for the entire visit.
+
+The wrong moment was easy to hit. A region's terrain registers itself into
+`GameServices.TidalTerrain` in *its* `OnEnable`; under the persistent-core travel model (#512/#515) a
+region's roots are switched on **one at a time, in hierarchy order**. So which of "terrain registers"
+and "water bakes" happened first was decided by nothing more durable than where two objects sat in the
+Hierarchy window. Bake first and the water sampled a terrain that was not there, silently fell back to
+its distance-to-land estimate — and in a region that authors no land tilemap, collider mask or shore
+fence (every analytic region), that estimate **saturates to a constant**:
+
+```
+no land seeds → every distance = ∞ → depth = maxDepth everywhere → a FLAT seabed
+```
+
+A flat seabed is not a subtle defect. There is no coast reveal, no depth gradient, no foam following
+the shore, no wet/dry clip — the sea renders, and renders *nothing about this place*. It fails
+silently and it reads as a rendering bug.
+
+**Three separate builders restated "create the terrain BEFORE the sea" as load-bearing**, which is the
+tell: a rule that has to be repeated in every builder is enforced in none of them. And it was already
+being broken — the committed `StPeters.unity` carries its `Sea` at root 0 and its `TidalTerrain` at
+root 12.
+
+**The fix is at the mechanism, not in any one scene.** `GameServices.TidalTerrain` is now a property
+that raises `GameServices.TidalTerrainChanged`, and `WaterSurface` subscribes for its whole enabled
+lifetime: a terrain that registers *late* re-does the bake. Activation order stops mattering and
+cannot regress by a drag in the Hierarchy.
+
+Three things the re-bake deliberately does **not** do (rule 7 — a bake is a full grid of
+`ElevationAt` calls):
+
+- **a null registration is ignored.** Every region hop passes through null, because travel deactivates
+  the region being left before activating the one arriving. Re-baking there would produce the fallback
+  one frame before throwing it away. The surface's own `OnDisable` is what retires a bake.
+- **the terrain already baked is ignored** — re-registering the same terrain costs nothing.
+- **the painted and distance-to-land sources never re-bake** — neither reads the accessor.
+
+Net cost in the ordering that was already correct: **zero extra bakes.**
+
+Guards: `WaterSeabedBakeOrderTests` (EditMode, the component in isolation),
+`RegionWaterBakePlayTests` (PlayMode, a real `RegionTravelCoordinator` toggling real scene roots with
+the Sea root deliberately ordered *first*). `WaterSurface.BakedTerrain` reports which source the
+current bake came from — null means the fallback — and `TryReadBakedElevation` reads back what the
+shader will actually see.
+
 ---
 
 ## 5. Subgraph breakdown (the build recipe)
