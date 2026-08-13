@@ -441,6 +441,14 @@ namespace HiddenHarbours.Art
         private Color[] _anchorColorValues;
         private bool[] _anchorColorHas;
 
+        // ---- WHICH seabed the current bake actually came from --------------------------------------------
+        // Not a cache and not an optimisation: it is the answer to "is the sea drawing this region's real
+        // bottom, or the fallback?", which nothing could ask before. Null after a distance-to-land bake, a
+        // painted feed, or no bake at all. Read by OnTidalTerrainChanged to re-bake exactly once when a
+        // terrain registers LATE, and exposed as BakedTerrain so a test can assert the fact rather than
+        // infer it from pixels.
+        private ITidalTerrain _bakedTerrain;
+
         private void Awake()
         {
             _renderer = GetComponent<Renderer>();
@@ -451,6 +459,10 @@ namespace HiddenHarbours.Art
 
         private void OnEnable()
         {
+            // Subscribe BEFORE the bake, never after. A terrain that registers between the bake and the
+            // subscription would be missed by both, and that half-frame is exactly the window this is
+            // here to close — the whole failure is a registration arriving at a moment nobody is looking.
+            GameServices.TidalTerrainChanged += OnTidalTerrainChanged;
             BakeHeightMapIfNeeded();
             // (ADR 0027 #7) Publish this region's seabed unconditionally, not only down the two
             // height-feed paths above. Those are skipped whenever the height bake is off or no source
@@ -479,6 +491,9 @@ namespace HiddenHarbours.Art
 
         private void OnDisable()
         {
+            // A STATIC event: an un-hooked subscriber outlives its own GameObject and re-bakes into a
+            // destroyed renderer on the next region hop.
+            GameServices.TidalTerrainChanged -= OnTidalTerrainChanged;
             // Clear the per-renderer overrides so the shared material reads as authored if this is removed.
             if (_renderer != null) _renderer.SetPropertyBlock(null);
             // Leave the published waterline UNSET rather than frozen on the last tide — a stopped play
@@ -540,6 +555,7 @@ namespace HiddenHarbours.Art
         /// </summary>
         private void DestroyBakedHeightTexture()
         {
+            _bakedTerrain = null;   // invariant: no bake texture ⇒ nothing was baked from a terrain
             if (_heightTex == null) return;
             if (Application.isPlaying) Destroy(_heightTex);
             else DestroyImmediate(_heightTex);
@@ -1129,6 +1145,83 @@ namespace HiddenHarbours.Art
 
         // ---- the height-map bake (depth source) -----------------------------------------------------------
 
+        /// <summary>
+        /// The <see cref="ITidalTerrain"/> the CURRENT height bake sampled, or null when the sea is drawing
+        /// the distance-to-land fallback, a painted map, or nothing at all.
+        ///
+        /// <para>This is the difference between "the water renders" and "the water renders THIS REGION'S
+        /// BOTTOM", and until now nothing could tell them apart from outside: both paths enable the same
+        /// shader keyword and hand over the same-shaped texture, so a sea baked from a terrain that was not
+        /// registered yet looks like a working sea with a suspiciously flat seabed. Read by the guard tests
+        /// so they assert the FACT rather than infer it from pixels.</para>
+        /// </summary>
+        public ITidalTerrain BakedTerrain => _bakedTerrain;
+
+        /// <summary>
+        /// Read back the seabed elevation (m above datum) THE SHADER WILL SEE at a world position —
+        /// the baked bytes decoded through the same <c>_heightMin</c>/<c>_heightMax</c> mapping that
+        /// wrote them. False when there is no bake to read.
+        ///
+        /// <para>Nearest-texel, not bilinear: this answers "what is in the texture", and a filtered read
+        /// would hide precisely the defect it exists to catch — a constant field interpolates to the same
+        /// constant and looks perfectly healthy. Quantisation is real and visible in the result
+        /// (<c>span/255</c> ≈ 4.7 cm over Nine Mile Creek's −6…6 m range), so compare with a tolerance
+        /// wider than one step.</para>
+        ///
+        /// <para>SCOPE: the BAKED texture only. The painted path (ADR 0014) hands the shader an asset
+        /// texture whose bytes the sim's own <c>PaintedTidalTerrain</c> decodes and
+        /// <c>PaintedHeightMapDecodeTests</c> already pins; there is nothing here that would not be a
+        /// second, drifting copy of that.</para>
+        /// </summary>
+        public bool TryReadBakedElevation(Vector2 worldPos, out float elevationMeters)
+        {
+            elevationMeters = 0f;
+            if (_heightTex == null) return false;
+
+            Vector2 min = _heightWorldCenter - _heightWorldSize * 0.5f;
+            Vector2 size = new Vector2(Mathf.Max(_heightWorldSize.x, 1e-3f),
+                                       Mathf.Max(_heightWorldSize.y, 1e-3f));
+            int res = _heightTex.width;
+            // Clamp, matching the texture's own TextureWrapMode.Clamp: an off-rect read is the edge
+            // depth on the GPU, and must be the edge depth here or the two disagree at the margins.
+            int x = Mathf.Clamp(Mathf.FloorToInt((worldPos.x - min.x) / size.x * res), 0, res - 1);
+            int y = Mathf.Clamp(Mathf.FloorToInt((worldPos.y - min.y) / size.y * res), 0, res - 1);
+
+            byte r = _heightTex.GetRawTextureData<byte>()[y * res + x];   // R8: one byte per texel
+            float span = Mathf.Max(_heightMax - _heightMin, 1e-3f);
+            elevationMeters = _heightMin + r / 255f * span;
+            return true;
+        }
+
+        /// <summary>
+        /// (The ordering fix — see <see cref="GameServices.TidalTerrainChanged"/> for the trap.) A region's
+        /// terrain has started or stopped being the registered one; re-bake if that changes what this sea
+        /// should be drawing.
+        ///
+        /// <para><b>A null registration is ignored, deliberately.</b> Travel clears the accessor when the
+        /// region we are LEAVING switches its roots off, and only then does the arriving region register —
+        /// so every hop passes through null. Re-baking there would spend a full grid of
+        /// <c>ElevationAt</c> samples producing the fallback, one frame before throwing it away for the
+        /// real thing. The last good bake is the better answer for that instant, and the surface's own
+        /// <c>OnDisable</c> is what actually retires it.</para>
+        ///
+        /// <para>The painted and distance-to-land sources never read the accessor, so they never re-bake;
+        /// and a terrain we have ALREADY baked re-bakes nothing. Net cost in the ordering that was already
+        /// correct: zero extra bakes.</para>
+        /// </summary>
+        private void OnTidalTerrainChanged()
+        {
+            if (!_bakeHeightMap) return;
+            if (_depthSource == DepthSource.PaintedHeightMap || _depthSource == DepthSource.DistanceToLand)
+                return;
+
+            var terrain = GameServices.TidalTerrain;
+            if (terrain == null) return;                          // the teardown half of a hop — see above
+            if (ReferenceEquals(terrain, _bakedTerrain)) return;   // already drawing this one
+
+            BakeHeightMapIfNeeded();
+        }
+
         private void BakeHeightMapIfNeeded()
         {
             if (!_bakeHeightMap) return;
@@ -1143,6 +1236,7 @@ namespace HiddenHarbours.Art
                                (_depthSource == DepthSource.Auto && GameServices.TidalTerrain == null));
             if (usePainted)
             {
+                _bakedTerrain = null;   // the painted bytes are the source, not an ITidalTerrain
                 FeedPaintedHeightTexture();
                 return;
             }
@@ -1182,6 +1276,11 @@ namespace HiddenHarbours.Art
                 elevation = BakeDistanceToLandElevation(res);
             else
                 return;   // no source resolvable — leave the shader on its uniform-deep fallback
+
+            // ⚠ Recorded HERE, not at the top: only a bake that actually ran is a bake. A fallback bake
+            // records null, which is what lets a terrain registering a moment later be seen as new and
+            // re-do the work (OnTidalTerrainChanged) instead of being mistaken for the one we drew.
+            _bakedTerrain = useTerrain ? terrain : null;
 
             Vector2 min = _heightWorldCenter - _heightWorldSize * 0.5f;
             WriteElevationTexture(elevation, res);

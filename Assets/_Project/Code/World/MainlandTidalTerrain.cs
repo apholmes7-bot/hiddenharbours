@@ -258,6 +258,92 @@ namespace HiddenHarbours.World
         /// of the crossing at the same height as St Peters'.</summary>
         public float BarCrestElevation => _barCrestElevation;
 
+        /// <summary>
+        /// The steepest seabed gradient (|Δ elevation| per metre) any stretch of THIS coast plan can
+        /// actually produce — the number the displaced sea's shore-fade band is sized from.
+        ///
+        /// <para><b>Why it is derived and not typed.</b> The fade band exists so the displaced mesh does not
+        /// TEAR where the ground climbs out from under it, and its width is
+        /// <c>coefficient × envelope × exaggeration × gradient</c>. The component's serialized default is
+        /// 0.5, which is St Peters' softly-shelving island — a plateau easing to a reef shelf over 20 m. A
+        /// mainland whose plan stands a deep-shore cliff straight off the bay floor falls twelve metres in
+        /// three, an order of magnitude harder, and the field's own tooltip says which way the error hurts:
+        /// overestimating only widens the band, underestimating risks the tear. So the plan answers for
+        /// itself, and a future retune of any profile constant moves this with it.</para>
+        ///
+        /// <para><b>Exact, not sampled.</b> Every band in every profile is a <see cref="Lerped"/> —
+        /// a smoothstep — and a smoothstep's gradient peaks at exactly <c>1.5×</c> its mean across the
+        /// band (the same fact <c>StPetersStarterSplat</c>'s talus threshold is pinned to). Finite
+        /// differences would under-read that peak, and under-reading is the direction that tears.</para>
+        ///
+        /// <para><b>Only classes the plan DECLARES are counted.</b> A coast of nothing but beach must not
+        /// inherit a cliff's number because the cliff profile happens to exist in this file. With no
+        /// sectors authored the coast is soft everywhere (<see cref="CoastProfileAt"/>), which is what is
+        /// measured then.</para>
+        /// </summary>
+        public float MaxShoreGradient()
+        {
+            float worst = 0f;
+
+            if (_coastSectors == null || _coastSectors.Length == 0)
+            {
+                return SoftGradient();
+            }
+
+            for (int i = 0; i < _coastSectors.Length; i++)
+            {
+                float g = ClassGradient(_coastSectors[i].Class);
+                if (g > worst) worst = g;
+            }
+            return worst;
+        }
+
+        /// <summary>The steepest gradient one coast CLASS produces — the per-class half of
+        /// <see cref="MaxShoreGradient"/>, split out so a test can name the class it is checking.</summary>
+        public float ClassGradient(CoastClass coast)
+        {
+            float plunge = Mathf.Max(0.01f, _cliffPlungeWidth);
+            float outRun = Mathf.Max(1f, _shoreFalloff);   // the run every cliff foot falls away over
+            switch (coast)
+            {
+                // A wall to the toe, then the bottom carrying on away to the floor.
+                case CoastClass.Cliff:
+                    return Mathf.Max(SmoothPeak(_landElevation, CliffToeElevation, plunge),
+                                     SmoothPeak(CliffToeElevation, _deepElevation, outRun));
+                // The same wall, and its toe IS the floor — so the band beyond it is flat.
+                case CoastClass.DeepShoreCliff:
+                    return SmoothPeak(_landElevation, DeepShoreToeElevation, plunge);
+                // Wall to a bench, flat across the bench, then away to the floor.
+                case CoastClass.LedgeCliff:
+                    return Mathf.Max(SmoothPeak(_landElevation, LedgeBenchElevation, plunge),
+                                     SmoothPeak(LedgeBenchElevation, _deepElevation, outRun));
+                // Beach, Dune and Access differ in what is PAINTED on them, never in how high they are.
+                default:
+                    return SoftGradient();
+            }
+        }
+
+        /// <summary>The soft chain's steepest band: beach, then the shelf, then the drop-off. With no
+        /// shelf authored the chain collapses to beach → floor, exactly as <see cref="ShoreProfile"/>
+        /// composes it.</summary>
+        private float SoftGradient()
+        {
+            bool hasShelf = _shelfWidth > 0f;
+            float beachOuter = hasShelf ? _shelfInnerElevation : _deepElevation;
+            float worst = SmoothPeak(_landElevation, beachOuter, Mathf.Max(1e-4f, _shoreFalloff));
+            if (!hasShelf) return worst;
+
+            worst = Mathf.Max(worst, SmoothPeak(_shelfInnerElevation, _shelfOuterElevation, _shelfWidth));
+            worst = Mathf.Max(worst, SmoothPeak(_shelfOuterElevation, _deepElevation,
+                                                Mathf.Max(1f, _shoreFalloff)));
+            return worst;
+        }
+
+        /// <summary>Peak |gradient| of one smoothstep band: 1.5 × the mean slope across it. See
+        /// <see cref="MaxShoreGradient"/> for why 1.5 is exact rather than a safety factor.</summary>
+        public static float SmoothPeak(float fromElevation, float toElevation, float widthMetres)
+            => 1.5f * Mathf.Abs(toElevation - fromElevation) / Mathf.Max(widthMetres, 1e-4f);
+
         /// <summary>Which class of coast stands at a world position, unfeathered — what the plan SAYS.
         /// The decider the ground paint, the cliff walls and the decor all read, so a dead classifier
         /// moves every one of them together instead of quietly moving none.</summary>

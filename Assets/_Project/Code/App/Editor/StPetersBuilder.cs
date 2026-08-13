@@ -72,19 +72,12 @@ namespace HiddenHarbours.App.Editor
         const string ArtNamePlate     = "Assets/_Project/Art/UI/NamePlate.png";       // nameplate art
         const string ArtSea      = "Assets/_Project/Art/Tilesets/Water/SeaTile.png";
         const string ArtWaterMat = "Assets/_Project/Art/Materials/Water.mat";   // the layered SIM-driven water shader (ADR 0010)
-        const string ArtWaterOverlayMat = "Assets/_Project/Art/Materials/WaterOverlay.mat"; // the displaced surface's in-scene face (ADR 0023)
         const string ArtTerrainSplatMat = "Assets/_Project/Art/Materials/TerrainSplat.mat"; // the splat-shaded ground (ADR 0028)
         const string DataTerrain        = "Assets/_Project/Data/Terrain";
-        // Weather-driven water palette anchor presets (ADR 0017) — the moods the deterministic weather blends
-        // between on the Sea's WaterSurface (calm <-> storm by sea-state, pulled toward fog by low visibility).
-        // The BASE / calm anchor is deliberately NOT a preset here: it is left UNWIRED so WaterSurface uses the
-        // Sea's own LIVE Water.mat as the calm baseline (see ConfigureWeatherPalette below) — that way the
-        // owner's hand-tuning of Water.mat always drives the calm sea, and weather-off / strength-0 is exactly
-        // Water.mat (no pinned-preset-copy trap; ADR 0017).
-        const string ArtWaterPresets   = "Assets/_Project/Art/Materials/WaterPresets";
-        const string ArtWaterCalmMood  = ArtWaterPresets + "/Water_GlassyCalm.mat";    // CALM (low sea-state)
-        const string ArtWaterStormMood = ArtWaterPresets + "/Water_StormGrey.mat";     // STORM (high sea-state)
-        const string ArtWaterFogMood   = ArtWaterPresets + "/Water_FoggySmother.mat";  // FOG (low visibility)
+        // (The WaterOverlay + ADR 0017 weather-preset paths that stood here are gone with the local water
+        // wiring — they live once now, in WaterSceneTemplate, which is what loads them for both land
+        // regions. The BASE/calm anchor is still deliberately left UNWIRED there, so the calm sea is the
+        // owner's own LIVE Water.mat rather than a frozen preset copy of it.)
         // (The single Grass.png / Sand.png fills are gone with the greybox ground patches — the island's
         // ground is painted from the shoreline-ISO v8 kit now; see StPetersShorePainter.)
         const string ArtCottage  = "Assets/_Project/Art/Sprites/Buildings/Cottage.png";
@@ -193,6 +186,25 @@ namespace HiddenHarbours.App.Editor
         // only stretch the crossing at the same depth while eating the open water the shrink was
         // ruled to create. The DEPTH numbers are the ruled ones and are untouched.
         public const float ReefShelfWidth          = 25f;
+
+        /// <summary>
+        /// How steeply this island shelves, for the displaced sea's shore-fade band (ADR 0023). Sizes the
+        /// band that keeps the displaced mesh from TEARING where the ground climbs out from under it.
+        ///
+        /// <para><b>A MEASUREMENT of this coast, carried unchanged.</b> The plateau falls to the reef shelf
+        /// over <see cref="IslandFalloff"/> metres — 7 m over 20, a mean of 0.35 — and a smoothstep's
+        /// gradient peaks at 1.5× its mean, so the island's steepest metre is 0.525. It has always been
+        /// carried here at 0.5 (the <c>DisplacedWaterSurface</c> field default this builder relied on before
+        /// the water wiring moved into <see cref="WaterSceneTemplate"/>), and it stays at 0.5: naming a
+        /// number is not licence to move it, and this region's look is not the Nine Mile Creek water PR's to
+        /// change. Overestimating only widens the band, so the 5% under-read is the safe direction anyway.</para>
+        ///
+        /// <para>A MAINLAND region derives its own instead — see
+        /// <c>MainlandTidalTerrain.MaxShoreGradient()</c> — because a coast plan that stands cliffs off the
+        /// bay floor shelves an order of magnitude harder than this island does, and 0.5 there is the
+        /// direction of the error that tears.</para>
+        /// </summary>
+        public const float ShoreGradient           = 0.5f;
 
         // The berth: §5.1a's "dock approach / berth bed ≈ −1.0 m", which clears the 0.6 m tier whenever
         // the water is above −0.4 m and DRIES near spring low — so the dock keeps its own gentle tide
@@ -713,50 +725,27 @@ namespace HiddenHarbours.App.Editor
             if (waterMat != null)
             {
                 wsr.sharedMaterial = waterMat;
-                var surface = water.AddComponent<HiddenHarbours.Art.WaterSurface>();
-                // Bake the seabed height map at 192² (ADR 0012 §A step 1): over the 160×120 m plane that's a
-                // ~0.83 m texel (half the old 96²/~1.67 m), so the shader's depth/foam shoreline follows a
-                // FINE grid — the wet edge stops reading as ~1.5 m rectangular steps on the near-flat bar
-                // crest. The bake is a one-time R8 texture on enable (trivial CPU/VRAM, rule 7). 256 is
-                // available if the crest still facets, but 192 is the ADR's recommended start.
-                ConfigureWaterSurface(surface, RegionWorldCenter, RegionWorldSize,
-                                      WaterHeightBakeResolution);
-                // (ADR 0023 arc step 3) The owner's GameConfig: WaterSurface pushes its DisplacedWater
-                // salience knobs (cap salience / envelope threshold / band strength) each tick — the
-                // one asset where the owner tunes how loudly the big wave is marked, no code (rule 6).
-                SetRef(surface, "_config", config);
+                water.AddComponent<HiddenHarbours.Art.WaterSurface>();
 
-                // (ADR 0017) WEATHER-DRIVEN PALETTE: enable the weather mood on the Sea + assign the storm/fog/
-                // calm anchor preset moods, so this scene's sea EASES through the preset library as the
-                // deterministic weather shifts (calm <-> storm by sea-state, pulled toward fog by low visibility —
-                // P1 "the sea has moods"). The blend rides the per-renderer MPB alongside the physics props
-                // (disjoint key sets, no double-drive) and NEVER mutates Water.mat (rule 5). Opt-in elsewhere —
-                // only this builder turns it on. If a preset is missing (first checkout before import) the anchor
-                // is left null and WaterSurface falls back to the base/own material — the wiring no-ops safely.
+                // ⭐ ONE WIRING, SHARED WITH NINE MILE CREEK (WaterSceneTemplate.ConfigureLandRegionWater).
+                // This block used to be the ONLY copy of it, and that is exactly how Nine Mile Creek came to
+                // be sailing on the pre-displacement flat sea while this region sailed on the displaced one:
+                // there was no shared home for the wiring, so the second region simply did not get half of
+                // it. Everything the four hand-rolled calls did is done there, in this order and for these
+                // reasons:
                 //
-                // BASE anchor = null (UNWIRED) ON PURPOSE: WaterSurface then uses the Sea's own LIVE Water.mat as
-                // the calm baseline the storm/fog moods blend RELATIVE TO. So weather-off / strength-0 reads as
-                // exactly Water.mat, and the owner's hand-tuning of Water.mat always flows through the calm sea —
-                // not a frozen preset COPY (the latent trap the ADR 0017 review caught). Pinning a base preset
-                // here would pin the calm look to that copy.
-                ConfigureWeatherPalette(
-                    surface,
-                    /*baseMood (null = use the live Water.mat as the calm baseline)*/ null,
-                    AssetDatabase.LoadAssetAtPath<Material>(ArtWaterCalmMood),
-                    AssetDatabase.LoadAssetAtPath<Material>(ArtWaterStormMood),
-                    AssetDatabase.LoadAssetAtPath<Material>(ArtWaterFogMood));
-
-                // (ADR 0023 phase 2) THE DISPLACED SURFACE A/B: hang the DisplacedWaterSurface
-                // beside WaterSurface, covering the SAME 160×120 m rect. Defaults OFF — the flat
-                // water renders exactly as today until the owner presses the dev key (O) in Play,
-                // which flips the sea to the vertically displaced mesh (same sim, same material,
-                // same waterline — the readability verdict instrument). Exaggeration + the shore-band
-                // coefficient are OWNER DATA (arc step 3): the wired GameConfig's DisplacedWater
-                // block is the live source, re-read every tick; grid density + the per-coast shore
-                // gradient stay on the component (scene data, not world policy).
-                var displaced = water.AddComponent<HiddenHarbours.Art.DisplacedWaterSurface>();
-                displaced.Configure(RegionWorldCenter, RegionWorldSize,
-                    AssetDatabase.LoadAssetAtPath<Material>(ArtWaterOverlayMat), config);
+                //  · the seabed height bake over the region rect at 192² (ADR 0012 §A step 1 — a ~0.83 m
+                //    texel, so the wet edge follows a fine grid instead of ~1.5 m steps on the bar crest),
+                //    with the elevation range bracketing the field from the harbour floor to the island top;
+                //  · the owner's GameConfig, whose DisplacedWater block carries the salience knobs both
+                //    surfaces re-read every tick (arc step 3 — tuning is an asset edit, never code);
+                //  · the ADR 0017 weather palette with base = null ON PURPOSE, so the calm sea is the LIVE
+                //    Water.mat the owner hand-tunes rather than a frozen preset copy of it;
+                //  · the ADR 0023 displaced surface over the SAME rect — the game's water since 2026-08-05.
+                WaterSceneTemplate.ConfigureLandRegionWater(
+                    water, RegionWorldCenter, RegionWorldSize,
+                    WaterHeightBakeResolution, DeepHarbourElevation, IslandElevation,
+                    ShoreGradient);
             }
             else
             {
@@ -1622,16 +1611,18 @@ namespace HiddenHarbours.App.Editor
         /// the bake <paramref name="resolution"/>. A FINER bake (ADR 0012 §A: 96 → 192) shrinks the texel from
         /// ~1.67 m to ~0.83 m over the 160×120 m plane, so the shader's wet edge follows a fine grid instead of
         /// reading as ~1.5 m rectangular steps — the smoothed shoreline. Clamped to the component's
-        /// [Range(16,256)]; pass 256 if the near-flat bar crest still facets at 192.</summary>
+        /// [Range(16,256)]; pass 256 if the near-flat bar crest still facets at 192.
+        ///
+        /// <para><b>A FORWARDER now, not a second implementation.</b> The body moved to
+        /// <see cref="WaterSceneTemplate.ConfigureWaterSurface"/> so the two land builders cannot drift
+        /// apart again; this entry point stays because the shoreline-render tests are written against it.
+        /// The elevation range it forwards — <see cref="DeepHarbourElevation"/> to
+        /// <see cref="IslandElevation"/> — is exactly the component's own −4…6 default this always relied
+        /// on, now said out loud instead of inherited.</para></summary>
         public static void ConfigureWaterSurface(HiddenHarbours.Art.WaterSurface surface,
                                                  Vector2 worldCenter, Vector2 worldSize, int resolution)
-        {
-            var so = new SerializedObject(surface);
-            SetV2(so, "_heightWorldCenter", worldCenter);
-            SetV2(so, "_heightWorldSize", worldSize);
-            SetInt(so, "_heightResolution", Mathf.Clamp(resolution, 16, 256));
-            so.ApplyModifiedPropertiesWithoutUndo();
-        }
+            => WaterSceneTemplate.ConfigureWaterSurface(surface, worldCenter, worldSize, resolution,
+                                                        DeepHarbourElevation, IslandElevation);
 
         /// <summary>Enable the weather-driven water palette (ADR 0017) on the Sea's
         /// <see cref="HiddenHarbours.Art.WaterSurface"/> and assign the anchor mood presets, persisting the
@@ -1643,19 +1634,14 @@ namespace HiddenHarbours.App.Editor
         /// preset no-ops safely. St Peters passes <paramref name="baseMood"/> = null ON PURPOSE so the BASE/calm
         /// anchor resolves to the Sea's own LIVE Water.mat (the owner's Water.mat tuning then always drives the
         /// calm sea; weather-off / strength-0 = exactly Water.mat — ADR 0017). Pass an explicit base only to PIN
-        /// the calm look to a fixed preset copy.</summary>
+        /// the calm look to a fixed preset copy.
+        ///
+        /// <para><b>A FORWARDER now</b>, for the same reason as <see cref="ConfigureWaterSurface"/> — one
+        /// implementation, in <see cref="WaterSceneTemplate"/>, so the land builders cannot drift.</para></summary>
         public static void ConfigureWeatherPalette(HiddenHarbours.Art.WaterSurface surface,
                                                    Material baseMood, Material calmMood,
                                                    Material stormMood, Material fogMood)
-        {
-            var so = new SerializedObject(surface);
-            SetBoolProp(so, "_weatherPaletteEnabled", true);
-            SetObjProp(so, "_baseMoodMaterial", baseMood);
-            SetObjProp(so, "_calmMoodMaterial", calmMood);
-            SetObjProp(so, "_stormMoodMaterial", stormMood);
-            SetObjProp(so, "_fogMoodMaterial", fogMood);
-            so.ApplyModifiedPropertiesWithoutUndo();
-        }
+            => WaterSceneTemplate.ConfigureWeatherPalette(surface, baseMood, calmMood, stormMood, fogMood);
 
         /// <summary>Apply the authored elevation zones onto a <see cref="TidalTerrain"/> via SerializedObject
         /// (the builder's persist-the-refs convention). One place so the values live on the component, never
@@ -1795,32 +1781,11 @@ namespace HiddenHarbours.App.Editor
             else Debug.LogWarning($"[StPetersBuilder] no float field '{field}'.");
         }
 
-        static void SetInt(SerializedObject so, string field, int value)
-        {
-            var p = so.FindProperty(field);
-            if (p != null) p.intValue = value;
-            else Debug.LogWarning($"[StPetersBuilder] no int field '{field}'.");
-        }
-
         static void SetV2(SerializedObject so, string field, Vector2 value)
         {
             var p = so.FindProperty(field);
             if (p != null) p.vector2Value = value;
             else Debug.LogWarning($"[StPetersBuilder] no Vector2 field '{field}'.");
-        }
-
-        static void SetBoolProp(SerializedObject so, string field, bool value)
-        {
-            var p = so.FindProperty(field);
-            if (p != null) p.boolValue = value;
-            else Debug.LogWarning($"[StPetersBuilder] no bool field '{field}'.");
-        }
-
-        static void SetObjProp(SerializedObject so, string field, Object value)
-        {
-            var p = so.FindProperty(field);
-            if (p != null && p.propertyType == SerializedPropertyType.ObjectReference) p.objectReferenceValue = value;
-            else Debug.LogWarning($"[StPetersBuilder] no object-reference field '{field}'.");
         }
 
         // Imported art is sliced (spriteMode Multiple, one sub-sprite), so LoadAssetAtPath<Sprite> returns

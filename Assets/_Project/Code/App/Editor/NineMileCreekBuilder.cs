@@ -60,12 +60,8 @@ namespace HiddenHarbours.App.Editor
         const string TreeMatPath = "Assets/_Project/Art/Materials/Tree.mat";        // canopy wind-sway material (HiddenHarbours/TreeWind)
         const string ArtSea      = "Assets/_Project/Art/Tilesets/Water/SeaTile.png";
         const string ArtWaterMat = "Assets/_Project/Art/Materials/Water.mat";   // the layered SIM-driven water shader (ADR 0010)
-        // Weather-driven water palette anchor presets (ADR 0017) — same wiring as St Peters: base = null on
-        // purpose so the live Water.mat is the calm baseline (never a frozen preset copy).
-        const string ArtWaterPresets   = "Assets/_Project/Art/Materials/WaterPresets";
-        const string ArtWaterCalmMood  = ArtWaterPresets + "/Water_GlassyCalm.mat";    // CALM (low sea-state)
-        const string ArtWaterStormMood = ArtWaterPresets + "/Water_StormGrey.mat";     // STORM (high sea-state)
-        const string ArtWaterFogMood   = ArtWaterPresets + "/Water_FoggySmother.mat";  // FOG (low visibility)
+        // (The ADR 0017 weather-preset paths that stood here are gone with the local water wiring — they
+        // live once now, in WaterSceneTemplate, which is what loads them for both land regions.)
         const string ArtGrass    = "Assets/_Project/Art/Tilesets/Grass.png";
         const string ArtSand     = "Assets/_Project/Art/Tilesets/Sand.png";
         const string ArtDialoguePanel = "Assets/_Project/Art/UI/DialoguePanel.png";   // dialogue panel art
@@ -509,20 +505,23 @@ namespace HiddenHarbours.App.Editor
             if (waterMat != null)
             {
                 wsr.sharedMaterial = waterMat;
-                var surface = water.AddComponent<HiddenHarbours.Art.WaterSurface>();
-                ConfigureWaterSurface(surface, NineMileCreekSeaCenter, NineMileCreekSeaSize,
-                                      NineMileCreekHeightResolution, NineMileCreekHeightMin, NineMileCreekHeightMax);
-                // (ADR 0023 arc step 3) The owner's GameConfig salience knobs — pushed each tick, so
-                // Nine Mile Creek's harbour marks the big wave with the SAME tuning as St Peters (one asset).
-                SetRef(surface, "_config", config);
-                // (ADR 0017) The same weather-driven palette wiring as St Peters: base = null ON PURPOSE
-                // (the live Water.mat is the calm baseline); null anchors no-op safely.
-                ConfigureWeatherPalette(
-                    surface,
-                    /*baseMood (null = the live Water.mat is the calm baseline)*/ null,
-                    AssetDatabase.LoadAssetAtPath<Material>(ArtWaterCalmMood),
-                    AssetDatabase.LoadAssetAtPath<Material>(ArtWaterStormMood),
-                    AssetDatabase.LoadAssetAtPath<Material>(ArtWaterFogMood));
+                water.AddComponent<HiddenHarbours.Art.WaterSurface>();
+                // ⭐ ONE WIRING, SHARED WITH ST PETERS (WaterSceneTemplate.ConfigureLandRegionWater): the
+                // height-bake rect and range, the owner's GameConfig, the ADR 0017 weather palette, and —
+                // the part Nine Mile Creek did not have — the ADR 0023 DISPLACED SURFACE. The displaced sea
+                // has been the game's water since 2026-08-05, and until now the wiring for it lived only in
+                // StPetersBuilder: so the owner sailed out of a displaced sea and into this flat one. The
+                // two seas are the same renderer stack from here on, because there is only one copy of the
+                // code that builds them.
+                //
+                // The shore gradient is MEASURED off the coast plan this region actually authors, not
+                // inherited from St Peters' soft island — see MainlandTidalTerrain.MaxShoreGradient. Nine
+                // Mile Creek stands a deep-shore cliff off the bay floor at the spit's root, and sizing the
+                // fade band for a beach there is the direction of the error that tears.
+                WaterSceneTemplate.ConfigureLandRegionWater(
+                    water, NineMileCreekSeaCenter, NineMileCreekSeaSize,
+                    NineMileCreekHeightResolution, NineMileCreekHeightMin, NineMileCreekHeightMax,
+                    terrain.MaxShoreGradient());
             }
             else
             {
@@ -1199,67 +1198,12 @@ namespace HiddenHarbours.App.Editor
             EditorUtility.SetDirty(r);
         }
 
-        /// <summary>Configure the Sea's <see cref="HiddenHarbours.Art.WaterSurface"/>: the world rectangle
-        /// the seabed height map bakes over, the bake resolution (ADR 0012 §A: 192), and the elevation range
-        /// the baked R channel maps across (must bracket the DREDGED -6 floor — the component default -4
-        /// would clip it). Persisted via SerializedObject (the persist-the-refs convention).</summary>
-        static void ConfigureWaterSurface(HiddenHarbours.Art.WaterSurface surface,
-                                          Vector2 worldCenter, Vector2 worldSize, int resolution,
-                                          float heightMin, float heightMax)
-        {
-            var so = new SerializedObject(surface);
-            SetV2(so, "_heightWorldCenter", worldCenter);
-            SetV2(so, "_heightWorldSize", worldSize);
-            SetInt(so, "_heightResolution", Mathf.Clamp(resolution, 16, 256));
-            SetF(so, "_heightMin", heightMin);
-            SetF(so, "_heightMax", heightMax);
-            so.ApplyModifiedPropertiesWithoutUndo();
-        }
-
-        /// <summary>Enable the weather-driven water palette (ADR 0017) and assign the anchor mood presets —
-        /// the same wiring St Peters uses (a null base = the live Water.mat is the calm baseline; a null
-        /// anchor no-ops safely).</summary>
-        static void ConfigureWeatherPalette(HiddenHarbours.Art.WaterSurface surface,
-                                            Material baseMood, Material calmMood,
-                                            Material stormMood, Material fogMood)
-        {
-            var so = new SerializedObject(surface);
-            var enabledProp = so.FindProperty("_weatherPaletteEnabled");
-            if (enabledProp != null) enabledProp.boolValue = true;
-            SetObj(so, "_baseMoodMaterial", baseMood);
-            SetObj(so, "_calmMoodMaterial", calmMood);
-            SetObj(so, "_stormMoodMaterial", stormMood);
-            SetObj(so, "_fogMoodMaterial", fogMood);
-            so.ApplyModifiedPropertiesWithoutUndo();
-        }
-
-        static void SetF(SerializedObject so, string field, float value)
-        {
-            var p = so.FindProperty(field);
-            if (p != null) p.floatValue = value;
-            else Debug.LogWarning($"[NineMileCreekBuilder] no float field '{field}'.");
-        }
-
-        static void SetInt(SerializedObject so, string field, int value)
-        {
-            var p = so.FindProperty(field);
-            if (p != null) p.intValue = value;
-            else Debug.LogWarning($"[NineMileCreekBuilder] no int field '{field}'.");
-        }
-
-        static void SetV2(SerializedObject so, string field, Vector2 value)
-        {
-            var p = so.FindProperty(field);
-            if (p != null) p.vector2Value = value;
-            else Debug.LogWarning($"[NineMileCreekBuilder] no Vector2 field '{field}'.");
-        }
-
-        static void SetObj(SerializedObject so, string field, Object value)
-        {
-            var p = so.FindProperty(field);
-            if (p != null && p.propertyType == SerializedPropertyType.ObjectReference) p.objectReferenceValue = value;
-            else Debug.LogWarning($"[NineMileCreekBuilder] no object-reference field '{field}'.");
-        }
+        // ⭐ The Sea's WaterSurface config, the weather palette, and the four SerializedObject setters they
+        // used are GONE from this file — they now live once, in WaterSceneTemplate, called by both land
+        // builders (see ConfigureLandRegionWater at the Sea above). They were a hand-rolled copy of St
+        // Peters' block, and the cost of that copy was the defect this PR fixes: when the displaced surface
+        // was added to the original in ADR 0023 phase 2, the copy did not get one, and Nine Mile Creek has
+        // been drawing the pre-displacement sea ever since. Deleting the copy is the fix that stays fixed.
 
         // ---- helpers (self-contained; the cove builder's are private) -----------------------
 
