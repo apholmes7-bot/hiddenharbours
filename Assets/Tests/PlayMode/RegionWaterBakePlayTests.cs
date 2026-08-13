@@ -90,9 +90,18 @@ namespace HiddenHarbours.Tests.PlayMode
             SceneManager.MoveGameObjectToScene(seaGo, _creek);
             _creekWater = seaGo.GetComponent<WaterSurface>();
 
-            var terrainGo = new GameObject("TidalTerrain", typeof(RectTidalTerrain));
+            // ⚠ CONFIGURE BEFORE ENABLE — the builders' convention, and load-bearing here for a reason
+            // worth writing down. A terrain registers itself in OnEnable, and since the ordering fix that
+            // registration is what makes the water bake. Standing one up already-active and configuring it
+            // afterwards therefore bakes the DEFAULTS: an empty zone list over a −4 m floor, which reads as
+            // −4 m at the shoal and looks exactly like the bug under test. (Measured, on CI's first run of
+            // this fixture: "Expected 1.5 ± 0.078, but was −4.0".) The real builders cannot hit this — they
+            // configure before the scene is ever saved, so a shipped terrain is always configured by the
+            // time anything enables it — but a fixture that builds its region live can, and did.
+            var terrainGo = new GameObject("TidalTerrain");
+            terrainGo.SetActive(false);
             SceneManager.MoveGameObjectToScene(terrainGo, _creek);
-            _creekTerrain = terrainGo.GetComponent<RectTidalTerrain>();
+            _creekTerrain = terrainGo.AddComponent<RectTidalTerrain>();
             _creekTerrain.Configure(BayFloorElevation, new[]
             {
                 new RectTidalTerrain.LandZone
@@ -101,6 +110,7 @@ namespace HiddenHarbours.Tests.PlayMode
                     Elevation = ShoalElevation, Falloff = 12f,
                 },
             });
+            terrainGo.SetActive(true);
 
             // The region's binding point, authored the way a builder authors one.
             var anchorGo = new GameObject("CreekRegionAnchor");
@@ -117,8 +127,17 @@ namespace HiddenHarbours.Tests.PlayMode
             // crossing under test rather than our own setup.
             SceneManager.SetActiveScene(_harbour);
 
+            // ⚠ THE COORDINATOR LIVES OUTSIDE BOTH REGION SCENES, exactly as the real one does — it rides
+            // the persistent core and is DontDestroyOnLoad. Left in a region scene it deactivates ITSELF on
+            // the first crossing (its own handler switches off the roots of the scene it is leaving, and it
+            // is one of them), OnDisable unsubscribes, and every crossing after the first is silently
+            // unhandled: the region you left never switches off, so its terrain never relinquishes.
+            // (Measured, on CI's first run of this fixture: "Expected null, but was <TidalTerrain>".) A
+            // fixture that travels ONCE cannot see this — which is why the older travel fixtures, whose
+            // coordinators do sit in a region scene, have never had to care.
             _coordinatorGo = new GameObject("RegionTravelCoordinator");
             _coordinatorGo.SetActive(false);
+            SceneManager.MoveGameObjectToScene(_coordinatorGo, _origin);
             var coordinator = _coordinatorGo.AddComponent<RegionTravelCoordinator>();
             coordinator.Configure(null, null, null, null);
             _coordinatorGo.SetActive(true);               // OnEnable subscribes
