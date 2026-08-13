@@ -321,7 +321,11 @@ namespace HiddenHarbours.Player
 
         /// <summary>The compass direction from the fisher to the pot she is working. A buoy sitting all
         /// but on top of her gives no honest direction, so the last one aimed is kept rather than
-        /// snapping her round to North.</summary>
+        /// snapping her round to North.
+        ///
+        /// <para>GroundHeadingFor, not HeadingFor: both positions are WORLD-space, and world XY is the
+        /// squashed ground plane while the clip's rows depict ground bearings (see
+        /// <c>Core.IsoGround</c>).</para></summary>
         private float HeadingToBuoy(in TrapHaulState s)
         {
             Vector3 p = transform.position;
@@ -332,7 +336,7 @@ namespace HiddenHarbours.Player
                 ResolveIsoSkin();
                 if (_isoSkin != null) _clipHeading = _isoSkin.HeadingDegrees;
             }
-            return HiddenHarbours.Core.IsoCharacterMath.HeadingFor(
+            return HiddenHarbours.Core.IsoCharacterMath.GroundHeadingFor(
                 new Vector2(s.BuoyX - p.x, s.BuoyY - p.y), MinBuoyOffset, _clipHeading);
         }
 

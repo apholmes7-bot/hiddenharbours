@@ -117,18 +117,26 @@ namespace HiddenHarbours.App.Editor
         /// <summary>
         /// The compass heading (degrees, 0 = North, CW) from one world point toward another.
         ///
-        /// <para><b>Plain world XY, deliberately un-squashed.</b> A building's facing has to un-squash the
-        /// depth axis first (<c>BuildingFacing</c> does, and #495 measured a schoolhouse 92° wrong when it
-        /// did not) because a building is baked art placed by a bearing. A CHARACTER's facing is a different
-        /// question: <see cref="HiddenHarbours.Core.IsoCharacterSprite"/> reads its heading off world-XY
-        /// motion — that is how the player's own facing works, and how a walking villager's does — so a
-        /// STAND heading derived in the ground plane would disagree with the WALK heading measured in the
-        /// world plane, and the villager would visibly turn on arrival. One plane, one answer.</para>
+        /// <para><b>A GROUND bearing</b> (<see cref="IsoGround.BearingDegrees(Vector2, Vector2)"/>) — the
+        /// same un-squash <c>BuildingFacing</c> applies, and for the same reason: world XY is the SQUASHED
+        /// ground plane.</para>
+        ///
+        /// <para><b>⚠️ This used to be a plain world-XY <c>atan2</c>, on a premise that has since been
+        /// measured false.</b> The argument was that a character is different from a building because
+        /// <see cref="IsoCharacterSprite"/> reads its heading off world-XY motion, so a stand heading taken
+        /// in the ground plane would disagree with the walk heading and the villager would turn on arrival.
+        /// The goal was right and is unchanged — one plane, one answer — but the plane was the wrong one:
+        /// ADR 0034 measured the baked character rows and they are evenly-spaced GROUND bearings, so the
+        /// presenter now un-squashes its own step too. Both sides moved together; a stated stance and a
+        /// walked approach still agree, and both are now agreeing with the artwork rather than with each
+        /// other alone.</para>
         /// </summary>
         public static float HeadingTo(Vector2 from, Vector2 to)
         {
             Vector2 d = to - from;
-            return d.sqrMagnitude < 1e-8f ? 180f : Mathf.Atan2(d.x, d.y) * Mathf.Rad2Deg;
+            // Facing the camera is the friendly default for a villager with nowhere to look; IsoGround
+            // answers 0 (North) for a degenerate delta, so the fallback stays explicit here.
+            return d.sqrMagnitude < 1e-8f ? 180f : IsoGround.BearingDegrees(d);
         }
 
         /// <summary>A point <paramref name="metres"/> from <paramref name="from"/> toward

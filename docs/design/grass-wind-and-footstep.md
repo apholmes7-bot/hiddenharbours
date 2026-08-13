@@ -28,11 +28,15 @@ stage:
   field — the same cohesion the water swell has. A per-`_PhaseGrid`-cell phase offset decorrelates
   neighbouring tufts. Amplitude scales with wind strength, plus a small wind-independent `_IdleSway`
   baseline so grass always has a little life.
-- **Footstep trail** = bend away from the player's recent **path**, not a single point. `GrassFootstep`
+- **Footstep trail** = bend away from a walker's recent **path**, not a single point. `GrassFootstep`
   publishes the last N world positions (`_GrassTrail`); each disturbs only a **footprint-sized** radius
-  (`_FootRadius`, ~0.5 m) and fades by recency, so the grass parts **along the trail the player walked**
-  and springs back behind them — a trodden path, not a halo circling the player. The shader takes the
-  strongest nearby point (max, not sum) so overlapping footprints never stack into a bulge.
+  (`_FootRadius`, ~0.5 m) and fades by recency, so the grass parts **along the trail that was walked**
+  and springs back behind — a trodden path, not a halo circling anyone. The shader takes the strongest
+  nearby point (max, not sum) so overlapping footprints never stack into a bulge.
+- **Many walkers, not one** (see [the pool](#the-trail-pool--many-walkers-not-one-2026-08-13) below):
+  `_GrassTrail` is `WALKERS_N` segments of `POINTS_N` points, one segment per `GrassFootstep`, and a
+  companion `_GrassWalkers` array carries one record per segment (trail bounding circle plus that
+  walker's own moving factor). The village's villagers and the player each tread their own path.
 - **Pixel-art faithful**: the bend offset is **snapped to the PPU grid** (PPU 32), point-sampled, like
   the water shader. The blade also dips slightly in Y as it bends (`_BendY`) so a hard bend reads as
   folding over, not stretching.
@@ -53,20 +57,65 @@ Both just publish a **global** shader vector; every grass instance reads it with
   direction, and sets `Shader.SetGlobalVector("_WindWorld", dir * strength)`. So **grass + water move
   together**. When there is no sim yet (EditMode / pre-boot / the bare demo) it publishes nothing,
   leaving the grass on its idle baseline.
-- **`GrassFootstep`** (`Assets/_Project/Code/Art/`) — a tiny component on the player (or any mover). It
-  keeps a ring buffer of the walker's recent positions (a new footprint every `_pointSpacing` m, each
-  fading over `_trailLifetime` s) and uploads it once per frame via
-  `Shader.SetGlobalVectorArray("_GrassTrail", …)` (no per-frame allocation). The spring-back is the
-  recency fade — still no per-tuft state, nothing saved.
+- **`GrassFootstep`** (`Assets/_Project/Code/Art/`) — a tiny component on the player, a villager, or any
+  mover. It keeps a ring buffer of that walker's recent positions (a new footprint every `_pointSpacing`
+  m, each fading over `_trailLifetime` s), writes them into **its own segment** of the shared pool, and
+  uploads the pool once per frame via `Shader.SetGlobalVectorArray("_GrassTrail", …)` /
+  `("_GrassWalkers", …)` (static buffers, no per-frame allocation). The spring-back is the recency fade —
+  still no per-tuft state, nothing saved.
 
 Both are **visual-only**: they drive no simulation and save nothing (rule 5). Determinism-sensitive math
-(`WindToShaderVector`, `FootstepFalloff`) lives as pure static methods mirrored from the HLSL and is unit
-tested headless.
+(`WindToShaderVector`, `FootstepFalloff`, `TrailStrength`, `DirectionalGate`, `GrowRadius`,
+`WalkerCanReach`) lives as pure static methods mirrored from the HLSL and is unit tested headless.
+
+### The trail pool — many walkers, not one (2026-08-13)
+`GrassFootstep` used to publish its 24-point ring buffer to the **single** global array `_GrassTrail`
+(plus the scalar `_PlayerMoving`) from **every** instance's `LateUpdate`. So the mechanism supported
+exactly **one** walker: a second `GrassFootstep` did not add a second trail, it overwrote the first every
+frame — last writer wins. That is why the village-routines work (M2‑23 phase 1) deliberately left the
+component **off** the six villagers: they would have erased the player's own trodden path.
+
+The array is now a **pool**:
+
+| | |
+|---|---|
+| `_GrassTrail[TRAIL_N]` | `WALKERS_N` fixed-stride **segments** of `POINTS_N` points. Per point: `xy` world position, `z` recency 0..1, `w` the heading angle the walker was moving when it was laid. |
+| `_GrassWalkers[WALKERS_N]` | one record per segment: `xy` the **bounding-circle centre** of that walker's live trail, `z` its **radius** (negative = the slot is unclaimed), `w` that walker's **own** 0..1 moving factor for the behind-only gate. |
+
+- `WALKERS_N` = `GrassFootstep.MaxWalkers` = **8** (St Peters wants seven: the player plus six
+  villagers). `POINTS_N` = `GrassFootstep.PointsPerWalker` = **24**, unchanged, so nobody's trail got
+  shorter. The three numbers must agree across the component and **both** shaders that read the pool;
+  a mismatch does not fail to compile, it silently reads the wrong walker's footprints, so
+  `Assets/Tests/EditMode/Art/GrassTrailPoolTests.cs` parses the `#define`s and pins them.
+- **Slots** are claimed in `OnEnable` and released in `OnDisable`. When the pool is full a claimant
+  evicts the lowest-priority holder ranked **strictly below** it — equals never churn each other, so a
+  full pool simply leaves the newest walker without a trail (cosmetic, one warning). The player is
+  built at `GrassFootstep.PlayerPriority`, because the persistent-core root toggles on a region hop and
+  its component therefore re-claims **after** the arriving region's villagers.
+- The retired `_PlayerMoving` was one scalar for the whole scene: with several walkers, whoever wrote
+  last gated everybody's footprints. It now rides per walker in `_GrassWalkers[i].w`.
 
 ### Performance (rule 7)
-One material, GPU-instanced / dynamic-batched; all sway + bend in-shader; two global vectors set on a
-throttled tick (wind) / per frame (player) regardless of tuft count; no per-frame allocation. Hundreds
-of tufts stay cheap and the later mobile port stays viable.
+One material, GPU-instanced / dynamic-batched; all sway + bend in-shader; the wind vector on a throttled
+tick and the two pool arrays per frame regardless of tuft count; no per-frame allocation (the pool
+buffers are static and reused). Hundreds of tufts stay cheap and the later mobile port stays viable.
+
+**The pool is not `WALKERS_N` times the work.** Each blade tests **one bounding circle per walker** and
+skips that walker's whole `POINTS_N` segment when it is out of reach, so cost tracks the number of
+walkers actually **near** a blade, not the pool size — a lone player in a 760 × 520 m region is now
+*cheaper* per tuft than the old un-culled 24-point loop, which every tuft on the island ran even with
+the player 400 m away. Only a genuine crowd pays, and only the tufts under it. The cull can never change
+the picture: a skipped point is at least `_FootRadius` away, where its falloff is already 0
+(`GrassTrailPoolTests.TheCull_OnlyEverSkipsPointsWhoseBendIsAlreadyZero` sweeps that property).
+
+The outer walker sweep is `[loop]` on purpose — unrolling it would flatten 192 iterations and throw the
+early-out away — while the inner point loop keeps its `[unroll]` over a compile-time bound.
+
+> ⚠️ **Mobile-port note.** The pool is 192 + 8 = 200 `float4` of vertex uniform. That is comfortable on
+> desktop and on any Vulkan/Metal mobile device, but GLES 3.0's *floor* for `MAX_VERTEX_UNIFORM_VECTORS`
+> is 256 — so on a minimum-spec GLES3 device this plus URP's built-ins would be tight. If the port ever
+> needs it, `MaxWalkers`/`PointsPerWalker` are the two numbers to lower (in C# and both shaders together
+> — the test above will tell you if you miss one).
 
 ## The demo — **Hidden Harbours ▸ Dev ▸ Build Grass Test**
 `Assets/_Project/Code/Tools/Editor/GrassTestBuilder.cs` (a separate dev builder, like *Build
@@ -92,8 +141,13 @@ On the **Grass** material (`Assets/_Project/Art/Materials/Grass.mat`): `_SwayAmo
 Place grass-tuft `SpriteRenderer`s (sharing `Grass.mat`) in the St Peters clearings, and put a
 `GrassFootstep` on the on-foot player. No wind wiring is needed — `GrassWindBridge` self-installs and the
 grass reads the shared wind automatically. The footstep bend is a **fading trail** along the path the
-player walks (a footprint-sized disturbance per recent position), so the grass reads as trodden-down
-rather than a halo orbiting the player.
+walker takes (a footprint-sized disturbance per recent position), so the grass reads as trodden-down
+rather than a halo orbiting them.
+
+**Villagers on routines** now want the same component. With the pool above, adding a `GrassFootstep`
+alongside the `YSortSprite.Dynamic = true` that `StPetersRoutines.WireVillagers` already sets is enough
+for the meadow to answer them, and it no longer costs the player their path. Leave villagers at the
+default `Priority` of 0 — that is exactly what keeps the player's `PlayerPriority` claim above them.
 
 ## ⚠️ The bend curve requires a tessellated sprite (measured 2026-07-25)
 
