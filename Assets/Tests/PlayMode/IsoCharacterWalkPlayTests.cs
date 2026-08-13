@@ -64,7 +64,10 @@ namespace HiddenHarbours.Tests.PlayMode
             while (!done() && Time.realtimeSinceStartup < deadline) yield return null;
         }
 
-        /// <summary>Walk the object at a constant speed on a heading for a real-seconds stretch.</summary>
+        /// <summary>Walk the object at a constant speed on a WORLD-XY heading for a real-seconds stretch —
+        /// deliberately how <c>PlayerWalkController</c> moves the fisher (uniform speed in world XY), not
+        /// a ground-metres walk. Off the cardinals the GROUND bearing this travels is a different number;
+        /// that is the whole point of <see cref="WalkingAWorldDiagonal_ShowsTheRowThatDepictsItsGroundBearing"/>.</summary>
         IEnumerator Travel(float headingDeg, float speed, float seconds)
         {
             var dir = new Vector2(Mathf.Sin(headingDeg * Mathf.Deg2Rad), Mathf.Cos(headingDeg * Mathf.Deg2Rad));
@@ -86,6 +89,28 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.AreEqual(6, _iso.FacingRow,
                 "the art bakes counter-clockwise, so East is row 6 — not the row labelled 'E'");
             Assert.AreEqual(CharacterGait.Walk, _iso.Gait, "3 m/s is a walk, not a run");
+        }
+
+        [UnityTest]
+        public IEnumerator WalkingAWorldDiagonal_ShowsTheRowThatDepictsItsGroundBearing()
+        {
+            // World XY is the SQUASHED ground plane, and the baked rows are evenly-spaced GROUND bearings
+            // (measured — see IsoGroundTests). So a 28° world walk is really an 18.9° ground walk, and the
+            // fisher must be drawn very nearly facing NORTH. Before the un-squash she was turned a whole
+            // cell to the north-east. Driven through the real frame loop, because the read that used to be
+            // wrong is the one LateUpdate takes off the transform.
+            yield return Travel(28f, 3f, 0.5f);
+
+            float ground = IsoGround.BearingDegrees(
+                new Vector2(Mathf.Sin(28f * Mathf.Deg2Rad), Mathf.Cos(28f * Mathf.Deg2Rad)));
+
+            Assert.AreEqual(ground, _iso.HeadingDegrees, 0.5f,
+                "the presenter publishes the GROUND bearing it is travelling, not the world-XY angle");
+            Assert.AreEqual(_def.FacingRowFor(ground), _iso.FacingRow,
+                "…and picks the row that depicts it");
+            Assert.AreNotEqual(_def.FacingRowFor(28f), _iso.FacingRow,
+                "the un-corrected read lands on the neighbouring row — if these ever agree, the " +
+                "un-squash has been removed or the bands have moved");
         }
 
         [UnityTest]
