@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e462da886a40bdc4b939f20562ce84c3, type: 3}
+  m_Name: EileenDoironRoutine
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.RoutineDef
+  Id: routine.eileen_doiron
+  Npc: {fileID: 11400000, guid: 2f8985f554ea4c9c84e248e9b8be1859, type: 2}
+  Entries:
+  - StartHour: 7.5
+    StationId: station.st_peters.farmhouse_dooryard
+    Activity: 0
+    Why: out on the farmhouse step before school
+  - StartHour: 8.25
+    StationId: station.st_peters.school_desk
+    Activity: 1
+    Why: "down the lane and in \u2014 the schoolhouse door faces the green, so you
+      see it open"
+  - StartHour: 12
+    StationId: station.st_peters.store_customer_c
+    Activity: 2
+    Why: her dinner at the store, the first of the noon queue
+  - StartHour: 13.25
+    StationId: station.st_peters.school_desk
+    Activity: 1
+    Why: afternoon lessons
+  - StartHour: 17.5
+    StationId: station.st_peters.flats_lookout
+    Activity: 3
+    Why: 'out the painted dirt path west to the head of the flats: the sun goes down
+      over the bar, and this is the only place on the island you can watch it'
+  - StartHour: 20.5
+    StationId: station.st_peters.home_farmhouse
+    Activity: 0
+    Why: the long walk back up the island in the dusk, and in
+  WalkSpeedMetresPerSecond: 1.05
+  ScheduleJitterMinutes: 4

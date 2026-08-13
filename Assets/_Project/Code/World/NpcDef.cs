@@ -9,10 +9,13 @@ namespace HiddenHarbours.World
     /// place an <see cref="Interactable"/> — the speaker's name, their dialogue (a <see cref="DialogueDef"/>),
     /// and the onboarding/flag bookkeeping — so introducing an NPC is a new asset, not new code.
     ///
-    /// <para>Scope note: this is the MINIMAL opening-cast shape (name + dialogue + flag), deliberately
-    /// short of the full routine/anchor/schedule system in <c>design/npcs-and-routines.md</c> §2 — those
-    /// land in M2 when the cast goes on daily routines. The St Peters opening NPCs are <b>anchored</b>
-    /// (placed, no routine), exactly as the charter's M1 focus describes. Fields here are append-only.</para>
+    /// <para>Scope note: this stays the MINIMAL identity shape — name + dialogue + flag + body — and it is
+    /// deliberately NOT where a routine lives. A person's DAY is its own asset
+    /// (<see cref="RoutineDef"/>, one per villager under <c>Data/Routines</c>, keyed to this def) rather
+    /// than a field here, so an NPC and their schedule can be authored, reviewed and vetoed separately,
+    /// and an NPC with no routine is simply an NPC who waits where they were placed —
+    /// <c>design/npcs-and-routines.md</c> §2.6 records what phase 1 shipped. Fields here are
+    /// append-only.</para>
     ///
     /// <para>Localization: <see cref="DisplayName"/> is plain copy for now (the world layer's stand-in
     /// until loc tables land — see <see cref="WorldStrings"/>); the FORMAT being data is the commitment.</para>

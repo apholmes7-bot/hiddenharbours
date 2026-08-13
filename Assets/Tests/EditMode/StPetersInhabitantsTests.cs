@@ -13,8 +13,14 @@ namespace HiddenHarbours.Tests.EditMode
 {
     /// <summary>
     /// <b>THE PEOPLE ON ST PETERS.</b> M1 §7.1 asks for "4–6 named inhabitants with a line of dialogue
-    /// with an opinion and a fixed spot", anchored rather than scheduled, and its exit condition is that
-    /// you can walk the island, meet everyone, and know what each building is for.
+    /// with an opinion and a fixed spot", and its exit condition is that you can walk the island, meet
+    /// everyone, and know what each building is for.
+    ///
+    /// <para>⚠️ The spots below are still <b>fixed</b>, and this file still checks them as such — but since
+    /// M2-23 they are the villagers' STARTING MARKS and working stations rather than the whole of where they
+    /// ever are: <see cref="StPetersRoutines"/> gives whoever has a <c>RoutineDef</c> a day to keep, and
+    /// derives its own stations from these positions rather than from a copy of them. What this file
+    /// guarantees is what the routine layer stands on.</para>
     ///
     /// <para>These assert that against the AUTHORED WORLD — the real terrain, the real wharf geometry and
     /// the building kit's own baked footprints — rather than against the constants in
@@ -135,21 +141,30 @@ namespace HiddenHarbours.Tests.EditMode
             }
         }
 
+        /// <summary>
+        /// <b>A PERSON'S DAY IS NOT A FIELD ON THE PERSON.</b> This was written as
+        /// <c>NobodyIsOnARoutine_BecauseRoutinesAreM2</c> and guarded the M1 boundary. The routine engine
+        /// has since landed (M2-23, <c>npcs-and-routines.md</c> §2.6) and the guard is still worth keeping —
+        /// for a different reason it happens to enforce identically: a routine lives in its OWN asset
+        /// (<c>RoutineDef</c>, one per villager under <c>Data/Routines</c>, keyed to this def), never as a
+        /// schedule field here.
+        ///
+        /// <para>Why the separation is load-bearing: an NPC and their day are authored, reviewed and VETOED
+        /// separately — "who keeps the post office" is a one-line edit the owner makes without touching the
+        /// person — and an NPC with no routine asset is simply an NPC who waits where the builder put them,
+        /// which is the null-safe state the whole layer degrades to.</para>
+        /// </summary>
         [Test]
-        public void NobodyIsOnARoutine_BecauseRoutinesAreM2()
+        public void APersonsDayIsItsOwnAsset_NotAFieldOnTheirNpcDef()
         {
-            // The guard is structural: NpcDef is deliberately the minimal anchored shape (its own remarks
-            // say so), so there is no schedule field to fill in by accident. If someone adds one to the
-            // Def before the M2 routine engine lands, this is the test that says "not yet, and here is
-            // where the boundary was written down".
             var fields = typeof(NpcDef).GetFields()
                 .Select(f => f.Name.ToLowerInvariant()).ToArray();
 
             foreach (string forbidden in new[] { "schedule", "routine", "anchor", "waypoint" })
                 Assert.IsFalse(fields.Any(f => f.Contains(forbidden)),
-                    $"NpcDef grew a '{forbidden}' field — the St Peters cast is ANCHORED, not scheduled " +
-                    "(npcs-and-routines.md §2 keeps the schedule engine in M2). Land the routine engine " +
-                    "first, then give them routines.");
+                    $"NpcDef grew a '{forbidden}' field. A person's DAY belongs in its own RoutineDef asset " +
+                    "keyed to this def, not inline here — see the remarks above for why the two are " +
+                    "authored separately.");
         }
 
         // =================================================================================

@@ -218,6 +218,56 @@ animation.
 
 ---
 
+### 2.6 ⭐ WHAT PHASE 1 ACTUALLY SHIPPED (M2-23, St Peters — 2026-08-12)
+
+The engine is built and St Peters' villagers live one full day on it. This section is the **as-built
+record**, and where it differs from the sketch above the sketch is the *target*, not the code.
+
+**Shipped — the whole of it is DATA plus one pure function.**
+
+| Piece | Where | What it is |
+|---|---|---|
+| `RoutineActivity` | `World/Routines` | the four activity tags (`Home` · `Work` · `Errand` · `Recreation`), append-only |
+| `RoutineDef` + `RoutineEntry` | `World/Routines` | one asset per villager under `Data/Routines`, id `routine.snake_case`; a day is a list of `{StartHour, StationId, Activity, Why}` plus that person's walk speed and departure jitter |
+| `RoutineStations` / `RoutineStationEntry` | `World/Routines` | the region's named places — position, stance, optional interior, which lane node it hangs off. **Emitted by the region builder, never hand-placed** |
+| `RoutineLanes` + `RoutineLaneTree` | `World/Routines` | the walkable network, and the pure maths that walks it |
+| `RoutineSchedule` | `World/Routines` | the pure time maths: which block, how long it has run, how long a walk takes, the seeded jitter |
+| `RoutinePlanner` → `RoutinePlan` | `World/Routines` | resolves a def + a region into flat arrays; then `SampleAt(hour)` is pure and allocation-free |
+| `VillagerRoutine` | `World/Routines` | the presenter: reads the pose, writes the transform, reveals/hides at a threshold |
+| `StPetersRoutines` | `App/Editor` | the island's stations and lanes, all DERIVED; validates both against the terrain |
+| `RoutineDefsBuilder` | `App/Editor` | authors the six shipped routine assets from a reviewable table |
+
+**Where the as-built differs from §2.4 and §7, and why.**
+
+- **No A\* and no navmesh. The lanes are a TREE.** §2.4 asks for A\* on a walkable grid. A village's
+  lanes radiate from where its life is, so a tree has exactly one path between any two places: nothing
+  to search, nothing to allocate, and no tie-break to be non-deterministic about. Two of St Peters'
+  three branches are literally the **painted dirt paths the terrain painter already paints**, so a
+  villager on them walks on ground the world already draws as walked. The day a village genuinely needs
+  a loop, this becomes a graph and gains a documented tie-break rule.
+- **No tiers, and nothing "teleport-resolves".** §2.4/§7's three-tier model (active / nearby /
+  dormant) exists to avoid ticking off-screen NPCs. Nothing ticks at all: a villager's position **is**
+  `f(worldSeed, hourOfDay)`, so an off-screen or another-region villager costs nothing by construction
+  and a region loading at 14:20 puts everybody mid-stride on the right leg with no snap. The tiering can
+  still arrive as a *presentation* budget (how many bodies are instantiated) without touching this.
+- **One schedule, not a prioritised conditional list.** §2.2's reactivity engine (storm day, market day,
+  rest day) is the next phase. Every field above keeps its meaning inside a conditional set — a set is a
+  list of these plus a `when` — so it grows rather than being replaced. Shipping the matrix first would
+  have meant six variants per person with no way to see whether one honest day reads right.
+- **Nothing is saved** (CLAUDE.md rule 5), and this deliberately includes mid-stride state. A pause, a
+  reload or a region hop recomputes; there is no save-format change.
+- **Departure jitter is a PERSONALITY, not noise.** It is seeded from
+  `(worldSeed, routineId, entryIndex)` and the day index is deliberately *not* folded in, so the
+  postmistress opens a few minutes past eight the same way every morning — which a player can learn
+  (§2.1's "predictability is a feature") — and there is no discontinuity at midnight in the block that
+  spans it.
+
+**Not shipped, still §2's:** conditional schedules and every reactivity rule in §2.3 (weather, tide,
+season, day-of-week, story flags); avoidance/separation between villagers; the procedural extras of §4;
+the relationship layer of §5.
+
+---
+
 ## 3. The handcrafted core cast
 
 Fourteen named characters, sized and placed to match `world-and-regions.md` (the bulk live and work

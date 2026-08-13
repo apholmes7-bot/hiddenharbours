@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e462da886a40bdc4b939f20562ce84c3, type: 3}
+  m_Name: BasilSamsonRoutine
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.RoutineDef
+  Id: routine.basil_samson
+  Npc: {fileID: 11400000, guid: 70e4a1dce6de42f88b5f991f3b8c0d05, type: 2}
+  Entries:
+  - StartHour: 5
+    StationId: station.st_peters.wharf_head
+    Activity: 1
+    Why: away before anyone, up the wharf from the slip head, watching the water
+  - StartHour: 12
+    StationId: station.st_peters.slip_head
+    Activity: 1
+    Why: "down to the shoreward end of the planks \u2014 where a boat's line gets
+      taken"
+  - StartHour: 15
+    StationId: station.st_peters.wharf_head
+    Activity: 3
+    Why: back out to the pier head. He is who is there when you come home under power
+  - StartHour: 18
+    StationId: station.st_peters.home_sage_b
+    Activity: 0
+    Why: the whole island again, in the dusk, and in
+  WalkSpeedMetresPerSecond: 0.95
+  ScheduleJitterMinutes: 8
