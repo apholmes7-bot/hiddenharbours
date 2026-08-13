@@ -101,6 +101,10 @@ namespace HiddenHarbours.Tests.RigBaking
                          "PropIso", AzimuthConvention.CounterClockwise),
             new Snapshot("lobsterBoat", "docs/art/rigs/lobsterBoatIsoRig.js",
                          "LobsterBoatIso", AzimuthConvention.CounterClockwise),
+            // Eighteen hulls off one generator (fleet rig pack). CCW re-measured against
+            // lobsterBoat in one host — +45.000° per step at all 8 headings, un-squashed.
+            new Snapshot("lobsterBoatVariants", "docs/art/rigs/lobsterBoatVariantsIsoRig.js",
+                         "LobsterBoatVariantsIso", AzimuthConvention.CounterClockwise),
             new Snapshot("navBuoy", "docs/art/rigs/nav-buoy-kit/navBuoyRig.js",
                          "NavBuoy", AzimuthConvention.Clockwise, "deckIsoSolid"),
             new Snapshot("punt", "docs/art/rigs/puntIsoRig.js",
