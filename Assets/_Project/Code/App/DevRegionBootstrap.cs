@@ -28,6 +28,16 @@ namespace HiddenHarbours.App
     /// <para>Runs in <c>Start</c> (after every scene Awake/OnEnable, so <see cref="GameServices.Ready"/>
     /// reflects reality) and destroys itself afterwards either way. Re-run-builder-safe: the builder
     /// recreates both the dev core and this component from scratch each build.</para>
+    ///
+    /// <para><b>⚠ FOR WHOEVER BUILDS THE NEXT REGION SCENE: the dev core is a GRAVE.</b> Everything
+    /// parented into it dies on the travel path, so nothing a TRAVELLED-IN player needs may live in
+    /// there — only the stand-in rig that reviews the scene. This has cost the project twice: the shops'
+    /// <c>BuildingInterior</c>s watched an occupant that died here (so no door in any region you sailed
+    /// to ever opened), and Nine Mile Creek's <c>WorldInteractor</c> + <c>DialoguePresenter</c> were
+    /// parented in here outright (so its two people were mute for anyone who arrived by sea). Region
+    /// content belongs on region roots, and what it needs from the persistent core it resolves at
+    /// runtime through <see cref="GameServices"/> — never through a reference a region scene cannot
+    /// hold.</para>
     /// </summary>
     public sealed class DevRegionBootstrap : MonoBehaviour
     {
