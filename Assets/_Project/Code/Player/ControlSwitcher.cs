@@ -961,10 +961,15 @@ namespace HiddenHarbours.Player
         }
 
         /// <summary>The compass heading of travel between two world points — the leg's own direction,
-        /// taken from TRAVEL rather than from a hop-modified position so a rise never reads as a turn.</summary>
+        /// taken from TRAVEL rather than from a hop-modified position so a rise never reads as a turn.
+        ///
+        /// <para>GROUND bearing, not the raw world-XY angle: the endpoints are world positions and world
+        /// XY is the squashed ground plane, while the clip rows this feeds depict ground bearings (see
+        /// <c>Core.IsoGround</c>). A vault taken on a diagonal would otherwise board her facing the
+        /// neighbouring cell.</para></summary>
         private static float HeadingBetween(Vector3 from, Vector3 to)
-            => IsoCharacterMath.HeadingFor(new Vector2(to.x - from.x, to.y - from.y),
-                                           minSpeed: 0f, fallbackHeading: 0f);
+            => IsoCharacterMath.GroundHeadingFor(new Vector2(to.x - from.x, to.y - from.y),
+                                                 minSpeed: 0f, fallbackHeading: 0f);
 
         // ---- the vault's CLIP (art drop of 2026-08-06 — the rig's board / boardDown) ---------------
         //

@@ -17,6 +17,12 @@ namespace HiddenHarbours.Core
     /// It is also what lets the SAME component serve the on-foot player (<c>HiddenHarbours.Player</c>) and,
     /// later, the harbour's NPCs (<c>world-content</c>) without either module referencing the other.</para>
     ///
+    /// <para><b>That step is UN-SQUASHED before it becomes a bearing.</b> The frame it is measured in is
+    /// world XY (or, on a deck, a frame parented into it), and world XY is the SQUASHED ground plane — one
+    /// metre of northward ground travel is only <c>sin 40° ≈ 0.643</c> world units. The rows, measured, are
+    /// evenly-spaced GROUND bearings, so the two have to be reconciled somewhere; <see cref="IsoGround"/>
+    /// carries the number and the measurement that settled it.</para>
+    ///
     /// <para><b>The heading→row rule is not re-implemented here.</b> It is
     /// <see cref="CharacterVisualDef.FacingRowFor"/> → the shared, tested
     /// <see cref="IsoFacing.HeadingToFacingIndex"/>, carrying the def's own bake facts — including
@@ -238,9 +244,15 @@ namespace HiddenHarbours.Core
             // smoothed, because it is the thing compared against a threshold. A HELD heading overrides the
             // read entirely rather than blending with it: the pilot faces where the hull points, and a
             // drifting boat's sideways slip must not swing them round.
+            //
+            // GroundHeadingFor, not HeadingFor: the step above was measured in WORLD XY, which is the
+            // SQUASHED ground plane (IsoGround), while the row it is about to pick DEPICTS a ground
+            // bearing. Reading the two as the same thing draws the neighbouring facing across about a
+            // fifth of the compass. Held headings need no such correction — they are stated compass
+            // bearings already, and the only frame that states one (a deck) holds it every frame.
             _headingDegrees = _headingHeld
                 ? _heldHeadingDegrees
-                : IsoCharacterMath.HeadingFor(velocity, _headingMinSpeed, _headingDegrees);
+                : IsoCharacterMath.GroundHeadingFor(velocity, _headingMinSpeed, _headingDegrees);
 
             // A HELD speed replaces the read outright rather than being smoothed toward: it is a statement
             // of fact from whoever is moving the character, and filtering it would only add lag to a number

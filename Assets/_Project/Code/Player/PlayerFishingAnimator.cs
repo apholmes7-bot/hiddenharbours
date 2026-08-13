@@ -115,11 +115,18 @@ namespace HiddenHarbours.Player
         /// <summary>
         /// The direction ROW that faces the line's far end: the published
         /// <c>FishingState.FishOffsetX/Y</c> (angler → fish/entry point) turned into a compass heading
-        /// (the <see cref="IsoCharacterMath.HeadingFor"/> convention — 0 = North, CW) and bucketed by
-        /// the shared <see cref="IsoFacing.HeadingToFacingIndex"/>. An offset shorter than
+        /// and bucketed by the shared <see cref="IsoFacing.HeadingToFacingIndex"/>. An offset shorter than
         /// <paramref name="minOffset"/> (deep fight straight under the boat, or a phase publishing
         /// neutral) HOLDS <paramref name="fallbackRow"/> — the fisher keeps facing where the action
         /// was, never snapping to North.
+        ///
+        /// <para><b>The offset is WORLD-space metres, so it is un-squashed before the angle is taken</b>
+        /// (<see cref="IsoGround.BearingDegrees(Vector2)"/>) — the fight sheets are the same baked
+        /// character rig as the walk, and their rows are evenly-spaced GROUND bearings. Reading a world
+        /// offset as if it were a ground one points her at the neighbouring facing whenever the fish is
+        /// off the cardinals, which is most of the time. The min-offset test is deliberately left in world
+        /// units: it answers "is there an honest direction here at all?", which is about the offset as
+        /// published.</para>
         /// </summary>
         public static int FacingRowFor(float fishOffsetX, float fishOffsetY, float minOffset,
                                        int rowCount, bool rowsAreCounterClockwise, int fallbackRow)
@@ -128,7 +135,7 @@ namespace HiddenHarbours.Player
             float y = float.IsNaN(fishOffsetY) ? 0f : fishOffsetY;
             float min = Mathf.Max(0f, minOffset);
             if (x * x + y * y < min * min) return fallbackRow;
-            float heading = Mathf.Atan2(x, y) * Mathf.Rad2Deg;   // 0 = +Y (North), CW toward +X (East)
+            float heading = IsoGround.BearingDegrees(new Vector2(x, y));
             return IsoFacing.HeadingToFacingIndex(heading, rowCount, 0f, rowsAreCounterClockwise);
         }
     }

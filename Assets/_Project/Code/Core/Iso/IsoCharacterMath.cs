@@ -15,6 +15,12 @@ namespace HiddenHarbours.Core
         /// project's bearing convention, the same one the boats use. Returns
         /// <paramref name="fallbackHeading"/> when the velocity is below <paramref name="minSpeed"/>, which
         /// is what makes a character HOLD its last facing when it stops rather than snapping back to North.
+        ///
+        /// <para><b>⚠️ Both axes of <paramref name="velocity"/> must be REAL metres.</b> That is true of the
+        /// DECK frame — <see cref="DeckRiderFacingMath.DeckBearing"/>, the one frame in the game that still
+        /// calls this: x abeam to starboard, y along the keel, metres of deck. It is NOT true of world XY,
+        /// where the ¾ camera foreshortens the depth axis by <see cref="IsoGround.GroundDepthScale"/>; a
+        /// world-space velocity wants <see cref="GroundHeadingFor"/>.</para>
         /// </summary>
         public static float HeadingFor(Vector2 velocity, float minSpeed, float fallbackHeading)
         {
@@ -22,6 +28,30 @@ namespace HiddenHarbours.Core
             if (velocity.sqrMagnitude < min * min) return fallbackHeading;
             // Atan2(x, y): 0 = +Y (North), growing clockwise toward +X (East).
             return Mathf.Atan2(velocity.x, velocity.y) * Mathf.Rad2Deg;
+        }
+
+        /// <summary>
+        /// The compass heading a WORLD-space velocity is travelling ACROSS THE GROUND — the same answer as
+        /// <see cref="HeadingFor"/> once the world's foreshortened depth axis has been stretched back out
+        /// (<see cref="IsoGround.BearingDegrees(Vector2)"/>). This is the one a character's facing row is
+        /// picked from, because the baked rows are evenly-spaced GROUND bearings (measured; see
+        /// <see cref="IsoGround"/>).
+        ///
+        /// <para><b>What it fixes.</b> Walking up-and-right at 45° in world XY is a ground bearing of only
+        /// 32.7°, not 45°; the raw read is out by up to 12.5°, and since a row spans 45° that error draws
+        /// the NEIGHBOURING facing across roughly a fifth of the compass — a band about 10° wide inside
+        /// each octant next to N/E/S/W, and about 7.6° next to each diagonal.</para>
+        ///
+        /// <para><b>The stop test is taken in WORLD units, before the un-squash</b>, on purpose:
+        /// <paramref name="minSpeed"/> answers "was that a real step or renderer jitter?", which is a
+        /// question about the motion actually measured off the transform. Un-squashing first would quietly
+        /// make the threshold 1.56× easier to clear when walking north than when walking east.</para>
+        /// </summary>
+        public static float GroundHeadingFor(Vector2 worldVelocity, float minSpeed, float fallbackHeading)
+        {
+            float min = Mathf.Max(0f, minSpeed);
+            if (worldVelocity.sqrMagnitude < min * min) return fallbackHeading;
+            return IsoGround.BearingDegrees(worldVelocity);
         }
 
         /// <summary>

@@ -113,6 +113,22 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void FacingRow_UnSquashesTheWorldOffset_SoSheFacesTheGROUNDBearingOfTheLine()
+        {
+            // The published offset is world-space metres, and world XY is the squashed ground plane, so
+            // the raw atan2 reads up to 12.5° off. A fish 5 m east and 9.4 m north (world) is a ground
+            // bearing of ~18.9°, i.e. she should be looking very nearly NORTH — the un-corrected read
+            // said 28° and turned her a whole cell to the north-east. See IsoGroundTests for the
+            // measurement that settles which one the rows depict.
+            Assert.AreEqual(0, PlayerFishingAnimMath.FacingRowFor(5f, 9.4f, 0.05f, 8, false, 4),
+                "world-28° is a ground bearing of ~18.9° — north");
+
+            // A TRUE ground diagonal still reads as the diagonal: (1, 0.643) world units per ground metre.
+            Assert.AreEqual(1, PlayerFishingAnimMath.FacingRowFor(5f, 5f * 0.6427876f, 0.05f, 8, false, 4),
+                "equal ground metres north and east is still north-east");
+        }
+
+        [Test]
         public void FacingRow_HoldsTheFallback_WhenTheLineRunsStraightDown()
         {
             Assert.AreEqual(3, PlayerFishingAnimMath.FacingRowFor(0.01f, 0.01f, 0.05f, 8, false, 3),
