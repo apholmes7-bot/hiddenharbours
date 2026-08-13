@@ -21,13 +21,17 @@ namespace HiddenHarbours.App.Editor
     /// shipped for the island. This file is authoring and placement; the words are assets the owner can
     /// edit without opening C# (CLAUDE.md rule 2).</para>
     ///
-    /// <para><b>⚠️ THE DIALOGUE DRIVER IS A KNOWN SEAM, AND IT IS NOT THIS LANE'S.</b> A
-    /// <c>WorldInteractor</c> needs a serialize-reference to the on-foot player, and in a region scene
-    /// the real player lives in the PERSISTENT core — a different scene — exactly like the hold and
-    /// wallet this builder already routes through proxies. So the interactor built here is wired to the
-    /// DEV bootstrap's player, which makes these two live the moment the owner presses Play in Nine Mile
-    /// Creek, and the persistent-core bind is left as the named TODO beside the two that are already
-    /// there. The people, their words and their spots are real either way.</para>
+    /// <para><b>THE DIALOGUE DRIVER USED TO BE A KNOWN SEAM. IT IS CLOSED.</b> A
+    /// <c>WorldInteractor</c> needs a player to measure proximity from, and in a region scene the real
+    /// player lives in the PERSISTENT core — a different scene, which Unity will not let anything here
+    /// serialize a reference to. The driver is therefore wired to the DEV bootstrap's stand-in, which is
+    /// what makes these two live the moment the owner presses Play in Nine Mile Creek; when a real core
+    /// travels in and that stand-in is destroyed, the interactor falls through to Core's
+    /// <c>GameServices.PlayerTransform</c> instead (the same relay the shops' rooms resolve through).
+    /// The driver is built by <c>NineMileCreekBuilder.PlaceDialogueDriver</c> as a SCENE ROOT rather
+    /// than inside the dev core, so it survives the arrival that destroys the stand-in — it did not, and
+    /// these two were mute for every player who came by sea. The people, their words and their spots
+    /// were real throughout; nobody could hear them.</para>
     /// </summary>
     public static class NineMileCreekPeople
     {

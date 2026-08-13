@@ -888,7 +888,14 @@ namespace HiddenHarbours.App.Editor
             // rod-fishing player on the wharf — as an INACTIVE root, plus an active DevRegionBootstrap
             // that activates it ONLY when the scene is played directly in the editor and destroys it
             // (never awakened — no service stomp, no duplicate player) when the real core travels in.
-            Transform devPlayer = BuildDevBootstrap(config, cam, DisembarkPos, creekPeople);
+            Transform devPlayer = BuildDevBootstrap(config, cam, DisembarkPos);
+
+            // --- AND THE THING THAT MAKES THOSE TWO SPEAK (panel + proximity interact driver) -----------
+            // ⚠️ AFTER the dev core and OUTSIDE it, and both halves of that matter. After, because the
+            // stand-in it reviews with does not exist until the line above runs; outside, because the dev
+            // core is destroyed on arrival and used to take the driver down with it — which is exactly
+            // how Wendell and Hector ended up mute for everyone who arrived by sea. See PlaceDialogueDriver.
+            PlaceDialogueDriver(creekPeople, devPlayer);
 
             // --- THE WHARF'S TWO SHOPS (B2) -----------------------------------------------------------
             // ⭐ THE RESTAURANT AND THE FISH MARKET, from the baked shop kit, both ENTERABLE — the owner's
@@ -972,11 +979,11 @@ namespace HiddenHarbours.App.Editor
         /// Null-safe on art/data (the greybox rule): missing sheets/defs leave pieces inert, never break
         /// the build.
         /// </summary>
-        /// <returns>The dev player's transform — the only occupant this scene can offer a
-        /// <c>BuildingInterior</c>. See the shops' call site for why that is worth returning and what it
-        /// does NOT cover.</returns>
-        static Transform BuildDevBootstrap(GameConfig config, Camera sceneReviewCamera, Vector3 devSpawn,
-                                           List<Interactable> creekPeople)
+        /// <returns>The dev player's transform — the REVIEW stand-in this scene hands to the region
+        /// content that wants a player to watch (the shops' rooms, the dialogue driver). It is the only
+        /// one this scene can name, and on the travel path it is not the one that matters: see
+        /// <see cref="PlaceDialogueDriver"/> and <c>GameServices.PlayerTransform</c>.</returns>
+        static Transform BuildDevBootstrap(GameConfig config, Camera sceneReviewCamera, Vector3 devSpawn)
         {
             var devCore = new GameObject("DevCore");
 
@@ -1071,33 +1078,6 @@ namespace HiddenHarbours.App.Editor
             toastGo.transform.SetParent(devCore.transform, false);
             toastGo.AddComponent<DevToast>();
 
-            // The proximity INTERACT driver + the dialogue panel, so the creek's two people actually
-            // SPEAK when the owner presses Play here. It lives INSIDE the dev core because a
-            // WorldInteractor needs a serialize-reference to the on-foot player, and the only player that
-            // exists in this scene at build time is the dev one — the real player arrives from the
-            // persistent core, a different scene.
-            //
-            // ⚠️ TODO (the same shape as the hold/wallet TODO at the top of this file, and the same
-            // owner): when the real core travels in, nothing binds it to these interactables, so Wendell
-            // and Hector are mute on a live arrival. The fix belongs with the travel rig — a runtime bind
-            // on arrival, like RegionTravelCoordinator already does for the hold — not with a second copy
-            // of the cast. The people, their words and their spots are correct either way.
-            if (creekPeople != null && creekPeople.Count > 0)
-            {
-                var dialogueGo = new GameObject("DialoguePresenter");
-                dialogueGo.transform.SetParent(devCore.transform, false);
-                var presenter = dialogueGo.AddComponent<DialoguePresenter>();
-                SetRef(presenter, "_panelSprite", LoadSpriteAny(ArtDialoguePanel));
-                SetRef(presenter, "_nameplateSprite", LoadSpriteAny(ArtNamePlate));
-
-                var interactorGo = new GameObject("WorldInteractor");
-                interactorGo.transform.SetParent(devCore.transform, false);
-                var interactor = interactorGo.AddComponent<WorldInteractor>();
-                SetRef(interactor, "_player", playerGo.transform);
-                SetRef(interactor, "_presenter", presenter);
-                SetRefArray(interactor, "_interactables", creekPeople.ToArray());
-            }
-
             // Baked INACTIVE — the bootstrap below is the only thing that may ever activate it.
             devCore.SetActive(false);
 
@@ -1106,6 +1086,50 @@ namespace HiddenHarbours.App.Editor
             bootstrap.Configure(devCore, sceneReviewCamera);
 
             return playerGo.transform;
+        }
+
+        /// <summary>
+        /// <b>THE THING THAT MAKES THE CREEK'S TWO PEOPLE SPEAK</b> — the dialogue panel and the
+        /// proximity INTERACT driver that offers "E: …" when you walk up to Wendell or Hector, wired to
+        /// the cast <see cref="NineMileCreekPeople.Place"/> just stood up.
+        ///
+        /// <para><b>⭐ SCENE ROOTS, AND THAT IS THE WHOLE FIX.</b> These two used to be built INSIDE the
+        /// dev core, because a <see cref="WorldInteractor"/> needs a player to measure from and the dev
+        /// stand-in is the only player a region scene can name at build time. But the dev core is
+        /// DESTROYED the moment a real core travels in (<see cref="DevRegionBootstrap"/>), and it took
+        /// the driver and the panel with it — so Wendell and Hector were mute, promptless and
+        /// unspeakable-to for every player who actually sailed here, while working perfectly for the
+        /// owner pressing Play. Out here they survive the dev core, and they are toggled with the region
+        /// like every other root, so they are live exactly while you are in this region.</para>
+        ///
+        /// <para><b>The stand-in is still handed in, and is now only a REVIEW affordance.</b>
+        /// <see cref="WorldInteractor"/> prefers its serialized player while that player is alive — which
+        /// is what keeps direct-play review working, since nothing publishes the Core relay in a scene
+        /// with no persistent core — and falls back to <c>GameServices.PlayerTransform</c> once the dev
+        /// core is gone. So the reference below is what makes the creek talk to the owner in the editor,
+        /// and its DEATH is what makes it talk to the fisher who arrived by sea.</para>
+        ///
+        /// <para>Nothing is placed for a cast of nobody: an unimported NpcDef means
+        /// <see cref="NineMileCreekPeople.Place"/> returns fewer people (or none), and a driver with an
+        /// empty list would be a prompt-less canvas built every load for nothing.</para>
+        /// </summary>
+        /// <returns>The interactor, or null when there was nobody to talk to.</returns>
+        public static WorldInteractor PlaceDialogueDriver(IReadOnlyList<Interactable> people,
+                                                          Transform reviewPlayer)
+        {
+            if (people == null || people.Count == 0) return null;
+
+            var dialogueGo = new GameObject("DialogueUI");          // the St Peters name, for one convention
+            var presenter = dialogueGo.AddComponent<DialoguePresenter>();
+            SetRef(presenter, "_panelSprite", LoadSpriteAny(ArtDialoguePanel));
+            SetRef(presenter, "_nameplateSprite", LoadSpriteAny(ArtNamePlate));
+
+            var interactorGo = new GameObject("WorldInteractor");
+            var interactor = interactorGo.AddComponent<WorldInteractor>();
+            SetRef(interactor, "_player", reviewPlayer);
+            SetRef(interactor, "_presenter", presenter);
+            SetRefArray(interactor, "_interactables", people.Cast<Object>().ToArray());
+            return interactor;
         }
 
         static void SetTideProfile(Component env, float mean, float amp, float phase)

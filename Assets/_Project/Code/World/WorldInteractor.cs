@@ -22,11 +22,20 @@ namespace HiddenHarbours.World
     ///
     /// Cross-module clean: it holds only a player <see cref="Transform"/> (no Player-module type) and
     /// talks to the rest of the game through Core (InteractionGate) — same discipline as the HUD.
+    ///
+    /// <para><b>Who it measures FROM is resolved, not just wired</b> — the builder's own reference where
+    /// there is one and Core's <see cref="GameServices.PlayerTransform"/> where there is not (see
+    /// <see cref="ResolvePlayer"/>), exactly as <see cref="BuildingInterior"/> resolves its occupant. A
+    /// region scene is saved long before the persistent player exists, so an interactor that could only
+    /// be wired at build time was an interactor that worked in the start scene and nowhere else.</para>
     /// </summary>
     public sealed class WorldInteractor : MonoBehaviour
     {
         [Header("Refs")]
-        [Tooltip("The on-foot player's transform (proximity is measured from here).")]
+        [Tooltip("The on-foot player, AS THIS SCENE'S BUILDER KNEW THEM — proximity is measured from " +
+                 "here. OPTIONAL: a region scene has no persistent player to name at build time, so " +
+                 "this is either empty or a dev stand-in that the travel path destroys, and the player " +
+                 "is then resolved from Core at runtime. See ResolvePlayer.")]
         [SerializeField] private Transform _player;
         [SerializeField] private DialoguePresenter _presenter;
         [Tooltip("Everything the player can walk up to and interact with.")]
@@ -60,15 +69,48 @@ namespace HiddenHarbours.World
             if (_presenter != null && _presenter.IsShowing)
             {
                 Claim(true);
-                if (interact) _presenter.Advance();
+                _nearest = null;
                 ShowPrompt(null);
+                if (interact) BeginInteract();
                 return;
             }
 
             _nearest = FindNearest();
             Claim(_nearest != null);
             ShowPrompt(_nearest);
-            if (_nearest != null && interact) Begin(_nearest);
+            if (interact) BeginInteract();
+        }
+
+        /// <summary>
+        /// Who the "E: …" prompt is offering right now, or null when nobody is in reach — the
+        /// affordance as STATE, recomputed every frame by <see cref="Update"/>.
+        ///
+        /// <para>Public because this is the readable half of "can you talk to them", and the only half
+        /// that does not need a keypress: the prompt itself is a <c>Text</c> on a canvas, and a test
+        /// that read it would be reading pixels' next-of-kin rather than the decision.</para>
+        /// </summary>
+        public Interactable Nearest => _nearest;
+
+        /// <summary>
+        /// Take an interact press: advance the conversation that is already up, or start one with
+        /// whoever is in reach. Returns true when the press was SPENT (there was something to say or
+        /// something to advance), false when it found nobody and the press belongs to somebody else.
+        ///
+        /// <para>Input-free on purpose, in the <c>ControlSwitcher.BeginInteract</c> shape this codebase
+        /// already uses for the same job: the decision is separable from the device that triggers it,
+        /// so it can be driven by a test — or later by the M2-39 interact verb, when NPCs become
+        /// <c>IInteractable</c> candidates and this component's private key handling retires — without
+        /// a keyboard in the loop. <see cref="Update"/> calls it, so what a test drives is what a press
+        /// does.</para>
+        /// </summary>
+        public bool BeginInteract()
+        {
+            if (_presenter != null && _presenter.IsShowing) { _presenter.Advance(); return true; }
+
+            Interactable target = FindNearest();
+            if (target == null) return false;
+            Begin(target);
+            return true;
         }
 
         /// <summary>
@@ -95,10 +137,47 @@ namespace HiddenHarbours.World
 
         // ---- interaction --------------------------------------------------------------------
 
+        /// <summary>
+        /// Who this interactor measures proximity FROM, right now — the builder's own reference while
+        /// it is alive, and otherwise whoever Core says is walking the world
+        /// (<see cref="GameServices.PlayerTransform"/>). Null when there is nobody out there at all,
+        /// under which this component simply offers nothing.
+        ///
+        /// <para><b>Why the serialized reference wins.</b> It is the more specific answer and it is
+        /// right wherever it exists: in the START scene it names the real persistent player (the
+        /// builder stands the core up in that same scene), and in a region scene played DIRECTLY for
+        /// review it names that scene's dev stand-in, who is the only player there is. Preferring it
+        /// means neither path can be perturbed by this — where the old code worked, it still measures
+        /// from the same transform on the same frame.</para>
+        ///
+        /// <para><b>Why the fallback has to exist.</b> A region scene cannot name the persistent player
+        /// at build time — it does not exist yet, and Unity does not serialize references across scenes
+        /// regardless. So a travelled-in region's interactor is pointed at a dev stand-in that
+        /// <c>DevRegionBootstrap</c> DESTROYS on arrival, and before this fallback that meant
+        /// <see cref="FindNearest"/> returned null forever: Nine Mile Creek's two were MUTE for any
+        /// player who sailed in, prompt and all.</para>
+        ///
+        /// <para><b>Resolved per tick, never cached</b> — two <c>UnityEngine.Object</c> null checks and
+        /// a static read, no allocation (rule 7), and staying stateless is what keeps this correct
+        /// across a shell restart, which replaces the persistent player with a different transform.</para>
+        ///
+        /// <para><b>⚠ Explicit <c>!= null</c>, never <c>??</c>/<c>?.</c>.</b> The reference this exists
+        /// to survive is a DESTROYED one, and a destroyed <c>UnityEngine.Object</c> is fake-null: the
+        /// null-propagating operators bypass the overloaded <c>==</c> and sail straight past it. A
+        /// <c>_player ?? GameServices.PlayerTransform</c> here would compile clean, never take the
+        /// fallback, and throw on the next dereference.</para>
+        /// </summary>
+        private Transform ResolvePlayer()
+        {
+            if (_player != null) return _player;
+            return GameServices.PlayerTransform;   // already laundered to a REAL null by the accessor
+        }
+
         private Interactable FindNearest()
         {
-            if (_player == null || _interactables == null) return null;
-            Vector2 p = _player.position;
+            Transform player = ResolvePlayer();
+            if (player == null || _interactables == null) return null;
+            Vector2 p = player.position;
             Interactable best = null;
             float bestSq = _radius * _radius;
             for (int i = 0; i < _interactables.Length; i++)
