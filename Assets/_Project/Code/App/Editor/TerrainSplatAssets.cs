@@ -26,18 +26,51 @@ namespace HiddenHarbours.App.Editor
 
         /// <summary>The St Peters splat stem — <c>StPetersSplatA/B/C/D/E.png</c>, the EXACT paths
         /// <c>StPetersBuilder</c> loads when it wires <c>TerrainSplatSurface.ConfigureSplat</c>
-        /// (a pin test holds the two spellings together).</summary>
+        /// (a pin test holds the two spellings together).
+        ///
+        /// <para>Also the DEFAULT stem for every overload below that does not take one — see the
+        /// per-region note on <see cref="PathOf(int, string)"/> for why the default exists and why it
+        /// is not the shape to build a second region on.</para></summary>
         public const string StPetersBaseName = "StPetersSplat";
 
-        /// <summary>The i-th splat texture's asset path (0=A 1=B 2=C 3=D 4=E).</summary>
-        public static string PathOf(int textureIndex) =>
-            Dir + "/" + StPetersBaseName + TerrainSplatBrush.TextureSuffixes[textureIndex] + ".png";
+        /// <summary>
+        /// The i-th splat texture's asset path (0=A 1=B 2=C 3=D 4=E) for <b>St Peters</b>.
+        ///
+        /// <para>⚠ This overload is the one that existed when St Peters was the only painted region, and
+        /// it is kept so its callers do not have to change. It is not the one a NEW region uses — see
+        /// <see cref="PathOf(int, string)"/>.</para>
+        /// </summary>
+        public static string PathOf(int textureIndex) => PathOf(textureIndex, StPetersBaseName);
 
-        /// <summary>True when every splat PNG exists as an imported asset.</summary>
-        public static bool AllExist()
+        /// <summary>
+        /// The i-th splat texture's asset path for the region whose splat maps are stemmed
+        /// <paramref name="baseName"/> — e.g. <c>"NineMileCreekSplat"</c> →
+        /// <c>Data/Terrain/NineMileCreekSplatA.png</c>.
+        ///
+        /// <para><b>Why this parameter had to exist.</b> A splat map is per-REGION data: it covers one
+        /// region's world rect at that region's own texel grid, exactly as a seabed bake does. Until now
+        /// every entry point here resolved to the St Peters stem as a <i>constant</i>, so a second
+        /// painted region had nowhere to put its ground — pointing Nine Mile Creek at this pipeline
+        /// would have had it painting over the island's maps, at the island's resolution, on the
+        /// island's world frame. That is not a defect anybody had hit yet; it is the wall the moment a
+        /// second coast is painted, which is what makes it worth removing before the paint rather than
+        /// during it.</para>
+        ///
+        /// <para>Stems are APPEND-ONLY and belong beside the region they name, the same discipline the
+        /// seabed bakes follow.</para>
+        /// </summary>
+        public static string PathOf(int textureIndex, string baseName) =>
+            Dir + "/" + baseName + TerrainSplatBrush.TextureSuffixes[textureIndex] + ".png";
+
+        /// <summary>True when every St Peters splat PNG exists as an imported asset.</summary>
+        public static bool AllExist() => AllExist(StPetersBaseName);
+
+        /// <summary>True when every splat PNG for <paramref name="baseName"/> exists as an imported
+        /// asset. <inheritdoc cref="PathOf(int, string)"/></summary>
+        public static bool AllExist(string baseName)
         {
             for (int i = 0; i < TerrainSplatBrush.TextureCount; i++)
-                if (AssetDatabase.LoadAssetAtPath<Texture2D>(PathOf(i)) == null) return false;
+                if (AssetDatabase.LoadAssetAtPath<Texture2D>(PathOf(i, baseName)) == null) return false;
             return true;
         }
 
@@ -48,7 +81,16 @@ namespace HiddenHarbours.App.Editor
         /// <paramref name="textures"/> and <paramref name="pixels"/> (working CPU buffers).
         /// Returns false only if an import failed.
         /// </summary>
-        public static bool LoadOrCreate(Vector2Int texels, Texture2D[] textures, Color[][] pixels)
+        public static bool LoadOrCreate(Vector2Int texels, Texture2D[] textures, Color[][] pixels) =>
+            LoadOrCreate(texels, textures, pixels, StPetersBaseName);
+
+        /// <summary>
+        /// <inheritdoc cref="LoadOrCreate(Vector2Int, Texture2D[], Color[][])"/>
+        ///
+        /// <para>For the region stemmed <paramref name="baseName"/> — <inheritdoc cref="PathOf(int, string)"/></para>
+        /// </summary>
+        public static bool LoadOrCreate(Vector2Int texels, Texture2D[] textures, Color[][] pixels,
+                                        string baseName)
         {
             if (!AssetDatabase.IsValidFolder(Dir))
             {
@@ -58,7 +100,7 @@ namespace HiddenHarbours.App.Editor
 
             for (int i = 0; i < TerrainSplatBrush.TextureCount; i++)
             {
-                string path = PathOf(i);
+                string path = PathOf(i, baseName);
                 var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
                 if (tex == null)
                 {
@@ -91,13 +133,23 @@ namespace HiddenHarbours.App.Editor
         /// old in-memory objects, so every downstream reference must be re-wired from the fresh
         /// loads, never the stale ones.
         /// </summary>
-        public static void Commit(Texture2D[] textures, Color[][] pixels)
+        public static void Commit(Texture2D[] textures, Color[][] pixels) =>
+            Commit(textures, pixels, StPetersBaseName);
+
+        /// <summary>
+        /// <inheritdoc cref="Commit(Texture2D[], Color[][])"/>
+        ///
+        /// <para><paramref name="baseName"/> is only ever the FALLBACK path: a texture that is already an
+        /// asset is written back to wherever it actually lives, so a mis-passed stem cannot redirect a
+        /// commit onto another region's maps. <inheritdoc cref="PathOf(int, string)"/></para>
+        /// </summary>
+        public static void Commit(Texture2D[] textures, Color[][] pixels, string baseName)
         {
             for (int i = 0; i < TerrainSplatBrush.TextureCount; i++)
             {
                 if (textures[i] == null || pixels[i] == null) continue;
                 string path = AssetDatabase.GetAssetPath(textures[i]);
-                if (string.IsNullOrEmpty(path)) path = PathOf(i);
+                if (string.IsNullOrEmpty(path)) path = PathOf(i, baseName);
                 WritePng(path, textures[i].width, textures[i].height, pixels[i]);
                 AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceSynchronousImport);
                 ConfigureImporter(path);
@@ -111,11 +163,19 @@ namespace HiddenHarbours.App.Editor
         /// in-memory asset may carry SetPixels the owner regrets) and reload textures + buffers.
         /// The single-step "revert to committed" the height brush never had.
         /// </summary>
-        public static void RevertToCommitted(Texture2D[] textures, Color[][] pixels)
+        public static void RevertToCommitted(Texture2D[] textures, Color[][] pixels) =>
+            RevertToCommitted(textures, pixels, StPetersBaseName);
+
+        /// <summary>
+        /// <inheritdoc cref="RevertToCommitted(Texture2D[], Color[][])"/>
+        ///
+        /// <para>For the region stemmed <paramref name="baseName"/> — <inheritdoc cref="PathOf(int, string)"/></para>
+        /// </summary>
+        public static void RevertToCommitted(Texture2D[] textures, Color[][] pixels, string baseName)
         {
             for (int i = 0; i < TerrainSplatBrush.TextureCount; i++)
             {
-                string path = PathOf(i);
+                string path = PathOf(i, baseName);
                 if (AssetDatabase.LoadAssetAtPath<Texture2D>(path) == null) continue;
                 AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceSynchronousImport);
                 textures[i] = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
