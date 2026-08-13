@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e462da886a40bdc4b939f20562ce84c3, type: 3}
+  m_Name: JuniorPoirierRoutine
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.RoutineDef
+  Id: routine.junior_poirier
+  Npc: {fileID: 11400000, guid: 1812e1b614eb4f5da2ad5be5808f804f, type: 2}
+  Entries:
+  - StartHour: 6
+    StationId: station.st_peters.sage_dooryard
+    Activity: 0
+    Why: "out early \u2014 through the same door Basil left by an hour before him,
+      and Basil is still a speck away up the island when he does it"
+  - StartHour: 6.5
+    StationId: station.st_peters.flats_head
+    Activity: 1
+    Why: west on the painted dirt to the head of the flats, and digs
+  - StartHour: 12
+    StationId: station.st_peters.store_customer_b
+    Activity: 2
+    Why: "the long walk in for his dinner \u2014 the middle slot at the counter"
+  - StartHour: 14.5
+    StationId: station.st_peters.flats_head
+    Activity: 1
+    Why: back out west for the afternoon tide
+  - StartHour: 19
+    StationId: station.st_peters.green_d
+    Activity: 3
+    Why: in off the flats to the green
+  - StartHour: 21
+    StationId: station.st_peters.home_sage_a
+    Activity: 0
+    Why: in, one side of the doorway lane
+  WalkSpeedMetresPerSecond: 1.35
+  ScheduleJitterMinutes: 7

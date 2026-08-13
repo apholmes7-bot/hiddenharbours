@@ -104,7 +104,13 @@ namespace HiddenHarbours.World
             for (int i = 0; i < _interactables.Length; i++)
             {
                 var it = _interactables[i];
-                if (it == null) continue;
+                // ⭐ SWITCHED OFF MEANS NOT THERE. You cannot talk to somebody you cannot see, and since
+                // routines landed there are people who genuinely are not there: a villager inside a house
+                // the player is not in is hidden, and her spot is a metre past a door the player can stand
+                // at — so without this you would get an "E: Talk" prompt on an invisible neighbour through
+                // her own wall, and she would answer. VillagerRoutine switches her Interactable with her
+                // renderer; this is the half that makes that mean something.
+                if (it == null || !it.isActiveAndEnabled) continue;
                 float sq = ((Vector2)it.transform.position - p).sqrMagnitude;
                 if (sq <= bestSq) { bestSq = sq; best = it; }
             }

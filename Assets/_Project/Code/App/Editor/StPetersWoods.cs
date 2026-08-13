@@ -90,6 +90,29 @@ namespace HiddenHarbours.App.Editor
         /// <summary>Clearance (m) around the dock and its pier, so the one berth is not planted shut.</summary>
         public const float DockClearance = 30f;
 
+        /// <summary>
+        /// Clearance (m) either side of a PAINTED DIRT PATH's centre-line — the walked tread the terrain
+        /// painter lays from the green to the slip and from the green to the bar head
+        /// (<see cref="StPetersStarterSplat.VillageToSlipPath"/> /
+        /// <see cref="StPetersStarterSplat.VillageToBarHeadPath"/>).
+        ///
+        /// <para><b>⭐ Why this exists at all, and why it is a fix rather than a feature.</b> The GRASS
+        /// layer already keeps the meadow off these paths, and says why in its own words: <i>"a path the
+        /// ground paints as dirt and the meadow grows over is not a path"</i>
+        /// (<see cref="StPetersGrass.PathBareHalfWidthMetres"/>). The woods never got the same rule, so a
+        /// spruce could — and did — stand in the middle of the dirt. Nobody noticed while nothing walked
+        /// these paths; the moment a villager commutes the island's length on one
+        /// (<see cref="StPetersRoutines"/>), a tree in the tread is a person walking through a trunk.</para>
+        ///
+        /// <para><b>4 m, not 30.</b> This is a footpath, not a berth: the tread itself is 1.5 m
+        /// (<see cref="StPetersStarterSplat.PathWidthMetres"/>), and 4 m leaves trunks a stride either side
+        /// with the crowns still closing overhead — a lane THROUGH woods, which is what a walked path in
+        /// woods looks like. <see cref="DockClearance"/>'s 30 m and
+        /// <see cref="CrossingClearance"/>'s 40 m are open-ground rulings about sightlines; this is not one,
+        /// and widening it would read as a firebreak.</para>
+        /// </summary>
+        public const float PathClearance = 4f;
+
         // =====================================================================================
         //  THE STAND FIELD
         // =====================================================================================
@@ -347,7 +370,29 @@ namespace HiddenHarbours.App.Editor
                     p, StPetersBuilder.BerthFrom, StPetersBuilder.BerthTo) < DockClearance)
                 return false;
 
+            // The two painted dirt paths — see PathClearance for why the woods owe them the same courtesy
+            // the grass already pays. Cheap: two polylines of five and four points, tested last so the
+            // village/spawn/crossing/dock rejections above have already thrown out most candidates.
+            if (OnPaintedPath(p)) return false;
+
             return true;
+        }
+
+        /// <summary>Is <paramref name="p"/> within <see cref="PathClearance"/> of either painted dirt
+        /// path? The polylines come straight out of <see cref="StPetersStarterSplat"/> — the same points
+        /// the painter dabs the dirt along and the same points <see cref="StPetersRoutines"/> walks
+        /// villagers down — so the tread, the clearing and the lane can never come apart.</summary>
+        public static bool OnPaintedPath(Vector2 p) =>
+            NearPolyline(p, StPetersStarterSplat.VillageToSlipPath(), PathClearance) ||
+            NearPolyline(p, StPetersStarterSplat.VillageToBarHeadPath(), PathClearance);
+
+        static bool NearPolyline(Vector2 p, Vector2[] points, float clearance)
+        {
+            if (points == null || points.Length < 2) return false;
+            for (int i = 0; i + 1 < points.Length; i++)
+                if (StPetersShoreMap.DistanceToSegment(p, points[i], points[i + 1]) < clearance)
+                    return true;
+            return false;
         }
 
         // =====================================================================================

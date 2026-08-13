@@ -1460,6 +1460,24 @@ namespace HiddenHarbours.App.Editor
             SetRefArray(interactor, "_interactables",
                         new Object[] { ginnyIt, letterIt }.Concat(islanders).ToArray());
 
+            // --- AND NOW THEY WALK (design/npcs-and-routines.md §2; P3, A Living Working Coast) -----------
+            // ⭐ THE ISLANDERS STOP BEING ANCHORED. StPetersInhabitants placed five people on fixed spots
+            // and said so in its own remarks — "routines are M2 — nobody here walks anywhere". This is M2:
+            // the island's named places (dooryards, the counter's customer side, the rooms, the flats, the
+            // wharf head), the LANES between them — two of which are literally the dirt paths
+            // StPetersStarterSplat already paints — and one VillagerRoutine per person with a day authored
+            // under Data/Routines.
+            //
+            // ⚠️ IT MUST RUN AFTER the buildings, the shops, the store counter, the islanders AND the
+            // WorldInteractor above: it reads the placed BuildingInterior components to find the real drawn
+            // doors, and it finds each villager by the Interactable their NpcDef named. Run it earlier and
+            // the stations resolve to nothing and everybody quietly stands still.
+            //
+            // Where anybody IS at a given hour stays a pure function of (worldSeed, gameTime) — recomputed,
+            // never saved (rule 5), so this adds nothing to the save and a region loaded at 14:20 puts
+            // every villager mid-stride on the right leg.
+            int villagersLiving = StPetersRoutines.Place(terrain);
+
             // Light onboarding: one nudge per beat of the new earned-dory loop, then it bows out and persists
             // 'onboarded' (on the dory being REPAIRED) so the opening never re-triggers on reload.
             new GameObject("Onboarding").AddComponent<OnboardingDirector>();
@@ -1554,7 +1572,8 @@ namespace HiddenHarbours.App.Editor
             Debug.Log($"[StPetersBuilder] THE ISLAND IS DRESSED: {woods.Trees} trees + {woods.Shrubs} shrubs + " +
                       $"{woods.Flowers} wildflowers by habitat, the one dock at the east berth, and a village " +
                       $"of {villageBuildings} houses + {shopBuildings} shop(s) — the school, the houses, the " +
-                      "general store and the post office — standing round the green beside the start spawn.");
+                      $"general store and the post office — standing round the green beside the start spawn, " +
+                      $"with {villagersLiving} villager(s) keeping a day in it.");
             Debug.Log($"[StPetersBuilder] THE COAST IS PAINTED: {coast.GroundTiles:N0} shoreline-ISO ground " +
                       $"tiles + {coast.FringeTiles:N0} fringe overlays + {coast.Rocks} rocks on the reef " +
                       $"({coast.MaterialSummary()}). The island paints at its re-ruled 240 x 140 m " +
@@ -1846,7 +1865,9 @@ namespace HiddenHarbours.App.Editor
             // dress branches so both the baked-body and the flat-sprite path get it. Without this they held
             // a FIXED order 9 — which read correctly only while the player's own Y-sort resolved (the old
             // band covered −7.5…+2.0 m, and the village stands at Y +8…+33), so up in the village the
-            // player drew BEHIND every NPC, even face to face. Static: routines are M2, nobody walks.
+            // player drew BEHIND every NPC, even face to face. Added STATIC; StPetersRoutines turns it
+            // DYNAMIC for whoever it gives a day to keep (Ginny among them, whose day stays in her own
+            // dooryard).
             go.AddComponent<YSortSprite>();
 
             if (npc != null && npc.HasBakedBody)

@@ -16,11 +16,15 @@ namespace HiddenHarbours.App.Editor
     /// teacher at the school rather than anywhere prettier. A building you can't attach a person to is
     /// scenery; a person standing at its door is a label you can talk to.
     ///
-    /// <para><b>ANCHORED, NOT SCHEDULED.</b> Every one of these has a fixed spot and no routine —
-    /// <see cref="NpcDef"/>'s own remarks say so, and <c>design/npcs-and-routines.md</c> §2 keeps the
-    /// schedule engine in M2. Stardew's first week works fine with people who mostly stand still, and a
-    /// routine you can't test is worse than a person who waits. Nothing here plans a path, ticks, or
-    /// reads the clock.</para>
+    /// <para><b>⭐ THIS FILE STILL ONLY PLACES THEM — AND THEY NOW WALK.</b> It used to say "anchored, not
+    /// scheduled … nothing here plans a path, ticks, or reads the clock", and the first two thirds of that
+    /// are still exactly true of THIS file: every position below is a fixed spot, nothing here reads a
+    /// clock, and a scene built without routine content stands these five people up precisely as it always
+    /// did. What changed is that <see cref="StPetersRoutines"/> now runs after this pass and gives whoever
+    /// has a <c>RoutineDef</c> authored a day to keep (M2-23, <c>design/npcs-and-routines.md</c> §2.6). The
+    /// spots below are therefore the villagers' <b>starting marks and their working stations</b> — the
+    /// routine layer derives its own stations from them rather than from a copy — and an islander with no
+    /// routine still simply waits here.</para>
     ///
     /// <para><b>Nothing new is built here.</b> The plumbing already shipped: an <see cref="NpcDef"/> per
     /// person and a <see cref="DialogueDef"/> per conversation under <c>Data/NPCs</c>, placed onto an
@@ -251,8 +255,9 @@ namespace HiddenHarbours.App.Editor
             }
 
             Debug.Log(
-                $"[StPetersInhabitants] Placed {placed.Count} of {People.Count} islander(s), anchored and " +
-                $"unscheduled: {string.Join(" · ", report)}. Routines are M2 — nobody here walks anywhere.");
+                $"[StPetersInhabitants] Placed {placed.Count} of {People.Count} islander(s) on their " +
+                $"starting marks: {string.Join(" · ", report)}. Whether any of them WALKS is " +
+                "StPetersRoutines' answer, a few passes later — this pass only stands them up.");
 
             return placed;
         }
@@ -290,8 +295,12 @@ namespace HiddenHarbours.App.Editor
             // An islander layers with the player by world Y like every other thing you can walk past.
             // Without this they held a FIXED order 9 — which read correctly only while the player's own
             // Y-sort resolved (the old band covered −7.5…+2.0 m, and the village stands at Y +8…+33), so
-            // up in the village the player drew BEHIND every islander, even face to face. Static: routines
-            // are M2, nobody here walks, so it sorts once on enable and stands its dispatch down.
+            // up in the village the player drew BEHIND every islander, even face to face.
+            //
+            // Added STATIC here, and turned DYNAMIC by StPetersRoutines for whoever gets a day to keep — a
+            // walker has to re-sort as they go or they draw in front of the house they just walked behind,
+            // and an islander who never moves should not pay for a per-frame dispatch (rule 7). The flip
+            // lives there because that is the pass that knows which of them walks.
             go.AddComponent<YSortSprite>();
             return go;
         }

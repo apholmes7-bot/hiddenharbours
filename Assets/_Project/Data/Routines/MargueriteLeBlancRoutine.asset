@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e462da886a40bdc4b939f20562ce84c3, type: 3}
+  m_Name: MargueriteLeBlancRoutine
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.RoutineDef
+  Id: routine.marguerite_leblanc
+  Npc: {fileID: 11400000, guid: 5b26b6a8c5154f86b2ea4b17e2511e1f, type: 2}
+  Entries:
+  - StartHour: 7
+    StationId: station.st_peters.store_counter
+    Activity: 1
+    Why: "out of her own door and behind the counter \u2014 she opens before anyone
+      is up"
+  - StartHour: 13
+    StationId: station.st_peters.post_office_door
+    Activity: 2
+    Why: up the lane with the day's mail. She crosses Rose coming the other way,
+      which is a moment neither of them was scripted into
+  - StartHour: 14.5
+    StationId: station.st_peters.store_counter
+    Activity: 1
+    Why: back behind the counter
+  - StartHour: 19
+    StationId: station.st_peters.green_c
+    Activity: 3
+    Why: shuts up and comes down to the green
+  - StartHour: 21
+    StationId: station.st_peters.home_store
+    Activity: 0
+    Why: in, upstairs, and the storefront goes dark
+  WalkSpeedMetresPerSecond: 1.1
+  ScheduleJitterMinutes: 5

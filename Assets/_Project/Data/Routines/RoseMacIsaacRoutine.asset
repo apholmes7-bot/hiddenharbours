@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e462da886a40bdc4b939f20562ce84c3, type: 3}
+  m_Name: RoseMacIsaacRoutine
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.RoutineDef
+  Id: routine.rose_macisaac
+  Npc: {fileID: 11400000, guid: 4083b8134ca747f68837268d2bd45653, type: 2}
+  Entries:
+  - StartHour: 7
+    StationId: station.st_peters.saltbox_dooryard
+    Activity: 0
+    Why: "out on her own step with the tea \u2014 the first face you meet crossing
+      the green"
+  - StartHour: 8.5
+    StationId: station.st_peters.post_office_counter
+    Activity: 1
+    Why: 'up the lane and INSIDE the post office: you watch her go in the door you
+      can see, and she is behind the counter if you follow her'
+  - StartHour: 12.5
+    StationId: station.st_peters.store_customer_a
+    Activity: 2
+    Why: "her dinner from the store \u2014 and the reason the counter has a queue
+      at noon"
+  - StartHour: 14
+    StationId: station.st_peters.post_office_counter
+    Activity: 1
+    Why: back behind the counter for the afternoon
+  - StartHour: 18
+    StationId: station.st_peters.green_a
+    Activity: 3
+    Why: "the green in the evening \u2014 the half of the day the village is a place
+      to be IN"
+  - StartHour: 21.5
+    StationId: station.st_peters.home_saltbox
+    Activity: 0
+    Why: in through her own door for the night
+  WalkSpeedMetresPerSecond: 1.2
+  ScheduleJitterMinutes: 6
