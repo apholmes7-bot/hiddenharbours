@@ -1,31 +1,31 @@
 fileFormatVersion: 2
-guid: 7926d6bbefe494b4a9316d3fd7ff97ec
+guid: 40f66f62463bb464a82d38b8e0b97c80
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 5963478814949312606
-    second: Village_school_0
+      213: -7220758697275357824
+    second: Interior_whiteFarmhouse_0
   - first:
-      213: 5293201360496380715
-    second: Village_school_1
+      213: -838542016840272142
+    second: Interior_whiteFarmhouse_1
   - first:
-      213: -8619957216008003837
-    second: Village_school_2
+      213: 2421212720453819030
+    second: Interior_whiteFarmhouse_2
   - first:
-      213: 2231245080106939619
-    second: Village_school_3
+      213: 20484755616635094
+    second: Interior_whiteFarmhouse_3
   - first:
-      213: 8019953046547906833
-    second: Village_school_4
+      213: 899497517159012440
+    second: Interior_whiteFarmhouse_4
   - first:
-      213: -1375076140908199942
-    second: Village_school_5
+      213: 4871508583670382767
+    second: Interior_whiteFarmhouse_5
   - first:
-      213: 995769100874004245
-    second: Village_school_6
+      213: -1789378122600021295
+    second: Interior_whiteFarmhouse_6
   - first:
-      213: 6151048487214444256
-    second: Village_school_7
+      213: 4916091084945881392
+    second: Interior_whiteFarmhouse_7
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -134,177 +134,177 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Village_school_d0
+      name: Interior_whiteFarmhouse_d0
       rect:
         serializedVersion: 2
         x: 0
-        y: 390
-        width: 424
-        height: 390
+        y: 337
+        width: 404
+        height: 337
       alignment: 9
-      pivot: {x: 0.5, y: 0.32820514}
+      pivot: {x: 0.5, y: 0.38575667}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 518cb04b3486d944ba4126d1df0c397a
-      internalID: 42892912
+      spriteID: bf8b4cb5f9dff264483139ffe47660d8
+      internalID: 1029106202
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Village_school_d1
+      name: Interior_whiteFarmhouse_d1
       rect:
         serializedVersion: 2
-        x: 424
-        y: 390
-        width: 424
-        height: 390
+        x: 404
+        y: 337
+        width: 404
+        height: 337
       alignment: 9
-      pivot: {x: 0.5, y: 0.32820514}
+      pivot: {x: 0.5, y: 0.38575667}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 86cfb0761a5aee2458f44f2948badb72
-      internalID: 954540820
+      spriteID: 5e81868272b93f84381c83c8a3b595b5
+      internalID: -1185071405
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Village_school_d2
+      name: Interior_whiteFarmhouse_d2
       rect:
         serializedVersion: 2
-        x: 848
-        y: 390
-        width: 424
-        height: 390
+        x: 808
+        y: 337
+        width: 404
+        height: 337
       alignment: 9
-      pivot: {x: 0.5, y: 0.32820514}
+      pivot: {x: 0.5, y: 0.38575667}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 576a20a8553232d4a9eb22d1e956bdbf
-      internalID: -781547416
+      spriteID: 1881bd2a590a52e41b876b030263e1b6
+      internalID: 558584533
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Village_school_d3
+      name: Interior_whiteFarmhouse_d3
       rect:
         serializedVersion: 2
-        x: 1272
-        y: 390
-        width: 424
-        height: 390
+        x: 1212
+        y: 337
+        width: 404
+        height: 337
       alignment: 9
-      pivot: {x: 0.5, y: 0.32820514}
+      pivot: {x: 0.5, y: 0.38575667}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4f8058ea4e07d7643bdf952e33393a1b
-      internalID: 480684836
+      spriteID: 5e39aba42d3cff84fbba359ee58ffd12
+      internalID: -748927210
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Village_school_d4
+      name: Interior_whiteFarmhouse_d4
+      rect:
+        serializedVersion: 2
+        x: 1616
+        y: 337
+        width: 404
+        height: 337
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38575667}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3f653fe0a4368aa408bef9396d4b7691
+      internalID: -1981107725
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Interior_whiteFarmhouse_d5
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 424
-        height: 390
+        width: 404
+        height: 337
       alignment: 9
-      pivot: {x: 0.5, y: 0.32820514}
+      pivot: {x: 0.5, y: 0.38575667}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e542bce80cc07c2419e5eb3fa633574d
-      internalID: -1954092359
+      spriteID: e2edff020a15c074e8fcad19853971b6
+      internalID: -1621544600
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Village_school_d5
+      name: Interior_whiteFarmhouse_d6
       rect:
         serializedVersion: 2
-        x: 424
+        x: 404
         y: 0
-        width: 424
-        height: 390
+        width: 404
+        height: 337
       alignment: 9
-      pivot: {x: 0.5, y: 0.32820514}
+      pivot: {x: 0.5, y: 0.38575667}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 76714fa8610ebcb4a902ae57e966713d
-      internalID: -980870231
+      spriteID: edbb60eb2bdbf8844b80d0a9006159e0
+      internalID: 1984139408
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Village_school_d6
+      name: Interior_whiteFarmhouse_d7
       rect:
         serializedVersion: 2
-        x: 848
+        x: 808
         y: 0
-        width: 424
-        height: 390
+        width: 404
+        height: 337
       alignment: 9
-      pivot: {x: 0.5, y: 0.32820514}
+      pivot: {x: 0.5, y: 0.38575667}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 82ea73a201a3fb64a8b909f0b0664011
-      internalID: -805760511
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Village_school_d7
-      rect:
-        serializedVersion: 2
-        x: 1272
-        y: 0
-        width: 424
-        height: 390
-      alignment: 9
-      pivot: {x: 0.5, y: 0.32820514}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: c48d3b53e9e9b5b4e86af79733ea65f4
-      internalID: 539757047
+      spriteID: 5b87d97dbfba9f845a31a5471215ed0f
+      internalID: -1249236838
       vertices: []
       indices: 
       edges: []
@@ -313,7 +313,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: b338c3a5cec1e0549947c5dad866a3ae
+    spriteID: a6c4cd3fd298bbb4597de1c1dee0be0e
     internalID: 0
     vertices: []
     indices: 
@@ -323,14 +323,14 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Village_school_d0: 42892912
-      Village_school_d1: 954540820
-      Village_school_d2: -781547416
-      Village_school_d3: 480684836
-      Village_school_d4: -1954092359
-      Village_school_d5: -980870231
-      Village_school_d6: -805760511
-      Village_school_d7: 539757047
+      Interior_whiteFarmhouse_d0: 1029106202
+      Interior_whiteFarmhouse_d1: -1185071405
+      Interior_whiteFarmhouse_d2: 558584533
+      Interior_whiteFarmhouse_d3: -748927210
+      Interior_whiteFarmhouse_d4: -1981107725
+      Interior_whiteFarmhouse_d5: -1621544600
+      Interior_whiteFarmhouse_d6: 1984139408
+      Interior_whiteFarmhouse_d7: -1249236838
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

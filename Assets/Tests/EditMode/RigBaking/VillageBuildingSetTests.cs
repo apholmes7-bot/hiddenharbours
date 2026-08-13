@@ -276,7 +276,15 @@ namespace HiddenHarbours.Tests.RigBaking
         [Test]
         public void OptionsLiteralRefusesAPresetBuild()
         {
-            var preset = VillageBuildingKit.M1Set.First(b => b.IsPreset);
+            // ⚠️ Constructed, not taken from M1Set. This used to do `M1Set.First(b => b.IsPreset)`,
+            // which made a test about OptionsLiteralFor's own CONTRACT depend on the village happening
+            // to contain a preset build — so it threw InvalidOperationException ("no matching element")
+            // the day the last two were dialled out for the interiors. The behaviour under test
+            // belongs to the method, so the input is built here.
+            var preset = VillageBuildingKit.Build.FromPreset(
+                "testPreset", "A preset build", "house", "redSaltbox",
+                "constructed for this test; the village set need not contain one");
+
             Assert.Throws<ArgumentException>(
                 () => VillageBuildingBakeMenu.OptionsLiteralFor(preset),
                 "a preset's options come from the rig's table — asking for a dialled literal is a bug " +

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using HiddenHarbours.Art;                 // SpriteLightMath — the shared bake camera's squash
 
 namespace HiddenHarbours.Art.Editor
 {
@@ -226,6 +227,38 @@ namespace HiddenHarbours.Art.Editor
         /// MEASURED offset. The one call anything placing a room under a shell should make.</summary>
         public static int InteriorFacingFor(int exteriorFacing) =>
             InteriorKit.InteriorFacingFor(InteriorKit.Load(), exteriorFacing);
+
+        /// <summary>
+        /// Where the doorway sits in the ROOM's own model frame, in metres: <c>x</c> across the wall
+        /// from its centre, <c>y</c> front-to-back. Read from the bake's own per-facing anchors, the
+        /// same way <c>ShopCatalog.DoorModelMetres</c> reads the shops'.
+        ///
+        /// <para><b>Why measure it when the answer is known.</b> Every room in this family comes out
+        /// on the <c>−y</c> wall, dead centre — <c>interiorIsoRig</c>'s anchor is literally
+        /// <c>pj(0, −Ln/2, fZ)</c>, so it cannot be anything else today. <see cref="InteriorFootprint"/>
+        /// defaults to exactly that. But the SHOP kit's rooms are on <c>+y</c> and two of its three
+        /// are metres off centre, and the difference between the two families was found by measuring
+        /// rather than by reading either README. A default that happens to be right is one rig drop
+        /// away from being silently wrong, and the symptom would be a doorway gap somewhere other
+        /// than the doorway — which draws perfectly.</para>
+        /// </summary>
+        public static Vector2 DoorModelMetres(Placement p)
+        {
+            // ⚠️ The fallback is (0, −1), NOT Vector2.zero, and the sign is the whole reason. A caller
+            // reads `door.y >= 0` to pick the wall, so a zero would say "+y" — the SHOP family's
+            // answer — and quietly cut the doorway in the back wall of every house. An entry with no
+            // anchors (a contract baked before they existed) has to fall back to this family's own
+            // convention, which is the −y gable.
+            if (!p.IsValid || p.Entry.doorX == null || p.Entry.doorX.Length == 0 ||
+                p.Entry.doorY == null || p.Entry.doorY.Length == 0)
+                return new Vector2(0f, -1f);
+
+            InteriorKit.Contract c = InteriorKit.Load();
+            float ppu = Mathf.Max(1, c?.ppu ?? 32);
+            return BuildingFacing.DoorModelMetres(p.Entry.doorX, p.Entry.doorY,
+                                                  p.Entry.pivotX, p.Entry.pivotY,
+                                                  ppu, SpriteLightMath.GroundDepthScale);
+        }
 
         /// <summary>
         /// A one-line report of what is placeable, for a tool's info box and the builder's log: how many

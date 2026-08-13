@@ -1,31 +1,31 @@
 fileFormatVersion: 2
-guid: 7926d6bbefe494b4a9316d3fd7ff97ec
+guid: b901ca9787f3a814e8756afb11ba6241
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 5963478814949312606
-    second: Village_school_0
+      213: -2793430129991695939
+    second: Interior_redSaltbox_0
   - first:
-      213: 5293201360496380715
-    second: Village_school_1
+      213: 4740677442627504604
+    second: Interior_redSaltbox_1
   - first:
-      213: -8619957216008003837
-    second: Village_school_2
+      213: 6847033158709631077
+    second: Interior_redSaltbox_2
   - first:
-      213: 2231245080106939619
-    second: Village_school_3
+      213: 6985953908917843254
+    second: Interior_redSaltbox_3
   - first:
-      213: 8019953046547906833
-    second: Village_school_4
+      213: 7879130969501989225
+    second: Interior_redSaltbox_4
   - first:
-      213: -1375076140908199942
-    second: Village_school_5
+      213: 8179984655400793184
+    second: Interior_redSaltbox_5
   - first:
-      213: 995769100874004245
-    second: Village_school_6
+      213: 6898581225412260170
+    second: Interior_redSaltbox_6
   - first:
-      213: 6151048487214444256
-    second: Village_school_7
+      213: -6780688758097342582
+    second: Interior_redSaltbox_7
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -134,177 +134,177 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Village_school_d0
+      name: Interior_redSaltbox_d0
       rect:
         serializedVersion: 2
         x: 0
-        y: 390
-        width: 424
-        height: 390
+        y: 303
+        width: 358
+        height: 303
       alignment: 9
-      pivot: {x: 0.5, y: 0.32820514}
+      pivot: {x: 0.5, y: 0.38283828}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 518cb04b3486d944ba4126d1df0c397a
-      internalID: 42892912
+      spriteID: fa6eb84fdc25432409eb4b60799e6ce5
+      internalID: -1565013223
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Village_school_d1
+      name: Interior_redSaltbox_d1
       rect:
         serializedVersion: 2
-        x: 424
-        y: 390
-        width: 424
-        height: 390
+        x: 358
+        y: 303
+        width: 358
+        height: 303
       alignment: 9
-      pivot: {x: 0.5, y: 0.32820514}
+      pivot: {x: 0.5, y: 0.38283828}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 86cfb0761a5aee2458f44f2948badb72
-      internalID: 954540820
+      spriteID: 206eb3470057ad14897add32f26bc9ae
+      internalID: 458722925
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Village_school_d2
+      name: Interior_redSaltbox_d2
       rect:
         serializedVersion: 2
-        x: 848
-        y: 390
-        width: 424
-        height: 390
+        x: 716
+        y: 303
+        width: 358
+        height: 303
       alignment: 9
-      pivot: {x: 0.5, y: 0.32820514}
+      pivot: {x: 0.5, y: 0.38283828}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 576a20a8553232d4a9eb22d1e956bdbf
-      internalID: -781547416
+      spriteID: 5fcae8161c7f6744ca96290925b8a0e4
+      internalID: -196323458
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Village_school_d3
+      name: Interior_redSaltbox_d3
       rect:
         serializedVersion: 2
-        x: 1272
-        y: 390
-        width: 424
-        height: 390
+        x: 1074
+        y: 303
+        width: 358
+        height: 303
       alignment: 9
-      pivot: {x: 0.5, y: 0.32820514}
+      pivot: {x: 0.5, y: 0.38283828}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4f8058ea4e07d7643bdf952e33393a1b
-      internalID: 480684836
+      spriteID: 99a0882911e996f4eb069b8461646fde
+      internalID: 1166053540
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Village_school_d4
+      name: Interior_redSaltbox_d4
+      rect:
+        serializedVersion: 2
+        x: 1432
+        y: 303
+        width: 358
+        height: 303
+      alignment: 9
+      pivot: {x: 0.5, y: 0.38283828}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 502218ac34d1bd04589e89923364dc75
+      internalID: -795616736
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Interior_redSaltbox_d5
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 424
-        height: 390
+        width: 358
+        height: 303
       alignment: 9
-      pivot: {x: 0.5, y: 0.32820514}
+      pivot: {x: 0.5, y: 0.38283828}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e542bce80cc07c2419e5eb3fa633574d
-      internalID: -1954092359
+      spriteID: 5552d1eaf9098f242adb73d475be6291
+      internalID: 1653376019
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Village_school_d5
+      name: Interior_redSaltbox_d6
       rect:
         serializedVersion: 2
-        x: 424
+        x: 358
         y: 0
-        width: 424
-        height: 390
+        width: 358
+        height: 303
       alignment: 9
-      pivot: {x: 0.5, y: 0.32820514}
+      pivot: {x: 0.5, y: 0.38283828}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 76714fa8610ebcb4a902ae57e966713d
-      internalID: -980870231
+      spriteID: 3a3d0f16d808da648a6edbf1a072e6be
+      internalID: 954949736
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Village_school_d6
+      name: Interior_redSaltbox_d7
       rect:
         serializedVersion: 2
-        x: 848
+        x: 716
         y: 0
-        width: 424
-        height: 390
+        width: 358
+        height: 303
       alignment: 9
-      pivot: {x: 0.5, y: 0.32820514}
+      pivot: {x: 0.5, y: 0.38283828}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 82ea73a201a3fb64a8b909f0b0664011
-      internalID: -805760511
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Village_school_d7
-      rect:
-        serializedVersion: 2
-        x: 1272
-        y: 0
-        width: 424
-        height: 390
-      alignment: 9
-      pivot: {x: 0.5, y: 0.32820514}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: c48d3b53e9e9b5b4e86af79733ea65f4
-      internalID: 539757047
+      spriteID: 248a21ba1082ae44eac2baa7b316a7d0
+      internalID: -1610433466
       vertices: []
       indices: 
       edges: []
@@ -313,7 +313,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: b338c3a5cec1e0549947c5dad866a3ae
+    spriteID: 3f963a001855dc0449fe81e3e95b157e
     internalID: 0
     vertices: []
     indices: 
@@ -323,14 +323,14 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Village_school_d0: 42892912
-      Village_school_d1: 954540820
-      Village_school_d2: -781547416
-      Village_school_d3: 480684836
-      Village_school_d4: -1954092359
-      Village_school_d5: -980870231
-      Village_school_d6: -805760511
-      Village_school_d7: 539757047
+      Interior_redSaltbox_d0: -1565013223
+      Interior_redSaltbox_d1: 458722925
+      Interior_redSaltbox_d2: -196323458
+      Interior_redSaltbox_d3: 1166053540
+      Interior_redSaltbox_d4: -795616736
+      Interior_redSaltbox_d5: 1653376019
+      Interior_redSaltbox_d6: 954949736
+      Interior_redSaltbox_d7: -1610433466
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -83,39 +83,114 @@ namespace HiddenHarbours.App.Editor
         }
 
         /// <summary>
-        /// How the pilot room is furnished. A handful, honestly placed — enough to prove the prop
-        /// pipeline end to end (bake → slice → place → collide → Y-sort past), not a decorating pass.
+        /// How each room is furnished. A handful per room, honestly placed — enough that a house reads
+        /// as lived in and that the prop pipeline is exercised end to end (bake → slice → place →
+        /// collide → Y-sort past), not a decorating pass.
         ///
-        /// <para>Coordinates are in the ROOM's frame, which is what the owner sees in the room art: the
-        /// doorway is at <c>(0, −Ln/2)</c> at the bottom of the picture and the hearth at the top. The
-        /// sage cottage is 6.6 × 8.05 m, so <c>x</c> runs ±3.3 and <c>y</c> ±4.03.</para>
+        /// <para>Coordinates are in the ROOM's own frame, which is what the owner sees in the room art:
+        /// the doorway is at <c>(0, −Ln/2)</c> at the bottom of the picture and the hearth at the top.
+        /// <b>Each room has its own extent</b> — from the school's 6.36 × 7.63 m to the farmhouse's
+        /// 7.68 × 9.94 m — so every list below states the one it was placed against, and
+        /// <c>StPetersInteriorsTests</c> checks each against its own <c>size</c> rather than against a
+        /// single hard-coded pair (which is what it used to do, and it silently stopped checking the
+        /// moment a second room was furnished).</para>
         ///
         /// <para>The doorway lane — <c>x</c> within ±0.7 of centre, near the front wall — is left clear
         /// on purpose: a prop parked in the threshold is a prop you cannot get past, and its collider
         /// would close the one gap in the house.</para>
+        ///
+        /// <para>Furniture MAY sit within the wall's thickness — that is what "against the wall" looks
+        /// like, and the shipped cottage's bed is 100 mm into it. What it may never do is stick out
+        /// through the wall into open air, which is the bound the tests hold.</para>
         /// </summary>
-        public static IReadOnlyList<Furnishing> FurnishingsFor(string roomKey) =>
-            roomKey == "sageCottage"
-                ? new[]
-                {
-                    new Furnishing("bed", new Vector2(-2.35f, 1.50f), 0,
-                                   "along the left wall in the back half — the far corner from the door, " +
-                                   "which is where a bed goes in a one-room cottage"),
-                    new Furnishing("seaChest", new Vector2(-2.30f, -0.40f), 0,
-                                   "at the foot of the bed; the shortest prop in the set, so it is the " +
-                                   "sorting edge case as well as the fisherman's detail"),
-                    new Furnishing("table", new Vector2(0.90f, -0.40f), 0,
-                                   "middle of the room, off centre so the doorway lane stays clear — " +
-                                   "THE prop the owner is asked to walk behind and then in front of"),
-                    new Furnishing("chair", new Vector2(0.30f, -1.15f), 0,
-                                   "pulled out on the door side of the table"),
-                    new Furnishing("chair", new Vector2(1.50f, -1.15f), 0,
-                                   "the second chair — a one-room cottage that seats two reads as lived in"),
-                    new Furnishing("dresser", new Vector2(2.75f, 0.50f), 2,
-                                   "against the right wall, turned a quarter so its back is to the wall " +
-                                   "— proves a prop can sit flush without fighting the wall collider"),
-                }
-                : System.Array.Empty<Furnishing>();
+        public static IReadOnlyList<Furnishing> FurnishingsFor(string roomKey) => roomKey switch
+        {
+            // ---- the sage cottage: one room, a fisherman's ----------------------------------------
+            // 6.6 × 8.05 m, so x runs ±3.3 and y ±4.03.
+            "sageCottage" => new[]
+            {
+                new Furnishing("bed", new Vector2(-2.35f, 1.50f), 0,
+                               "along the left wall in the back half — the far corner from the door, " +
+                               "which is where a bed goes in a one-room cottage"),
+                new Furnishing("seaChest", new Vector2(-2.30f, -0.40f), 0,
+                               "at the foot of the bed; the shortest prop in the set, so it is the " +
+                               "sorting edge case as well as the fisherman's detail"),
+                new Furnishing("table", new Vector2(0.90f, -0.40f), 0,
+                               "middle of the room, off centre so the doorway lane stays clear — " +
+                               "THE prop the owner is asked to walk behind and then in front of"),
+                new Furnishing("chair", new Vector2(0.30f, -1.15f), 0,
+                               "pulled out on the door side of the table"),
+                new Furnishing("chair", new Vector2(1.50f, -1.15f), 0,
+                               "the second chair — a one-room cottage that seats two reads as lived in"),
+                new Furnishing("dresser", new Vector2(2.75f, 0.50f), 2,
+                               "against the right wall, turned a quarter so its back is to the wall " +
+                               "— proves a prop can sit flush without fighting the wall collider"),
+            },
+
+            // ---- the school: desks facing the stove end -------------------------------------------
+            // 6.36 × 7.63 m, so x runs ±3.18 and y ±3.815 (usable ±2.88 / ±3.515 inside the walls).
+            // The kit has no desk, so a table IS the desk — two of them in a row facing the teacher's,
+            // which is the shape a one-room school reads as even with a house's furniture.
+            "school" => new[]
+            {
+                new Furnishing("table", new Vector2(0f, 0.55f), 0,
+                               "the pupils' bench-desk, square in the middle of the room"),
+                new Furnishing("chair", new Vector2(-0.60f, -0.15f), 0,
+                               "two seats at it, on the door side so the class faces the front"),
+                new Furnishing("chair", new Vector2(0.60f, -0.15f), 0,
+                               "the second seat"),
+                new Furnishing("table", new Vector2(0f, 2.10f), 0,
+                               "the teacher's desk at the stove end, facing back down the room"),
+                new Furnishing("chair", new Vector2(0f, 2.85f), 0,
+                               "her chair behind it, between the desk and the hearth"),
+                new Furnishing("dresser", new Vector2(2.55f, 1.30f), 2,
+                               "the book press against the right wall, turned a quarter"),
+                new Furnishing("seaChest", new Vector2(-2.35f, 1.30f), 0,
+                               "the wood box by the stove — a schoolroom that heats itself"),
+            },
+
+            // ---- the red saltbox: the plainest keeping room ---------------------------------------
+            // 6.96 × 8.68 m, so x runs ±3.48 and y ±4.34 (usable ±3.18 / ±4.04).
+            "redSaltbox" => new[]
+            {
+                new Furnishing("bed", new Vector2(-2.35f, 2.30f), 0,
+                               "back-left corner, the furthest point from the door"),
+                new Furnishing("seaChest", new Vector2(-2.35f, 0.75f), 0,
+                               "at the foot of the bed"),
+                new Furnishing("table", new Vector2(1.20f, 0.40f), 0,
+                               "off centre to the right, so the doorway lane stays clear"),
+                new Furnishing("chair", new Vector2(0.70f, -0.35f), 0,
+                               "pulled out on the door side"),
+                new Furnishing("chair", new Vector2(1.75f, -0.35f), 0,
+                               "the second chair"),
+                new Furnishing("dresser", new Vector2(2.85f, 2.20f), 2,
+                               "against the right wall in the back half, turned a quarter"),
+            },
+
+            // ---- the white farmhouse: the hall ----------------------------------------------------
+            // 7.68 × 9.94 m, so x runs ±3.84 and y ±4.97 (usable ±3.54 / ±4.67) — the biggest floor on
+            // the island, and the only one that seats four. No bed: this is the downstairs hall of a
+            // house with a family in it, and they sleep upstairs.
+            "whiteFarmhouse" => new[]
+            {
+                new Furnishing("table", new Vector2(0.60f, 0.70f), 0,
+                               "the family table, off centre so the doorway lane stays clear"),
+                new Furnishing("chair", new Vector2(-0.20f, -0.10f), 0,
+                               "near side, left"),
+                new Furnishing("chair", new Vector2(1.40f, -0.10f), 0,
+                               "near side, right"),
+                new Furnishing("chair", new Vector2(-0.20f, 1.50f), 0,
+                               "far side, left — the seat you have to walk round the table to reach"),
+                new Furnishing("chair", new Vector2(1.40f, 1.50f), 0,
+                               "far side, right"),
+                new Furnishing("dresser", new Vector2(3.10f, 1.60f), 2,
+                               "the dresser against the right wall, turned a quarter"),
+                new Furnishing("seaChest", new Vector2(-2.90f, 2.60f), 0,
+                               "back-left corner, out of the way of the table"),
+            },
+
+            _ => System.Array.Empty<Furnishing>(),
+        };
 
         // =====================================================================================
         //  PLACEMENT
@@ -161,11 +236,19 @@ namespace HiddenHarbours.App.Editor
             roomGo.transform.localPosition = Vector3.zero;
             SpriteRenderer roomRenderer = InteriorCatalog.ConfigureRoom(roomGo, room, roomSprite);
 
+            // --- where the doorway is, in the room's own model frame. MEASURED, per room, from the
+            //     bake's own anchors — not taken from InteriorFootprint's house-family defaults. The
+            //     two agree today (this rig's door anchor is pj(0,−Ln/2,fZ), so it cannot be anything
+            //     but centred on −y); measuring is what keeps that true after the next rig drop.
+            Vector2 door = InteriorCatalog.DoorModelMetres(room);
+            float doorSign = door.y >= 0f ? 1f : -1f;
+
             // --- the footprint everything else is measured from.
             var footprint = new InteriorFootprint(
                 buildingGo.transform.position,
                 room.Entry.footprintWidthMetres, room.Entry.footprintLengthMetres,
-                interiorFacing, room.Entry.facings, SpriteLightMath.GroundDepthScale);
+                interiorFacing, room.Entry.facings, SpriteLightMath.GroundDepthScale,
+                doorSign, door.x);
 
             // --- the walls. Always on, from both sides: the cutaway that drops the two camera-facing
             //     walls is a courtesy to the camera, not a hole in the house.
@@ -184,15 +267,17 @@ namespace HiddenHarbours.App.Editor
                                room.Entry.footprintWidthMetres, room.Entry.footprintLengthMetres,
                                interiorFacing, room.Entry.facings,
                                SpriteLightMath.GroundDepthScale,
-                               WallThicknessMetres, DoorwayWidthMetres);
+                               WallThicknessMetres, DoorwayWidthMetres,
+                               doorOnPlusY: doorSign > 0f, doorAcrossMetres: door.x);
             interior.SetOccupant(occupant);
 
             Debug.Log(
                 $"[StPetersInteriors] '{buildingKey}' is enterable: room d{interiorFacing} under shell " +
                 $"d{exteriorFacing} (the contract's MEASURED offset), " +
                 $"{room.Entry.footprintWidthMetres:0.#}×{room.Entry.footprintLengthMetres:0.#} m of " +
-                $"floor, {furnished} piece(s) of furniture, threshold at " +
-                $"({footprint.DoorWorld.x:0.#},{footprint.DoorWorld.y:0.#}).");
+                $"floor, {furnished} piece(s) of furniture, doorway on the " +
+                $"{(doorSign > 0f ? "+Y" : "−Y")} wall {door.x:+0.00;-0.00} m off its centre, threshold " +
+                $"at ({footprint.DoorWorld.x:0.#},{footprint.DoorWorld.y:0.#}).");
             return true;
         }
 

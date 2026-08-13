@@ -168,19 +168,31 @@ namespace HiddenHarbours.Art.Editor
         }
 
         /// <summary>
-        /// The rooms the pilot bakes. ONE, deliberately: the point of the pilot is that the chain is
-        /// right, not that the village is furnished. Everything else follows by adding a row here.
-        ///
-        /// <para><b>Why the sage cottage.</b> It is a generic house from
-        /// <see cref="VillageBuildingKit.M1Set"/> with no pending owner ruling attached to it — the
-        /// handoff's own constraint — and it is the smallest of the three, so the room reads as one room
-        /// at the on-foot framing rather than a hall.</para>
+        /// The rooms the village walks into. The pilot baked ONE — the sage cottage — to prove the
+        /// chain; these are the rest of St Peters' houses, which is the whole of "make the school
+        /// enterable": a row here, a furnishing list in <c>StPetersInteriors</c>, and the builder
+        /// already stands it (nothing in the placement pass names a building).
         ///
         /// <para><b>⚠️ <c>size</c> must match the exterior build's <c>size</c> exactly.</b> That is the
         /// whole 1:1 registration: both rigs compute <c>Wd = 6 + size·2.4</c>, <c>Ln = 7 + size·4.2</c>,
         /// and the bake's registration probe REFUSES if the two resolve different footprints rather
         /// than shimming the difference downstream. <see cref="ExteriorKeyFor"/> is the link, and
         /// <c>InteriorKitTests</c> asserts the sizes agree without baking anything.</para>
+        ///
+        /// <para><b>⚠️ A ROOM IS ONLY HALF THE PROMISE — THE SHELL HAS TO DRAW ITS DOOR WHERE THIS
+        /// ROOM OPENS.</b> A doorway registers to <c>houseIsoRig.anchors().door</c>, which is
+        /// DECLARED at the <c>+Y</c> gable centre for every shape and does not follow where the rig
+        /// actually draws the door. Three of these four shells had to be re-dialled before they could
+        /// be entered at all — see <see cref="VillageBuildingKit.DrawsDoorOnGable"/>, which is the
+        /// rule and the measurement. Adding a room to a building that fails that predicate ships a
+        /// house whose visible door is solid wall and whose walk-in gap is blank clapboard.</para>
+        ///
+        /// <para><b>⚠️ <c>dividers</c> is 0 on every row, and that is a COLLISION constraint, not a
+        /// taste one.</b> The rig draws a partition as a full-width wall with its own 1.15 m doorway
+        /// gap (<c>interiorIsoRig.js:382-396</c>), but <see cref="World.InteriorFootprint.WallQuads"/>
+        /// builds the four outer walls and nothing else — so a room dialled with dividers draws
+        /// partitions the player walks straight through. Give <c>InteriorFootprint</c> partition
+        /// quads first; until then a divider is a wall that is not there.</para>
         /// </summary>
         public static readonly Build[] RoomSet =
         {
@@ -206,6 +218,83 @@ namespace HiddenHarbours.Art.Editor
                 // derelict, so this is softer than the shell's 0.55.
                 ["weather"] = 0.35,
             }, "the pilot room: the inside of the sage cottage the village already places"),
+
+            // ---- the one-room school ------------------------------------------------------------
+            // The smallest room in the set (6.36 × 7.63 m) and the only one that is a PUBLIC room, so
+            // it is finished like one: wide boards underfoot and vertical shiplap on the walls rather
+            // than a house's plaster. Mostly windows, at the shell's own density, because a schoolroom
+            // is lit from the sides.
+            Build.RoomDialled("school", "One-room school — the schoolroom", new Dictionary<string, object>
+            {
+                // MUST equal VillageBuildingKit.M1Set["school"].size.
+                ["size"] = 0.15,
+                ["floor"] = "wideBoard",
+                ["wall"] = "board",
+                ["paper"] = "cream",
+                ["wainscot"] = true,
+                // The shell's own sashes and density, so the window count reads the same from inside.
+                ["windows"] = "sixOverSix",
+                ["winDensity"] = 0.85,
+                ["door"] = true,
+                // ONE room — it is a one-room school. See the class remarks: a divider is also a wall
+                // the collision model does not have.
+                ["dividers"] = 0,
+                // The shell dials one chimney; this is the stove it belongs to.
+                ["hearth"] = true,
+                ["beams"] = true,
+                // A little more worn than a house: it is scrubbed, but the whole village uses it.
+                ["weather"] = 0.30,
+            }, "world-and-regions §6: the room where the aunt teaches the compass and hand skills"),
+
+            // ---- the red saltbox ----------------------------------------------------------------
+            // The plainest of the three houses outside; inside it takes the one blue paper in the set,
+            // so the three houses do not read as one interior repeated. No wainscot — papered walls
+            // straight down is the plainer of the two treatments. 6.96 × 8.68 m.
+            //
+            // ⚠️ `wall` MUST be 'wallpaper' for `paper` to draw anything: the rig picks the paper
+            // material only on that finish (interiorIsoRig.js:249). Dialled 'plaster' first and the
+            // blue silently did nothing — the room baked cream and read as the cottage twice.
+            Build.RoomDialled("redSaltbox", "Red saltbox — the keeping room", new Dictionary<string, object>
+            {
+                // MUST equal VillageBuildingKit.M1Set["redSaltbox"].size.
+                ["size"] = 0.4,
+                ["floor"] = "plank",
+                ["wall"] = "wallpaper",
+                ["paper"] = "blue",
+                ["wainscot"] = false,
+                ["windows"] = "twoOverTwo",
+                ["winDensity"] = 0.60,
+                ["door"] = true,
+                ["dividers"] = 0,
+                ["hearth"] = true,
+                ["beams"] = true,
+                ["weather"] = 0.30,
+            }, "the plainest house's one room — the middle house of the three"),
+
+            // ---- the white farmhouse ------------------------------------------------------------
+            // The biggest room on the island (7.68 × 9.94 m) and the best kept: papered walls, a
+            // wainscot, and the softest weathering in the set. The family house, so it should read as
+            // the one somebody is house-proud of.
+            Build.RoomDialled("whiteFarmhouse", "White farmhouse — the hall",
+                new Dictionary<string, object>
+            {
+                // MUST equal VillageBuildingKit.M1Set["whiteFarmhouse"].size.
+                ["size"] = 0.7,
+                ["floor"] = "plank",
+                ["wall"] = "wallpaper",
+                ["paper"] = "sage",
+                ["wainscot"] = true,
+                ["windows"] = "sixOverSix",
+                ["winDensity"] = 0.60,
+                ["door"] = true,
+                // ⚠️ The rig's `farmhouseHall` preset dials 2 dividers and this room deliberately does
+                // not: partitions have no colliders yet (class remarks). This is the room that most
+                // wants them back once InteriorFootprint can express one.
+                ["dividers"] = 0,
+                ["hearth"] = true,
+                ["beams"] = true,
+                ["weather"] = 0.15,
+            }, "the biggest of the three — the one with a family in it"),
         };
 
         /// <summary>

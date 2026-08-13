@@ -311,12 +311,30 @@ namespace HiddenHarbours.Tools.RigBaking
         }
 
         /// <summary>
-        /// Measure the facing offset against a room that actually has a shell. Throws rather than
-        /// defaulting: an unmeasured offset written as 0 would put every doorway against the back wall,
-        /// and it would look like the art was wrong.
+        /// Measure the facing offset against <b>every</b> room that has a shell, and refuse if they do
+        /// not all agree. Throws rather than defaulting: an unmeasured offset written as 0 would put
+        /// every doorway against the back wall, and it would look like the art was wrong.
+        ///
+        /// <para><b>⚠️ THIS USED TO RETURN ON THE FIRST ROOM IT COULD MEASURE.</b> With one room baked
+        /// that was the same thing; with four it is a kit-wide constant derived from whichever row
+        /// happens to sort first, applied unchecked to the rest. The contract carries ONE
+        /// <c>exteriorFacingOffset</c> because the house family genuinely has one — but "genuinely"
+        /// is a measurement, not an assumption, and it is the kind that stays true right up until a
+        /// build is added whose shell turns differently. Measuring all of them costs four probes at
+        /// bake time and turns a silent half-turn into a refusal that names the building.</para>
+        ///
+        /// <para>Each probe also re-checks that its room and its shell resolve the SAME footprint, so
+        /// this is where a room dialled to the wrong <c>size</c> is caught as well.</para>
         /// </summary>
         static InteriorRigAzimuthProbe.Registration MeasureRegistration(List<InteriorKit.Entry> rooms)
         {
+            var houseRig = RigCatalog.Get("house");
+            var interiorRig = RigCatalog.Get("interior");
+
+            InteriorRigAzimuthProbe.Registration first = default;
+            string firstKey = null;
+            var report = new StringBuilder();
+
             foreach (var room in rooms)
             {
                 string exteriorKey = InteriorKit.ExteriorKeyFor(room.key);
@@ -324,9 +342,6 @@ namespace HiddenHarbours.Tools.RigBaking
 
                 var exterior = VillageBuildingKit.FindBuild(exteriorKey);
                 if (exterior == null) continue;
-
-                var houseRig = RigCatalog.Get("house");
-                var interiorRig = RigCatalog.Get("interior");
 
                 using IRigScriptHost host = RigScriptHostFactory.Create();
                 RigCatalog.Install(host, houseRig);
@@ -336,17 +351,42 @@ namespace HiddenHarbours.Tools.RigBaking
                     ? $"Object.assign({{}},{houseRig.GlobalName}.PRESETS['{exterior.Value.Preset}'])"
                     : VillageBuildingBakeMenu.OptionsLiteralFor(exterior.Value);
 
-                return InteriorRigAzimuthProbe.MeasureRegistration(
+                InteriorRigAzimuthProbe.Registration reg = InteriorRigAzimuthProbe.MeasureRegistration(
                     host, houseRig.GlobalName, exteriorOpts,
                     interiorRig.GlobalName, room.optionsJs, InteriorKit.Facings);
+
+                report.AppendLine($"--- {room.key} (inside '{exteriorKey}') ---");
+                report.AppendLine(reg.Report);
+
+                if (firstKey == null) { first = reg; firstKey = room.key; continue; }
+
+                if (reg.FacingOffset != first.FacingOffset)
+                    throw new InvalidOperationException(
+                        $"[interiors] THE ROOMS DO NOT AGREE ON THE FACING OFFSET. '{firstKey}' " +
+                        $"measures +{first.FacingOffset} and '{room.key}' measures " +
+                        $"+{reg.FacingOffset}, but the contract carries ONE offset for the whole kit " +
+                        "and every consumer reads it through InteriorKit.InteriorFacingFor.\n\n" +
+                        report +
+                        "\nOne of these two shells turns differently from the other, so no single " +
+                        "constant can be right for both: whichever room lost the coin-flip would " +
+                        "stand under its house a half-turn out, with its doorway against the back " +
+                        "wall. Refusing rather than picking one. If the kit really does need two " +
+                        "offsets, the contract has to carry a per-room offset and " +
+                        "InteriorKit.InteriorFacingFor has to take a key.");
             }
 
-            throw new InvalidOperationException(
-                "[interiors] No baked room has an exterior in VillageBuildingKit, so the exterior↔" +
-                "interior facing offset cannot be MEASURED. Refusing to write a contract with an " +
-                "assumed offset: at the wrong offset every doorway lands against the back wall, the " +
-                "player walks in the front door and appears at the back of the room, and it reads as " +
-                "an art bug. Give a room the same key as the village building it belongs inside.");
+            if (firstKey == null)
+                throw new InvalidOperationException(
+                    "[interiors] No baked room has an exterior in VillageBuildingKit, so the exterior↔" +
+                    "interior facing offset cannot be MEASURED. Refusing to write a contract with an " +
+                    "assumed offset: at the wrong offset every doorway lands against the back wall, the " +
+                    "player walks in the front door and appears at the back of the room, and it reads " +
+                    "as an art bug. Give a room the same key as the village building it belongs inside.");
+
+            return new InteriorRigAzimuthProbe.Registration(
+                first.FacingOffset, first.ExteriorGable, first.InteriorGable,
+                first.WidthMetres, first.LengthMetres, first.DoorHeightGapPx,
+                report.ToString());
         }
 
         /// <summary>
