@@ -647,10 +647,50 @@ namespace HiddenHarbours.App.Editor
             ShipyardPos.x - ShipyardSideMetres * 0.5f, ShipyardPos.y - ShipyardSideMetres * 0.5f,
             ShipyardSideMetres, ShipyardSideMetres);
 
-        /// <summary>THE RESTAURANT — the photograph's one non-working building on the wharf front, near
-        /// where the road arrives so it catches whoever comes down it. ⚠ NO KIT BAKES ONE; this is a
-        /// reserved lot and a reported art-director gap.</summary>
-        public static readonly Vector3 RestaurantLotPos = new Vector3(112f, 102f, 0f);
+        /// <summary>
+        /// THE RESTAURANT — the photograph's one non-working building on the wharf front, near where the
+        /// road arrives so it catches whoever comes down it.
+        ///
+        /// <para><b>⭐ IT IS DRAWN NOW.</b> The line that stood here — <i>"NO KIT BAKES ONE; this is a
+        /// reserved lot and a reported art-director gap"</i> — was true when it was written and stopped
+        /// being true when the shop kit (#437) baked a restaurant among its nine trades. B2 stands the
+        /// real building on this point, so this is a SITE rather than a reservation and
+        /// <see cref="NineMileCreekLots"/> no longer carries it.</para>
+        ///
+        /// <para><b>⚠ AND IT MOVED 5.32 m NORTH-WEST, from (112, 102), because the reservation was a
+        /// shed's and the building is not.</b> Every lot on this yard reserves
+        /// <see cref="WharfShedRadius"/> — 5 m. The kit's restaurant is 9.00 × 11.50 m, whose
+        /// half-diagonal is <b>7.30 m</b>, and a 7.30 m circle on (112, 102) reaches down to y = 94.70:
+        /// 1.30 m off the made ground and <b>2.30 m onto the working quay</b>. That is the same half-metre
+        /// mistake <see cref="ShipyardPos"/> records two paragraphs up, at four times the size.</para>
+        ///
+        /// <para>The site below is the point that MAXIMISES the worst clearance rather than the one
+        /// nearest the old lot: it clears the quay deck by <b>1.20 m</b>, Wharf Road by 1.27 m and the
+        /// fish store by 1.35 m. A restaurant does fit on this wharf with room to spare. The building
+        /// that does not is <see cref="FishMarketPos"/>.</para>
+        /// </summary>
+        public static readonly Vector3 RestaurantLotPos = new Vector3(108f, 105.5f, 0f);
+
+        /// <summary>
+        /// THE FISH MARKET — B2's second shop, and the one the wharf is for: what the fleet lands, sold.
+        /// On the yard's west end beside the buyers' parking and 13.04 m from the buyer's own tailgate
+        /// (<see cref="FishBuyerPos"/>), which is where fish is handled on this wharf.
+        ///
+        /// <para><b>⚠ THIS IS THE BUILDING THE YARD HAS NO ROOM FOR, and the number says so.</b> §8b
+        /// already warned that "the photograph shows more sheds than this yard has room for"; the market
+        /// is where that stops being a warning. Measured against every claim the plan makes — made
+        /// ground, the quay deck, Wharf Road's corridor, the walk up from the berths, the working sites
+        /// and the seven owner shed lots — the kit's 7.50 × 8.50 m market (a 5.67 m half-diagonal) clears
+        /// its tightest neighbour here by <b>0.38 m</b>: the shanty at (80, 132), which is also owner
+        /// shed lot 1, because the plan's shed row and its shanty row are the same row.</para>
+        ///
+        /// <para>Searched at 0.25 m over the whole spit, the only market sites with a metre of slack are
+        /// ~<b>60 m</b> from the buyer's tailgate, wedged between the bait cluster and the boatyard —
+        /// legal, and a fish market nowhere near the fish. So this site is a PROPOSAL the owner eyeballs,
+        /// and if it wants room the ground has to come from somewhere: that is his ruling, not this
+        /// file's (§8b took the same finding to him over the basin depth rather than taking the 30 m).</para>
+        /// </summary>
+        public static readonly Vector3 FishMarketPos = new Vector3(81f, 121f, 0f);
 
         /// <summary>
         /// THE BAIT SHEDS — the photograph's cluster, of which the plan already had one

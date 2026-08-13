@@ -119,6 +119,15 @@ namespace HiddenHarbours.Art.Editor
                 if (!path.StartsWith(ShopsRoot, StringComparison.Ordinal)) continue;
                 if (!path.EndsWith(".png", StringComparison.OrdinalIgnoreCase)) continue;
 
+                // ⚠️ THE FIXTURE FAMILY LIVES IN A SUBFOLDER OF THIS ONE, and FindAssets RECURSES.
+                // ShopFixtureKit.OutputFolder is `<ShopsRoot>/Fixtures`, it has its own contract
+                // (shopFixtures.contract.json) and its own slicer (ShopFixtureSheetSlicer), and none of
+                // its sheets can ever appear in shops.contract.json. Without this skip every counter
+                // sheet trips the stray-sheet error below, so `Slice Shop Sheets` logs a red and exits
+                // 1 having sliced all eight shop sheets perfectly — which is the state #506 shipped and
+                // B2 was the first to run into.
+                if (path.StartsWith(ShopFixtureKit.OutputFolder + "/", StringComparison.Ordinal)) continue;
+
                 string stem = Path.GetFileNameWithoutExtension(path);
                 ShopKit.Entry entry = ShopKit.EntryForStem(contract, stem);
                 if (entry == null)

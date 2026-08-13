@@ -888,7 +888,29 @@ namespace HiddenHarbours.App.Editor
             // rod-fishing player on the wharf — as an INACTIVE root, plus an active DevRegionBootstrap
             // that activates it ONLY when the scene is played directly in the editor and destroys it
             // (never awakened — no service stomp, no duplicate player) when the real core travels in.
-            BuildDevBootstrap(config, cam, DisembarkPos, creekPeople);
+            Transform devPlayer = BuildDevBootstrap(config, cam, DisembarkPos, creekPeople);
+
+            // --- THE WHARF'S TWO SHOPS (B2) -----------------------------------------------------------
+            // ⭐ THE RESTAURANT AND THE FISH MARKET, from the baked shop kit, both ENTERABLE — the owner's
+            // 2026-08-11 canon (no façade-only buildings). The restaurant FILLS the lot the photograph
+            // pass reserved and NineMileCreekLots has been reporting as an art gap on every build since;
+            // the market is B2's proposal. Sites, and the arithmetic that chose them, live in
+            // NineMileCreekShops and NineMileCreekMainland.
+            //
+            // ⚠️ PLACED HERE, AFTER THE DEV CORE, AND THE ORDER IS THE POINT — a BuildingInterior needs an
+            // OCCUPANT to watch, and the only one this scene can name is the dev player above. Nothing
+            // else in the region has a transform to give it: the real player arrives with the persistent
+            // core from another scene, and there is no runtime re-binder for BuildingInterior anywhere in
+            // the repo (grep SetOccupant — only builders call it).
+            //
+            // ⚠️ SO SAY WHAT THIS DOES NOT COVER. Play NineMileCreek.unity directly and the shops open,
+            // which is how this scene is reviewed. TRAVEL in from St Peters and they do not: the dev core
+            // is destroyed by DevRegionBootstrap and _occupant goes fake-null, so BuildingInterior's
+            // Update returns on its first line and the roof stays on. That is a pre-existing seam this
+            // slice found rather than made — it is true of every interior in every region scene that is
+            // not the start scene — and closing it is a Core/travel change (an occupant re-bind on
+            // RegionTravelCoordinator's arrival), not a shop change. Flagged, not smuggled.
+            NineMileCreekShops.Place(terrain, devPlayer);
 
             // --- TREE DECOR (greybox dressing; world-content) ------------------------------------------
             // A sparse-to-moderate scatter of cold-coast trees on the WEST quay land only — the far-west
@@ -950,8 +972,11 @@ namespace HiddenHarbours.App.Editor
         /// Null-safe on art/data (the greybox rule): missing sheets/defs leave pieces inert, never break
         /// the build.
         /// </summary>
-        static void BuildDevBootstrap(GameConfig config, Camera sceneReviewCamera, Vector3 devSpawn,
-                                      List<Interactable> creekPeople)
+        /// <returns>The dev player's transform — the only occupant this scene can offer a
+        /// <c>BuildingInterior</c>. See the shops' call site for why that is worth returning and what it
+        /// does NOT cover.</returns>
+        static Transform BuildDevBootstrap(GameConfig config, Camera sceneReviewCamera, Vector3 devSpawn,
+                                           List<Interactable> creekPeople)
         {
             var devCore = new GameObject("DevCore");
 
@@ -1079,6 +1104,8 @@ namespace HiddenHarbours.App.Editor
             var bootstrapGo = new GameObject("DevRegionBootstrap");
             var bootstrap = bootstrapGo.AddComponent<DevRegionBootstrap>();
             bootstrap.Configure(devCore, sceneReviewCamera);
+
+            return playerGo.transform;
         }
 
         static void SetTideProfile(Component env, float mean, float amp, float phase)

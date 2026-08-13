@@ -9,18 +9,24 @@ namespace HiddenHarbours.App.Editor
 {
     /// <summary>
     /// <b>THE BUILDING LOTS ALONG WHARF ROAD</b> — the cluster the owner's satellite view shows behind
-    /// the basin, placed from the photograph: the bait sheds, the boatyard, the restaurant, and one shed
-    /// per boat-owner on the register.
+    /// the basin, placed from the photograph: the bait sheds, the boatyard, and one shed per boat-owner
+    /// on the register. (The restaurant was here too, until something baked one — see below.)
     ///
-    /// <para><b>⭐ ONE OF THEM IS DRAWN AND THE REST ARE RESERVED, and the split is a standing ruling
-    /// rather than an accident of effort.</b> <c>Harris &amp; Sons</c> is drawn because the shipyard kit
-    /// is baked — 25 sheets, and the owner ruled its <c>smallYard</c> tier by name. The bait sheds and the
-    /// restaurant are NOT drawn, because nothing bakes either: <c>wharfBuildingRig</c>'s
-    /// <c>netShed</c>/<c>iceHouse</c> presets have never been baked (M2-40/46) and no rig in the repo
-    /// bakes a restaurant at all. The rule those two obey is <see cref="NineMileCreekFlavour"/>'s, in its
-    /// own words: <i>a clapboard house standing in for a bait shed would be a worse lie than the greybox
-    /// sprite it replaced, because it would look finished.</i> So they are named, reserved ground with no
-    /// pixels, and the gap goes to the art-director as a list rather than as a surprise.</para>
+    /// <para><b>⭐ WHAT IS DRAWN AND WHAT IS RESERVED, and the split is a standing ruling rather than an
+    /// accident of effort.</b> <c>Harris &amp; Sons</c> is drawn because the shipyard kit is baked — 25
+    /// sheets, and the owner ruled its <c>smallYard</c> tier by name. The BAIT SHEDS are not, because
+    /// <c>wharfBuildingRig</c>'s <c>netShed</c>/<c>iceHouse</c> presets have never been baked (M2-40/46).
+    /// The rule they obey is <see cref="NineMileCreekFlavour"/>'s, in its own words: <i>a clapboard house
+    /// standing in for a bait shed would be a worse lie than the greybox sprite it replaced, because it
+    /// would look finished.</i> So they are named, reserved ground with no pixels, and the gap goes to
+    /// the art-director as a list rather than as a surprise.</para>
+    ///
+    /// <para><b>⭐ AND THE RESTAURANT HAS LEFT THIS LIST — that is what a reserved lot is FOR.</b> It sat
+    /// here from the photograph pass carrying the strongest form of the ask (<i>"NOTHING IN THE REPO
+    /// BAKES A RESTAURANT — this is a new preset, not a re-bake"</i>) until the shop kit (#437) baked one
+    /// among its nine trades. B2 stands the real building on the site and
+    /// <see cref="NineMileCreekShops"/> owns it, so the claim moved from "ground nobody may take" to
+    /// "ground something took". A lot that never empties is a lot nobody was ever going to fill.</para>
     ///
     /// <para><b>The lots are the plan's, not this file's.</b> Every position comes from
     /// <see cref="NineMileCreekMainland"/> — the boatyard's site and footprint, the bait cluster, the
@@ -81,12 +87,13 @@ namespace HiddenHarbours.App.Editor
                     NineMileCreekMainland.WharfShedRadius, "wharfBuildingRig/netShed",
                     "the bait shed the plan already sited — the cluster's first, and still undrawn"),
 
-                new ReservedLot("Restaurant",
-                    new Vector2(NineMileCreekMainland.RestaurantLotPos.x,
-                                NineMileCreekMainland.RestaurantLotPos.y),
-                    NineMileCreekMainland.WharfShedRadius, "",
-                    "the wharf's one non-working building, near where the road arrives. NOTHING IN THE " +
-                    "REPO BAKES A RESTAURANT — this is a new preset, not a re-bake"),
+                // ⭐ THE RESTAURANT IS NO LONGER RESERVED GROUND — it is a building. Its lot carried
+                // "NOTHING IN THE REPO BAKES A RESTAURANT" from the photograph pass until the shop kit
+                // (#437) baked one, and B2 stands it on the site. NineMileCreekShops owns it now.
+                // ⚠ A lot removed from this list is a lot nothing claims, so the removal only stays
+                // honest because the placer took the ground in the same change — which is what
+                // NineMileCreekShopsTests.TheRestaurantLeftTheReservedLots_BecauseSomethingTookIt and
+                // .EveryPlacedShopClearsEveryClaimTheYardMakes measure between them.
             };
 
             for (int i = 0; i < NineMileCreekMainland.BaitShedCluster.Length; i++)
