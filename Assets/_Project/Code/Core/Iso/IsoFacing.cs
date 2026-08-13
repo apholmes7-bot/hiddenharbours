@@ -9,8 +9,13 @@ namespace HiddenHarbours.Core
     /// <para>This lives in Core because more than one lane needs it and no feature module may reach
     /// into another's concrete classes (CLAUDE.md rule 4). The Boats lane drives directional hulls and
     /// their overlay layers (oars, outboard); the CHARACTER rigs are baked to the same 8-way convention
-    /// — including the same counter-clockwise-but-labelled-clockwise quirk — and must resolve a cell
-    /// from a heading by exactly the same rule. One copy of the rule, one place to fix it.</para>
+    /// and must resolve a cell from a heading by exactly the same rule. One copy of the rule, one place
+    /// to fix it.</para>
+    ///
+    /// <para><b>The two lineages disagree about which way round the cells run, and that is fine</b> — it
+    /// is what <see cref="HeadingToFacingIndex"/>'s <c>facingsAreCounterClockwise</c> is for. The character
+    /// rigs were corrected at source and re-baked, so the shipped character defs pass <c>false</c>; the iso
+    /// BOAT kits were not, and pass <c>true</c>. Never fold either into a constant here.</para>
     /// </summary>
     public static class IsoFacing
     {
@@ -26,7 +31,7 @@ namespace HiddenHarbours.Core
         ///
         /// <para><paramref name="facingsAreCounterClockwise"/> mirrors the lookup for art whose cells run the
         /// OTHER way — cell i depicting −step·i rather than +step·i (see
-        /// <c>BoatVisualDef.FacingsAreCounterClockwise</c>: the iso rigs bake CCW but label CW).
+        /// <c>BoatVisualDef.FacingsAreCounterClockwise</c>: the iso BOAT rigs bake CCW but label CW).
         /// Default false = the clockwise convention, unchanged. Note this only picks a different CELL; the
         /// heading itself is never altered, which is why <c>DirectionalBoatSprite.SnapHeadingDegrees</c>
         /// ignores the flag.</para>

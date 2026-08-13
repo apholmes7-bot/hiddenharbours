@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -13,27 +14,46 @@ namespace HiddenHarbours.Tests.PlayMode
     /// <para>⚠️ Frame count is NOT time here. Headless, 60 <c>yield return null</c>s can pass in ~45 ms, so
     /// these spin on a CONDITION with a real-seconds budget (the <c>PilotableFleetPlayTests</c> pattern)
     /// rather than counting frames and hoping.</para>
+    ///
+    /// <para><b>BOTH bake conventions are driven here, because both are live.</b> The fixture def is the
+    /// SHIPPED one — <c>FisherIso.asset</c> carries <c>FacingsAreCounterClockwise: 0</c>, the character rig
+    /// having been corrected at source and all twelve body sheets re-baked — so every test below runs the
+    /// configuration the game actually ships in.
+    /// <see cref="WalkingEast_ThenSwappingToMIRRORED_Art_MovesTheRow"/> then swaps a deliberately
+    /// counter-clockwise FIXTURE def onto the same live fisher for the other convention, which the iso
+    /// BOAT kits still declare.</para>
+    ///
+    /// <para><b>What these tests claim, and what they do not.</b> No test here asserts a row because "that
+    /// is how the art is baked" — they assert that the presenter routes through whatever the DEF declares,
+    /// which is the only thing this component promises. Which way the shipped art ACTUALLY runs is proved
+    /// against the PIXELS in <c>CharacterIsoFacingTests</c> (EditMode), never here and never against a
+    /// constant: asserting a mapping against the mapping is exactly how the mirrored boat art shipped
+    /// green and cost the owner six playtest defects.</para>
     /// </summary>
     public class IsoCharacterWalkPlayTests
     {
         const int Directions = 8, IdleFrames = 6, WalkFrames = 8, RunFrames = 6;
 
+        // The row heading 90° (East) lands on under each bake convention. IsoFacing mirrors the lookup as
+        // idx → count − idx, so East is row 2 clockwise and row 8 − 2 = 6 counter-clockwise.
+        //
+        // East is the heading worth asserting precisely BECAUSE a mirror swaps only the east/west rows:
+        // North and South are their own mirrors and read identically either way, which is how the original
+        // bake defect stayed hidden for so long. A test that walked South would pass under both.
+        const int EastRowClockwise = 2, EastRowMirrored = 6;
+
         GameObject _go;
         IsoCharacterSprite _iso;
         CharacterVisualDef _def;
 
+        // Every def and sheet-texture handed out below, so the second skin a test builds is torn down too.
+        readonly List<Object> _spawned = new List<Object>();
+
         [SetUp]
         public void SetUp()
         {
-            _def = ScriptableObject.CreateInstance<CharacterVisualDef>();
-            _def.FacingCount = Directions;
-            _def.FacingsAreCounterClockwise = true;   // as the shipped Fisher art is baked
-            _def.IdleFrameCount = IdleFrames; _def.WalkFrameCount = WalkFrames; _def.RunFrameCount = RunFrames;
-            _def.IdleSheet = Fill(Directions * IdleFrames);
-            _def.WalkSheet = Fill(Directions * WalkFrames);
-            _def.RunSheet = Fill(Directions * RunFrames);
-            _def.WalkSpeedThreshold = 0.35f;
-            _def.RunSpeedThreshold = 4.5f;
+            // The SHIPPED convention: FisherIso.asset declares FacingsAreCounterClockwise: 0.
+            _def = NewVisual(counterClockwise: false);
 
             _go = new GameObject("Fisher");
             _go.AddComponent<SpriteRenderer>();
@@ -45,12 +65,32 @@ namespace HiddenHarbours.Tests.PlayMode
         public void TearDown()
         {
             if (_go != null) Object.DestroyImmediate(_go);
-            if (_def != null) Object.DestroyImmediate(_def);
+            // Reverse order, so a def always goes before the sheets it points at.
+            for (int i = _spawned.Count - 1; i >= 0; i--)
+                if (_spawned[i] != null) Object.DestroyImmediate(_spawned[i]);
+            _spawned.Clear();
         }
 
-        static Sprite[] Fill(int n)
+        /// <summary>A complete 8-way skin over throwaway sprites, declared baked whichever way is asked for.</summary>
+        CharacterVisualDef NewVisual(bool counterClockwise)
+        {
+            var def = ScriptableObject.CreateInstance<CharacterVisualDef>();
+            def.FacingCount = Directions;
+            def.FacingsAreCounterClockwise = counterClockwise;
+            def.IdleFrameCount = IdleFrames; def.WalkFrameCount = WalkFrames; def.RunFrameCount = RunFrames;
+            def.IdleSheet = Fill(Directions * IdleFrames);
+            def.WalkSheet = Fill(Directions * WalkFrames);
+            def.RunSheet = Fill(Directions * RunFrames);
+            def.WalkSpeedThreshold = 0.35f;
+            def.RunSpeedThreshold = 4.5f;
+            _spawned.Add(def);
+            return def;
+        }
+
+        Sprite[] Fill(int n)
         {
             var tex = new Texture2D(2, 2);
+            _spawned.Add(tex);
             var set = new Sprite[n];
             for (int i = 0; i < n; i++)
                 set[i] = Sprite.Create(tex, new Rect(0, 0, 2, 2), new Vector2(0.5f, 0f), 32f);
@@ -83,9 +123,48 @@ namespace HiddenHarbours.Tests.PlayMode
 
             Assert.AreEqual(_def.FacingRowFor(90f), _iso.FacingRow,
                 "the presenter must land on the row the def says depicts East");
-            Assert.AreEqual(6, _iso.FacingRow,
-                "the art bakes counter-clockwise, so East is row 6 — not the row labelled 'E'");
+            Assert.AreEqual(EastRowClockwise, _iso.FacingRow,
+                "on clockwise-baked art — which every shipped character kit now is — East IS the row " +
+                "labelled 'E'");
             Assert.AreEqual(CharacterGait.Walk, _iso.Gait, "3 m/s is a walk, not a run");
+        }
+
+        /// <summary>
+        /// The MIRRORED lookup, DRIVEN — and driven through the SAME fisher, mid-walk, so both conventions
+        /// are measured off one live presenter rather than compared across two fixtures.
+        ///
+        /// <para>⚠️ The def swapped in here is a deliberately counter-clockwise <b>fixture</b>. It is NOT a
+        /// picture of the shipped Fisher art — that is the fixture def, and it is clockwise. The mirrored
+        /// path is kept covered because it still ships: the iso BOAT kits were never re-baked and
+        /// <c>BoatVisualDef.FacingsAreCounterClockwise</c> stays true for them, so the mirror inside
+        /// <c>IsoFacing.HeadingToFacingIndex</c> is live code that a character def could legally ask for
+        /// again the day a kit arrives baked that way.</para>
+        ///
+        /// <para>Same object, same heading, no re-Awake — only the def changed, and the row moved. That is
+        /// the component's whole claim: the convention lives in the DEF and the presenter holds none of its
+        /// own, not even one cached at startup.</para>
+        /// </summary>
+        [UnityTest]
+        public IEnumerator WalkingEast_ThenSwappingToMIRRORED_Art_MovesTheRow()
+        {
+            yield return Travel(90f, 3f, 0.5f);
+            int rowOnShippedBake = _iso.FacingRow;
+            Assert.AreEqual(EastRowClockwise, rowOnShippedBake, "still walking East on the shipped bake");
+
+            // Same fisher, still walking East — only the artwork's declared bake direction changes.
+            var mirrored = NewVisual(counterClockwise: true);
+            _iso.Configure(mirrored);
+            yield return Travel(90f, 3f, 0.2f);
+
+            Assert.AreEqual(mirrored.FacingRowFor(90f), _iso.FacingRow,
+                "the presenter must land on the row the def says depicts East — whichever way that def " +
+                "declares its art was baked");
+            Assert.AreEqual(EastRowMirrored, _iso.FacingRow,
+                "mirrored art bakes East at row 6 — NOT the row labelled 'E'");
+            Assert.AreNotEqual(rowOnShippedBake, _iso.FacingRow,
+                "the row MUST move when the bake direction flips under a fisher walking the same way. If " +
+                "these ever agree, the mirror in IsoFacing has stopped being consulted and every " +
+                "counter-clockwise kit is drawn reversed.");
         }
 
         [UnityTest]
