@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using UnityEditor;
@@ -52,6 +53,24 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         /// <summary>
+        /// Which rig each family is cut from — the mapping <see cref="RigIsCommitted"/> is checked
+        /// against, so the flag is DERIVED from disk rather than remembered.
+        ///
+        /// <para>The flag used to be policed by a hard-coded list of the three provisional variants,
+        /// which is a guard that rots the moment somebody imports a rig and forgets the list: it
+        /// would have gone red on 2026-08-14 naming a change it could not verify. Now an unmapped id
+        /// fails loudly, and the flag can only be wrong if the file system is.</para>
+        /// </summary>
+        static string RigFileFor(string meshId) =>
+            meshId.StartsWith("hullmesh.lobster_") ? "lobsterBoatVariantsIsoRig.js" :
+            meshId.StartsWith("hullmesh.zodiac_") ? "zodiacIsoRig.js" :
+            meshId.StartsWith("hullmesh.sport_fisher_") ? "sportFisherIsoRig2.js" :
+            meshId == "hullmesh.sport_skiff_mk2_iso" ? "sportSkiffMk2IsoRig.js" :
+            null;
+
+        static string RigFolder => Path.Combine(RigCatalog.RepoRoot, "docs", "art", "rigs");
+
+        /// <summary>
         /// The authored table. Ids are the bake's to choose and are a PROPOSAL (see the doc §6); the
         /// numbers are not. Keyed so that a different id choice moves only the key.
         ///
@@ -89,14 +108,31 @@ namespace HiddenHarbours.Tests.RigBaking
                 ["hullmesh.lobster_offshore_hardtop_newfoundland_iso"] = new Flotation("offshore/hardtop/newfoundland", 0.55f, 0.55f, 2.90f, 2.576f),
 
                 // ---- coast-guard RHIB, 2 builds. Half-beam is over the TUBES. Doc §4. --------------
-                // PROVISIONAL: zodiacIsoRig.js is pack-only, so nothing here has a committed source.
-                ["hullmesh.zodiac_hurricane_iso"] = new Flotation("hurricane", 0.32f, 0.42f, 1.61f, 1.480f, rigIsCommitted: false),
-                ["hullmesh.zodiac_frc_iso"] = new Flotation("frc", 0.30f, 0.40f, 1.52f, 1.400f, rigIsCommitted: false),
+                // NO LONGER PROVISIONAL (2026-08-14): zodiacIsoRig.js is committed, and every number
+                // below was re-verified against it — her sidecar reports beam_over_tubes 2.96 / 2.80
+                // (→ true half-beam 1.480 / 1.400) and cockpit z 0.420 / 0.403, and both drafts
+                // reproduce the console skiff's 0.750 draft/sole exactly.
+                ["hullmesh.zodiac_hurricane_iso"] = new Flotation("hurricane", 0.32f, 0.42f, 1.61f, 1.480f),
+                ["hullmesh.zodiac_frc_iso"] = new Flotation("frc", 0.30f, 0.40f, 1.52f, 1.400f),
 
                 // ---- sport skiff v2. She does NOT inherit the committed skiff — doc §5. -----------
-                // PROVISIONAL: the v2 rig is pack-only, and its shipped sidecar is STALE (it pins the
-                // hash of the OLD rig), so the numbers come off the v2 rig source directly.
-                ["hullmesh.sport_skiff_mk2_iso"] = new Flotation("sport skiff v2", 0.36f, 0.46f, 1.38f, 1.270f, rigIsCommitted: false),
+                // NO LONGER PROVISIONAL (2026-08-14): the v2 rig is committed as sportSkiffMk2IsoRig.js
+                // (a SECOND hull — the shipped sport skiff keeps her own rig, id and numbers), and the
+                // 2026-08-14 reissued sidecar independently confirms the derivation: beam 2.54
+                // (→ true half-beam 1.270), sole 0.46, sheer amid 1.10 — the exact figures doc §5
+                // read off the rig when the sidecar available at the time still said 0.28.
+                ["hullmesh.sport_skiff_mk2_iso"] = new Flotation("sport skiff v2", 0.36f, 0.46f, 1.38f, 1.270f),
+
+                // ---- sport fisher, 2 builds. Doc §6. ----------------------------------------------
+                // ⚠️ SHE IS NOT THE SPORT SKIFF'S v2 — a genuinely different model that arrived in the
+                // same drop and was outside the original 21-hull table entirely. Owner ruled her IN on
+                // 2026-08-14. She is the first hull in this document whose LENGTH lands inside the
+                // 12–38 m band, so §1's draft/LOA band (0.041–0.044) is her calibration target rather
+                // than a cross-check; draft is the band floor, rounded up to the centimetre so the
+                // rounded value stays in band. Deck is the rig's own DECK (the cockpit sole); half-beam
+                // is her true max sheer half-width carried out by the lobster family's margin (1.126).
+                ["hullmesh.sport_fisher_convertible_iso"] = new Flotation("53' convertible", 0.67f, 1.25f, 2.91f, 2.580f),
+                ["hullmesh.sport_fisher_skybridge_iso"] = new Flotation("90' skybridge", 1.13f, 2.05f, 4.12f, 3.660f),
             };
 
         /// <summary>The variants rig's own depth scalars, for the size-ladder claim.</summary>
@@ -298,19 +334,72 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         /// <summary>
-        /// The three pack-only rigs are flagged, and the flag has to stay honest: once a rig lands in
-        /// <c>docs/art/rigs/</c> its row stops being provisional and this says so out loud rather than
-        /// letting a stale caveat harden into folklore.
+        /// <b>The provisional flag is DERIVED from disk, not remembered.</b> A row is provisional
+        /// exactly when the rig it was cut from is not in <c>docs/art/rigs/</c> — so the flag cannot
+        /// disagree with reality, and a rig import can never leave a stale caveat behind.
+        ///
+        /// <para>This replaced a hard-coded list of the three provisional variants. That guard was
+        /// honest but fragile in one specific way: it could only tell you the set had CHANGED, never
+        /// whether the new set was right, and it went red on the 2026-08-14 rig import naming a
+        /// change it had no way to verify. Sabotage: flip <c>rigIsCommitted</c> on any row, or delete
+        /// a rig from disk, and this names the row and the file.</para>
         /// </summary>
         [Test]
-        public void TheProvisionalRows_AreExactlyTheHullsWithNoCommittedRig()
+        public void TheProvisionalFlag_IsExactlyWhetherHerRigIsOnDisk()
         {
-            var provisional = Authored.Where(k => !k.Value.RigIsCommitted)
-                                      .Select(k => k.Value.Variant).OrderBy(v => v).ToList();
-            CollectionAssert.AreEqual(new[] { "frc", "hurricane", "sport skiff v2" }, provisional,
-                "The provisional set changed. If art-pipeline has imported zodiacIsoRig.js or the " +
-                "sport-skiff v2 rig, clear the flag on that row and verify its numbers against the " +
-                "committed source (docs/design/fleet-flotation.md §6).");
+            var wrong = new List<string>();
+
+            foreach (var kvp in Authored)
+            {
+                string rigFile = RigFileFor(kvp.Key);
+                Assert.IsNotNull(rigFile,
+                    $"'{kvp.Key}' is in the flotation table but RigFileFor() does not know which rig " +
+                    "she is cut from, so her provisional flag cannot be checked. Add her family there.");
+
+                bool onDisk = File.Exists(Path.Combine(RigFolder, rigFile));
+                if (onDisk != kvp.Value.RigIsCommitted)
+                    wrong.Add($"{kvp.Value.Variant}: rigIsCommitted={kvp.Value.RigIsCommitted} but " +
+                              $"docs/art/rigs/{rigFile} {(onDisk ? "EXISTS" : "is absent")}");
+            }
+
+            CollectionAssert.IsEmpty(wrong,
+                "A row's provisional flag disagrees with the rigs actually on disk. If art-pipeline " +
+                "has just imported a rig, clear the flag on that row AND verify its numbers against " +
+                "the now-committed source (docs/design/fleet-flotation.md): " +
+                string.Join("; ", wrong));
+        }
+
+        /// <summary>
+        /// <b>The sport fisher is calibrated on the band, and the band is §1's own rule.</b> She is
+        /// the first hull in this table whose LENGTH lands inside the 12–38 m span over which
+        /// draft/LOA holds at 0.041–0.044 across four hull types, and §1 says that band "is the
+        /// calibration target for anything landing in it".
+        ///
+        /// <para>⚠️ <b>Her draft/sole deliberately breaks the other precedent</b> — 0.536 and 0.551,
+        /// against 0.750 (console skiff) to 1.00 (lobster) everywhere else. That is the hull type,
+        /// not an error: a sportfisher's cockpit sole stands far higher over her waterline than a
+        /// workboat's. The two methods cannot both be honoured for this hull, §1 makes the band
+        /// primary for her length, and the departure is recorded rather than smoothed over. If the
+        /// owner judges her to sit too high in the water by eye, THIS is the number to move.</para>
+        /// </summary>
+        [Test]
+        public void TheSportFisher_SitsInTheFleetsDraftLoaBand()
+        {
+            var loa = new Dictionary<string, float>
+            {
+                ["hullmesh.sport_fisher_convertible_iso"] = 16.2f,   // rig L, measured in V8
+                ["hullmesh.sport_fisher_skybridge_iso"] = 27.4f,
+            };
+
+            foreach (var kvp in loa)
+            {
+                Flotation f = Authored[kvp.Key];
+                float ratio = f.Draft / kvp.Value;
+                Assert.That(ratio, Is.InRange(0.041f, 0.044f),
+                    $"{f.Variant}: draft/LOA {ratio:0.0000} is outside the fleet's 12–38 m band " +
+                    "(0.041–0.044). She is inside that band by length, so the band is her calibration " +
+                    "target — docs/design/fleet-flotation.md §1 and §6.");
+            }
         }
     }
 }
