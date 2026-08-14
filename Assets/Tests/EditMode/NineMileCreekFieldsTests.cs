@@ -459,8 +459,10 @@ namespace HiddenHarbours.Tests.EditMode
         {
             foreach (var m in _marsh)
             {
-                Assert.That(m.Zone, Is.AnyOf(StPetersShorePlants.ZoneLowMarsh,
-                                             StPetersShorePlants.ZoneHighMarsh),
+                // ⚠ `Or`, not `Is.AnyOf` — the latter is a newer NUnit than this project ships, and it
+                // fails to COMPILE rather than to assert, which takes the whole suite down with it.
+                Assert.That(m.Zone, Is.EqualTo(StPetersShorePlants.ZoneLowMarsh)
+                                      .Or.EqualTo(StPetersShorePlants.ZoneHighMarsh),
                     $"a marsh plant at {m.Position} is in zone '{m.Zone}', which is not one of the two " +
                     "this pass plants");
                 Assert.That(StPetersShorePlants.ZoneSpecies[m.Zone], Contains.Item(m.SpeciesKey),
