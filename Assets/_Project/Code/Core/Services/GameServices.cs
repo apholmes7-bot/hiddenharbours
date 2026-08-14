@@ -266,6 +266,30 @@ namespace HiddenHarbours.Core
         private static ICarrier _hands;
 
         /// <summary>
+        /// The WRITE side of the player's hands — where an on-foot catch source puts a landed clam or fish
+        /// so it is in her hands rather than teleported into a container (the owner's ruling, 2026-08-13).
+        /// Published by the same <c>CarryHands</c> that publishes <see cref="Hands"/>, with the same
+        /// lifetime and the same fake-null laundering.
+        ///
+        /// <para><b>Separate from <see cref="Hands"/> on purpose</b> — see <see cref="ICatchHands"/>. That
+        /// one is read by gates many times a second; this one is written to at the instant a catch lands.
+        /// A gate should not be able to reach the thing that fills your hands.</para>
+        ///
+        /// <para>OPTIONAL and NOT part of <see cref="Ready"/>: null in EditMode and before the persistent
+        /// core boots. <b>A null here must mean "land it in the hold, as before"</b>, never a dropped
+        /// catch — every caller falls back, and that fallback is what keeps every boat path working
+        /// unchanged.</para>
+        /// FLAG lead-architect: new Core contract (the catch-in-hand seam).
+        /// </summary>
+        public static ICatchHands CatchHands
+        {
+            get => _catchHands is UnityEngine.Object o && o == null ? null : _catchHands;
+            set => _catchHands = value;
+        }
+
+        private static ICatchHands _catchHands;
+
+        /// <summary>
         /// The stable id of the region the player is CURRENTLY in (e.g. <c>"region.st_peters"</c>) —
         /// the travel-aware read gameplay resolves per-region content against (which fish bite HERE,
         /// now). The <b>App</b> travel rig is the writer (the active region's anchor reports itself;
@@ -581,6 +605,7 @@ namespace HiddenHarbours.Core
             TidalTerrain = null;
             PlayerTransform = null;
             Hands = null;
+            CatchHands = null;
             CurrentRegionId = null;
             PendingArrivalKey = null;
             CurrentRegionBounds = default;

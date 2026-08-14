@@ -39,7 +39,7 @@ namespace HiddenHarbours.Player
     // sprite mirrors the order the player ACTUALLY drew at rather than last frame's. Same reason, and the
     // same number, as DeckRiderVisual.
     [DefaultExecutionOrder(100)]
-    public sealed class CarryHands : MonoBehaviour, ICarrier
+    public sealed class CarryHands : MonoBehaviour, ICarrier, ICatchHands
     {
         [Header("Wiring (auto-resolved off this object if empty)")]
         [Tooltip("The player's own renderer — the SORTING DATUM the carried sprite rides. Null = the " +
@@ -97,7 +97,11 @@ namespace HiddenHarbours.Player
         /// Publish these hands so lanes that cannot reference Player can still ask what is held
         /// (<see cref="GameServices.Hands"/> — the seam <c>ClamDig</c> reads across the Fishing boundary).
         /// </summary>
-        private void OnEnable() => GameServices.Hands = this;
+        private void OnEnable()
+        {
+            GameServices.Hands = this;
+            GameServices.CatchHands = this;
+        }
 
         /// <summary>
         /// Relinquish the relay — <b>in <c>OnDestroy</c>, and deliberately NOT in <c>OnDisable</c>.</b>
@@ -112,6 +116,116 @@ namespace HiddenHarbours.Player
         private void OnDestroy()
         {
             if (ReferenceEquals(GameServices.Hands, this)) GameServices.Hands = null;
+            if (ReferenceEquals(GameServices.CatchHands, this)) GameServices.CatchHands = null;
+        }
+
+        // ---- the catch seam: a landed clam goes in your hand, and the tool tucks under your arm -------
+
+        /// <summary>
+        /// What is SLUNG — the tool tucked away to free the hands for a landed catch, or null.
+        ///
+        /// <para><b>Why a second slot exists when the design says "one tool at a time".</b> It is not a
+        /// second carry slot and it cannot be used as one: nothing may put anything here deliberately.
+        /// It exists because the dig requires the shovel IN HAND and the dig's own product must also go in
+        /// hand, so without somewhere for the shovel to go the very first clam has nowhere to land and the
+        /// loop cannot close. That is the owner's stated default — "the rod auto-stows to slung on a
+        /// landed catch, fish in hand" — and the sling is strictly a consequence of the catch: it fills
+        /// only in <see cref="TryPutInHand"/> and empties the moment the hands are free.</para>
+        /// </summary>
+        public ICarriable Slung => _slung is Object o && o == null ? null : _slung;
+
+        private ICarriable _slung;
+
+        /// <summary>
+        /// Put a landed catch in her hands (<see cref="ICatchHands.TryPutInHand"/>).
+        ///
+        /// <para>Refuses — returning false, so the caller lands it in its own hold instead — when the
+        /// hands already hold a CATCH. That is the ruling's over-encumbrance rule in its cheapest honest
+        /// form: full is full, and you deal with the clam you have before you dig another
+        /// (diegetic-ui-and-inventory.md §4.2, "no room = you cannot pick it up", no weight meter and no
+        /// slow-crawl).</para>
+        ///
+        /// <para>A TOOL in the hands is not a refusal — it is slung, and taken back the moment the catch
+        /// leaves. A tool already slung is, though: that would mean a catch is in hand, which the first
+        /// check has already covered, so it is belt-and-braces against a state nothing can currently
+        /// reach.</para>
+        /// </summary>
+        public bool TryPutInHand(in CatchItem item)
+        {
+            if (Carried is CarriableCatch) return false;      // one catch at a time — full is full
+            if (Slung != null) return false;                  // unreachable today; see the remarks
+
+            ICarriable tool = Carried;
+            if (tool != null)
+            {
+                // Tuck it under the arm: it stays parented to the fisher and stays HERS, it simply stops
+                // being posed at the hip. Deliberately not TryPlace() — setting the shovel on the sand
+                // every time a clam comes up would be a different, worse game.
+                _slung = tool;
+                _carried = null;
+                if (tool.Transform != null) tool.Transform.gameObject.SetActive(false);
+            }
+
+            _carried = CarriableCatch.Create(item, transform);
+            ApplyCarriedPose();
+            EventBus.Publish(new CatchLanded(item));
+            return true;
+        }
+
+        /// <summary>
+        /// Hand the held catch to a container. Returns false when there is no catch to give or the
+        /// container would not take it, and NOTHING changes in that case — the catch stays in her hands
+        /// rather than evaporating between the two.
+        ///
+        /// <para>The item is moved, never copied and never re-stamped: the same <see cref="CatchItem"/>
+        /// that landed is the one that stacks, freshness clock and all.</para>
+        /// </summary>
+        public bool TryGiveCatchTo(IHold hold)
+        {
+            if (hold == null) return false;
+            if (Carried is not CarriableCatch held || !held.HasItem) return false;
+            if (hold.UsedUnits >= hold.CapacityUnits) return false;
+
+            CatchItem item = held.Item;
+            if (!hold.TryAdd(item)) return false;
+
+            // ⚠️ THIS is where FishCaught belongs on the in-hand path, and it is easy to leave out — the
+            // catch source no longer publishes it (it did not put anything in a hold), so if this line is
+            // missing, nothing does. The event means "a catch entered a hold": the hold-fill renderers
+            // re-read the container on it, the onboarding director counts clams with it, the deck
+            // presenters re-stack. Without it a clam dug the new way would be in the pail and invisible to
+            // every one of them.
+            EventBus.Publish(new FishCaught(item));
+
+            held.Take();
+            _carried = null;
+
+            // ⚠️ Destroy() THROWS in edit mode ("Destroy may not be called from edit mode"), and this path
+            // is reached by every EditMode test of the stack. Object.Destroy is also DEFERRED to end of
+            // frame in play mode, which would leave a taken-from catch parented to the fisher for the rest
+            // of the frame — harmless, but the immediate form is the honest one here since the object has
+            // already given up its item.
+            if (Application.isPlaying) Destroy(held.gameObject);
+            else DestroyImmediate(held.gameObject);
+
+            TakeBackSlung();
+            return true;
+        }
+
+        /// <summary>
+        /// Put the slung tool back in her hands, if the hands are free. Idempotent and silent when there
+        /// is nothing slung — this is called on every path that empties the hands, so "nothing to do" is
+        /// the ordinary case.
+        /// </summary>
+        public void TakeBackSlung()
+        {
+            ICarriable slung = Slung;
+            if (slung == null || IsCarrying) return;
+
+            _slung = null;
+            if (slung.Transform != null) slung.Transform.gameObject.SetActive(true);
+            _carried = slung;
+            ApplyCarriedPose();
         }
 
         /// <summary>The heading the BODY is drawn at right now (compass degrees, 0 = N, CW) — the one

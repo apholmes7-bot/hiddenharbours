@@ -178,10 +178,40 @@ namespace HiddenHarbours.Fishing
                 Debug.LogWarning("[FishingController] No IHold found on the hold provider.", this);
         }
 
-        private void OnEnable() => InstallSchoolModel();
+        [Tooltip("ON FOOT, land the fish IN THE FISHER'S HAND rather than into the hold (the owner's " +
+                 "ruling, 2026-08-13). At sea this changes nothing — a boat has a hold and that is where " +
+                 "a catch goes. Falls back to the hold wherever there are no hands to land into, so no " +
+                 "context can drop a fish. Turn OFF for the pre-ruling behaviour everywhere.")]
+        [SerializeField] private bool _landInHandOnFoot = true;
+
+        // Where the fisher's control lives. The controller is mounted on the BOAT (the dev rig puts it on
+        // the Dory alongside DevFishingInput), so it cannot infer "on foot" from its own transform — it
+        // has to be told, and ControlModeChanged is the same Core signal DevFishingInput already rides.
+        // Defaults to OnFoot for the same reason DevFishingInput does: the game starts ashore.
+        private ControlMode _mode = ControlMode.OnFoot;
+
+        private void OnEnable()
+        {
+            InstallSchoolModel();
+            EventBus.Subscribe<ControlModeChanged>(OnControlModeChanged);
+        }
+
+        /// <summary>Public so a test can drive the mode through the same path the bus uses (the
+        /// DevFishingInput convention).</summary>
+        public void OnControlModeChanged(ControlModeChanged e) => _mode = e.Mode;
+
+        /// <summary>Offer the fish to her hands. False = no hands published, or hands already full of a
+        /// catch — the caller then lands it in the hold, which is the compatibility path.</summary>
+        private static bool TryLandInHand(in CatchItem item)
+        {
+            ICatchHands hands = GameServices.CatchHands;
+            return hands != null && hands.TryPutInHand(item);
+        }
 
         private void OnDisable()
         {
+            EventBus.Unsubscribe<ControlModeChanged>(OnControlModeChanged);
+
             // Only clear what we still own — a later producer may already have taken over (the
             // GameServices.CurrentRegionBounds discipline). Assigning null is what turns the accessor back
             // into EmptyFishSchools, so a torn-down region leaves an honest empty sea, never a dead model.
@@ -699,7 +729,19 @@ namespace HiddenHarbours.Fishing
                                      _pendingWeight, fish.BaseValue, fish.SupplyElasticity,
                                      fish.SpoilPerDay, Freshness.Landed(landedAt));
 
-            if (_hold != null && _hold.TryAdd(item))
+            // ON FOOT, THE FISH COMES INTO YOUR HAND (the owner's ruling, 2026-08-13) — you are standing
+            // on a dock with a rod, not loading a hold. At sea it lands in the hold exactly as it always
+            // has: a boat HAS a hold, that is most of the point of a boat, and the deck ladder (tote,
+            // tray, ice box) is its own arc.
+            //
+            // ⚠️ FishCaught is NOT published on the in-hand path — see ClamDig for the full reasoning.
+            // It means "a catch entered a hold", and the hand is not a hold. CarryHands publishes
+            // CatchLanded for the hand moment; FishCaught fires when the fish goes in the pail.
+            if (_landInHandOnFoot && _mode == ControlMode.OnFoot && TryLandInHand(item))
+            {
+                Debug.Log($"[Fishing] Landed {item} — it's in your hand.");
+            }
+            else if (_hold != null && _hold.TryAdd(item))
             {
                 EventBus.Publish(new FishCaught(item));          // unchanged land path
                 Debug.Log($"[Fishing] Landed {item}!");

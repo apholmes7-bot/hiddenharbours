@@ -145,7 +145,10 @@ namespace HiddenHarbours.Tests.EditMode
 
             Assert.IsTrue(dig.ShovelInHand());
             Assert.IsTrue(dig.TryDig(), "shovel in hand digs");
-            Assert.AreEqual(1, hold.UsedUnits);
+            // The clam lands IN HER HAND, not in the pail (the third ruling — CatchInHandTests owns that
+            // behaviour in full). Asserting the hand is the faithful proof that the dig happened here.
+            Assert.AreEqual("fish.soft_shell_clam", GameServices.Hands.Carried.DefId);
+            Assert.AreEqual(0, hold.UsedUnits, "…and the pail is untouched until she puts it there");
         }
 
         [Test]
@@ -231,8 +234,9 @@ namespace HiddenHarbours.Tests.EditMode
                            "the work-site outranks the thing in your hands — otherwise you can never dig");
 
             best.Interact(actor);
-            Assert.AreEqual(1, hold.UsedUnits, "the press dug a clam");
-            Assert.IsTrue(hands.IsCarrying, "and she is still holding the shovel");
+            Assert.IsTrue(dig.Consumed, "the press dug the hole out");
+            Assert.AreEqual("fish.soft_shell_clam", hands.Carried.DefId, "…and the clam is in her hand");
+            Assert.AreSame(shovel, hands.Slung, "the shovel went under her arm to make room for it");
         }
 
         [Test]

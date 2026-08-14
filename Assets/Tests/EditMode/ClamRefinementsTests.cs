@@ -118,6 +118,10 @@ namespace HiddenHarbours.Tests.EditMode
             go.transform.position = spotPos;
             var d = go.AddComponent<ClamDig>();
             d.Configure(clam, bucket, go.transform, "gear.shovel", seed, reach);
+            // landInHand: FALSE — these pin yields-once, the skittish escape and reach, all read out of
+            // the pail. The landing DESTINATION is CatchInHandTests' subject; see ClamDigTests' note.
+            d.ConfigureInteract($"fixture.clam_hole.{spotPos.x}_{spotPos.y}", ToolDef.ShovelId,
+                                landInHand: false);
             return d;
         }
 
