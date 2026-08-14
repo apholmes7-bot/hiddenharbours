@@ -3,6 +3,7 @@ using NUnit.Framework;
 using UnityEngine;
 using HiddenHarbours.Core;
 using HiddenHarbours.Fishing;
+using HiddenHarbours.Player;   // ToolDef — the shovel the dig now needs IN HAND
 
 namespace HiddenHarbours.Tests.EditMode
 {
@@ -83,6 +84,10 @@ namespace HiddenHarbours.Tests.EditMode
             GameServices.TidalTerrain = _terrain;
             GameServices.Environment = _env;
             GameServices.Save = new FakeSaveService(_save);
+
+            // …and holds it: digging needs the shovel IN HAND since the tools-in-hand ruling, so the
+            // refinements below (yields-once, the skittish escape, reach) go on testing what they pin.
+            ToolInHand.Holding(ToolDef.ShovelId, _spawned);
         }
 
         [TearDown]

@@ -53,7 +53,7 @@ namespace HiddenHarbours.Fishing
     /// classes referenced. The dev Interact key (E) lives on the sibling <see cref="ClamDigger"/>, not here;
     /// an InputService/interaction prompt replaces it later (ui-ux).</para>
     /// </summary>
-    public class ClamDig : MonoBehaviour
+    public class ClamDig : MonoBehaviour, IInteractable
     {
         [Header("What & where")]
         [Tooltip("The clam species this hole yields (fish.soft_shell_clam). Data-driven — the value, " +
@@ -72,6 +72,16 @@ namespace HiddenHarbours.Fishing
         [SerializeField] private float _reachRadius = 1.25f;
         [Tooltip("Owned-gear id that enables digging (the shovel). Matches the GearOffer id.")]
         [SerializeField] private string _shovelGearId = "gear.shovel";
+        [Tooltip("The TOOL id that must be IN THE FISHER'S HANDS to dig (tool.shovel) — the owner's " +
+                 "ruling, 2026-08-13: 'they should need a shovel to dig clams'. Distinct from the gear id " +
+                 "above, which is the OWNERSHIP record: owning a shovel and holding one are different " +
+                 "facts, and digging now needs both. Empty disables the in-hand gate (ownership only), " +
+                 "which is the pre-ruling behaviour and exists so a test can pin the difference.")]
+        [SerializeField] private string _shovelToolId = "tool.shovel";
+        [Tooltip("Stable INSTANCE id for the interact registry — the resolver's LAST tie-break, so it " +
+                 "must be unique among live holes. The builder gives each hole a readable one derived " +
+                 "from its cell; left empty an instance-scoped fallback keeps it unique but unreadable.")]
+        [SerializeField] private string _id;
         [Tooltip("0 = time-seeded weight roll; non-zero for reproducible clam weights in testing.")]
         [SerializeField] private int _rngSeed = 0;
 
@@ -88,6 +98,7 @@ namespace HiddenHarbours.Fishing
         private float _revealTimer;
         private bool _showingSquirt;
         private bool _consumed;
+        private string _resolvedId;
 
         /// <summary>True while the greybox squirt-hole cue is showing (art/UI hint; cosmetic, never gates).</summary>
         public bool ShowingSquirt => _showingSquirt;
@@ -133,25 +144,35 @@ namespace HiddenHarbours.Fishing
 
             if (_consumed)
             {
-                Debug.Log("[ClamDig] This hole's already given up its clam — there's nothing left to dig.");
+                Say("This hole's already given up its clam.");
                 return false;
             }
             if (!IsExposedNow())
             {
-                Debug.Log("[ClamDig] The flat's still under water here — wait for the tide to fall.");
+                Say("The flat's still under water here — wait for the tide to fall.");
                 return false;
             }
             if (!OwnsShovel())
             {
-                Debug.Log("[ClamDig] You need a clam shovel to dig.");
+                Say("You need a clam shovel to dig.");
+                return false;
+            }
+            // THE OWNER'S RULING (2026-08-13): owning the shovel is no longer enough — it has to be in
+            // your hands. Kept as a SECOND gate rather than replacing the first because the two are
+            // different facts and both are cheap: ownership is what the shop sold you, holding is what
+            // you brought to the flats. Asked through Core (CarriedItem), so this file still has no idea
+            // that CarryHands exists — Fishing cannot reference Player and must not start (rule 4).
+            if (!ShovelInHand())
+            {
+                Say("Your hands are empty — you need the shovel to dig.");
                 return false;
             }
 
             EnsureBucket();
-            if (_bucket == null) { Debug.Log("[ClamDig] Nowhere to put a clam — you need a bucket."); return false; }
+            if (_bucket == null) { Say("Nowhere to put a clam — you need a bucket."); return false; }
             if (_bucket.UsedUnits >= _bucket.CapacityUnits)
             {
-                Debug.Log("[ClamDig] The bucket's full — head to Nine Mile Creek and sell.");
+                Say("The bucket's full — head to Nine Mile Creek and sell.");
                 return false;
             }
 
@@ -201,6 +222,91 @@ namespace HiddenHarbours.Fishing
                    && save.OwnedGear.Contains(_shovelGearId);
         }
 
+        /// <summary>
+        /// Is the shovel in the fisher's hands right now? Asked through Core's
+        /// <see cref="CarriedItem.InHand"/>, which is the only thing that crosses the module boundary —
+        /// this file cannot see <c>CarryHands</c> and never should.
+        ///
+        /// <para>An EMPTY <see cref="_shovelToolId"/> means "no in-hand gate", which reads as true. That
+        /// is the pre-ruling behaviour, kept reachable on purpose: it is what a test sets to prove the new
+        /// gate is the thing doing the work rather than some other condition.</para>
+        /// </summary>
+        public bool ShovelInHand()
+            => string.IsNullOrEmpty(_shovelToolId) || CarriedItem.InHand(_shovelToolId);
+
+        /// <summary>
+        /// Say it to the player, not just to the console. A dig is now a deliberate press through the one
+        /// interact verb, and a press that refuses EARNS a sentence (P5) — the register the carry
+        /// refusals and the wet bucket already use. Still logged, because a headless run has no toast.
+        /// </summary>
+        private void Say(string message)
+        {
+            EventBus.Publish(new DevNotice(message));
+            Debug.Log($"[ClamDig] {message}");
+        }
+
+        // ---- the interact seam (M2-39): the hole is the CANDIDATE, the shovel is the tool -------------
+
+        /// <inheritdoc/>
+        public string Id => _resolvedId ??= ResolveId();
+
+        /// <inheritdoc/>
+        public Vector2 WorldPosition => SpotPos;
+
+        /// <summary>The shovel's reach — this hole's own tunable, unchanged from the radius the digger
+        /// used to apply itself.</summary>
+        public float ReachMeters => _reachRadius;
+
+        /// <summary>
+        /// <see cref="InteractPriority.ToolTarget"/> — a work-site the tool in your hands operates.
+        ///
+        /// <para><b>⚠️ This rung is what makes digging possible at all, and the reason is worth keeping
+        /// in front of whoever changes it.</b> A held shovel reports <c>Held</c> (20). If a hole were a
+        /// plain <c>Fixture</c> (0), then standing on a bared hole WITH THE SHOVEL IN HAND, E would
+        /// resolve to "put the shovel down" — and the one thing the shovel exists for would be
+        /// unreachable. Using what you hold on what is in front of you is the more specific act; putting
+        /// it down is the fallback you get by stepping a pace away.</para>
+        /// </summary>
+        public int Priority => InteractPriority.ToolTarget;
+
+        /// <summary>On your own two feet — the flats are walked, not sailed.</summary>
+        public InteractContext Contexts => InteractContext.OnFoot;
+
+        /// <summary>False: a hole at your feet should not need you to look down at it, matching every
+        /// other interaction on this seam.</summary>
+        public bool RequiresFacing => false;
+
+        /// <summary>
+        /// Is this hole a thing to act on right now? Exposed, unspent, AND the shovel in hand.
+        ///
+        /// <para><b>The shovel condition is not optional decoration — it is the obligation
+        /// <see cref="InteractPriority.ToolTarget"/> imposes.</b> A work-site claiming that rung
+        /// unconditionally would outrank the held thing forever, and you could never put anything down
+        /// while standing near a clam hole. Gating availability on the tool is what keeps the ladder
+        /// honest in both directions.</para>
+        ///
+        /// <para>Note what is deliberately NOT here: bucket room, and shovel OWNERSHIP. Those are
+        /// refusals — press and the game tells you (P5) — not reasons to vanish from the resolver and
+        /// leave the press silent. Exposure and the tool decide whether this is a work-site at all.</para>
+        /// </summary>
+        public bool IsAvailable => !_consumed && ShovelInHand() && IsExposedNow();
+
+        /// <summary>The press: one clam, this hole. The resolver has already picked the nearest qualifying
+        /// hole, which is what <c>ClamDigger.NearestDiggable</c> used to do by hand.</summary>
+        public void Interact(in InteractActor actor) => TryDig();
+
+        private void OnEnable() => Interactables.Register(this);
+
+        private void OnDisable() => Interactables.Unregister(this);
+
+        private string ResolveId()
+        {
+            if (!string.IsNullOrEmpty(_id)) return _id;
+            // Instance-scoped so two holes can never collide. Readable ids are the builder's job.
+            // GetEntityId, not the deprecated GetInstanceID (6000.5 marks that obsolete-as-ERROR).
+            return $"fixture.clam_hole#{GetEntityId()}";
+        }
+
         private void EnsureBucket()
         {
             if (_bucket == null && _bucketProvider != null) _bucket = _bucketProvider.GetComponent<IHold>();
@@ -242,6 +348,21 @@ namespace HiddenHarbours.Fishing
             _shovelGearId = shovelGearId;
             _rng = seed == 0 ? new System.Random() : new System.Random(seed);
             if (reachRadius >= 0f) _reachRadius = reachRadius;
+        }
+
+        /// <summary>
+        /// Give this hole its interact identity and its in-hand tool gate (builder / tests).
+        ///
+        /// <para>Split from <see cref="Configure"/> rather than added to it so every existing caller —
+        /// the builder and a dozen tests — keeps compiling and keeps meaning what it meant. Pass a null
+        /// or empty <paramref name="shovelToolId"/> to run WITHOUT the in-hand gate, which is the
+        /// pre-ruling behaviour and is exactly what a test needs to prove the gate is load-bearing.</para>
+        /// </summary>
+        public void ConfigureInteract(string id, string shovelToolId)
+        {
+            _id = id;
+            _resolvedId = null;
+            _shovelToolId = shovelToolId;
         }
     }
 }

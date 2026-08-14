@@ -105,7 +105,78 @@ namespace HiddenHarbours.Fishing
                                    && !InteractionGate.IsBlocked
                                    && !CastActionClaim.IsClaimed
                                    && !(Haul != null && Haul.IsHauling)
-                                   && !(DeckWork != null && DeckWork.HasPotAboard);
+                                   && !(DeckWork != null && DeckWork.HasPotAboard)
+                                   && RodIsToHand;
+
+        [Header("The rod is a THING you hold (owner's ruling, 2026-08-13)")]
+        [Tooltip("Require the rod to be IN THE FISHER'S HANDS before a cast is live. This is the ruling — " +
+                 "'the player always has a rod available to use; this should be a carried item like any " +
+                 "item'. ⚠️ Turn it OFF and fishing is always-on again, which is the pre-ruling behaviour: " +
+                 "it exists for QA and for bisecting a cast bug without hunting down a rod, and it ships ON.")]
+        [SerializeField] private bool _requireRodInHand = true;
+
+        [Tooltip("The TOOL id that must be in hand (tool.rod). Distinct from gear.rod, which is the " +
+                 "OWNERSHIP record — holding and owning are different facts.")]
+        [SerializeField] private string _rodToolId = "tool.rod";
+
+        [Tooltip("ALSO require the player to OWN the rod. ⚠️ Ships OFF, and that is the owner's call: " +
+                 "holding is enough, because ownership matters at the shop, not at the shore. It is a " +
+                 "field rather than a deletion because the rod is meant to be BOUGHT at Nine Mile Creek — " +
+                 "the day the opening stops standing a free rod on the wharf, this is the switch that " +
+                 "makes the purchase bite.")]
+        [SerializeField] private bool _requireRodOwnership;
+
+        [Tooltip("Owned-gear id checked when the ownership gate above is on (gear.rod). Matches the " +
+                 "GearOffer id, exactly as ClamDig's shovel-ownership field does.")]
+        [SerializeField] private string _rodGearId = "gear.rod";
+
+        /// <summary>
+        /// Is the rod to hand — i.e. may a cast start at all?
+        ///
+        /// <para>Asked through Core (<see cref="CarriedItem.InHand"/>), so this file still cannot see
+        /// <c>CarryHands</c>; Fishing does not reference Player and must not start (rule 4). Both gates
+        /// are configurable and both default to the owner's stated answer: the rod must be HELD, and need
+        /// not be OWNED.</para>
+        ///
+        /// <para><b>Why the ownership leg reads the save directly instead of calling
+        /// <c>PlayerGear.CanRodFish</c>, which is exactly the helper written for this.</b> Same rule-4
+        /// wall: <c>PlayerGear</c> is a Player-module static and Fishing may not reach it. So it asks the
+        /// same question of the same Core save seam, which is what that helper does too — the in-lane
+        /// pattern <c>ClamDig.OwnsShovel</c> has used since it shipped. The duplication is real and it is
+        /// the honest cost of the boundary; collapsing it would mean moving the capability read into Core,
+        /// which is a lead-architect call and not this PR's.</para>
+        ///
+        /// <para>Public + input-free so the gate is EditMode-testable, exactly like
+        /// <see cref="FishingLive"/> around it.</para>
+        /// </summary>
+        public bool RodIsToHand
+        {
+            get
+            {
+                if (_requireRodInHand && !CarriedItem.InHand(_rodToolId)) return false;
+                if (_requireRodOwnership && !OwnsRod()) return false;
+                return true;
+            }
+        }
+
+        private bool OwnsRod()
+        {
+            var save = GameServices.Save?.Current;
+            return save?.OwnedGear != null && !string.IsNullOrEmpty(_rodGearId)
+                   && save.OwnedGear.Contains(_rodGearId);
+        }
+
+        /// <summary>Wire the rod gates in one call (tests / editor). Pass <c>requireInHand: false</c> to
+        /// get the pre-ruling always-on behaviour, which is what a test sets to prove the gate is the
+        /// thing doing the work.</summary>
+        public void ConfigureRodGate(bool requireInHand, string rodToolId,
+                                     bool requireOwnership = false, string rodGearId = "gear.rod")
+        {
+            _requireRodInHand = requireInHand;
+            _rodToolId = rodToolId;
+            _requireRodOwnership = requireOwnership;
+            _rodGearId = rodGearId;
+        }
 
         // The camera that maps the mouse into the world (cached; Camera.main is a tag lookup).
         private Camera _cam;

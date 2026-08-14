@@ -4,6 +4,7 @@ using UnityEngine;
 using HiddenHarbours.Core;
 using HiddenHarbours.Economy;   // BaitDef (the trap's required bait)
 using HiddenHarbours.Fishing;
+using HiddenHarbours.Player;   // ToolDef — the rod a live cast now needs IN HAND
 
 namespace HiddenHarbours.Tests.EditMode
 {
@@ -86,6 +87,15 @@ namespace HiddenHarbours.Tests.EditMode
 
             GameServices.Clock = new FakeClock { Seconds = 5000.0 };
             GameServices.Environment = new FakeEnv();
+
+            // THE ROD IS IN HER HANDS. Since the tools-in-hand ruling (2026-08-13) a cast is not live
+            // unless it is — so every gate test below (the helm, the modal, the live haul, the pot aboard,
+            // the rope claim, the release latch) needs the rod held to still be testing ITS OWN gate
+            // rather than accidentally passing on the new one. Deliberately NOT switched off with
+            // ConfigureRodGate: leaving the gate on and satisfying it honestly proves the gates COMPOSE,
+            // which is the thing that would actually break. The rod gate's own tests are in
+            // ToolsInHandTests, where the rod is taken back out of her hands on purpose.
+            ToolInHand.Holding(ToolDef.RodId, _spawned);
 
             _trap = ScriptableObject.CreateInstance<TrapDef>();
             _trap.Id = "trap.lobster"; _trap.DisplayName = "Lobster Pot";

@@ -4,6 +4,7 @@ using UnityEngine;
 using HiddenHarbours.Core;
 using HiddenHarbours.Economy;
 using HiddenHarbours.Fishing;
+using HiddenHarbours.Player;   // ToolDef — the rod a live cast now needs IN HAND
 
 namespace HiddenHarbours.Tests.EditMode
 {
@@ -423,6 +424,12 @@ namespace HiddenHarbours.Tests.EditMode
             fishing.Configure(hold, new[] { MakeSpecies("fish.cod2", "Cod") }, "region.coddle_cove", Gear.Handline, seed: 7);
             var dev = haul.gameObject.AddComponent<DevFishingInput>();
             dev.OnControlModeChanged(new ControlModeChanged(ControlMode.OnDeck));
+
+            // …with the rod in her hands. Since the tools-in-hand ruling a cast is not live without it, and
+            // this test is about the DECK-WORK stand-down and the release latch — so the rod gate has to be
+            // satisfied honestly, or step (b) ("pot cleared → the handline gate is open again") would be
+            // asserting the wrong closed gate. She carried it aboard, which is exactly what carrying does.
+            ToolInHand.Holding(ToolDef.RodId, _spawned);
 
             HaulToSurface(haul);
             var deck = DeckOf(haul);

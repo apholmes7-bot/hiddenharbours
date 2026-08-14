@@ -58,6 +58,7 @@ namespace HiddenHarbours.App.Editor
         const string DataFish    = "Assets/_Project/Data/Fish";     // the soft-shell clam (the flats' catch)
         const string DataTraps   = "Assets/_Project/Data/Traps";    // the lobster/crab pots (the trap-haul loop, Build 4)
         const string DataBait    = "Assets/_Project/Data/Bait";     // the trap bait (herring/fish-scrap/mackerel)
+        const string DataTools   = "Assets/_Project/Data/Tools";    // the rod + clam shovel you pick up and carry
         const string DataNpcs    = "Assets/_Project/Data/NPCs";     // the opening cast (Aunt Ginny, Ned's letter)
         const string DataGear     = "Assets/_Project/Data/Gear";      // the rod on the store's counter (§7.5)
         const string DataLicenses = "Assets/_Project/Data/Licenses";  // the clam licence the store vends (§7.5)
@@ -84,6 +85,10 @@ namespace HiddenHarbours.App.Editor
         const string ArtCottageNight = "Assets/_Project/Art/Sprites/Buildings/CottageNight.png";  // lit-window night swap
         const string ArtClamHole   = "Assets/_Project/Art/Sprites/ClamHole.png";    // the still dig-spot sprite
         const string ArtClamSquirt = "Assets/_Project/Art/Sprites/ClamSquirt.png";  // 4-frame "two squirts" tell
+        // The carried tools' greybox pictures — already committed, 32 px, sliced, pivot centred. These are
+        // what a tool looks like lying on the sand and hanging at the hip until the directional kits bake.
+        const string ArtToolShovel = "Assets/_Project/Art/Sprites/Gear/Shovel.png";
+        const string ArtToolRod    = "Assets/_Project/Art/Sprites/Gear/Rod.png";
         const string Scenes      = "Assets/_Project/Scenes";
         const string SceneName   = "StPeters";
         const string ScenePath   = Scenes + "/" + SceneName + ".unity";
@@ -1174,12 +1179,36 @@ namespace HiddenHarbours.App.Editor
                 MakeClamHole(clamRoot.transform, p, clam, "fish.soft_shell_clam",
                              core.Bucket, holeSprite, squirtFrames, waterSprite);
 
-            // THE DIGGER (gameplay-systems): one Interact owner on the player. On E it digs the nearest hole
-            // that's BOTH in shovel reach AND exposed — so a press is exactly one clam from the hole you're
-            // standing on, and nothing when you're not at a bared hole. Sits on the persistent Player so it
-            // carries across region hops with the player (no per-region re-wire needed).
+            // THE CLAM-HOLE BEACON (gameplay-systems). ⚠️ This no longer owns the E key — the dig moved onto
+            // the one interact verb when tools became things you HOLD, because two independent readers of E
+            // (dig, and "put the shovel down") would be arbitrated by Update order and nothing else. What it
+            // still does is publish the on-foot player position for the per-hole skittish-clam escape timer.
+            // Sits on the persistent Player so it carries across region hops (no per-region re-wire).
             var digger = core.PlayerGo.AddComponent<ClamDigger>();
             SetRef(digger, "_player", core.PlayerGo.transform);
+
+            // --- THE TOOLS, STANDING IN THE WORLD (the owner's ruling, 2026-08-13) ------------------------
+            // "Currently the player always has a rod available to use — this should be a carried item like
+            // any item", and "they should need a shovel to dig clams". So the rod and the shovel are OBJECTS
+            // on the ground at the start spawn: you pick one up with the same interact press that lifts a
+            // fuel can, you carry ONE at a time, and you put it back to swap. The dig and the cast now ask
+            // what is in your hands rather than what is on your gear list.
+            //
+            // WHERE: at the start spawn, a pace either side, so the very first thing in view on a new game
+            // is the two tools the opening is about. They are REGION content (they belong to St Peters, not
+            // to the persistent player) — carry one to Nine Mile Creek and it comes with you in your hands;
+            // set it down there and it stays there, which is the honest physical answer and is exactly what
+            // CarryHands' place path now does correctly across a hop.
+            //
+            // ART: the committed 32 px gear sprites. The DIRECTIONAL kits (shovelIsoRig.js is in
+            // docs/art/rigs/ but not yet in RigCatalog; a carried-rod stance likewise) are art-pipeline's and
+            // land later WITHOUT touching this builder — CarriableTool already reports BakedFacings 0 and
+            // takes a facing it currently ignores.
+            var toolsRoot = new GameObject("Tools");
+            MakeTool(toolsRoot.transform, DataTools + "/Shovel.asset", ArtToolShovel,
+                     new Vector2(StartSpawnPos.x - 1.1f, StartSpawnPos.y - 0.6f), "tool.st_peters.shovel");
+            MakeTool(toolsRoot.transform, DataTools + "/Rod.asset", ArtToolRod,
+                     new Vector2(StartSpawnPos.x + 1.1f, StartSpawnPos.y - 0.6f), "tool.st_peters.rod");
 
             // --- THE TRAP-HAUL LOOP (gameplay-systems, Build 4 — the playable manual loop) ---------------
             // Set → soak → lay alongside → HAUL WITH THE SWELL → collect → sell. The trap runtime
@@ -1967,6 +1996,18 @@ namespace HiddenHarbours.App.Editor
             SetRef(dig, "_bucketProvider", bucket != null ? bucket.gameObject : null);
             SetRef(dig, "_spot", go.transform);
 
+            // THE HOLE IS AN INTERACT CANDIDATE NOW (the tools-in-hand ruling): it registers itself and the
+            // one verb picks the nearest qualifying one, instead of ClamDigger reading E and scanning by
+            // hand. Two things it needs from the builder:
+            //
+            //  • a UNIQUE, READABLE id — the resolver's LAST tie-break, so two holes sharing one would make
+            //    its order non-total and let registration order decide between them. Derived from the
+            //    hole's own scattered position, which the scatter guarantees is one per grid cell and
+            //    which a rebuild reproduces exactly (the scatter is a stable hash, not RNG).
+            //  • the TOOL id the dig gates on. Passed explicitly rather than left to the field default so
+            //    the gate is visible HERE, at the place that decides what the opening's flats require.
+            dig.ConfigureInteract($"fixture.clam_hole.{pos.x:0.00}_{pos.y:0.00}", ToolDef.ShovelId);
+
             // The LOOK: the two-holes sprite stays on the BASE renderer while exposed; the squirt plays as an
             // OVERLAY on a separate child renderer the visual creates on top (added, never a sprite-swap), so
             // the holes are always visible when exposed. Driven off the SAME exposure read the dig gates on, so
@@ -1976,6 +2017,45 @@ namespace HiddenHarbours.App.Editor
             SetRef(visual, "_holeSprite", holeSprite);
             if (squirtFrames != null && squirtFrames.Length > 0)
                 SetRefArray(visual, "_squirtFrames", squirtFrames.Cast<Object>().ToArray());
+        }
+
+        /// <summary>
+        /// Stand one carriable tool on the ground — the rod or the clam shovel (the tools-in-hand ruling).
+        ///
+        /// <para>Null-safe in the greybox way the rest of this builder is: a missing Def logs and builds
+        /// NOTHING, because a tool object with no Def is not carriable and would be an invisible,
+        /// un-liftable prop sitting in the sand pretending to be the shovel. A missing SPRITE is survivable
+        /// by comparison — the object still works, it is just not drawn — so that only warns.</para>
+        /// </summary>
+        static void MakeTool(Transform parent, string defPath, string spritePath, Vector2 pos, string id)
+        {
+            var tool = AssetDatabase.LoadAssetAtPath<ToolDef>(defPath);
+            if (tool == null)
+            {
+                Debug.LogWarning($"[StPetersBuilder] No ToolDef at '{defPath}' — no tool placed. The dig " +
+                                 "and the cast both gate on a tool being IN HAND, so without this the " +
+                                 "opening has no way to dig or fish.");
+                return;
+            }
+
+            var go = new GameObject(tool.name);
+            go.transform.SetParent(parent, false);
+            go.transform.position = new Vector3(pos.x, pos.y, 0f);
+
+            var sr = go.AddComponent<SpriteRenderer>();
+            sr.sprite = LoadSpriteAny(spritePath);
+            if (sr.sprite == null)
+                Debug.LogWarning($"[StPetersBuilder] No sprite at '{spritePath}' — {tool.Id} is invisible " +
+                                 "but still liftable.");
+
+            // Lying on the ground among the decor: Y-sorted like every other walk-up prop (ADR 0032), so it
+            // draws behind the fisher standing north of it and in front of one standing south. While CARRIED
+            // this component stands itself down and CarryHands states the order instead — one Y-sort policy
+            // at a time, never two fighting over the renderer.
+            go.AddComponent<YSortSprite>();
+
+            var carriable = go.AddComponent<CarriableTool>();
+            carriable.Configure(tool, sr, id);
         }
 
         static Sprite MakeSquareSprite(string path)
