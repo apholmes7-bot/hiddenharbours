@@ -232,6 +232,40 @@ namespace HiddenHarbours.Core
         private static UnityEngine.Transform _playerTransform;
 
         /// <summary>
+        /// <b>The player's hands</b> — what is being carried right now, published by the Player lane's
+        /// <c>CarryHands</c> so any other lane can ask without referencing Player (rule 4).
+        ///
+        /// <para><b>Why a relay and not a reference.</b> The asker is <c>ClamDig</c>, in
+        /// <c>HiddenHarbours.Fishing</c>, whose asmdef references Core and Economy and must never grow a
+        /// Player reference. "Is the shovel in your hands?" is therefore a question that can only be asked
+        /// through Core. Same shape and same discipline as <see cref="PlayerTransform"/>: the producer
+        /// publishes itself on enable, and this is where every consumer resolves it.</para>
+        ///
+        /// <para><b>⚠ The getter launders Unity's FAKE-NULL, and it has to do it the awkward way.</b> The
+        /// field is INTERFACE-typed, and an interface reference does not carry
+        /// <c>UnityEngine.Object</c>'s overloaded <c>==</c> — so a destroyed <c>CarryHands</c> would read
+        /// as a perfectly live <see cref="ICarrier"/> here and every consumer's <c>!= null</c> would pass
+        /// on a corpse. The cast back to <c>UnityEngine.Object</c> is what re-enters the Unity-aware
+        /// comparison. Consumers may then write a plain <c>!= null</c> and be right; better still, ask
+        /// <see cref="CarriedItem.InHand"/>, which is the safe form stated once.</para>
+        ///
+        /// <para>OPTIONAL and NOT part of <see cref="Ready"/>: null in EditMode (a plain MonoBehaviour's
+        /// <c>OnEnable</c> never fires there, so nothing publishes itself), in a bare art scene, and
+        /// before the persistent core boots. "Nobody published a pair of hands" must mean "carry on" —
+        /// never a throw. ⚠ Note the lifetime rule the persistent core imposes: the publisher clears this
+        /// in <c>OnDestroy</c>, never <c>OnDisable</c>, because root-toggling IS how a region hop works
+        /// and a service cleared on disable is a service wiped mid-crossing.</para>
+        /// FLAG lead-architect: new Core contract (the carry seam — see <see cref="ICarriable"/>).
+        /// </summary>
+        public static ICarrier Hands
+        {
+            get => _hands is UnityEngine.Object o && o == null ? null : _hands;
+            set => _hands = value;
+        }
+
+        private static ICarrier _hands;
+
+        /// <summary>
         /// The stable id of the region the player is CURRENTLY in (e.g. <c>"region.st_peters"</c>) —
         /// the travel-aware read gameplay resolves per-region content against (which fish bite HERE,
         /// now). The <b>App</b> travel rig is the writer (the active region's anchor reports itself;
@@ -546,6 +580,7 @@ namespace HiddenHarbours.Core
             Save = null;
             TidalTerrain = null;
             PlayerTransform = null;
+            Hands = null;
             CurrentRegionId = null;
             PendingArrivalKey = null;
             CurrentRegionBounds = default;
