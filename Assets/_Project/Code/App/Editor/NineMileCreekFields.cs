@@ -688,16 +688,23 @@ namespace HiddenHarbours.App.Editor
         /// <summary>
         /// Grid spacing (m) of the meadow's candidate sites.
         ///
-        /// <para><b>⭐ MORE THAN TWICE ST PETERS' 0.85 m, and both halves of that are on purpose.</b>
+        /// <para><b>⭐ WELL OVER TWICE ST PETERS' 0.85 m, and both halves of that are on purpose.</b>
         /// <b>Truth:</b> St Peters is a reverting island where nobody has cut anything in a generation;
         /// this is a farmed coast, and a field that is grazed or mown is not a hayfield. <b>Cost
         /// (rule 7):</b> the field's payload is one byte per candidate site, and this region's plantable
         /// land is roughly seven times the island's — at the island's grain the scene line would be most
         /// of a megabyte and the derived meadow several times the geometry the batching pass was built
-        /// to afford. At 1.8 m with a single slot per cell the payload lands within a factor of the
-        /// island's, which is the budget <c>NineMileCreekFieldsTests</c> pins.</para>
+        /// to afford.</para>
+        ///
+        /// <para><b>⚠ 2.0 m, NOT 1.8 — AND CI IS WHY.</b> The first draft used 1.8 m on an estimate that
+        /// about half the grid would turn out plantable. It measured at <b>86%</b>, and the meadow came
+        /// back at <b>42,819 tufts</b> against the 40,000 the budget test pins — 7% over. The right move
+        /// was to thin the grass rather than to widen the ceiling: the ceiling is the argument (half
+        /// again the island's ratified count, for seven times the ground) and the grain is the knob. At
+        /// 2.0 m the same land carries about 34,600 tufts on ~65 KB of scene, and the field reads more
+        /// like worked ground into the bargain. <c>TheGrassFieldFitsItsPayloadBudget</c> is the pin.</para>
         /// </summary>
-        public const float GrassStepMetres = 1.8f;
+        public const float GrassStepMetres = 2.0f;
 
         /// <summary>Max wander (m) off the grid. Just under half the step, as far as it goes before two
         /// neighbours can swap places.</summary>

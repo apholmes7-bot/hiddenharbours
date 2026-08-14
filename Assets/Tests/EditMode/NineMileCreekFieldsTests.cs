@@ -378,9 +378,16 @@ namespace HiddenHarbours.Tests.EditMode
         /// only calibrated number this project has for what a committed meadow may cost.</summary>
         private const int GrassPayloadBudgetBytes = 100_000;
 
-        /// <summary>The derived-geometry ceiling. St Peters ratified ~27,000 tufts; this allows half as
-        /// many again for a region seven times the size, which is what "sparser, over more ground" means
-        /// as a number.</summary>
+        /// <summary>
+        /// The derived-geometry ceiling. St Peters ratified ~27,000 tufts; this allows half as many again
+        /// for a region seven times the size, which is what "sparser, over more ground" means as a number.
+        ///
+        /// <para>⚠ <b>THIS NUMBER HAS ALREADY EARNED ITS KEEP.</b> The first draft's 1.8 m grid measured
+        /// 42,819 tufts here — 7% over — because the plantable fraction turned out to be 86% of the grid
+        /// rather than the ~50% it was sized against. The grain moved to 2.0 m and the ceiling did NOT
+        /// move, which is the whole point of writing a budget down: it is the argument, and the density
+        /// constants are what give way to it.</para>
+        /// </summary>
         private const int GrassTuftBudget = 40_000;
 
         [Test]

@@ -439,7 +439,7 @@ than trusting it (no circle the size of a small wood may hold more trees than a 
 
 | Layer | Where it comes from | Density |
 |---|---|---|
-| **Field grass** | A `GrassField` bake (#485's byte-plane + chunked meshes) over the land west of the coast | 1.8 m grid, **one** slot per cell, 0.62 chance |
+| **Field grass** | A `GrassField` bake (#485's byte-plane + chunked meshes) over the land west of the coast | 2.0 m grid, **one** slot per cell, 0.62 chance |
 | **Hedgerows** | A 96 m E–W field-strip lattice anchored on the region origin, **plus both sides of the two GRAVEL roads** | a shrub every 3.5 m, 0.72 of stations |
 | **Trees** | Every 11th hedge station, plus a 48 m field-tree grid at 0.35 | ~100 trees in 425,600 m² |
 | **Marsh** | The two carved ponds' own shoulders, banded by the region's tide | 3.2 m grid, 0.55 |
@@ -477,9 +477,14 @@ road a neck into a reed bed. Low marsh below neap high water, high marsh above i
 Rule 7 as a number. A `GrassField` costs **one byte per candidate site** in a committed scene, and this
 region's plantable land is roughly seven times the island's. At St Peters' 0.85 m grid and two slots the
 scene line would be most of a megabyte and the derived geometry several times what the batching pass was
-built to afford. At **1.8 m with a single slot** the payload lands at ~80 KB against the island's ~93 KB,
-and the tuft count within half again of the island's — sparser grass over seven times the ground, which
-is also simply *true* for worked land. `TheGrassFieldFitsItsPayloadBudget` pins both numbers.
+built to afford. At **2.0 m with a single slot** the payload lands at ~65 KB against the island's ~93 KB,
+and the tuft count at ~34,600 — half again the island's ratified 27,000, for seven times the ground.
+`TheGrassFieldFitsItsPayloadBudget` pins both numbers.
+
+⚠ **The grain is 2.0 m because CI measured it, not because it was chosen.** The first draft used 1.8 m on
+an estimate that about half the grid would turn out plantable; it measured at **86%**, and the meadow came
+back at **42,819 tufts** against the 40,000 ceiling. The ceiling did not move — it is the argument, and
+the density constants are what give way to it.
 
 Two smaller economies, for the same reason and the same truth: the grid is **bounded to the land** rather
 than to the region rectangle (more than a third of which is bay that can never grow a blade, and an empty
