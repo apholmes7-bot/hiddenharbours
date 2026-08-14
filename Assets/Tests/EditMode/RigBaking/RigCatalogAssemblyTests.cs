@@ -59,9 +59,14 @@ namespace HiddenHarbours.Tests.RigBaking
 
         /// <summary>
         /// The catalog as it stood at 18b67d1c, read out of the single dictionary this fixture's
-        /// refactor replaced. Sorted by key; prerequisites are IN ORDER, because the order is the
-        /// depth-first install order (<c>shopBuilding</c> → <c>shopInterior</c>, <c>shopfront</c>)
-        /// and swapping it changes what a bake produces.
+        /// refactor replaced, PLUS every kit registered since — the table is a running ledger, not a
+        /// frozen snapshot, and <see cref="TheCatalogHoldsExactlyTheKeysMainDeclared"/> says so in its
+        /// own failure message ("if a NEW kit landed, add its row"). Later rows carry the drop that
+        /// brought them.
+        ///
+        /// <para>Sorted by key; prerequisites are IN ORDER, because the order is the depth-first
+        /// install order (<c>shopBuilding</c> → <c>shopInterior</c>, <c>shopfront</c>) and swapping it
+        /// changes what a bake produces.</para>
         /// </summary>
         static readonly Snapshot[] Baseline =
         {
@@ -77,6 +82,13 @@ namespace HiddenHarbours.Tests.RigBaking
                          "CharacterIso6", AzimuthConvention.Clockwise, "characterHead"),
             new Snapshot("characterEye", "docs/art/rigs/eyeIsoRig.js",
                          "EyeIso", AzimuthConvention.Clockwise),
+            // Added by the rev-6.4 carry drop (2026-08-14), not present at 18b67d1c. The prerequisite
+            // is the BODY and the order is load-bearing: this layer reads the body's camera basis and
+            // anchors(), and loaded first it does not throw — every pin() silently returns null.
+            // Convention is inherited from the body it annotates rather than measured; the table holds
+            // no pixels of its own to measure.
+            new Snapshot("characterHands", "docs/art/rigs/characterIsoRig6.hands.js",
+                         "CharacterHands6", AzimuthConvention.Clockwise, "character"),
             new Snapshot("characterHead", "docs/art/rigs/headIsoRig3.js",
                          "HeadIso3", AzimuthConvention.Clockwise, "characterEye"),
             new Snapshot("crustacean", "docs/art/rigs/crustaceanRig.js",

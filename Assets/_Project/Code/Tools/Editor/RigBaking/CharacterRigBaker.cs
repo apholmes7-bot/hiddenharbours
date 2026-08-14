@@ -196,6 +196,12 @@ namespace HiddenHarbours.Tools.RigBaking
             host.Execute(RoundingHelperJs);
             string g = entry.GlobalName;
 
+            // The rev-6.4 hand-prop anchor layer, plus the prop rigs its table asks questions of.
+            // Best-effort and AFTER the body (it reads the body's camera and anchors) — a kit without
+            // it still bakes every sheet and every existing anchor, and simply writes no handProps
+            // block. See AppendHandProps.
+            InstallHandPropLayer(host);
+
             var result = new CharacterBakeResult
             {
                 RigKey = rigKey,
@@ -545,12 +551,169 @@ namespace HiddenHarbours.Tools.RigBaking
                 sb.Append(a < states.Count - 1 ? "\n    },\n" : "\n    }\n");
             }
 
-            sb.Append("  }\n}\n");
+            sb.Append("  },\n");
+            AppendHandProps(sb, host, geo, convention, buildPreset);
+            sb.Append("}\n");
 
             string assetPath = $"{outputFolder}/{anchorFileName}";
             File.WriteAllText(Path.Combine(RigCatalog.RepoRoot, assetPath), sb.ToString());
             return assetPath;
         }
+
+        /// <summary>
+        /// Load the hand-prop anchor layer and the prop rigs it interrogates.
+        ///
+        /// <para><b>Order is the whole contract.</b> <c>characterHands</c> declares the body as its
+        /// prerequisite, so installing it here — after <see cref="RigCatalog.Install"/> has already put
+        /// the body in — is idempotent and correct. Loaded BEFORE the body it would not throw: its
+        /// <c>C()</c> resolves to null and every <c>pin()</c> silently returns null, which is the
+        /// failure mode the prerequisite exists to make impossible.</para>
+        ///
+        /// <para><b>Why the prop rigs come too.</b> One row is not a constant: <c>fish</c> declares
+        /// <c>hands:'auto'</c> and resolves it by asking <c>FishIso.hold(species, scale)</c> whether
+        /// that species is a one-hand gill grip or a two-hand cradle. Without <c>FishIso</c> in the
+        /// host the string <c>'auto'</c> falls through into the sidecar unresolved — not an error, just
+        /// a number nobody can use. The others are loaded for the same reason in principle and cost a
+        /// file read each.</para>
+        ///
+        /// <para><b>Best-effort by design.</b> A rig the catalog does not know (the shovel and the rope
+        /// coil have no registration yet) is SKIPPED, not fatal: the hand-prop table names seven props
+        /// and only some have art, which is the drop's own stated position. A missing prop rig costs
+        /// its own row's precision and nothing else.</para>
+        /// </summary>
+        static void InstallHandPropLayer(IRigScriptHost host)
+        {
+            foreach (string key in HandPropRigKeys)
+            {
+                if (!RigCatalog.Has(key)) continue;
+                try { RigCatalog.InstallModule(host, RigCatalog.Get(key)); }
+                catch (Exception e)
+                {
+                    // A prop rig that fails to load costs its own row's precision. Refusing the whole
+                    // character bake over it would be a worse trade — every sheet and every existing
+                    // anchor is independent of this layer.
+                    UnityEngine.Debug.LogWarning(
+                        $"[CharacterRigBaker] hand-prop layer: rig '{key}' did not load — " +
+                        $"rows that ask it a question fall back to the table's literal. {e.Message}");
+                }
+            }
+        }
+
+        /// <summary>
+        /// The anchor layer, then the prop rigs its rows interrogate. <c>characterHands</c> is FIRST
+        /// so its own prerequisite chain (eye → head → body) is satisfied before anything else runs.
+        ///
+        /// <para>Not every prop in the table appears here, and that is the drop's own position rather
+        /// than an omission: <c>knife</c> and <c>gaff</c> have no rig at all (their rows carry a
+        /// <c>stub</c> spec instead), the carried rope coil is a half-scaled deck prop awaiting its own
+        /// bake, and <c>shovelIsoRig.js</c> is committed but not yet registered in this catalog.</para>
+        /// </summary>
+        static readonly string[] HandPropRigKeys = { "characterHands", "rod", "fish", "shellfish" };
+
+        /// <summary>
+        /// The rev-6.4 HAND-PROP anchors: for each carried object, the eight per-facing rows saying
+        /// which hand holds it at that heading, how far off the wrist it sits, how it is angled, which
+        /// cell of its own turntable to draw, and whether it draws over or under the sprite.
+        ///
+        /// <para><b>Why this is a sibling of <c>states</c> and not inside it.</b> The prop's own grip
+        /// offset is a function of (prop, dir) ONLY — the rig projects a body-local metre offset through
+        /// the camera basis, which depends on dir/elev/roll/pitch and not on the anim or the frame. So
+        /// there is exactly one table, not one per state, and folding it into <c>states</c> would bake
+        /// the same eight rows twenty-nine times over.</para>
+        ///
+        /// <para><b>The two point fields are DIFFERENT QUANTITIES and the names say so.</b>
+        /// <c>gripDx/gripDy</c> is the frame-independent offset FROM THE WRIST — add it to the per-frame
+        /// <c>anchors</c> grid above and a carried object tracks the hand as it swings.
+        /// <c>restX/restY</c> is the absolute pin in cell px at the REST POSE ONLY (idle frame 0, named
+        /// in <c>restPose</c>), for a consumer that hangs the object off the body rather than off a
+        /// tracked hand. Reading <c>restX</c> as if it were live is the one mistake this block can
+        /// invite, which is why it is not called <c>x</c>.</para>
+        ///
+        /// <para>Silent no-op when the hand-prop layer is not in the host — a rig kit without it is an
+        /// older kit, not a broken one, and an absent block reads as absent rather than as
+        /// <c>undefined</c>.</para>
+        /// </summary>
+        static void AppendHandProps(StringBuilder sb, IRigScriptHost host, in RigGeometry geo,
+                                    AzimuthConvention convention, string buildPreset)
+        {
+            const string H = "CharacterHands6";
+            if (!host.EvaluateBool($"typeof {H} === 'object' && {H} !== null"))
+            {
+                sb.Append("  \"handProps\": null,\n");
+                return;
+            }
+
+            int dirs = geo.NativeDirs;
+            string build = string.IsNullOrEmpty(buildPreset)
+                ? "{}" : $"{{preset:{JsString(buildPreset)}}}";
+
+            sb.Append("  \"handProps\": {\n");
+            sb.Append($"    \"pass\": {Num(host.EvaluateNumber($"{H}.pass"))},\n");
+            sb.Append($"    \"torsoHalfMetres\": {Num(host.EvaluateNumber($"{H}.TORSO_HALF"))},\n");
+            sb.Append($"    \"restPose\": {{ \"anim\": \"{HandPropRestAnim}\", \"frame\": {HandPropRestFrame} }},\n");
+            sb.Append("    \"_note\": \"Per-facing anchors for a CARRIED object (CharacterHands6, rev 6.4). gripDx/gripDy is the prop's offset FROM THE WRIST in cell px and is frame-INDEPENDENT — add it to the per-frame 'anchors' grid to track a swinging hand. restX/restY is the absolute pin in cell px at the rest pose named above, for a consumer that hangs the object off the body instead. 'hand' is already swapped for the heading; 'itemDir' is the cell of the PROP's own turntable to draw (a turntable prop has no yaw, only eight cells); 'behind' means draw under the sprite. A prop whose 'rig' is null has no art baked yet and carries its spec in 'stub'.\",\n");
+            sb.Append("    \"props\": {\n");
+
+            string[] props = host.EvaluateString($"{H}.PROP_ORDER.join(',')").Split(',');
+            for (int p = 0; p < props.Length; p++)
+            {
+                // ⚠️ TWO different quotings of the same word, and they are not interchangeable.
+                // `js` is a JS string literal (single-quoted, JsString's job) and is only ever passed
+                // INTO an expression the rig host evaluates. The KEY written here is JSON, which
+                // admits double quotes only — emitting JsString here produces 'rodTrail': …, which
+                // every JS engine accepts and every JSON parser rejects at exactly that column.
+                string prop = props[p], js = JsString(prop);
+                sb.Append($"      \"{prop}\": {{ ");
+                sb.Append($"\"label\": {host.EvaluateString($"JSON.stringify({H}.PROPS[{js}].label)")}, ");
+                sb.Append($"\"mount\": {host.EvaluateString($"JSON.stringify({H}.PROPS[{js}].mount)")}, ");
+                sb.Append($"\"rig\": {host.EvaluateString($"JSON.stringify({H}.PROPS[{js}].rig || null)")}, ");
+                sb.Append($"\"itemScale\": {Num(host.EvaluateNumber($"{H}.PROPS[{js}].itemScale || 1"))}, ");
+                sb.Append($"\"item\": {host.EvaluateString($"JSON.stringify({H}.item({js}), __hhRound3)")}, ");
+                sb.Append($"\"stub\": {host.EvaluateString($"JSON.stringify({H}.PROPS[{js}].stub || null)")}, ");
+                sb.Append($"\"rest\": {host.EvaluateString($"JSON.stringify({H}.PROPS[{js}].rest || null)")}, ");
+                sb.Append($"\"note\": {host.EvaluateString($"JSON.stringify({H}.PROPS[{js}].note || null)")},\n");
+                sb.Append("        \"rows\": [\n");
+
+                for (int d = 0; d < dirs; d++)
+                {
+                    // The SAME DirForCell correction the pixels take, so row d of this table describes
+                    // the heading row d of every sheet depicts. Identity for a clockwise rig — but
+                    // written out rather than assumed, because that is the assumption this lane has
+                    // got wrong twice.
+                    string ds = Num(RigBaker.DirForCell(d, dirs, convention));
+                    string opts = $"{{anim:{JsString(HandPropRestAnim)},frame:{HandPropRestFrame}," +
+                                  $"elev:{Num(geo.DefaultElevation)},build:{build}}}";
+                    sb.Append("          ").Append(host.EvaluateString(
+                        $"(function(){{var p={H}.pin({js},{ds},{opts});return JSON.stringify({{" +
+                        "dir:p.dir,facing:p.facing,hand:p.hand,hands:p.hands,mode:p.mode," +
+                        "gripDx:p.dx,gripDy:p.dy,restX:p.x,restY:p.y," +
+                        "yaw:p.yaw,pitch:p.pitch,bend:p.bend,turn:p.turn,itemDir:p.itemDir," +
+                        // ⚠️ This segment is NOT interpolated, so a brace here is LITERAL. The
+                        // interpolated first segment above needs `{{` to emit one `{`; this one needs
+                        // a single `}`. Writing `}}` here (the symmetry your eye wants) emits two and
+                        // the rig host dies with "SyntaxError: Unexpected token '}'" at bake time —
+                        // invisible to the compiler, because the string is only assembled at runtime.
+                        "behind:p.behind,swapped:p.swapped},__hhRound3);})()"));
+                    sb.Append(d < dirs - 1 ? ",\n" : "\n");
+                }
+
+                sb.Append("        ]\n      }");
+                sb.Append(p < props.Length - 1 ? ",\n" : "\n");
+            }
+
+            sb.Append("    }\n  }\n");
+        }
+
+        /// <summary>
+        /// The pose the absolute <c>restX/restY</c> pins are measured at. Idle frame 0 is the rig's
+        /// rest stance — the pose a consumer that does not track the hand per frame should hang a
+        /// carried object from. Named as constants so the sidecar can STATE which pose it baked
+        /// rather than leaving a reader to infer it.
+        /// </summary>
+        public const string HandPropRestAnim = "idle";
+
+        /// <inheritdoc cref="HandPropRestAnim"/>
+        public const int HandPropRestFrame = 0;
 
         /// <summary>One <c>[dir][frame]</c> grid of whatever the expression returns, JSON-stringified
         /// through the rounding replacer. Rows follow the same DirForCell correction the pixels do, so

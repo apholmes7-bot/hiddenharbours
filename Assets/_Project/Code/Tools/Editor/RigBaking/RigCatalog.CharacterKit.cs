@@ -45,6 +45,30 @@ namespace HiddenHarbours.Tools.RigBaking
                 ["character"] = new RigEntry($"{RigFolder}/characterIsoRig6.js", "CharacterIso6",
                                              AzimuthConvention.Clockwise,
                                              prerequisites: new[] { "characterHead" }),
+
+                // ---- the hand-prop ANCHOR layer, rev 6.4 (drop of 2026-08-14) --------------------
+                //
+                // The fourth file of the character kit, and the only one that draws nothing: it is a
+                // TABLE. For a given carried object it says where on the hand it sits, WHICH hand holds
+                // it at which heading, how it is angled to read there, and whether it draws over or
+                // under the sprite. That layer used to be written per consumer page, in px, by eye —
+                // which is exactly why every held thing hung off ONE fixed hip offset at all eight
+                // facings (CarryHands._hipOffsetMeters, flagged in its own tooltip as art-lane work).
+                //
+                // ⚠️ LOADS AFTER THE BODY, not before: it reads the body's camera basis and anchors().
+                // Prerequisites are depth-first and in order, so naming "character" here is what
+                // guarantees eye -> head -> body -> hands. Reversed, nothing throws — `C()` resolves to
+                // null and every pin() silently returns null.
+                //
+                // A module, not a rig: it exposes no W/H/pivot triple (its numbers are body-local
+                // METRES, which is what makes one table correct at any elev and any density), so
+                // Install would throw on the missing pivot and InstallModule is the entry point.
+                // Convention is inherited from the body it annotates rather than measured — the table
+                // holds no pixels of its own to measure.
+                ["characterHands"] = new RigEntry($"{RigFolder}/characterIsoRig6.hands.js",
+                                                  "CharacterHands6",
+                                                  AzimuthConvention.Clockwise,
+                                                  prerequisites: new[] { "character" }),
             };
     }
 }
