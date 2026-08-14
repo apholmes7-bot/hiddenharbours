@@ -48,6 +48,18 @@ error). Never invent a section to fill a gap.
     vertex; every cited line number and constant in those files still reads exactly as
     written. **art-director: please re-stamp those eight from the committed files** so the
     check goes back to exact. dory / punt / console already hash exactly.
+  - ⚠️ **That re-stamp is blocked on the IMPORTER, not on the art — measured 2026-08-14, and the
+    ask above stands.** It is not a one-file edit: the SHA is recorded in **two** places. Each
+    committed deck asset carries its own `DerivedFromRigSha256`
+    (`Assets/_Project/Data/Boats/Decks/*.asset`), written at import from the sidecar's value
+    (`DeckSidecarImporter.cs:154`), and `DeckSidecarImportParityTests` asserts the two are
+    **string-equal** (`DeckSidecarImportParityTests.cs:93`). All eleven sidecars currently agree
+    with their assets, so re-stamping the eight reds exactly those eight until *Hidden Harbours ▸
+    Dev ▸ Import Deck Sidecars* is re-run and the eight assets re-committed **in the same PR**.
+    Note which assert fires: the staleness check (`EverySidecarStillDescribesTheRigItNames`) would
+    still pass, because it accepts the line-ending match — the failure lands on the *provenance*
+    assert instead. **So the re-stamp needs an editor session; a session without Unity must not
+    attempt it.** Geometry is unaffected either way — a line ending cannot move a vertex.
 - `DECK` — array of walkable polygons, each with an `id` and
   `winding: "ccw_from_above"` (counter-clockwise when viewed from +z).
   - `polygon` + `z` for FLAT areas: `[x, y]` pairs, height in the single `z` field.
