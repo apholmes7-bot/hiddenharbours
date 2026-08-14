@@ -176,10 +176,21 @@ namespace HiddenHarbours.Player
             ICarriable container = Carried;
             _carried = null;
 
-            // Back to the region it came from when that parent is still alive; the scene root otherwise
-            // (the region was unloaded under it, which is not a reason to refuse the press).
-            container.Transform.SetParent(_placedParent != null ? _placedParent : null,
-                                          worldPositionStays: false);
+            // Back to the region it came from when that parent is still alive AND still on screen; the
+            // scene root otherwise (the region was unloaded or toggled out under it, which is not a
+            // reason to refuse the press).
+            //
+            // ⚠️ The activeInHierarchy leg is not belt-and-braces — it is a real defect the moment
+            // anything carriable is standing in a REGION rather than spawned by a dev menu. A region hop
+            // does not unload the region you left; it SetActive(false)s its roots. So carrying a tool
+            // from St Peters to Nine Mile Creek and setting it down would re-parent it under St Peters'
+            // sleeping root: the object survives, inactive — invisible, unregistered from the interact
+            // registry, and unrecoverable without going back and re-activating a scene. Dropping to the
+            // scene root instead leaves it where the fisher actually stood, which is what she just did.
+            Transform parent = _placedParent != null && _placedParent.gameObject.activeInHierarchy
+                               ? _placedParent
+                               : null;
+            container.Transform.SetParent(parent, worldPositionStays: false);
             container.Transform.position = feet;
             _placedParent = null;
 

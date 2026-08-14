@@ -1,28 +1,34 @@
+// No UnityEngine.InputSystem and no HiddenHarbours.Core here any more — this component reads no key and
+// consults no gate. Both went with the E poll when the dig moved onto the interact verb; if either
+// comes back, so has the double-reader ambiguity the move removed (see the class remarks).
 using UnityEngine;
-using UnityEngine.InputSystem;
-using HiddenHarbours.Core;
 
 namespace HiddenHarbours.Fishing
 {
     /// <summary>
-    /// The on-foot player's single <b>clam digger</b> (St Peters opening) — it owns the Interact key for
-    /// digging so a press is always exactly ONE clam from the hole you're standing on. It sits on the player
-    /// and, on Interact, picks the <em>nearest in-range, exposed</em> <see cref="ClamDig"/> hole and digs only
-    /// that one.
+    /// The on-foot player's <b>clam-hole beacon</b> (St Peters opening).
     ///
-    /// <para><b>Why a digger, not per-hole input.</b> Each <see cref="ClamDig"/> used to listen for E itself,
-    /// so a press fired EVERY exposed hole on the bar at once — you dug clams from anywhere and a press or two
-    /// filled the 20-clam bucket. Centralising the key here makes the proximity gate real (you must be at a
-    /// hole) and the yield exactly one clam per press (the nearest hole), which is the cozy hand-gather feel
-    /// the design asks for. Candidate holes are gathered on a press (not per frame) with a single
-    /// <c>FindObjectsByType</c> scan — fine for a one-shot keypress, and it needs no enable-time registry
-    /// bookkeeping (which doesn't run in EditMode tests anyway). No per-frame allocation (rule 7).</para>
+    /// <para><b>⚠️ THIS COMPONENT NO LONGER OWNS A KEY, AND THAT IS THE POINT (2026-08-13, the tools-in-hand
+    /// ruling).</b> It used to read E directly and dig the nearest in-range exposed hole. That was correct
+    /// when nothing else on foot answered E — but the moment a TOOL can be in your hands, a second
+    /// independent reader of the same key is an ambiguity nobody arbitrates: standing at a hole with the
+    /// shovel held, one reader wants to dig and the carry verb wants to put the shovel down, and which one
+    /// wins is decided by <c>Update</c> order. So the dig moved onto the one interact verb, where a single
+    /// pure function decides. Each <see cref="ClamDig"/> is now an <c>IInteractable</c> in its own right;
+    /// the resolver picks the nearest qualifying hole, which is precisely what
+    /// <see cref="NearestDiggable"/> did by hand — with the tie-break made deterministic (by id) instead
+    /// of by scan order. <b>Do not give this component a key again.</b></para>
     ///
-    /// <para><b>Seam discipline.</b> Holds only a <see cref="Transform"/> for the player position and reads the
-    /// holes through <see cref="ClamDig"/> in this same lane — no Player/World concrete classes referenced. A
-    /// modal dialogue owns Interact while up (the Core <see cref="InteractionGate"/>), so the digger stands
-    /// down under it. Input is dev-keyed (E) for the greybox; an InputService/interaction prompt replaces it
-    /// later (ui-ux). Real-time only — it touches no sim state, so determinism is unaffected (rule 5).</para>
+    /// <para><b>What it still does, and why it still exists.</b> It is the one Fishing-lane component that
+    /// holds the on-foot player, so it publishes that position to the static
+    /// <see cref="TryGetPlayerPosition"/> beacon each frame. The per-hole <see cref="ClamHoleVisual"/>
+    /// reads it to run the "skittish clam" proximity-escape timer WITHOUT referencing the Player module.
+    /// Cosmetic, real-time only: never saved, feeds no sim path (rule 5).</para>
+    ///
+    /// <para><b><see cref="TryDigNearest"/> and <see cref="NearestDiggable"/> are kept</b> — they are no
+    /// longer on the input path, but they are the honest expression of "which hole would a press dig", and
+    /// a dozen EditMode tests drive the dig through them without standing up a resolver. They are now a
+    /// TEST/tooling entry point, not the runtime one.</para>
     ///
     /// <para><b>The player-position beacon.</b> The digger is the one Fishing-lane component that holds the
     /// on-foot player, so it publishes that position to a static <see cref="TryGetPlayerPosition"/> beacon each
@@ -75,12 +81,8 @@ namespace HiddenHarbours.Fishing
         private void Update()
         {
             // Publish the player position for the per-hole proximity-escape timer (cosmetic, real-time).
+            // ⚠️ THIS IS ALL THAT IS LEFT, and the removal is the point — see the class remarks.
             PublishPlayerPosition();
-
-            // A modal dialogue (world-content) owns the shared Interact key while it's up — don't dig under it.
-            if (InteractionGate.IsBlocked) return;
-            var kb = Keyboard.current;
-            if (kb != null && kb.eKey.wasPressedThisFrame) TryDigNearest();
         }
 
         /// <summary>

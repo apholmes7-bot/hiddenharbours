@@ -48,6 +48,26 @@ namespace HiddenHarbours.Core
         /// <summary>Something already in your hands, which you are putting down / using. Outranks both:
         /// what you are carrying is always the most specific answer to "act".</summary>
         public const int Held = 20;
+
+        /// <summary>
+        /// A work-site that the tool ALREADY IN YOUR HANDS operates — a bared clam hole with the shovel
+        /// held, and later a bench, a net, a rack.
+        ///
+        /// <para><b>Why this outranks <see cref="Held"/>, which reads backwards at first glance.</b>
+        /// Without it, carrying is a trap: the shovel reports <c>Held</c> (20), a clam hole is a fixture
+        /// (0), so E standing on a bared hole with the shovel in your hands means "put the shovel down" —
+        /// and digging becomes IMPOSSIBLE the moment you are holding the thing you dig with. The ladder
+        /// ranks by SPECIFICITY, and "use the thing you are holding on the thing right in front of you" is
+        /// more specific than "put the thing you are holding down". Put-down is the general fallback, and
+        /// you still get it the honest way: <b>step out of the work-site's reach</b>, which is a pace, and
+        /// is what a person does before setting a shovel on the sand.</para>
+        ///
+        /// <para><b>The obligation this puts on a registrant.</b> A <c>ToolTarget</c> candidate MUST gate
+        /// <see cref="IInteractable.IsAvailable"/> on the tool actually being held. A work-site that
+        /// claimed this rung unconditionally would outrank the held thing forever and you could never put
+        /// anything down near it — the inversion, re-created one rung higher.</para>
+        /// </summary>
+        public const int ToolTarget = 30;
     }
 
     /// <summary>

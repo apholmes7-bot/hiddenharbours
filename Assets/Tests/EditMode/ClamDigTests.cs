@@ -3,6 +3,7 @@ using NUnit.Framework;
 using UnityEngine;
 using HiddenHarbours.Core;
 using HiddenHarbours.Fishing;
+using HiddenHarbours.Player;   // ToolDef — the shovel the dig now needs IN HAND
 
 namespace HiddenHarbours.Tests.EditMode
 {
@@ -74,6 +75,13 @@ namespace HiddenHarbours.Tests.EditMode
             GameServices.TidalTerrain = _terrain;
             GameServices.Environment = _env;
             GameServices.Save = new FakeSaveService(_save);
+
+            // …AND HOLDS IT. The owner's ruling (2026-08-13) made digging need the shovel IN HAND, not
+            // merely owned — so every pre-existing test below, which was written when owning was enough,
+            // needs the second precondition to go on testing what it was written to test. Real hands
+            // holding a real CarriableTool, not a fake (see ToolInHand on why that distinction matters).
+            // The tests that pin the NEW gate deliberately undo this.
+            ToolInHand.Holding(ToolDef.ShovelId, _spawned);
         }
 
         [TearDown]
@@ -103,6 +111,7 @@ namespace HiddenHarbours.Tests.EditMode
             go.transform.position = Vector2.zero;          // spot at origin; terrain is flat anyway
             var d = go.AddComponent<ClamDig>();
             d.Configure(clam, bucket, go.transform, "gear.shovel", seed);
+            d.ConfigureInteract($"fixture.clam_hole#{_spawned.Count}", ToolDef.ShovelId);
             return d;
         }
 
