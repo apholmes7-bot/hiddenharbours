@@ -719,5 +719,97 @@
         [{"handL":{"x":23.741,"y":62.599},"handR":{"x":33.471,"y":56.345},"head":{"x":30.915,"y":44.497},"hip":{"x":32,"y":67.623}}, {"handL":{"x":24.611,"y":63.633},"handR":{"x":34.341,"y":57.379},"head":{"x":31.977,"y":45.039},"hip":{"x":32.08,"y":68.009}}, {"handL":{"x":24.74,"y":63.786},"handR":{"x":34.469,"y":57.532},"head":{"x":32.159,"y":45.113},"hip":{"x":32.113,"y":68.052}}, {"handL":{"x":24.113,"y":63.041},"handR":{"x":33.842,"y":56.787},"head":{"x":31.408,"y":44.688},"hip":{"x":32.08,"y":67.758}}, {"handL":{"x":20.164,"y":48.484},"handR":{"x":29.893,"y":42.23},"head":{"x":27.549,"y":42.942},"hip":{"x":32,"y":67.623}}, {"handL":{"x":19.646,"y":46.442},"handR":{"x":29.376,"y":40.188},"head":{"x":27.325,"y":42.944},"hip":{"x":31.92,"y":67.674}}, {"handL":{"x":19.411,"y":45.513},"handR":{"x":29.14,"y":39.258},"head":{"x":27.292,"y":42.966},"hip":{"x":31.887,"y":67.696}}, {"handL":{"x":20.7,"y":50.599},"handR":{"x":30.43,"y":44.345},"head":{"x":27.965,"y":43.174},"hip":{"x":31.92,"y":67.674}}]
       ]
     }
+  },
+  "handProps": {
+    "pass": 6.4,
+    "torsoHalfMetres": 0.115,
+    "restPose": { "anim": "idle", "frame": 0 },
+    "_note": "Per-facing anchors for a CARRIED object (CharacterHands6, rev 6.4). gripDx/gripDy is the prop's offset FROM THE WRIST in cell px and is frame-INDEPENDENT — add it to the per-frame 'anchors' grid to track a swinging hand. restX/restY is the absolute pin in cell px at the rest pose named above, for a consumer that hangs the object off the body instead. 'hand' is already swapped for the heading; 'itemDir' is the cell of the PROP's own turntable to draw (a turntable prop has no yaw, only eight cells); 'behind' means draw under the sprite. A prop whose 'rig' is null has no art baked yet and carries its spec in 'stub'.",
+    "props": {
+      "rodTrail": { "label": "ROD · TRAIL", "mount": "hand", "rig": "RodIso", "itemScale": 1, "item": {"rig":"RodIso","pivot":"grip centre (56,72)","pivotFix":{"dx":0,"dy":0}}, "stub": null, "rest": {"tier":"coast"}, "note": "rides idle / walk / run / board — free arms, no pose change",
+        "rows": [
+          {"dir":0,"facing":"N","hand":"R","hands":1,"mode":"hand","gripDx":1.76,"gripDy":0.554,"restX":39.232,"restY":66.4,"yaw":134,"pitch":12,"bend":0.06,"turn":0,"itemDir":0,"behind":false,"swapped":false},
+          {"dir":1,"facing":"NE","hand":"R","hands":1,"mode":"hand","gripDx":0.453,"gripDy":0.972,"restX":36.763,"restY":69.423,"yaw":147,"pitch":12,"bend":0.06,"turn":0,"itemDir":1,"behind":false,"swapped":false},
+          {"dir":2,"facing":"E","hand":"R","hands":1,"mode":"hand","gripDx":-0.48,"gripDy":0.965,"restX":32.145,"restY":70.73,"yaw":163,"pitch":12,"bend":0.06,"turn":0,"itemDir":2,"behind":false,"swapped":false},
+          {"dir":3,"facing":"SE","hand":"R","hands":1,"mode":"hand","gripDx":-1.131,"gripDy":0.536,"restX":27.441,"restY":69.555,"yaw":157,"pitch":12,"bend":0.06,"turn":0,"itemDir":3,"behind":false,"swapped":false},
+          {"dir":4,"facing":"S","hand":"R","hands":1,"mode":"hand","gripDx":-1.12,"gripDy":0.348,"restX":25.408,"restY":66.997,"yaw":143,"pitch":12,"bend":0.06,"turn":0,"itemDir":4,"behind":false,"swapped":false},
+          {"dir":5,"facing":"SW","hand":"R","hands":1,"mode":"hand","gripDx":-0.453,"gripDy":-0.482,"restX":27.237,"restY":63.562,"yaw":153,"pitch":12,"bend":0.06,"turn":0,"itemDir":5,"behind":false,"swapped":false},
+          {"dir":6,"facing":"W","hand":"R","hands":1,"mode":"hand","gripDx":0.48,"gripDy":-0.475,"restX":31.855,"restY":62.256,"yaw":164,"pitch":12,"bend":0.06,"turn":0,"itemDir":6,"behind":true,"swapped":false},
+          {"dir":7,"facing":"NW","hand":"R","hands":1,"mode":"hand","gripDx":1.131,"gripDy":-0.046,"restX":36.559,"restY":63.431,"yaw":144,"pitch":12,"bend":0.06,"turn":0,"itemDir":7,"behind":false,"swapped":false}
+        ]
+      },
+      "rodSling": { "label": "ROD · SLUNG", "mount": "back", "rig": "RodIso", "itemScale": 1, "item": {"rig":"RodIso","pivot":"grip centre (56,72)","pivotFix":{"dx":0,"dy":0}}, "stub": null, "rest": {"tier":"coast"}, "note": "anchor = hip + 0.52 of the way to the head, pushed 0.105 m aft",
+        "rows": [
+          {"dir":0,"facing":"N","hand":null,"hands":0,"mode":"back","gripDx":-1.76,"gripDy":0.812,"restX":30.24,"restY":56.699,"yaw":160,"pitch":58,"bend":0.03,"turn":0,"itemDir":0,"behind":false,"swapped":false},
+          {"dir":1,"facing":"NE","hand":null,"hands":0,"mode":"back","gripDx":-3.62,"gripDy":-0.621,"restX":28.438,"restY":55.282,"yaw":156,"pitch":58,"bend":0.03,"turn":0,"itemDir":1,"behind":false,"swapped":false},
+          {"dir":2,"facing":"E","hand":null,"hands":0,"mode":"back","gripDx":-3.36,"gripDy":-2.48,"restX":28.723,"restY":53.461,"yaw":146,"pitch":58,"bend":0.03,"turn":0,"itemDir":2,"behind":true,"swapped":false},
+          {"dir":3,"facing":"SE","hand":null,"hands":0,"mode":"back","gripDx":-1.131,"gripDy":-3.675,"restX":30.927,"restY":52.303,"yaw":142,"pitch":58,"bend":0.03,"turn":0,"itemDir":3,"behind":true,"swapped":false},
+          {"dir":4,"facing":"S","hand":null,"hands":0,"mode":"back","gripDx":1.76,"gripDy":-3.508,"restX":33.76,"restY":52.486,"yaw":140,"pitch":58,"bend":0.03,"turn":0,"itemDir":4,"behind":true,"swapped":false},
+          {"dir":5,"facing":"SW","hand":null,"hands":0,"mode":"back","gripDx":3.62,"gripDy":-2.075,"restX":35.562,"restY":53.903,"yaw":144,"pitch":58,"bend":0.03,"turn":0,"itemDir":5,"behind":true,"swapped":false},
+          {"dir":6,"facing":"W","hand":null,"hands":0,"mode":"back","gripDx":3.36,"gripDy":-0.217,"restX":35.277,"restY":55.724,"yaw":148,"pitch":58,"bend":0.03,"turn":0,"itemDir":6,"behind":false,"swapped":false},
+          {"dir":7,"facing":"NW","hand":null,"hands":0,"mode":"back","gripDx":1.131,"gripDy":0.979,"restX":33.073,"restY":56.882,"yaw":156,"pitch":58,"bend":0.03,"turn":0,"itemDir":7,"behind":false,"swapped":false}
+        ]
+      },
+      "fish": { "label": "FISH · GILL GRIP", "mount": "hand", "rig": "FishIso", "itemScale": 1, "item": {"rig":"FishIso","pivot":"gripU point (32,38)","pivotFix":{"dx":0,"dy":0}}, "stub": null, "rest": {"species":"mackerel","rest":"gill","two":"cradle"}, "note": "gill grip 1-hand · cradle 2-hand at mass >= 2.2 kg (cod cradles, mackerel hangs)",
+        "rows": [
+          {"dir":0,"facing":"N","hand":"R","hands":1,"mode":"hand","gripDx":2.4,"gripDy":0.039,"restX":39.872,"restY":65.886,"yaw":0,"pitch":0,"bend":0,"turn":2,"itemDir":2,"behind":false,"swapped":false},
+          {"dir":1,"facing":"NE","hand":"R","hands":1,"mode":"hand","gripDx":1.584,"gripDy":0.391,"restX":37.895,"restY":68.842,"yaw":0,"pitch":0,"bend":0,"turn":1,"itemDir":2,"behind":false,"swapped":false},
+          {"dir":2,"facing":"E","hand":"R","hands":1,"mode":"hand","gripDx":0.96,"gripDy":0.657,"restX":33.585,"restY":70.422,"yaw":0,"pitch":0,"bend":0,"turn":0,"itemDir":2,"behind":false,"swapped":false},
+          {"dir":3,"facing":"SE","hand":"R","hands":1,"mode":"hand","gripDx":0.453,"gripDy":1.118,"restX":29.025,"restY":70.136,"yaw":0,"pitch":0,"bend":0,"turn":1,"itemDir":4,"behind":false,"swapped":false},
+          {"dir":4,"facing":"S","hand":"R","hands":1,"mode":"hand","gripDx":-0.64,"gripDy":0.862,"restX":25.888,"restY":67.511,"yaw":0,"pitch":0,"bend":0,"turn":2,"itemDir":6,"behind":false,"swapped":false},
+          {"dir":5,"facing":"SW","hand":"L","hands":1,"mode":"hand","gripDx":-0.226,"gripDy":0.972,"restX":35.304,"restY":69.925,"yaw":0,"pitch":0,"bend":0,"turn":-1,"itemDir":4,"behind":false,"swapped":true},
+          {"dir":6,"facing":"W","hand":"L","hands":1,"mode":"hand","gripDx":-0.96,"gripDy":0.657,"restX":30.56,"restY":70.422,"yaw":0,"pitch":0,"bend":0,"turn":0,"itemDir":6,"behind":false,"swapped":true},
+          {"dir":7,"facing":"NW","hand":"L","hands":1,"mode":"hand","gripDx":-1.131,"gripDy":0.1,"restX":26.66,"restY":68.616,"yaw":0,"pitch":0,"bend":0,"turn":-1,"itemDir":6,"behind":false,"swapped":true}
+        ]
+      },
+      "clam": { "label": "CLAM · HANDFUL", "mount": "hand", "rig": "Shellfish", "itemScale": 1, "item": {"rig":"Shellfish","pivot":"handful grip (11,8)","pivotFix":{"dx":0,"dy":0}}, "stub": null, "rest": {"kind":"clam","variant":0}, "note": "Shellfish.renderHandful — one per hand when hands:2",
+        "rows": [
+          {"dir":0,"facing":"N","hand":"R","hands":1,"mode":"hand","gripDx":1.92,"gripDy":0.285,"restX":39.392,"restY":66.131,"yaw":0,"pitch":0,"bend":0,"turn":0,"itemDir":0,"behind":false,"swapped":false},
+          {"dir":1,"facing":"NE","hand":"R","hands":1,"mode":"hand","gripDx":1.471,"gripDy":0.563,"restX":37.782,"restY":69.014,"yaw":0,"pitch":0,"bend":0,"turn":0,"itemDir":1,"behind":false,"swapped":false},
+          {"dir":2,"facing":"E","hand":"R","hands":1,"mode":"hand","gripDx":1.28,"gripDy":0.799,"restX":33.905,"restY":70.564,"yaw":0,"pitch":0,"bend":0,"turn":0,"itemDir":2,"behind":false,"swapped":false},
+          {"dir":3,"facing":"SE","hand":"R","hands":1,"mode":"hand","gripDx":0.566,"gripDy":1.29,"restX":29.138,"restY":70.309,"yaw":0,"pitch":0,"bend":0,"turn":0,"itemDir":3,"behind":false,"swapped":false},
+          {"dir":4,"facing":"S","hand":"R","hands":1,"mode":"hand","gripDx":-0.48,"gripDy":1.519,"restX":26.048,"restY":68.168,"yaw":0,"pitch":0,"bend":0,"turn":0,"itemDir":4,"behind":false,"swapped":false},
+          {"dir":5,"facing":"SW","hand":"L","hands":1,"mode":"hand","gripDx":-0.566,"gripDy":1.29,"restX":34.964,"restY":70.243,"yaw":0,"pitch":0,"bend":0,"turn":0,"itemDir":5,"behind":false,"swapped":true},
+          {"dir":6,"facing":"W","hand":"L","hands":1,"mode":"hand","gripDx":-1.28,"gripDy":0.799,"restX":30.24,"restY":70.564,"yaw":0,"pitch":0,"bend":0,"turn":0,"itemDir":6,"behind":false,"swapped":true},
+          {"dir":7,"facing":"NW","hand":"L","hands":1,"mode":"hand","gripDx":-1.245,"gripDy":0.127,"restX":26.547,"restY":68.643,"yaw":0,"pitch":0,"bend":0,"turn":0,"itemDir":7,"behind":false,"swapped":true}
+        ]
+      },
+      "knife": { "label": "KNIFE", "mount": "hand", "rig": null, "itemScale": 1, "item": {"rig":null,"pivot":"— no rig baked —","pivotFix":{"dx":0,"dy":0}}, "stub": {"len":0.24,"pitch":6}, "rest": null, "note": "needs a knife rig — pitch/yaw and grip are the spec",
+        "rows": [
+          {"dir":0,"facing":"N","hand":"R","hands":1,"mode":"hand","gripDx":1.92,"gripDy":-0.411,"restX":39.392,"restY":65.435,"yaw":8,"pitch":8,"bend":0,"turn":0,"itemDir":0,"behind":false,"swapped":false},
+          {"dir":1,"facing":"NE","hand":"R","hands":1,"mode":"hand","gripDx":2.036,"gripDy":-0.145,"restX":38.347,"restY":68.305,"yaw":14,"pitch":8,"bend":0,"turn":0,"itemDir":1,"behind":false,"swapped":false},
+          {"dir":2,"facing":"E","hand":"R","hands":1,"mode":"hand","gripDx":1.6,"gripDy":0.411,"restX":34.225,"restY":70.176,"yaw":22,"pitch":8,"bend":0,"turn":0,"itemDir":2,"behind":false,"swapped":false},
+          {"dir":3,"facing":"SE","hand":"R","hands":1,"mode":"hand","gripDx":0.679,"gripDy":1.018,"restX":29.251,"restY":70.037,"yaw":28,"pitch":8,"bend":0,"turn":0,"itemDir":3,"behind":false,"swapped":false},
+          {"dir":4,"facing":"S","hand":"R","hands":1,"mode":"hand","gripDx":-0.64,"gripDy":1.028,"restX":25.888,"restY":67.678,"yaw":32,"pitch":8,"bend":0,"turn":0,"itemDir":4,"behind":false,"swapped":false},
+          {"dir":5,"facing":"SW","hand":"L","hands":1,"mode":"hand","gripDx":-0.679,"gripDy":1.018,"restX":34.851,"restY":69.971,"yaw":12,"pitch":8,"bend":0,"turn":0,"itemDir":5,"behind":false,"swapped":true},
+          {"dir":6,"facing":"W","hand":"L","hands":1,"mode":"hand","gripDx":-1.6,"gripDy":0.411,"restX":29.92,"restY":70.176,"yaw":16,"pitch":8,"bend":0,"turn":0,"itemDir":6,"behind":false,"swapped":true},
+          {"dir":7,"facing":"NW","hand":"L","hands":1,"mode":"hand","gripDx":-1.584,"gripDy":-0.436,"restX":26.207,"restY":68.08,"yaw":10,"pitch":8,"bend":0,"turn":0,"itemDir":7,"behind":false,"swapped":true}
+        ]
+      },
+      "gaff": { "label": "GAFF", "mount": "hand", "rig": null, "itemScale": 1, "item": {"rig":null,"pivot":"— no rig baked —","pivotFix":{"dx":0,"dy":0}}, "stub": {"len":1.55,"pitch":16,"hook":true}, "rest": null, "note": "needs a gaff rig — 1.55 m pole, hook at the far end",
+        "rows": [
+          {"dir":0,"facing":"N","hand":"R","hands":1,"mode":"hand","gripDx":1.6,"gripDy":0.451,"restX":39.072,"restY":66.297,"yaw":132,"pitch":16,"bend":0,"turn":0,"itemDir":0,"behind":false,"swapped":false},
+          {"dir":1,"facing":"NE","hand":"R","hands":1,"mode":"hand","gripDx":0.453,"gripDy":0.827,"restX":36.763,"restY":69.278,"yaw":143,"pitch":16,"bend":0,"turn":0,"itemDir":1,"behind":false,"swapped":false},
+          {"dir":2,"facing":"E","hand":"R","hands":1,"mode":"hand","gripDx":-0.32,"gripDy":0.862,"restX":32.305,"restY":70.627,"yaw":158,"pitch":16,"bend":0,"turn":0,"itemDir":2,"behind":false,"swapped":false},
+          {"dir":3,"facing":"SE","hand":"R","hands":1,"mode":"hand","gripDx":-0.905,"gripDy":0.536,"restX":27.667,"restY":69.555,"yaw":152,"pitch":16,"bend":0,"turn":0,"itemDir":3,"behind":false,"swapped":false},
+          {"dir":4,"facing":"S","hand":"R","hands":1,"mode":"hand","gripDx":-0.96,"gripDy":0.451,"restX":25.568,"restY":67.1,"yaw":140,"pitch":16,"bend":0,"turn":0,"itemDir":4,"behind":false,"swapped":false},
+          {"dir":5,"facing":"SW","hand":"R","hands":1,"mode":"hand","gripDx":-0.453,"gripDy":-0.337,"restX":27.237,"restY":63.708,"yaw":149,"pitch":16,"bend":0,"turn":0,"itemDir":5,"behind":false,"swapped":false},
+          {"dir":6,"facing":"W","hand":"R","hands":1,"mode":"hand","gripDx":0.32,"gripDy":-0.372,"restX":31.695,"restY":62.358,"yaw":159,"pitch":16,"bend":0,"turn":0,"itemDir":6,"behind":true,"swapped":false},
+          {"dir":7,"facing":"NW","hand":"R","hands":1,"mode":"hand","gripDx":0.905,"gripDy":-0.046,"restX":36.333,"restY":63.431,"yaw":141,"pitch":16,"bend":0,"turn":0,"itemDir":7,"behind":false,"swapped":false}
+        ]
+      },
+      "rope": { "label": "ROPE COIL", "mount": "hand", "rig": "RopeProps", "itemScale": 0.5, "item": {"rig":"RopeProps","pivot":"bottom centre (20,30)","pivotFix":{"dx":-3,"dy":-13}}, "stub": null, "rest": {"kind":"coil"}, "note": "RopeProps coil at 0.5 scale — a carried hank is still real art",
+        "rows": [
+          {"dir":0,"facing":"N","hand":"L","hands":1,"mode":"hand","gripDx":-0.8,"gripDy":0.573,"restX":25.728,"restY":66.513,"yaw":0,"pitch":0,"bend":0,"turn":0,"itemDir":0,"behind":false,"swapped":false},
+          {"dir":1,"facing":"NE","hand":"L","hands":1,"mode":"hand","gripDx":-0.113,"gripDy":-0.287,"restX":28.357,"restY":63.256,"yaw":0,"pitch":0,"bend":0,"turn":0,"itemDir":1,"behind":false,"swapped":false},
+          {"dir":2,"facing":"E","hand":"L","hands":1,"mode":"hand","gripDx":0.64,"gripDy":-0.352,"restX":33.12,"restY":62.378,"yaw":0,"pitch":0,"bend":0,"turn":0,"itemDir":2,"behind":true,"swapped":false},
+          {"dir":3,"facing":"SE","hand":"L","hands":1,"mode":"hand","gripDx":1.018,"gripDy":0.295,"restX":37.227,"restY":64.274,"yaw":0,"pitch":0,"bend":0,"turn":0,"itemDir":3,"behind":false,"swapped":false},
+          {"dir":4,"facing":"S","hand":"L","hands":1,"mode":"hand","gripDx":0.8,"gripDy":1.19,"restX":38.272,"restY":67.747,"yaw":0,"pitch":0,"bend":0,"turn":0,"itemDir":4,"behind":false,"swapped":false},
+          {"dir":5,"facing":"SW","hand":"L","hands":1,"mode":"hand","gripDx":0.113,"gripDy":1.022,"restX":35.643,"restY":69.975,"yaw":0,"pitch":0,"bend":0,"turn":0,"itemDir":5,"behind":false,"swapped":false},
+          {"dir":6,"facing":"W","hand":"L","hands":1,"mode":"hand","gripDx":-0.64,"gripDy":1.088,"restX":30.88,"restY":70.853,"yaw":0,"pitch":0,"bend":0,"turn":0,"itemDir":6,"behind":false,"swapped":false},
+          {"dir":7,"facing":"NW","hand":"L","hands":1,"mode":"hand","gripDx":-1.018,"gripDy":0.44,"restX":26.773,"restY":68.957,"yaw":0,"pitch":0,"bend":0,"turn":0,"itemDir":7,"behind":false,"swapped":false}
+        ]
+      }
+    }
   }
 }

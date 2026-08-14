@@ -184,6 +184,15 @@ namespace HiddenHarbours.Tools.RigBaking
                 : throw new ArgumentException(
                     $"No rig '{key}' in the catalog. Known: {string.Join(", ", Entries.Keys)}.");
 
+        /// <summary>
+        /// Is this key registered? For the callers with an OPTIONAL dependency — a layer that loads
+        /// whichever prop rigs happen to exist and does less, honestly, for the ones that do not
+        /// (<c>CharacterRigBaker.InstallHandPropLayer</c>). Everyone else should call
+        /// <see cref="Get"/> and take the throw: a required rig that is missing is a bug, not a
+        /// branch.
+        /// </summary>
+        public static bool Has(string key) => Entries.ContainsKey(key);
+
         public static string ReadSource(in RigEntry entry)
         {
             string full = Path.Combine(RepoRoot, entry.ScriptPath);

@@ -754,6 +754,50 @@
         "reads": "rung, ladderW",
         "stepZ": 0.6,
         "note": "in-place locomotion cycle; translate the sprite by ladderMount().descend"
+      },
+      "hauler": {
+        "frames": 8,
+        "ms": 115,
+        "loops": true,
+        "reads": "workZ",
+        "workZ_default": 1.05
+      },
+      "bench": {
+        "frames": 10,
+        "ms": 130,
+        "loops": true,
+        "reads": "workZ",
+        "workZ_default": 0.885
+      },
+      "chop": {
+        "frames": 8,
+        "ms": 105,
+        "loops": true,
+        "reads": "workZ",
+        "workZ_default": 0.775
+      },
+      "lift": {
+        "frames": 8,
+        "ms": 105,
+        "oneShot": true,
+        "reads": "workZ",
+        "workZ_default": 0.93
+      },
+      "place": {
+        "frames": 8,
+        "ms": 110,
+        "oneShot": true,
+        "reads": "workZ",
+        "workZ_default": 0.93,
+        "note": "not lift reversed \u2014 going down the hips settle before the load leaves the hands"
+      },
+      "toss": {
+        "frames": 8,
+        "ms": 95,
+        "oneShot": true,
+        "reads": "workZ",
+        "workZ_default": 0.93,
+        "release_u": 0.52
       }
     },
     "groups": {
@@ -784,6 +828,14 @@
       "work": [
         "dig",
         "haul"
+      ],
+      "deck": [
+        "hauler",
+        "lift",
+        "place",
+        "bench",
+        "chop",
+        "toss"
       ]
     },
     "mount": {
@@ -804,7 +856,13 @@
       "board": "free",
       "boardDown": "free",
       "haul": "free",
-      "ladderDown": "ladder"
+      "ladderDown": "ladder",
+      "hauler": "warp",
+      "bench": "bench",
+      "chop": "knife",
+      "lift": "load",
+      "place": "load",
+      "toss": "load"
     },
     "carries": {
       "buckets": {
@@ -848,13 +906,233 @@
           "idle",
           "walk"
         ]
+      },
+      "pot": {
+        "label": "POT",
+        "layer": "TrapIso (any build)",
+        "pin": "mid",
+        "anims": [
+          "idle",
+          "walk",
+          "board",
+          "boardDown"
+        ],
+        "note": "carried wide and low against the chest; nobody runs with one"
       }
     },
     "carry_order": [
       "buckets",
       "tray",
       "helm",
-      "oars"
+      "oars",
+      "pot"
+    ],
+    "work_height": {
+      "opt": "workZ",
+      "units": "world metres",
+      "scaled_by_build": false,
+      "clamped_to": "the figure's own reach; workMount().clamped reports when it bit",
+      "source": "DeckGear.station(kind, dir) \u2014 not in this kit; see export/deck-loop-kit",
+      "mounts": {
+        "warp": "hand, grip, out, tension",
+        "bench": "handL, handR, mid, workZ",
+        "knife": "these hands + tool(dir,opts) for the blade",
+        "load": "handL, handR, mid, hold, phase, release, out"
+      }
+    }
+  },
+  "hand_props": {
+    "rig": "characterIsoRig6.hands.js",
+    "global": "CharacterHands6",
+    "pass": 6.4,
+    "load_after": "characterIsoRig6.js",
+    "note": "WHERE on the hand a carried object sits, WHICH hand at which heading, HOW it is angled, and WHETHER it draws over or under the sprite. Offsets are BODY-LOCAL METRES, not cell px, so one table is correct at any elev, any density and any deck-rock roll/pitch.",
+    "units": {
+      "grip": "metres from the wrist to the object's own pivot; out is signed by the carrying hand",
+      "pitch_yaw_bend": "degrees / unitless bend, the object's rest attitude in its own frame (rod convention: +y = character forward, pitch 0 = level, 90 = up)",
+      "facing_deltas": "per-heading corrections added to grip and yaw; absent row = no correction",
+      "turn": "heading for a turntable-baked prop, in 45deg steps RELATIVE to the body; pin() returns itemDir and the consumer renders the prop's own rig at itemDir instead of dir",
+      "swap": "carry it in the other hand at this heading",
+      "itemScale": "1 when the prop was baked for the hand; anything else is an art debt, not a setting"
+    },
+    "draw_order": {
+      "rule": "behind only when the prop is BOTH deeper than the body axis AND laterally inside the torso",
+      "torso_half_m": 0.115,
+      "note": "depth alone is the wrong test — a wrist sits 0.215 m out and the waist is ~0.115 m half-wide, so a small held item clears the silhouette at N and must draw OVER. A back mount inverts on its own."
+    },
+    "rides": {
+      "hand": "free clips only (idle, walk, run, balance, stagger, board, boardDown) and no carry stance — the hands have to be free",
+      "back": "every clip, including dig, haul and ladderDown"
+    },
+    "order": [
+      "rodTrail",
+      "rodSling",
+      "fish",
+      "clam",
+      "knife",
+      "gaff",
+      "rope"
+    ],
+    "props": {
+      "rodTrail": {
+        "label": "ROD \u00b7 TRAIL",
+        "mount": "hand",
+        "hand": "R",
+        "hands": 1,
+        "rig": "RodIso",
+        "grip": { "out": 0.035, "fwd": -0.015, "up": -0.01 },
+        "pitch": 12,
+        "yaw": 168,
+        "bend": 0.06,
+        "facing": {
+          "N": { "yaw": -34, "out": 0.02 },
+          "NE": { "yaw": -21 },
+          "E": { "yaw": -5 },
+          "SE": { "yaw": -11 },
+          "S": { "yaw": -25, "fwd": 0.02 },
+          "SW": { "yaw": -15 },
+          "W": { "yaw": -4 },
+          "NW": { "yaw": -24 }
+        },
+        "rest": { "tier": "coast" },
+        "itemScale": 1,
+        "note": "rides idle / walk / run / board \u2014 free arms, no pose change. No hand swap: a rod that changes hands mid-turn reads as two rods."
+      },
+      "rodSling": {
+        "label": "ROD \u00b7 SLUNG",
+        "mount": "back",
+        "hands": 0,
+        "rig": "RodIso",
+        "grip": { "out": -0.055, "fwd": -0.105, "up": 0.055 },
+        "pitch": 58,
+        "yaw": 152,
+        "bend": 0.03,
+        "facing": {
+          "N": { "yaw": 8 },
+          "NE": { "yaw": 4 },
+          "E": { "yaw": -6 },
+          "SE": { "yaw": -10 },
+          "S": { "yaw": -12 },
+          "SW": { "yaw": -8 },
+          "W": { "yaw": -4 },
+          "NW": { "yaw": 4 }
+        },
+        "rest": { "tier": "coast" },
+        "itemScale": 1,
+        "note": "anchor = hip + 0.52 of the way to the head, pushed 0.105 m aft. Rides EVERY clip; draw order inverts against the hand props."
+      },
+      "fish": {
+        "label": "FISH \u00b7 GILL GRIP",
+        "mount": "hand",
+        "hand": "R",
+        "hands": "auto",
+        "rig": "FishIso",
+        "grip": { "out": 0.02, "fwd": 0.03, "up": -0.01 },
+        "facing": {
+          "N": { "fwd": -0.02, "out": 0.055, "turn": 2 },
+          "NE": { "out": 0.02, "turn": 1 },
+          "E": { "turn": 0 },
+          "SE": { "fwd": 0.01, "turn": 1 },
+          "S": { "turn": 2 },
+          "SW": { "swap": true, "turn": -1 },
+          "W": { "swap": true, "turn": 0 },
+          "NW": { "swap": true, "turn": -1 }
+        },
+        "rest": { "species": "mackerel", "rest": "gill", "two": "cradle" },
+        "itemScale": 1,
+        "note": "hands:'auto' \u2014 FishIso.hold() returns 1 or 2 by mass; a two-hand fish cradles on the midpoint pin at >= 2.2 kg (cod cradles, mackerel hangs). turn is what stops the catch foreshortening to a blob at N and S."
+      },
+      "clam": {
+        "label": "CLAM \u00b7 HANDFUL",
+        "mount": "hand",
+        "hand": "R",
+        "hands": 1,
+        "rig": "Shellfish",
+        "grip": { "out": 0.015, "fwd": 0.04, "up": -0.02 },
+        "facing": {
+          "N": { "fwd": -0.03, "out": 0.045 },
+          "NE": { "fwd": -0.01, "out": 0.02 },
+          "S": { "fwd": 0.01 },
+          "SW": { "swap": true },
+          "W": { "swap": true },
+          "NW": { "swap": true }
+        },
+        "rest": { "kind": "clam", "variant": 0 },
+        "itemScale": 1,
+        "note": "Shellfish.renderHandful \u2014 22x16, the smallest thing anyone carries, so the most sensitive to a one-pixel offset. hands:2 draws one handful per hand."
+      },
+      "knife": {
+        "label": "KNIFE",
+        "mount": "hand",
+        "hand": "R",
+        "hands": 1,
+        "rig": null,
+        "stub": { "len": 0.24, "pitch": 6 },
+        "grip": { "out": 0.02, "fwd": 0.05, "up": 0 },
+        "pitch": 8,
+        "yaw": 22,
+        "facing": {
+          "N": { "yaw": -14, "fwd": -0.03, "out": 0.04 },
+          "NE": { "yaw": -8, "out": 0.02 },
+          "SE": { "yaw": 6 },
+          "S": { "yaw": 10 },
+          "SW": { "swap": true, "yaw": -10 },
+          "W": { "swap": true, "yaw": -6 },
+          "NW": { "swap": true, "yaw": -12 }
+        },
+        "itemScale": 1,
+        "art_debt": "needs a knife rig \u2014 0.24 m overall, blade forward and down off the leg; pitch/yaw and grip here are the spec"
+      },
+      "gaff": {
+        "label": "GAFF",
+        "mount": "hand",
+        "hand": "R",
+        "hands": 1,
+        "rig": null,
+        "stub": { "len": 1.55, "pitch": 16, "hook": true },
+        "grip": { "out": 0.03, "fwd": -0.01, "up": -0.01 },
+        "pitch": 16,
+        "yaw": 162,
+        "facing": {
+          "N": { "yaw": -30, "out": 0.02 },
+          "NE": { "yaw": -19 },
+          "E": { "yaw": -4 },
+          "SE": { "yaw": -10 },
+          "S": { "yaw": -22, "fwd": 0.02 },
+          "SW": { "yaw": -13 },
+          "W": { "yaw": -3 },
+          "NW": { "yaw": -21 }
+        },
+        "itemScale": 1,
+        "art_debt": "needs a gaff rig \u2014 1.55 m pole, hook at the far end, carried like the rod but blunter"
+      },
+      "rope": {
+        "label": "ROPE COIL",
+        "mount": "hand",
+        "hand": "L",
+        "hands": 1,
+        "rig": "RopeProps",
+        "grip": { "out": 0.025, "fwd": 0.02, "up": -0.015 },
+        "facing": {
+          "N": { "fwd": -0.03 },
+          "S": { "fwd": 0.02 },
+          "E": { "out": 0.01 },
+          "W": { "out": 0.01 }
+        },
+        "rest": { "kind": "coil" },
+        "itemScale": 0.5,
+        "art_debt": "RopeProps coil is a DECK prop at ~0.75 m across; 0.5 scale is what makes it hand-sized. A carried hank wants its own bake \u2014 a 0.35 m flake with a visible bight over the thumb."
+      }
+    },
+    "item_pivots": {
+      "RodIso": { "pivot": "grip centre (56,72)", "pivotFix": { "dx": 0, "dy": 0 } },
+      "FishIso": { "pivot": "gripU point (32,38)", "pivotFix": { "dx": 0, "dy": 0 } },
+      "Shellfish": { "pivot": "handful grip (11,8)", "pivotFix": { "dx": 0, "dy": 0 } },
+      "RopeProps": { "pivot": "bottom centre (20,30)", "pivotFix": { "dx": -3, "dy": -13 } }
+    },
+    "engine_work_not_anchors": [
+      "a true over-the-shoulder carry needs an arm raise inside pose() \u2014 a new carry stance, not an anchor row",
+      "two hands closing on one object that pose() does not already close"
     ]
   },
   "afloat": {
