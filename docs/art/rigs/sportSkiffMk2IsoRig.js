@@ -127,7 +127,7 @@
    Cell 244x216, pivot (122,120) = boat origin (amidships, keel bottom, centreline), pinned every
    heading. 32 px = 1 m. Outboards ship as their own layer — MOUNTS carries the twin clamp points
    plus the single centre MOUNT; pass the hull's rock(i) values so overlays ride the same wave.
-   Exposes globalThis.SportSkiffIso = { W,H,PX,DIRS,pivot,order,ROCK,rock(i),render(dir,opts),
+   Exposes globalThis.SportSkiffMk2Iso = { W,H,PX,DIRS,pivot,order,ROCK,rock(i),render(dir,opts),
    renderWheel,wheelFaces,WHEEL_GEO,WHEEL_LOCK, motorMount,MOUNT,motorMounts,MOUNTS,
    helmSeat,HELM, wheelHub,WHEEL_HUB, painter,PAINTER, sternEye,STERN_EYE, TUBS,tubMounts,
    PILOT,pilotStand, SCHEMES,schemeIds,defaultScheme,palette,rampFrom,chipWall,C_CAP,
@@ -1013,7 +1013,7 @@
   const PILOT = { x:0, y:-0.62, z:DECK };
   const pilotStand = _anchor(PILOT);
 
-  root.SportSkiffIso = { W, H, PX, DIRS:8, pivot:{x:cx,y:cy}, defaultElev:DEFAULT_ELEV,
+  root.SportSkiffMk2Iso = { W, H, PX, DIRS:8, pivot:{x:cx,y:cy}, defaultElev:DEFAULT_ELEV,
     order:['N','NE','E','SE','S','SW','W','NW'], PAINT, TRIM, STEEL, DECKF, CANV, GLAS, MOTO, KEY,
     render, ROCK, rock:rockMotion,
     renderWheel, wheelFaces, WHEEL_GEO, WHEEL_LOCK,
