@@ -64,6 +64,18 @@ namespace HiddenHarbours.Tools.RigBaking
         public List<RigFace> Faces = new List<RigFace>();
         public List<RigMaterial> Materials = new List<RigMaterial>();
 
+        /// <summary>
+        /// The JS these faces actually came from, when it was anything other than the rig's static
+        /// <c>F</c> — a fitting's builder call, or a generator hull's variant expression. Empty for
+        /// the static case, so a def written from it stays empty on every hull baked before
+        /// generators existed.
+        ///
+        /// <para>It exists because eighteen lobster boats out of one file are otherwise
+        /// indistinguishable in their own asset: same rig path, same global, different boat. This is
+        /// the field that says WHICH one.</para>
+        /// </summary>
+        public string SourceFaceExpression = "";
+
         /// <summary>The rig's LN, already normalised by the rig itself.</summary>
         public Vector3d LightN;
         public double Gain, Bias;
@@ -368,6 +380,40 @@ namespace HiddenHarbours.Tools.RigBaking
                     ["MATS"] = "palette({}).mats",
                 },
 
+                // ---- the lobster-boat GENERATOR (fleet rig pack, 2026-08-13) ----------------------
+                // The first rig in the repo that is not one boat. 3 sizes × 2 styles × 3 regions, and
+                // no `F` anywhere: her faces come from a private facesFor(V) keyed on the exported
+                // resolve(v), so the face list is a FUNCTION OF THE VARIANT.
+                //
+                // `variantFaces` is the per-FILE half of that — how to reach the builder at all. WHICH
+                // variant is the per-HULL half and lives on FleetHull.Extraction (RigHullExtraction).
+                // One reconstruction, eighteen boats.
+                //
+                // ⚠️ NAMED `variantFaces`, NOT `facesFor`/`facesOf`. The widening adds a PROPERTY to
+                // the exported literal while the expression is evaluated in the rig's own closure, so
+                // a shim named after a rig private happens to work — the zodiac generator already has
+                // a private `facesOf` and it resolves fine. It is still a trap for the next reader,
+                // and `RigMeshExtractionTests` pins the shim names as absent from the unmodified rigs.
+                //
+                // MEASURED, not argued (repo's own V8 host, 2026-08-13, shim applied exactly as
+                // WidenExportedLiteral applies it):
+                //   · She exports NONE of F/MATS/GAIN/BIAS/LN; PX, defaultElev and resolve ARE public.
+                //   · All 18 variants build, and all 18 are DISTINCT by a hash over
+                //     {mat, b, db, vertices@1e-6} in face order — 591…834 faces. ⚠️ Face COUNT alone
+                //     is not an oracle: inshore_hardtop_northumberland and inshore_hardtop_fundy are
+                //     both 637 faces and different boats.
+                //   · `matsFor('gelcoat').MATS` gives 11 entries in the order
+                //     hull,boot,cream,deck,grip,glas,blue,steel,iron,blk,dark — byte-for-byte the key
+                //     order recorded for lobsterBoatIsoRig.js above, independently re-confirming that
+                //     her paint table IS the hero hull's and that the committed paint.lobster_* defs
+                //     cover her. Order is load-bearing: the face packer resolves an unknown material
+                //     to index 0.
+                ["lobsterBoatVariantsIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
+                {
+                    ["variantFaces"] = "function(v){return facesFor(resolve(v)).F;}",
+                    ["MATS"] = "matsFor('gelcoat').MATS",
+                },
+
                 // The skiff motor is a LAYER, not a hull, so its export omits two things every hull
                 // rig publishes and the extractor reads unconditionally: the pixel scale and the bake
                 // elevation. Both exist under the rig's own names (`S`, `DEFAULT_ELEV`) — this is a
@@ -537,6 +583,59 @@ namespace HiddenHarbours.Tools.RigBaking
         public bool DropReverseDuplicateFaces = false;
     }
 
+    /// <summary>
+    /// How to extract ONE HULL out of a rig that builds SEVERAL (ADR 0022 phase 8).
+    ///
+    /// <para><b>The problem, and it is not the fitting's problem wearing a hat.</b> Every hull baked
+    /// so far is one boat per rig file, and its geometry is the static <c>F</c> array the rig builds
+    /// once at load. Two rigs in the 2026-08-13 fleet pack are GENERATORS — one file, many hulls,
+    /// each built on demand by a private function of a variant descriptor:</para>
+    /// <list type="bullet">
+    ///   <item><c>lobsterBoatVariantsIsoRig.js</c> — <c>facesFor(resolve(v)).F</c>, 18 hulls
+    ///   (3 sizes × 2 styles × 3 regions).</item>
+    ///   <item><c>zodiacIsoRig.js</c> — <c>facesOf(buildOf(o)).F</c>, 2 builds off one loft.</item>
+    /// </list>
+    /// <para>Neither has an <c>F</c> at all. Twenty hulls, and the only thing standing in the way was
+    /// that <see cref="RigMeshExtractor.ExtractFrom"/> hard-coded <c>{global}.F</c> for anything that
+    /// was not a fitting.</para>
+    ///
+    /// <para><b>Why not just reuse <see cref="RigPropExtraction"/>.</b> It carries five knobs that
+    /// mean something only to an articulated fitting — a pose probe, a swivel point, its own cell,
+    /// and two rasteriser flags whose defaults are deliberately the OPPOSITE of a hull's
+    /// (<see cref="RigPropExtraction.DepthEdgeDarkening"/> is false for a fitting and true for a
+    /// hull). Routing hulls through it would change the defaults all eleven baked hulls take today,
+    /// to buy nothing. A hull variant is still a hull: it wants the hull's rasteriser rules and the
+    /// hull's cell, and the ONLY thing it does differently is where its face list comes from. So this
+    /// type carries exactly that, and nothing else.</para>
+    ///
+    /// <para><b>Per-FILE knowledge stays in <see cref="RigMeshSymbols.Reconstructions"/>; per-HULL
+    /// knowledge lives here.</b> How to reach a generator's private builder is a fact about the rig
+    /// file and is shimmed like any other missing symbol. WHICH variant to build is a fact about the
+    /// hull, and is this field. That split is why one <c>variantFaces</c> reconstruction serves all
+    /// eighteen lobster boats.</para>
+    /// </summary>
+    public sealed class RigHullExtraction
+    {
+        /// <summary>
+        /// JS returning this variant's face list, evaluated against the rig's global and prefixed
+        /// with <c>&lt;Global&gt;.</c> — e.g.
+        /// <c>variantFaces({size:'offshore',style:'hardtop',region:'fundy'})</c>.
+        ///
+        /// <para>Null means the static <c>F</c> array, which is the path every previously-baked hull
+        /// takes and is left bit-for-bit alone.</para>
+        /// </summary>
+        public string FaceExpression;
+
+        /// <summary>Closure-private symbols <see cref="FaceExpression"/> needs on top of the usual
+        /// five — the generator's builder, normally. Shimmed exactly as <c>F</c>/<c>MATS</c> are, and
+        /// retires the same way, on the day the rig exports it.</summary>
+        public string[] ExtraSymbols = Array.Empty<string>();
+
+        /// <summary>True when this extraction names a variant rather than taking the static array.
+        /// </summary>
+        public bool IsVariant => !string.IsNullOrEmpty(FaceExpression);
+    }
+
     public static class RigMeshExtractor
     {
         /// <summary>Extracts from a catalogued rig, in its own throwaway host.</summary>
@@ -570,9 +669,20 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <param name="prop">Non-null to extract an articulated FITTING instead of the hull — its
         /// faces come from a builder called at a canonical pose rather than from the static
         /// <c>F</c> array. See <see cref="RigPropExtraction"/>.</param>
+        /// <param name="hull">Non-null to extract ONE HULL from a rig that generates several — its
+        /// faces come from a per-variant expression rather than from the static <c>F</c> array. See
+        /// <see cref="RigHullExtraction"/>. Mutually exclusive with <paramref name="prop"/>.</param>
         public static RigMeshData ExtractFrom(IRigScriptHost host, string scriptPath, string globalName,
-                                              RigPropExtraction prop = null)
+                                              RigPropExtraction prop = null,
+                                              RigHullExtraction hull = null)
         {
+            // Nonsense rather than a silent precedence rule: a fitting is not a hull variant, and
+            // picking one arm quietly is how a bake ends up meaning something nobody chose.
+            if (prop != null && hull != null && hull.IsVariant)
+                throw new ArgumentException(
+                    $"Both a fitting and a hull-variant extraction were given for '{scriptPath}'. " +
+                    "They are alternative face sources — pass exactly one.", nameof(hull));
+
             if (host == null) throw new ArgumentNullException(nameof(host));
             string full = Path.Combine(RigCatalog.RepoRoot, scriptPath);
             if (!File.Exists(full))
@@ -594,10 +704,16 @@ namespace HiddenHarbours.Tools.RigBaking
             // A fitting needs the shading half of the usual five but NOT `F` — its geometry comes
             // from a builder, and demanding a static face array of a rig that has none would shim in
             // a symbol nothing reads. It needs that builder (and its pivot) instead.
+            //
+            // A GENERATOR hull is in exactly the same position and for exactly the same reason: it
+            // has no `F` either, only a private builder keyed on a variant. Measured 2026-08-13 in
+            // the repo's own V8 host — both pack generators export none of F/MATS/GAIN/BIAS/LN.
+            bool variantHull = hull != null && hull.IsVariant;
             var required = new List<string>();
             foreach (string sym in RigMeshSymbols.Required)
-                if (prop == null || sym != "F") required.Add(sym);
+                if ((prop == null && !variantHull) || sym != "F") required.Add(sym);
             if (prop != null) required.AddRange(prop.ExtraSymbols);
+            if (variantHull) required.AddRange(hull.ExtraSymbols);
 
             var missing = new List<string>();
             foreach (string sym in required)
@@ -678,7 +794,13 @@ namespace HiddenHarbours.Tools.RigBaking
             ReadBayer(host, g, bayerExported, data);
             ReadMaterials(host, g, data);
 
-            string faceSource = prop == null ? $"{g}.F" : $"{g}.{prop.FaceBuilderCall}";
+            // Three arms, and the LAST is the one every hull baked before 2026-08-13 takes — passing
+            // neither extraction leaves this method on the identical code path it has always had.
+            string faceSource =
+                prop != null ? $"{g}.{prop.FaceBuilderCall}"
+                : variantHull ? $"{g}.{hull.FaceExpression}"
+                : $"{g}.F";
+            data.SourceFaceExpression = prop != null || variantHull ? faceSource : "";
             ReadFaces(host, g, faceSource, data);
 
             if (prop != null && !string.IsNullOrEmpty(prop.PoseProbeFaceBuilderCall))
@@ -697,12 +819,19 @@ namespace HiddenHarbours.Tools.RigBaking
 
             if (data.Faces.Count == 0)
                 throw new InvalidOperationException(
-                    prop == null
-                        ? $"{g}.F is present but empty. The rig builds its face list once at load " +
-                          "(`(function build(){…})`); an empty list means build() did not run."
-                        : $"{faceSource} returned no faces. The builder ran but produced nothing — " +
+                    prop != null
+                        ? $"{faceSource} returned no faces. The builder ran but produced nothing — " +
                           "check the canonical pose's arguments against the rig's own signature " +
-                          "(a mistyped option name silently yields a default-posed empty list).");
+                          "(a mistyped option name silently yields a default-posed empty list)."
+                    : variantHull
+                        ? $"{faceSource} returned no faces. The generator ran but produced nothing " +
+                          "for this variant — check the descriptor's keys and values against the " +
+                          "rig's own axis tables. ⚠️ A rig that resolves an UNKNOWN id to its " +
+                          "default (both pack generators do) will not fail here; it will hand back " +
+                          "the default hull instead, which is why the per-variant distinctness test " +
+                          "hashes geometry rather than trusting this check."
+                        : $"{g}.F is present but empty. The rig builds its face list once at load " +
+                          "(`(function build(){…})`); an empty list means build() did not run.");
 
             return data;
         }

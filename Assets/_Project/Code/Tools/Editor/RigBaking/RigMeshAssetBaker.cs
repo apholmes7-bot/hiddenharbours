@@ -155,7 +155,8 @@ namespace HiddenHarbours.Tools.RigBaking
         public static HullMeshDef BakeOne(string key)
         {
             FleetHull hull = HullMeshFleet.Get(key);
-            HullMeshDef def = Bake(hull.ScriptPath, hull.GlobalName, hull.MeshAssetPath, hull.MeshId);
+            HullMeshDef def = Bake(hull.ScriptPath, hull.GlobalName, hull.MeshAssetPath, hull.MeshId,
+                                   hull.Extraction);
             WireVisuals(hull, def);
             return def;
         }
@@ -308,10 +309,14 @@ namespace HiddenHarbours.Tools.RigBaking
                       "the deck itself wettable.");
         }
 
-        public static HullMeshDef Bake(string scriptPath, string globalName, string assetPath, string id)
+        /// <param name="extraction">Non-null to bake ONE VARIANT of a rig that generates several
+        /// hulls. Null — every hull baked before 2026-08-13 — takes the rig's static <c>F</c>.</param>
+        public static HullMeshDef Bake(string scriptPath, string globalName, string assetPath, string id,
+                                       RigHullExtraction extraction = null)
         {
             using IRigScriptHost host = RigScriptHostFactory.Create();
-            RigMeshData data = RigMeshExtractor.ExtractFrom(host, scriptPath, globalName);
+            RigMeshData data = RigMeshExtractor.ExtractFrom(host, scriptPath, globalName,
+                                                           hull: extraction);
 
             // The per-face INTERIOR MASK (ADR 0023). HULLS ONLY — never fittings, whose legs and
             // propellers must stay wettable (see RigMeshBuilder.Build's parameter doc). The log
@@ -375,6 +380,10 @@ namespace HiddenHarbours.Tools.RigBaking
 
             def.Id = id;
             def.SourceRigPath = scriptPath;
+            // Empty for a static-F hull, so the eleven defs baked before generators existed keep the
+            // exact bytes they have. Non-empty is the ONLY thing that distinguishes eighteen lobster
+            // boats sharing one rig path.
+            def.SourceFaceBuilder = data.SourceFaceExpression;
             def.LightN = data.LightN.ToVector3();
             def.Gain = (float)data.Gain;
             def.Bias = (float)data.Bias;
