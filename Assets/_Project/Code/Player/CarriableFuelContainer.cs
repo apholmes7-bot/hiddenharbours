@@ -35,7 +35,7 @@ namespace HiddenHarbours.Player
     [DisallowMultipleComponent]
     [RequireComponent(typeof(FuelLevelPresenter))]
     [AddComponentMenu("Hidden Harbours/Carriable Fuel Container")]
-    public sealed class CarriableFuelContainer : MonoBehaviour, IInteractable
+    public sealed class CarriableFuelContainer : MonoBehaviour, IInteractable, ICarriable
     {
         [Tooltip("Stable id — the art highlight matches on it, and it is the resolver's LAST tie-break. " +
                  "⚠️ Must be unique among live registrants: two cans sharing an id make the resolver's " +
@@ -75,10 +75,22 @@ namespace HiddenHarbours.Player
         /// resolves into. 0 with no Def, which that function answers null-safely.</summary>
         public int BakedFacings => Container != null ? Container.Facings : 0;
 
+        /// <summary>The Def id of WHAT this is (<c>fuelstore.gas_jerry_s20</c>) — the TYPE id a gate
+        /// matches on, and deliberately not <see cref="Id"/>, which is this INSTANCE's unique
+        /// registry key. See <see cref="ICarriable.DefId"/> on why the two must differ.</summary>
+        public string DefId => Container != null ? Container.Id : null;
+
+        /// <summary>The transform the hands re-parent and pose (<see cref="ICarriable.Transform"/>).</summary>
+        public Transform Transform => transform;
+
         /// <summary>True while this is the thing in the fisher's hands. <b>Derived from the hands, not
         /// stored here</b> — a second copy of "am I carried" is a copy that can disagree with the hands
-        /// that actually hold it.</summary>
-        public bool IsCarried => _hands != null && _hands.Carried == this;
+        /// that actually hold it. <c>ReferenceEquals</c>, not <c>==</c>: the hands now report an
+        /// <see cref="ICarriable"/>, and comparing an interface reference against a concrete
+        /// <see cref="UnityEngine.Object"/> with <c>==</c> is exactly the mixed-operand case whose
+        /// resolution is worth nobody's time to reason about. Identity is what is meant, so identity is
+        /// what is asked.</summary>
+        public bool IsCarried => _hands != null && ReferenceEquals(_hands.Carried, this);
 
         private FuelLevelPresenter Presenter
         {
@@ -200,9 +212,15 @@ namespace HiddenHarbours.Player
         /// <summary>Called by <see cref="CarryHands"/> as it lifts this: remember WHOSE hands these are —
         /// handed in rather than searched for, so <see cref="IsCarried"/> can never bind to a different
         /// pair — and stand the object's own Y-sort down so the two do not fight over the renderer.</summary>
-        public void OnLifted(CarryHands hands)
+        public void OnLifted(ICarrier carrier)
         {
-            _hands = hands;
+            // Narrowed deliberately, and it costs nothing: the press path below needs TryPickUp/TryPlace,
+            // which are the CARRIER's own verbs and are not on the Core contract (ICarrier is read-only by
+            // design — what crosses a module boundary is the QUESTION "what is held", never the act of
+            // holding). Player→Player, so the concrete type is free here. There is exactly one pair of
+            // hands in the game; a carrier that is not CarryHands would leave this null and IsCarried
+            // false, which is the correct answer to "am I in the fisher's hands" when it is not.
+            _hands = carrier as CarryHands;
             if (_ySort == null) _ySort = GetComponent<YSortSprite>();
             if (_ySort != null) _ySort.enabled = false;
         }
@@ -231,8 +249,19 @@ namespace HiddenHarbours.Player
             _resolvedId = null;
         }
 
+        /// <summary>
+        /// Find the fisher's hands: the Core relay first (<see cref="GameServices.Hands"/>, which is where
+        /// a live <see cref="CarryHands"/> publishes itself and is correct across a region hop), then a
+        /// scene scan as the fallback.
+        ///
+        /// <para>The fallback is not dead weight — it is what keeps EditMode working. A plain
+        /// MonoBehaviour's <c>OnEnable</c> does not fire there, so nothing publishes the relay and a test
+        /// that builds hands with <c>AddComponent</c> would otherwise never be found.</para>
+        /// </summary>
         private void ResolveHands()
         {
+            if (_hands != null) return;
+            if (GameServices.Hands is CarryHands published) _hands = published;
             if (_hands == null) _hands = FindAnyObjectByType<CarryHands>();
         }
 

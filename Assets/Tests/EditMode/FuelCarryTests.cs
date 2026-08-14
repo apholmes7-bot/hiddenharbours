@@ -445,5 +445,103 @@ namespace HiddenHarbours.Tests.EditMode
                                                           out _),
                            "on deck the press is not offered the can");
         }
+
+        // ---- the Core seam: the can is the FIRST implementor, not a special case ---------------------
+        //
+        // These pin the generalisation itself. The carry loop above used to be typed end-to-end to
+        // CarriableFuelContainer; it is now typed to Core's ICarriable/ICarrier so that a lane which
+        // cannot reference Player (Fishing) can still ask what is in the fisher's hands. Everything
+        // above this line is the BEHAVIOUR that had to survive that move unchanged — these are the
+        // claims the move itself makes.
+
+        [Test]
+        public void The_can_is_carriable_through_the_core_contract()
+        {
+            CarriableFuelContainer can = Container(Def());
+
+            Assert.IsInstanceOf<ICarriable>(can, "the can implements the Core carry contract");
+            Assert.IsInstanceOf<IInteractable>(can, "and still answers the press — the two are separate");
+
+            var carriable = (ICarriable)can;
+            Assert.IsTrue(carriable.IsCarriable);
+            Assert.AreSame(can.transform, carriable.Transform, "the hands re-parent THIS");
+            Assert.AreEqual(8, carriable.BakedFacings);
+        }
+
+        [Test]
+        public void The_hands_are_a_carrier_and_report_the_held_thing_through_the_contract()
+        {
+            CarryHands hands = Hands();
+            CarriableFuelContainer can = Container(Def(), new Vector2(0.5f, 0f));
+
+            var carrier = (ICarrier)hands;
+            Assert.IsFalse(carrier.IsCarrying, "empty hands");
+            Assert.IsNull(carrier.Carried);
+
+            hands.TryPickUp(can);
+
+            Assert.IsTrue(carrier.IsCarrying);
+            Assert.AreSame(can, carrier.Carried, "what the contract reports IS the object lifted");
+        }
+
+        [Test]
+        public void DefId_is_the_KIND_and_Id_is_the_INSTANCE_and_they_are_not_the_same_string()
+        {
+            // ⚠️ The whole point of the two ids, and the one thing a later "tidy-up" would get wrong by
+            // collapsing them. IInteractable.Id must be UNIQUE among live registrants (it is the
+            // resolver's last tie-break, so duplicates make its order non-total). ICarriable.DefId must
+            // be SHARED by every can of the same kind, because it is what a gate matches on. Two cans off
+            // the same Def therefore agree on one and differ on the other — in both directions.
+            FuelContainerDef def = Def(id: "fuelstore.gas_jerry_s20");
+            CarriableFuelContainer a = Container(def, new Vector2(0f, 0f));
+            CarriableFuelContainer b = Container(def, new Vector2(2f, 0f));
+
+            Assert.AreEqual("fuelstore.gas_jerry_s20", ((ICarriable)a).DefId, "the KIND is the Def id");
+            Assert.AreEqual(((ICarriable)a).DefId, ((ICarriable)b).DefId, "two gas cans are the same kind");
+            Assert.AreNotEqual(a.Id, b.Id, "but they are not the same THING");
+        }
+
+        [Test]
+        public void CarriedItem_answers_the_cross_module_question_without_a_Player_reference()
+        {
+            // This is the query ClamDig makes from the Fishing assembly, which cannot see CarryHands at
+            // all. Driven through the explicit-hands overload because EditMode never fires OnEnable on a
+            // plain MonoBehaviour, so nothing publishes GameServices.Hands here (see its remarks).
+            CarryHands hands = Hands();
+            CarriableFuelContainer can = Container(Def(id: "fuelstore.gas_jerry_s20"), new Vector2(0.5f, 0f));
+
+            Assert.IsFalse(CarriedItem.InHand(hands, "fuelstore.gas_jerry_s20"), "nothing in hand yet");
+
+            hands.TryPickUp(can);
+
+            Assert.IsTrue(CarriedItem.InHand(hands, "fuelstore.gas_jerry_s20"), "a gas can is in hand");
+            Assert.IsFalse(CarriedItem.InHand(hands, "tool.shovel"), "a gas can is not a shovel");
+            Assert.IsFalse(CarriedItem.InHand(hands, null), "a null id asks nothing and gets false");
+            Assert.IsFalse(CarriedItem.InHand(null, "fuelstore.gas_jerry_s20"),
+                           "no published hands is 'carry on', never a throw");
+
+            hands.TryPlace();
+            Assert.IsFalse(CarriedItem.InHand(hands, "fuelstore.gas_jerry_s20"), "set down again");
+        }
+
+        [Test]
+        public void The_hands_report_empty_when_what_they_held_was_destroyed_under_them()
+        {
+            // ⚠️ THE FAKE-NULL TRAP, pinned. The backing field is INTERFACE-typed, and an interface
+            // reference does NOT carry UnityEngine.Object's == overload — so without the laundering in
+            // CarryHands.Carried a destroyed can reads as a live ICarriable and every consumer's
+            // `!= null` passes on a corpse. Remove the cast in that getter and this goes red; nothing
+            // else in the suite would notice.
+            CarryHands hands = Hands();
+            CarriableFuelContainer can = Container(Def(), new Vector2(0.5f, 0f));
+            hands.TryPickUp(can);
+            Assert.IsTrue(hands.IsCarrying);
+
+            Object.DestroyImmediate(can.gameObject);
+
+            Assert.IsNull(hands.Carried, "a destroyed can is not something you are carrying");
+            Assert.IsFalse(hands.IsCarrying);
+            Assert.IsFalse(CarriedItem.InHand(hands, "fuelstore.gas_jerry_s20"));
+        }
     }
 }

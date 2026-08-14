@@ -39,7 +39,7 @@ namespace HiddenHarbours.Player
     // sprite mirrors the order the player ACTUALLY drew at rather than last frame's. Same reason, and the
     // same number, as DeckRiderVisual.
     [DefaultExecutionOrder(100)]
-    public sealed class CarryHands : MonoBehaviour
+    public sealed class CarryHands : MonoBehaviour, ICarrier
     {
         [Header("Wiring (auto-resolved off this object if empty)")]
         [Tooltip("The player's own renderer — the SORTING DATUM the carried sprite rides. Null = the " +
@@ -68,16 +68,51 @@ namespace HiddenHarbours.Player
         [SerializeField, Min(0)] private int _aheadOrders = 1;
 
         private Transform _placedParent;      // where the carried thing hung before it was lifted
+        private ICarriable _carried;
         private bool _resolved;
 
-        /// <summary>What is in the fisher's hands right now, or null. The single source of truth for
-        /// "am I carrying something" — <see cref="CarriableFuelContainer"/> reads it, nothing writes it
-        /// but <see cref="TryPickUp"/> and <see cref="TryPlace"/>.</summary>
-        public CarriableFuelContainer Carried { get; private set; }
+        /// <summary>
+        /// What is in the fisher's hands right now, or null. The single source of truth for "am I carrying
+        /// something" — <see cref="CarriableFuelContainer"/> reads it, nothing writes it but
+        /// <see cref="TryPickUp"/> and <see cref="TryPlace"/>.
+        ///
+        /// <para><b>⚠ The getter launders Unity's fake-null and the cast is load-bearing.</b> The backing
+        /// field is INTERFACE-typed, and an interface reference does not carry
+        /// <see cref="UnityEngine.Object"/>'s <c>==</c> overload — so a carried object destroyed out from
+        /// under the hands (a region unloaded, a test tearing down) would read here as a live
+        /// <see cref="ICarriable"/> and hand every consumer a corpse whose <c>!= null</c> passes. Casting
+        /// back to <c>Object</c> re-enters the Unity-aware comparison. Same reason, same shape, as
+        /// <see cref="GameServices.Hands"/>'s own getter.</para>
+        /// </summary>
+        public ICarriable Carried
+            => _carried is Object o && o == null ? null : _carried;
 
         /// <summary>True when something is held. Sugar over <see cref="Carried"/>, for readability at the
         /// call sites that only care whether the hands are free.</summary>
         public bool IsCarrying => Carried != null;
+
+        // ---- the Core relay ------------------------------------------------------------------------
+
+        /// <summary>
+        /// Publish these hands so lanes that cannot reference Player can still ask what is held
+        /// (<see cref="GameServices.Hands"/> — the seam <c>ClamDig</c> reads across the Fishing boundary).
+        /// </summary>
+        private void OnEnable() => GameServices.Hands = this;
+
+        /// <summary>
+        /// Relinquish the relay — <b>in <c>OnDestroy</c>, and deliberately NOT in <c>OnDisable</c>.</b>
+        ///
+        /// <para>⚠️ The house law, learned the expensive way (fix/interior-reveal-travel): root-toggling
+        /// IS how a region hop works, so "disabled" happens constantly and does not mean "gone". A service
+        /// cleared on disable is a service wiped mid-crossing, and the symptom is silent and total — every
+        /// consumer reads the null as "the thing does not exist". Whoever registers, unregisters, on
+        /// destroy, guarded on still owning the slot (<c>GameRoot.OnDestroy</c> is the reference
+        /// implementation).</para>
+        /// </summary>
+        private void OnDestroy()
+        {
+            if (ReferenceEquals(GameServices.Hands, this)) GameServices.Hands = null;
+        }
 
         /// <summary>The heading the BODY is drawn at right now (compass degrees, 0 = N, CW) — the one
         /// quantity a carried object's facing is derived from. Prefers the iso skin's drawn heading (the
@@ -104,18 +139,21 @@ namespace HiddenHarbours.Player
         /// same component on the same object throughout. Its previous parent is remembered so
         /// <see cref="TryPlace"/> can put it back in the region it came from.</para>
         /// </summary>
-        public CarryRefusal TryPickUp(CarriableFuelContainer container)
+        public CarryRefusal TryPickUp(ICarriable container)
         {
-            if (container == null) return CarryRefusal.NotCarriable;
+            // The Unity-aware leg of the check is the one that matters: `container == null` on an
+            // interface reference misses a destroyed component entirely (see the Carried remarks), and a
+            // destroyed one has no transform to re-parent.
+            if (container == null || container.Transform == null) return CarryRefusal.NotCarriable;
 
             CarryRefusal refusal = CarryMath.CanPickUp(container.IsCarriable, IsCarrying);
             if (refusal != CarryRefusal.None) return refusal;
 
-            _placedParent = container.transform.parent;
-            Carried = container;
+            _placedParent = container.Transform.parent;
+            _carried = container;
             container.OnLifted(this);
 
-            container.transform.SetParent(transform, worldPositionStays: false);
+            container.Transform.SetParent(transform, worldPositionStays: false);
             ApplyCarriedPose();
             return CarryRefusal.None;
         }
@@ -135,14 +173,14 @@ namespace HiddenHarbours.Player
             CarryRefusal refusal = CarryMath.CanPlace(IsCarrying, TidalWalkability.IsWalkableNow(feet));
             if (refusal != CarryRefusal.None) return refusal;
 
-            CarriableFuelContainer container = Carried;
-            Carried = null;
+            ICarriable container = Carried;
+            _carried = null;
 
             // Back to the region it came from when that parent is still alive; the scene root otherwise
             // (the region was unloaded under it, which is not a reason to refuse the press).
-            container.transform.SetParent(_placedParent != null ? _placedParent : null,
+            container.Transform.SetParent(_placedParent != null ? _placedParent : null,
                                           worldPositionStays: false);
-            container.transform.position = feet;
+            container.Transform.position = feet;
             _placedParent = null;
 
             container.OnPlaced();
@@ -161,16 +199,17 @@ namespace HiddenHarbours.Player
         /// </summary>
         public void ApplyCarriedPose()
         {
-            if (!IsCarrying) return;
+            ICarriable carried = Carried;      // read ONCE — the getter does the fake-null laundering
+            if (carried == null) return;
             Resolve();
 
-            Carried.transform.localPosition = _hipOffsetMeters;
+            carried.Transform.localPosition = _hipOffsetMeters;
 
             float heading = DrawnHeadingDegrees;
-            Carried.ShowFacing(CarryMath.BakedFacingIndex(heading, Carried.BakedFacings));
+            carried.ShowFacing(CarryMath.BakedFacingIndex(heading, carried.BakedFacings));
 
             if (_bodyRenderer != null)
-                Carried.RideSortingBand(_bodyRenderer.sortingLayerID,
+                carried.RideSortingBand(_bodyRenderer.sortingLayerID,
                                         _bodyRenderer.sortingOrder
                                         + CarryMath.AheadOrdersFor(heading, _aheadOrders));
         }
