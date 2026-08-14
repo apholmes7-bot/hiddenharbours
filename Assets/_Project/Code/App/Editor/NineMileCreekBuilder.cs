@@ -64,6 +64,8 @@ namespace HiddenHarbours.App.Editor
         // live once now, in WaterSceneTemplate, which is what loads them for both land regions.)
         const string ArtGrass    = "Assets/_Project/Art/Tilesets/Grass.png";
         const string ArtSand     = "Assets/_Project/Art/Tilesets/Sand.png";
+        const string ArtTerrainSplatMat = "Assets/_Project/Art/Materials/TerrainSplat.mat"; // the splat-shaded ground (ADR 0028)
+        const string DataTerrain        = "Assets/_Project/Data/Terrain";
         const string ArtDialoguePanel = "Assets/_Project/Art/UI/DialoguePanel.png";   // dialogue panel art
         const string ArtNamePlate     = "Assets/_Project/Art/UI/NamePlate.png";       // nameplate art
         const string ArtShipwright = "Assets/_Project/Art/Sprites/Buildings/ShipwrightShed.png";
@@ -567,11 +569,14 @@ namespace HiddenHarbours.App.Editor
             // a 3 m sand strip beside it — described the town strip of a 120 m island; laid on a 760 m
             // mainland they would be a patch of lawn in the middle of a bay.
             //
-            // GREYBOX, and deliberately so: the real ground here is the owner's Terrain Paint Tool pass
-            // (ADR 0014), which paints beach/dune/rock/grass off the coast plan the terrain already
-            // carries. This is what the region reads as until he runs it, and it is one draw call.
-            MakeTiledGround("Ground", LoadSpriteAny(ArtGrass), NineMileCreekSeaCenter, NineMileCreekSeaSize,
-                            GroundSortingOrder, waterSprite, new Color(0.40f, 0.46f, 0.40f));
+            // ⭐ NO LONGER GREYBOX. The paragraph above described a flat green rectangle standing in until
+            // the ground was painted; this is the painted ground (ADR 0028), the same splat-shaded surface
+            // St Peters has. The tiled fallback below it stays for the one case the splat cannot cover —
+            // see BuildSplatGround's return.
+            if (!BuildSplatGround(nineMileCreek))
+                MakeTiledGround("Ground", LoadSpriteAny(ArtGrass), NineMileCreekSeaCenter,
+                                NineMileCreekSeaSize, GroundSortingOrder, waterSprite,
+                                new Color(0.40f, 0.46f, 0.40f));
 
             // --- THE WORKING QUAY (the wharf tile kit, replacing the flat WharfDeck.png rectangle) ----
             // The public wharf reaching EAST out into the deep harbour (head = the east tip, x=4) is now
@@ -1161,6 +1166,147 @@ namespace HiddenHarbours.App.Editor
         /// </summary>
         public static void ConfigureNineMileCreekTerrain(MainlandTidalTerrain terrain) =>
             NineMileCreekMainland.ConfigureTerrain(terrain);
+
+        /// <summary>
+        /// <b>THE PAINTED GROUND (ADR 0028)</b> — one full-region quad carrying the TerrainSplat shader,
+        /// fed this region's painted height map and its five splat maps, replacing the greybox tiled
+        /// rectangle. The mainland's mirror of <c>StPetersBuilder</c>'s splat block.
+        ///
+        /// <para><b>⭐ BUILDER-WIRED, NOT SCENE-WIRED.</b> Everything here is pushed from its owner — the
+        /// band ladder and the sector from <see cref="NineMileCreekShoreMap"/>, the bar from
+        /// <see cref="NineMileCreekMainland"/>, the paths from <see cref="TerrainSplatAssets"/> — so the
+        /// owner's one Build click reproduces the whole wiring and a hand-dragged reference cannot be the
+        /// only thing holding it together. <c>NineMileCreekSplatGroundTests</c> pins it.</para>
+        ///
+        /// <para><b>⚠ THE SECTOR IS NEUTRALISED ON PURPOSE.</b> The shader carries one island-shaped
+        /// weather/sheltered split and cannot read a coast run, so the whole region is pushed onto the
+        /// SHELTERED ladder and this coast's rock arrives as PAINT instead. See
+        /// <see cref="NineMileCreekShoreMap"/> for the argument.</para>
+        ///
+        /// <para>Returns false — and leaves the caller to lay the greybox tiles — only when the region has
+        /// no usable extent or the TerrainSplat material is missing. A region that has simply never been
+        /// painted still gets the quad: the height bands alone draw a legible coast, which is the shader's
+        /// PR-1 fallback and is strictly better than a flat green rectangle.</para>
+        /// </summary>
+        public static bool BuildSplatGround(RegionDef region)
+        {
+            if (region == null || !region.HasUsableExtent)
+            {
+                Debug.LogWarning("[NineMileCreekBuilder] no usable region extent for the splat ground — " +
+                                 "falling back to the tiled greybox. Fix the RegionDef's " +
+                                 "WorldSizeMeters / SeabedPixelsPerMetre.");
+                return false;
+            }
+
+            var splatMat = AssetDatabase.LoadAssetAtPath<Material>(ArtTerrainSplatMat);
+            if (splatMat == null)
+            {
+                Debug.LogWarning("[NineMileCreekBuilder] " + ArtTerrainSplatMat + " not found — falling " +
+                                 "back to the tiled greybox ground. Re-run after the material imports.");
+                return false;
+            }
+
+            // ⚠⚠ CREATED INACTIVE, CONFIGURED, AND ONLY THEN ACTIVATED — and that order is load-bearing.
+            // TerrainSplatSurface is [ExecuteAlways], so AddComponent fires OnEnable IMMEDIATELY, and
+            // OnEnable builds the ground quad's mesh from whatever extent the component is carrying at
+            // that instant — which, on a fresh component, is its serialized default of 160 × 120 m.
+            // Configure() afterwards updates the fields but EnsureBuilt() early-returns once the mesh
+            // exists, so the quad stays 160 × 120 in the middle of a 760 × 560 region: a small rectangle
+            // of painted ground with black around it, which is exactly what the first capture of this pass
+            // showed.
+            //
+            // St Peters does the same thing and gets away with it ONLY because the builder saves the
+            // scene: on the next load OnEnable runs again with the correct serialized extent and rebuilds
+            // the mesh. That makes the wiring depend on a save/reload round-trip nobody wrote down.
+            // Configuring before the first enable removes the dependency instead of relying on it.
+            var splatGo = new GameObject("TerrainSplat");
+            splatGo.SetActive(false);
+            var splat = splatGo.AddComponent<HiddenHarbours.Art.TerrainSplatSurface>();
+            splat.Configure(NineMileCreekSeaCenter, NineMileCreekSeaSize, splatMat,
+                            HiddenHarbours.Art.TerrainSplatSurface.DefaultSortingOrder);
+
+            // The owner's painted seabed if it exists, else a fresh bake of the analytic coast — NEVER
+            // overwrite an existing paint (ADR 0019: refresh, don't clobber).
+            var heightMap = AssetDatabase.LoadAssetAtPath<PaintedHeightMap>(
+                DataTerrain + "/" + TerrainPaintTool.NineMileCreekSeabedName + ".asset");
+            if (heightMap == null)
+                heightMap = TerrainPaintTool.BakeNineMileCreekSeabed(
+                    region.WorldCenter, region.WorldSizeMeters, region.SeabedTexels);
+            if (heightMap != null && heightMap.HeightTexture != null)
+                splat.ConfigureHeightMap(heightMap.HeightTexture,
+                    heightMap.MinElevation, heightMap.MaxElevation);
+            else
+                Debug.LogWarning("[NineMileCreekBuilder] no painted height map for the splat ground — the " +
+                                 "quad clips itself empty (below the paint floor everywhere). Run " +
+                                 "'Hidden Harbours ▸ Art ▸ Regenerate Nine Mile Creek Starter Splat' " +
+                                 "after re-baking the seabed.");
+
+            ConfigureSplatSurface(splat);
+
+            // The terrain material kit: pack the detail arrays (derived, GUID-stable) and wire them plus
+            // any painted splat maps. Both no-op safely when the kit or the paint is absent — the shader
+            // falls back to flat band colours / bands-only.
+            HiddenHarbours.Art.Editor.TerrainTexArrayBuilder.Build();
+            splat.ConfigureDetail(
+                AssetDatabase.LoadAssetAtPath<Texture2DArray>(
+                    HiddenHarbours.Art.Editor.TerrainTexArrayBuilder.Array256Path),
+                AssetDatabase.LoadAssetAtPath<Texture2DArray>(
+                    HiddenHarbours.Art.Editor.TerrainTexArrayBuilder.Array512Path));
+
+            // Paths from TerrainSplatAssets with THIS region's stem, never literals here — the stem
+            // overloads (#522) are what keep a second painted region off the island's maps.
+            var splatMaps = new Texture2D[TerrainSplatBrush.TextureCount];
+            for (int i = 0; i < splatMaps.Length; i++)
+                splatMaps[i] = AssetDatabase.LoadAssetAtPath<Texture2D>(
+                    TerrainSplatAssets.PathOf(i, NineMileCreekStarterSplat.SplatBaseName));
+            splat.ConfigureSplat(splatMaps[0], splatMaps[1], splatMaps[2], splatMaps[3], splatMaps[4]);
+
+            if (splatMaps[0] == null)
+                Debug.LogWarning("[NineMileCreekBuilder] the splat ground is wired but UNPAINTED (no " +
+                                 TerrainSplatAssets.PathOf(0, NineMileCreekStarterSplat.SplatBaseName) +
+                                 ") — the coast draws from the height bands alone. Run 'Hidden Harbours ▸ " +
+                                 "Art ▸ Regenerate Nine Mile Creek Starter Splat'.");
+
+            // Everything is on the component; NOW let OnEnable build the quad — at the region's real
+            // extent, with every uniform already in place. See the SetActive(false) note above.
+            splatGo.SetActive(true);
+            return true;
+        }
+
+        /// <summary>
+        /// Push every DESIGN NUMBER the splat shader needs onto <paramref name="splat"/> — the band
+        /// ladder, the neutralised sector, the crossing's cobble spine.
+        ///
+        /// <para><b>⭐ SPLIT OUT FROM <see cref="BuildSplatGround"/> so a test can hold it.</b> The rest of
+        /// that method is asset I/O — minting a height map, packing texture arrays, loading five PNGs —
+        /// which a test cannot run without writing to the project. This half is pure number-pushing, which
+        /// is exactly the half that drifts silently: a band floor left at the component's serialized
+        /// default draws a coast metres out of position and nothing errors.
+        /// <c>NineMileCreekSplatGroundTests</c> asserts every value below arrives.</para>
+        /// </summary>
+        public static void ConfigureSplatSurface(HiddenHarbours.Art.TerrainSplatSurface splat)
+        {
+            if (splat == null) return;
+
+            splat.ConfigureBands(
+                NineMileCreekShoreMap.PaintFloorElevation, NineMileCreekShoreMap.RippleFloorElevation,
+                NineMileCreekShoreMap.SandFloorElevation, NineMileCreekShoreMap.MarramFloorElevation,
+                NineMileCreekShoreMap.GrassFloorElevation, NineMileCreekShoreMap.ShingleFloorElevation,
+                NineMileCreekShoreMap.BandWiggleMetres, NineMileCreekShoreMap.BandWiggleScale,
+                NineMileCreekShoreMap.BandDetailMetres, NineMileCreekShoreMap.BandDetailScale);
+
+            splat.ConfigureWeatherSector(NineMileCreekShoreMap.SectorAnchor,
+                NineMileCreekShoreMap.SectorAspect, NineMileCreekShoreMap.SectorFacing,
+                NineMileCreekShoreMap.SectorFeather);
+
+            // The crossing's cobble spine — the walking line the player reads to decide whether the bar is
+            // on. Its geometry is this region's half of the bar; its spine numbers are the ISLAND'S,
+            // because it is one bar and NineMileCreekMainland §6 keeps the two halves mirror images
+            // deliberately.
+            splat.ConfigureSandbar(NineMileCreekMainland.BarFrom, NineMileCreekMainland.BarTo,
+                NineMileCreekMainland.BarHalfWidth,
+                StPetersShoreMap.BarSpineHalfWidth, StPetersShoreMap.BarSpineFloorElevation);
+        }
 
         /// <summary>
         /// Everything the region's <see cref="RegionDef"/> asserts about itself, applied to an EXISTING

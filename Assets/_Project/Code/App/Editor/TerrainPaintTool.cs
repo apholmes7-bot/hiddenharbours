@@ -1175,6 +1175,138 @@ namespace HiddenHarbours.App.Editor
             return map;
         }
 
+        // ==================== NINE MILE CREEK'S SEED (the mainland's sibling) ====================
+
+        /// <summary>The committed Nine Mile Creek seed map's asset name (its PNG is that stem +
+        /// <c>_HeightTex</c>).</summary>
+        public const string NineMileCreekSeabedName = "NineMileCreekSeabed";
+
+        /// <summary>
+        /// The elevation range the mainland's R channel maps across — read from the region's own zones, so
+        /// a deeper bay floor or a taller plateau cannot silently saturate the map (rule 6).
+        /// </summary>
+        public static float NineMileCreekMinElevation => NineMileCreekMainland.BayFloorElevation;
+
+        /// <inheritdoc cref="NineMileCreekMinElevation"/>
+        public static float NineMileCreekMaxElevation => NineMileCreekMainland.LandElevation;
+
+        /// <summary>
+        /// Bake the Nine Mile Creek painted-height seed from TODAY'S analytic coast — the shipped
+        /// <see cref="MainlandTidalTerrain.ElevationAtZones"/> configured with the region's own plan,
+        /// sampled per texel.
+        ///
+        /// <para><b>⚠ WHY THIS EXISTS AT ALL.</b> The splat ground is a quad that clips itself away
+        /// wherever the height field says the ground is below the paint floor — so with no height map it
+        /// renders NOTHING, everywhere, and the region reads exactly as it did before it was painted. Nine
+        /// Mile Creek had no committed height map: its water bakes one at runtime into a 256-texel scratch
+        /// texture it owns, which the ground cannot share (it is transient, square, and sized for a wave
+        /// shader). This is the ground's own copy, at the region's published 2 px/m, and it is the same
+        /// asset the owner's Terrain Paint Tool then paints ON (the ADR 0014 adoption seam St Peters
+        /// has).</para>
+        ///
+        /// <para><b>⚠ AND WHY IT IS A SIBLING RATHER THAN A REFACTOR of
+        /// <see cref="BakeStPetersSeabed"/>.</b> The two walks are the same shape and the duplication is
+        /// real. But the St Peters seed is a COMMITTED BINARY whose bytes are load-bearing — CI drives its
+        /// batch entry point, and hoisting the loop risks re-encoding it for no gain this PR needs. The
+        /// extraction is worth doing; it is worth doing on its own, where a byte-comparison of the old and
+        /// new seed is the whole review.</para>
+        /// </summary>
+        public static PaintedHeightMap BakeNineMileCreekSeabed(Vector2 center, Vector2 worldSize,
+                                                               Vector2Int texels)
+        {
+            float min0 = NineMileCreekMinElevation, max0 = NineMileCreekMaxElevation;
+
+            var go = EditorUtility.CreateGameObjectWithHideFlags("~NMCSeabedExport",
+                HideFlags.HideAndDontSave, typeof(MainlandTidalTerrain));
+            var terrain = go.GetComponent<MainlandTidalTerrain>();
+            NineMileCreekMainland.ConfigureTerrain(terrain);
+
+            Vector2 min = center - worldSize * 0.5f;
+            var pixels = new Color[texels.x * texels.y];
+            for (int y = 0; y < texels.y; y++)
+            for (int x = 0; x < texels.x; x++)
+            {
+                float wx = min.x + (x + 0.5f) / texels.x * worldSize.x;
+                float wy = min.y + (y + 0.5f) / texels.y * worldSize.y;
+                float elev = terrain.ElevationAtZones(new Vector2(wx, wy));
+                float r01 = PaintedHeightField.EncodeElevation(elev, min0, max0);
+                pixels[y * texels.x + x] = new Color(r01, r01, r01, 1f);
+            }
+            Object.DestroyImmediate(go);
+
+            var map = CreatePaintedMapAsset(NineMileCreekSeabedName, texels.x, texels.y, center, worldSize,
+                                            min0, max0, pixels: pixels, overwrite: true);
+            if (map == null)
+            {
+                Debug.LogError("[TerrainPaintTool] The Nine Mile Creek seabed bake produced no map.");
+                return null;
+            }
+
+            // ⚠ POST-CONDITION, not a prediction. A texture importer's size cap silently DOWNSCALES
+            // anything above it, which would leave every world→texel mapping in the map a lie with the
+            // bake reporting success. Ask the imported asset how big it actually is.
+            var written = map.HeightTexture;
+            if (written != null && (written.width != texels.x || written.height != texels.y))
+                Debug.LogError("[TerrainPaintTool] " + NineMileCreekSeabedName + "_HeightTex.png imported " +
+                               "at " + written.width + " × " + written.height + " but was baked at " +
+                               texels.x + " × " + texels.y + " — the importer's size cap has RESCALED the " +
+                               "height data, so every elevation in this map is off. Raise the texture's " +
+                               "Max Size (or the region's px/m) and re-export.");
+
+            Debug.Log("[TerrainPaintTool] Exported analytic Nine Mile Creek → " +
+                      AssetDatabase.GetAssetPath(map) + " at " + texels.x + " × " + texels.y +
+                      " texels (" + (worldSize.x / texels.x).ToString("F2") + " × " +
+                      (worldSize.y / texels.y).ToString("F2") + " m per texel) over " +
+                      worldSize.x + " × " + worldSize.y + " m, elevation " + min0 + ".." + max0 + " m.");
+            return map;
+        }
+
+        /// <summary>Batch entry point for <c>-executeMethod</c> — re-bakes the Nine Mile Creek seed at
+        /// whatever extent and resolution its <see cref="RegionDef"/> currently publishes, with no dialog.
+        /// The mainland's mirror of <see cref="RebakeStPetersSeabedFromCommandLine"/>, and it exists for
+        /// the same reason: a menu-only path means the committed map silently describes a world that no
+        /// longer exists.</summary>
+        public static void RebakeNineMileCreekSeabedFromCommandLine()
+        {
+            try
+            {
+                AssetDatabase.Refresh();
+
+                RegionDef region = NineMileCreekStarterSplat.NineMileCreekRegion();
+                if (region == null)
+                {
+                    Debug.LogError("[TerrainPaintTool] (batch) " + NineMileCreekStarterSplat.RegionId +
+                                   " not found — nothing to size the bake from.");
+                    EditorApplication.Exit(1);
+                    return;
+                }
+                if (!region.HasUsableExtent)
+                {
+                    Debug.LogError("[TerrainPaintTool] (batch) '" + region.DisplayName + "' has an " +
+                                   "unusable extent: " + region.WorldSizeMeters.x + " × " +
+                                   region.WorldSizeMeters.y + " m at " + region.SeabedPixelsPerMetre +
+                                   " px/m.");
+                    EditorApplication.Exit(1);
+                    return;
+                }
+
+                var map = BakeNineMileCreekSeabed(region.WorldCenter, region.WorldSizeMeters,
+                                                  region.SeabedTexels);
+                if (map == null)
+                {
+                    EditorApplication.Exit(1);
+                    return;
+                }
+                AssetDatabase.SaveAssets();
+                Debug.Log("[TerrainPaintTool] (batch) Nine Mile Creek seabed re-bake complete.");
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError("[TerrainPaintTool] (batch) Nine Mile Creek seabed re-bake threw: " + e);
+                EditorApplication.Exit(1);
+            }
+        }
+
         /// <summary>
         /// Batch entry point for <c>-executeMethod</c> — re-bakes the St Peters seed at whatever extent and
         /// resolution the <see cref="RegionDef"/> currently publishes, with no dialog.
