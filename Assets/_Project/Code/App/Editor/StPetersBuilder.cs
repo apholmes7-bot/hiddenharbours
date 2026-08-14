@@ -1059,7 +1059,17 @@ namespace HiddenHarbours.App.Editor
             // layers (-18) and far below the Sea plane (-5), so the ADR 0012 tide reveal is untouched.
             if (UseSplatGround)
             {
+                // ⚠⚠ CREATED INACTIVE, CONFIGURED, AND ONLY THEN ACTIVATED — and that order is
+                // load-bearing. TerrainSplatSurface is [ExecuteAlways], so AddComponent fires OnEnable
+                // IMMEDIATELY and builds the quad's mesh from the component's serialized DEFAULT extent
+                // (160 × 120 m); Configure() afterwards updates the fields but EnsureBuilt() early-returns
+                // once the mesh exists. This builder used the naive order and survived ONLY because it
+                // saves the scene — the next load re-ran OnEnable with the correct serialized extent — an
+                // undocumented save/reload dependency that broke the moment anything looked at the freshly
+                // built scene without reloading it. See NineMileCreekBuilder.BuildSplatGround (where the
+                // trap was found) and StPetersSplatGroundTests, which pins this order.
                 var splatGo = new GameObject("TerrainSplat");
+                splatGo.SetActive(false);
                 var splat = splatGo.AddComponent<HiddenHarbours.Art.TerrainSplatSurface>();
                 splat.Configure(RegionWorldCenter, RegionWorldSize,
                     AssetDatabase.LoadAssetAtPath<Material>(ArtTerrainSplatMat),
@@ -1107,6 +1117,10 @@ namespace HiddenHarbours.App.Editor
                 for (int i = 0; i < splatMaps.Length; i++)
                     splatMaps[i] = AssetDatabase.LoadAssetAtPath<Texture2D>(TerrainSplatAssets.PathOf(i));
                 splat.ConfigureSplat(splatMaps[0], splatMaps[1], splatMaps[2], splatMaps[3], splatMaps[4]);
+
+                // Everything is on the component; NOW let OnEnable build the quad — at the region's real
+                // extent, with every uniform already in place. See the SetActive(false) note above.
+                splatGo.SetActive(true);
             }
 
             // --- THE PAINTED COAST (shoreline-ISO v8) ---------------------------------------------------
