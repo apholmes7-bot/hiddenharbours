@@ -57,12 +57,15 @@ namespace HiddenHarbours.Tools.RigBaking
         /// loads no shared library, so load order cannot go wrong here. One kit, one file — see
         /// <c>RigCatalog.cs</c> for the assembly contract.</para>
         ///
-        /// <para>⚠️ <b>Not yet a mesh.</b> Her faces come from a private <c>facesFor(V)</c> driven by
-        /// the exported <c>resolve(opts)</c>, not from a static <c>F</c>, so her face list is a
-        /// function of the variant — which neither <see cref="HullMeshFleet"/> nor
-        /// <c>RigMeshSymbols.Reconstructions</c> can express today. She is listed in
-        /// <c>HullMeshFleet.NotHulls</c> with that reason. Her sidecars and deck defs are committed;
-        /// the 18 <c>HullMeshDef</c>s are the follow-up.</para>
+        /// <para>⚠️ <b>Not yet a mesh — but no longer for a structural reason.</b> Her faces come
+        /// from a private <c>facesFor(V)</c> driven by the exported <c>resolve(opts)</c>, not from a
+        /// static <c>F</c>, so her face list is a function of the variant. That is a thing the
+        /// extractor could not express until ADR 0022 phase 8, which added
+        /// <see cref="RigHullExtraction"/> and the per-file <c>variantFaces</c> reconstruction; all
+        /// eighteen now extract distinct geometry through it, measured by
+        /// <c>RigMeshVariantExtractionTests</c>. What is outstanding is her own bake — the 18
+        /// <c>HullMeshDef</c>s and the deck defs that ride with them. She stays in
+        /// <c>HullMeshFleet.NotHulls</c> until they land, with that as the reason.</para>
         /// </summary>
         [RigContribution]
         static IEnumerable<KeyValuePair<string, RigEntry>> LobsterVariantRigs() =>

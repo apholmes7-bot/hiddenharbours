@@ -49,6 +49,23 @@ namespace HiddenHarbours.Core
         [Tooltip("The rig source this was extracted from (repo-relative), for provenance and re-bakes.")]
         public string SourceRigPath = "";
 
+        /// <summary>
+        /// The JS expression these faces came from, when the rig generates more than one hull —
+        /// e.g. <c>LobsterBoatVariantsIso.variantFaces({size:'offshore',…})</c>.
+        ///
+        /// <para><b>Empty means the rig's static <c>F</c> array</b>, which is every hull baked before
+        /// generators existed. It stays empty on those defs, and reaches YAML only when an asset is
+        /// re-written — so adding this field churned nothing.</para>
+        ///
+        /// <para>Without it, eighteen lobster boats out of one file all claim the same provenance:
+        /// same <see cref="SourceRigPath"/>, same global, different boat. Mirrors
+        /// <c>HullPropMeshDef.SourceFaceBuilder</c>, which has recorded the same fact for fittings
+        /// since ADR 0022 phase 7.</para>
+        /// </summary>
+        [Tooltip("For a rig that generates several hulls: the variant expression this one came from. " +
+                 "Empty = the rig's static F array (every single-hull rig).")]
+        public string SourceFaceBuilder = "";
+
         [Header("Geometry (extracted by RigMeshExtractor, built by RigMeshBuilder)")]
         [Tooltip("The hull mesh, stored as a sub-asset of this def. RigMeshBuilder layout: flat " +
                  "per-face normals, UV0 = (materialId, faceBias b, depthBias db, 0).")]
