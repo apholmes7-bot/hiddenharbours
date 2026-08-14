@@ -578,6 +578,24 @@ namespace HiddenHarbours.App.Editor
                                 NineMileCreekSeaSize, GroundSortingOrder, waterSprite,
                                 new Color(0.40f, 0.46f, 0.40f));
 
+            // --- THE ROADS, ON THE GROUND THAT WAS JUST LAID -------------------------------------------
+            // ⭐ THE ROUTES HAVE BEEN PUBLISHED SINCE PHASE A-1 AND NOTHING DREW THEM. NineMileCreekMainland
+            // §9 carries the bar road, Wharf Road, the through-road and the gully path as derived data —
+            // the pole line already walks Wharf Road and the lot tests already measure against its
+            // corridor — but the ground under all of it was bare. This lays the v3 road kit along those
+            // same published routes: dirt on the bar road, gravel on the two named roads, foot tread down
+            // the gully, concrete on the winch apron and gravel under the buyers' trucks. Re-site a road
+            // in the plan and the tiles follow it; nothing here authors a coordinate.
+            //
+            // ⚠ AFTER the splat ground and BEFORE the quay, which is the order the sorting band wants:
+            // the painted ground is at -21, the road's two layers at -17/-16, the sea at -5. A lane that
+            // floods is covered by depth-graded water, exactly as painted ground is.
+            //
+            // ⚠ The greybox fallback above sits at GroundSortingOrder (-7) and would cover the roads — but
+            // that path only fires when the splat material or the region extent is missing, which is a
+            // region with larger problems than an invisible lane.
+            NineMileCreekRoadPainter.Paint(terrain);
+
             // --- THE WORKING QUAY (the wharf tile kit, replacing the flat WharfDeck.png rectangle) ----
             // The public wharf reaching EAST out into the deep harbour (head = the east tip, x=4) is now
             // built from the BAKED kit: 48 'quay' cells drawn back to front with one sorting order per
@@ -957,16 +975,24 @@ namespace HiddenHarbours.App.Editor
                 "registered as standable floor with their decks measured, every berth given a bollard and " +
                 "every bollard a real ShoreCleat — the drawn ISO quay is Phase B's. The town moved INLAND " +
                 "to the through-road; the working sites are on the spit. Vendors, offers and the market " +
-                "id are unchanged and still wired by stable id.");
+                "id are unchanged and still wired by stable id. ⭐ THE ROADS ARE DRAWN: the four published " +
+                "routes are laid in v3 road tiles on their own centre-lines — dirt on the bar road, " +
+                "gravel on Wharf Road and the through-road, foot tread down the gully — plus the concrete " +
+                "apron at the winch and gravel under the buyers' trucks, and one shell walk up to each of " +
+                "the five public town lots (the region's only paving canon does not ask for).");
             EditorUtility.DisplayDialog("Hidden Harbours",
                 "Nine Mile Creek rebuilt as the MAINLAND.\n\n" +
                 $"• {NineMileCreekSeaSize.x:0} × {NineMileCreekSeaSize.y:0} m — water east, fields west\n" +
                 "• The tidal bar to St Peters comes ashore to the SOUTH; its passage is mid-bar\n" +
                 $"• Tide is now ±{TideAmplitude} m, phase {TidePhaseHours} h (St Peters', because it is one bar)\n" +
-                "• The wharf dries out under its fleet at spring low — that is the ruled gate\n\n" +
+                "• The wharf dries out under its fleet at spring low — that is the ruled gate\n" +
+                "• The roads are laid: red dirt on the bar road, gravel on Wharf Road and the\n" +
+                "  through-road, a foot tread down the gully, concrete at the winch\n\n" +
                 "STILL TO DO, and it is yours:\n" +
                 "1. Hidden Harbours ▸ Terrain Paint Tool → bake the seabed at 2 px/m, then save\n" +
-                "2. Press Play and walk it: the crossing, the bar road, Wharf Road, the wharf front\n\n" +
+                "2. Press Play and walk it: the crossing, the bar road, Wharf Road, the wharf front\n" +
+                "3. Walk the roads specifically — the junction at (−16, 92) where the dirt meets the\n" +
+                "   gravel, the neck between the two ponds, and the shell walks in the town\n\n" +
                 "The ground is a single greybox plane until you paint it.",
                 "Fair winds");
         }
