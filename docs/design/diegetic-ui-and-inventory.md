@@ -15,7 +15,10 @@
 > read it — and to **P2 (Dory to Dynasty)** and **P4 (Earn It, Then Automate It)** — progression *is*
 > the growth of what you can carry, hold, store, and read.
 >
-> Sibling docs: [`ux-and-mobile-controls.md`](ux-and-mobile-controls.md) (the current UI/HUD/screens
+> Sibling docs: [`diegetic-devices.md`](diegetic-devices.md) (the owner-directed **device suite** —
+> calendar, notebook, phone, computers — captured 2026-08-14; it works *inside* this doc's §3 keystone
+> rule and puts the one place the two directions could collide in front of the owner as a ruling),
+> [`ux-and-mobile-controls.md`](ux-and-mobile-controls.md) (the current UI/HUD/screens
 > spec — **this doc reframes its HUD and its menus**, see §7), [`economy-and-business.md`](economy-and-business.md)
 > (the market this doc turns into *conversation*), [`progression-and-housing.md`](progression-and-housing.md)
 > (the storage/transport ladder this doc makes the *spine* of progression),

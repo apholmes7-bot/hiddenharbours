@@ -49,6 +49,10 @@ instrument) from *readings* (clock, tide, wind) to *knowledge itself*:
   same world that has outboards, freezers, and a gas pump). What lives on which device, who
   owns one, and what upgrades unlock (a phone that receives price texts? a computer at the
   buyer's office?) are OPEN — owner's world-building, capture before building.
+  > **Captured 2026-08-14** — the owner directed a four-device suite (calendar · notebook ·
+  > phone · computers) and named what the phone carries. The capture, the reconciliation with
+  > the earned-instrument rule, and the rulings still needed are in
+  > [`diegetic-devices.md`](diegetic-devices.md); §5 Q3 below stays open until those are ruled.
 - **Documents** — letters, notices, the almanac, ledgers, charts. The tide-table almanac page
   (#355) is the proof piece of this pattern and the template.
 - **Other NPCs** — asking people is a first-class information channel (the §2 question
