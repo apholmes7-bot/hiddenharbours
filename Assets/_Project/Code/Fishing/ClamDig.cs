@@ -84,6 +84,12 @@ namespace HiddenHarbours.Fishing
         [SerializeField] private string _id;
         [Tooltip("0 = time-seeded weight roll; non-zero for reproducible clam weights in testing.")]
         [SerializeField] private int _rngSeed = 0;
+        [Tooltip("Land the dug clam IN THE FISHER'S HAND rather than straight into the pail (the owner's " +
+                 "ruling, 2026-08-13: 'a clam can be in hand but needs to be placed in a container to " +
+                 "stack'). Falls back to the pail wherever there are no hands to land into — EditMode, a " +
+                 "bare art scene, a region with no persistent core — so nothing ever drops a clam. Turn " +
+                 "OFF for the pre-ruling behaviour; that path is what a test uses to prove the difference.")]
+        [SerializeField] private bool _landInHand = true;
 
         [Header("Greybox reveal (cosmetic placeholder)")]
         [Tooltip("Shortest gap between squirt-hole reveals while exposed (real seconds).")]
@@ -168,12 +174,28 @@ namespace HiddenHarbours.Fishing
                 return false;
             }
 
-            EnsureBucket();
-            if (_bucket == null) { Say("Nowhere to put a clam — you need a bucket."); return false; }
-            if (_bucket.UsedUnits >= _bucket.CapacityUnits)
+            // ⚠️ HANDS FIRST, and the order of these two checks is the ruling. A dug clam goes IN YOUR
+            // HAND (owner, 2026-08-13), so "can it be landed?" is a question about your hands before it is
+            // a question about the pail — and a clam already in hand refuses HERE, before the bucket is
+            // ever consulted, because a full pail and a full hand are different problems with different
+            // sentences. The bucket-room check below still runs for the hold-direct fallback path.
+            if (_landInHand && CatchHandsAvailable())
             {
-                Say("The bucket's full — head to Nine Mile Creek and sell.");
-                return false;
+                if (HandsAlreadyFull())
+                {
+                    Say("You're already holding a clam — put it in the bucket first.");
+                    return false;
+                }
+            }
+            else
+            {
+                EnsureBucket();
+                if (_bucket == null) { Say("Nowhere to put a clam — you need a bucket."); return false; }
+                if (_bucket.UsedUnits >= _bucket.CapacityUnits)
+                {
+                    Say("The bucket's full — head to Nine Mile Creek and sell.");
+                    return false;
+                }
             }
 
             float weight = CatchResolver.RollWeight(_clamSpecies, _rng);
@@ -182,7 +204,27 @@ namespace HiddenHarbours.Fishing
             var clam = new CatchItem(_clamSpecies.Id, _clamSpecies.DisplayName, _clamSpecies.Category,
                                      weight, _clamSpecies.BaseValue, _clamSpecies.SupplyElasticity,
                                      _clamSpecies.SpoilPerDay, Freshness.Landed(dugAt));
-            if (!_bucket.TryAdd(clam)) return false;   // race with capacity; cozy no-op
+            // INTO HER HAND if the hands are there to take it; into the pail if they are not.
+            //
+            // The fallback is not a nicety — it is what keeps every context that has no CarryHands working
+            // exactly as it did: EditMode, a bare art scene, a region played directly with no persistent
+            // core. "Nobody published a pair of hands" must mean "as before", never a dropped clam.
+            //
+            // ⚠️ FishCaught is NOT published here on the in-hand path, and that is deliberate. It has
+            // always meant "a catch entered a hold" — the fill renderers re-read the container on it, the
+            // onboarding director counts it, the deck presenters re-stack. Firing it over a clam that is
+            // merely in your fist would lie to all of them. The hand moment publishes CatchLanded instead
+            // (from CarryHands), and FishCaught fires when the clam actually goes in the pail.
+            if (_landInHand && TryLandInHand(clam))
+            {
+                _showingSquirt = false;
+                _consumed = true;
+                Debug.Log($"[ClamDig] Lifted out a {clam} — it's in your hand.");
+                return true;
+            }
+
+            EnsureBucket();
+            if (_bucket == null || !_bucket.TryAdd(clam)) return false;   // race with capacity; cozy no-op
 
             EventBus.Publish(new FishCaught(clam));     // same land path the rod uses
             _showingSquirt = false;                     // dug it — the tell's gone
@@ -233,6 +275,30 @@ namespace HiddenHarbours.Fishing
         /// </summary>
         public bool ShovelInHand()
             => string.IsNullOrEmpty(_shovelToolId) || CarriedItem.InHand(_shovelToolId);
+
+        /// <summary>Are there hands to land a clam into? False in EditMode, a bare art scene, or a region
+        /// played with no persistent core — and then the dig falls back to the pail exactly as it always
+        /// did.</summary>
+        private static bool CatchHandsAvailable() => GameServices.CatchHands != null;
+
+        /// <summary>Is she already holding a landed catch? Asked of the READ side (<see cref="ICarrier"/>)
+        /// so this file needs nothing from Player but the Core contracts — a clam in hand reports its
+        /// SPECIES id as its <c>DefId</c>, which is what makes this answerable from here.</summary>
+        private bool HandsAlreadyFull()
+        {
+            ICarrier hands = GameServices.Hands;
+            ICarriable held = hands?.Carried;
+            return held != null && !string.IsNullOrEmpty(_clamSpecies != null ? _clamSpecies.Id : null)
+                   && string.Equals(held.DefId, _clamSpecies.Id, System.StringComparison.Ordinal);
+        }
+
+        /// <summary>Offer the clam to her hands. False means the hands refused (or were not there), and
+        /// the caller lands it in the pail instead.</summary>
+        private static bool TryLandInHand(in CatchItem clam)
+        {
+            ICatchHands hands = GameServices.CatchHands;
+            return hands != null && hands.TryPutInHand(clam);
+        }
 
         /// <summary>
         /// Say it to the player, not just to the console. A dig is now a deliberate press through the one
@@ -358,11 +424,12 @@ namespace HiddenHarbours.Fishing
         /// or empty <paramref name="shovelToolId"/> to run WITHOUT the in-hand gate, which is the
         /// pre-ruling behaviour and is exactly what a test needs to prove the gate is load-bearing.</para>
         /// </summary>
-        public void ConfigureInteract(string id, string shovelToolId)
+        public void ConfigureInteract(string id, string shovelToolId, bool landInHand = true)
         {
             _id = id;
             _resolvedId = null;
             _shovelToolId = shovelToolId;
+            _landInHand = landInHand;
         }
     }
 }

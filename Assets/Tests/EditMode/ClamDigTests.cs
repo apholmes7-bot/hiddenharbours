@@ -111,7 +111,13 @@ namespace HiddenHarbours.Tests.EditMode
             go.transform.position = Vector2.zero;          // spot at origin; terrain is flat anyway
             var d = go.AddComponent<ClamDig>();
             d.Configure(clam, bucket, go.transform, "gear.shovel", seed);
-            d.ConfigureInteract($"fixture.clam_hole#{_spawned.Count}", ToolDef.ShovelId);
+            // ⚠️ landInHand: FALSE, deliberately. This suite pins the dig's GATES — exposure, ownership,
+            // the shovel in hand, bucket room, one-clam-per-press — and asserts them by looking in the
+            // pail. Where the clam GOES is a different subject with its own suite (CatchInHandTests), and
+            // running it here would mean every assertion below had to stack the clam first just to see it.
+            // This is the fallback path that ships wherever no hands are published, so it is a real
+            // configuration, not a test-only fiction.
+            d.ConfigureInteract($"fixture.clam_hole#{_spawned.Count}", ToolDef.ShovelId, landInHand: false);
             return d;
         }
 
@@ -220,6 +226,11 @@ namespace HiddenHarbours.Tests.EditMode
             go.transform.position = spotPos;
             var d = go.AddComponent<ClamDig>();
             d.Configure(clam, bucket, go.transform, "gear.shovel", seed, reach);
+            // landInHand: false — same reason as MakeDig above: these pin WHICH hole a press digs
+            // (nearest, in reach, one per press), read out of the pail. The destination is
+            // CatchInHandTests' subject.
+            d.ConfigureInteract($"fixture.clam_hole.{spotPos.x}_{spotPos.y}", ToolDef.ShovelId,
+                                landInHand: false);
             return d;
         }
 

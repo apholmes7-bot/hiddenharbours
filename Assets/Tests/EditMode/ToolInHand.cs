@@ -68,7 +68,15 @@ namespace HiddenHarbours.Tests.EditMode
             spawned.Add(go);
             go.AddComponent<SpriteRenderer>();
             var hands = go.AddComponent<CarryHands>();
+
+            // ⚠️ BOTH relays, because a live CarryHands publishes both in OnEnable — and publishing only
+            // the read side would be worse than publishing neither. A catch source checks
+            // GameServices.CatchHands to decide whether to land in the hand or fall back to the hold, so a
+            // fixture that left it null would silently take the FALLBACK path while looking like it had
+            // hands: every dig would fill the pail, the in-hand behaviour would never run, and the tests
+            // would be green about the wrong game.
             GameServices.Hands = hands;
+            GameServices.CatchHands = hands;
             return hands;
         }
     }
