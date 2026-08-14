@@ -757,8 +757,10 @@ namespace HiddenHarbours.App.Editor
 
             // Re-feed any open splat surface from the RELOADED assets (Commit reimported them — the old
             // in-memory references are invalid; wire only the fresh loads).
-            // ⚠ The no-arg overload, matching StPetersStarterSplat: the FindObjectsSortMode one is
-            // OBSOLETE in 6000.5 and this repo's CI treats obsolete-as-error.
+            // ⚠ The no-arg overload, matching StPetersStarterSplat. The FindObjectsSortMode overload is
+            // [Obsolete] in 6000.5 — WARNING-only today (CS0618: it compiles), but 6000.5 has already
+            // promoted several editor APIs in this family to obsolete-as-ERROR, and there is no reason to
+            // sit on a deprecated call when the shipped sibling uses the stable one.
             foreach (var s in Object.FindObjectsByType<HiddenHarbours.Art.TerrainSplatSurface>())
             {
                 s.ConfigureSplat(textures[0], textures[1], textures[2], textures[3], textures[4]);
