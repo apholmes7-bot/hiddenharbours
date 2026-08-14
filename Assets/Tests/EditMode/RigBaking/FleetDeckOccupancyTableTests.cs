@@ -73,11 +73,12 @@ namespace HiddenHarbours.Tests.RigBaking
         /// <summary>
         /// A fresh V8 host with exactly ONE rig in it.
         ///
-        /// <para>⚠️ <b>One rig per host is load-bearing, not tidiness.</b>
-        /// <c>sportSkiffMk2IsoRig.js</c> installs the SAME global (<c>SportSkiffIso</c>) as the
-        /// committed sport-skiff rig — the collision PR #533 flagged upstream and did not patch,
-        /// because <c>docs/art/rigs/**</c> is art-director's lane. Two rigs in one host gets the
-        /// wrong boat with no error at all.</para>
+        /// <para>⚠️ <b>One rig per host is load-bearing, not tidiness.</b> When this fixture was
+        /// written, <c>sportSkiffMk2IsoRig.js</c> installed the SAME global (<c>SportSkiffIso</c>)
+        /// as the committed sport-skiff rig, and two rigs in one host got the wrong boat with no
+        /// error at all. #534 re-issued her installing <c>SportSkiffMk2Iso</c>, which retires that
+        /// specific collision — but one-per-host stays: it is the bake's own posture, and it keeps
+        /// any FUTURE drop that ships a colliding global from silently poisoning a census.</para>
         /// </summary>
         static IRigScriptHost HostFor(string rigFile)
         {
@@ -401,20 +402,21 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         /// <summary>The sport skiff v2's three tub anchors, read from the rig she is actually cut
-        /// from — under the Mk2 filename, because the v2 rig installs the shipped skiff's global and
-        /// this fixture must not be the thing that gets the wrong boat.</summary>
+        /// from — under the Mk2 filename AND the Mk2 global (<c>SportSkiffMk2Iso</c>, #534): if the
+        /// host somehow holds the shipped 7.0 m skiff instead, that global is absent and the read
+        /// throws, so this fixture cannot be the thing that gets the wrong boat.</summary>
         [Test]
         public void TheSportSkiffMk2_StillAnchorsTheTubsTheTableCounts()
         {
             using IRigScriptHost host = HostFor(SkiffMk2Rig);
 
             Assert.AreEqual(Authored["hullmesh.sport_skiff_mk2_iso"].Dressable,
-                (int)host.EvaluateNumber("SportSkiffIso.TUBS.length"),
+                (int)host.EvaluateNumber("SportSkiffMk2Iso.TUBS.length"),
                 "sport skiff v2: TUBS (rig line 1007) no longer matches her dressable term.");
-            Assert.AreEqual(7.0d, host.EvaluateNumber("SportSkiffIso.L"), 1e-6,
-                "This host loaded a 7.0 m rig that is not the Mk2 — check the global collision " +
-                "PR #533 flagged (she installs SportSkiffIso, the shipped skiff's own global).");
-            Assert.AreEqual(0.46d, host.EvaluateNumber("SportSkiffIso.DECK"), 1e-6,
+            Assert.AreEqual(7.0d, host.EvaluateNumber("SportSkiffMk2Iso.L"), 1e-6,
+                "SportSkiffMk2Iso resolved but L is not the v2's 7.0 — the rig under the Mk2 " +
+                "filename has been reshaped; every number derived from it needs re-measuring.");
+            Assert.AreEqual(0.46d, host.EvaluateNumber("SportSkiffMk2Iso.DECK"), 1e-6,
                 "DECK 0.46 is the v2's sole; the committed skiff's is 0.28. If this reads 0.28 the " +
                 "host has the WRONG BOAT and every number derived from it is the wrong hull's.");
         }
