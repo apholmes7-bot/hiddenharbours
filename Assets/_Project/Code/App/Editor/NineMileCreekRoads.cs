@@ -519,6 +519,29 @@ namespace HiddenHarbours.App.Editor
                 yield return new Vector2Int(x, y);
         }
 
+        /// <summary>
+        /// The cell a world point belongs to, clamped into the region's own grid.
+        ///
+        /// <para><b>⚠ THE CLAMP IS THE POINT, and CI is what found it.</b> The grid covers
+        /// <c>[min, max)</c> — cell <c>y</c> owns world <c>[y, y+1)</c> — so a point lying exactly ON the
+        /// region's north or east boundary floors to a cell one PAST the last one. The through-road's
+        /// last node is <c>(−186, 280)</c>, which is the region's north edge to the metre, so
+        /// <see cref="CentreLineIsContinuous"/> read the road's own end as a hole in it. The road was
+        /// paved correctly; the arithmetic that asked about it was off by one cell.</para>
+        ///
+        /// <para>Both the raster and the continuity check go through this, so the cell a road is LAID in
+        /// and the cell it is CHECKED in cannot be two different answers.</para>
+        /// </summary>
+        public static Vector2Int CellOf(Vector2 p)
+        {
+            Rect region = RegionRect();
+            return new Vector2Int(
+                Mathf.Clamp(Mathf.FloorToInt(p.x),
+                            Mathf.FloorToInt(region.xMin), Mathf.CeilToInt(region.xMax) - 1),
+                Mathf.Clamp(Mathf.FloorToInt(p.y),
+                            Mathf.FloorToInt(region.yMin), Mathf.CeilToInt(region.yMax) - 1));
+        }
+
         /// <summary>The region rectangle, from the plan.</summary>
         public static Rect RegionRect() => new Rect(
             NineMileCreekMainland.RegionWorldCenter.x - NineMileCreekMainland.RegionWorldSize.x * 0.5f,
@@ -609,7 +632,10 @@ namespace HiddenHarbours.App.Editor
                 for (int k = 0; k <= steps; k++)
                 {
                     Vector2 p = Vector2.Lerp(way.Route[i], way.Route[i + 1], k / (float)steps);
-                    if (paving.IsPaved(Mathf.FloorToInt(p.x), Mathf.FloorToInt(p.y))) continue;
+                    // ⚠ CellOf, not a raw floor — a node lying exactly on the region's closing edge
+                    // belongs to the last cell, not to a cell past it. See CellOf.
+                    Vector2Int cell = CellOf(p);
+                    if (paving.IsPaved(cell.x, cell.y)) continue;
                     firstGap = p;
                     return false;
                 }

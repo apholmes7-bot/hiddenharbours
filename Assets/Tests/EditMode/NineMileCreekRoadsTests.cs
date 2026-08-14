@@ -207,6 +207,25 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void ARouteNodeOnTheRegionsClosingEdgeBelongsToTheLastCell()
+        {
+            // ⚠ REGRESSION, and CI is what found it. The cell grid covers [min, max) — cell y owns world
+            // [y, y+1) — so a point lying exactly ON the region's north or east boundary floors to a cell
+            // one PAST the last one. The through-road's last node is (−186, 280), which is the region's
+            // north edge to the metre, and the first version of the continuity check therefore read the
+            // road's own end as a hole in it. The road was paved correctly; the arithmetic asking about
+            // it was off by one cell.
+            Rect region = NineMileCreekRoads.RegionRect();
+            var onTheEdge = new Vector2(-186f, region.yMax);
+
+            Vector2Int cell = NineMileCreekRoads.CellOf(onTheEdge);
+            Assert.That(cell.y, Is.EqualTo(Mathf.CeilToInt(region.yMax) - 1),
+                "a point on the region's closing edge must land in the LAST cell row, not one past it");
+            Assert.IsTrue(_paving.IsPaved(cell.x, cell.y),
+                "…and that is the cell the through-road's last node is actually paved in");
+        }
+
+        [Test]
         public void NoPavedCellStandsInEitherPond()
         {
             // Said geometrically as well as by elevation, because the two ponds are the named hazard: the
