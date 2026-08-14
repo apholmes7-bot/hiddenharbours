@@ -153,7 +153,7 @@ Two consequences worth naming before it is built:
 | Fish store / holds | `wharfBuildingRig` **`iceHouse`**, and **`storage`** type with `dock` fittings (raised loading dock + roll-up bays) |
 | **NOT built** | `fishPlant` / `cannery` presets — the owner's "no processing here yet". They are the visible promise of a later tier. |
 | Beach, north end | `ShoreIsoGround` sand/ripple + `ShoreIsoFringe` |
-| Roads, parking, apron | `RoadIso` — **dirt/gravel** for the yard, a `concrete` apron at the winch |
+| Roads, parking, apron | ✅ **BUILT** from the v3 road kit (`RoadsV3`, which supersedes `RoadIso`) — **gravel** under the buyers' trucks and down Wharf Road, a `concrete` apron over the west wall's working end at the winch. See [`nine-mile-creek-mainland.md`](nine-mile-creek-mainland.md) §1.2a. *(The v3 kit also bakes a surface literally named `apron` — "wharf apron", new since this row was written. Canon says `concrete` and canon wins; swapping is one constant.)* |
 | Stacked traps | Existing `potRig` art, stacked as dressing |
 
 **Everything in that table already exists in the repo.** Nine Mile Creek is the first region that can

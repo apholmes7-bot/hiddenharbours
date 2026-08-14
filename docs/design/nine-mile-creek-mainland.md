@@ -71,6 +71,44 @@ Creek's wharf front."* They meet at `(−16, 92)`.
 
 **Walk budgets:** landing → wharf front **2:23**; landing → town **2:24**; wharf → town **1:47**.
 
+#### 1.2a The roads are DRAWN — the v3 road kit, on these same routes
+
+Phase A published the routes and nothing laid a tile on them. `NineMileCreekRoads` +
+`NineMileCreekRoadPainter` now do, off the RoadsV3 blob-47 kit — **reading the arrays above, never a
+copy of them**, so re-siting a road here re-lays the tiles.
+
+| Paving | Route / shape | Surface | Width |
+|---|---|---|---|
+| The bar road | `BarRoad` | `dirt` | 4 m |
+| Wharf Road | `WharfRoad` | `gravel` | 5 m |
+| The through-road | `ThroughRoad` | `gravel` | 5 m |
+| The gully path | `GullyPath` | `dirt` | 1.5 m (foot) |
+| The winch apron | the west wall's working end, stopping at the quay deck | `concrete` | 10 × 17 m |
+| The buyers' parking | covers `ParkingPos` + `FishBuyerPos` + a truck's length | `gravel` | ~16 × 20 m |
+| ⚠ The town walks | road → the 6 m reserved radius of each of the **five public lots** | `shell` | 1.5 m |
+
+**Every carriageway fits inside the 3 m corridor the plan already reserves**, so the tiles can never
+pave ground another pass believes it may stand a prop on. **A road does not ford:** a cell whose
+ground is at or below spring high water is not paved, so a carriageway stops where the ground goes
+under — and the armed guard is that a route's own **centre-line must be paved end to end**, which is
+the tile-level form of the marsh-pool defect this region shipped once already.
+
+⚠ **The town walks are the one thing here canon does not ask for, and the owner should look at
+them.** There is no sidewalk and there should not be: the photographs are of a rural coast — red
+dirt, gravel, grass to the road edge, no kerbs — and a kerbed footway strung along the through-road
+would be the most wrong thing this pass could add, wrong in a way that reads as *finished*. What a
+Maritime village actually has is a crushed-shell walk up to the door, so that is what is laid: five
+of them, ~22 m each, one per **public** lot (harbourmaster · chandlery · store · tavern · parish
+hall). The three houses and the boat shed get none — a dooryard is grass and ruts. Deleting them is
+one list, `NineMileCreekRoads.PublicTownLots`.
+
+⚠ **No boardwalk anywhere, deliberately.** The kit bakes one, and the only decking the wharf plan
+names is the **floating** dock and its gangway — a tilemap cell is nailed to one elevation and a
+float swings through 4.4 m of tide, so a boardwalk laid there would be swallowed at high water or
+left standing over dry mud at low. The float wants the wave-field treatment the moored hulls already
+get, which is a Boats seam. The breakwater's plank catwalk is the plan's other decking and the ISO
+crib run already draws that structure.
+
 ### 1.3 Town lots
 
 Nine lots, flanking the through-road and the west end of Wharf Road: harbourmaster's office (the cod
@@ -329,7 +367,7 @@ it is in `NineMileCreekMainland.cs`.
 | Harbour beacon / range light | The breakwater head `(184, 38)`. *(The "small lighthouse on the point" in `world-and-regions.md` §6.3 belongs to Greywick; a community wharf gets a range light.)* |
 | **The utility-pole route** | **Along Wharf Road, 5 m to its north, at 40 m spacing**, town → wharf, ending at the yard light |
 | Town buildings | The nine lots of §1.3, each with a 6 m reserved radius |
-| Ground paint + road tiles | The coast plan (§5) and the four road routes (§1.2) |
+| Ground paint + road tiles | The coast plan (§5) and the four road routes (§1.2). ✅ **The road tiles are laid** — see §1.2a for the surfaces, the widths and the two findings the pass reported rather than faked |
 
 ---
 
