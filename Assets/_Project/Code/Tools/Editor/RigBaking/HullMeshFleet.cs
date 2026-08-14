@@ -83,12 +83,28 @@ namespace HiddenHarbours.Tools.RigBaking
         /// </summary>
         public readonly string OverlayBlockedReason;
 
+        /// <summary>
+        /// Non-null when this hull is ONE OF SEVERAL out of a generator rig, naming which one. Null
+        /// — the case for every hull baked before 2026-08-13 — means the rig's static <c>F</c> array,
+        /// and the extractor takes the code path it always has.
+        ///
+        /// <para>See <see cref="RigHullExtraction"/> for why this is a separate type from the
+        /// fitting's <see cref="RigPropExtraction"/> rather than a reuse of it.</para>
+        /// </summary>
+        public readonly RigHullExtraction Extraction;
+
         public bool FlipsToMesh => OverlayBlockedReason == null;
+
+        /// <summary>True when this entry names one variant of a rig that generates several — so
+        /// several entries in this table legitimately share one <see cref="ScriptPath"/>.</summary>
+        public bool IsVariant => Extraction != null && Extraction.IsVariant;
 
         public FleetHull(string key, string scriptPath, string globalName, string meshAssetPath,
                          string meshId, string[] visualAssetPaths, string[] visualIds,
-                         bool hasBakedSheet, string label, string overlayBlockedReason = null)
+                         bool hasBakedSheet, string label, string overlayBlockedReason = null,
+                         RigHullExtraction extraction = null)
         {
+            Extraction = extraction;
             Key = key;
             ScriptPath = scriptPath;
             GlobalName = globalName;
@@ -262,24 +278,26 @@ namespace HiddenHarbours.Tools.RigBaking
                 // (alphaDiff 0 on all twelve, and her ramps are byte-identical to
                 // lobsterBoatIsoRig's), so they are schemes, not variants.
                 //
-                // The blocker is mechanical, not artistic. A hull's faces are extracted from a
-                // static `F`; hers come from a private facesFor(V) driven by the exported
-                // resolve(opts), so the face list is a FUNCTION OF THE VARIANT. FleetHull carries no
-                // per-hull face call (RigPropExtraction.FaceBuilderCall is the fitting-only
-                // equivalent) and RigMeshSymbols.Reconstructions is keyed per rig FILE, so there is
-                // no way today to say "this hull, that variant". Baking one arbitrary variant and
-                // calling it the lobster variants would be worse than waiting.
+                // ⚠️ THE MECHANICAL BLOCKER IS GONE; WHAT IS LEFT IS THE BAKE ITSELF.
                 //
-                // Landing now: the rig, her 18 sidecars and her 18 deck defs — the art-director
-                // contract, which needs none of the above. The extractor work and the 18
-                // HullMeshDefs are the follow-up; delete this entry when it lands.
+                // Until 2026-08-13 a hull's faces could only be extracted from a static `F`, and hers
+                // come from a private facesFor(V) driven by the exported resolve(opts) — a face list
+                // that is a FUNCTION OF THE VARIANT, which neither FleetHull nor
+                // RigMeshSymbols.Reconstructions could express. ADR 0022 phase 8 added exactly that
+                // expressiveness (RigHullExtraction + the `variantFaces` reconstruction), and
+                // RigMeshVariantExtractionTests measures all eighteen extracting distinct geometry
+                // through it. So this entry no longer records an impossibility — it records
+                // unfinished work, which is a different claim and a much shorter-lived one.
+                //
+                // What is still missing is the 18 HullMeshDefs, their 18 deck Defs and their picker
+                // entries. Delete this entry when they land.
                 ["lobsterBoatVariantsIsoRig.js"] =
                     "EIGHTEEN hulls from one generator (3 sizes × 2 styles × 3 regions, all three " +
-                    "axes geometry — measured 18/18 distinct). Her faces come from a private " +
-                    "facesFor(V) keyed on the exported resolve(opts), not from a static F, and " +
-                    "neither FleetHull nor RigMeshSymbols.Reconstructions can express a per-variant " +
-                    "face call yet. Her sidecars and deck defs are committed; the mesh bake is the " +
-                    "follow-up that adds that expressiveness.",
+                    "axes geometry — measured 18/18 distinct, and re-measured through the extractor " +
+                    "itself by RigMeshVariantExtractionTests). The per-variant face path she needed " +
+                    "now EXISTS (RigHullExtraction, ADR 0022 phase 8); what is outstanding is her " +
+                    "own bake — 18 HullMeshDefs and the deck defs that ride with them. Her rig and " +
+                    "sidecars are committed. This is a to-do, not a blocker.",
             };
 
         public static FleetHull Get(string key)
