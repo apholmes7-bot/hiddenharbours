@@ -1,16 +1,28 @@
 # Fleet flotation — resting drafts and watertight clamps for the rig-pack hulls
 
-**What this is.** The hand-authored gameplay half of twenty-one incoming hulls: `RestingDraftMeters`,
-`WatertightDeckHeightMeters` and `WatertightHalfBeamMeters` for the 18 lobster-boat variants, the two
-coast-guard RHIB builds and the reshaped sport skiff. The baker never writes these three fields — that
-is what lets them survive a re-bake (`RigMeshAssetBaker`, and the `HullMeshDef` field docs) — so they
-have to be derived and written by hand, once, against a method somebody can check.
+**What this is.** The hand-authored gameplay half of **twenty-three** incoming hulls:
+`RestingDraftMeters`, `WatertightDeckHeightMeters` and `WatertightHalfBeamMeters` for the 18
+lobster-boat variants, the two coast-guard RHIB builds, the reshaped sport skiff and the two sport
+fishers. The baker never writes these three fields — that is what lets them survive a re-bake
+(`RigMeshAssetBaker`, and the `HullMeshDef` field docs) — so they have to be derived and written by
+hand, once, against a method somebody can check.
 
-**Status.** The numbers below are authored and pinned by `FleetFlotationTableTests`. They are **not yet
-on any asset**, because no `HullMeshDef` exists for these hulls yet: `lobsterBoatVariantsIsoRig.js` is
-still in `HullMeshFleet.NotHulls`, and neither the zodiac rig nor the sport-skiff v2 rig is in the repo
-at all. When the bake lands, it writes these values into the defs it creates and the coverage test in
-that fixture stops being inert.
+**Status (2026-08-14).** The numbers below are authored and pinned by `FleetFlotationTableTests`. They
+are **not yet on any asset**, because no `HullMeshDef` exists for these hulls yet:
+`lobsterBoatVariantsIsoRig.js`, `zodiacIsoRig.js`, `sportSkiffMk2IsoRig.js` and `sportFisherIsoRig2.js`
+are all in `HullMeshFleet.NotHulls`. When the bake lands, it writes these values into the defs it
+creates and the coverage test in that fixture stops being inert.
+
+**⚠️ Nothing here is provisional any more.** This document was written when the zodiac and sport-skiff-v2
+rigs were pack-only and could not be checked against a committed source. All three rigs were imported on
+2026-08-14 and **every number in §4 and §5 was re-verified against them** — see those sections. The
+provisional flag is now derived from disk (`TheProvisionalFlag_IsExactlyWhetherHerRigIsOnDisk`), so it
+cannot go stale again.
+
+**⚠️ Two hulls were missing from this document entirely.** The sport fisher (§6) is a genuinely
+different model from the sport skiff — 16.2 m and 27.4 m battlewagons, not a 7.0 m skiff — and the two
+arriving in one art drop caused them to be conflated in the bake handoff. She was ruled IN by the owner
+on 2026-08-14 and derived by this document's own method. The count went 21 → 23.
 
 ---
 
@@ -140,6 +152,11 @@ Every half-beam clears its own cell: the variants bake at 480 px / 32 px per m, 
 Her sidecar carries `derivedFromRigSha256` and it **matches her own rig exactly**, so her geometry is
 trustworthy as supplied.
 
+**✅ Re-verified 2026-08-14 against the now-committed `zodiacIsoRig.js`** (LF sha256 `66e5a977…`, which
+is the SHA her sidecar pins). Her sidecar reports `beam_over_tubes_m` 2.96 / 2.80 — exactly the 1.480 /
+1.400 true half-beams tabulated below — and cockpit `z` 0.420 / 0.403, exactly the soles. Both authored
+drafts reproduce the console skiff's 0.750 draft/sole to the centimetre. **Nothing moved.**
+
 She is a chined deep-V with an inflated collar swept along the sheer. Landmarks, from the rig's own
 loft (`hullHalf()`), in metres above the keel:
 
@@ -200,26 +217,91 @@ above the 12–38 m band, which is expected: the band is a displacement-hull lad
 at the small end. **The reshape justifies the delta; she is a second hull under a new id and the
 committed skiff keeps her own numbers untouched.**
 
+**✅ Confirmed 2026-08-14 by an independent source.** This section was derived off the v2 rig *because*
+the sidecar available at the time was stale. Art then reissued that sidecar against the v2 rig, and it
+reports `beam` 2.54 (→ true half-beam **1.270**), `sole` **0.46** and `sheerAmid` **1.10** — the exact
+three figures this section read off the rig source. The stale-sidecar diagnosis and the numbers derived
+around it both stand. The v2 rig is now committed as **`sportSkiffMk2IsoRig.js`**.
+
+⚠️ **She is filed under a Mk2 filename, and that is not cosmetic.** Art ships her as
+`sportSkiffIsoRig.js` — the same name *and the same installed global* (`SportSkiffIso`) as the committed
+366-line rig that draws the shipped sport skiff. Overwriting that file would silently reshape a hull
+already in the game. `docs/art/rigs/**` is read-only to us, so the collision is flagged upstream rather
+than patched; it is latent because a bake loads one rig into a fresh host, but anything that ever loads
+two rigs into one host gets the wrong boat with no error.
+
 ---
 
-## 6. Proposed ids, and what is provisional
+## 6. Sport fisher — two battlewagons, and the band decides her
+
+⚠️ **She is not the sport skiff's v2.** The two arrived in one art drop and were conflated in the bake
+handoff; they are different models by an order of magnitude in displacement. She was outside the
+original 21-hull table entirely. **Owner ruled her IN on 2026-08-14**, so she is derived here by this
+document's own method.
+
+Her rig is committed as `sportFisherIsoRig2.js` (LF sha256 `152eb5f3…`, the SHA both her sidecars pin).
+Measured in the standalone V8 harness against the rig's own loft — and every figure agrees with her two
+sidecars exactly:
+
+| build | LOA (`L`) | sole (`DECK`) | max sheer half-width | cell | px/m |
+| --- | --: | --: | --: | --- | --: |
+| convertible (53′) | 16.2 | 1.25 | 2.580 | 820 × 770 | 32 |
+| skybridge (90′) | 27.4 | 2.05 | 3.660 | 1200 × 1170 | 32 |
+
+### Why the band, and not the draft/sole precedent
+
+**She is the first hull in this document whose LENGTH lands inside the 12–38 m band.** §1 says that band
+— draft/LOA 0.041–0.044, holding across four different hull types — "is the calibration target for
+anything landing in it". The zodiac and the sport skiff sit below the band by length, so for them the
+draft/sole precedent was the only available anchor and band agreement was a bonus. For this hull the
+rule applies directly.
+
+⚠️ **The two methods cannot both be honoured here, and that is worth stating plainly.** A sportfisher's
+cockpit sole stands far higher over her waterline than a workboat's, so:
+
+| method | convertible | skybridge |
+| --- | --: | --: |
+| draft/LOA band (0.041–0.044) | 0.66 – 0.71 | 1.12 – 1.21 |
+| draft/sole precedent (0.750–1.00) | 0.94 – 1.25 | 1.54 – 2.05 |
+
+They do not overlap. The band wins on §1's own wording, and the resulting draft/sole (0.536 / 0.551)
+is recorded as a deliberate departure rather than smoothed over — the same treatment §3 gives the
+region axis. **If the owner judges her to ride too high by eye, the draft is the number to move and
+this is the trade he is adjudicating.**
+
+Draft is the band floor (0.041), rounded **up** to the centimetre so the rounded value stays in band.
+Deck is the rig's own `DECK`. Half-beam is her true max sheer half-width carried out by the lobster
+family's margin (2.50 / 2.220 = 1.126) — she is in that size class and up, so the small-boat margin
+(1.087) would be the wrong precedent.
+
+| build | draft | deck | half-beam | true half-beam | draft/LOA | draft/sole |
+| --- | --: | --: | --: | --: | --: | --: |
+| convertible | 0.67 | 1.25 | 2.91 | 2.580 | 0.0414 | 0.536 |
+| skybridge | 1.13 | 2.05 | 4.12 | 3.660 | 0.0412 | 0.551 |
+
+Both satisfy §2 with room to spare (0.58 m and 0.92 m of dry sole), both clear their own cell easily
+(2.91 against 12.81 m, 4.12 against 18.75 m), and `TheSportFisher_SitsInTheFleetsDraftLoaBand` pins the
+band claim.
+
+**Not derived here:** her planing pose. Like the zodiac's, `plane(t)` is presenter-applied on top of
+the datum, so these are at-rest drafts and no new field is needed.
+
+---
+
+## 7. Proposed ids
 
 Ids follow `hullmesh.snake_case` with the fleet's `_iso` suffix and are **append-only once baked**:
 
 - `hullmesh.lobster_{size}_{style}_{region}_iso` × 18
 - `hullmesh.zodiac_hurricane_iso`, `hullmesh.zodiac_frc_iso`
 - `hullmesh.sport_skiff_mk2_iso`
+- `hullmesh.sport_fisher_convertible_iso`, `hullmesh.sport_fisher_skybridge_iso`
 
 ⚠️ **The ids are a proposal; the numbers are not.** The bake PR owns the ids. The table is keyed by
 `(size, style, region)` / build, which is unambiguous, so if the bake picks different ids only the key
-column moves.
+column moves — and `RigFileFor()` in the fixture, which maps a row to the rig it was cut from.
 
-⚠️ **Three hulls are provisional in a way the lobster variants are not.** The zodiac and sport-skiff-v2
-rigs are in the fleet rig pack and not in `docs/art/rigs/`, so nothing here can be verified against a
-committed source until art-pipeline imports them. Their derivations are recorded above in full so that
-import is the only outstanding step. The 18 lobster variants rest entirely on committed sources.
-
-## 7. What drafts do not fix
+## 8. What drafts do not fix
 
 Hulls visually sitting too low was diagnosed as **iso gain plus animator phase**, not draft. If a hull
 looks wrong in the water at the number above, measure before touching it — the draft may be right and

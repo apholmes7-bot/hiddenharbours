@@ -296,8 +296,50 @@ namespace HiddenHarbours.Tools.RigBaking
                     "axes geometry — measured 18/18 distinct, and re-measured through the extractor " +
                     "itself by RigMeshVariantExtractionTests). The per-variant face path she needed " +
                     "now EXISTS (RigHullExtraction, ADR 0022 phase 8); what is outstanding is her " +
-                    "own bake — 18 HullMeshDefs and the deck defs that ride with them. Her rig and " +
-                    "sidecars are committed. This is a to-do, not a blocker.",
+                    "own bake — 18 HullMeshDefs and the deck defs that ride with them. Her RIG is " +
+                    "committed; her sidecars are NOT (see below). This is a to-do, not a blocker.",
+
+                // ⚠️ CORRECTION, 2026-08-14: the line above used to read "Her rig and sidecars are
+                // committed". The rig is; the sidecars never landed. `git ls-tree` finds zero
+                // `lobsterBoatVariants*.gameplay.json` anywhere in the repo, and the fleet pack's
+                // own README repeats the same false claim. LobsterVariantRigTests said so all
+                // along — "Her sidecars are deliberately NOT in this PR" — but the comment here
+                // drifted, which is exactly how a wrong premise hardens into folklore.
+
+                // ---- the 2026-08-12 fleet pack's remaining three rigs, imported 2026-08-14 -------
+                // All three are IMPORTED but NOT YET BAKED. They are here rather than in Hulls
+                // because a rig lands in one PR and her HullMeshDef, deck Def and visual land in the
+                // next — the chain LobsterVariantRigTests describes (a committed sidecar needs a
+                // deck Def, which needs a visual that wears it). Importing the rig first is what
+                // makes the sidecars' `derivedFromRigSha256` resolvable at all: each of these three
+                // files' LF bytes hash to exactly the SHA its sidecar pins, verified on import.
+
+                ["zodiacIsoRig.js"] =
+                    "Coast-guard RHIB, TWO builds off one rig (hurricane 7.28 m / frc 6.66 m over " +
+                    "the tubes). Imported 2026-08-14 so her sidecar's derivedFromRigSha256 " +
+                    "(66e5a977…) resolves against a committed source; her flotation is authored and " +
+                    "no longer provisional (FleetFlotationTableTests, docs/design/fleet-flotation.md " +
+                    "§4). What is outstanding is the bake itself — 2 HullMeshDefs and their deck " +
+                    "defs. Delete this entry when they land.",
+
+                ["sportSkiffMk2IsoRig.js"] =
+                    "The RESHAPED 7.0 m sport skiff — a SECOND hull under a new id " +
+                    "(hullmesh.sport_skiff_mk2_iso), not a replacement for hullmesh.sport_skiff_iso. " +
+                    "⚠️ She ships from art as `sportSkiffIsoRig.js` and installs the SAME global " +
+                    "(`SportSkiffIso`) as the committed 366-line rig, so she is filed here under a " +
+                    "Mk2 name (the sternTrawlerMk2 precedent) rather than overwriting a shipped " +
+                    "hull's source. docs/art/rigs/** is read-only to us, so the global collision is " +
+                    "flagged upstream, not patched: a bake loads ONE rig into a fresh host, so it is " +
+                    "latent — but anything that ever loads two rigs into one host would get the " +
+                    "wrong boat silently. Outstanding: her bake. Delete this entry when it lands.",
+
+                ["sportFisherIsoRig2.js"] =
+                    "TWO battlewagons off one rig (53' convertible 16.2 m / 90' skybridge 27.4 m) — " +
+                    "a genuinely different model from the sport skiff, NOT her v2, despite the two " +
+                    "arriving in one drop. She was outside the 21-hull flotation table entirely; the " +
+                    "owner ruled her IN on 2026-08-14 and her two rows were derived by the doc's own " +
+                    "method (docs/design/fleet-flotation.md §6). Outstanding: her bake. Delete this " +
+                    "entry when it lands.",
             };
 
         public static FleetHull Get(string key)
