@@ -56,8 +56,6 @@ namespace HiddenHarbours.App.Editor
         const string DataLicenses= "Assets/_Project/Data/Licenses";   // St Peters opening: the cod licence
         const string DataGear    = "Assets/_Project/Data/Gear";        // St Peters opening: the rod
         const string ArtSprites  = "Assets/_Project/Art/Sprites";
-        const string ArtTrees    = "Assets/_Project/Art/Sprites/Environment/Trees"; // imported tree decor pack (TreeNN.png)
-        const string TreeMatPath = "Assets/_Project/Art/Materials/Tree.mat";        // canopy wind-sway material (HiddenHarbours/TreeWind)
         const string ArtSea      = "Assets/_Project/Art/Tilesets/Water/SeaTile.png";
         const string ArtWaterMat = "Assets/_Project/Art/Materials/Water.mat";   // the layered SIM-driven water shader (ADR 0010)
         // (The ADR 0017 weather-preset paths that stood here are gone with the local water wiring — they
@@ -941,15 +939,23 @@ namespace HiddenHarbours.App.Editor
             // actually arrived. Driven end to end by InteriorTravelPlayTests.
             NineMileCreekShops.Place(terrain, devPlayer);
 
-            // --- TREE DECOR (greybox dressing; world-content) ------------------------------------------
-            // A sparse-to-moderate scatter of cold-coast trees on the WEST quay land only — the far-west
-            // back edge behind the houses and a few in the gaps between/around the buildings — to soften
-            // the harbour town. NEVER in the open harbour water (EAST of x=-4), on the public wharf deck
-            // (x∈[-4,4], y∈[-3,3]) or its dock/disembark zones, on the paths, or overlapping a building
-            // footprint (the x=-8 and x=-12 building rows). Cold-coast varieties only (green broadleaf,
-            // pine, birch). Data-driven (NineMileCreekTrees) so counts/positions tweak freely; sortingOrder is
-            // derived from base Y so trees further north sort behind, and the band sits below buildings.
-            PlaceTrees("NineMileCreek", NineMileCreekTrees, waterSprite);
+            // --- THE HINTERLAND: fields, hedgerows, scattered trees, marsh -----------------------------
+            // ⭐ FIELDS, NOT FOREST — the mainland doc's first photograph, as a build step. The land
+            // behind this wharf is farmed, so NineMileCreekFields lays a grass FIELD over the strips,
+            // hedgerows on a 96 m boundary lattice and along the two GRAVEL roads, trees standing mostly
+            // IN those hedges, and salt marsh on the two ponds' shoulders. Every position derives from
+            // the plan and from the road pass's own published carriageway widths — widen a road and its
+            // hedge steps back — and nothing at all stands on the wharf's made ground.
+            //
+            // ⚠ THIS REPLACES THE GREYBOX TREE TABLE, and the retirement is the point. Eleven
+            // hand-placed TreeNN.png decor sprites stood here — a shelter belt west of the through-road
+            // and a few at the pond margins — drawn from the old imported decor pack rather than the
+            // baked Acadian kit, and sited when this region was a 120 m island. Two tree pipelines at
+            // two art standards on one coast is the same defect the road kit warns about for its own
+            // v1/v3 split ("two road families at different vertical scales in one village is a bug only
+            // the eye would ever catch"); NineMileCreekFlavour made exactly this move for the houses one
+            // pass earlier. The shelter belt's ground is inside the new hedgerow lattice anyway.
+            NineMileCreekFieldPlanter.Plant(terrain);
 
             // --- SAVE & REGISTER ------------------------------------------------------------
             EditorSceneManager.SaveScene(scene, ScenePath);
@@ -979,7 +985,13 @@ namespace HiddenHarbours.App.Editor
                 "routes are laid in v3 road tiles on their own centre-lines — dirt on the bar road, " +
                 "gravel on Wharf Road and the through-road, foot tread down the gully — plus the concrete " +
                 "apron at the winch and gravel under the buyers' trucks, and one shell walk up to each of " +
-                "the five public town lots (the region's only paving canon does not ask for).");
+                "the five public town lots (the region's only paving canon does not ask for). ⭐ AND THE " +
+                "FIELDS ARE DRESSED: a grass FIELD over the strips west of the coast, hedgerows on a " +
+                $"{NineMileCreekFields.FieldStripMetres:0} m boundary lattice and along the two gravel " +
+                "roads, trees standing mostly IN those hedges, and salt marsh on both ponds' shoulders — " +
+                "FIELDS, NOT FOREST, which is the mainland doc's first photograph and the one thing this " +
+                "region's hinterland must never stop being. The greybox TreeNN decor table is retired " +
+                "with it: one tree pipeline on this coast, the baked Acadian kit.");
             EditorUtility.DisplayDialog("Hidden Harbours",
                 "Nine Mile Creek rebuilt as the MAINLAND.\n\n" +
                 $"• {NineMileCreekSeaSize.x:0} × {NineMileCreekSeaSize.y:0} m — water east, fields west\n" +
@@ -987,12 +999,17 @@ namespace HiddenHarbours.App.Editor
                 $"• Tide is now ±{TideAmplitude} m, phase {TidePhaseHours} h (St Peters', because it is one bar)\n" +
                 "• The wharf dries out under its fleet at spring low — that is the ruled gate\n" +
                 "• The roads are laid: red dirt on the bar road, gravel on Wharf Road and the\n" +
-                "  through-road, a foot tread down the gully, concrete at the winch\n\n" +
+                "  through-road, a foot tread down the gully, concrete at the winch\n" +
+                "• The fields are dressed: meadow on the strips, hedgerows on the boundaries and\n" +
+                "  the gravel roads, scattered trees, salt marsh at both ponds\n\n" +
                 "STILL TO DO, and it is yours:\n" +
                 "1. Hidden Harbours ▸ Terrain Paint Tool → bake the seabed at 2 px/m, then save\n" +
                 "2. Press Play and walk it: the crossing, the bar road, Wharf Road, the wharf front\n" +
                 "3. Walk the roads specifically — the junction at (−16, 92) where the dirt meets the\n" +
-                "   gravel, the neck between the two ponds, and the shell walks in the town\n\n" +
+                "   gravel, the neck between the two ponds, and the shell walks in the town\n" +
+                "4. Stand on the through-road and look EAST. You should see a patchwork: hedgerows\n" +
+                "   running down to the water, fields between them, the odd tree in a hedge.\n" +
+                "   ⚠ If it reads as WOODS, that is the one thing it must not be — say so.\n\n" +
                 "The ground is a single greybox plane until you paint it.",
                 "Fair winds");
         }
@@ -1527,82 +1544,6 @@ namespace HiddenHarbours.App.Editor
             if (list.Any(s => s.path == path)) return;
             list.Add(new EditorBuildSettingsScene(path, true));
             EditorBuildSettings.scenes = list.ToArray();
-        }
-
-        // ---- tree decor (greybox dressing) ----------------------------------------------------------
-        // One placed tree: world position (the trunk base — the sprite pivot is BottomCenter) + the
-        // imported variety file ("TreeNN"). Plain struct so placement is a tweakable data list.
-        struct TreeSpec
-        {
-            public float X, Y;
-            public string Variety;   // "TreeNN" → Art/Sprites/Environment/Trees/TreeNN.png
-            public TreeSpec(float x, float y, string variety) { X = x; Y = y; Variety = variety; }
-        }
-
-        // COLD NORTH ATLANTIC scatter, RE-SITED onto the mainland. The old eleven hugged the back edge of a
-        // 24 m island strip at x ≈ −14 and tucked into gaps between two building rows that no longer
-        // exist; laid on this landform unchanged they would stand in the middle of the bay.
-        //
-        // WHERE TREES BELONG HERE, and where they emphatically do not:
-        //  · The owner's photographs are of a coast of FIELDS, not forest, so this stays SPARSE on
-        //    purpose. The real dressing is the owner's paint pass and Phase B.
-        //  · A wind-scoured shelter belt WEST of the through-road, behind the town on the +6 m plateau —
-        //    the one place a PEI farm actually plants trees.
-        //  · A few round the two pond margins, where the ground is too wet to plough.
-        //  · NONE on the spit (made ground, and a working yard), none on the wharf, none seaward of the
-        //    coast run, and none inside a road's cleared corridor.
-        // Varieties: green broadleaf (Tree01/05/06/08/18/21/34/35), pine (Tree02/22), birch (Tree25).
-        static readonly TreeSpec[] NineMileCreekTrees =
-        {
-            // The shelter belt, west of the through-road (which runs x ≈ −176…−230), north → south.
-            new TreeSpec(-244f, 238f, "Tree02"),  // pine, N end
-            new TreeSpec(-240f, 198f, "Tree08"),  // broadleaf
-            new TreeSpec(-246f, 150f, "Tree25"),  // birch
-            new TreeSpec(-238f, 108f, "Tree06"),  // broadleaf, behind the chandlery
-            new TreeSpec(-244f,  64f, "Tree22"),  // pine, behind the parish hall
-            new TreeSpec(-240f,  16f, "Tree01"),  // broadleaf
-            new TreeSpec(-236f, -40f, "Tree05"),  // broadleaf, S end
-            // The barachois margin — too wet to plough, so the scrub stands. The pond is centred (−10,132)
-            // with a (54,26) half-size, so this is off its north-west shoulder, well clear of Wharf Road
-            // (which runs y ≈ 92 along the neck between the two ponds).
-            new TreeSpec( -72f, 166f, "Tree18"),  // broadleaf, NW shoulder of the barachois
-            new TreeSpec( -34f, 172f, "Tree21"),  // broadleaf, its north shore
-            // The marsh pool's south margin — the pool is centred (−26,58), half (30,16), so this sits
-            // below it and clear of the bar road, which passes east of the pool at x ≈ 20.
-            new TreeSpec( -52f,  28f, "Tree34"),  // broadleaf
-            new TreeSpec(  -4f,  26f, "Tree35"),  // broadleaf
-        };
-
-        // Instance the tree decor under a single "Decor/Trees" parent. sortingOrder derives from the
-        // tree's base Y (BottomCenter pivot) so trees further north (higher Y) render behind nearer ones;
-        // trees behind the x=-12 house row (high Y → negative order) sort under the buildings (order 2).
-        // Loads each variety via LoadSpriteAny (Sprite Mode Multiple → one TreeNN_0 sub-sprite, so
-        // LoadAssetAtPath<Sprite> is null; [[imported-art-spritemode-multiple]]). Tinted-square fallback so
-        // the scene still builds before the art is imported.
-        static void PlaceTrees(string sceneLabel, TreeSpec[] specs, Sprite fallback)
-        {
-            var decor = new GameObject("Decor");
-            var trees = new GameObject("Trees");
-            trees.transform.SetParent(decor.transform, false);
-            // The canopy wind-sway material (HiddenHarbours/TreeWind), shared with the drag-in tree prefabs, so
-            // Nine Mile Creek's baked trees sway off the SAME wind as the grass + water. Optional — null leaves them
-            // static (re-run after importing the TreeWind shader + Tree.mat).
-            var treeMaterial = AssetDatabase.LoadAssetAtPath<Material>(TreeMatPath);
-            int placed = 0;
-            foreach (var t in specs)
-            {
-                var go = new GameObject(t.Variety);
-                go.transform.SetParent(trees.transform, false);
-                go.transform.position = new Vector3(t.X, t.Y, 0f);
-                var sr = go.AddComponent<SpriteRenderer>();
-                sr.sortingOrder = Mathf.RoundToInt(-t.Y * 2f);
-                if (treeMaterial != null) sr.sharedMaterial = treeMaterial;   // canopy sway off the shared wind
-                var sprite = LoadSpriteAny($"{ArtTrees}/{t.Variety}.png");
-                if (sprite != null) { sr.sprite = sprite; go.transform.localScale = Vector3.one; }
-                else { sr.sprite = fallback; sr.color = new Color(0.24f, 0.40f, 0.26f); go.transform.localScale = new Vector3(1.6f, 3.2f, 1f); }
-                placed++;
-            }
-            Debug.Log($"[NineMileCreekBuilder] Placed {placed} decor trees in {sceneLabel} (under Decor/Trees).");
         }
 
         static void EnsureFolders()

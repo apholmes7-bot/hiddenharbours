@@ -392,7 +392,12 @@ namespace HiddenHarbours.App.Editor
         /// <para>Order is preserved exactly as <see cref="GrassArtChooser"/> returns it, because a site's
         /// blade is <c>roll % pool.Length</c> — re-ordering a pool would repaint the island.</para>
         /// </summary>
-        static GrassField.HabitatPool[] ResolveGrassPools(GrassArtChooser chooser, out Sprite[] variants)
+        /// <remarks>⭐ PUBLIC since Nine Mile Creek: what it resolves is a property of the grass LIBRARY
+        /// (which art carries which habitat tag, in which order), not of St Peters — and the order is
+        /// load-bearing, because a site's blade is <c>roll % pool.Length</c>. A second region re-deriving
+        /// its own pools would repaint whichever coast it happened to disagree with.</remarks>
+        public static GrassField.HabitatPool[] ResolveGrassPools(GrassArtChooser chooser,
+                                                                 out Sprite[] variants)
         {
             var palette = new List<Sprite>();
             var indexOf = new Dictionary<string, int>();
