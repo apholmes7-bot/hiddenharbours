@@ -36,6 +36,12 @@ namespace HiddenHarbours.App.Editor
     /// machine grows the same one and a save carries nothing. St Peters bakes <see cref="GrassFieldSeed"/> =
     /// 0, which reproduces the scatter the owner already ratified tuft for tuft — this change alters what is
     /// STORED, not what is SEEN.</para>
+    ///
+    /// <para><b>⭐ AND SINCE NINE MILE CREEK, THE ENCODER IS SHARED.</b> <see cref="Encode"/> is the
+    /// region-agnostic half — layout in, byte planes out — and <see cref="BakeField"/> is St Peters' thin
+    /// wrapper round it. The mainland's fields bake through the same call with their own layout, their
+    /// own scatter and their own straw, because two copies of a byte-packing rule is how one region's
+    /// meadow quietly stops matching the renderer that draws it.</para>
     /// </summary>
     public static class StPetersGrassField
     {
@@ -103,7 +109,8 @@ namespace HiddenHarbours.App.Editor
         }
 
         /// <summary>
-        /// Read the island and write the field.
+        /// Read the island and write the field. A thin wrapper now: it decides WHICH island, and
+        /// <see cref="Encode"/> does the encoding.
         ///
         /// <para><b>⚠ It does not walk the island itself — <see cref="StPetersGrass.Scatter"/> does.</b>
         /// That is the whole point: the gates (the meadow's clearings, the swathe field, the per-cell chance
@@ -111,65 +118,89 @@ namespace HiddenHarbours.App.Editor
         /// footpath) stay in the one class that has always owned them, and this only ENCODES the answer.
         /// A second grid walk here would be a second definition of the meadow, and the two would part
         /// company the first time somebody re-tuned a threshold.</para>
-        ///
-        /// <para>Every site carries its own cell and slot index, so packing is a direct write — no search,
-        /// no re-derivation, and no way for a site to land in another cell's byte.</para>
         /// </summary>
         public static Baked BakeField(ITidalTerrain terrain, int seed = GrassFieldSeed)
         {
-            var baked = new Baked();
-            if (terrain == null) return baked;
+            if (terrain == null) return new Baked();
+            return Encode(StPetersGrass.FieldLayout(seed), StPetersGrass.Scatter(terrain, seed),
+                          StrawCellMetres, StPetersStraw);
+        }
 
-            var layout = StPetersGrass.FieldLayout(seed);
-            baked.Layout = layout;
+        /// <summary>The island's straw: the same <c>exposure × 0.8</c> the object pass tinted each tuft
+        /// with.</summary>
+        static float StPetersStraw(Vector2 p) => Mathf.Clamp01(StPetersWoods.ExposureAt(p) * 0.8f);
 
-            var sites = new byte[layout.CellsX * layout.CellsY * layout.Slots];
+        /// <summary>
+        /// <b>Encode a scatter into a field.</b> The region-agnostic half, extracted so a second region can
+        /// bake its own meadow without a second copy of this arithmetic — which is the same "two
+        /// definitions of one thing" failure this whole file exists to prevent, one level up.
+        ///
+        /// <para>Every site carries its own cell and slot index, so packing is a direct write — no search,
+        /// no re-derivation, and no way for a site to land in another cell's byte. A site whose habitat
+        /// this field's vocabulary cannot name is DROPPED rather than stored as 0, because 0 means
+        /// "nothing grows here" and a silently-renamed habitat would empty a region with nothing
+        /// failing.</para>
+        ///
+        /// <para><paramref name="strawAt"/> is the region's own bleach field, sampled at cell centres —
+        /// the one thing about the straw plane that is not shared, because how dry a coast gets is a
+        /// property of that coast.</para>
+        /// </summary>
+        public static Baked Encode(GrassFieldLayout layout,
+                                   IEnumerable<StPetersGrass.GrassTuftSite> sites,
+                                   float strawCellMetres,
+                                   System.Func<Vector2, float> strawAt)
+        {
+            var baked = new Baked { Layout = layout };
+            var plane = new byte[layout.CellsX * layout.CellsY * layout.Slots];
 
-            foreach (var site in StPetersGrass.Scatter(terrain, seed))
+            if (sites != null)
+            foreach (var site in sites)
             {
                 int id = HabitatIdOf(site.Habitat);
                 if (id <= 0) continue;                    // a habitat this field cannot name grows nothing
 
                 int at = (site.CellY * layout.CellsX + site.CellX) * layout.Slots + site.Slot;
-                if ((uint)at >= (uint)sites.Length) continue;
+                if ((uint)at >= (uint)plane.Length) continue;
 
-                sites[at] = GrassFieldScatter.PackSlot(id, site.Broad);
+                plane[at] = GrassFieldScatter.PackSlot(id, site.Broad);
                 baked.Tufts++;
                 baked.PerHabitat[site.Habitat] =
                     baked.PerHabitat.TryGetValue(site.Habitat, out int n) ? n + 1 : 1;
             }
 
-            baked.Sites = sites;
-            BakeStraw(layout, baked);
+            baked.Sites = plane;
+            BakeStraw(layout, baked, strawCellMetres, strawAt);
             return baked;
         }
 
         /// <summary>
-        /// The straw plane: how far this ground has bleached toward dry, per <see cref="StrawCellMetres"/>.
-        /// The same <c>exposure × 0.8</c> the object pass tinted each tuft with, sampled at cell centres and
-        /// quantised to a byte — a 1/255 step on a tint multiply, which no eye resolves.
+        /// The straw plane: how far this ground has bleached toward dry, per
+        /// <paramref name="cellMetres"/>. Sampled at cell centres and quantised to a byte — a 1/255 step
+        /// on a tint multiply, which no eye resolves.
         /// </summary>
-        static void BakeStraw(in GrassFieldLayout layout, Baked baked)
+        static void BakeStraw(in GrassFieldLayout layout, Baked baked, float cellMetres,
+                              System.Func<Vector2, float> strawAt)
         {
+            float cell = Mathf.Max(0.5f, cellMetres);
             float widthM = layout.CellsX * layout.CellSize;
             float heightM = layout.CellsY * layout.CellSize;
 
             // +2 so the bilinear tap at the far edge still lands on real data rather than a clamp.
-            int sx = Mathf.CeilToInt(widthM / StrawCellMetres) + 2;
-            int sy = Mathf.CeilToInt(heightM / StrawCellMetres) + 2;
+            int sx = Mathf.CeilToInt(widthM / cell) + 2;
+            int sy = Mathf.CeilToInt(heightM / cell) + 2;
 
             var straw = new byte[sx * sy];
             for (int y = 0; y < sy; y++)
             for (int x = 0; x < sx; x++)
             {
-                var p = new Vector2(layout.OriginX + (x + 0.5f) * StrawCellMetres,
-                                    layout.OriginY + (y + 0.5f) * StrawCellMetres);
-                float s = Mathf.Clamp01(StPetersWoods.ExposureAt(p) * 0.8f);
+                var p = new Vector2(layout.OriginX + (x + 0.5f) * cell,
+                                    layout.OriginY + (y + 0.5f) * cell);
+                float s = strawAt != null ? Mathf.Clamp01(strawAt(p)) : 0f;
                 straw[y * sx + x] = (byte)Mathf.RoundToInt(s * 255f);
             }
 
             baked.Straw = straw;
-            baked.StrawCellSize = StrawCellMetres;
+            baked.StrawCellSize = cell;
             baked.StrawCellsX = sx;
             baked.StrawCellsY = sy;
         }

@@ -422,3 +422,80 @@ lands:
 4. Press Play and walk it: the crossing, the bar road, Wharf Road, the wharf front.
 
 Nothing else in the project needs deleting. Region builders are re-runnable and converge on re-run.
+
+---
+
+## 9. The hinterland — fields, hedgerows, trees, marsh
+
+> Built by `NineMileCreekFields` (the decisions) + `NineMileCreekFieldPlanter` (the Unity work), the same
+> split `StPetersWoods` / `StPetersWoodsPlanter` uses on the island.
+
+**⭐ THE LAW: FIELDS, NOT FOREST.** §1's first photograph is the constraint the whole hinterland hangs
+on — *the land behind the wharf is fields, not forest.* St Peters is a reverting island whose twenty
+families left, so it grows in **stands** with meadow between them. Nine Mile Creek is **farmed**. There
+is no stand field in this region and there must never be one: a mosaic threshold is exactly how a farmed
+coast turns into a wood by accident, and `TheHinterlandIsFieldsAndNotForest` measures the rule rather
+than trusting it (no circle the size of a small wood may hold more trees than a hedgerow does).
+
+| Layer | Where it comes from | Density |
+|---|---|---|
+| **Field grass** | A `GrassField` bake (#485's byte-plane + chunked meshes) over the land west of the coast | 2.0 m grid, **one** slot per cell, 0.62 chance |
+| **Hedgerows** | A 96 m E–W field-strip lattice anchored on the region origin, **plus both sides of the two GRAVEL roads** | a shrub every 3.5 m, 0.72 of stations |
+| **Trees** | Every 11th hedge station, plus a 48 m field-tree grid at 0.35 | ~100 trees in 425,600 m² |
+| **Marsh** | The two carved ponds' own shoulders, banded by the region's tide | 3.2 m grid, 0.55 |
+
+**Why the strips run east–west.** This coast runs north–south, and PEI's fields are long strips running
+down to the water — so their boundaries are lines of constant *y*, spaced one field width apart and
+anchored on the region's own centre line. A rule, not a table: a taller region grows more of them
+without a code change.
+
+**Only the gravel roads are hedged.** The bar road is a red dirt track along an open clifftop and the
+photographs show it running through bare field; hedging it would turn the region's most exposed road
+into a lane. The gully path is nineteen metres of foot tread.
+
+**The two habitat fields.** *Wetness* is coherent noise on its own salt (hollows hold water — bog and
+swale shrubs). *Exposure* is **measured from the coast run, not from elevation**, and that is the one
+place this geography differs from the island's: a mainland is a side, not a shape, so the whole interior
+sits at the same +6.0 m and elevation says nothing at all about how far from the sea you are. The
+species gradient itself is St Peters' `SpeciesPreference` — a pure function of (exposure, wetness) with
+no island in it — because two regions on one coast must not disagree about which tree grows in a salt
+wind.
+
+**Nothing on the made ground.** Every gate asks `NineMileCreekShoreMap.IsMadeGround`, so the spit, both
+decks, the breakwater and the harbour shoal stay as clear as the wharf plan keeps them. Nothing woody
+stands in a carriageway (the widths are `NineMileCreekRoads`' own published ones, read rather than
+copied), on a town lot, on one of the plan's working sites, or within 30 m of the bar's landing — **the
+arrival is open ground**, the same ruling St Peters makes about its end of the crossing.
+
+**The marsh starts at MEAN WATER, not at a pond's bed** — which is where a salt marsh actually starts,
+and the difference is a whole pond: the marsh pool is carved to −0.4 m, so a floor keyed to a bed would
+have classified the entire pool interior as low marsh and turned the pond whose only job is to leave the
+road a neck into a reed bed. Low marsh below neap high water, high marsh above it, field above +3.0 m.
+
+### 9.1 ⚠ The grass budget, and why this meadow is coarser than the island's
+
+Rule 7 as a number. A `GrassField` costs **one byte per candidate site** in a committed scene, and this
+region's plantable land is roughly seven times the island's. At St Peters' 0.85 m grid and two slots the
+scene line would be most of a megabyte and the derived geometry several times what the batching pass was
+built to afford. At **2.0 m with a single slot** the payload lands at ~65 KB against the island's ~93 KB,
+and the tuft count at ~34,600 — half again the island's ratified 27,000, for seven times the ground.
+`TheGrassFieldFitsItsPayloadBudget` pins both numbers.
+
+⚠ **The grain is 2.0 m because CI measured it, not because it was chosen.** The first draft used 1.8 m on
+an estimate that about half the grid would turn out plantable; it measured at **86%**, and the meadow came
+back at **42,819 tufts** against the 40,000 ceiling. The ceiling did not move — it is the argument, and
+the density constants are what give way to it.
+
+Two smaller economies, for the same reason and the same truth: the grid is **bounded to the land** rather
+than to the region rectangle (more than a third of which is bay that can never grow a blade, and an empty
+cell costs a byte anyway), and **no tuft takes a broad clump** — the library's wide art is the island's
+cheapest coverage, and coverage is exactly what a worked field is not supposed to have.
+
+### 9.2 What the legacy tree table was, and why it is gone
+
+The builder carried eleven hand-placed `TreeNN.png` decor sprites — a shelter belt west of the
+through-road and a few at the pond margins — from the greybox era, drawn from the old imported decor pack
+rather than from the baked Acadian kit. They are retired here. Two tree pipelines at two art standards on
+one coast is the same class of defect the road kit warns about for its own v1/v3 split ("two road families
+at different vertical scales in one village is a bug only the eye would ever catch"), and the shelter
+belt's ground is inside the new hedgerow lattice anyway.
