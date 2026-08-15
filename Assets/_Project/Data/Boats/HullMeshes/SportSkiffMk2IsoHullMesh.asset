@@ -223,9 +223,9 @@ MonoBehaviour:
   RockRollDegrees: 3.8
   RockPitchDegrees: 2.2
   RockHeavePixels: 1.5
-  RestingDraftMeters: 0
-  WatertightDeckHeightMeters: 0
-  WatertightHalfBeamMeters: 0
+  RestingDraftMeters: 0.36
+  WatertightDeckHeightMeters: 0.46
+  WatertightHalfBeamMeters: 1.38
 --- !u!43 &3150225311922826384
 Mesh:
   m_ObjectHideFlags: 0
