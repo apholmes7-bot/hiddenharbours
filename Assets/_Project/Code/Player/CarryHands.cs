@@ -54,11 +54,19 @@ namespace HiddenHarbours.Player
                  "matching the fallback the player's own picture uses.")]
         [SerializeField] private PlayerWalkController _walk;
 
+        [Header("Where it hangs")]
+        [Tooltip("The character rig's HAND-PROP table (imported from the baked sidecar): per prop, per " +
+                 "facing, which hand holds it, how far off that wrist it sits and whether it draws over " +
+                 "or under. Anything whose ICarryAnchored.HandPropKey names a row in here is posed from " +
+                 "it. Null, or a carried thing with no row, falls back to the single offset below.")]
+        [SerializeField] private CarryAnchorTableDef _carryAnchors;
+
         [Header("How it is held (greybox tunables, rule 6)")]
-        [Tooltip("Where the carried object sits relative to the fisher's feet, in metres — the hip. " +
-                 "⚠️ ONE offset for every facing: the fuel kit bakes no hand anchors, so there is nothing " +
-                 "to read a per-facing grip from. A per-facing hand anchor is art-lane work (the boats " +
-                 "carry exactly that in their anchor sidecars); until then this is the owner's knob.")]
+        [Tooltip("FALLBACK only — where a carried object with no hand-prop row sits relative to the " +
+                 "fisher's feet, in metres. ⚠️ ONE offset for every facing, which is why it is only a " +
+                 "fallback now: the fuel kit bakes no hand anchors and the rig bakes no spade row, so a " +
+                 "jerry can and a shovel still hang here. Everything the rig DOES bake a row for (the " +
+                 "rod, a fish, a handful of clams) is posed from the table above and ignores this.")]
         [SerializeField] private Vector2 _hipOffsetMeters = new Vector2(0.28f, 0.34f);
 
         [Tooltip("How many sorting orders the carried sprite draws ahead of the body when the fisher " +
@@ -321,6 +329,20 @@ namespace HiddenHarbours.Player
         /// State the carried object's pose from the body, every frame: where it hangs, which baked facing
         /// it shows, and which order it draws at. <b>Stated, never accumulated</b> — the deck rider's rule,
         /// for the deck rider's reason. Public so a test can settle the pose without waiting a frame.
+        ///
+        /// <para><b>Two paths, and the table wins whenever it can answer.</b> A carried thing that names a
+        /// hand-prop row is pinned to the LIVE wrist for the cell the body is drawing this frame, shows the
+        /// cell of its own turntable the rig chose, and draws over or under per the rig's own measurement.
+        /// Everything else — a jerry can, a shovel, anything held by a carrier with no iso skin — keeps
+        /// the single offset and the heading-derived order that shipped before the table existed. The
+        /// fallback is not a degraded mode; it is what those objects have always looked like.</para>
+        ///
+        /// <para><b>⚠️ The two paths must not be merged into one "compute an offset then apply it".</b>
+        /// They disagree about the DRAW ORDER at north, and the table is the one that is right: deriving
+        /// the order from the heading puts a small held item behind the body at N, where the wrist is
+        /// 0.215 m out and the torso only ~0.115 m half-wide, so the item is really clear of the
+        /// silhouette. That is the bug that made a held clam vanish, and it is fixed here by taking the
+        /// rig's answer rather than by tuning the epsilon in <see cref="CarryMath.AheadOrdersFor"/>.</para>
         /// </summary>
         public void ApplyCarriedPose()
         {
@@ -328,16 +350,72 @@ namespace HiddenHarbours.Player
             if (carried == null) return;
             Resolve();
 
+            if (TryAnchorRow(carried, out CarryAnchorRow row, out int facingRow))
+            {
+                carried.Transform.localPosition =
+                    _carryAnchors.PinMeters(row, _character.Gait, facingRow, _character.Frame);
+                carried.ShowFacing(row.ItemFacing);
+                RideBodyBand(carried, row.Behind ? -_aheadOrders : _aheadOrders);
+                return;
+            }
+
             carried.Transform.localPosition = _hipOffsetMeters;
 
             float heading = DrawnHeadingDegrees;
             carried.ShowFacing(CarryMath.BakedFacingIndex(heading, carried.BakedFacings));
-
-            if (_bodyRenderer != null)
-                carried.RideSortingBand(_bodyRenderer.sortingLayerID,
-                                        _bodyRenderer.sortingOrder
-                                        + CarryMath.AheadOrdersFor(heading, _aheadOrders));
+            RideBodyBand(carried, CarryMath.AheadOrdersFor(heading, _aheadOrders));
         }
+
+        /// <summary>
+        /// The hand-prop row for what is held right now, and the facing row it applies at. False means
+        /// "pose it the old way", and every false here is an ordinary state rather than a fault.
+        ///
+        /// <para><b>Why the iso skin is required and not merely preferred.</b> The rows are indexed by the
+        /// CHARACTER kit's facing rows and describe the wrists in that kit's pictures. A fisher drawn by
+        /// the four-way fallback sheets is not those pictures, and deriving a row index from the heading
+        /// instead would mean restating the character kit's bake convention inside a helper that carries
+        /// the FUEL kit's (<see cref="CarryMath.FuelKitFacingsAreCounterClockwise"/>) — two art lineages
+        /// that agree today by coincidence and are documented as free to disagree. So the facing row is
+        /// read off the picture that is actually up (<see cref="IsoCharacterSprite.FacingRow"/>), which is
+        /// the same rule the deck rider was rebuilt around, and no skin means no row.</para>
+        ///
+        /// <para>The facing-count check is the other half of that: a skin baked at four rows indexing an
+        /// eight-row table would pose from a heading the body is not facing, silently and only at some
+        /// headings — the worst shape of wrong. Nothing ships at four today; the check costs an int
+        /// compare and closes it before it can happen.</para>
+        /// </summary>
+        private bool TryAnchorRow(ICarriable carried, out CarryAnchorRow row, out int facingRow)
+        {
+            row = default;
+            facingRow = 0;
+
+            if (_carryAnchors == null || _character == null || !_character.HasArt) return false;
+            if (carried is not ICarryAnchored anchored) return false;
+
+            CharacterVisualDef visual = _character.Visual;
+            if (visual == null || visual.FacingCount != _carryAnchors.FacingCount) return false;
+
+            facingRow = _character.FacingRow;
+            return _carryAnchors.TryRow(anchored.HandPropKey, facingRow, out row);
+        }
+
+        /// <summary>Put the carried sprite in the body's own live sorting band, this many orders ahead of
+        /// it (negative = behind). No order is authored anywhere — the body's Y-sort output this frame is
+        /// the datum, ADR 0032.</summary>
+        private void RideBodyBand(ICarriable carried, int aheadOrders)
+        {
+            if (_bodyRenderer == null) return;
+            carried.RideSortingBand(_bodyRenderer.sortingLayerID,
+                                    _bodyRenderer.sortingOrder + aheadOrders);
+        }
+
+        /// <summary>Wire the hand-prop table (the start builder / tests) — the same <c>Configure</c> seam
+        /// <see cref="IsoCharacterSprite.Configure"/> offers, and needed for the same reason: EditMode
+        /// never runs a builder, so a test states it.</summary>
+        public void ConfigureCarryAnchors(CarryAnchorTableDef table) => _carryAnchors = table;
+
+        /// <summary>The hand-prop table currently wired, or null. For tests / tooling.</summary>
+        public CarryAnchorTableDef CarryAnchors => _carryAnchors;
 
         private void Resolve()
         {

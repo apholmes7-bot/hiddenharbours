@@ -171,6 +171,28 @@ namespace HiddenHarbours.Art.Editor
         public static int Int(object node, string key, int fallback = 0)
             => node is Dictionary<string, object> d && d.TryGetValue(key, out object v) && v is double n
                 ? (int)System.Math.Round(n) : fallback;
+
+        /// <summary>A string member. Missing, or present as JSON <c>null</c> (which the parser gives as a
+        /// C# null and which the rig kits use for "no art baked yet"), both answer
+        /// <paramref name="fallback"/> — so a caller never has to distinguish absent from explicitly
+        /// nothing, because for every reader here they mean the same.</summary>
+        public static string String(object node, string key, string fallback = null)
+            => node is Dictionary<string, object> d && d.TryGetValue(key, out object v) && v is string s
+                ? s : fallback;
+
+        /// <summary>A boolean member; anything that is not a real JSON <c>true</c>/<c>false</c> answers
+        /// <paramref name="fallback"/>. ⚠️ A caller for whom "absent" and "false" mean different things —
+        /// a flag that decides whether a held object draws in front of the fisher or behind her — must
+        /// check <see cref="Has"/> first, because this cannot tell them apart.</summary>
+        public static bool Bool(object node, string key, bool fallback = false)
+            => node is Dictionary<string, object> d && d.TryGetValue(key, out object v) && v is bool b
+                ? b : fallback;
+
+        /// <summary>Is this member present at all (whatever its value, <c>null</c> included)? The check a
+        /// reader makes before trusting a default — a bake that quietly stopped writing a field is
+        /// otherwise indistinguishable from one that wrote the default.</summary>
+        public static bool Has(object node, string key)
+            => node is Dictionary<string, object> d && d.ContainsKey(key);
     }
 }
 #endif

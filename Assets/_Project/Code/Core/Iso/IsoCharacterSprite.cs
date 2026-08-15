@@ -95,6 +95,7 @@ namespace HiddenHarbours.Core
         private CharacterStance _stance = CharacterStance.Free;
         private CharacterStance _drawnStance = CharacterStance.Free;
         private int _facingRow;
+        private int _frame;
         private int _suspendCount;
         private Sprite _lastApplied;
         private bool _headingHeld;
@@ -111,6 +112,22 @@ namespace HiddenHarbours.Core
 
         /// <summary>The direction ROW of the sheet currently showing. For tests / tooling.</summary>
         public int FacingRow => _facingRow;
+
+        /// <summary>
+        /// The FRAME of the current cycle currently showing — the third index of the cell on screen,
+        /// alongside <see cref="DrawnStance"/>/<see cref="Gait"/> and <see cref="FacingRow"/>.
+        ///
+        /// <para>Published because a carried object has to hang off the hand THIS frame: the fisher's
+        /// right wrist travels 8.3 px across a walk cycle and 11.5 px across a run, so a prop pinned to
+        /// anything less than the live cell visibly comes off her hand as she moves
+        /// (<see cref="CarryAnchorTableDef"/>). It is the same reason <see cref="HeadingDegrees"/> is
+        /// published rather than re-derived: whoever draws alongside the body must read the picture that
+        /// is actually up, not recompute what it ought to be.</para>
+        ///
+        /// <para>Stale by design while <see cref="IsSuspended"/> — this component writes nothing then, so
+        /// the last frame it drew IS the one on screen.</para>
+        /// </summary>
+        public int Frame => _frame;
 
         /// <summary>The gait currently playing (after the def's art-availability ladder). For tests / tooling.</summary>
         public CharacterGait Gait => _gait;
@@ -308,7 +325,16 @@ namespace HiddenHarbours.Core
                                                   _visual.FramesPerSecondFor(_drawnStance, gait),
                                                   _visual.FrameCountFor(_drawnStance, gait));
             Sprite cell = _visual.SpriteFor(_drawnStance, gait, _facingRow, frame);
-            if (cell == null || ReferenceEquals(cell, _lastApplied)) return;
+            if (cell == null) return;
+
+            // Publish the frame as soon as the cell it names is REAL, and deliberately BEFORE the
+            // no-change early-out below: a cell that has not changed is still the cell on screen, and a
+            // carried prop reading a stale frame index would hang off a wrist the body is no longer
+            // drawing. Left un-published when the cell is null — the body is not showing that frame at
+            // all, so neither should anything pinned to it.
+            _frame = frame;
+
+            if (ReferenceEquals(cell, _lastApplied)) return;
 
             // The 8 directions are all DRAWN — nothing here is a mirror, so any flip a previous 4-way,
             // mirrored sheet left on the renderer has to be cleared or every westward facing is inverted.

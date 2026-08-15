@@ -45,7 +45,7 @@ namespace HiddenHarbours.Player
     /// </summary>
     [DisallowMultipleComponent]
     [AddComponentMenu("Hidden Harbours/Carriable Tool")]
-    public sealed class CarriableTool : MonoBehaviour, IInteractable, ICarriable
+    public sealed class CarriableTool : MonoBehaviour, IInteractable, ICarriable, ICarryAnchored
     {
         [Header("What it is (content is data — rule 2)")]
         [Tooltip("The tool this object IS. Null makes the object inert rather than universally " +
@@ -87,6 +87,20 @@ namespace HiddenHarbours.Player
         /// <summary>Every tool is light enough to lift — that is what makes it a tool rather than a
         /// fixture. A missing Def is NOT carriable: an unbuilt object should be inert.</summary>
         public bool IsCarriable => _tool != null;
+
+        // ---- ICarryAnchored -------------------------------------------------------------------------
+
+        /// <summary>
+        /// Which hand-prop row holds this tool — <b>the Def's, never this class's</b>. The rod says
+        /// <c>rodTrail</c>; the shovel says nothing, because the rig bakes no spade row and an empty key
+        /// is the documented "keep the carrier's own offset" answer.
+        ///
+        /// <para>It comes off <see cref="ToolDef"/> rather than being switched on <see cref="DefId"/>
+        /// here for the reason rule 2 exists: the day the art lane bakes a shovel row, the owner fills a
+        /// field in an asset and nothing recompiles. A <c>switch</c> on the tool id would have made that
+        /// a code change, and would have put a fact about an art drop inside a gameplay component.</para>
+        /// </summary>
+        public string HandPropKey => _tool != null ? _tool.HandPropKey : null;
 
         /// <inheritdoc/>
         public Transform Transform => transform;
