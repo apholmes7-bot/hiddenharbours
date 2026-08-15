@@ -379,17 +379,27 @@ namespace HiddenHarbours.Player
         /// read off the picture that is actually up (<see cref="IsoCharacterSprite.FacingRow"/>), which is
         /// the same rule the deck rider was rebuilt around, and no skin means no row.</para>
         ///
-        /// <para>The facing-count check is the other half of that: a skin baked at four rows indexing an
-        /// eight-row table would pose from a heading the body is not facing, silently and only at some
-        /// headings — the worst shape of wrong. Nothing ships at four today; the check costs an int
-        /// compare and closes it before it can happen.</para>
+        /// <para><b>⚠️ And why a SUSPENDED skin is refused too, which is not a corner case.</b> While
+        /// another driver has claimed the renderer (<see cref="IsoCharacterSprite.Suspend"/>) the body is
+        /// being drawn from a different sheet entirely — <c>CharacterClipPlayer</c>'s board / boardDown /
+        /// haul / ladderDown, or the rod-fight animator's cast and land — and this skin's facing row and
+        /// frame are frozen at whatever they last were. The table only carries the FREE body's idle, walk
+        /// and run wrists, so posing from it through a clip would hang the prop off a wrist the fisher is
+        /// not drawing. That is reachable and visible: boarding while carrying is a supported move, and
+        /// the <c>board</c> clip's arms travel 19 px over its ten frames.</para>
+        ///
+        /// <para>The facing-count check is the other half of the same rule: a skin baked at four rows
+        /// indexing an eight-row table would pose from a heading the body is not facing, silently and only
+        /// at some headings — the worst shape of wrong. Nothing ships at four today; the check costs an
+        /// int compare and closes it before it can happen.</para>
         /// </summary>
         private bool TryAnchorRow(ICarriable carried, out CarryAnchorRow row, out int facingRow)
         {
             row = default;
             facingRow = 0;
 
-            if (_carryAnchors == null || _character == null || !_character.HasArt) return false;
+            if (_carryAnchors == null || _character == null) return false;
+            if (!_character.HasArt || _character.IsSuspended) return false;
             if (carried is not ICarryAnchored anchored) return false;
 
             CharacterVisualDef visual = _character.Visual;

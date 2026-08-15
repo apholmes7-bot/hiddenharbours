@@ -341,6 +341,32 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
+        public void ASuspendedSkin_KeepsTheFallbackOffset_BecauseAClipIsDrawingTheBody()
+        {
+            var (hands, skin, _) = Fisher(Table(), Visual());
+            DrawnCell(skin, 3, 4);
+            hands.TryPutInHand(Clam());
+            Assert.That((Vector2)hands.Carried.Transform.localPosition,
+                        Is.EqualTo(new Vector2(3f, 4f)).Using(Vec2Within(1e-4f)), "precondition: live");
+
+            // ⚠️ NOT a corner case. CharacterClipPlayer suspends this skin for board / boardDown / haul /
+            // ladderDown, and boarding while carrying is a supported move — so during a vault the body is
+            // drawn from the BOARD sheet, whose wrists are nowhere in this table, while the skin's facing
+            // row and frame sit frozen at whatever they last were. Posing from the table there would hang
+            // the clam off a wrist she is not drawing, across ten frames whose arms travel 19 px.
+            skin.Suspend();
+            hands.ApplyCarriedPose();
+            Assert.That((Vector2)hands.Carried.Transform.localPosition,
+                        Is.EqualTo(ShippedHipOffset).Using(Vec2Within(1e-4f)));
+
+            skin.Release();
+            hands.ApplyCarriedPose();
+            Assert.That((Vector2)hands.Carried.Transform.localPosition,
+                        Is.EqualTo(new Vector2(3f, 4f)).Using(Vec2Within(1e-4f)),
+                        "and it comes straight back when the clip hands the renderer over");
+        }
+
+        [Test]
         public void ASkinBakedAtADifferentFacingCount_KeepsTheFallbackOffset()
         {
             // A four-row skin indexing an eight-row table would pose from a heading the body is not
