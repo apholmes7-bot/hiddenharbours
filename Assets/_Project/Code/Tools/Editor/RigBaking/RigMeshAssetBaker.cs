@@ -205,6 +205,65 @@ namespace HiddenHarbours.Tools.RigBaking
             }
         }
 
+        /// <summary>
+        /// <b>The five hulls the fleet pack's last three rigs make, and nothing else</b> — the
+        /// zodiac's two builds, the reshaped sport skiff, and the two battlewagons.
+        ///
+        /// <para>Its own entry point for exactly the reason the eighteen have one, and the argument
+        /// is now stronger: a fleet bake would rewrite all thirty-four defs, and Unity's
+        /// serialisation is not byte-deterministic, so the twenty-nine this PR does not touch would
+        /// come back with regenerated sub-asset fileIDs and reshuffled YAML for no change at all.
+        /// Baking exactly the new hulls is what keeps the diff readable.</para>
+        /// </summary>
+        public static IReadOnlyList<FleetHull> FleetPackHulls
+        {
+            get
+            {
+                var keys = new List<string> { "sportSkiffMk2" };
+                foreach (ZodiacBuild b in ZodiacFleet.All) keys.Add(b.Key);
+                foreach (SportFisherHull h in SportFisherFleet.All) keys.Add(h.Key);
+
+                var hulls = new List<FleetHull>(keys.Count);
+                foreach (string k in keys) hulls.Add(HullMeshFleet.Get(k));
+                return hulls;
+            }
+        }
+
+        [MenuItem(RigMeshGate.MenuRoot + "/Bake the 5 fleet-pack hull meshes", priority = 223)]
+        public static void BakeFleetPack() => BakeFleetInternal(FleetPackHulls);
+
+        [MenuItem(RigMeshGate.MenuRoot + "/Bake the 5 fleet-pack hull meshes", validate = true)]
+        static bool BakeFleetPackValidate() => RigMeshGate.Enabled;
+
+        /// <summary>Headless entry (-executeMethod) for the five.</summary>
+        public static void BakeFleetPackCli()
+        {
+            try
+            {
+                var hulls = FleetPackHulls;
+                if (hulls.Count != 5)
+                    throw new InvalidOperationException(
+                        $"Expected 5 fleet-pack hulls, found {hulls.Count}. This bake will not run " +
+                        "on a list it does not recognise — a short list here is a silently partial " +
+                        "bake, and the hull that went missing keeps whatever def it had.");
+
+                int failed = BakeFleetInternal(hulls);
+                if (failed > 0)
+                {
+                    Debug.LogError($"[rig-mesh] CLI fleet-pack bake FAILED: {failed} of " +
+                                   $"{hulls.Count} hull(s) did not bake.");
+                    EditorApplication.Exit(1);
+                    return;
+                }
+                Debug.Log($"[rig-mesh] CLI fleet-pack bake OK — {hulls.Count} hulls.");
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[rig-mesh] CLI fleet-pack bake FAILED: {e}");
+                EditorApplication.Exit(1);
+            }
+        }
+
         /// <summary>Bake one catalog hull by key, and wire whatever visuals it owns.</summary>
         public static HullMeshDef BakeOne(string key)
         {

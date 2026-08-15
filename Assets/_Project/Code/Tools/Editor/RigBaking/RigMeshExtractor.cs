@@ -432,9 +432,41 @@ namespace HiddenHarbours.Tools.RigBaking
                 // applies it): she exports none of F/MATS/GAIN/BIAS/LN; PX, defaultElev, KEY, BUILDS
                 // and buildIds ARE public. hurricane builds 1780 faces, frc 1704 — distinct, and the
                 // per-hull geometry hash is what proves it rather than those counts.
+                //
+                // ⚠️ HER MATS IS THE ONLY ONE IN THE FLEET THAT DOES NOT FIT THE SHADER, and the fix
+                // is a MEASUREMENT rather than a shader change. She declares EIGHTEEN materials and
+                // `_RampMeta` is a `float4[16]` — a real uniform array, guarded in three places
+                // (HullMeshDef.IsUsable, IsoFacetHullRenderer.Configure, HullPaintSchemeBaker) — so
+                // her first bake failed with "not usable" and no hull-side change could have fixed
+                // it.
+                //
+                // Measured in the repo's own V8, 2026-08-16: her hull FACES reference exactly
+                // FOURTEEN of those eighteen, and the same fourteen on BOTH builds —
+                // alu,blk,blu,boot,glas,hull,liner,moto,rub,seat,silv,sole,tube,white. The four that
+                // no face names are `tubed`, `blulit`, `amb` and `amblit`, and they are not an
+                // oversight: `blulit`/`amblit` are the +2-offset LIT variants of her nav lights and
+                // belong to `renderBeacon`/`renderLight`, which draw a beacon this mesh does not
+                // carry. A ramp no face references cannot colour a pixel.
+                //
+                // So this hands the extractor the materials her hull ACTUALLY USES, in the rig's own
+                // MATS order, derived from the rig's own face lists — not a hand-written list of
+                // fourteen names, which is the transcription this project has been burned by. Order
+                // is preserved and therefore still load-bearing: `hull` is first in MATS and is used,
+                // so it stays index 0, which is what the face packer resolves an unknown material to.
+                //
+                // ⚠️ Per-FILE, so no other hull's ramp table moves — the eleven and the eighteen keep
+                // their committed bytes. And it is adjudicated in PIXELS by her acceptance fixture
+                // against her own renderer, like every other hull: if dropping those four changed
+                // anything visible, that is where it shows.
                 ["zodiacIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
                 {
                     ["variantFaces"] = "function(b){return facesOf(BUILDS[b]).F;}",
+                    ["MATS"] =
+                        "(function(){var used={},out={};" +
+                        "for(var b in BUILDS){var F=facesOf(BUILDS[b]).F;" +
+                        "for(var i=0;i<F.length;i++)used[F[i].mat]=1;}" +
+                        "for(var k in MATS)if(used[k])out[k]=MATS[k];" +
+                        "return out;})()",
                 },
 
                 // ---- the sport fisher REGISTRY (fleet rig pack, 2026-08-12; baked 2026-08-16) -----
@@ -480,6 +512,23 @@ namespace HiddenHarbours.Tools.RigBaking
                     // (RigHullExtraction.HullScope), which is where she publishes it. A module-level
                     // reconstruction would bind the same 40 by a second mechanism and hide the fact
                     // that elevation is a per-hull fact on this rig.
+                },
+
+                // ---- the RESHAPED sport skiff (fleet rig pack, 2026-08-12; baked 2026-08-16) -----
+                // The FIFTH hull to lose her `MATS` const to a paint axis, and she takes the small
+                // craft's API for the same reason the Cape Islander does: she IS one of them, and
+                // `palette` is already exported so the entry is one line. Her `defaultScheme` is
+                // 'gelcoat-white', and `palette({})` is her own resolver called with no colourway,
+                // which her own code resolves to that default — the table she would use, not one
+                // transcribed here.
+                //
+                // ⚠️ Without this the bake fails outright with "ReferenceError: MATS is not defined",
+                // exactly as the punt and the console did. That is what it did on 2026-08-16's first
+                // run, and it is a loud failure rather than a wrong boat — which is the one good
+                // thing about this class of gap.
+                ["sportSkiffMk2IsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
+                {
+                    ["MATS"] = "palette({}).mats",
                 },
 
                 // The skiff motor is a LAYER, not a hull, so its export omits two things every hull
