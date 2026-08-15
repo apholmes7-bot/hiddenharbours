@@ -199,6 +199,42 @@ namespace HiddenHarbours.Tests.EditMode
                 "not reaching the planting");
         }
 
+        [Test]
+        public void RunningThePassTwiceConvergesRatherThanStackingASecondCoast()
+        {
+            // ⭐ THE IDEMPOTENCY ACCEPTANCE, in the form this pass can actually be held to.
+            //
+            // The handoff asks for "the pass runs twice, textures byte-stable" — which is the shape of
+            // #527's trap, where a generated paint pass laid EXCLUSIVE strokes that double-applied on a
+            // second Build. This pass generates no textures: it generates scene objects. The equivalent
+            // property is that a second Build converges on the same scene rather than standing a second
+            // coast inside the first, and the failure mode is just as real — a builder that stacks would
+            // double every plant on every rebuild and nothing would fail until the scene stopped opening.
+            //
+            // (The PURE half — that the layout itself is identical twice — is next door in
+            // NineMileCreekShoreTests; this is the SCENE half, which no pure test can reach.)
+            BuildTheShore();
+            int plantsAfterOne = ShorePlantViews().Count;
+            int wallsAfterOne = CountCliffWalls();
+            Assert.That(plantsAfterOne, Is.GreaterThan(0));
+            Assert.That(wallsAfterOne, Is.GreaterThan(0));
+
+            var terrain = _terrainGo.GetComponent<MainlandTidalTerrain>();
+            NineMileCreekCliffWalls.Build(terrain);
+            NineMileCreekShorePainter.Paint(terrain);
+            Remember(NineMileCreekCliffWalls.RootName);
+            Remember(NineMileCreekShorePainter.RootName);
+
+            Assert.That(ShorePlantViews().Count, Is.EqualTo(plantsAfterOne),
+                "a second pass changed the plant count — the painter is stacking a second shore on the " +
+                "first instead of replacing it");
+            Assert.That(CountCliffWalls(), Is.EqualTo(wallsAfterOne),
+                "a second pass changed the wall count — the cliff builder is stacking");
+        }
+
+        static int CountCliffWalls() =>
+            Object.FindObjectsByType<CliffWallSurface>(FindObjectsSortMode.None).Length;
+
         // =============================================================================================
         //  the scene
         // =============================================================================================
