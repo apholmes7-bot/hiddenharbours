@@ -388,18 +388,22 @@ namespace HiddenHarbours.App.Editor
             seaGo.transform.position = new Vector3(CoveSeaCenter.x, CoveSeaCenter.y, 0f);
             var seaSr = seaGo.AddComponent<SpriteRenderer>();
             seaSr.sortingOrder = -5;
-            if (seaSprite != null)
-            {
-                seaSr.sprite = seaSprite;
-                seaSr.drawMode = SpriteDrawMode.Tiled;
-                seaSr.size = CoveSeaSize;
-            }
+            if (seaSprite != null) seaSr.sprite = seaSprite;
             else
             {
                 seaSr.sprite = MakeSquareSprite(ArtSprites + "/Square.png");
                 seaSr.color = new Color(0.15f, 0.27f, 0.34f);
-                seaGo.transform.localScale = new Vector3(CoveSeaSize.x, CoveSeaSize.y, 1f);
             }
+            // ⭐ ONE QUAD, the same rule as every other region's sea (WaterSceneTemplate.ConfigureSeaPlane).
+            // The cove is the ONE sea small enough that the old Tiled draw did not blow Unity's vertex limit
+            // — 80 × 50 m is 1,000 tiles against Nine Mile Creek's 106,400 — so this is a rule change here
+            // rather than a bug fix. It is made anyway, deliberately: the tile was never sampled by the
+            // water shader in ANY region, a fourth copy of the old pattern is a fourth place to grow past
+            // the limit unnoticed, and the sprite-derived scale fixes this builder's copy of the half-size
+            // no-material backdrop (Square is 0.5 m, and the old line scaled it as if it were 1 m). The one
+            // visible difference is the pre-import state — SeaTile present, Water.mat not yet imported —
+            // where the greybox backdrop becomes one stretched tile instead of a tiled field.
+            WaterSceneTemplate.ConfigureSeaPlane(seaSr, CoveSeaSize);
             var waterMat = AssetDatabase.LoadAssetAtPath<Material>(ArtWaterMat);
             if (waterMat != null)
             {
