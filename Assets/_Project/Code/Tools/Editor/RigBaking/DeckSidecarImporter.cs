@@ -21,10 +21,16 @@ namespace HiddenHarbours.Tools.RigBaking
     /// dead because the runtime's real motor mount was a hand-transcribed constant beside it, and the
     /// two drifted. Re-running this menu item is the only supported way to change a deck polygon.</para>
     ///
-    /// <para><b>The one table here is WIRING, not geometry.</b> <see cref="VisualsByRig"/> says which
-    /// visual assets wear which rig's deck — the join a <see cref="BoatVisualDef"/> cannot make for
-    /// itself (nothing on it names a rig, and two paint builds of one hull share one deck). Not a single
-    /// number in it comes from the sidecars.</para>
+    /// <para><b>The one table here is WIRING, not geometry.</b> <see cref="VisualsBySidecar"/> says
+    /// which visual assets wear which sidecar's deck — the join a <see cref="BoatVisualDef"/> cannot
+    /// make for itself (nothing on it names a rig, and two paint builds of one hull share one deck). Not
+    /// a single number in it comes from the sidecars.</para>
+    ///
+    /// <para><b>A sidecar names its HULL; the rig is read from inside it.</b> The eleven original files
+    /// are named after their rig, which is only possible while a rig makes one boat. The lobster
+    /// generator makes eighteen, so those files are named after the hull and the rig comes from the
+    /// sidecar's own <c>rig</c> field — see <see cref="DeckSidecarReader.ResolveRigFileName"/>, which
+    /// also explains why reading the field is the safer source even for the eleven.</para>
     /// </summary>
     public static class DeckSidecarImporter
     {
@@ -44,8 +50,11 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <para><c>FishingBoat</c> is absent on purpose: she is the hand-drawn compass, has no rig and
         /// therefore no measured deck, and keeps the deck-walk's greybox rectangle.</para>
         /// </summary>
-        static readonly IReadOnlyDictionary<string, string[]> VisualsByRig =
-            new Dictionary<string, string[]>(StringComparer.Ordinal)
+        static readonly IReadOnlyDictionary<string, string[]> VisualsBySidecar = BuildWiring();
+
+        static Dictionary<string, string[]> BuildWiring()
+        {
+            var wiring = new Dictionary<string, string[]>(StringComparer.Ordinal)
             {
                 ["doryIsoRig"]            = new[] { "DoryIso" },
                 ["puntIsoRig"]            = new[] { "PuntIsoBasic", "PuntIsoUpgraded" },
@@ -60,6 +69,17 @@ namespace HiddenHarbours.Tools.RigBaking
                 ["tankerIsoRig"]          = new[] { "TankerIso" },
             };
 
+            // The lobster generator's eighteen wear one visual each, and every one of the three
+            // names involved (sidecar stem, visual asset, deck def) is the SAME string with a
+            // different case or suffix. Restating eighteen rows by hand would be eighteen chances to
+            // wire a hull to her neighbour's deck — a defect that draws a plausible boat and is
+            // invisible until somebody walks off the edge of one.
+            foreach (LobsterVariant v in LobsterVariantFleet.All)
+                wiring[v.SidecarStem] = new[] { v.AssetName };
+
+            return wiring;
+        }
+
         [MenuItem("Hidden Harbours/Dev/Import Deck Sidecars (walkable DECK/WASHBOARD/CLEATS → Defs)",
                   priority = 122)]
         public static void ImportAll()
@@ -71,6 +91,32 @@ namespace HiddenHarbours.Tools.RigBaking
                                "Those hulls keep the deck-walk's greybox rectangle until they are re-derived.");
             EditorUtility.DisplayDialog("Import deck sidecars",
                 $"{imported} imported, {refused} refused.\n\nFull report in the Console.", "OK");
+        }
+
+        /// <summary>
+        /// Headless entry (-executeMethod). Exits non-zero on any refusal, because a refused sidecar
+        /// is not a partial success — that hull keeps the greybox rectangle and the next thing to
+        /// notice is a player walking through her wheelhouse.
+        /// </summary>
+        public static void ImportAllCli()
+        {
+            try
+            {
+                Debug.Log(Run(out int imported, out int refused));
+                if (refused > 0)
+                {
+                    Debug.LogError($"[DeckSidecarImporter] CLI import FAILED: {refused} refused, " +
+                                   $"{imported} imported.");
+                    EditorApplication.Exit(1);
+                    return;
+                }
+                Debug.Log($"[DeckSidecarImporter] CLI import OK — {imported} sidecar(s).");
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[DeckSidecarImporter] CLI import FAILED: {e}");
+                EditorApplication.Exit(1);
+            }
         }
 
         /// <summary>Do the import and hand back the report. Split out so a test (or a CI step) can run
@@ -94,31 +140,36 @@ namespace HiddenHarbours.Tools.RigBaking
             string[] files = Directory.GetFiles(sidecarDir, "*.gameplay.json").OrderBy(f => f).ToArray();
             foreach (string file in files)
             {
-                string rigBase = Path.GetFileName(file).Replace(".gameplay.json", "");
-                string rigPath = Path.Combine(root, RigFolder, rigBase + ".js");
+                // The file's STEM names the hull (and therefore the Def); the rig it was cut from is
+                // read out of the file. For the eleven single-hull sidecars the two are the same
+                // string, so nothing about them changes — see DeckSidecarReader.ResolveRigFileName.
+                string stem = Path.GetFileName(file).Replace(".gameplay.json", "");
+                string json = File.ReadAllText(file);
+                string rigFile = DeckSidecarReader.ResolveRigFileName(Path.GetFileName(file), json);
+                string rigPath = Path.Combine(root, RigFolder, rigFile);
                 byte[] rigBytes = File.Exists(rigPath) ? File.ReadAllBytes(rigPath) : null;
 
                 if (rigBytes == null)
                 {
                     refused++;
-                    log.Append($"  ✗ {rigBase}: the rig it names ({rigBase}.js) is not in {RigFolder}.\n");
+                    log.Append($"  ✗ {stem}: the rig it names ({rigFile}) is not in {RigFolder}.\n");
                     continue;
                 }
 
-                SidecarRead read = DeckSidecarReader.Read(File.ReadAllText(file),
+                SidecarRead read = DeckSidecarReader.Read(json,
                                                           $"{SidecarFolder}/{Path.GetFileName(file)}", rigBytes);
                 if (!read.Ok)
                 {
                     refused++;
-                    log.Append($"  ✗ {rigBase}: {string.Join(" | ", read.Errors)}\n");
+                    log.Append($"  ✗ {stem}: {string.Join(" | ", read.Errors)}\n");
                     continue;
                 }
 
-                BoatDeckDef def = WriteDeckAsset(rigBase, read, out string assetPath);
-                int wired = WireVisuals(rigBase, def);
+                BoatDeckDef def = WriteDeckAsset(stem, read, out string assetPath);
+                int wired = WireVisuals(stem, def);
                 imported++;
 
-                log.Append($"  ✓ {rigBase}: {read.Areas.Count(a => !a.IsWashboard)} deck area(s), " +
+                log.Append($"  ✓ {stem}: {read.Areas.Count(a => !a.IsWashboard)} deck area(s), " +
                            $"{read.Areas.Count(a => a.IsWashboard)} washboard(s), {read.Cleats.Count} cleat(s), " +
                            $"walk box {Fmt(def.WalkHalfExtents * 2f)} m → {Path.GetFileName(assetPath)}, " +
                            $"{wired} visual(s) wired [{read.HashMatch}]\n");
@@ -139,9 +190,11 @@ namespace HiddenHarbours.Tools.RigBaking
 
         // ---- writing -------------------------------------------------------------------------------
 
-        static BoatDeckDef WriteDeckAsset(string rigBase, SidecarRead read, out string assetPath)
+        static BoatDeckDef WriteDeckAsset(string sidecarStem, SidecarRead read, out string assetPath)
         {
-            string stem = StripRigSuffix(rigBase);                   // lobsterBoatIsoRig → lobsterBoatIso
+            // lobsterBoatIsoRig → lobsterBoatIso; lobsterStandardHardtopFundyIso → itself (a
+            // hull-named sidecar has no rig suffix to strip).
+            string stem = StripRigSuffix(sidecarStem);
             assetPath = $"{DeckFolder}/{Capitalise(stem)}.asset";
 
             var def = AssetDatabase.LoadAssetAtPath<BoatDeckDef>(assetPath);
@@ -200,13 +253,13 @@ namespace HiddenHarbours.Tools.RigBaking
             def.WalkHalfExtents = new Vector2((maxX - minX) * 0.5f, (maxY - minY) * 0.5f);
         }
 
-        static int WireVisuals(string rigBase, BoatDeckDef def)
+        static int WireVisuals(string sidecarStem, BoatDeckDef def)
         {
-            if (!VisualsByRig.TryGetValue(rigBase, out string[] names))
+            if (!VisualsBySidecar.TryGetValue(sidecarStem, out string[] names))
             {
-                Debug.LogWarning($"[DeckSidecarImporter] '{rigBase}' has a sidecar but no entry in " +
-                                 "VisualsByRig, so no hull wears its deck. Add the wiring row (or say " +
-                                 "out loud that this rig has no visual yet).");
+                Debug.LogWarning($"[DeckSidecarImporter] '{sidecarStem}' has a sidecar but no entry in " +
+                                 "VisualsBySidecar, so no hull wears its deck. Add the wiring row (or " +
+                                 "say out loud that this hull has no visual yet).");
                 return 0;
             }
 
@@ -217,8 +270,8 @@ namespace HiddenHarbours.Tools.RigBaking
                 var visual = AssetDatabase.LoadAssetAtPath<BoatVisualDef>(path);
                 if (visual == null)
                 {
-                    Debug.LogWarning($"[DeckSidecarImporter] '{rigBase}' wants to wire {path}, which does " +
-                                     "not exist.");
+                    Debug.LogWarning($"[DeckSidecarImporter] '{sidecarStem}' wants to wire {path}, which " +
+                                     "does not exist.");
                     continue;
                 }
                 if (visual.Deck == def) { wired++; continue; }   // already right — no needless re-dirty

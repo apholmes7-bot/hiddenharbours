@@ -60,10 +60,10 @@ namespace HiddenHarbours.Tools.RigBaking
         /// TEST's job (it can afford the minutes and nobody waits on it) — see
         /// <c>HullMeshFleetBakeTests</c>.</para>
         /// </summary>
-        public static readonly (string label, string path, string global)[] Hulls =
-            new[] { "lobsterBoat", "sideDragger", "punt" }
+        public static readonly (string label, string path, string global, RigHullExtraction extraction)[]
+            Hulls = new[] { "lobsterBoat", "sideDragger", "punt" }
                 .Select(HullMeshFleet.Get)
-                .Select(h => (h.Label, h.ScriptPath, h.GlobalName))
+                .Select(h => (h.Label, h.ScriptPath, h.GlobalName, h.Extraction))
                 .ToArray();
 
         [MenuItem(RigMeshGate.MenuRoot + "/Verify hull meshes against the rigs", priority = 210)]
@@ -87,24 +87,30 @@ namespace HiddenHarbours.Tools.RigBaking
         /// </summary>
         public static void VerifyFleetCli()
         {
-            var hulls = HullMeshFleet.Hulls.Select(h => (h.Label, h.ScriptPath, h.GlobalName)).ToArray();
+            // ⚠️ The extraction travels with the hull. A generator hull verified WITHOUT it is not
+            // this hull at all — the extractor would demand the static `F` she has none of and the
+            // whole entry would report FAILED, which reads like a broken mesh rather than a broken
+            // call site.
+            var hulls = HullMeshFleet.Hulls
+                .Select(h => (h.Label, h.ScriptPath, h.GlobalName, h.Extraction)).ToArray();
             if (!Verify(hulls, $"ADR 0022 phase-6 fleet verification — {hulls.Length} hulls"))
                 EditorApplication.Exit(1);
         }
 
         /// <summary>Returns true when every hull came in under the bar. Reports either way.</summary>
-        static bool Verify((string label, string path, string global)[] hulls, string title)
+        static bool Verify((string label, string path, string global, RigHullExtraction extraction)[] hulls,
+                           string title)
         {
             var report = new StringBuilder($"[rig-mesh] {title}\n");
             bool ok = true;
 
-            foreach (var (label, path, global) in hulls)
+            foreach (var (label, path, global, extraction) in hulls)
             {
                 try
                 {
                     var sw = Stopwatch.StartNew();
                     using IRigScriptHost host = RigScriptHostFactory.Create();
-                    var data = RigMeshExtractor.ExtractFrom(host, path, global);
+                    var data = RigMeshExtractor.ExtractFrom(host, path, global, hull: extraction);
                     var build = RigMeshBuilder.Build(data);
                     double extractMs = sw.Elapsed.TotalMilliseconds;
 

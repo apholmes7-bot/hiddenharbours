@@ -105,6 +105,41 @@ namespace HiddenHarbours.Tests.EditMode
             "visual.stern_trawler_mk2_iso",
             "visual.coastal_packet_iso",
             "visual.tanker_iso",
+
+            // ---- phase 8 — the lobster generator's EIGHTEEN, mesh-only ------------------------
+            // One rig file, eighteen boats: 3 sizes × 2 styles × 3 regions, all three axes geometry
+            // (18 of 18 distinct by face fingerprint, and face COUNT is not an oracle — two of them
+            // are both 637 faces and are different hulls). No sheet was ever baked for any of them,
+            // so like the four above they carry no compass and the mesh is the whole picture.
+            //
+            // Their acceptance: IsoFacetLobsterVariantAcceptanceTests renders the committed def
+            // through the real IsoFacetHullRenderer on the GPU and compares against the rig's own
+            // render of THAT variant — with a sabotage arm that swaps in a sister hull's def, so the
+            // check is known to be able to tell the eighteen apart. Their conventions are measured
+            // twice over (RigMeshAssetBaker.MeasureAzimuth): the pixel bow-taper heuristic is FOOLED
+            // on this family and says Clockwise, and the rig's own abeam anchors say CounterClockwise
+            // at exactly −90.00°, which is what shipped.
+            //
+            // Written out rather than looped from LobsterVariantFleet, per this list's own rule: the
+            // value is that a human wrote the id down twice.
+            "visual.lobster_inshore_open_northumberland_iso",
+            "visual.lobster_inshore_hardtop_northumberland_iso",
+            "visual.lobster_inshore_open_fundy_iso",
+            "visual.lobster_inshore_hardtop_fundy_iso",
+            "visual.lobster_inshore_open_newfoundland_iso",
+            "visual.lobster_inshore_hardtop_newfoundland_iso",
+            "visual.lobster_standard_open_northumberland_iso",
+            "visual.lobster_standard_hardtop_northumberland_iso",
+            "visual.lobster_standard_open_fundy_iso",
+            "visual.lobster_standard_hardtop_fundy_iso",
+            "visual.lobster_standard_open_newfoundland_iso",
+            "visual.lobster_standard_hardtop_newfoundland_iso",
+            "visual.lobster_offshore_open_northumberland_iso",
+            "visual.lobster_offshore_hardtop_northumberland_iso",
+            "visual.lobster_offshore_open_fundy_iso",
+            "visual.lobster_offshore_hardtop_fundy_iso",
+            "visual.lobster_offshore_open_newfoundland_iso",
+            "visual.lobster_offshore_hardtop_newfoundland_iso",
         };
 
         [Test]
