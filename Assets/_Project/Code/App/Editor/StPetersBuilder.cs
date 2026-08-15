@@ -702,18 +702,14 @@ namespace HiddenHarbours.App.Editor
             // show, and the Sea takes the vacated -5 slot. The always-dry island stays visible because the
             // shader clips over it: its 6 m elevation is above every water level, so depth<0 → transparent.)
             wsr.sortingOrder = -5;
-            if (seaTile != null)
-            {
-                wsr.sprite = seaTile;
-                wsr.drawMode = SpriteDrawMode.Tiled;
-                wsr.size = RegionWorldSize;
-                water.transform.localScale = Vector3.one;
-            }
-            else
-            {
-                wsr.sprite = waterSprite; wsr.color = new Color(0.15f, 0.27f, 0.34f);
-                water.transform.localScale = new Vector3(RegionWorldSize.x, RegionWorldSize.y, 1f);
-            }
+            if (seaTile != null) wsr.sprite = seaTile;
+            else                 { wsr.sprite = waterSprite; wsr.color = new Color(0.15f, 0.27f, 0.34f); }
+            // ⭐ ONE QUAD over the region, never a tiling of it — 760 × 520 m at a 2 m tile is 98,800 tiles
+            // (395,200 vertices), which Unity's tiling generator refused and logged on every build. The
+            // tile contributed nothing to draw: the water shader samples no _MainTex and reads only world
+            // XY. The whole argument, and the sprite-derived scale that also fixes the half-size
+            // no-material backdrop, live in WaterSceneTemplate.ConfigureSeaPlane.
+            WaterSceneTemplate.ConfigureSeaPlane(wsr, RegionWorldSize);
 
             // --- LAYERED SIM-DRIVEN WATER SHADER (ADR 0010 / design/water-rendering.md) ------------------
             // FLAG lead-architect (this PR, the FREE touch): apply the HiddenHarbours/Water material to the

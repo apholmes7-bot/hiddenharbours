@@ -211,6 +211,60 @@ namespace HiddenHarbours.App.Editor
         // =============================================================================================
 
         /// <summary>
+        /// ⭐ <b>THE SEA PLANE IS ONE QUAD, NOT A GRID OF TILES.</b> Size <paramref name="sr"/>'s already-
+        /// assigned sprite to cover <paramref name="worldSize"/> by SCALING it, and never by tiling it.
+        ///
+        /// <para><b>What this replaced, and why it had to go.</b> Every sea plane used to be a
+        /// <c>SpriteDrawMode.Tiled</c> renderer sized to the region rect. <c>SeaTile.png</c> is 64 px at 32
+        /// px/unit — a 2 × 2 m tile — so Nine Mile Creek's 760 × 560 m rect asked for 380 × 280 = 106,400
+        /// tiles, and Unity's tiling generator refuses past a 16-bit index buffer and logged, on every
+        /// build of the region:
+        /// <code>
+        ///   Cannot generate 9 slice most likely because the size is too big.
+        ///   Requires 425600 vertices and 638400 indices
+        /// </code>
+        /// 106,400 × 4 verts = 425,600 and × 6 indices = 638,400 — the logged numbers exactly, which is
+        /// what identifies the tiling as the thing counting. St Peters (760 × 520 → 395,200) and Greywick
+        /// (the same rect through <see cref="AddSea"/>) were over the same limit; only the 80 × 50 m
+        /// greybox cove was under it.</para>
+        ///
+        /// <para><b>The tile was never drawn, at any size.</b> <c>HiddenHarbours/Water</c> declares no
+        /// <c>_MainTex</c> and <c>Water.mat</c> has no slot for one, so the sprite's TEXTURE is never
+        /// sampled; the shader writes <c>OUT.uv = IN.uv</c> and no fragment stage ever reads it. Every
+        /// layer is driven by <c>worldXY</c>, taken from <c>GetVertexPositionInputs(IN.positionOS).positionWS</c>
+        /// — and a SpriteRenderer submits its mesh ALREADY IN WORLD SPACE, so a Simple sprite scaled to
+        /// 760 × 560 hands the fragment stage the same four world corners a Tiled sprite sized 760 × 560
+        /// would. Same <c>worldXY</c>, same pixels, 4 vertices instead of 425,600 attempted. The plane's
+        /// real job is to BE that quad and to carry Water.mat, the sorting slot and the property block
+        /// <c>WaterSurface</c> pushes — and, with the displaced sea on (the default since 2026-08-05),
+        /// <c>DisplacedWaterSurface</c> disables this renderer outright and reads only those three things
+        /// off it.</para>
+        ///
+        /// <para><b>⚠ The scale is DERIVED from the sprite, never assumed to be 1 m.</b> The hand-rolled
+        /// no-material fallback in all four builders scaled <c>Square.png</c> by <c>(worldSize.x,
+        /// worldSize.y, 1)</c> — but Square is 16 px at 32 px/unit, i.e. 0.5 m, so the greybox backdrop
+        /// covered a QUARTER of the region's area. Deriving the factor from <c>sprite.bounds.size</c> (what
+        /// the renderer actually draws at scale 1) is what makes one call correct for both sprites.</para>
+        ///
+        /// <para>A scaled sea transform is an anticipated shape, not a new one:
+        /// <c>DisplacedWaterSurface</c> already inverse-scales its mesh root and overlay off
+        /// <c>transform.lossyScale</c>, and the old fallback branch already scaled this way.</para>
+        /// </summary>
+        public static void ConfigureSeaPlane(SpriteRenderer sr, Vector2 worldSize)
+        {
+            // ⚠️ An explicit `== null`, never `??`: `??` bypasses UnityEngine.Object's equality overload.
+            if (sr == null || sr.sprite == null) return;
+
+            sr.drawMode = SpriteDrawMode.Simple;
+
+            Vector3 atUnitScale = sr.sprite.bounds.size;   // metres this sprite draws before any scaling
+            sr.transform.localScale = new Vector3(
+                atUnitScale.x > 1e-4f ? worldSize.x / atUnitScale.x : 1f,
+                atUnitScale.y > 1e-4f ? worldSize.y / atUnitScale.y : 1f,
+                1f);
+        }
+
+        /// <summary>
         /// The sea plane over the whole region rectangle, carrying the layered SIM-driven water shader
         /// (ADR 0010) with its seabed height bake pointed at the plan's extent, plus the weather-driven
         /// palette (ADR 0017) wired exactly as both land builders wire it.
@@ -229,16 +283,15 @@ namespace HiddenHarbours.App.Editor
             if (seaTile != null)
             {
                 wsr.sprite = seaTile;
-                wsr.drawMode = SpriteDrawMode.Tiled;
-                wsr.size = plan.WorldSize;
-                water.transform.localScale = Vector3.one;
             }
             else
             {
                 wsr.sprite = fallbackSquare;
                 wsr.color = plan.BackdropColor;
-                water.transform.localScale = new Vector3(plan.WorldSize.x, plan.WorldSize.y, 1f);
             }
+            // One quad over the region rect, whichever sprite is carrying it — see ConfigureSeaPlane for
+            // why this is never tiled (Greywick's 760 × 520 rect was over the tiling limit too).
+            ConfigureSeaPlane(wsr, plan.WorldSize);
 
             var waterMat = AssetDatabase.LoadAssetAtPath<Material>(ArtWaterMat);
             if (waterMat == null)
@@ -342,6 +395,14 @@ namespace HiddenHarbours.App.Editor
             }
 
             var config = AssetDatabase.LoadAssetAtPath<GameConfig>(GameConfigAsset);
+
+            // ⭐ FIRST, and on the renderer the caller HANDS US rather than only at the call sites: the sea
+            // plane is one quad over the region rect. Both land builders size their own plane through the
+            // same call before getting here, so for them this is a re-assert — but a fixture or a future
+            // builder that hand-rolls a Sea and reaches for the shared wiring gets the quad too, instead of
+            // logging the 425,600-vertex tiling refusal that hand-rolled copies kept re-introducing. No-ops
+            // on a MeshRenderer sea (the parity tests stand one up), which has no draw mode to correct.
+            ConfigureSeaPlane(water.GetComponent<SpriteRenderer>(), worldSize);
 
             ConfigureWaterSurface(surface, worldCenter, worldSize, bakeResolution, heightMin, heightMax);
             // (ADR 0023 arc step 3) The owner's salience knobs — how loudly the big wave is marked.
