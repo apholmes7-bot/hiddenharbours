@@ -1,0 +1,74 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8e963cec94c290ca72be0cf932b826b, type: 3}
+  m_Name: ZodiacFrcIso
+  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.BoatDeckDef
+  Id: deck.zodiac_frc_iso
+  SourceSidecar: docs/art/rigs/gameplay/zodiacFrcIso.gameplay.json
+  SourceRig: docs/art/rigs/zodiacIsoRig.js
+  DerivedFromRigSha256: 66e5a977f02452c6413fb523faf21e735aa48469995810244e0a88a1efeb6e8e
+  LoaMeters: 6.66
+  Areas:
+  - Id: cockpit
+    Kind: 0
+    Outline:
+    - {x: -0.955, y: -3.2}
+    - {x: -0.966, y: -2.834}
+    - {x: -0.977, y: -2.469}
+    - {x: -0.939, y: -2.103}
+    - {x: -0.895, y: -1.737}
+    - {x: -0.842, y: -1.371}
+    - {x: -0.789, y: -1.006}
+    - {x: -0.73, y: -0.64}
+    - {x: -0.663, y: -0.274}
+    - {x: -0.598, y: 0.091}
+    - {x: -0.521, y: 0.457}
+    - {x: -0.451, y: 0.823}
+    - {x: -0.359, y: 1.189}
+    - {x: -0.276, y: 1.554}
+    - {x: -0.166, y: 1.92}
+    - {x: 0.166, y: 1.92}
+    - {x: 0.276, y: 1.554}
+    - {x: 0.359, y: 1.189}
+    - {x: 0.451, y: 0.823}
+    - {x: 0.521, y: 0.457}
+    - {x: 0.598, y: 0.091}
+    - {x: 0.663, y: -0.274}
+    - {x: 0.73, y: -0.64}
+    - {x: 0.789, y: -1.006}
+    - {x: 0.842, y: -1.371}
+    - {x: 0.895, y: -1.737}
+    - {x: 0.939, y: -2.103}
+    - {x: 0.977, y: -2.469}
+    - {x: 0.966, y: -2.834}
+    - {x: 0.955, y: -3.2}
+    HeightPlane: {x: 0, y: 0, z: 0.403}
+    HeightResidualMax: 0
+    Bounds: {x: -0.977, y: -3.2, z: 0.977, w: 1.92}
+  Cleats:
+  - Id: bow_eye
+    Type: towing_eye
+    PositionMeters: {x: 0, y: 3.124, z: 0.806}
+  - Id: quarter_port
+    Type: strong_point
+    PositionMeters: {x: -0.911, y: -2.72, z: 0.723}
+  - Id: quarter_stbd
+    Type: strong_point
+    PositionMeters: {x: 0.911, y: -2.72, z: 0.723}
+  - Id: towing_post
+    Type: bollard
+    PositionMeters: {x: 0, y: -2.464, z: 0.703}
+  - Id: stern_eye
+    Type: tow_point
+    PositionMeters: {x: 0, y: -3.16, z: 0.551}
+  WalkCenter: {x: 0, y: -0.64000005}
+  WalkHalfExtents: {x: 0.977, y: 2.56}

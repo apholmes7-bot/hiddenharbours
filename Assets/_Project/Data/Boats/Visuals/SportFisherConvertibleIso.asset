@@ -16,7 +16,7 @@ MonoBehaviour:
   Variant: 1
   HullMesh: {fileID: 11400000, guid: 9fabc984b4cc14d40a5181685f9b9d43, type: 2}
   DesignWaterlineMeters: 0
-  Deck: {fileID: 0}
+  Deck: {fileID: 11400000, guid: 0a943a9d9709e5146930eadbe77d60d3, type: 2}
   Facings: []
   ZeroHeadingDegrees: 0
   FacingsAreCounterClockwise: 0
