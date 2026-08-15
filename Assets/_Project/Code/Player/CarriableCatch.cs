@@ -34,7 +34,7 @@ namespace HiddenHarbours.Player
     /// candidate that offers that. Hands are freed by stacking, not by dropping.</para>
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class CarriableCatch : MonoBehaviour, ICarriable
+    public sealed class CarriableCatch : MonoBehaviour, ICarriable, ICarryAnchored
     {
         [SerializeField] private SpriteRenderer _renderer;
 
@@ -92,6 +92,16 @@ namespace HiddenHarbours.Player
         /// <summary>A landed catch is always liftable — it is already in your hands by the time this
         /// exists.</summary>
         public bool IsCarriable => true;
+
+        /// <summary>
+        /// Which hand-prop row holds it: a handful of shellfish, or a fish by the gill
+        /// (<see cref="CarryPropKeys.ForCatch"/>). Derived from the category the content already stamps
+        /// on the item, so a new species holds correctly the day it lands with no wiring.
+        ///
+        /// <para>Null once the catch has been handed on — <see cref="Take"/> empties this object a beat
+        /// before it is destroyed, and for that beat it must not still claim to be a fish.</para>
+        /// </summary>
+        public string HandPropKey => _hasItem ? CarryPropKeys.ForCatch(_item.Category) : null;
 
         /// <inheritdoc/>
         public Transform Transform => transform;

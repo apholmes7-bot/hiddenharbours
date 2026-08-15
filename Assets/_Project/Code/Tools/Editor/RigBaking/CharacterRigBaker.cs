@@ -632,14 +632,28 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <para>Silent no-op when the hand-prop layer is not in the host — a rig kit without it is an
         /// older kit, not a broken one, and an absent block reads as absent rather than as
         /// <c>undefined</c>.</para>
+        ///
+        /// <para><b>Public only so the ABSENT branch can be tested.</b> A normal bake always installs the
+        /// layer, so that arm is unreachable from every entry point above it — and it is the arm whose
+        /// output, if wrong, breaks the whole sidecar rather than one block, because this is the
+        /// document's last key. An unreachable branch that can take down every consumer at once is worth
+        /// one widened modifier.</para>
         /// </summary>
-        static void AppendHandProps(StringBuilder sb, IRigScriptHost host, in RigGeometry geo,
-                                    AzimuthConvention convention, string buildPreset)
+        public static void AppendHandProps(StringBuilder sb, IRigScriptHost host, in RigGeometry geo,
+                                           AzimuthConvention convention, string buildPreset)
         {
             const string H = "CharacterHands6";
             if (!host.EvaluateBool($"typeof {H} === 'object' && {H} !== null"))
             {
-                sb.Append("  \"handProps\": null,\n");
+                // ⚠️ NO TRAILING COMMA. This is the LAST key of the document — the caller closes with
+                // "}" on the very next line — so a comma here writes `"handProps": null,\n}` and the
+                // whole sidecar stops being JSON: every consumer's parse fails, not just this block's.
+                // The present branch below already ends without one; this arm shipped with the comma and
+                // could not fire, because the hand-prop layer is installed on every character bake. It is
+                // fixed rather than deleted because a rig kit WITHOUT the layer is an older kit, not a
+                // broken one, and that is precisely the case that would have produced the unparseable
+                // file. AbsentHandPropLayer_StillWritesParseableJson pins it.
+                sb.Append("  \"handProps\": null\n");
                 return;
             }
 

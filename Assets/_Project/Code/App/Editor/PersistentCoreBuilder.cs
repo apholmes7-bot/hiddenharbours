@@ -496,7 +496,21 @@ namespace HiddenHarbours.App.Editor
             // skin and the walk controller off this same object in its own Resolve(), so there is nothing
             // to hand it — the three sources of the DRAWN heading it derives a carried facing from are all
             // already here.
-            playerGo.AddComponent<CarryHands>();
+            //
+            // The one thing it CANNOT resolve off this object is the hand-prop table: it is an asset, not
+            // a component. Handed in here so a carried thing hangs off the fisher's live WRIST at every
+            // heading and every frame of the cycle rather than off one serialized hip offset — the rig
+            // bakes that per prop per facing (CarryAnchorTableBuilder imports it), and without it the
+            // hands fall back to exactly the pose they had before, which is what a jerry can still gets.
+            var hands = playerGo.AddComponent<CarryHands>();
+            var carryAnchors = AssetDatabase.LoadAssetAtPath<HiddenHarbours.Core.CarryAnchorTableDef>(
+                CarryAnchorTableBuilder.TablePath);
+            hands.ConfigureCarryAnchors(carryAnchors);
+            if (carryAnchors == null || !carryAnchors.HasRows)
+                Debug.LogWarning($"[PersistentCoreBuilder] No carry-anchor table at " +
+                                 $"'{CarryAnchorTableBuilder.TablePath}' — a carried clam, fish or rod " +
+                                 "hangs off the single fallback offset at every heading. Run " +
+                                 "Art ▸ Import (after a new drop) ▸ Build Carry Anchor Table.");
 
             // THE HAUL ANIMATION (owner's PlayerHaul sheet): while a trap haul is live the deck-walking
             // fisher plays the hand-over-hand cycle as line comes in, the STRAIN frame while the rope

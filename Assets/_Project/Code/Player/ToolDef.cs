@@ -54,5 +54,12 @@ namespace HiddenHarbours.Player
         [Tooltip("One line for the pick-up message and later the tool rack's label. Greybox copy.")]
         [TextArea(2, 4)]
         public string Flavor;
+
+        [Tooltip("Which of the character rig's HAND-PROP rows holds this tool — 'rodTrail' for the rod; " +
+                 "Core.CarryPropKeys names all seven. EMPTY is legal and is the honest answer for the " +
+                 "SHOVEL: the rig bakes no spade row, so the carrier keeps its own single offset for it. " +
+                 "⚠️ Do not point the shovel at 'gaff' to fill the gap — that row is a 1.55 m pole's " +
+                 "grip and a spade is 1.04 m.")]
+        public string HandPropKey;
     }
 }
