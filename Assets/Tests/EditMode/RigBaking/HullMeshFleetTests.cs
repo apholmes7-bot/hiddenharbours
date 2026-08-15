@@ -216,7 +216,16 @@ namespace HiddenHarbours.Tests.RigBaking
 
                 using IRigScriptHost host = RigScriptHostFactory.Create();
                 host.Execute(File.ReadAllText(Path.Combine(RepoRoot, hull.ScriptPath)));
-                string g = hull.GlobalName;
+
+                // ⚠️ ROCK is not always on the GLOBAL, and assuming it was is how this went red on a
+                // CORRECT bake. sportFisherIsoRig2.js is a registry — her two hulls carry their own
+                // sea state and her global carries none. They genuinely differ, and the right way
+                // round: rollA 2.1 on the 16.2 m boat against 1.35 on the 27.4 m one. So this reads
+                // from the same scope the baker read from. For every other hull that scope IS the
+                // global, so nothing about the other thirty-two moves.
+                string g = hull.Extraction != null
+                    ? hull.Extraction.ScopeOr(hull.GlobalName)
+                    : hull.GlobalName;
 
                 Assert.IsTrue(host.EvaluateBool($"typeof {g}.ROCK === 'object' && {g}.ROCK !== null"),
                     $"{hull.Key} exports no ROCK block — a hull that cannot rock is not a hull.");
