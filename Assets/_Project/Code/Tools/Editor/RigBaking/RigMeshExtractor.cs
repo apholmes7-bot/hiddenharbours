@@ -631,6 +631,22 @@ namespace HiddenHarbours.Tools.RigBaking
         /// retires the same way, on the day the rig exports it.</summary>
         public string[] ExtraSymbols = Array.Empty<string>();
 
+        /// <summary>
+        /// The same variant, written as a JS object literal for the rig's own PUBLIC entry points —
+        /// e.g. <c>{size:'offshore',style:'hardtop',region:'fundy'}</c> for
+        /// <c>render(dir, opts)</c>, <c>navMounts(dir, opts)</c>, <c>anchors(v)</c>.
+        ///
+        /// <para><b>Not a duplicate of <see cref="FaceExpression"/>, and the difference matters.</b>
+        /// That one is a call into a SHIMMED private builder and is only valid inside the widened
+        /// host; this one is a plain descriptor the rig accepts anywhere, and is what a probe needs
+        /// in order to photograph THIS hull rather than the generator's default. Measured
+        /// 2026-08-15: without it, all eighteen lobster cells rendered an identical 45,211 opaque
+        /// pixels at the azimuth probe — one hull's picture deciding seventeen hulls' convention.</para>
+        ///
+        /// <para>Null for a static-F hull, whose rig takes no descriptor at all.</para>
+        /// </summary>
+        public string ViewOptions;
+
         /// <summary>True when this extraction names a variant rather than taking the static array.
         /// </summary>
         public bool IsVariant => !string.IsNullOrEmpty(FaceExpression);

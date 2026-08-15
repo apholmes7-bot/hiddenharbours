@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using HiddenHarbours.Core;
 using UnityEditor;
@@ -91,7 +92,15 @@ namespace HiddenHarbours.Tools.RigBaking
                     EditorUtility.DisplayProgressBar(
                         "Baking fleet hull meshes", hull.Label, (i + 0.5f) / hulls.Count);
 
-                    HullMeshDef def = Bake(hull.ScriptPath, hull.GlobalName, hull.MeshAssetPath, hull.MeshId);
+                    // ⚠️ hull.Extraction is NOT optional here, though it reads like it. BakeOne has
+                    // passed it since ADR 0022 phase 8 and this loop did not, so the whole-fleet
+                    // bake would have taken the static-F path for a GENERATOR hull: the extractor
+                    // then demands `F`, the widening cannot supply one, and the run reports
+                    // "✗ lobster …: FAILED" for all eighteen while the eleven pass. Loud rather than
+                    // silent — but only because the extractor happens to fail closed, and a bake
+                    // that means the wrong hull is exactly what this field exists to prevent.
+                    HullMeshDef def = Bake(hull.ScriptPath, hull.GlobalName, hull.MeshAssetPath,
+                                           hull.MeshId, hull.Extraction);
                     WireVisuals(hull, def);
 
                     long sheetBytes = (long)def.CellW * def.CellH * 4 * 32 * 4;  // 32 facings × 4 rock, RGBA32
@@ -150,6 +159,51 @@ namespace HiddenHarbours.Tools.RigBaking
 
         /// <summary>Headless entry (-executeMethod) for the dragger's bake.</summary>
         public static void BakeSideDraggerCli() => BakeOneCli("sideDragger");
+
+        /// <summary>
+        /// <b>The lobster generator's eighteen, and nothing else.</b>
+        ///
+        /// <para>Its own entry point rather than "just run the fleet bake", for a reason that is
+        /// about the DIFF and not about the runtime. A fleet bake rewrites all twenty-nine defs, and
+        /// Unity's serialisation is not byte-deterministic — local sub-asset fileIDs are regenerated
+        /// and the YAML document order is reshuffled — so re-baking the eleven shipped hulls that
+        /// this PR does not touch produces hundreds of lines of pure churn on assets nobody changed.
+        /// Baking exactly the new hulls keeps the eleven's committed bytes untouched, which is what
+        /// makes the change reviewable.</para>
+        /// </summary>
+        [MenuItem(RigMeshGate.MenuRoot + "/Bake the 18 lobster variant hull meshes", priority = 222)]
+        public static void BakeLobsterVariants() =>
+            BakeFleetInternal(HullMeshFleet.VariantHulls.ToList());
+
+        [MenuItem(RigMeshGate.MenuRoot + "/Bake the 18 lobster variant hull meshes", validate = true)]
+        static bool BakeLobsterVariantsValidate() => RigMeshGate.Enabled;
+
+        /// <summary>Headless entry (-executeMethod) for the eighteen.</summary>
+        public static void BakeLobsterVariantsCli()
+        {
+            try
+            {
+                var hulls = HullMeshFleet.VariantHulls.ToList();
+                if (hulls.Count == 0)
+                    throw new InvalidOperationException(
+                        "No variant hulls in the fleet — this bake would silently do nothing.");
+
+                int failed = BakeFleetInternal(hulls);
+                if (failed > 0)
+                {
+                    Debug.LogError($"[rig-mesh] CLI lobster-variant bake FAILED: {failed} of " +
+                                   $"{hulls.Count} hull(s) did not bake.");
+                    EditorApplication.Exit(1);
+                    return;
+                }
+                Debug.Log($"[rig-mesh] CLI lobster-variant bake OK — {hulls.Count} hulls.");
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[rig-mesh] CLI lobster-variant bake FAILED: {e}");
+                EditorApplication.Exit(1);
+            }
+        }
 
         /// <summary>Bake one catalog hull by key, and wire whatever visuals it owns.</summary>
         public static HullMeshDef BakeOne(string key)
@@ -309,6 +363,153 @@ namespace HiddenHarbours.Tools.RigBaking
                       "the deck itself wettable.");
         }
 
+        /// <summary>
+        /// <b>Which way this rig's <c>dir</c> argument actually turns the artwork</b> — measured two
+        /// independent ways, with the rig's own geometry as the authority when it offers one.
+        ///
+        /// <para><b>Why two.</b> <see cref="RigAzimuthProbe"/> finds the bow by TAPER: it bins the
+        /// silhouette along its principal axis and calls the narrower end the bow. That works
+        /// because a boat is pointed forward and blunt aft — and it stops working when the end bands
+        /// are dominated by superstructure rather than by hull, because the "beam" it measures is a
+        /// screen-space extent, and a tall raked stem projects wide even where the planking is
+        /// narrow.</para>
+        ///
+        /// <para><b>MEASURED, on this fleet, 2026-08-15.</b> Across the eleven shipped hulls the
+        /// taper signal (blunt/sharp beam ratio) runs 1.04–1.60 and the verdict is CCW everywhere;
+        /// for the seven rigs that also publish a stern-and-masthead pair, the analytic bearing
+        /// agrees with margins of 250–1563 px — no ambiguity anywhere. The lobster VARIANT generator
+        /// is the one rig where the two disagree, and it disagrees on the weakest taper signal in
+        /// the fleet: 1.088 on <c>standard/hardtop/northumberland</c>, down to <b>1.040</b> on
+        /// <c>offshore/hardtop/newfoundland</c>. Her hardtop cantilevers FORWARD over the stem while
+        /// the shipped lobster boat's roof extends AFT on two posts, which loads the two hulls'
+        /// taper bands at opposite ends — same boat family, opposite answer from the same heuristic.
+        /// The analytic oracle puts her bow 254 px WEST at a quarter turn, exactly where the shipped
+        /// hull's is (249 px), and her un-squashed port→star ground bearing is byte-identical to the
+        /// hero's at all eight headings. She is not mirrored; the taper test is fooled.</para>
+        ///
+        /// <para><b>So the analytic answer wins where it exists</b>, and the disagreement is logged
+        /// as an ERROR rather than resolved quietly — a wrong convention mirrors the whole
+        /// heading→dir mapping, which is the defect this project has shipped five times and the
+        /// reason the probe exists at all. Rigs with no such pair (dory, punt, console, sport skiff
+        /// — none publish <c>navMounts</c>) keep the pixel path they were baked from, unchanged.</para>
+        ///
+        /// <para><b>Nothing already committed moves.</b> Of the eleven shipped hulls, seven publish
+        /// an abeam pair and on every one of them the analytic answer CONFIRMS the pixel answer
+        /// (bearing exactly −90.00°, CCW); the other four never reach the new arm. So this can only
+        /// change a hull whose two oracles disagree, and today that is exactly the eighteen.</para>
+        /// </summary>
+        static AzimuthConvention MeasureAzimuth(IRigScriptHost host, string globalName, RigMeshData data,
+                                                RigHullExtraction extraction)
+        {
+            // ⚠️ THE VARIANT DESCRIPTOR BELONGS IN THIS RENDER. Without it a generator rig hands back
+            // its DEFAULT hull — measured: all eighteen lobster cells probed an identical 45,211
+            // opaque pixels, i.e. seventeen hulls' conventions were being decided by an eighteenth's
+            // picture. It happened not to change the answer here; that it could is the point.
+            string opts = extraction != null && extraction.IsVariant && extraction.ViewOptions != null
+                ? extraction.ViewOptions
+                : "{}";
+            string view = $"Object.assign({{}},{opts},{{elev:{data.DefaultElev.ToString("R", Inv)}}})";
+
+            byte[] rgba = host.EvaluateBytes($"{globalName}.render(2,{view})");
+            RigAzimuthProbe.Result pixel = RigAzimuthProbe.MeasureFromQuarterTurn(rgba, data.W, data.H);
+            Debug.Log($"[rig-mesh] {globalName} azimuth probe (pixels):\n{pixel.Report}");
+
+            if (!HasAbeamPair(host, globalName, view))
+            {
+                Debug.Log($"[rig-mesh] {globalName}: no admissible abeam nav-mount pair to " +
+                          "cross-check against, so the pixel taper stands alone. That is the path " +
+                          "every hull baked before 2026-08-15 took.");
+                return pixel.Convention;
+            }
+
+            double bearing = GroundBearingOfAbeamPair(host, globalName, view, data.DefaultElev);
+            AzimuthConvention analytic = bearing > 0 ? AzimuthConvention.Clockwise
+                                                    : AzimuthConvention.CounterClockwise;
+
+            double taper = Math.Max(pixel.BowBeam, pixel.SternBeam) /
+                           Math.Max(1e-6, Math.Min(pixel.BowBeam, pixel.SternBeam));
+            string margin = $"port→star ground bearing {bearing:F2}° at a quarter turn; pixel taper " +
+                            $"ratio {taper:F3}";
+
+            if (analytic == pixel.Convention)
+            {
+                Debug.Log($"[rig-mesh] {globalName} azimuth CONFIRMED {analytic} by the rig's own " +
+                          $"abeam anchors ({margin}).");
+                return analytic;
+            }
+
+            Debug.LogError(
+                $"[rig-mesh] {globalName}: THE TWO AZIMUTH ORACLES DISAGREE — pixels say " +
+                $"{pixel.Convention}, the rig's own abeam anchors say {analytic} ({margin}).\n" +
+                "Taking the ANALYTIC answer, and the reason is that the two are not equally strong. " +
+                "The abeam bearing is a pure ±x separation rotated by the rig's own camera and read " +
+                "on the UN-SQUASHED ground plane, so its answer is a SIGN and it lands on ±90.00° " +
+                "exactly; the pixel test infers the bow from which end of the silhouette is " +
+                "narrower, which superstructure over the stem can invert. A taper ratio near 1 " +
+                "above is the tell that it did.\n" +
+                "⚠️ If this ever fires with a LARGE taper ratio, do not accept either answer on its " +
+                "own — render the rig beside a registered reference in one host and compare their " +
+                "bearings directly before baking anything.");
+            return analytic;
+        }
+
+        /// <summary>
+        /// True when this rig publishes port and starboard nav mounts that are a genuine ABEAM pair
+        /// — the same y and z, opposite x — which is what makes their screen bearing a hull bearing.
+        ///
+        /// <para><b>Admissibility is CHECKED, not assumed, and the check has already earned its
+        /// keep.</b> <see cref="RigAzimuthProbe"/>'s own note records an investigation misled by
+        /// treating the console skiff's off-centre tub anchors as a centreline pair. Measured
+        /// 2026-08-15 on this very fleet: the lobster generator's three <c>open/newfoundland</c>
+        /// cells carry their masthead on the dry stack, <b>0.485–0.700 m to port</b> — so a
+        /// stern-to-masthead formulation of this same cross-check was inadmissible on exactly those
+        /// three and silently fell back to the heuristic it was meant to correct. The abeam pair has
+        /// no such gap: every rig that publishes <c>navMounts</c> at all publishes it.</para>
+        ///
+        /// <para>The test is done in SCREEN space at heading 0, where the rig's own +x is screen +x
+        /// and nothing has mixed the axes yet: an abeam pair at equal height projects to a
+        /// horizontal segment, so a non-zero screen dy means the two mounts are not abeam.</para>
+        /// </summary>
+        static bool HasAbeamPair(IRigScriptHost host, string globalName, string view)
+        {
+            if (!host.EvaluateBool($"typeof {globalName}.navMounts === 'function'")) return false;
+            if (!host.EvaluateBool(
+                    $"(function(m){{return !!m && !!m.port && !!m.star;}})" +
+                    $"({globalName}.navMounts(0,{view}))"))
+                return false;
+
+            return host.EvaluateBool(
+                $"(function(m){{return Math.abs(m.star.y-m.port.y) < 1e-6 && " +
+                $"Math.abs(m.star.x-m.port.x) > 1e-6;}})({globalName}.navMounts(0,{view}))");
+        }
+
+        /// <summary>
+        /// The port→starboard bearing at a quarter turn, on the GROUND PLANE.
+        ///
+        /// <para>⚠️ <b>The un-squash is the whole method.</b> The ¾ projection scales screen depth by
+        /// <c>sin(elevation)</c>, so any angle taken straight off screen coordinates is a squashed
+        /// angle and is wrong by up to 12°. Dividing the screen dy by <c>sin(elev)</c> before the
+        /// <c>atan2</c> recovers the real bearing — and it is self-checking: only the correct
+        /// divisor lands the eight headings on exact 45° steps.</para>
+        ///
+        /// <para>Screen y is DOWN, so a hull turned a quarter CLOCKWISE (bow east) has her starboard
+        /// side toward the viewer, giving a positive bearing; counter-clockwise gives −90°.
+        /// Measured across the whole fleet 2026-08-15: every rig that publishes an abeam pair — the
+        /// seven shipped hulls that do, plus all eighteen lobster variants — returns exactly
+        /// <b>−90.00°</b>.</para>
+        /// </summary>
+        static double GroundBearingOfAbeamPair(IRigScriptHost host, string globalName, string view,
+                                               double elevationDeg)
+        {
+            string sin = Math.Sin(elevationDeg * Math.PI / 180.0).ToString("R", Inv);
+            return host.EvaluateNumber(
+                $"(function(m){{return Math.atan2((m.star.y-m.port.y)/{sin}," +
+                $"m.star.x-m.port.x)*180/Math.PI;}})({globalName}.navMounts(2,{view}))");
+        }
+
+        static readonly System.Globalization.CultureInfo Inv =
+            System.Globalization.CultureInfo.InvariantCulture;
+
         /// <param name="extraction">Non-null to bake ONE VARIANT of a rig that generates several
         /// hulls. Null — every hull baked before 2026-08-13 — takes the rig's static <c>F</c>.</param>
         public static HullMeshDef Bake(string scriptPath, string globalName, string assetPath, string id,
@@ -330,10 +531,7 @@ namespace HiddenHarbours.Tools.RigBaking
             LogInteriorMask(globalName, data, interiorSides);
 
             // --- the measured azimuth convention (quarter turn: broadside, least ambiguous) --------
-            var quarter = new RigViewOptions(2, data.DefaultElev);   // dir 2 of 8 = 90° of turntable
-            byte[] rgba = host.EvaluateBytes($"{globalName}.render({quarter.ToJsArgs()})");
-            RigAzimuthProbe.Result probe = RigAzimuthProbe.MeasureFromQuarterTurn(rgba, data.W, data.H);
-            Debug.Log($"[rig-mesh] {globalName} azimuth probe:\n{probe.Report}");
+            AzimuthConvention convention = MeasureAzimuth(host, globalName, data, extraction);
 
             // --- the rock amplitudes, off the exported ROCK block (optional; 0 = no rock) ----------
             float rollA = 0f, pitchA = 0f, heaveA = 0f;
@@ -393,7 +591,7 @@ namespace HiddenHarbours.Tools.RigBaking
             def.CellW = data.W;
             def.CellH = data.H;
             def.ElevationDeg = (float)data.DefaultElev;
-            def.AzimuthCounterClockwise = probe.Convention == AzimuthConvention.CounterClockwise;
+            def.AzimuthCounterClockwise = convention == AzimuthConvention.CounterClockwise;
             def.RockRollDegrees = rollA;
             def.RockPitchDegrees = pitchA;
             def.RockHeavePixels = heaveA;

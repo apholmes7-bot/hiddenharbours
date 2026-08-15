@@ -1,0 +1,138 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8e963cec94c290ca72be0cf932b826b, type: 3}
+  m_Name: LobsterInshoreOpenNewfoundlandIso
+  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.BoatDeckDef
+  Id: deck.lobster_inshore_open_newfoundland_iso
+  SourceSidecar: docs/art/rigs/gameplay/lobsterInshoreOpenNewfoundlandIso.gameplay.json
+  SourceRig: docs/art/rigs/lobsterBoatVariantsIsoRig.js
+  DerivedFromRigSha256: ff8414f844f19d3a1ae0cceb30dadb98ea98e06109393eb6419aa1b22048c8a0
+  LoaMeters: 8.6
+  Areas:
+  - Id: cockpit
+    Kind: 0
+    Outline:
+    - {x: -0.574, y: 2.924}
+    - {x: -0.836, y: 2.267}
+    - {x: -1.022, y: 1.611}
+    - {x: -1.18, y: 0.954}
+    - {x: -1.288, y: 0.297}
+    - {x: -1.366, y: -0.36}
+    - {x: -1.419, y: -1.016}
+    - {x: -1.441, y: -1.673}
+    - {x: -1.451, y: -2.33}
+    - {x: -1.438, y: -2.987}
+    - {x: -1.397, y: -3.643}
+    - {x: -1.342, y: -4.3}
+    - {x: 1.342, y: -4.3}
+    - {x: 1.397, y: -3.643}
+    - {x: 1.438, y: -2.987}
+    - {x: 1.451, y: -2.33}
+    - {x: 1.441, y: -1.673}
+    - {x: 1.419, y: -1.016}
+    - {x: 1.366, y: -0.36}
+    - {x: 1.288, y: 0.297}
+    - {x: 1.18, y: 0.954}
+    - {x: 1.022, y: 1.611}
+    - {x: 0.836, y: 2.267}
+    - {x: 0.574, y: 2.924}
+    HeightPlane: {x: 0, y: 0, z: 0.44}
+    HeightResidualMax: 0
+    Bounds: {x: -1.451, y: -4.3, z: 1.451, w: 2.924}
+  - Id: foredeck
+    Kind: 0
+    Outline:
+    - {x: -0.02, y: 4.185}
+    - {x: -0.178, y: 3.977}
+    - {x: -0.367, y: 3.769}
+    - {x: -0.555, y: 3.56}
+    - {x: -0.744, y: 3.351}
+    - {x: -0.884, y: 3.142}
+    - {x: -0.964, y: 2.933}
+    - {x: 0.964, y: 2.933}
+    - {x: 0.884, y: 3.142}
+    - {x: 0.744, y: 3.351}
+    - {x: 0.555, y: 3.56}
+    - {x: 0.367, y: 3.769}
+    - {x: 0.178, y: 3.977}
+    - {x: 0.02, y: 4.185}
+    HeightPlane: {x: 0, y: 0.3186115, z: 0.9185939}
+    HeightResidualMax: 0.005918503
+    Bounds: {x: -0.964, y: 2.933, z: 0.964, w: 4.185}
+  - Id: washboard_starboard
+    Kind: 1
+    Outline:
+    - {x: 1.6, y: -4.3}
+    - {x: 1.686, y: -3.578}
+    - {x: 1.75, y: -2.855}
+    - {x: 1.792, y: -2.133}
+    - {x: 1.803, y: -1.41}
+    - {x: 1.802, y: -0.688}
+    - {x: 1.789, y: 0.034}
+    - {x: 1.724, y: 0.757}
+    - {x: 1.624, y: 1.479}
+    - {x: 1.484, y: 2.202}
+    - {x: 1.204, y: 2.924}
+    - {x: 0.8086863, y: 2.7706928}
+    - {x: 1.0768497, y: 2.0836587}
+    - {x: 1.2057298, y: 1.4095294}
+    - {x: 1.3027375, y: 0.70889735}
+    - {x: 1.3656164, y: 0.011146058}
+    - {x: 1.3780199, y: -0.6921106}
+    - {x: 1.3790101, y: -1.4070657}
+    - {x: 1.368285, y: -2.1174588}
+    - {x: 1.3271363, y: -2.8239803}
+    - {x: 1.2642661, y: -3.5342214}
+    - {x: 1.1789763, y: -4.2498507}
+    HeightPlane: {x: -0.2280148, y: 0.09201833, z: 1.7435726}
+    HeightResidualMax: 0.16489565
+    Bounds: {x: 0.8086863, y: -4.3, z: 1.803, w: 2.924}
+  - Id: washboard_port
+    Kind: 1
+    Outline:
+    - {x: -1.1789763, y: -4.2498507}
+    - {x: -1.2642661, y: -3.5342214}
+    - {x: -1.3271363, y: -2.8239803}
+    - {x: -1.368285, y: -2.1174588}
+    - {x: -1.3790101, y: -1.4070657}
+    - {x: -1.3780199, y: -0.6921106}
+    - {x: -1.3656164, y: 0.011146058}
+    - {x: -1.3027375, y: 0.70889735}
+    - {x: -1.2057298, y: 1.4095294}
+    - {x: -1.0768497, y: 2.0836587}
+    - {x: -0.8086863, y: 2.7706928}
+    - {x: -1.204, y: 2.924}
+    - {x: -1.484, y: 2.202}
+    - {x: -1.624, y: 1.479}
+    - {x: -1.724, y: 0.757}
+    - {x: -1.789, y: 0.034}
+    - {x: -1.802, y: -0.688}
+    - {x: -1.803, y: -1.41}
+    - {x: -1.792, y: -2.133}
+    - {x: -1.75, y: -2.855}
+    - {x: -1.686, y: -3.578}
+    - {x: -1.6, y: -4.3}
+    HeightPlane: {x: 0.2280148, y: 0.09201833, z: 1.7435726}
+    HeightResidualMax: 0.16489565
+    Bounds: {x: -1.803, y: -4.3, z: -0.8086863, w: 2.924}
+  Cleats:
+  - Id: bow_1
+    Type: samson_post
+    PositionMeters: {x: 0, y: 3.711, z: 2.19}
+  - Id: stern_port
+    Type: cleat
+    PositionMeters: {x: -1.424, y: -4.099, z: 1.174}
+  - Id: stern_star
+    Type: cleat
+    PositionMeters: {x: 1.424, y: -4.099, z: 1.174}
+  WalkCenter: {x: 0, y: -0.057500124}
+  WalkHalfExtents: {x: 1.451, y: 4.2425003}

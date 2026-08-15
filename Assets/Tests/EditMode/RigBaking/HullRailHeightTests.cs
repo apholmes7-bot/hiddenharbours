@@ -43,8 +43,14 @@ namespace HiddenHarbours.Tests.EditMode.RigBaking
                 var def = AssetDatabase.LoadAssetAtPath<HullMeshDef>(hull.MeshAssetPath);
                 Assert.NotNull(def, $"{hull.Key}: no HullMeshDef at {hull.MeshAssetPath}");
 
+                // ⚠️ The extraction travels with the hull. Eighteen of them are cells of one
+                // generator with no static `F` at all, so re-extracting without it does not read
+                // the wrong boat — it throws "ReferenceError: F is not defined" and takes the whole
+                // sweep with it. (Measured: that is exactly how this fixture went red when the
+                // lobster variants first joined the fleet.)
                 using var host = RigScriptHostFactory.Create();
-                RigMeshData data = RigMeshExtractor.ExtractFrom(host, hull.ScriptPath, hull.GlobalName);
+                RigMeshData data = RigMeshExtractor.ExtractFrom(host, hull.ScriptPath, hull.GlobalName,
+                                                                hull: hull.Extraction);
                 float rail = RigMeshInteriorClassifier.DeriveRailHeight(data);
                 float deck = def.WatertightDeckHeightMeters;
 

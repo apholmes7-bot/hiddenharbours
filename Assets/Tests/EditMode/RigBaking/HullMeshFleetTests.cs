@@ -159,8 +159,13 @@ namespace HiddenHarbours.Tests.RigBaking
                 Assert.IsTrue(def.IsUsable(), $"{hull.Key}: the committed def is not usable.");
                 Assert.IsNotNull(def.Mesh, $"{hull.Key}: the mesh sub-asset is missing.");
 
+                // ⚠️ The extraction travels with the hull, and for eighteen of them it is the ONLY
+                // thing that says which boat this is. Re-extracting without it does not merely
+                // compare the wrong hull — the generator has no static F at all, so the extractor
+                // throws and this whole fixture fails on the first variant.
                 using IRigScriptHost host = RigScriptHostFactory.Create();
-                RigMeshData fresh = RigMeshExtractor.ExtractFrom(host, hull.ScriptPath, hull.GlobalName);
+                RigMeshData fresh = RigMeshExtractor.ExtractFrom(host, hull.ScriptPath, hull.GlobalName,
+                                                                 hull: hull.Extraction);
                 RigMeshBuild built = RigMeshBuilder.Build(fresh, $"{hull.GlobalName}Check");
 
                 try
@@ -180,6 +185,11 @@ namespace HiddenHarbours.Tests.RigBaking
                     Same("Ramps", def.Ramps.Length, fresh.Materials.Count);
                     Same("SourceRigPath", def.SourceRigPath, hull.ScriptPath);
                     Same("Id", def.Id, hull.MeshId);
+
+                    // Eighteen defs share one SourceRigPath, so the face expression is the only
+                    // field that tells them apart — and a bake that wrote the wrong one would ship
+                    // a real boat under another hull's id, which no count or size check would see.
+                    Same("SourceFaceBuilder", def.SourceFaceBuilder, fresh.SourceFaceExpression);
                 }
                 finally
                 {

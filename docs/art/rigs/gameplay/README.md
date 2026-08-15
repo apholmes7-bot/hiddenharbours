@@ -1,9 +1,30 @@
 # Gameplay sidecars — `DECK` / `WASHBOARD` / `CLEATS` as data
 
-`<rigBasename>.gameplay.json` — one per pilotable hull, named mechanically from its rig
-(`lobsterBoatIsoRig.js` → `lobsterBoatIsoRig.gameplay.json`). Authored by **art-director**
-(this folder is that role's lane, see `agents/art-director.md`); consumed by the deck
-sidecar importer and the deck-boarding/mooring work (M2-37..39).
+One file per **hull**. Authored by **art-director** (this folder is that role's lane, see
+`agents/art-director.md`); consumed by the deck sidecar importer and the deck-boarding/mooring
+work (M2-37..39).
+
+**Naming, and where the rig name comes from.** The original eleven are named mechanically from
+their rig (`lobsterBoatIsoRig.js` → `lobsterBoatIsoRig.gameplay.json`), which works while a rig
+makes exactly one boat. `lobsterBoatVariantsIsoRig.js` makes **eighteen**, and eighteen sidecars
+cannot share one file name — so a sidecar is named for its HULL
+(`lobsterStandardHardtopFundyIso.gameplay.json`) and **the rig is read from the file's own `rig`
+field**, which every sidecar has always carried. For the eleven the two agree, so nothing about
+them changed. Reading the field is also the safer form: before this, a sidecar could name rig A
+in its JSON while being hashed against rig B off its file name, and nothing checked that they
+agreed (`DeckSidecarReader.ResolveRigFileName`).
+
+The file stem is not cosmetic — it is the input to the importer's naming: strip a trailing
+`Rig`, capitalise, and that is the `BoatDeckDef` asset file; snake_case it and that is the def's
+id. `LobsterVariantFleetTests.EveryDerivedName_RoundTripsThroughTheImportersOwnConventions`
+pins the round-trip.
+
+**Generated, not authored, where the rig ships a generator.** The eighteen lobster variants are
+extracted from the rig's own `gameplayGeometry(variant)` by *Hidden Harbours ▸ Dev ▸ Generate
+the 18 lobster-variant deck sidecars* — every number derived from the same `resolve(v)` the mesh
+bake reads, so a reshape cannot leave them stale. That tool also stamps `derivedFromRigSha256`,
+which this rig's generator omits; see that field below for why an absent hash is a refusal and
+not a warning. **Do not hand-edit those eighteen — re-generate.**
 
 **These files are read by the game now** (M2-37's data half). `Hidden Harbours ▸ Dev ▸
 Import Deck Sidecars` turns each one into a `BoatDeckDef` asset under
@@ -111,7 +132,7 @@ stay known:
 - coastalPacket, sternTrawlerMk2 and tanker apply `flareExp` inside their deck-width
   functions; sternTrawler (mk1) and sideDragger do not.
 
-## Current set (11 hulls)
+## Current set (11 single-hull rigs + the lobster generator's 18)
 
 | hull | LOA | DECK | WASHBOARD | CLEATS |
 |---|---|---|---|---|
@@ -126,6 +147,26 @@ stay known:
 | sternTrawlerMk2 | 38 m | ramp strips, trawl deck, house alleys, foc'sle (3d) | — bulwarks | samson + 2 bow + 2 quarter bollards |
 | coastalPacket | 60 m | aft deck, house alleys, hold walkways, gaps, foc'sle (3d) | — merchant rails | 2 bow + 2 quarter bollards |
 | tanker | 110 m | poop, alleys, tank lanes, fore deck, catwalk, foc'sle (3d) | — bulwarks | centre bitt + 2 bow + 2 quarter + 2 stern bollards |
+
+### The lobster generator's eighteen (2026-08-15, ADR 0022 phase 8)
+
+`lobsterBoatVariantsIsoRig.js` → **3 sizes × 2 styles × 3 regions**, one sidecar each, all
+generated. Every cell has the same section shape — cockpit (flat, 24 pts) + foredeck (3d, 14
+pts), both washboards, 3 cleats (bow samson + 2 stern) — and differs in the numbers:
+
+| size | LOA | sole (`DECK`) | washboard width, nor / fundy / nfld |
+|---|---|---|---|
+| inshore | 8.6 m | 0.44 m | 0.352 / 0.376 / 0.424 m |
+| standard | 12.0 m | 0.50 m | 0.44 / 0.47 / 0.53 m |
+| offshore | 14.6 m | 0.55 m | 0.502 / 0.536 / 0.604 m |
+
+Style changes the roof and the arch, never the planking — measured: `open` and `hardtop` of one
+size+region report identical hull metrics, which is why the flotation table gives them one row
+(9 hull rows, 18 hulls). Their meshes are still distinct, because deck and anchors differ.
+
+⚠ `standard/*/northumberland` **is** the shipped `lobsterBoatIsoRig.js` hull: offsets table
+byte-identical, same `L` / `DECK` / `RAKE`. Her flotation is the shipped boat's 0.50/0.50/2.50,
+and `FleetFlotationTableTests.TheAnchor_MatchesTheCommittedLobsterBoat` holds the two together.
 
 ## Other handoff sidecars
 

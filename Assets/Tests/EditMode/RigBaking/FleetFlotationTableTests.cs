@@ -318,10 +318,15 @@ namespace HiddenHarbours.Tests.RigBaking
                     wrong.Add($"{f.Variant} half-beam: asset {def.WatertightHalfBeamMeters}, table {f.HalfBeam}");
 
                 // The clamp scans x over half the rig cell, so it cannot reach past it.
+                //
+                // ⚠️ ACCUMULATED, not asserted in place. This was an Assert.Less inside the loop,
+                // which throws on the FIRST offender and hides every later one — and with eighteen
+                // hulls off one rig, "one hull is too wide for her cell" and "the whole family is"
+                // are very different diagnoses that the in-place form cannot tell apart.
                 float cellHalfMeters = 0.5f * def.CellW / Mathf.Max(1, def.PxPerMetre);
-                Assert.Less(f.HalfBeam, cellHalfMeters,
-                    $"{f.Variant}: half-beam {f.HalfBeam} m exceeds half her own cell " +
-                    $"({cellHalfMeters:0.##} m) — she cannot be that wide.");
+                if (f.HalfBeam >= cellHalfMeters)
+                    wrong.Add($"{f.Variant} half-beam {f.HalfBeam} m exceeds half her own cell " +
+                              $"({cellHalfMeters:0.##} m) — she cannot be that wide");
             }
 
             CollectionAssert.IsEmpty(wrong,
