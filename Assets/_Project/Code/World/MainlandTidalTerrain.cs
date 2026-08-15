@@ -478,6 +478,28 @@ namespace HiddenHarbours.World
             if (!MainlandCoast.IsRun(_coastPoints)) return _deepElevation;
 
             MainlandCoast.Project(_coastPoints, worldPos, out float along, out float seaward);
+            return ProfileAt(along, seaward);
+        }
+
+        /// <summary>
+        /// The natural coast's cross-section in the run's OWN frame — the same blend
+        /// <see cref="CoastProfileAt"/> composes, addressed by <paramref name="along"/> the run and
+        /// <paramref name="seaward"/> of the shoreline instead of by a world point.
+        ///
+        /// <para><b>⭐ ONE LAW, TWO CONSUMERS — and this overload is why the second one can exist.</b> A
+        /// cliff-wall generator has to ask for the profile at an EXACT distance seaward of an exact metre
+        /// of shore (the foot of the plunge), and the world-point form cannot answer that: stepping out
+        /// along the normal and re-projecting lands at a slightly different <c>along</c> wherever the coast
+        /// turns, so the drawn wall would be sampled off a station the terrain never had. Splitting the
+        /// frame out means the picture is taken from literally the method the walk gate and the seabed bake
+        /// read, which is the property that keeps a wall from disagreeing with the ground under it — the
+        /// same arrangement <c>StPetersCliffWalls</c> makes with <c>TidalTerrain.IslandProfileAt</c>.</para>
+        ///
+        /// <para>The sector FEATHER therefore comes through for free: a run's drop tapers as it approaches
+        /// a beach, so a cliff dies into the sand instead of ending in a step.</para>
+        /// </summary>
+        public float ProfileAt(float along, float seaward)
+        {
             if (seaward <= 0f) return _landElevation;                    // inland: the fields
 
             if (_coastSectors == null || _coastSectors.Length == 0) return ShoreProfile(seaward);

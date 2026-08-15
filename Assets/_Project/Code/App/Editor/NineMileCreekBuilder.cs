@@ -957,6 +957,29 @@ namespace HiddenHarbours.App.Editor
             // pass earlier. The shelter belt's ground is inside the new hedgerow lattice anyway.
             NineMileCreekFieldPlanter.Plant(terrain);
 
+            // --- THE SHORE: the coast stands up, and the tide gets something to move --------------------
+            // ⭐ THE THIRD PASS OF THE TERRAIN ARC, and the one that makes the other two READ. #520 gave
+            // this region the displaced sea and #527 gave it painted ground, and between them they draw a
+            // coast that is correct and completely still: the water moves, the paint does not, and there
+            // is nothing on the beach for the eye to measure the tide against. This pass hangs the things
+            // that STAND — weed and marsh that rise and drown twice a day (ShorePlantTideView), boulders
+            // the falling water uncovers, and the cliff faces the coast plan has been declaring since the
+            // region was authored without anything ever drawing them.
+            //
+            // ⚠ AFTER the fields, deliberately. The two passes ABUT at the grass floor (4.2 m) rather than
+            // overlapping — NineMileCreekShore.ZoneAt stops the upland exactly where
+            // NineMileCreekFields.IsGrassGround starts the meadow — so the order cannot double-plant a
+            // band either way round. It runs second only so its log line is the last thing about the
+            // ground the owner reads.
+            //
+            // ⚠ EnsureBaked FIRST: the Cliff Face kit's pixels are gitignored by design (the rig is the
+            // committed source), so a fresh checkout has no faces and the coast would stand up untextured
+            // without a word. St Peters' builder makes the same call for the same reason.
+            HiddenHarbours.Tools.RigBaking.CliffBakeMenu.EnsureBaked();
+            int cliffChunks = NineMileCreekCliffWalls.Build(terrain);
+            var shore = NineMileCreekShorePainter.Paint(terrain);
+            shore.CliffChunks = cliffChunks;
+
             // --- SAVE & REGISTER ------------------------------------------------------------
             EditorSceneManager.SaveScene(scene, ScenePath);
             RegisterScene(ScenePath);
@@ -991,7 +1014,15 @@ namespace HiddenHarbours.App.Editor
                 "roads, trees standing mostly IN those hedges, and salt marsh on both ponds' shoulders — " +
                 "FIELDS, NOT FOREST, which is the mainland doc's first photograph and the one thing this " +
                 "region's hinterland must never stop being. The greybox TreeNN decor table is retired " +
-                "with it: one tree pipeline on this coast, the baked Acadian kit.");
+                "with it: one tree pipeline on this coast, the baked Acadian kit. ⭐ AND THE SHORE IS " +
+                $"DRESSED: {shore.ShorePlants:N0} tide-riding plants ({shore.ZoneSummary()}) across " +
+                $"{shore.TreatmentSummary()}, {shore.Rocks} boulders on the foreshore, and " +
+                $"{cliffChunks} chunks of standing cliff on the two rock sectors the coast plan declares " +
+                "— drawn where the PLAN says rock is, never invented. The four treatments are this " +
+                "coast's own: the barachois and the basin get the quiet mix, the crib breakwater's outer " +
+                "face and the two tall cliff sectors get the exposed one, and the marsh pool — the only " +
+                "standing FRESH water either region has — finally gets the cattail the kit has carried " +
+                "unplaced since it baked.");
             EditorUtility.DisplayDialog("Hidden Harbours",
                 "Nine Mile Creek rebuilt as the MAINLAND.\n\n" +
                 $"• {NineMileCreekSeaSize.x:0} × {NineMileCreekSeaSize.y:0} m — water east, fields west\n" +
@@ -1001,7 +1032,10 @@ namespace HiddenHarbours.App.Editor
                 "• The roads are laid: red dirt on the bar road, gravel on Wharf Road and the\n" +
                 "  through-road, a foot tread down the gully, concrete at the winch\n" +
                 "• The fields are dressed: meadow on the strips, hedgerows on the boundaries and\n" +
-                "  the gravel roads, scattered trees, salt marsh at both ponds\n\n" +
+                "  the gravel roads, scattered trees, salt marsh at both ponds\n" +
+                $"• The shore is dressed: {shore.ShorePlants:N0} plants that RIDE THE TIDE, " +
+                $"{shore.Rocks} boulders,\n" +
+                $"  and {cliffChunks} chunks of standing cliff on the ledge and the bluff\n\n" +
                 "STILL TO DO, and it is yours:\n" +
                 "1. Hidden Harbours ▸ Terrain Paint Tool → bake the seabed at 2 px/m, then save\n" +
                 "2. Press Play and walk it: the crossing, the bar road, Wharf Road, the wharf front\n" +
