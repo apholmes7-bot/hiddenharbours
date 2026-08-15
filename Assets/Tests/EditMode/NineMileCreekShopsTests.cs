@@ -288,9 +288,9 @@ namespace HiddenHarbours.Tests.EditMode
         /// <para>St Peters' post office vanished into its meadow because a room's floor sorts at
         /// <see cref="ShopCatalog.RoomSortingOrder"/> — BELOW the Y-sort band the grass tufts live in —
         /// so from outside the building was perfect and from inside it was a lawn. This region has no
-        /// scatter at all: its ground cover is ONE tiled quad at
-        /// <c>NineMileCreekBuilder.GroundSortingOrder</c>. That is the reason it is safe, so it is the
-        /// thing to check — not the absence of a file.</para>
+        /// scatter at all: its ground cover is ONE quad — the painted splat surface, or the greybox
+        /// stand-in at <c>NineMileCreekBuilder.GroundSortingOrder</c> behind it. That is the reason it is
+        /// safe, so it is the thing to check — not the absence of a file.</para>
         ///
         /// <para><b>⚠️ And the near miss worth knowing about:</b> the wharf deck's top row draws at
         /// <see cref="SortingBands.WharfDeckMax"/>, which is the SAME order as the interior floor. Two
