@@ -1,0 +1,90 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8e963cec94c290ca72be0cf932b826b, type: 3}
+  m_Name: SportSkiffMk2Iso
+  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.BoatDeckDef
+  Id: deck.sport_skiff_mk2_iso
+  SourceSidecar: docs/art/rigs/gameplay/sportSkiffMk2Iso.gameplay.json
+  SourceRig: docs/art/rigs/sportSkiffMk2IsoRig.js
+  DerivedFromRigSha256: fc0dcbc9bbcbafd8f3cf8943af50bf013b00460cd5ba6876f7c546812457c89c
+  LoaMeters: 7
+  Areas:
+  - Id: cockpit
+    Kind: 0
+    Outline:
+    - {x: -0.441, y: 1.54}
+    - {x: -0.549, y: 1.12}
+    - {x: -0.66, y: 0.7}
+    - {x: -0.765, y: 0.28}
+    - {x: -0.869, y: -0.14}
+    - {x: -0.956, y: -0.56}
+    - {x: -1.033, y: -0.98}
+    - {x: -1.053, y: -1.4}
+    - {x: -1.068, y: -1.82}
+    - {x: -1.065, y: -2.24}
+    - {x: -1.059, y: -2.66}
+    - {x: -1.04, y: -3.08}
+    - {x: -1.021, y: -3.5}
+    - {x: 1.021, y: -3.5}
+    - {x: 1.04, y: -3.08}
+    - {x: 1.059, y: -2.66}
+    - {x: 1.065, y: -2.24}
+    - {x: 1.068, y: -1.82}
+    - {x: 1.053, y: -1.4}
+    - {x: 1.033, y: -0.98}
+    - {x: 0.956, y: -0.56}
+    - {x: 0.869, y: -0.14}
+    - {x: 0.765, y: 0.28}
+    - {x: 0.66, y: 0.7}
+    - {x: 0.549, y: 1.12}
+    - {x: 0.441, y: 1.54}
+    HeightPlane: {x: 0, y: 0, z: 0.46}
+    HeightResidualMax: 0
+    Bounds: {x: -1.068, y: -3.5, z: 1.068, w: 1.54}
+  - Id: foredeck
+    Kind: 0
+    Outline:
+    - {x: -0.326, y: 3.177}
+    - {x: -0.516, y: 2.902}
+    - {x: -0.697, y: 2.629}
+    - {x: -0.768, y: 2.356}
+    - {x: -0.833, y: 2.085}
+    - {x: -0.892, y: 1.813}
+    - {x: -0.885, y: 1.54}
+    - {x: 0.885, y: 1.54}
+    - {x: 0.892, y: 1.813}
+    - {x: 0.833, y: 2.085}
+    - {x: 0.768, y: 2.356}
+    - {x: 0.697, y: 2.629}
+    - {x: 0.516, y: 2.902}
+    - {x: 0.326, y: 3.177}
+    HeightPlane: {x: 0, y: 0.2368028, z: 0.65261143}
+    HeightResidualMax: 0.06128776
+    Bounds: {x: -0.892, y: 1.54, z: 0.892, w: 3.177}
+  Cleats:
+  - Id: stern_port
+    Type: cleat
+    PositionMeters: {x: -0.94, y: -3, z: 0.965}
+  - Id: stern_star
+    Type: cleat
+    PositionMeters: {x: 0.94, y: -3, z: 0.965}
+  - Id: mid_port
+    Type: cleat
+    PositionMeters: {x: -1.06, y: 1.3, z: 1.197}
+  - Id: mid_star
+    Type: cleat
+    PositionMeters: {x: 1.06, y: 1.3, z: 1.197}
+  - Id: bow_1
+    Type: bow_eye
+    PositionMeters: {x: 0, y: 3.181, z: 1.019}
+  WalkCenter: {x: 0, y: -0.16149998}
+  WalkHalfExtents: {x: 1.068, y: 3.3385}

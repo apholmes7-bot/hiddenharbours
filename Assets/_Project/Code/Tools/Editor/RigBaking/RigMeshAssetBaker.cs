@@ -205,6 +205,65 @@ namespace HiddenHarbours.Tools.RigBaking
             }
         }
 
+        /// <summary>
+        /// <b>The five hulls the fleet pack's last three rigs make, and nothing else</b> — the
+        /// zodiac's two builds, the reshaped sport skiff, and the two battlewagons.
+        ///
+        /// <para>Its own entry point for exactly the reason the eighteen have one, and the argument
+        /// is now stronger: a fleet bake would rewrite all thirty-four defs, and Unity's
+        /// serialisation is not byte-deterministic, so the twenty-nine this PR does not touch would
+        /// come back with regenerated sub-asset fileIDs and reshuffled YAML for no change at all.
+        /// Baking exactly the new hulls is what keeps the diff readable.</para>
+        /// </summary>
+        public static IReadOnlyList<FleetHull> FleetPackHulls
+        {
+            get
+            {
+                var keys = new List<string> { "sportSkiffMk2" };
+                foreach (ZodiacBuild b in ZodiacFleet.All) keys.Add(b.Key);
+                foreach (SportFisherHull h in SportFisherFleet.All) keys.Add(h.Key);
+
+                var hulls = new List<FleetHull>(keys.Count);
+                foreach (string k in keys) hulls.Add(HullMeshFleet.Get(k));
+                return hulls;
+            }
+        }
+
+        [MenuItem(RigMeshGate.MenuRoot + "/Bake the 5 fleet-pack hull meshes", priority = 223)]
+        public static void BakeFleetPack() => BakeFleetInternal(FleetPackHulls);
+
+        [MenuItem(RigMeshGate.MenuRoot + "/Bake the 5 fleet-pack hull meshes", validate = true)]
+        static bool BakeFleetPackValidate() => RigMeshGate.Enabled;
+
+        /// <summary>Headless entry (-executeMethod) for the five.</summary>
+        public static void BakeFleetPackCli()
+        {
+            try
+            {
+                var hulls = FleetPackHulls;
+                if (hulls.Count != 5)
+                    throw new InvalidOperationException(
+                        $"Expected 5 fleet-pack hulls, found {hulls.Count}. This bake will not run " +
+                        "on a list it does not recognise — a short list here is a silently partial " +
+                        "bake, and the hull that went missing keeps whatever def it had.");
+
+                int failed = BakeFleetInternal(hulls);
+                if (failed > 0)
+                {
+                    Debug.LogError($"[rig-mesh] CLI fleet-pack bake FAILED: {failed} of " +
+                                   $"{hulls.Count} hull(s) did not bake.");
+                    EditorApplication.Exit(1);
+                    return;
+                }
+                Debug.Log($"[rig-mesh] CLI fleet-pack bake OK — {hulls.Count} hulls.");
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[rig-mesh] CLI fleet-pack bake FAILED: {e}");
+                EditorApplication.Exit(1);
+            }
+        }
+
         /// <summary>Bake one catalog hull by key, and wire whatever visuals it owns.</summary>
         public static HullMeshDef BakeOne(string key)
         {
@@ -410,37 +469,55 @@ namespace HiddenHarbours.Tools.RigBaking
                 : "{}";
             string view = $"Object.assign({{}},{opts},{{elev:{data.DefaultElev.ToString("R", Inv)}}})";
 
-            byte[] rgba = host.EvaluateBytes($"{globalName}.render(2,{view})");
+            // A registry rig draws from the HULL, not from the global — SportFisherIso2.render is
+            // undefined and only SportFisherIso2.byId('skybridge').render exists. Every other rig's
+            // scope IS the global, so this line changes nothing for them.
+            string scope = extraction != null ? extraction.ScopeOr(globalName) : globalName;
+
+            byte[] rgba = host.EvaluateBytes($"{scope}.render(2,{view})");
             RigAzimuthProbe.Result pixel = RigAzimuthProbe.MeasureFromQuarterTurn(rgba, data.W, data.H);
             Debug.Log($"[rig-mesh] {globalName} azimuth probe (pixels):\n{pixel.Report}");
 
-            if (!HasAbeamPair(host, globalName, view))
-            {
-                Debug.Log($"[rig-mesh] {globalName}: no admissible abeam nav-mount pair to " +
-                          "cross-check against, so the pixel taper stands alone. That is the path " +
-                          "every hull baked before 2026-08-15 took.");
-                return pixel.Convention;
-            }
-
-            double bearing = GroundBearingOfAbeamPair(host, globalName, view, data.DefaultElev);
-            AzimuthConvention analytic = bearing > 0 ? AzimuthConvention.Clockwise
-                                                    : AzimuthConvention.CounterClockwise;
-
             double taper = Math.Max(pixel.BowBeam, pixel.SternBeam) /
                            Math.Max(1e-6, Math.Min(pixel.BowBeam, pixel.SternBeam));
-            string margin = $"port→star ground bearing {bearing:F2}° at a quarter turn; pixel taper " +
-                            $"ratio {taper:F3}";
+
+            AzimuthConvention analytic;
+            string margin;
+
+            if (HasAbeamPair(host, scope, view))
+            {
+                double bearing = GroundBearingOfAbeamPair(host, scope, view, data.DefaultElev);
+                analytic = bearing > 0 ? AzimuthConvention.Clockwise
+                                       : AzimuthConvention.CounterClockwise;
+                margin = $"port→star ground bearing {bearing:F2}° at a quarter turn; pixel taper " +
+                         $"ratio {taper:F3}";
+            }
+            else if (HasCentrelineForeAftPair(host, scope, view))
+            {
+                double dx = BowScreenXOfForeAftPair(host, scope, view);
+                analytic = dx > 0 ? AzimuthConvention.Clockwise
+                                  : AzimuthConvention.CounterClockwise;
+                margin = $"stern-eye→painter screen dx {dx:F1} px at a quarter turn; pixel taper " +
+                         $"ratio {taper:F3}";
+            }
+            else
+            {
+                Debug.Log($"[rig-mesh] {globalName}: no admissible analytic pair — neither abeam nav " +
+                          "mounts nor a centreline fore-and-aft pair — so the pixel taper stands " +
+                          "alone. That is the path every hull baked before 2026-08-15 took.");
+                return pixel.Convention;
+            }
 
             if (analytic == pixel.Convention)
             {
                 Debug.Log($"[rig-mesh] {globalName} azimuth CONFIRMED {analytic} by the rig's own " +
-                          $"abeam anchors ({margin}).");
+                          $"anchors ({margin}).");
                 return analytic;
             }
 
             Debug.LogError(
                 $"[rig-mesh] {globalName}: THE TWO AZIMUTH ORACLES DISAGREE — pixels say " +
-                $"{pixel.Convention}, the rig's own abeam anchors say {analytic} ({margin}).\n" +
+                $"{pixel.Convention}, the rig's own anchors say {analytic} ({margin}).\n" +
                 "Taking the ANALYTIC answer, and the reason is that the two are not equally strong. " +
                 "The abeam bearing is a pure ±x separation rotated by the rig's own camera and read " +
                 "on the UN-SQUASHED ground plane, so its answer is a SIGN and it lands on ±90.00° " +
@@ -470,17 +547,20 @@ namespace HiddenHarbours.Tools.RigBaking
         /// and nothing has mixed the axes yet: an abeam pair at equal height projects to a
         /// horizontal segment, so a non-zero screen dy means the two mounts are not abeam.</para>
         /// </summary>
-        static bool HasAbeamPair(IRigScriptHost host, string globalName, string view)
+        /// <param name="scope">The object that publishes <c>navMounts</c> — the global for every
+        /// one-hull rig, the per-hull object for a registry rig (see
+        /// <see cref="RigHullExtraction.HullScope"/>).</param>
+        static bool HasAbeamPair(IRigScriptHost host, string scope, string view)
         {
-            if (!host.EvaluateBool($"typeof {globalName}.navMounts === 'function'")) return false;
+            if (!host.EvaluateBool($"typeof {scope}.navMounts === 'function'")) return false;
             if (!host.EvaluateBool(
                     $"(function(m){{return !!m && !!m.port && !!m.star;}})" +
-                    $"({globalName}.navMounts(0,{view}))"))
+                    $"({scope}.navMounts(0,{view}))"))
                 return false;
 
             return host.EvaluateBool(
                 $"(function(m){{return Math.abs(m.star.y-m.port.y) < 1e-6 && " +
-                $"Math.abs(m.star.x-m.port.x) > 1e-6;}})({globalName}.navMounts(0,{view}))");
+                $"Math.abs(m.star.x-m.port.x) > 1e-6;}})({scope}.navMounts(0,{view}))");
         }
 
         /// <summary>
@@ -498,14 +578,78 @@ namespace HiddenHarbours.Tools.RigBaking
         /// seven shipped hulls that do, plus all eighteen lobster variants — returns exactly
         /// <b>−90.00°</b>.</para>
         /// </summary>
-        static double GroundBearingOfAbeamPair(IRigScriptHost host, string globalName, string view,
+        static double GroundBearingOfAbeamPair(IRigScriptHost host, string scope, string view,
                                                double elevationDeg)
         {
             string sin = Math.Sin(elevationDeg * Math.PI / 180.0).ToString("R", Inv);
             return host.EvaluateNumber(
                 $"(function(m){{return Math.atan2((m.star.y-m.port.y)/{sin}," +
-                $"m.star.x-m.port.x)*180/Math.PI;}})({globalName}.navMounts(2,{view}))");
+                $"m.star.x-m.port.x)*180/Math.PI;}})({scope}.navMounts(2,{view}))");
         }
+
+        /// <summary>
+        /// True when this rig publishes a bow eye and a stern eye that are a genuine CENTRELINE
+        /// FORE-AND-AFT pair — the same x, different y — which is what makes the segment between
+        /// them the hull's own fore-and-aft axis.
+        ///
+        /// <para><b>Why a second analytic arm at all.</b> The abeam pair is the stronger oracle and
+        /// stays first, but only seven of the eleven shipped hulls publish <c>navMounts</c> and NONE
+        /// of the three families this bake adds does except the sport fisher. Without this, the
+        /// zodiac's two builds and the sport skiff Mk2 would rest on the pixel taper alone — the
+        /// heuristic that had all eighteen lobster variants mirrored on a taper ratio of 1.040. A
+        /// rig that says where its bow eye is has already answered the question; the answer just
+        /// was not being asked for.</para>
+        ///
+        /// <para><b>Admissibility is CHECKED, and on this fleet it does real work.</b> Measured
+        /// 2026-08-15 across every hull rig in the repo: the dory (9.60 px) and the punt (13.44 px)
+        /// publish <c>painter</c>/<c>sternEye</c> whose screen x's DIFFER at heading 0 — their bow
+        /// eyes are not on the centreline — and both are correctly rejected here and keep the pure
+        /// pixel path they were baked from. This is the same trap <see cref="RigAzimuthProbe"/>'s own
+        /// note records for the console skiff's off-centre tubs (−30.72 px), which one investigation
+        /// has already been misled by.</para>
+        ///
+        /// <para><b>Nothing already committed moves.</b> Of the eleven shipped hulls exactly one —
+        /// the console skiff — publishes an ADMISSIBLE pair and is not already covered by the abeam
+        /// arm, and on her this says CounterClockwise, which is what
+        /// <c>ConsoleIsoHullMesh.asset</c> already carries. The other ten either have no such pair or
+        /// are rejected by the check above.</para>
+        ///
+        /// <para>Tested in SCREEN space at heading 0 for the same reason the abeam check is: the
+        /// rig's own +x is screen +x there and nothing has mixed the axes yet, so a centreline pair
+        /// projects to a VERTICAL segment — zero screen dx — and a non-zero dx means one of the two
+        /// is off the centreline.</para>
+        /// </summary>
+        static bool HasCentrelineForeAftPair(IRigScriptHost host, string scope, string view)
+        {
+            if (!host.EvaluateBool($"typeof {scope}.painter === 'function' && " +
+                                   $"typeof {scope}.sternEye === 'function'"))
+                return false;
+
+            return host.EvaluateBool(
+                $"(function(p,s){{return !!p && !!s && Math.abs(p.x-s.x) < 1e-6 && " +
+                $"Math.abs(p.y-s.y) > 1e-6;}})({scope}.painter(0,{view}),{scope}.sternEye(0,{view}))");
+        }
+
+        /// <summary>
+        /// The bow's SIGNED SCREEN X at a quarter turn, taken from the rig's own two eyes rather than
+        /// from the silhouette: <c>painter.x − sternEye.x</c>, i.e. stern-to-bow.
+        ///
+        /// <para><b>No un-squash, and that is not an omission.</b> The abeam arm has to un-squash
+        /// because it reads an ANGLE, and the ¾ projection scales screen depth by
+        /// <c>sin(elevation)</c>. This arm reads a SIGN on the horizontal axis only — the axis the
+        /// projection leaves alone — and <see cref="RigAzimuthProbe"/>'s own step 4 is the same
+        /// reading: "a quarter turn clockwise from north points the bow EAST (screen +x)". Dividing
+        /// the y term by anything positive cannot change the sign of the x term, so the un-squash
+        /// would be arithmetic with no effect on the answer.</para>
+        ///
+        /// <para>Measured 2026-08-15, and the margins are not marginal: zodiac hurricane −220.0 px,
+        /// zodiac frc −201.1 px, sport skiff Mk2 −213.2 px, console skiff −219.1 px. All bow-WEST,
+        /// all CounterClockwise, on cells 244–272 px wide.</para>
+        /// </summary>
+        static double BowScreenXOfForeAftPair(IRigScriptHost host, string scope, string view) =>
+            host.EvaluateNumber(
+                $"(function(p,s){{return p.x-s.x;}})" +
+                $"({scope}.painter(2,{view}),{scope}.sternEye(2,{view}))");
 
         static readonly System.Globalization.CultureInfo Inv =
             System.Globalization.CultureInfo.InvariantCulture;
@@ -534,14 +678,18 @@ namespace HiddenHarbours.Tools.RigBaking
             AzimuthConvention convention = MeasureAzimuth(host, globalName, data, extraction);
 
             // --- the rock amplitudes, off the exported ROCK block (optional; 0 = no rock) ----------
+            // Read from the HULL's scope for a registry rig: a 16.2 m boat and a 27.4 m boat do not
+            // share a sea state, and SportFisherIso2.ROCK does not exist. Identical to the global for
+            // every other rig, so no committed amplitude moves.
+            string rockScope = extraction != null ? extraction.ScopeOr(globalName) : globalName;
             float rollA = 0f, pitchA = 0f, heaveA = 0f;
             bool hasRock = host.EvaluateBool(
-                $"typeof {globalName}.ROCK === 'object' && {globalName}.ROCK !== null");
+                $"typeof {rockScope}.ROCK === 'object' && {rockScope}.ROCK !== null");
             if (hasRock)
             {
-                rollA = (float)host.EvaluateNumber($"{globalName}.ROCK.rollA || 0");
-                pitchA = (float)host.EvaluateNumber($"{globalName}.ROCK.pitchA || 0");
-                heaveA = (float)host.EvaluateNumber($"{globalName}.ROCK.heaveA || 0");
+                rollA = (float)host.EvaluateNumber($"{rockScope}.ROCK.rollA || 0");
+                pitchA = (float)host.EvaluateNumber($"{rockScope}.ROCK.pitchA || 0");
+                heaveA = (float)host.EvaluateNumber($"{rockScope}.ROCK.heaveA || 0");
             }
             else
             {

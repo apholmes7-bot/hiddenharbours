@@ -508,18 +508,15 @@ namespace HiddenHarbours.App.Editor
             water.transform.position = new Vector3(NineMileCreekSeaCenter.x, NineMileCreekSeaCenter.y, 0f);
             var wsr = water.AddComponent<SpriteRenderer>();
             wsr.sortingOrder = -5;
-            if (seaTile != null)
-            {
-                wsr.sprite = seaTile;
-                wsr.drawMode = SpriteDrawMode.Tiled;
-                wsr.size = NineMileCreekSeaSize;
-                water.transform.localScale = Vector3.one;
-            }
-            else
-            {
-                wsr.sprite = waterSprite; wsr.color = new Color(0.12f, 0.22f, 0.30f); // deep harbour
-                water.transform.localScale = new Vector3(NineMileCreekSeaSize.x, NineMileCreekSeaSize.y, 1f);
-            }
+            if (seaTile != null) wsr.sprite = seaTile;
+            else                 { wsr.sprite = waterSprite; wsr.color = new Color(0.12f, 0.22f, 0.30f); } // deep harbour
+            // ⭐ ONE QUAD over the bay, never a tiling of it. This used to be a Tiled draw sized to the
+            // region, which at a 2 m tile asked for 106,400 tiles — over Unity's limit, refused, and logged
+            // on every build of the region. The tile was never drawn anyway: the water shader samples no
+            // _MainTex and reads only world XY. WaterSceneTemplate.ConfigureSeaPlane carries the whole
+            // argument, and derives the scale from the sprite so the no-material fallback covers the bay
+            // instead of a quarter of it.
+            WaterSceneTemplate.ConfigureSeaPlane(wsr, NineMileCreekSeaSize);
             var waterMat = AssetDatabase.LoadAssetAtPath<Material>(ArtWaterMat);
             if (waterMat != null)
             {
