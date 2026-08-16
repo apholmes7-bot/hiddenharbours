@@ -60,8 +60,11 @@ namespace HiddenHarbours.App.Editor
         const string ArtWaterMat = "Assets/_Project/Art/Materials/Water.mat";   // the layered SIM-driven water shader (ADR 0010)
         // (The ADR 0017 weather-preset paths that stood here are gone with the local water wiring — they
         // live once now, in WaterSceneTemplate, which is what loads them for both land regions.)
-        const string ArtGrass    = "Assets/_Project/Art/Tilesets/Grass.png";
-        const string ArtSand     = "Assets/_Project/Art/Tilesets/Sand.png";
+        // (ArtGrass and ArtSand are RETIRED — the 1 m grass tile and the sand strip that the greybox
+        // ground was tiled from. Nothing reads them now: the ground is painted (ADR 0028) and its
+        // stand-in is a flat scaled quad, because tiling a 1 m sprite over 760 × 560 m asks for 425,600
+        // tiles and gets a refusal. See MakeGreyboxGround. The PNGs stay on disk — Tilesets/Tiles/Grass
+        // .asset, Sand.asset and the HiddenHarboursTerrain palette are built on them.)
         const string ArtTerrainSplatMat = "Assets/_Project/Art/Materials/TerrainSplat.mat"; // the splat-shaded ground (ADR 0028)
         const string DataTerrain        = "Assets/_Project/Data/Terrain";
         const string ArtDialoguePanel = "Assets/_Project/Art/UI/DialoguePanel.png";   // dialogue panel art
@@ -111,8 +114,24 @@ namespace HiddenHarbours.App.Editor
 
         /// <summary>Where the greybox ground plane sits in the stack: below the sea, so the water shader's
         /// wet-dry clip is what decides whether you see ground or sea at a given tide. Named off the
-        /// partition rather than typed, so a re-base of the bands moves it (ADR 0032).</summary>
-        public const int GroundSortingOrder = SortingBands.Sea - 2;
+        /// partition rather than typed, so a re-base of the bands moves it (ADR 0032).
+        ///
+        /// <para>⚠ <b>RE-BASED from <c>Sea - 2</c> (−7) to the rung it always claimed to be on.</b> The
+        /// greybox ground STANDS IN FOR THE PAINTED GROUND, which draws at
+        /// <see cref="HiddenHarbours.Art.TerrainSplatSurface.DefaultSortingOrder"/> (−21) — so everything
+        /// laid ON the ground belongs above it. At −7 it was above the road kit's two layers (−17 / −16),
+        /// above a submerged shore plant (−8), and eleven rungs clear of the band it replaces: an opaque
+        /// green rectangle over Wharf Road and the bar road. It never actually drew that over them only
+        /// because the tiling it was built from was refused by the engine (see
+        /// <see cref="MakeGreyboxGround"/>) — so fixing the draw without fixing this would have TURNED ON
+        /// a defect the builder's own comment already flagged and left.</para>
+        ///
+        /// <para><see cref="SortingBands.PaintedSeabedMax"/> is the tightest value that satisfies both
+        /// standing rules — under the sea, above the painted seabed (<c>NineMileCreekWharfTests</c>
+        /// asserts each) — and it is the first rung under the roads. "Above the painted seabed, which is
+        /// the rung below it" is what that test's own message has always said this number meant; now it
+        /// says it exactly rather than approximately.</para></summary>
+        public const int GroundSortingOrder = SortingBands.PaintedSeabedMax;
 
         /// <summary>
         /// A passage trigger's band, in metres — wide ACROSS the way you are travelling and deep enough
@@ -566,12 +585,15 @@ namespace HiddenHarbours.App.Editor
             //
             // ⭐ NO LONGER GREYBOX. The paragraph above described a flat green rectangle standing in until
             // the ground was painted; this is the painted ground (ADR 0028), the same splat-shaded surface
-            // St Peters has. The tiled fallback below it stays for the one case the splat cannot cover —
+            // St Peters has. The greybox fallback below it stays for the one case the splat cannot cover —
             // see BuildSplatGround's return.
+            //
+            // ⚠ It is a SCALED QUAD, not a tiling. It used to be a Tiled draw of the 1 m Grass tile sized
+            // to the region, which over 760 × 560 m asked for 425,600 tiles and was refused by the engine
+            // — see MakeGreyboxGround for the whole argument.
             if (!BuildSplatGround(nineMileCreek))
-                MakeTiledGround("Ground", LoadSpriteAny(ArtGrass), NineMileCreekSeaCenter,
-                                NineMileCreekSeaSize, GroundSortingOrder, waterSprite,
-                                new Color(0.40f, 0.46f, 0.40f));
+                MakeGreyboxGround("Ground", waterSprite, NineMileCreekSeaCenter, NineMileCreekSeaSize,
+                                  GroundSortingOrder, new Color(0.40f, 0.46f, 0.40f));
 
             // --- THE ROADS, ON THE GROUND THAT WAS JUST LAID -------------------------------------------
             // ⭐ THE ROUTES HAVE BEEN PUBLISHED SINCE PHASE A-1 AND NOTHING DREW THEM. NineMileCreekMainland
@@ -586,9 +608,12 @@ namespace HiddenHarbours.App.Editor
             // the painted ground is at -21, the road's two layers at -17/-16, the sea at -5. A lane that
             // floods is covered by depth-graded water, exactly as painted ground is.
             //
-            // ⚠ The greybox fallback above sits at GroundSortingOrder (-7) and would cover the roads — but
-            // that path only fires when the splat material or the region extent is missing, which is a
-            // region with larger problems than an invisible lane.
+            // ⭐ The greybox fallback above no longer covers these. It sat at GroundSortingOrder = Sea - 2
+            // (-7), eleven rungs above the road layers, and the note here used to excuse that on the
+            // grounds that the path "only fires when the splat material or the region extent is missing".
+            // That was an argument for the defect being rare, not for it being acceptable — and the same
+            // pass that made the fallback actually draw would have made it actually cover the roads. The
+            // constant is now SortingBands.PaintedSeabedMax (-18), the first rung under the road kit.
             NineMileCreekRoadPainter.Paint(terrain);
 
             // --- THE WORKING QUAY (the wharf tile kit, replacing the flat WharfDeck.png rectangle) ----
@@ -1473,15 +1498,75 @@ namespace HiddenHarbours.App.Editor
             return (u >= 0 && int.TryParse(spriteName.Substring(u + 1), out int n)) ? n : 0;
         }
 
-        static void MakeTiledGround(string name, Sprite sprite, Vector2 center, Vector2 size, int order,
-                                    Sprite fallback, Color fallbackColor)
+        /// <summary>
+        /// ⭐ <b>THE GREYBOX GROUND IS ONE SCALED QUAD, NEVER A TILING OF THE REGION.</b> A flat
+        /// <paramref name="color"/> rectangle covering <paramref name="size"/>, standing in for the
+        /// painted ground on the one checkout <see cref="BuildSplatGround"/> cannot serve.
+        ///
+        /// <para><b>What this replaced.</b> It was a <c>SpriteDrawMode.Tiled</c> draw of
+        /// <c>Tilesets/Grass.png</c> — 32 px at 32 px/unit, so a <b>1 × 1 m</b> tile — sized to the region
+        /// rect. Over 760 × 560 m that is <b>425,600 tiles = 1,702,400 vertices</b>, and Unity's tiling
+        /// generator refuses past a 16-bit index buffer:
+        /// <code>
+        ///   Cannot generate 9 slice most likely because the size is too big.
+        /// </code>
+        /// So the renderer drew NOTHING. The fallback for a checkout that cannot paint its ground has
+        /// never once put ground on the screen at this region's size.</para>
+        ///
+        /// <para><b>Why it broke without anyone changing it.</b> The helper was right when it was written:
+        /// it drew a 24 × 40 m town strip beside the quay — 960 tiles, comfortably inside the ceiling. It
+        /// became impossible the day the ground was re-pointed at the WHOLE region ("ONE ground plane over
+        /// the WHOLE region", at the call site above), which multiplied the tile count by 443 without
+        /// touching this line. Same failure the sea plane hit, one rect at a time.</para>
+        ///
+        /// <para><b>Why the answer is a flat quad and not a coarser tiling.</b> The three ways to keep the
+        /// grass texture all cost more than the path is worth: a pre-tiled chunk sprite is a new art asset
+        /// for a broken-checkout stand-in; a grid of sub-ceiling renderers is real code on a path that
+        /// fires when the project is already unbuildable; and scaling the tile up (8 m/tile would fit)
+        /// picks a magic number and draws 32 texels across 8 m. This path already fell back to a flat
+        /// coloured square whenever Grass.png was not imported — which, since <c>*.png</c> is LFS and
+        /// <c>*.mat</c> is not, is the LIKELIER of the two broken checkouts anyway. Making that the only
+        /// behaviour is a simplification of what shipped, not a new look: greybox that admits it is
+        /// greybox, correct at any region size, with no ceiling to stay under.</para>
+        ///
+        /// <para><b>⚠ The scale is DERIVED from the sprite, never assumed.</b> The old fallback branch
+        /// hard-coded <c>size * 2f</c> — right only because Square.png happens to be 16 px at 32 px/unit,
+        /// i.e. 0.5 m. Reading <c>sprite.bounds.size</c> is what keeps this correct if that asset is ever
+        /// re-cut, and it is the same lesson <c>WaterSceneTemplate.ConfigureSeaPlane</c> learned from the
+        /// four sea planes that scaled a 0.5 m square as though it were 1 m and covered a QUARTER of their
+        /// regions.</para>
+        ///
+        /// <para>Returns the object so a test can measure it; <c>NineMileCreekGreyboxGroundTests</c> holds
+        /// the rule.</para>
+        /// </summary>
+        public static GameObject MakeGreyboxGround(string name, Sprite square, Vector2 center, Vector2 size,
+                                                   int order, Color color)
         {
             var go = new GameObject(name);
             go.transform.position = new Vector3(center.x, center.y, 0f);
             var sr = go.AddComponent<SpriteRenderer>();
             sr.sortingOrder = order;
-            if (sprite != null) { sr.sprite = sprite; sr.drawMode = SpriteDrawMode.Tiled; sr.size = size; }
-            else { sr.sprite = fallback; sr.color = fallbackColor; go.transform.localScale = new Vector3(size.x * 2f, size.y * 2f, 1f); }
+
+            // ⚠️ An explicit `== null`, never `??`: `??` bypasses UnityEngine.Object's equality overload,
+            // so a destroyed-or-missing sprite would sail past it and throw at draw time instead.
+            if (square == null)
+            {
+                Debug.LogWarning("[NineMileCreekBuilder] no square sprite for the greybox ground — the " +
+                                 "region draws no ground at all. This is the fallback's own fallback; the " +
+                                 "thing to fix is whatever stopped " + ArtTerrainSplatMat + " loading.");
+                return go;
+            }
+
+            sr.sprite = square;
+            sr.color = color;
+            sr.drawMode = SpriteDrawMode.Simple;   // ⚠ NOT Tiled — see the summary above
+
+            Vector3 atUnitScale = square.bounds.size;   // metres this sprite draws before any scaling
+            go.transform.localScale = new Vector3(
+                atUnitScale.x > 1e-4f ? size.x / atUnitScale.x : 1f,
+                atUnitScale.y > 1e-4f ? size.y / atUnitScale.y : 1f,
+                1f);
+            return go;
         }
 
         // (ShorelinePoints / MakeShoreline are RETIRED. They traced a hand-made land/water fence at x = -4
