@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
+using HiddenHarbours.App.Editor;
 using HiddenHarbours.Core;
 using HiddenHarbours.Boats;
 
@@ -164,46 +166,64 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.AreSame(a, boat.Hull);
         }
 
+        /// <summary>
+        /// ⭐ THE ST PETERS CYCLE, WALKED END TO END — every rung lands on the right boat and all four
+        /// things move together at each one.
+        ///
+        /// <para><b>This test used to assert SEVEN, and the real cycle had been fifteen for months.</b> It
+        /// said so in a comment, too: "the two punts took it from 5 to 7, and an off-by-one here is a rung
+        /// the owner cycles into and finds empty". The count was hand-copied from the builder, the builder
+        /// grew, and the copy did not — so the one number the test existed to protect had quietly become
+        /// folklore, and it passed the whole time because it was checking a seven-long list against itself.
+        /// The fix is not a better number. It is not having a number: the roster is now built FROM
+        /// <see cref="StPetersBuilder.DevPickerRosterFiles"/>, the same array the builder loads its hulls
+        /// from, so adding a rung there grows this guard automatically and no count can drift again.</para>
+        ///
+        /// <para>Hulls are still mirrored IN MEMORY rather than loaded off disk — that is deliberate and
+        /// unchanged. <c>Data/Boats/Punt.asset</c> is builder-generated and has never been committed, so a
+        /// clean clone has no such file; and what this file tests is the CYCLE, which is the picker's job.
+        /// Whether the assets themselves are in step is <c>PilotableFleetContentTests</c>' job. Each mirror
+        /// hull is given a distinct hold, camera framing and mass so a swap that half-lands shows up as a
+        /// mismatch rather than passing by coincidence.</para>
+        /// </summary>
         [Test]
-        public void TheStPetersCycle_IsSevenRungs_AndWrapsOnTheSeventh()
+        public void TheStPetersCycle_IsTheBuildersOwnRoster_AndWrapsOnTheLastRung()
         {
-            // St Peters' real roster shape, in its real order: dory → fishing boat → punt → punt (upgraded)
-            // → console → sport → sport twin → wrap. Mirrored in memory rather than loaded off disk, because
-            // Data/Boats/Punt.asset is builder-generated and has never been committed (a clean clone has no
-            // such file) — so this asserts the CYCLE, which is the picker's job, and leaves the assets to the
-            // content tests. The COUNT is the point: the two punts took it from 5 to 7, and an off-by-one
-            // here is a rung the owner cycles into and finds empty.
-            var roster = new[]
-            {
-                MakeHull("boat.dory", MakeVisual("visual.dory_iso"), 6, 14f, 400f),
-                MakeHull("boat.fishing_skiff", MakeVisual("visual.fishing_boat"), 6, 13.5f, 450f),
-                MakeHull("boat.punt", MakeVisual("visual.punt_iso_basic"), 14, 17f, 700f),
-                MakeHull("boat.punt_upgraded", MakeVisual("visual.punt_iso_upgraded"), 14, 17f, 725f),
-                MakeHull("boat.console_skiff", MakeVisual("visual.console_skiff"), 20, 18.5f, 1200f),
-                MakeHull("boat.sport_skiff", MakeVisual("visual.sport_skiff_single"), 8, 19f, 950f),
-                MakeHull("boat.sport_skiff_twin", MakeVisual("visual.sport_skiff_twin"), 8, 19.5f, 1000f),
-            };
+            var files = StPetersBuilder.DevPickerRosterFiles;
+            Assert.IsNotEmpty(files, "the builder names no hulls at all — there would be no picker");
+
+            var roster = files
+                .Select((f, i) => MakeHull($"boat.{f}", MakeVisual($"visual.{f}"),
+                                           hold: 6 + i, camera: 14f + i, massKg: 400f + 25f * i))
+                .ToArray();
             var (picker, boat, hold, sr, go) = MakeRig(roster, roster[0]);
 
-            Assert.AreEqual(7, picker.RosterCount, "the punt and her upgrade take the cycle from 5 to 7");
-            Assert.AreSame(roster[0], picker.Current, "…starting on the dory the boat is already wearing");
+            Assert.AreEqual(files.Length, picker.RosterCount,
+                "the picker cycles exactly the hulls the builder names");
+            Assert.AreSame(roster[0], picker.Current,
+                "…starting on the hull the boat is already wearing, so the FIRST press moves on rather " +
+                "than re-applying it");
 
-            // A full lap: every rung lands on the RIGHT boat, and all four things move together at each one.
+            // A full lap: every rung lands on the RIGHT boat, and feel, hold, camera and picture all agree
+            // at each one (the #208 guard, applied to every rung rather than a sampled few).
             for (int step = 1; step <= roster.Length; step++)
             {
                 picker.Next();
                 var expected = roster[step % roster.Length];
-                Assert.AreSame(expected, picker.Current, $"step {step} of the cycle");
+                Assert.AreSame(expected, picker.Current,
+                    $"step {step} of {roster.Length} — the cycle should be on {files[step % files.Length]}");
                 AssertShowing(expected, boat, hold, sr, go);
             }
 
-            Assert.AreSame(roster[0], boat.Hull, "the seventh press wraps back to the dory");
+            Assert.AreSame(roster[0], boat.Hull,
+                $"the {roster.Length}th press wraps back to the first rung ({files[0]})");
 
-            // …and the two punts really are distinct rungs, not one hull shown twice — the mistake this
-            // shape invites, since they share a hull, a length and a hold and differ only in the engine.
-            Assert.AreNotSame(roster[2], roster[3]);
-            Assert.AreNotEqual(roster[2].Id, roster[3].Id,
-                "boat.punt and boat.punt_upgraded are separate ids — the cycle must stop at both");
+            // Every rung is its OWN boat. The mistake this shape invites is a hull listed twice — the two
+            // punts share a hull, a length and a hold and differ only in the engine, and the lobster
+            // variants differ from each other by as little as a roof — so a duplicated entry would look
+            // entirely reasonable in the builder and cost the owner a press of F for nothing.
+            CollectionAssert.AllItemsAreUnique(files,
+                "a hull named twice in the roster is one boat on two rungs: " + string.Join(", ", files));
         }
 
         [Test]

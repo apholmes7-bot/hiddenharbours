@@ -58,20 +58,47 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         /// <summary>
-        /// The COMMITTED hulls the picker cycles, in cycle order.
+        /// The COMMITTED hulls the picker cycles, and how many SPRITE facings each one's artwork is drawn
+        /// for. <b>ZERO means MESH-ONLY and is a real expectation, not a missing entry</b> — see below.
         ///
-        /// <para><b>"Punt" is absent on purpose, and it is not an oversight.</b> The picker's real roster is
-        /// eight — the basic punt sits between FishingSkiff and PuntUpgraded — but <c>Data/Boats/Punt.asset</c>
+        /// <para><b>One table, not two lists.</b> The file names and the facing counts used to be separate
+        /// members, which is a shape that invites adding a hull to one and not the other. Pairing them makes
+        /// the mesh hulls expressible (facings 0) instead of simply absent, which is what they were: the
+        /// side dragger and the four hulls above her have been in the picker since ADR 0022 phase 5/6 and
+        /// were never in this file at all, because there was no way to say "this one has no compass" without
+        /// a second parallel list. Now there is, so the fleet this file walks is the fleet the owner sails.</para>
+        ///
+        /// <para><b>"Punt" is absent on purpose, and it is not an oversight.</b> The basic punt sits between
+        /// FishingSkiff and PuntUpgraded in the real roster — but <c>Data/Boats/Punt.asset</c>
         /// is BUILDER-GENERATED AND HAS NEVER BEEN COMMITTED: it exists only in a checkout where someone has
         /// run the cove builder. Listing her here would fail on a clean clone for a reason with nothing to do
         /// with the code under test. Every existing test in this repo mirrors the punt in memory for the same
         /// reason. What CAN be asserted about her from disk lives behind <see cref="OptionalHull"/>.</para>
         /// </summary>
-        static string[] FleetFiles => new[]
+        static readonly (string File, int Facings)[] Fleet =
         {
-            "Dory", "FishingSkiff", "PuntUpgraded", "ConsoleSkiff", "SportSkiff", "SportSkiffTwin",
-            "CapeIslander", "LobsterBoat",
+            // --- drawn as a SPRITE COMPASS: Facings is how many headings her artwork is cut for ---
+            ("Dory", 8), ("FishingSkiff", 8), ("PuntUpgraded", 8), ("ConsoleSkiff", 8),
+            ("SportSkiff", 8), ("SportSkiffTwin", 8), ("CapeIslander", 8),
+            ("LobsterBoat", 32),   // baked in-engine, 11.25° steps — see LobsterBoatFacingTests
+
+            // --- MESH-ONLY (ADR 0022): zero sheets, so zero facings, and that is the ASSERTION ---
+            // These hulls are drawn by a real-time mesh because a sheet set was never possible for them
+            // (the coastal packet's would have been 1.8 GiB). They have no sprite half at all, which is
+            // why the V key reports "this hull has only one look" on them.
+            ("SideDragger", 0), ("SternTrawler", 0), ("SternTrawlerMk2", 0),
+            ("CoastalPacket", 0), ("Tanker", 0),
+            // …and the #541/#543 pack, given their gameplay half by the 2026-08-15 ruling. Their own
+            // derivations and their speed ladder live in FleetHullDefLadderTests; what they are doing
+            // HERE is being part of the one fleet this file walks, so a stale re-slice or a broken
+            // reference on any of them fails in the same place as everyone else's.
+            ("SportSkiffMk2", 0), ("ZodiacFrc", 0), ("ZodiacHurricane", 0),
+            ("SportFisherConvertible", 0), ("SportFisherSkybridge", 0),
+            ("LobsterInshoreOpenNorthumberland", 0), ("LobsterStandardHardtopNorthumberland", 0),
+            ("LobsterOffshoreOpenNorthumberland", 0),
         };
+
+        static string[] FleetFiles => Fleet.Select(f => f.File).ToArray();
 
         /// <summary>
         /// How many facings each hull's artwork is actually drawn for — <b>an ART FACT PER HULL, which is why
@@ -88,13 +115,13 @@ namespace HiddenHarbours.Tests.EditMode
         /// <para>Kept as an explicit per-hull expectation rather than dropped, because the count is exactly
         /// the kind of thing a stale re-slice silently quarters: a hull falling from 32 facings to 8 still
         /// renders, still passes every other check in this file, and just quietly turns coarse.</para>
+        ///
+        /// <para><b>Zero is the mesh hulls' entry, and it is asserted as hard as any other count.</b> A
+        /// mesh hull growing facings would mean somebody had baked sheets for a hull whose whole reason for
+        /// existing is that sheets were impossible for her — so the assertion runs in both directions.</para>
         /// </summary>
-        static readonly Dictionary<string, int> ExpectedFacings = new Dictionary<string, int>
-        {
-            { "Dory", 8 }, { "FishingSkiff", 8 }, { "PuntUpgraded", 8 }, { "ConsoleSkiff", 8 },
-            { "SportSkiff", 8 }, { "SportSkiffTwin", 8 }, { "CapeIslander", 8 },
-            { "LobsterBoat", 32 },   // baked in-engine, 11.25° steps — see LobsterBoatFacingTests
-        };
+        static readonly Dictionary<string, int> ExpectedFacings =
+            Fleet.ToDictionary(f => f.File, f => f.Facings);
 
         /// <summary>
         /// A hull that may legitimately not be on disk (the basic Punt — see <see cref="FleetFiles"/>).
@@ -118,6 +145,22 @@ namespace HiddenHarbours.Tests.EditMode
                     $"{file}: no Visual — this hull has no directional skin, and its fallback Sprite is " +
                     "empty, so it would sail INVISIBLE. Re-run Build Boat Visual Defs, then the cove builder.");
                 int expectedFacings = ExpectedFacings[file];
+
+                if (expectedFacings == 0)
+                {
+                    // A MESH hull. Her picture is a real-time mesh, so the thing that must resolve is the
+                    // mesh chain, not a compass — and the compass must be ABSENT, or someone has baked
+                    // sheets for a hull whose entire reason for existing is that sheets were impossible.
+                    Assert.IsTrue(h.Visual.HasHullMesh(),
+                        $"{file}: mesh-only, but its Visual '{h.Visual.Id}' has no usable HullMesh — she " +
+                        "has neither a compass nor a mesh to draw, so she would sail INVISIBLE.");
+                    Assert.AreEqual(0, h.Visual.HeadingCount,
+                        $"{file}: mesh-only hulls carry no sprite facings, and this one has " +
+                        $"{h.Visual.HeadingCount}. Either sheets were baked that nobody asked for, or this " +
+                        "hull's row in the fleet table is wrong.");
+                    continue;
+                }
+
                 Assert.IsTrue(h.Visual.HasFullCompass(),
                     $"{file}: its Visual '{h.Visual.Id}' has {h.Visual.HeadingCount}/{expectedFacings} " +
                     "facings — a re-slice has gone stale. Re-run Build Boat Visual Defs.");

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using NUnit.Framework;
 using UnityEditor;
@@ -216,8 +217,27 @@ namespace HiddenHarbours.Tests.EditMode
                 "if the layout changed for a better one, say so and move this assert deliberately.");
         }
 
-        /// <summary>Every anchored hull is mesh-only art with no hull Def — this display must not have
-        /// quietly become the next phase.</summary>
+        /// <summary>
+        /// Every anchored hull is mesh-only art, and the anchorage MECHANISM is display-only.
+        ///
+        /// <para><b>This used to assert that no <c>BoatHullDef</c> anywhere in the project referenced an
+        /// anchored visual, and that half has been overtaken by a ruling.</b> It was written under the
+        /// owner's 2026-08-14 call — every model visible, moored, NOT pilotable — and read the ABSENCE of
+        /// hull defs as the proof of it. On 2026-08-15 he ruled the pack dev-picker sailable (#545), so all
+        /// 23 hulls now have one and the old scan would have failed on the ruling itself rather than on a
+        /// defect. Its own message asked for exactly that case to be met by reconsidering the anchorage
+        /// rather than letting it drift into the next phase; this is that reconsideration, and the
+        /// anchorage stays — it is where the owner rules on the sport fishers' waterlines.</para>
+        ///
+        /// <para><b>The claim worth keeping is the narrower one, and it is also the stronger one.</b> "No
+        /// hull def exists" was a fact about the whole project, and the project has moved. "This anchorage
+        /// cannot make a boat pilotable" is a fact about this anchorage, it is what actually keeps a review
+        /// display from quietly becoming the fleet roster, and no ruling about the picker touches it. So
+        /// the guard now reads the <see cref="FleetReviewMoorage.Berth"/> TYPE: a berth may name a picture
+        /// and a place to put it, and may carry no route to a hull def or an owner. Reading the type rather
+        /// than the instances matters — a table that merely happens to leave such a field null would
+        /// satisfy an instance check and still have opened the door.</para>
+        /// </summary>
         [Test]
         public void NothingHere_IsPilotableOrPurchasable()
         {
@@ -230,22 +250,32 @@ namespace HiddenHarbours.Tests.EditMode
                     "rather than from the mesh this arc baked.");
             }
 
-            var hullDefs = AssetDatabase.FindAssets("t:BoatHullDef",
-                                                    new[] { "Assets/_Project/Data/Boats" })
-                .Select(g => AssetDatabase.LoadAssetAtPath<BoatHullDef>(AssetDatabase.GUIDToAssetPath(g)))
-                .Where(d => d != null && d.Visual != null)
+            // A BERTH IS A PICTURE AND A PLACE. Read off the TYPE, so this cannot be satisfied by a
+            // table that merely happens to leave a field null.
+            var berthFields = typeof(FleetReviewMoorage.Berth)
+                .GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            Assert.IsNotEmpty(berthFields,
+                "reflection found no fields on Berth — the type moved, and this guard is now inert");
+
+            var routes = berthFields
+                .Where(f => typeof(BoatHullDef).IsAssignableFrom(f.FieldType)
+                         || typeof(BoatOwnerDef).IsAssignableFrom(f.FieldType))
+                .Select(f => $"{f.FieldType.Name} {f.Name}")
                 .ToList();
 
-            var anchoredIds = new HashSet<string>(FleetReviewMoorage.Anchorage.Select(b => b.VisualId));
-            var pilotable = hullDefs.Where(d => anchoredIds.Contains(d.Visual.Id))
-                                    .Select(d => d.Id)
-                                    .ToList();
+            CollectionAssert.IsEmpty(routes,
+                "A berth has grown a route to a hull def or an owner: " + string.Join(", ", routes) +
+                ". This anchorage is a DISPLAY — he sails out and looks at it. The moment a berth can name " +
+                "the boat you drive or the person who owns her, it has stopped being a display and become " +
+                "the fleet roster, which is M2's job (rule 8). Hulls being sailable ELSEWHERE is expected " +
+                "since the 2026-08-15 ruling; hulls being sailable FROM HERE is what this guards.");
 
-            CollectionAssert.IsEmpty(pilotable,
-                "A review hull has acquired a BoatHullDef: " + string.Join(", ", pilotable) + ". That " +
-                "is the NEXT phase (dev-picker sailable), and the owner ruled this display explicitly " +
-                "NOT pilotable. If that phase has landed, this anchorage should be reconsidered as a " +
-                "whole rather than silently becoming it.");
+            // …and the one thing a berth resolves is ART. Pinned separately so a Resolve that starts
+            // handing back hull defs cannot slip past a field check that only sees the struct.
+            Assert.AreEqual(typeof(BoatVisualDef),
+                typeof(FleetReviewMoorage).GetMethod(nameof(FleetReviewMoorage.Resolve)).ReturnType,
+                "Resolve hands back a PICTURE. If it ever returns a hull def, the anchorage has become " +
+                "the fleet by another route and the field check above would not have seen it.");
         }
     }
 }
