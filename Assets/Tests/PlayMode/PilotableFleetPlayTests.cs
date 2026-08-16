@@ -501,6 +501,61 @@ namespace HiddenHarbours.Tests.PlayMode
                 $"{rb.linearVelocity.magnitude:0.00}. EnginePower is a DESIGN unit, not Newtons.");
         }
 
+        /// <summary>
+        /// <b>The five #543 families, measured on real physics against the speeds they were tuned to.</b>
+        /// The EditMode sibling (<c>FleetHullDefLadderTests</c>) holds the algebra — which is where a bad
+        /// number gets introduced — and this one proves the force model actually produces it under a running
+        /// Rigidbody2D, on the same split every other hull on the ladder uses.
+        ///
+        /// <para>Each hull is checked against <c>predicted − 0.025·τ</c> rather than a shared tolerance,
+        /// because <see cref="RunToTerminal"/>'s settle rule is an ABSOLUTE per-step threshold on a quantity
+        /// that decays with the hull's own time constant, so it always lands short by exactly that much (see
+        /// <see cref="LobsterBoat_MatchesTheDerivation_OnceTheHarnessBiasIsAccountedFor"/>). These five span
+        /// τ = 2.7 s on the little RIB to 4.5 s on the 27 m skybridge, so one shared tolerance would either
+        /// be too loose for the RIBs or too tight for the battlewagon. Accounting for the bias per hull is
+        /// both stricter and honest about what the harness does.</para>
+        /// </summary>
+        [UnityTest]
+        public IEnumerator TheFiveNewFamilies_MeasureToTheirDerivedSpeeds()
+        {
+            const float forceFeelScale = 0.01f;   // BoatController.ForceFeelScale
+            const float linearDamping = 0.2f;     // the damping BoatController.Awake sets
+            const float settleEpsilon = 0.0005f;  // RunToTerminal's stop threshold, per fixed step
+
+            foreach (var file in new[] { "ZodiacFrc", "ZodiacHurricane", "SportSkiffMk2",
+                                         "SportFisherConvertible", "SportFisherSkybridge" })
+            {
+                var hull = LoadHull(file);
+                Assert.AreEqual(PropulsionType.Engine, hull.Propulsion,
+                    $"{file}: measured on the engine harness — an Oars hull here would measure a boat with " +
+                    "no propulsion at all");
+
+                var (go, boat, rb) = NewBoat(hull, Vector3.zero);
+                yield return RunToTerminal(boat, rb);
+
+                float mass = hull.MassKg / 100f;
+                float resistance = hull.ForwardDrag * forceFeelScale + mass * linearDamping;
+                float predicted = hull.EnginePower * forceFeelScale / resistance;
+                float tau = mass / resistance;
+                float harnessGap = settleEpsilon * tau / Time.fixedDeltaTime;
+                float measured = rb.linearVelocity.magnitude;
+
+                Assert.AreEqual(predicted - harnessGap, measured, 0.05f,
+                    $"{file}: measured {measured:0.000} m/s against the derivation's {predicted:0.000} less " +
+                    $"the harness's {harnessGap:0.000} (τ = {tau:0.00} s). If this fails by roughly the gap, " +
+                    "RunToTerminal's settle rule changed; if it fails by more, her assets were retuned " +
+                    "without re-solving EnginePower.");
+
+                // Inside the spray sheet's frame, measured rather than solved — BowSprayGrading maps
+                // 1.7 → 6 m/s and a hull past the top clips flat and outruns her own art.
+                Assert.Greater(measured, 1.7f, $"{file}: below the spray sheet's floor at {measured:0.00} m/s");
+                Assert.LessOrEqual(measured, 6f, $"{file}: past the spray sheet's ceiling at {measured:0.00} m/s");
+
+                Object.Destroy(go);
+                yield return null;
+            }
+        }
+
         [UnityTest]
         public IEnumerator TheMeasuredLadder_MatchesTheDerivation()
         {
@@ -639,10 +694,16 @@ namespace HiddenHarbours.Tests.PlayMode
             // committed, so a clean clone has no such file. Her rung is proven in EditMode
             // (DevBoatPickerTests) against an in-memory mirror; what THIS test exists for is the swap
             // surviving real Awake/LateUpdate lifecycles, which her sister hull exercises identically.
+            // …and three MESH-ONLY hulls on the tail (the #543 pack). They matter here in a way the sprite
+            // hulls do not: a mesh hull that fails to skin has NO sprite compass and NO fallback Sprite to
+            // degrade to, so an unskinned one is an INVISIBLE boat rather than an older-looking one. Cycling
+            // INTO and OUT OF them is also the transition that tears a mesh rig down and stands one back up
+            // under a running boat, which no sprite-only roster exercises.
             var roster = new[]
             {
                 LoadHull("Dory"), LoadHull("FishingSkiff"), LoadHull("PuntUpgraded"),
                 LoadHull("ConsoleSkiff"), LoadHull("SportSkiff"), LoadHull("SportSkiffTwin"),
+                LoadHull("SportSkiffMk2"), LoadHull("ZodiacHurricane"), LoadHull("SportFisherConvertible"),
             };
             var (picker, boat, hold, _, go) = NewPickedBoat(roster);
             var start = go.transform.position;

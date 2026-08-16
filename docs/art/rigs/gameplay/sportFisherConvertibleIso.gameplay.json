@@ -1,0 +1,1120 @@
+{
+  "schema": "hidden-harbours/boat-gameplay-geometry@1",
+  "rig": "sportFisherIsoRig2.js",
+  "exportSymbol": "SportFisherIso2",
+  "variant": {
+    "hull": "convertible",
+    "label": "53′ CONVERTIBLE",
+    "loa": "16.2 m · 53′"
+  },
+  "derivedFromRigSha256": "152eb5f3cf1f4f38fba781161e86320cd7e06f0d0cdc98a82b14d6973e3b4061",
+  "units": "metres",
+  "frame": {
+    "origin": "amidships / keel-bottom / centreline",
+    "axes": "+x starboard, +y bow, +z up",
+    "scale_px_per_m": 32,
+    "LOA_m": 16.2,
+    "polygon_winding": "CCW viewed from +Z (above)"
+  },
+  "authoring": "Extracted by SportFisherGameplay (Art/_sportFisherGameplay.js) from the rig source at the hash above — the rig itself is unedited. Polygons are computed by the rig’s own station/hbOf/dfrac/sheerZ/bowRake and the house volumes’ own plan functions; fit-out footprints are transcribed hull-spec literals with per-item provenance. Rig tuning constants (F/MATS/GAIN/BIAS/LN) stay in the rig. Do not hand-edit — re-run the extractor.",
+  "extractor_contract": "per section: rig export -> this sidecar -> absent section = hull does not support the feature (not an error).",
+  "hull": {
+    "loa": 16.2,
+    "beam": 5.16,
+    "transomBeam": 4.1,
+    "sole": 1.25,
+    "sheerAft": 2.3,
+    "sheerCrest": 4.2,
+    "sheerCrestU": 0.945,
+    "sheerStem": 4.12,
+    "coveringBoard": 0.34,
+    "deckLineDrop": 0.07,
+    "foredeckCamber": 0.14,
+    "toeRail": 0.15,
+    "cockpitTo": -4.9,
+    "soleForwardLimit": -5.348,
+    "foredeckFrom": 1.7,
+    "deckMarginReveal": [
+      0.076,
+      0.412
+    ],
+    "mezzanine": 1.77,
+    "bridgeSole": 4.86,
+    "aftDeck": 4.66,
+    "towerPlatform": 7
+  },
+  "DECK": [
+    {
+      "id": "cockpit",
+      "z": 1.25,
+      "winding": "ccw_from_above",
+      "polygon": [
+        [
+          -2.023,
+          -5.348
+        ],
+        [
+          -2.006,
+          -5.545
+        ],
+        [
+          -1.989,
+          -5.741
+        ],
+        [
+          -1.972,
+          -5.938
+        ],
+        [
+          -1.955,
+          -6.134
+        ],
+        [
+          -1.938,
+          -6.331
+        ],
+        [
+          -1.921,
+          -6.528
+        ],
+        [
+          -1.902,
+          -6.724
+        ],
+        [
+          -1.884,
+          -6.921
+        ],
+        [
+          -1.864,
+          -7.117
+        ],
+        [
+          -1.845,
+          -7.314
+        ],
+        [
+          -1.826,
+          -7.51
+        ],
+        [
+          -1.806,
+          -7.707
+        ],
+        [
+          -1.787,
+          -7.903
+        ],
+        [
+          -1.768,
+          -8.1
+        ],
+        [
+          1.768,
+          -8.1
+        ],
+        [
+          1.787,
+          -7.903
+        ],
+        [
+          1.806,
+          -7.707
+        ],
+        [
+          1.826,
+          -7.51
+        ],
+        [
+          1.845,
+          -7.314
+        ],
+        [
+          1.864,
+          -7.117
+        ],
+        [
+          1.884,
+          -6.921
+        ],
+        [
+          1.902,
+          -6.724
+        ],
+        [
+          1.921,
+          -6.528
+        ],
+        [
+          1.938,
+          -6.331
+        ],
+        [
+          1.955,
+          -6.134
+        ],
+        [
+          1.972,
+          -5.938
+        ],
+        [
+          1.989,
+          -5.741
+        ],
+        [
+          2.006,
+          -5.545
+        ],
+        [
+          2.023,
+          -5.348
+        ]
+      ],
+      "note": "Teak-planked working sole, transom (y=-8.1) forward to the salon’s aft wall taken down to sole height (y=-5.348); half-width = rig dw(u) = (hbOf(u,dfrac)-TH)*0.965. The rig draws this sole on to y=-4.9, i.e. 0.448 m of it runs UNDER the salon — trimmed here, because that strip is inside the house. The sole sits deep in this hull (z=1.25 on a 2.3 m transom sheer) — that is the point of a fishing cockpit.",
+      "_notes": [
+        {
+          "id": "fighting_chair",
+          "kind": "obstruction",
+          "type": "chair",
+          "footprint": {
+            "x": [
+              -0.42,
+              0.42
+            ],
+            "y": [
+              -6.97,
+              -6.13
+            ]
+          },
+          "height_above_floor_m": {
+            "top": 0.2
+          },
+          "provenance": "exact, build() fighting chair: base plate r=0.42 at y=-6.55, pedestal top DECK+0.20",
+          "note": "Pedestal on a flush base plate. Footrest bar 0.30 above the sole at y=-5.67, x ±0.378."
+        },
+        {
+          "id": "mezzanine_riser",
+          "kind": "obstruction",
+          "type": "step",
+          "footprint": {
+            "x": [
+              -1.358,
+              1.358
+            ],
+            "y": [
+              -5.92,
+              -5.9
+            ]
+          },
+          "height_above_floor_m": {
+            "top": 0.52
+          },
+          "provenance": "exact, build() mezzanine front face at y=-5.9, from DECK up to DECK+0.52",
+          "note": "The step up from the cockpit sole to the mezzanine deck. No treads modelled — one 0.52 m riser across the full mezzanine width."
+        },
+        {
+          "id": "sole_hatches",
+          "kind": "surface",
+          "type": "hatch_lid",
+          "footprint": {
+            "x": [
+              [
+                -0.42,
+                0.42
+              ],
+              [
+                -1.5,
+                -1
+              ],
+              [
+                1,
+                1.5
+              ]
+            ],
+            "y": [
+              [
+                -7.56,
+                -7.04
+              ],
+              [
+                -6.61,
+                -6.09
+              ],
+              [
+                -6.61,
+                -6.09
+              ]
+            ]
+          },
+          "height_above_floor_m": {
+            "top": 0.03
+          },
+          "provenance": "exact, build() hatch() lids at DECK+0.008..0.014, handles +0.03",
+          "note": "NOT obstructions — flush fish-box and lazarette lids in the teak sole. 3 of them."
+        },
+        {
+          "id": "transom_doors",
+          "kind": "access",
+          "type": "door",
+          "footprint": {
+            "x": [
+              [
+                0.7,
+                1.5
+              ],
+              [
+                -1.35,
+                -0.65
+              ]
+            ],
+            "y": [
+              [
+                -8.12,
+                -8.1
+              ],
+              [
+                -8.12,
+                -8.1
+              ]
+            ]
+          },
+          "height_above_floor_m": {
+            "top": [
+              1,
+              0.6
+            ]
+          },
+          "provenance": "exact, hull spec doors: transom door x 0.7..1.5 h=1, tuna door x -1.35..-0.65 h=0.6",
+          "note": "The two ways in at sole level: the transom door (starboard, full height) and the tuna door (port, half height, for gaffing fish aboard). Boarding from a dock or a tender comes through these, not over the covering board."
+        },
+        {
+          "id": "rocket_launcher",
+          "kind": "surface",
+          "type": "gear",
+          "footprint": {
+            "x": [
+              -1.08,
+              1.08
+            ],
+            "y": [
+              -4.92,
+              -4.62
+            ]
+          },
+          "height_above_floor_m": {
+            "top": 4.74
+          },
+          "provenance": "exact, build() rocket launcher: 5 tubes on a bar at y=-4.62, z=5.55",
+          "note": "NOT a floor obstruction — rod tubes overhead on the house aft wall, 4.3 above the sole. Rod anchor points are in ANCHORS.rods."
+        }
+      ],
+      "_notes_convention": "Footprints and heights above the cockpit sole plane (z=1.25). Per the 2026-07-22 ruling these become game-side colliders sourced from these notes — never authored holes."
+    },
+    {
+      "id": "mezzanine",
+      "z": 1.77,
+      "winding": "ccw_from_above",
+      "polygon": [
+        [
+          -1.358,
+          -5.26
+        ],
+        [
+          -1.358,
+          -5.9
+        ],
+        [
+          1.358,
+          -5.9
+        ],
+        [
+          1.358,
+          -5.26
+        ]
+      ],
+      "note": "Raised teak deck against the raked house aft wall, 0.52 m above the cockpit sole, y -5.9..-5.26. Half-width is the salon’s own plan at the deck line plus 0.24, clamped to the hull.",
+      "_notes": [
+        {
+          "id": "mezz_bench",
+          "kind": "obstruction",
+          "type": "bench",
+          "footprint": {
+            "x": [
+              -0.869,
+              0.869
+            ],
+            "y": [
+              -5.8,
+              -5.24
+            ]
+          },
+          "height_above_floor_m": {
+            "top": 0.4
+          },
+          "provenance": "exact, build() mezzanine bench box at y=(y0+y1)/2+0.06, seat 0.4, backrest 0.38",
+          "note": "Bench seat facing the cockpit; backrest a further 0.38 m up against the house wall at y=-5.36. Step-over at the ends, wall in the middle."
+        }
+      ]
+    },
+    {
+      "id": "foredeck",
+      "winding": "ccw_from_above",
+      "polygon3d": [
+        [
+          -0.065,
+          8.754,
+          4.07
+        ],
+        [
+          -1.024,
+          7.906,
+          4.124
+        ],
+        [
+          -1.436,
+          7.02,
+          3.987
+        ],
+        [
+          -1.71,
+          6.105,
+          3.814
+        ],
+        [
+          -1.887,
+          5.172,
+          3.641
+        ],
+        [
+          -2.006,
+          4.232,
+          3.474
+        ],
+        [
+          -2.09,
+          3.294,
+          3.31
+        ],
+        [
+          -2.14,
+          2.369,
+          3.161
+        ],
+        [
+          -2.174,
+          1.467,
+          3.028
+        ],
+        [
+          2.174,
+          1.467,
+          3.028
+        ],
+        [
+          2.14,
+          2.369,
+          3.161
+        ],
+        [
+          2.09,
+          3.294,
+          3.31
+        ],
+        [
+          2.006,
+          4.232,
+          3.474
+        ],
+        [
+          1.887,
+          5.172,
+          3.641
+        ],
+        [
+          1.71,
+          6.105,
+          3.814
+        ],
+        [
+          1.436,
+          7.02,
+          3.987
+        ],
+        [
+          1.024,
+          7.906,
+          4.124
+        ],
+        [
+          0.065,
+          8.754,
+          4.07
+        ]
+      ],
+      "note": "Cambered foredeck from y=1.4 to the stem head. NOT reachable from the cockpit on the outside of this hull — there are no washboards (see _excluded.WASHBOARD); the real route is through the house, which the rig does not model. The ring given is the OUTBOARD edge, landing on the covering board at z=sheer-0.07; the surface crowns to +0.14 m on the centreline, falling as (1-t²) across the half-beam. Walkable extent stops at u=0.988.",
+      "_notes": [
+        {
+          "id": "bow_rail",
+          "kind": "obstruction",
+          "type": "guard_rail",
+          "footprint": {
+            "x": "both edges, stanchions at ws-TH-capW*0.45",
+            "y": [
+              6.245,
+              8.754
+            ]
+          },
+          "height_above_floor_m": {
+            "top": 0.58
+          },
+          "provenance": "exact, build() bow rail: stanchions at u 0.845/0.895/0.94, 0.58 m high, top run closing to 0.55x half-width at u=0.988",
+          "note": "Fences the foredeck from u=0.845 forward. Aft of the first stanchion the deck edge is unguarded, straight onto the covering board."
+        },
+        {
+          "id": "windlass",
+          "kind": "obstruction",
+          "type": "fitting",
+          "footprint": {
+            "x": [
+              -0.19,
+              0.19
+            ],
+            "y": [
+              7.945,
+              8.385
+            ]
+          },
+          "height_above_floor_m": {
+            "top": 0.24
+          },
+          "provenance": "exact, build() windlass box at y=fyr(0.985)-pulpit*1.8, 0.38 x 0.44 x 0.24",
+          "note": "Anchor windlass on the centreline, a wall at this scale. The bow tie-off (CLEATS.bow_1) sits just aft of it."
+        },
+        {
+          "id": "anchor_pulpit",
+          "kind": "surface",
+          "type": "platform",
+          "footprint": {
+            "x": [
+              -0.187,
+              0.187
+            ],
+            "y": [
+              8.645,
+              9.245
+            ]
+          },
+          "height_above_floor_m": {
+            "top": 0.08
+          },
+          "provenance": "exact, build() pulpit box at y=fyr(0.985)+pulpit*0.8, half-width capW*0.55",
+          "note": "EXCLUDED from the walkable polygon — a 0.374 m wide anchor platform cantilevered past the stem head, outside the rail apex."
+        },
+        {
+          "id": "nav_housings",
+          "kind": "obstruction",
+          "type": "fitting",
+          "footprint": {
+            "x": "both edges at ws-TH-capW*0.6",
+            "y": [
+              6.873,
+              7.073
+            ]
+          },
+          "height_above_floor_m": {
+            "top": 0.18
+          },
+          "provenance": "exact, build() nav housings at u=0.885, 0.14 x 0.20 x 0.18",
+          "note": "Port and starboard sidelight boxes on the deck edge. Positions are also in ANCHORS.nav."
+        }
+      ]
+    },
+    {
+      "id": "bridge_sole",
+      "z": 4.86,
+      "winding": "ccw_from_above",
+      "polygon": [
+        [
+          -0.03,
+          -0.72
+        ],
+        [
+          -0.214,
+          -0.744
+        ],
+        [
+          -0.572,
+          -0.814
+        ],
+        [
+          -0.913,
+          -0.929
+        ],
+        [
+          -1.218,
+          -1.087
+        ],
+        [
+          -1.447,
+          -1.282
+        ],
+        [
+          -1.541,
+          -1.511
+        ],
+        [
+          -1.569,
+          -1.768
+        ],
+        [
+          -1.595,
+          -2.047
+        ],
+        [
+          -1.617,
+          -2.34
+        ],
+        [
+          -1.633,
+          -2.64
+        ],
+        [
+          -1.64,
+          -2.94
+        ],
+        [
+          -1.634,
+          -3.233
+        ],
+        [
+          -1.612,
+          -3.512
+        ],
+        [
+          -1.583,
+          -3.769
+        ],
+        [
+          -1.549,
+          -3.998
+        ],
+        [
+          -1.474,
+          -4.193
+        ],
+        [
+          -1.357,
+          -4.351
+        ],
+        [
+          -1.214,
+          -4.466
+        ],
+        [
+          -1.058,
+          -4.536
+        ],
+        [
+          -0.899,
+          -4.56
+        ],
+        [
+          0.899,
+          -4.56
+        ],
+        [
+          1.058,
+          -4.536
+        ],
+        [
+          1.214,
+          -4.466
+        ],
+        [
+          1.357,
+          -4.351
+        ],
+        [
+          1.474,
+          -4.193
+        ],
+        [
+          1.549,
+          -3.998
+        ],
+        [
+          1.583,
+          -3.769
+        ],
+        [
+          1.612,
+          -3.512
+        ],
+        [
+          1.634,
+          -3.233
+        ],
+        [
+          1.64,
+          -2.94
+        ],
+        [
+          1.633,
+          -2.64
+        ],
+        [
+          1.617,
+          -2.34
+        ],
+        [
+          1.595,
+          -2.047
+        ],
+        [
+          1.569,
+          -1.768
+        ],
+        [
+          1.541,
+          -1.511
+        ],
+        [
+          1.447,
+          -1.282
+        ],
+        [
+          1.218,
+          -1.087
+        ],
+        [
+          0.913,
+          -0.929
+        ],
+        [
+          0.572,
+          -0.814
+        ],
+        [
+          0.214,
+          -0.744
+        ],
+        [
+          0.03,
+          -0.72
+        ]
+      ],
+      "note": "Sole of the open flybridge coaming, 4.86 m above the keel — the ring is the coaming plan less its 0.15 m rim. The coaming wall stands 0.56 m above this sole.",
+      "_notes": [
+        {
+          "id": "helm_pod",
+          "kind": "obstruction",
+          "type": "console",
+          "footprint": {
+            "x": [
+              -0.68,
+              0.68
+            ],
+            "y": [
+              -2.17,
+              -1.53
+            ]
+          },
+          "height_above_floor_m": {
+            "top": 0.78
+          },
+          "provenance": "exact, hull spec helmPod at (0,-1.85,4.86), hx=0.68, pod z0..z0+0.78 with glass above",
+          "note": "Upper helm console with a screen brow at +0.86. Seats: (-0.6,-4.2) (0.6,-4.2), 0.60 m tall boxes."
+        }
+      ]
+    },
+    {
+      "id": "aft_deck",
+      "z": 4.66,
+      "winding": "ccw_from_above",
+      "polygon": [
+        [
+          -0.012,
+          -4.78
+        ],
+        [
+          -1.374,
+          -4.864
+        ],
+        [
+          -1.768,
+          -4.948
+        ],
+        [
+          -1.927,
+          -5.032
+        ],
+        [
+          -1.94,
+          -5.116
+        ],
+        [
+          -1.94,
+          -5.2
+        ],
+        [
+          -1.94,
+          -5.284
+        ],
+        [
+          -1.927,
+          -5.368
+        ],
+        [
+          -1.768,
+          -5.452
+        ],
+        [
+          -1.374,
+          -5.536
+        ],
+        [
+          -0.012,
+          -5.62
+        ],
+        [
+          0.012,
+          -5.62
+        ],
+        [
+          1.374,
+          -5.536
+        ],
+        [
+          1.768,
+          -5.452
+        ],
+        [
+          1.927,
+          -5.368
+        ],
+        [
+          1.94,
+          -5.284
+        ],
+        [
+          1.94,
+          -5.2
+        ],
+        [
+          1.94,
+          -5.116
+        ],
+        [
+          1.927,
+          -5.032
+        ],
+        [
+          1.768,
+          -4.948
+        ],
+        [
+          1.374,
+          -4.864
+        ],
+        [
+          0.012,
+          -4.78
+        ]
+      ],
+      "note": "Crowned slab aft of the house at 4.66 m, over the mezzanine, y -5.62..-4.78, half-beam 1.94 with rounded ends. Top crowns +0.05 on the centreline. NO RAIL modelled on this deck — see _confirm.",
+      "_notes": []
+    },
+    {
+      "id": "tower_platform",
+      "z": 7,
+      "winding": "ccw_from_above",
+      "polygon": [
+        [
+          -0.012,
+          -1.85
+        ],
+        [
+          -0.781,
+          -2.065
+        ],
+        [
+          -0.941,
+          -2.28
+        ],
+        [
+          -0.95,
+          -2.495
+        ],
+        [
+          -0.95,
+          -2.71
+        ],
+        [
+          -0.95,
+          -2.925
+        ],
+        [
+          -0.95,
+          -3.14
+        ],
+        [
+          -0.95,
+          -3.355
+        ],
+        [
+          -0.941,
+          -3.57
+        ],
+        [
+          -0.781,
+          -3.785
+        ],
+        [
+          -0.012,
+          -4
+        ],
+        [
+          0.012,
+          -4
+        ],
+        [
+          0.781,
+          -3.785
+        ],
+        [
+          0.941,
+          -3.57
+        ],
+        [
+          0.95,
+          -3.355
+        ],
+        [
+          0.95,
+          -3.14
+        ],
+        [
+          0.95,
+          -2.925
+        ],
+        [
+          0.95,
+          -2.71
+        ],
+        [
+          0.95,
+          -2.495
+        ],
+        [
+          0.941,
+          -2.28
+        ],
+        [
+          0.781,
+          -2.065
+        ],
+        [
+          0.012,
+          -1.85
+        ]
+      ],
+      "note": "Tuna tower platform, 7 m above the keel on four pipe legs standing on the bridge coaming, half-beam 0.95, rail 0.58 m. Control head forward, buggy top over it at 8.3.",
+      "_notes": [
+        {
+          "id": "tower_ladder",
+          "kind": "access",
+          "type": "ladder",
+          "footprint": {
+            "x": [
+              -0.4,
+              0.4
+            ],
+            "y": [
+              -4.05,
+              -4.55
+            ]
+          },
+          "height_above_floor_m": {
+            "top": "spans z 5.4 → 7"
+          },
+          "provenance": "exact, tower.lads[0]: 0.4, -4.55, 5.4, 0.34, -4.05, 7, 5",
+          "note": "The only modelled way up to the tower: 5 rungs from the bridge coaming top."
+        }
+      ]
+    }
+  ],
+  "CLEATS": [
+    {
+      "id": "stern_port",
+      "type": "bitt",
+      "pos": [
+        -1.71,
+        -7.624,
+        2.35
+      ],
+      "provenance": "iron block on the covering board at the transom quarter: x=±(station(0).ws-capW), y=station(0).y+capW*1.4, z=sheer(0)+0.05, 0.11 x 0.20 x 0.11 (exact position, read as a tie-off)",
+      "_confirm": "Unlabelled in the rig. The centreline fitting at the same station is the stern light (ANCHORS.nav.stern); these two are the quarter fittings and are read as bitts."
+    },
+    {
+      "id": "stern_star",
+      "type": "bitt",
+      "pos": [
+        1.71,
+        -7.624,
+        2.35
+      ],
+      "provenance": "iron block on the covering board at the transom quarter: x=±(station(0).ws-capW), y=station(0).y+capW*1.4, z=sheer(0)+0.05, 0.11 x 0.20 x 0.11 (exact position, read as a tie-off)",
+      "_confirm": "Unlabelled in the rig. The centreline fitting at the same station is the stern light (ANCHORS.nav.stern); these two are the quarter fittings and are read as bitts."
+    },
+    {
+      "id": "bow_1",
+      "type": "bitt",
+      "pos": [
+        0,
+        7.505,
+        4.166
+      ],
+      "provenance": "iron block on the centreline foredeck at y=fyr(0.985)-pulpit*4.0, 0.12 x 0.14 x 0.18 (exact position, read as a tie-off)",
+      "_confirm": "The rig models this as an unlabelled iron fitting just aft of the windlass. Read here as the bow bitt/cleat — it is the only centreline deck fitting forward that is not the windlass or a light."
+    }
+  ],
+  "ANCHORS": {
+    "helm": {
+      "x": 0,
+      "y": -1.85,
+      "z": 4.8
+    },
+    "towerStation": {
+      "x": 0,
+      "y": -2.95,
+      "z": 7.1
+    },
+    "chair": {
+      "x": 0,
+      "y": -6.55,
+      "z": 1.45
+    },
+    "mezzSeat": {
+      "x": 0,
+      "y": -5.52,
+      "z": 2.17
+    },
+    "doors": {
+      "transom": {
+        "x": 1.1,
+        "y": -8.1,
+        "z": 1.75
+      },
+      "tuna": {
+        "x": -1,
+        "y": -8.1,
+        "z": 1.55
+      }
+    },
+    "rods": [
+      {
+        "x": -1.1,
+        "y": -4.9,
+        "z": 5.99
+      },
+      {
+        "x": -0.55,
+        "y": -4.9,
+        "z": 5.99
+      },
+      {
+        "x": 0,
+        "y": -4.9,
+        "z": 5.99
+      },
+      {
+        "x": 0.55,
+        "y": -4.9,
+        "z": 5.99
+      },
+      {
+        "x": 1.1,
+        "y": -4.9,
+        "z": 5.99
+      },
+      {
+        "x": -2.17,
+        "y": -5.45,
+        "z": 2.763
+      },
+      {
+        "x": -2.049,
+        "y": -6.85,
+        "z": 2.695
+      },
+      {
+        "x": 2.17,
+        "y": -5.45,
+        "z": 2.763
+      },
+      {
+        "x": 2.049,
+        "y": -6.85,
+        "z": 2.695
+      }
+    ],
+    "tubs": [
+      {
+        "x": -1.55,
+        "y": -7.3,
+        "z": 1.25
+      },
+      {
+        "x": 1.55,
+        "y": -7.3,
+        "z": 1.25
+      },
+      {
+        "x": -1.62,
+        "y": -6.1,
+        "z": 1.25
+      },
+      {
+        "x": 1.62,
+        "y": -6.1,
+        "z": 1.25
+      }
+    ],
+    "nav": {
+      "port": {
+        "x": -1.588,
+        "y": 6.973,
+        "z": 4.097
+      },
+      "star": {
+        "x": 1.588,
+        "y": 6.973,
+        "z": 4.097
+      },
+      "stern": {
+        "x": 0,
+        "y": -7.93,
+        "z": 2.44
+      },
+      "mast": {
+        "x": 0,
+        "y": -2.925,
+        "z": 9.5
+      }
+    }
+  },
+  "_excluded": {
+    "WASHBOARD": "NO washboards on this hull, and this is the load-bearing absence. The rig draws a deck margin alongside the house, but measured at the deck line it is 0.076–0.412 m wide (11 samples, y -4.95 → 0.99, widening only as the house nose narrows into the foredeck): a reveal between the house side and the covering board, not a strip anyone walks. It is that narrow by design — clampHW lands the house sides on the cap so the covering board reads as ONE unbroken line stem to transom. Consequence: cockpit and foredeck are separate walkable islands on the exterior.",
+    "covering_board": "The teak cap outboard of the reveal is rolled and carries a toe rail lifting to 0.15 m forward of u=0.55 — a boundary, not a surface.",
+    "house_interior": "Salon is modelled as an exterior volume only — no interior floor exists to walk.",
+    "bridge_access_interior": "No ladder from the cockpit or mezzanine to the flybridge is modelled on this hull — the real route is interior stairs through the salon, which the rig does not build. The tower ladder (bridge → tower) IS modelled.",
+    "foredeck_access": "Nothing in the rig connects the cockpit to the foredeck: no margin wide enough to walk, no ladder, no door in the house exterior other than the aft glass. Any walk-forward move a character makes on this hull has to be authored game-side.",
+    "gear_above": "Outriggers, tower pipework, whips, radomes and rod tubes are gear over the decks, not surfaces. Rod points are ANCHORS.rods.",
+    "topside_detail": "Hull windows, louvre vents and the boot/cove bands are paint and detail, outside any walkable surface."
+  },
+  "_confirm": {
+    "cleat_identification": "All three CLEATS entries are read from unlabelled iron fittings (see each provenance). Positions are exact; the reading as tie-offs is the art side’s, and a gameplay ruling can demote any of them.",
+    "upper_decks": "bridge_sole, aft_deck and tower_platform are included because they are real modelled surfaces with real dimensions. If gameplay only ever walks the cockpit, mezzanine, side decks and foredeck, the upper polygons are inert data — they are not a claim that a character can reach them.",
+    "aft_deck_rail": "The 53′ CONVERTIBLE’s aft deck (z=4.66) carries NO rail in the rig — railH:0. Either it is an unguarded edge above the mezzanine or the rail is simply not modelled; a fall rule needs a ruling either way."
+  }
+}

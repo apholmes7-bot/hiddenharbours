@@ -16,3 +16,4 @@ MonoBehaviour:
   DisplayName: Clam Shovel
   GearId: gear.shovel
   Flavor: Short, bent, and the only thing that gets a soft-shell out of the flat.
+  HandPropKey:

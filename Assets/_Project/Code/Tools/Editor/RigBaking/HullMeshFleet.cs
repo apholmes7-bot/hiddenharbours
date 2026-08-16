@@ -128,12 +128,15 @@ namespace HiddenHarbours.Tools.RigBaking
     /// menu items is not a fleet; a table is. So the per-hull code became per-hull DATA, and the two
     /// existing menu items now look themselves up in here rather than restating their own paths.</para>
     ///
-    /// <para><b>Two families, and the difference is the sheet, not the size.</b> Six hulls were
-    /// already in the game drawn from baked 32-facing sprite sheets; for them the bake is a
-    /// conversion and they keep their compass so the owner can toggle. Four have never been in Unity
-    /// at all — the upper fleet the ADR was written for, where a sheet set was never an option (the
-    /// tanker's would be measured in gigabytes) — and for them the mesh is the first and only
-    /// picture.</para>
+    /// <para><b>THREE families now, and each is a different kind of entry.</b> Six hulls were already
+    /// in the game drawn from baked 32-facing sprite sheets; for them the bake is a conversion and
+    /// they keep their compass so the owner can toggle. Five had never been in Unity at all — the
+    /// upper fleet the ADR was written for, where a sheet set was never an option (the tanker's would
+    /// be measured in gigabytes) — and for them the mesh is the first and only picture. The
+    /// eighteenth-of-a-file family arrived with ADR 0022 phase 8: <c>lobsterBoatVariantsIsoRig.js</c>
+    /// builds EIGHTEEN boats from one source, so those rows carry a
+    /// <see cref="FleetHull.Extraction"/> naming which one they mean. See
+    /// <see cref="LobsterVariantFleet"/>, which owns their list and their names.</para>
     ///
     /// <para>⚠️ <b>Importing art is not a licence to wire content</b> (rule 8, and the phrasing
     /// <see cref="RigCatalog"/> already uses). This table bakes ART. The upper fleet's gameplay
@@ -179,12 +182,55 @@ namespace HiddenHarbours.Tools.RigBaking
                           new[] { $"visual.{snake}" }, hasBakedSheet: false, label);
 
         /// <summary>
-        /// The fleet, in size order — which is also roughly the order the owner meets them, and the
-        /// order the dev picker walks. Size order matters here for one practical reason: it is the
-        /// order in which the mesh path gets HARDER (more faces, longer straight edges, larger flat
-        /// panels), so a bake that starts failing tends to fail from the bottom of this list up.
+        /// One cell of a GENERATOR rig — mesh-only like the upper fleet, plus the one thing that
+        /// makes it a different kind of entry: a <see cref="RigHullExtraction"/> naming WHICH hull
+        /// this row means out of the several the file builds.
+        ///
+        /// <para>Every name comes off <see cref="LobsterVariant"/> rather than being spelled here,
+        /// because eighteen rows are exactly the number where one hand-typed mismatch between a mesh
+        /// path and a visual id survives review.</para>
         /// </summary>
-        public static readonly IReadOnlyList<FleetHull> Hulls = new[]
+        static FleetHull Variant(LobsterVariant v) =>
+            new FleetHull(v.Key, LobsterVariantFleet.ScriptPath, LobsterVariantFleet.GlobalName,
+                          $"{Meshes}/{v.AssetName}HullMesh.asset", v.MeshId,
+                          new[] { $"{Visuals}/{v.AssetName}.asset" }, new[] { v.VisualId },
+                          hasBakedSheet: false, v.Label, overlayBlockedReason: null,
+                          extraction: v.Extraction);
+
+        /// <summary>One build of the zodiac generator. Same shape as <see cref="Variant"/> — every
+        /// name comes off <see cref="ZodiacBuild"/> rather than being spelled here.</summary>
+        static FleetHull Variant(ZodiacBuild b) =>
+            new FleetHull(b.Key, ZodiacFleet.ScriptPath, ZodiacFleet.GlobalName,
+                          $"{Meshes}/{b.AssetName}HullMesh.asset", b.MeshId,
+                          new[] { $"{Visuals}/{b.AssetName}.asset" }, new[] { b.VisualId },
+                          hasBakedSheet: false, b.Label, overlayBlockedReason: null,
+                          extraction: b.Extraction);
+
+        /// <summary>One hull of the sport fisher registry. Her <see cref="SportFisherHull.Extraction"/>
+        /// carries a <see cref="RigHullExtraction.HullScope"/> as well, which is the whole difference
+        /// between a registry rig and a generator function.</summary>
+        static FleetHull Variant(SportFisherHull h) =>
+            new FleetHull(h.Key, SportFisherFleet.ScriptPath, SportFisherFleet.GlobalName,
+                          $"{Meshes}/{h.AssetName}HullMesh.asset", h.MeshId,
+                          new[] { $"{Visuals}/{h.AssetName}.asset" }, new[] { h.VisualId },
+                          hasBakedSheet: false, h.Label, overlayBlockedReason: null,
+                          extraction: h.Extraction);
+
+        /// <summary>
+        /// <b>The hulls whose rig file makes exactly one boat</b> — in size order, which is also
+        /// roughly the order the owner meets them and the order the dev picker walks. Size order
+        /// matters here for one practical reason: it is the order in which the mesh path gets HARDER
+        /// (more faces, longer straight edges, larger flat panels), so a bake that starts failing
+        /// tends to fail from the bottom of this list up.
+        ///
+        /// <para>Kept as a list of its own because it is the CONTROL SET: these eleven were baked
+        /// before generators existed, and <c>RigMeshVariantExtractionTests</c> proves the variant
+        /// work left their path bit-for-bit alone by sweeping exactly this list.</para>
+        ///
+        /// <para>⚠️ Declared BEFORE <see cref="Hulls"/> on purpose — static field initialisers run in
+        /// textual order, and <see cref="Hulls"/> reads this one.</para>
+        /// </summary>
+        public static readonly IReadOnlyList<FleetHull> OneHullPerRig = new[]
         {
             // ---- the six with baked sheets: a CONVERSION, and they keep their compass -----------
             // Each of these already renders in game from a 32-facing sheet. Wiring the mesh does not
@@ -253,7 +299,52 @@ namespace HiddenHarbours.Tools.RigBaking
             // If anything downstream assumed 32, she is the hull that finds it.
             MeshOnly("tanker", "tankerIsoRig.js", "TankerIso", "TankerIso", "tanker_iso",
                      "tanker (T7, ~110 m — the final hull, 16 px/m)"),
+
+            // ---- the 2026-08-12 fleet pack's twelfth one-hull rig (baked 2026-08-16) -------------
+            // A SECOND 7 m sport skiff, not a replacement: the committed hullmesh.sport_skiff_iso
+            // keeps her id, her mesh and her two visuals untouched (owner's ruling, 2026-08-13).
+            // Her own sidecar's _supersedes block is the reason there are two — the v2 moved the
+            // cockpit sole from 0.28 m to 0.46 m, put a boardable rising foredeck and a bow step in,
+            // and replaced the single bow cleat with four deck cleats plus a stem-face eye. That is
+            // a different boat to stand on, so it is a different deck Def and a different hull.
+            //
+            // She wears NO sprite overlay of her own: the twin-outboard visual belongs to the v1
+            // hull, and this Mk2 is mesh-only until an outboard is fitted to her in a later phase.
+            MeshOnly("sportSkiffMk2", "sportSkiffMk2IsoRig.js", "SportSkiffMk2Iso",
+                     "SportSkiffMk2Iso", "sport_skiff_mk2_iso",
+                     "sport skiff Mk2 (~7.0 m, glass — the reshaped hull)"),
         };
+
+        /// <summary>
+        /// <b>Every hull the baker knows how to bake</b> — the eleven above, then the lobster
+        /// generator's eighteen.
+        ///
+        /// <para>The eighteen are appended as a BLOCK rather than interleaved into the size order,
+        /// and the reason is practical: they span 8.6–14.6 m and would scatter through the middle of
+        /// the list, hiding the fact that one rig file makes all of them. Within the block the rig's
+        /// own axis order is kept, so this list, <c>FleetFlotationTableTests.Authored</c> and
+        /// <c>FleetDeckOccupancyTableTests.Authored</c> all read in the same order and a diff of one
+        /// lines up against a diff of the others.</para>
+        /// </summary>
+        public static readonly IReadOnlyList<FleetHull> Hulls = BuildFleet();
+
+        static IReadOnlyList<FleetHull> BuildFleet()
+        {
+            var fleet = new List<FleetHull>(OneHullPerRig);
+            foreach (LobsterVariant v in LobsterVariantFleet.All) fleet.Add(Variant(v));
+            foreach (ZodiacBuild b in ZodiacFleet.All) fleet.Add(Variant(b));
+            foreach (SportFisherHull h in SportFisherFleet.All) fleet.Add(Variant(h));
+            return fleet;
+        }
+
+        /// <summary>The hulls that are one cell of a generator rig — today, the eighteen lobster
+        /// variants. Several fixtures need them separately from the eleven, because the questions
+        /// that can be asked of them differ (a variant's extraction is non-null; her sidecar is
+        /// named for the hull rather than for the rig).</summary>
+        public static IEnumerable<FleetHull> VariantHulls
+        {
+            get { foreach (FleetHull h in Hulls) if (h.IsVariant) yield return h; }
+        }
 
         /// <summary>
         /// Boat-shaped rigs under <c>docs/art/rigs/</c> that this catalog deliberately does NOT bake,
@@ -270,76 +361,43 @@ namespace HiddenHarbours.Tools.RigBaking
                     "hull-mesh table — it is baked as an articulated FITTING instead (ADR 0022 phase " +
                     "7, HullPropFleet: hullprop.skiff_motor_work / _sport).",
 
-                // ⚠️ EIGHTEEN hulls, not one, and that is precisely why she is not here YET.
+                // ⚠️ lobsterBoatVariantsIsoRig.js WAS HERE, and its entry said "delete this when the
+                // 18 HullMeshDefs and deck defs land". They landed; it is deleted. Her eighteen are
+                // in Hulls above, via LobsterVariantFleet.
                 //
-                // She is a GENERATOR: 3 sizes × 2 styles × 3 regions, and all three axes are
-                // geometry. Measured in V8 by hashing every cell at heading SE and NW — 18 of 18
-                // distinct, no redundant axis, nothing collapses. Her 12 paints are colour-only
-                // (alphaDiff 0 on all twelve, and her ramps are byte-identical to
-                // lobsterBoatIsoRig's), so they are schemes, not variants.
+                // Two things that entry recorded are worth keeping, because they are still the
+                // reasons the bake is shaped the way it is: her faces come from a private
+                // facesFor(V) driven by resolve(opts) rather than from a static `F` (hence
+                // RigHullExtraction + the `variantFaces` reconstruction, ADR 0022 phase 8), and her
+                // 12 paints move no vertex, so ONE mesh per cell serves every scheme. Both are now
+                // asserted rather than commented — RigMeshVariantExtractionTests and
+                // LobsterVariantRigTests respectively.
+
+                // ⚠️ zodiacIsoRig.js, sportSkiffMk2IsoRig.js AND sportFisherIsoRig2.js WERE HERE,
+                // each saying "delete this entry when the bake lands". It landed (ADR 0022 phase 8,
+                // the second half): all five hulls are in Hulls above, via ZodiacFleet,
+                // SportFisherFleet and the sportSkiffMk2 row in OneHullPerRig.
                 //
-                // ⚠️ THE MECHANICAL BLOCKER IS GONE; WHAT IS LEFT IS THE BAKE ITSELF.
+                // Four things those entries recorded are worth keeping, because they are still the
+                // reasons the bake is shaped the way it is:
                 //
-                // Until 2026-08-13 a hull's faces could only be extracted from a static `F`, and hers
-                // come from a private facesFor(V) driven by the exported resolve(opts) — a face list
-                // that is a FUNCTION OF THE VARIANT, which neither FleetHull nor
-                // RigMeshSymbols.Reconstructions could express. ADR 0022 phase 8 added exactly that
-                // expressiveness (RigHullExtraction + the `variantFaces` reconstruction), and
-                // RigMeshVariantExtractionTests measures all eighteen extracting distinct geometry
-                // through it. So this entry no longer records an impossibility — it records
-                // unfinished work, which is a different claim and a much shorter-lived one.
+                //  · The zodiac is TWO builds in ONE cell (272×248), so she needs a variantFaces
+                //    reconstruction but no scope — RigMeshSymbols.Reconstructions["zodiacIsoRig.js"].
+                //  · The sport fisher is a REGISTRY, and her face list lives inside makeRig()'s own
+                //    closure where the exported-literal shim cannot reach it. That is what
+                //    RigMeshSymbols.InnerWidenings exists for, and hers is the only entry.
+                //  · The sport skiff Mk2 is a SECOND hull, not a replacement — the committed
+                //    hullmesh.sport_skiff_iso keeps her id, mesh and visuals (owner, 2026-08-13).
+                //  · The sport fisher is NOT the sport skiff's v2, despite arriving in one drop.
                 //
-                // What is still missing is the 18 HullMeshDefs, their 18 deck Defs and their picker
-                // entries. Delete this entry when they land.
-                ["lobsterBoatVariantsIsoRig.js"] =
-                    "EIGHTEEN hulls from one generator (3 sizes × 2 styles × 3 regions, all three " +
-                    "axes geometry — measured 18/18 distinct, and re-measured through the extractor " +
-                    "itself by RigMeshVariantExtractionTests). The per-variant face path she needed " +
-                    "now EXISTS (RigHullExtraction, ADR 0022 phase 8); what is outstanding is her " +
-                    "own bake — 18 HullMeshDefs and the deck defs that ride with them. Her RIG is " +
-                    "committed; her sidecars are NOT (see below). This is a to-do, not a blocker.",
-
-                // ⚠️ CORRECTION, 2026-08-14: the line above used to read "Her rig and sidecars are
-                // committed". The rig is; the sidecars never landed. `git ls-tree` finds zero
-                // `lobsterBoatVariants*.gameplay.json` anywhere in the repo, and the fleet pack's
-                // own README repeats the same false claim. LobsterVariantRigTests said so all
-                // along — "Her sidecars are deliberately NOT in this PR" — but the comment here
-                // drifted, which is exactly how a wrong premise hardens into folklore.
-
-                // ---- the 2026-08-12 fleet pack's remaining three rigs, imported 2026-08-14 -------
-                // All three are IMPORTED but NOT YET BAKED. They are here rather than in Hulls
-                // because a rig lands in one PR and her HullMeshDef, deck Def and visual land in the
-                // next — the chain LobsterVariantRigTests describes (a committed sidecar needs a
-                // deck Def, which needs a visual that wears it). Importing the rig first is what
-                // makes the sidecars' `derivedFromRigSha256` resolvable at all: each of these three
-                // files' LF bytes hash to exactly the SHA its sidecar pins, verified on import.
-
-                ["zodiacIsoRig.js"] =
-                    "Coast-guard RHIB, TWO builds off one rig (hurricane 7.28 m / frc 6.66 m over " +
-                    "the tubes). Imported 2026-08-14 so her sidecar's derivedFromRigSha256 " +
-                    "(66e5a977…) resolves against a committed source; her flotation is authored and " +
-                    "no longer provisional (FleetFlotationTableTests, docs/design/fleet-flotation.md " +
-                    "§4). What is outstanding is the bake itself — 2 HullMeshDefs and their deck " +
-                    "defs. Delete this entry when they land.",
-
-                ["sportSkiffMk2IsoRig.js"] =
-                    "The RESHAPED 7.0 m sport skiff — a SECOND hull under a new id " +
-                    "(hullmesh.sport_skiff_mk2_iso), not a replacement for hullmesh.sport_skiff_iso. " +
-                    "⚠️ She ships from art as `sportSkiffIsoRig.js` and installs the SAME global " +
-                    "(`SportSkiffIso`) as the committed 366-line rig, so she is filed here under a " +
-                    "Mk2 name (the sternTrawlerMk2 precedent) rather than overwriting a shipped " +
-                    "hull's source. docs/art/rigs/** is read-only to us, so the global collision is " +
-                    "flagged upstream, not patched: a bake loads ONE rig into a fresh host, so it is " +
-                    "latent — but anything that ever loads two rigs into one host would get the " +
-                    "wrong boat silently. Outstanding: her bake. Delete this entry when it lands.",
-
-                ["sportFisherIsoRig2.js"] =
-                    "TWO battlewagons off one rig (53' convertible 16.2 m / 90' skybridge 27.4 m) — " +
-                    "a genuinely different model from the sport skiff, NOT her v2, despite the two " +
-                    "arriving in one drop. She was outside the 21-hull flotation table entirely; the " +
-                    "owner ruled her IN on 2026-08-14 and her two rows were derived by the doc's own " +
-                    "method (docs/design/fleet-flotation.md §6). Outstanding: her bake. Delete this " +
-                    "entry when it lands.",
+                // ⚠️ One thing those entries said is NO LONGER TRUE, and it is corrected rather than
+                // carried forward: the Mk2 entry warned that she "installs the SAME global
+                // (`SportSkiffIso`) as the committed 366-line rig" and that "the global collision is
+                // flagged upstream, not patched". #534 patched it — she installs `SportSkiffMk2Iso`,
+                // verified in the repo's own V8 — so two rigs in one host no longer collide. That
+                // rename is also why her sidecar needed re-stamping: the drop's file pins the
+                // PRE-rename hash. Measured before the re-stamp: the rename changed 4 lines, 2 of
+                // them the identifier, and moved no number.
             };
 
         public static FleetHull Get(string key)

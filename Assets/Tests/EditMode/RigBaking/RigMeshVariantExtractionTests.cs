@@ -105,13 +105,20 @@ namespace HiddenHarbours.Tests.RigBaking
         [Test]
         public void EveryHullBakedBeforeGeneratorsExisted_TakesTheIdenticalPath()
         {
+            // ⚠️ NARROWED DELIBERATELY, which is what the message below used to ask for. When the 18
+            // lobster variants joined the fleet this swept HullMeshFleet.Hulls and asserted every
+            // entry's Extraction was null — so it went red on the bake, as designed. The control it
+            // is actually making is about the ELEVEN that were baked before generators existed, and
+            // HullMeshFleet.OneHullPerRig is exactly that set, named. Widening the sweep back to
+            // Hulls would only mean asserting that a variant takes the static path, which is the
+            // opposite of true.
             var report = new StringBuilder();
-            foreach (FleetHull hull in HullMeshFleet.Hulls)
+            foreach (FleetHull hull in HullMeshFleet.OneHullPerRig)
             {
                 Assert.IsNull(hull.Extraction,
                     $"{hull.Key} carries a hull extraction. Every hull in the table on 2026-08-12 " +
-                    "took the static F array; if this one is now a generator variant, this fixture's " +
-                    "control set must be narrowed deliberately rather than by accident.");
+                    "took the static F array; if this one is now a generator variant, it belongs in " +
+                    "the variant block rather than in OneHullPerRig — move it deliberately.");
 
                 string before, after;
                 using (IRigScriptHost h = RigScriptHostFactory.Create())
@@ -129,10 +136,66 @@ namespace HiddenHarbours.Tests.RigBaking
                 report.Append(hull.Key).Append(' ');
             }
 
-            Assert.AreEqual(11, HullMeshFleet.Hulls.Count,
-                $"The fleet is no longer the eleven hulls this control was measured against " +
-                $"({report}). That is fine — but re-read the field-compare gate before landing a " +
-                "twelfth, because this test alone does not prove a committed asset unchanged.");
+            // ⚠️ THE CONTROL IS THE ELEVEN, NOT THE COUNT — and writing it as a count is what made
+            // this red on a correct change.
+            //
+            // It used to read `Assert.AreEqual(11, OneHullPerRig.Count)`, and its own message asked
+            // the next person to "re-read the field-compare gate before landing a twelfth". A
+            // twelfth landed on 2026-08-16: the reshaped sport skiff, one hull per rig exactly like
+            // the eleven, but baked long AFTER generators existed, so she is not part of the control
+            // this test is making. A bare count cannot tell her arrival apart from one of the
+            // original eleven going MISSING — which is the failure this exists to catch. Naming them
+            // can, and the gate the old message pointed at is met: her committed def is compared
+            // field-for-field against a fresh extraction by
+            // HullMeshFleetTests.EveryCommittedHullMesh_MatchesAFreshExtractionFromItsRig.
+            //
+            // The per-hull identity check above still sweeps the WHOLE set, newcomer included — that
+            // an extraction naming no variant is exactly the same as none at all is a real check
+            // whenever the hull was baked.
+            string[] bakingOn20260812 =
+            {
+                "dory", "punt", "consoleSkiff", "sportSkiff", "capeIslander", "lobsterBoat",
+                "sideDragger", "sternTrawler", "sternTrawlerMk2", "coastalPacket", "tanker",
+            };
+            CollectionAssert.IsSubsetOf(bakingOn20260812,
+                HullMeshFleet.OneHullPerRig.Select(h => h.Key).ToList(),
+                $"One of the eleven hulls this control was measured against has left " +
+                $"OneHullPerRig ({report}). A hull leaving the static-F set is either a deliberate " +
+                "re-categorisation — say so — or this control silently shrinking, which is how the " +
+                "eleven quietly stop being proven unchanged.");
+
+            CollectionAssert.IsSupersetOf(HullMeshFleet.Hulls.Select(h => h.Key).ToList(),
+                HullMeshFleet.OneHullPerRig.Select(h => h.Key).ToList(),
+                "OneHullPerRig has drifted out of Hulls, so this control set is no longer a subset " +
+                "of the fleet it is meant to be controlling.");
+        }
+
+        /// <summary>
+        /// Every hull that IS a generator cell names a variant — the mirror of the control above,
+        /// and the thing that makes it a partition rather than two lists that happen not to overlap.
+        ///
+        /// <para>Worth its own assert because the failure it catches is silent: a variant row whose
+        /// <c>Extraction</c> went null would bake through the static-F path, and since the rig has no
+        /// <c>F</c> the run reports FAILED — but a row that kept a NON-NULL extraction naming the
+        /// wrong cell bakes a real, plausible boat under another hull's id. The distinctness sweep
+        /// below is what catches the second; this catches the first at the table rather than at the
+        /// bake.</para>
+        /// </summary>
+        [Test]
+        public void EveryGeneratorCellInTheFleet_NamesTheVariantItMeans()
+        {
+            var variants = HullMeshFleet.Hulls.Where(h => h.IsVariant).ToList();
+            Assert.AreEqual(HullMeshFleet.Hulls.Count - HullMeshFleet.OneHullPerRig.Count,
+                            variants.Count,
+                            "Every hull is either one-per-rig or a generator cell; something is neither.");
+
+            foreach (FleetHull hull in variants)
+            {
+                Assert.IsNotEmpty(hull.Extraction.FaceExpression, $"{hull.Key}: empty face expression.");
+                CollectionAssert.Contains(hull.Extraction.ExtraSymbols, ShimName,
+                    $"{hull.Key}: her face expression calls {ShimName}() but does not ask for it to " +
+                    "be shimmed, so the extractor would evaluate an undefined function.");
+            }
         }
 
         /// <summary>A hull that names no variant records no variant — so the eleven committed defs

@@ -159,8 +159,13 @@ namespace HiddenHarbours.Tests.RigBaking
                 Assert.IsTrue(def.IsUsable(), $"{hull.Key}: the committed def is not usable.");
                 Assert.IsNotNull(def.Mesh, $"{hull.Key}: the mesh sub-asset is missing.");
 
+                // ⚠️ The extraction travels with the hull, and for eighteen of them it is the ONLY
+                // thing that says which boat this is. Re-extracting without it does not merely
+                // compare the wrong hull — the generator has no static F at all, so the extractor
+                // throws and this whole fixture fails on the first variant.
                 using IRigScriptHost host = RigScriptHostFactory.Create();
-                RigMeshData fresh = RigMeshExtractor.ExtractFrom(host, hull.ScriptPath, hull.GlobalName);
+                RigMeshData fresh = RigMeshExtractor.ExtractFrom(host, hull.ScriptPath, hull.GlobalName,
+                                                                 hull: hull.Extraction);
                 RigMeshBuild built = RigMeshBuilder.Build(fresh, $"{hull.GlobalName}Check");
 
                 try
@@ -180,6 +185,11 @@ namespace HiddenHarbours.Tests.RigBaking
                     Same("Ramps", def.Ramps.Length, fresh.Materials.Count);
                     Same("SourceRigPath", def.SourceRigPath, hull.ScriptPath);
                     Same("Id", def.Id, hull.MeshId);
+
+                    // Eighteen defs share one SourceRigPath, so the face expression is the only
+                    // field that tells them apart — and a bake that wrote the wrong one would ship
+                    // a real boat under another hull's id, which no count or size check would see.
+                    Same("SourceFaceBuilder", def.SourceFaceBuilder, fresh.SourceFaceExpression);
                 }
                 finally
                 {
@@ -206,7 +216,16 @@ namespace HiddenHarbours.Tests.RigBaking
 
                 using IRigScriptHost host = RigScriptHostFactory.Create();
                 host.Execute(File.ReadAllText(Path.Combine(RepoRoot, hull.ScriptPath)));
-                string g = hull.GlobalName;
+
+                // ⚠️ ROCK is not always on the GLOBAL, and assuming it was is how this went red on a
+                // CORRECT bake. sportFisherIsoRig2.js is a registry — her two hulls carry their own
+                // sea state and her global carries none. They genuinely differ, and the right way
+                // round: rollA 2.1 on the 16.2 m boat against 1.35 on the 27.4 m one. So this reads
+                // from the same scope the baker read from. For every other hull that scope IS the
+                // global, so nothing about the other thirty-two moves.
+                string g = hull.Extraction != null
+                    ? hull.Extraction.ScopeOr(hull.GlobalName)
+                    : hull.GlobalName;
 
                 Assert.IsTrue(host.EvaluateBool($"typeof {g}.ROCK === 'object' && {g}.ROCK !== null"),
                     $"{hull.Key} exports no ROCK block — a hull that cannot rock is not a hull.");

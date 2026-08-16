@@ -37,19 +37,30 @@ namespace HiddenHarbours.Tests.RigBaking
             Directory.GetFiles(Path.Combine(RepoRoot, SidecarFolder), "*.gameplay.json")
                      .OrderBy(f => f);
 
+        /// <summary>
+        /// Read one sidecar against the rig IT names — the same resolution the importer uses, so the
+        /// two cannot disagree about which file the staleness rule is checking.
+        ///
+        /// <para>This used to derive the rig from the sidecar's file name. That is only expressible
+        /// while every rig makes one boat; the lobster generator makes eighteen, whose files are
+        /// named for the hull. It is also the safer form for the eleven — see
+        /// <see cref="DeckSidecarReader.ResolveRigFileName"/>.</para>
+        /// </summary>
         static SidecarRead ReadOne(string file)
         {
-            string rigBase = Path.GetFileName(file).Replace(".gameplay.json", "");
-            string rigPath = Path.Combine(RepoRoot, RigFolder, rigBase + ".js");
-            Assert.IsTrue(File.Exists(rigPath), $"{rigBase}: the rig it names is missing");
-            return DeckSidecarReader.Read(File.ReadAllText(file), $"{SidecarFolder}/{Path.GetFileName(file)}",
-                                          File.ReadAllBytes(rigPath));
+            string who = Path.GetFileName(file);
+            string json = File.ReadAllText(file);
+            string rigFile = DeckSidecarReader.ResolveRigFileName(who, json);
+            string rigPath = Path.Combine(RepoRoot, RigFolder, rigFile);
+            Assert.IsTrue(File.Exists(rigPath), $"{who}: the rig it names ({rigFile}) is missing");
+            return DeckSidecarReader.Read(json, $"{SidecarFolder}/{who}", File.ReadAllBytes(rigPath));
         }
 
         static BoatDeckDef DefFor(string file)
         {
-            string rigBase = Path.GetFileName(file).Replace(".gameplay.json", "");
-            string stem = DeckSidecarImporter.StripRigSuffix(rigBase);
+            // The sidecar's file STEM names the hull; the rig it was cut from is inside the file.
+            string stem = DeckSidecarImporter.StripRigSuffix(
+                Path.GetFileName(file).Replace(".gameplay.json", ""));
             string name = char.ToUpperInvariant(stem[0]) + stem.Substring(1);
             return AssetDatabase.LoadAssetAtPath<BoatDeckDef>($"{DeckFolder}/{name}.asset");
         }

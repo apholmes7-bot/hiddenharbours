@@ -414,6 +414,123 @@ namespace HiddenHarbours.Tools.RigBaking
                     ["MATS"] = "matsFor('gelcoat').MATS",
                 },
 
+                // ---- the zodiac GENERATOR (fleet rig pack, 2026-08-12; baked 2026-08-16) ----------
+                // The second generator, and the simplest of the three: ONE cell (272×248) serving TWO
+                // builds, with `BUILDS` and `buildIds` already public and only the assembler private.
+                // So her reconstruction is one line and she needs no scope and no inner widening.
+                //
+                // ⚠️ `facesOf(BUILDS[b])` rather than the rig's own `facesOf(buildOf({build:b}))`, and
+                // the difference is the failure mode. `buildOf` is written to fall back
+                // (`BUILDS[o.build] || BUILDS[DEFAULT_BUILD]`), so a mistyped build id would hand back
+                // the hurricane silently — the same trap the lobster generator's `resolve` carries and
+                // the sport fisher's `byId` carries. Indexing BUILDS directly means an unknown id is
+                // `undefined` and `facesOf` throws on `B.id` — measured 2026-08-15:
+                // `variantFaces('NONSENSE')` → "TypeError: Cannot read properties of undefined".
+                // A loud failure at the one point a typo can enter is worth more than a fallback.
+                //
+                // MEASURED (repo's own V8 host, 2026-08-15, shim applied as WidenExportedLiteral
+                // applies it): she exports none of F/MATS/GAIN/BIAS/LN; PX, defaultElev, KEY, BUILDS
+                // and buildIds ARE public. hurricane builds 1780 faces, frc 1704 — distinct, and the
+                // per-hull geometry hash is what proves it rather than those counts.
+                //
+                // ⚠️ HER MATS IS THE ONLY ONE IN THE FLEET THAT DOES NOT FIT THE SHADER, and the fix
+                // is a MEASUREMENT rather than a shader change. She declares EIGHTEEN materials and
+                // `_RampMeta` is a `float4[16]` — a real uniform array, guarded in three places
+                // (HullMeshDef.IsUsable, IsoFacetHullRenderer.Configure, HullPaintSchemeBaker) — so
+                // her first bake failed with "not usable" and no hull-side change could have fixed
+                // it.
+                //
+                // Measured in the repo's own V8, 2026-08-16: her hull FACES reference exactly
+                // FOURTEEN of those eighteen, and the same fourteen on BOTH builds —
+                // alu,blk,blu,boot,glas,hull,liner,moto,rub,seat,silv,sole,tube,white. The four that
+                // no face names are `tubed`, `blulit`, `amb` and `amblit`, and they are not an
+                // oversight: `blulit`/`amblit` are the +2-offset LIT variants of her nav lights and
+                // belong to `renderBeacon`/`renderLight`, which draw a beacon this mesh does not
+                // carry. A ramp no face references cannot colour a pixel.
+                //
+                // So this hands the extractor the materials her hull ACTUALLY USES, in the rig's own
+                // MATS order, derived from the rig's own face lists — not a hand-written list of
+                // fourteen names, which is the transcription this project has been burned by. Order
+                // is preserved and therefore still load-bearing: `hull` is first in MATS and is used,
+                // so it stays index 0, which is what the face packer resolves an unknown material to.
+                //
+                // ⚠️ Per-FILE, so no other hull's ramp table moves — the eleven and the eighteen keep
+                // their committed bytes. And it is adjudicated in PIXELS by her acceptance fixture
+                // against her own renderer, like every other hull: if dropping those four changed
+                // anything visible, that is where it shows.
+                ["zodiacIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
+                {
+                    ["variantFaces"] = "function(b){return facesOf(BUILDS[b]).F;}",
+                    ["MATS"] =
+                        "(function(){var used={},out={};" +
+                        "for(var b in BUILDS){var F=facesOf(BUILDS[b]).F;" +
+                        "for(var i=0;i<F.length;i++)used[F[i].mat]=1;}" +
+                        "for(var k in MATS)if(used[k])out[k]=MATS[k];" +
+                        "return out;})()",
+                },
+
+                // ---- the sport fisher REGISTRY (fleet rig pack, 2026-08-12; baked 2026-08-16) -----
+                // The third generator shape, and the only one whose face list is out of the global
+                // widening's reach entirely. The other two build their hulls from a MODULE-level
+                // function, so widening the exported literal — which is evaluated in the module
+                // closure — can call it. This rig builds each hull inside `makeRig(spec)`, and `F`,
+                // `RIGF` and `faceList` are locals of that CALL. There is no expression in the module
+                // closure that names them, so no Reconstructions entry alone can reach them; see
+                // RigMeshSymbols.InnerWidenings, which widens `makeRig`'s own return literal.
+                //
+                // ⚠️ `faceList('stowed')`, NOT `F`. Her outriggers are a state, not a fitting:
+                // `faceList(r) = F.concat(RIGF[r])` and her own `render` calls
+                // `faceList(opts.riggers||'stowed')`. Taking `F` alone would bake a boat whose mesh
+                // is missing the geometry her own picture draws, and the acceptance compares the two.
+                // Reading the rig's OWN composer rather than transcribing the concat is the same
+                // move `palette({}).mats` makes for the small craft.
+                //
+                // ⚠️ Throws on an unknown id ON PURPOSE. `byId` falls back to the convertible
+                // silently, so `byId(typo).faceList('stowed')` would bake the 16.2 m boat under the
+                // 27.4 m boat's id and every count would look plausible.
+                //
+                // MEASURED (repo's own V8 host, 2026-08-15, both widenings applied): the widened
+                // `faceList('stowed').length` equals the rig's OWN published `faceCount` on both
+                // hulls — 3200 and 3770 — which is an independent check that this expression reaches
+                // the list the rig means, not merely a list.
+                ["sportFisherIsoRig2.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
+                {
+                    ["variantFaces"] =
+                        "function(id){var h=null;for(var i=0;i<HULLS.length;i++)" +
+                        "if(HULLS[i].id===id)h=HULLS[i];" +
+                        "if(!h)throw new Error('sportFisherIsoRig2.js: no hull \"'+id+'\". " +
+                        "byId() would have returned the DEFAULT hull silently.');" +
+                        "return h.faceList('stowed');}",
+                    // Her paint is an axis, like the lobster's and the small craft's, and
+                    // `defaultPaint` is 'gelcoat' on both hulls — so this reads the table the rig
+                    // itself would use rather than transcribing one. Her twelve entries are
+                    // hull,boot,cream,stripe,teak,deck,grip,glas,steel,iron,blk,dark; order is
+                    // load-bearing because the face packer resolves an unknown material to index 0.
+                    ["MATS"] = "matsFor('gelcoat').MATS",
+                    // ⚠️ NO `defaultElev` entry, deliberately. It is not one of Required, so it is
+                    // never shimmed — it is read directly, and for this rig it is read from the HULL
+                    // (RigHullExtraction.HullScope), which is where she publishes it. A module-level
+                    // reconstruction would bind the same 40 by a second mechanism and hide the fact
+                    // that elevation is a per-hull fact on this rig.
+                },
+
+                // ---- the RESHAPED sport skiff (fleet rig pack, 2026-08-12; baked 2026-08-16) -----
+                // The FIFTH hull to lose her `MATS` const to a paint axis, and she takes the small
+                // craft's API for the same reason the Cape Islander does: she IS one of them, and
+                // `palette` is already exported so the entry is one line. Her `defaultScheme` is
+                // 'gelcoat-white', and `palette({})` is her own resolver called with no colourway,
+                // which her own code resolves to that default — the table she would use, not one
+                // transcribed here.
+                //
+                // ⚠️ Without this the bake fails outright with "ReferenceError: MATS is not defined",
+                // exactly as the punt and the console did. That is what it did on 2026-08-16's first
+                // run, and it is a loud failure rather than a wrong boat — which is the one good
+                // thing about this class of gap.
+                ["sportSkiffMk2IsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
+                {
+                    ["MATS"] = "palette({}).mats",
+                },
+
                 // The skiff motor is a LAYER, not a hull, so its export omits two things every hull
                 // rig publishes and the extractor reads unconditionally: the pixel scale and the bake
                 // elevation. Both exist under the rig's own names (`S`, `DEFAULT_ELEV`) — this is a
@@ -425,6 +542,73 @@ namespace HiddenHarbours.Tools.RigBaking
                     ["defaultElev"] = "DEFAULT_ELEV",
                 },
             };
+
+        /// <summary>One extra object literal a rig has to have widened before the exported one can
+        /// reach its contents. See <see cref="InnerWidenings"/>.</summary>
+        public sealed class InnerWidening
+        {
+            /// <summary>Must match EXACTLY ONCE, and the insertion goes immediately after it. Written
+            /// tightly enough to name one literal rather than "a return statement".</summary>
+            public string AnchorPattern;
+
+            /// <summary>Verbatim JS inserted after the anchor — property names the closure already
+            /// binds, so the widening EXPOSES what is there rather than computing anything.</summary>
+            public string Insert;
+
+            /// <summary>What the widening buys, for the log line and the failure message.</summary>
+            public string Why;
+        }
+
+        /// <summary>
+        /// ⚠️ <b>Rigs whose geometry is out of the exported literal's REACH — not merely unexported.
+        /// </b>
+        ///
+        /// <para><see cref="Reconstructions"/> handles a symbol that is private to the rig's MODULE:
+        /// the shim adds a property to the exported literal, that literal is evaluated in the module
+        /// closure, so any module-level name is reachable. Every generator so far has been of that
+        /// kind — the lobster's <c>facesFor</c>/<c>resolve</c> and the zodiac's <c>facesOf</c> are
+        /// module-level functions, and one line each is enough.</para>
+        ///
+        /// <para><b><c>sportFisherIsoRig2.js</c> is not.</b> She builds each of her two hulls inside
+        /// <c>makeRig(spec)</c> and returns an object that deliberately omits the geometry:
+        /// <c>F</c>, <c>RIGF</c> and <c>faceList</c> are locals of that CALL, and the two calls have
+        /// two different sets of them. No expression evaluated in the module closure can name
+        /// either, so there is no <see cref="Reconstructions"/> entry that could work — the reach
+        /// problem has to be solved where the values live, by widening <c>makeRig</c>'s OWN return
+        /// literal. Both hulls get the property because both come out of the same function, which is
+        /// the point: one anchor, two hulls, and no per-hull transcription.</para>
+        ///
+        /// <para><b>Same discipline as the outer shim, for the same reasons:</b> anchored on a regex
+        /// that must match exactly once, operating on a string in memory, never a file on disk, and
+        /// it retires the day the rig exports <c>faceList</c> itself. It is louder about failing than
+        /// the outer one because a mis-aimed insert here produces a rig that still RUNS and still
+        /// draws — it would simply have no faces to extract.</para>
+        /// </summary>
+        public static readonly IReadOnlyDictionary<string, IReadOnlyList<InnerWidening>>
+            InnerWidenings = new Dictionary<string, IReadOnlyList<InnerWidening>>(
+                StringComparer.OrdinalIgnoreCase)
+            {
+                ["sportFisherIsoRig2.js"] = new[]
+                {
+                    new InnerWidening
+                    {
+                        // `return {` followed by makeRig's own first property. Deliberately NOT a
+                        // bare `return {`: this rig has several (proj's `{x,y}`, DOORS, NAV), and an
+                        // anchor that matched one of those would expose nothing and fail far away.
+                        AnchorPattern = @"return\s*\{\s*\n\s*id:spec\.id,",
+                        Insert = " faceList, F, RIGF,",
+                        Why = "makeRig() keeps this hull's face list in its own closure; the mesh " +
+                              "bake reads faceList('stowed'), which is exactly what her render() " +
+                              "draws (F.concat(RIGF.stowed)).",
+                    },
+                },
+            };
+
+        /// <summary>The extra literals to widen for this rig, or an empty list.</summary>
+        public static IReadOnlyList<InnerWidening> InnerWideningsFor(string scriptPath) =>
+            InnerWidenings.TryGetValue(Path.GetFileName(scriptPath ?? string.Empty), out var list)
+                ? list
+                : Array.Empty<InnerWidening>();
 
         /// <summary>
         /// The JS expression the shim should bind <paramref name="symbol"/> to for this rig. Normally
@@ -631,9 +815,58 @@ namespace HiddenHarbours.Tools.RigBaking
         /// retires the same way, on the day the rig exports it.</summary>
         public string[] ExtraSymbols = Array.Empty<string>();
 
+        /// <summary>
+        /// The same variant, written as a JS object literal for the rig's own PUBLIC entry points —
+        /// e.g. <c>{size:'offshore',style:'hardtop',region:'fundy'}</c> for
+        /// <c>render(dir, opts)</c>, <c>navMounts(dir, opts)</c>, <c>anchors(v)</c>.
+        ///
+        /// <para><b>Not a duplicate of <see cref="FaceExpression"/>, and the difference matters.</b>
+        /// That one is a call into a SHIMMED private builder and is only valid inside the widened
+        /// host; this one is a plain descriptor the rig accepts anywhere, and is what a probe needs
+        /// in order to photograph THIS hull rather than the generator's default. Measured
+        /// 2026-08-15: without it, all eighteen lobster cells rendered an identical 45,211 opaque
+        /// pixels at the azimuth probe — one hull's picture deciding seventeen hulls' convention.</para>
+        ///
+        /// <para>Null for a static-F hull, whose rig takes no descriptor at all.</para>
+        /// </summary>
+        public string ViewOptions;
+
+        /// <summary>
+        /// The object THIS HULL's own cell and camera live on, relative to the global — e.g.
+        /// <c>byId('convertible')</c>. Empty (the case for every hull baked before 2026-08-16) means
+        /// the global itself, and that path is left bit-for-bit alone.
+        ///
+        /// <para><b>Why a scope and not a cell path.</b> <see cref="RigPropExtraction.CellPath"/>
+        /// redirects exactly one thing — <c>W</c>/<c>H</c>/<c>pivot</c> — because a fitting shares
+        /// its hull's camera and differs only in how much room its cowl needs. That is not the shape
+        /// of <c>sportFisherIsoRig2.js</c>. She is a REGISTRY: her global carries no
+        /// <c>defaultElev</c>, no <c>render</c>, no <c>ROCK</c> and no <c>navMounts</c> at all
+        /// (measured in the repo's own V8, 2026-08-15 — the global holds only <c>PX</c>,
+        /// <c>KEY</c>, <c>HULLS</c>, <c>byId</c> and the paint tables), because those are per-hull
+        /// facts and her two hulls genuinely differ in every one of them: 820×770 against
+        /// 1200×1170, pivots (410,475) against (600,730).</para>
+        ///
+        /// <para>So this redirects the whole per-hull GROUP — cell, elevation, render, rock, nav
+        /// mounts — and the shading half (<c>GAIN</c>/<c>BIAS</c>/<c>LN</c>/<c>MATS</c>/<c>KEY</c>)
+        /// stays on the global, which is where that rig puts it. Splitting them is not a
+        /// convenience: reading <c>defaultElev</c> off her global yields <c>undefined</c>, and an
+        /// undefined elevation does not fail — it poses the whole bake at NaN.</para>
+        ///
+        /// <para>⚠️ <b>An unknown id here is silent.</b> <c>byId</c> resolves anything it does not
+        /// recognise to the FIRST hull, so a typo in this path bakes the convertible under the
+        /// skybridge's id and nothing complains. That is why the per-hull geometry hash exists and
+        /// why face COUNT is not the oracle.</para>
+        /// </summary>
+        public string HullScope = "";
+
         /// <summary>True when this extraction names a variant rather than taking the static array.
         /// </summary>
         public bool IsVariant => !string.IsNullOrEmpty(FaceExpression);
+
+        /// <summary><paramref name="globalName"/>, or the per-hull object when this extraction names
+        /// one. The single place the "global unless scoped" rule is written.</summary>
+        public string ScopeOr(string globalName) =>
+            string.IsNullOrEmpty(HullScope) ? globalName : $"{globalName}.{HullScope}";
     }
 
     public static class RigMeshExtractor
@@ -724,7 +957,12 @@ namespace HiddenHarbours.Tools.RigBaking
             // ---- pass 2: the shim, only for what is actually missing -------------------------
             if (missing.Count > 0)
             {
-                string widened = WidenExportedLiteral(source, g, missing, scriptPath);
+                // The INNER literals first, where a rig keeps geometry out of the exported literal's
+                // reach entirely, then the exported literal itself. Order matters only in that both
+                // must be present in the one string pass 2 executes — executing them separately would
+                // re-run the IIFE twice and the second run would win.
+                string widened = ApplyInnerWidenings(source, scriptPath);
+                widened = WidenExportedLiteral(widened, g, missing, scriptPath);
                 host.Execute(widened);
 
                 var stillMissing = new List<string>();
@@ -761,9 +999,17 @@ namespace HiddenHarbours.Tools.RigBaking
             // A fitting may ship its OWN cell — the skiff outboard's 272×216 against a 244×216 hull,
             // because the engine swings outboard of the transom. Reading the hull's cell for it would
             // crop the cowl on hard-over headings, so the cell source is part of the extraction.
-            string cell = prop == null || string.IsNullOrEmpty(prop.CellPath)
-                ? g
-                : $"{g}.{prop.CellPath}";
+            //
+            // A HULL may ship its own too, and for a different reason: a registry rig
+            // (sportFisherIsoRig2.js) publishes no cell on its global at all, because a 16.2 m boat
+            // and a 27.4 m boat share nothing but their paint. Reading the global's would read
+            // `undefined`, which does not fail — it poses the bake at NaN. See
+            // RigHullExtraction.HullScope. Null scope = the global, which is the path every hull
+            // baked before 2026-08-16 takes, unchanged.
+            string hullScope = hull != null ? hull.ScopeOr(g) : g;
+            string cell = prop != null && !string.IsNullOrEmpty(prop.CellPath)
+                ? $"{g}.{prop.CellPath}"
+                : hullScope;
 
             var data = new RigMeshData
             {
@@ -774,7 +1020,10 @@ namespace HiddenHarbours.Tools.RigBaking
                 PivotX = host.EvaluateNumber($"{cell}.pivot.x"),
                 PivotY = host.EvaluateNumber($"{cell}.pivot.y"),
                 PxPerMetre = (int)host.EvaluateNumber($"{g}.PX"),
-                DefaultElev = host.EvaluateNumber($"{g}.defaultElev"),
+                // The elevation follows the CELL, not the global: a rig that gives each hull its own
+                // camera gives each hull its own bake elevation with it. A fitting keeps the global's,
+                // because it is drawn through its hull's camera by construction.
+                DefaultElev = host.EvaluateNumber($"{(prop != null ? g : hullScope)}.defaultElev"),
                 Gain = host.EvaluateNumber($"{g}.GAIN"),
                 Bias = host.EvaluateNumber($"{g}.BIAS"),
                 LightN = new Vector3d(host.EvaluateNumber($"{g}.LN[0]"),
@@ -883,6 +1132,42 @@ namespace HiddenHarbours.Tools.RigBaking
 
             var m = matches[0];
             return source.Insert(m.Index + m.Length, insert.ToString());
+        }
+
+        /// <summary>
+        /// Applies this rig's <see cref="RigMeshSymbols.InnerWidenings"/> — the extra object literals
+        /// whose contents the exported literal cannot reach. A no-op for every rig but the sport
+        /// fisher, so the string every other bake executes is byte-identical to what it always was.
+        /// </summary>
+        /// <remarks>Public for the same reason <see cref="WidenExportedLiteral"/> is: the tests hit
+        /// it without an engine. Not an entry point.</remarks>
+        public static string ApplyInnerWidenings(string source, string scriptPath)
+        {
+            foreach (var w in RigMeshSymbols.InnerWideningsFor(scriptPath))
+            {
+                var anchor = new Regex(w.AnchorPattern, RegexOptions.CultureInvariant);
+                var matches = anchor.Matches(source);
+                if (matches.Count != 1)
+                    throw new InvalidOperationException(
+                        $"Inner widening for {scriptPath} matched its anchor {matches.Count} times, " +
+                        "expected exactly 1.\n" +
+                        $"  anchor : {w.AnchorPattern}\n" +
+                        $"  buys   : {w.Why}\n" +
+                        "⚠️ This one fails QUIETLY if it is ever loosened: a mis-aimed insert still " +
+                        "leaves a rig that runs and draws, it simply has no faces to extract, and " +
+                        "the error surfaces later as an empty face list from an unrelated-looking " +
+                        "expression. Re-aim the anchor against the rig's current text — or, far " +
+                        "better, retire this entry by asking the art director to export the " +
+                        "symbols it exposes. ⚠️ Do NOT fix this by editing docs/art/rigs/**.");
+
+                var m = matches[0];
+                source = source.Insert(m.Index + m.Length, w.Insert);
+                Debug.LogWarning(
+                    $"[rig-mesh] {scriptPath}: widened an INNER literal in memory ({w.Insert.Trim()}) " +
+                    $"because {w.Why} The file on disk was not touched. This retires the day the rig " +
+                    "returns those names from that literal itself.");
+            }
+            return source;
         }
 
         static void ReadBayer(IRigScriptHost host, string g, bool exported, RigMeshData data)

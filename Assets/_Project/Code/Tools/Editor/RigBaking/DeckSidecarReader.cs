@@ -121,6 +121,42 @@ namespace HiddenHarbours.Tools.RigBaking
         }
 
         /// <summary>
+        /// <b>Which rig file this sidecar was cut from — asked of the FILE, not of its name.</b>
+        ///
+        /// <para>Every sidecar has always carried a <c>rig</c> field naming its source; until now the
+        /// importer ignored it and derived the rig mechanically from the file name instead
+        /// (<c>lobsterBoatIsoRig.gameplay.json</c> → <c>lobsterBoatIsoRig.js</c>). That worked while
+        /// every rig made exactly one boat, and it stops working the moment one does not:
+        /// <c>lobsterBoatVariantsIsoRig.js</c> makes EIGHTEEN, and eighteen sidecars cannot share one
+        /// file name. So the variants' files are named for the HULL
+        /// (<c>lobsterStandardHardtopFundyIso.gameplay.json</c>) and the rig is read from the
+        /// declaration inside.</para>
+        ///
+        /// <para><b>Reading the field is also strictly safer than reading the name</b>, which is the
+        /// part worth noticing. The staleness rule hashes the rig against
+        /// <c>derivedFromRigSha256</c>; with the name as the source of truth, a sidecar could name
+        /// rig A in its JSON while being hashed against rig B off its file name, and nothing checked
+        /// that the two agreed. Resolving from the field closes that: the file that gets hashed is
+        /// the file the sidecar claims to describe.</para>
+        ///
+        /// <para>The file name remains the fallback for a sidecar with no <c>rig</c> field at all, so
+        /// the historic rule still applies where it is the only rule available.</para>
+        /// </summary>
+        /// <param name="sidecarFileName">e.g. <c>doryIsoRig.gameplay.json</c>.</param>
+        /// <param name="sidecarJson">the file's contents; unparseable content falls back to the name.</param>
+        public static string ResolveRigFileName(string sidecarFileName, string sidecarJson)
+        {
+            string declared = null;
+            try { declared = DeckSidecarJson.String(DeckSidecarJson.Member(DeckSidecarJson.Parse(sidecarJson), "rig")); }
+            catch (Exception) { /* an unreadable sidecar is reported by Read(); fall back to the name */ }
+
+            if (!string.IsNullOrWhiteSpace(declared)) return declared.Trim();
+
+            string stem = (sidecarFileName ?? "").Replace(".gameplay.json", "");
+            return stem + ".js";
+        }
+
+        /// <summary>
         /// Read one sidecar. <paramref name="rigBytes"/> is the rig file the sidecar names, as stored;
         /// pass null to skip the staleness check entirely (tests only — the import never does).
         /// </summary>

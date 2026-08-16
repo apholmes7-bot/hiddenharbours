@@ -81,15 +81,22 @@ namespace HiddenHarbours.Tests.RigBaking
         ///
         /// <para>The omission is in the owner's GENERATOR, not in the packaging, and this test is how
         /// that is established rather than assumed: it asks the rig itself. Per ADR 0021 a defect in
-        /// the owner's file is recorded and pinned, never patched — so when her sidecars land they
-        /// will land with the hash stamped on our side, and this test going RED is the signal that a
-        /// drop has fixed it and the stamping step can be deleted.</para>
+        /// the owner's file is recorded and pinned, never patched — so her sidecars land with the
+        /// hash stamped on OUR side, and this test going RED is the signal that a drop has fixed it
+        /// and the stamping step can be deleted.</para>
         ///
-        /// <para>Her sidecars are deliberately NOT in this PR. A committed sidecar requires a deck
-        /// Def (<c>EverySidecarHasACommittedDeckDef</c>), and a committed deck Def requires a visual
-        /// that wears it (<c>EveryMeasuredHullsVisualPointsAtHerOwnDeck</c>) — which requires a
-        /// picture, which for her requires the per-variant mesh extraction she is excluded for. The
-        /// whole chain lands together.</para>
+        /// <para><b>The stamping step now exists and is named:</b>
+        /// <see cref="LobsterVariantSidecarGenerator"/>. It writes the rig's own
+        /// <c>gameplayGeometry()</c> output verbatim and splices in the LF-normalised hash of the
+        /// committed rig, because an ABSENT <c>derivedFromRigSha256</c> is not a soft warning —
+        /// <c>DeckSidecarReader.MatchRigHash</c> returns <c>None</c> for it, the same refusal a stale
+        /// hash gets, so an unstamped sidecar imports as nothing at all.</para>
+        ///
+        /// <para>⚠️ <b>This test stays GREEN through that work, and that is correct</b>, not an
+        /// oversight — it asserts a fact about the RIG, which is read-only to us and unchanged. The
+        /// prose here used to say "her sidecars are deliberately NOT in this PR"; they are in the
+        /// repo now (the whole chain — sidecar → deck Def → visual → mesh — landed together, exactly
+        /// as that note predicted it would have to).</para>
         /// </summary>
         [Test]
         public void TheRigsOwnGenerator_StillOmitsProvenance()

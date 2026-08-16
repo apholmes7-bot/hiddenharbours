@@ -7,11 +7,15 @@ fishers. The baker never writes these three fields — that is what lets them su
 (`RigMeshAssetBaker`, and the `HullMeshDef` field docs) — so they have to be derived and written by
 hand, once, against a method somebody can check.
 
-**Status (2026-08-14).** The numbers below are authored and pinned by `FleetFlotationTableTests`. They
-are **not yet on any asset**, because no `HullMeshDef` exists for these hulls yet:
-`lobsterBoatVariantsIsoRig.js`, `zodiacIsoRig.js`, `sportSkiffMk2IsoRig.js` and `sportFisherIsoRig2.js`
-are all in `HullMeshFleet.NotHulls`. When the bake lands, it writes these values into the defs it
-creates and the coverage test in that fixture stops being inert.
+**Status (2026-08-16). ~~Not yet on any asset~~ — SHIPPED.** This section used to say the numbers were
+"not yet on any asset, because no `HullMeshDef` exists for these hulls yet". That went stale the day
+#541 and #543 landed: all 23 hulls have a committed `HullMeshDef` carrying these drafts, none of the four
+rigs is in `HullMeshFleet.NotHulls` any more, and the coverage test in that fixture is no longer inert.
+**The assets are the source of truth; this document is the derivation behind them.**
+
+The gameplay half landed next, on the owner's 2026-08-15 ruling that the new boats go dev-picker
+sailable: all 23 now carry a `BoatHullDef` too. That def has its own draft field, and it is **not** this
+one — see §9.
 
 **⚠️ Nothing here is provisional any more.** This document was written when the zodiac and sport-skiff-v2
 rigs were pack-only and could not be checked against a committed source. All three rigs were imported on
@@ -306,3 +310,47 @@ column moves — and `RigFileFor()` in the fixture, which maps a row to the rig 
 Hulls visually sitting too low was diagnosed as **iso gain plus animator phase**, not draft. If a hull
 looks wrong in the water at the number above, measure before touching it — the draft may be right and
 the presentation at fault.
+
+---
+
+## 9. The OTHER draft — `BoatHullDef.DraughtMeters`, and the ratio between them
+
+Everything above is `HullMeshDef.RestingDraftMeters`: **where the sea is drawn on her planking.** It is
+not the field that decides where she runs aground. That one is `BoatHullDef.DraughtMeters`, it lives on
+a different asset with a different owner, and the two have been mistaken for each other more than once —
+the console skiff reads 0.21 on one and 0.55 on the other.
+
+**They are not independent.** `water-rendering.md` records the side dragger's mesh draft being set by
+"the same ≈0.38 visual-to-gameplay-draught ratio applied to her 2.9 m `DraughtMeters`" — and that ratio
+turns out to reproduce the *entire* shipped fleet, not just her:
+
+| hull | gameplay draught | drawn waterline | ratio |
+| --- | --: | --: | --: |
+| dory | 0.30 | 0.11 | 2.727 |
+| punt (upgraded) | 0.55 | 0.19 | 2.895 |
+| console skiff | 0.55 | 0.21 | 2.619 |
+| sport skiff | 0.50 | 0.19 | 2.632 |
+| sport skiff (twin) | 0.55 | 0.19 | 2.895 |
+| cape islander | 1.40 | 0.53 | 2.642 |
+| lobster boat | 1.30 | 0.50 | 2.600 |
+| side dragger | 2.90 | 1.10 | 2.636 |
+| stern trawler | 4.20 | 1.60 | 2.625 |
+| trawler Mk2 | 4.30 | 1.63 | 2.638 |
+| coastal packet | 5.00 | 1.90 | 2.632 |
+| tanker | 6.50 | 2.47 | 2.632 |
+
+Eleven hulls of four different types across a 25× range of length, and ten of them sit inside
+2.60–2.65. The two outliers are both the same case — a hull given a heavier engine without her art being
+re-lofted (the upgraded punt and the sport twin each inherit a sister's mesh draft), which is a reason,
+not a counterexample. **So `DraughtMeters = RestingDraftMeters / 0.38`, rounded to the fleet's 0.05 m
+granularity, is the rule.** Every gameplay draught in the 23-hull pack was derived that way rather than
+eyeballed, and at the one cell where a committed answer already existed — `standard/*/northumberland`,
+which §3 establishes IS the committed lobster boat — it reproduces her authored 1.30 m exactly.
+
+`FleetHullDefLadderTests` pins both halves: the band fleet-wide, and exact agreement on the hulls
+derived by it.
+
+⚠️ **Do not read this as physics either.** It is the same kind of number as §1's: a drawn waterline is
+a look, a gameplay draught is a grounding rule with a safety margin baked in, and 0.38 is the constant
+this project has consistently chosen between them. It is a *consistency* rule, and its value is that a
+hull re-lofted by art has one obvious right answer on the gameplay side.

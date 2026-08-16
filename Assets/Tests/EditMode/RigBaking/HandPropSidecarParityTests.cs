@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using NUnit.Framework;
 using UnityEngine;
 using HiddenHarbours.Art.Editor;      // MiniJson — the reader the shipped importers use
@@ -34,9 +35,14 @@ namespace HiddenHarbours.Tests.RigBaking
             CharacterRigBakeMenu.CharacterArtFolder,
             CharacterRigBakeMenu.AnchorFileName);
 
-        /// <summary>MiniJson exposes Dict/List/Float/Int but no string or bool accessor — the importers
-        /// that use it never needed one. Read them off the dictionary directly rather than widening a
-        /// shared helper for a test.</summary>
+        /// <summary>
+        /// Local string/bool readers, kept even though <see cref="MiniJson"/> has since grown
+        /// <c>String</c>/<c>Bool</c> for the carry-anchor importer — because these two answer DIFFERENTLY
+        /// on purpose. <see cref="Str"/> reports an explicit JSON <c>null</c> as the text "null" so a test
+        /// can tell "no rig baked" apart from "no such key", which is the distinction the art-debt test
+        /// below turns on; the shared helper flattens both to a C# null, which is what its importers
+        /// want. Do not "unify" them.
+        /// </summary>
         static string Str(object node, string key)
             => node is Dictionary<string, object> d && d.TryGetValue(key, out object v)
                 ? (v as string ?? (v == null ? "null" : v.ToString()))
@@ -168,6 +174,47 @@ namespace HiddenHarbours.Tests.RigBaking
                         $"'{prop}' at dir {d}: the grip offset drifted from the rig.");
                 }
             }
+        }
+
+        /// <summary>
+        /// <b>The arm nothing can reach, and the one whose failure takes every consumer down at once.</b>
+        ///
+        /// <para><c>handProps</c> is the LAST key of the document, so the absent-layer branch's output is
+        /// followed immediately by the closing brace. It shipped with a trailing comma — <c>"handProps":
+        /// null,</c> then <c>}</c> — which is not JSON, and would have made the whole sidecar unreadable
+        /// rather than merely dropping one block: the rod overlay, the bobber, the held fish and the
+        /// carry anchors all parse the same file. It has never fired, because a character bake always
+        /// installs the layer; a rig kit that predates it would have been the first to find out.</para>
+        ///
+        /// <para>This drives that arm directly on a host with nothing installed, which is exactly the
+        /// condition it exists for, and then PARSES the result rather than eyeballing the text —
+        /// <see cref="MiniJson"/> rejects a trailing comma (it demands a key after every comma), so the
+        /// parse is the assertion and the string checks below only turn a throw into a diagnosis.</para>
+        /// </summary>
+        [Test]
+        public void AnAbsentHandPropLayer_StillWritesParseableJson()
+        {
+            using var host = RigScriptHostFactory.Create();      // NOTHING installed
+            Assert.IsFalse(host.EvaluateBool($"typeof {Hands} === 'object' && {Hands} !== null"),
+                           "precondition: this host must NOT have the hand-prop layer");
+
+            // The document's tail, exactly as the baker assembles it: the states block closed with its
+            // comma, the handProps arm, the closing brace.
+            var sb = new StringBuilder();
+            sb.Append("{\n  \"rig\": \"probe\",\n  \"states\": {\n  },\n");
+            CharacterRigBaker.AppendHandProps(sb, host, default, AzimuthConvention.Clockwise, "fisher");
+            sb.Append("}\n");
+            string json = sb.ToString();
+
+            StringAssert.Contains("\"handProps\": null", json, "the absent arm must still declare the key");
+            Assert.IsFalse(json.Contains("null,\n}"),
+                           $"a trailing comma before the closing brace:\n{json}");
+
+            object parsed = null;
+            Assert.DoesNotThrow(() => parsed = MiniJson.Parse(json),
+                                $"the absent-layer sidecar is not parseable JSON:\n{json}");
+            Assert.IsNull(MiniJson.Dict(parsed, "handProps"),
+                          "an absent layer must read as absent, not as an empty block");
         }
     }
 }
