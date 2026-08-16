@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb8575fc41a22d24c8433d9cb61748dc, type: 3}
+  m_Name: ZodiacFrc
+  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.BoatHullDef
+  Id: boat.zodiac_frc
+  DisplayName: The Zodiac FRC
+  Visual: {fileID: 11400000, guid: 30e6cae75666a814f865683f67beb9b9, type: 2}
+  Sprite: {fileID: 0}
+  LengthMeters: 6.66
+  DraughtMeters: 0.8
+  MassKg: 800
+  HoldUnits: 6
+  CrewSlots: 2
+  Propulsion: 1
+  EnginePower: 1710
+  RudderAuthority: 950
+  OarPower: 0
+  OarLateralOffset: 0
+  OarBraceDrag: 0
+  ForwardDrag: 140
+  LateralDrag: 360
+  WindExposure: 0.6
+  MaxSafeSeaState: 6
+  RodeMeters: 10
+  SeakeepingMassFactor: 1.6
+  SeakeepingLiveliness: 0.8
+  SeakeepingDamping: 0.25
+  CameraWorldHeightMeters: 18
+  DeckContainer: {fileID: 0}
+  DeckContainerOffset: {x: 0.35, y: -0.9}
+  Helm: {fileID: 11400000, guid: 3f8a1c2e9b674d0f8a51c7e2d4b90a11, type: 2}
+  HelmAheadNotches: 0
+  HelmAsternNotches: 0

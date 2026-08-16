@@ -93,6 +93,79 @@ namespace HiddenHarbours.App.Editor
         const string SceneName   = "StPeters";
         const string ScenePath   = Scenes + "/" + SceneName + ".unity";
 
+        /// <summary>
+        /// ⭐ THE DEV PICKER'S CYCLE — file names under <see cref="DataBoats"/>, in the order F walks them.
+        ///
+        /// <para><b>This list is the roster, and it is PUBLIC so the tests read the same one the builder
+        /// builds from.</b> It used to be an inline array, and the in-memory mirror in
+        /// <c>DevBoatPickerTests</c> drifted from it silently — the mirror still said seven rungs long after
+        /// the real cycle had reached fifteen, so the count it asserted was folklore. Reading this array is
+        /// the only way for a test to make a claim about the cycle's SHAPE that cannot rot: add a rung here
+        /// and the guard grows with it.</para>
+        ///
+        /// <para>The order is deliberate and is NOT one rule. Rungs 1–11 are a SPEED ramp — the dory at
+        /// 1.7 m/s up to the Zodiac Hurricane at 5.9, because at this end of the fleet what a press of F
+        /// should buy you is "faster than the last one". From the Cape Islander on it is a SIZE ladder —
+        /// 12.9 m to the tanker's 110 — because up there the boats differ by an order of magnitude in
+        /// displacement and speed stops being the interesting axis (the tanker is the SLOWEST powered hull
+        /// afloat). The two sport fishers are placed by length inside the upper ladder even though they
+        /// out-run their neighbours, so the size story stays readable.</para>
+        ///
+        /// <para><c>Punt</c> is builder-generated and NOT committed, so on a clean clone she loads null and
+        /// the roster is one shorter. That is why the builder filters nulls and warns rather than throwing,
+        /// and why every test that counts rungs counts what actually LOADED.</para>
+        /// </summary>
+        public static readonly string[] DevPickerRosterFiles =
+        {
+            // --- the speed ramp: the M1 slice, then the planing craft ---
+            "Dory",
+            // ...and the SAME dory with the used kicker on her transom (D8), next to her rowed self on
+            // purpose: it is the M1 slice's closing rung, and the only way to feel what the outboard
+            // actually buys is to press F once and still be in the same boat.
+            "DoryOutboard",
+            "FishingSkiff",
+            "Punt",
+            "PuntUpgraded",
+            "ConsoleSkiff",
+            "SportSkiff",
+            // The reshaped sport skiff, immediately after her v1 sister — which is BOTH things at once:
+            // she is the v1 hull re-lofted (7.0 m still, but a chined deep-V — beam 2.30 → 2.54, sole
+            // 0.28 → 0.46), so back-to-back with SportSkiff is the only way to feel the reshape; and at
+            // 5.19 m/s she keeps the ramp monotonic on the way up to the twin's 5.63.
+            "SportSkiffMk2",
+            "SportSkiffTwin",
+            // The two coast-guard RIBs close the ramp as the fastest things afloat (5.70 / 5.89 m/s —
+            // deliberately under BowSprayGrading's 6 m/s ceiling, or they would outrun their own spray
+            // art). They are SHORTER than the skiffs they follow: this is the clearest case of the ramp
+            // being ordered by speed, because a planing RIB slotted at her 6.7/7.3 m length would break it.
+            "ZodiacFrc",
+            "ZodiacHurricane",
+            // --- the size ladder: 12.9 m to 110 m ---
+            "CapeIslander",
+            "LobsterBoat",
+            // THE LOBSTER FAMILY, THREE RUNGS FOR EIGHTEEN HULLS. All 18 variants are authored as Defs,
+            // but SIZE is the only axis that changes how one sails: style (open/hardtop) moves no hull
+            // metric at all, and region moves beam by ±2% — ±0.01 of liveliness (fleet-flotation.md §3
+            // measured both). So the picker carries one rung per size and the other 15 exist for moorage
+            // and for M2's fleet roster. Ordered small→large inside the family, immediately after the
+            // lobster boat they are variants OF — and the standard rung is HER OWN metrics under
+            // different art, which is what makes the other two mean something.
+            "LobsterInshoreOpenNorthumberland",
+            "LobsterStandardHardtopNorthumberland",
+            "LobsterOffshoreOpenNorthumberland",
+            // The two sport fishers take their places by LENGTH: 16.2 m puts the convertible between the
+            // lobster boat and the dragger, 27.4 m puts the skybridge between the dragger and the
+            // trawler. Both are the fast outliers of their neighbourhood (5.39 / 4.98 against the
+            // dragger's 3.48) — the point of a battlewagon, and felt at once cycling into one off a workboat.
+            "SportFisherConvertible",
+            "SideDragger",
+            "SportFisherSkybridge",
+            "SternTrawler",
+            "SternTrawlerMk2",
+            "CoastalPacket",
+            "Tanker",
+        };
+
         // --- St Peters region tunables (authored data; mirrored onto the RegionDef + TidalTerrain + Env) ---
         // The opening's defining feature is a BIG tide vs the cove's gentle 1.6 m — the bar must visibly bare
         // and flood. Mean 0 (chart datum centred), amplitude 2.2 m → water swings ≈ -2.2 .. +2.2 m.
@@ -782,6 +855,13 @@ namespace HiddenHarbours.App.Editor
             // (boat.punt_upgraded) is a picker rung ONLY: deliberately no ShipwrightOffer, because a
             // purchasable engine upgrade is real economy work nobody has asked for (rule 8).
             //
+            // ⚠️ EVERY "TAILS THE CYCLE / position N" CLAIM BELOW IS HISTORICAL. Each paragraph records
+            // why a hull was ADDED and where she landed AT THE TIME she arrived, and each of the Cape, the
+            // lobster boat and the side dragger really did tail the cycle on the day she was written about.
+            // None of them does now. The live order is DevPickerRosterFiles at the top of this class and
+            // nothing else — read it there, and treat the positions below as the reasoning that produced it
+            // rather than as a description of it.
+            //
             // THE CAPE ISLANDER TAILS THE CYCLE, and she is deliberately OUT of speed order: at 4.20 m/s
             // she is slower than both sport skiffs, but she is ~13 m and 6000 kg against their 7 m and
             // ~1000, so she is a SIZE step rather than a speed step and the cycle ends on the biggest boat
@@ -825,32 +905,35 @@ namespace HiddenHarbours.App.Editor
             // Cape Islander and the upgraded punt set, because a purchasable 110 m gas carrier is the
             // M2/M3 fleet roster and its economy (rule 8). Tuning them is M2's job and re-running any
             // art bake can never touch them: they live in their own committed assets (rule 2).
-            var pickerRoster = new[]
-            {
-                dory,
-                // ...and the SAME dory with the used kicker on her transom (D8), next to her rowed
-                // self on purpose: it is the M1 slice's closing rung, and the only way to feel what
-                // the outboard actually buys is to press F once and still be in the same boat.
-                AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/DoryOutboard.asset"),
-                AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/FishingSkiff.asset"),
-                punt,
-                AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/PuntUpgraded.asset"),
-                AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/ConsoleSkiff.asset"),
-                AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/SportSkiff.asset"),
-                AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/SportSkiffTwin.asset"),
-                AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/CapeIslander.asset"),
-                AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/LobsterBoat.asset"),
-                AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/SideDragger.asset"),
-                AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/SternTrawler.asset"),
-                AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/SternTrawlerMk2.asset"),
-                AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/CoastalPacket.asset"),
-                AssetDatabase.LoadAssetAtPath<BoatHullDef>(DataBoats + "/Tanker.asset"),
-            }.Where(h => h != null).ToArray();
+            //
+            // THE 2026-08-15 RULING TOOK THE CYCLE FROM 15 RUNGS TO 23. #541 and #543 baked 23 more
+            // hulls end to end — mesh, deck and visual — but gave none of them a BoatHullDef, so
+            // none could be sailed. All 23 now have one. Eight reach the picker: the five #543
+            // families (two RIBs, the reshaped sport skiff, two sport fishers) and three of the 18
+            // lobster variants, one per size. Same scope bar as every rung above — PICKER ONLY, no
+            // ShipwrightOffer, no economy (rule 8) — and the same authoring rule: their numbers live
+            // in committed assets an art re-bake cannot reach (rule 2).
+            //
+            // ⚠️ ALL EIGHT ARE MESH-ONLY, like the dragger above: no sheet, so the V key correctly
+            // reports "this hull has only one look", and no fallback Sprite either. Their gameplay
+            // DraughtMeters is NOT the HullMeshDef.RestingDraftMeters the art side committed — the
+            // two are different fields with different owners, related across the whole shipped fleet
+            // by the ≈0.38 visual-to-gameplay ratio water-rendering.md names. Deriving them that way
+            // reproduces the committed lobster boat to the unit, which is why the anchor row of the
+            // variant family is asserted against her in LobsterVariantLadderTests.
+            var pickerRoster = DevPickerRosterFiles
+                .Select(f => AssetDatabase.LoadAssetAtPath<BoatHullDef>($"{DataBoats}/{f}.asset"))
+                .Where(h => h != null)
+                .ToArray();
 
-            const int ExpectedPickerRungs = 15;
-            if (pickerRoster.Length < ExpectedPickerRungs)
+            // DERIVED, not typed: this used to be a hand-maintained `const int ExpectedPickerRungs`, which
+            // is a second copy of a number the array above already knows and so a thing that goes stale the
+            // first time someone adds a rung and forgets. The only hull that may legitimately be missing is
+            // the uncommitted Punt, so any shortfall is worth a warning.
+            int expectedPickerRungs = DevPickerRosterFiles.Length;
+            if (pickerRoster.Length < expectedPickerRungs)
                 Debug.LogWarning($"[StPetersBuilder] The dev boat picker got {pickerRoster.Length}/" +
-                                 $"{ExpectedPickerRungs} hulls — " +
+                                 $"{expectedPickerRungs} hulls — " +
                                  "some Data/Boats assets are missing, so those boats won't be in the cycle. " +
                                  "Run Hidden Harbours ▸ Art ▸ Import (after a new drop) ▸ Build Boat " +
                                  "Visual Defs and the cove builder " +
