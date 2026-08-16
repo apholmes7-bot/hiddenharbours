@@ -60,6 +60,10 @@ namespace HiddenHarbours.Tools.RigBaking
                 ["puntIsoRig"]            = new[] { "PuntIsoBasic", "PuntIsoUpgraded" },
                 ["consoleIsoRig"]         = new[] { "ConsoleSkiff" },
                 ["sportSkiffIsoRig"]      = new[] { "SportSkiffSingle", "SportSkiffTwin" },
+                // The RESHAPED 7 m skiff — a second hull, not a rename of the row above. Her sidecar
+                // is named for the HULL (no `Rig` suffix) because that is #541's convention and
+                // because `sportSkiffMk2IsoRig` would collide conceptually with the v1's two visuals.
+                ["sportSkiffMk2Iso"]      = new[] { "SportSkiffMk2Iso" },
                 ["lobsterBoatIsoRig"]     = new[] { "LobsterBoatIso" },
                 ["capeIslanderIsoRig"]    = new[] { "CapeIslanderIso" },
                 ["sideDraggerIsoRig"]     = new[] { "SideDraggerIso" },
@@ -76,6 +80,16 @@ namespace HiddenHarbours.Tools.RigBaking
             // invisible until somebody walks off the edge of one.
             foreach (LobsterVariant v in LobsterVariantFleet.All)
                 wiring[v.SidecarStem] = new[] { v.AssetName };
+
+            // The same argument, for the two families ADR 0022 phase 8's second half adds. The
+            // sport skiff Mk2 is deliberately NOT here: she is one hull per rig and her sidecar stem
+            // is `sportSkiffMk2Iso`, which the loop below cannot produce and the table above names
+            // directly — right next to `sportSkiffIsoRig`, so a reader sees the two hulls are
+            // separate wirings rather than one hull renamed.
+            foreach (ZodiacBuild b in ZodiacFleet.All)
+                wiring[b.SidecarStem] = new[] { b.AssetName };
+            foreach (SportFisherHull h in SportFisherFleet.All)
+                wiring[h.SidecarStem] = new[] { h.AssetName };
 
             return wiring;
         }

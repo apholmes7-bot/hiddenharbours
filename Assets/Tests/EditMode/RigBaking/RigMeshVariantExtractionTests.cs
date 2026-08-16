@@ -136,11 +136,33 @@ namespace HiddenHarbours.Tests.RigBaking
                 report.Append(hull.Key).Append(' ');
             }
 
-            Assert.AreEqual(11, HullMeshFleet.OneHullPerRig.Count,
-                $"The single-hull-per-rig set is no longer the eleven this control was measured " +
-                $"against ({report}). That is fine — but re-read the field-compare gate before " +
-                "landing a twelfth, because this test alone does not prove a committed asset " +
-                "unchanged.");
+            // ⚠️ THE CONTROL IS THE ELEVEN, NOT THE COUNT — and writing it as a count is what made
+            // this red on a correct change.
+            //
+            // It used to read `Assert.AreEqual(11, OneHullPerRig.Count)`, and its own message asked
+            // the next person to "re-read the field-compare gate before landing a twelfth". A
+            // twelfth landed on 2026-08-16: the reshaped sport skiff, one hull per rig exactly like
+            // the eleven, but baked long AFTER generators existed, so she is not part of the control
+            // this test is making. A bare count cannot tell her arrival apart from one of the
+            // original eleven going MISSING — which is the failure this exists to catch. Naming them
+            // can, and the gate the old message pointed at is met: her committed def is compared
+            // field-for-field against a fresh extraction by
+            // HullMeshFleetTests.EveryCommittedHullMesh_MatchesAFreshExtractionFromItsRig.
+            //
+            // The per-hull identity check above still sweeps the WHOLE set, newcomer included — that
+            // an extraction naming no variant is exactly the same as none at all is a real check
+            // whenever the hull was baked.
+            string[] bakingOn20260812 =
+            {
+                "dory", "punt", "consoleSkiff", "sportSkiff", "capeIslander", "lobsterBoat",
+                "sideDragger", "sternTrawler", "sternTrawlerMk2", "coastalPacket", "tanker",
+            };
+            CollectionAssert.IsSubsetOf(bakingOn20260812,
+                HullMeshFleet.OneHullPerRig.Select(h => h.Key).ToList(),
+                $"One of the eleven hulls this control was measured against has left " +
+                $"OneHullPerRig ({report}). A hull leaving the static-F set is either a deliberate " +
+                "re-categorisation — say so — or this control silently shrinking, which is how the " +
+                "eleven quietly stop being proven unchanged.");
 
             CollectionAssert.IsSupersetOf(HullMeshFleet.Hulls.Select(h => h.Key).ToList(),
                 HullMeshFleet.OneHullPerRig.Select(h => h.Key).ToList(),

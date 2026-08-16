@@ -138,9 +138,15 @@ namespace HiddenHarbours.Tests.RigBaking
         [Test]
         public void TheFleetCarriesExactlyTheseEighteen_WithTheirOwnExtractions()
         {
-            var byId = HullMeshFleet.Hulls.Where(h => h.IsVariant).ToDictionary(h => h.MeshId);
+            // ⚠️ FILTERED BY RIG, not by IsVariant. She was the only generator when this was
+            // written, so "every variant row" and "every lobster row" were the same set; the zodiac
+            // and the sport fisher made them different on 2026-08-16 and this went red counting
+            // twenty-two. The control being made is about HER eighteen, so it names her file.
+            var byId = HullMeshFleet.Hulls
+                .Where(h => h.IsVariant && h.ScriptPath == LobsterVariantFleet.ScriptPath)
+                .ToDictionary(h => h.MeshId);
             Assert.AreEqual(LobsterVariantFleet.All.Count, byId.Count,
-                "The fleet's variant rows are not the eighteen this table enumerates.");
+                "The fleet's lobster-variant rows are not the eighteen this table enumerates.");
 
             foreach (LobsterVariant v in LobsterVariantFleet.All)
             {

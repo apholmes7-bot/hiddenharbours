@@ -1,0 +1,318 @@
+{
+  "schema": "hidden-harbours/boat-gameplay-geometry@1",
+  "rig": "zodiacIsoRig.js",
+  "exportSymbol": "ZodiacIso",
+  "derivedFromRigSha256": "66e5a977f02452c6413fb523faf21e735aa48469995810244e0a88a1efeb6e8e",
+  "variant": {
+    "hull": "frc",
+    "loa_over_tubes_m": 6.66,
+    "beam_over_tubes_m": 2.8
+  },
+  "units": "metres",
+  "frame": {
+    "origin": "amidships / keel-bottom / centreline",
+    "axes": "+x starboard, +y bow, +z up",
+    "scale_px_per_m": 32,
+    "cell": [
+      272,
+      248
+    ],
+    "pivot": [
+      136,
+      138
+    ],
+    "polygon_winding": "CCW viewed from +Z (above)",
+    "LOA_m": 6.66
+  },
+  "authoring": "Gameplay geometry (our layer). Rig tuning constants (F/MATS/GAIN/BIAS/LN) stay in the rig. Derived from the rig SHA above; a rig reshape re-opens this file.",
+  "extractor_contract": "per section: rig export -> this sidecar -> absent section = hull does not support the feature (not an error).",
+  "engines": 1,
+  "DECK": [
+    {
+      "id": "cockpit",
+      "z": 0.403,
+      "winding": "ccw_from_above",
+      "polygon": [
+        [
+          -0.955,
+          -3.2
+        ],
+        [
+          -0.966,
+          -2.834
+        ],
+        [
+          -0.977,
+          -2.469
+        ],
+        [
+          -0.939,
+          -2.103
+        ],
+        [
+          -0.895,
+          -1.737
+        ],
+        [
+          -0.842,
+          -1.371
+        ],
+        [
+          -0.789,
+          -1.006
+        ],
+        [
+          -0.73,
+          -0.64
+        ],
+        [
+          -0.663,
+          -0.274
+        ],
+        [
+          -0.598,
+          0.091
+        ],
+        [
+          -0.521,
+          0.457
+        ],
+        [
+          -0.451,
+          0.823
+        ],
+        [
+          -0.359,
+          1.189
+        ],
+        [
+          -0.276,
+          1.554
+        ],
+        [
+          -0.166,
+          1.92
+        ],
+        [
+          0.166,
+          1.92
+        ],
+        [
+          0.276,
+          1.554
+        ],
+        [
+          0.359,
+          1.189
+        ],
+        [
+          0.451,
+          0.823
+        ],
+        [
+          0.521,
+          0.457
+        ],
+        [
+          0.598,
+          0.091
+        ],
+        [
+          0.663,
+          -0.274
+        ],
+        [
+          0.73,
+          -0.64
+        ],
+        [
+          0.789,
+          -1.006
+        ],
+        [
+          0.842,
+          -1.371
+        ],
+        [
+          0.895,
+          -1.737
+        ],
+        [
+          0.939,
+          -2.103
+        ],
+        [
+          0.977,
+          -2.469
+        ],
+        [
+          0.966,
+          -2.834
+        ],
+        [
+          0.955,
+          -3.2
+        ]
+      ],
+      "note": "Sole between the collars, transom to the fore bulkhead. Walk-around: the console splits it fore/aft but does not close it. The collar itself is NOT walkable and NOT a washboard \u2014 see COLLAR."
+    }
+  ],
+  "COLLAR": {
+    "note": "The inflated tube is a boarding surface and a fender, never deck. Treat as an impassable soft rim of radius 0.270 m swept along the sheer; crew step over it, casualties are pulled across it.",
+    "radius_m": 0.27,
+    "contact_points_via": "ZodiacIso.collarPoints(dir, opts)"
+  },
+  "STATIONS": [
+    {
+      "id": "helm",
+      "type": "seated",
+      "pos": [
+        0,
+        -0.064,
+        0.918
+      ],
+      "note": "thwart bench, centre"
+    }
+  ],
+  "CLEATS": [
+    {
+      "id": "bow_eye",
+      "type": "towing_eye",
+      "pos": [
+        0,
+        3.124,
+        0.806
+      ],
+      "provenance": "zodiacIsoRig.js \u2014 PAINTER, stem at u=0.985"
+    },
+    {
+      "id": "quarter_port",
+      "type": "strong_point",
+      "pos": [
+        -0.911,
+        -2.72,
+        0.723
+      ]
+    },
+    {
+      "id": "quarter_stbd",
+      "type": "strong_point",
+      "pos": [
+        0.911,
+        -2.72,
+        0.723
+      ]
+    },
+    {
+      "id": "towing_post",
+      "type": "bollard",
+      "pos": [
+        0,
+        -2.464,
+        0.703
+      ],
+      "provenance": "zodiacIsoRig.js \u2014 BRIDLE, cross head"
+    },
+    {
+      "id": "stern_eye",
+      "type": "tow_point",
+      "pos": [
+        0,
+        -3.16,
+        0.551
+      ]
+    }
+  ],
+  "MOUNTS": {
+    "motor": [
+      0,
+      -3.27,
+      0.691
+    ],
+    "motor_lateral_m": [
+      0
+    ],
+    "rig": "skiffMotorRig.js",
+    "variant": "guard",
+    "note": "Single. Shorter loft, so the clamp sits forward of the skiff's axis \u2014 ZodiacIso.motorOffset(dir,opts) returns the exact per-heading screen shift."
+  },
+  "LAMPS": [
+    {
+      "id": "beacon",
+      "type": "flashing",
+      "pos": [
+        0.5,
+        -1.114,
+        2.165
+      ],
+      "colours": [
+        "blue",
+        "amber"
+      ],
+      "frames": 6,
+      "pattern": [
+        1,
+        0,
+        1,
+        0,
+        0,
+        0
+      ],
+      "layer": "ZodiacIso.renderBeacon(dir,{frame,colour})"
+    },
+    {
+      "id": "searchlight",
+      "type": "aimable",
+      "pos": [
+        0,
+        -0.774,
+        2.04
+      ],
+      "pan_deg": [
+        -170,
+        170
+      ],
+      "tilt_deg": [
+        -12,
+        38
+      ],
+      "layer": "ZodiacIso.renderLight(dir,{pan,tilt,on})"
+    }
+  ],
+  "POSES": {
+    "note": "Feed ONE pose object into every layer of a frame \u2014 hull, both motor parts, beacon, searchlight \u2014 and into the anchor calls, or the layers shear. yaw is new on this rig: it rotates the boat about its own z BEFORE roll/pitch, which is what lets a heading-locked sprite show crab.",
+    "rock": {
+      "frames": 8,
+      "roll_deg": 2.4,
+      "pitch_deg": 2.6,
+      "heave_px": 1.5,
+      "period_s": 2.4
+    },
+    "plane": {
+      "input": "t 0..1 (throttle)",
+      "hump_at": 0.45,
+      "hump_pitch_deg": 11.5,
+      "cruise_pitch_deg": 6.6,
+      "lift_px": 9
+    },
+    "turn": {
+      "input": "s -1..1 (helm)",
+      "max_roll_deg": 13.5,
+      "max_yaw_deg": 8.5,
+      "pitch_deg": 5.6,
+      "heave_px": 4,
+      "note": "She banks INTO the turn; positive s is starboard."
+    }
+  },
+  "_excluded": {
+    "PAINT": "Fixed livery, hand-tuned ramps. No SCHEMES, no rampFrom, no paint slot \u2014 a service boat is not repaintable, and her orange sits above the fleet C_CAP of 0.115 on purpose.",
+    "washboards": "Open boat with a collar instead of a rail \u2014 absence is data.",
+    "tubs": "No fish-tub anchors. She is not a fishing boat; the aft sole is kept clear for a casualty."
+  },
+  "_split": {
+    "from": "zodiacIsoRig.gameplay.json (fleet rig pack, 2026-08-12)",
+    "why": "The drop ships ONE document with builds.hurricane and builds.frc. A sidecar names its HULL (#541), and DeckSidecarReader reads DECK/WASHBOARD/CLEATS at the top level, so each build is hoisted into its own file.",
+    "transform": "builds.frc.* -> top level, verbatim; frame.LOA_m := builds.frc.LOA_over_tubes_m (6.66 m), because the reader looks for frame.LOA_m and this document carries the LOA per build. No polygon, cleat or station value is altered.",
+    "sha_unchanged": "Both builds come from the same rig file, so both keep the drop's own derivedFromRigSha256, which matches the committed zodiacIsoRig.js exactly."
+  }
+}

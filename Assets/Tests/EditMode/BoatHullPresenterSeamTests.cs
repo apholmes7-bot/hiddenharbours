@@ -140,6 +140,33 @@ namespace HiddenHarbours.Tests.EditMode
             "visual.lobster_offshore_hardtop_fundy_iso",
             "visual.lobster_offshore_open_newfoundland_iso",
             "visual.lobster_offshore_hardtop_newfoundland_iso",
+
+            // ---- phase 8, the second half — the fleet pack's last five, mesh-only --------------
+            // Three more rig SHAPES, none of which had ever been in Unity. The zodiac builds two
+            // hulls in ONE cell off a module-level assembler; the sport fisher is a REGISTRY whose
+            // two hulls carry their own cell, camera, rock and nav mounts (her global carries none);
+            // the sport skiff Mk2 is one hull per rig, a SECOND 7 m skiff under a new id — the
+            // shipped visual.sport_skiff_single/_twin above are a different, still-sailing boat.
+            //
+            // Their acceptance: IsoFacetFleetPackAcceptanceTests, same shape as the eighteen's —
+            // committed def through the real IsoFacetHullRenderer, eight views, against each rig's
+            // own render, with a sabotage arm that draws the Mk2 as the shipped v1 (identical cell,
+            // 88.81% differing, cluster 13,944) and each zodiac build as her sister (~63%).
+            //
+            // ⚠⚠ TWO OF THESE FIVE ARE NOT HELD TO THE FLEET'S PIXEL FLOOR, and a reader of this
+            // list deserves to know which. The Mk2 and both zodiac builds are pass-2 rigs carrying a
+            // per-material `dith` weight the mesh path does not model, so their crisp banded paint
+            // renders dithered: 22–27% of inked pixels differ where the sport fishers manage
+            // 2.7–4.0% and the shipped v1 skiff CONTROL manages 5.43% at the Mk2's identical cell.
+            // That gap is PRE-EXISTING (RigMeshSymbols.Reconstructions has recorded it since the
+            // pass-2 small craft landed; the shipped console skiff carries it too) and closing it is
+            // an ADR-level call. They are on this list because their meshes are committed, usable and
+            // proven to be the RIGHT BOAT — not because their colours are proven.
+            "visual.zodiac_hurricane_iso",
+            "visual.zodiac_frc_iso",
+            "visual.sport_skiff_mk2_iso",
+            "visual.sport_fisher_convertible_iso",
+            "visual.sport_fisher_skybridge_iso",
         };
 
         [Test]

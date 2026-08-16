@@ -1,0 +1,665 @@
+{
+  "schema": "hidden-harbours/boat-gameplay-geometry@1",
+  "rig": "sportSkiffMk2IsoRig.js",
+  "exportSymbol": "SportSkiffMk2Iso",
+  "derivedFromRigSha256": "fc0dcbc9bbcbafd8f3cf8943af50bf013b00460cd5ba6876f7c546812457c89c",
+  "units": "metres",
+  "frame": {
+    "origin": "amidships / keel-bottom / centreline",
+    "axes": "+x starboard, +y bow, +z up",
+    "scale_px_per_m": 32,
+    "LOA_m": 7,
+    "polygon_winding": "CCW viewed from +Z (above)"
+  },
+  "authoring": "Extracted by SportSkiffGameplay (Art/_sportSkiffGameplay.js) from the rig source at the hash above — the rig itself is unedited. Polygons are computed by the rig’s own station/skin/halfAtZ/bowZ; fit-out footprints are transcribed literals with per-item provenance. Rig tuning constants (F/MATS/GAIN/BIAS/LN) stay in the rig. Do not hand-edit — re-run the extractor.",
+  "extractor_contract": "per section: rig export -> this sidecar -> absent section = hull does not support the feature (not an error).",
+  "hull": {
+    "loa": 7,
+    "beam": 2.54,
+    "transomBeam": 2.32,
+    "sole": 0.46,
+    "stepTop": 0.956,
+    "foredeckStem": 1.366,
+    "sheerAft": 1,
+    "sheerAmid": 1.1,
+    "sheerStem": 1.42,
+    "chineFrac": 0.34,
+    "knuckleFrac": 0.62,
+    "deadriseTransom": 18.104,
+    "deadriseForefoot": 56.192,
+    "flareBow": 1.905
+  },
+  "DECK": [
+    {
+      "id": "cockpit",
+      "z": 0.46,
+      "winding": "ccw_from_above",
+      "polygon": [
+        [
+          -0.441,
+          1.54
+        ],
+        [
+          -0.549,
+          1.12
+        ],
+        [
+          -0.66,
+          0.7
+        ],
+        [
+          -0.765,
+          0.28
+        ],
+        [
+          -0.869,
+          -0.14
+        ],
+        [
+          -0.956,
+          -0.56
+        ],
+        [
+          -1.033,
+          -0.98
+        ],
+        [
+          -1.053,
+          -1.4
+        ],
+        [
+          -1.068,
+          -1.82
+        ],
+        [
+          -1.065,
+          -2.24
+        ],
+        [
+          -1.059,
+          -2.66
+        ],
+        [
+          -1.04,
+          -3.08
+        ],
+        [
+          -1.021,
+          -3.5
+        ],
+        [
+          1.021,
+          -3.5
+        ],
+        [
+          1.04,
+          -3.08
+        ],
+        [
+          1.059,
+          -2.66
+        ],
+        [
+          1.065,
+          -2.24
+        ],
+        [
+          1.068,
+          -1.82
+        ],
+        [
+          1.053,
+          -1.4
+        ],
+        [
+          1.033,
+          -0.98
+        ],
+        [
+          0.956,
+          -0.56
+        ],
+        [
+          0.869,
+          -0.14
+        ],
+        [
+          0.765,
+          0.28
+        ],
+        [
+          0.66,
+          0.7
+        ],
+        [
+          0.549,
+          1.12
+        ],
+        [
+          0.441,
+          1.54
+        ]
+      ],
+      "note": "Self-bailing moulded sole, transom (y=-3.5) to the step riser at u=FORE_U (y=1.54); half-width = rig dw(u) = halfAtZ(u,DECK,1)*0.97. Sole is at z=0.46 in this hull — the deep vee eats interior depth, so she sits 0.18 m higher than the pre-v2 skiff. No washboards (open skiff) — absence is data.",
+      "_notes": [
+        {
+          "id": "centre_console",
+          "kind": "obstruction",
+          "type": "console",
+          "footprint": {
+            "x": [
+              -0.42,
+              0.42
+            ],
+            "y": [
+              -0.34,
+              0.72
+            ]
+          },
+          "height_above_floor_m": {
+            "top": 0.88
+          },
+          "provenance": "exact, build() console shell X0=0.42, Y0=-0.34, Y1=0.72, dash top ZTA=1.34",
+          "note": "A wall, not a step-over. Windscreen frame carries on to z=1.66 (1.20 above the sole); the port side has a recessed door but no through route."
+        },
+        {
+          "id": "leaning_post",
+          "kind": "obstruction",
+          "type": "helm_seat",
+          "footprint": {
+            "x": [
+              -0.44,
+              0.44
+            ],
+            "y": [
+              -1.17,
+              -0.7
+            ]
+          },
+          "height_above_floor_m": {
+            "top": 0.46
+          },
+          "provenance": "exact, build() helm YH=-0.92, post [0.44,0.19] top DECK+0.46; cushions top DECK+0.555; backrest cap DECK+0.955",
+          "note": "Post box is a 0.46 m wall; the two chair cushions sit 0.555 above the sole and the backrest caps at 0.955. Four rod holders rake aft off the top (y -1.18..-1.36) — overhead, not floor."
+        },
+        {
+          "id": "forward_console_seat",
+          "kind": "obstruction",
+          "type": "seat",
+          "footprint": {
+            "x": [
+              -0.39,
+              0.39
+            ],
+            "y": [
+              0.69,
+              1.17
+            ]
+          },
+          "height_above_floor_m": {
+            "top": 0.47
+          },
+          "provenance": "exact, build() forward seat base [0.36,0.20] at y=0.94, cushion [0.39,0.23] top DECK+0.47, backrest top DECK+0.78",
+          "note": "Faces forward off the console front; sits between the console and the step, so the walk-forward route is up either side of it."
+        },
+        {
+          "id": "transom_livewell",
+          "kind": "obstruction",
+          "type": "seat",
+          "footprint": {
+            "x": [
+              -0.5,
+              0.5
+            ],
+            "y": [
+              -3.44,
+              -3.34
+            ]
+          },
+          "height_above_floor_m": {
+            "top": 0.35
+          },
+          "provenance": "exact, build() livewell face at station(0).y+0.13 = -3.37, lid box [0.50,0.05,0.03] at DECK+0.32",
+          "note": "Step-over / stern seat at 0.35 above the sole across the transom centre. The sole polygon runs under it to the transom — no authored hole."
+        },
+        {
+          "id": "ttop_legs",
+          "kind": "obstruction",
+          "type": "post",
+          "footprint": {
+            "x": [
+              [
+                -0.57,
+                -0.51
+              ],
+              [
+                0.51,
+                0.57
+              ],
+              [
+                -0.57,
+                -0.51
+              ],
+              [
+                0.51,
+                0.57
+              ]
+            ],
+            "y": [
+              [
+                -1.09,
+                -1.03
+              ],
+              [
+                -1.09,
+                -1.03
+              ],
+              [
+                0.63,
+                0.69
+              ],
+              [
+                0.63,
+                0.69
+              ]
+            ]
+          },
+          "height_above_floor_m": {
+            "top": "full height — legs rise to the T-top at z=2.22"
+          },
+          "provenance": "exact, build() legs at (±0.54,-1.06) and (±0.54,0.66), 0.030 m tube radius",
+          "note": "Four 60 mm posts standing on the sole, raking outboard as they rise (top ×1.16 in x). Thin walls, not step-overs."
+        },
+        {
+          "id": "bow_step",
+          "kind": "obstruction",
+          "type": "bulkhead_step",
+          "footprint": {
+            "x": [
+              -0.856,
+              0.856
+            ],
+            "y": [
+              1.51,
+              1.61
+            ]
+          },
+          "height_above_floor_m": {
+            "top": 0.496,
+            "treads": [
+              0.15,
+              0.33
+            ]
+          },
+          "provenance": "exact, build() step riser at u=FORE_U (y=1.54): half-width halfAtZ(DECK)*0.97=0.441 at the sole to halfAtZ(ZBOW)*0.96=0.856 at the top; treads at DECK+0.15 and DECK+0.33; step nose 0.07 m proud",
+          "note": "THE BOARDING ROUTE. 0.496 m riser from the cockpit sole to the foredeck, with two 0.34 m stainless treads and a nosed top edge — a climb, not a step-over. Side lockers are let into its face."
+        },
+        {
+          "id": "coaming_bolsters",
+          "kind": "surface",
+          "type": "bolster",
+          "footprint": {
+            "x": "both sides, inboard off the inner skin at skin frac 0.90 minus 0.045",
+            "y": [
+              -3.15,
+              1.4
+            ]
+          },
+          "height_above_floor_m": {
+            "top": "overhang — cap z 0.748 aft to 0.978 at the step (0.5–0.8 above the sole)"
+          },
+          "provenance": "exact, build() bolster cap = skin(side,u,0.90,1) with 0.045 m inboard extrusion, 0.15 m below the cap",
+          "note": "NOT a floor obstruction — upholstery at coaming height, outboard of the sole polygon edge. Listed so nobody reads it off a bake as a bench."
+        },
+        {
+          "id": "sole_hatches",
+          "kind": "surface",
+          "type": "hatch_lid",
+          "footprint": {
+            "x": [
+              [
+                -0.88,
+                -0.16
+              ],
+              [
+                0.16,
+                0.88
+              ],
+              [
+                -0.34,
+                0.34
+              ]
+            ],
+            "y": [
+              [
+                -2.88,
+                -2.08
+              ],
+              [
+                -2.88,
+                -2.08
+              ],
+              [
+                -1.86,
+                -1.28
+              ]
+            ]
+          },
+          "height_above_floor_m": {
+            "top": 0.014
+          },
+          "provenance": "exact, build() sole lids at DECK+0.014, latch pads at (±0.52,-2.48) DECK+0.032",
+          "note": "NOT obstructions — two aft fish boxes and a centre inspection lid, 14 mm proud. Walk straight over."
+        },
+        {
+          "id": "footrest",
+          "kind": "obstruction",
+          "type": "rail",
+          "footprint": {
+            "x": [
+              -0.3,
+              0.3
+            ],
+            "y": [
+              -0.78,
+              -0.74
+            ]
+          },
+          "height_above_floor_m": {
+            "top": 0.079,
+            "underside": 0.041
+          },
+          "provenance": "exact, build() footrest tube at (y=-0.76, DECK+0.06), 0.019 m radius",
+          "note": "79 mm step-over in front of the leaning post."
+        }
+      ],
+      "_notes_convention": "Footprints and heights above the sole plane (z=0.46). Per the 2026-07-22 ruling these become game-side colliders sourced from these notes — never authored holes in the polygon."
+    },
+    {
+      "id": "foredeck",
+      "winding": "ccw_from_above",
+      "polygon3d": [
+        [
+          -0.326,
+          3.177,
+          1.366
+        ],
+        [
+          -0.516,
+          2.902,
+          1.333
+        ],
+        [
+          -0.697,
+          2.629,
+          1.298
+        ],
+        [
+          -0.768,
+          2.356,
+          1.241
+        ],
+        [
+          -0.833,
+          2.085,
+          1.178
+        ],
+        [
+          -0.892,
+          1.813,
+          1.104
+        ],
+        [
+          -0.885,
+          1.54,
+          0.956
+        ],
+        [
+          0.885,
+          1.54,
+          0.956
+        ],
+        [
+          0.892,
+          1.813,
+          1.104
+        ],
+        [
+          0.833,
+          2.085,
+          1.178
+        ],
+        [
+          0.768,
+          2.356,
+          1.241
+        ],
+        [
+          0.697,
+          2.629,
+          1.298
+        ],
+        [
+          0.516,
+          2.902,
+          1.333
+        ],
+        [
+          0.326,
+          3.177,
+          1.366
+        ]
+      ],
+      "note": "Boardable, reached over the bow step (no washboards on this hull). RISING deck: z = bowZ(u) = sheer minus a coaming that closes from 0.30 m at the step to 0.018 m at the stem head, so it climbs 0.956 → 1.366 while narrowing to 0.326 half-width. Walkable extent stops at u=0.955 where the moulded non-skid stops; the last 0.30 m of stem head is bare gelcoat converging to a point.",
+      "_notes": [
+        {
+          "id": "bow_rail",
+          "kind": "obstruction",
+          "type": "guard_rail",
+          "footprint": {
+            "x": "both deck edges, feet at bw(u)-0.105 (0.816..) inboard",
+            "y": [
+              1.15,
+              3.3
+            ]
+          },
+          "height_above_floor_m": {
+            "top": 0.39,
+            "note": "above the local foredeck, which itself rises 0.956 → 1.366"
+          },
+          "provenance": "exact, build() bow rail: 56 mm tube, stanchions at u 0.740/0.826/0.906, swept top run u 0.665→0.972 pinching to the centreline",
+          "note": "The foredeck is FENCED on both edges from beside the step to one apex over the stem head. Gameplay: you get onto the bow over the step, not over the sheer, and you cannot walk off the side of it."
+        },
+        {
+          "id": "bow_lounge_pads",
+          "kind": "obstruction",
+          "type": "cushion",
+          "footprint": {
+            "x": "both sides, 0.20 m wide inboard from bw(u)-0.085 (0.816 → 0.606)",
+            "y": [
+              1.764,
+              2.638
+            ]
+          },
+          "height_above_floor_m": {
+            "top": 0.05
+          },
+          "provenance": "exact, build() bow lounge u 0.752–0.878, PW=0.20, TP=0.05 proud",
+          "note": "50 mm step-over / seating either side of the centreline walkway. The centre of the deck between them is clear."
+        },
+        {
+          "id": "anchor_locker_lid",
+          "kind": "surface",
+          "type": "hatch_lid",
+          "footprint": {
+            "x": "centreline, bw(u)-0.075 wide",
+            "y": [
+              2.708,
+              3.072
+            ]
+          },
+          "height_above_floor_m": {
+            "top": 0.016
+          },
+          "provenance": "exact, build() locker lid u 0.888–0.940 at bowZ+0.016, lifting ring +0.010",
+          "note": "NOT an obstruction — 16 mm proud lid forward of the lounge, with a small lifting ring."
+        },
+        {
+          "id": "anchor_roller",
+          "kind": "obstruction",
+          "type": "fitting",
+          "footprint": {
+            "x": [
+              -0.038,
+              0.038
+            ],
+            "y": [
+              -0.125,
+              0.035
+            ]
+          },
+          "height_above_floor_m": {
+            "top": 0.04
+          },
+          "provenance": "exact, build() roller cheeks at u=0.942 (y offset -0.045 from the deck edge), stainless pin +0.034",
+          "note": "Ground tackle at the stem head, 40 mm proud. y is relative to the deck edge at u=0.942 (bdy=3.086)."
+        }
+      ]
+    }
+  ],
+  "CLEATS": [
+    {
+      "id": "stern_port",
+      "type": "cleat",
+      "pos": [
+        -0.94,
+        -3,
+        0.965
+      ],
+      "provenance": "exact, build() quarter cleat box centre (±0.94, -3.00, station(0.02).kz+dep-0.035); rail cap there z=1"
+    },
+    {
+      "id": "stern_star",
+      "type": "cleat",
+      "pos": [
+        0.94,
+        -3,
+        0.965
+      ],
+      "provenance": "exact, build() quarter cleat box centre (±0.94, -3.00, station(0.02).kz+dep-0.035); rail cap there z=1"
+    },
+    {
+      "id": "mid_port",
+      "type": "cleat",
+      "pos": [
+        -1.06,
+        1.3,
+        1.197
+      ],
+      "provenance": "exact, build() forward cleat box centre (±1.06, 1.30, station(0.69).kz+dep-0.035); rail cap there z=1.232"
+    },
+    {
+      "id": "mid_star",
+      "type": "cleat",
+      "pos": [
+        1.06,
+        1.3,
+        1.197
+      ],
+      "provenance": "exact, build() forward cleat box centre (±1.06, 1.30, station(0.69).kz+dep-0.035); rail cap there z=1.232"
+    },
+    {
+      "id": "bow_1",
+      "type": "bow_eye",
+      "pos": [
+        0,
+        3.181,
+        1.019
+      ],
+      "provenance": "exact, rig PAINTER (u=0.962, z=station.kz+0.58*dep) — the same point the bow eye is modelled on at u=0.905",
+      "note": "A stem-FACE eye, not a deck cleat: this hull carries no bow cleat at all. A bow line leads from the stem face under the anchor roller, so the lead is forward and down, not off the deck."
+    }
+  ],
+  "ANCHORS": {
+    "painter": {
+      "x": 0,
+      "y": 3.181,
+      "z": 1.019
+    },
+    "sternEye": {
+      "x": 0,
+      "y": -3.48,
+      "z": 0.19
+    },
+    "motorMount": {
+      "x": 0,
+      "y": -3.535,
+      "z": 1
+    },
+    "motorMounts": [
+      {
+        "x": -0.34,
+        "y": -3.555,
+        "z": 0.9
+      },
+      {
+        "x": 0.34,
+        "y": -3.555,
+        "z": 0.9
+      }
+    ],
+    "helm": {
+      "x": 0,
+      "y": -0.92,
+      "z": 1.02
+    },
+    "wheelHub": {
+      "x": 0,
+      "y": -0.36,
+      "z": 1.1
+    },
+    "pilot": {
+      "x": 0,
+      "y": -0.62,
+      "z": 0.46
+    },
+    "tubs": [
+      {
+        "x": -0.56,
+        "y": -2.1,
+        "z": 0.46
+      },
+      {
+        "x": 0.56,
+        "y": -2.1,
+        "z": 0.46
+      },
+      {
+        "x": 0,
+        "y": 1.28,
+        "z": 0.46
+      }
+    ]
+  },
+  "_excluded": {
+    "WASHBOARD": "None modelled — open skiff. The sheer is capped by the 38 mm stainless rub rail with no side deck to walk, so the section is omitted entirely: absence is the data.",
+    "bow_cleat": "No bow cleat on this hull. The stem head carries the anchor roller and the locker lid; the bow tie-off is the stem-face eye recorded as CLEATS.bow_1. The pre-v2 sidecar’s bow cleat at [0, 3.16, 1.049] does not exist here.",
+    "anchor_roller": "Ground tackle, not a tie-off — recorded as a foredeck obstruction instead.",
+    "bow_rail": "Guard rail, not a tie-off — recorded as a foredeck obstruction (it is what makes the step the only boarding route).",
+    "stern_quarter_eye": "ANCHORS.sternEye is a tow eye let into the transom below the sole (z=0.19), reachable from the water, not a mooring cleat.",
+    "trim_tabs": "Below the chine, outside any walkable surface."
+  },
+  "_confirm": {
+    "foredeck_forward_limit": "Walkable polygon stops at u=0.955 (y=3.177), where the non-skid stops. The rail’s apex runs on to u=0.972 over the anchor locker — if anchoring animations need a standing point further forward, that is a gameplay ruling, not a rig fact."
+  },
+  "_restamp": {
+    "reason": "This sidecar shipped as sportSkiffIsoRig.gameplay.json pinning 2aa8fe2b30d1\u2026, which is the pack's pre-rename sportSkiffIsoRig.js (1025 lines). That file is committed here as sportSkiffMk2IsoRig.js after #534 renamed its global off the shipped 366-line skiff's. Re-stamped to the committed file's LF hash.",
+    "measured": "diff(pack sportSkiffIsoRig.js, committed sportSkiffMk2IsoRig.js) = 4 changed lines, of which 2 are the identifier SportSkiffIso -> SportSkiffMk2Iso (one doc comment at the header, one on the export literal). No numeric literal, no vertex, no station and no anchor differs, so every polygon below still describes this rig.",
+    "supersedes_note": "The sibling _supersedes block is the ART DIRECTOR's, and it records the v1->v2 HULL reshape (sole 0.28 -> 0.46 m, boardable foredeck, four deck cleats). That is why this is a second hull under hullmesh.sport_skiff_mk2_iso rather than an update to hullmesh.sport_skiff_iso, whose own sidecar is untouched."
+  },
+  "_supersedes": {
+    "derivedFromRigSha256": "03c6755a81c38dc48db40c7de36170adc6eeb592289d01a05c9456e6f0ecfdf5",
+    "was": "Pre-v2 skiff: cockpit sole z=0.28, one bow cleat, no foredeck.",
+    "why": "The v2 (pass-5) hull moved the sole to z=0.46, put a boardable rising foredeck and a bow step in, replaced the bow cleat with four deck cleats plus a stem-face eye, and fenced the foredeck. Any consumer still holding the old file has the wrong deck plane by 0.18 m."
+  }
+}
