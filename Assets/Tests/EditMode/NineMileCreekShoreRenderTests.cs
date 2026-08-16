@@ -4,7 +4,6 @@ using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
-using UnityEngine.TestTools;
 using HiddenHarbours.Art;
 using HiddenHarbours.Core;
 using HiddenHarbours.World;
@@ -86,36 +85,11 @@ namespace HiddenHarbours.Tests.EditMode
         public void SetUp()
         {
             _previousTerrain = GameServices.TidalTerrain;
-
-            // ⚠⚠ A PRE-EXISTING DEFECT IN THE SHIPPED SEA WIRING, TOLERATED HERE AND REPORTED — NOT MINE
-            // AND NOT MASKED.
-            //
-            // Both land builders draw the Sea as a TILED SpriteRenderer covering the whole region
-            // (NineMileCreekBuilder.cs:495, StPetersBuilder.cs:708). SeaTile.png imports at 32 px/unit, so
-            // one tile is 1 m and Nine Mile Creek's 760 × 560 m rect asks for 425,600 tiles — Unity's
-            // 9-slice generator refuses past 64k and logs
-            //   "Cannot generate 9 slice most likely because the size is too big.
-            //    Requires 425600 vertices and 638400 indices"
-            // The number is exactly 760 × 560, so there is no doubt what it is counting; St Peters'
-            // 760 × 520 is over the same limit. The sea still draws — WaterSurface's material is what
-            // actually paints it — so nothing is visibly broken, which is why it has gone unnoticed.
-            //
-            // It is deliberately NOT fixed in this PR: the Sea's draw mode is #520's wiring, shared by
-            // both regions, and quietly changing how the sea is drawn inside a shore-decor pass is exactly
-            // the sort of unrelated change that makes a rendering regression impossible to bisect. This
-            // fixture builds the REAL wiring on purpose — a capture of a sea I had special-cased would
-            // prove nothing about the region — so it tolerates the error and the PR reports it.
-            //
-            // ⚠ The tolerance itself is set in BuildTheShore, NOT here: the test framework resets
-            // `ignoreFailingMessages` to false at the start of every test case, i.e. AFTER [SetUp] has
-            // run, so a flag set here is silently cleared before the first Render(). Measured — the first
-            // attempt put it here and the test went on failing on exactly this message.
         }
 
         [TearDown]
         public void TearDown()
         {
-            LogAssert.ignoreFailingMessages = false;   // a GLOBAL — never leave it set for the next file
             if (_cam != null) _cam.targetTexture = null;
             if (_rt != null) { _rt.Release(); Object.DestroyImmediate(_rt); _rt = null; }
             foreach (var go in _built) if (go != null) Object.DestroyImmediate(go);
@@ -216,8 +190,29 @@ namespace HiddenHarbours.Tests.EditMode
             BuildTheShore();
             int plantsAfterOne = ShorePlantViews().Count;
             int wallsAfterOne = CountCliffWalls();
+
+            // The plants are a real precondition — their sheets ARE committed, so a zero here means the
+            // painter did nothing and the comparison below would be vacuous.
             Assert.That(plantsAfterOne, Is.GreaterThan(0));
-            Assert.That(wallsAfterOne, Is.GreaterThan(0));
+
+            // ⚠⚠ THE WALL COUNT IS DELIBERATELY *NOT* ASSERTED NON-ZERO, AND THAT IS THE WHOLE POINT OF
+            // THIS COMMENT — the first version of this test did assert it, and it was the one red in CI.
+            //
+            // The Cliff Face kit's baked pixels are GITIGNORED BY DESIGN (.gitignore: "⭐ DELIBERATELY NOT
+            // COMMITTED, unlike every sibling kit's sheets… ~90 MB… every byte of it regenerable in
+            // seconds and stale the moment a rig coefficient moves"). The rig is the committed source and
+            // CliffRigBakeTests guards it. So on a fresh clone — which is exactly what CI is — every
+            // TryLoadBands fails, no CliffWallSurface is created, and the count is legitimately 0. The
+            // gitignore even says so in as many words: "A fresh clone renders cliff geometry untextured
+            // until the bake is run once."
+            //
+            // Asserting >0 here made a CI-facing test depend on a local bake, which is a false red that
+            // could only be "fixed" by reversing that decision and committing ~90 MB of regenerable
+            // binaries. The property this test is FOR is idempotence — that a second pass replaces the
+            // first rather than stacking on it — and equality holds perfectly well at zero. That the
+            // walls are cut at all is proved where it belongs, by
+            // NineMileCreekShoreTests.TheCliffWallsResolveIdenticallyTwice, which resolves chunks purely
+            // and needs no pixels.
 
             var terrain = _terrainGo.GetComponent<MainlandTidalTerrain>();
             NineMileCreekCliffWalls.Build(terrain);
@@ -269,8 +264,6 @@ namespace HiddenHarbours.Tests.EditMode
                 "Assets/_Project/Art/Materials/Water.mat");
             if (waterMat != null)
             {
-                // See [SetUp] for what this tolerates and why it is set HERE rather than there.
-                LogAssert.ignoreFailingMessages = true;
                 _seaGo = new GameObject("Sea");
                 _seaGo.SetActive(false);
                 _seaGo.transform.position = new Vector3(NineMileCreekBuilder.NineMileCreekSeaCenter.x,
@@ -280,12 +273,12 @@ namespace HiddenHarbours.Tests.EditMode
                 sr.sharedMaterial = waterMat;
                 var seaTile = WaterSceneTemplate.LoadSpriteAny(
                     "Assets/_Project/Art/Tilesets/Water/SeaTile.png");
-                if (seaTile != null)
-                {
-                    sr.sprite = seaTile;
-                    sr.drawMode = SpriteDrawMode.Tiled;
-                    sr.size = NineMileCreekBuilder.NineMileCreekSeaSize;
-                }
+                if (seaTile != null) sr.sprite = seaTile;
+                // ONE QUAD over the region rect, exactly as the builder now stands it up (#542). The
+                // draft of this fixture predated that and hand-rolled a TILED draw, which asked Unity's
+                // 9-slice generator for 760 × 560 = 425,600 tiles and logged an error the fixture then had
+                // to tolerate. #542 fixed the wiring for both regions; the tolerance is gone with it.
+                WaterSceneTemplate.ConfigureSeaPlane(sr, NineMileCreekBuilder.NineMileCreekSeaSize);
                 _seaGo.AddComponent<WaterSurface>();
                 WaterSceneTemplate.ConfigureLandRegionWater(
                     _seaGo, NineMileCreekBuilder.NineMileCreekSeaCenter,
