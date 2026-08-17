@@ -27,9 +27,25 @@ namespace HiddenHarbours.Tools.RigBaking
     /// </summary>
     public static class VehicleRigFleet
     {
-        /// <summary>Where a road vehicle's gameplay sidecar lives — the same folder the hulls use.
-        /// Repo-relative.</summary>
-        public const string SidecarFolder = "docs/art/rigs/gameplay";
+        /// <summary>
+        /// Where a road vehicle's gameplay sidecar lives — a subfolder of the hulls', repo-relative.
+        ///
+        /// <para><b>⚠ A SUBFOLDER, AND IT IS LOAD-BEARING.</b> The first draft of this import put the
+        /// Dually's sidecar straight into <c>docs/art/rigs/gameplay/</c> beside the boats', and it
+        /// reddened five tests in <c>DeckSidecarImportParityTests</c> — that fixture enumerates
+        /// <b>every</b> <c>*.gameplay.json</c> in that folder and requires each one to parse as a boat
+        /// deck with a committed <c>BoatDeckDef</c> behind it. That law is right and has been
+        /// working; the folder simply means "boat deck sidecars", which is why the reader is called
+        /// <see cref="DeckSidecarReader"/>.</para>
+        ///
+        /// <para>A vehicle sidecar is a different document — <c>CAB</c>, <c>CARGO</c>,
+        /// <c>THRESHOLD</c>, <c>WHEELS</c>, and the drop's own <c>_excluded</c> block says
+        /// <i>"WASHBOARD: not a hull"</i> and <i>"CLEATS: not a hull"</i>. So it goes one level down
+        /// rather than becoming an exception carved into a law that is otherwise literally true.
+        /// <c>Directory.GetFiles</c> is not recursive, so the two populations stay separate by
+        /// construction and neither fixture needs to know about the other.</para>
+        /// </summary>
+        public const string SidecarFolder = "docs/art/rigs/gameplay/vehicles";
 
         /// <summary>The top-level <c>kind</c> that marks a sidecar as this table's business.</summary>
         public const string RoadVehicleKind = "road_vehicle";

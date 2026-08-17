@@ -29,7 +29,10 @@ namespace HiddenHarbours.Tests.RigBaking
     public class DuallyIsoKitProbeTests
     {
         const string RigPath = "docs/art/rigs/dually-iso-kit/vehicleIsoRig.js";
-        const string SidecarPath = "docs/art/rigs/gameplay/vehicleIsoRig.dually3500.gameplay.json";
+        // ⚠ Under gameplay/vehicles/, NOT gameplay/ — see VehicleRigFleet.SidecarFolder for why
+        // (DeckSidecarImportParityTests requires every sidecar in the parent folder to be a boat deck).
+        const string SidecarPath =
+            "docs/art/rigs/gameplay/vehicles/vehicleIsoRig.dually3500.gameplay.json";
         const string Global = "VehicleIso";
 
         static string Full(string repoRelative) => Path.Combine(RigCatalog.RepoRoot, repoRelative);
