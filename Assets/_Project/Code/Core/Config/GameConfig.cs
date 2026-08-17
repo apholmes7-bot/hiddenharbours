@@ -357,6 +357,57 @@ namespace HiddenHarbours.Core
                  "families are naturally redone; that mixed period is accepted (ADR 0031, Half B skipped).")]
         public bool HullKeylineFlood = DefaultHullKeylineFlood;
 
+        // -----------------------------------------------------------------------------------------
+        //  The silhouette through foliage (owner ruling, 2026-08-16)
+        // -----------------------------------------------------------------------------------------
+        // "Slight occlusion — you always know where you are, you never lose your character." Dense
+        // woods draw in FRONT of the fisher, opaque and correctly sorted; she reads through them as a
+        // tinted silhouette. These three are the look, and they are the owner's to tune.
+        //
+        // ⚠️ THREE SCALARS, NOT A SETTINGS STRUCT, and that is deliberate. GameConfig.asset lags the
+        // code: a field the shipped YAML has never heard of keeps its initializer here, but a field
+        // MISSING FROM INSIDE a serialized struct comes back as the C# default — zero — because the
+        // struct as a whole is overwritten by what the asset does carry. Packed into a struct, an
+        // un-re-serialized asset would therefore ship strength 0 and a black tint: the feature silently
+        // off, reported as on. Flat fields with code-side Default consts cannot fail that way, and
+        // GameConfigSilhouetteDefaultTests pins it against the REAL shipped asset.
+
+        /// <summary>Ship default — <b>ON</b>. The whole point of the arc is that the woods can be made
+        /// deep without losing the fisher in them, so the silhouette is not an option the density pass
+        /// depends on someone remembering to switch on.</summary>
+        public const bool DefaultFoliageSilhouette = true;
+
+        /// <summary>Ship default strength — how far a covered foliage pixel moves toward the tint.
+        /// 0.55 reads as "clearly her, clearly behind something": low enough that the canopy still
+        /// looks like canopy (the leaves keep better than half their own colour), high enough to find
+        /// her at a glance against dark spruce, which is the darkest thing she can stand behind on
+        /// this coast.</summary>
+        public const float DefaultFoliageSilhouetteStrength = 0.55f;
+
+        /// <summary>Ship default tint — a pale warm bone. NOT white: a pure white silhouette reads as a
+        /// UI cutout pasted over the world, and this coast's palette has no pure white in it. Warm
+        /// because every light in this game is warm (sun, lamp, window) and a cool silhouette would
+        /// read as a ghost rather than as a person with the light behind her.</summary>
+        public static readonly Color DefaultFoliageSilhouetteTint = new Color(0.94f, 0.90f, 0.82f, 1f);
+
+        [Header("Foliage silhouette (the fisher read through dense woods)")]
+        [Tooltip("Let the player read through foliage that draws in front of her? ON is the shipped " +
+                 "look: trees and shrubs stay opaque and correctly sorted, and her shape shows through " +
+                 "them in the tint below. OFF restores plain occlusion, where deep woods can hide her " +
+                 "completely. This costs one extra draw call for the whole screen however dense the " +
+                 "forest is, so it is a look switch and not a performance one.")]
+        public bool FoliageSilhouette = DefaultFoliageSilhouette;
+
+        [Tooltip("The colour a foliage pixel moves toward where the player is behind it. A pale warm " +
+                 "bone by default. Pure white reads as a UI cutout pasted over the world.")]
+        public Color FoliageSilhouetteTint = DefaultFoliageSilhouetteTint;
+
+        [Range(0f, 1f)]
+        [Tooltip("How far toward the tint a covered foliage pixel moves. 0 is off (and genuinely free " +
+                 "— the foliage skips the lookup entirely), 1 is a flat opaque cutout of her shape " +
+                 "with no leaf detail left in it. 0.55 is the shipped read.")]
+        public float FoliageSilhouetteStrength = DefaultFoliageSilhouetteStrength;
+
         [Header("Depth drop (Rod Fishing v2 — the weighted rig's fall + the slack bottom tell)")]
         [Tooltip("The depth-fishing game's tunables (drop a weighted rig, count the fall, feel the floor): " +
                  "how fast a rig sinks per kilogram (heavier = faster — the whole 'count the fall' read), " +

@@ -567,6 +567,30 @@ namespace HiddenHarbours.Core
         public static bool HullKeylineFlood =>
             Config != null ? Config.HullKeylineFlood : GameConfig.DefaultHullKeylineFlood;
 
+        /// <summary>Does the fisher read through foliage that draws in front of her (owner ruling,
+        /// 2026-08-16)? Same contract as <see cref="WaveField"/>, including the <c>Config != null</c>
+        /// discipline (never <c>?.</c>/<c>??</c> on a <c>UnityEngine.Object</c> — Unity's fake-null
+        /// defeats both). Falls back to <see cref="GameConfig.DefaultFoliageSilhouette"/> — <b>ON</b> —
+        /// so an unwired scene ships the look the density pass was designed around, never the one where
+        /// deep woods can swallow her. Read per camera per frame by <c>FoliageSilhouetteGate.Apply</c>.
+        /// FLAG lead-architect: new Core contract (the foliage-silhouette seam).</summary>
+        public static bool FoliageSilhouetteEnabled =>
+            Config != null ? Config.FoliageSilhouette : GameConfig.DefaultFoliageSilhouette;
+
+        /// <summary>The colour a covered foliage pixel moves toward. Same contract and same fallback
+        /// discipline as <see cref="FoliageSilhouetteEnabled"/>.</summary>
+        public static UnityEngine.Color FoliageSilhouetteTint =>
+            Config != null ? Config.FoliageSilhouetteTint : GameConfig.DefaultFoliageSilhouetteTint;
+
+        /// <summary>How far toward the tint a covered foliage pixel moves, 0..1. <b>0 is the OFF state
+        /// as well as the amount</b> — the foliage shader branches on it and skips its texture read
+        /// entirely — so this is the dial that makes the feature genuinely free when it is down, not
+        /// merely invisible. Same contract and same fallback discipline as
+        /// <see cref="FoliageSilhouetteEnabled"/>.</summary>
+        public static float FoliageSilhouetteStrength =>
+            Config != null ? Config.FoliageSilhouetteStrength
+                           : GameConfig.DefaultFoliageSilhouetteStrength;
+
         /// <summary>
         /// Rebuilds a <see cref="CatchItem"/> from a stable species id — the save-restore's species
         /// resolver (M1 §7.3: the save carries the reference, the Def's stats re-cache at load).

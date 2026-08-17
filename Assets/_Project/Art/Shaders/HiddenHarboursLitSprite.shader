@@ -172,6 +172,18 @@ Shader "HiddenHarbours/LitSprite"
                     col.rgb += _LightResponse * SpriteLitDecorResponse(IN.uv, IN.rootWS, litParams);
                 }
 
+                // ---- the fisher, read through this foliage (owner ruling 2026-08-16) ---------------
+                // The shrubs and the shoreline plants take the SAME treatment the tree does, from the
+                // same shared function, for the same reason: a path cut through dense woods is only
+                // walkable if stepping off it does not lose the character. LAST, on the final colour,
+                // and outside the light block — a silhouette is compositing, not lighting.
+                //
+                // ⚠️ This shader is the general lit-decor consumer, so it reaches families that are
+                // not foliage at all as they are adopted. That is correct and deliberate: anything the
+                // fisher can walk BEHIND should let her read through it. If a family ever wants out,
+                // the exit is its own material dial, not a second copy of this function.
+                col.rgb = SilhouetteThrough(col.rgb, IN.positionCS.xy);
+
                 return col;
             }
             ENDHLSL

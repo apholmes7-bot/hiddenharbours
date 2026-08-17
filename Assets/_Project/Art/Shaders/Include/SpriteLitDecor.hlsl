@@ -230,4 +230,54 @@ float3 SpriteLitDecorResponse(float2 uv, float2 rootWS, SpriteLitDecorParams p)
     return sunAdd + lampAdd;
 }
 
+// ================================================================================================
+// 🔴 THE SILHOUETTE THROUGH THE LEAVES (owner ruling, 2026-08-16)
+// ================================================================================================
+// "Slight occlusion — you always know where you are, you never lose your character." Foliage stays
+// OPAQUE and draws in front where it genuinely is in front; the fisher reads through it as a tinted
+// silhouette. SilhouetteMaskFeature stamps her sprite coverage into _HHSilhouetteMaskTex before any
+// sprite draws; this is the consumer half, and every foliage family calls it from the END of its
+// Universal2D fragment, after its own colour is final.
+//
+// ⚠️ THIS IS NOT A THIRD LIGHTING PATH, and it must never become one. SpriteLitDecorResponse above is
+// the shared LIGHT assembly — one include, two lighting paths (sun and lamp), by design. What follows
+// is a COMPOSITING operation on an already-lit colour: it reads no normal, no mask channel, no light
+// direction, and runs after the light has been added. It lives in this file only because every foliage
+// consumer already includes it, so the read exists in exactly ONE place for the tree, the shrubs and
+// the shoreline plants alike. Adding a lighting term here would be the fork; adding this is not.
+//
+// ⚠️ SORTING, NOT DEPTH, DECIDES WHO IS IN FRONT — and nothing here checks. It does not need to:
+// foliage BEHIND the fisher draws before her and is painted over by her own sprite, so the tint it
+// received this frame is never seen; foliage in FRONT draws after her and keeps it. That is the entire
+// "is it in front?" test, paid for by the sprite queue we were already running. A tree that tints and
+// is then overdrawn has cost one Load and nothing else.
+//
+// ⚠️ THE HHReflect PASS MUST NOT CALL THIS. A tree's reflection in the water is a mirrored silhouette
+// of the TREE; stamping the fisher into it would put her in the sea, upside down, wherever she happens
+// to stand on the shore.
+
+// Declared at file scope, deliberately OUTSIDE UnityPerMaterial: both are globals written once per
+// camera per frame (SetGlobalTexture / SetGlobalVector), never per-material values, and folding them
+// into the batched block would break the SRP batcher's layout contract for every decor material.
+Texture2D<float4> _HHSilhouetteMaskTex;
+float4 _HHSilhouetteParams;   // rgb = tint, a = strength AND gate
+
+/// Blend an already-final foliage colour toward the silhouette tint where the fisher is behind it.
+/// positionCS is the fragment's SV_Position.xy — the same integer screen pixel the mask was
+/// rasterised at, so the lookup is an exact Load and never a filtered sample. Point-for-point: no
+/// half-texel offset can slide the silhouette off the body.
+float3 SilhouetteThrough(float3 col, float2 positionCS)
+{
+    // The gate is the strength, and it is a UNIFORM branch — every fragment in the draw takes the
+    // same side, so the GPU pays a scalar compare and nothing else. At 0 (dial off, no live body, no
+    // config wired) the texture read never happens, which is what makes "off" free rather than merely
+    // invisible. Never write a zero as a cleared BUFFER and leave the strength up: a buffer needs a
+    // source and a zero must be a strength.
+    float strength = _HHSilhouetteParams.a;
+    if (strength <= 1e-4) return col;
+
+    float cover = _HHSilhouetteMaskTex.Load(int3(int2(positionCS), 0)).r;
+    return lerp(col, _HHSilhouetteParams.rgb, saturate(cover * strength));
+}
+
 #endif // HIDDEN_HARBOURS_SPRITE_LIT_DECOR_INCLUDED
