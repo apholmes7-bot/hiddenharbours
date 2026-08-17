@@ -140,7 +140,8 @@ namespace HiddenHarbours.Tests.PlayMode
             yield return null;
             if (!_testKeyboard.fKey.isPressed)
                 Assert.Ignore("virtual key press not deliverable here (unfocused headless input) — the " +
-                              "reach decision itself is covered by the in-range test below");
+                              "gate itself is covered by TheDoorIsOnlyInReachWhileYouAreStandingAtIt, " +
+                              "which needs no keyboard");
 
             yield return null;
             Assert.AreEqual(1000, _wallet.Money, "a press from 80 m away bought the camper");
@@ -186,12 +187,41 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         /// <summary>
-        /// The reach gate is live state, not a one-shot: walking away puts the door out of reach again.
-        /// Driven through <see cref="HomeDoor.Interact"/> rather than the key so it runs even where a
-        /// virtual press is not deliverable — the gate is the subject, the keyboard is not.
+        /// 🔴 <b>THE PROXIMITY GATE ITSELF, without a keyboard.</b> The two tests above self-ignore on
+        /// this machine — a virtual key press is not deliverable to an unfocused headless editor, which
+        /// is why three other PlayMode classes in this repo carry the same escape hatch — so THIS is the
+        /// test that actually holds the rule "you cannot buy a house from across the island" here.
+        ///
+        /// <para>It also pins that the gate is LIVE state and not a one-shot: <see cref="StallReach"/>
+        /// caches the player transform on first resolve, so a gate that answered from a stale position
+        /// would pass a naive walk-up test and fail the walk-away.</para>
         /// </summary>
         [UnityTest]
-        public IEnumerator TheDoorIsOnlyReachableWhileYouAreStandingAtIt()
+        public IEnumerator TheDoorIsOnlyInReachWhileYouAreStandingAtIt()
+        {
+            yield return null;
+
+            Assert.IsFalse(_door.PlayerIsAtTheDoor,
+                "the door is in reach from 80 m away — the proximity gate is not gating");
+
+            _player.transform.position = DoorPos;
+            yield return null;
+            Assert.IsTrue(_door.PlayerIsAtTheDoor,
+                "the door is out of reach while the player is standing on its step");
+
+            _player.transform.position = FarAway;
+            yield return null;
+            Assert.IsFalse(_door.PlayerIsAtTheDoor,
+                "walking away left the door in reach — StallReach is answering from a cached position");
+        }
+
+        /// <summary>
+        /// Buying is idempotent across the walk-away and back: the second try is the shell answer, not a
+        /// second charge. Driven through <see cref="HomeDoor.Interact"/> rather than the key so it runs
+        /// where a virtual press does not — the double-charge guard is the subject, the keyboard is not.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator BuyingThenLeavingAndComingBack_NeverChargesTwice()
         {
             yield return null;
 
@@ -201,12 +231,13 @@ namespace HiddenHarbours.Tests.PlayMode
 
             _player.transform.position = FarAway;
             yield return null;
+            _player.transform.position = DoorPos;
+            yield return null;
 
-            // Interact() itself does not gate — Update does — so this is the honest statement of the
-            // split: the DECISION is unconditional and the REACH is what the frame loop applies.
             Assert.AreEqual(HomeDoor.Outcome.OwnedButNotEnterable, _door.Interact(),
-                "the second try must be the shell answer regardless of where the player stands");
+                "the second try must be the shell answer — the camper is already his");
             Assert.AreEqual(600, _wallet.Money, "walking away and back re-charged for the camper");
+            Assert.AreEqual(1, _events.Count);
         }
     }
 }

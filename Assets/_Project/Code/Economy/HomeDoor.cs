@@ -63,6 +63,19 @@ namespace HiddenHarbours.Economy
         /// <summary>True iff the player already holds this home's deed.</summary>
         public bool IsOwned => _home != null && HomeDeeds.IsOwned(_home.Id);
 
+        /// <summary>
+        /// Is the on-foot player standing close enough to try this door? The gate <see cref="Update"/>
+        /// applies to a key press, exposed because <see cref="Interact"/> deliberately does NOT gate —
+        /// the DECISION is unconditional so a test (or a future UI) can drive it, and the REACH is what
+        /// the frame loop puts in front of it.
+        ///
+        /// <para>Public because it is otherwise untestable: a virtual key press is not deliverable to an
+        /// unfocused headless editor (three PlayMode classes in this repo self-ignore for it), so a test
+        /// that drives the keyboard proves nothing about the gate on this machine. This is the seam that
+        /// lets the proximity rule be checked without one.</para>
+        /// </summary>
+        public bool PlayerIsAtTheDoor => _reach.CanInteract(transform.position);
+
         /// <summary>What happened on the last <see cref="Interact"/> — for tests and for a future
         /// UI to bind without re-deriving the decision.</summary>
         public Outcome LastOutcome { get; private set; }
