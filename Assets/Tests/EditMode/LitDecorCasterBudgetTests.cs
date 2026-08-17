@@ -54,6 +54,22 @@ namespace HiddenHarbours.Tests.EditMode
 
         ITidalTerrain Terrain() => _terrain;
 
+        /// <summary>
+        /// Every species the tree kit can bake — the tree side of the island, at full width whatever a
+        /// given machine has on disk.
+        ///
+        /// <para>⚠ Used only to reconstruct the CANOPY the understorey has to stand between, never to
+        /// assert a tree count (<see cref="TheWoodsCasterCount_IsOnePerPlantedTree_InsideThePlantersOwnGridBound"/>
+        /// reads the real catalog for that). A partially-baked kit would hand the shrub scatter a thinner
+        /// canopy, fewer trunks to keep clear of, and therefore MORE shrubs than the build plants — which
+        /// is the wrong direction for a budget to be wrong in.</para>
+        /// </summary>
+        static readonly string[] TreeSpeciesForBudget =
+        {
+            "BlackSpruce", "RedSpruce", "BalsamFir", "WhiteCedar",
+            "RedMaple", "RedOak", "WhiteBirch", "TremblingAspen", "WhitePine",
+        };
+
         // =========================================================================================
 
         /// <summary>
@@ -171,6 +187,13 @@ namespace HiddenHarbours.Tests.EditMode
         /// Every shrub carries both a binder and a caster, so the shrub population IS the shrub cost. The
         /// kit ships to order — a species with no sheet on disk is simply not planted — so this measures
         /// what is actually committed rather than what the contract declares.
+        ///
+        /// <para><b>⚠ BOTH SHRUB PASSES, and the second one is why this note exists.</b> The island grows
+        /// its shrubs in two scatters — the ambient heath and the woodland lots' UNDERSTOREY — and
+        /// <c>StPetersWoodsPlanter</c> gives every shrub from either one the same binder and the same
+        /// caster. A budget that counted only the heath would have gone on reading green while the real
+        /// per-frame cost grew underneath it, which is the exact failure mode this whole fixture exists to
+        /// catch.</para>
         /// </summary>
         [Test]
         public void TheShrubLayer_CarriesABinderAndACasterEach_AndStaysInsideItsBudget()
@@ -189,9 +212,25 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsNotNull(contract, "The shrub contract did not load.");
             var habitatOf = contract.Species.ToDictionary(e => e.Key, e => e.Habitat);
 
-            var sites = StPetersShrubs.Scatter(
-                Terrain(), baked, s => habitatOf.TryGetValue(s, out string h) ? h : null,
-                ShrubCatalog.Variants);
+            System.Func<string, string> habitat =
+                s => habitatOf.TryGetValue(s, out string h) ? h : null;
+
+            var heath = StPetersShrubs.Scatter(Terrain(), baked, habitat, ShrubCatalog.Variants);
+
+            // The understorey, handed exactly what the planter hands it: the whole canopy plus the heath
+            // that walked the lots' ground on its way past. Passing less would inflate the count here
+            // relative to the build, which is the wrong direction for a budget to be wrong in.
+            var ambient = StPetersWoods.ScatterTrees(Terrain(), TreeSpeciesForBudget, _ => 4);
+            var standing = ambient.Select(t => t.Position).ToList();
+            standing.AddRange(StPetersWoods
+                .ScatterLotTrees(Terrain(), TreeSpeciesForBudget, _ => 4, ambient)
+                .Select(t => t.Position));
+            standing.AddRange(heath.Select(s => s.Position));
+
+            var understorey = StPetersShrubs.ScatterUnderstorey(
+                Terrain(), baked, habitat, ShrubCatalog.Variants, standing);
+
+            var sites = heath.Concat(understorey).ToList();
 
             // 🔴 EVERY PLANTED SPECIES MUST HAVE ITS LIGHT CHANNELS ON DISK. This is the assertion that
             // records the finding this pass turned up: the shrub rig's `_light` and `_calendar` sheets
@@ -220,7 +259,9 @@ namespace HiddenHarbours.Tests.EditMode
             }
 
             Debug.Log($"[LitDecorCasterBudget] shrubs: {sites.Count} placed from {baked.Count} baked " +
-                      "species — each carries one SpriteLightBinder and one SpriteShadow.");
+                      $"species ({heath.Count} ambient heath + {understorey.Count} understorey in the " +
+                      $"{StPetersWoodlandZones.LotCount} woodland lots) — each carries one " +
+                      "SpriteLightBinder and one SpriteShadow.");
 
             Assert.Less(sites.Count, 1200,
                 $"{sites.Count} shrubs is past the budget this pass was signed off at. EVERY shrub now " +

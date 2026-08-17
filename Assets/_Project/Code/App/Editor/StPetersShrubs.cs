@@ -11,6 +11,13 @@ namespace HiddenHarbours.App.Editor
     /// habitat fields the woods are planted from (<see cref="StPetersWoods"/>) so the two layers agree
     /// about what kind of ground they are standing on.
     ///
+    /// <para><b>TWO PASSES, the same way the woods have two.</b> <see cref="Scatter"/> is the AMBIENT heath
+    /// over the whole island — the layer that takes the ground the forest gives up. <see cref="ScatterUnderstorey"/>
+    /// is the layer INSIDE the authored woodland lots, at a grain derived from the canopy standing over it.
+    /// The pairing is deliberate and it mirrors <see cref="StPetersWoods.ScatterTrees"/> /
+    /// <see cref="StPetersWoods.ScatterLotTrees"/> exactly: an island-wide density and a lot's own density
+    /// are two different questions with two different owners' dials.</para>
+    ///
     /// <para><b>The habitats are the RIG'S OWN five</b> — <c>barren · woods · edge · bog · swale</c> — and
     /// every species is placed by the habitat <i>the contract itself gives it</i>, never by a table written
     /// here. So this file decides which habitat a patch of island IS; the contract decides what grows in
@@ -57,6 +64,22 @@ namespace HiddenHarbours.App.Editor
         /// Which of the rig's five habitats a patch of island is. Order matters: wet beats everything (a bog
         /// is a bog whatever the wind does), then the wood and its margin, then exposure decides whether
         /// open ground is barren heath or ordinary edge.
+        ///
+        /// <para><b>⭐ THE CANOPY QUESTION IS <see cref="StPetersWoods.InWoods"/>, NOT
+        /// <c>InStand</c> — and that one word is the meadow floor this pass was written to fix.</b>
+        /// <c>InStand</c> is the AMBIENT mosaic alone; since the owner's 2026-08-16 density ruling the
+        /// shadiest ground on the island is the AUTHORED lots <see cref="StPetersWoodlandZones"/> declares,
+        /// and asking the mosaic alone left every one of them growing open-meadow rose and raspberry under a
+        /// closed canopy. <c>InWoods</c> is <i>"is there a canopy over this metre"</i>, which is the question
+        /// an understorey actually has — the same reading, and the same sentence, the lady's slipper already
+        /// gets in <see cref="StPetersWoods.ScatterFlowers"/>.</para>
+        ///
+        /// <para><b>⚠ A CUT LANE IS NOT EXCEPTED HERE, AND DOES NOT NEED TO BE.</b> A lane's tread is inside
+        /// its lot's capsule, so this would happily call it woods — but nothing is ever planted there to ask:
+        /// <see cref="StPetersWoods.IsPlantable"/> routes through
+        /// <see cref="StPetersWoodlandZones.IsCleared"/>, and every shrub pass on this island goes through
+        /// it. Keeping the exception out of the habitat field keeps ONE gate answering "may anything stand
+        /// here", which is what stops a corridor being cut by one pass and grown over by another.</para>
         /// </summary>
         public static string HabitatAt(ITidalTerrain terrain, Vector2 p)
         {
@@ -65,19 +88,30 @@ namespace HiddenHarbours.App.Editor
             if (wetness >= SwaleThreshold) return "swale";
 
             float e = terrain.ElevationAt(p);
-            if (StPetersWoods.InStand(p, e)) return "woods";
+            if (StPetersWoods.InWoods(p, e)) return WoodsHabitat;
 
-            // Just outside a stand is its EDGE — sampled on the four compass points, which is enough to
+            // Just outside a wood is its EDGE — sampled on the four compass points, which is enough to
             // catch a margin at this scale and keeps the field cheap over tens of thousands of candidates.
+            // ⚠ The probe asks the same question the test above does: a woodland lot's margin is a wood
+            // margin, and rose and raspberry belong on it exactly as they belong on the mosaic's.
             for (int i = 0; i < 4; i++)
             {
                 var probe = p + new Vector2(i == 0 ? EdgeReachMetres : i == 1 ? -EdgeReachMetres : 0f,
                                             i == 2 ? EdgeReachMetres : i == 3 ? -EdgeReachMetres : 0f);
-                if (StPetersWoods.InStand(probe, terrain.ElevationAt(probe))) return "edge";
+                if (StPetersWoods.InWoods(probe, terrain.ElevationAt(probe))) return "edge";
             }
 
             return StPetersWoods.ExposureAt(p) >= BarrenThreshold ? "barren" : "edge";
         }
+
+        /// <summary>
+        /// The kit's own key for the UNDERSTOREY habitat — the layer that belongs inside a stand.
+        ///
+        /// <para>Named once rather than spelled at each site that asks for it, because it is the one habitat
+        /// two regions and four tests all have to agree about; it is quoted from the shrub contract's
+        /// <c>ShrubCatalog.HabitatKeys</c>, and a test pins that it is still one of them.</para>
+        /// </summary>
+        public const string WoodsHabitat = "woods";
 
         /// <summary>One planted shrub: where, which species, and which drawn individual of it.</summary>
         public struct ShrubSite
@@ -104,15 +138,7 @@ namespace HiddenHarbours.App.Editor
             var sites = new List<ShrubSite>();
             if (terrain == null || available == null || available.Count == 0) return sites;
 
-            // Group what was baked by the habitat the CONTRACT gives it.
-            var byHabitat = new Dictionary<string, List<string>>();
-            foreach (string s in available)
-            {
-                string h = habitatOf != null ? habitatOf(s) : null;
-                if (string.IsNullOrEmpty(h)) continue;
-                if (!byHabitat.TryGetValue(h, out var list)) byHabitat[h] = list = new List<string>();
-                list.Add(s);
-            }
+            var byHabitat = GroupByHabitat(available, habitatOf);
             if (byHabitat.Count == 0) return sites;
 
             float minX = StPetersBuilder.IslandCenter.x - StPetersBuilder.IslandRadius;
@@ -157,6 +183,79 @@ namespace HiddenHarbours.App.Editor
                 });
             }
             return sites;
+        }
+
+        /// <summary>
+        /// <b>The island's UNDERSTOREY</b> — the shrub layer inside the woodland lots
+        /// <see cref="StPetersWoodlandZones"/> declares, at its own grain.
+        ///
+        /// <para><b>⭐ WHY A SECOND PASS RATHER THAN A DENSER <see cref="Scatter"/>.</b> Exactly the split
+        /// the trees already make (<see cref="StPetersWoods.ScatterTrees"/> for the reverting mosaic,
+        /// <see cref="StPetersWoods.ScatterLotTrees"/> for the closed stands): the ambient heath is a
+        /// property of the whole island and its density is the owner's dial for <i>how scrubby is the
+        /// island</i>; the understorey is a property of a LOT and its density is a ratio of the canopy over
+        /// it (<see cref="WoodlandZones.UnderstoreyTrunksPerShrub"/>). One grid cannot carry both without
+        /// one of the two questions becoming un-tunable.</para>
+        ///
+        /// <para><b>It INFILLS, like the lot trees do</b> — pass the trunks AND the ambient shrubs already
+        /// standing, and nothing new lands within <see cref="WoodlandZones.MinUnderstoreyGapMetres"/> of
+        /// them. The ambient heath walks a lot's ground too (it does not know lots exist), so without that
+        /// the two layers would grow through each other.</para>
+        /// </summary>
+        /// <param name="alreadyStanding">Every trunk and shrub already placed on the island.</param>
+        public static List<ShrubSite> ScatterUnderstorey(ITidalTerrain terrain,
+                                                        IReadOnlyList<string> available,
+                                                        System.Func<string, string> habitatOf,
+                                                        int variants,
+                                                        IEnumerable<Vector2> alreadyStanding)
+        {
+            var sites = new List<ShrubSite>();
+            if (terrain == null || available == null || available.Count == 0) return sites;
+
+            var byHabitat = GroupByHabitat(available, habitatOf);
+            if (byHabitat.Count == 0) return sites;
+
+            foreach (var site in WoodlandZones.ScatterUnderstorey(
+                         StPetersWoodlandZones.Zones, terrain,
+                         // ⚠ The SHRUB line, not the tree line — the same argument IsPlantable's own remarks
+                         // make about the ambient pass. It cannot bite inside a lot (all three sit on the
+                         // sheltered interior plateau) but passing the tree line here would leave a caller
+                         // reading this line believing the understorey is held to the canopy's floor.
+                         p => StPetersWoods.IsPlantable(terrain, p, ShrubLineElevation),
+                         variants, alreadyStanding))
+            {
+                // The region decides what kind of ground this is; the contract decides what grows in one.
+                // Inside a lot that is normally `woods` — but a wet hollow under a canopy is still a bog,
+                // and sweet gale is what actually grows in it, so the habitat field is asked rather than
+                // assumed.
+                string habitat = HabitatAt(terrain, site.Position);
+                if (!byHabitat.TryGetValue(habitat, out var candidates) || candidates.Count == 0) continue;
+
+                sites.Add(new ShrubSite
+                {
+                    Position = site.Position,
+                    Species = candidates[site.Roll % candidates.Count],
+                    Variant = site.Variant,
+                });
+            }
+            return sites;
+        }
+
+        /// <summary>What was baked, grouped by the habitat the CONTRACT gives it — never by a table written
+        /// here. Shared by both passes so a re-bake that moves a species between habitats moves it in the
+        /// heath and in the understorey together.</summary>
+        static Dictionary<string, List<string>> GroupByHabitat(IReadOnlyList<string> available,
+                                                               System.Func<string, string> habitatOf)
+        {
+            var byHabitat = new Dictionary<string, List<string>>();
+            foreach (string s in available)
+            {
+                string h = habitatOf != null ? habitatOf(s) : null;
+                if (string.IsNullOrEmpty(h)) continue;
+                if (!byHabitat.TryGetValue(h, out var list)) byHabitat[h] = list = new List<string>();
+                list.Add(s);
+            }
+            return byHabitat;
         }
     }
 }

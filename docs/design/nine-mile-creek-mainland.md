@@ -442,6 +442,8 @@ than trusting it (no circle the size of a small wood may hold more trees than a 
 | **Field grass** | A `GrassField` bake (#485's byte-plane + chunked meshes) over the land west of the coast | 2.0 m grid, **one** slot per cell, 0.62 chance |
 | **Hedgerows** | A 96 m E–W field-strip lattice anchored on the region origin, **plus both sides of the two GRAVEL roads** | a shrub every 3.5 m, 0.72 of stations |
 | **Trees** | Every 11th hedge station, plus a 48 m field-tree grid at 0.35 | ~100 trees in 425,600 m² |
+| **Wood lots** | Three bounded blocks (`NineMileCreekWoodLots`) squared against field boundaries, 110 m back from the shore, each with a lane cut along its own boundary | 4.2 m core spacing, tapering through a fringe; ≤ 8% of the plantable hinterland |
+| **Understorey** | The shrub layer inside those lots (`NineMileCreekWoodLots.ScatterUnderstorey`) | a shrub per 3 trunks over it — 7.3 m grid, same fringe taper, cut out of the lanes |
 | **Marsh** | The two carved ponds' own shoulders, banded by the region's tide | 3.2 m grid, 0.55 |
 
 **Why the strips run east–west.** This coast runs north–south, and PEI's fields are long strips running
@@ -452,6 +454,29 @@ without a code change.
 **Only the gravel roads are hedged.** The bar road is a red dirt track along an open clifftop and the
 photographs show it running through bare field; hedging it would turn the region's most exposed road
 into a lane. The gully path is nineteen metres of foot tread.
+
+**⭐ THE WOOD LOTS, AND WHY THEY DO NOT BREAK THE LAW ABOVE.** The owner ruled on 2026-08-16 that
+woodland zones go *alongside* these fields, as **bounded lots**. Every PEI farm has one: a block at the
+back kept for firewood and lumber, too rough or too wet to plough. They are a **separate pass** from the
+farmed scatter, on purpose — `TheHinterlandIsFieldsAndNotForest` still walks the FARMED trees and is still
+provably stand-free, so the region's founding constraint was never re-scoped to let a stand through. What
+reconciles the two rulings numerically is `MaxHinterlandShare`: the lots may cover at most **8%** of the
+plantable hinterland (measured ~4%), because "lot" is not a claim you can make about a shape — only about
+a share. The hedgerows **give way** to a lot rather than running through it.
+
+**And the lots have a floor.** The shrub kit ships a `woods` habitat and its own contract calls it an
+**understorey** — the layer that belongs inside a stand. Until the lots landed this coast had none, so
+`ShrubHabitatAt` refused to name it at all and a test pinned the refusal; now it names it, **only inside a
+declared lot**, and the old test's inverse guards the bound. The density is a ratio rather than a second
+table — one shrub for every **three** trunks over it, so re-tuning `LotCoreSpacingMetres` carries the
+shrubs with it — and it reads as *depth, not a second canopy*: measured, a lot core carries about half as
+many shrubs as trunks. It thins through the same fringe the canopy does, keeps half a trunk-gap clear of
+every trunk foot (shrubs stand **between** trunks, not on them), and is **cut out of the lanes with the
+canopy** — a corridor whose trees were cleared and then filled with waist-high brush is not a corridor.
+
+⚠ Neither ceiling above moves for the understorey. `MaxHinterlandShare` measures **ground the lot capsules
+cover**; `TheHinterlandIsFieldsAndNotForest` counts **trees in the farmed pass**. A shrub is neither a
+hectare nor a tree. Do not "make room" for the understorey by widening a law written for canopy.
 
 **The two habitat fields.** *Wetness* is coherent noise on its own salt (hollows hold water — bog and
 swale shrubs). *Exposure* is **measured from the coast run, not from elevation**, and that is the one
