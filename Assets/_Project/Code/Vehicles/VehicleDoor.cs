@@ -177,9 +177,12 @@ namespace HiddenHarbours.Vehicles
                 // NOT latched until she knows what she is. AddComponent on a live object runs OnEnable
                 // before the caller has said which vehicle this is (the #556 trap), so an id cached on
                 // that first access would name her "unassigned" for the rest of her life.
-                if (string.IsNullOrEmpty(vehicle))
-                    return $"vehicle.unassigned.drive_door.{GetInstanceID()}";
-                return _id = $"{vehicle}.drive_door.{GetInstanceID()}";
+                //
+                // GetEntityId, not the deprecated GetInstanceID — 6000.5 marks that obsolete-as-ERROR,
+                // which is a compile failure and not a warning. Same '#' separator the carriables and the
+                // clam holes use for their per-instance ids.
+                if (string.IsNullOrEmpty(vehicle)) return $"vehicle.unassigned.drive_door#{GetEntityId()}";
+                return _id = $"{vehicle}.drive_door#{GetEntityId()}";
             }
         }
 
