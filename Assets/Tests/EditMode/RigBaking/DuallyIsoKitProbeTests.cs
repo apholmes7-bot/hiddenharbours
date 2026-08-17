@@ -225,6 +225,240 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         // =============================================================================================
+        //  3. THE STEERING REVISION (drop of 2026-08-16, night) — what the new axes actually DO
+        // =============================================================================================
+
+        /// <summary>
+        /// JS helpers the articulation tests share: the rig's own private builder at a pose, and a
+        /// face-by-face comparison. Deliberately computed by the RIG — nothing about the truck's
+        /// geometry is transcribed into C#, because a transcription is a second implementation that
+        /// can agree with itself and with nothing else.
+        /// </summary>
+        const string Articulation = @"
+            function __faces(o){ return VehicleIso.build(VehicleIso.resolve(o)); }
+            function __moved(a, b){
+              if (a.length !== b.length) return -1;
+              var n = 0;
+              for (var i = 0; i < a.length; i++) {
+                var fa = a[i].v, fb = b[i].v, d = false;
+                if (fa.length !== fb.length) { n++; continue; }
+                for (var k = 0; k < fa.length && !d; k++)
+                  for (var c = 0; c < 3; c++)
+                    if (Math.abs(fa[k][c] - fb[k][c]) > 1e-9) { d = true; break; }
+                if (d) n++;
+              }
+              return n;
+            }
+            function __movedMats(a, b){
+              var o = {};
+              for (var i = 0; i < a.length; i++) {
+                var fa = a[i].v, fb = b[i].v, d = false;
+                for (var k = 0; k < fa.length && !d; k++)
+                  for (var c = 0; c < 3; c++)
+                    if (Math.abs(fa[k][c] - fb[k][c]) > 1e-9) { d = true; break; }
+                if (d) o[a[i].mat] = 1;
+              }
+              return Object.keys(o);
+            }
+            function __movedBoundsY(a, b){
+              var lo = 1e9, hi = -1e9;
+              for (var i = 0; i < a.length; i++) {
+                var fa = a[i].v, fb = b[i].v, d = false;
+                for (var k = 0; k < fa.length && !d; k++)
+                  for (var c = 0; c < 3; c++)
+                    if (Math.abs(fa[k][c] - fb[k][c]) > 1e-9) { d = true; break; }
+                if (!d) continue;
+                for (var k2 = 0; k2 < fa.length; k2++) {
+                  lo = Math.min(lo, fa[k2][1]); hi = Math.max(hi, fa[k2][1]);
+                }
+              }
+              return [lo, hi];
+            }";
+
+        /// <summary>Loads the rig with its private <c>build</c> widened onto the global, plus the
+        /// articulation helpers. The widening is the shim <see cref="RigMeshExtractor"/> uses, not a
+        /// second mechanism.</summary>
+        static IRigScriptHost ArticulationHost()
+        {
+            string widened = RigMeshExtractor.WidenExportedLiteral(
+                File.ReadAllText(Full(RigPath)), Global, new[] { "build" }, RigPath);
+
+            IRigScriptHost host = RigScriptHostFactory.Create();
+            host.Execute(widened);
+            host.Execute(Articulation);
+            return host;
+        }
+
+        /// <summary>
+        /// ⭐ <b>The standing art ask was ANSWERED — the rig now models steering.</b>
+        ///
+        /// <para>#548 shipped with a recorded art limit: <i>"the rig models NO STEERING. The front
+        /// wheels roll but never yaw, so a turning truck is a yaw on the whole sprite."</i> The
+        /// 2026-08-16 night revision adds a <c>steer</c> axis, and this pins what it promises so a
+        /// later drop cannot quietly change the lock angles the controller solves against.</para>
+        ///
+        /// <para><b>Ackermann, and the sign matters.</b> <c>+1</c> is full LEFT, and the INNER wheel
+        /// turns further than the outer (30° against 24.94°) — the geometry that keeps both front
+        /// tyres tangent to the same turn centre. A controller that fed the same angle to both would
+        /// scrub, and one that took the sign the other way would steer the truck into the ditch it
+        /// was avoiding.</para>
+        /// </summary>
+        [Test]
+        public void TheRigNowModelsSteeringAndItIsAckermannSplit()
+        {
+            using IRigScriptHost host = RigScriptHostFactory.Create();
+            host.Execute(File.ReadAllText(Full(RigPath)));
+
+            Assert.That(host.EvaluateBool($"typeof {Global}.steer === 'object' && {Global}.steer !== null"),
+                Is.True,
+                "the rig exports no steer block. If the art side withdrew the steering revision, the " +
+                "controller's steered-wheel path has no angles to pose and must fall back to " +
+                "whole-body yaw — that is a decision, not something to paper over.");
+
+            Assert.That(host.EvaluateNumber($"{Global}.steer.maxInnerDeg"), Is.EqualTo(30d).Within(1e-9),
+                "peak INNER lock moved. VehicleDef's steering authority is solved against this.");
+
+            Assert.That(host.EvaluateNumber($"{Global}.steer.maxOuterDeg"), Is.EqualTo(24.94d).Within(0.005d),
+                "peak OUTER lock moved — the Ackermann split changed, so the two front wheels no " +
+                "longer share a turn centre at the angles this repo poses them at.");
+
+            // +1 = LEFT lock, and the inner (left) wheel turns FURTHER. Both halves measured.
+            Assert.That(host.EvaluateNumber($"{Global}.steer.angles(1).L"), Is.EqualTo(30d).Within(1e-9));
+            Assert.That(host.EvaluateNumber($"{Global}.steer.angles(1).R"), Is.EqualTo(24.9372d).Within(1e-3),
+                "at full LEFT lock the left wheel must be the inner one. A flipped sign here steers " +
+                "the truck the wrong way and nothing else in the stack would notice.");
+
+            Assert.That(host.EvaluateBool(
+                    $"{Global}.steer.angles(-1).R === -{Global}.steer.angles(1).L && " +
+                    $"{Global}.steer.angles(-1).L === -{Global}.steer.angles(1).R"),
+                Is.True,
+                "right lock is not the mirror of left lock — the controller cannot use one angle " +
+                "solver for both directions.");
+        }
+
+        /// <summary>
+        /// ⭐⭐ <b>The finding that decides how the truck is BUILT: <c>steer</c> articulates the front
+        /// wheels and nothing else.</b>
+        ///
+        /// <para>This is the repo's own technique for splitting an articulated fitting from its body —
+        /// <c>HullPropMeshDef.FixedMesh</c>'s "build the rig's face list at two poses, keep the ones
+        /// that did not move" — applied to a truck. Measured: 286 of 1153 faces move, all of them
+        /// inside the front axle's envelope, and <b>not one of them is <c>paint</c></b>. The body is
+        /// untouched.</para>
+        ///
+        /// <para>So the Dually's front wheels are the outboard motor's problem exactly: a sub-mesh
+        /// that rotates about a known pivot, which <see cref="Core.HullPropMeshDef"/> and
+        /// <c>IHullPropRenderer</c> already exist to carry. No new articulation machinery is needed —
+        /// which is the whole reason this is measured here rather than discovered during the bake.</para>
+        /// </summary>
+        [Test]
+        public void SteerArticulatesTheFrontWheelsAndLeavesTheBodyAlone()
+        {
+            using IRigScriptHost host = ArticulationHost();
+
+            double total = host.EvaluateNumber("__faces({}).length");
+            Assert.That(total, Is.GreaterThan(200d), "the truck built implausibly few faces.");
+
+            double moved = host.EvaluateNumber("__moved(__faces({}), __faces({steer:1}))");
+            Assert.That(moved, Is.GreaterThan(0d),
+                "steering moved NO geometry. Either the axis was withdrawn or it is a camera " +
+                "parameter like yaw — and those two want opposite implementations.");
+            Assert.That(moved, Is.LessThan(total * 0.5d),
+                "steering moved more than half the truck. That is a whole-body transform, not a " +
+                "steered pair, and it cannot be baked as a fitting.");
+
+            // The moved set must sit inside the FRONT axle's envelope: axF ± wheelR = 2.18 ± 0.42.
+            double lo = host.EvaluateNumber("__movedBoundsY(__faces({}), __faces({steer:1}))[0]");
+            double hi = host.EvaluateNumber("__movedBoundsY(__faces({}), __faces({steer:1}))[1]");
+            double axF = host.EvaluateNumber($"{Global}.G.axF");
+            double wheelR = host.EvaluateNumber($"{Global}.G.wheelR");
+
+            Assert.That(lo, Is.GreaterThanOrEqualTo(axF - wheelR - 1e-6),
+                $"steering moved geometry aft of the front axle (y={lo:F3} < {axF - wheelR:F3}). " +
+                "Something other than the front wheels is riding the steer axis.");
+            Assert.That(hi, Is.LessThanOrEqualTo(axF + wheelR + 1e-6),
+                $"steering moved geometry forward of the front wheels (y={hi:F3} > {axF + wheelR:F3}).");
+
+            Assert.That(host.EvaluateBool(
+                    "__movedMats(__faces({}), __faces({steer:1})).indexOf('paint') < 0"),
+                Is.True,
+                "a 'paint' face moved with the steering. The BODY is on the steer axis, so the " +
+                "wheels cannot be lifted out as a fitting and posed against a static body — the " +
+                "whole bake plan for this vehicle changes.");
+        }
+
+        /// <summary>
+        /// ⭐⭐ <b><c>yaw</c> is a CAMERA parameter, and that is why continuous heading costs nothing.</b>
+        ///
+        /// <para>The revision's own comment reads <i>"Rotates the whole truck under the fixed key, so
+        /// the shading stays right — this is how a turning truck reads BETWEEN facings, and it is not
+        /// a rotated sprite."</i> That describes the RESULT. What it does mechanically is fold the
+        /// angle into <c>camBasis</c> (<c>th = dir·45° + yaw</c>), so the model never moves and the
+        /// key light never moves with it.</para>
+        ///
+        /// <para><b>Which means the mesh path already has this axis.</b>
+        /// <c>IHullMeshRenderer.HeadingDirUnits</c> is documented "1 = 45°, fractional allowed —
+        /// continuous is the point": the same continuous azimuth, applied the same way. A mesh truck
+        /// therefore reads at any heading with no extra bake, no yaw variants, and no new channel —
+        /// the thing the sprite path needed a new art axis for.</para>
+        ///
+        /// <para>Pinned because it would be entirely natural to "support" yaw by rotating the baked
+        /// mesh's vertices, and this test says the rig does not mean that.</para>
+        /// </summary>
+        [Test]
+        public void YawIsACameraParameterSoItMovesNoGeometry()
+        {
+            using IRigScriptHost host = ArticulationHost();
+
+            Assert.That(host.EvaluateBool("typeof " + Global + ".resolve({}).yaw === 'number'"), Is.True,
+                "the rig no longer resolves a yaw axis.");
+
+            Assert.That(host.EvaluateNumber("__moved(__faces({}), __faces({yaw:30}))"),
+                Is.EqualTo(0d),
+                "yaw MOVED geometry. It is documented and measured as a camera-basis rotation, and " +
+                "the mesh path leans on that: heading is IHullMeshRenderer.HeadingDirUnits, not a " +
+                "re-baked vertex set. If the rig started baking yaw into the model, a mesh vehicle " +
+                "would be yawed twice — once by the rig and once by the renderer.");
+        }
+
+        /// <summary>
+        /// ⚠️ <b>Wheel roll is measured in REVOLUTIONS, and the axis is cyclic with period 1.</b>
+        ///
+        /// <para>Pinned because the obvious formula is wrong. Rolling a wheel of radius r at speed v
+        /// is <c>ω = v/r</c> in RADIANS per second — and feeding that number to this axis spins the
+        /// wheels 2π times too fast. The rig wants <c>v / (2πr)</c>.</para>
+        ///
+        /// <para>The period is what makes it measurable: <c>{roll:1}</c> is one whole turn and
+        /// therefore reproduces <c>{roll:0}</c> exactly. (That also makes 1 a uselessly degenerate
+        /// probe value — the first pass of this measurement tested exactly there and concluded the
+        /// axis moved nothing.)</para>
+        /// </summary>
+        [Test]
+        public void WheelRollIsCyclicInRevolutionsNotRadians()
+        {
+            using IRigScriptHost host = ArticulationHost();
+
+            Assert.That(host.EvaluateNumber("__moved(__faces({}), __faces({wFL:1}))"), Is.EqualTo(0d),
+                "one full revolution did not reproduce the neutral pose, so this axis is not in " +
+                "revolutions. Whatever unit it is now in, the controller's v/(2*pi*r) conversion is " +
+                "wrong and the wheels will spin at the wrong rate.");
+
+            double quarter = host.EvaluateNumber("__moved(__faces({}), __faces({wFL:0.25}))");
+            Assert.That(quarter, Is.GreaterThan(0d),
+                "a quarter revolution moved nothing — the wheel does not roll in geometry at all, " +
+                "and 'wheels turn with speed' cannot be delivered on the mesh path.");
+
+            // Per-wheel and all-wheels are the same axis applied to different sets: the four roll
+            // groups of a dually (front pair + rear duals as one group a side).
+            double one = host.EvaluateNumber("__moved(__faces({}), __faces({wFL:0.25}))");
+            double all = host.EvaluateNumber("__moved(__faces({}), __faces({roll:0.25}))");
+            Assert.That(all, Is.EqualTo(one * 4d),
+                $"the all-wheels roll axis moved {all} faces against {one} for one wheel. The rig " +
+                "models four roll groups; if that changed, the controller's per-wheel posing no " +
+                "longer covers the same geometry.");
+        }
+
+        // =============================================================================================
         //  helpers
         // =============================================================================================
 

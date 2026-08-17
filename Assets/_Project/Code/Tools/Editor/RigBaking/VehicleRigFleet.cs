@@ -114,18 +114,29 @@ namespace HiddenHarbours.Tools.RigBaking
                     "NAME rather than an index-ordered array, so the fleet's 'MATS order IS the baked " +
                     "material index' law does not transfer and a Reconstructions entry supplies it.\n" +
                     "\n" +
-                    "What is missing is an ARCHITECTURE RULING the art side cannot make: a truck is " +
-                    "not a hull, so she cannot take HullMeshDef (Core/Boats) without making 'boat' " +
-                    "mean 'anything with a mesh'. She needs a vehicle def and a home module — proposed " +
-                    "HiddenHarbours.Vehicles, Core-mediated per rule 4, with a NEW 'vehicle.*' id " +
-                    "family that is append-only once shipped. That is an ADR and lead-architect " +
-                    "sign-off (CLAUDE.md §3 rule 4, §6), and importing source is not a licence to wire " +
-                    "content (rule 8). So the drop lands here, verified and guarded, and the bake " +
-                    "follows the ruling.\n" +
+                    "The ARCHITECTURE RULING this entry waited on has since been GIVEN (lead-architect, " +
+                    "2026-08-16, posted on #548): module HiddenHarbours.Vehicles with its own asmdef, " +
+                    "Core-mediated per rule 4; per-domain def types (VehicleMeshDef / VehicleDef) over " +
+                    "the SHARED bake tooling; id family 'vehicle.*', append-only once shipped. So what " +
+                    "is left here is the BUILD, not a decision — she stays listed only until the pass " +
+                    "that bakes her lands, and this entry goes away rather than being reworded.\n" +
                     "\n" +
-                    "⚠ One art limit the owner should rule on before the controller is built: the rig " +
-                    "models NO STEERING. The front wheels roll but never yaw, so a turning truck is a " +
-                    "yaw on the whole sprite.",
+                    "⭐ THE STEERING LIMIT RECORDED HERE IS CLOSED. The 2026-08-16 night revision adds " +
+                    "a `steer` axis (Ackermann-split: inner 30°, outer 24.94° at full lock, +1 = full " +
+                    "LEFT) and a `yaw` axis, and the sidecar arrived already re-stamped to the revised " +
+                    "rig — no re-pinning was needed. DuallyIsoKitProbeTests measures all of it. Three " +
+                    "facts from that pass shape the bake, and each was measured because the obvious " +
+                    "reading is wrong:\n" +
+                    "  · `steer` moves 286 of 1153 faces, ALL inside the front axle's envelope and not " +
+                    "    one of them 'paint'. The front wheels are separable exactly as an outboard is, " +
+                    "    so HullPropMeshDef + IHullPropRenderer carry them and no new articulation " +
+                    "    machinery is needed.\n" +
+                    "  · `yaw` moves ZERO faces — it is folded into camBasis, i.e. a CAMERA rotation. " +
+                    "    That is already what IHullMeshRenderer.HeadingDirUnits does ('fractional " +
+                    "    allowed — continuous is the point'), so a mesh vehicle reads at any heading " +
+                    "    for free. Baking yaw into vertices would yaw her twice.\n" +
+                    "  · wheel roll is in REVOLUTIONS, cyclic with period 1 — so the rate is v/(2πr), " +
+                    "    NOT the v/r that 'angular velocity' invites. 2π too fast is not subtle.",
             };
     }
 }

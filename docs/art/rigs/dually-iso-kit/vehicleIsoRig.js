@@ -13,6 +13,12 @@
      wFL wFR wRL wRR   per-wheel roll offsets, revolutions — wheels rotate INDEPENDENTLY
      susF susR         suspension travel per axle, -1..1 (+ compresses, body drops & pitches;
                        wheels stay on the ground — the BODY moves, which is what reads)
+     steer             front-wheel steering, -1..1. The front pair YAW about their own vertical
+                       axes, Ackermann-split: inner 30deg, outer 24.9deg at full lock.
+                       +1 is full LEFT (the nose swings toward -x).
+     yaw               heading off the 45deg facing grid, in DEGREES (-45..45). Rotates the whole
+                       truck under the fixed key, so the shading stays right — this is how a
+                       turning truck reads BETWEEN facings, and it is not a rotated sprite.
 
    ORIGIN / PIVOT: ground-centre of the body footprint. +x curb side, +y nose, +z up.
    Doors: FL/RL are street side (-x, the driver's), FR/RR curb side (+x).
@@ -67,7 +73,7 @@
   function desat(hex,t){ const [r,g,b]=hex2rgb(hex); const l=0.3*r+0.59*g+0.11*b; return rgb2hex(r+(l-r)*t,g+(l-g)*t,b+(l-b)*t); }
   function hash2(a,b){ let h=(a*374761393 + b*668265263)>>>0; h=(h^(h>>13))*1274126177>>>0; return ((h^(h>>16))>>>0)/4294967296; }
 
-  function camBasis(opts){ const dir=opts.dir||0, th=dir*Math.PI/4, e=(opts.elev!=null?opts.elev:DEFAULT_ELEV)*DEG;
+  function camBasis(opts){ const dir=opts.dir||0, th=dir*Math.PI/4 + (opts.yaw||0)*DEG, e=(opts.elev!=null?opts.elev:DEFAULT_ELEV)*DEG;
     return { th, ct:Math.cos(th), stt:Math.sin(th), se:Math.sin(e), ce:Math.cos(e) }; }
   function projVert(x,y,z,B){ const xr=x*B.ct - y*B.stt, yr=x*B.stt + y*B.ct, zr=z;
     return { xr,yr,zr, sx:cx+xr*S, sy:groundY-(yr*B.se+zr*B.ce)*S, d:(yr*B.ce-zr*B.se) }; }
@@ -147,6 +153,16 @@
       bedLen:+((G.bedFront-0.06)-G.tailY).toFixed(2), wheels:6 },
   };
 
+  // ---- steering: the front pair yaw about their own vertical axes, Ackermann-split ----
+  const STEER_MAX = 30;                                   // inner wheel, degrees, at full lock
+  function steerAngles(v){
+    if(!v) return { L:0, R:0 };
+    const inner = Math.abs(v)*STEER_MAX*DEG;
+    const outer = Math.atan(1/(1/Math.tan(inner) + (G.frontWX*2)/(G.axF-G.axR)));
+    const i=inner/DEG, o=outer/DEG;
+    return v>0 ? { L:+i, R:+o } : { L:-o, R:-i };         // +v = left lock; the inside wheel turns more
+  }
+
   const PRESETS = {
     showroom:  { paint:'white', weather:0.05 },
     workhorse: { paint:'white', weather:0.45 },
@@ -160,6 +176,8 @@
     hood:  (t)=>({ hood:t }),
     gate:  (t)=>({ gate:t }),
     roll:  (t)=>({ roll:t }),                             // one revolution, cyclic
+    steer: (t)=>({ steer:t*2-1 }),                        // full right lock -> full left lock
+    turn:  (t)=>({ steer:Math.sin(t*Math.PI*2), yaw:Math.sin(t*Math.PI*2)*14, roll:t }),  // cyclic
     bounce:(t)=>({ susF:Math.sin(t*Math.PI*2)*0.7, susR:Math.sin(t*Math.PI*2+1.3)*0.7, roll:t }),
   };
 
@@ -174,6 +192,7 @@
       dFL:c01(g('dFL',0)), dFR:c01(g('dFR',0)), dRL:c01(g('dRL',0)), dRR:c01(g('dRR',0)),
       roll:g('roll',0), wFL:g('wFL',0), wFR:g('wFR',0), wRL:g('wRL',0), wRR:g('wRR',0),
       susF:c11(g('susF',0)), susR:c11(g('susR',0)),
+      steer:c11(g('steer',0)), yaw:Math.max(-45,Math.min(45,g('yaw',0))),
       mirrors:g('mirrors',true), mudflaps:g('mudflaps',true), steps:g('steps',false), hitch:g('hitch',true),
       night:!!opts.night, outline: opts.outline!=null?!!opts.outline:KEYLINE_DEFAULT };
   }
@@ -435,7 +454,9 @@
   }
 
   // ---- wheels & axles (the rolling group — untouched by suspension) ----
-  function wheelAt(out, xc, yc, sxOut, roll, hub){
+  function wheelAt(out, xc, yc, sxOut, roll, hub, yawDeg){
+    if(yawDeg){ const a=yawDeg*DEG, ca=Math.cos(a), sa=Math.sin(a);
+      part(out,(T)=>wheelAt(T,xc,yc,sxOut,roll,hub,0),(p)=>hingeZ(p,xc,yc,ca,sa)); return; }
     const r=G.wheelR, w=G.tireW, ph=roll*2*Math.PI;
     tube(out,[xc-w/2,yc,r],[xc+w/2,yc,r], r, 14, 'rubber', -0.05, true, treadTex(roll*2*Math.PI*r));
     if(!hub) return;
@@ -451,12 +472,13 @@
     tube(out,[xf,yc,r],[xf+sxOut*0.045,yc,r],0.07,8,'chrome',0.4);           // centre cap
   }
   function buildWheels(out,s){
+    const st=steerAngles(s.steer);
     tube(out,[-0.78,G.axF,G.wheelR],[0.78,G.axF,G.wheelR],0.055,8,'iron',-0.25);
     tube(out,[-0.98,G.axR,G.wheelR],[0.98,G.axR,G.wheelR],0.065,8,'iron',-0.25);
     tube(out,[-0.06,G.axR,G.wheelR],[0.26,G.axR,G.wheelR],0.16,10,'iron',-0.2);   // diff
     bar(out,[0.08,0.40,0.48],[0.08,G.axR+0.34,0.44],0.045,'iron',-0.3);           // driveshaft
-    wheelAt(out,  G.frontWX, G.axF, +1, s.roll+s.wFR, true);
-    wheelAt(out, -G.frontWX, G.axF, -1, s.roll+s.wFL, true);
+    wheelAt(out,  G.frontWX, G.axF, +1, s.roll+s.wFR, true, st.R);
+    wheelAt(out, -G.frontWX, G.axF, -1, s.roll+s.wFL, true, st.L);
     wheelAt(out,  G.rearWXin,  G.axR, +1, s.roll+s.wRR, false);
     wheelAt(out,  G.rearWXout, G.axR, +1, s.roll+s.wRR, true);
     wheelAt(out, -G.rearWXin,  G.axR, -1, s.roll+s.wRL, false);
@@ -561,18 +583,18 @@
   }
 
   function render(dir, opts){ opts=(typeof opts==='number')?{elev:opts}:(opts||{});
-    const s=resolve(opts), B=camBasis({dir,elev:opts.elev});
+    const s=resolve(opts), B=camBasis({dir,elev:opts.elev,yaw:s.yaw});
     return toRGBA(post(paint(build(s), B, makeMats(s), s), s));
   }
   function frames(dir, n, opts, cue){ n=n||8; const fn=CUES[cue||'doors']||CUES.doors, out=[];
-    const cyclic = (cue==='roll'||cue==='bounce');
+    const cyclic = (cue==='roll'||cue==='bounce'||cue==='turn');
     for(let i=0;i<n;i++){ const t = cyclic ? i/n : i/(n-1);
       out.push(render(dir, Object.assign({}, opts, fn(t)))); }
     return out;
   }
-  function project(dir, p, elev){ const v=projVert(p[0],p[1],p[2],camBasis({dir,elev})); return {x:v.sx,y:v.sy}; }
+  function project(dir, p, elev, yaw){ const v=projVert(p[0],p[1],p[2],camBasis({dir,elev,yaw})); return {x:v.sx,y:v.sy}; }
   function anchors(dir, opts){ opts=opts||{}; const s=resolve(opts), e=opts.elev;
-    const P=(p)=>{ const q=project(dir,p,e); return { x:q.x, y:q.y, m:p }; };
+    const P=(p)=>{ const q=project(dir,p,e,s.yaw); return { x:q.x, y:q.y, m:p }; };
     return {
       hitch:P([0,-3.36,0.55]), gate:P([0,G.tailY,1.42]), bed:P([0,(G.tailY+G.bedFront)/2,G.bedFloorZ]),
       hoodLatch:P([0,G.noseY-0.10,G.hoodZn]),
@@ -590,5 +612,6 @@
     order:['N','NE','E','SE','S','SW','W','NW'],
     BODY, TRIM, IRON, GALV, RUBBER, CHROME, CLOTH, GLASSD, GLASSN, KEY,
     BODIES, PRESETS, CUES, G, travel:{F:TF,R:TR},
+    steer:{ maxInnerDeg:STEER_MAX, maxOuterDeg:+(steerAngles(1).R.toFixed(2)), angles:steerAngles },
     list, dims, resolve, render, frames, anchors, project };
 })(typeof globalThis!=='undefined'?globalThis:window);

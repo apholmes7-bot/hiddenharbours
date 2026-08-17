@@ -2,7 +2,7 @@
   "rig": "vehicleIsoRig.js",
   "exportSymbol": "VehicleIso",
   "variant": "dually3500",
-  "derivedFromRigSha256": "130580238ab2c6d438ad0bd27cc338534316b5befd506be9f785c43dc8b84bdf",
+  "derivedFromRigSha256": "6486b3359030f459d05f9e964adc751b635a3111b45b8c20679127e6b07c814e",
   "kind": "road_vehicle",
   "label": "Dually 3500",
   "generated": "measured off the rig source by hand-transcription with per-value provenance; no generator in the rig",
@@ -855,7 +855,14 @@
           2.18,
           0.42
         ],
-        "role": "steer"
+        "role": "steer",
+        "steer_axis": {
+          "kind": "vertical",
+          "at": [
+            -0.9,
+            2.18
+          ]
+        }
       },
       {
         "id": "FR",
@@ -864,7 +871,14 @@
           2.18,
           0.42
         ],
-        "role": "steer"
+        "role": "steer",
+        "steer_axis": {
+          "kind": "vertical",
+          "at": [
+            0.9,
+            2.18
+          ]
+        }
       },
       {
         "id": "RL_inner",
@@ -908,8 +922,53 @@
       "rear_outer": 2.1
     },
     "contact_z": 0,
-    "_note": "roll is per-wheel (wFL..wRR, in REVOLUTIONS) on top of the master roll. One revolution closes the hubs exactly but the tread only to 0.29% of painted pixels (25.133 stripes per turn), so a rolling loop is seamless rather than bit-exact. Steering is NOT modelled — the front wheels do not yaw.",
+    "_note": "roll is per-wheel (wFL..wRR, in REVOLUTIONS) on top of the master roll. One revolution closes the hubs exactly but the tread only to 0.29% of painted pixels (25.133 stripes per turn), so a rolling loop is seamless rather than bit-exact. The front pair DO yaw — see STEERING.",
     "provenance": "G.frontWX / rearWXin / rearWXout / axF / axR / wheelR / tireW — exact"
+  },
+  "STEERING": {
+    "param": "steer",
+    "range": [
+      -1,
+      1
+    ],
+    "sense": "+1 = full LEFT lock; the nose swings toward -x",
+    "max_deg": {
+      "inner": 30,
+      "outer": 24.94
+    },
+    "ackermann": "outer = atan(1/(1/tan(inner) + track/wheelbase)), front track 1.80 m, wheelbase 4.30 m",
+    "axis": "vertical, through each front wheel centre — no kingpin offset, caster or scrub radius is modelled",
+    "applies_to": [
+      "FL",
+      "FR"
+    ],
+    "turning_radius_m": {
+      "rear_axle_centre": 8.29,
+      "outer_front_wheel_path": 10.15,
+      "_note": "geometric, at full lock, from the published Ackermann angles. No slip, no load transfer."
+    },
+    "swept_envelope": {
+      "tire_corner_x_m": 1.22,
+      "front_fender_x_m": 1.05,
+      "flare_x_m": 1.24,
+      "_note": "at full lock a front tire corner stands 0.17 m proud of the front fender and 0.02 m inside the rear flares. BODY.collider_bbox (1.24) still holds; a narrower per-axle collider does not."
+    },
+    "does_not": "yaw the truck. STEERING turns the wheels; YAW turns the machine. A turning truck wants both.",
+    "helm": "the wheel inside the cab does NOT turn with it — at 32 px/m the rim is 11 px and the spokes are not modelled, so there is nothing to rotate.",
+    "provenance": "steerAngles() + wheelAt() yaw branch in the rig; STEER_MAX = 30"
+  },
+  "YAW": {
+    "param": "yaw",
+    "units": "degrees",
+    "range": [
+      -45,
+      45
+    ],
+    "what": "heading between the eight facings. The model turns about z before projection under a FIXED key, so the shading is rebaked for the new heading — this is not a rotated sprite.",
+    "pivot": "unaffected; the origin projects to the published pivot at any yaw",
+    "frame": "yaw is a RENDER param, not geometry. Every metre in this file is in the machine frame and does not move with it.",
+    "gameplay": "a heading is dir*45 + yaw. Colliders, reach points and seat refs rotate with the machine as they always did; nothing here needs a yaw correction.",
+    "_note": "this replaces the old \"a turning truck is a yaw on the sprite\" workaround — the rig does it properly now."
   },
   "ATTACH": {
     "exhaust_tip": {
@@ -1097,7 +1156,6 @@
     "CLEATS": "not a hull. The tow points are in TOW; they are recovery/coupling points, not mooring.",
     "walkable_roof": "the cab roof is a 1.64 x 2.52 m panel at z 1.90..2.00 with no rack, no grab rail and no route up. Omitted rather than published as a surface.",
     "fuel_fill": "no filler neck, cap or door is modelled anywhere on the body. The tank is in ATTACH.fuel_tank; if fuelling needs a point, it wants rig geometry first.",
-    "steering": "the front wheels roll but do not yaw. A turning vehicle needs a yaw on the sprite, not on the wheels.",
     "plate_and_wipers": "no licence plate, wipers, aerial or decals. At 32 px/m they are 1-3 px and were left out of the bake.",
     "cab_bed_passthrough": "the rear window is glass; there is no opening between CAB and CARGO.",
     "interior_INTERACT": "nothing inside the cab is an interactable — no glovebox, radio or handbrake in the rig. Contrast camperInteriorRig, which models its own."
@@ -1107,6 +1165,7 @@
     "cab_occupancy": "the rear bench is one undivided 1.64 m cushion. Rider count and slot spacing are gameplay's call; the rig has no divisions to read.",
     "mirror_collider": "BODY.collider_bbox stops at the flares. The mirrors reach 2.72 m over — decide before a mirror clips a doorframe.",
     "steps_default": "resolve() defaults steps:false, so THRESHOLD.boarding is a 0.70 m step-in on the default build. If the game boards this truck often, ship it with steps:true.",
-    "reach_points": "six reach points, none tested against a ground collider or against each other. The two door points and the two rear points sit 0.15-0.60 m outside the swept arcs."
+    "reach_points": "six reach points, none tested against a ground collider or against each other. The two door points and the two rear points sit 0.15-0.60 m outside the swept arcs.",
+    "steering_and_yaw": "STEERING moves the wheels only; YAW moves the machine. Nothing couples them — a game that turns the wheels without yawing (or the reverse) will look wrong, and the rig will not stop it."
   }
 }

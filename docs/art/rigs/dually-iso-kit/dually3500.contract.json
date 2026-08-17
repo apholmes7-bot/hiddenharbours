@@ -1,8 +1,8 @@
 {
-  "kit": "dually-iso-kit",
+  "kit": "vehicle-rig-pack/dually-3500",
   "rig": "vehicleIsoRig.js",
   "exportSymbol": "VehicleIso",
-  "rigSha256": "130580238ab2c6d438ad0bd27cc338534316b5befd506be9f785c43dc8b84bdf",
+  "rigSha256": "6486b3359030f459d05f9e964adc751b635a3111b45b8c20679127e6b07c814e",
   "body": "dually3500",
   "label": "Dually 3500",
   "kind": "pickup",
@@ -268,6 +268,40 @@
       ],
       "default": 0.32,
       "effect": "greys and grimes the paint, rusts iron/galv/rubber, speckles at 5% x weather"
+    },
+    "steer": {
+      "param": "steer",
+      "range": [
+        -1,
+        1
+      ],
+      "sense": "+1 is full LEFT lock (the nose swings toward -x)",
+      "deg": {
+        "inner": 30,
+        "outer": 24.94
+      },
+      "geometry": "Ackermann: the inside wheel takes the larger angle. outer = atan(1/(1/tan(inner) + track/wheelbase)), track 1.80, wheelbase 4.30.",
+      "axis": "vertical, through each front wheel centre. No kingpin offset, no caster, no scrub radius.",
+      "swept_extreme_x_m": 1.22,
+      "note": "the front wheels yaw, the truck does NOT. Pair it with yaw for a turning pose. At full lock a front tire corner reaches |x| 1.22 m — proud of the 1.05 m front fender, inside the 1.24 m rear flares, so the truck never gets wider than its widest point."
+    },
+    "yaw": {
+      "param": "yaw",
+      "units": "degrees",
+      "range": [
+        -45,
+        45
+      ],
+      "what": "heading off the 45deg facing grid. Rotates the model about z before projection, so the fixed upper-LEFT key stays fixed and the shading is REBAKED, not rotated.",
+      "pivot": "unaffected — the origin still projects to the published pivot at any yaw",
+      "use": "yaw +/-22.5 covers the whole gap between two facings; 8 facings x 3 yaw steps is a 24-heading wheel off the same rig.",
+      "painted_bbox_over_sweep": [
+        80,
+        110,
+        303,
+        275
+      ],
+      "cost": "the painted union grows to 224 x 166 px over a +/-22.5 sweep — pack from it if the atlas holds yawed cells."
     }
   },
   "paints": [
@@ -313,6 +347,8 @@
     "hood",
     "gate",
     "roll",
+    "steer",
+    "turn",
     "bounce"
   ],
   "anchors": {
@@ -1345,6 +1381,16 @@
         "greyShingle",
         "plum"
       ]
+    },
+    {
+      "file": "Dually3500_steer_S.png",
+      "cells": 8,
+      "layout": "1 row",
+      "grid": [
+        3072,
+        320
+      ],
+      "pose": "steer cue at S — full right lock to full left lock, workhorse (white, weather 0.45)"
     }
   ],
   "sidecar": "vehicleIsoRig.dually3500.gameplay.json"

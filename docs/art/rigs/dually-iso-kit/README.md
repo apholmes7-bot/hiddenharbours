@@ -1,7 +1,11 @@
 # Hidden Harbours — Dually 3500 Iso Kit
 
+*One body of the [Vehicle Rig Pack](../README.md). Its sibling is the amphibian in `../otter-8x8/`; the
+conventions the two share — camera, ramps, facings, `yaw` — are documented once, in the pack README.*
+
 The first **road vehicle** in the harbour: a crew-cab one-tonne dually pickup, six wheels, long box,
-flared rear fenders — **8 facings × 10 paints × every panel on a hinge**. Same turntable, same camera,
+flared rear fenders — **8 facings × 10 paints × every panel on a hinge**, and now a heading wheel
+between the facings. Same turntable, same camera,
 same shading recipe as the campers, the houses and the fleet, so it parks next to them without a reskin.
 
 `vehicleIsoRig.js` is a **catalogue rig, not one truck**. Its `BODIES` table holds a single entry today
@@ -36,6 +40,7 @@ and all four doors open — crop and pack from `painted_bbox` in the contract, p
 | `Dually3500_doors_W.png` | 8 × (384 × 320) — the doors cue 0 → 62° at facing W, all four leaves in view. |
 | `Dually3500_gate_NE.png` | 8 × (384 × 320) — the tailgate cue 0 → 92° at facing NE. |
 | `Dually3500_roll_W.png` | 10 × (384 × 320) — the `bounce` cue at W: one wheel revolution plus suspension, **cyclic** (frame 10 wraps to frame 0). |
+| `Dually3500_steer_S.png` | 8 × (384 × 320) — the `steer` cue at S: full right lock to full left lock, 30° inner / 24.9° outer. |
 | `Dually3500_paints_SE.png` | 5 × 2 grid — the ten harbour paints at SE, weather 0.22. |
 
 Pivot is pinned identically in every cell of every sheet.
@@ -58,13 +63,15 @@ Pivot is pinned identically in every cell of every sheet.
 | `roll` | revolutions | master wheel roll. The loop closes on **one revolution** to within a tread phase — the hub lugs and the index notch return exactly, but the tread advances 2.639 m over a 0.105 m stripe period (25.13 stripes), so `roll:1` differs from `roll:0` by 43 px of 14,800 painted (**0.29%**, no alpha change). Seamless in motion; not bit-identical. |
 | `wFL wFR wRL wRR` | revolutions | per-wheel offsets. The wheels turn **independently**; an index notch on each hub gives the loop a full-revolution period rather than a 45° one. |
 | `susF susR` | −1..1 | suspension travel, 0.09 m front / 0.11 m rear. **The body moves, the wheels do not** — and the drop extrapolates past both axles, so the bumpers pitch. That is what sells it. |
+| `steer` | −1..1 | the front pair **yaw** about their own vertical axes, Ackermann-split: **inner 30°, outer 24.9°** at full lock. `+1` is left. The truck itself does not turn — pair it with `yaw`. |
+| `yaw` | −45..45° | heading **between** the facings. The model turns about z under the fixed key, so the shading is **rebaked, not rotated**, and the pivot holds. `±22.5°` covers the whole gap between two facings: 8 facings × 3 yaw steps is a 24-heading wheel off the same rig. |
 | `steps` | bool | running boards. **Defaults off** — see the sidecar's `_confirm`. |
 | `mirrors` `mudflaps` `hitch` | bool | fitted parts, default on. |
 | `night` | bool | glass ramps swap, headlamps become glow, light spills one pixel onto its neighbours. |
 | `weather` | 0..1 | greys and grimes the paint, rusts the running gear, speckles. Default 0.32; the workhorse sheet is 0.45. |
 
-`frames(dir, n, opts, cue)` bakes a strip through one of five named cues — `doors` `hood` `gate` `roll`
-`bounce`. `roll` and `bounce` are cyclic; the other three run 0 → 1 inclusive. Five `PRESETS`
+`frames(dir, n, opts, cue)` bakes a strip through one of seven named cues — `doors` `hood` `gate` `roll`
+`steer` `turn` `bounce`. `roll`, `turn` and `bounce` are cyclic; the other four run 0 → 1 inclusive. Five `PRESETS`
 (`showroom` `workhorse` `farmGate` `serviceBay` `crewCall`) are whole builds, not just paint.
 
 ## The sidecar is the gameplay layer, and it is not a boat's
@@ -91,6 +98,12 @@ vehicle's, and two of them exist nowhere else in `Art/gameplay/`:
 - **`SUSPENSION`** — the exact `dz(y)` the bake applies, verbatim, because **every polygon in the file
   rides it**. A rider in a seat or a crate in the bed needs the same correction.
 - **`WHEELS`** — six, with roles (`steer`, `dual_inner`, `dual_outer`), tracks and radius.
+- **`STEERING`** — the Ackermann pair: max angles, the formula, the vertical axis through each front wheel
+  centre, geometric turning radii (8.29 m at the rear axle centre, 10.15 m for the outer front wheel), and
+  the swept envelope — at full lock a front tyre corner reaches **|x| 1.22 m**, proud of the 1.05 m front
+  fender and 0.02 m inside the flares, so `collider_bbox` still holds.
+- **`YAW`** — heading between the facings. A **render** param, not geometry: every metre in the file is in
+  the machine frame and does not move with it.
 - **`ATTACH`** / **`INTERACT`** — exhaust tip, fuel tank, engine bay, clearance lamps; six interactables
   with reach points and `visible_facings`.
 
@@ -109,9 +122,10 @@ if the two disagree. The same sidecar sits byte-identical in the art workspace a
 
 `harness.html` bakes all eight facings twice — at rest and wide open — and checks: the origin projects to
 the published pivot in every facing; nothing paints outside its cell or more than 62 px below the pivot;
-each of the five cues actually moves pixels; the one-revolution roll seam stays under 0.6% of painted
-pixels; compressing both axles lowers the roof and **leaves the bottom row alone**; all 13 anchors land
-inside the cell.
+each of the seven cues actually moves pixels; the one-revolution roll seam stays under 0.6% of painted
+pixels; compressing both axles lowers the roof and **leaves the bottom row alone**; full lock moves the
+nose view and left lock differs from right; **45° of yaw is bit-identical to the next facing**; a ±22.5°
+yawed cell still fits; and all 13 anchors land inside the cell.
 
 Served over http it also fetches the two JSON files and cross-checks them against the live rig — the
 contract's per-facing bbox against a fresh bake, and the sidecar's floor heights, door spans, hinge
@@ -120,7 +134,12 @@ disk those fetches are blocked, and the harness reports them as **skipped**, not
 
 ## Known limits
 
-- **No steering.** The front wheels roll but never yaw. A turning truck is a yaw on the sprite.
+- **Steering turns the wheels; yaw turns the truck. Nothing couples them.** A game that locks the wheels
+  over without yawing the machine (or the reverse) will look wrong, and the rig will not stop it.
+- **The wheel inside the cab does not turn.** At 32 px/m the rim is 11 px and has no modelled spokes, so
+  there is nothing that would read.
+- **At full lock the front tyres read from astern.** At elev 40° you look past the cab roof onto them —
+  that is correct, not a leak.
 - **No walkable roof**, no rack, no grab rail, no route up — the cab roof is omitted from the sidecar
   rather than published as a surface.
 - **No fuel filler.** The tank is modelled (street side, under the bed); the neck, cap and door are not.

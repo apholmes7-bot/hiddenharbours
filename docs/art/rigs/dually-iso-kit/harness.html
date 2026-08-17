@@ -203,7 +203,7 @@ the JSON fetches are blocked by the browser and those groups are skipped, not si
       }
       return { painted:painted, moved:moved, pct:100*moved/painted };
     }
-    ['doors','hood','gate','roll','bounce'].forEach(function(c){
+    ['doors','hood','gate','roll','bounce','steer','turn'].forEach(function(c){
       var d0 = pixDiff(V.render(6, Object.assign({}, rest, V.CUES[c](0))), V.render(6, Object.assign({}, rest, V.CUES[c](0.5))));
       assert('cues', d0.moved > 40, 'cue ' + c + ': only ' + d0.moved + ' px move between t=0 and t=0.5');
     });
@@ -230,6 +230,25 @@ the JSON fetches are blocked by the browser and those groups are skipped, not si
       assert('anchors', ok, FACE[d] + ': anchor ' + bad + ' projects outside the cell');
       assert('anchors', A.hitch.m[1] < A.hoodLatch.m[1], FACE[d] + ': hitch is not aft of the hood latch');
     }
+
+    // steering: the front pair yaw, the truck does not — and yaw is a heading, not a rotated sprite
+    var lock = pixDiff(V.render(4, rest), V.render(4, Object.assign({}, rest, {steer:1})));
+    assert('steering', lock.moved > 40, 'full lock moves only ' + lock.moved + ' px at S — the front wheels are not yawing');
+    assert('steering', pixDiff(V.render(4, Object.assign({}, rest, {steer:1})), V.render(4, Object.assign({}, rest, {steer:-1}))).moved > 60,
+      'left lock and right lock look the same');
+    var tail = pixDiff(V.render(0, rest), V.render(0, Object.assign({}, rest, {steer:1})));
+    assert('steering', tail.moved > 0, 'the tail view is unchanged by steering — at 40° elev you look past the cab roof onto the front tyres, so it should move');
+    var env = V.G.frontWX + (V.G.tireW/2)*Math.cos(V.steer.maxInnerDeg*Math.PI/180) + V.G.wheelR*Math.sin(V.steer.maxInnerDeg*Math.PI/180);
+    assert('steering', env <= V.G.flareHW + 0.005, 'at full lock a front tyre corner reaches |x| ' + env.toFixed(3)
+      + ' m, outside the ' + V.G.flareHW + ' m flares — the truck would get wider than its widest point');
+    var sa = V.steer.angles(1);
+    assert('steering', sa.L > sa.R && near(sa.L, 30, 0.01), 'Ackermann is backwards or off: inner ' + sa.L.toFixed(2) + ' outer ' + sa.R.toFixed(2));
+    var yq = pixDiff(V.render(1, Object.assign({}, rest, {yaw:45})), V.render(2, rest));
+    assert('steering', yq.moved === 0, 'yaw 45 at NE is not identical to E (' + yq.moved + ' px) — the heading maths has drifted');
+    var yb = bbox(V.render(1, Object.assign({}, rest, {yaw:22.5})));
+    assert('steering', yb[0] >= 0 && yb[1] >= 0 && yb[2] < V.W && yb[3] < V.H, 'a yawed cell paints outside the cell [' + yb.join(',') + ']');
+    assert('steering', near(V.project(1, [0,0,0], null, 22.5).x, V.pivot.x) && near(V.project(1, [0,0,0], null, 22.5).y, V.pivot.y),
+      'the pivot moved under yaw');
 
     report('rig-only groups done, ' + dm.label);
 
