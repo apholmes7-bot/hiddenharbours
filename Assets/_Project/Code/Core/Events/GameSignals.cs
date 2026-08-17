@@ -119,6 +119,67 @@ namespace HiddenHarbours.Core
     }
 
     /// <summary>
+    /// Raised when the player takes the wheel of a road vehicle (ADR 0035), carrying the framing the
+    /// camera should use for her — the land twin of <see cref="ActiveBoatChanged"/>, and published on
+    /// entering <see cref="ControlMode.Driving"/> exactly as that one is published on taking the helm.
+    ///
+    /// <para><b>Why a second signal rather than reusing the boat's.</b> <see cref="ActiveBoatChanged"/>
+    /// means "the hull you are piloting is now this one", and the camera is not its only reader — the
+    /// owned-fleet reframe and the propulsion audio hang off the same idea. A truck published on it would
+    /// be a boat as far as every one of them is concerned. The two carry the same SHAPE because the
+    /// question is the same (which thing, framed how); they are separate because the answers are consumed
+    /// by different code.</para>
+    ///
+    /// <para>No length term, deliberately. The hull's is there to FLOOR the framing so a 110 m tanker
+    /// fits on screen (the §9.8 ruling); a road vehicle's authored framing already shows her many times
+    /// over — the Dually is 6.64 m against an 18 m view — so there is nothing for a floor to do, and a
+    /// term nobody needs is a term that goes stale.</para>
+    /// </summary>
+    public readonly struct ActiveVehicleChanged
+    {
+        /// <summary>Stable <c>vehicle.*</c> id of the machine now being driven.
+        ///
+        /// <para>Nothing is published when the wheel is GIVEN UP, which mirrors the helm exactly: the
+        /// camera keeps the last framing it was handed and <see cref="ControlModeChanged"/> is what moves
+        /// it back to the on-foot step. A "no vehicle" signal would be a second way of saying the same
+        /// thing, and two ways of saying it is how they come to disagree.</para></summary>
+        public readonly string VehicleId;
+
+        /// <summary>Her authored framing — <c>VehicleDef.CameraWorldHeightMeters</c>.</summary>
+        public readonly float CameraWorldHeightMeters;
+
+        public ActiveVehicleChanged(string vehicleId, float cameraWorldHeightMeters)
+        {
+            VehicleId = vehicleId;
+            CameraWorldHeightMeters = cameraWorldHeightMeters;
+        }
+    }
+
+    /// <summary>
+    /// <b>Somebody worked a driver's door</b> (ADR 0035) — raised by the door's own
+    /// <see cref="IInteractable"/> registration when the interact verb reaches it, and answered by whoever
+    /// owns the control modes.
+    ///
+    /// <para><b>Why a signal and not a call.</b> The door is a Vehicles-lane component and the state
+    /// machine is a Player-lane one; neither may name the other (rule 4). This is the same one-way Core
+    /// handoff <see cref="TrapPlaced"/> makes between Fishing and Boats — the publisher states what
+    /// happened, and does not care whether anything is listening. With nothing subscribed (an art scene, an
+    /// EditMode fixture) working the door is simply a no-op rather than a null reference.</para>
+    ///
+    /// <para><b>It is a REQUEST.</b> The subscriber re-reads its own gates before honouring it — a blocked
+    /// interaction gate, a machine that has stopped being drivable, a player who is not on their feet — so
+    /// publishing this never itself puts anyone behind a wheel.</para>
+    /// </summary>
+    public readonly struct DriveSeatRequested
+    {
+        /// <summary>The seat being asked for. Never null from the door, but a subscriber must still test
+        /// <see cref="IDriveSeat.IsAlive"/> before using it — see that interface's fake-null warning.</summary>
+        public readonly IDriveSeat Seat;
+
+        public DriveSeatRequested(IDriveSeat seat) { Seat = seat; }
+    }
+
+    /// <summary>
     /// Raised once, after a save has been loaded and its persistent player state has been re-applied to
     /// the live services (the clock seeked, the wallet brought to the saved balance, the owned fleet/
     /// licences/gear restored) — the "resume exactly where it was saved" signal (VS-08 load-restore).
@@ -146,11 +207,19 @@ namespace HiddenHarbours.Core
     ///   <item><see cref="OnDeck"/> — standing on the boat's deck as a walkable character (boarded, but
     ///   NOT at the helm). This is where boat/gear work happens (set a pot, haul a trap); steering is
     ///   dead. Boarding lands here; take the helm to get <see cref="Aboard"/>; disembark from here.</item>
+    ///   <item><see cref="Driving"/> — <b>behind the wheel of a road vehicle</b> (ADR 0035): the fisher is
+    ///   IN the cab, the truck's controller has the input, and the camera is on her. The land twin of
+    ///   <see cref="Aboard"/>, and deliberately a state of its own rather than a reuse of it — every
+    ///   consumer that reads <c>Aboard</c> means "piloting a BOAT" (the water framing, the propulsion
+    ///   audio, the fleet's reframe-on-grant), and a truck answering yes to those would be wrong in each
+    ///   one. You enter it from <see cref="OnFoot"/> at the door and leave it back to
+    ///   <see cref="OnFoot"/> beside her; there is no deck-equivalent middle state, because a cab is a
+    ///   seat rather than a place you walk about in.</item>
     /// </list>
     /// Values are append-only (the enum is a Core contract): OnDeck was appended so the numeric values
-    /// of the two original states never shifted.
+    /// of the two original states never shifted, and Driving is appended after it for the same reason.
     /// </summary>
-    public enum ControlMode { OnFoot, Aboard, OnDeck }
+    public enum ControlMode { OnFoot, Aboard, OnDeck, Driving }
 
     /// <summary>
     /// Raised when control switches between on-foot, on-deck and the helm (board / take the helm /

@@ -38,6 +38,10 @@ namespace HiddenHarbours.Vehicles
         /// <summary>Her controller, when she is drivable; null when she is scenery.</summary>
         public VehicleController Controller { get; private set; }
 
+        /// <summary>Her driver's door — the interact candidate that gets a player in — when she is
+        /// drivable; null when she is scenery.</summary>
+        public VehicleDoor Door { get; private set; }
+
         /// <summary>
         /// Set her up from code — the builder's and the tests' path.
         ///
@@ -77,6 +81,17 @@ namespace HiddenHarbours.Vehicles
                 Controller = GetComponent<VehicleController>();
                 if (Controller == null) Controller = gameObject.AddComponent<VehicleController>();
                 Controller.SetVehicle(_vehicle);
+            }
+
+            // Her driver's door — the way a player gets in (ADR 0035). Given to drivable machines only:
+            // scenery has no wheel to take, and a door on it would register a candidate that refuses every
+            // press. GetComponent first for the same reason the controller does it: Skin() is idempotent
+            // and runs on every enable, and a second AddComponent would register a second candidate under
+            // a second id, which is precisely the non-total resolver ordering IInteractable warns about.
+            if (_drivable && Door == null)
+            {
+                Door = GetComponent<VehicleDoor>();
+                if (Door == null) Door = gameObject.AddComponent<VehicleDoor>();
             }
 
             _rig = VehicleSkinner.Apply(gameObject, _vehicle, Controller);

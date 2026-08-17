@@ -215,6 +215,10 @@ namespace HiddenHarbours.App
         private bool _modeKnown;                 // no policy ticks until control declares itself — the builder-authored initial framing rules
         private bool _haulLive;                  // TrapHaulPhase.Hauling is live (via TrapHaulStateChanged)
         private float _boatWorldHeightMeters = DefaultWorldHeightMeters; // last ActiveBoatChanged hull framing (Dory fallback, mirrors ControlSwitcher's)
+        // Last ActiveVehicleChanged framing. The fallback is the on-foot step rather than a made-up number:
+        // with no vehicle ever announced this framing is unreachable (nothing can be Driving), and if it
+        // somehow were reached, showing what a walker sees is the harmless answer.
+        private float _vehicleWorldHeightMeters = OnFootWorldHeightMeters;
 
         private void Awake()
         {
@@ -226,6 +230,7 @@ namespace HiddenHarbours.App
         private void OnEnable()
         {
             EventBus.Subscribe<ActiveBoatChanged>(OnActiveBoatChanged);
+            EventBus.Subscribe<ActiveVehicleChanged>(OnActiveVehicleChanged);
             EventBus.Subscribe<ControlModeChanged>(OnControlModeChanged);
             EventBus.Subscribe<TrapHaulStateChanged>(OnTrapHaulStateChanged);
         }
@@ -233,6 +238,7 @@ namespace HiddenHarbours.App
         private void OnDisable()
         {
             EventBus.Unsubscribe<ActiveBoatChanged>(OnActiveBoatChanged);
+            EventBus.Unsubscribe<ActiveVehicleChanged>(OnActiveVehicleChanged);
             EventBus.Unsubscribe<ControlModeChanged>(OnControlModeChanged);
             EventBus.Unsubscribe<TrapHaulStateChanged>(OnTrapHaulStateChanged);
         }
@@ -254,11 +260,30 @@ namespace HiddenHarbours.App
                 SetFraming(_boatWorldHeightMeters, _framingTweenSeconds);
         }
 
+        // A vehicle taken over carries her own framing, exactly as a hull does. No length term and so no
+        // "whole vessel visible" floor: the §9.8 ruling exists because big hulls outgrew their authored
+        // framing, and a road vehicle is many times smaller than the view she asks for.
+        // Stored ALWAYS, re-applied now only if the vehicle framing is already the one on screen — the
+        // ActiveBoatChanged rule, for the ActiveBoatChanged reason (this arrives one signal BEFORE the mode
+        // change on taking a wheel, so the stored height is fresh when the policy commits).
+        // Public so EditMode tests can drive the flow without the play-mode lifecycle.
+        public void OnActiveVehicleChanged(ActiveVehicleChanged e)
+        {
+            _vehicleWorldHeightMeters = Mathf.Max(0.5f, e.CameraWorldHeightMeters);
+            if (_zoomPolicy.HasCommitted && _zoomPolicy.Committed == CameraFraming.Vehicle)
+                SetFraming(_vehicleWorldHeightMeters, _framingTweenSeconds);
+        }
+
         // Switching control retargets the follow-cam IMMEDIATELY (the subject changed); the ZOOM follows
         // via the policy tick (same frame), which owns the discrete step choice and the anti-thrash hold.
         // Only the HELM (Aboard) gets the boat target; on foot AND on deck the camera follows the visible,
         // walking player — the deck-walking fisher is the subject, the boat just happens to be under them
         // (Build 5 on-deck state). Public for EditMode tests (see OnActiveBoatChanged).
+        //
+        // ⚠️ DRIVING deliberately takes the on-foot target too, and that is not an oversight to tidy up:
+        // the driver is SEATED on the machine's root every frame by ControlSwitcher, so following the
+        // player IS following the truck — and it keeps working when she is despawned under him, where a
+        // captured vehicle transform would leave the camera parked on a destroyed object.
         public void OnControlModeChanged(ControlModeChanged e)
         {
             Transform next = e.Mode == ControlMode.Aboard ? _boatTarget : _onFootTarget;
@@ -449,6 +474,7 @@ namespace HiddenHarbours.App
                 case CameraFraming.Boat: return _boatWorldHeightMeters;
                 case CameraFraming.Deck: return _deckWorldHeightMeters;
                 case CameraFraming.DeckHaul: return _haulWorldHeightMeters;
+                case CameraFraming.Vehicle: return _vehicleWorldHeightMeters;
                 default: return OnFootWorldHeightMeters;
             }
         }

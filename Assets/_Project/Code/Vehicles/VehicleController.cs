@@ -128,13 +128,41 @@ namespace HiddenHarbours.Vehicles
             if (_vehicle == null || deltaTime <= 0f) return;
 
             _steer = StepSteer(_steer, SteerDemand, _vehicle, deltaTime);
-            _speed = StepSpeed(_speed, Throttle, Brake, _vehicle, deltaTime);
+            _speed = GroundSpeed(StepSpeed(_speed, Throttle, Brake, _vehicle, deltaTime));
             _odometerMeters += _speed * deltaTime;
 
             if (_rb == null && (_rb = GetComponent<Rigidbody2D>()) == null) return;
 
             _rb.linearVelocity = (Vector2)transform.up * _speed;
             _rb.angularVelocity = YawRateDegreesPerSecond;
+        }
+
+        /// <summary>
+        /// <b>The land gate</b> (<see cref="VehicleGrounding"/>): cap the speed at what she could still
+        /// stop from before her leading wheel leaves the gravel. Applied to the speed the pedals have just
+        /// ASKED for, before it becomes motion — so the look-ahead reads the direction she is about to go,
+        /// and backing off the water's edge is always allowed.
+        ///
+        /// <para><b>A cap, not a refusal</b>, and the difference is the whole behaviour. Zeroing her when a
+        /// probe lands on water sets up a limit cycle — stopped, she has no stopping distance, so the probe
+        /// pulls back onto dry ground, so the throttle is allowed, so she accelerates until it trips again,
+        /// several times a second at the water's edge. The cap falls continuously to zero exactly as the
+        /// clear road does, so what the driver sees is a truck braking smoothly to a halt on the gravel.</para>
+        ///
+        /// <para>Self-disabling: no mesh (so no axle geometry) or no authored terrain means no gate, and
+        /// the speed passes through untouched.</para>
+        /// </summary>
+        private float GroundSpeed(float speed)
+        {
+            VehicleMeshDef mesh = _vehicle != null ? _vehicle.Mesh : null;
+            if (mesh == null) return speed;
+
+            Vector2 origin = _rb != null ? _rb.position : (Vector2)transform.position;
+            float cap = VehicleGrounding.SpeedCapNow(
+                origin, transform.up, speed, mesh.FrontAxleY, mesh.RearAxleY,
+                _vehicle.BrakingMetersPerSecondSquared, mesh.WheelRadiusMeters);
+
+            return float.IsPositiveInfinity(cap) ? speed : Mathf.Clamp(speed, -cap, cap);
         }
 
         /// <summary>

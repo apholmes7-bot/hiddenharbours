@@ -25,8 +25,17 @@ namespace HiddenHarbours.Core
         /// nothing can resolve here yet — E at the helm means "step back onto the deck" and the switcher
         /// answers it before the verb is ever consulted.</summary>
         AtHelm = 1 << 2,
-        /// <summary>Every place there is. Convenience only — prefer naming the places you mean.</summary>
-        Anywhere = OnFoot | OnDeck | AtHelm,
+        /// <summary>Behind the wheel of a road vehicle (<see cref="ControlMode.Driving"/>, ADR 0035).
+        /// Unreachable today for exactly the reason <see cref="AtHelm"/> is, and by the same construction:
+        /// the interact press in the cab means "get out", and the switcher answers it before the verb is
+        /// consulted. The bit exists so the enum stays append-only when that changes — and because the
+        /// mode→context mapping must have somewhere honest to send a driver, rather than reporting them as
+        /// standing at a boat's helm.</summary>
+        Driving = 1 << 3,
+        /// <summary>Every place there is. Convenience only — prefer naming the places you mean. Note that
+        /// two of the four are unreachable by construction (see <see cref="AtHelm"/>,
+        /// <see cref="Driving"/>), so this is in practice "on foot or on deck" plus room to grow.</summary>
+        Anywhere = OnFoot | OnDeck | AtHelm | Driving,
     }
 
     /// <summary>

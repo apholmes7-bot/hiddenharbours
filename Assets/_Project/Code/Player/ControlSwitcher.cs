@@ -8,8 +8,8 @@ using HiddenHarbours.Economy;   // RepairLedger only — the boarding gate's sin
 namespace HiddenHarbours.Player
 {
     /// <summary>
-    /// The control-mode state machine (OnFoot ⇄ OnDeck ⇄ Aboard-at-the-helm) — trap arc Build 5, the
-    /// owner's on-deck control state replacing the old binary board-and-drive model:
+    /// The control-mode state machine (OnFoot ⇄ OnDeck ⇄ Aboard-at-the-helm, and OnFoot ⇄ Driving) —
+    /// trap arc Build 5, the owner's on-deck control state replacing the old binary board-and-drive model:
     ///
     /// <list type="bullet">
     ///   <item><b>Boarding lands you ON THE DECK.</b> INTERACT (dev key E) within reach of the boat puts
@@ -29,6 +29,14 @@ namespace HiddenHarbours.Player
     ///   always seated them. The state machine below is untouched: the move decides WHEN the same
     ///   transition lands, never WHETHER it may. See the boarding-move block for where the sim flips and
     ///   why that end.</item>
+    ///   <item><b>A road vehicle is a station too</b> (ADR 0035). Walk to a machine's driver's door and the
+    ///   one interact verb puts you behind her wheel (<see cref="ControlMode.Driving"/>); press again and
+    ///   you are set down at that same door. It is entered through the Core drive-seat REQUEST rather than
+    ///   a key of its own — the dev-key ledger is spent A–Z — and it is a third station beside the helm,
+    ///   not a reuse of it, because every consumer that reads <c>Aboard</c> means "piloting a boat". See
+    ///   the driving block for the one place it departs from the deck's shape: the driver is seated by
+    ///   POSITION rather than parented, because a Unity child dies with its parent and a vehicle, unlike a
+    ///   hull, is something a region despawns.</item>
     /// </list>
     ///
     /// The deck-walking player (and the helm spot / deck bounds maths) ride the boat's PHYSICS ROOT —
@@ -147,6 +155,13 @@ namespace HiddenHarbours.Player
                  "affected; a fixture you operate by standing at it ignores this entirely.")]
         [SerializeField, Range(0f, 360f)] private float _interactArcDegrees =
             InteractResolver.DefaultFacingArcDegrees;
+
+        [Header("Driving (ADR 0035 — the third station, on land)")]
+        [Tooltip("Answer a driver's door at all. Off restores the pre-drive behaviour exactly (the door " +
+                 "resolves, publishes, and nothing listens), which is both the A/B and the escape hatch. " +
+                 "It cannot affect anything else: driving is entered ONLY through the Core drive-seat " +
+                 "request, so with this off the mode is simply unreachable.")]
+        [SerializeField] private bool _driveMode = true;
 
         public ControlMode Mode { get; private set; } = ControlMode.OnFoot;
 
@@ -333,9 +348,23 @@ namespace HiddenHarbours.Player
                     if (CanStepAshore()) { Disembark(); return true; }
                     return false;
 
-                default: // Aboard (at the helm) → step back onto the deck
+                case ControlMode.Driving:  // behind the wheel → get out at her door
+                    LeaveDriving();
+                    return true;
+
+                // ⚠️ Aboard is NAMED, not left to a default arm. This used to read `default:` and mean
+                // "at the helm", which was true while there were three modes and became a live defect the
+                // moment there were four: a DRIVER pressing the key would have been handed to LeaveHelm,
+                // stepping onto a boat's deck from inside a truck. ControlMode is an append-only Core
+                // contract, so every arm here is explicit and the next mode appended fails loudly rather
+                // than silently inheriting the helm's behaviour.
+                case ControlMode.Aboard:   // at the helm → step back onto the deck, always allowed
                     LeaveHelm();
                     return true;
+
+                default:
+                    throw new System.ArgumentOutOfRangeException(
+                        nameof(Mode), Mode, "ControlMode has grown a member the switcher cannot dispatch.");
             }
         }
 
@@ -551,6 +580,236 @@ namespace HiddenHarbours.Player
             world = Player != null ? Player.position : Vector3.zero;
             return false;
         }
+
+        // ---- driving a road vehicle (ADR 0035 — the third station, on land) ------------------
+        //
+        // WHAT IT IS. The land twin of the helm: you walk to a machine's driver's door, work the ONE
+        // interact verb, and you are behind her wheel with the camera on her. Getting out puts you down at
+        // that same door. It is a third state beside AtHelm rather than a reuse of it, because everything
+        // that reads Aboard means "piloting a BOAT" — the water framing, the propulsion audio, the fleet's
+        // reframe-on-grant — and a truck answering yes to those would be wrong in every one.
+        //
+        // HOW IT IS ENTERED, AND WHY NOT BY A KEY. The dev-key ledger is spent A–Z (see InteractVerb), so
+        // the door is an IInteractable registration in the Vehicles lane and the press reaches it through
+        // the resolver like any other candidate. That door publishes DriveSeatRequested; this subscribes.
+        // Neither lane names the other (rule 4) and the whole path is inert with nothing registered.
+        //
+        // ⚠️ THE DRIVER IS NOT PARENTED TO THE TRUCK, and that is the one place this deliberately differs
+        // from the deck. Riding a boat is done by parenting, which is exact and free — but a Unity child is
+        // DESTROYED WITH ITS PARENT, and unlike a hull, a vehicle is a thing regions despawn. Parenting
+        // would mean a truck deleted under the player took the player with her, and there would be nobody
+        // left to hand control back to. So the driver is SEATED at her root each LateUpdate instead. The
+        // cost is that the seat is written after physics rather than by the transform hierarchy; the camera
+        // absorbs it completely, because it exponentially smooths toward its target and is always trailing
+        // it by design.
+        //
+        // WHAT THE MODE DOES NOT DO. It connects input and camera. It does not re-implement motion: the
+        // throttle, the brake and the wheel go straight to VehicleController, the yaw and the drawn wheel
+        // angles are solved from that ONE steer number by VehicleSteeringMath (ADR 0035 §5), and staying
+        // out of the water is the vehicle's own grounding gate. There is deliberately no second steering
+        // path here — the picture and the physics agreeing is the whole design.
+
+        private IDriveSeat _seat;
+
+        /// <summary>The machine being driven, or null. For tests, tooling, and anything that needs to ask
+        /// what the player is sitting in.</summary>
+        public IDriveSeat DrivenSeat => _seat;
+
+        /// <summary>
+        /// Is the seat REALLY there? Three tests, because a drive seat can be absent in three different
+        /// ways and only one of them is plain null.
+        ///
+        /// <para><b>The middle one is the trap.</b> <see cref="IDriveSeat"/> is implemented by a
+        /// MonoBehaviour, but the reference here is INTERFACE-typed — so <c>==</c> is plain reference
+        /// equality and does NOT see Unity's fake-null. A destroyed truck therefore reads as a perfectly
+        /// live seat right up until the next dereference throws <c>MissingReferenceException</c>. This is
+        /// the same defect <c>GameServices.PlayerTransform</c> exists to close, and the drive mode reaches
+        /// it the moment anything despawns a vehicle mid-drive — a region hop, a dev picker, a test.</para>
+        /// </summary>
+        private bool SeatAlive => _seat != null && _seat.IsAlive && _seat.Root != null;
+
+        /// <summary>
+        /// <b>Take the wheel.</b> Returns false — leaving the player exactly as they were — for every "no"
+        /// there is, because this is reached from a published request and a request is not a permission.
+        ///
+        /// <para>The gates: the mode switched off, a player who is not on their feet (you get into a truck
+        /// from the ground, not off a boat's deck), a boarding move already in flight, a modal dialogue
+        /// holding the interact key, a seat that has died between the press and here, and a machine that is
+        /// not drivable (scenery, or a def with no usable mesh). <see cref="InteractionGate"/> is re-read
+        /// even though <see cref="InteractVerb.TryPerform"/> has already refused a blocked press — this is
+        /// public and tests drive it directly, and a gate that only holds on one of two paths is not a
+        /// gate.</para>
+        /// </summary>
+        public bool TryEnterDriving(IDriveSeat seat)
+        {
+            if (!_driveMode) return false;
+            if (Mode != ControlMode.OnFoot) return false;
+            if (IsBoardingMove) return false;
+            if (InteractionGate.IsBlocked) return false;
+            if (seat == null || !seat.IsAlive || seat.Root == null) return false;
+            if (!seat.IsDrivable) return false;
+
+            _seat = seat;
+            seat.TakeControls();
+
+            // Seated BEFORE the mode applies, exactly as TakeHelm seats the pilot before the rider's first
+            // frame: the camera retargets on the signal below, and a frame spent at the player's old spot
+            // on the gravel would read as the view snapping across the park.
+            ApplyPlayerFor(ControlMode.Driving);
+            RideVehicle();
+            Mode = ControlMode.Driving;
+
+            // Framing first, then the mode — the order TakeHelm publishes in, and for its reason: the
+            // camera stores the framing on the first signal and commits it on the second, so a mode that
+            // arrived first would commit the previous framing for a frame.
+            EventBus.Publish(new ActiveVehicleChanged(seat.VehicleId, seat.CameraWorldHeightMeters));
+            EventBus.Publish(new ControlModeChanged(ControlMode.Driving));
+            return true;
+        }
+
+        /// <summary>
+        /// <b>Get out</b>, at her door — the mirror of <see cref="TryEnterDriving"/>, and deliberately
+        /// symmetric with it: the same point that decided you could get in is the point you are set down
+        /// on, read live off the machine wherever she has been driven to.
+        ///
+        /// <para><b>Where the player lands, and why it is safe.</b> The door reach point is measured art
+        /// (<c>VehicleMeshDef.DriveDoorLocal</c>), derived by the art side to stand outside the door leaf's
+        /// swept disc — and on the Dually it is 1.75 m off her centreline against a 1.24 m half-width over
+        /// the flares and a 1.22 m swept tyre corner at full lock, so it is outside the body AND outside
+        /// the turning circle. Stepping out into the ground she is about to drive over would be the one
+        /// placement bug that hurts.</para>
+        ///
+        /// <para><b>Which way they end up looking</b> is the outward bearing from her centre to that door,
+        /// taken as a GROUND bearing (ADR 0034) — so the fisher steps out looking away from the truck, and
+        /// the facing the interact resolver is handed for the next press is the one they are actually
+        /// standing in.</para>
+        ///
+        /// <para>A seat that has died under the player is handled too: they are put down where they are
+        /// rather than at a door that no longer exists. See <see cref="AbandonDriving"/> for the path that
+        /// notices.</para>
+        /// </summary>
+        public bool LeaveDriving()
+        {
+            if (Mode != ControlMode.Driving) return false;
+
+            IDriveSeat seat = _seat;
+            bool alive = SeatAlive;
+
+            // Both read BEFORE the controls are given up and before the seat is forgotten.
+            Vector3 landing = alive ? (Vector3)seat.DoorWorldPosition
+                                    : (Player != null ? Player.position : Vector3.zero);
+            Vector2 outward = alive
+                ? seat.DoorWorldPosition - (Vector2)seat.Root.position
+                : Vector2.zero;
+
+            if (alive) seat.ReleaseControls();
+            _seat = null;
+
+            ApplyPlayerFor(ControlMode.OnFoot);
+            if (Player != null)
+            {
+                landing.z = Player.position.z;   // depth is the rig's, never a door's
+                Player.position = landing;
+            }
+            FacePlayerOutward(outward);
+            Mode = ControlMode.OnFoot;
+
+            // No ActiveVehicleChanged on the way out, matching the helm: the camera keeps the last framing
+            // it was given and the MODE signal is what moves it back to the on-foot step.
+            EventBus.Publish(new ControlModeChanged(ControlMode.OnFoot));
+            return true;
+        }
+
+        /// <summary>
+        /// The truck died under the driver — despawned by a region hop, a dev picker, or a test. Hand
+        /// control back on the spot: there is no door left to step out of, so the player simply stands
+        /// where the machine last carried them.
+        ///
+        /// <para>It goes through the same <see cref="ApplyPlayerFor"/> every other transition uses, so the
+        /// walk controller, the physics body, the footprint collider and the sprite all come back in one
+        /// place — the failure mode being avoided is a player left invisible, un-simulated and unable to
+        /// walk, which is indistinguishable from a hung game.</para>
+        /// </summary>
+        private void AbandonDriving()
+        {
+            _seat = null;
+            ApplyPlayerFor(ControlMode.OnFoot);
+            Mode = ControlMode.OnFoot;
+            EventBus.Publish(new ControlModeChanged(ControlMode.OnFoot));
+        }
+
+        /// <summary>Point the fisher along an outward world direction, as a GROUND bearing (ADR 0034 — the
+        /// world XY plane is the SQUASHED ground plane, so the raw angle would be out by up to 12.6° and
+        /// would bucket to the wrong cardinal near the boundaries). A zero direction leaves the facing
+        /// alone, which is the honest answer when there is no direction to derive one from.</summary>
+        private void FacePlayerOutward(Vector2 outward)
+        {
+            if (_playerWalk == null || outward.sqrMagnitude < 1e-6f) return;
+            float bearing = IsoCharacterMath.GroundHeadingFor(outward, minSpeed: 0f, fallbackHeading: 0f);
+            _playerWalk.Face(PlayerWalkController.FacingForGroundBearing(bearing));
+        }
+
+        /// <summary>
+        /// Seat the driver on the machine. Position only — she is hidden in the cab, so this is about where
+        /// the CAMERA is looking, not about a figure anyone can see. Her root is the right anchor: it is the
+        /// ground-centre of her body footprint, which is what the view should be centred on.
+        /// </summary>
+        private void RideVehicle()
+        {
+            if (Player == null || !SeatAlive) return;
+            Vector3 seat = _seat.Root.position;
+            seat.z = Player.position.z;
+            Player.position = seat;
+        }
+
+        /// <summary>
+        /// Hand the driver's demand to the machine — the whole of what "driving" means here. The move axis
+        /// becomes throttle and steer; nothing is interpreted, scaled or smoothed on the way, because the
+        /// wheel's own rate and its self-centring live on the vehicle (<c>VehicleController.StepSteer</c>)
+        /// and a second opinion here would be a second steering path.
+        ///
+        /// <para>Public and explicit so a headless test can drive it: a PlayMode fixture cannot press keys,
+        /// so the gate is exposed and driven directly rather than through the keyboard read below.</para>
+        /// </summary>
+        public void DriveInput(float throttle, float steer, bool brake)
+        {
+            if (Mode != ControlMode.Driving || !SeatAlive) return;
+            _seat.SetDriveInput(throttle, steer, brake);
+        }
+
+        /// <summary>Drop the driver's demand and let her brake to rest — what a pause, a modal dialogue or
+        /// a lost seat leaves behind. Idempotent, and safe with no seat at all.</summary>
+        private void ReleaseDriveInput()
+        {
+            if (SeatAlive) _seat.ReleaseControls();
+        }
+
+        /// <summary>
+        /// The greybox keyboard read, in the same New-Input-System polling style as every other control in
+        /// this file. W/S is the throttle, A/D the wheel, Space the brake — the move axis the player already
+        /// walks with, so there is nothing new to learn, and the brake is the one control a driver expects
+        /// to be separate from a negative throttle (which is REVERSE, and stays reverse).
+        ///
+        /// <para><b>Left is +1.</b> That is the rig's own steering sense (<c>+1 = full LEFT lock</c>), so
+        /// the A key and the drawn wheels and the yaw all agree without a sign flip hidden anywhere.</para>
+        /// </summary>
+        private void ReadDriveInput()
+        {
+            var kb = Keyboard.current;
+            if (kb == null) { DriveInput(0f, 0f, false); return; }
+
+            float throttle = 0f, steer = 0f;
+            if (kb.wKey.isPressed || kb.upArrowKey.isPressed) throttle += 1f;
+            if (kb.sKey.isPressed || kb.downArrowKey.isPressed) throttle -= 1f;
+            if (kb.aKey.isPressed || kb.leftArrowKey.isPressed) steer += 1f;
+            if (kb.dKey.isPressed || kb.rightArrowKey.isPressed) steer -= 1f;
+
+            DriveInput(throttle, steer, kb.spaceKey.isPressed);
+        }
+
+        /// <summary>The door was worked (Core handoff — see <see cref="DriveSeatRequested"/>). A request,
+        /// not a permission: every gate is re-read in <see cref="TryEnterDriving"/>.</summary>
+        private void OnDriveSeatRequested(DriveSeatRequested e) => TryEnterDriving(e.Seat);
 
         // ---- the boarding MOVE (the owner's ask: climb aboard, don't teleport) ----------------
         //
@@ -1195,6 +1454,21 @@ namespace HiddenHarbours.Player
             // left) and let the re-assert below settle the fisher properly.
             CancelBoardingMove(restorePosition: true);
 
+            // A DRIVER across a region hop. The machine is region content and the switcher is persistent,
+            // so the ordinary outcome is that she did not come with us: the seat is dead, and the player is
+            // handed back to their feet where the coordinator has just put them. If she DID survive (the
+            // same region re-activated), the mode stands and the driver is simply re-seated on her.
+            if (Mode == ControlMode.Driving)
+            {
+                if (!SeatAlive) { AbandonDriving(); return; }
+
+                ApplyPlayerFor(ControlMode.Driving);
+                RideVehicle();
+                EventBus.Publish(new ActiveVehicleChanged(_seat.VehicleId, _seat.CameraWorldHeightMeters));
+                EventBus.Publish(new ControlModeChanged(ControlMode.Driving));
+                return;
+            }
+
             if (Mode == ControlMode.Aboard)
             {
                 if (Mooring != null) Mooring.Stow();                 // at the helm → rope stowed
@@ -1260,12 +1534,17 @@ namespace HiddenHarbours.Player
             if (_playerWalk == null) return;
             bool onFoot = mode == ControlMode.OnFoot;
             bool onDeck = mode == ControlMode.OnDeck;
+            // DRIVING is aboard-like in every respect but one: the driver rides a machine, not a hull, and
+            // is seated by position rather than by parenting (see the drive block for why a Unity child of
+            // a despawnable vehicle is not survivable). So it takes the frozen, hidden, un-simulated shape
+            // the helm takes, and rides no boat.
+            bool driving = mode == ControlMode.Driving;
 
             // The three things the transit shape actually changes, named once so the rest reads as before:
             // it is drawn ashore, it moves under nobody's power but the move's, and it rides no boat.
             bool drawnAshore = onFoot || inTransit;
             bool free = onFoot && !inTransit;
-            bool ridesBoat = !onFoot && !inTransit;
+            bool ridesBoat = !onFoot && !driving && !inTransit;
 
             _playerWalk.enabled = free;
 
@@ -1315,7 +1594,9 @@ namespace HiddenHarbours.Player
                 // figure wherever a region hop dropped them. Binding a DISABLED controller is inert: it
                 // stores two references and nothing else runs — which is also why a boarding move can
                 // bind it purely to ASK where this hull's rail and seat are, without waking the walk.
-                if (!onFoot || inTransit) deck.Bind(Boat);
+                // Not while DRIVING: a driver is aboard a truck, and binding the deck frame to a boat they
+                // are nowhere near would be a statement about the world that is simply untrue.
+                if ((!onFoot && !driving) || inTransit) deck.Bind(Boat);
                 deck.enabled = onDeck && !inTransit;
             }
         }
@@ -1390,13 +1671,25 @@ namespace HiddenHarbours.Player
 
         private void Awake() => BuildHint();
 
+        /// <summary>Listen for a worked driver's door (ADR 0035). The Vehicles lane publishes; this
+        /// answers. An EventBus subscription, NOT a Core service registration — the region-travel law about
+        /// never relinquishing a service in OnDisable is about <see cref="GameServices"/> slots, and this
+        /// is the ordinary subscribe/unsubscribe pair <c>CameraFollow</c> uses on the same bus.</summary>
+        private void OnEnable() => EventBus.Subscribe<DriveSeatRequested>(OnDriveSeatRequested);
+
         /// <summary>Torn down mid-move (scene teardown, a disabled rig): call the move off so it can hand
         /// back the interact key. A held <see cref="InteractionGate"/> outliving its holder is the one way
         /// this could wedge interaction off for the whole game. The interact candidate goes with it, for
-        /// the same reason — nothing else republishes it, so a highlight would simply stay lit.</summary>
+        /// the same reason — nothing else republishes it, so a highlight would simply stay lit.
+        ///
+        /// <para>A driver is put back on their feet rather than left in a cab nothing is ticking: with this
+        /// component gone there is nobody to read the wheel, nobody to seat them, and nobody to answer the
+        /// key that would let them out.</para></summary>
         private void OnDisable()
         {
+            EventBus.Unsubscribe<DriveSeatRequested>(OnDriveSeatRequested);
             CancelBoardingMove(restorePosition: true);
+            if (Mode == ControlMode.Driving) { ReleaseDriveInput(); AbandonDriving(); }
             InteractVerb.ClearCandidate();
         }
 
@@ -1422,6 +1715,12 @@ namespace HiddenHarbours.Player
         private void LateUpdate()
         {
             if (Mode == ControlMode.OnFoot || Player == null) return;
+
+            // The DRIVER rides here rather than by parenting — see the drive block for why a child of a
+            // despawnable vehicle is not survivable. LateUpdate because the truck's transform is written by
+            // physics, so this is the first point in the frame where her position is final.
+            if (Mode == ControlMode.Driving) RideVehicle();
+
             if (Player.rotation != Quaternion.identity) Player.rotation = Quaternion.identity;
         }
 
@@ -1448,7 +1747,12 @@ namespace HiddenHarbours.Player
             // rather than merely deaf. A pause you can sail through is not a pause.
             // Every early-out below drops the interact candidate as well as the hint: a diegetic highlight
             // left burning on a thing you can no longer act on teaches the player a lie (M2-39).
-            if (ApplyShellInputBlock()) { InteractVerb.ClearCandidate(); return; }
+            if (ApplyShellInputBlock()) { InteractVerb.ClearCandidate(); ReleaseDriveInput(); return; }
+
+            // A truck that has died under the driver (despawned by a region hop, a dev picker, a test).
+            // Checked FIRST of everything below, because every branch after this may dereference the seat,
+            // and an interface-typed reference does not see Unity's fake-null (see SeatAlive).
+            if (Mode == ControlMode.Driving && !SeatAlive) AbandonDriving();
 
             // A boarding move owns the frame while it runs, and is ticked BEFORE the gate check because
             // it is holding that gate itself (see the boarding-move block above). Scaled time, so a pause
@@ -1468,8 +1772,13 @@ namespace HiddenHarbours.Player
             {
                 if (_hint != null && _hint.enabled) _hint.enabled = false;
                 InteractVerb.ClearCandidate();
+                ReleaseDriveInput();   // a modal owns the key; the truck brakes and waits
                 return;
             }
+
+            // The wheel, read before the press — so a frame that both steers and gets out does the
+            // steering it was asked for and then stops, rather than driving a truck nobody is in.
+            if (Mode == ControlMode.Driving) ReadDriveInput();
 
             var kb = Keyboard.current;
             if (kb != null && kb.eKey.wasPressedThisFrame) BeginInteract();
@@ -1480,7 +1789,14 @@ namespace HiddenHarbours.Player
             // What the verb WOULD act on, republished only when it changes — the signal the diegetic
             // outline rides (M2-39; no screen-space prompt). Resolved after the press so the highlight
             // reflects the world the press left behind, not the one it found.
-            if (_interactVerb) InteractVerb.PublishCandidate(ActorNow(), _interactArcDegrees);
+            //
+            // NOTHING is offered from inside a cab. The press there means "get out" and is answered by the
+            // switcher before the verb is consulted, so a candidate resolved here could never be acted on
+            // — and a highlight burning on something the player cannot reach teaches them a lie, which is
+            // the one thing this signal must never do.
+            if (_interactVerb && Mode != ControlMode.Driving)
+                InteractVerb.PublishCandidate(ActorNow(), _interactArcDegrees);
+            else if (Mode == ControlMode.Driving) InteractVerb.ClearCandidate();
         }
 
         // ---- the shell's hold on the world (M1 §7.8) ----------------------------------------
@@ -1537,6 +1853,7 @@ namespace HiddenHarbours.Player
             {
                 string text;
                 if (atDamagedBoat) text = "She needs repairs before she'll sail";
+                else if (Mode == ControlMode.Driving) text = "E: Get out";
                 else if (Mode == ControlMode.OnFoot) text = CanInteract() ? "E: Board" : null;
                 else if (Mode == ControlMode.Aboard) text = "E: Leave the helm";
                 else if (WithinHelmReach()) text = "E: Take the helm";

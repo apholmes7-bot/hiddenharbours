@@ -785,12 +785,16 @@ namespace HiddenHarbours.Player
             Pose = DeckRidePose.Level;
             RequestedStance = CharacterStance.Free;
 
-            // The body draws again — EXCEPT at the helm, which is the pre-existing "taking the helm hides
-            // you" rule (ControlSwitcher's `onFoot || onDeck`) restated by its new owner. Nothing else
-            // writes this flag while a rider is wired, so the two can never disagree.
+            // The body draws again — EXCEPT where the character is INSIDE something. At the helm that is
+            // the pre-existing "taking the helm hides you" rule (ControlSwitcher's `onFoot || onDeck`)
+            // restated by its new owner; DRIVING is the same rule on land (ADR 0035), and it is not
+            // cosmetic: the vehicle rig models no visible driver and her cab glass is opaque at 32 px/m, so
+            // a body left drawing would be a fisher standing ON the truck's roofline, sorted against a
+            // machine she is supposed to be sitting in. Nothing else writes this flag while a rider is
+            // wired, so the two can never disagree.
             if (_bodyRenderer != null)
             {
-                bool bodyVisible = _mode != ControlMode.Aboard;
+                bool bodyVisible = _mode != ControlMode.Aboard && _mode != ControlMode.Driving;
                 if (_bodyRenderer.enabled != bodyVisible) _bodyRenderer.enabled = bodyVisible;
             }
         }

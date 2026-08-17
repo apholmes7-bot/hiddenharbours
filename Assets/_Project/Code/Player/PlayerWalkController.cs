@@ -150,6 +150,42 @@ namespace HiddenHarbours.Player
         }
 
         /// <summary>
+        /// The four-way facing nearest a <b>GROUND compass bearing</b> (degrees, 0 = North, clockwise) —
+        /// how a fisher who has been PLACED somewhere ends up looking, rather than one who walked there.
+        ///
+        /// <para><b>A ground bearing, not a world-XY angle, and the distinction is the whole point</b>
+        /// (ADR 0034). The ¾ camera foreshortens the depth axis by <c>sin 40°</c>, so a direction that
+        /// looks like 45° in world XY is a ground bearing of 32.7°; feeding raw world XY into a bucketing
+        /// like this one draws the neighbouring facing across about a fifth of the compass. Callers pass a
+        /// bearing already un-squashed through <see cref="IsoCharacterMath.GroundHeadingFor"/> — the number
+        /// has one home, and this function does not get to re-derive it.</para>
+        ///
+        /// <para>Buckets to the nearest CARDINAL, because there are only four of them: the diagonals have
+        /// no row of their own in this fallback model and each falls to the axis it is nearer.</para>
+        /// </summary>
+        public static Facing FacingForGroundBearing(float bearingDegrees)
+        {
+            float b = Mathf.Repeat(bearingDegrees, 360f);
+            if (b < 45f || b >= 315f) return Facing.Up;      // North
+            if (b < 135f) return Facing.Right;               // East
+            if (b < 225f) return Facing.Down;                // South
+            return Facing.Left;                              // West
+        }
+
+        /// <summary>
+        /// Point the fisher a way without moving them — for a transition that PLACES the character (stepping
+        /// out of a truck at her door), where there is no motion for the usual velocity read to measure.
+        ///
+        /// <para><b>It is not only about the sprite.</b> On a rig with an iso skin the drawn row is chosen
+        /// by <see cref="IsoCharacterSprite"/> from measured motion and this flag changes nothing visible —
+        /// but <c>ControlSwitcher.ActorNow</c> reports <see cref="FacingUnitVector"/> of exactly this value
+        /// to <see cref="InteractResolver"/>, so it decides which facing-requiring candidates are reachable
+        /// the instant the player is set down. A fisher placed beside a fixture while still "facing" the way
+        /// they were when they got in would find it unreachable for no visible reason.</para>
+        /// </summary>
+        public void Face(Facing facing) => _facing = facing;
+
+        /// <summary>
         /// The facing as a world-space UNIT VECTOR — the form the interact verb's forward-arc test needs
         /// (<see cref="InteractResolver"/>), where <see cref="Facing"/> the enum means nothing.
         ///

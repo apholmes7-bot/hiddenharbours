@@ -458,6 +458,7 @@ MonoBehaviour:
   MaxOuterSteerDegrees: 24.94
   SuspensionTravelFrontMeters: 0.09
   SuspensionTravelRearMeters: 0.11
+  DriveDoorLocal: {x: -1.75, y: 0.1}
   Wheels:
   - Slot: WheelFL
     Prop: {fileID: 11400000, guid: 45262cae64d810f4b835c68f8c986823, type: 2}
