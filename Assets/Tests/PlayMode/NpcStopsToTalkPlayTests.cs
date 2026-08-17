@@ -197,21 +197,28 @@ namespace HiddenHarbours.Tests.PlayMode
         /// <summary>Put the clock at an hour and let the position land. Two frames, for the reason
         /// <c>VillagerRoutinePlayTests.At</c> documents: a test coroutine resumes during Update in an
         /// order Unity does not define.</summary>
+        /// <summary>
+        /// Drive the clock to an hour and let the world catch up — INCLUDING the throttled shelter
+        /// visibility read (<see cref="VillagerRoutine.ShelterCheckSeconds"/>).
+        ///
+        /// <para>⚠️ The settle is not optional, and the 4060 run is what proved it (2026-08-17,
+        /// coordinator): at SetUp's hour 6 the villager is INSIDE her home (the pre-first-block wrap),
+        /// so her <see cref="Interactable"/> starts DISABLED with her renderer. A test that jumps the
+        /// clock to an outdoor hour and interacts within two frames finds her interactable still off
+        /// from 6:00 — `BeginInteract` returns false and everything downstream reds. Two frames are
+        /// not enough; the visibility read runs on its own throttle and must be waited out.</para>
+        /// </summary>
         IEnumerator At(float hour)
-        {
-            _clock.Hour = hour;
-            yield return null;
-            yield return null;
-        }
-
-        /// <summary>As <see cref="At"/>, but also long enough for the throttled visibility read.</summary>
-        IEnumerator AtSettled(float hour)
         {
             _clock.Hour = hour;
             yield return null;
             yield return new WaitForSecondsRealtime(VillagerRoutine.ShelterCheckSeconds + 0.05f);
             yield return null;
         }
+
+        /// <summary>Kept as an explicit name for the sites where the SHELTER answer itself is what the
+        /// test reads next — identical to <see cref="At"/>, which settles the same read.</summary>
+        IEnumerator AtSettled(float hour) => At(hour);
 
         /// <summary>Wait for the catch-up walk to finish — by CONDITION, so the test cannot pass or fail
         /// on how fast the machine renders frames.</summary>
