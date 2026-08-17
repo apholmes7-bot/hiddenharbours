@@ -273,7 +273,10 @@ namespace HiddenHarbours.Tests.PlayMode
         public IEnumerator SheTurnsToFaceThePlayer()
         {
             yield return At(12f);                       // standing on the green
-            _player.position = new Vector3(Green.x + 2f, Green.y, 0f);   // due EAST of her
+            // Due EAST of her, and INSIDE reach — the original 2 m stood 0.2 m past the 1.8 m radius,
+            // so BeginInteract found nobody and the test failed in every environment (4060 run,
+            // 2026-08-17). The bearing only needs the direction; the distance needs to be reachable.
+            _player.position = new Vector3(Green.x + Reach * 0.8f, Green.y, 0f);
 
             Assert.That(_interactor.BeginInteract(), Is.True);
             yield return null;
