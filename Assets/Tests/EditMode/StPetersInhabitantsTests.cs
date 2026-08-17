@@ -245,7 +245,7 @@ namespace HiddenHarbours.Tests.EditMode
             {
                 if (p.AssetName == "JuniorPoirier" || p.AssetName == "BasilSamson") continue;
 
-                float d = Vector2.Distance(p.Position, StPetersBuilder.CottagePos);
+                float d = Vector2.Distance(p.Position, StPetersBuilder.VillageHearthPos);
                 Assert.Less(d, StPetersWoods.VillageClearingRadius,
                     $"{p.AssetName} is {d:0.0} m from the hearth, outside the {StPetersWoods.VillageClearingRadius:0.0} m " +
                     "village clearing — they would be standing in the woods, and the planter would be " +
@@ -342,14 +342,16 @@ namespace HiddenHarbours.Tests.EditMode
             const float Personal = 3f;
 
             // Each NEW islander against every other interactable spot on the island. Deliberately not
-            // shipped-against-shipped: Aunt Ginny already stands 1.8 m from her own freezer, which is fine
-            // (one is a person and one is an appliance, and the opening was tuned that way). This wave owns
-            // where the five stand, not where the opening props do.
+            // shipped-against-shipped: this wave owns where the five stand, not where the opening props
+            // do. ⚠ Ginny used to stand 1.8 m from her own freezer here and that was tolerated as a tuned
+            // exception; the 2026-08-16 move took the freezer 85 m east onto her plot, so the exception
+            // is gone rather than fixed. The freezer is still listed — it is still a thing you walk up
+            // to, and a new islander sited on top of it would still be wrong.
             var alsoThere = new List<(string Name, Vector2 At)>
             {
                 ("AuntGinny",    (Vector2)StPetersBuilder.GinnyPos),
                 ("NedsLetter",   (Vector2)StPetersBuilder.NedsLetterPos),
-                ("GinnyFreezer", (Vector2)StPetersBuilder.FreezerPos),
+                ("GinnyFreezer", StPetersGinnyPlot.FreezerPos),
                 ("WetBucket",    (Vector2)StPetersBuilder.WetBucketPos),
             };
             foreach (var p in People) alsoThere.Add((p.AssetName, p.Position));

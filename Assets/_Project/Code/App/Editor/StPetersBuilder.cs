@@ -81,8 +81,11 @@ namespace HiddenHarbours.App.Editor
         // owner's own LIVE Water.mat rather than a frozen preset copy of it.)
         // (The single Grass.png / Sand.png fills are gone with the greybox ground patches — the island's
         // ground is painted from the shoreline-ISO v8 kit now; see StPetersShorePainter.)
-        const string ArtCottage  = "Assets/_Project/Art/Sprites/Buildings/Cottage.png";
-        const string ArtCottageNight = "Assets/_Project/Art/Sprites/Buildings/CottageNight.png";  // lit-window night swap
+        // ⭐ ArtCottage / ArtCottageNight are GONE with the greybox standee they drew (2026-08-16). Ginny's
+        // cottage is a village-kit build on her own plot now, drawn from the kit's baked per-facing
+        // sheets. Cottage.png and CottageNight.png are still on disk and still the only lit-window pair
+        // the project owns — which is exactly the art ask the move left open: the kit bakes no night
+        // sheet, so the promoted cottage keeps its window GLOW but loses the lit PANES.
         const string ArtClamHole   = "Assets/_Project/Art/Sprites/ClamHole.png";    // the still dig-spot sprite
         const string ArtClamSquirt = "Assets/_Project/Art/Sprites/ClamSquirt.png";  // 4-frame "two squirts" tell
         // The carried tools' greybox pictures — already committed, 32 px, sliced, pivot centred. These are
@@ -509,10 +512,37 @@ namespace HiddenHarbours.App.Editor
         // small place, and within sight of the bar head the opening walks out across. Every position is on
         // the plateau (+6 m, dry at every tide), which StPetersVillageTests asserts against the authored
         // terrain rather than trusting these numbers.
-        public static readonly Vector3 CottagePos    = new Vector3(0f, 14f, 0f);        // Ginny's — the hearth
-        public static readonly Vector3 GinnyPos      = new Vector3(4f, 11f, 0f);        // out front, on the path
-        public static readonly Vector3 NedsLetterPos = new Vector3(-2f, 10.5f, 0f);     // on the cottage step
-        public static readonly Vector3 FreezerPos    = new Vector3(3f, 12.5f, 0f);      // round the side
+        /// <summary>
+        /// <b>THE VILLAGE HEARTH — the anchor, not a building.</b> This was <c>CottagePos</c>, and Ginny's
+        /// cottage stood on it until the owner moved her into the woods on 2026-08-16
+        /// (<see cref="StPetersGinnyPlot"/>). <b>The VALUE has not moved and must not</b>: five separate
+        /// systems read this point meaning "the middle of the village", not "where the aunt lives" —
+        /// <see cref="VillageGreen"/> is its midpoint with the spawn, <see cref="StPetersWoods.IsPlantable"/>
+        /// centres the village's 44 m no-plant clearing on it, <see cref="StPetersVillage.RequiredClearingRadius"/>
+        /// measures building reach from it, <see cref="StPetersShops"/> measures back to it, and the grass
+        /// and decor keepouts ring it. Moving it with the cottage would have swung every villager's door
+        /// facing east and planted the woods through the schoolhouse. So the cottage left and the anchor
+        /// stayed, renamed for what it always meant.
+        /// </summary>
+        public static readonly Vector3 VillageHearthPos = new Vector3(0f, 14f, 0f);
+
+        /// <summary>
+        /// Ginny's mark IN THE VILLAGE — where she stands through the working day, and
+        /// <b>the spot the opening's first conversation happens on</b>. It is unmoved, and that is
+        /// deliberate: a new game starts at hour 6 (<c>GameClock._startHour</c>) with the player waking
+        /// beside her, so her HOME could move to the woods but her DAY could not follow it without
+        /// rewriting the opening — which is the owner's call, not this file's. Her routine walks her in
+        /// from the plot before six to keep this true; see <see cref="StPetersRoutines"/>.
+        /// </summary>
+        public static readonly Vector3 GinnyPos      = new Vector3(4f, 11f, 0f);        // her village mark
+
+        /// <summary>
+        /// Ned's letter — the opening's other piece, and the one thing that stayed behind when the cottage
+        /// went. It reads as lying on the ground where the hearth used to be, a few strides from where you
+        /// wake; it is the PLAYER's letter at the PLAYER's spawn, so it belongs to the opening and not to
+        /// Ginny. The vacated site gets nothing else: an empty lot is what an empty lot looks like.
+        /// </summary>
+        public static readonly Vector3 NedsLetterPos = new Vector3(-2f, 10.5f, 0f);     // where the hearth was
         // ⭐ The wet bucket belongs AT THE WATER, and on this island that means the HEAD OF THE FLATS — the
         // last dry ground before the sandbar's cobble spine runs out west. The ground here is +4.49 m
         // (measured off the analytic profile — the same beach-band point the old island had it at), about
@@ -554,9 +584,15 @@ namespace HiddenHarbours.App.Editor
         // facing index, so the village faces itself — and so a re-bake with four facings instead of eight
         // re-derives the nearest cell instead of silently pointing five doors at a wall (the kit's own
         // warning: nothing in placement may assume a facing count). It is the ground between the hearth
-        // and the green: the midpoint of the cottage and the start spawn, which is where the life is.
+        // and the spawn: the midpoint of the two, which is where the life is.
+        //
+        // ⚠ It is the midpoint of the HEARTH, not of Ginny's cottage. Those were the same point until
+        // 2026-08-16; they are not any more, and the green stayed with the village. Reading
+        // StPetersGinnyPlot.CottagePos here would drag the green — and every door on the island turned
+        // toward it — 85 m east into the woods.
         public static Vector2 VillageGreen =>
-            (new Vector2(CottagePos.x, CottagePos.y) + new Vector2(StartSpawnPos.x, StartSpawnPos.y)) * 0.5f;
+            (new Vector2(VillageHearthPos.x, VillageHearthPos.y) +
+             new Vector2(StartSpawnPos.x, StartSpawnPos.y)) * 0.5f;
 
         /// <summary>
         /// How far out past the storekeeper's own doorstep the general store's COUNTER stands, in metres —
@@ -1000,44 +1036,32 @@ namespace HiddenHarbours.App.Editor
             // which way the coast faces (scene-sizing §5.1) — so the patches have nothing left to stand in
             // for. The paint runs after the TidalTerrain is authored below, because the terrain IS the map.
 
-            // The cottage / the hard where the uncle's dory waits (greybox marker — the actual damaged-dory
-            // OFFER lives at the Nine Mile Creek Shipwright this round; the slip here is set dressing for the opening).
-            var cottageGo = new GameObject("IslandCottage");
-            cottageGo.transform.position = CottagePos;
-            var cottageSr = cottageGo.AddComponent<SpriteRenderer>();
-            cottageSr.sortingOrder = 2;   // pre-Play default only; the YSortSprite below OWNS the order
-            // The hearth is something you walk AROUND, so it layers by world Y like the rest of the world —
-            // the same treatment VillageBuildingCatalog gives the kit's houses (this one predates that path,
-            // being a greybox marker). Without it the cottage held a fixed 2, which is the decor band's
-            // FLOOR, so once the band was re-based to fit the island (ADR 0032) every tuft of the meadow it
-            // stands in would have drawn over it. The window glow is a CHILD and rides along; the chimney
-            // smoke now takes its order RELATIVE to this renderer (ChimneySmoke._sortingOrder became an
-            // offset in the same change) so the plume follows the roof up the band instead of sinking
-            // under it at the old fixed 5.
-            cottageGo.AddComponent<YSortSprite>();
-            var cottageSprite = LoadSpriteAny(ArtCottage);
-            if (cottageSprite != null) { cottageSr.sprite = cottageSprite; cottageGo.transform.localScale = Vector3.one; }
-            else { cottageSr.sprite = waterSprite; cottageSr.color = new Color(0.70f, 0.50f, 0.40f); cottageGo.transform.localScale = new Vector3(6f, 6f, 1f); }
+            // ⭐ GINNY'S COTTAGE IS NOT BUILT HERE ANY MORE. It stood on this line as "IslandCottage" —
+            // a greybox SpriteRenderer standee with a day/night sprite swap, a window glow and a chimney
+            // plume — until the owner moved her into the eastern woods on 2026-08-16 and ruled the new
+            // cottage a REAL building you can walk into. It is now a village-kit build with a baked
+            // interior, placed by StPetersGinnyPlot.Place along with her sheds, her freezer and her
+            // garden. The greybox path is gone rather than moved: a standee cannot be entered, and the
+            // ruling was that this one is.
+            //
+            // What did NOT survive the promotion, stated so it is not mistaken for a regression: the
+            // CottageDayNight lit-window SPRITE SWAP. It swapped Cottage.png ⇄ CottageNight.png, and a
+            // kit building draws baked per-facing sheets with no lit twin — so the lit PANES are an
+            // upstream art ask (a night sheet, or a lit-window axis on the house rig). The window GLOW
+            // and the chimney SMOKE moved across unchanged, and they are what actually make the cottage
+            // read warm from across a clearing at night.
 
             // --- THE COLD CHAIN, ashore (M1 §7.3 — gameplay-systems) --------------------------------
-            // Ginny's FREEZER by the cottage (Frozen: time ashore, free but only at home) and the
-            // WET-BUCKET spot at the water's edge (Live: free, shellfish only). Both are proximity
-            // interactables on the stall pattern (StallReach resolves the player itself — no wiring);
-            // greybox colour markers until art lands. Ice for the boat rides the DeckIceBox on the
-            // hold (runtime-spawned) — nothing to place here.
-            var freezerGo = new GameObject("GinnyFreezer");
-            freezerGo.transform.position = FreezerPos;
-            var freezerSr = freezerGo.AddComponent<SpriteRenderer>();
-            freezerSr.sprite = waterSprite;
-            freezerSr.color = new Color(0.85f, 0.92f, 0.95f);   // chest-freezer white, reads icy
-            freezerSr.sortingOrder = 3;   // pre-Play default only; the YSortSprite below OWNS the order
-            freezerGo.transform.localScale = new Vector3(1.2f, 1.0f, 1f);
-            freezerGo.AddComponent<GinnyFreezer>();
-            // A thing you walk up to layers by world Y like everything else you can stand in front of.
-            // Its fixed 3 sat one above the decor band's FLOOR, which only read right while the meadow
-            // round it saturated there too — re-basing the band (ADR 0032) would otherwise bury it.
-            freezerGo.AddComponent<YSortSprite>();
-
+            // The WET-BUCKET spot at the water's edge (Live: free, shellfish only). A proximity
+            // interactable on the stall pattern (StallReach resolves the player itself — no wiring);
+            // greybox colour marker until art lands. Ice for the boat rides the DeckIceBox on the hold
+            // (runtime-spawned) — nothing to place here.
+            //
+            // ⚠ GINNY'S FREEZER (Frozen: time ashore, free but only at home) IS NO LONGER IN THE
+            // VILLAGE. The owner ruled on 2026-08-16 that it follows her: it is her freezer at her
+            // house. StPetersGinnyPlot places it. That is a live cold-chain change — freezing a catch
+            // was three metres from the spawn and is now an 85 m walk inland — and nothing in the
+            // economy was retuned to match.
             var wetGo = new GameObject("WetBucketSpot");
             wetGo.transform.position = WetBucketPos;   // the head of the flats — the last dry ground
             var wetSr = wetGo.AddComponent<SpriteRenderer>();
@@ -1048,40 +1072,12 @@ namespace HiddenHarbours.App.Editor
             wetGo.AddComponent<WetBucketPoint>();
             wetGo.AddComponent<YSortSprite>();   // walk-up prop: layers by world Y (see the freezer above)
 
-            // NIGHT WINDOWS — the cottage's lit-window SPRITE SWAP (CottageDayNight): swap to the lit-window
-            // night sprite after dusk (through the Core clock only). Complements the window GLOW below: the swap
-            // shows lit panes, the glow makes the cottage actually CAST warm light onto the ground. Both are
-            // automatic + self-driven; if the night sprite isn't imported yet the swap simply no-ops (the glow
-            // still reads as light spilling from the windows).
-            var cottageNightSprite = LoadSpriteAny(ArtCottageNight);
-            if (cottageSprite != null && cottageNightSprite != null)
-            {
-                var dayNight = cottageGo.AddComponent<CottageDayNight>();
-                SetRef(dayNight, "_renderer", cottageSr);
-                SetRef(dayNight, "_daySprite", cottageSprite);
-                SetRef(dayNight, "_nightSprite", cottageNightSprite);
-            }
-
-            // PRECONFIGURED WINDOW GLOW — the cottage carries its OWN night light (the owner's lighting principle,
-            // ADR 0016): a soft warm RADIAL pool that self-installs + NIGHT-GATES automatically (on at dusk, off
-            // by day, reading the published _DayNightTint in-shader — no owner wiring, no clock read here). So the
-            // cottage doesn't just SWAP to lit panes, it CASTS warm light spilling from the windows. Sits a touch
-            // below the sprite centre (the preset's origin offset pools the light at the sill/ground). Same
-            // attach-and-forget pattern any future lit object reuses.
-            var cottageGlowGo = new GameObject("WindowGlow");
-            cottageGlowGo.transform.SetParent(cottageGo.transform, worldPositionStays: false);
-            cottageGlowGo.AddComponent<PreconfiguredLight>();   // defaults to LightPresets.Kind.WindowGlow
-
-            // Cosy HEARTH SMOKE off the cottage chimney — the one positioned living-coast ambient effect (P3).
-            // A thin pooled plume that rises and bends DOWNWIND on the SAME shared wind the grass/water/mist
-            // read; it dims with the day/night cycle (the hearth burns on at night). Sits at the roofline,
-            // slightly to one side where a flue would be (offset is in WORLD metres; the cottage isn't scaled
-            // when the real sprite loads, so a fixed offset reads at the roof either way). The mist/gulls/motes
-            // self-install; this is the only one the builder places. (ChimneySmoke is visual-only, rule 5.)
-            var chimneyGo = new GameObject("ChimneySmoke");
-            chimneyGo.transform.SetParent(cottageGo.transform, worldPositionStays: false);
-            chimneyGo.transform.localPosition = new Vector3(0.6f, 1.6f, 0f);   // roofline, flue side
-            chimneyGo.AddComponent<ChimneySmoke>();
+            // ⭐ THE COTTAGE'S NIGHT PIECES MOVED WITH IT. The lit-window swap (CottageDayNight), the
+            // PreconfiguredLight window glow and the ChimneySmoke plume all hung off the greybox standee
+            // that used to stand at the hearth. StPetersGinnyPlot now attaches the glow and the smoke to
+            // the kit cottage in the woods; the sprite SWAP could not follow (a kit building has no
+            // lit-window twin sheet) and is restated as an art ask. See the note at the cottage's old
+            // build site above.
 
             // --- SANDBAR + CHANNEL: PAINTED now too -----------------------------------------------------
             // ⭐ RETIRED HERE: a flat sand strip down the bar's centre-line and a teal rectangle marking
@@ -1413,6 +1409,23 @@ namespace HiddenHarbours.App.Editor
             // floor: EVERY building gets an interior is canon now, not a per-building choice.
             int shopBuildings = StPetersShops.Place(terrain, core.PlayerGo.transform);
 
+            // --- AUNT GINNY'S PLOT (the owner's 2026-08-16 ruling) ----------------------------------------
+            // She moved out of the village onto land that is hers, 85 m east in the woods: a cottage you
+            // can walk into, three derelict sheds, her garden and her freezer. Placed here because it
+            // borrows the same building kit and the same interior kit the village and the shops just
+            // used, with the same player transform for the door.
+            //
+            // ⚠ ORDER DOES NOT MATTER against the woods planter above, and must not start to. The trees
+            // were already scattered by the time this line runs, and they miss her plot because
+            // StPetersWoods.IsPlantable asks StPetersGinnyPlot.IsInsideClearing — a pure function of
+            // static constants, answerable before anything is placed. If a future clearing ever needs to
+            // know what actually got BUILT, it has to move above the planter, not hope.
+            //
+            // `waterSprite` is the greybox quad the sheds are drawn with until a shed rig exists — the
+            // same marker the wet-bucket barrel uses.
+            int ginnyPlotBuildings =
+                StPetersGinnyPlot.Place(terrain, waterSprite, core.PlayerGo.transform);
+
             // --- THE STORE'S COUNTER (§7.5's other half: the placement) -----------------------------------
             // #356 built the island general store's ECONOMY — the StPetersStore market channel that pays a
             // worse price level than the creek, the clam licence, the counted bait/ice stock — and said so
@@ -1684,7 +1697,10 @@ namespace HiddenHarbours.App.Editor
                       $"{woods.Flowers} wildflowers by habitat, the one dock at the east berth, and a village " +
                       $"of {villageBuildings} houses + {shopBuildings} shop(s) — the school, the houses, the " +
                       $"general store and the post office — standing round the green beside the start spawn, " +
-                      $"with {villagersLiving} villager(s) keeping a day in it.");
+                      $"with {villagersLiving} villager(s) keeping a day in it. Aunt Ginny is not among the " +
+                      $"village any more: her {ginnyPlotBuildings} building(s) stand on her own plot " +
+                      $"{Vector2.Distance(StPetersGinnyPlot.CottagePos, VillageHearthPos):0.0} m east, in " +
+                      "the woods.");
             Debug.Log($"[StPetersBuilder] THE COAST IS PAINTED: {coast.GroundTiles:N0} shoreline-ISO ground " +
                       $"tiles + {coast.FringeTiles:N0} fringe overlays + {coast.Rocks} rocks on the reef " +
                       $"({coast.MaterialSummary()}). The island paints at its re-ruled 240 x 140 m " +

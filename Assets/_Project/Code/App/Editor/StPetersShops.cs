@@ -118,7 +118,7 @@ namespace HiddenHarbours.App.Editor
             ShopCatalog.FacingToward(shell, site.Position, StPetersBuilder.VillageGreen);
 
         /// <summary>
-        /// How far the furthest shop footprint reaches from <see cref="StPetersBuilder.CottagePos"/> —
+        /// How far the furthest shop footprint reaches from <see cref="StPetersBuilder.VillageHearthPos"/> —
         /// what <see cref="StPetersWoods.VillageClearingRadius"/> has to cover, alongside
         /// <see cref="StPetersVillage.RequiredClearingRadius"/>. Returns 0 when nothing is baked, so a
         /// test can say so rather than pass vacuously.
@@ -126,7 +126,7 @@ namespace HiddenHarbours.App.Editor
         public static float RequiredClearingRadius()
         {
             float worst = 0f;
-            Vector2 cottage = StPetersBuilder.CottagePos;
+            Vector2 cottage = StPetersBuilder.VillageHearthPos;
             foreach (var site in Sites)
             {
                 var shell = ShopCatalog.FindShell(site.Key);

@@ -215,9 +215,14 @@ namespace HiddenHarbours.Tests.EditMode
             foreach (var shop in StPetersShops.Sites)
                 AssertCleared(shop.Key, shop.Position);
 
-            // Ginny's cottage is its own sprite rather than a kit entry, and is just as capable of being
-            // forgotten.
-            AssertCleared("cottage", StPetersBuilder.CottagePos);
+            // Aunt Ginny's plot, out in the eastern woods (2026-08-16). Her cottage IS a kit entry now,
+            // but it is not in StPetersVillage.Sites — it is placed by its own file — so it would be
+            // missed by both loops above. Her sheds are greybox markers with no contract at all, which
+            // makes them the single most forgettable buildings on the island: exactly the shape of the
+            // post-office bug this test exists for.
+            AssertCleared(StPetersGinnyPlot.CottageKey, StPetersGinnyPlot.CottagePos);
+            foreach (var shed in StPetersGinnyPlot.Sheds)
+                AssertCleared(shed.Key, shed.Position);
 
             void AssertCleared(string key, Vector2 at)
             {
@@ -420,8 +425,12 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.IsFalse(StPetersWoods.InStand(r.Position, _terrain.ElevationAt(r.Position)),
                     "an erratic hides under a closed canopy — invisible ground cost");
 
-                Assert.Greater(Vector2.Distance(r.Position, StPetersBuilder.CottagePos),
+                Assert.Greater(Vector2.Distance(r.Position, StPetersBuilder.VillageHearthPos),
                     StPetersWoods.VillageClearingRadius, "an erratic is inside the village clearing");
+                Assert.Greater(Vector2.Distance(r.Position, StPetersGinnyPlot.CottagePos),
+                    StPetersGinnyPlot.ClearingRadius,
+                    "an erratic sits inside Ginny's plot — a boulder through her shed is exactly as " +
+                    "wrong as a spruce through the schoolhouse");
                 Assert.Greater(Vector2.Distance(r.Position, StPetersBuilder.StartSpawnPos),
                     StPetersWoods.SpawnClearingRadius, "an erratic is on the spawn");
                 Assert.Greater(StPetersShoreMap.DistanceToSegment(r.Position,

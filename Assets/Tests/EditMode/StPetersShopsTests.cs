@@ -106,9 +106,10 @@ namespace HiddenHarbours.Tests.EditMode
                         $"{site.Key} stands {d:0.0} m from the {other.Key} and needs {need:0.0} m");
                 }
 
-                float toCottage = Vector2.Distance(site.Position, StPetersBuilder.CottagePos);
-                Assert.Greater(toCottage, r + StPetersVillage.CottageFootprintRadius,
-                    $"{site.Key} is inside the cottage's authored clearance — nothing may crowd the hearth");
+                float toHearth = Vector2.Distance(site.Position, StPetersBuilder.VillageHearthPos);
+                Assert.Greater(toHearth, r + StPetersVillage.HearthClearanceRadius,
+                    $"{site.Key} is inside the hearth's authored clearance — nothing may crowd the " +
+                    "ground the green is measured from");
             }
         }
 
