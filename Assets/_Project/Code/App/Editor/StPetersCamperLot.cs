@@ -386,17 +386,25 @@ namespace HiddenHarbours.App.Editor
         /// <summary>
         /// Which of the rig's eight facings shows the camper parked the way this lot parks it.
         ///
-        /// <para><b>⚠ DECLARED, NOT DERIVED — and it is the one number here that a contract should own.</b>
-        /// The building kit reads its facing from the bake's own door anchors
-        /// (<c>BuildingFacing.FacingToward</c>); the camper kit ships no contract at all, so there is
-        /// nothing to read. The reasoning: the rig's order is <c>N NE E SE S SW W NW</c> (measured in the
-        /// repo's V8 by <c>CamperIsoKitProbeTests</c>), the lot parks the camper broadside to the
-        /// approach so the curb side faces the cottage, and <see cref="NoseDirection"/> comes out east —
-        /// index 2. <b>This repo has been wrong about a facing order before</b> (the iso art baked
-        /// counter-clockwise; the azimuth probe's taper heuristic was backwards on eighteen hulls), so
-        /// treat it as unverified until someone looks at a baked cell: the follow-up is one integer, and
-        /// <see cref="TryLoadCamperSprite"/> draws nothing rather than the wrong thing if it is
-        /// wrong.</para>
+        /// <para><b>⚠ DECLARED, NOT DERIVED — the one number here a contract should own.</b> The building
+        /// kit reads its facing from the bake's own door anchors (<c>BuildingFacing.FacingToward</c>); the
+        /// camper kit ships no contract, so there is nothing for this file to read. The reasoning: the
+        /// rig's order is <c>N NE E SE S SW W NW</c> (measured in the repo's V8 by
+        /// <c>CamperIsoKitProbeTests</c>), the lot parks the camper broadside to the approach so the curb
+        /// side faces the cottage, and <see cref="NoseDirection"/> comes out east — index 2.</para>
+        ///
+        /// <para><b>✔ CROSS-CHECKED against the bake lane's measured anchors, on two independent
+        /// features.</b> Its <c>Camper.json</c> gives, for <c>camper_clipper_rest</c> facing 2, a hitch at
+        /// <c>(+158.1, −10.8)</c> px from the pivot — level and to the right, i.e. pointing EAST — and the
+        /// fold-down step at <c>(+2.6, +23.7)</c>, down-screen toward the camera, i.e. SOUTH. This lot
+        /// parks the drawbar east and wants the step facing Ginny's cottage, which is due south of it.
+        /// Both agree. <b>That check was made against an OPEN branch</b> (the bake PR), so if its facing
+        /// convention moves before it merges, re-check — but this is no longer a guess.</para>
+        ///
+        /// <para>Belt and braces either way: this repo has been wrong about a facing order before (the
+        /// iso art baked counter-clockwise; the azimuth probe's taper heuristic was backwards on eighteen
+        /// hulls), so <see cref="TryLoadCamperSprite"/> draws NOTHING rather than the wrong cell if this
+        /// is ever wrong — the correction is one integer.</para>
         /// </summary>
         public const int DoorFacing = 2;
 
