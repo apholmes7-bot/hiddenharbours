@@ -30,7 +30,19 @@ namespace HiddenHarbours.World
 
         // ---- prompts ------------------------------------------------------------------------
         public const string InteractKey  = "E";
-        public const string ContinueHint = "E ▸";   // "press E to continue", shown in the panel
+        public const string ContinueHint = "E ▸";   // "press E to continue", shown on the bubble
+
+        /// <summary>
+        /// The always-last row of every option bubble — the Animal Crossing convention, made a guarantee
+        /// by <see cref="DialogueOptionPicker.RowsFor"/> rather than left to content: there is exactly one
+        /// safe way out of a conversation and it is always in the same place, so a player never has to
+        /// read four rows to find the exit.
+        /// </summary>
+        public const string CloseConversationOption = "See you later.";
+
+        /// <summary>The cursor drawn against the selected option row. ⚑ OWNER TASTE — the art lane's
+        /// bubble kit may replace this glyph with a drawn motif; one const, one edit.</summary>
+        public const string OptionCursor = "▸ ";
 
         /// <summary>The floating "E: Talk to …" / "E: Read …" prompt for an interactable in range.</summary>
         public static string Prompt(InteractKind kind, string who)

@@ -290,7 +290,17 @@ namespace HiddenHarbours.Tests.PlayMode
 
             // Second line, then the close — a conversation is a thing you walk out of, not a thing that
             // latches the world into a dialogue that never ends.
+            //
+            // ⚠️ CHOREOGRAPHY UPDATED for the anchored bubble (#557): a line FILLS a letter at a time
+            // now, and an impatient press completes the fill rather than skipping the line — the
+            // Animal Crossing read, pinned by DialogueTypewriterTests. Back-to-back presses with no
+            // frames between them therefore spend one press per line on the fill. A real player whose
+            // line has finished filling still advances in one press; only the impatient path pays two.
+            Assert.IsTrue(_interactor.BeginInteract(), "the press mid-fill completes the first line");
+            Assert.IsTrue(_presenter.IsShowing);
             Assert.IsTrue(_interactor.BeginInteract(), "the next press advances him");
+            Assert.IsTrue(_presenter.IsShowing);
+            Assert.IsTrue(_interactor.BeginInteract(), "…completes the second line's fill");
             Assert.IsTrue(_presenter.IsShowing);
             Assert.IsTrue(_interactor.BeginInteract(), "…and the last one closes the panel");
             Assert.IsFalse(_presenter.IsShowing);

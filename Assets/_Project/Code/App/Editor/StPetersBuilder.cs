@@ -67,8 +67,6 @@ namespace HiddenHarbours.App.Editor
         const string ArtSprites  = "Assets/_Project/Art/Sprites";
         // Opening-cast art (greybox; final St Peters storekeeper etc. are on the owner's draw-list).
         const string ArtGinny         = "Assets/_Project/Art/Characters/Ginny.png";   // Aunt Ginny standee
-        const string ArtPortraitGinny = "Assets/_Project/Art/Portraits/Ginny.png";    // Ginny dialogue portrait
-        const string ArtPortraitNed   = "Assets/_Project/Art/Portraits/Ned.png";      // Ned portrait on his letter
         const string ArtDialoguePanel = "Assets/_Project/Art/UI/DialoguePanel.png";   // dialogue panel art
         const string ArtNamePlate     = "Assets/_Project/Art/UI/NamePlate.png";       // nameplate art
         const string ArtSea      = "Assets/_Project/Art/Tilesets/Water/SeaTile.png";
@@ -1544,7 +1542,7 @@ namespace HiddenHarbours.App.Editor
                                   waterSprite, new Color(0.78f, 0.55f, 0.62f),
                                   npc: ginnyNpc);
             var ginnyIt = ginnyGo.AddComponent<Interactable>();
-            ConfigureInteractableNpc(ginnyIt, ginnyNpc, LoadSpriteAny(ArtPortraitGinny));
+            ConfigureInteractableNpc(ginnyIt, ginnyNpc);
 
             // ⭐ AND SHE FRONTS THE LICENCE FEE — on her, because it is her beat (§7.5). CatchLicensePolicy
             // fails CLOSED, so the clam licence gates the only income day one has: "buy the clam licence
@@ -1566,7 +1564,7 @@ namespace HiddenHarbours.App.Editor
                                    waterSprite, new Color(0.62f, 0.47f, 0.30f));
             letterGo.transform.localScale = new Vector3(0.6f, 0.8f, 1f);
             var letterIt = letterGo.AddComponent<Interactable>();
-            ConfigureInteractableNpc(letterIt, nedNpc, LoadSpriteAny(ArtPortraitNed));
+            ConfigureInteractableNpc(letterIt, nedNpc);
 
             // --- THE ISLAND'S OWN PEOPLE (M1 §7.1) -------------------------------------------------------
             // Ginny and the letter are the OPENING; these five are the PLACE. §7.1 asks for "4–6 named
@@ -1985,15 +1983,14 @@ namespace HiddenHarbours.App.Editor
             return go;
         }
 
-        // Wire an Interactable to an NpcDef (the data-driven path) + an optional portrait, via the builder's
-        // persist-the-refs SerializedObject convention so the refs survive into the saved scene.
-        static void ConfigureInteractableNpc(Interactable it, NpcDef npc, Sprite portrait)
+        // Wire an Interactable to an NpcDef (the data-driven path), via the builder's persist-the-refs
+        // SerializedObject convention so the ref survives into the saved scene. There is no portrait to
+        // wire: the bubble anchors at the speaker and they are their own portrait (owner ruling 2026-07-30).
+        static void ConfigureInteractableNpc(Interactable it, NpcDef npc)
         {
             var so = new SerializedObject(it);
             var npcProp = so.FindProperty("_npc");
             if (npcProp != null) npcProp.objectReferenceValue = npc;
-            var portraitProp = so.FindProperty("_portrait");
-            if (portraitProp != null) portraitProp.objectReferenceValue = portrait;
             so.ApplyModifiedPropertiesWithoutUndo();
             if (npc == null)
                 Debug.LogWarning("[StPetersBuilder] NpcDef missing for an Interactable — re-run after the " +

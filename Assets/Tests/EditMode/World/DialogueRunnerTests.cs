@@ -14,7 +14,7 @@ namespace HiddenHarbours.Tests.World.EditMode
         {
             var lines = new DialogueLine[texts.Length];
             for (int i = 0; i < texts.Length; i++)
-                lines[i] = new DialogueLine("Ginny", null, texts[i]);
+                lines[i] = new DialogueLine("Ginny", texts[i]);
             return new DialogueRunner(lines);
         }
 

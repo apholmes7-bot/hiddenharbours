@@ -268,6 +268,51 @@ the relationship layer of §5.
 
 ---
 
+### 2.7 ⭐ THEY STOP TO TALK — as an OVERLAY, never as a change to the day (2026-08-17)
+
+The Animal Crossing behaviour the owner ruled on (`dialogue-and-knowledge.md` §2): walk up to a
+villager and she stops what she is doing and turns to face you. Built alongside the anchored speech
+bubble.
+
+**The load-bearing constraint is §2.6's purity, and it is untouched.** A routine is still a pure
+function of `(worldSeed, gameTime)`. A conversation does not pause a schedule, shift a departure,
+write anything down or touch the save. `ConversationHold` sits *on top* of `RoutinePlan.SampleAt`:
+
+- **Holding.** She stands on the spot she stopped on and faces the player. Her schedule carries on
+  without her, which is the point — a long chat makes her *late*.
+- **Catching up.** On release the engine asks the clock where she should be **by now** and she walks
+  back onto it at her own hurrying speed (`RoutineDef.CatchUpSpeedMultiplier`, per person, because an
+  old skipper's hurry is not a clam digger's). She is visibly late and moving fast, and the moment she
+  arrives the overlay ends and she is the pure function again — exactly, to the last bit.
+- **Nothing persists.** Save/load and determinism never see any of it. `RoutineInterruptibilityTests`
+  asserts that flipping every conversation-related field moves no pose by a single bit.
+
+**"Stop if you can" is DATA, not a heuristic.** `RoutineEntry.Uninterruptible` is a flag per *block* —
+default off, i.e. everyone stops, because the field records the **exception** and a routine authored
+before this existed therefore keeps working. Tick it on a block that must not be interrupted (a lane
+crossing, a timed beat). A refused stop is not a refused conversation: she keeps walking and the
+bubble travels with her, which reads as *"on my way to the wharf!"*.
+> ⚑ **OWNER TASTE, not guessed:** whether an uninterruptible block should also say a one-line
+> brush-off is open. It is one authored line per block if the owner wants it, and the refusal path is
+> already the place it plugs into.
+
+**Facing is DERIVED, on ground bearings.** She turns through the eight-facing selection using
+`IsoGround.BearingDegrees` — the world XY plane is the *squashed* ground plane (ADR 0034), so the
+angle is un-squashed before it is taken. The error is zero on the cardinals and peaks at 12.56° near
+the diagonals, which is why the tests check the diagonals.
+
+**Range and disengage.** The conversation opens through the existing `Interactable` proximity path;
+walking past reach (with hysteresis, so a half-step back is not being hung up on) closes the bubble
+and releases her through the presenter's single completion path — no wedged `InteractionGate`.
+Conversations indoors work through the same seam: the shelter answer is frozen for the duration, so
+a villager cannot blink out of existence mid-sentence because her schedule has meanwhile taken her
+out of her own front door.
+
+**Not shipped:** the talk-bounce / emote animation while speaking (§5 Q1 of the dialogue doc) — that
+is an art-lane rig ask, and until it lands she simply stands and faces you.
+
+---
+
 ## 3. The handcrafted core cast
 
 Fourteen named characters, sized and placed to match `world-and-regions.md` (the bulk live and work

@@ -53,6 +53,13 @@ namespace HiddenHarbours.World
         private Text _prompt;
         private Interactable _nearest;
 
+        // Who is currently talking, and their day — looked up ONCE when the conversation opens rather
+        // than per frame (rule 7). Null for an interactable with no routine (a letter, a logbook, an
+        // islander who simply waits where they were placed), which is a perfectly good speaker who
+        // simply has nothing to stop doing.
+        private Interactable _speaker;
+        private VillagerRoutine _speakerRoutine;
+
         private void Awake()
         {
             _flagStore = new SaveFlagStore();                    // VS-08: persisted via the save file, not PlayerPrefs
@@ -71,7 +78,13 @@ namespace HiddenHarbours.World
                 Claim(true);
                 _nearest = null;
                 ShowPrompt(null);
+                // ⚠️ THE DEV-KEY LEDGER IS EXHAUSTED A–Z (sweep 2026-08-17), so choosing an option binds
+                // NOTHING new: it is the move axis the player already walks with, and Interact confirms.
+                // The presenter ignores the axis unless rows are actually up, so this is inert in an
+                // ordinary conversation. See the coordination note on ReadMoveAxis.
+                _presenter.MoveSelection(ReadMoveAxis(kb));
                 if (interact) BeginInteract();
+                else if (HasWalkedAway()) _presenter.Close();
                 return;
             }
 
@@ -133,7 +146,12 @@ namespace HiddenHarbours.World
         /// </summary>
         private void Claim(bool hasTarget) => InteractActionClaim.IsClaimed = hasTarget;
 
-        private void OnDisable() => InteractActionClaim.Reset();
+        private void OnDisable()
+        {
+            InteractActionClaim.Reset();
+            // A region torn down mid-conversation must not leave a villager standing in one forever.
+            ReleaseSpeaker();
+        }
 
         // ---- interaction --------------------------------------------------------------------
 
@@ -196,6 +214,38 @@ namespace HiddenHarbours.World
             return best;
         }
 
+        /// <summary>
+        /// How much further than <see cref="_radius"/> the player may drift before a conversation gives
+        /// up on them. Hysteresis, not owner feel: without it, standing exactly on the edge of reach
+        /// would open and close the bubble on alternate frames, and a half-step back mid-sentence would
+        /// read as being hung up on.
+        /// </summary>
+        public const float DisengageSlack = 1.35f;
+
+        /// <summary>
+        /// Has the player left the conversation? True when they are past
+        /// <see cref="_radius"/> × <see cref="DisengageSlack"/> from whoever is talking, or when that
+        /// speaker has stopped being there at all (a villager whose routine took her inside a house the
+        /// player is not in switches her <see cref="Interactable"/> off with her renderer).
+        ///
+        /// <para>Walking off is a real way to end a conversation and it must not leave anything wedged:
+        /// the presenter's <c>Close</c> lowers the <see cref="InteractionGate"/> and fires the same
+        /// completion callback a normal ending does, and that callback is what releases the villager
+        /// back onto her day. One ending, not two.</para>
+        /// </summary>
+        private bool HasWalkedAway()
+        {
+            if (_speaker == null) return false;              // nobody in particular is talking
+            if (!_speaker.isActiveAndEnabled) return true;   // she went in through her own door
+
+            Transform player = ResolvePlayer();
+            if (player == null) return false;
+
+            float reach = _radius * DisengageSlack;
+            return ((Vector2)_speaker.transform.position - (Vector2)player.position).sqrMagnitude
+                   > reach * reach;
+        }
+
         private void Begin(Interactable it)
         {
             if (_presenter == null) return;
@@ -216,13 +266,67 @@ namespace HiddenHarbours.World
 
             var lines = new List<DialogueLine>(text.Length);
             for (int i = 0; i < text.Length; i++)
-                lines.Add(new DialogueLine(it.Speaker, it.Portrait, text[i]));
+                lines.Add(new DialogueLine(it.Speaker, text[i]));
+
+            // The bubble hangs at the SPEAKER (owner ruling 2026-07-30) and fills at THEIR cadence; the
+            // rows they offer are data on the same DialogueDef. Every one of the three is optional —
+            // no anchor parks the bubble, no voice fills at the default, no options ends on the last
+            // line — so an interactable authored before any of this existed behaves exactly as it did.
+            NpcDef npc = it.Npc;
+            var request = new DialogueRequest(
+                lines,
+                it.BubbleAnchorTransform,
+                it.BubbleAnchorOffset,
+                DialogueVoiceDef.VoiceOf(npc != null ? npc.Voice : null),
+                it.HasNpcData ? DialogueOptionPicker.RowsFor(npc.Dialogue.Options) : null,
+                it.HasNpcData ? npc.Dialogue.Id : it.ConversationId,
+                npc != null ? npc.Id : null);
+
+            // ⭐ SHE STOPS TO TALK — if she can. The interruptibility is authored per routine block, so
+            // this asks rather than decides; a refused stop is not a refused conversation, she just
+            // answers on the move and the bubble travels with her.
+            _speaker = it;
+            _speakerRoutine = it.GetComponent<VillagerRoutine>();
+            if (_speakerRoutine != null) _speakerRoutine.TryHoldForConversation(ResolvePlayer());
 
             string flag = it.CompletionFlag;
-            _presenter.Play(lines, () =>
+            _presenter.Play(request, () =>
             {
                 if (!string.IsNullOrEmpty(flag)) _flags.Set(flag, true);
+                ReleaseSpeaker();
             });
+        }
+
+        /// <summary>Let whoever was talking get back to their day. Called from the presenter's single
+        /// completion callback, so every way a conversation can end — the last line, an option, the
+        /// player walking off — releases them by the same path.</summary>
+        private void ReleaseSpeaker()
+        {
+            if (_speakerRoutine != null) _speakerRoutine.ReleaseFromConversation();
+            _speakerRoutine = null;
+            _speaker = null;
+        }
+
+        /// <summary>
+        /// This frame's vertical move axis, from the SAME keys that walk the fisher
+        /// (<c>PlayerWalkController.ReadInput</c>) — +1 up, -1 down.
+        ///
+        /// <para><b>⚑ Coordination point for gameplay-systems, flagged in the PR.</b> While the option
+        /// rows are up this axis does two things at once: it moves the cursor AND it still walks the
+        /// player, because <see cref="InteractionGate"/> gates the interact VERB and nothing gates
+        /// movement (its semantics are deliberately unchanged here). In practice that is legible rather
+        /// than broken — the picker is edge-latched, so a TAP steps a row and nudges the fisher a
+        /// centimetre, while a HOLD walks them out of conversation range, which closes the bubble and is
+        /// a perfectly good way to leave. The clean fix is a movement claim in the shape of
+        /// <see cref="InteractActionClaim"/>, which is gameplay-systems' to own and out of this lane.</para>
+        /// </summary>
+        private static float ReadMoveAxis(Keyboard kb)
+        {
+            if (kb == null) return 0f;
+            float axis = 0f;
+            if (kb.wKey.isPressed || kb.upArrowKey.isPressed) axis += 1f;
+            if (kb.sKey.isPressed || kb.downArrowKey.isPressed) axis -= 1f;
+            return axis;
         }
 
         /// <summary>Wire the interactor in one call (editor / tests).</summary>

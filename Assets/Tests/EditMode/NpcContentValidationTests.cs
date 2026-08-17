@@ -71,6 +71,94 @@ namespace HiddenHarbours.Tests.EditMode
             }
         }
 
+        // ---- dialogue options (2026-08-17) ----------------------------------------------------
+
+        /// <summary>
+        /// Option ids are the payload of the Core <c>DialogueOptionPicked</c> signal — whichever system
+        /// acts on a choice matches on the id and never on the label. So they follow the same
+        /// append-only, namespaced discipline as every other id here, and they are unique WITHIN a
+        /// conversation (two rows sharing an id would make the pick ambiguous at the listener).
+        ///
+        /// <para>Passes vacuously until the first choice is authored, which is the point: it is here so
+        /// that the day one is, the rule is already being enforced.</para>
+        /// </summary>
+        [Test]
+        public void DialogueOptions_HaveNamespacedIdsUniqueWithinTheirConversation()
+        {
+            foreach (var d in LoadAll<DialogueDef>())
+            {
+                string path = AssetDatabase.GetAssetPath(d);
+                if (d.Options == null) continue;
+
+                var seen = new Dictionary<string, int>();
+                for (int i = 0; i < d.Options.Length; i++)
+                {
+                    DialogueOption o = d.Options[i];
+                    if (!o.IsAuthored) continue;   // a half-typed row is skipped at runtime too
+
+                    Assert.IsTrue(o.Id.StartsWith("option."),
+                        $"{path}: option {i} id '{o.Id}' must be namespaced 'option.snake_case' — it is " +
+                        "what the DialogueOptionPicked signal carries");
+                    Assert.IsFalse(seen.ContainsKey(o.Id),
+                        $"{path}: duplicate option id '{o.Id}' (rows " +
+                        $"{(seen.TryGetValue(o.Id, out int first) ? first : -1)} and {i}) — a listener " +
+                        "could not tell which row the player chose");
+                    seen[o.Id] = i;
+                }
+            }
+        }
+
+        /// <summary>
+        /// ⛔ <b>No conversation authors its own way out.</b> <c>DialogueOptionPicker</c> APPENDS the
+        /// close row so it is always present and always last; a hand-authored row claiming the reserved
+        /// id would be silently dropped at runtime, so catch it at the asset instead of leaving somebody
+        /// wondering why their goodbye never shows.
+        /// </summary>
+        [Test]
+        public void NoDialogueAuthorsTheReservedCloseOption()
+        {
+            foreach (var d in LoadAll<DialogueDef>())
+            {
+                if (d.Options == null) continue;
+                foreach (DialogueOption o in d.Options)
+                    Assert.AreNotEqual(DialogueOption.CloseId, o.Id,
+                        $"{AssetDatabase.GetAssetPath(d)}: '{DialogueOption.CloseId}' is reserved — the " +
+                        "picker appends the close row itself, always last, so that every conversation " +
+                        "has exactly one safe way out and it is always in the same place");
+            }
+        }
+
+        // ---- dialogue voices (2026-08-17) -----------------------------------------------------
+
+        /// <summary>
+        /// A voice asset is a shared cadence, so it needs the same stable, unique, namespaced id as
+        /// anything else an NpcDef points at. Its NUMBERS are the owner's taste surface and are
+        /// deliberately not asserted — only that a voice which exists can actually finish a line, which
+        /// <c>DialogueVoice.Sanitised</c> guarantees and this checks has not been designed around.
+        /// </summary>
+        [Test]
+        public void Voices_HaveNonEmptyUniqueNamespacedIds_AndCanFinishALine()
+        {
+            var seen = new Dictionary<string, string>();
+            foreach (var v in LoadAll<DialogueVoiceDef>())
+            {
+                string path = AssetDatabase.GetAssetPath(v);
+                Assert.IsFalse(string.IsNullOrWhiteSpace(v.Id), $"{path}: DialogueVoiceDef has an empty id");
+                Assert.IsTrue(v.Id.StartsWith("voice."),
+                    $"{path}: DialogueVoiceDef id '{v.Id}' must be namespaced 'voice.snake_case'");
+                Assert.IsFalse(seen.ContainsKey(v.Id),
+                    $"duplicate DialogueVoiceDef id '{v.Id}' in '{path}' and " +
+                    $"'{(seen.TryGetValue(v.Id, out var o) ? o : "?")}'");
+                seen[v.Id] = path;
+
+                Assert.Greater(v.Resolved.CharactersPerSecond, 0f,
+                    $"{path}: a voice that fills at zero characters a second would leave a bubble that " +
+                    "never finishes and no way past it");
+                Assert.GreaterOrEqual(v.Resolved.CharactersPerTick, 1,
+                    $"{path}: the audio stride must be at least one character");
+            }
+        }
+
         // ---- npc defs -------------------------------------------------------------------------
 
         [Test]

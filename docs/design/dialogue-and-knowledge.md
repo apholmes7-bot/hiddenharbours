@@ -64,10 +64,30 @@ instrument) from *readings* (clock, tide, wind) to *knowledge itself*:
 ## 4. Phasing
 
 - **M1 (shipped/OK):** anchored NPCs with lines (#354); the almanac tide table (#355) as the
-  document-pattern proof. The current `DialoguePresenter` panel is ACCEPTED AS INTERIM.
+  document-pattern proof. The `DialoguePresenter` panel was ACCEPTED AS INTERIM — and has now
+  been replaced (below).
 - **The bubble presentation slice** (panel → anchored bubble + facing + populate-sound,
-  options picker): **M2 by default; the owner may pull it into M1** the way he pulled the
-  instruments (§0 of the consoles doc). Small, ui-ux lane, `NpcDef` data untouched.
+  options picker): **PULLED INTO PHASE by the owner, 2026-08-17**, the way he pulled the
+  instruments (§0 of the consoles doc).
+  > **Built 2026-08-17.** The panel is gone. `DialoguePresenter` is now the anchored bubble:
+  > world-tracked screen space, tail aimed at the speaker, screen-edge clamping that slides the
+  > bubble while the tail keeps pointing (`DialogueBubbleLayout`, pure + tested at the corners);
+  > per-character fill at a per-character cadence (`DialogueVoiceDef` on `NpcDef`, so §5 Q2 is a
+  > slider rather than a guess); **the fill IS the audio event**, published through Core as
+  > `DialogueTypewriterTick` — the SOUND of it is the audio lane's own PR, and nothing is
+  > synthesised in World; and an option picker (`DialogueDef.Options`) driven by the existing
+  > move axis + Interact, whose picks cross modules as `DialogueOptionPicked`. The close row
+  > ("See you later.") is APPENDED by the picker, always last, so no authored conversation can
+  > ship without a way out. Options are flat and one-round on purpose — a reply never leads to
+  > more options; the tree is the M2/M3 knowledge-graph work below.
+  > **The portrait slot is gone with the panel** (§2's "no portrait dialogue boxes, ever"):
+  > `DialogueLine.Portrait`, `Interactable._portrait` and the region builders' `Art/Portraits`
+  > loads are all removed. The character on screen is the portrait.
+  > **Still greybox:** the bubble draws as tinted rects until the art lane's kit lands at
+  > `Assets/_Project/Art/UI/DialogueBubble`; `DialogueBubbleArtTests` is the tripwire that goes
+  > red the day it does and names the flip.
+- **NPCs stopping to talk** (facing the player, the routine held as an overlay): built alongside
+  the bubble, 2026-08-17 — see `npcs-and-routines.md` §2.7.
 - **Devices (phones/computers) and ask-a-question knowledge graphs: M2/M3**, alongside the
   physical inventory and merchant-conversation work the keystone doc already places there.
 
