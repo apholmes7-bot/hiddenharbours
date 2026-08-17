@@ -6,7 +6,8 @@
         "HiddenHarbours.Art.Editor",
         "HiddenHarbours.Tools.JsEngine.Editor",
         "HiddenHarbours.Core",
-        "HiddenHarbours.Boats"
+        "HiddenHarbours.Boats",
+        "HiddenHarbours.Vehicles"
     ],
     "includePlatforms": [
         "Editor"
