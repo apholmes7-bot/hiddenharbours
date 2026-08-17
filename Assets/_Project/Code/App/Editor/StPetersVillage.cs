@@ -46,18 +46,26 @@ namespace HiddenHarbours.App.Editor
         public const string RootName = "IslandVillage";
 
         /// <summary>
-        /// Clearance (m) a building keeps from the cottage's own footprint. Ginny's cottage is a legacy
-        /// single sprite with no contract to ask, so its extent is authored here — generously, because
-        /// being wrong about it means a house through the hearth.
+        /// Clearance (m) a building keeps from the HEARTH — the ground at
+        /// <see cref="StPetersBuilder.VillageHearthPos"/> that the village is arranged around.
+        ///
+        /// <para>⚠ This was <c>CottageFootprintRadius</c>, and it guarded a BUILDING: Ginny's cottage
+        /// stood on the hearth and was a legacy single sprite with no contract to ask, so its extent was
+        /// authored here. She moved out to her own plot on 2026-08-16 and the lot is empty — but the
+        /// clearance is not obsolete, because <see cref="StPetersBuilder.VillageGreen"/> is still the
+        /// midpoint of this point and the spawn, and the green is where the village gathers. It guards
+        /// open ground now instead of clapboard. <b>The VALUE is unchanged at 8 m</b>, so no building
+        /// moves and the rename is behaviour-neutral.</para>
         /// </summary>
-        public const float CottageFootprintRadius = 8f;
+        public const float HearthClearanceRadius = 8f;
 
         /// <summary>Gap (m) left between two building footprints — the lane between them. Wide enough to
         /// walk down at the on-foot framing rather than a token separation.</summary>
         public const float LaneGap = 4f;
 
-        /// <summary>Clearance (m) from the cottage props (Ginny, Ned's letter, the freezer). They are
-        /// small interactables; they only need to not be inside a wall.</summary>
+        /// <summary>Clearance (m) from the small opening props (Ginny on her mark, Ned's letter). They
+        /// are small interactables; they only need to not be inside a wall. ⚠ The freezer used to be on
+        /// this list and is 85 m east on Ginny's plot now.</summary>
         public const float PropClearance = 2.5f;
 
         // =====================================================================================
@@ -164,7 +172,7 @@ namespace HiddenHarbours.App.Editor
 
         /// <summary>
         /// The clearing radius the village ACTUALLY needs, derived from the contract: the furthest any
-        /// footprint reaches from <see cref="StPetersBuilder.CottagePos"/>, which is what
+        /// footprint reaches from <see cref="StPetersBuilder.VillageHearthPos"/>, which is what
         /// <see cref="StPetersWoods.VillageClearingRadius"/> has to cover or trees and shrubs plant
         /// through a wall. Returns 0 when nothing is baked, so a test can say so rather than pass
         /// vacuously.
@@ -172,7 +180,7 @@ namespace HiddenHarbours.App.Editor
         public static float RequiredClearingRadius()
         {
             float worst = 0f;
-            Vector2 cottage = StPetersBuilder.CottagePos;
+            Vector2 cottage = StPetersBuilder.VillageHearthPos;
             foreach (var site in Sites)
             {
                 var placement = VillageBuildingCatalog.Find(site.Key);

@@ -106,9 +106,11 @@ namespace HiddenHarbours.App.Editor
         /// cannot hide between samples.</summary>
         public const float LaneSampleStepMetres = 1.5f;
 
-        /// <summary>Ginny's garden, as an offset from her cottage in metres: round the west side, clear of
-        /// Ned's letter on the step and of the freezer round the other side.</summary>
-        public static readonly Vector2 CottageGardenOffset = new Vector2(-4.5f, -1.5f);
+        // ⭐ CottageGardenOffset MOVED to StPetersGinnyPlot.GardenOffset on 2026-08-16, along with the
+        // cottage it was an offset FROM. It lived here while the garden was a village fixture; now that
+        // Ginny has her own plot, every number about that plot belongs to the plot and this file derives
+        // its stations from them. The value changed too — west was her quiet flank in the village and is
+        // the FRONT of the house out in the woods, so the garden went round to the south side.
 
         // =====================================================================================
         //  GEOMETRY (pure — no assets, no scene, so a test can assert the whole layout without either)
@@ -177,8 +179,8 @@ namespace HiddenHarbours.App.Editor
         public static Vector2 GreenSlot(int slot)
         {
             Vector2 green = StPetersBuilder.VillageGreen;
-            Vector2 fromHearth = green - new Vector2(StPetersBuilder.CottagePos.x,
-                                                     StPetersBuilder.CottagePos.y);
+            Vector2 fromHearth = green - new Vector2(StPetersBuilder.VillageHearthPos.x,
+                                                     StPetersBuilder.VillageHearthPos.y);
             if (fromHearth.sqrMagnitude < 1e-8f) return green;
             fromHearth.Normalize();
             Vector2 across = new Vector2(-fromHearth.y, fromHearth.x);
@@ -365,6 +367,14 @@ namespace HiddenHarbours.App.Editor
             Add(LaneSageCottage, StPetersInhabitants.Dooryard(StPetersBuilder.SageCottagePos), nGreen);
             Add(LaneCottage, StPetersBuilder.GinnyPos, nGreen);
 
+            // --- EAST, up off the road: Ginny's plot in the woods. The one node that is a walk rather
+            //     than a step — 85 m from the green, which at her 1 m/s and a 1800 s day is 1.13 GAME
+            //     HOURS each way. That number is why her routine has three blocks and not four, and why
+            //     she leaves for the village at 4.5 to be standing on her mark before the game starts at
+            //     six. No via-bends: there is no painted path out there yet, and cutting one is the
+            //     forest lane's work (its path corridors), not this file's.
+            Add(LaneGinnyPlot, StPetersGinnyPlot.Dooryard, nGreen);
+
             // --- WEST, on the painted dirt: out to the head of the flats where the clam digging is. The
             //     node is the digger's own validated spot rather than the bar head itself, because the bar
             //     FLOODS at every tide (crest 0.88 m against a 2.2 m spring high) and a lane must not end
@@ -447,15 +457,28 @@ namespace HiddenHarbours.App.Editor
                         "between the hearth and the spawn, where the life is");
             }
 
-            // --- Ginny's, the hearth. Her step is EXACTLY where she has stood since the opening shipped,
-            //     so wiring her to the engine cannot move her off the mark the onboarding looks for.
-            Outdoor(StationCottageStep, StPetersBuilder.GinnyPos, 180f, LaneCottage,
-                    "Ginny's own step, unmoved — the spot the opening's first conversation happens on");
-            Vector2 gardenSpot = new Vector2(StPetersBuilder.CottagePos.x, StPetersBuilder.CottagePos.y)
-                                 + CottageGardenOffset;
-            Outdoor(StationCottageGarden, gardenSpot, HeadingTo(gardenSpot, green), LaneCottage,
-                    "the garden round the cottage's west side — 'garden and kitchen at dawn' (§3.4), and " +
-                    "clear of Ned's letter on the step and the freezer round the other side");
+            // --- Ginny's VILLAGE MARK. Where she has stood since the opening shipped, and it does not
+            //     move: a new game starts at hour 6 (GameClock._startHour) with the player waking beside
+            //     her, so this is load-bearing for the onboarding whatever happens to her house. Her home
+            //     went east into the woods on 2026-08-16; her working day did not follow it, because
+            //     that would be rewriting the opening and the opening is the owner's to rewrite.
+            Outdoor(StationGinnyVillageMark, StPetersBuilder.GinnyPos, 180f, LaneCottage,
+                    "Ginny's mark in the village — the spot the opening's first conversation happens on, " +
+                    "and where she is through the working day now that she lives out on her plot");
+
+            // --- Ginny's, on her own land. Both of these DERIVE from StPetersGinnyPlot, so the day the
+            //     owner walks the site and moves it, the stations follow the cottage without an edit here.
+            Vector2 ginnyStep = StPetersGinnyPlot.Dooryard;
+            Outdoor(StationCottageStep, ginnyStep,
+                    HeadingTo(ginnyStep, StPetersGinnyPlot.Approach), LaneGinnyPlot,
+                    "Ginny's own step, out on her plot in the eastern woods — turned to look back down " +
+                    "the way you walk up from the village");
+
+            Vector2 gardenSpot = StPetersGinnyPlot.GardenPos;
+            Outdoor(StationCottageGarden, gardenSpot,
+                    HeadingTo(gardenSpot, StPetersGinnyPlot.CottagePos), LaneGinnyPlot,
+                    "the garden on the cottage's south side — the sunny flank, and the one clear of both " +
+                    "the door and the sheds now that she gardens her own ground");
 
             // --- the dooryards: on your own step with the tea, which is where a neighbour is at seven.
             Vector2 saltbox = StPetersInhabitants.Dooryard(StPetersBuilder.RedSaltboxPos);
@@ -859,6 +882,14 @@ namespace HiddenHarbours.App.Editor
         public const string LaneSaltbox = "yard_saltbox";
         public const string LaneSageCottage = "yard_sage_cottage";
         public const string LaneCottage = "yard_cottage";
+
+        /// <summary>
+        /// Ginny's plot, out in the eastern woods — the one lane node that is not in or beside the
+        /// village. It hangs off the green like every other yard, which makes her walk in a straight run
+        /// down the island; there is no painted path out there to give it bends yet, and inventing one
+        /// would be the forest lane's road, not this file's.
+        /// </summary>
+        public const string LaneGinnyPlot = "yard_ginny_plot";
         public const string LaneFlatsHead = "flats_head";
         public const string LaneSlipHead = "slip_head";
         public const string LaneWharfHead = "wharf_head";
@@ -869,8 +900,22 @@ namespace HiddenHarbours.App.Editor
         public const string StationGreenB = P + "green_b";
         public const string StationGreenC = P + "green_c";
         public const string StationGreenD = P + "green_d";
+        /// <summary>Her own step. ⚠ It FOLLOWS THE COTTAGE — since 2026-08-16 that is out on her plot in
+        /// the woods, not in the village. The id is unchanged because ids are append-only and stable
+        /// (CLAUDE.md §5) and because it still means exactly what it says: the step of Ginny's
+        /// cottage.</summary>
         public const string StationCottageStep = P + "cottage_step";
+
+        /// <summary>Her garden. Follows the cottage too — see <see cref="StationCottageStep"/>.</summary>
         public const string StationCottageGarden = P + "cottage_garden";
+
+        /// <summary>
+        /// <b>The mark the opening's first conversation happens on</b>, in the village, four metres off
+        /// the green. NEW on 2026-08-16 and the reason the cottage could move at all: a new game starts
+        /// at hour 6 with the player waking beside Ginny, so when her HOME went east this had to stay
+        /// behind as its own declared spot rather than travel with the step it used to be part of.
+        /// </summary>
+        public const string StationGinnyVillageMark = P + "ginny_village_mark";
         public const string StationSaltboxDooryard = P + "saltbox_dooryard";
         public const string StationFarmhouseDooryard = P + "farmhouse_dooryard";
         public const string StationSageDooryard = P + "sage_dooryard";
@@ -909,7 +954,7 @@ namespace HiddenHarbours.App.Editor
         public static readonly string[] AllStationIds =
         {
             StationGreenA, StationGreenB, StationGreenC, StationGreenD,
-            StationCottageStep, StationCottageGarden,
+            StationCottageStep, StationCottageGarden, StationGinnyVillageMark,
             StationSaltboxDooryard, StationFarmhouseDooryard, StationSageDooryard,
             StationStoreCounter, StationStoreCustomerA, StationStoreCustomerB, StationStoreCustomerC,
             StationPostOfficeDoor, StationPostOfficeCounter, StationSchoolDesk,
@@ -922,7 +967,8 @@ namespace HiddenHarbours.App.Editor
         public static readonly string[] AllLaneNodeNames =
         {
             LaneGreen, LaneStore, LaneSchool, LaneFarmhouse, LanePostOffice,
-            LaneSaltbox, LaneSageCottage, LaneCottage, LaneFlatsHead, LaneSlipHead, LaneWharfHead,
+            LaneSaltbox, LaneSageCottage, LaneCottage, LaneGinnyPlot,
+            LaneFlatsHead, LaneSlipHead, LaneWharfHead,
         };
 
         // =====================================================================================

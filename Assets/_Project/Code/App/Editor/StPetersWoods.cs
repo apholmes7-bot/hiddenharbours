@@ -47,7 +47,7 @@ namespace HiddenHarbours.App.Editor
 
         /// <summary>
         /// Radius (m) of the clearing the village stands in, measured from
-        /// <see cref="StPetersBuilder.CottagePos"/>. A village in a forest is a village in a clearing;
+        /// <see cref="StPetersBuilder.VillageHearthPos"/>. A village in a forest is a village in a clearing;
         /// without this the cottage would be planted through.
         ///
         /// <para>⭐ <b>THIS FOLLOWS THE VILLAGE, AND THE VILLAGE JUST GREW.</b> 34 m was right when the
@@ -358,8 +358,15 @@ namespace HiddenHarbours.App.Editor
         {
             if (terrain.ElevationAt(p) < (floorElevation ?? TreeLineElevation)) return false;
 
-            if (Vector2.Distance(p, StPetersBuilder.CottagePos) < VillageClearingRadius) return false;
+            if (Vector2.Distance(p, StPetersBuilder.VillageHearthPos) < VillageClearingRadius) return false;
             if (Vector2.Distance(p, StPetersBuilder.StartSpawnPos) < SpawnClearingRadius) return false;
+
+            // ⭐ AUNT GINNY'S PLOT — the second clearing on this island, and THE SEAM THE DENSE-FOREST
+            // LANE ADOPTS. She moved into these woods on 2026-08-16, and the trees have to come off her
+            // dooryard, her garden and her three sheds. Asked as ONE predicate on purpose: when the
+            // woodland zone/cutout table lands, it takes this call over by name and no other line in
+            // placement changes. See StPetersGinnyPlot.IsInsideClearing.
+            if (StPetersGinnyPlot.IsInsideClearing(p)) return false;
 
             if (StPetersShoreMap.DistanceToSegment(
                     p, StPetersBuilder.SandbarFrom, StPetersBuilder.SandbarTo) < CrossingClearance)
@@ -491,7 +498,7 @@ namespace HiddenHarbours.App.Editor
                 float e = terrain.ElevationAt(p);
                 string species = PickSpecies(
                     FlowerPreference(p, InStand(p, e), WetnessAt(p),
-                                     Vector2.Distance(p, StPetersBuilder.CottagePos)),
+                                     Vector2.Distance(p, StPetersBuilder.VillageHearthPos)),
                     available, StPetersShoreMap.Hash01(ix, iy, 107));
                 if (species == null) continue;
 

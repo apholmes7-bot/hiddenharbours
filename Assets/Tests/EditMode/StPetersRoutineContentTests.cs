@@ -45,6 +45,51 @@ namespace HiddenHarbours.Tests.EditMode
                             $"{day.NpcAsset} is in the roster but has no asset with id '{day.RoutineId}'.");
         }
 
+        /// <summary>
+        /// 🔴 <b>THE COMMITTED ASSET AND THE BUILDER'S TABLE HAVE TO AGREE.</b>
+        /// <c>RoutineDefsBuilder.Author</c> runs with <c>overwrite: false</c>, so editing the roster does
+        /// NOT rewrite an asset that already exists — the C# says one thing, the shipped
+        /// <c>.asset</c> says another, and the GAME reads the asset. Ginny's move on 2026-08-16 changed
+        /// both by hand, which is exactly the moment this can silently drift.
+        ///
+        /// <para>Blocks are compared by departure hour and station id. The <c>Why</c> prose is not
+        /// compared: it is documentation, it wraps differently through Unity's YAML writer, and holding
+        /// it byte-equal would make this test fail on a comma.</para>
+        /// </summary>
+        [Test]
+        public void EveryRoutineAsset_MatchesTheRosterItWasBuiltFrom()
+        {
+            RoutineDef[] routines = Routines();
+            Assert.That(routines.Length, Is.GreaterThan(0), "no routine assets — this would be vacuous");
+
+            foreach (RoutineDefsBuilder.Day day in RoutineDefsBuilder.Roster)
+            {
+                RoutineDef asset = routines.FirstOrDefault(r => r.Id == day.RoutineId);
+                if (asset == null) continue;   // EveryRosterMemberHasARoutineAsset owns that failure
+
+                Assert.That(asset.Entries.Length, Is.EqualTo(day.Blocks.Length),
+                            $"'{day.RoutineId}': the asset has {asset.Entries.Length} block(s) and the " +
+                            $"roster authors {day.Blocks.Length}. The builder does not overwrite an " +
+                            "existing asset — edit both, or delete the asset and re-run the builder.");
+
+                int n = System.Math.Min(asset.Entries.Length, day.Blocks.Length);
+                for (int i = 0; i < n; i++)
+                {
+                    Assert.That(asset.Entries[i].StartHour, Is.EqualTo(day.Blocks[i].StartHour).Within(1e-4f),
+                                $"'{day.RoutineId}' block {i}: asset departs at " +
+                                $"{asset.Entries[i].StartHour}, roster says {day.Blocks[i].StartHour}.");
+                    Assert.That(asset.Entries[i].StationId, Is.EqualTo(day.Blocks[i].StationId),
+                                $"'{day.RoutineId}' block {i}: asset walks to " +
+                                $"'{asset.Entries[i].StationId}', roster says " +
+                                $"'{day.Blocks[i].StationId}'.");
+                }
+
+                Assert.That(asset.WalkSpeedMetresPerSecond, Is.EqualTo(day.WalkSpeed).Within(1e-4f),
+                            $"'{day.RoutineId}': walk speed differs between asset and roster — and it is " +
+                            "what every travel-time argument on this island is computed from.");
+            }
+        }
+
         [Test]
         public void EveryRoutineIdIsSnakeCaseAndUnique()
         {
@@ -347,13 +392,20 @@ namespace HiddenHarbours.Tests.EditMode
                                 Is.GreaterThanOrEqualTo(StPetersRoutines.GreenSlotStrideMetres * 0.9f),
                                 "four neighbours on the green have to be four people");
 
-            // Index 1 is the offset-0 slot — the green itself — and it is Ginny's, because it is the one
-            // nearest the step the opening's first conversation happens on.
+            // Index 1 is the offset-0 slot — the green itself.
             Assert.That(slots[1], Is.EqualTo(StPetersBuilder.VillageGreen));
+
+            // ⚠ THE CENTRE SLOT IS NOBODY'S NOW, AND THAT IS A DECISION. It was Ginny's, "because it is
+            // the one nearest the step the opening's first conversation happens on" — a reason the
+            // 2026-08-16 move made false, since her step is 85 m east in the woods. Her dusk block went
+            // with it, so station.st_peters.green_b is declared and unvisited. The alternative was
+            // walking her back across the island at dusk for a slot she no longer lives beside, and at
+            // 1.13 game hours per crossing that would have put her at 2.3 h/day on the road.
             var ginny = RoutineDefsBuilder.Roster.First(d => d.NpcAsset == "AuntGinny");
-            Assert.That(ginny.Blocks.Any(b => b.StationId == StPetersRoutines.StationGreenB), Is.True,
-                        "Ginny keeps the centre slot: she may not be walked further from her own step than " +
-                        "she has to be.");
+            Assert.That(ginny.Blocks.Any(b => b.StationId == StPetersRoutines.StationGreenB), Is.False,
+                        "Ginny's dusk-on-the-green block came back. If that is intended, re-check the " +
+                        "commute arithmetic in her routine's own note first — a fourth crossing is a " +
+                        "third of her waking day spent walking.");
         }
 
         [Test]
@@ -385,20 +437,104 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void GinnysGarden_StaysInsideHerOwnDooryard()
+        public void GinnysGardenAndHerStep_AreBothOnHerOwnPlot()
         {
-            // Her whole day is deliberately the smallest on the island: she is the onboarding gate, and the
-            // opening cannot afford her to be somewhere else on the first morning.
-            Vector2 step = StPetersBuilder.GinnyPos;
-            Vector2 garden = new Vector2(StPetersBuilder.CottagePos.x, StPetersBuilder.CottagePos.y)
-                             + StPetersRoutines.CottageGardenOffset;
+            // Her home is her plot in the eastern woods now (2026-08-16), so "inside her own dooryard"
+            // means inside the clearing that plot declares — she may not garden under a spruce, and her
+            // step may not be somewhere the woods planter is allowed to plant.
+            Vector2 step = StPetersGinnyPlot.Dooryard;
+            Vector2 garden = StPetersGinnyPlot.GardenPos;
+            Vector2 cottage = StPetersGinnyPlot.CottagePos;
 
-            Assert.That(Vector2.Distance(garden, step), Is.LessThan(12f),
-                        "Ginny may not wander off the mark the opening's first conversation happens on.");
-            Assert.That(Vector2.Distance(garden, StPetersBuilder.NedsLetterPos), Is.GreaterThan(2f),
-                        "…and not stand on Ned's letter, which is the other thing on that step.");
-            Assert.That(Vector2.Distance(garden, StPetersBuilder.FreezerPos), Is.GreaterThan(2f),
-                        "…nor inside the freezer round the side.");
+            Assert.That(Vector2.Distance(step, cottage),
+                        Is.LessThan(StPetersGinnyPlot.ClearingRadius),
+                        "Ginny's step is outside her own clearing — the woods would close over it.");
+            Assert.That(Vector2.Distance(garden, cottage),
+                        Is.LessThan(StPetersGinnyPlot.ClearingRadius),
+                        "Ginny's garden is outside her own clearing — she would be weeding under a canopy.");
+
+            Assert.That(Vector2.Distance(garden, step), Is.GreaterThan(2f),
+                        "…and the garden is not her own doorstep: two stations a stride apart are one " +
+                        "station with two names.");
+            Assert.That(Vector2.Distance(garden, StPetersGinnyPlot.FreezerPos), Is.GreaterThan(2f),
+                        "…nor inside the freezer, which moved out here with her.");
+
+            foreach (var shed in StPetersGinnyPlot.Sheds)
+                Assert.That(Vector2.Distance(garden, shed.Position),
+                            Is.GreaterThan(shed.FootprintRadiusMetres + 1f),
+                            $"…nor inside the {shed.Key}.");
+        }
+
+        /// <summary>
+        /// 🔴 <b>THE TEST THE WHOLE MOVE HANGS ON.</b> A new game starts at hour 6
+        /// (<c>GameClock._startHour</c>) and the opening's first beat is talking to the aunt, so at 06:00
+        /// Ginny must be STANDING on her village mark — not still walking in from the woods.
+        ///
+        /// <para>That is not a matter of picking a nice-looking departure hour, because
+        /// <c>RoutineSchedule</c> treats <c>StartHour</c> as a DEPARTURE and the walk is charged in game
+        /// hours: 85 m at 1 m/s is 85 real seconds, and a game hour is
+        /// <c>SecondsPerDay / 24</c> = 75 real seconds. So the crossing costs about 1.13 game hours and
+        /// she has to leave before ~04:82 to make six. This test does that arithmetic against the shipped
+        /// numbers rather than trusting the comment — if the owner lengthens the day, shortens it, moves
+        /// her plot or slows her down, it fails here with the figure to use.</para>
+        /// </summary>
+        [Test]
+        public void GinnyIsStandingOnTheOpeningsMark_ByTheHourANewGameStartsAt()
+        {
+            const float GameStartHour = 6f;   // GameClock._startHour
+
+            var ginny = RoutineDefsBuilder.Roster.First(d => d.NpcAsset == "AuntGinny");
+
+            // The block running at 06:00 is the last one whose departure hour is at or before it.
+            var running = ginny.Blocks
+                               .Where(b => b.StartHour <= GameStartHour)
+                               .OrderBy(b => b.StartHour)
+                               .LastOrDefault();
+
+            Assert.That(running.StationId, Is.EqualTo(StPetersRoutines.StationGinnyVillageMark),
+                        $"at {GameStartHour:0.0} the block running is '{running.StationId}'. The opening's " +
+                        "first beat is talking to the aunt beside the spawn — she has to be walking to, " +
+                        "or standing on, her village mark.");
+
+            // …and she must have ARRIVED, not still be on the road.
+            float metres = Vector2.Distance(StPetersGinnyPlot.Dooryard,
+                                            (Vector2)StPetersBuilder.GinnyPos);
+            float secondsPerGameHour = GameConfig.DefaultSecondsPerDay / 24f;
+            float travelHours = metres / ginny.WalkSpeed / secondsPerGameHour;
+            float jitterHours = ginny.JitterMinutes / 60f;
+            float arrival = running.StartHour + travelHours + jitterHours;
+
+            Assert.That(arrival, Is.LessThan(GameStartHour),
+                        $"Ginny leaves her plot at {running.StartHour:0.00} and the {metres:0.0} m walk " +
+                        $"costs {travelHours:0.00} game hours (+{jitterHours:0.00} h of jitter), so she " +
+                        $"is still on the road at {arrival:0.00} — after the {GameStartHour:0.0} the game " +
+                        "starts at. The player would wake to an empty mark. Move her departure earlier.");
+
+            Debug.Log($"[stpeters-ginny] commute {metres:0.0} m at {ginny.WalkSpeed:0.0} m/s = " +
+                      $"{travelHours:0.00} game hours; departs {running.StartHour:0.00}, on the mark by " +
+                      $"{arrival:0.00}, game starts {GameStartHour:0.0}.");
+        }
+
+        /// <summary>
+        /// Sabotage for the test above: prove the arrival check BITES. Her old 6.50 departure — the hour
+        /// she left for the garden with before the move — would strand her on the road past six now that
+        /// the walk is 85 m instead of 5.
+        /// </summary>
+        [Test]
+        public void Sabotage_HerOldDepartureHour_WouldStrandHerOnTheRoadPastTheOpening()
+        {
+            const float GameStartHour = 6f;
+            const float OldDepartureHour = 6.5f;   // what she left at while she lived in the village
+
+            var ginny = RoutineDefsBuilder.Roster.First(d => d.NpcAsset == "AuntGinny");
+            float metres = Vector2.Distance(StPetersGinnyPlot.Dooryard,
+                                            (Vector2)StPetersBuilder.GinnyPos);
+            float travelHours = metres / ginny.WalkSpeed / (GameConfig.DefaultSecondsPerDay / 24f);
+
+            Assert.That(OldDepartureHour + travelHours, Is.GreaterThan(GameStartHour),
+                        "her pre-move departure hour was supposed to be too late for the new commute — " +
+                        "if it is not, the arrival check above is not constraining anything and the " +
+                        "departure hour is unexplained.");
         }
 
         [Test]
@@ -569,8 +705,13 @@ namespace HiddenHarbours.Tests.EditMode
         {
             if (System.Array.IndexOf(StPetersRoutines.GreenSlotIds, stationId) >= 0)
                 return StPetersRoutines.LaneGreen;
+            // ⚠ Ginny's step and garden hang off her PLOT since 2026-08-16, not off the village. The
+            // mark she keeps in the village is a station of its own and is the one that still hangs off
+            // the old cottage node. Getting these two rows the wrong way round is not cosmetic: it is
+            // what makes the leg-length arithmetic above measure a 7 m stroll instead of an 85 m walk.
             if (stationId == StPetersRoutines.StationCottageStep ||
-                stationId == StPetersRoutines.StationCottageGarden) return StPetersRoutines.LaneCottage;
+                stationId == StPetersRoutines.StationCottageGarden) return StPetersRoutines.LaneGinnyPlot;
+            if (stationId == StPetersRoutines.StationGinnyVillageMark) return StPetersRoutines.LaneCottage;
             if (stationId == StPetersRoutines.StationSaltboxDooryard) return StPetersRoutines.LaneSaltbox;
             if (stationId == StPetersRoutines.StationFarmhouseDooryard) return StPetersRoutines.LaneFarmhouse;
             if (stationId == StPetersRoutines.StationSageDooryard) return StPetersRoutines.LaneSageCottage;

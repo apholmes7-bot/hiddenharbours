@@ -342,10 +342,17 @@ namespace HiddenHarbours.Tests.EditMode
         {
             foreach (var t in Trees())
             {
-                Assert.Greater(Vector2.Distance(t.Position, StPetersBuilder.CottagePos),
+                Assert.Greater(Vector2.Distance(t.Position, StPetersBuilder.VillageHearthPos),
                                StPetersWoods.VillageClearingRadius - 0.01f,
                     $"a {t.Species} at {t.Position} is inside the village — a village stands in a CLEARING, " +
-                    "and a spruce through the cottage is the first thing the player would see");
+                    "and a spruce through the schoolhouse is the first thing the player would see");
+
+                // Ginny's plot is the island's SECOND clearing (2026-08-16). She lives IN these woods
+                // now, so this is the assertion that stops the planter from walling her in.
+                Assert.Greater(Vector2.Distance(t.Position, StPetersGinnyPlot.CottagePos),
+                               StPetersGinnyPlot.ClearingRadius - 0.01f,
+                    $"a {t.Species} at {t.Position} stands inside Ginny's plot — her cottage, her garden " +
+                    "and her three sheds are in a clearing, not under a canopy");
 
                 Assert.Greater(Vector2.Distance(t.Position, StPetersBuilder.StartSpawnPos),
                                StPetersWoods.SpawnClearingRadius - 0.01f,
@@ -640,6 +647,42 @@ namespace HiddenHarbours.Tests.EditMode
                       $"({taken:P0}); a fill would have been {plantable}.");
         }
 
+        /// <summary>
+        /// 🔴 <b>"SHE MOVED INTO THE WOODS" HAS TO BE TRUE OF THE BUILT WORLD, not just of the
+        /// elevation.</b> Her plot clears trees within its own radius — that is what a clearing is — so
+        /// every other test about it would pass just as happily if she had been dropped on open heath
+        /// with no woods for a hundred metres. This is the one that looks OUTWARD: there must be real
+        /// planted trees in the ring just outside her clearing, or the owner asked for a cottage in the
+        /// forest and got a hut in a field.
+        ///
+        /// <para>Trees come from the same scatter the region plants, so this moves with the site: re-site
+        /// the plot onto bare ground and this fails with the count it found.</para>
+        /// </summary>
+        [Test]
+        public void GinnysPlotIsAClearingInTheWoods_NotAHutOnTheHeath()
+        {
+            const float RingMetres = 34f;   // the clearing edge (18 m) out to ~2 tree steps beyond it
+
+            var trees = Trees();
+            Assert.That(trees.Count, Is.GreaterThan(0), "nothing planted — this assert would be vacuous");
+
+            int inRing = trees.Count(t =>
+            {
+                float d = Vector2.Distance(t.Position, StPetersGinnyPlot.CottagePos);
+                return d >= StPetersGinnyPlot.ClearingRadius && d < RingMetres;
+            });
+
+            Assert.That(inRing, Is.GreaterThan(10),
+                $"only {inRing} tree(s) stand between Ginny's clearing edge " +
+                $"({StPetersGinnyPlot.ClearingRadius:0.0} m) and {RingMetres:0.0} m out. Her plot is not " +
+                "in the woods — it is a clearing with nothing around it, which is a field. Re-site the " +
+                "plot into planted ground, or the owner's 'into the St Peters woods' is not what shipped.");
+
+            float nearest = trees.Min(t => Vector2.Distance(t.Position, StPetersGinnyPlot.CottagePos));
+            Debug.Log($"[stpeters-ginny] {inRing} tree(s) in the ring {StPetersGinnyPlot.ClearingRadius:0.0}–" +
+                      $"{RingMetres:0.0} m off her cottage; nearest tree {nearest:0.0} m away.");
+        }
+
         [Test]
         public void NoShrubGrowsWhereThePlayerHasToBe()
         {
@@ -647,9 +690,13 @@ namespace HiddenHarbours.Tests.EditMode
             // would be exactly as wrong as a spruce — worse, being thorny.
             foreach (var s in Shrubs())
             {
-                Assert.Greater(Vector2.Distance(s.Position, StPetersBuilder.CottagePos),
+                Assert.Greater(Vector2.Distance(s.Position, StPetersBuilder.VillageHearthPos),
                                StPetersWoods.VillageClearingRadius - 0.01f,
                     $"a {s.Species} at {s.Position} is inside the village clearing");
+                Assert.Greater(Vector2.Distance(s.Position, StPetersGinnyPlot.CottagePos),
+                               StPetersGinnyPlot.ClearingRadius - 0.01f,
+                    $"a {s.Species} at {s.Position} is inside Ginny's plot — a raspberry thicket across " +
+                    "her own dooryard is exactly as wrong as one across the crossing");
                 Assert.Greater(Vector2.Distance(s.Position, StPetersBuilder.StartSpawnPos),
                                StPetersWoods.SpawnClearingRadius - 0.01f,
                     $"a {s.Species} at {s.Position} is on the start spawn");

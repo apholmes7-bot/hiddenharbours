@@ -393,17 +393,38 @@ namespace HiddenHarbours.App.Editor
         /// Y-sort band the tufts live in, the grass drew OVER the floor. From outside the shop looked
         /// perfect. The only thing that showed it was rendering the interior reveal and finding the
         /// building had vanished into the meadow. Anything placed on this island gets a row here.</para>
+        ///
+        /// <para><b>⚠ THE HEARTH CAME OFF THIS LIST ON 2026-08-16, AND THAT IS DELIBERATE.</b> It held
+        /// <c>StPetersBuilder.VillageHearthPos</c> while Ginny's cottage stood on it. She moved out to
+        /// her own plot in the eastern woods and nothing replaced her, so the meadow closes back over
+        /// the empty lot — which is what a vacated site on a reverting island looks like, and the whole
+        /// of what "leave it tidy" means here. Her cottage and her three sheds took its place on the
+        /// list, 85 m east.</para>
         /// </summary>
-        public static readonly Vector2[] BuildingSites =
+        public static readonly Vector2[] BuildingSites = BuildSiteList();
+
+        static Vector2[] BuildSiteList()
         {
-            StPetersBuilder.CottagePos,
-            StPetersBuilder.SchoolPos,
-            StPetersBuilder.GeneralStorePos,          // a SHOP since 2026-08-11, at the same site
-            StPetersBuilder.WhiteFarmhousePos,
-            StPetersBuilder.RedSaltboxPos,
-            StPetersBuilder.SageCottagePos,
-            StPetersShops.PostOfficePos,
-        };
+            var sites = new List<Vector2>
+            {
+                StPetersBuilder.SchoolPos,
+                StPetersBuilder.GeneralStorePos,      // a SHOP since 2026-08-11, at the same site
+                StPetersBuilder.WhiteFarmhousePos,
+                StPetersBuilder.RedSaltboxPos,
+                StPetersBuilder.SageCottagePos,
+                StPetersShops.PostOfficePos,
+
+                // Aunt Ginny's, out on her own plot in the eastern woods.
+                StPetersGinnyPlot.CottagePos,
+            };
+
+            // Her sheds come from the plot's OWN data rows rather than being copied across, so a shed
+            // that moves — or a fourth one — cannot end up growing a meadow through its floor. That is
+            // exactly the failure the 🔴 note above is about.
+            foreach (var shed in StPetersGinnyPlot.Sheds) sites.Add(shed.Position);
+
+            return sites.ToArray();
+        }
 
         /// <summary>
         /// Ground a TUFT may stand on.

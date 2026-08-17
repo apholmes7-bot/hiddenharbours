@@ -177,27 +177,37 @@ namespace HiddenHarbours.App.Editor
 
             // -----------------------------------------------------------------------------------------
             new Day("AuntGinny", "routine.aunt_ginny", walkSpeed: 1.00f, jitterMinutes: 3f,
-                    why: "⭐ THE SMALLEST DAY ON THE ISLAND, ON PURPOSE. Ginny is the onboarding gate — " +
-                         "the first conversation, the met_ginny flag, and the FrontedFeeGrant that stops " +
-                         "the clam licence being a soft-lock — so the opening cannot afford her to be " +
-                         "somewhere else on the first morning. Her whole day stays inside her own dooryard: " +
-                         "she is never more than ~9 m from the spot she has stood on since the opening " +
-                         "shipped, and at the 06:00 start hour she is standing exactly on it. §3.4's own " +
-                         "words are 'garden and kitchen at dawn … on the step at dusk … rarely leaves'. " +
-                         "⚠️ Her cottage is a legacy single sprite with no baked room, so she has no " +
-                         "inside to go into — she keeps her step overnight, which is what she did before " +
-                         "routines existed",
+                    why: "⭐ SHE COMMUTES NOW, AND THE FIRST BLOCK IS LOAD-BEARING. The owner moved Ginny " +
+                         "out of the village on 2026-08-16 onto her own plot 85 m east in the woods. She " +
+                         "is still the onboarding gate — the first conversation, the met_ginny flag, and " +
+                         "the FrontedFeeGrant that stops the clam licence being a soft-lock — so the " +
+                         "opening still cannot afford her to be somewhere else on the first morning, and " +
+                         "a new game starts at 06:00 (GameClock._startHour) with the player waking beside " +
+                         "her. Her HOME moved; her working DAY did not follow it, because moving that is " +
+                         "rewriting the opening and the opening is the owner's to rewrite. " +
+                         "⚠️ THE 4.50 DEPARTURE IS ARITHMETIC, NOT TASTE: 85.2 m at her 1 m/s is 85 real " +
+                         "seconds, and at 1800 s/day a game hour is 75 real seconds — so the walk in costs " +
+                         "1.13 GAME HOURS. Leaving at 4.50 puts her on the mark at ~05:38, comfortably " +
+                         "before six even with the ±3 min jitter. Move this earlier if the day ever " +
+                         "lengthens, and never later. " +
+                         "⚠️ SHE HAS THREE BLOCKS, NOT FOUR, for the same reason: a fourth crossing would " +
+                         "put her at 2.3 h/day on the road. What was dropped is her 19:00 green_b block, " +
+                         "whose own note read 'four metres from her own door' — a sentence the move made " +
+                         "false. She is on her own land in the evening instead, which is what makes the " +
+                         "plot somewhere you walk out to. " +
+                         "⭐ AND SHE HAS AN INSIDE NOW: the new cottage is a village-kit build with a " +
+                         "baked room, so 'she keeps her step overnight because she has no inside to go " +
+                         "into' is no longer true — the step is a real doorstep in front of a real door",
                     new[]
                     {
-                        At(6.50f, StPetersRoutines.StationCottageGarden, RoutineActivity.Work,
-                           "the garden round the cottage's west side, at dawn"),
-                        At(10.00f, StPetersRoutines.StationCottageStep, RoutineActivity.Home,
-                           "back to her step — the mark the opening's first conversation happens on, and " +
-                           "where she is for most of the day"),
-                        At(19.00f, StPetersRoutines.StationGreenB, RoutineActivity.Recreation,
-                           "down to the green at dusk, four metres from her own door"),
-                        At(21.00f, StPetersRoutines.StationCottageStep, RoutineActivity.Home,
-                           "back on the step for the night"),
+                        At(4.50f, StPetersRoutines.StationGinnyVillageMark, RoutineActivity.Work,
+                           "the long walk in off her plot, to be standing on the opening's mark before " +
+                           "the day starts — and there through the working day, which is her post"),
+                        At(17.00f, StPetersRoutines.StationCottageGarden, RoutineActivity.Work,
+                           "home the length of the island to her own garden, on the cottage's sunny " +
+                           "south side, in the last of the light"),
+                        At(20.00f, StPetersRoutines.StationCottageStep, RoutineActivity.Home,
+                           "in off the garden onto her own step, on her own ground, for the night"),
                     }),
         };
 

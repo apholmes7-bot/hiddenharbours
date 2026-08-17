@@ -46,12 +46,25 @@ namespace HiddenHarbours.Tests.EditMode
             if (_go != null) Object.DestroyImmediate(_go);
         }
 
-        static Vector2[] VillageBuildings => new[]
+        /// <summary>
+        /// <b>The pieces the OPENING is made of</b> — the ground the player wakes on and the two things
+        /// within reach of it.
+        ///
+        /// <para>⚠ It used to be four, and the other two were Ginny's cottage and her freezer. The owner
+        /// moved both onto her own plot 85 m east on 2026-08-16 (<see cref="StPetersGinnyPlot"/>), so
+        /// they are no longer village pieces and cannot be held to a village's spacing — the assertions
+        /// below say "nothing here is more than 40 m from anything else" and "everything here is within
+        /// 30 m of the spawn", and a cottage in the woods is neither. <b>Ginny herself stays</b>: her
+        /// MARK did not move, because a new game starts at hour 6 with the player waking beside her and
+        /// the opening's first beat is talking to the aunt. That is the whole reason her home could move
+        /// and her day could not. <see cref="GinnysPlot_IsAWalkFromTheVillage_AndOnDryGroundInTheWoods"/>
+        /// holds the other end.</para>
+        /// </summary>
+        static Vector2[] OpeningPieces => new[]
         {
-            (Vector2)StPetersBuilder.CottagePos,
             (Vector2)StPetersBuilder.GinnyPos,
             (Vector2)StPetersBuilder.NedsLetterPos,
-            (Vector2)StPetersBuilder.FreezerPos,
+            (Vector2)StPetersBuilder.StartSpawnPos,
         };
 
         // =================================================================================
@@ -61,12 +74,13 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void EveryVillagePiece_StandsOnGroundThatIsDryAtEveryTide()
         {
-            foreach (var p in VillageBuildings)
+            foreach (var p in OpeningPieces)
             {
                 float e = _terrain.ElevationAt(p);
                 Assert.Greater(e, SpringHighWater,
-                    $"{p} is at {e:0.00} m — the cottage, the aunt, the letter and the freezer are the " +
-                    "HOME, and home does not flood. They must sit above the highest water of a spring tide.");
+                    $"{p} is at {e:0.00} m — the aunt, the letter and the ground you wake on are the " +
+                    "OPENING, and the opening does not flood. They must sit above the highest water of " +
+                    "a spring tide.");
 
                 float d = TidalTerrain.IslandDistance(p, StPetersBuilder.IslandCenter,
                                                      StPetersBuilder.IslandRadius,
@@ -81,16 +95,236 @@ namespace HiddenHarbours.Tests.EditMode
         {
             // §6.0's mood is the point: "Quiet, close, the whole world the size of a low-tide walk." A
             // village whose pieces are a hundred metres apart is a hamlet strung along a road, not this.
-            for (int i = 0; i < VillageBuildings.Length; i++)
-            for (int j = i + 1; j < VillageBuildings.Length; j++)
-                Assert.Less(Vector2.Distance(VillageBuildings[i], VillageBuildings[j]), 40f,
+            for (int i = 0; i < OpeningPieces.Length; i++)
+            for (int j = i + 1; j < OpeningPieces.Length; j++)
+                Assert.Less(Vector2.Distance(OpeningPieces[i], OpeningPieces[j]), 40f,
                     "the village reads as ONE small place — nothing in it is more than 40 m from anything else");
 
             // And you start in it, not a walk from it: the opening's first beat is talking to the aunt.
             Vector2 spawn = StPetersBuilder.StartSpawnPos;
-            foreach (var p in VillageBuildings)
+            foreach (var p in OpeningPieces)
                 Assert.Less(Vector2.Distance(spawn, p), 30f,
                     $"{p} is more than 30 m from the start spawn — the player should wake up IN the village");
+        }
+
+        // =================================================================================
+        //  AUNT GINNY'S PLOT (the owner's 2026-08-16 move)
+        // =================================================================================
+
+        /// <summary>
+        /// 🔴 <b>THE OTHER END OF THE MOVE.</b> The test above says the opening is tight around the
+        /// spawn; this one says her plot is genuinely somewhere ELSE — far enough out to be her own land
+        /// in the woods rather than the village's weedy edge, and still on dry ground the player can
+        /// walk to. Both have to hold at once, and the pair is what makes "she moved" a fact rather than
+        /// a comment.
+        /// </summary>
+        [Test]
+        public void GinnysPlot_IsAWalkFromTheVillage_AndOnDryGroundInTheWoods()
+        {
+            Vector2 plot = StPetersGinnyPlot.CottagePos;
+
+            // Past the DOORYARD band, which is the repo's own line for how far the village's human
+            // disturbance reads on the ground. Inside it she would be living at the end of the village
+            // rather than on her own land — the distinction the owner actually asked for.
+            float fromHearth = Vector2.Distance(plot, StPetersBuilder.VillageHearthPos);
+            Assert.Greater(fromHearth, StPetersWoods.DooryardRadius,
+                $"Ginny's plot is {fromHearth:0.0} m from the hearth, inside the " +
+                $"{StPetersWoods.DooryardRadius:0.0} m dooryard band — that is the village's disturbed " +
+                "edge, not the woods. Her land has to begin past it.");
+
+            // Dry at every tide, and on the plateau rather than down the beach.
+            float e = _terrain.ElevationAt(plot);
+            Assert.Greater(e, SpringHighWater,
+                $"Ginny's cottage is at {e:0.00} m — her land does not flood either.");
+
+            float d = TidalTerrain.IslandDistance(plot, StPetersBuilder.IslandCenter,
+                                                  StPetersBuilder.IslandRadius,
+                                                  StPetersBuilder.IslandRadiusY);
+            Assert.LessOrEqual(d, StPetersBuilder.IslandRadius,
+                $"Ginny's cottage is past the plateau edge at elliptical distance {d:0.0}");
+
+            // …and IN the woods, not on the heath: the ground has to be above the tree line, or she has
+            // been moved to a clearing that was already a clearing and the move means nothing.
+            Assert.Greater(e, StPetersWoods.TreeLineElevation,
+                $"Ginny's plot sits at {e:0.00} m, below the {StPetersWoods.TreeLineElevation:0.00} m " +
+                "tree line — there would be no woods around her to have moved INTO.");
+
+            Debug.Log($"[stpeters-ginny] plot at {plot} — {fromHearth:0.0} m from the hearth " +
+                      $"(dooryard band {StPetersWoods.DooryardRadius:0.0} m), ground {e:0.00} m, " +
+                      $"elliptical distance {d:0.0} m of {StPetersBuilder.IslandRadius:0.0}.");
+        }
+
+        /// <summary>
+        /// Everything that stands on her plot fits inside the clearing she declares, so the woods planter
+        /// cannot put a spruce through a shed wall. Same argument as
+        /// <see cref="TheClearingContainsEveryFootprint_SoNothingIsPlantedThroughAWall"/>, derived from
+        /// the contract rather than from these numbers, so a re-bake fails here with the figure to use.
+        /// </summary>
+        [Test]
+        public void GinnysClearing_ContainsHerCottageAndEveryShed()
+        {
+            float need = StPetersGinnyPlot.RequiredClearingRadius();
+            Assert.Greater(need, 0f, "nothing on the plot — this assert would be vacuous");
+            Assert.LessOrEqual(need, StPetersGinnyPlot.ClearingRadius,
+                $"the plot's furthest footprint reaches {need:0.00} m but the declared clearing is " +
+                $"{StPetersGinnyPlot.ClearingRadius:0.00} m. Widen StPetersGinnyPlot.ClearingRadius to " +
+                "at least that, or bring the shed in — as it stands, trees plant through its wall.");
+
+            // Her buildings do not stand in each other, cottage footprint included.
+            var cottage = VillageBuildingCatalog.Find(StPetersGinnyPlot.CottageKey);
+            float cottageRadius = cottage.IsValid
+                ? StPetersVillage.FootprintRadiusMetres(cottage)
+                : 0f;
+
+            foreach (var shed in StPetersGinnyPlot.Sheds)
+            {
+                float gap = Vector2.Distance(shed.Position, StPetersGinnyPlot.CottagePos)
+                            - cottageRadius - shed.FootprintRadiusMetres;
+                Assert.Greater(gap, 0f,
+                    $"the {shed.Key} overlaps the cottage by {-gap:0.00} m at their footprint edges");
+            }
+
+            for (int i = 0; i < StPetersGinnyPlot.Sheds.Count; i++)
+            for (int j = i + 1; j < StPetersGinnyPlot.Sheds.Count; j++)
+            {
+                var a = StPetersGinnyPlot.Sheds[i];
+                var b = StPetersGinnyPlot.Sheds[j];
+                float gap = Vector2.Distance(a.Position, b.Position)
+                            - a.FootprintRadiusMetres - b.FootprintRadiusMetres;
+                Assert.Greater(gap, 0f,
+                    $"the {a.Key} and the {b.Key} overlap by {-gap:0.00} m");
+            }
+
+            Debug.Log($"[stpeters-ginny] furthest footprint reaches {need:0.00} m; clearing is " +
+                      $"{StPetersGinnyPlot.ClearingRadius:0.0} m " +
+                      $"({StPetersGinnyPlot.ClearingRadius - need:0.00} m of headroom).");
+        }
+
+        /// <summary>
+        /// 🔴 <b>HER COTTAGE IS A DOOR, NOT A PICTURE OF ONE — and its occupant is bound.</b> The owner
+        /// ruled on 2026-08-16 that the woods cottage is a real building you can walk into, which is a
+        /// claim about what <see cref="StPetersGinnyPlot.Place"/> actually builds, not about what the kit
+        /// is capable of. This stands the plot up for real and looks.
+        ///
+        /// <para>The occupant check is the <b>#512 regression surface</b>: a <c>BuildingInterior</c> whose
+        /// <c>_occupant</c> is null falls back to <c>GameServices.PlayerTransform</c>, which is exactly
+        /// the path that broke when a region was travelled to rather than started in. Placing her cottage
+        /// with a null occupant would look identical from outside and open onto nothing.</para>
+        ///
+        /// <para>⚠ Everything here is torn down explicitly: <see cref="StPetersGinnyPlot.Place"/> creates
+        /// a ROOT GameObject in the open scene, and a fixture that leaves it behind poisons every later
+        /// test that calls <c>GameObject.Find</c>.</para>
+        /// </summary>
+        [Test]
+        public void GinnysCottage_StandsAsAnEnterableBuilding_WithItsOccupantBound()
+        {
+            var occupantGo = new GameObject("GinnyPlotTest_Occupant");
+            var tex = new Texture2D(2, 2);
+            var greybox = Sprite.Create(tex, new Rect(0, 0, 2, 2), new Vector2(0.5f, 0.5f), 32f);
+            GameObject root = null;
+
+            try
+            {
+                int placed = StPetersGinnyPlot.Place(_terrain, greybox, occupantGo.transform);
+                root = GameObject.Find(StPetersGinnyPlot.RootName);
+                Assert.IsNotNull(root, "StPetersGinnyPlot.Place built no root — the plot is not standing.");
+
+                // The sheds are greybox and always place; the cottage needs the kit baked. If the kit is
+                // absent this is a working-tree state, not a repo one — say so rather than fail vaguely.
+                var cottage = root.transform.Find(StPetersGinnyPlot.CottageKey);
+                if (cottage == null)
+                {
+                    Assert.Ignore($"'{StPetersGinnyPlot.CottageKey}' is not baked in this working tree, " +
+                                  "so there is no cottage to enter. Run Hidden Harbours ▸ Art ▸ Bake " +
+                                  "Village Buildings.");
+                }
+
+                Assert.That(placed, Is.GreaterThanOrEqualTo(StPetersGinnyPlot.Sheds.Count + 1),
+                            "the plot placed fewer buildings than the cottage plus its sheds");
+
+                var interior = cottage.GetComponentInChildren<BuildingInterior>(true);
+                Assert.IsNotNull(interior,
+                    "Ginny's cottage has no BuildingInterior, so her door does not open. The owner ruled " +
+                    "this cottage ENTERABLE — that ruling is the whole reason it stopped being a greybox " +
+                    "standee and became a kit build.");
+
+                var so = new UnityEditor.SerializedObject(interior);
+                var bound = so.FindProperty("_occupant").objectReferenceValue;
+                Assert.AreSame(occupantGo.transform, bound,
+                    "her interior's occupant is not the transform Place() was handed. A null occupant " +
+                    "falls back to GameServices.PlayerTransform, which is precisely the #512 defect: it " +
+                    "looks right from outside and opens onto nothing in a region you travelled to.");
+
+                // Her freezer came out here with her, and it is still the thing you walk up to.
+                var freezer = root.transform.Find("GinnyFreezer");
+                Assert.IsNotNull(freezer, "the freezer did not follow her onto the plot");
+                Assert.That(Vector2.Distance(freezer.position, StPetersGinnyPlot.FreezerPos),
+                            Is.LessThan(0.01f), "the freezer is not on its authored spot");
+
+                foreach (var shed in StPetersGinnyPlot.Sheds)
+                    Assert.IsNotNull(root.transform.Find(shed.Key),
+                        $"the {shed.Key} is missing — the plot's derelict sheds are data rows and every " +
+                        "one of them places");
+            }
+            finally
+            {
+                if (root != null) Object.DestroyImmediate(root);
+                Object.DestroyImmediate(occupantGo);
+                Object.DestroyImmediate(greybox);
+                Object.DestroyImmediate(tex);
+            }
+        }
+
+        /// <summary>
+        /// Sabotage: prove the dooryard-band constraint BITES. A plot sited where her cottage used to
+        /// stand — or anywhere in the village's disturbed ring — must fail the test above, or that test
+        /// is not constraining anything and "she moved into the woods" is decoration.
+        /// </summary>
+        [Test]
+        public void Sabotage_APlotAtTheOldVillageSite_IsInsideTheDooryardBand()
+        {
+            Vector2 whereSheUsedToLive = StPetersBuilder.VillageHearthPos;
+            float d = Vector2.Distance(whereSheUsedToLive, StPetersBuilder.VillageHearthPos);
+            Assert.Less(d, StPetersWoods.DooryardRadius,
+                "the old cottage site was supposed to be inside the dooryard band — if it is not, the " +
+                "plot test is not actually constraining where Ginny lives.");
+
+            // And a site just outside the village's no-plant clearing is STILL not the woods: the two
+            // radii are different questions (44 m of buildings vs 74.8 m of human disturbance), and
+            // siting her at the nearer one would have been the mistake that looks correct.
+            Vector2 justOutsideTheClearing =
+                (Vector2)StPetersBuilder.VillageHearthPos +
+                new Vector2(StPetersWoods.VillageClearingRadius + 1f, 0f);
+            Assert.Less(Vector2.Distance(justOutsideTheClearing, StPetersBuilder.VillageHearthPos),
+                        StPetersWoods.DooryardRadius,
+                "a site one metre outside the village's tree clearing was supposed to still be inside " +
+                "the dooryard band — that gap is the whole reason the plot is sited off the dooryard " +
+                "radius and not the clearing radius.");
+        }
+
+        /// <summary>
+        /// Sabotage for the DRY-GROUND guard: <see cref="StPetersGinnyPlot.Place"/> logs an error for any
+        /// building sited at or below spring high water, and this proves that check can actually fail.
+        /// Take the plot and walk it off the plateau into the sea — the ground must come back wet, or the
+        /// guard is asserting something that is true everywhere and protects nothing.
+        /// </summary>
+        [Test]
+        public void Sabotage_GinnysPlotMovedIntoTheSea_IsGroundTheDryCheckRejects()
+        {
+            // Due south off the island, well past the plateau edge and its beach band.
+            var inTheSea = new Vector2(StPetersGinnyPlot.CottagePos.x,
+                                       StPetersBuilder.IslandCenter.y - StPetersBuilder.IslandRadiusY - 60f);
+
+            float wet = _terrain.ElevationAt(inTheSea);
+            Assert.Less(wet, SpringHighWater,
+                $"a site 60 m off the south shore came back at {wet:0.00} m, above spring high water " +
+                $"({SpringHighWater:0.00} m) — if the sea is dry ground, the plot's own dry check is " +
+                "vacuous and a cottage could be sited in the water without anything firing.");
+
+            // …and the real site passes the same predicate, so the two arms are the same question.
+            float dry = _terrain.ElevationAt(StPetersGinnyPlot.CottagePos);
+            Assert.Greater(dry, SpringHighWater,
+                $"Ginny's actual plot came back at {dry:0.00} m — her land floods.");
         }
 
         [Test]
@@ -470,23 +704,26 @@ namespace HiddenHarbours.Tests.EditMode
         [Test]
         public void NoBuildingCrowdsTheHearth_TheGreen_OrTheProps()
         {
-            Vector2 cottage = StPetersBuilder.CottagePos;
+            Vector2 hearth = StPetersBuilder.VillageHearthPos;
             Vector2 spawn = StPetersBuilder.StartSpawnPos;
+            // ⚠ The freezer came off this list on 2026-08-16. It was a village prop while it stood by
+            // Ginny's cottage at the hearth; it followed her 85 m east onto her plot, so asking whether a
+            // village building crowds it is asking a question about two different places.
             var props = new[]
             {
                 ("Ginny", (Vector2)StPetersBuilder.GinnyPos),
                 ("Ned's letter", (Vector2)StPetersBuilder.NedsLetterPos),
-                ("the freezer", (Vector2)StPetersBuilder.FreezerPos),
             };
 
             foreach (var site in Sites)
             {
                 float r = Radius(site);
 
-                Assert.GreaterOrEqual(Vector2.Distance(site.Position, cottage),
-                                      r + StPetersVillage.CottageFootprintRadius,
-                    $"{site.Key} is inside Ginny's cottage. The hearth is the middle of the village and " +
-                    "nothing may crowd it.");
+                Assert.GreaterOrEqual(Vector2.Distance(site.Position, hearth),
+                                      r + StPetersVillage.HearthClearanceRadius,
+                    $"{site.Key} is on the hearth. Ginny's cottage stood there until 2026-08-16 and the " +
+                    "lot is empty now, but the hearth is still the middle of the village — the green is " +
+                    "measured from it — and nothing may crowd it.");
 
                 // §6.0: "you wake up IN the village" — the spawn is the green, and it stays open ground.
                 Assert.GreaterOrEqual(Vector2.Distance(site.Position, spawn),
@@ -549,7 +786,7 @@ namespace HiddenHarbours.Tests.EditMode
             // Per building, so the failure names the one that is out rather than just the worst.
             foreach (var site in Sites)
                 Assert.LessOrEqual(
-                    Vector2.Distance(site.Position, StPetersBuilder.CottagePos) + Radius(site),
+                    Vector2.Distance(site.Position, StPetersBuilder.VillageHearthPos) + Radius(site),
                     StPetersWoods.VillageClearingRadius,
                     $"{site.Key}'s footprint reaches outside the village clearing");
 

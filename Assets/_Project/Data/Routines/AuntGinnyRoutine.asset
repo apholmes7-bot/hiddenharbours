@@ -15,22 +15,19 @@ MonoBehaviour:
   Id: routine.aunt_ginny
   Npc: {fileID: 11400000, guid: 86882db9ae6d45fdb962f86b99592991, type: 2}
   Entries:
-  - StartHour: 6.5
+  - StartHour: 4.5
+    StationId: station.st_peters.ginny_village_mark
+    Activity: 1
+    Why: "the long walk in off her plot, to be standing on the opening's mark before
+      the day starts \u2014 and there through the working day, which is her post"
+  - StartHour: 17
     StationId: station.st_peters.cottage_garden
     Activity: 1
-    Why: the garden round the cottage's west side, at dawn
-  - StartHour: 10
+    Why: "home the length of the island to her own garden, on the cottage's sunny
+      south side, in the last of the light"
+  - StartHour: 20
     StationId: station.st_peters.cottage_step
     Activity: 0
-    Why: "back to her step \u2014 the mark the opening's first conversation happens
-      on, and where she is for most of the day"
-  - StartHour: 19
-    StationId: station.st_peters.green_b
-    Activity: 3
-    Why: down to the green at dusk, four metres from her own door
-  - StartHour: 21
-    StationId: station.st_peters.cottage_step
-    Activity: 0
-    Why: back on the step for the night
+    Why: in off the garden onto her own step, on her own ground, for the night
   WalkSpeedMetresPerSecond: 1
   ScheduleJitterMinutes: 3
