@@ -108,6 +108,12 @@ namespace HiddenHarbours.App.Editor
         public sealed class Result
         {
             public int Trees, Flowers, Shrubs, GrassTufts, ShorePlants;
+
+            /// <summary>How many of <see cref="Trees"/> the WOODLAND LOTS put in, as opposed to the ambient
+            /// mosaic. Counted apart because they are two different claims about the island and the owner
+            /// tunes them with two different knobs — <see cref="StPetersWoods.TreeStep"/> for the reverting
+            /// mosaic, <see cref="StPetersWoodlandZones.LotCoreSpacingMetres"/> for the closed stands.</summary>
+            public int LotTrees;
             public readonly Dictionary<string, int> PerSpecies = new Dictionary<string, int>();
             public readonly Dictionary<string, int> PerFlower = new Dictionary<string, int>();
             public readonly Dictionary<string, int> PerShrub = new Dictionary<string, int>();
@@ -146,7 +152,10 @@ namespace HiddenHarbours.App.Editor
             PlantGrass(terrain, result);
             PlantShorePlants(terrain, result);
 
-            Debug.Log($"[StPetersWoodsPlanter] Planted {result.Trees} trees ({result.TreeSummary()}), " +
+            Debug.Log($"[StPetersWoodsPlanter] Planted {result.Trees} trees " +
+                      $"({result.Trees - result.LotTrees} in the reverting mosaic, {result.LotTrees} " +
+                      $"closing the {StPetersWoodlandZones.LotCount} woodland lots the owner ruled on " +
+                      $"2026-08-16, each with a lane cut through it) ({result.TreeSummary()}), " +
                       $"{result.Shrubs} shrubs ({result.ShrubSummary()}), " +
                       $"{result.Flowers} wildflowers ({result.FlowerSummary()}), " +
                       $"{result.GrassTufts} grass tufts ({result.HabitatSummary()}) and " +
@@ -557,38 +566,55 @@ namespace HiddenHarbours.App.Editor
                                  "woods will stand still instead of swaying on the shared wind.");
 
             var root = new GameObject(TreeRootName);
-            var sites = StPetersWoods.ScatterTrees(
-                terrain, bySpecies.Keys,
+            System.Func<string, int> variantsFor =
                 species => bySpecies.TryGetValue(species, out var pl)
-                           ? AcadianTreeCatalog.VariantCount(pl.Entry) : 1);
+                           ? AcadianTreeCatalog.VariantCount(pl.Entry) : 1;
+
+            var sites = StPetersWoods.ScatterTrees(terrain, bySpecies.Keys, variantsFor);
 
             // One sprite lookup per (species, variant) rather than per tree: a stand of 700 trees resolves
             // a couple of dozen distinct sprites, and an AssetDatabase call each would dominate the build.
             var spriteCache = new Dictionary<(string, int), Sprite>();
 
-            foreach (var site in sites)
+            // ⚠ ONE instantiation path for both passes. A lot tree and an ambient tree must be the SAME
+            // object — same pivot, same Configure, same material, same sorting — or the island grows two
+            // kinds of tree and only the eye ever catches it (the two-pipelines defect the road kit and
+            // NineMileCreekBuilder both warn about).
+            bool Stand(Vector2 at, string species, int variant)
             {
-                if (!bySpecies.TryGetValue(site.Species, out var placement)) continue;
+                if (!bySpecies.TryGetValue(species, out var placement)) return false;
 
-                var key = (site.Species, site.Variant);
+                var key = (species, variant);
                 if (!spriteCache.TryGetValue(key, out Sprite sprite))
                 {
-                    sprite = AcadianTreeCatalog.LoadVariant(placement, site.Variant);
+                    sprite = AcadianTreeCatalog.LoadVariant(placement, variant);
                     spriteCache[key] = sprite;
                 }
-                if (sprite == null) continue;
+                if (sprite == null) return false;
 
-                var go = new GameObject($"{site.Species}_{site.Variant}");
+                var go = new GameObject($"{species}_{variant}");
                 go.transform.SetParent(root.transform, worldPositionStays: false);
                 // The rig's pivot is the TRUNK FOOT (ADR 0026), so the position IS where the tree is
                 // planted — no offset, and no rescaling (the bake is already at honest metric size).
-                go.transform.position = new Vector3(site.Position.x, site.Position.y, 0f);
+                go.transform.position = new Vector3(at.x, at.y, 0f);
                 AcadianTreeCatalog.Configure(go, placement, sprite, material);
 
                 result.Trees++;
-                result.PerSpecies.TryGetValue(site.Species, out int n);
-                result.PerSpecies[site.Species] = n + 1;
+                result.PerSpecies.TryGetValue(species, out int n);
+                result.PerSpecies[species] = n + 1;
+                return true;
             }
+
+            foreach (var site in sites) Stand(site.Position, site.Species, site.Variant);
+
+            // ---- THE WOODLAND LOTS ------------------------------------------------------------------
+            // ⭐ The owner's 2026-08-16 "denser, more forest-like woods" ruling, on the bounded ground
+            // StPetersWoodlandZones declares. It runs SECOND and is handed the ambient sites, because a
+            // lot INFILLS the mosaic rather than replacing it — no ambient tree moved when the island
+            // thickened, and no lot trunk lands inside one that was already standing.
+            var lotSites = StPetersWoods.ScatterLotTrees(terrain, bySpecies.Keys, variantsFor, sites);
+            foreach (var site in lotSites)
+                if (Stand(site.Position, site.Species, site.Variant)) result.LotTrees++;
         }
 
         // =====================================================================================

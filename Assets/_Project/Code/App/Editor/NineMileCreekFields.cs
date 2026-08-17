@@ -122,6 +122,37 @@ namespace HiddenHarbours.App.Editor
         /// </summary>
         public static bool IsPlantable(ITidalTerrain terrain, Vector2 p)
         {
+            if (!IsWoodyGround(terrain, p)) return false;
+
+            // ⭐ THE WOOD LOTS GIVE THE FARMED LAYERS NOTHING. A hedgerow does not run through a wood and
+            // out the other side, and a field tree does not stand inside one — the LOT is the planting
+            // there, at its own grain (NineMileCreekWoodLots). Exactly the give-way idiom
+            // NearAHedgedRoad already applies where a field boundary runs into a road's verge, and the
+            // reason this gate is HERE rather than in IsWoodyGround: the lot pass has to be able to plant
+            // on the ground it has taken, and asks the woody gate for precisely that reason.
+            if (NineMileCreekWoodLots.InALot(p)) return false;
+
+            return true;
+        }
+
+        /// <summary>
+        /// Ground a woody thing may stand on <b>before the wood lots are consulted</b> — everything the
+        /// region reserves for a reason other than "a wood is already growing here": the field floor, the
+        /// made ground, the ponds, the roads and their pads, the town lots, the wharf's working sites, the
+        /// bar landing, and any CUT LANE.
+        ///
+        /// <para><b>⭐ WHY THIS IS SPLIT OFF <see cref="IsPlantable"/>, and it is not tidiness.</b> The two
+        /// passes that plant trees in this region want DIFFERENT answers about one thing and the same answer
+        /// about everything else. The farmed pass (hedges, hedgerow trees, field trees) must refuse ground a
+        /// wood lot has taken; the lot pass must be allowed to plant on it, or a lot would be a declaration
+        /// with nothing in it. Asking one function for the shared part is how the two cannot drift apart —
+        /// add a road here and both passes step off it.</para>
+        ///
+        /// <para>⚠ The CUT LANES are in here rather than in the farmed gate, deliberately: a lane must stay
+        /// cut against the wood it runs through as well as against the hedges, so both callers inherit it.</para>
+        /// </summary>
+        public static bool IsWoodyGround(ITidalTerrain terrain, Vector2 p)
+        {
             if (!IsFieldGround(terrain, p, FieldFloorElevation)) return false;
             if (OnAnyCarriageway(p, RoadVergeMetres)) return false;
             if (OnAnyPad(p, RoadVergeMetres)) return false;
@@ -130,6 +161,9 @@ namespace HiddenHarbours.App.Editor
 
             if (Vector2.Distance(p, NineMileCreekMainland.BarRoad[0]) < LandingClearanceMetres)
                 return false;
+
+            // The way into a wood lot, kept open — see NineMileCreekWoodLots.IsCleared.
+            if (NineMileCreekWoodLots.IsCleared(p)) return false;
 
             return true;
         }
@@ -601,16 +635,13 @@ namespace HiddenHarbours.App.Editor
 
         /// <summary>A stable integer for a line's name, so two lines' rolls cannot correlate. Ordinal and
         /// deliberately simple — <c>string.GetHashCode</c> is not stable across runtimes and this feeds a
-        /// scatter that must reproduce.</summary>
-        public static int HashOfLine(string line)
-        {
-            unchecked
-            {
-                int h = 17;
-                foreach (char c in line) h = h * 31 + c;
-                return h & 0x7fffffff;
-            }
-        }
+        /// scatter that must reproduce.
+        ///
+        /// <para>⚠ The IMPLEMENTATION moved to <see cref="WoodlandZones.StableHash"/> when the wood lots
+        /// needed the same thing for a lot's name; this is the same algorithm it always was, in one place
+        /// instead of two, so no hedge shrub's roll changed. The name stays because a hedge asks about a
+        /// LINE and reads better for saying so.</para></summary>
+        public static int HashOfLine(string line) => WoodlandZones.StableHash(line);
 
         // =================================================================================================
         //  6. THE TREES — scattered, and mostly standing in a hedge

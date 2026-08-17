@@ -207,14 +207,28 @@ namespace HiddenHarbours.App.Editor
         public const float ClearingRadius = 18f;
 
         /// <summary>
-        /// <b>⭐ THE SEAM THE FOREST LANE ADOPTS.</b> Is this ground inside a clearing this file declares?
-        /// <see cref="StPetersWoods.IsPlantable"/> asks exactly this and nothing else, so when the dense-
-        /// forest work lands its woodland zone/cutout table can take this over by name without touching
-        /// placement: one predicate, one call site. Until then it is a plain radius, which is the smallest
-        /// honest thing that keeps trees out of her dooryard.
+        /// <b>⭐ THE SEAM THE FOREST LANE ADOPTED — and this is what became of it.</b> Is this ground on
+        /// GINNY'S land?
+        ///
+        /// <para>It used to be <c>Vector2.Distance(p, CottagePos) &lt; ClearingRadius</c>, asked from
+        /// exactly one line in <see cref="StPetersWoods.IsPlantable"/> so the dense-forest pass could take
+        /// the call over by name. It did: placement now asks
+        /// <see cref="StPetersWoodlandZones.IsCleared"/>, which covers her plot, the cut lane out to her
+        /// dooryard and the corridors through the island's three woodland lots — <b>one clearing mechanism,
+        /// still one call site in placement.</b></para>
+        ///
+        /// <para><b>⚠ THIS ANSWERS THE NARROW QUESTION ON PURPOSE.</b> It asks the table about HER row
+        /// alone, not whether the ground is cleared at all — those are different questions and the general
+        /// one would put the village green, both painted paths and every lot's lane "on Ginny's land". A
+        /// caller who means <i>"may a tree stand here"</i> wants <c>IsCleared</c>; a caller who means
+        /// <i>"is this hers"</i> — a later pass siting the camper on her plot, say — wants this.</para>
+        ///
+        /// <para>The GEOMETRY is still declared here, in <see cref="CottagePos"/> and
+        /// <see cref="ClearingRadius"/>: the zone row reads those two constants rather than restating them,
+        /// so growing or moving her land is still a one-line change in this file and the woods follow it.</para>
         /// </summary>
         public static bool IsInsideClearing(Vector2 p) =>
-            Vector2.Distance(p, CottagePos) < ClearingRadius;
+            StPetersWoodlandZones.IsInside(StPetersWoodlandZones.GinnyPlotZone, p);
 
         /// <summary>
         /// The clearing the plot ACTUALLY needs, derived from what stands on it: the furthest any

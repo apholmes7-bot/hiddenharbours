@@ -130,16 +130,40 @@ namespace HiddenHarbours.App.Editor
         /// gain a few new ones, but the island stays mostly open; the reverting-interior thesis (§5.1)
         /// is a design ruling, not a density accident, so "more trees" densifies the mosaic rather than
         /// closing it. <c>StPetersWoodsTests</c> still pins the wooded fraction under 0.7.</para>
+        ///
+        /// <para><b>⭐ WIDENED AGAIN to −0.15 on the owner's 2026-08-16 "denser, more forest-like woods"
+        /// ruling — and the size of that step is MEASURED, after a bigger one was tried and rejected.</b>
+        /// The first draft used −0.20, which took the ambient mosaic from 73 trees to <b>218</b>. Two
+        /// things were wrong with that, and neither was the tree count:</para>
+        ///
+        /// <para>(1) <b>It answered the ruling with the wrong instrument.</b> §5.1's reverting interior is a
+        /// design ruling, not a density accident — the island is meant to be mostly open with woods coming
+        /// back in patches. Tripling the mosaic buys "more trees" by quietly retiring that thesis.</para>
+        ///
+        /// <para>(2) <b>It swamped the lots.</b> A uniform 218-tree mosaic plants a woodland lot's ground
+        /// too, because <see cref="InStand"/> does not know lots exist — so the authored lots could only
+        /// infill what the min-gap rule left, came out at 89 trees between them, and their cores measured no
+        /// denser than their fringes. <c>ALotsCoreIsMeasurablyDenserThanItsFringe</c> is what caught it.</para>
+        ///
+        /// <para>So the mosaic gets a real but modest thickening and the <b>"forest-like" density lives in
+        /// <see cref="StPetersWoodlandZones"/>' authored lots</b>, where a closed canopy is bounded, has an
+        /// edge that reads, and has a lane cut through it. Before/after numbers are on the PR; the wooded
+        /// fraction and the sabotage margin are both still pinned by <c>StPetersWoodsTests</c>.</para>
         /// </summary>
-        public const float StandThreshold = -0.12f;
+        public const float StandThreshold = -0.15f;
 
         /// <summary>Grid spacing (m) of the candidate positions inside a stand, before jitter. A touch
         /// under one mature crown width at this kit's scale, so a stand reads closed with the occasional
         /// crown overlap — and it is the one knob that trades how dense the woods look against how many
         /// GameObjects the region carries (rule 7). A whole island of trees is a real cost.
         /// Tightened from 6.5 on the owner's 2026-08-01 "add more trees" ask (~1.4× the trunks per
-        /// stand); the count stays well inside the 40–500 budget the tests pin.</summary>
-        public const float TreeStep = 5.4f;
+        /// stand), and from 5.4 to 4.8 on his 2026-08-16 "denser, more forest-like" one (~1.27× again).
+        /// <para>⚠ This is the AMBIENT grain and it is deliberately NOT the dense one. A wood that reads
+        /// as forest wants trunks closer than this, and closing the whole island to that grain is a draw
+        /// call cost paid over ground the player mostly walks past — so the closed canopy lives in
+        /// <see cref="StPetersWoodlandZones.LotCoreSpacingMetres"/>, on bounded ground, and this stays the
+        /// number the reverting mosaic between the lots is planted at.</para></summary>
+        public const float TreeStep = 4.8f;
 
         /// <summary>Max deterministic offset (m) applied to each candidate, so a stand never reads as
         /// a plantation. Just under half the step, which is as far as it can go without letting two
@@ -165,6 +189,21 @@ namespace HiddenHarbours.App.Editor
             // cutting it off.
             return field > StandThreshold + (1f - shelter) * 0.9f;
         }
+
+        /// <summary>
+        /// True where this ground is UNDER TREES — the ambient mosaic <see cref="InStand"/> grows, plus the
+        /// authored woodland lots <see cref="StPetersWoodlandZones"/> declares.
+        ///
+        /// <para><b>⚠ Deliberately a second function rather than a widening of <see cref="InStand"/>.</b>
+        /// The two answer different questions and both are asked. <c>InStand</c> is <i>"is the reverting
+        /// mosaic growing here"</i>: it is the thing the stand-field tests measure, the thing the sabotage
+        /// arm compares a uniform fill against, and the thing the wooded-fraction ceiling is a ceiling ON —
+        /// folding authored lots into it would have moved all three bars for a reason that has nothing to
+        /// do with the mosaic. <c>InWoods</c> is <i>"is there a canopy over this metre"</i>, which is what
+        /// a lady's slipper on a shaded forest floor actually needs to know.</para>
+        /// </summary>
+        public static bool InWoods(Vector2 worldPos, float elevation) =>
+            InStand(worldPos, elevation) || StPetersWoodlandZones.InALot(worldPos);
 
         // =====================================================================================
         //  HABITAT
@@ -344,6 +383,38 @@ namespace HiddenHarbours.App.Editor
         }
 
         /// <summary>
+        /// <b>The island's WOODLAND LOTS, planted.</b> The owner's 2026-08-16 "denser, more forest-like
+        /// woods" ruling, on bounded ground: <see cref="StPetersWoodlandZones"/> declares three lots and
+        /// <see cref="WoodlandZones.ScatterLots"/> — the same scatter Nine Mile Creek's lots use — closes a
+        /// canopy inside each one.
+        ///
+        /// <para><b>⚠ It INFILLS <paramref name="ambient"/>, so pass the real ambient forest.</b> Every lot
+        /// tree keeps <see cref="WoodlandZones.MinTrunkGapMetres"/> from a trunk already standing, which is
+        /// what lets a lot be "the mosaic plus more" rather than a second forest overlaid on the first. Pass
+        /// an empty list and the lots still plant — denser, and with the occasional trunk inside another
+        /// tree's, which is the artefact this argument exists to prevent.</para>
+        /// </summary>
+        public static List<WoodlandZones.LotTreeSite> ScatterLotTrees(
+            ITidalTerrain terrain,
+            IReadOnlyCollection<string> available,
+            System.Func<string, int> variantsFor,
+            IReadOnlyList<TreeSite> ambient)
+        {
+            var standing = new List<Vector2>();
+            if (ambient != null)
+                for (int i = 0; i < ambient.Count; i++) standing.Add(ambient[i].Position);
+
+            return WoodlandZones.ScatterLots(
+                StPetersWoodlandZones.Zones, terrain,
+                // ⚠ The island's own ground rules, unchanged — a lot may not plant on the pier, across the
+                // crossing, through the village or down one of its own cut lanes just because a table says
+                // "wood here". IsPlantable already asks the zone table about the lanes, so the corridors
+                // come out of a lot for free rather than by a second rule.
+                p => IsPlantable(terrain, p),
+                ExposureAt, WetnessAt, available, variantsFor, standing);
+        }
+
+        /// <summary>
         /// Ground a tree may stand on: dry meadow, clear of the village, the spawn, the crossing's approach
         /// and the dock. Public so the flower scatter can share the same clearings — a lupin in the middle
         /// of the pier would be as wrong as a spruce.
@@ -361,12 +432,13 @@ namespace HiddenHarbours.App.Editor
             if (Vector2.Distance(p, StPetersBuilder.VillageHearthPos) < VillageClearingRadius) return false;
             if (Vector2.Distance(p, StPetersBuilder.StartSpawnPos) < SpawnClearingRadius) return false;
 
-            // ⭐ AUNT GINNY'S PLOT — the second clearing on this island, and THE SEAM THE DENSE-FOREST
-            // LANE ADOPTS. She moved into these woods on 2026-08-16, and the trees have to come off her
-            // dooryard, her garden and her three sheds. Asked as ONE predicate on purpose: when the
-            // woodland zone/cutout table lands, it takes this call over by name and no other line in
-            // placement changes. See StPetersGinnyPlot.IsInsideClearing.
-            if (StPetersGinnyPlot.IsInsideClearing(p)) return false;
+            // ⭐ THE WOODLAND ZONE TABLE — and this line is the #551 seam being spent exactly as it was
+            // left. It used to read `StPetersGinnyPlot.IsInsideClearing(p)`, asked as ONE predicate on
+            // purpose so the dense-forest pass could take it over by name; it has. Ginny's plot is now a
+            // row in StPetersWoodlandZones (reading her own file's geometry, not a copy of it) alongside
+            // the CUT LANES the owner ruled on 2026-08-16 — the walk out to her dooryard, and one through
+            // each of the island's three woodland lots. One predicate, one call site, still.
+            if (StPetersWoodlandZones.IsCleared(p)) return false;
 
             if (StPetersShoreMap.DistanceToSegment(
                     p, StPetersBuilder.SandbarFrom, StPetersBuilder.SandbarTo) < CrossingClearance)
@@ -496,8 +568,12 @@ namespace HiddenHarbours.App.Editor
                 if (!IsPlantable(terrain, p)) continue;
 
                 float e = terrain.ElevationAt(p);
+                // ⚠ InWoods, not InStand: the lady's slipper belongs on a SHADED FOREST FLOOR, and after
+                // the 2026-08-16 density ruling the shadiest floors on the island are the authored lots.
+                // Asking the mosaic alone would have left the three closed woods with the open meadow's
+                // lupins growing under them.
                 string species = PickSpecies(
-                    FlowerPreference(p, InStand(p, e), WetnessAt(p),
+                    FlowerPreference(p, InWoods(p, e), WetnessAt(p),
                                      Vector2.Distance(p, StPetersBuilder.VillageHearthPos)),
                     available, StPetersShoreMap.Hash01(ix, iy, 107));
                 if (species == null) continue;
