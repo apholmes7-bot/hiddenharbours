@@ -108,6 +108,13 @@ namespace HiddenHarbours.Tests.RigBaking
                          "DeckGear", AzimuthConvention.Clockwise, "deckIsoSolid"),
             new Snapshot("deckIsoSolid", "docs/art/rigs/deck-loop-kit/Art/isoSolid.js",
                          "IsoSolid", AzimuthConvention.Clockwise),
+            // Added by the dialogue bubble kit (#561), not present at 18b67d1c. NOT DIRECTIONAL —
+            // flat screen-space stamps on the 32 px/m grid; the Clockwise convention is the
+            // placeholder every non-directional entry carries (shellfish, catchKit) and nothing
+            // probes it. It DRAWS (fillStyle/fillRect), so BubbleKitBaker installs a real canvas
+            // shim before it loads; no prerequisites — a bare host with the shim renders every piece.
+            new Snapshot("dialogueBubble", "docs/art/rigs/dialogue-bubble-kit/Art/dialogueBubbleRig.js",
+                         "BubbleKit", AzimuthConvention.Clockwise),
             new Snapshot("fish", "docs/art/rigs/fishIsoRig.js",
                          "FishIso", AzimuthConvention.Clockwise),
             new Snapshot("fishTote", "docs/art/rigs/fishToteRig.js",
@@ -146,6 +153,14 @@ namespace HiddenHarbours.Tests.RigBaking
                          "Shopfront", AzimuthConvention.CounterClockwise, "shopInterior"),
             new Snapshot("shoreFinds", "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
                          "ShoreFinds", AzimuthConvention.CounterClockwise),
+            // Added by the dialogue bubble kit (#561). ⚠️ The prerequisite is the SHIPPING character
+            // rig, not the kit's harness copy — the kit's characterIsoRig6/headIsoRig3/eyeIsoRig
+            // duplicates are byte-identical today and a test keeps them that way; depending on
+            // "character" means the mouth probe adjudicates the rig the game actually runs, and it
+            // drags characterHead/characterEye in through character's own declared prerequisites.
+            // TalkCue draws its emote markers, so it wants the same canvas shim the bubble rig does.
+            new Snapshot("talkCue", "docs/art/rigs/dialogue-bubble-kit/Art/talkCueRig.js",
+                         "TalkCue", AzimuthConvention.Clockwise, "character"),
             new Snapshot("trap", "docs/art/rigs/deck-loop-kit/Art/trapIsoRig.js",
                          "TrapIso", AzimuthConvention.Clockwise, "deckIsoSolid"),
             new Snapshot("trapFauna", "docs/art/rigs/deck-loop-kit/Art/trapFaunaRig.js",

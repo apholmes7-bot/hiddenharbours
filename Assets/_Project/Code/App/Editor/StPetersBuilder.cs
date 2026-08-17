@@ -67,8 +67,11 @@ namespace HiddenHarbours.App.Editor
         const string ArtSprites  = "Assets/_Project/Art/Sprites";
         // Opening-cast art (greybox; final St Peters storekeeper etc. are on the owner's draw-list).
         const string ArtGinny         = "Assets/_Project/Art/Characters/Ginny.png";   // Aunt Ginny standee
-        const string ArtDialoguePanel = "Assets/_Project/Art/UI/DialoguePanel.png";   // dialogue panel art
-        const string ArtNamePlate     = "Assets/_Project/Art/UI/NamePlate.png";       // nameplate art
+        // ⚠ ORPHANED BY #557, kept only so the paths are findable. The screen-space panel and the
+        // nameplate were deleted when the bubble became anchored art with no portrait; the speech
+        // bubble's art now comes from the baked kit via DialogueBubbleArt.Dress. Nothing reads these.
+        const string ArtDialoguePanel = "Assets/_Project/Art/UI/DialoguePanel.png";   // unused since #557
+        const string ArtNamePlate     = "Assets/_Project/Art/UI/NamePlate.png";       // unused since #557
         const string ArtSea      = "Assets/_Project/Art/Tilesets/Water/SeaTile.png";
         const string ArtWaterMat = "Assets/_Project/Art/Materials/Water.mat";   // the layered SIM-driven water shader (ADR 0010)
         const string ArtTerrainSplatMat = "Assets/_Project/Art/Materials/TerrainSplat.mat"; // the splat-shaded ground (ADR 0028)
@@ -1530,11 +1533,19 @@ namespace HiddenHarbours.App.Editor
             // is DATA — the Interactables carry NpcDef refs, not strings; the words live in Data/NPCs.
             // Art is greybox (Ginny standee + portraits + panel), null-safe if a sprite isn't imported.
 
-            // Dialogue panel (builds its own canvas in Awake; needs only the panel + nameplate art).
+            // The speech bubble (builds its own canvas in Awake, so it needs no prefab).
+            //
+            // ⚠ The two lines that used to be here set "_panelSprite" and "_nameplateSprite" — fields
+            // #557 DELETED when the screen-space panel and the portrait went away (the character on
+            // screen is the portrait now). SetRef no-ops silently on a property that does not exist,
+            // so they had been wiring nothing for some time while still reading as if they were.
+            //
+            // This is the real thing: the baked bubble kit, wired through one lookup that tolerates
+            // absence. Nothing baked → every piece stays null → the presenter draws its tinted-rect
+            // greybox exactly as before.
             var dialogueGo = new GameObject("DialogueUI");
             var presenter = dialogueGo.AddComponent<DialoguePresenter>();
-            SetRef(presenter, "_panelSprite", LoadSpriteAny(ArtDialoguePanel));
-            SetRef(presenter, "_nameplateSprite", LoadSpriteAny(ArtNamePlate));
+            DialogueBubbleArt.Dress(presenter);
 
             // Aunt Ginny — by the cottage on the island plateau. Teaches the buy-and-repair loop; finishing
             // her conversation sets met_ginny (which gates the first onboarding nudge + her warmer re-greet).

@@ -67,8 +67,11 @@ namespace HiddenHarbours.App.Editor
         // .asset, Sand.asset and the HiddenHarboursTerrain palette are built on them.)
         const string ArtTerrainSplatMat = "Assets/_Project/Art/Materials/TerrainSplat.mat"; // the splat-shaded ground (ADR 0028)
         const string DataTerrain        = "Assets/_Project/Data/Terrain";
-        const string ArtDialoguePanel = "Assets/_Project/Art/UI/DialoguePanel.png";   // dialogue panel art
-        const string ArtNamePlate     = "Assets/_Project/Art/UI/NamePlate.png";       // nameplate art
+        // ⚠ ORPHANED BY #557, kept only so the paths are findable. The screen-space panel and the
+        // nameplate were deleted when the bubble became anchored art with no portrait; the speech
+        // bubble's art now comes from the baked kit via DialogueBubbleArt.Dress. Nothing reads these.
+        const string ArtDialoguePanel = "Assets/_Project/Art/UI/DialoguePanel.png";   // unused since #557
+        const string ArtNamePlate     = "Assets/_Project/Art/UI/NamePlate.png";       // unused since #557
         const string ArtShipwright = "Assets/_Project/Art/Sprites/Buildings/ShipwrightShed.png";
         const string ArtFishStall  = "Assets/_Project/Art/Sprites/Buildings/FishBuyerStall.png";
         const string ArtHouseRed   = "Assets/_Project/Art/Sprites/Buildings/NineMileCreekHouseRed.png";
@@ -1231,8 +1234,16 @@ namespace HiddenHarbours.App.Editor
 
             var dialogueGo = new GameObject("DialogueUI");          // the St Peters name, for one convention
             var presenter = dialogueGo.AddComponent<DialoguePresenter>();
-            SetRef(presenter, "_panelSprite", LoadSpriteAny(ArtDialoguePanel));
-            SetRef(presenter, "_nameplateSprite", LoadSpriteAny(ArtNamePlate));
+
+            // ⚠ The two lines that used to be here set "_panelSprite" and "_nameplateSprite" — fields
+            // #557 DELETED when the screen-space panel and the portrait went away (the character on
+            // screen is the portrait now). SetRef no-ops silently on a property that does not exist,
+            // so they had been wiring nothing for some time while still reading as if they were.
+            //
+            // This is the real thing: the baked bubble kit, wired through one lookup that tolerates
+            // absence. Nothing baked → every piece stays null → the presenter draws its tinted-rect
+            // greybox exactly as before.
+            DialogueBubbleArt.Dress(presenter);
 
             var interactorGo = new GameObject("WorldInteractor");
             var interactor = interactorGo.AddComponent<WorldInteractor>();
