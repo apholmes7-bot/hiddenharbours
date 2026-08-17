@@ -111,9 +111,15 @@ namespace HiddenHarbours.Tools.RigBaking
             Vector4 wantBorder = BorderFor(piece);
             bool dirty = false;
 
-            if (importer.spriteImportMode != SpriteImportMode.Single)
+            // ⚠️ The mode is written on the SETTINGS OBJECT, not the importer property — measured on
+            // the 4060, 2026-08-17. TextureImporterSettings carries spriteMode too, ReadTextureSettings
+            // above captured the OLD mode, and SetTextureSettings below applies the WHOLE object last —
+            // so `importer.spriteImportMode = Single` here was clobbered straight back to Multiple by
+            // our own settings write, and every piece verified red twice. Two APIs write one field;
+            // the one applied last must be the one that carries the value.
+            if (settings.spriteMode != (int)SpriteImportMode.Single)
             {
-                importer.spriteImportMode = SpriteImportMode.Single;
+                settings.spriteMode = (int)SpriteImportMode.Single;
                 dirty = true;
             }
 
