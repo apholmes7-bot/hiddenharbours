@@ -124,6 +124,7 @@ namespace HiddenHarbours.App.Editor
         {
             if (!IsFieldGround(terrain, p, FieldFloorElevation)) return false;
             if (OnAnyCarriageway(p, RoadVergeMetres)) return false;
+            if (OnAnyPad(p, RoadVergeMetres)) return false;
             if (OnATownLot(p, TownLotBreathingMetres)) return false;
             if (OnAWorkingSite(p)) return false;
 
@@ -143,8 +144,55 @@ namespace HiddenHarbours.App.Editor
             if (!IsFieldGround(terrain, p, GrassFloorElevation)) return false;
             if (OnATownLot(p, 0f)) return false;
             if (OnAnyCarriageway(p, 0f)) return false;
+            if (OnAnyPad(p, 0f)) return false;
             return true;
         }
+
+        /// <summary>
+        /// ⭐ <b>Is <paramref name="p"/> on (or within <paramref name="margin"/> of) a paved PAD?</b>
+        ///
+        /// <para><b>⚠ THIS EXISTED AS A HOLE UNTIL THE TRUCK PARK FOUND IT.</b> This pass has always
+        /// asked <see cref="NineMileCreekRoads"/> about its <see cref="NineMileCreekRoads.Ways"/> and
+        /// never about its <see cref="NineMileCreekRoads.Pads"/> — a gap that was invisible because both
+        /// pads that existed sit on the wharf, and <see cref="IsFieldGround"/> already refuses made
+        /// ground. The buyers' gravel was protected by accident, through the working-site radius round
+        /// <c>ParkingPos</c>, rather than because it is paved.</para>
+        ///
+        /// <para>The truck park is the first pad on the mainland PLATEAU — field ground by every test
+        /// this file applies — so without this a hedge would be planted across it and the meadow would
+        /// grow over it. Asked of the published pad list rather than of the park by name, so the apron
+        /// and the buyers' gravel are now covered on purpose instead of incidentally, and a pad added
+        /// later inherits it.</para>
+        /// </summary>
+        public static bool OnAnyPad(Vector2 p, float margin)
+        {
+            foreach (var pad in Pads)
+            {
+                Rect area = pad.Area;
+                if (p.x >= area.xMin - margin && p.x <= area.xMax + margin &&
+                    p.y >= area.yMin - margin && p.y <= area.yMax + margin)
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>The paved pads, memoised for the same reason <see cref="Carriageways"/> is — this
+        /// pass asks about eighty thousand candidate sites and <see cref="NineMileCreekRoads.Pads"/>
+        /// rebuilds two rectangles from wharf geometry on every call.</summary>
+        static NineMileCreekRoads.Pad[] Pads
+        {
+            get
+            {
+                if (_pads != null) return _pads;
+                var pads = NineMileCreekRoads.Pads();
+                var array = new NineMileCreekRoads.Pad[pads.Count];
+                for (int i = 0; i < pads.Count; i++) array[i] = pads[i];
+                _pads = array;
+                return _pads;
+            }
+        }
+
+        static NineMileCreekRoads.Pad[] _pads;
 
         /// <summary>
         /// Is <paramref name="p"/> on (or within <paramref name="margin"/> of) any paved carriageway?
@@ -188,7 +236,11 @@ namespace HiddenHarbours.App.Editor
         /// <summary>Drop the memoised road network. Nothing in a build needs this — the roads are
         /// constants — but a test that wants to prove the cache is not the thing making its assertion
         /// true can clear it.</summary>
-        public static void InvalidateRoadCache() => _carriageways = null;
+        public static void InvalidateRoadCache()
+        {
+            _carriageways = null;
+            _pads = null;
+        }
 
         /// <summary>Is <paramref name="p"/> inside a town lot's reserved ground?</summary>
         public static bool OnATownLot(Vector2 p, float margin)

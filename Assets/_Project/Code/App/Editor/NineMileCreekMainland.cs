@@ -855,6 +855,38 @@ namespace HiddenHarbours.App.Editor
         /// all have to be able to ask where it is without a second copy of the number.</summary>
         public static readonly Vector2 RoadJunction = new Vector2(-16f, 92f);
 
+        /// <summary>
+        /// ⭐ <b>THE TRUCK PARK — where a road vehicle is left, and THE ONE NUMBER THAT SITES IT.</b>
+        ///
+        /// <para><b>This is a PROPOSAL awaiting the owner's walk.</b> Everything about the park and its
+        /// spur derives from this single point — <see cref="NineMileCreekRoads.TruckParkArea"/> centres the
+        /// gravel on it and <see cref="NineMileCreekRoads.ParkSpurRoute"/> runs the spur from the nearest
+        /// carriageway to its edge — so moving the park is editing this Vector3 and rebuilding. No second
+        /// copy of the site exists anywhere.</para>
+        ///
+        /// <para><b>Why here, on the north verge at x = −120.</b> Four things had to be true at once and
+        /// this is where they all are:</para>
+        /// <list type="bullet">
+        /// <item>ON Wharf Road, at the east edge of the village — the first level ground you meet driving
+        /// out of town toward the wharf, and walkable from the town lots.</item>
+        /// <item>CLEAR of both carves. The barachois reaches x = −64 and feathers to −72
+        /// (<see cref="BarachoisCarve"/>); the marsh pool reaches x = −56 and feathers to −62
+        /// (<see cref="MarshPoolCarve"/>). The park's east edge stops at −110, leaving 38 m.</item>
+        /// <item>CLEAR of all nine <see cref="TownLots"/> at their reserved <see cref="TownLotRadius"/> —
+        /// the nearest is the harbourmaster's at (−150, 118), 20.7 m off the park's nearest corner.</item>
+        /// <item>NOT IN THE YARD. The spit is full — the fish market already misses its site by 0.38 m —
+        /// and the yard's gravel is the BUYERS' (<see cref="ParkingPos"/>), which is theirs and 210 m
+        /// further east. A truck the player leaves somewhere wants its own ground.</item>
+        /// </list>
+        ///
+        /// <para>⚠ Land here is <see cref="LandElevation"/> (6 m) against a spring high of
+        /// <see cref="SpringHighWater"/> (2.2 m), so the park is dry at every tide — but that is ASSERTED,
+        /// not assumed: the dry-ground rule in <c>Pave</c> would silently eat a park sited in a pond, so
+        /// <c>NineMileCreekTruckParkTests</c> fails on a single trimmed cell rather than shipping a
+        /// half-drawn one.</para>
+        /// </summary>
+        public static readonly Vector3 TruckParkPos = new Vector3(-120f, 106f, 0f);
+
         /// <summary>Half-width (m) of a road's cleared corridor — nothing may be sited inside it.</summary>
         public const float RoadHalfWidth = 3f;
 

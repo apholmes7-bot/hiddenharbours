@@ -120,6 +120,7 @@ namespace HiddenHarbours.App.Editor
         public const int RankThroughRoad = 40;  // Route 19 carries through everything it meets
         public const int RankWharfRoad = 35;
         public const int RankParking = 30;
+        public const int RankParkSpur = 25;     // ⭐ gives way to Wharf Road AND to the park it serves
         public const int RankBarRoad = 20;
         public const int RankGullyPath = 10;
         public const int RankTownWalk = 5;      // a walk gives way to every road it joins
@@ -178,6 +179,8 @@ namespace HiddenHarbours.App.Editor
         public const string ThroughRoadName = "TheThroughRoad";
         public const string GullyPathName = "TheGullyPath";
         public const string TownWalkNamePrefix = "TownWalk_";
+        public const string ParkSpurName = "TruckParkSpur";
+        public const string TruckParkName = "TruckPark";
 
         /// <summary>
         /// Every stroked way in the region: the canon four, then the town walks.
@@ -209,6 +212,16 @@ namespace HiddenHarbours.App.Editor
                         FootpathHalfWidthMetres, RankGullyPath, true,
                         "nineteen metres of foot tread off the bar road to the head of the Access gully — " +
                         "without it the whole cliff foreshore is scenery you can see and never reach"),
+
+                // ⭐ THE PARK SPUR. Gravel and full carriageway width, because a truck turns off it: a
+                // footpath-width spur would be a driveway you cannot actually drive. It gives way to Wharf
+                // Road (RankParkSpur < RankWharfRoad) so the through gravel is unbroken at the mouth, and
+                // to the park itself, so the pad's corners stay square where the stroke's round end
+                // overlaps them.
+                new Way(ParkSpurName, GravelSurface, ParkSpurRoute(),
+                        CarriagewayHalfWidthMetres, RankParkSpur, true,
+                        "the turn-off from Wharf Road into the truck park — the region's first road built " +
+                        "for a vehicle to stop rather than to pass through"),
             };
 
             list.AddRange(TownWalks());
@@ -304,6 +317,11 @@ namespace HiddenHarbours.App.Editor
             new Pad("BuyersParking", GravelSurface, ParkingArea(), RankParking,
                 "gravel under the buyers' trucks — the wharf doc's 'dirt/gravel for the yard', on the " +
                 "authored parking site so the man at his tailgate is standing on something"),
+
+            new Pad(TruckParkName, GravelSurface, TruckParkArea(), RankParking,
+                "⭐ the truck park at the east edge of the village — the ground a road vehicle is LEFT " +
+                "on. Same rank as the buyers' gravel because it is the same kind of thing; the two are " +
+                "210 m apart and never contend for a cell"),
         };
 
         /// <summary>
@@ -363,6 +381,91 @@ namespace HiddenHarbours.App.Editor
         /// <summary>Ground left round the parking sites, in metres — a truck is six metres long and has to
         /// get out again.</summary>
         public const float ParkingMarginMetres = 6f;
+
+        // -------------------------------------------------------------------------------------------------
+        //  THE TRUCK PARK — the ground a road vehicle is left on, and the spur that reaches it
+        // -------------------------------------------------------------------------------------------------
+
+        /// <summary>
+        /// ⭐ <b>THE VEHICLE ENVELOPE THIS PARK IS SIZED FOR — declared here, proved elsewhere.</b>
+        ///
+        /// <para>6.7 m is a one-tonne crew-cab dually with the long box, rounded up from the drop's
+        /// measured 6.64 m LOA. It is stated as an ENVELOPE rather than read off a def on purpose: this
+        /// file is region geometry and must not take a dependency on the vehicle content that parks here.
+        /// The binding in the other direction is a test's job — the vehicle pass asserts that the def that
+        /// ships is no longer than this, so a future long-wheelbase truck that outgrows the park fails
+        /// loudly instead of hanging its tail over the verge.</para>
+        /// </summary>
+        public const float ParkedVehicleLengthMetres = 6.7f;
+
+        /// <summary>The envelope's width — 2.8 m, rounded up from 2.72 m over the tow mirrors, which are
+        /// the widest thing on a dually and 0.24 m wider than its flares. A park sized to the flares would
+        /// be a park you fold the mirrors to use.</summary>
+        public const float ParkedVehicleWidthMetres = 2.8f;
+
+        /// <summary>
+        /// The truck park: <b>three bays wide and two lengths deep</b>, centred on
+        /// <see cref="NineMileCreekMainland.TruckParkPos"/>.
+        ///
+        /// <para>Both numbers are the vehicle's, not the region's. Three <see cref="ParkedVehicleLengthMetres"/>
+        /// across (20.1 m) is three trucks side by side with room to open the doors — the drop's sidecar
+        /// measures a front door's swept arc out to 2.07 m from the centreline, a foot wider than the
+        /// truck's own flares. Two lengths deep (13.4 m) is one truck parked with a second length to turn in:
+        /// a THREE-POINT turn, not a sweep, which is what a 4.3 m wheelbase actually does on a 20 m pad and
+        /// what the village would have bulldozed.</para>
+        ///
+        /// <para>⚠ Unclipped by any fill, unlike <see cref="ParkingArea"/>. The buyers' gravel is clipped to
+        /// the spit because it sits on made ground with marsh behind it; this park is on the mainland
+        /// plateau at <see cref="NineMileCreekMainland.LandElevation"/>, where there is nothing to spill
+        /// off. If the owner walks the park onto softer ground, the dry-ground rule in <see cref="Pave"/>
+        /// trims it and <c>NineMileCreekTruckParkTests</c> fails on the first trimmed cell.</para>
+        /// </summary>
+        public static Rect TruckParkArea()
+        {
+            var centre = new Vector2(NineMileCreekMainland.TruckParkPos.x,
+                                     NineMileCreekMainland.TruckParkPos.y);
+            float halfWidth = ParkBaysAcross * ParkedVehicleLengthMetres * 0.5f;
+            float halfDepth = ParkLengthsDeep * ParkedVehicleLengthMetres * 0.5f;
+
+            return Rect.MinMaxRect(centre.x - halfWidth, centre.y - halfDepth,
+                                   centre.x + halfWidth, centre.y + halfDepth);
+        }
+
+        /// <summary>How many vehicles stand side by side. Three, because one is a driveway and the village
+        /// has more than one truck.</summary>
+        public const float ParkBaysAcross = 3f;
+
+        /// <summary>How many vehicle lengths deep — one to park in and one to turn in.</summary>
+        public const float ParkLengthsDeep = 2f;
+
+        /// <summary>
+        /// The spur: from the nearest point on the nearest published carriageway <b>to the park's centre</b>.
+        ///
+        /// <para>Derived exactly the way <see cref="TownWalks"/> derives a front walk, and for the same
+        /// reason — re-site the park or re-route Wharf Road and the spur follows, because there is no
+        /// second copy of either end. <see cref="NearestPointOnAnyRoad"/> reads only the through-road and
+        /// Wharf Road, so a spur can never join itself.</para>
+        ///
+        /// <para><b>⚠ It runs to the CENTRE, not to the near edge, and that is deliberate.</b> A walk stops
+        /// at the doorstep because shell under a house is wrong; gravel under gravel is not. Running to the
+        /// centre means the spur meets the pad whatever direction the owner walks the park to — no edge to
+        /// clip against, no geometry that breaks when the park moves north of the road instead of south —
+        /// and the pad outranks the spur (<see cref="RankParking"/> &gt; <see cref="RankParkSpur"/>), so
+        /// every cell inside the park is drawn as park and the stroke's rounded end never rounds off a
+        /// corner. <see cref="CentreLineIsContinuous"/> asks only whether a cell is paved, not by whom, so
+        /// the spur's centre-line is unbroken end to end.</para>
+        /// </summary>
+        public static Vector2[] ParkSpurRoute()
+        {
+            var park = new Vector2(NineMileCreekMainland.TruckParkPos.x,
+                                   NineMileCreekMainland.TruckParkPos.y);
+            Vector2 joinsAt = NearestPointOnAnyRoad(park);
+
+            // A park sited ON the road wants no spur at all — but a zero-length route would claim no cells
+            // and read as a silent omission, so return the degenerate two-point route and let
+            // NineMileCreekTruckParkTests.TheSpurReachesTheParkFromARoad say so out loud.
+            return new[] { joinsAt, park };
+        }
 
         // =================================================================================================
         //  6. THE RASTER — which square metre carries which surface
