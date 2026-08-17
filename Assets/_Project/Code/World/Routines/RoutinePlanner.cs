@@ -99,6 +99,7 @@ namespace HiddenHarbours.World
             var routeCount = new int[n];
             var routeLength = new float[n];
             var activities = new RoutineActivity[n];
+            var interruptible = new bool[n];
             var standHeading = new float[n];
             var exitAt = new float[n];
             var enterAt = new float[n];
@@ -161,6 +162,7 @@ namespace HiddenHarbours.World
 
                 routeCount[i] = waypoints.Count - routeStart[i];
                 activities[i] = routine.Entries[i].Activity;
+                interruptible[i] = routine.Entries[i].Interruptible;
                 standHeading[i] = station[i].StandHeadingDegrees;
                 interiors[i] = station[i].Interior;
                 exitAt[i] = exitDistance;
@@ -195,7 +197,8 @@ namespace HiddenHarbours.World
 
             blockInteriors = interiors;
             return new RoutinePlan(departures, flat, routeStart, routeCount, routeLength, activities,
-                                   standHeading, exitAt, enterAt, routine.WalkSpeedMetresPerSecond);
+                                   standHeading, exitAt, enterAt, routine.WalkSpeedMetresPerSecond,
+                                   interruptible, routine.CatchUpSpeedMetresPerSecond);
         }
 
         /// <summary>

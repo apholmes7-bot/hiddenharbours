@@ -62,6 +62,8 @@ namespace HiddenHarbours.World
         [SerializeField] private SpriteRenderer _renderer;
 
         private RoutinePlan _plan;
+        private readonly ConversationHold _hold = new ConversationHold();
+        private Transform _talkingTo;
         private BuildingInterior[] _blockInteriors = System.Array.Empty<BuildingInterior>();
         private IsoCharacterSprite _iso;
         private Interactable _talkable;
@@ -83,6 +85,49 @@ namespace HiddenHarbours.World
         /// <summary>True while this villager is actually keeping a routine (as opposed to standing where
         /// the builder left them because something did not resolve).</summary>
         public bool IsLiving => _plan != null;
+
+        /// <summary>
+        /// What the conversation overlay is doing to her right now. <b>Exposed deliberately</b>, in the
+        /// shape <c>HomeDoor.PlayerIsAtTheDoor</c> established: headless input cannot deliver a key
+        /// press, so the thing a test must be able to see is the DECISION, not the keystroke that
+        /// reaches it.
+        /// </summary>
+        public ConversationHoldPhase HoldPhase => _hold.Phase;
+
+        /// <summary>True while she is stopped, facing whoever is talking to her.</summary>
+        public bool IsTalking => _hold.IsHolding;
+
+        /// <summary>
+        /// Stop her where she stands and turn her to <paramref name="player"/>. Returns FALSE when the
+        /// block she is in was authored uninterruptible, or when she has no routine to interrupt — in
+        /// which case she simply keeps doing what she was doing, and the conversation happens on the
+        /// move.
+        ///
+        /// <para><b>It changes nothing about her day.</b> No departure moves, nothing is written down,
+        /// nothing is saved — <see cref="RoutinePlan.SampleAt"/> is the same pure function of the clock
+        /// during a conversation that it was before one (rule 5). See <see cref="ConversationHold"/>.</para>
+        /// </summary>
+        public bool TryHoldForConversation(Transform player)
+        {
+            if (_plan == null) return false;
+
+            RoutinePose pose = Pose;
+            Vector2 here = transform.position;   // where she VISIBLY is, which is the spot she must keep
+            if (!_hold.TryBegin(here, player != null ? (Vector2)player.position : here,
+                                _plan.InterruptibleAt(pose.BlockIndex), pose.Shelter, pose.BlockIndex))
+                return false;
+
+            _talkingTo = player;
+            return true;
+        }
+
+        /// <summary>The conversation ended: let her hurry back onto the day the clock says she should be
+        /// having by now. A no-op if she never stopped.</summary>
+        public void ReleaseFromConversation()
+        {
+            _hold.Release();
+            _talkingTo = null;
+        }
 
         /// <summary>Wire this villager up in one call (the region builder).</summary>
         public void Configure(RoutineDef routine, RoutineStations stations, RoutineLanes lanes,
@@ -114,6 +159,11 @@ namespace HiddenHarbours.World
 
         void OnDisable()
         {
+            // A villager switched off mid-conversation must not come back still standing in it — the
+            // overlay is per-conversation state and the conversation is over the moment she is gone.
+            _hold.Cancel();
+            _talkingTo = null;
+
             // Hand the facing back, so a villager who is disabled mid-stand does not come back pinned to a
             // stance nobody asked for (IsoCharacterSprite keeps the held direction, which is what we want).
             if (_headingHeld && _iso != null) _iso.ReleaseHeading();
@@ -138,9 +188,19 @@ namespace HiddenHarbours.World
             RoutinePose pose = _plan.SampleAt(clock.HourOfDay, secondsPerGameHour);
             Pose = pose;
 
+            // ⭐ THE OVERLAY, AND WHERE IT SITS. The pose above is the clock's answer and is computed
+            // identically whether or not anybody is talking to her — that is rule 5 kept intact. What a
+            // conversation changes is only what gets WRITTEN: while she is held she stays put, and after
+            // it she walks back onto the clock's answer rather than snapping to it.
+            UpdateHold(pose);
+            // SCALED delta, deliberately — a paused game stops the whole village, and a villager
+            // hurrying back onto her day while the world is frozen would be the one thing on screen
+            // still moving. (The BUBBLE fills on UNSCALED time, because reading is not simulation.)
+            Vector2 drawn = _hold.Step(pose.Position, Time.deltaTime, _plan.CatchUpSpeedMetresPerSecond);
+
             // The position. Z is left alone — the Y-sort owns the draw order and nothing here is 3D.
             Vector3 p = transform.position;
-            transform.position = new Vector3(pose.Position.x, pose.Position.y, p.z);
+            transform.position = new Vector3(drawn.x, drawn.y, p.z);
 
             ApplyFacing(pose);
 
@@ -193,16 +253,57 @@ namespace HiddenHarbours.World
         }
 
         /// <summary>
+        /// Keep the overlay honest, once a frame, before it is asked where she is standing.
+        /// </summary>
+        void UpdateHold(in RoutinePose pose)
+        {
+            switch (_hold.Phase)
+            {
+                case ConversationHoldPhase.Holding:
+                    // She turns to follow whoever is talking to her, so somebody circling her
+                    // mid-sentence is looked at rather than talked past. A partner who has been
+                    // DESTROYED (the player travelled out of the region mid-conversation) releases her
+                    // instead of freezing her there forever — the matching half of the presenter's own
+                    // OnDisable gate reset.
+                    if (_talkingTo != null) _hold.FaceToward(_talkingTo.position);
+                    else ReleaseFromConversation();
+                    break;
+
+                case ConversationHoldPhase.CatchingUp:
+                    // ⭐ A CATCH-UP MUST NEVER BECOME A WALK THROUGH A WALL. The moment the clock's own
+                    // answer puts her on the far side of a threshold from the side she stopped on, the
+                    // honest move is to stop overlaying at all and hand her straight back to the pure
+                    // function: that crossing is about to hide (or reveal) her anyway, so the jump
+                    // happens where nobody can see it rather than through a drawn door.
+                    if (pose.Shelter != _hold.Shelter) _hold.Cancel();
+                    break;
+            }
+        }
+
+        /// <summary>
         /// While walking, the facing follows the walk — which <see cref="IsoCharacterSprite"/> would do by
         /// itself from motion, except on the FIRST frame of a leg (a mid-leg spawn on region load has no
         /// previous position to difference, and would face North for one frame). While standing, the
         /// station's own stance is stated, because motion has nothing to say about which way somebody
         /// looking out at the water is turned.
+        ///
+        /// <para><b>Three cases since conversations landed.</b> TALKING: the stated heading is the ground
+        /// bearing to the player, so she turns to whoever is speaking to her (and keeps turning if they
+        /// walk around her). CATCHING UP: the hold is RELEASED and motion decides — she is walking
+        /// somewhere the clock's own heading knows nothing about, and pinning her to it would have her
+        /// striding sideways. Otherwise: the clock's answer, as before.</para>
         /// </summary>
         void ApplyFacing(in RoutinePose pose)
         {
             if (_iso == null) return;
-            _iso.HoldHeading(pose.HeadingDegrees);
+
+            if (_hold.Phase == ConversationHoldPhase.CatchingUp)
+            {
+                if (_headingHeld) { _iso.ReleaseHeading(); _headingHeld = false; }
+                return;
+            }
+
+            _iso.HoldHeading(_hold.IsHolding ? _hold.HeadingDegrees : pose.HeadingDegrees);
             _headingHeld = true;
         }
 
@@ -219,7 +320,14 @@ namespace HiddenHarbours.World
         /// </summary>
         void ApplyShelter(in RoutinePose pose)
         {
-            BuildingInterior interior = InteriorFor(pose);
+            // ⭐ While the overlay is active she is standing where the CONVERSATION left her, not where
+            // the clock says — so the clock's shelter answer is about a position she is not at. The
+            // answer captured when the talk began is the true one, and it is what stops a villager
+            // blinking out of existence mid-sentence because her schedule has meanwhile taken her
+            // through a door. UpdateHold ends the overlay rather than letting the two disagree for long.
+            BuildingInterior interior = _hold.IsActive
+                ? InteriorFor(_hold.Shelter, _hold.ShelterBlockIndex)
+                : InteriorFor(pose);
             bool visible = interior == null || interior.IsInside;
 
             if (_renderer != null && _renderer.enabled != visible) _renderer.enabled = visible;
@@ -227,17 +335,21 @@ namespace HiddenHarbours.World
         }
 
         /// <summary>Which building's threshold this pose is behind, or null out in the world.</summary>
-        BuildingInterior InteriorFor(in RoutinePose pose)
+        BuildingInterior InteriorFor(in RoutinePose pose) => InteriorFor(pose.Shelter, pose.BlockIndex);
+
+        /// <summary>The same question asked of a shelter answer that may not be this frame's — see
+        /// <see cref="ApplyShelter"/>.</summary>
+        BuildingInterior InteriorFor(RoutineShelter shelter, int blockIndex)
         {
             int n = _blockInteriors.Length;
-            if (n == 0 || pose.BlockIndex < 0) return null;
+            if (n == 0 || blockIndex < 0) return null;
 
-            switch (pose.Shelter)
+            switch (shelter)
             {
                 case RoutineShelter.InsideDestination:
-                    return _blockInteriors[pose.BlockIndex % n];
+                    return _blockInteriors[blockIndex % n];
                 case RoutineShelter.InsideOrigin:
-                    return _blockInteriors[(pose.BlockIndex - 1 + n) % n];
+                    return _blockInteriors[(blockIndex - 1 + n) % n];
                 default:
                     return null;
             }

@@ -119,12 +119,33 @@ namespace HiddenHarbours.World
         /// <summary>Metres per second this person walks.</summary>
         public readonly float WalkSpeedMetresPerSecond;
 
+        /// <summary>Metres per second they move when they are LATE — hurrying back onto the day after a
+        /// conversation held them up. See <see cref="ConversationHold"/>.</summary>
+        public readonly float CatchUpSpeedMetresPerSecond;
+
+        /// <summary>
+        /// Whether each block may be interrupted by a conversation — <b>authored data, not a heuristic</b>
+        /// (<see cref="RoutineEntry.Uninterruptible"/>). Default true: stopping to talk is the rule and
+        /// the exception is typed by a person who knows why.
+        ///
+        /// <para>Note it is a property of the BLOCK, not of the villager: the same fisher will stop for
+        /// you on the green at noon and keep walking through the timed beat she must not miss.</para>
+        /// </summary>
+        public readonly bool[] Interruptible;
+
         public int BlockCount => DepartureHours.Length;
+
+        /// <summary>Can a conversation stop them during block <paramref name="block"/>? Out-of-range
+        /// answers YES — the same fail-open every other unauthored field here takes, because a villager
+        /// who cannot be talked to is a worse bug than one who stops when she might not have.</summary>
+        public bool InterruptibleAt(int block)
+            => block < 0 || block >= Interruptible.Length || Interruptible[block];
 
         public RoutinePlan(float[] departureHours, Vector2[] waypoints, int[] routeStart, int[] routeCount,
                            float[] routeLengthMetres, RoutineActivity[] activities,
                            float[] standHeadingDegrees, float[] exitAtMetres, float[] enterAtMetres,
-                           float walkSpeedMetresPerSecond)
+                           float walkSpeedMetresPerSecond, bool[] interruptible = null,
+                           float catchUpSpeedMetresPerSecond = 0f)
         {
             DepartureHours = departureHours ?? System.Array.Empty<float>();
             Waypoints = waypoints ?? System.Array.Empty<Vector2>();
@@ -136,6 +157,12 @@ namespace HiddenHarbours.World
             ExitAtMetres = exitAtMetres ?? System.Array.Empty<float>();
             EnterAtMetres = enterAtMetres ?? System.Array.Empty<float>();
             WalkSpeedMetresPerSecond = Mathf.Max(0f, walkSpeedMetresPerSecond);
+            Interruptible = interruptible ?? System.Array.Empty<bool>();
+            // A caller that names no hurry gets the walk itself, which converges on a stationary target
+            // and simply cannot on a moving one — safe, and visibly wrong enough to be noticed.
+            CatchUpSpeedMetresPerSecond = catchUpSpeedMetresPerSecond > 0f
+                ? catchUpSpeedMetresPerSecond
+                : WalkSpeedMetresPerSecond;
         }
 
         /// <summary>How many game hours block <paramref name="block"/>'s walk takes.</summary>

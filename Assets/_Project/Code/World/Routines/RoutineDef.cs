@@ -37,6 +37,18 @@ namespace HiddenHarbours.World
 
         [Tooltip("One line on WHY, for the owner reading the table. Authoring note only.")]
         public string Why;
+
+        [Tooltip("Tick this and they will NOT stop to talk during this block — they keep walking and " +
+                 "answer on the move. LEAVE IT OFF for almost everything: stopping is the default and " +
+                 "the exception is authored, not guessed. Reach for it on a block that must not be " +
+                 "interrupted in the middle — a lane crossing, a timed beat — where a villager frozen " +
+                 "mid-stride would read as broken rather than polite.")]
+        public bool Uninterruptible;
+
+        /// <summary>True when a conversation may stop this block — the default, because the field
+        /// records the EXCEPTION. A routine authored before this existed deserializes to false here and
+        /// is therefore interruptible, which is what it always was.</summary>
+        public bool Interruptible => !Uninterruptible;
     }
 
     /// <summary>
@@ -89,6 +101,18 @@ namespace HiddenHarbours.World
                  "half the smallest gap between two of this person's blocks, which " +
                  "RoutineContentTests checks.")]
         [Min(0f)] public float ScheduleJitterMinutes = 6f;
+
+        [Tooltip("How much faster than their normal walk this person moves when they are LATE — after a " +
+                 "conversation held them up, hurrying back onto the day the clock says they should be " +
+                 "having. PER PERSON, like the walk speed: an old skipper's version of hurrying is not a " +
+                 "clam digger's. It must be above 1 or they can never catch a target that is itself " +
+                 "walking away at their own speed.")]
+        [Min(1f)] public float CatchUpSpeedMultiplier = 1.6f;
+
+        /// <summary>Metres per second this person moves while catching up after a conversation — their
+        /// walk, hurried. Not a stored field: one number times another, so the two can never drift.</summary>
+        public float CatchUpSpeedMetresPerSecond =>
+            WalkSpeedMetresPerSecond * Mathf.Max(1f, CatchUpSpeedMultiplier);
 
         /// <summary>True when this table can actually be walked: two blocks or more, and an NPC to walk
         /// them. Everything downstream is null-tolerant, so a half-authored routine is a reported
