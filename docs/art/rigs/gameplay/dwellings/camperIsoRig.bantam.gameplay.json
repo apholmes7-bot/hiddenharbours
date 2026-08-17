@@ -1,0 +1,478 @@
+{
+  "exportSymbol": "CamperIso",
+  "rig": "camperIsoRig.js",
+  "variant": "bantam",
+  "derivedFromRigSha256": "b7a48e2fe0a9755deaf4f1c658a18a089b8254a0223a7c60d5cd53b53e8e7549",
+  "generatedBy": "CamperIso.gameplayGeometry({variant:\"bantam\"})",
+  "hull": {
+    "label": "Bantam 16",
+    "nominal_ft": 16,
+    "body_length_m": 4.34,
+    "overall_length_m": 5.58,
+    "width_m": 1.98,
+    "height_m": 2.58,
+    "sole_z_m": 0.68,
+    "interior_headroom_m": 1.8,
+    "axle_y_m": -0.34
+  },
+  "frame": {
+    "units": "metres",
+    "scale_px_per_m": 32,
+    "origin": "ground-centre of the BODY footprint (tongue excluded)",
+    "axes": "+x curb side (door side), +y bow/hitch, +z up",
+    "heading_independent": true
+  },
+  "SOLE": [
+    {
+      "id": "saloon",
+      "winding": "ccw_from_above",
+      "z": 0.68,
+      "polygon": [
+        [
+          0.125,
+          -2.154
+        ],
+        [
+          0.269,
+          -2.107
+        ],
+        [
+          0.424,
+          -2.029
+        ],
+        [
+          0.573,
+          -1.921
+        ],
+        [
+          0.7,
+          -1.786
+        ],
+        [
+          0.792,
+          -1.624
+        ],
+        [
+          0.836,
+          -1.439
+        ],
+        [
+          0.838,
+          -1.233
+        ],
+        [
+          0.838,
+          -1.008
+        ],
+        [
+          0.838,
+          -0.769
+        ],
+        [
+          0.838,
+          -0.519
+        ],
+        [
+          0.838,
+          -0.262
+        ],
+        [
+          0.838,
+          0
+        ],
+        [
+          0.838,
+          0.262
+        ],
+        [
+          0.838,
+          0.519
+        ],
+        [
+          0.838,
+          0.769
+        ],
+        [
+          0.838,
+          1.008
+        ],
+        [
+          0.838,
+          1.233
+        ],
+        [
+          0.816,
+          1.439
+        ],
+        [
+          0.751,
+          1.624
+        ],
+        [
+          0.652,
+          1.786
+        ],
+        [
+          0.527,
+          1.921
+        ],
+        [
+          0.387,
+          2.029
+        ],
+        [
+          0.245,
+          2.107
+        ],
+        [
+          0.114,
+          2.154
+        ],
+        [
+          -0.114,
+          2.154
+        ],
+        [
+          -0.245,
+          2.107
+        ],
+        [
+          -0.387,
+          2.029
+        ],
+        [
+          -0.527,
+          1.921
+        ],
+        [
+          -0.652,
+          1.786
+        ],
+        [
+          -0.751,
+          1.624
+        ],
+        [
+          -0.816,
+          1.439
+        ],
+        [
+          -0.838,
+          1.233
+        ],
+        [
+          -0.838,
+          1.008
+        ],
+        [
+          -0.838,
+          0.769
+        ],
+        [
+          -0.838,
+          0.519
+        ],
+        [
+          -0.838,
+          0.262
+        ],
+        [
+          -0.838,
+          0
+        ],
+        [
+          -0.838,
+          -0.262
+        ],
+        [
+          -0.838,
+          -0.519
+        ],
+        [
+          -0.838,
+          -0.769
+        ],
+        [
+          -0.838,
+          -1.008
+        ],
+        [
+          -0.838,
+          -1.233
+        ],
+        [
+          -0.836,
+          -1.439
+        ],
+        [
+          -0.792,
+          -1.624
+        ],
+        [
+          -0.7,
+          -1.786
+        ],
+        [
+          -0.573,
+          -1.921
+        ],
+        [
+          -0.424,
+          -2.029
+        ],
+        [
+          -0.269,
+          -2.107
+        ],
+        [
+          -0.125,
+          -2.154
+        ]
+      ],
+      "note": "One continuous sole from tail to nose, inset 0.055 m off the skin at sole height — the shell tumblehome means the walkable width is NARROWER than the body width everywhere. Fit-out is listed as obstructions, never as holes.",
+      "_notes": [
+        {
+          "id": "rear_berth",
+          "kind": "berth",
+          "footprint": [
+            [
+              -0.546,
+              -1.94
+            ],
+            [
+              0.546,
+              -1.94
+            ],
+            [
+              0.546,
+              -0.86
+            ],
+            [
+              -0.546,
+              -0.86
+            ]
+          ],
+          "height_above_sole_m": 0.52,
+          "treatment": "waist_block",
+          "note": "transverse double, lift-up storage under",
+          "provenance": "rig LAYOUT.bantam entry \"rear_berth\", x clamped to the loft by fitOut()"
+        },
+        {
+          "id": "gaucho",
+          "kind": "seat",
+          "footprint": [
+            [
+              -0.833,
+              -0.8
+            ],
+            [
+              -0.3,
+              -0.8
+            ],
+            [
+              -0.3,
+              0.3
+            ],
+            [
+              -0.833,
+              0.3
+            ]
+          ],
+          "height_above_sole_m": 0.42,
+          "treatment": "step_over",
+          "note": "street-side gaucho, folds to a single",
+          "provenance": "rig LAYOUT.bantam entry \"gaucho\", x clamped to the loft by fitOut()"
+        },
+        {
+          "id": "table",
+          "kind": "table",
+          "footprint": [
+            [
+              -0.833,
+              -0.34
+            ],
+            [
+              -0.16,
+              -0.34
+            ],
+            [
+              -0.16,
+              0.06
+            ],
+            [
+              -0.833,
+              0.06
+            ]
+          ],
+          "height_above_sole_m": 0.72,
+          "treatment": "waist_block",
+          "note": "drop-leaf on a single post — step-under at 0.72",
+          "provenance": "rig LAYOUT.bantam entry \"table\", x clamped to the loft by fitOut()"
+        },
+        {
+          "id": "galley",
+          "kind": "counter",
+          "footprint": [
+            [
+              -0.831,
+              0.36
+            ],
+            [
+              -0.36,
+              0.36
+            ],
+            [
+              -0.36,
+              1.3
+            ],
+            [
+              -0.831,
+              1.3
+            ]
+          ],
+          "height_above_sole_m": 0.88,
+          "treatment": "waist_block",
+          "note": "two-burner, sink, ice box below",
+          "provenance": "rig LAYOUT.bantam entry \"galley\", x clamped to the loft by fitOut()"
+        },
+        {
+          "id": "wardrobe",
+          "kind": "tall",
+          "footprint": [
+            [
+              0.26,
+              0.72
+            ],
+            [
+              0.82,
+              0.72
+            ],
+            [
+              0.82,
+              1.24
+            ],
+            [
+              0.26,
+              1.24
+            ]
+          ],
+          "height_above_sole_m": 1.3,
+          "treatment": "wall",
+          "note": "full-height locker — a wall, not a step-over",
+          "provenance": "rig LAYOUT.bantam entry \"wardrobe\", x clamped to the loft by fitOut()"
+        }
+      ]
+    }
+  ],
+  "THRESHOLD": {
+    "id": "entry",
+    "side": "curb",
+    "door_clear_width_m": 0.68,
+    "door_clear_height_m": 1.7,
+    "threshold_point": [
+      0.871,
+      0.18,
+      0.68
+    ],
+    "hinge_axis": {
+      "x": 0.851,
+      "y": 0.52,
+      "vertical": true
+    },
+    "swing": {
+      "outward": true,
+      "toward": "+y (forward)",
+      "open_deg": 104,
+      "arc_radius_m": 0.68,
+      "keep_clear": [
+        [
+          0.851,
+          0.52
+        ],
+        [
+          1.511,
+          0.685
+        ],
+        [
+          0.851,
+          -0.16
+        ]
+      ],
+      "note": "Collider is the swept arc, not the leaf — the leaf is hinged on its FORWARD edge and sweeps out over the step. 8-frame cue, played reversed on exit."
+    }
+  },
+  "STEP": {
+    "id": "entry_step",
+    "treads": [
+      {
+        "index": 1,
+        "top_z_m": 0.44,
+        "riser_from_sole_m": 0.24,
+        "out_x_m": 1.092
+      },
+      {
+        "index": 2,
+        "top_z_m": 0.22,
+        "riser_from_below_m": 0.22,
+        "out_x_m": 1.352
+      }
+    ],
+    "ground_to_first_tread_m": 0.22,
+    "width_m": 0.6,
+    "note": "Folds down with the door over the back 58% of the swing. Stowed it is inside the body silhouette and NOT walkable."
+  },
+  "HOOKUPS": [
+    {
+      "id": "shore_power",
+      "type": "power",
+      "pos": [
+        -0.911,
+        -1.29,
+        1.01
+      ],
+      "side": "street"
+    },
+    {
+      "id": "water_fill",
+      "type": "water",
+      "pos": [
+        -0.911,
+        -0.87,
+        0.69
+      ],
+      "side": "street"
+    },
+    {
+      "id": "sewer_outlet",
+      "type": "sewer",
+      "pos": [
+        -1.307,
+        -1.59,
+        0.34
+      ],
+      "side": "street"
+    },
+    {
+      "id": "propane",
+      "type": "fuel",
+      "pos": [
+        0.2,
+        2.79,
+        1
+      ],
+      "side": "A-frame"
+    }
+  ],
+  "_excluded": {
+    "WASHBOARD": "Not a hull. No side decks.",
+    "CLEATS": "Parked dwelling — the coupler at [0, 3.35, 0.44] is a tow point, not a tie-off, and the four stabiliser jacks are level pads, not moorings.",
+    "ROOF": "Vents, AC pod and the rack are modelled but no roof surface is walkable on a monocoque this light."
+  },
+  "_confirm": {
+    "head_partition": "n/a",
+    "awning_footprint": "The awning is a deployable and its shade footprint is NOT in this file — it moves with the toggle, so it belongs to the runtime, not the geometry."
+  },
+  "_sections_elsewhere": {
+    "INTERACT": "Generated by camperInteriorRig.js — CamperInterior.interactables({variant:\"bantam\"}). The berth (sleep/save), wardrobe, shelf and wall calendar live there because the interior rig places them; merge that output in as this file's INTERACT section rather than re-typing it. Its reach points are sole-level standing spots and must be checked against SOLE above."
+  }
+}

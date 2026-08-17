@@ -1,0 +1,684 @@
+{
+  "exportSymbol": "CamperIso",
+  "rig": "camperIsoRig.js",
+  "variant": "clipper",
+  "derivedFromRigSha256": "b7a48e2fe0a9755deaf4f1c658a18a089b8254a0223a7c60d5cd53b53e8e7549",
+  "generatedBy": "CamperIso.gameplayGeometry({variant:\"clipper\"})",
+  "hull": {
+    "label": "Clipper 26",
+    "nominal_ft": 26,
+    "body_length_m": 7.16,
+    "overall_length_m": 8.58,
+    "width_m": 2.2,
+    "height_m": 2.8,
+    "sole_z_m": 0.7,
+    "interior_headroom_m": 2,
+    "axle_y_m": -0.62
+  },
+  "frame": {
+    "units": "metres",
+    "scale_px_per_m": 32,
+    "origin": "ground-centre of the BODY footprint (tongue excluded)",
+    "axes": "+x curb side (door side), +y bow/hitch, +z up",
+    "heading_independent": true
+  },
+  "SOLE": [
+    {
+      "id": "saloon",
+      "winding": "ccw_from_above",
+      "z": 0.7,
+      "polygon": [
+        [
+          0.101,
+          -3.57
+        ],
+        [
+          0.213,
+          -3.54
+        ],
+        [
+          0.339,
+          -3.49
+        ],
+        [
+          0.469,
+          -3.421
+        ],
+        [
+          0.597,
+          -3.333
+        ],
+        [
+          0.712,
+          -3.225
+        ],
+        [
+          0.81,
+          -3.1
+        ],
+        [
+          0.883,
+          -2.958
+        ],
+        [
+          0.925,
+          -2.799
+        ],
+        [
+          0.932,
+          -2.624
+        ],
+        [
+          0.932,
+          -2.435
+        ],
+        [
+          0.932,
+          -2.232
+        ],
+        [
+          0.932,
+          -2.017
+        ],
+        [
+          0.932,
+          -1.79
+        ],
+        [
+          0.932,
+          -1.553
+        ],
+        [
+          0.932,
+          -1.308
+        ],
+        [
+          0.932,
+          -1.055
+        ],
+        [
+          0.932,
+          -0.797
+        ],
+        [
+          0.932,
+          -0.534
+        ],
+        [
+          0.932,
+          -0.268
+        ],
+        [
+          0.932,
+          0
+        ],
+        [
+          0.932,
+          0.268
+        ],
+        [
+          0.932,
+          0.534
+        ],
+        [
+          0.932,
+          0.797
+        ],
+        [
+          0.932,
+          1.055
+        ],
+        [
+          0.932,
+          1.308
+        ],
+        [
+          0.932,
+          1.553
+        ],
+        [
+          0.932,
+          1.79
+        ],
+        [
+          0.932,
+          2.017
+        ],
+        [
+          0.932,
+          2.232
+        ],
+        [
+          0.932,
+          2.435
+        ],
+        [
+          0.922,
+          2.624
+        ],
+        [
+          0.884,
+          2.799
+        ],
+        [
+          0.821,
+          2.958
+        ],
+        [
+          0.738,
+          3.1
+        ],
+        [
+          0.64,
+          3.225
+        ],
+        [
+          0.53,
+          3.333
+        ],
+        [
+          0.414,
+          3.421
+        ],
+        [
+          0.298,
+          3.49
+        ],
+        [
+          0.188,
+          3.54
+        ],
+        [
+          0.09,
+          3.57
+        ],
+        [
+          -0.09,
+          3.57
+        ],
+        [
+          -0.188,
+          3.54
+        ],
+        [
+          -0.298,
+          3.49
+        ],
+        [
+          -0.414,
+          3.421
+        ],
+        [
+          -0.53,
+          3.333
+        ],
+        [
+          -0.64,
+          3.225
+        ],
+        [
+          -0.738,
+          3.1
+        ],
+        [
+          -0.821,
+          2.958
+        ],
+        [
+          -0.884,
+          2.799
+        ],
+        [
+          -0.922,
+          2.624
+        ],
+        [
+          -0.932,
+          2.435
+        ],
+        [
+          -0.932,
+          2.232
+        ],
+        [
+          -0.932,
+          2.017
+        ],
+        [
+          -0.932,
+          1.79
+        ],
+        [
+          -0.932,
+          1.553
+        ],
+        [
+          -0.932,
+          1.308
+        ],
+        [
+          -0.932,
+          1.055
+        ],
+        [
+          -0.932,
+          0.797
+        ],
+        [
+          -0.932,
+          0.534
+        ],
+        [
+          -0.932,
+          0.268
+        ],
+        [
+          -0.932,
+          0
+        ],
+        [
+          -0.932,
+          -0.268
+        ],
+        [
+          -0.932,
+          -0.534
+        ],
+        [
+          -0.932,
+          -0.797
+        ],
+        [
+          -0.932,
+          -1.055
+        ],
+        [
+          -0.932,
+          -1.308
+        ],
+        [
+          -0.932,
+          -1.553
+        ],
+        [
+          -0.932,
+          -1.79
+        ],
+        [
+          -0.932,
+          -2.017
+        ],
+        [
+          -0.932,
+          -2.232
+        ],
+        [
+          -0.932,
+          -2.435
+        ],
+        [
+          -0.932,
+          -2.624
+        ],
+        [
+          -0.925,
+          -2.799
+        ],
+        [
+          -0.883,
+          -2.958
+        ],
+        [
+          -0.81,
+          -3.1
+        ],
+        [
+          -0.712,
+          -3.225
+        ],
+        [
+          -0.597,
+          -3.333
+        ],
+        [
+          -0.469,
+          -3.421
+        ],
+        [
+          -0.339,
+          -3.49
+        ],
+        [
+          -0.213,
+          -3.54
+        ],
+        [
+          -0.101,
+          -3.57
+        ]
+      ],
+      "note": "One continuous sole from tail to nose, inset 0.055 m off the skin at sole height — the shell tumblehome means the walkable width is NARROWER than the body width everywhere. Fit-out is listed as obstructions, never as holes.",
+      "_notes": [
+        {
+          "id": "rear_berth",
+          "kind": "berth",
+          "footprint": [
+            [
+              -0.829,
+              -3.06
+            ],
+            [
+              0.829,
+              -3.06
+            ],
+            [
+              0.829,
+              -1.88
+            ],
+            [
+              -0.829,
+              -1.88
+            ]
+          ],
+          "height_above_sole_m": 0.52,
+          "treatment": "waist_block",
+          "note": "transverse double across the tail",
+          "provenance": "rig LAYOUT.clipper entry \"rear_berth\", x clamped to the loft by fitOut()"
+        },
+        {
+          "id": "wardrobe",
+          "kind": "tall",
+          "footprint": [
+            [
+              -0.905,
+              -1.84
+            ],
+            [
+              -0.42,
+              -1.84
+            ],
+            [
+              -0.42,
+              -1.4
+            ],
+            [
+              -0.905,
+              -1.4
+            ]
+          ],
+          "height_above_sole_m": 1.66,
+          "treatment": "wall",
+          "note": "full-height",
+          "provenance": "rig LAYOUT.clipper entry \"wardrobe\", x clamped to the loft by fitOut()"
+        },
+        {
+          "id": "head",
+          "kind": "room",
+          "footprint": [
+            [
+              0.3,
+              -1.84
+            ],
+            [
+              0.731,
+              -1.84
+            ],
+            [
+              0.731,
+              -0.96
+            ],
+            [
+              0.3,
+              -0.96
+            ]
+          ],
+          "height_above_sole_m": 1.9,
+          "treatment": "wall",
+          "note": "partitioned head — a room within the room, door on its -y face",
+          "provenance": "rig LAYOUT.clipper entry \"head\", x clamped to the loft by fitOut()"
+        },
+        {
+          "id": "galley",
+          "kind": "counter",
+          "footprint": [
+            [
+              -0.927,
+              -1.3
+            ],
+            [
+              -0.4,
+              -1.3
+            ],
+            [
+              -0.4,
+              0.1
+            ],
+            [
+              -0.927,
+              0.1
+            ]
+          ],
+          "height_above_sole_m": 0.88,
+          "treatment": "waist_block",
+          "note": "range, sink, fridge below the counter",
+          "provenance": "rig LAYOUT.clipper entry \"galley\", x clamped to the loft by fitOut()"
+        },
+        {
+          "id": "dinette",
+          "kind": "seat",
+          "footprint": [
+            [
+              0.26,
+              0.62
+            ],
+            [
+              0.927,
+              0.62
+            ],
+            [
+              0.927,
+              1.78
+            ],
+            [
+              0.26,
+              1.78
+            ]
+          ],
+          "height_above_sole_m": 0.44,
+          "treatment": "step_over",
+          "note": "facing benches, curb side",
+          "provenance": "rig LAYOUT.clipper entry \"dinette\", x clamped to the loft by fitOut()"
+        },
+        {
+          "id": "table",
+          "kind": "table",
+          "footprint": [
+            [
+              0.26,
+              1.02
+            ],
+            [
+              0.927,
+              1.02
+            ],
+            [
+              0.927,
+              1.42
+            ],
+            [
+              0.26,
+              1.42
+            ]
+          ],
+          "height_above_sole_m": 0.74,
+          "treatment": "waist_block",
+          "note": "drops to make the second berth",
+          "provenance": "rig LAYOUT.clipper entry \"table\", x clamped to the loft by fitOut()"
+        },
+        {
+          "id": "lounge",
+          "kind": "seat",
+          "footprint": [
+            [
+              -0.92,
+              1.2
+            ],
+            [
+              -0.34,
+              1.2
+            ],
+            [
+              -0.34,
+              2.6
+            ],
+            [
+              -0.92,
+              2.6
+            ]
+          ],
+          "height_above_sole_m": 0.44,
+          "treatment": "step_over",
+          "note": "front gaucho under the panoramic band",
+          "provenance": "rig LAYOUT.clipper entry \"lounge\", x clamped to the loft by fitOut()"
+        },
+        {
+          "id": "front_locker",
+          "kind": "low",
+          "footprint": [
+            [
+              -0.6,
+              2.62
+            ],
+            [
+              0.6,
+              2.62
+            ],
+            [
+              0.6,
+              3.06
+            ],
+            [
+              -0.6,
+              3.06
+            ]
+          ],
+          "height_above_sole_m": 0.6,
+          "treatment": "waist_block",
+          "note": "nose locker under the front window",
+          "provenance": "rig LAYOUT.clipper entry \"front_locker\", x clamped to the loft by fitOut()"
+        }
+      ]
+    }
+  ],
+  "THRESHOLD": {
+    "id": "entry",
+    "side": "curb",
+    "door_clear_width_m": 0.72,
+    "door_clear_height_m": 1.72,
+    "threshold_point": [
+      0.968,
+      0.08,
+      0.7
+    ],
+    "hinge_axis": {
+      "x": 0.946,
+      "y": 0.44,
+      "vertical": true
+    },
+    "swing": {
+      "outward": true,
+      "toward": "+y (forward)",
+      "open_deg": 104,
+      "arc_radius_m": 0.72,
+      "keep_clear": [
+        [
+          0.946,
+          0.44
+        ],
+        [
+          1.645,
+          0.614
+        ],
+        [
+          0.946,
+          -0.28
+        ]
+      ],
+      "note": "Collider is the swept arc, not the leaf — the leaf is hinged on its FORWARD edge and sweeps out over the step. 8-frame cue, played reversed on exit."
+    }
+  },
+  "STEP": {
+    "id": "entry_step",
+    "treads": [
+      {
+        "index": 1,
+        "top_z_m": 0.46,
+        "riser_from_sole_m": 0.24,
+        "out_x_m": 1.18
+      },
+      {
+        "index": 2,
+        "top_z_m": 0.24,
+        "riser_from_below_m": 0.22,
+        "out_x_m": 1.44
+      }
+    ],
+    "ground_to_first_tread_m": 0.24,
+    "width_m": 0.6,
+    "note": "Folds down with the door over the back 58% of the swing. Stowed it is inside the body silhouette and NOT walkable."
+  },
+  "HOOKUPS": [
+    {
+      "id": "shore_power",
+      "type": "power",
+      "pos": [
+        -1.012,
+        -1.57,
+        1.01
+      ],
+      "side": "street"
+    },
+    {
+      "id": "water_fill",
+      "type": "water",
+      "pos": [
+        -1.012,
+        -1.15,
+        0.69
+      ],
+      "side": "street"
+    },
+    {
+      "id": "sewer_outlet",
+      "type": "sewer",
+      "pos": [
+        -1.452,
+        -1.87,
+        0.34
+      ],
+      "side": "street"
+    },
+    {
+      "id": "propane",
+      "type": "fuel",
+      "pos": [
+        0.2,
+        4.38,
+        1
+      ],
+      "side": "A-frame"
+    }
+  ],
+  "_excluded": {
+    "WASHBOARD": "Not a hull. No side decks.",
+    "CLEATS": "Parked dwelling — the coupler at [0, 4.94, 0.44] is a tow point, not a tie-off, and the four stabiliser jacks are level pads, not moorings.",
+    "ROOF": "Vents, AC pod and the rack are modelled but no roof surface is walkable on a monocoque this light."
+  },
+  "_confirm": {
+    "head_partition": "The head is given as a 1.90 m partition (a wall). If gameplay needs to enter it, it wants its own sole polygon and a second door.",
+    "awning_footprint": "The awning is a deployable and its shade footprint is NOT in this file — it moves with the toggle, so it belongs to the runtime, not the geometry."
+  },
+  "_sections_elsewhere": {
+    "INTERACT": "Generated by camperInteriorRig.js — CamperInterior.interactables({variant:\"clipper\"}). The berth (sleep/save), wardrobe, shelf and wall calendar live there because the interior rig places them; merge that output in as this file's INTERACT section rather than re-typing it. Its reach points are sole-level standing spots and must be checked against SOLE above."
+  }
+}
