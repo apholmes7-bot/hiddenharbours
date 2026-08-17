@@ -423,6 +423,11 @@ namespace HiddenHarbours.App.Editor
             // exactly the failure the 🔴 note above is about.
             foreach (var shed in StPetersGinnyPlot.Sheds) sites.Add(shed.Position);
 
+            // The camper on its lot at the back of her land (2026-08-17), by the same rule and derived
+            // for the same reason: it is the newest building on the island and therefore exactly the
+            // shape of the post-office bug the 🔴 note above is about.
+            sites.Add(StPetersCamperLot.LotPos);
+
             return sites.ToArray();
         }
 

@@ -199,12 +199,22 @@ namespace HiddenHarbours.App.Editor
         /// this is how the world knows where her plot is, and the only thing that reads it is placement.
         ///
         /// <para>⚠ Do not re-tune by eye. <see cref="RequiredClearingRadius"/> derives what the buildings
-        /// on the plot actually need and <c>StPetersGinnyPlotTests</c> fails with the number to use if a
+        /// on the plot actually need and <c>StPetersVillageTests</c> fails with the number to use if a
         /// shed moves or the cottage is re-baked bigger. Kept a <c>const</c> for the same reason
         /// <see cref="StPetersWoods.VillageClearingRadius"/> is: <see cref="StPetersWoods.IsPlantable"/>
         /// calls it tens of thousands of times per build and must not read a contract to answer.</para>
+        ///
+        /// <para><b>⚠ 18 → 20 m on 2026-08-17, and the reason is a measurement.</b> The camper lot
+        /// (<see cref="StPetersCamperLot"/>) put a SECOND DWELLING on her land, and the Clipper reserves
+        /// 5.21 m of ground — the same as her cottage's 5.21 m. Her plot was sized for one house and
+        /// three sheds; there is exactly one slot inside the old 18 m that takes a camper, threaded
+        /// between the woodshed and the lean-to with 2.1 m either side, and parking a home you own in a
+        /// gap is not a lot. Twenty metres holds the whole thing at the plot's own tightest existing
+        /// walking gap. <b>Cost, stated:</b> 239 m² more ground the woods are held off, and the erratics
+        /// and the meadow follow the same number — it is a slightly larger clearing in the trees, not a
+        /// different kind of place.</para>
         /// </summary>
-        public const float ClearingRadius = 18f;
+        public const float ClearingRadius = 20f;
 
         /// <summary>
         /// <b>⭐ THE SEAM THE FOREST LANE ADOPTED — and this is what became of it.</b> Is this ground on
@@ -226,6 +236,14 @@ namespace HiddenHarbours.App.Editor
         /// <para>The GEOMETRY is still declared here, in <see cref="CottagePos"/> and
         /// <see cref="ClearingRadius"/>: the zone row reads those two constants rather than restating them,
         /// so growing or moving her land is still a one-line change in this file and the woods follow it.</para>
+        ///
+        /// <para><b>⚠ THE CAMPER LOT IS INSIDE THIS SAME DISC, on purpose — there is no second clearing
+        /// mechanism and there must not be.</b> When <see cref="StPetersCamperLot"/> needed cleared
+        /// ground the answer was to widen <see cref="ClearingRadius"/> (18 → 20 m, 2026-08-17), not to
+        /// declare a second circle or a second zone row: two mechanisms means one of them gets forgotten.
+        /// The zone row reads the widened constant, so the woods follow it with no table change. Anything
+        /// else that ever stands on her land goes the same way — into
+        /// <see cref="RequiredClearingRadius"/>, and this predicate grows to hold it.</para>
         /// </summary>
         public static bool IsInsideClearing(Vector2 p) =>
             StPetersWoodlandZones.IsInside(StPetersWoodlandZones.GinnyPlotZone, p);
@@ -234,6 +252,11 @@ namespace HiddenHarbours.App.Editor
         /// The clearing the plot ACTUALLY needs, derived from what stands on it: the furthest any
         /// footprint reaches from <see cref="CottagePos"/>. Returns the cottage's own reach alone when the
         /// kit is unbaked, so a test can say so rather than pass vacuously.
+        ///
+        /// <para>The camper lot is in here too, and it is the term that DOMINATES (2026-08-17) — see
+        /// <see cref="ClearingRadius"/>. Its reach comes off the chosen variant's own gameplay sidecar,
+        /// so the owner's Bantam/Clipper decision re-derives this number instead of leaving the clearing
+        /// measured against the camper he did not pick.</para>
         /// </summary>
         public static float RequiredClearingRadius()
         {
@@ -245,7 +268,9 @@ namespace HiddenHarbours.App.Editor
                 float reach = Vector2.Distance(shed.Position, CottagePos) + shed.FootprintRadiusMetres;
                 if (reach > worst) worst = reach;
             }
-            return worst;
+
+            float camper = StPetersCamperLot.ClearingReachMetres;
+            return camper > worst ? camper : worst;
         }
 
         // =====================================================================================
@@ -375,11 +400,19 @@ namespace HiddenHarbours.App.Editor
                 placed++;
             }
 
+            // ---- the camper lot ---------------------------------------------------------------------
+            // The player's own address, on the back of her land (2026-08-17). It is placed FROM here
+            // because it stands on her ground and its site derives from her cottage — but everything
+            // about it (which camper, what it costs, whether it is bought at all, how much room it
+            // takes) belongs to StPetersCamperLot and its HomeDef asset, not to this file.
+            if (StPetersCamperLot.Place(root.transform, terrain, greybox, occupant)) placed++;
+
             float need = RequiredClearingRadius();
             Debug.Log(
                 $"[StPetersGinnyPlot] Ginny's plot stands at ({CottagePos.x:0.#},{CottagePos.y:0.#}) — " +
-                $"{placed} building(s): the {CottageKey} cottage and {Sheds.Count} derelict shed(s), her " +
-                $"freezer at ({FreezerPos.x:0.#},{FreezerPos.y:0.#}), her garden on the south side. " +
+                $"{placed} building(s): the {CottageKey} cottage, {Sheds.Count} derelict shed(s) and the " +
+                $"camper on its lot at ({StPetersCamperLot.LotPos.x:0.#},{StPetersCamperLot.LotPos.y:0.#})" +
+                $", her freezer at ({FreezerPos.x:0.#},{FreezerPos.y:0.#}), her garden on the south side. " +
                 $"Furthest footprint reaches {need:0.0} m against a {ClearingRadius:0.0} m declared " +
                 $"clearing, so the woods are held off her dooryard. " +
                 $"{Vector2.Distance(CottagePos, StPetersBuilder.VillageHearthPos):0.0} m from the village " +
