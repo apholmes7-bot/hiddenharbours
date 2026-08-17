@@ -1,0 +1,1195 @@
+{
+  "rig": "amphibIsoRig.js",
+  "exportSymbol": "AmphibIso",
+  "variant": "otter8x8",
+  "derivedFromRigSha256": "ffa7191a31f409f12aa14cb1fbaa74ff9dbd7c99bfed7130ba14e2f8a74a56df",
+  "kind": "amphibious_xtv",
+  "label": "Otter 8x8",
+  "generated": "measured off the rig source by hand-transcription with per-value provenance; flotation numbers integrated numerically off the same station profiles the bake lathes",
+  "frame": {
+    "units": "metres",
+    "scale_px_per_m": 32,
+    "origin": "ground-centre of the hull footprint (z=0 is the ground on land, and the WATER SURFACE afloat)",
+    "axes": "+x curb side, +y bow, +z up",
+    "heading_independent": true,
+    "at_rest": "every value here is at float=0, tracks=false, hatch=0. Two whole-machine z offsets ride on top of it — see FLOAT.sink and TRACKS.lift.",
+    "pivot_px": {
+      "x": 128,
+      "y": 128,
+      "cell": [
+        256,
+        192
+      ],
+      "_note": "model z=0 projects to the pivot row in all 8 facings, at every pose"
+    },
+    "facings": {
+      "order": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "_note": "dir 0 (N) shows the TRANSOM: the machine points away. dir 4 (S) shows the bow. Street side (-x) reads at NE E SE; curb side (+x) at SW W NW."
+    }
+  },
+  "BODY": {
+    "loa_m": 3.1,
+    "hull_beam_m": 1.4,
+    "width_over_tires_m": 1.56,
+    "width_over_tracks_m": 1.66,
+    "height_m": 1.3,
+    "hull_crown_z": 1.106,
+    "rail_z": 0.86,
+    "keel_z": 0.24,
+    "ground_clearance_m": 0.24,
+    "wheels": 8,
+    "axles": 4,
+    "drive": "skid steer — there is no steering axle and no articulation; a turn is counter-rotation of the two sides",
+    "collider_bbox": {
+      "x": [
+        -0.83,
+        0.83
+      ],
+      "y": [
+        -1.48,
+        1.62
+      ],
+      "z": [
+        0,
+        1.3
+      ],
+      "_note": "x is over the TRACKS. On the default (tired) build the widest hard point is 0.78 — the tires themselves, which sit proud of the 0.70 hull. The rack at z 1.30 is the top; without it the crown is 1.11."
+    },
+    "mass_kg_estimate": {
+      "value": 620,
+      "basis": "NOT measured off the rig — no rig geometry carries mass. Quoted so FLOAT.displacement has something to sit against; treat it as a gameplay knob, not a published fact."
+    },
+    "provenance": "BODIES.otter8x8 + G; hull_crown_z = crownAt(1.16); width_over_tires = 2*(wheelX 0.63 + tireW/2 0.15)"
+  },
+  "HULL": {
+    "_what": "the tub IS the hull. One sealed poly moulding lofted through 19 stations — there is no separate frame, no bilge, no deck join. Everything in COCKPIT sits inside it.",
+    "form": {
+      "keel_z": 0.24,
+      "keel_flat_from_y": [
+        -1.1,
+        0.72
+      ],
+      "bow_rocker": "keel rises to 0.68 at y=1.62 over the forward 0.90 m",
+      "stern_tuck": "keel rises to 0.34 at the transom over the aft 0.38 m",
+      "max_half_beam_m": 0.7,
+      "parallel_body_y": [
+        -1.05,
+        0.8
+      ],
+      "chine_z": "bz(y) + 0.32, clamped to top-0.07 — it climbs with the bow rocker, which is why the black lower hull sweeps up forward",
+      "two_tone": {
+        "below_chine": "hull (near-black poly)",
+        "above_chine": "paint",
+        "_note": "not a decal — it is where the loft changes material, so it follows the hull form in all eight facings"
+      },
+      "rub_rail": {
+        "at": "the chine point, 1.2% proud",
+        "section_m": 0.055,
+        "material": "rubber"
+      }
+    },
+    "stations_half_beam": [
+      [
+        -1.48,
+        0.5
+      ],
+      [
+        -1.38,
+        0.605
+      ],
+      [
+        -1.26,
+        0.659
+      ],
+      [
+        -1.14,
+        0.685
+      ],
+      [
+        -0.96,
+        0.7
+      ],
+      [
+        -0.4,
+        0.7
+      ],
+      [
+        0.24,
+        0.7
+      ],
+      [
+        0.8,
+        0.7
+      ],
+      [
+        0.9,
+        0.696
+      ],
+      [
+        1.02,
+        0.671
+      ],
+      [
+        1.14,
+        0.625
+      ],
+      [
+        1.26,
+        0.552
+      ],
+      [
+        1.34,
+        0.484
+      ],
+      [
+        1.44,
+        0.377
+      ],
+      [
+        1.54,
+        0.226
+      ],
+      [
+        1.62,
+        0.11
+      ]
+    ],
+    "sealed": true,
+    "provenance": "hwAt/bzAt/topAt/profile() in the rig, sampled — the same functions the loft calls"
+  },
+  "FLOAT": {
+    "_what": "THE RIG BAKES DRY. No pixel is clipped and no wake is painted. `float` only lowers the whole machine onto its waterline so the attitude is right; the GAME cuts the sprite with its own water shader. Everything the shader needs is in this section.",
+    "param": "float",
+    "range": [
+      0,
+      1
+    ],
+    "sink_m_at_float_1": 0.52,
+    "sink_formula": "dz = -0.52 * float, applied to EVERY polygon (hull, tub, seats, fittings, wheels, tracks) before projection",
+    "clip_rule": {
+      "plane": "world z = 0 — the same plane the pivot row projects, in all eight facings",
+      "in_sprite_space": "clip everything below the pivot row (y > 128 in a 256x192 cell). The pivot row IS the waterline whenever float > 0.",
+      "_note": "no per-facing correction: z=0 is a horizontal plane in this projection, so it is a horizontal line in the sprite too."
+    },
+    "at_float_1": {
+      "draft_above_keel_m": 0.28,
+      "waterline_model_z": 0.52,
+      "freeboard_to_rail_m": 0.34,
+      "freeboard_at_transom_m": 0.29,
+      "freeboard_at_bow_crown_m": 0.586,
+      "tub_floor_vs_waterline_m": -0.08,
+      "_tub_note": "the cockpit floor sits 0.08 m BELOW the outside water. That is correct and it is not a leak — the tub is a sealed moulding, the floor is a pan inside it. Do not drain it.",
+      "wheels": "tires are submerged to 0.12 of their 0.64 diameter above the surface — the top 19% of each tire shows",
+      "displacement_kg": 866
+    },
+    "displacement_curve": {
+      "_units": "draft measured ABOVE the keel (add 0.24 for model z); mass in kg of fresh water displaced by the HULL ONLY",
+      "points": [
+        [
+          0.1,
+          239
+        ],
+        [
+          0.18,
+          503
+        ],
+        [
+          0.28,
+          866
+        ],
+        [
+          0.38,
+          1258
+        ],
+        [
+          0.48,
+          1661
+        ]
+      ],
+      "excludes": "the eight tires, which on the real class carry a real share of the buoyancy. Counting them would add roughly 8 x 0.045 m3 = 360 kg at full submersion — if the game wants a loaded machine to ride higher, that is where the margin is.",
+      "method": "trapezoidal integration of the station half-areas below the waterline, 0.02 m steps from y=-1.48 to 1.62, x2 for both sides, x1000 kg/m3"
+    },
+    "waterline_polygon_at_float_1": {
+      "_units": "[y, half_width] at model z=0.52; mirror for -x. Use it for the wake mask, the foam ring and the hull-vs-water intersection.",
+      "points": [
+        [
+          -1.48,
+          0.468
+        ],
+        [
+          -1.38,
+          0.601
+        ],
+        [
+          -1.26,
+          0.657
+        ],
+        [
+          -1.14,
+          0.683
+        ],
+        [
+          -0.9,
+          0.687
+        ],
+        [
+          -0.5,
+          0.687
+        ],
+        [
+          0,
+          0.687
+        ],
+        [
+          0.5,
+          0.687
+        ],
+        [
+          0.8,
+          0.685
+        ],
+        [
+          0.95,
+          0.664
+        ],
+        [
+          1.1,
+          0.617
+        ],
+        [
+          1.25,
+          0.543
+        ],
+        [
+          1.4,
+          0.318
+        ],
+        [
+          1.46,
+          0
+        ]
+      ],
+      "length_at_waterline_m": 2.94,
+      "max_half_beam_m": 0.687
+    },
+    "downflooding": {
+      "lowest_gunwale_point": {
+        "at": "transom top",
+        "z": 0.82
+      },
+      "sink_to_flood_m": 0.82,
+      "_note": "0.82 m of sink is float = 1.58, outside the rig's clamped 0..1. The machine CANNOT be posed swamped. A swamping state is the game's to invent."
+    },
+    "propulsion_afloat": {
+      "means": "the tires. There is no propeller, no jet, no rudder and no outboard bracket in the rig.",
+      "steering": "differential — same skid input as on land",
+      "_note": "roll still animates afloat and the exposed top 19% of each tire is what the player sees turning"
+    },
+    "provenance": "G.sinkMax, build() dz; flotation integrated off profile() — see displacement_curve.method"
+  },
+  "COCKPIT": {
+    "_what": "an open tub with two benches, not a room. Seated occupants; the only standing space is the footwell between the benches.",
+    "floor": {
+      "polygon": [
+        [
+          -0.53,
+          -1.1
+        ],
+        [
+          0.53,
+          -1.1
+        ],
+        [
+          0.53,
+          0.74
+        ],
+        [
+          -0.53,
+          0.74
+        ]
+      ],
+      "z": 0.44,
+      "winding": "ccw_from_above",
+      "size_m": [
+        1.06,
+        1.84
+      ],
+      "provenance": "buildTub slab at G.floorZ — exact"
+    },
+    "walls": {
+      "inner_x": [
+        -0.53,
+        0.53
+      ],
+      "rail_z": 0.86,
+      "depth_below_rail_m": 0.42
+    },
+    "footwell": {
+      "polygon": [
+        [
+          -0.53,
+          -0.58
+        ],
+        [
+          0.53,
+          -0.58
+        ],
+        [
+          0.53,
+          0.14
+        ],
+        [
+          -0.53,
+          0.14
+        ]
+      ],
+      "z": 0.44,
+      "size_m": [
+        1.06,
+        0.72
+      ],
+      "_note": "the only clear floor. Ahead of it is the front bench pedestal, behind it the aft bench box."
+    },
+    "obstructions": [
+      {
+        "id": "front_bench_pedestal",
+        "footprint": {
+          "x": [
+            -0.44,
+            0.44
+          ],
+          "y": [
+            0.14,
+            0.34
+          ]
+        },
+        "top_z": 0.6,
+        "height_above_floor_m": 0.16,
+        "treatment": "step_over"
+      },
+      {
+        "id": "aft_box",
+        "footprint": {
+          "x": [
+            -0.5,
+            0.5
+          ],
+          "y": [
+            -1.1,
+            -0.58
+          ]
+        },
+        "top_z": 0.74,
+        "height_above_floor_m": 0.3,
+        "treatment": "step_over",
+        "_note": "carries the aft bench. The rig does not model what is inside it."
+      },
+      {
+        "id": "console",
+        "footprint": {
+          "x": [
+            -0.34,
+            0.34
+          ],
+          "y": [
+            0.62,
+            0.78
+          ]
+        },
+        "top_z": 0.94,
+        "height_above_floor_m": 0.5,
+        "treatment": "wall"
+      }
+    ],
+    "helm": {
+      "type": "handlebar / T-bar — NOT a wheel",
+      "bar_axis": {
+        "from": [
+          -0.3,
+          0.66,
+          1.03
+        ],
+        "to": [
+          0.3,
+          0.66,
+          1.03
+        ]
+      },
+      "grip_span_m": 0.6,
+      "grips": [
+        [
+          -0.25,
+          0.66,
+          1.03
+        ],
+        [
+          0.25,
+          0.66,
+          1.03
+        ]
+      ],
+      "centred": true,
+      "_note": "centre-steer. There is no driver's side on this machine — read that off the bar, not off the seats.",
+      "provenance": "buildHelm tube [-0.30,0.66,1.03]->[0.30,0.66,1.03] r 0.028, grips r 0.038"
+    },
+    "walkable": "UNRULED — see _confirm.tub_standing"
+  },
+  "SEATS": [
+    {
+      "id": "front_bench",
+      "kind": "bench",
+      "cushion": {
+        "x": [
+          -0.47,
+          0.47
+        ],
+        "y": [
+          0.14,
+          0.58
+        ],
+        "top_z": 0.76
+      },
+      "back": {
+        "y": [
+          0,
+          0.16
+        ],
+        "top_z": 1.16
+      },
+      "seat_ref": [
+        0,
+        0.36,
+        0.76
+      ],
+      "width_m": 0.94,
+      "height_above_floor_m": 0.32,
+      "faces": "+y (bow)",
+      "role": "driver + one",
+      "_note": "ONE undivided cushion, and the helm is centred on it — which of the two riders is driving is a gameplay decision, not a rig fact"
+    },
+    {
+      "id": "aft_bench",
+      "kind": "bench",
+      "cushion": {
+        "x": [
+          -0.49,
+          0.49
+        ],
+        "y": [
+          -1,
+          -0.6
+        ],
+        "top_z": 0.9
+      },
+      "back": {
+        "y": [
+          -1.1,
+          -0.98
+        ],
+        "top_z": 1.28
+      },
+      "seat_ref": [
+        0,
+        -0.8,
+        0.9
+      ],
+      "width_m": 0.98,
+      "height_above_floor_m": 0.46,
+      "faces": "+y (bow)",
+      "role": "two passengers",
+      "_note": "raised 0.14 m above the front cushion, on the aft box"
+    }
+  ],
+  "THRESHOLD": {
+    "_what": "THERE ARE NO DOORS. Boarding is a step over the gunwale, from either side or over the transom. Published as three ways in, not as openings.",
+    "ways_in": [
+      {
+        "id": "board_street",
+        "side": "street (-x)",
+        "over": "gunwale",
+        "span_y": [
+          -0.9,
+          0.6
+        ],
+        "sill_z": 0.86,
+        "ground_to_sill_m": 0.86,
+        "sill_to_floor_m": -0.42,
+        "clear_width_m": 1.5,
+        "obstructed_by": "the four tires stand 0.78 out and 0.64 tall directly under the rail — a boarder steps over a tire, not up a clear face",
+        "reach_point": [
+          -1.4,
+          -0.1,
+          0
+        ],
+        "visible_facings": [
+          "NE",
+          "E",
+          "SE"
+        ]
+      },
+      {
+        "id": "board_curb",
+        "side": "curb (+x)",
+        "over": "gunwale",
+        "span_y": [
+          -0.9,
+          0.6
+        ],
+        "sill_z": 0.86,
+        "ground_to_sill_m": 0.86,
+        "sill_to_floor_m": -0.42,
+        "clear_width_m": 1.5,
+        "obstructed_by": "the four tires stand 0.78 out and 0.64 tall directly under the rail — a boarder steps over a tire, not up a clear face",
+        "reach_point": [
+          1.4,
+          -0.1,
+          0
+        ],
+        "visible_facings": [
+          "SW",
+          "W",
+          "NW"
+        ]
+      },
+      {
+        "id": "board_transom",
+        "side": "aft",
+        "over": "transom deck",
+        "span_x": [
+          -0.5,
+          0.5
+        ],
+        "sill_z": 0.82,
+        "ground_to_sill_m": 0.82,
+        "_note": "clear of the tires — the transom overhangs the rear axle by 0.14 m — but the rack (when fitted) stands in the way from z 0.84 to 1.30",
+        "blocked_when": {
+          "rack": true
+        },
+        "reach_point": [
+          0,
+          -2,
+          0
+        ],
+        "visible_facings": [
+          "N",
+          "NE",
+          "NW"
+        ]
+      }
+    ],
+    "step_up_tracked_m": 0.93,
+    "_tracked_note": "tracks lift the whole machine 0.07 m, so every sill above gains 0.07"
+  },
+  "DECK": {
+    "bow": {
+      "_what": "a closed, crowned engine deck — the highest part of the hull. Not a walkable surface: it is 0.66 m wide at the crown and domed.",
+      "y": [
+        0.8,
+        1.62
+      ],
+      "crown_z_max": 1.106,
+      "crown_at": 1.16,
+      "hatch": {
+        "opening": {
+          "x": [
+            -0.34,
+            0.34
+          ],
+          "y": [
+            0.9,
+            1.34
+          ]
+        },
+        "size_m": [
+          0.68,
+          0.44
+        ],
+        "hinge_axis": {
+          "kind": "x_axis",
+          "at_y": 0.88,
+          "at_z": 1.032
+        },
+        "open_deg": 52,
+        "param": "hatch",
+        "recess_floor_z": 0.846,
+        "bay_depth_m": 0.26,
+        "contents": [
+          {
+            "id": "block",
+            "x": [
+              -0.24,
+              0.24
+            ],
+            "y": [
+              0.96,
+              1.24
+            ],
+            "top_z": 1.016
+          },
+          {
+            "id": "intake",
+            "x": [
+              -0.13,
+              0.13
+            ],
+            "y": [
+              1.02,
+              1.16
+            ],
+            "top_z": 1.076
+          },
+          {
+            "id": "battery",
+            "x": [
+              -0.3,
+              -0.16
+            ],
+            "y": [
+              1.24,
+              1.32
+            ],
+            "top_z": 0.976
+          }
+        ],
+        "visible_facings": [
+          "N",
+          "NE",
+          "E",
+          "SE",
+          "S",
+          "SW",
+          "W",
+          "NW"
+        ],
+        "_note": "a top face — it reads at all eight facings, open or shut"
+      }
+    },
+    "aft": {
+      "y": [
+        -1.48,
+        -1.14
+      ],
+      "top_z": 0.88,
+      "_what": "the closed transom deck. Flat enough to set a crate on; 0.34 m fore-and-aft, so nothing large."
+    }
+  },
+  "CARGO": {
+    "rack": {
+      "present_when": {
+        "rack": true
+      },
+      "default": true,
+      "platform": {
+        "x": [
+          -0.46,
+          0.46
+        ],
+        "y": [
+          -1.42,
+          -1.1
+        ],
+        "z": 1.3
+      },
+      "size_m": [
+        0.92,
+        0.32
+      ],
+      "load_height_m": 1.3,
+      "construction": "tube — two side rails, two cross rails and three longitudinals at 0.30 centres. Open between the bars: small items fall through.",
+      "clear_below_m": 0.46,
+      "blocks": "board_transom",
+      "visible_facings": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "provenance": "buildFittings rack bars — exact"
+    },
+    "_no_bed": "there is no cargo box, no bed and no tailgate on this machine. Anything carried rides the rack, the footwell or a rider's lap."
+  },
+  "WHEELS": {
+    "radius_m": 0.32,
+    "tire_width_m": 0.3,
+    "count": 8,
+    "axles_y": [
+      1.02,
+      0.34,
+      -0.34,
+      -1.02
+    ],
+    "axle_spacing_m": 0.68,
+    "track_width_m": 1.26,
+    "contact_z": 0,
+    "list": [
+      {
+        "id": "L1",
+        "pos": [
+          -0.63,
+          1.02,
+          0.32
+        ],
+        "side": "street"
+      },
+      {
+        "id": "L2",
+        "pos": [
+          -0.63,
+          0.34,
+          0.32
+        ],
+        "side": "street"
+      },
+      {
+        "id": "L3",
+        "pos": [
+          -0.63,
+          -0.34,
+          0.32
+        ],
+        "side": "street"
+      },
+      {
+        "id": "L4",
+        "pos": [
+          -0.63,
+          -1.02,
+          0.32
+        ],
+        "side": "street"
+      },
+      {
+        "id": "R1",
+        "pos": [
+          0.63,
+          1.02,
+          0.32
+        ],
+        "side": "curb"
+      },
+      {
+        "id": "R2",
+        "pos": [
+          0.63,
+          0.34,
+          0.32
+        ],
+        "side": "curb"
+      },
+      {
+        "id": "R3",
+        "pos": [
+          0.63,
+          -0.34,
+          0.32
+        ],
+        "side": "curb"
+      },
+      {
+        "id": "R4",
+        "pos": [
+          0.63,
+          -1.02,
+          0.32
+        ],
+        "side": "curb"
+      }
+    ],
+    "roll": {
+      "params": [
+        "roll",
+        "rollL",
+        "rollR"
+      ],
+      "units": "revolutions",
+      "rule": "each side takes roll + its side offset. rollL = +t, rollR = -t is a spin on the spot — see YAW for the arithmetic that ties a side split to a heading change.",
+      "distance_per_rev_m": 2.011,
+      "_note": "no suspension anywhere on this machine. The axles are rigid, the tires ARE the suspension, and no rig param flexes them."
+    },
+    "provenance": "G.axY / wheelX / wheelR / tireW — exact"
+  },
+  "YAW": {
+    "param": "yaw",
+    "units": "degrees",
+    "range": [
+      -45,
+      45
+    ],
+    "what": "heading between the eight facings, and the ONLY yaw on this machine — there is no steer axle, so nothing turns but the whole hull. The model rotates about z before projection under a FIXED key, so the shading is rebaked for the new heading.",
+    "pivot": "unaffected; the origin projects to the published pivot at any yaw",
+    "frame": "yaw is a RENDER param, not geometry. Every metre in this file is in the machine frame and does not move with it — colliders, seat refs and reach points rotate with the machine as they always did.",
+    "skid_arithmetic": {
+      "track_m": 1.26,
+      "distance_per_rev_m": 2.011,
+      "deg_per_rev_of_split": 182.89,
+      "rev_of_split_per_45deg": 0.2461,
+      "formula": "yaw_rad = 2 * split_rev * 2.011 / 1.26",
+      "_note": "a game that yaws her without splitting the sides (or splits without yawing) will read wrong; the rig will not stop it."
+    },
+    "afloat": "yaw is independent of float. Afloat she yaws on the same tires — see FLOAT.propulsion_afloat — and the pivot row is still the waterline.",
+    "tracked": "unchanged. The belt path is symmetrical, so a tracked spin uses the same arithmetic with the same 1.26 m track."
+  },
+  "TRACKS": {
+    "present_when": {
+      "tracks": true
+    },
+    "default": false,
+    "lift_m": 0.07,
+    "_lift_note": "the belt runs under the tires, so the WHOLE machine — hull, tub, seats, sills, rack — stands 0.07 m higher. Every z in this file gains 0.07 when tracks are fitted. Ground clearance becomes 0.31.",
+    "belt": {
+      "outer_radius_at_ends_m": 0.39,
+      "thickness_m": 0.085,
+      "half_width_m": 0.2,
+      "outboard_x": 0.83,
+      "path": "stadium loop about the y=1.02 and y=-1.02 axle centres",
+      "path_length_m": 6.53,
+      "flat_run_y": [
+        -1.02,
+        1.02
+      ]
+    },
+    "ground_contact": {
+      "per_side_m2": 0.816,
+      "total_m2": 1.632,
+      "vs_tires_m2": 0.36,
+      "_note": "4.5x the tired contact patch. If soft ground, ice or bog is a gameplay surface, this is the number that should change behaviour."
+    },
+    "provenance": "beltPath() + buildTracks; contact = flat run 2.04 m x belt width 0.40 m x 2 sides"
+  },
+  "ATTACH": {
+    "headlamps": [
+      {
+        "pos": [
+          -0.3,
+          1.55,
+          0.74
+        ],
+        "r_m": 0.095,
+        "aim": "+y",
+        "visible_facings": [
+          "SE",
+          "S",
+          "SW"
+        ]
+      },
+      {
+        "pos": [
+          0.3,
+          1.55,
+          0.74
+        ],
+        "r_m": 0.095,
+        "aim": "+y",
+        "visible_facings": [
+          "SE",
+          "S",
+          "SW"
+        ]
+      }
+    ],
+    "deck_markers_amber": [
+      {
+        "x": [
+          -0.58,
+          -0.5
+        ],
+        "y": [
+          1.16,
+          1.24
+        ],
+        "top_z": 1.101
+      },
+      {
+        "x": [
+          0.5,
+          0.58
+        ],
+        "y": [
+          1.16,
+          1.24
+        ],
+        "top_z": 1.101
+      }
+    ],
+    "tail_lamps_red": [
+      {
+        "x": [
+          -0.4,
+          -0.3
+        ],
+        "y": -1.48,
+        "z": [
+          0.68,
+          0.78
+        ]
+      },
+      {
+        "x": [
+          0.3,
+          0.4
+        ],
+        "y": -1.48,
+        "z": [
+          0.68,
+          0.78
+        ]
+      }
+    ],
+    "winch": {
+      "present_when": {
+        "winch": true
+      },
+      "default": true,
+      "drum_axis": {
+        "from": [
+          -0.15,
+          1.43,
+          1.043
+        ],
+        "to": [
+          0.15,
+          1.43,
+          1.043
+        ]
+      },
+      "drum_r_m": 0.055,
+      "fairlead": [
+        -0.21,
+        1.43,
+        1.043
+      ],
+      "line_exit": "forward, over the bow guard",
+      "guard_hoop": {
+        "x": [
+          -0.28,
+          0.28
+        ],
+        "y": [
+          1.5,
+          1.58
+        ],
+        "z": [
+          0.62,
+          0.88
+        ]
+      },
+      "visible_facings": [
+        "SE",
+        "S",
+        "SW"
+      ],
+      "_note": "a recovery point that happens to be a winch. There is no rope in the rig — the line is the game's to draw."
+    },
+    "bimini": {
+      "present_when": {
+        "bimini": true
+      },
+      "default": false,
+      "posts": [
+        [
+          -0.5,
+          0.56
+        ],
+        [
+          0.5,
+          0.56
+        ],
+        [
+          -0.5,
+          -1.02
+        ],
+        [
+          0.5,
+          -1.02
+        ]
+      ],
+      "post_base_z": 0.84,
+      "canopy": {
+        "x": [
+          -0.52,
+          0.52
+        ],
+        "y": [
+          -1.08,
+          0.62
+        ],
+        "z": [
+          1.57,
+          1.68
+        ]
+      },
+      "headroom_above_front_cushion_m": 0.81,
+      "_note": "soft top on four posts. It does not fold in the rig — it is fitted or it is not."
+    },
+    "screen": {
+      "present_when": {
+        "screen": true
+      },
+      "default": false,
+      "pane": {
+        "x": [
+          -0.42,
+          0.42
+        ],
+        "bottom": [
+          0.8,
+          0.88
+        ],
+        "top": [
+          0.7,
+          1.36
+        ]
+      },
+      "rake_deg": 11,
+      "_note": "fixed. No wiper, no fold-down."
+    }
+  },
+  "INTERACT": [
+    {
+      "id": "drive",
+      "action": "enter_drive",
+      "at": "front_bench",
+      "reach_point": [
+        -1.4,
+        0.2,
+        0
+      ],
+      "alt_reach_point": [
+        1.4,
+        0.2,
+        0
+      ],
+      "visible_facings": [
+        "NE",
+        "E",
+        "SE",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "_note": "centre-steer: board from either side"
+    },
+    {
+      "id": "ride_front",
+      "action": "enter_ride",
+      "at": "front_bench",
+      "reach_point": [
+        1.4,
+        0.2,
+        0
+      ],
+      "visible_facings": [
+        "SW",
+        "W",
+        "NW"
+      ]
+    },
+    {
+      "id": "ride_aft",
+      "action": "enter_ride",
+      "at": "aft_bench",
+      "reach_point": [
+        -1.4,
+        -0.8,
+        0
+      ],
+      "visible_facings": [
+        "NE",
+        "E",
+        "SE"
+      ]
+    },
+    {
+      "id": "engine",
+      "action": "open_close_engine",
+      "at": "DECK.bow.hatch",
+      "reach_point": [
+        0,
+        2.15,
+        0
+      ],
+      "visible_facings": [
+        "SE",
+        "S",
+        "SW"
+      ]
+    },
+    {
+      "id": "winch",
+      "action": "recover",
+      "reach_point": [
+        0,
+        2.15,
+        0
+      ],
+      "present_when": {
+        "winch": true
+      },
+      "visible_facings": [
+        "SE",
+        "S",
+        "SW"
+      ]
+    },
+    {
+      "id": "rack",
+      "action": "cargo",
+      "reach_point": [
+        0,
+        -2,
+        0
+      ],
+      "present_when": {
+        "rack": true
+      },
+      "visible_facings": [
+        "N",
+        "NE",
+        "NW"
+      ]
+    },
+    {
+      "id": "launch",
+      "action": "enter_water",
+      "_note": "a state change, not a place — see FLOAT. No ramp, bow door or transom gate exists to gate it."
+    }
+  ],
+  "_interact_notes": {
+    "reach_point": "a request, not a promise — a ground-level standing spot derived from which face the item is on. NOT validated against terrain, another vehicle, or the water's edge.",
+    "visible_facings": "computed, not eyeballed: a feature with outward normal n is listed for facing d when nx*sin(d*45) + ny*cos(d*45) < -0.3 (the near-side test paint() uses, edge-on excluded). Top faces read at all eight."
+  },
+  "_excluded": {
+    "CLEATS": "not a boat in the harbour's sense — no mooring hardware anywhere. The winch and the bow guard are recovery points, and the sidecar says so rather than letting someone tie up to them.",
+    "steering_geometry": "no steer axle, no kingpin, no wheel yaw — correct for the class. Her steering is YAW, the whole machine, tied to the side split by the arithmetic in that section.",
+    "suspension": "there is none. Unlike the dually there is no travel param, no dz(y), and nothing for a rider to be corrected against.",
+    "propulsion_afloat": "no prop, jet, kicker bracket or rudder. See FLOAT.propulsion_afloat.",
+    "bilge_and_drain": "the tub is published as sealed. No drain plug, no scupper, no bilge pump — if the game floods it, the volume is COCKPIT.floor x depth and nothing in the rig empties it.",
+    "wake_and_spray": "the bake is dry — no wake ring, no spray, no waterline stain. FLOAT gives the polygon to draw them from.",
+    "fuel_fill": "the tank is not modelled at all. The aft box is a closed volume with nothing published inside it.",
+    "plate_decals_mirrors": "no plate, no mirrors, no aerial, no decals. At 32 px/m each is 1-3 px.",
+    "roof_load": "the bimini canopy is fabric on four posts. It is not a rack and carries nothing.",
+    "cab": "there is no enclosed cab variant in this rig. The hard-cab machines in the reference class would be a second BODIES entry."
+  },
+  "_confirm": {
+    "tub_standing": "COCKPIT.footwell is 1.06 x 0.72 m of clear floor 0.42 m below the rail. Whether a player stands there (deckhand-style) or the tub is seats-only is unruled. Geometry is published either way.",
+    "float_is_a_pose_not_a_state": "the rig will hold any float 0..1 with no consequence. Whether the machine is buoyant with four riders and a loaded rack is a gameplay call — FLOAT.displacement_curve is the input, BODY.mass_kg_estimate is a guess, and nothing in the rig enforces either.",
+    "tracked_z_shift": "TRACKS.lift moves every published z by 0.07. Rider slots, reach points and sills all need it applied, and no value in this file is pre-shifted.",
+    "transom_boarding_vs_rack": "board_transom and the rack occupy the same space. The rig defaults rack:true, so on the default build the only ways in are the two sides.",
+    "front_bench_occupancy": "one 0.94 m cushion with a centred bar. Two up is the intent; the rig has no division to read and would not object to three.",
+    "reach_points": "seven, none tested against a ground collider, the tires, or each other. The side points sit 0.62 m outboard of the tires.",
+    "yaw_and_split": "YAW and the side split are published together but NOT coupled in the rig. Driving one without the other is a gameplay bug the rig cannot catch."
+  }
+}

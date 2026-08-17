@@ -36,10 +36,26 @@ namespace HiddenHarbours.Tests.RigBaking
         /// question.</para></summary>
         static IEnumerable<string> RoadVehicleSidecarsOnDisk() =>
             Directory.EnumerateFiles(SidecarFolder, "*.gameplay.json")
-                     .Where(f => DeclaresPair(File.ReadAllText(f),
-                                              "\"kind\"", "\"" + VehicleRigFleet.RoadVehicleKind + "\""))
+                     .Where(f => HiddenHarbours.Core.VehicleKinds.KnownTokens.Any(
+                                     t => DeclaresPair(File.ReadAllText(f), "\"kind\"", "\"" + t + "\"")))
                      .Select(Path.GetFileName)
                      .OrderBy(f => f, System.StringComparer.Ordinal);
+
+        /// <summary>The top-level <c>kind</c> token a sidecar declares, or null when it has none.
+        /// Reads the FIRST <c>"kind":</c> in the file, which is the top-level one — these documents
+        /// put it in the header, above every nested <c>kind</c> the geometry blocks reuse.</summary>
+        static string TopLevelKind(string json)
+        {
+            int at = json.IndexOf("\"kind\"", System.StringComparison.Ordinal);
+            if (at < 0) return null;
+            int i = json.IndexOf(':', at);
+            if (i < 0) return null;
+            i++;
+            while (i < json.Length && char.IsWhiteSpace(json[i])) i++;
+            if (i >= json.Length || json[i] != '"') return null;
+            int end = json.IndexOf('"', i + 1);
+            return end < 0 ? null : json.Substring(i + 1, end - i - 1);
+        }
 
         /// <summary>Is <paramref name="key"/> immediately followed by <paramref name="value"/>, allowing
         /// only a colon and whitespace between? Cheap, and enough to tell a top-level declaration from
@@ -65,6 +81,77 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         // =============================================================================================
+
+        /// <summary>
+        /// ⭐ <b>EVERY sidecar's kind token is one this repo RECOGNISES.</b> The law the Otter forced,
+        /// and the reason it is a separate test from the coverage scan above.
+        ///
+        /// <para>That scan can only see a vehicle whose token it knows. So a drop shipping a word
+        /// nobody mapped is not merely unbaked — it is <b>unscanned</b>, and the coverage test passes
+        /// while the vehicle sits there. The Otter is exactly that case: her sidecar says
+        /// <c>amphibious_xtv</c> and her rig says <c>amphib_xtv</c>, neither of which is the ruled
+        /// <c>amphibious_vehicle</c>.</para>
+        ///
+        /// <para>⚠️ The fix is NEVER to edit the sidecar — <c>docs/art/rigs/**</c> is the art
+        /// director's lane, and a hand-corrected token breaks the sidecar's own hash pin and comes
+        /// back wrong on the next regeneration. Add the shipped spelling to
+        /// <see cref="HiddenHarbours.Core.VehicleKinds"/>, which is the one table that translates.</para>
+        /// </summary>
+        [Test]
+        public void EverySidecarInTheVehicleFolder_DeclaresAKindThisRepoRecognises()
+        {
+            foreach (string file in Directory.EnumerateFiles(SidecarFolder, "*.gameplay.json"))
+            {
+                string token = TopLevelKind(File.ReadAllText(file));
+
+                Assert.That(token, Is.Not.Null,
+                    $"{Path.GetFileName(file)} sits in the vehicle sidecar folder but declares no " +
+                    "top-level `kind` at all. That folder IS the population — a document without a " +
+                    "kind cannot be classified and would go unscanned.");
+
+                Assert.That(HiddenHarbours.Core.VehicleKinds.TryFromToken(token, out _), Is.True,
+                    $"{Path.GetFileName(file)} declares kind '{token}', which VehicleKinds does not " +
+                    "map. She is therefore INVISIBLE to the coverage scan — not unbaked, UNSCANNED, " +
+                    "which is worse because the coverage test stays green.\n" +
+                    "Add '" + token + "' to VehicleKinds.Tokens. Do NOT edit the sidecar: it is the " +
+                    "art director's file, its hash is pinned, and the token would come back on the " +
+                    "next regeneration.\n" +
+                    "Known today: " +
+                    string.Join(", ", HiddenHarbours.Core.VehicleKinds.KnownTokens) + ".");
+            }
+        }
+
+        /// <summary>Both of the Otter's shipped spellings — the sidecar's and the rig's — reach the
+        /// SAME ruled kind. Two files, one idea; a reader that knew only one would work until it
+        /// read the other.</summary>
+        [Test]
+        public void BothOfTheOttersShippedSpellings_MapToTheOneRuledKind()
+        {
+            foreach (string shipped in new[] { "amphibious_xtv", "amphib_xtv", "amphibious_vehicle" })
+            {
+                Assert.That(HiddenHarbours.Core.VehicleKinds.TryFromToken(shipped, out var kind),
+                    Is.True, $"'{shipped}' no longer maps.");
+                Assert.That(kind, Is.EqualTo(HiddenHarbours.Core.VehicleKind.AmphibiousVehicle),
+                    $"'{shipped}' maps to {kind}, not the amphibian. Driving an amphibian onto the " +
+                    "road, or a truck into the water, are both plausible-looking failures.");
+            }
+
+            Assert.That(HiddenHarbours.Core.VehicleKinds.CanonicalToken(
+                            HiddenHarbours.Core.VehicleKind.AmphibiousVehicle),
+                Is.EqualTo("amphibious_vehicle"),
+                "the repo-side canonical name is the owner's ruled one, never the shipped alias.");
+        }
+
+        /// <summary>⚠️ An unknown token is a REFUSAL, not a default. A fallback to RoadVehicle would
+        /// put an amphibian on the road and a truck in the sea, silently, because both read as
+        /// plausible.</summary>
+        [Test]
+        public void AnUnknownKindTokenIsRefused_NeverDefaulted()
+        {
+            foreach (string junk in new[] { "hovercraft", "", "  ", "road vehicle", null })
+                Assert.That(HiddenHarbours.Core.VehicleKinds.TryFromToken(junk, out _), Is.False,
+                    $"'{junk ?? "<null>"}' was accepted. Unrecognised must mean refused.");
+        }
 
         [Test]
         public void EveryRoadVehicleOnDisk_IsEitherBakedOrExplicitlyExcluded()
