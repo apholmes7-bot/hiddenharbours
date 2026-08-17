@@ -1,0 +1,1112 @@
+{
+  "rig": "vehicleIsoRig.js",
+  "exportSymbol": "VehicleIso",
+  "variant": "dually3500",
+  "derivedFromRigSha256": "130580238ab2c6d438ad0bd27cc338534316b5befd506be9f785c43dc8b84bdf",
+  "kind": "road_vehicle",
+  "label": "Dually 3500",
+  "generated": "measured off the rig source by hand-transcription with per-value provenance; no generator in the rig",
+  "frame": {
+    "units": "metres",
+    "scale_px_per_m": 32,
+    "origin": "ground-centre of the body footprint (bumpers excluded from the centring; z=0 is the road)",
+    "axes": "+x curb side, +y nose, +z up",
+    "heading_independent": true,
+    "at_rest": "every value here is at susF=susR=0, all four doors / hood / gate shut. See SUSPENSION for the body-drop correction.",
+    "pivot_px": {
+      "x": 192,
+      "y": 214,
+      "cell": [
+        384,
+        320
+      ],
+      "_note": "model z=0 projects to the pivot row in all 8 facings"
+    }
+  },
+  "BODY": {
+    "loa_m": 6.64,
+    "body_length_m": 6.14,
+    "width_over_flares_m": 2.48,
+    "width_over_mirrors_m": 2.72,
+    "body_width_m": 2.06,
+    "height_m": 2.05,
+    "roof_z": 2,
+    "belt_z": 1.38,
+    "wheelbase_m": 4.3,
+    "bed_length_m": 1.92,
+    "wheels": 6,
+    "collider_bbox": {
+      "x": [
+        -1.24,
+        1.24
+      ],
+      "y": [
+        -3.34,
+        3.3
+      ],
+      "z": [
+        0,
+        2.05
+      ],
+      "_note": "flares, not mirrors. Add 0.12 m per side if the mirrors must be solid (they are 0.38 m of glass at z 1.40..1.78 and the fleet clips them)."
+    },
+    "ground_clearance_m": {
+      "hard": 0.26,
+      "source": "diff tube r 0.16 centred z 0.42 (buildWheels)",
+      "frame_rails": 0.5,
+      "mudflaps": 0.1,
+      "_note": "mudflaps are rubber — sweep them, do not collide them"
+    },
+    "provenance": "BODIES.dually3500 + G; width over mirrors from buildDoors mirror box |1.24..1.36|"
+  },
+  "CAB": {
+    "_what": "a seated interior, not a walkable room. The floor is given so a camera, an occupant slot or a door-open reveal can sit on it.",
+    "floor": {
+      "polygon": [
+        [
+          -0.92,
+          -0.98
+        ],
+        [
+          0.92,
+          -0.98
+        ],
+        [
+          0.92,
+          1.78
+        ],
+        [
+          -0.92,
+          1.78
+        ]
+      ],
+      "z": 0.8,
+      "winding": "ccw_from_above",
+      "provenance": "buildCab final slab — exact"
+    },
+    "liner": {
+      "walls_x": [
+        -0.9,
+        0.9
+      ],
+      "rear_y": -0.98,
+      "top_z": 1.9,
+      "headroom_above_floor_m": 1.1
+    },
+    "helm": {
+      "side": "street (-x)",
+      "wheel_hub": [
+        -0.5,
+        1.36,
+        1.27
+      ],
+      "wheel_r_m": 0.17,
+      "dash_face_y": 1.46,
+      "provenance": "buildInterior tube [-0.50,1.40,1.24]->[-0.50,1.32,1.30] r 0.17 — left-hand drive"
+    },
+    "seats": [
+      {
+        "id": "front_street",
+        "kind": "bucket",
+        "cushion": {
+          "x": [
+            -0.74,
+            -0.24
+          ],
+          "y": [
+            0.62,
+            1.12
+          ],
+          "top_z": 1.14
+        },
+        "back": {
+          "y": [
+            0.52,
+            0.68
+          ],
+          "top_z": 1.6
+        },
+        "seat_ref": [
+          -0.49,
+          0.87,
+          1.14
+        ],
+        "height_above_floor_m": 0.34,
+        "role": "driver"
+      },
+      {
+        "id": "front_curb",
+        "kind": "bucket",
+        "cushion": {
+          "x": [
+            0.24,
+            0.74
+          ],
+          "y": [
+            0.62,
+            1.12
+          ],
+          "top_z": 1.14
+        },
+        "back": {
+          "y": [
+            0.52,
+            0.68
+          ],
+          "top_z": 1.6
+        },
+        "seat_ref": [
+          0.49,
+          0.87,
+          1.14
+        ],
+        "height_above_floor_m": 0.34,
+        "role": "passenger"
+      },
+      {
+        "id": "rear_bench",
+        "kind": "bench",
+        "cushion": {
+          "x": [
+            -0.82,
+            0.82
+          ],
+          "y": [
+            -0.72,
+            -0.22
+          ],
+          "top_z": 1.14
+        },
+        "back": {
+          "y": [
+            -0.86,
+            -0.7
+          ],
+          "top_z": 1.58
+        },
+        "seat_ref": [
+          0,
+          -0.47,
+          1.14
+        ],
+        "width_m": 1.64,
+        "height_above_floor_m": 0.34,
+        "_note": "ONE undivided cushion in the rig. How many riders it seats is a gameplay decision — see _confirm."
+      }
+    ],
+    "obstructions": [
+      {
+        "id": "console",
+        "footprint": {
+          "x": [
+            -0.14,
+            0.14
+          ],
+          "y": [
+            0.7,
+            1.24
+          ]
+        },
+        "top_z": 1.22,
+        "height_above_floor_m": 0.42,
+        "treatment": "waist_block"
+      },
+      {
+        "id": "dash",
+        "footprint": {
+          "x": [
+            -0.9,
+            0.9
+          ],
+          "y": [
+            1.46,
+            1.76
+          ]
+        },
+        "top_z": 1.4,
+        "height_above_floor_m": 0.6,
+        "treatment": "wall"
+      }
+    ],
+    "rear_window": {
+      "y": -1.02,
+      "x": [
+        -0.66,
+        0.66
+      ],
+      "z": [
+        1.46,
+        1.84
+      ],
+      "_note": "glass, not an opening — there is no cab-to-bed pass-through"
+    },
+    "provenance": "buildInterior + buildCab, read verbatim"
+  },
+  "CARGO": {
+    "floor": {
+      "polygon": [
+        [
+          -0.88,
+          -3.06
+        ],
+        [
+          0.88,
+          -3.06
+        ],
+        [
+          0.88,
+          -1.16
+        ],
+        [
+          -0.88,
+          -1.16
+        ]
+      ],
+      "z": 0.95,
+      "winding": "ccw_from_above",
+      "size_m": [
+        1.76,
+        1.9
+      ],
+      "load_height_m": 0.95,
+      "provenance": "buildBed slab at G.bedFloorZ — exact"
+    },
+    "walls": {
+      "inner_x": [
+        -0.88,
+        0.88
+      ],
+      "height_above_floor_m": 0.51,
+      "rail_top_z": 1.51,
+      "front_y": -1.16
+    },
+    "obstructions": [
+      {
+        "id": "wheel_tub_street",
+        "footprint": {
+          "x": [
+            -0.88,
+            -0.56
+          ],
+          "y": [
+            -2.67,
+            -1.57
+          ]
+        },
+        "top_z": 1.24,
+        "height_above_floor_m": 0.29,
+        "treatment": "step_over"
+      },
+      {
+        "id": "wheel_tub_curb",
+        "footprint": {
+          "x": [
+            0.56,
+            0.88
+          ],
+          "y": [
+            -2.67,
+            -1.57
+          ]
+        },
+        "top_z": 1.24,
+        "height_above_floor_m": 0.29,
+        "treatment": "step_over"
+      }
+    ],
+    "clear_between_tubs": {
+      "width_m": 1.12,
+      "over_length_m": 1.1,
+      "_note": "a 1.12 m aisle for 1.10 m of the bed; full 1.76 m fore and aft of the tubs"
+    },
+    "gate": {
+      "hinge_axis": {
+        "kind": "x_axis",
+        "at_y": -3.03,
+        "at_z": 1
+      },
+      "open_deg": 92,
+      "leaf": {
+        "width_m": 2,
+        "height_m": 0.48,
+        "shut_z": [
+          0.98,
+          1.46
+        ]
+      },
+      "open_ledge": {
+        "y": [
+          -3.49,
+          -3.03
+        ],
+        "z_range": [
+          0.93,
+          1
+        ],
+        "depth_m": 0.46,
+        "width_m": 2,
+        "ground_to_ledge_m": 0.94,
+        "step_up_to_bed_m": -0.02,
+        "_note": "past 90deg it hangs a whisker below level — treat it as a 0.46 m ledge at z 0.95, not a ramp"
+      },
+      "visible_facings": [
+        "N",
+        "NE",
+        "NW"
+      ],
+      "provenance": "buildGate rotX(p, G.tailY+0.05, 1.00, 92deg) — ledge extremes evaluated at pose 1"
+    },
+    "tail_lamps": [
+      {
+        "x": [
+          -1,
+          -0.9
+        ],
+        "y": -3.08,
+        "z": [
+          1.04,
+          1.42
+        ]
+      },
+      {
+        "x": [
+          0.9,
+          1
+        ],
+        "y": -3.08,
+        "z": [
+          1.04,
+          1.42
+        ]
+      }
+    ],
+    "walkable": "UNRULED — see _confirm.bed_walkable",
+    "visible_facings": [
+      "N",
+      "NE",
+      "E",
+      "SE",
+      "S",
+      "SW",
+      "W",
+      "NW"
+    ]
+  },
+  "THRESHOLD": [
+    {
+      "id": "door_fl",
+      "side": "street (-x, driver)",
+      "span_y": [
+        0.54,
+        1.74
+      ],
+      "clear_width_m": 1.2,
+      "sill_z": 0.7,
+      "head_z": 1.9,
+      "clear_height_m": 1.2,
+      "jamb_z": [
+        0.72,
+        1.9
+      ],
+      "hinge_axis": {
+        "kind": "vertical",
+        "at": [
+          -1,
+          1.74
+        ],
+        "edge": "forward"
+      },
+      "swing_deg": 62,
+      "swing_sense": "CCW seen from above",
+      "keep_clear": {
+        "radius_m": 1.2,
+        "sector_deg": [
+          0,
+          62
+        ],
+        "arc_at_sill": [
+          [
+            -1.03,
+            0.54
+          ],
+          [
+            -1.35,
+            0.59
+          ],
+          [
+            -1.64,
+            0.73
+          ],
+          [
+            -1.89,
+            0.94
+          ],
+          [
+            -2.07,
+            1.2
+          ]
+        ],
+        "outboard_extreme_x": -2.07,
+        "_note": "sweep of the free edge about the hinge axis; the collider is the arc, not the leaf"
+      },
+      "boarding": {
+        "ground_to_sill_m": 0.7,
+        "with_step_m": 0.15,
+        "_note": "0.70 m step-in bare; the running board (STEP) breaks it into 0.55 + 0.15"
+      },
+      "reach_point": {
+        "pos": [
+          -1.75,
+          0.1,
+          0
+        ],
+        "hinge_clearance_m": 1.8,
+        "_note": "outside the swept disc (clearance > radius); NOT tested against ground colliders"
+      },
+      "mirror": {
+        "outboard_x": 1.36,
+        "z": [
+          1.4,
+          1.78
+        ],
+        "rides": "this door — it swings with the leaf and comes inboard as it opens"
+      },
+      "visible_facings": [
+        "NE",
+        "E",
+        "SE"
+      ],
+      "provenance": "buildDoors defs + G.doorF/G.doorR, G.doorZ0, G.glassTop; sill slab z=0.70, jambs 0.72..glassTop; hinge (sx*1.00, y1); a = sx*pose*62deg"
+    },
+    {
+      "id": "door_fr",
+      "side": "curb (+x)",
+      "span_y": [
+        0.54,
+        1.74
+      ],
+      "clear_width_m": 1.2,
+      "sill_z": 0.7,
+      "head_z": 1.9,
+      "clear_height_m": 1.2,
+      "jamb_z": [
+        0.72,
+        1.9
+      ],
+      "hinge_axis": {
+        "kind": "vertical",
+        "at": [
+          1,
+          1.74
+        ],
+        "edge": "forward"
+      },
+      "swing_deg": 62,
+      "swing_sense": "CW seen from above",
+      "keep_clear": {
+        "radius_m": 1.2,
+        "sector_deg": [
+          0,
+          62
+        ],
+        "arc_at_sill": [
+          [
+            1.03,
+            0.54
+          ],
+          [
+            1.35,
+            0.59
+          ],
+          [
+            1.64,
+            0.73
+          ],
+          [
+            1.89,
+            0.94
+          ],
+          [
+            2.07,
+            1.2
+          ]
+        ],
+        "outboard_extreme_x": 2.07,
+        "_note": "sweep of the free edge about the hinge axis; the collider is the arc, not the leaf"
+      },
+      "boarding": {
+        "ground_to_sill_m": 0.7,
+        "with_step_m": 0.15,
+        "_note": "0.70 m step-in bare; the running board (STEP) breaks it into 0.55 + 0.15"
+      },
+      "reach_point": {
+        "pos": [
+          1.75,
+          0.1,
+          0
+        ],
+        "hinge_clearance_m": 1.8,
+        "_note": "outside the swept disc (clearance > radius); NOT tested against ground colliders"
+      },
+      "mirror": {
+        "outboard_x": 1.36,
+        "z": [
+          1.4,
+          1.78
+        ],
+        "rides": "this door — it swings with the leaf and comes inboard as it opens"
+      },
+      "visible_facings": [
+        "SW",
+        "W",
+        "NW"
+      ],
+      "provenance": "buildDoors defs + G.doorF/G.doorR, G.doorZ0, G.glassTop; sill slab z=0.70, jambs 0.72..glassTop; hinge (sx*1.00, y1); a = sx*pose*62deg"
+    },
+    {
+      "id": "door_rl",
+      "side": "street (-x, driver)",
+      "span_y": [
+        -0.76,
+        0.46
+      ],
+      "clear_width_m": 1.22,
+      "sill_z": 0.7,
+      "head_z": 1.9,
+      "clear_height_m": 1.2,
+      "jamb_z": [
+        0.72,
+        1.9
+      ],
+      "hinge_axis": {
+        "kind": "vertical",
+        "at": [
+          -1,
+          0.46
+        ],
+        "edge": "forward"
+      },
+      "swing_deg": 62,
+      "swing_sense": "CCW seen from above",
+      "keep_clear": {
+        "radius_m": 1.22,
+        "sector_deg": [
+          0,
+          62
+        ],
+        "arc_at_sill": [
+          [
+            -1.03,
+            -0.76
+          ],
+          [
+            -1.35,
+            -0.71
+          ],
+          [
+            -1.65,
+            -0.57
+          ],
+          [
+            -1.91,
+            -0.36
+          ],
+          [
+            -2.09,
+            -0.09
+          ]
+        ],
+        "outboard_extreme_x": -2.09,
+        "_note": "sweep of the free edge about the hinge axis; the collider is the arc, not the leaf"
+      },
+      "boarding": {
+        "ground_to_sill_m": 0.7,
+        "with_step_m": 0.15,
+        "_note": "0.70 m step-in bare; the running board (STEP) breaks it into 0.55 + 0.15"
+      },
+      "reach_point": {
+        "pos": [
+          -1.75,
+          -1.2,
+          0
+        ],
+        "hinge_clearance_m": 1.82,
+        "_note": "outside the swept disc (clearance > radius); NOT tested against ground colliders"
+      },
+      "visible_facings": [
+        "NE",
+        "E",
+        "SE"
+      ],
+      "provenance": "buildDoors defs + G.doorF/G.doorR, G.doorZ0, G.glassTop; sill slab z=0.70, jambs 0.72..glassTop; hinge (sx*1.00, y1); a = sx*pose*62deg"
+    },
+    {
+      "id": "door_rr",
+      "side": "curb (+x)",
+      "span_y": [
+        -0.76,
+        0.46
+      ],
+      "clear_width_m": 1.22,
+      "sill_z": 0.7,
+      "head_z": 1.9,
+      "clear_height_m": 1.2,
+      "jamb_z": [
+        0.72,
+        1.9
+      ],
+      "hinge_axis": {
+        "kind": "vertical",
+        "at": [
+          1,
+          0.46
+        ],
+        "edge": "forward"
+      },
+      "swing_deg": 62,
+      "swing_sense": "CW seen from above",
+      "keep_clear": {
+        "radius_m": 1.22,
+        "sector_deg": [
+          0,
+          62
+        ],
+        "arc_at_sill": [
+          [
+            1.03,
+            -0.76
+          ],
+          [
+            1.35,
+            -0.71
+          ],
+          [
+            1.65,
+            -0.57
+          ],
+          [
+            1.91,
+            -0.36
+          ],
+          [
+            2.09,
+            -0.09
+          ]
+        ],
+        "outboard_extreme_x": 2.09,
+        "_note": "sweep of the free edge about the hinge axis; the collider is the arc, not the leaf"
+      },
+      "boarding": {
+        "ground_to_sill_m": 0.7,
+        "with_step_m": 0.15,
+        "_note": "0.70 m step-in bare; the running board (STEP) breaks it into 0.55 + 0.15"
+      },
+      "reach_point": {
+        "pos": [
+          1.75,
+          -1.2,
+          0
+        ],
+        "hinge_clearance_m": 1.82,
+        "_note": "outside the swept disc (clearance > radius); NOT tested against ground colliders"
+      },
+      "visible_facings": [
+        "SW",
+        "W",
+        "NW"
+      ],
+      "provenance": "buildDoors defs + G.doorF/G.doorR, G.doorZ0, G.glassTop; sill slab z=0.70, jambs 0.72..glassTop; hinge (sx*1.00, y1); a = sx*pose*62deg"
+    }
+  ],
+  "STEP": {
+    "present_when": {
+      "steps": true
+    },
+    "default": false,
+    "_note": "the running boards are an OPTIONAL part (resolve() defaults steps:false). Stowed they do not exist — there is nothing to stand on and the step-in is the bare 0.70 m.",
+    "boards": [
+      {
+        "id": "board_street",
+        "tread_top_z": 0.55,
+        "outboard_x": [
+          -1.16,
+          -1.04
+        ],
+        "span_y": [
+          -0.6,
+          1.6
+        ],
+        "length_m": 2.2
+      },
+      {
+        "id": "board_curb",
+        "tread_top_z": 0.55,
+        "outboard_x": [
+          1.04,
+          1.16
+        ],
+        "span_y": [
+          -0.6,
+          1.6
+        ],
+        "length_m": 2.2
+      }
+    ],
+    "risers_m": {
+      "ground_to_tread": 0.55,
+      "tread_to_sill": 0.15
+    },
+    "serves": [
+      "door_fl",
+      "door_fr",
+      "door_rl",
+      "door_rr"
+    ],
+    "provenance": "buildSteps boxAt |1.04..1.16| y -0.60..1.60 z 0.50..0.55 — exact"
+  },
+  "TOW": {
+    "hitch": {
+      "id": "hitch_rear",
+      "type": "receiver_ball",
+      "present_when": {
+        "hitch": true
+      },
+      "default": true,
+      "receiver": {
+        "x": [
+          -0.07,
+          0.07
+        ],
+        "y": [
+          -3.4,
+          -3.2
+        ],
+        "z": [
+          0.36,
+          0.5
+        ]
+      },
+      "coupling_point": [
+        0,
+        -3.36,
+        0.55
+      ],
+      "ball_top_z": 0.6,
+      "visible_facings": [
+        "N",
+        "NE",
+        "NW"
+      ],
+      "provenance": "buildFrame hitch block + tube [0,-3.36,0.50]->[0,-3.36,0.60]; anchors().hitch is the same point"
+    },
+    "front_hooks": [
+      {
+        "id": "tow_hook_street",
+        "pos": [
+          -0.4,
+          3.32,
+          0.47
+        ]
+      },
+      {
+        "id": "tow_hook_curb",
+        "pos": [
+          0.4,
+          3.32,
+          0.47
+        ]
+      }
+    ],
+    "front_hooks_visible_facings": [
+      "SE",
+      "S",
+      "SW"
+    ],
+    "_note": "a recovery point apiece and one ball. No pintle, no chain loops, no fifth wheel — the bed floor is unpierced.",
+    "provenance": "buildFrame tow hooks boxAt sx*0.40+-0.04, y 3.28..3.36, z 0.42..0.52"
+  },
+  "SUSPENSION": {
+    "travel_m": {
+      "front": 0.09,
+      "rear": 0.11
+    },
+    "input_range": [
+      -1,
+      1
+    ],
+    "formula": "dz(y) = -(susF*0.09)*t - (susR*0.11)*(1-t),  t = (y - (-2.12)) / 4.30",
+    "applies_to": "the whole body group (cab, bed, doors, hood, gate, steps, hitch, mirrors) — the wheels do NOT move",
+    "consequence": "every polygon in CAB, CARGO, THRESHOLD, STEP and TOW rides that dz. An occupant or a crate parented to the body must take the same correction, and t extrapolates past both axles, so the bumpers pitch further than the travel.",
+    "provenance": "build() dz(y), verbatim"
+  },
+  "WHEELS": {
+    "radius_m": 0.42,
+    "tire_width_m": 0.26,
+    "axles": {
+      "front_y": 2.18,
+      "rear_y": -2.12,
+      "wheelbase_m": 4.3
+    },
+    "list": [
+      {
+        "id": "FL",
+        "pos": [
+          -0.9,
+          2.18,
+          0.42
+        ],
+        "role": "steer"
+      },
+      {
+        "id": "FR",
+        "pos": [
+          0.9,
+          2.18,
+          0.42
+        ],
+        "role": "steer"
+      },
+      {
+        "id": "RL_inner",
+        "pos": [
+          -0.72,
+          -2.12,
+          0.42
+        ],
+        "role": "dual_inner"
+      },
+      {
+        "id": "RL_outer",
+        "pos": [
+          -1.05,
+          -2.12,
+          0.42
+        ],
+        "role": "dual_outer"
+      },
+      {
+        "id": "RR_inner",
+        "pos": [
+          0.72,
+          -2.12,
+          0.42
+        ],
+        "role": "dual_inner"
+      },
+      {
+        "id": "RR_outer",
+        "pos": [
+          1.05,
+          -2.12,
+          0.42
+        ],
+        "role": "dual_outer"
+      }
+    ],
+    "track_m": {
+      "front": 1.8,
+      "rear_outer": 2.1
+    },
+    "contact_z": 0,
+    "_note": "roll is per-wheel (wFL..wRR, in REVOLUTIONS) on top of the master roll. One revolution closes the hubs exactly but the tread only to 0.29% of painted pixels (25.133 stripes per turn), so a rolling loop is seamless rather than bit-exact. Steering is NOT modelled — the front wheels do not yaw.",
+    "provenance": "G.frontWX / rearWXin / rearWXout / axF / axR / wheelR / tireW — exact"
+  },
+  "ATTACH": {
+    "exhaust_tip": {
+      "pos": [
+        0.62,
+        -3.3,
+        0.27
+      ],
+      "_note": "curb side, aft — smoke/heat FX attach"
+    },
+    "fuel_tank": {
+      "x": [
+        -0.92,
+        -0.46
+      ],
+      "y": [
+        -0.9,
+        0.2
+      ],
+      "z": [
+        0.4,
+        0.62
+      ],
+      "side": "street",
+      "_note": "the tank is modelled; the filler neck is not (see _excluded)"
+    },
+    "engine_bay": {
+      "hood_hinge": {
+        "kind": "x_axis",
+        "at_y": 1.84,
+        "at_z": 1.5
+      },
+      "open_deg": 46,
+      "bay_walls_x": [
+        -0.86,
+        0.86
+      ],
+      "bay_y": [
+        1.82,
+        2.98
+      ],
+      "block": {
+        "x": [
+          -0.38,
+          0.38
+        ],
+        "y": [
+          2.02,
+          2.86
+        ],
+        "top_z": 1.22
+      },
+      "battery": {
+        "x": [
+          -0.8,
+          -0.48
+        ],
+        "y": [
+          2.56,
+          2.9
+        ],
+        "top_z": 1.24,
+        "side": "street"
+      },
+      "visible_facings": [
+        "SE",
+        "S",
+        "SW"
+      ],
+      "_note": "the bay is real geometry under the hood — a repair/jump interaction has something to look at"
+    },
+    "clearance_lamps": {
+      "y": [
+        1.42,
+        1.5
+      ],
+      "z": [
+        2,
+        2.05
+      ],
+      "count": 5,
+      "_note": "the highest thing on the truck; height_m includes them"
+    }
+  },
+  "INTERACT": [
+    {
+      "id": "drive",
+      "action": "enter_drive",
+      "at": "door_fl",
+      "reach_point": [
+        -1.75,
+        0.1,
+        0
+      ],
+      "visible_facings": [
+        "NE",
+        "E",
+        "SE"
+      ]
+    },
+    {
+      "id": "ride",
+      "action": "enter_ride",
+      "at": "door_fr",
+      "reach_point": [
+        1.75,
+        0.1,
+        0
+      ],
+      "visible_facings": [
+        "SW",
+        "W",
+        "NW"
+      ]
+    },
+    {
+      "id": "tailgate",
+      "action": "open_close",
+      "reach_point": [
+        0,
+        -3.95,
+        0
+      ],
+      "visible_facings": [
+        "N",
+        "NE",
+        "NW"
+      ]
+    },
+    {
+      "id": "bed",
+      "action": "cargo",
+      "reach_point": [
+        1.8,
+        -2.1,
+        0
+      ],
+      "visible_facings": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "_note": "reachable from either side and over the open gate; the tubs split the floor"
+    },
+    {
+      "id": "hood",
+      "action": "open_close_engine",
+      "reach_point": [
+        0,
+        3.95,
+        0
+      ],
+      "visible_facings": [
+        "SE",
+        "S",
+        "SW"
+      ]
+    },
+    {
+      "id": "hitch",
+      "action": "couple",
+      "reach_point": [
+        0,
+        -3.95,
+        0
+      ],
+      "visible_facings": [
+        "N",
+        "NE",
+        "NW"
+      ]
+    }
+  ],
+  "_interact_notes": {
+    "reach_point": "a request, not a promise — a ground-level standing spot derived from which face the item is on. NOT validated against terrain, kerb or another vehicle.",
+    "visible_facings": "computed, not asserted by eye: a feature with outward normal n is listed for facing d when nx*sin(d*45) + ny*cos(d*45) < -0.3 (the near-side test paint() uses, with edge-on excluded). Top faces are visible at all eight."
+  },
+  "_excluded": {
+    "WASHBOARD": "not a hull.",
+    "CLEATS": "not a hull. The tow points are in TOW; they are recovery/coupling points, not mooring.",
+    "walkable_roof": "the cab roof is a 1.64 x 2.52 m panel at z 1.90..2.00 with no rack, no grab rail and no route up. Omitted rather than published as a surface.",
+    "fuel_fill": "no filler neck, cap or door is modelled anywhere on the body. The tank is in ATTACH.fuel_tank; if fuelling needs a point, it wants rig geometry first.",
+    "steering": "the front wheels roll but do not yaw. A turning vehicle needs a yaw on the sprite, not on the wheels.",
+    "plate_and_wipers": "no licence plate, wipers, aerial or decals. At 32 px/m they are 1-3 px and were left out of the bake.",
+    "cab_bed_passthrough": "the rear window is glass; there is no opening between CAB and CARGO.",
+    "interior_INTERACT": "nothing inside the cab is an interactable — no glovebox, radio or handbrake in the rig. Contrast camperInteriorRig, which models its own."
+  },
+  "_confirm": {
+    "bed_walkable": "CARGO.floor is a 1.76 x 1.90 m rubber sole 0.95 m up with 0.51 m walls and two 0.29 m tubs. Whether a player stands in it (vs. it being a container) is unruled. It is published as geometry either way.",
+    "cab_occupancy": "the rear bench is one undivided 1.64 m cushion. Rider count and slot spacing are gameplay's call; the rig has no divisions to read.",
+    "mirror_collider": "BODY.collider_bbox stops at the flares. The mirrors reach 2.72 m over — decide before a mirror clips a doorframe.",
+    "steps_default": "resolve() defaults steps:false, so THRESHOLD.boarding is a 0.70 m step-in on the default build. If the game boards this truck often, ship it with steps:true.",
+    "reach_points": "six reach points, none tested against a ground collider or against each other. The two door points and the two rear points sit 0.15-0.60 m outside the swept arcs."
+  }
+}
