@@ -37,6 +37,11 @@ namespace HiddenHarbours.App.Editor
     /// give-way idiom <see cref="NineMileCreekFields.NearAHedgedRoad"/> already uses where a field boundary
     /// meets a road. A hedgerow that ran into a wood and out the other side would be a fence through a
     /// forest, and a hedgerow tree planted inside one would be counted twice.</para>
+    ///
+    /// <para><b>A lot carries TWO layers.</b> <see cref="ScatterTrees"/> closes its canopy;
+    /// <see cref="ScatterUnderstorey"/> puts the shrub layer under it — the first ask this region has ever
+    /// made for the shrub kit's <c>woods</c> habitat, and the reason a wood lot here now reads as something
+    /// you walk INTO rather than a block of trunks standing on a field floor.</para>
     /// </summary>
     public static class NineMileCreekWoodLots
     {
@@ -281,6 +286,53 @@ namespace HiddenHarbours.App.Editor
                 p => NineMileCreekFields.IsWoodyGround(terrain, p),
                 NineMileCreekFields.ExposureAt, NineMileCreekFields.WetnessAt,
                 available, variantsFor, standing);
+        }
+
+        /// <summary>
+        /// <b>The wood lots' UNDERSTOREY</b> — the shrub layer under their canopy, and the first time this
+        /// region has ever asked the shrub kit for its <c>woods</c> habitat.
+        ///
+        /// <para><b>⭐ THIS IS THE ONLY SHRUB LAYER INSIDE A LOT, which is the opposite of the island's
+        /// arrangement and follows from this region's own law.</b> St Peters' ambient heath walks a lot's
+        /// ground as well, so there an understorey is <i>more</i> shrubs among some. Here the hedges GIVE
+        /// WAY to a lot (<see cref="NineMileCreekFields.IsPlantable"/>), so before this pass a wood lot's
+        /// floor was bare ground and after it the lot's shrubs are entirely this pass's. That is why the
+        /// count matters and why <c>NineMileCreekWoodLotTests</c> measures it.</para>
+        ///
+        /// <para><b>⚠ IT DOES NOT TOUCH THE HINTERLAND-SHARE CEILING, and the two are easy to confuse.</b>
+        /// <see cref="MaxHinterlandShare"/> is a law about how much GROUND the lots cover — it is what keeps
+        /// "denser, more forest-like woods" compatible with "FIELDS, NOT FOREST", and it is measured on the
+        /// lot capsules themselves, never on what grows in them. This pass adds no ground: it plants inside
+        /// capsules that were already declared, so the share is arithmetically unchanged. Nor does it touch
+        /// <c>TheHinterlandIsFieldsAndNotForest</c>, which counts TREES in the FARMED pass. A shrub is
+        /// neither a tree nor a hectare; if a later change makes one of those ceilings move, the cause is
+        /// somewhere else.</para>
+        ///
+        /// <para><paramref name="standing"/> should be every trunk and hedge shrub already placed — the
+        /// canopy is what an understorey stands between (<see cref="WoodlandZones.MinUnderstoreyGapMetres"/>).</para>
+        /// </summary>
+        public static List<NineMileCreekFields.ShrubSite> ScatterUnderstorey(
+            ITidalTerrain terrain, int variants, IEnumerable<Vector2> standing)
+        {
+            var sites = new List<NineMileCreekFields.ShrubSite>();
+            if (terrain == null) return sites;
+
+            foreach (var site in WoodlandZones.ScatterUnderstorey(
+                         Zones, terrain,
+                         // The same woody gate the lot's own trees ask, for the same reason: this pass must
+                         // be allowed on ground a lot has taken, and refused everything else the region
+                         // reserves — including the CUT LANE through its own wood.
+                         p => NineMileCreekFields.IsWoodyGround(terrain, p),
+                         variants, standing))
+            {
+                // The region names the ground; the kit's contract decides what grows on it. Inside a lot
+                // that is normally `woods`, but a damp hollow under the canopy is still a swale and
+                // meadowsweet is what actually grows there — so the field is asked, never assumed.
+                sites.Add(new NineMileCreekFields.ShrubSite(
+                    site.Position, NineMileCreekFields.ShrubHabitatAt(site.Position),
+                    site.Lot, site.Variant, site.Roll));
+            }
+            return sites;
         }
     }
 }

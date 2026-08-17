@@ -35,6 +35,10 @@ namespace HiddenHarbours.Tests.EditMode
         private List<NineMileCreekFields.ShrubSite> _hedges;
         private List<WoodlandZones.LotTreeSite> _lots;
 
+        /// <summary>The lots' UNDERSTOREY — the shrub layer under their canopy, and the only shrubs inside
+        /// a lot on this coast (the hedges give way to one rather than running through it).</summary>
+        private List<NineMileCreekFields.ShrubSite> _understorey;
+
         /// <summary>Every species the tree kit can bake, so the gradient is exercised at full width whatever
         /// a given machine has on disk — the fields tests' own reasoning.</summary>
         static readonly string[] AllTreeSpecies =
@@ -59,6 +63,19 @@ namespace HiddenHarbours.Tests.EditMode
             _farmed = NineMileCreekFields.ScatterTrees(_terrain, AllTreeSpecies, _ => 4);
             _hedges = NineMileCreekFields.ScatterHedges(_terrain, 4);
             _lots = NineMileCreekWoodLots.ScatterTrees(_terrain, AllTreeSpecies, _ => 4, _farmed);
+            _understorey = NineMileCreekWoodLots.ScatterUnderstorey(_terrain, 4, Standing());
+        }
+
+        /// <summary>Everything already on the ground when the understorey runs — exactly what the planter
+        /// hands it. Composed here rather than in the fixture body so a test that wants to re-run the
+        /// scatter (determinism, sabotage) hands it the same second argument.</summary>
+        List<Vector2> Standing()
+        {
+            var standing = new List<Vector2>();
+            foreach (var t in _farmed) standing.Add(t.Position);
+            foreach (var t in _lots) standing.Add(t.Position);
+            foreach (var s in _hedges) standing.Add(s.Position);
+            return standing;
         }
 
         [OneTimeTearDown]
@@ -130,6 +147,14 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(share, Is.GreaterThan(0.01f),
                 $"the wood lots cover only {share:P2} of the hinterland — that is not woods ALONGSIDE the " +
                 "fields, it is three thickets, and the ruling asked for something you can walk into");
+
+            // ⚠ THIS CEILING MEASURES GROUND, NOT PLANTING, AND THE TWO ARE EASY TO CONFUSE. The share
+            // above is `InALot` over the hinterland — the LOT CAPSULES' own footprint. Nothing that grows
+            // inside a lot can move it: not the canopy, and not the UNDERSTOREY this region gained on top
+            // of it. Likewise `TheHinterlandIsFieldsAndNotForest` counts TREES in the FARMED pass, so a
+            // shrub is outside its population by construction. If either number ever moves, the cause is a
+            // change to the zone table or to the farmed scatter — do not go looking in the shrub layer,
+            // and do not let a future pass "make room" for shrubs by widening a law written for canopy.
         }
 
         [Test]
@@ -453,6 +478,243 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(_lots.Count, Is.GreaterThan(60),
                 $"the wood lots grew only {_lots.Count} trees between them, which is not woods you can " +
                 "walk into");
+        }
+
+        // =============================================================================================
+        //  7. THE UNDERSTOREY — the floor of the lots
+        //
+        //  ⭐ This is the region's FIRST and ONLY ask for the shrub kit's `woods` habitat, and it is what
+        //  retired NineMileCreekFieldsTests.NoWoodsHabitatIsEverAskedFor. Before this the lots were a
+        //  canopy standing on a meadow floor: the hedges give way to a lot, so a lot's ground grew
+        //  nothing at all below head height.
+        // =============================================================================================
+
+        [Test]
+        public void EveryUnderstoreyShrubStandsInsideADeclaredLot()
+        {
+            Assert.That(_understorey.Count, Is.GreaterThan(0),
+                "the wood lots grew no understorey at all — the woods habitat is declared and then never " +
+                "reached, which is the state #554 flagged and this pass exists to end");
+
+            foreach (var site in _understorey)
+            {
+                var lot = WoodlandZones.Require(NineMileCreekWoodLots.Zones, site.Line);
+                Assert.IsTrue(lot.Contains(site.Position),
+                    $"an understorey shrub at {site.Position} is outside '{site.Line}' — a bounded lot " +
+                    "that leaks is not bounded, and on this coast the bound is the whole argument");
+                Assert.That(site.Habitat, Is.EqualTo(StPetersShrubs.WoodsHabitat)
+                                            .Or.EqualTo("bog").Or.EqualTo("swale"),
+                    $"an understorey shrub at {site.Position} is on '{site.Habitat}' ground. Under a " +
+                    "canopy the honest answers are the woods understorey and — where the ground is wet — " +
+                    "a bog or a swale, which really do occur under trees. `edge` or `barren` there would " +
+                    "mean the habitat field has stopped seeing the lot.");
+            }
+        }
+
+        [Test]
+        public void NoUnderstoreyShrubStandsInALanesTread()
+        {
+            // The owner's ruling cuts the canopy AND what grows under it: a corridor whose trunks were
+            // cleared and then filled with waist-high brush is not a corridor.
+            foreach (var lot in NineMileCreekWoodLots.Lots)
+            {
+                var lane = WoodlandZones.Require(NineMileCreekWoodLots.Zones,
+                                                 lot.Name + NineMileCreekWoodLots.LaneSuffix);
+                int inTread = _understorey.Count(s => lane.SpineDistance(s.Position) < lane.Radius);
+                Assert.That(inTread, Is.Zero,
+                    $"{inTread} understorey shrub(s) stand in the tread of '{lane.Name}' — the lane is cut " +
+                    "for the trees and grown over by the shrubs, which leaves the player walking through a " +
+                    "thicket on a path that is declared clear");
+            }
+        }
+
+        [Test]
+        public void Sabotage_AnUnderstoreyThatIgnoresTheCutLanes_FillsTheirTreads()
+        {
+            // ⭐ "A cutout that stops cutting must fail", applied to the new layer. The cut reaches the
+            // understorey through ONE gate — NineMileCreekFields.IsWoodyGround asking
+            // NineMileCreekWoodLots.IsCleared — so the arm rebuilds the scatter with exactly that gate
+            // removed and nothing else changed. If the treads stay clear anyway, the test above is passing
+            // on something incidental (the fringe roll, say) rather than on the corridor being cut.
+            var withoutTheCut = WoodlandZones.ScatterUnderstorey(
+                NineMileCreekWoodLots.Zones, _terrain,
+                p => NineMileCreekFields.IsFieldGround(_terrain, p,
+                         NineMileCreekFields.FieldFloorElevation)
+                     && !NineMileCreekFields.OnAnyCarriageway(p, NineMileCreekFields.RoadVergeMetres)
+                     && !NineMileCreekFields.OnAnyPad(p, NineMileCreekFields.RoadVergeMetres)
+                     && !NineMileCreekFields.OnATownLot(p, NineMileCreekFields.TownLotBreathingMetres)
+                     && !NineMileCreekFields.OnAWorkingSite(p),
+                4, new List<Vector2>());
+
+            int inTreads = 0;
+            foreach (var lot in NineMileCreekWoodLots.Lots)
+            {
+                var lane = WoodlandZones.Require(NineMileCreekWoodLots.Zones,
+                                                 lot.Name + NineMileCreekWoodLots.LaneSuffix);
+                inTreads += withoutTheCut.Count(s => lane.SpineDistance(s.Position) < lane.Radius);
+            }
+
+            Assert.That(inTreads, Is.GreaterThan(3),
+                "with the cut-lane gate removed the lanes' treads still came back empty of shrubs — so the " +
+                "understorey is not actually being cut out of the corridors, and the test that says it is " +
+                "is passing on something else");
+        }
+
+        [Test]
+        public void TheUnderstoreyIsSparserThanTheCanopyOverIt()
+        {
+            // ⭐ THE RULING AS A MEASUREMENT: "an understorey reads as depth, not as a second canopy."
+            // WoodlandZones.UnderstoreyTrunksPerShrub is the dial and this is what holds it honest — a
+            // shrub layer as dense as the trees is a thicket, and you cannot see into a thicket.
+            //
+            // ⚠ The RATIO is pooled across the three lots and only the weaker claim is made per lot: one
+            // 30 m lot is a few dozen candidate cells, so a per-lot 2:1 bar would partly be measuring
+            // where its lane happened to fall. The island's twin of this test says the same thing.
+            int trunksAll = 0, shrubsAll = 0;
+
+            foreach (var lot in NineMileCreekWoodLots.Lots)
+            {
+                int trunks = _lots.Count(s => s.Lot == lot.Name)
+                             + _farmed.Count(t => lot.Contains(t.Position));
+                int shrubs = _understorey.Count(s => s.Line == lot.Name);
+                trunksAll += trunks; shrubsAll += shrubs;
+
+                Assert.That(shrubs, Is.GreaterThan(0),
+                    $"'{lot.Name}' grew no understorey at all — on this coast the hedges give way to a " +
+                    "lot, so that lot's floor is bare ground and nothing else will cover it");
+                Assert.That(shrubs, Is.LessThan(trunks),
+                    $"'{lot.Name}' carries {shrubs} understorey shrubs under {trunks} trunks — a floor at " +
+                    "least as dense as the canopy over it is a thicket, not a wood you can walk into");
+            }
+
+            Assert.That(shrubsAll, Is.GreaterThan(15),
+                $"the three wood lots grew {shrubsAll} understorey shrubs between them, which is not a " +
+                "layer — every other assertion in this section would pass vacuously on it");
+            Assert.That(shrubsAll * 2, Is.LessThan(trunksAll),
+                $"the lots carry {shrubsAll} understorey shrubs under {trunksAll} trunks. The dial asks " +
+                $"for one shrub per {WoodlandZones.UnderstoreyTrunksPerShrub} trunks; at better than one " +
+                "in two the layer has stopped reading as depth under a canopy and started reading as a " +
+                "second canopy at knee height");
+
+            Debug.Log($"[NineMileCreekWoodLotTests] understorey vs canopy: {shrubsAll} shrubs under " +
+                      $"{trunksAll} trunks (1 : {trunksAll / (float)Mathf.Max(1, shrubsAll):0.0}).");
+        }
+
+        [Test]
+        public void TheUnderstoreyStandsBetweenTheTrunksRatherThanOnThem()
+        {
+            // Trees pivot at the trunk FOOT and shrubs at the root crown, so a shrub rolled onto a trunk's
+            // position is drawn growing out of the tree — the one artefact a layered wood can produce that
+            // a single layer cannot.
+            // ⚠ ONE assertion over ~60,000 pairs, not 60,000 assertions: the nearest neighbour is found
+            // first and the constraint runs once. NUnit's constraint machinery is not free and this
+            // fixture already walks two whole scatters.
+            var standing = Standing();
+            float worst = float.MaxValue;
+            Vector2 worstShrub = Vector2.zero, worstNeighbour = Vector2.zero;
+
+            foreach (var s in _understorey)
+            foreach (var p in standing)
+            {
+                float d = Vector2.Distance(s.Position, p);
+                if (d >= worst) continue;
+                worst = d; worstShrub = s.Position; worstNeighbour = p;
+            }
+
+            Assert.That(worst, Is.GreaterThanOrEqualTo(WoodlandZones.MinUnderstoreyGapMetres - 1e-3f),
+                $"the closest an understorey shrub gets to something already planted is {worst:0.00} m — " +
+                $"a shrub at {worstShrub} against a trunk or hedge at {worstNeighbour}, inside the " +
+                $"{WoodlandZones.MinUnderstoreyGapMetres:0.00} m that keeps a shrub BESIDE a trunk rather " +
+                "than drawn growing out of one");
+        }
+
+        [Test]
+        public void TheUnderstoreyThinsTowardTheLotsRims()
+        {
+            // The same taper the canopy has, read the same way — proof that the fringe roll is being
+            // asked rather than ignored. ⚠ POOLED ACROSS THE LOTS, unlike the canopy's twin: an
+            // understorey is a fraction of the trunks over it by design, so a single 30 m lot carries a
+            // couple of dozen shrubs and a per-lot core/fringe split of that is noise. The claim is the
+            // same claim; only the sample is wider.
+            float coreTotal = 0f, fringeTotal = 0f;
+            int inCore = 0, inFringe = 0;
+
+            foreach (var lot in NineMileCreekWoodLots.Lots)
+            {
+                float coreRadius = lot.Radius * NineMileCreekWoodLots.LotCoreFraction;
+                float coreArea = Mathf.PI * coreRadius * coreRadius;
+                coreTotal += coreArea;
+                fringeTotal += Mathf.PI * lot.Radius * lot.Radius - coreArea;
+
+                foreach (var s in _understorey.Where(s => s.Line == lot.Name))
+                    if (lot.SpineDistance(s.Position) <= coreRadius) inCore++; else inFringe++;
+            }
+
+            float coreDensity = inCore / coreTotal;
+            float fringeDensity = inFringe / fringeTotal;
+
+            Assert.That(coreDensity, Is.GreaterThan(fringeDensity * 1.5f),
+                $"the understorey carries {coreDensity * 1000f:0.0} shrubs per 1000 m² in the lots' cores " +
+                $"against {fringeDensity * 1000f:0.0} in their fringes. A wood whose trees thin out at the " +
+                "rim while its brush runs flat to a hard edge reads as a hedge round a plantation");
+        }
+
+        [Test]
+        public void TheUnderstoreyIsDeterministic_NoRng()
+        {
+            var again = NineMileCreekWoodLots.ScatterUnderstorey(_terrain, 4, Standing());
+
+            Assert.That(again.Count, Is.EqualTo(_understorey.Count),
+                "two runs of the understorey scatter grew different numbers of shrubs — something in it " +
+                "is not a pure function of position (rule 5)");
+            for (int i = 0; i < again.Count; i++)
+            {
+                Assert.That(again[i].Position, Is.EqualTo(_understorey[i].Position));
+                Assert.That(again[i].Habitat, Is.EqualTo(_understorey[i].Habitat));
+                Assert.That(again[i].Line, Is.EqualTo(_understorey[i].Line));
+                Assert.That(again[i].Variant, Is.EqualTo(_understorey[i].Variant));
+            }
+        }
+
+        [Test]
+        public void TheUnderstoreyIsNotAHedgerowAndTheHedgerowsDidNotMove()
+        {
+            // ⚠ TWO POPULATIONS, RETURNED BY TWO CALLS, AND THEY MUST NOT MERGE. Every hedge shrub is
+            // explicable by the line that owns it (NineMileCreekFieldsTests' "derive, never eyeball"
+            // test); an understorey shrub carries a LOT's name in the same field and would fail it. This
+            // is the seam said out loud, so a later pass that concatenates the two lists for convenience
+            // fails here with the reason rather than there with a puzzle.
+            var lotNames = new HashSet<string>(NineMileCreekWoodLots.Lots.Select(l => l.Name));
+
+            foreach (var s in _understorey)
+                Assert.IsTrue(lotNames.Contains(s.Line),
+                    $"an understorey shrub claims to belong to '{s.Line}', which is not one of this " +
+                    $"region's wood lots [{string.Join(", ", lotNames)}]");
+
+            foreach (var s in _hedges)
+                Assert.IsFalse(lotNames.Contains(s.Line),
+                    $"a hedge shrub claims to belong to the wood lot '{s.Line}' — the two shrub " +
+                    "populations have merged");
+        }
+
+        [Test]
+        public void TheUnderstoreyFitsItsGameObjectBudget()
+        {
+            int total = _hedges.Count + _understorey.Count;
+            Debug.Log($"[NineMileCreekWoodLotTests] CENSUS — {total} shrub GameObjects in the hinterland: " +
+                      $"{_hedges.Count} hedgerow + {_understorey.Count} understorey in " +
+                      $"{NineMileCreekWoodLots.LotCount} wood lots, at one shrub per " +
+                      $"{WoodlandZones.UnderstoreyTrunksPerShrub} trunks over them.");
+
+            // The understorey is bounded by the lots and the lots are bounded by MaxHinterlandShare, so
+            // this cannot run away without one of those failing first — which is exactly why the bar is
+            // set against the layer it was ADDED to rather than at some absolute number: if the shrubs
+            // ever outnumber the hedges, a bounded 4% of the hinterland is carrying more brush than every
+            // field boundary and gravel road in the region put together, and something is wrong upstream.
+            Assert.That(_understorey.Count, Is.LessThan(_hedges.Count),
+                $"{_understorey.Count} understorey shrubs against {_hedges.Count} in the hedgerows — the " +
+                "lots are a few percent of the hinterland and cannot honestly carry more shrubs than every " +
+                "hedge in the region");
         }
     }
 }

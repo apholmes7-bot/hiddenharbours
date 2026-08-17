@@ -817,12 +817,24 @@ namespace HiddenHarbours.Tests.EditMode
             planted.AddRange(StPetersWoods.ScatterFlowers(
                                  _terrain, new List<string> { "Buttercup", "LupinBlue", "BlueFlag" })
                                           .Select(f => (f.Species, f.Position)));
+            var shrubSpecies = new List<string> { "LowbushBlueberry", "SweetGale", "Meadowsweet",
+                                                  "BeakedHazelnut", "WildRose", "Raspberry" };
+            System.Func<string, string> shrubHabitat =
+                s => habitatOf.TryGetValue(s, out string h) ? h : null;
+
             planted.AddRange(StPetersShrubs.Scatter(
-                                 _terrain,
-                                 new List<string> { "LowbushBlueberry", "SweetGale", "Meadowsweet",
-                                                    "BeakedHazelnut", "WildRose", "Raspberry" },
-                                 s => habitatOf.TryGetValue(s, out string h) ? h : null,
-                                 ShrubCatalog.Variants)
+                                 _terrain, shrubSpecies, shrubHabitat, ShrubCatalog.Variants)
+                                          .Select(s => (s.Species, s.Position)));
+
+            // ⚠ THE UNDERSTOREY IS A FOURTH PLANTER AND HAS TO BE IN HERE, or this check quietly stops
+            // covering a whole layer — which is the exact hole its own preamble warns about ("the
+            // structural argument is only as good as its premise that every planter routes through
+            // IsPlantable"). Handed NOTHING already standing on purpose: the min-gap rule only ever
+            // removes sites, so an empty neighbour set yields a SUPERSET of what the build plants, which
+            // is the conservative direction for a "nothing is inside a wall" test.
+            planted.AddRange(StPetersShrubs.ScatterUnderstorey(
+                                 _terrain, shrubSpecies, shrubHabitat, ShrubCatalog.Variants,
+                                 new List<Vector2>())
                                           .Select(s => (s.Species, s.Position)));
 
             Assert.IsNotEmpty(planted, "nothing was planted at all — this check would be vacuous");

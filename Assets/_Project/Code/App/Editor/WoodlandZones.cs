@@ -427,7 +427,7 @@ namespace HiddenHarbours.App.Editor
                     // by the region's isPlantable, so this is one call and not two opinions.
                     if (!isPlantable(p)) continue;
 
-                    if (TooNear(neighbours, p)) continue;
+                    if (TooNear(neighbours, p, MinTrunkGapMetres)) continue;
 
                     string species = StPetersWoods.PickSpecies(
                         StPetersWoods.SpeciesPreference(exposureAt != null ? exposureAt(p) : 0.5f,
@@ -451,9 +451,9 @@ namespace HiddenHarbours.App.Editor
             return sites;
         }
 
-        static bool TooNear(List<Vector2> neighbours, Vector2 p)
+        static bool TooNear(List<Vector2> neighbours, Vector2 p, float gap)
         {
-            const float gap2 = MinTrunkGapMetres * MinTrunkGapMetres;
+            float gap2 = gap * gap;
             for (int i = 0; i < neighbours.Count; i++)
                 if ((neighbours[i] - p).sqrMagnitude < gap2) return true;
             return false;
@@ -461,6 +461,208 @@ namespace HiddenHarbours.App.Editor
 
         static Rect Grow(Rect r, float by) =>
             Rect.MinMaxRect(r.xMin - by, r.yMin - by, r.xMax + by, r.yMax + by);
+
+        // =================================================================================================
+        //  THE UNDERSTOREY
+        // =================================================================================================
+        // ⭐ WHAT THIS IS FOR. The shrub kit ships a `woods` habitat and its own contract calls it an
+        // UNDERSTOREY — the layer that belongs INSIDE a stand. Until this pass nothing ever asked for it on
+        // the mainland at all, and on the island a lot's ground could still resolve to open-meadow habitat,
+        // so the owner's closed stands were canopy standing on a meadow floor. This scatter is the ASK.
+        //
+        // ⚠ IT IS THE LOT SCATTER'S MECHANISM, NOT A SECOND ONE. Same grid, same LotJitterFraction, same
+        // PlantingShare roll, same accumulate-across-lots neighbour set. The measurement that produced those
+        // choices (a min-gap rule fighting a dense jittered grid; a linear taper that did not taper) is
+        // written up on LotJitterFraction and WoodlandZone.PlantingShare, and re-deriving any of it here
+        // would mean re-learning it.
+
+        /// <summary>
+        /// How many canopy trunks stand for every understorey shrub.
+        ///
+        /// <para><b>⭐ THE ONE DIAL, AND IT IS A RATIO RATHER THAN A SPACING — which is what makes it
+        /// travel.</b> An understorey is not an independent layer that happens to be under trees; it is a
+        /// layer whose grain is the canopy's grain. Expressing it as "a shrub for every third trunk" means
+        /// the island's tight 3.6 m lots and Nine Mile Creek's looser 4.2 m worked wood lots each get an
+        /// understorey in proportion to what stands over them, with no second table to keep in step — and a
+        /// re-tune of either region's <c>LotCoreSpacingMetres</c> carries its shrubs with it.</para>
+        ///
+        /// <para><b>Three, and the number is the whole "depth, not a second canopy" ruling as arithmetic.</b>
+        /// A lot core measures ~41 trunks per 1000 m²; at one shrub per three trunk cells the same core lays
+        /// out ~26 shrubs per 1000 m² and keeps ~20 of them once they have stood clear of the trunks — call
+        /// it half as many shrubs as trunks. Two would have put the understorey at 0.7 of the canopy, which
+        /// on the ground reads as a second canopy at knee height rather than as depth under the first.</para>
+        /// </summary>
+        public const int UnderstoreyTrunksPerShrub = 3;
+
+        /// <summary>
+        /// How far apart understorey shrubs stand in a lot's core: the lot's own trunk spacing, widened so
+        /// that one shrub covers <see cref="UnderstoreyTrunksPerShrub"/> of its cells.
+        ///
+        /// <para>⚠ <b>√N, not N.</b> A grid carries one site per <i>step²</i> of ground, so thinning a grid
+        /// by a factor of three means widening its step by √3 — multiplying the step by three would thin the
+        /// layer ninefold and leave a lot with four shrubs in it.</para>
+        /// </summary>
+        public static float UnderstoreySpacingFor(WoodlandZone lot) =>
+            lot.CoreSpacingMetres * Mathf.Sqrt(UnderstoreyTrunksPerShrub);
+
+        /// <summary>
+        /// How much room a planted shrub keeps from <b>anything already standing</b> — a trunk's foot or
+        /// another shrub's root crown.
+        ///
+        /// <para><b>⭐ HALF THE TRUNK GAP, AND THAT IS THE "BETWEEN THE TRUNKS, NOT ON THEM" RULE AS A
+        /// NUMBER.</b> Trees pivot at the trunk foot and shrubs at the root crown, so a shrub rolled onto a
+        /// trunk's position is drawn growing out of the tree. Two trunks are never nearer than
+        /// <see cref="MinTrunkGapMetres"/>, so a shrub that clears every trunk by half of it is — by
+        /// construction — nearer the middle of a gap than it is to either foot.</para>
+        ///
+        /// <para><b>⚠ It is a SAFETY NET, not the density instrument, and the difference was measured
+        /// once already.</b> <see cref="LotJitterFraction"/> records what happens when a min-gap rule and a
+        /// jittered grid fight: 46% of a core's candidates thrown out and a taper that flattened. The
+        /// understorey has room by construction — at <see cref="UnderstoreySpacingFor"/> two orthogonal
+        /// neighbours can approach no nearer than <c>step × (1 − 2 × LotJitterFraction)</c>, which is 2.49 m
+        /// on the island's 6.24 m grid and 2.91 m on the mainland's 7.27 m one. Both are twice this gap, so
+        /// shrub-on-shrub rejections are essentially nil and what the rule actually catches is the trunk
+        /// feet it was written for.</para>
+        /// </summary>
+        public const float MinUnderstoreyGapMetres = MinTrunkGapMetres * 0.5f;
+
+        /// <summary>Suffix folded into a lot's name to salt the understorey's rolls apart from its canopy's.
+        /// The two layers walk different grids over the same ground, so they could not correlate anyway —
+        /// this makes it true on purpose rather than by luck.</summary>
+        const string UnderstoreyLayerSalt = "_Understorey";
+
+        /// <summary>
+        /// One understorey shrub, as GEOMETRY only: where it stands, which lot put it there, how far into
+        /// that lot's core, and the two stable rolls a caller needs to dress it.
+        ///
+        /// <para><b>⚠ No habitat and no species, deliberately.</b> This machinery is region-neutral and the
+        /// shrub kit's habitat vocabulary is not — the region owns the question <i>"what kind of ground is
+        /// this"</i> (<c>StPetersShrubs.HabitatAt</c>, <c>NineMileCreekFields.ShrubHabitatAt</c>) and the
+        /// kit's own contract owns <i>"what grows in that habitat"</i>. The same split
+        /// <see cref="ScatterLots"/> makes when it takes the region's exposure and wetness fields rather
+        /// than inventing them.</para>
+        /// </summary>
+        public readonly struct UnderstoreySite
+        {
+            public readonly Vector2 Position;
+
+            /// <summary>Which lot planted it — so a failing test names a wood rather than a coordinate.</summary>
+            public readonly string Lot;
+
+            /// <summary>How far into that lot's core this shrub stands, 0..1. Carried for the same reason
+            /// <see cref="LotTreeSite.CoreShare"/> is: so a test can prove the understorey thins toward the
+            /// rim instead of taking the taper on trust.</summary>
+            public readonly float CoreShare;
+
+            /// <summary>Column of the kit's variant-axis sheet — a different individual of the same species,
+            /// which is what stops a thicket reading as one bush repeated.</summary>
+            public readonly int Variant;
+
+            /// <summary>A stable per-site roll, for picking between the species a habitat baked more than
+            /// one of. Nine Mile Creek's hedges carry the same field for the same reason.</summary>
+            public readonly int Roll;
+
+            public UnderstoreySite(Vector2 position, string lot, float coreShare, int variant, int roll)
+            {
+                Position = position; Lot = lot; CoreShare = coreShare; Variant = variant; Roll = roll;
+            }
+        }
+
+        /// <summary>Range of <see cref="UnderstoreySite.Roll"/>, matching the hedge pass's own — a plain
+        /// integer a caller can take modulo the size of a habitat's species pool.</summary>
+        public const int UnderstoreyRollRange = 1024;
+
+        /// <summary>
+        /// <b>Plant the understorey of every woodland lot in a table.</b> Pure and deterministic on the same
+        /// terms as <see cref="ScatterLots"/>: grid, jitter, fringe roll, variant and species roll are all
+        /// stable hashes of a lot's name and a grid index, so a rebuild reproduces the layer exactly
+        /// (rule 5).
+        ///
+        /// <para><b>⭐ IT PLANTS INSIDE THE LOTS AND NOWHERE ELSE.</b> The walk is per lot over that lot's
+        /// own bounds, and a candidate outside the capsule scores a zero share and is dropped — so the
+        /// <c>woods</c> habitat cannot be asked for out on the open meadow, in a hedgerow, or anywhere else
+        /// a region grows shrubs. The CUT LANES come out for free through <paramref name="isPlantable"/>,
+        /// which every region already routes through its zone table: a corridor keeps a clear tread, and the
+        /// owner's ruling cuts the canopy AND the understorey rather than repainting the ground.</para>
+        ///
+        /// <para><b><paramref name="alreadyStanding"/> is the canopy plus whatever the region's own shrub
+        /// pass already put down</b>, and both halves matter. The trunks are what an understorey stands
+        /// BETWEEN — see <see cref="MinUnderstoreyGapMetres"/> — and on St Peters the ambient heath walks a
+        /// lot's ground too, because it does not know lots exist. Pass an empty list and the layer still
+        /// plants, with the occasional shrub drawn growing out of a tree, which is the artefact this
+        /// argument exists to prevent.</para>
+        /// </summary>
+        public static List<UnderstoreySite> ScatterUnderstorey(IReadOnlyList<WoodlandZone> zones,
+                                                               ITidalTerrain terrain,
+                                                               System.Func<Vector2, bool> isPlantable,
+                                                               int variants,
+                                                               IEnumerable<Vector2> alreadyStanding)
+        {
+            var sites = new List<UnderstoreySite>();
+            if (zones == null || terrain == null || isPlantable == null) return sites;
+
+            int columns = Mathf.Max(1, variants);
+
+            // ⚠ ACCUMULATED ACROSS LOTS, for the reason ScatterLots' own neighbour set spells out: two lots
+            // that shared any ground would otherwise each plant a shrub inside the other's.
+            var placed = new List<Vector2>();
+            if (alreadyStanding != null) placed.AddRange(alreadyStanding);
+
+            for (int z = 0; z < zones.Count; z++)
+            {
+                var lot = zones[z];
+                if (lot.Kind != WoodlandZoneKind.Lot) continue;
+                if (lot.CoreSpacingMetres <= 0.01f) continue;
+
+                // Only what could possibly be in the way — the same O(candidates × neighbours) argument the
+                // canopy makes, and here the second factor is a whole region's forest AND its heath.
+                var neighbours = new List<Vector2>();
+                Rect reach = Grow(lot.Bounds, MinUnderstoreyGapMetres);
+                foreach (Vector2 p in placed)
+                    if (reach.Contains(p)) neighbours.Add(p);
+
+                int salt = StableHash(lot.Name + UnderstoreyLayerSalt);
+                float step = UnderstoreySpacingFor(lot);
+                float jitter = step * LotJitterFraction;
+
+                Rect bounds = lot.Bounds;
+                int nx = Mathf.Max(1, Mathf.CeilToInt(bounds.width / step));
+                int ny = Mathf.Max(1, Mathf.CeilToInt(bounds.height / step));
+
+                for (int ix = 0; ix < nx; ix++)
+                for (int iy = 0; iy < ny; iy++)
+                {
+                    float cx = bounds.xMin + (ix + 0.5f) * step
+                               + (StPetersShoreMap.Hash01(ix, iy, salt ^ 0x5f3a) * 2f - 1f) * jitter;
+                    float cy = bounds.yMin + (iy + 0.5f) * step
+                               + (StPetersShoreMap.Hash01(ix, iy, salt ^ 0x2b91) * 2f - 1f) * jitter;
+                    var p = new Vector2(cx, cy);
+
+                    // The fringe, read exactly as the canopy reads it — PlantingShare, not CoreShare. An
+                    // understorey that ran at a flat density to a hard rim would put a wall of brush round
+                    // a wood whose own trees are thinning out of it.
+                    float share = lot.CoreShare(p);
+                    if (share <= 0f) continue;
+                    if (StPetersShoreMap.Hash01(ix, iy, salt ^ 0x7d19) > lot.PlantingShare(p)) continue;
+
+                    // ⚠ The region's OWN ground rules — the dooryards, the corridors, the painted paths, the
+                    // building sites, the roads and the made ground. One call, not a second opinion.
+                    if (!isPlantable(p)) continue;
+
+                    if (TooNear(neighbours, p, MinUnderstoreyGapMetres)) continue;
+
+                    int variant = Mathf.Min(columns - 1,
+                        (int)(StPetersShoreMap.Hash01(ix, iy, salt ^ 0x3ae5) * columns));
+                    int roll = (int)(StPetersShoreMap.Hash01(ix, iy, salt ^ 0x11c7) * UnderstoreyRollRange);
+
+                    sites.Add(new UnderstoreySite(p, lot.Name, share, variant, roll));
+
+                    neighbours.Add(p);
+                    placed.Add(p);          // …and carried to the NEXT lot, per the note above
+                }
+            }
+            return sites;
+        }
     }
 }
 #endif

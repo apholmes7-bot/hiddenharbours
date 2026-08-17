@@ -29,6 +29,11 @@ namespace HiddenHarbours.App.Editor
         public const string TreeRootName = "IslandWoods";
         public const string FlowerRootName = "IslandFlowers";
         public const string ShrubRootName = "IslandShrubs";
+
+        /// <summary>Where the woodland lots' UNDERSTOREY hangs — its own root, separate from the ambient
+        /// heath's, for the reason <see cref="ShorePlantRootName"/> gives: the owner can hide one and look
+        /// at the other, which is how a density ruling gets judged rather than argued.</summary>
+        public const string UnderstoreyRootName = "IslandUnderstorey";
         public const string GrassRootName = "IslandGrass";
 
         /// <summary>Where the tidal coast's planting hangs — its own root, separate from the meadow's,
@@ -114,6 +119,14 @@ namespace HiddenHarbours.App.Editor
             /// tunes them with two different knobs — <see cref="StPetersWoods.TreeStep"/> for the reverting
             /// mosaic, <see cref="StPetersWoodlandZones.LotCoreSpacingMetres"/> for the closed stands.</summary>
             public int LotTrees;
+
+            /// <summary>How many of <see cref="Shrubs"/> the lots' UNDERSTOREY put in, as opposed to the
+            /// ambient heath. Counted apart for the same reason <see cref="LotTrees"/> is: they are two
+            /// claims about the island with two different dials — <see cref="StPetersShrubs.ShrubStep"/>
+            /// for the heath, <see cref="WoodlandZones.UnderstoreyTrunksPerShrub"/> for what grows under a
+            /// closed canopy.</summary>
+            public int UnderstoreyShrubs;
+
             public readonly Dictionary<string, int> PerSpecies = new Dictionary<string, int>();
             public readonly Dictionary<string, int> PerFlower = new Dictionary<string, int>();
             public readonly Dictionary<string, int> PerShrub = new Dictionary<string, int>();
@@ -146,8 +159,10 @@ namespace HiddenHarbours.App.Editor
             var result = new Result();
             if (terrain == null) return result;
 
-            PlantTrees(terrain, result);
-            PlantShrubs(terrain, result);
+            // ⚠ ORDER, and it is load-bearing: the trees hand the shrubs their trunk positions, because the
+            // understorey stands BETWEEN trunks rather than on them (WoodlandZones.MinUnderstoreyGapMetres).
+            var trunks = PlantTrees(terrain, result);
+            PlantShrubs(terrain, result, trunks);
             PlantFlowers(terrain, result);
             PlantGrass(terrain, result);
             PlantShorePlants(terrain, result);
@@ -156,7 +171,10 @@ namespace HiddenHarbours.App.Editor
                       $"({result.Trees - result.LotTrees} in the reverting mosaic, {result.LotTrees} " +
                       $"closing the {StPetersWoodlandZones.LotCount} woodland lots the owner ruled on " +
                       $"2026-08-16, each with a lane cut through it) ({result.TreeSummary()}), " +
-                      $"{result.Shrubs} shrubs ({result.ShrubSummary()}), " +
+                      $"{result.Shrubs} shrubs ({result.Shrubs - result.UnderstoreyShrubs} of ambient " +
+                      $"heath, {result.UnderstoreyShrubs} of understorey inside those lots — a shrub for " +
+                      $"every {WoodlandZones.UnderstoreyTrunksPerShrub} trunks over it) " +
+                      $"({result.ShrubSummary()}), " +
                       $"{result.Flowers} wildflowers ({result.FlowerSummary()}), " +
                       $"{result.GrassTufts} grass tufts ({result.HabitatSummary()}) and " +
                       $"{result.ShorePlants} shore plants ({result.ZoneSummary()}) — stands, heath, " +
@@ -542,8 +560,19 @@ namespace HiddenHarbours.App.Editor
         //  TREES
         // =====================================================================================
 
-        static void PlantTrees(ITidalTerrain terrain, Result result)
+        /// <summary>
+        /// Plant the island's woods, and hand back <b>every trunk the scatter decided on</b> — what the
+        /// understorey needs in order to stand between them.
+        ///
+        /// <para>⚠ The SCATTER's positions, not the GameObjects': a species whose sprite fails to resolve is
+        /// not instantiated but its ground is still spoken for, and — more to the point — a test with no
+        /// assets on disk must be able to reproduce exactly the canopy the build avoided. Returning the
+        /// planted subset would make the two disagree the moment a sheet went missing.</para>
+        /// </summary>
+        static List<Vector2> PlantTrees(ITidalTerrain terrain, Result result)
         {
+            var trunks = new List<Vector2>();
+
             // Every placeable tree the committed contract claims — species x stage x season. The kit bakes
             // mature/summer only today, so this is one entry per species.
             var placements = AcadianTreeCatalog.Scan();
@@ -551,7 +580,7 @@ namespace HiddenHarbours.App.Editor
             {
                 Debug.LogWarning("[StPetersWoodsPlanter] the Acadian tree contract is missing or claims no " +
                                  "trees — the island was left unwooded. Import the pass-2 tree kit.");
-                return;
+                return trunks;
             }
 
             // Index by species so the habitat model can ask for one by name. If a later bake ships more
@@ -605,7 +634,11 @@ namespace HiddenHarbours.App.Editor
                 return true;
             }
 
-            foreach (var site in sites) Stand(site.Position, site.Species, site.Variant);
+            foreach (var site in sites)
+            {
+                Stand(site.Position, site.Species, site.Variant);
+                trunks.Add(site.Position);
+            }
 
             // ---- THE WOODLAND LOTS ------------------------------------------------------------------
             // ⭐ The owner's 2026-08-16 "denser, more forest-like woods" ruling, on the bounded ground
@@ -614,7 +647,12 @@ namespace HiddenHarbours.App.Editor
             // thickened, and no lot trunk lands inside one that was already standing.
             var lotSites = StPetersWoods.ScatterLotTrees(terrain, bySpecies.Keys, variantsFor, sites);
             foreach (var site in lotSites)
+            {
                 if (Stand(site.Position, site.Species, site.Variant)) result.LotTrees++;
+                trunks.Add(site.Position);
+            }
+
+            return trunks;
         }
 
         // =====================================================================================
@@ -631,7 +669,7 @@ namespace HiddenHarbours.App.Editor
         /// null-tolerant: a species that was not baked simply has no sheet and its habitat goes unplanted
         /// rather than throwing halfway through a region build.</para>
         /// </summary>
-        static void PlantShrubs(ITidalTerrain terrain, Result result)
+        static void PlantShrubs(ITidalTerrain terrain, Result result, IReadOnlyList<Vector2> trunks)
         {
             var contract = ShrubCatalog.Load();
             if (contract?.Species == null || contract.Species.Count == 0)
@@ -685,10 +723,11 @@ namespace HiddenHarbours.App.Editor
                 return pair;
             }
 
-            foreach (var site in StPetersShrubs.Scatter(
-                         terrain, sheets.Keys.ToList(),
-                         s => habitatOf.TryGetValue(s, out string h) ? h : null,
-                         ShrubCatalog.Variants))
+            // ⚠ ONE instantiation path for both passes, the same ruling PlantTrees makes about a lot tree
+            // and an ambient tree: an understorey hazel and a heath blueberry must be the SAME object —
+            // same pivot, same lit material, same light channels, same caster — or the island grows two
+            // kinds of shrub and only the eye ever catches it.
+            bool Stand(StPetersShrubs.ShrubSite site, GameObject parent)
             {
                 var key = (site.Species, site.Variant);
                 if (!spriteCache.TryGetValue(key, out Sprite sprite))
@@ -703,10 +742,10 @@ namespace HiddenHarbours.App.Editor
                         .OfType<Sprite>().FirstOrDefault(sp => sp.name == want);
                     spriteCache[key] = sprite;
                 }
-                if (sprite == null) continue;
+                if (sprite == null) return false;
 
                 var go = new GameObject($"{site.Species}_{site.Variant}");
-                go.transform.SetParent(root.transform, worldPositionStays: false);
+                go.transform.SetParent(parent.transform, worldPositionStays: false);
                 // The kit's pivot is the ROOT CROWN — the ground-contact point — so the position IS
                 // where the shrub is planted. No offset, no rescale: the bake is already at metric size.
                 go.transform.position = new Vector3(site.Position.x, site.Position.y, 0f);
@@ -737,7 +776,29 @@ namespace HiddenHarbours.App.Editor
                 result.Shrubs++;
                 result.PerShrub.TryGetValue(site.Species, out int n);
                 result.PerShrub[site.Species] = n + 1;
+                return true;
             }
+
+            var speciesOnDisk = sheets.Keys.ToList();
+            System.Func<string, string> habitat =
+                s => habitatOf.TryGetValue(s, out string h) ? h : null;
+
+            // ---- THE AMBIENT HEATH -------------------------------------------------------------------
+            var heath = StPetersShrubs.Scatter(terrain, speciesOnDisk, habitat, ShrubCatalog.Variants);
+            foreach (var site in heath) Stand(site, root);
+
+            // ---- THE UNDERSTOREY ---------------------------------------------------------------------
+            // ⭐ The floor of the owner's closed stands. It runs LAST and is handed everything already
+            // standing — the whole canopy AND the heath that walked a lot's ground on its way past —
+            // because an understorey INFILLS between trunks rather than replacing what is there. Pass
+            // less and shrubs start growing out of trees.
+            var standing = new List<Vector2>(trunks);
+            foreach (var site in heath) standing.Add(site.Position);
+
+            var understoreyRoot = new GameObject(UnderstoreyRootName);
+            foreach (var site in StPetersShrubs.ScatterUnderstorey(
+                         terrain, speciesOnDisk, habitat, ShrubCatalog.Variants, standing))
+                if (Stand(site, understoreyRoot)) result.UnderstoreyShrubs++;
         }
 
         // =====================================================================================

@@ -57,6 +57,10 @@ namespace HiddenHarbours.Tests.EditMode
             NineMileCreekMainland.ConfigureTerrain(_terrain);
 
             NineMileCreekFields.InvalidateRoadCache();
+            // ⚠ The wood-lot table too, since #554: the farmed gate refuses ground a lot has taken, and
+            // the shrub habitat field now names a lot's ground `woods`. A sibling fixture's sabotage arm
+            // must not be able to reach in here through a memo.
+            NineMileCreekWoodLots.InvalidateCache();
 
             _shrubs = NineMileCreekFields.ScatterHedges(_terrain, 4);
             _trees = NineMileCreekFields.ScatterTrees(_terrain, AllTreeSpecies, _ => 4);
@@ -120,15 +124,70 @@ namespace HiddenHarbours.Tests.EditMode
                 "of them should");
         }
 
+        /// <summary>
+        /// ⭐⭐ <b>THE INVERSE OF A RETIRED GUARD, AND THE SWAP IS DELIBERATE.</b>
+        ///
+        /// <para>This used to be <c>NoWoodsHabitatIsEverAskedFor</c>: the shrub kit's <c>woods</c> habitat
+        /// is an UNDERSTOREY, it belongs INSIDE a stand, and until #554 this coast genuinely had none — so
+        /// the test pinned that the habitat was never requested at all. #554 gave the region three bounded
+        /// wood lots and flagged the gap rather than absorbing it; this pass fills it, and the old test's
+        /// premise ("this coast has no stands") is simply no longer true. A test whose premise has expired
+        /// must be replaced by the one that still has a job, not deleted.</para>
+        ///
+        /// <para><b>The job that survives is the BOUND.</b> The reason a hedgerow may not ask for
+        /// <c>woods</c> was never "there are no woods here" — it was "a hedge is not a forest floor", and
+        /// that is as true now as it was. So the claim tightens rather than relaxing: the woods habitat is
+        /// asked <b>only inside a declared stand</b>, and nowhere else in this region — not in the meadow,
+        /// not in a hedgerow, and not in a cut lane's tread (which the understorey's own test proves is
+        /// never planted at all). If a re-tune ever lets it leak back out into the fields, this fails with
+        /// the ground it leaked onto.</para>
+        /// </summary>
         [Test]
-        public void NoWoodsHabitatIsEverAskedFor()
+        public void TheWoodsHabitatIsAskedOnlyInsideAStand()
         {
-            // The shrub kit's `woods` habitat is an UNDERSTOREY — it belongs inside a stand, and this
-            // coast has none. A hedge asking for it would be a hedge that thinks it is a forest floor.
+            // (1) The half that is word-for-word the old guard: no HEDGE shrub asks for it. A hedgerow is
+            // `edge` — rose and raspberry, which is what actually grows in a Maritime hedge.
             foreach (var shrub in _shrubs)
-                Assert.That(shrub.Habitat, Is.Not.EqualTo("woods"),
-                    $"a hedge shrub at {shrub.Position} asked for the woods understorey — there are no " +
-                    "woods in this region");
+                Assert.That(shrub.Habitat, Is.Not.EqualTo(StPetersShrubs.WoodsHabitat),
+                    $"a hedge shrub on '{shrub.Line}' at {shrub.Position} asked for the woods " +
+                    "understorey — a hedge is not a forest floor, whatever else this region has grown");
+
+            // (2) …and the half that is new: the habitat FIELD itself, walked over the whole region rather
+            // than sampled where something happens to be planted. This is what makes the bound a property
+            // of the RULE instead of a property of where the hedges happen to fall.
+            //
+            // ⚠ Yes, this is structurally true of today's ShrubHabitatAt — it names `woods` off the same
+            // InALot call this walk asks. That is what a guard looks like BEFORE the thing it guards
+            // against happens, and it is the shape the test it replaces had too. What it costs is one
+            // grid walk; what it buys is that the day someone answers "the woods should feel bigger" with
+            // a noise threshold — which this region's own docs call "exactly how a farmed coast turns
+            // into a wood by accident" — the leak fails here, in the fields' own fixture, naming the
+            // ground it leaked onto.
+            const float step = 6f;
+            Rect region = NineMileCreekRoads.RegionRect();
+
+            int inLots = 0;
+            var strays = new List<Vector2>();
+            for (float x = region.xMin; x < region.xMax; x += step)
+            for (float y = region.yMin; y < region.yMax; y += step)
+            {
+                var p = new Vector2(x, y);
+                if (NineMileCreekFields.ShrubHabitatAt(p) != StPetersShrubs.WoodsHabitat) continue;
+                if (NineMileCreekWoodLots.InALot(p)) inLots++;
+                else strays.Add(p);
+            }
+
+            string first = strays.Count > 0 ? strays[0].ToString() : "none";
+            Assert.That(strays, Is.Empty,
+                $"{strays.Count} patch(es) of this region call themselves woods understorey while standing " +
+                $"outside every declared wood lot (first at {first}). The kit's woods habitat belongs " +
+                "INSIDE a stand; a farmed coast that grows it out in the open field has stopped being a " +
+                "farmed coast");
+
+            Assert.That(inLots, Is.GreaterThan(0),
+                "no ground in this region resolves to the woods habitat at all, so the assertion above is " +
+                "vacuous — either the wood lots have vanished from the table or ShrubHabitatAt has stopped " +
+                "asking about them, and in both cases the lots are back to a meadow floor");
         }
 
         // =============================================================================================

@@ -563,19 +563,35 @@ namespace HiddenHarbours.App.Editor
 
         /// <summary>
         /// Which of the shrub kit's five habitats a patch of field is. Order matters: wet beats
-        /// everything (a hollow is a hollow whatever the wind does), then exposure decides whether open
-        /// ground is wind-scoured barren or ordinary hedgerow edge.
+        /// everything (a hollow is a hollow whatever the wind does), then a wood lot's canopy, then
+        /// exposure decides whether open ground is wind-scoured barren or ordinary hedgerow edge.
         ///
-        /// <para><b>⚠ There is no <c>woods</c> habitat anywhere in this region, and that is the law
-        /// rather than an omission.</b> The kit's woods habitat is an understorey — it belongs INSIDE a
-        /// stand, and this coast has no stands. A hedgerow is <c>edge</c>: rose and raspberry, which is
-        /// exactly what grows in a Maritime hedge.</para>
+        /// <para><b>⭐ THE <c>woods</c> HABITAT EXISTS HERE NOW, AND IT IS STILL BOUNDED BY THE SAME LAW
+        /// THAT USED TO EXCLUDE IT.</b> The kit's woods habitat is an UNDERSTOREY — it belongs INSIDE a
+        /// stand — and until #554 this coast genuinely had none, so this function refused to name it and
+        /// <c>NineMileCreekFieldsTests</c> pinned that refusal. #554 gave the region three bounded wood
+        /// lots; this is the ask that finally reaches them. The bound did not move: <c>woods</c> is
+        /// returned <b>only</b> inside a declared lot, so a hedgerow is still <c>edge</c> — rose and
+        /// raspberry, which is exactly what grows in a Maritime hedge — and the open fields are still
+        /// barren or edge by exposure. The old test's inverse (<i>the woods habitat is asked ONLY inside a
+        /// stand</i>) is what guards it now.</para>
+        ///
+        /// <para><b>⚠ A HEDGE CAN NEVER REACH THIS BRANCH, and that is structural rather than lucky.</b>
+        /// <see cref="IsPlantable"/> — the farmed layers' gate — refuses ground a lot has taken, so a hedge
+        /// station inside a lot is never planted to ask the question. The branch is here rather than in the
+        /// understorey pass because the two passes must agree about what kind of ground a metre is; a
+        /// second opinion is how a hedge and a wood end up naming the same ground differently.</para>
+        ///
+        /// <para>⚠ A cut lane's tread is inside its lot's capsule and would answer <c>woods</c> too. Nothing
+        /// is ever planted there to ask: <see cref="IsWoodyGround"/> refuses a corridor to BOTH passes, which
+        /// keeps one gate answering "may anything stand here" — see its own remarks.</para>
         /// </summary>
         public static string ShrubHabitatAt(Vector2 p)
         {
             float wetness = WetnessAt(p);
             if (wetness >= WetThreshold) return "bog";
             if (wetness >= DampThreshold) return "swale";
+            if (NineMileCreekWoodLots.InALot(p)) return StPetersShrubs.WoodsHabitat;
             return ExposureAt(p) >= BarrenExposure ? "barren" : "edge";
         }
 
@@ -592,7 +608,10 @@ namespace HiddenHarbours.App.Editor
             /// habitats moves it in the hedge too, with no code change here.</summary>
             public readonly string Habitat;
             /// <summary>Which hedge line this stands on — so a failing test names a boundary or a road
-            /// rather than an index.</summary>
+            /// rather than an index. ⚠ The UNDERSTOREY pass reuses this record and puts its WOOD LOT's name
+            /// here instead, for the same reason and to the same effect (a failing test names a wood). The
+            /// two populations are returned by two different calls and must never be concatenated:
+            /// <c>EveryHedgeShrubRidesAFieldBoundaryOrARoad</c> is the test that would catch it.</summary>
             public readonly string Line;
             /// <summary>Column of the kit's variant-axis sheet: a different individual of the same
             /// species, which is what stops a hedge reading as one bush repeated.</summary>

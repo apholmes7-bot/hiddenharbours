@@ -45,6 +45,12 @@ namespace HiddenHarbours.App.Editor
         /// <inheritdoc cref="GrassRootName"/>
         public const string MarshRootName = "CreekMarsh";
 
+        /// <summary>Where the wood lots' UNDERSTOREY hangs. ⚠ Its OWN root rather than the hedgerows',
+        /// and not only for tidiness: these shrubs are not hedgerow — filing them under
+        /// <see cref="HedgeRootName"/> would put a name on them that the region's own tests spend effort
+        /// proving false (a hedge gives way to a lot, it does not run through one).</summary>
+        public const string UnderstoreyRootName = "CreekUnderstorey";
+
         /// <summary>Sorting order of a hedge shrub. The island's, so a shrub is a shrub in both
         /// regions.</summary>
         public const int ShrubSortingOrder = StPetersWoodsPlanter.ShrubSortingOrder;
@@ -71,6 +77,11 @@ namespace HiddenHarbours.App.Editor
             /// see <see cref="NineMileCreekWoodLots"/>.</summary>
             public int LotTrees;
 
+            /// <summary>How many of <see cref="Shrubs"/> stand in a wood lot's UNDERSTOREY rather than in
+            /// a hedgerow. Counted apart because they are the region's two shrub populations and only one
+            /// of them rides a field boundary — see <c>EveryHedgeShrubRidesAFieldBoundaryOrARoad</c>.</summary>
+            public int UnderstoreyShrubs;
+
             public string GrassSummary() => Summarise(PerGrassHabitat);
             public string ShrubSummary() => Summarise(PerShrubHabitat);
             public string TreeSummary() => Summarise(PerTreeSpecies);
@@ -95,15 +106,20 @@ namespace HiddenHarbours.App.Editor
             }
 
             PlantGrass(terrain, result);
-            PlantHedges(terrain, result);
-            PlantTrees(terrain, result);
+            // ⚠ TREES BEFORE SHRUBS, and the order is load-bearing rather than cosmetic: the wood lots'
+            // understorey stands BETWEEN trunks (WoodlandZones.MinUnderstoreyGapMetres), so it has to be
+            // handed the canopy that is already there. Nothing in the hedge pass reads the trees, so
+            // moving it after them changes only the order the two roots appear in the hierarchy.
+            var trunks = PlantTrees(terrain, result);
+            PlantShrubs(terrain, result, trunks);
             PlantMarsh(terrain, result);
 
             Debug.Log(
                 $"[NineMileCreekFieldPlanter] Dressed the fields of Nine Mile Creek: " +
                 $"{result.GrassTufts:N0} grass tufts ({result.GrassSummary()}) baked as a FIELD into " +
-                $"{result.GrassPayloadCharacters:N0} characters of scene, {result.Shrubs:N0} hedgerow " +
-                $"shrubs ({result.ShrubSummary()}), {result.Trees:N0} trees " +
+                $"{result.GrassPayloadCharacters:N0} characters of scene, {result.Shrubs:N0} shrubs " +
+                $"({result.Shrubs - result.UnderstoreyShrubs} in hedgerows, {result.UnderstoreyShrubs} " +
+                $"as the wood lots' understorey — {result.ShrubSummary()}), {result.Trees:N0} trees " +
                 $"({result.HedgeTrees} standing in hedges, {result.FieldTrees} alone in fields, " +
                 $"{result.LotTrees} in the {NineMileCreekWoodLots.LotCount} wood lots — " +
                 $"{result.TreeSummary()}), and {result.MarshPlants:N0} marsh plants round the two ponds " +
@@ -119,7 +135,12 @@ namespace HiddenHarbours.App.Editor
                 $"{NineMileCreekWoodLots.MaxHinterlandShare:P0} of the plantable hinterland at most. The " +
                 "hedges GIVE WAY to a lot rather than running through it. A farm wood lot is part of a " +
                 "farmed coast, not a contradiction of one — but the FARMED trees above are still " +
-                "measurably stand-free, which is what keeps the photograph true.");
+                "measurably stand-free, which is what keeps the photograph true.\n" +
+                $"⭐ AND THE LOTS NOW HAVE A FLOOR — {result.UnderstoreyShrubs} understorey shrubs, a shrub " +
+                $"for every {WoodlandZones.UnderstoreyTrunksPerShrub} trunks over them, thinning through " +
+                "the same fringe the canopy does and cut out of the lanes with it. This is the first time " +
+                "this coast has ever asked the shrub kit for its `woods` habitat: it had no stands to ask " +
+                "from until the lots landed, and every other habitat here is still open-field.");
 
             return result;
         }
@@ -216,8 +237,15 @@ namespace HiddenHarbours.App.Editor
         /// region reads what is on disk rather than asking for a second bake of the same bushes. Where a
         /// habitat has no baked species, that habitat's stations simply go unplanted and the console says
         /// so — a reported gap, not a substitution.</para>
+        ///
+        /// <para><b>⭐ TWO POPULATIONS, ONE INSTANTIATION PATH.</b> The hedgerows ride the field boundaries
+        /// and the gravel roads; the UNDERSTOREY stands inside the wood lots, on ground the hedges are
+        /// required to give way to. They are two different claims about this coast and they are counted,
+        /// rooted and tested apart — but a hedgerow rose and an understorey hazel must be the same OBJECT,
+        /// so they are built by one local function, the same ruling <see cref="PlantTrees"/> makes about a
+        /// farmed tree and a lot tree.</para>
         /// </summary>
-        static void PlantHedges(ITidalTerrain terrain, Result result)
+        static void PlantShrubs(ITidalTerrain terrain, Result result, IReadOnlyList<Vector2> trunks)
         {
             var contract = ShrubCatalog.Load();
             if (contract?.Species == null || contract.Species.Count == 0)
@@ -255,23 +283,32 @@ namespace HiddenHarbours.App.Editor
                 return;
             }
 
-            var root = new GameObject(HedgeRootName);
+            var hedgeRoot = new GameObject(HedgeRootName);
             var shrubMat = AssetDatabase.LoadAssetAtPath<Material>(
                 StPetersWoodsPlanter.LitShrubMaterialPath);
             var spriteCache = new Dictionary<(string, int), Sprite>();
             var lightCache = new Dictionary<string, (Texture2D light, Texture2D state)>();
             var unservedHabitats = new HashSet<string>();
 
-            foreach (var site in NineMileCreekFields.ScatterHedges(terrain, ShrubCatalog.Variants))
+            bool Stand(NineMileCreekFields.ShrubSite site, GameObject parent)
             {
                 if (!byHabitat.TryGetValue(site.Habitat, out var pool) || pool.Count == 0)
                 {
                     unservedHabitats.Add(site.Habitat);
-                    continue;
+                    return false;
                 }
 
                 // A habitat with more than one baked species mixes them on the site's own roll, so a
                 // hedge is rose AND raspberry rather than one long run of the same bush.
+                //
+                // ⚠ NOTED, NOT FIXED HERE: this hashes (line + variant) rather than reading the site's own
+                // `Roll`, which the record carries for exactly this purpose. For the HEDGES that is a long
+                // line and four variants, so it mixes fine. For the UNDERSTOREY the "line" is a single lot
+                // name, so a lot only ever draws four distinct picks — harmless today, because every
+                // habitat that can occur inside a lot (woods, bog, swale) has exactly ONE baked species in
+                // the committed slice, but wrong the day a second woods shrub is baked. The fix is to read
+                // `site.Roll`; it is not made here because it would re-roll every hedge species on this
+                // coast, which is a look change and belongs in its own PR with the owner's eye on it.
                 string species = pool[NineMileCreekFields.HashOfLine(site.Line + site.Variant) % pool.Count];
                 string stem = stems[species];
 
@@ -286,10 +323,10 @@ namespace HiddenHarbours.App.Editor
                         .OfType<Sprite>().FirstOrDefault(sp => sp.name == want);
                     spriteCache[key] = sprite;
                 }
-                if (sprite == null) continue;
+                if (sprite == null) return false;
 
                 var go = new GameObject($"{species}_{site.Variant}");
-                go.transform.SetParent(root.transform, worldPositionStays: false);
+                go.transform.SetParent(parent.transform, worldPositionStays: false);
                 // The kit's pivot is the ROOT CROWN — the ground-contact point — so the site position IS
                 // where the shrub is planted. No offset, no rescale: the bake is at metric size already.
                 go.transform.position = new Vector3(site.Position.x, site.Position.y, 0f);
@@ -319,11 +356,28 @@ namespace HiddenHarbours.App.Editor
                 result.Shrubs++;
                 result.PerShrubHabitat[site.Habitat] =
                     result.PerShrubHabitat.TryGetValue(site.Habitat, out int n) ? n + 1 : 1;
+                return true;
             }
+
+            // ---- THE HEDGEROWS ------------------------------------------------------------------------
+            var hedges = NineMileCreekFields.ScatterHedges(terrain, ShrubCatalog.Variants);
+            foreach (var site in hedges) Stand(site, hedgeRoot);
+
+            // ---- THE WOOD LOTS' UNDERSTOREY -----------------------------------------------------------
+            // ⭐ The floor of the three lots #554 declared, and the first `woods` habitat this coast has
+            // ever asked for. Handed the canopy AND the hedges: the trunks are what it stands between, and
+            // a hedgerow on a lot's rim must not get a shrub planted inside it either.
+            var standing = new List<Vector2>(trunks);
+            foreach (var site in hedges) standing.Add(site.Position);
+
+            var understoreyRoot = new GameObject(UnderstoreyRootName);
+            foreach (var site in NineMileCreekWoodLots.ScatterUnderstorey(
+                         terrain, ShrubCatalog.Variants, standing))
+                if (Stand(site, understoreyRoot)) result.UnderstoreyShrubs++;
 
             if (unservedHabitats.Count > 0)
                 Debug.LogWarning(
-                    "[NineMileCreekFieldPlanter] the hedgerows asked for habitats the committed shrub " +
+                    "[NineMileCreekFieldPlanter] the shrub layers asked for habitats the committed shrub " +
                     $"slice does not bake: {string.Join(", ", unservedHabitats)}. Those stations are " +
                     "unplanted rather than filled with the wrong bush — a species standing in the wrong " +
                     "habitat looks finished while being wrong. Art ask: extend the bake, or accept the " +
@@ -337,16 +391,24 @@ namespace HiddenHarbours.App.Editor
         /// <summary>
         /// The trees, from the Acadian kit. <b>Scattered — never a stand</b>: most of them stand in a
         /// hedgerow (which is what the commonest tree in farmland anywhere actually is) and the rest
-        /// alone in a field.
+        /// alone in a field. The three WOOD LOTS are the exception the ruling carved, and they are a
+        /// separate pass below.
+        ///
+        /// <para>Returns every trunk the two scatters decided on — what the wood lots' understorey needs
+        /// in order to stand between them. ⚠ The SCATTER's positions, not the GameObjects': a species
+        /// whose sprite fails to resolve is not instantiated but its ground is still spoken for, and a
+        /// test with no art on disk must be able to reproduce exactly the canopy the build avoided.</para>
         /// </summary>
-        static void PlantTrees(ITidalTerrain terrain, Result result)
+        static List<Vector2> PlantTrees(ITidalTerrain terrain, Result result)
         {
+            var trunks = new List<Vector2>();
+
             var placements = AcadianTreeCatalog.Scan();
             if (placements.Count == 0)
             {
                 Debug.LogWarning("[NineMileCreekFieldPlanter] the Acadian tree contract is missing or " +
                                  "claims no trees — the fields were left treeless. Import the tree kit.");
-                return;
+                return trunks;
             }
 
             var bySpecies = new Dictionary<string, AcadianTreeCatalog.Placement>();
@@ -395,6 +457,7 @@ namespace HiddenHarbours.App.Editor
             var farmed = NineMileCreekFields.ScatterTrees(terrain, bySpecies.Keys, variantsFor);
             foreach (var site in farmed)
             {
+                trunks.Add(site.Position);
                 if (!Stand(site.Position, site.Species, site.Variant)) continue;
                 if (site.InHedge) result.HedgeTrees++; else result.FieldTrees++;
             }
@@ -407,7 +470,12 @@ namespace HiddenHarbours.App.Editor
             // around the hedgerow trees on its rim instead of planting inside one.
             var lots = NineMileCreekWoodLots.ScatterTrees(terrain, bySpecies.Keys, variantsFor, farmed);
             foreach (var site in lots)
+            {
+                trunks.Add(site.Position);
                 if (Stand(site.Position, site.Species, site.Variant)) result.LotTrees++;
+            }
+
+            return trunks;
         }
 
         // =============================================================================================

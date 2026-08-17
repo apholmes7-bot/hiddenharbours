@@ -120,7 +120,7 @@ dawn/noon/dusk/night behaviour by `SpriteShadowCastsPlayTests`.
 | Caster | Attached in | Rule |
 |---|---|---|
 | **Trees** | `AcadianTreeCatalog.Configure` | **All of them.** The kit's smallest mature cell is 4.8 m; there is no short tree. Planter, Tree Paint Tool and prefab builder all come through this one method. |
-| **Shrubs** | `StPetersWoodsPlanter.PlantShrubs` | All of them — a metre-ish mass with a real silhouette on open ground. |
+| **Shrubs** | `StPetersWoodsPlanter.PlantShrubs` | All of them — a metre-ish mass with a real silhouette on open ground. ⚠ *All of them* means **both** island shrub passes, the ambient heath and the woodland lots' understorey: one instantiation path, one caster rule, and the budget test counts the two together. |
 | **Shore plants** | `StPetersWoodsPlanter.PlantShorePlants` | The **emergent stands only**: not algae, not the subtidal fringe, standing ≥ `ShadowCasterMinHeightM` (0.6 m). 8 of 16 species. |
 | **The player** | `PlayerShadowInstaller` (self-installing host) | Exactly one, covering every state — walk, iso skin, haul and rod-fight all swap the sprite on the *same* renderer. Attached from the Art lane by name, so no `Code/Player` edit (rule 4). |
 | **Grass** | — | 🔴 **Never.** Thousands of tufts each pushing a sheared quad and a per-frame `LateUpdate`, bought for a shadow the size of a blade, is the rule-7 violation the caster rules exist to prevent. Asserted, not merely intended. |

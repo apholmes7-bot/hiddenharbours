@@ -881,5 +881,236 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.Less(bogOnly.Count, Shrubs().Count,
                 "one species must plant FEWER shrubs than six — if not, habitat is being ignored");
         }
+
+        // =================================================================================
+        //  THE UNDERSTOREY — the floor of the island's three woodland lots
+        //
+        //  ⭐ Two shrub passes, exactly as there are two tree passes: the AMBIENT heath over the whole
+        //  island (Shrubs() above) and the layer inside the authored lots, at a grain derived from the
+        //  canopy over it. Before this pass a lot's ground could still resolve to open-meadow habitat —
+        //  the owner's densest woods growing rose and raspberry under a closed canopy.
+        // =================================================================================
+
+        /// <summary>Every trunk on the island, ambient mosaic and woodland lots together — what the
+        /// planter hands the understorey, and what it has to stand between.</summary>
+        List<Vector2> Trunks()
+        {
+            var ambient = Trees();
+            var trunks = ambient.Select(t => t.Position).ToList();
+            trunks.AddRange(StPetersWoods.ScatterLotTrees(_terrain, Available(), _ => 4, ambient)
+                                         .Select(t => t.Position));
+            return trunks;
+        }
+
+        /// <summary>Everything standing when the understorey runs: the whole canopy plus the ambient heath,
+        /// which walks a lot's ground on its way past because it does not know lots exist.</summary>
+        List<Vector2> Standing()
+        {
+            var standing = Trunks();
+            standing.AddRange(Shrubs().Select(s => s.Position));
+            return standing;
+        }
+
+        List<StPetersShrubs.ShrubSite> Understorey(int variants = 4) =>
+            StPetersShrubs.ScatterUnderstorey(_terrain, ShrubsAvailable(), HabitatFromContract(),
+                                              variants, Standing());
+
+        [Test]
+        public void TheLotsHaveAFloorNow_AndItIsInsideTheLots()
+        {
+            var understorey = Understorey();
+            Assert.IsNotEmpty(understorey,
+                "the island's woodland lots grew no understorey — the owner's closed stands are still " +
+                "canopy standing on a meadow floor, which is the gap this layer exists to close");
+
+            foreach (var s in understorey)
+            {
+                float share = StPetersWoodlandZones.LotShareAt(s.Position, out string lot);
+                Assert.Greater(share, 0f,
+                    $"a {s.Species} the understorey planted at {s.Position} is outside every declared " +
+                    "woodland lot — this layer is bounded to the lots and nothing else");
+                Assert.IsFalse(StPetersWoodlandZones.IsCleared(s.Position),
+                    $"a {s.Species} at {s.Position} stands in '{lot}'s cut lane or in a clearing — the " +
+                    "owner's ruling cuts the canopy AND what grows under it, or the corridor is a path " +
+                    "with a thicket down the middle of it");
+            }
+
+            Debug.Log($"[stpeters-shrubs] understorey: {understorey.Count} shrubs in " +
+                      $"{StPetersWoodlandZones.LotCount} lots, one per " +
+                      $"{WoodlandZones.UnderstoreyTrunksPerShrub} trunks over them.");
+        }
+
+        [Test]
+        public void TheUnderstoreyGrowsWhatTheContractPutsUnderAWood()
+        {
+            // The whole point of the ask. `woods` is the kit's own key for the understorey habitat and
+            // BeakedHazelnut is the species the CONTRACT puts in it — never a label chosen here.
+            var habitatOf = HabitatFromContract();
+            Assert.AreEqual(StPetersShrubs.WoodsHabitat, habitatOf("BeakedHazelnut"),
+                "the contract has moved the hazel out of the woods habitat; re-read it rather than " +
+                "hard-coding a species here");
+            CollectionAssert.Contains(ShrubCatalog.HabitatKeys, StPetersShrubs.WoodsHabitat,
+                "StPetersShrubs.WoodsHabitat is not one of the rig's own habitat keys, so nothing baked " +
+                "will ever match it and every lot goes back to a bare floor with nothing failing");
+
+            var understorey = Understorey();
+            var perHabitat = new Dictionary<string, int>();
+
+            foreach (var s in understorey)
+            {
+                string ground = StPetersShrubs.HabitatAt(_terrain, s.Position);
+                Assert.AreEqual(ground, habitatOf(s.Species),
+                    $"a {s.Species} ({habitatOf(s.Species)}) is standing on '{ground}' ground at " +
+                    $"{s.Position}");
+
+                // 🔴 THE MEADOW FLOOR, SAID AS AN ASSERTION. Under a canopy the only honest answers are
+                // the understorey and — where the ground is wet — a bog or a swale, both of which really
+                // do occur under trees. `edge` (rose and raspberry) or `barren` (blueberry heath) would
+                // mean a lot's floor had gone back to being open meadow, which is the exact state this
+                // pass exists to end. It cannot happen while HabitatAt asks InWoods; this is what notices
+                // if it stops.
+                Assert.That(ground, Is.EqualTo(StPetersShrubs.WoodsHabitat)
+                                      .Or.EqualTo("bog").Or.EqualTo("swale"),
+                    $"a {s.Species} in the understorey stands on '{ground}' ground at {s.Position} — " +
+                    "inside a closed stand, which is open-meadow habitat under a canopy");
+
+                perHabitat.TryGetValue(ground, out int n);
+                perHabitat[ground] = n + 1;
+            }
+
+            perHabitat.TryGetValue(StPetersShrubs.WoodsHabitat, out int woods);
+            Assert.Greater(woods, 0,
+                "not one understorey shrub asked for the woods habitat — the layer is planting inside " +
+                "the lots but the habitat field is still calling every one of their floors something " +
+                "else, so the hazel the slice was baked for never reaches the island");
+
+            Debug.Log("[stpeters-shrubs] understorey by habitat: " +
+                      string.Join(", ", perHabitat.OrderByDescending(kv => kv.Value)
+                                                  .Select(kv => $"{kv.Key} {kv.Value}")));
+        }
+
+        [Test]
+        public void TheWoodsHabitatIsNeverAskedForOutOnTheOpenMeadow()
+        {
+            // ⭐ THE ISLAND'S HALF OF THE BOUND Nine Mile Creek's TheWoodsHabitatIsAskedOnlyInsideAStand
+            // states. Here the answer is INWOODS rather than "in a lot" — the island genuinely has an
+            // ambient mosaic of stands and hazel belongs under those too — so the claim is: woods habitat
+            // means a canopy overhead, and never open ground.
+            var habitatOf = HabitatFromContract();
+            foreach (var s in Shrubs().Concat(Understorey()))
+            {
+                if (habitatOf(s.Species) != StPetersShrubs.WoodsHabitat) continue;
+                Assert.IsTrue(StPetersWoods.InWoods(s.Position, _terrain.ElevationAt(s.Position)),
+                    $"a {s.Species} is growing the woods understorey at {s.Position}, where there is no " +
+                    "canopy at all — neither the reverting mosaic nor an authored lot. The kit's woods " +
+                    "habitat belongs INSIDE a stand");
+            }
+        }
+
+        [Test]
+        public void TheUnderstoreyIsSparserThanTheCanopyOverIt()
+        {
+            // "Depth, not a second canopy" (owner, on the density of the closed stands) as a measurement.
+            //
+            // ⚠ THE RATIO IS ASSERTED ON THE POOLED SAMPLE and only the weaker claim per lot, on purpose.
+            // The dial is one shrub per UnderstoreyTrunksPerShrub trunks, but an individual 20 m lot
+            // carries a couple of dozen shrubs against a grid of ~30 candidate cells — small enough that a
+            // per-lot 2:1 bar would be measuring where the lane happened to fall as much as the density
+            // law. Pooled, the sample is the island's whole understorey and the claim is the real one.
+            var trunks = Trunks();
+            var understorey = Understorey();
+            int overAll = 0, underAll = 0;
+
+            foreach (var lot in StPetersWoodlandZones.Lots)
+            {
+                int over = trunks.Count(p => lot.Contains(p));
+                int under = understorey.Count(s => lot.Contains(s.Position));
+                overAll += over; underAll += under;
+
+                Assert.Greater(under, 0,
+                    $"'{lot.Name}' grew no understorey at all — one of the island's closed stands is still " +
+                    "canopy on a meadow floor");
+                Assert.Less(under, over,
+                    $"'{lot.Name}' carries {under} understorey shrubs under {over} trunks — a floor at " +
+                    "least as dense as the canopy over it is a thicket, and you cannot see into a thicket");
+            }
+
+            Assert.Greater(underAll, 10,
+                $"the island's three lots grew {underAll} understorey shrubs between them, which is not a " +
+                "layer — every other assertion here would pass vacuously on it");
+            Assert.Less(underAll * 2, overAll,
+                $"the lots carry {underAll} understorey shrubs under {overAll} trunks " +
+                $"(1 : {overAll / (float)Mathf.Max(1, underAll):0.0}). The dial asks for one shrub per " +
+                $"{WoodlandZones.UnderstoreyTrunksPerShrub} trunks; better than one in two stops reading " +
+                "as depth under a canopy and starts reading as brush you cannot see through");
+
+            Debug.Log($"[stpeters-shrubs] understorey vs canopy: {underAll} shrubs under {overAll} trunks " +
+                      $"(1 : {overAll / (float)Mathf.Max(1, underAll):0.0}).");
+        }
+
+        [Test]
+        public void TheUnderstoreyStandsBetweenTheTrunksRatherThanOnThem()
+        {
+            // Trees pivot at the trunk FOOT and shrubs at the root crown, so a shrub rolled onto a
+            // trunk's position is drawn growing out of the tree. ⚠ Nearest pair found first and asserted
+            // once — this is tens of thousands of pairs and NUnit constraints are not free.
+            var standing = Standing();
+            var understorey = Understorey();
+
+            float worst = float.MaxValue;
+            Vector2 worstShrub = Vector2.zero, worstNeighbour = Vector2.zero;
+            foreach (var s in understorey)
+            foreach (var p in standing)
+            {
+                float d = Vector2.Distance(s.Position, p);
+                if (d >= worst) continue;
+                worst = d; worstShrub = s.Position; worstNeighbour = p;
+            }
+
+            Assert.GreaterOrEqual(worst, WoodlandZones.MinUnderstoreyGapMetres - 1e-3f,
+                $"the closest an understorey shrub gets to something already planted is {worst:0.00} m — " +
+                $"a shrub at {worstShrub} against a trunk or heath bush at {worstNeighbour}, inside the " +
+                $"{WoodlandZones.MinUnderstoreyGapMetres:0.00} m that keeps a shrub beside a trunk rather " +
+                "than inside one");
+        }
+
+        [Test]
+        public void GinnysDooryardStaysClearOfTheUnderstoreyToo()
+        {
+            // 🔴 Her plot is a CLEARING IN THE WOODS and NorthWood stands just east of it. A layer that
+            // planted a hazel thicket across the dooryard she walks out of twice a day would be exactly
+            // the bug NoShrubGrowsWhereThePlayerHasToBe catches for the heath — asserted separately
+            // because it is a separate scatter and would not be covered by that one.
+            foreach (var s in Understorey())
+            {
+                Assert.Greater(Vector2.Distance(s.Position, StPetersGinnyPlot.CottagePos),
+                               StPetersGinnyPlot.ClearingRadius - 0.01f,
+                    $"an understorey {s.Species} at {s.Position} is inside Ginny's plot");
+                Assert.Greater(Vector2.Distance(s.Position, StPetersBuilder.VillageHearthPos),
+                               StPetersWoods.VillageClearingRadius - 0.01f,
+                    $"an understorey {s.Species} at {s.Position} is inside the village clearing");
+                Assert.IsFalse(StPetersWoods.OnPaintedPath(s.Position),
+                    $"an understorey {s.Species} at {s.Position} stands on a painted dirt path");
+            }
+        }
+
+        [Test]
+        public void TheUnderstoreyIsDeterministic_NoRng()
+        {
+            var a = Understorey();
+            var b = Understorey();
+            Assert.AreEqual(a.Count, b.Count,
+                "the understorey must reproduce exactly on a rebuild (rule 5)");
+            for (int i = 0; i < a.Count; i++)
+            {
+                Assert.AreEqual(a[i].Species, b[i].Species);
+                Assert.AreEqual(a[i].Variant, b[i].Variant);
+                Assert.AreEqual(a[i].Position, b[i].Position);
+            }
+
+            // A one-column sheet must never be asked for a second column — the heath's own rule.
+            foreach (var s in Understorey(1))
+                Assert.AreEqual(0, s.Variant, "a one-variant sheet only has variant 0");
+        }
     }
 }
