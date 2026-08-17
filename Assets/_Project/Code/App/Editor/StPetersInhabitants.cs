@@ -54,7 +54,6 @@ namespace HiddenHarbours.App.Editor
 
         const string DataNpcs   = "Assets/_Project/Data/NPCs";
         const string ArtChars   = "Assets/_Project/Art/Characters";
-        const string ArtPortrait = "Assets/_Project/Art/Portraits";
 
         /// <summary>
         /// How far out from a building's footprint CENTRE its keeper stands, in metres.
@@ -86,7 +85,7 @@ namespace HiddenHarbours.App.Editor
         {
             /// <summary>Asset stem under <c>Data/NPCs</c> — also the NpcDef this places.</summary>
             public readonly string AssetName;
-            /// <summary>Art stem under <c>Art/Characters</c> / <c>Art/Portraits</c> (the Ginny/Ned convention).</summary>
+            /// <summary>Art stem under <c>Art/Characters</c> (the Ginny/Ned convention).</summary>
             public readonly string ArtStem;
             public readonly Vector2 Position;
             public readonly Footing Ground;
@@ -189,10 +188,9 @@ namespace HiddenHarbours.App.Editor
         /// empty panel is worse than an absence you can see in the log.</para>
         ///
         /// <para>Art is greybox — a tinted standee at the Ginny marker's size — but the loader looks for
-        /// <c>Art/Characters/&lt;stem&gt;.png</c> and <c>Art/Portraits/&lt;stem&gt;.png</c> first, so the
-        /// day art-pipeline drops those files in, these people wear them with no code change. The
-        /// portrait slot ships EMPTY and legal: <c>DialoguePresenter</c> hides the portrait box when the
-        /// sprite is null and draws name + text alone.</para>
+        /// <c>Art/Characters/&lt;stem&gt;.png</c> first, so the day art-pipeline drops those files in,
+        /// these people wear them with no code change. There is NO portrait: the speech bubble anchors at
+        /// the character and they are their own portrait (owner ruling 2026-07-30).</para>
         /// </summary>
         public static List<Interactable> Place(ITidalTerrain terrain, Sprite greyboxSquare)
         {
@@ -247,7 +245,7 @@ namespace HiddenHarbours.App.Editor
                 go.transform.SetParent(root.transform, worldPositionStays: true);
 
                 var interactable = go.AddComponent<Interactable>();
-                ConfigureNpc(interactable, npc, LoadSprite($"{ArtPortrait}/{person.ArtStem}.png"));
+                ConfigureNpc(interactable, npc);
 
                 placed.Add(interactable);
                 report.Add($"{npc.DisplayName} at ({person.Position.x:0.#},{person.Position.y:0.#})" +
@@ -305,20 +303,17 @@ namespace HiddenHarbours.App.Editor
             return go;
         }
 
-        static Sprite LoadSprite(string path) => AssetDatabase.LoadAssetAtPath<Sprite>(path);
 
         /// <summary>
-        /// Wire an <see cref="Interactable"/> to its <see cref="NpcDef"/> (+ portrait) through the
-        /// builder's persist-the-refs SerializedObject convention, so the references survive into the
-        /// saved scene rather than being lost when the build finishes.
+        /// Wire an <see cref="Interactable"/> to its <see cref="NpcDef"/> through the builder's
+        /// persist-the-refs SerializedObject convention, so the reference survives into the saved scene
+        /// rather than being lost when the build finishes.
         /// </summary>
-        static void ConfigureNpc(Interactable it, NpcDef npc, Sprite portrait)
+        static void ConfigureNpc(Interactable it, NpcDef npc)
         {
             var so = new SerializedObject(it);
             var npcProp = so.FindProperty("_npc");
             if (npcProp != null) npcProp.objectReferenceValue = npc;
-            var portraitProp = so.FindProperty("_portrait");
-            if (portraitProp != null) portraitProp.objectReferenceValue = portrait;
             so.ApplyModifiedPropertiesWithoutUndo();
         }
     }

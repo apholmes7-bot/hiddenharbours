@@ -53,6 +53,20 @@ namespace HiddenHarbours.World
                  "this player, and says nothing about it before it has.")]
         [TextArea] public string[] ConditionalLines = new string[0];
 
+        [Header("Player options (the picker at the end of the exchange)")]
+        [Tooltip("Rows the player can choose once the lines have played — gameplay choices (\"can you " +
+                 "front me the fee?\") and questions to ask (people are knowledge surfaces, " +
+                 "design/dialogue-and-knowledge.md §3). LEAVE IT EMPTY and nothing changes: the " +
+                 "conversation simply ends on the last line, exactly as it did before options existed. " +
+                 "\"See you later.\" is NOT authored here — the picker appends it, always last, so no " +
+                 "conversation can be shipped without a safe way out.")]
+        public DialogueOption[] Options = new DialogueOption[0];
+
+        /// <summary>True when this conversation ends in a choice rather than just ending. Half-typed rows
+        /// do not count — see <see cref="DialogueOptionPicker.RowsFor"/>, which is the one place a row is
+        /// judged fit to show.</summary>
+        public bool HasOptions => DialogueOptionPicker.RowsFor(Options) != null;
+
         /// <summary>
         /// The lines to play given whether the speaker has been met before. The conditional pool is NOT
         /// consulted (no flag store to ask) — every pre-existing caller keeps its exact behaviour.

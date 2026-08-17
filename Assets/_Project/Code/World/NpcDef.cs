@@ -41,6 +41,13 @@ namespace HiddenHarbours.World
                  "Empty = no flag. Drives the warmer 'met before' variant and the onboarding nudges.")]
         public string CompletionFlag = "";
 
+        [Tooltip("How this person's speech bubble FILLS — their cadence, and the tick that fills it is " +
+                 "the sound of them talking (design/dialogue-and-knowledge.md §2). Optional and " +
+                 "append-only: leave it empty and they fill at DialogueVoice.Default, which is a " +
+                 "cadence, never a stall. A voice asset is shared on purpose — half the harbour can " +
+                 "speak in one island voice and be re-tuned in one edit.")]
+        public DialogueVoiceDef Voice;
+
         [Header("Appearance (optional — append-only, 2026-08-02)")]
         [Tooltip("Which baked body this person wears. LEAVE IT EMPTY and nothing changes: they keep " +
                  "the greybox standee (or the static sprite at Art/Characters/<stem>.png) they had " +

@@ -71,6 +71,11 @@ namespace HiddenHarbours.World
                 Claim(true);
                 _nearest = null;
                 ShowPrompt(null);
+                // ⚠️ THE DEV-KEY LEDGER IS EXHAUSTED A–Z (sweep 2026-08-17), so choosing an option binds
+                // NOTHING new: it is the move axis the player already walks with, and Interact confirms.
+                // The presenter ignores the axis unless rows are actually up, so this is inert in an
+                // ordinary conversation. See the coordination note on ReadMoveAxis.
+                _presenter.MoveSelection(ReadMoveAxis(kb));
                 if (interact) BeginInteract();
                 return;
             }
@@ -216,13 +221,49 @@ namespace HiddenHarbours.World
 
             var lines = new List<DialogueLine>(text.Length);
             for (int i = 0; i < text.Length; i++)
-                lines.Add(new DialogueLine(it.Speaker, it.Portrait, text[i]));
+                lines.Add(new DialogueLine(it.Speaker, text[i]));
+
+            // The bubble hangs at the SPEAKER (owner ruling 2026-07-30) and fills at THEIR cadence; the
+            // rows they offer are data on the same DialogueDef. Every one of the three is optional —
+            // no anchor parks the bubble, no voice fills at the default, no options ends on the last
+            // line — so an interactable authored before any of this existed behaves exactly as it did.
+            NpcDef npc = it.Npc;
+            var request = new DialogueRequest(
+                lines,
+                it.BubbleAnchorTransform,
+                it.BubbleAnchorOffset,
+                DialogueVoiceDef.VoiceOf(npc != null ? npc.Voice : null),
+                it.HasNpcData ? DialogueOptionPicker.RowsFor(npc.Dialogue.Options) : null,
+                it.HasNpcData ? npc.Dialogue.Id : it.ConversationId,
+                npc != null ? npc.Id : null);
 
             string flag = it.CompletionFlag;
-            _presenter.Play(lines, () =>
+            _presenter.Play(request, () =>
             {
                 if (!string.IsNullOrEmpty(flag)) _flags.Set(flag, true);
             });
+        }
+
+        /// <summary>
+        /// This frame's vertical move axis, from the SAME keys that walk the fisher
+        /// (<c>PlayerWalkController.ReadInput</c>) — +1 up, -1 down.
+        ///
+        /// <para><b>⚑ Coordination point for gameplay-systems, flagged in the PR.</b> While the option
+        /// rows are up this axis does two things at once: it moves the cursor AND it still walks the
+        /// player, because <see cref="InteractionGate"/> gates the interact VERB and nothing gates
+        /// movement (its semantics are deliberately unchanged here). In practice that is legible rather
+        /// than broken — the picker is edge-latched, so a TAP steps a row and nudges the fisher a
+        /// centimetre, while a HOLD walks them out of conversation range, which closes the bubble and is
+        /// a perfectly good way to leave. The clean fix is a movement claim in the shape of
+        /// <see cref="InteractActionClaim"/>, which is gameplay-systems' to own and out of this lane.</para>
+        /// </summary>
+        private static float ReadMoveAxis(Keyboard kb)
+        {
+            if (kb == null) return 0f;
+            float axis = 0f;
+            if (kb.wKey.isPressed || kb.upArrowKey.isPressed) axis += 1f;
+            if (kb.sKey.isPressed || kb.downArrowKey.isPressed) axis -= 1f;
+            return axis;
         }
 
         /// <summary>Wire the interactor in one call (editor / tests).</summary>

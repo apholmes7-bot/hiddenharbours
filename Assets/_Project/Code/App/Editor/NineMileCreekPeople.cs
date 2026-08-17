@@ -40,7 +40,6 @@ namespace HiddenHarbours.App.Editor
 
         const string DataNpcs    = "Assets/_Project/Data/NPCs";
         const string ArtChars    = "Assets/_Project/Art/Characters";
-        const string ArtPortrait = "Assets/_Project/Art/Portraits";
 
         /// <summary>
         /// One anchored person: which asset speaks, where they stand, and one line on why there — the
@@ -50,7 +49,7 @@ namespace HiddenHarbours.App.Editor
         {
             /// <summary>Asset stem under <c>Data/NPCs</c> — also the NpcDef this places.</summary>
             public readonly string AssetName;
-            /// <summary>Art stem under <c>Art/Characters</c> / <c>Art/Portraits</c> (the Ginny/Ned convention).</summary>
+            /// <summary>Art stem under <c>Art/Characters</c> (the Ginny/Ned convention).</summary>
             public readonly string ArtStem;
             public readonly Vector2 Position;
             public readonly Color GreyboxTint;
@@ -154,7 +153,7 @@ namespace HiddenHarbours.App.Editor
                 go.transform.SetParent(root.transform, worldPositionStays: true);
 
                 var interactable = go.AddComponent<Interactable>();
-                ConfigureNpc(interactable, npc, LoadSprite($"{ArtPortrait}/{person.ArtStem}.png"));
+                ConfigureNpc(interactable, npc);
 
                 placed.Add(interactable);
                 report.Add($"{npc.DisplayName} at ({person.Position.x:0.#},{person.Position.y:0.#})" +
@@ -193,18 +192,15 @@ namespace HiddenHarbours.App.Editor
             return go;
         }
 
-        static Sprite LoadSprite(string path) => AssetDatabase.LoadAssetAtPath<Sprite>(path);
 
-        /// <summary>Wire an <see cref="Interactable"/> to its <see cref="NpcDef"/> (+ portrait) through
-        /// the builder's persist-the-refs SerializedObject convention, so the references survive into the
-        /// saved scene rather than being lost when the build finishes.</summary>
-        static void ConfigureNpc(Interactable it, NpcDef npc, Sprite portrait)
+        /// <summary>Wire an <see cref="Interactable"/> to its <see cref="NpcDef"/> through the builder's
+        /// persist-the-refs SerializedObject convention, so the reference survives into the saved scene
+        /// rather than being lost when the build finishes.</summary>
+        static void ConfigureNpc(Interactable it, NpcDef npc)
         {
             var so = new SerializedObject(it);
             var npcProp = so.FindProperty("_npc");
             if (npcProp != null) npcProp.objectReferenceValue = npc;
-            var portraitProp = so.FindProperty("_portrait");
-            if (portraitProp != null) portraitProp.objectReferenceValue = portrait;
             so.ApplyModifiedPropertiesWithoutUndo();
         }
     }
