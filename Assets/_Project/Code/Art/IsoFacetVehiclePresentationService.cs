@@ -107,6 +107,15 @@ namespace HiddenHarbours.Art
         }
 
         /// <inheritdoc/>
+        public void SetWaterlineClamp(GameObject host, float deckHeightMeters, float halfBeamMeters)
+        {
+            if (host == null) return;
+            var renderer = host.GetComponent<IsoFacetHullRenderer>();
+            if (renderer == null) return;   // never installed, or already torn down — nothing to clamp
+            renderer.SetWatertightClamp(deckHeightMeters, halfBeamMeters);
+        }
+
+        /// <inheritdoc/>
         public void Remove(GameObject host)
         {
             if (host == null) return;
@@ -133,6 +142,12 @@ namespace HiddenHarbours.Art
         /// off": a road vehicle has no waterline to hold the sea below, and 0 is the same value the
         /// whole fleet carried before that clamp existed, so the vehicle path takes the render the
         /// hull path is A/B-pinned against.</para>
+        ///
+        /// <para><b>Still 0 here, even for an amphibian</b>, and that is not an oversight. A machine
+        /// that swims is INSTALLED ashore-shaped, because ashore is the state a vehicle is placed in
+        /// and the clamp is a fact about the medium she is currently in rather than about what she is.
+        /// <see cref="SetWaterlineClamp"/> is what raises it, from her own def, on the frame she
+        /// floats — and drops it again on the frame she takes the beach.</para>
         /// </summary>
         public static IsoFacetHullSetup ToSetup(VehicleMeshDef def)
         {

@@ -347,6 +347,32 @@ namespace HiddenHarbours.Art
             ApplyPose();
         }
 
+        /// <summary>
+        /// Re-aim the watertight clamp on a hull that is already configured — the two floats, and
+        /// nothing else.
+        ///
+        /// <para><b>Who needs this.</b> An AMPHIBIOUS vehicle (ADR 0035's follow-up), which is the
+        /// first thing in the fleet whose relationship with the water changes while she is alive:
+        /// ashore she carries the road vehicle's <c>0/0</c> — the documented "clamp off" — and afloat
+        /// she carries her own published waterline. A boat's clamp is a fact about her hull and is set
+        /// once at <see cref="Configure"/>; hers is a fact about the medium she is in. Re-configuring
+        /// to change it would rebuild every ramp texture, the material and both children to move two
+        /// numbers.</para>
+        ///
+        /// <para>Allocation-free and idempotent, so a caller may write it every frame — though the
+        /// vehicle driver dirty-checks and only writes it on the swap. Inert before
+        /// <see cref="Configure"/>: there is no setup to hold the values, and the next configure
+        /// starts from the def's own ashore state, which is the correct place for a freshly installed
+        /// machine to start.</para>
+        /// </summary>
+        public void SetWatertightClamp(float deckHeightMeters, float halfBeamMeters)
+        {
+            if (_setup == null) return;
+            _setup.WatertightDeckHeightMeters = Mathf.Max(0f, deckHeightMeters);
+            _setup.WatertightHalfBeamMeters = Mathf.Max(0f, halfBeamMeters);
+            _poseDirty = true;   // the clamp is read inside ApplyPose; a silent change would land late
+        }
+
         private void BuildRampTextures(IsoFacetHullSetup setup)
         {
             int maxLen = 0;

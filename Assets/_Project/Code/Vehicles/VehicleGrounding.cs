@@ -1,3 +1,4 @@
+using System;
 using HiddenHarbours.Core;
 using UnityEngine;
 
@@ -29,9 +30,21 @@ namespace HiddenHarbours.Vehicles
     ///
     /// <para><b>Non-punishing (P5).</b> This is a passability gate and not a damage model: too-wet ground
     /// simply cannot be entered. There is no bogging, no stalling and no recovery minigame, and the refusal
-    /// is DIRECTIONAL — see <see cref="LeadOffsetMeters"/> — so a truck stopped at the water's edge can
-    /// always reverse off it. A gate that could strand you would be a gate that needs a tow truck, and the
-    /// village does not have one.</para>
+    /// is DIRECTIONAL — the speed cap marches from whichever end is about to LEAD — so a truck stopped at
+    /// the water's edge can always reverse off it. A gate that could strand you would be a gate that needs
+    /// a tow truck, and the village does not have one.</para>
+    ///
+    /// <para>⭐ <b>AND THE SAME NUMBER MEANS THE OPPOSITE THING FOR AN AMPHIBIAN.</b> Everything above
+    /// reads one depth: <c>waterLevel − authoredGround</c>, recomputed from <c>(worldSeed, gameTime)</c>
+    /// and never saved (rule 5). For a <see cref="VehicleKind.RoadVehicle"/> a deep sample is a WALL and
+    /// the speed falls to nothing in front of it; for a <see cref="VehicleKind.AmphibiousVehicle"/> the
+    /// very same sample is the SWIM state and there is no wall at all. One reading of the world, two rules,
+    /// chosen by what the machine IS — and the kind arrives here through
+    /// <see cref="VehicleKinds"/> off her def rather than as a literal or a guess, so a machine that
+    /// declares a word nobody maps is refused at install and never reaches a launch ramp. Every switch on
+    /// the kind below NAMES both arms and THROWS on a third, because <see cref="VehicleKind"/> is an
+    /// append-only Core enum and a <c>default:</c> arm meaning "road" is exactly how the next kind gets
+    /// silently drowned (the trap #560 closed in <c>InteractActor.ContextFor</c>).</para>
     /// </summary>
     public static class VehicleGrounding
     {
@@ -187,6 +200,190 @@ namespace HiddenHarbours.Vehicles
             return SpeedCapMetersPerSecond(GameServices.TidalTerrain, GameServices.Environment, now,
                                            origin, nose, speed, frontAxleY, rearAxleY,
                                            brakingMetersPerSecondSquared, wheelRadiusMeters);
+        }
+
+        // =================================================================================================
+        //  THE DISCRIMINATOR — one depth read, two rules
+        // =================================================================================================
+
+        /// <summary>
+        /// ⭐ <b>The land gate, dispatched on what she IS.</b>
+        ///
+        /// <list type="bullet">
+        ///   <item><see cref="VehicleKind.RoadVehicle"/> — the march above, unchanged to the last float.
+        ///   <b>The Dually does not learn to swim from this file</b>, and that is the one arm worth
+        ///   sabotaging a test at: an amphibian arriving in the fleet must not relax a rule that was
+        ///   already holding a truck out of the harbour.</item>
+        ///   <item><see cref="VehicleKind.AmphibiousVehicle"/> — <b>no cap at all.</b> Not a bigger cap, not
+        ///   a cap she can push through: the gate is simply not her rule. She drives at the water at
+        ///   whatever speed she likes, and past her float draft she is afloat (see
+        ///   <see cref="IsAfloat"/>). Marching a look-ahead for her would be arithmetic in service of a
+        ///   refusal nobody wants.</item>
+        /// </list>
+        ///
+        /// <para>Both arms NAMED and a third THROWS — see the class doc.</para>
+        /// </summary>
+        public static float SpeedCapMetersPerSecond(VehicleKind kind, ITidalTerrain terrain,
+                                                    IEnvironmentService environment, double totalSeconds,
+                                                    Vector2 origin, Vector2 nose, float speed,
+                                                    float frontAxleY, float rearAxleY,
+                                                    float brakingMetersPerSecondSquared,
+                                                    float wheelRadiusMeters) => kind switch
+        {
+            VehicleKind.RoadVehicle => SpeedCapMetersPerSecond(
+                terrain, environment, totalSeconds, origin, nose, speed, frontAxleY, rearAxleY,
+                brakingMetersPerSecondSquared, wheelRadiusMeters),
+
+            VehicleKind.AmphibiousVehicle => float.PositiveInfinity,
+
+            _ => throw new ArgumentOutOfRangeException(
+                     nameof(kind), kind,
+                     "VehicleKind has grown a member with no grounding rule. Name the arm — a " +
+                     "default meaning 'road' holds an amphibian out of the water she was built for, " +
+                     "and a default meaning 'amphibious' drowns a truck."),
+        };
+
+        /// <summary>The live-services overload of the kind-dispatched gate — what
+        /// <see cref="VehicleController"/> calls each physics tick.</summary>
+        public static float SpeedCapNow(VehicleKind kind, Vector2 origin, Vector2 nose, float speed,
+                                        float frontAxleY, float rearAxleY,
+                                        float brakingMetersPerSecondSquared, float wheelRadiusMeters)
+        {
+            IGameClock clock = GameServices.Clock;
+            double now = clock != null ? clock.TotalSeconds : 0.0;
+            return SpeedCapMetersPerSecond(kind, GameServices.TidalTerrain, GameServices.Environment, now,
+                                           origin, nose, speed, frontAxleY, rearAxleY,
+                                           brakingMetersPerSecondSquared, wheelRadiusMeters);
+        }
+
+        // =================================================================================================
+        //  AFLOAT — the state that lives on the MACHINE
+        // =================================================================================================
+
+        /// <summary>
+        /// ⭐ <b>Is she swimming?</b> The medium she is in, from the same deterministic depth every other
+        /// rule here reads, with a dead band so the water's edge is a line she crosses rather than one she
+        /// flickers on.
+        ///
+        /// <para><b>Hysteresis, and why it is not optional.</b> The threshold is her float draft — the depth
+        /// at which her hull genuinely takes her weight. A naked comparison against it swaps her medium on
+        /// any wobble of a number that really does wobble: the tide moves continuously, she is moving, and
+        /// the ground under her is authored per texel. Two thresholds a few centimetres apart turn that into
+        /// one transition each way. She floats past <c>draft + band</c> and takes the beach again below
+        /// <c>draft − band</c>, so the two can never be satisfied at once and the state has no chatter
+        /// mode.</para>
+        ///
+        /// <para><b>Deterministic (rule 5).</b> Nothing here is saved and nothing is random: the depth is
+        /// <c>WaterLevelAt(t) − ElevationAt(pos)</c>, recomputed from <c>(worldSeed, gameTime)</c>, and the
+        /// decision is a pure function of it, her published draft, her tuned band, and the state she was in.
+        /// Evaluated twice at the same <c>(seed, time, position)</c> from the same prior state it returns
+        /// the same bit, which is the arm the fixture pins.</para>
+        ///
+        /// <para><b>No map, no water.</b> An unwired terrain reads <see cref="float.NegativeInfinity"/>
+        /// (see <see cref="DepthAt"/>), which is never past any draft — so an EditMode fixture, an art
+        /// scene and a region with no authored tidal ground all leave her on her wheels, which is the safe
+        /// answer and the same self-disabling the road gate has.</para>
+        /// </summary>
+        /// <param name="wasAfloat">The state she is in NOW — the hysteresis needs it.</param>
+        /// <param name="floatDraftMeters">Her published draft afloat
+        /// (<see cref="VehicleMeshDef.FloatDraftMeters"/>); 0 = a machine that does not swim.</param>
+        /// <param name="hysteresisMeters">Half the dead band
+        /// (<see cref="VehicleDef.SwimHysteresisMeters"/>).</param>
+        public static bool IsAfloat(VehicleKind kind, bool wasAfloat, ITidalTerrain terrain,
+                                    IEnvironmentService environment, double totalSeconds,
+                                    Vector2 worldPos, float floatDraftMeters,
+                                    float hysteresisMeters) => kind switch
+        {
+            // Water is a wall for her, and a wall is not a state. The road gate already stopped her
+            // short of it — this is the second lock on the same door, and it is what a sabotage test
+            // aims at: nothing in this PR may let the truck float.
+            VehicleKind.RoadVehicle => false,
+
+            VehicleKind.AmphibiousVehicle => IsAfloatAtDepth(
+                wasAfloat, DepthAt(terrain, environment, totalSeconds, worldPos),
+                floatDraftMeters, hysteresisMeters),
+
+            _ => throw new ArgumentOutOfRangeException(
+                     nameof(kind), kind,
+                     "VehicleKind has grown a member with no flotation rule. Name the arm."),
+        };
+
+        /// <summary>
+        /// The hysteresis itself, on a depth already read — pure, so the band's behaviour is pinned as
+        /// arithmetic rather than felt for at a shoreline.
+        ///
+        /// <para>Strict <c>&gt;=</c> going in and strict <c>&gt;</c> coming out, so a machine sitting
+        /// exactly at <c>draft − band</c> takes the beach rather than hovering: an exact tie must resolve
+        /// toward the state that cannot strand anybody.</para>
+        /// </summary>
+        public static bool IsAfloatAtDepth(bool wasAfloat, float depthMeters, float floatDraftMeters,
+                                           float hysteresisMeters)
+        {
+            if (floatDraftMeters <= 0f) return false;   // she has no flotation data: she does not swim
+            float band = Mathf.Max(0f, hysteresisMeters);
+            return wasAfloat
+                ? depthMeters > floatDraftMeters - band
+                : depthMeters >= floatDraftMeters + band;
+        }
+
+        /// <summary>Convenience over the live Core services at the current clock time — what
+        /// <see cref="VehicleController"/> calls each physics tick.</summary>
+        public static bool IsAfloatNow(VehicleKind kind, bool wasAfloat, Vector2 worldPos,
+                                       float floatDraftMeters, float hysteresisMeters)
+        {
+            IGameClock clock = GameServices.Clock;
+            double now = clock != null ? clock.TotalSeconds : 0.0;
+            return IsAfloat(kind, wasAfloat, GameServices.TidalTerrain, GameServices.Environment, now,
+                            worldPos, floatDraftMeters, hysteresisMeters);
+        }
+
+        /// <summary>
+        /// <b>The SHARED heave, for something that is not a boat</b> — the displaced sea's lift under a
+        /// world point, in metres, by the one rule every displaced-water consumer draws with.
+        ///
+        /// <para>Character-for-character the read <c>BoatWaveMotion</c> makes for a hull, reached entirely
+        /// through Core (rule 4 — Vehicles may not call into Boats, and does not want to: what it needs is
+        /// <see cref="SharedWaveField"/>, <see cref="DisplacedSea"/> and <see cref="ShoreFadeMath"/>, all of
+        /// which are already the shared seam the two feature modules meet at). Three details are
+        /// load-bearing and all three are borrowed rather than re-invented:</para>
+        /// <list type="bullet">
+        ///   <item><b>The PUBLISHED trains, not a local animator.</b> The animator accumulates travel phase
+        ///   from zero at its own first tick, so a second one seeded at a different moment holds the same
+        ///   wave at the wrong moment — a machine bobbing up as the drawn water goes down.</item>
+        ///   <item><b>Sampled at the published FREQUENCY SCALE</b> (position × <c>FreqScale</c>), because
+        ///   the surface's vertex stage draws the field at 2.8 at the owner's tuned materials. Sampling at 1
+        ///   rides a different wave from the one drawn around her — the "boats are nearly submerged"
+        ///   defect.</item>
+        ///   <item><b>At <c>timeSeconds = 0</c></b>: the accumulated travel already rides in each train's
+        ///   phase offset. A real game time would add it twice.</item>
+        /// </list>
+        ///
+        /// <para><b>Nothing published ⇒ exactly 0</b> — no bridge, no displaced sea, an EditMode fixture, an
+        /// edit-time builder: she sits at her flat waterline and the render is byte-identical to a machine
+        /// with no flotation at all. That is the same A/B contract the boat fleet ships under.</para>
+        /// </summary>
+        public static float SharedSeaRideMeters(ITidalTerrain terrain, IEnvironmentService environment,
+                                                double totalSeconds, Vector2 worldPos)
+        {
+            if (!DisplacedSea.TryGet(out DisplacedSeaState sea)) return 0f;
+            if (!SharedWaveField.TryGet(out WaveTrains trains) || trains.Count == 0) return 0f;
+
+            // The wind-fetch envelope is resolved at the TRUE position — fetch is a real distance over
+            // real water, and marching the frequency-scaled one would shelter her behind a headland that
+            // is not there.
+            float fetch = GameServices.FetchEnvelopeAt(worldPos);
+            float height = WaveMath.Sample(worldPos * sea.FreqScale, 0.0, in trains, fetch).Height;
+            float depth = DepthAt(terrain, environment, totalSeconds, worldPos);
+            return ShoreFadeMath.DisplacedHeight(height, depth, sea.ShoreFadeBandMeters, sea.Exaggeration);
+        }
+
+        /// <summary>The live-services overload — what <see cref="VehicleMeshDriver"/> calls each
+        /// LateUpdate while she is afloat.</summary>
+        public static float SharedSeaRideMetersNow(Vector2 worldPos)
+        {
+            IGameClock clock = GameServices.Clock;
+            double now = clock != null ? clock.TotalSeconds : 0.0;
+            return SharedSeaRideMeters(GameServices.TidalTerrain, GameServices.Environment, now, worldPos);
         }
     }
 }

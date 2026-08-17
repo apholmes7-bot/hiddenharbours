@@ -103,8 +103,24 @@ namespace HiddenHarbours.Core
                  "length scale: yaw rate is v·tan(δ)/wheelbase.")]
         [Min(0.01f)] public float WheelbaseMeters = 1f;
 
-        [Tooltip("Front track in metres (2·G.frontWX) — the Ackermann split's other term.")]
+        [Tooltip("Front track in metres (2·G.frontWX) — the Ackermann split's other term.\n\n" +
+                 "On a SKID-STEERED machine there is no front axle to be the front of: this is her " +
+                 "one track (the Otter's G.trackWidth, 1.26), and it is the differential's lever " +
+                 "arm rather than an Ackermann term. Read it as TrackWidthMeters there.")]
         [Min(0f)] public float FrontTrackMeters;
+
+        /// <summary>
+        /// <b>The lateral separation of a pair of wheels</b>, in metres — the same measurement
+        /// <see cref="FrontTrackMeters"/> holds, named for what a skid machine uses it as.
+        ///
+        /// <para>An alias rather than a second field, deliberately. One physical distance, measured
+        /// off the rig once: an Ackermann machine levers her steer split against it and a skid
+        /// machine levers her track split against it, but a def carrying BOTH numbers is a def whose
+        /// two copies can drift, and there is no reading of the geometry under which they should
+        /// differ. (The Otter has four axles at one track width — <c>WHEELS.track_width_m</c>, with
+        /// <c>axle_spacing_m</c> published separately and used by nothing here.)</para>
+        /// </summary>
+        public float TrackWidthMeters => FrontTrackMeters;
 
         [Tooltip("Rolling radius in metres (G.wheelR). One revolution covers 2π·r, so the wheel's " +
                  "roll rate is v/(2π·r) REVOLUTIONS per second.\n\n" +
@@ -139,6 +155,51 @@ namespace HiddenHarbours.Core
                  "def baked before the field existed, and one VehicleDoor refuses rather than putting " +
                  "the player inside the cab wall.")]
         public Vector2 DriveDoorLocal;
+
+        [Header("Flotation (amphibious rigs only — every field 0 means she does not swim)")]
+        [Tooltip("How far the WHOLE machine drops onto her waterline afloat, in rig metres (the " +
+                 "rig's G.sinkMax; the Otter's 0.52).\n\n" +
+                 "⚠️ MEASURED as an EXACT RIGID TRANSLATION, which is the single most useful fact " +
+                 "about an amphibian: OtterIsoKitProbeTests measured every vertex's displacement at " +
+                 "float=1 against one common offset and found a max deviation of 0. So floating her " +
+                 "is a runtime Z offset on the DRY mesh — no second bake, no afloat variant, no " +
+                 "reshape — and it is linear, so a partial float is a partial offset.")]
+        [Min(0f)] public float FloatSinkMeters;
+
+        [Tooltip("How much water she needs under her to float CLEAR of the bottom, in metres — her " +
+                 "draft above the keel at full float (the Otter's 0.28: keel at rig z 0.24, sunk " +
+                 "0.52, so 0.28 of her is below the surface).\n\n" +
+                 "This is the swim threshold, and it is an ART fact rather than a feel one: it is " +
+                 "the depth at which her hull genuinely takes her weight. The band either side of it " +
+                 "— the hysteresis that stops the water's edge being a flicker line — IS feel, and " +
+                 "lives on VehicleDef.")]
+        [Min(0f)] public float FloatDraftMeters;
+
+        [Tooltip("The WATERTIGHT clamp's line while AFLOAT: height above rig z = 0 (metres) of the " +
+                 "lowest point the sea could come aboard over. The Otter's 0.82 — her transom top, " +
+                 "which her sidecar publishes as downflooding.lowest_gunwale_point.\n\n" +
+                 "⚠️ NOT her cockpit floor. That sits at rig z 0.44, i.e. 0.08 m BELOW the outside " +
+                 "water once she is sunk 0.52 — and her sidecar says so, and says it is correct: " +
+                 "'the tub is a sealed moulding, the floor is a pan inside it. Do not drain it.' A " +
+                 "clamp aimed at the floor would be aimed below the waterline and would mean " +
+                 "nothing. 0 = clamp off, which is what a ROAD vehicle carries and what the vehicle " +
+                 "path has passed since #560.")]
+        [Min(0f)] public float WatertightDeckHeightMeters;
+
+        [Tooltip("The watertight clamp's half-beam reach while AFLOAT, in rig ground metres — the " +
+                 "Otter's 0.687, off her sidecar's own waterline polygon at float 1.\n\n" +
+                 "Her tires stand proud of that to 0.78 and her tracks to 0.83; the waterline " +
+                 "polygon is what her HULL presents to the sea, and washing over a tire is correct " +
+                 "(only the top 0.12 m of each 0.64 m tire shows afloat). Generous is a touch drier; " +
+                 "too small re-opens far-rail flooding — the coordinator's run adjudicates it in " +
+                 "pixels, as it does for the hull fleet.")]
+        [Min(0f)] public float WatertightHalfBeamMeters;
+
+        /// <summary>True when this rig carries the flotation facts an amphibian needs — a sink to
+        /// pose her at and a draft to decide the swim on. A def with neither is a machine that
+        /// cannot swim, whatever her <see cref="VehicleKind"/> says, and the drive model reads THIS
+        /// rather than assuming the kind implies the geometry.</summary>
+        public bool Floats => FloatSinkMeters > 0f && FloatDraftMeters > 0f;
 
         [Header("Wheels (the articulated fittings lifted out of the body mesh)")]
         [Tooltip("Every part that moves relative to the body, with the motion it takes. Written by " +
