@@ -38,11 +38,27 @@ namespace HiddenHarbours.Vehicles
         /// <summary>Her controller, when she is drivable; null when she is scenery.</summary>
         public VehicleController Controller { get; private set; }
 
-        /// <summary>Set her up from code — the builder's and the tests' path. Call before enable.</summary>
+        /// <summary>
+        /// Set her up from code — the builder's and the tests' path.
+        ///
+        /// <para>⚠️ <b>Skins immediately when the object is already live, and that is not a
+        /// convenience.</b> <c>AddComponent</c> on an ACTIVE GameObject runs <c>OnEnable</c> then and
+        /// there — before the caller has had a chance to say which vehicle this is — and the
+        /// <c>SetActive(true)</c> that usually follows is a no-op on an object that never went
+        /// inactive. So the natural-looking sequence
+        /// <c>new GameObject() → AddComponent → Configure → SetActive(true)</c> leaves her
+        /// permanently unskinned, with every call having apparently succeeded. Measured 2026-08-17:
+        /// it took out all five PlayMode fixtures at once.</para>
+        ///
+        /// <para>Authoring her INACTIVE first is still the tidier order and it works unchanged; this
+        /// simply means the other order is not a trap. <see cref="Skin"/> is idempotent, so a caller
+        /// who does both skins once.</para>
+        /// </summary>
         public void Configure(VehicleDef vehicle, bool drivable)
         {
             _vehicle = vehicle;
             _drivable = drivable;
+            if (isActiveAndEnabled) Skin();
         }
 
         private void OnEnable() => Skin();

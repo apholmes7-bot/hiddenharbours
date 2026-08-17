@@ -45,6 +45,65 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         /// <summary>
+        /// Build her the way a caller naturally would: a live GameObject, add the component,
+        /// configure it. ⚠️ <c>AddComponent</c> on an ACTIVE object runs <c>OnEnable</c> immediately —
+        /// before <c>Configure</c> has said which vehicle this is — so this order relies on
+        /// <see cref="ParkedVehicle.Configure"/> skinning her itself. It is the order every test
+        /// below uses, on purpose: it is the one that used to fail silently.
+        /// </summary>
+        ParkedVehicle SpawnLive(bool drivable)
+        {
+            _go = new GameObject("Dually", typeof(Rigidbody2D));
+            var parked = _go.AddComponent<ParkedVehicle>();
+            parked.Configure(LoadDually(), drivable);
+            return parked;
+        }
+
+        /// <summary>
+        /// ⭐ <b>Both authoring orders skin her, and exactly once.</b>
+        ///
+        /// <para>The INACTIVE-first order is the tidy one and runs through <c>OnEnable</c>. The
+        /// live order runs through <c>Configure</c>. Measured 2026-08-17: the live order left her
+        /// permanently unskinned with every call apparently succeeding, which took out all five
+        /// fixtures in this file at once. Both are pinned here so neither can regress into the
+        /// other's blind spot.</para>
+        /// </summary>
+        [UnityTest]
+        public IEnumerator BothAuthoringOrdersSkinHer_AndNeitherDoublesUp()
+        {
+            // 1. Inactive first — Configure, then activate. OnEnable does the work.
+            _go = new GameObject("DuallyInactive", typeof(Rigidbody2D));
+            _go.SetActive(false);
+            var parked = _go.AddComponent<ParkedVehicle>();
+            parked.Configure(LoadDually(), drivable: false);
+            Assert.That(parked.IsSkinned, Is.False, "nothing should have skinned while she was inactive.");
+            _go.SetActive(true);
+            yield return null;
+            Assert.That(parked.IsSkinned, Is.True, "the inactive-first order never skinned her.");
+            Object.Destroy(_go);
+            yield return null;
+
+            // 2. Live — AddComponent has already run OnEnable, so Configure must do the work.
+            parked = SpawnLive(drivable: false);
+            yield return null;
+            Assert.That(parked.IsSkinned, Is.True,
+                "the live order never skinned her. AddComponent on an ACTIVE object runs OnEnable " +
+                "before Configure names the vehicle, and the SetActive(true) that usually follows is " +
+                "a no-op — so Configure has to skin her itself.");
+
+            // Skinning twice must reconfigure in place, not accumulate a second set of wheels.
+            parked.Skin();
+            yield return null;
+            Transform posed = _go.transform.Find(VehicleSkinner.VisualChildName)
+                                 .GetComponent<HiddenHarbours.Art.IsoFacetHullRenderer>().PosedMesh;
+            int wheels = 0;
+            for (int i = 0; i < posed.childCount; i++)
+                if (posed.GetChild(i).GetComponent<HiddenHarbours.Art.IsoFacetPropRenderer>() != null) wheels++;
+            Assert.That(wheels, Is.EqualTo(6),
+                "a re-skin accumulated wheels instead of reconfiguring the six in place.");
+        }
+
+        /// <summary>
         /// She skins herself on enable, through the live Art service, and the renderer she gets is
         /// CONFIGURED — not merely installed. An unconfigured renderer draws nothing while every
         /// "is it skinned?" flag reads true.
@@ -57,10 +116,7 @@ namespace HiddenHarbours.Tests.PlayMode
                 "IsoFacetVehiclePresentationService self-registers at BeforeSceneLoad; if this is " +
                 "null the mesh path is dead for every vehicle in the game.");
 
-            _go = new GameObject("Dually", typeof(Rigidbody2D));
-            var parked = _go.AddComponent<ParkedVehicle>();
-            parked.Configure(LoadDually(), drivable: true);
-            _go.SetActive(true);
+            ParkedVehicle parked = SpawnLive(drivable: true);
             yield return null;
 
             Assert.That(parked.IsSkinned, Is.True, "she never took the mesh path.");
@@ -83,10 +139,7 @@ namespace HiddenHarbours.Tests.PlayMode
         [UnityTest]
         public IEnumerator EverySixWheelsAttachAsPosableFittings()
         {
-            _go = new GameObject("Dually", typeof(Rigidbody2D));
-            var parked = _go.AddComponent<ParkedVehicle>();
-            parked.Configure(LoadDually(), drivable: true);
-            _go.SetActive(true);
+            SpawnLive(drivable: true);
             yield return null;
 
             Transform visual = _go.transform.Find(VehicleSkinner.VisualChildName);
@@ -116,10 +169,7 @@ namespace HiddenHarbours.Tests.PlayMode
         [UnityTest]
         public IEnumerator SheNeitherChurnsFoamNorReflectsInWater()
         {
-            _go = new GameObject("Dually", typeof(Rigidbody2D));
-            var parked = _go.AddComponent<ParkedVehicle>();
-            parked.Configure(LoadDually(), drivable: false);
-            _go.SetActive(true);
+            SpawnLive(drivable: false);
             yield return null;
 
             Transform visual = _go.transform.Find(VehicleSkinner.VisualChildName);
@@ -145,10 +195,7 @@ namespace HiddenHarbours.Tests.PlayMode
         [UnityTest]
         public IEnumerator HerHeadingIsContinuous_AndMapsThroughTheMeasuredCcwConvention()
         {
-            _go = new GameObject("Dually", typeof(Rigidbody2D));
-            var parked = _go.AddComponent<ParkedVehicle>();
-            parked.Configure(LoadDually(), drivable: false);
-            _go.SetActive(true);
+            SpawnLive(drivable: false);
             yield return null;
 
             var driver = _go.GetComponent<VehicleMeshDriver>();
@@ -178,10 +225,7 @@ namespace HiddenHarbours.Tests.PlayMode
         [UnityTest]
         public IEnumerator DrivingWithTheWheelOverActuallyTurnsHer()
         {
-            _go = new GameObject("Dually", typeof(Rigidbody2D));
-            var parked = _go.AddComponent<ParkedVehicle>();
-            parked.Configure(LoadDually(), drivable: true);
-            _go.SetActive(true);
+            ParkedVehicle parked = SpawnLive(drivable: true);
             yield return null;
 
             VehicleController c = parked.Controller;
