@@ -137,6 +137,14 @@ namespace HiddenHarbours.Tests.RigBaking
                          "LobsterBoatVariantsIso", AzimuthConvention.CounterClockwise),
             new Snapshot("navBuoy", "docs/art/rigs/nav-buoy-kit/navBuoyRig.js",
                          "NavBuoy", AzimuthConvention.Clockwise, "deckIsoSolid"),
+            // The player's notebook — the main UI surface (drop 2026-08-17, imported here).
+            // TWO prerequisites, in install order, and both are load-bearing for different reasons:
+            // dialogueBubble because this kit ships NO FACE OF ITS OWN (probeType asserts literal
+            // object identity with BubbleKit.FONT), and deckIsoSolid because without it the rig
+            // still loads and every piece of furniture still draws while NotebookIsoKit — the closed
+            // book — silently never registers. A missing global that costs nothing today.
+            new Snapshot("notebook", "docs/art/rigs/notebook-kit/Art/notebookRig3.js",
+                         "NotebookKit", AzimuthConvention.Clockwise, "dialogueBubble", "deckIsoSolid"),
             new Snapshot("punt", "docs/art/rigs/puntIsoRig.js",
                          "PuntIso", AzimuthConvention.CounterClockwise),
             new Snapshot("rod", "docs/art/rigs/rodIsoRig.js",

@@ -1,0 +1,609 @@
+{
+  "_schema": "gameplay sidecar — CARRY/READ/OPEN sections for a hand-held prop that is also a UI surface. Absence is data.",
+  "rig": "Art/notebookRig3.js",
+  "globals": [
+    "NotebookKit",
+    "NotebookIsoKit"
+  ],
+  "requires": [
+    "Art/dialogueBubbleRig.js (BubbleKit — the shared face; the notebook does not draw without it)",
+    "Art/isoSolid.js (closed object only)"
+  ],
+  "derivedFromRigSha256": "505eaed858de95bb2e2dfe64c0a70803fd41e8d6ac57d256c5dbf229de5cad0f",
+  "supersedes": "Art/gameplay/notebookRig.gameplay.json (pass 1/2)",
+  "frame": {
+    "units": "metres",
+    "scale_px_per_m": 32,
+    "origin": "ground under the centre (NotebookIsoKit.pivot = 7,8) — the standard prop convention",
+    "axes": "+x right, +y away from the camera at dir 0, +z up"
+  },
+  "dims_m": {
+    "w": 0.1,
+    "l": 0.145,
+    "t": 0.018
+  },
+  "CARRY": [
+    {
+      "id": "hand_r",
+      "type": "hand",
+      "pos": [
+        0,
+        0,
+        0.009
+      ],
+      "grip": "spine into the palm, fore-edge outboard; the elastic sits under the fingers",
+      "provenance": "exact — t/2 with t = 0.018"
+    },
+    {
+      "id": "cover",
+      "type": "surface",
+      "pos": [
+        0,
+        0,
+        0.018
+      ],
+      "use": "where a ribbon, a stamp or a sticker mounts on the closed book",
+      "provenance": "exact — t"
+    },
+    {
+      "id": "spine",
+      "type": "edge",
+      "pos": [
+        -0.05,
+        0,
+        0.009
+      ],
+      "use": "shelf/stow orientation; the hinge the open spread rotates about",
+      "provenance": "exact — -w/2"
+    }
+  ],
+  "READ": {
+    "px_in_world": "~3 x 5 px closed",
+    "silhouette": "dark cover block, one pale sliver of page edge, a darker band where the elastic crosses, and the ribbon tail. Nothing else exists at this size.",
+    "facings": [
+      {
+        "dir": 0,
+        "name": "N",
+        "anchors": {
+          "carry": {
+            "dx": 0,
+            "dy": 0
+          },
+          "cover": {
+            "dx": 0,
+            "dy": 0
+          },
+          "spine": {
+            "dx": -2,
+            "dy": 0
+          }
+        }
+      },
+      {
+        "dir": 1,
+        "name": "NE",
+        "anchors": {
+          "carry": {
+            "dx": 0,
+            "dy": 0
+          },
+          "cover": {
+            "dx": 0,
+            "dy": 0
+          },
+          "spine": {
+            "dx": -1,
+            "dy": -1
+          }
+        }
+      },
+      {
+        "dir": 2,
+        "name": "E",
+        "anchors": {
+          "carry": {
+            "dx": 0,
+            "dy": 0
+          },
+          "cover": {
+            "dx": 0,
+            "dy": 0
+          },
+          "spine": {
+            "dx": 0,
+            "dy": -1
+          }
+        }
+      },
+      {
+        "dir": 3,
+        "name": "SE",
+        "anchors": {
+          "carry": {
+            "dx": 0,
+            "dy": 0
+          },
+          "cover": {
+            "dx": 0,
+            "dy": 0
+          },
+          "spine": {
+            "dx": 1,
+            "dy": -1
+          }
+        }
+      },
+      {
+        "dir": 4,
+        "name": "S",
+        "anchors": {
+          "carry": {
+            "dx": 0,
+            "dy": 0
+          },
+          "cover": {
+            "dx": 0,
+            "dy": 0
+          },
+          "spine": {
+            "dx": 2,
+            "dy": 0
+          }
+        }
+      },
+      {
+        "dir": 5,
+        "name": "SW",
+        "anchors": {
+          "carry": {
+            "dx": 0,
+            "dy": 0
+          },
+          "cover": {
+            "dx": 0,
+            "dy": 0
+          },
+          "spine": {
+            "dx": 1,
+            "dy": 1
+          }
+        }
+      },
+      {
+        "dir": 6,
+        "name": "W",
+        "anchors": {
+          "carry": {
+            "dx": 0,
+            "dy": 0
+          },
+          "cover": {
+            "dx": 0,
+            "dy": 0
+          },
+          "spine": {
+            "dx": 0,
+            "dy": 1
+          }
+        }
+      },
+      {
+        "dir": 7,
+        "name": "NW",
+        "anchors": {
+          "carry": {
+            "dx": 0,
+            "dy": 0
+          },
+          "cover": {
+            "dx": 0,
+            "dy": 0
+          },
+          "spine": {
+            "dx": -1,
+            "dy": 1
+          }
+        }
+      }
+    ],
+    "covers": [
+      {
+        "key": "waxed",
+        "ship": true,
+        "ramp": [
+          "#1e2a2c",
+          "#263436",
+          "#2f4043",
+          "#3a4d50"
+        ]
+      },
+      {
+        "key": "oxblood",
+        "ship": false,
+        "ramp": [
+          "#3f1d16",
+          "#5a2a20",
+          "#743629",
+          "#8e4534"
+        ]
+      },
+      {
+        "key": "canvas",
+        "ship": false,
+        "ramp": [
+          "#5c5140",
+          "#948468",
+          "#b09e80",
+          "#c9b899"
+        ]
+      }
+    ],
+    "keyline": "none (ADR 0031)"
+  },
+  "OPEN": {
+    "verb": "the dev-key ledger is exhausted — opening rides an existing verb; the closed art IS the icon that verb shows",
+    "surface": "NotebookKit.drawUnit(ctx, X, Y, W, H, o) — pass the room in, read the returned layout; never clamp a returned rect",
+    "fit": "fit(availW, availH, o) → the integer scale and the cols/lines that fill the room",
+    "scaleRule": "INTEGER scale only — fit() picks it. A fractional scale puts the hand on a half cell and the wobble stops reading as a hand and starts reading as a bug.",
+    "occupancy": "at the CLOSEST tier (4×) the open book occupies 73.4% of the screen (410 × 232 px of 480 × 270), leaving 26.6% of the world visible. It DOMINATES, by design — it is held up in front of her — and the presenter now chooses that knowing the fraction.",
+    "copyBudget": "THE NUMBER THE WRITING LANE NEEDS: at the closest tier a step line holds 31 characters and a title line 33, with 20 ruled lines a leaf. A step longer than that is not clipped — it wraps and eats a line, and a quest whose block outgrows a leaf moves whole to the facing leaf. Write to 31 and nothing surprises anybody.",
+    "tiers": [
+      {
+        "zoom": 2,
+        "scale": 3,
+        "cols": 17,
+        "lines": 12,
+        "spreadPx": [
+          810,
+          456
+        ],
+        "screenPct": 71.3,
+        "holds": true
+      },
+      {
+        "zoom": 3,
+        "scale": 2,
+        "cols": 17,
+        "lines": 12,
+        "spreadPx": [
+          540,
+          304
+        ],
+        "screenPct": 71.3,
+        "holds": true
+      },
+      {
+        "zoom": 4,
+        "scale": 1,
+        "cols": 31,
+        "lines": 20,
+        "spreadPx": [
+          410,
+          232
+        ],
+        "screenPct": 73.4,
+        "holds": true
+      }
+    ],
+    "turn": {
+      "frames": 3,
+      "api": "pageTurn(ctx, layout, frame 1..3)",
+      "note": "a flip, not a scroll: lift off the right leaf, stand at the gutter, land on the left. ~70 ms a frame at 3 frames is a page turn you can read; slower reads as a cutscene."
+    },
+    "ribbon": "ribbon(ctx, layout, {at}) — the bookmark, 3 px, cover-height plus a tail. It is also the only thing that reads on a dark cover, which is why the cover board matters.",
+    "wear": {
+      "api": "wear(ctx, layout, level 1..2)",
+      "ships": "CHEAP — nibbled fore-edge at level 1, plus a stain at level 2. Flagged not gold-plated: per-page wear, ring stains and a cracked spine are a separate ask."
+    },
+    "pageNumbers": "pageNumber(ctx, leaf, n) — pencil, in the outside corner of each leaf. layout().leaves[i].pageNo is the rect.",
+    "cornerMarks": "cornerMark(ctx, rect, \"next\"|\"prev\") — layout().cornerNext / cornerPrev. The dog-ear is decoration; these two are the affordance.",
+    "tabs": {
+      "mount": "layout().tabMountX is the mount line (the fore-edge). layout().tabs[i] is chip + label rect + cursor rest, i in 0..7.",
+      "chip": {
+        "w": 37,
+        "h": 12,
+        "pad": 3,
+        "gap": 3,
+        "top": 7,
+        "max": 8
+      },
+      "maxLabelChars": "colsFor(tabW − pad − 1) — 5 characters at scale 1, clipped not shrunk. Sub-tabs lose one to the narrower stub.",
+      "states": [
+        "on — pulled out, inked edge, lit top row",
+        "off — flush, unlit",
+        "cursor — the pointing hand rests on the stub at layout().tabs[i].cursor"
+      ],
+      "families": [
+        {
+          "key": "active",
+          "placeholderLabel": "OPEN",
+          "page": "quests",
+          "subs": 0
+        },
+        {
+          "key": "done",
+          "placeholderLabel": "DONE",
+          "page": "done",
+          "subs": 0
+        },
+        {
+          "key": "know",
+          "placeholderLabel": "KNOW",
+          "page": "knowledge",
+          "subs": 3
+        },
+        {
+          "key": "notes",
+          "placeholderLabel": "MINE",
+          "page": "notes",
+          "subs": 0
+        }
+      ],
+      "ruling": "FOUR families ship as furniture: Active · Done · Knowledge · My Notes. Knowledge takes N SUB-TABS and N is DATA — the kit ships the chip and the label rect, never a label."
+    },
+    "quest": {
+      "anatomy": "block = { kind:\"quest\", title, context?, steps:[{text, state}], done? }. blockRows() turns it into ruled lines; flow() places it.",
+      "titleRow": "starts at leaf.titleX, titleCols wide, ink, the hand at press 0.9",
+      "contextLine": "optional, same x, pencil at press 0.68 — the asker or the deadline, never a second title",
+      "step": {
+        "box": "leaf.rows[i].box · 6 × 6 px at scale 1",
+        "text": "leaf.rows[i].text · cols wide",
+        "states": [
+          "unchecked — the box, empty",
+          "checked — the box + a tick, and the text struck through",
+          "current — the CURRENT marker (see currents)"
+        ]
+      },
+      "currents": [
+        {
+          "key": "arrow",
+          "label": "INK ARROW",
+          "ship": true,
+          "note": "The box lane carries a solid ink arrowhead instead of a box. Costs no colour, cannot collide with the selection gold, and reads at one glance because nothing else on the page is solid."
+        },
+        {
+          "key": "pill",
+          "label": "GOLD PILL",
+          "ship": false,
+          "note": "The bubble kit’s emphasis, on the step row. Strongest read on the page — and the reason it does not ship by default: gold already means SELECTED. Two meanings for one colour on one page is the owner’s call, not the rig’s."
+        },
+        {
+          "key": "dot",
+          "label": "INKED BOX",
+          "ship": false,
+          "note": "The box stays and takes a heavy ink dot. Quietest and most diegetic — she blacked in the one she is on — but at 6 px it is a smudge, not a signal."
+        }
+      ],
+      "done": [
+        {
+          "key": "strike",
+          "label": "STRUCK + TICKED",
+          "ship": true,
+          "note": "A pencil line through the title and a tick in every box. Carried from pass 2, costs nothing, and keeps a finished quest legible — the page is a record of what she did, so nothing is deleted."
+        },
+        {
+          "key": "stamp",
+          "label": "HARBOUR STAMP",
+          "ship": false,
+          "note": "A stamped DONE in the printed margin ink, over the title row. The best read on a Done tab at a glance and the most characterful — but it is the harbourmaster’s mark on HER book, so it implies someone else signs her work off. Owner’s call."
+        },
+        {
+          "key": "fade",
+          "label": "INK FADE",
+          "ship": false,
+          "note": "The whole block redrawn at a light press, as if the ink has gone. Quietest, cheapest, and the most honest about time passing — loses the tick, which is the satisfying part."
+        }
+      ],
+      "checkboxFamily": [
+        {
+          "key": "pencil",
+          "label": "PENCIL SQUARE",
+          "ship": true,
+          "note": "Four pencil strokes with the corners not quite meeting. She ruled it herself, so it wobbles."
+        },
+        {
+          "key": "printed",
+          "label": "PRINTED SQUARE",
+          "ship": false,
+          "note": "A clean printed box with a hand tick in it. Reads as a form she was given — wrong for her own lists, arguably right for quests."
+        },
+        {
+          "key": "round",
+          "label": "PENCIL CIRCLE",
+          "ship": false,
+          "note": "A scratched ring. Softer, and a filled ring makes a strong CURRENT marker — but a circle at 6 px costs a pixel of legibility."
+        }
+      ],
+      "reuse": "the checkbox family is drawn ONCE here and reused verbatim by the player’s own note lines — same function, same rect, different ink weight",
+      "hitBoxes": "flow().placed[k].hit is the whole block (a quest that wraps is one thing to click); .rows[j].r.hit is the ruled line; .rows[j].r.box is the box a mouse actually aims at"
+    },
+    "knowledge": {
+      "header": "block = { kind:\"section\", head, body, slot? } — head in ink with a ruled underline, body in the hand at titleCols",
+      "rules": "the printed ruled stock carries the body; the facing leaf is squared so a diagram lands on the same lattice as the type",
+      "slot": {
+        "rect": "the rows the section RESERVED (slotLines, default 5) — the frame flows with the text, so knowledge copy can never run through it. layout().plate is the default full-leaf rect for a plate that is not part of a section.",
+        "api": "plate(ctx, layout, {rect, caption, fill}) · block = { kind:\"section\", head, body, slot:true, slotLines?, slotCaption? }",
+        "note": "ART RESERVES THE ROOM AND SAYS WHERE. The frame, the corner ticks and the caption ship now; what goes inside is a later content drop (knots, a fish plate, a rigged line)."
+      }
+    },
+    "notes": {
+      "stock": "the leaves are stock \"mine\" — the same paper, ruled by HER in pencil, wobbling, with no printed margin rule. Distinct by drawing, not by a new colour.",
+      "lines": "block = { kind:\"note\", text, box?, state? } — prose lines run titleCols wide with no box; task lines take the shared checkbox family at cols wide",
+      "newNote": "block = { kind:\"newnote\" } — newNoteMark() draws a fresh box and a pencil cross in the margin lane; its rect is the affordance’s hit-box",
+      "playerText": [
+        {
+          "key": "clean",
+          "label": "THE BUBBLE KIT’S FACE",
+          "ship": true,
+          "note": "The page is set in exactly the face the bubbles are set in — same glyphs, same cell, same weight. SHIPS (owner, 2026-08-17): the roughened hand was unreadable at page sizes, and knowledge pages are the longest running text in the game. What makes the book HERS is the furniture — her pencil rules, her wobbling boxes, her strikes — not damaged letters."
+        },
+        {
+          "key": "rough",
+          "label": "THE ROUGHENED HAND",
+          "ship": false,
+          "note": "The same glyphs with baseline wobble, dropped strokes, crowding inside the cell and per-line drift. Reads as written rather than typeset and holds up enlarged — and at one cell it costs legibility, which is why it is a flag and not the default. Still drawn and still measured: probeHand() runs against this mode."
+        }
+      ]
+    },
+    "flow": {
+      "api": "flow(blocks, layout) → { placed[], overflow, used[], capacity, filled }",
+      "rule": "blocks are kept whole. A quest that fits a leaf but not the remaining rows moves to the facing leaf; a quest that fits neither is split, because the alternative is not drawing it.",
+      "overflow": "what is left over is NOT drawn and NOT shrunk: overflowMark() writes a pencil \"n more\" with an arrow, and the answer is pageTurn(). There is no scroll state in this kit.",
+      "proof": "probeFlow()"
+    },
+    "selection": {
+      "shared": "the pointing hand and the cove gold are BubbleKit.CURSORS / BubbleKit.GOLD, imported — one selection vocabulary across the talking UI and the book UI",
+      "cursors": [
+        {
+          "key": "hand",
+          "label": "POINTING HAND",
+          "ship": true,
+          "w": 10,
+          "h": 9,
+          "point": [
+            9,
+            3
+          ],
+          "note": "BubbleKit.CURSORS.hand, unchanged and imported. One selection vocabulary across the talking UI and the book UI — the player learns the pointer once. It rests in the margin lane, over the printed margin rule, which is where a hand actually goes on a page."
+        },
+        {
+          "key": "cuff",
+          "label": "HAND + CUFF",
+          "ship": false,
+          "w": 10,
+          "h": 9,
+          "point": [
+            9,
+            3
+          ],
+          "note": "The bubble kit’s knitted-cuff alternate. Still on the owner’s board there; if it wins there it wins here, because there is only one cursor family."
+        },
+        {
+          "key": "tack",
+          "label": "BRASS TACK",
+          "ship": false,
+          "w": 6,
+          "h": 6,
+          "point": [
+            5,
+            2
+          ],
+          "note": "An object pressed into the page — no anatomy to get wrong. Reads as a rivet before it reads as a pointer."
+        }
+      ],
+      "highlights": [
+        {
+          "key": "pill",
+          "label": "GOLD PILL",
+          "ship": true,
+          "note": "The bubble kit’s selected row in the same cove gold. Selection must never be missed and the owner ruled on it once; this rig does not re-open it. NOTE the collision below: if the CURRENT step also takes gold, gold stops meaning \"you are here\"."
+        },
+        {
+          "key": "bracket",
+          "label": "PENCIL BRACKET",
+          "ship": false,
+          "note": "Hand-drawn brackets round the row, as if she marked it. The most diegetic of the four and the strongest contender if gold ever reads as UI on paper stock."
+        },
+        {
+          "key": "rule",
+          "label": "GOLD RULE",
+          "ship": false,
+          "note": "Paper stays, a gold rule under the row. Lightest touch, leans hardest on the cursor."
+        },
+        {
+          "key": "press",
+          "label": "PRESSED ROW",
+          "ship": false,
+          "note": "The row is inset a pixel, shade above and light below. Costs no colour; quietest."
+        }
+      ],
+      "rests": "a row cursor rests at rows[i].cursor (the margin lane, 12 px, sized for the bubble kit’s 10 px hand); a tab cursor rests at tabs[i].cursor",
+      "collision": "GOLD MEANS SELECTED. If the CURRENT step also takes gold (currents.pill), one colour carries two meanings on one page — flagged, not decided."
+    },
+    "dataModel": {
+      "quest": "{ kind:\"quest\", title, context?, steps:[{text, state:\"todo\"|\"done\"|\"current\"}], done?, fill? }",
+      "section": "{ kind:\"section\", head, body, slot?, slotLines?, slotCaption? }",
+      "note": "{ kind:\"note\", text, box?, state? }",
+      "newNote": "{ kind:\"newnote\" }",
+      "tabs": "[{ key, label, page, style?, subs? }] — labels and the sub-tab COUNT are yours"
+    },
+    "text": {
+      "face": "BubbleKit.FONT at BubbleKit.CELL, drawn CLEAN — pixel-identical to a speech bubble",
+      "cell": {
+        "adv": 5,
+        "w": 4,
+        "box": 8,
+        "cap": 6,
+        "xh": 4,
+        "desc": 2,
+        "baseline": 5,
+        "line": 10,
+        "leading": 2,
+        "slack": 1,
+        "rule": 7,
+        "pitch": 10,
+        "from": "BubbleKit.CELL — imported, never redeclared",
+        "glyph": [
+          4,
+          8
+        ],
+        "note": "IMPORTED from BubbleKit.CELL. advance is EXACT; the crowding that reads as an uneven hand is a 1 px nudge inside the cell (glyph 4 wide in a 5 wide cell). The printed rule sits at row 7 of the line box, one under the baseline, so descenders cross it as they do on real ruled stock."
+      },
+      "case": {
+        "body": "sentence case — knowledge pages are the longest running text in the game and mixed case is what makes them readable",
+        "labels": "CAPS on tab chips, running heads and the DONE stamp — those are labels, not voice",
+        "was": "pass 2 set the whole book in CAPS on a 4 × 8 caps-only cell"
+      },
+      "wrap": "charsPerLine = cols = floor((textLaneWidth + s) / (5·s)) · NotebookKit.colsFor(px, s) · wrap() is BubbleKit.wrap, shared",
+      "fill": "one cell per character, left to right, line by line; layout().leaves[i].rows[] gives each ruled line its cell origin"
+    },
+    "shipped": {
+      "current": "arrow",
+      "done": "strike",
+      "box": "pencil",
+      "cursor": "BubbleKit.CURSORS.hand",
+      "highlight": "pill (BubbleKit.GOLD)",
+      "face": "clean (rough: 0)"
+    }
+  },
+  "PROBES": {
+    "run": [
+      "NotebookKit.probeType()",
+      "NotebookKit.probeHand()",
+      "NotebookKit.probeWrite()",
+      "NotebookKit.probeFlow()"
+    ],
+    "results": {
+      "type": {
+        "pass": true,
+        "claim": "the notebook’s cell and glyph set ARE the bubble kit’s, by reference — one voice across the talking UI and the book UI, enforced rather than promised."
+      },
+      "hand": {
+        "pass": true,
+        "claim": "the ROUGHENED mode (flagged OFF) differs from the clean face pixel by pixel — wobble, crowding, dropped strokes — while every cell origin stays exactly x + i·5·s. The page ships clean, so what this proves is that switching roughness back on cannot break the arithmetic."
+      },
+      "write": {
+        "pass": true,
+        "claim": "ink at fill k is a subset of ink at fill k+1; a part-written block carries exactly ONE caret and no strike or tick on text that has not been written yet; a finished one carries its marks and no caret."
+      },
+      "flow": {
+        "pass": true,
+        "claim": "blocks are kept whole across the gutter when they could fit a leaf, nothing is drawn past the last ruled line, and placed + overflow = given — so the pencil \"n more\" is a fact and the page turn is the only answer to a long list."
+      }
+    }
+  },
+  "_blocked": [
+    "THE DONE TREATMENT. Struck + ticked ships by default (cheapest, carried, keeps the tick). The harbour stamp is the best read on a Done tab and the most characterful, but it is the harbourmaster’s mark in HER book — that is a fiction call, not an art call. Ink fade is quietest and loses the tick. All three are drawn and on the board.",
+    "THE CURRENT STEP. The ink arrow ships because gold already means SELECTED, and spending it twice on one page is how a colour stops meaning anything. If the owner wants the bubble kit’s gold-pill emphasis on the current step, the swap is one string — and then selection needs its own mark (the pencil bracket is drawn and measured).",
+    "THE FACE ON THE PAGE — RESOLVED 2026-08-17, recorded here because it reverses pass 1 and 2. The page is set in the bubble kit’s face CLEAN: the roughened hand (wobble, dropped strokes, crowding, drift) was unreadable at page sizes, and knowledge pages are the longest running text in the game. The roughening is still drawn, still measured by probeHand(), and one flag away (`rough`) if the owner wants it back for short pages. What carries \"she wrote this\" now is the furniture: her pencil-ruled leaves, her wobbling boxes, her strikes, pencil weight for her own lines.",
+    "THE COVER. Waxed dark teal ships (pass 1). Oxblood reads instantly against water and is the best closed-icon at 3 × 5 px; oiled canvas reads as a ledger rather than a diary. Whichever wins, the ribbon stays — it is the only thing that reads on a dark cover.",
+    "HOW MUCH SCREEN THE OPEN BOOK TAKES. readBudget().occupancyAnswer states the fraction at the closest tier instead of asserting a screenshot. The kit’s position: it is a held object and it may dominate; the number is published so the presenter chooses knowingly.",
+    "KNOWLEDGE SUB-TAB COUNT. N is data. The chip clips at 5 characters and 8 stubs fit the fore-edge at any legal size — past that the tab column needs a second bank, which is a layout change, not a label change.",
+    "WEAR. Two levels ship cheap. Per-page wear, ring stains, a cracked spine and a swollen block are a separate ask with real art in them.",
+    "THE ILLUSTRATION SLOT’S CONTENTS. The rect, the frame and the caption ship. Nobody has said what draws inside it."
+  ],
+  "_excluded": [
+    "no quest data, no knowledge registry, no note storage — this kit ships furniture and measured rects only",
+    "no baked text: every string in NotebookKit.SAMPLE belongs to the harness and the reference sheet"
+  ]
+}
