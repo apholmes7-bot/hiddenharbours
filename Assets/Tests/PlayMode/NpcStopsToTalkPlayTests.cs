@@ -194,9 +194,6 @@ namespace HiddenHarbours.Tests.PlayMode
                                               f.DoorSign * (f.LengthMetres * 0.5f - 1.2f)));
         }
 
-        /// <summary>Put the clock at an hour and let the position land. Two frames, for the reason
-        /// <c>VillagerRoutinePlayTests.At</c> documents: a test coroutine resumes during Update in an
-        /// order Unity does not define.</summary>
         /// <summary>
         /// Drive the clock to an hour and let the world catch up — INCLUDING the throttled shelter
         /// visibility read (<see cref="VillagerRoutine.ShelterCheckSeconds"/>).
@@ -207,6 +204,11 @@ namespace HiddenHarbours.Tests.PlayMode
         /// clock to an outdoor hour and interacts within two frames finds her interactable still off
         /// from 6:00 — `BeginInteract` returns false and everything downstream reds. Two frames are
         /// not enough; the visibility read runs on its own throttle and must be waited out.</para>
+        ///
+        /// <para>The two frames themselves are still needed for the reason
+        /// <c>VillagerRoutinePlayTests.At</c> documents: a test coroutine resumes during Update in an
+        /// order Unity does not define, so a LateUpdate downstream of the villager has certainly not run
+        /// after only one.</para>
         /// </summary>
         IEnumerator At(float hour)
         {
@@ -350,7 +352,12 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             yield return At(18.15f);
             _player.position = _villager.transform.position + new Vector3(0.8f, 0f, 0f);
-            _interactor.BeginInteract();
+            Assert.That(_interactor.BeginInteract(), Is.True,
+                        "⚠️ ASSERTED, not merely called. Every other claim this test makes is true of a " +
+                        "villager who never stopped in the first place — Close() no-ops, the phase is " +
+                        "already Idle, and 'she is the pure function again' is trivially true. Without " +
+                        "this line the test passes VACUOUSLY, which is exactly how it survived the run " +
+                        "that reddened its seven neighbours.");
             yield return null;
 
             yield return At(18.25f);
@@ -420,7 +427,7 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             yield return At(12f);
             _player.position = new Vector3(Green.x + 1f, Green.y, 0f);
-            _interactor.BeginInteract();
+            Assert.That(_interactor.BeginInteract(), Is.True);
             yield return null;
             Assert.That(_presenter.IsShowing, Is.True);
 
@@ -439,7 +446,7 @@ namespace HiddenHarbours.Tests.PlayMode
         {
             yield return At(12f);
             _player.position = new Vector3(Green.x + 1f, Green.y, 0f);
-            _interactor.BeginInteract();
+            Assert.That(_interactor.BeginInteract(), Is.True);
             yield return null;
             Assert.That(_villager.IsTalking, Is.True);
 
