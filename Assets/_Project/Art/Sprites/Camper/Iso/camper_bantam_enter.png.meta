@@ -1,0 +1,1516 @@
+fileFormatVersion: 2
+guid: 25d1eb8b18561a045a4aac080ec1d44a
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 3708570378994852336
+    second: camper_bantam_enter_0
+  - first:
+      213: -1046836311813166495
+    second: camper_bantam_enter_1
+  - first:
+      213: 6857742931374349438
+    second: camper_bantam_enter_2
+  - first:
+      213: -6266606574624504617
+    second: camper_bantam_enter_3
+  - first:
+      213: 5780602381159125606
+    second: camper_bantam_enter_4
+  - first:
+      213: -2482517080621032708
+    second: camper_bantam_enter_5
+  - first:
+      213: 4007855337339731684
+    second: camper_bantam_enter_6
+  - first:
+      213: -500476696219053925
+    second: camper_bantam_enter_7
+  - first:
+      213: 6699641438937553682
+    second: camper_bantam_enter_8
+  - first:
+      213: 584115279167389461
+    second: camper_bantam_enter_9
+  - first:
+      213: -7767566424935015569
+    second: camper_bantam_enter_10
+  - first:
+      213: -3900749944638148055
+    second: camper_bantam_enter_11
+  - first:
+      213: -7768682679225119483
+    second: camper_bantam_enter_12
+  - first:
+      213: 830113295238255401
+    second: camper_bantam_enter_13
+  - first:
+      213: -1021581667822262129
+    second: camper_bantam_enter_14
+  - first:
+      213: 762865613613846361
+    second: camper_bantam_enter_15
+  - first:
+      213: -2062153846288653802
+    second: camper_bantam_enter_16
+  - first:
+      213: 3423794383171927882
+    second: camper_bantam_enter_17
+  - first:
+      213: 4764278816807702089
+    second: camper_bantam_enter_18
+  - first:
+      213: 6999701964446157845
+    second: camper_bantam_enter_19
+  - first:
+      213: -5303554204421317751
+    second: camper_bantam_enter_20
+  - first:
+      213: 950776543644725763
+    second: camper_bantam_enter_21
+  - first:
+      213: 8633365852749465787
+    second: camper_bantam_enter_22
+  - first:
+      213: 6283988754361590184
+    second: camper_bantam_enter_23
+  - first:
+      213: -4994938766913952018
+    second: camper_bantam_enter_24
+  - first:
+      213: -3899929346644869712
+    second: camper_bantam_enter_25
+  - first:
+      213: 1723756765194656609
+    second: camper_bantam_enter_26
+  - first:
+      213: -2040483296229787602
+    second: camper_bantam_enter_27
+  - first:
+      213: -9215407895326812616
+    second: camper_bantam_enter_28
+  - first:
+      213: 3615248984556080991
+    second: camper_bantam_enter_29
+  - first:
+      213: -489348881382880618
+    second: camper_bantam_enter_30
+  - first:
+      213: 4043228338480624141
+    second: camper_bantam_enter_31
+  - first:
+      213: -297056494284631185
+    second: camper_bantam_enter_32
+  - first:
+      213: 8597798535000793722
+    second: camper_bantam_enter_33
+  - first:
+      213: -4586198786074729106
+    second: camper_bantam_enter_34
+  - first:
+      213: -5549904783588186894
+    second: camper_bantam_enter_35
+  - first:
+      213: -3142603855871901281
+    second: camper_bantam_enter_36
+  - first:
+      213: 1103987943489271863
+    second: camper_bantam_enter_37
+  - first:
+      213: -2690603323935778876
+    second: camper_bantam_enter_38
+  - first:
+      213: -3103715070209673193
+    second: camper_bantam_enter_39
+  - first:
+      213: 2696082804317639554
+    second: camper_bantam_enter_40
+  - first:
+      213: -4595973593807286780
+    second: camper_bantam_enter_41
+  - first:
+      213: -838156377120218597
+    second: camper_bantam_enter_42
+  - first:
+      213: -1047243966178429248
+    second: camper_bantam_enter_43
+  - first:
+      213: 6576992998388478034
+    second: camper_bantam_enter_44
+  - first:
+      213: -242182068832071673
+    second: camper_bantam_enter_45
+  - first:
+      213: 240119008297380447
+    second: camper_bantam_enter_46
+  - first:
+      213: 1688894059390817572
+    second: camper_bantam_enter_47
+  - first:
+      213: 7223560958543815248
+    second: camper_bantam_enter_48
+  - first:
+      213: 155860435359624507
+    second: camper_bantam_enter_49
+  - first:
+      213: 8779355064202086562
+    second: camper_bantam_enter_50
+  - first:
+      213: -2957335864553498220
+    second: camper_bantam_enter_51
+  - first:
+      213: 755282635172833211
+    second: camper_bantam_enter_52
+  - first:
+      213: -5110835548185585845
+    second: camper_bantam_enter_53
+  - first:
+      213: -2486957544869538188
+    second: camper_bantam_enter_54
+  - first:
+      213: 1917445065473704139
+    second: camper_bantam_enter_55
+  - first:
+      213: 3387369786644056276
+    second: camper_bantam_enter_56
+  - first:
+      213: -2572959897400616838
+    second: camper_bantam_enter_57
+  - first:
+      213: -7557184867836598010
+    second: camper_bantam_enter_58
+  - first:
+      213: -1369618242681215744
+    second: camper_bantam_enter_59
+  - first:
+      213: 5698431418429083836
+    second: camper_bantam_enter_60
+  - first:
+      213: -2989741640085273291
+    second: camper_bantam_enter_61
+  - first:
+      213: 8073909176061429338
+    second: camper_bantam_enter_62
+  - first:
+      213: -404056899870548837
+    second: camper_bantam_enter_63
+  - first:
+      213: -5282690621800908549
+    second: camper_bantam_enter_64
+  - first:
+      213: 466160437495719674
+    second: camper_bantam_enter_65
+  - first:
+      213: -8849992002035565495
+    second: camper_bantam_enter_66
+  - first:
+      213: -3768547453954937498
+    second: camper_bantam_enter_67
+  - first:
+      213: 3445762640277932189
+    second: camper_bantam_enter_68
+  - first:
+      213: -6572304866434779010
+    second: camper_bantam_enter_69
+  - first:
+      213: -7402385109240843718
+    second: camper_bantam_enter_70
+  - first:
+      213: 957838322503107047
+    second: camper_bantam_enter_71
+  - first:
+      213: -3574939967481336276
+    second: camper_bantam_enter_72
+  - first:
+      213: -8645018253104957709
+    second: camper_bantam_enter_73
+  - first:
+      213: 2514027899505524125
+    second: camper_bantam_enter_74
+  - first:
+      213: 3115339240671450799
+    second: camper_bantam_enter_75
+  - first:
+      213: 8566329931596948832
+    second: camper_bantam_enter_76
+  - first:
+      213: 4919763963762793151
+    second: camper_bantam_enter_77
+  - first:
+      213: 5023369854581432381
+    second: camper_bantam_enter_78
+  - first:
+      213: -8850942212401375962
+    second: camper_bantam_enter_79
+  - first:
+      213: -3353700389722613969
+    second: camper_bantam_enter_80
+  - first:
+      213: -1693526102572752456
+    second: camper_bantam_enter_81
+  - first:
+      213: 3150743723206751413
+    second: camper_bantam_enter_82
+  - first:
+      213: -1816363356512924857
+    second: camper_bantam_enter_83
+  - first:
+      213: 1639090732331361808
+    second: camper_bantam_enter_84
+  - first:
+      213: -3992850232057489258
+    second: camper_bantam_enter_85
+  - first:
+      213: -7632658503844983049
+    second: camper_bantam_enter_86
+  - first:
+      213: 2470652613209225927
+    second: camper_bantam_enter_87
+  - first:
+      213: -8219695899325912234
+    second: camper_bantam_enter_88
+  - first:
+      213: 4664415684245133229
+    second: camper_bantam_enter_89
+  - first:
+      213: -95533260317812769
+    second: camper_bantam_enter_90
+  - first:
+      213: -3850276105247463939
+    second: camper_bantam_enter_91
+  - first:
+      213: 1244455263233962462
+    second: camper_bantam_enter_92
+  - first:
+      213: -8731650857104896843
+    second: camper_bantam_enter_93
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: camper_bantam_enter_d0_s0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1113
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 36d3d0a998429f547a9efa997762b28e
+      internalID: -257357270
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_enter_d0_s1
+      rect:
+        serializedVersion: 2
+        x: 220
+        y: 1113
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5ad4bafb98e5ec34bb4697a2c29ed70a
+      internalID: -1475272965
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_enter_d0_s2
+      rect:
+        serializedVersion: 2
+        x: 440
+        y: 1113
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ef72ae00e0413174d88916231b8e6b9f
+      internalID: -1683413328
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_enter_d0_s3
+      rect:
+        serializedVersion: 2
+        x: 660
+        y: 1113
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3f27051508654ad4ab2ae4b8ae5f55f6
+      internalID: -1229950857
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_enter_d0_s4
+      rect:
+        serializedVersion: 2
+        x: 880
+        y: 1113
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4c7542992a5c6404b8512c90c72e4fff
+      internalID: -2047192787
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_enter_d0_s5
+      rect:
+        serializedVersion: 2
+        x: 1100
+        y: 1113
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cb4e26ae1381e604f9286bbc7bef6d00
+      internalID: -1835356295
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_enter_d1_s0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 954
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8d32215155e119844a84ff187a889e3b
+      internalID: 1585065518
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_enter_d1_s1
+      rect:
+        serializedVersion: 2
+        x: 220
+        y: 954
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4db1bd22cb56a76419142053fa464c10
+      internalID: 1418838490
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_enter_d1_s2
+      rect:
+        serializedVersion: 2
+        x: 440
+        y: 954
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b23f1b518f5d6774082c527f104835ec
+      internalID: -1675312658
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_enter_d1_s3
+      rect:
+        serializedVersion: 2
+        x: 660
+        y: 954
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0d6cb20547b7726449746ee916149e1f
+      internalID: 1512417889
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_enter_d1_s4
+      rect:
+        serializedVersion: 2
+        x: 880
+        y: 954
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aa01513e6f1781a439552ad8642a698d
+      internalID: 645958701
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_enter_d1_s5
+      rect:
+        serializedVersion: 2
+        x: 1100
+        y: 954
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d3d58ee5d69e5744ab1d5dd0628c7131
+      internalID: 2060623200
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_enter_d2_s0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 795
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7d3d47f3bc9203c4d881623adecc245b
+      internalID: -274932316
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_enter_d2_s1
+      rect:
+        serializedVersion: 2
+        x: 220
+        y: 795
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aac34cede4d585e4bb5331408fd9c80f
+      internalID: -1968942621
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_enter_d2_s2
+      rect:
+        serializedVersion: 2
+        x: 440
+        y: 795
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6f01e0222614d1d40945860364b5c222
+      internalID: 1039148682
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_enter_d2_s3
+      rect:
+        serializedVersion: 2
+        x: 660
+        y: 795
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ea7e7d0bfcb5bfa4fb57a724e5957016
+      internalID: -979903380
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_enter_d2_s4
+      rect:
+        serializedVersion: 2
+        x: 880
+        y: 795
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8f33e06ec8e142c4797f19b9be42f2e6
+      internalID: -1870508516
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_enter_d2_s5
+      rect:
+        serializedVersion: 2
+        x: 1100
+        y: 795
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9ba1a752d6b8c234cb9c6b54e018aa00
+      internalID: 1122040650
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_enter_d3_s0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 636
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a612a6f32ecd28b459ee23bf6b18367f
+      internalID: 1237920807
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_enter_d3_s1
+      rect:
+        serializedVersion: 2
+        x: 220
+        y: 636
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c388a7ff104556b429389721be1d6214
+      internalID: -776357356
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_enter_d3_s2
+      rect:
+        serializedVersion: 2
+        x: 440
+        y: 636
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 89ee5d6b096dc7145ab6eea841a0b09e
+      internalID: -1547113379
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_enter_d3_s3
+      rect:
+        serializedVersion: 2
+        x: 660
+        y: 636
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c1fb849a19617984ba0363607d34c609
+      internalID: 757019805
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_enter_d3_s4
+      rect:
+        serializedVersion: 2
+        x: 880
+        y: 636
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b39627bae49388941b3f614bfbe92a35
+      internalID: -421948829
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_enter_d3_s5
+      rect:
+        serializedVersion: 2
+        x: 1100
+        y: 636
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ac1157b7b3e20a749887e89a6f465d84
+      internalID: 1925142474
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_enter_d4_s0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 477
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b9871dffd08eecf4ab22156dbf0cc19a
+      internalID: -510789461
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_enter_d4_s1
+      rect:
+        serializedVersion: 2
+        x: 220
+        y: 477
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 653d6dc375811c24c94d9ac3e501b677
+      internalID: 1123238795
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_enter_d4_s2
+      rect:
+        serializedVersion: 2
+        x: 440
+        y: 477
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5076e9b8c6942d241b11674f3eab5c1f
+      internalID: -911394693
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_enter_d4_s3
+      rect:
+        serializedVersion: 2
+        x: 660
+        y: 477
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 85da2319bdc2e9a4aa0073275681229d
+      internalID: 1118855788
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_enter_d4_s4
+      rect:
+        serializedVersion: 2
+        x: 880
+        y: 477
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e994e47ae255f024ba4c14a68c21fdcb
+      internalID: 1813446415
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_enter_d4_s5
+      rect:
+        serializedVersion: 2
+        x: 1100
+        y: 477
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4ebbe84138ada3c4786ae400a9082cde
+      internalID: -1654203482
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_enter_d5_s0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 318
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 713ca010f1a1e9c40b010dbff5912954
+      internalID: 787835355
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_enter_d5_s1
+      rect:
+        serializedVersion: 2
+        x: 220
+        y: 318
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4c7c36cc6b3357a4f98476e2652021e9
+      internalID: 1915591383
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_enter_d5_s2
+      rect:
+        serializedVersion: 2
+        x: 440
+        y: 318
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f7ff2abc1c9de5e4b82b064a0d48f4ba
+      internalID: -550069667
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_enter_d5_s3
+      rect:
+        serializedVersion: 2
+        x: 660
+        y: 318
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: daf0610e661fbd54a9309bf2faff1162
+      internalID: -778061046
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_enter_d5_s4
+      rect:
+        serializedVersion: 2
+        x: 880
+        y: 318
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ba827c945cbe5fa4ba6dfc0a4727dc12
+      internalID: 553238849
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_enter_d5_s5
+      rect:
+        serializedVersion: 2
+        x: 1100
+        y: 318
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c41c9494656321f4399c9a753ababeb1
+      internalID: 597564542
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_enter_d6_s0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 159
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e54728aaf8e7e8743b2ed1e820974839
+      internalID: 158380236
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_enter_d6_s1
+      rect:
+        serializedVersion: 2
+        x: 220
+        y: 159
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 31258b8a3e2c2114db094f961c8cbe44
+      internalID: 646274724
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_enter_d6_s2
+      rect:
+        serializedVersion: 2
+        x: 440
+        y: 159
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 91cc272ad045be249bf71d7219406975
+      internalID: 790088524
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_enter_d6_s3
+      rect:
+        serializedVersion: 2
+        x: 660
+        y: 159
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4aad658216e95ea4e9119a5ea0453ae0
+      internalID: 834666601
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_enter_d6_s4
+      rect:
+        serializedVersion: 2
+        x: 880
+        y: 159
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d7ff39aaf5e5f6248ad5d5039003f513
+      internalID: 1797990951
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_enter_d6_s5
+      rect:
+        serializedVersion: 2
+        x: 1100
+        y: 159
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eaaf2296bb980da499ab9f2260fa1f4a
+      internalID: -172017834
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_enter_d7_s0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0d1be5c6b9dd4a14aab97f179cb87409
+      internalID: -454441944
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_enter_d7_s1
+      rect:
+        serializedVersion: 2
+        x: 220
+        y: 0
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d6e49aad467045e4ca08d8166d4b4f31
+      internalID: -1019193289
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_enter_d7_s2
+      rect:
+        serializedVersion: 2
+        x: 440
+        y: 0
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 30a4abf7312324d4f84818ce7726455f
+      internalID: -2088755624
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_enter_d7_s3
+      rect:
+        serializedVersion: 2
+        x: 660
+        y: 0
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 60be356725e8d9f429bc3853137fa597
+      internalID: 132347095
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_enter_d7_s4
+      rect:
+        serializedVersion: 2
+        x: 880
+        y: 0
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ba09881596da9624f9b1de060fd2c5ee
+      internalID: -1256143699
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_enter_d7_s5
+      rect:
+        serializedVersion: 2
+        x: 1100
+        y: 0
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a9521e200747c004da9179aad7fd1a9c
+      internalID: 254258774
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 8b14efcf49e2e1b4eaaf380a25fee9a5
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      camper_bantam_enter_d0_s0: -257357270
+      camper_bantam_enter_d0_s1: -1475272965
+      camper_bantam_enter_d0_s2: -1683413328
+      camper_bantam_enter_d0_s3: -1229950857
+      camper_bantam_enter_d0_s4: -2047192787
+      camper_bantam_enter_d0_s5: -1835356295
+      camper_bantam_enter_d1_s0: 1585065518
+      camper_bantam_enter_d1_s1: 1418838490
+      camper_bantam_enter_d1_s2: -1675312658
+      camper_bantam_enter_d1_s3: 1512417889
+      camper_bantam_enter_d1_s4: 645958701
+      camper_bantam_enter_d1_s5: 2060623200
+      camper_bantam_enter_d2_s0: -274932316
+      camper_bantam_enter_d2_s1: -1968942621
+      camper_bantam_enter_d2_s2: 1039148682
+      camper_bantam_enter_d2_s3: -979903380
+      camper_bantam_enter_d2_s4: -1870508516
+      camper_bantam_enter_d2_s5: 1122040650
+      camper_bantam_enter_d3_s0: 1237920807
+      camper_bantam_enter_d3_s1: -776357356
+      camper_bantam_enter_d3_s2: -1547113379
+      camper_bantam_enter_d3_s3: 757019805
+      camper_bantam_enter_d3_s4: -421948829
+      camper_bantam_enter_d3_s5: 1925142474
+      camper_bantam_enter_d4_s0: -510789461
+      camper_bantam_enter_d4_s1: 1123238795
+      camper_bantam_enter_d4_s2: -911394693
+      camper_bantam_enter_d4_s3: 1118855788
+      camper_bantam_enter_d4_s4: 1813446415
+      camper_bantam_enter_d4_s5: -1654203482
+      camper_bantam_enter_d5_s0: 787835355
+      camper_bantam_enter_d5_s1: 1915591383
+      camper_bantam_enter_d5_s2: -550069667
+      camper_bantam_enter_d5_s3: -778061046
+      camper_bantam_enter_d5_s4: 553238849
+      camper_bantam_enter_d5_s5: 597564542
+      camper_bantam_enter_d6_s0: 158380236
+      camper_bantam_enter_d6_s1: 646274724
+      camper_bantam_enter_d6_s2: 790088524
+      camper_bantam_enter_d6_s3: 834666601
+      camper_bantam_enter_d6_s4: 1797990951
+      camper_bantam_enter_d6_s5: -172017834
+      camper_bantam_enter_d7_s0: -454441944
+      camper_bantam_enter_d7_s1: -1019193289
+      camper_bantam_enter_d7_s2: -2088755624
+      camper_bantam_enter_d7_s3: 132347095
+      camper_bantam_enter_d7_s4: -1256143699
+      camper_bantam_enter_d7_s5: 254258774
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

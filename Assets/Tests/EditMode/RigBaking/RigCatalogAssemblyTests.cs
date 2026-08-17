@@ -76,6 +76,17 @@ namespace HiddenHarbours.Tests.RigBaking
                          "BucketIso", AzimuthConvention.CounterClockwise),
             new Snapshot("buoyIso", "docs/art/rigs/deck-loop-kit/Art/buoyIsoRig.js",
                          "BuoyIso", AzimuthConvention.Clockwise, "deckIsoSolid"),
+            // Added by the camper iso kit (drop 2026-08-16, imported #552, baked here), not present
+            // at 18b67d1c. Standalone — the kit's README is explicit that the rig carries its own
+            // loft and needs no isoSolid.js. Convention MEASURED two ways rather than inherited: the
+            // hitch projects 107 px (bantam) / 158 px (clipper) WEST of the pivot at cell 2, which
+            // the rig's own order labels 'E', and the ground-plane bearing of +Y steps +45.000°/dir —
+            // the same figure to three decimals as utilityIso and houseIso in one host. ⚠️ The DOOR
+            // cannot answer that question on this rig: it is on the CURB side, 5.8 px (bantam) /
+            // 2.6 px (clipper) off the pivot at a quarter turn, under BuildingRigAzimuthProbe's own
+            // MinDoorOffsetPx. That probe would refuse, correctly — hence CamperRigAzimuthProbe.
+            new Snapshot("camper", "docs/art/rigs/camper-iso-kit/camperIsoRig.js",
+                         "CamperIso", AzimuthConvention.CounterClockwise),
             new Snapshot("catchKit", "docs/art/rigs/catchKit.js",
                          "CatchKit", AzimuthConvention.Clockwise),
             new Snapshot("character", "docs/art/rigs/characterIsoRig6.js",
