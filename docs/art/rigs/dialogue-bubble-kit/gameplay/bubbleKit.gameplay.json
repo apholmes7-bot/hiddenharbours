@@ -1,0 +1,1335 @@
+{
+  "kit": "dialogue-bubble-kit",
+  "version": 2,
+  "generated": "read out of Art/dialogueBubbleRig.js + Art/talkCueRig.js at their defaults — regenerate, never hand-edit",
+  "purpose": "the gameplay-facing half of the contract: the numbers a presenter needs to wrap text, drive a per-character fill, anchor a bubble on a speaker, grow an option list and hit-test a row",
+  "loadOrder": [
+    "Art/dialogueBubbleRig.js",
+    "Art/talkCueRig.js"
+  ],
+  "globals": {
+    "dialogueBubbleRig": "BubbleKit",
+    "talkCueRig": "TalkCue"
+  },
+  "dependencies": {
+    "required": "none — both rigs are standalone and draw into any 2D context",
+    "harnessOnly": [
+      "Art/characterIsoRig6.js",
+      "Art/headIsoRig3.js",
+      "Art/eyeIsoRig.js"
+    ],
+    "speakerSide": "the talk cues apply to characterIsoRig6 (pass 6.3) or any pass that keeps its anchors() contract"
+  },
+  "grid": {
+    "ppu": 32,
+    "unit": "32 px = 1 m",
+    "why": "The bubble is an object IN the scene (diegetic doctrine), so it is authored on the same grid as the props it stands among — 32 px/m, the assets grid every shipped rig in this repo bakes at. The 24 px/m grid is the camera-side number (memory two-pixel-grids-ppu-vs-assetsppu); authoring there would put UI pixels on a different pitch from world pixels and the bubble would read as an overlay."
+  },
+  "baked": {
+    "anything": false,
+    "note": "nothing here bakes. Every piece is live-drawn from the rig at native resolution, like the wall calendar face — feed it state. If the import wants slices, panel(ctx,x,y,18,18) IS the nine-slice tile."
+  },
+  "calls": {
+    "speech": "BubbleKit.say(ctx, x, y, { text, cols, name, tail, fill, frame, stock, marker, caret }) -> layout",
+    "place": "BubbleKit.mount(speakerAnchor, { tail, clear, gap }) -> { x, y } — the tail tip lands clear of the sprite",
+    "measureOnly": "BubbleKit.layoutSay(x, y, o) — same maths, nothing drawn",
+    "options": "BubbleKit.options(ctx, x, y, { rows, sel, cols, highlight, cursor, stock }) -> layout",
+    "placeOptions": "BubbleKit.optionsMount(sayLayout, { rows, cols, bounds }) -> { x, y, w, h, side, away, vSide, clearFromTail, clamped }",
+    "talk": "CharacterIso6.render(dir, { t, talk: fill < chars, expr }) — the mouth cadence already ships",
+    "cue": "TalkCue.body({ t, talking, startedAt, stoppedAt, emote, emoteAt }) -> { dy } — whole-px screen offset for the speaker blit",
+    "emote": "TalkCue.markerAt(headAnchor, { emote, side, place }) then TalkCue.marker(ctx, x, y, kind, { t, stock })",
+    "probe": "TalkCue.probeMouth(CharacterIso6) -> { pass, px, t, bbox } — run it in CI and fail on it"
+  },
+  "type": {
+    "cell": {
+      "w": 5,
+      "h": 10,
+      "glyph": [
+        4,
+        8
+      ],
+      "advance": 5,
+      "capHeight": 6,
+      "xHeight": 4,
+      "ascender": 6,
+      "descender": 2,
+      "baselineRow": 5,
+      "leading": 2,
+      "lineHeight": 10
+    },
+    "wrap": "charsPerLine = cols = floor((textBoxWidth + 1) / 5)  ·  BubbleKit.colsFor(px)",
+    "fill": "one cell per character, left to right, line by line; layout.rows[] gives each line its cell origin, and layout.chars the total the cadence divides",
+    "case": {
+      "body": "sentence case (owner ruling, 2026-08-17)",
+      "labels": "name chip and option rows in CAPS"
+    },
+    "charsPerLine": "cols; BubbleKit.colsFor(px) converts a pixel width",
+    "panelFormula": {
+      "w": "insetL + (cols × 5 − 1) + insetR",
+      "h": "insetT + (lines − 1) × 10 + 8 + insetB"
+    },
+    "ladder": [
+      {
+        "cols": 8,
+        "lines": 1,
+        "panel": [
+          49,
+          18
+        ],
+        "metres": [
+          1.53,
+          0.56
+        ],
+        "textBox": [
+          39,
+          8
+        ],
+        "charsPerLine": 8,
+        "cells": 8,
+        "baselines": [
+          10
+        ]
+      },
+      {
+        "cols": 8,
+        "lines": 2,
+        "panel": [
+          49,
+          28
+        ],
+        "metres": [
+          1.53,
+          0.88
+        ],
+        "textBox": [
+          39,
+          18
+        ],
+        "charsPerLine": 8,
+        "cells": 16,
+        "baselines": [
+          10,
+          20
+        ]
+      },
+      {
+        "cols": 8,
+        "lines": 3,
+        "panel": [
+          49,
+          38
+        ],
+        "metres": [
+          1.53,
+          1.19
+        ],
+        "textBox": [
+          39,
+          28
+        ],
+        "charsPerLine": 8,
+        "cells": 24,
+        "baselines": [
+          10,
+          20,
+          30
+        ]
+      },
+      {
+        "cols": 8,
+        "lines": 4,
+        "panel": [
+          49,
+          48
+        ],
+        "metres": [
+          1.53,
+          1.5
+        ],
+        "textBox": [
+          39,
+          38
+        ],
+        "charsPerLine": 8,
+        "cells": 32,
+        "baselines": [
+          10,
+          20,
+          30,
+          40
+        ]
+      },
+      {
+        "cols": 14,
+        "lines": 1,
+        "panel": [
+          79,
+          18
+        ],
+        "metres": [
+          2.47,
+          0.56
+        ],
+        "textBox": [
+          69,
+          8
+        ],
+        "charsPerLine": 14,
+        "cells": 14,
+        "baselines": [
+          10
+        ]
+      },
+      {
+        "cols": 14,
+        "lines": 2,
+        "panel": [
+          79,
+          28
+        ],
+        "metres": [
+          2.47,
+          0.88
+        ],
+        "textBox": [
+          69,
+          18
+        ],
+        "charsPerLine": 14,
+        "cells": 28,
+        "baselines": [
+          10,
+          20
+        ]
+      },
+      {
+        "cols": 14,
+        "lines": 3,
+        "panel": [
+          79,
+          38
+        ],
+        "metres": [
+          2.47,
+          1.19
+        ],
+        "textBox": [
+          69,
+          28
+        ],
+        "charsPerLine": 14,
+        "cells": 42,
+        "baselines": [
+          10,
+          20,
+          30
+        ]
+      },
+      {
+        "cols": 14,
+        "lines": 4,
+        "panel": [
+          79,
+          48
+        ],
+        "metres": [
+          2.47,
+          1.5
+        ],
+        "textBox": [
+          69,
+          38
+        ],
+        "charsPerLine": 14,
+        "cells": 56,
+        "baselines": [
+          10,
+          20,
+          30,
+          40
+        ]
+      },
+      {
+        "cols": 18,
+        "lines": 1,
+        "panel": [
+          99,
+          18
+        ],
+        "metres": [
+          3.09,
+          0.56
+        ],
+        "textBox": [
+          89,
+          8
+        ],
+        "charsPerLine": 18,
+        "cells": 18,
+        "baselines": [
+          10
+        ]
+      },
+      {
+        "cols": 18,
+        "lines": 2,
+        "panel": [
+          99,
+          28
+        ],
+        "metres": [
+          3.09,
+          0.88
+        ],
+        "textBox": [
+          89,
+          18
+        ],
+        "charsPerLine": 18,
+        "cells": 36,
+        "baselines": [
+          10,
+          20
+        ]
+      },
+      {
+        "cols": 18,
+        "lines": 3,
+        "panel": [
+          99,
+          38
+        ],
+        "metres": [
+          3.09,
+          1.19
+        ],
+        "textBox": [
+          89,
+          28
+        ],
+        "charsPerLine": 18,
+        "cells": 54,
+        "baselines": [
+          10,
+          20,
+          30
+        ]
+      },
+      {
+        "cols": 18,
+        "lines": 4,
+        "panel": [
+          99,
+          48
+        ],
+        "metres": [
+          3.09,
+          1.5
+        ],
+        "textBox": [
+          89,
+          38
+        ],
+        "charsPerLine": 18,
+        "cells": 72,
+        "baselines": [
+          10,
+          20,
+          30,
+          40
+        ]
+      },
+      {
+        "cols": 22,
+        "lines": 1,
+        "panel": [
+          119,
+          18
+        ],
+        "metres": [
+          3.72,
+          0.56
+        ],
+        "textBox": [
+          109,
+          8
+        ],
+        "charsPerLine": 22,
+        "cells": 22,
+        "baselines": [
+          10
+        ]
+      },
+      {
+        "cols": 22,
+        "lines": 2,
+        "panel": [
+          119,
+          28
+        ],
+        "metres": [
+          3.72,
+          0.88
+        ],
+        "textBox": [
+          109,
+          18
+        ],
+        "charsPerLine": 22,
+        "cells": 44,
+        "baselines": [
+          10,
+          20
+        ]
+      },
+      {
+        "cols": 22,
+        "lines": 3,
+        "panel": [
+          119,
+          38
+        ],
+        "metres": [
+          3.72,
+          1.19
+        ],
+        "textBox": [
+          109,
+          28
+        ],
+        "charsPerLine": 22,
+        "cells": 66,
+        "baselines": [
+          10,
+          20,
+          30
+        ]
+      },
+      {
+        "cols": 22,
+        "lines": 4,
+        "panel": [
+          119,
+          48
+        ],
+        "metres": [
+          3.72,
+          1.5
+        ],
+        "textBox": [
+          109,
+          38
+        ],
+        "charsPerLine": 22,
+        "cells": 88,
+        "baselines": [
+          10,
+          20,
+          30,
+          40
+        ]
+      },
+      {
+        "cols": 26,
+        "lines": 1,
+        "panel": [
+          139,
+          18
+        ],
+        "metres": [
+          4.34,
+          0.56
+        ],
+        "textBox": [
+          129,
+          8
+        ],
+        "charsPerLine": 26,
+        "cells": 26,
+        "baselines": [
+          10
+        ]
+      },
+      {
+        "cols": 26,
+        "lines": 2,
+        "panel": [
+          139,
+          28
+        ],
+        "metres": [
+          4.34,
+          0.88
+        ],
+        "textBox": [
+          129,
+          18
+        ],
+        "charsPerLine": 26,
+        "cells": 52,
+        "baselines": [
+          10,
+          20
+        ]
+      },
+      {
+        "cols": 26,
+        "lines": 3,
+        "panel": [
+          139,
+          38
+        ],
+        "metres": [
+          4.34,
+          1.19
+        ],
+        "textBox": [
+          129,
+          28
+        ],
+        "charsPerLine": 26,
+        "cells": 78,
+        "baselines": [
+          10,
+          20,
+          30
+        ]
+      },
+      {
+        "cols": 26,
+        "lines": 4,
+        "panel": [
+          139,
+          48
+        ],
+        "metres": [
+          4.34,
+          1.5
+        ],
+        "textBox": [
+          129,
+          38
+        ],
+        "charsPerLine": 26,
+        "cells": 104,
+        "baselines": [
+          10,
+          20,
+          30,
+          40
+        ]
+      },
+      {
+        "cols": 34,
+        "lines": 1,
+        "panel": [
+          179,
+          18
+        ],
+        "metres": [
+          5.59,
+          0.56
+        ],
+        "textBox": [
+          169,
+          8
+        ],
+        "charsPerLine": 34,
+        "cells": 34,
+        "baselines": [
+          10
+        ]
+      },
+      {
+        "cols": 34,
+        "lines": 2,
+        "panel": [
+          179,
+          28
+        ],
+        "metres": [
+          5.59,
+          0.88
+        ],
+        "textBox": [
+          169,
+          18
+        ],
+        "charsPerLine": 34,
+        "cells": 68,
+        "baselines": [
+          10,
+          20
+        ]
+      },
+      {
+        "cols": 34,
+        "lines": 3,
+        "panel": [
+          179,
+          38
+        ],
+        "metres": [
+          5.59,
+          1.19
+        ],
+        "textBox": [
+          169,
+          28
+        ],
+        "charsPerLine": 34,
+        "cells": 102,
+        "baselines": [
+          10,
+          20,
+          30
+        ]
+      },
+      {
+        "cols": 34,
+        "lines": 4,
+        "panel": [
+          179,
+          48
+        ],
+        "metres": [
+          5.59,
+          1.5
+        ],
+        "textBox": [
+          169,
+          38
+        ],
+        "charsPerLine": 34,
+        "cells": 136,
+        "baselines": [
+          10,
+          20,
+          30,
+          40
+        ]
+      }
+    ]
+  },
+  "panel": {
+    "border": 1,
+    "chamfer": 2,
+    "cornerSlice": 6,
+    "textInset": {
+      "l": 5,
+      "t": 5,
+      "r": 5,
+      "b": 5
+    },
+    "slices": {
+      "corner": 6,
+      "cols": [
+        [
+          0,
+          6
+        ],
+        [
+          6,
+          6
+        ],
+        [
+          12,
+          6
+        ]
+      ],
+      "rows": [
+        [
+          0,
+          6
+        ],
+        [
+          6,
+          6
+        ],
+        [
+          12,
+          6
+        ]
+      ],
+      "note": "corners copied, edges repeated 1 px, centre flat paper"
+    },
+    "minCells": [
+      8,
+      1
+    ],
+    "maxCells": [
+      34,
+      4
+    ]
+  },
+  "tail": {
+    "w": 7,
+    "set": [
+      {
+        "key": "left",
+        "label": "BELOW-LEFT",
+        "dir": "down",
+        "w": 7,
+        "h": 7,
+        "tip": [
+          1,
+          6
+        ]
+      },
+      {
+        "key": "centre",
+        "label": "BELOW-CENTRE",
+        "dir": "down",
+        "w": 7,
+        "h": 6,
+        "tip": [
+          3,
+          5
+        ]
+      },
+      {
+        "key": "right",
+        "label": "BELOW-RIGHT",
+        "dir": "down",
+        "w": 7,
+        "h": 7,
+        "tip": [
+          5,
+          6
+        ]
+      },
+      {
+        "key": "leftUp",
+        "label": "ABOVE-LEFT",
+        "dir": "up",
+        "w": 7,
+        "h": 7,
+        "tip": [
+          1,
+          0
+        ]
+      },
+      {
+        "key": "centreUp",
+        "label": "ABOVE-CENTRE",
+        "dir": "up",
+        "w": 7,
+        "h": 6,
+        "tip": [
+          3,
+          0
+        ]
+      },
+      {
+        "key": "rightUp",
+        "label": "ABOVE-RIGHT",
+        "dir": "up",
+        "w": 7,
+        "h": 7,
+        "tip": [
+          5,
+          0
+        ]
+      }
+    ],
+    "anchorRule": "the tip pixel is THE anchor — the presenter aims it at the speaker anchor. tail.tip is given relative to the tail sprite origin; layoutSay() returns it in bubble space.",
+    "placement": {
+      "left": "x + 8",
+      "centre": "x + round((w-7)/2)",
+      "right": "x + w - 15"
+    },
+    "upSet": "SHIPPED, not flipped at import: leftUp / centreUp / rightUp anchor a bubble BELOW the speaker, for a speaker near the top of the screen. A tail is 2 colours with NO shading, so a y-flip fights nothing in the panel light — but the kit performs it so the import never has to reason about it, and so the tip pixel is measured in both directions.",
+    "join": "the tail's edge row overwrites the panel's edge row on that side, so the ink ring opens and the paper is continuous",
+    "gap": 3,
+    "gapNote": "px the tip stops CLEAR OF THE SPRITE INK, not of the anchor: mount({clear}) takes the anchor→ink-edge distance (the head anchor is the head centre, so 3 px off the anchor would bury the tip in the crown). The harness measures clear off the rig’s own alpha — 7 px for the adult idle at dir 4.",
+    "chipInteraction": "the chip rides the edge AWAY from the tail — top-left for down tails, bottom-left for up tails — so a name and a tail never fight for a corner"
+  },
+  "chip": {
+    "h": 12,
+    "padX": 4,
+    "mountX": 4,
+    "overlap": 4,
+    "capH": 6,
+    "paper": "#e0b13a",
+    "ramp": [
+      "#7a5a1c",
+      "#a8842a",
+      "#e0b13a",
+      "#f2cf6a"
+    ],
+    "mount": "x + 4, y − (h − 4) for down tails; y + panelH − 4 for up tails",
+    "widthFormula": "padX × 2 + (chars × 5 − 1)",
+    "case": "CAPS",
+    "perSpeakerTint": "FLAGGED, not built — a tint would slot at chip.paper only; the ink and the ramp steps stay."
+  },
+  "options": {
+    "rowH": 13,
+    "gutter": 11,
+    "insets": {
+      "t": 4,
+      "b": 4,
+      "r": 6
+    },
+    "rowsRange": [
+      2,
+      4
+    ],
+    "widthFormula": "insetL + gutter + (cols × 5 − 1) + insetR",
+    "heightFormula": "insetT + rows × 13 + insetB",
+    "ladder": [
+      {
+        "rows": 2,
+        "px": [
+          111,
+          34
+        ],
+        "rowH": 13,
+        "textX": 16,
+        "textY": 8
+      },
+      {
+        "rows": 3,
+        "px": [
+          111,
+          47
+        ],
+        "rowH": 13,
+        "textX": 16,
+        "textY": 8
+      },
+      {
+        "rows": 4,
+        "px": [
+          111,
+          60
+        ],
+        "rowH": 13,
+        "textX": 16,
+        "textY": 8
+      }
+    ],
+    "step": "+13 px per row (34 / 47 / 60 px for 2 / 3 / 4 rows)",
+    "highlights": [
+      {
+        "key": "pill",
+        "ship": true
+      },
+      {
+        "key": "invert",
+        "ship": false
+      },
+      {
+        "key": "rule",
+        "ship": false
+      },
+      {
+        "key": "press",
+        "ship": false
+      }
+    ],
+    "mount": "optionsMount(sayLayout, {bounds}): hangs off the speech bubble on the side AWAY from the tail (below it for down tails, above it for up tails), keeping speakerClear from the tail column",
+    "mountFallback": "the away side is a preference, not a guarantee — a below-right tail near the left edge of the screen has no room there. Pass bounds {x0,x1} (drawable span, same coordinate space) and the mount takes the side that fits, returning side / away / clearFromTail / clamped. clamped:true means neither side fits: shorten the rows or move the camera, do not nudge pixels."
+  },
+  "cursor": [
+    {
+      "key": "hand",
+      "ship": true,
+      "w": 10,
+      "h": 9,
+      "pointPx": [
+        9,
+        3
+      ]
+    },
+    {
+      "key": "glove",
+      "ship": false,
+      "w": 10,
+      "h": 10,
+      "pointPx": [
+        9,
+        3
+      ]
+    },
+    {
+      "key": "tack",
+      "ship": false,
+      "w": 6,
+      "h": 6,
+      "pointPx": [
+        5,
+        2
+      ]
+    },
+    {
+      "key": "hook",
+      "ship": false,
+      "w": 7,
+      "h": 10,
+      "pointPx": [
+        6,
+        2
+      ]
+    }
+  ],
+  "marker": {
+    "w": 7,
+    "h": 4,
+    "insetR": 11,
+    "dropB": 2,
+    "bob": [
+      0,
+      1
+    ],
+    "ms": 420,
+    "shape": "7x4 solid triangle, ink ring + paper fill",
+    "anim": "2-frame idle bob, +1 px, 420 ms per frame",
+    "mount": "x + w − 11, y + h − 2 — rides the bottom edge, right of centre, clear of every tail"
+  },
+  "caret": {
+    "w": 1,
+    "h": 6,
+    "cell": [
+      5,
+      10
+    ],
+    "ms": 260,
+    "shape": "1 × 6 ink bar in the cell the next character lands in",
+    "shown": "while filling only; it hands off to the continue marker when the line completes",
+    "why": "the sound IS the bubble populating — the caret is the visible half of that cadence"
+  },
+  "stocks": [
+    {
+      "key": "cream",
+      "ship": true,
+      "paper": "#e8ebe5",
+      "hi": "#f2f4ee",
+      "lo": "#d6dbd7",
+      "ink": "#232a32",
+      "edge": "#171d27"
+    },
+    {
+      "key": "newsprint",
+      "ship": false,
+      "paper": "#cdc8b9",
+      "hi": "#dcd7c8",
+      "lo": "#b8b2a1",
+      "ink": "#2c2b29",
+      "edge": "#2c2b29"
+    },
+    {
+      "key": "sailcloth",
+      "ship": false,
+      "paper": "#e9e6df",
+      "hi": "#f2f4ee",
+      "lo": "#c9c4b8",
+      "ink": "#231d14",
+      "edge": "#231d14"
+    },
+    {
+      "key": "enamel",
+      "ship": false,
+      "paper": "#d6dbd7",
+      "hi": "#e8ebe5",
+      "lo": "#a2aaae",
+      "ink": "#10141b",
+      "edge": "#0a0d12"
+    }
+  ],
+  "invariant": {
+    "rule": "the speech panel, the name chip and the option bubble never occlude the speaker's sprite rect — the character IS the portrait. speakerClear (20 px) is one implementation of it, not the rule.",
+    "tailRule": "the TAIL is the pointer and the exception: it reaches towards the speaker and stops gap (3 px) clear of the sprite ink, measured through mount({clear}) rather than guessed from the anchor. clear is DIRECTIONAL — a down tail clears the crown, an up tail hangs the bubble below the FEET (below the head is her body), so aim an up tail at the hip/foot anchor or pass the anchor→ink-bottom distance.",
+    "speakerClearPx": 20,
+    "clear": {
+      "down": 7,
+      "up": 36
+    },
+    "gap": 3,
+    "boundsContract": "pass bounds {x0,x1,y0,y1} into optionsMount and honour side / vSide / clamped; never clamp a returned x or y yourself",
+    "proof": {
+      "cases": [
+        {
+          "tail": "left",
+          "listSide": "right",
+          "flipped": false,
+          "clamped": false,
+          "clear": 7,
+          "union": [
+            183,
+            125
+          ],
+          "panelOccludesPx": 0,
+          "tailTipToInk": 3,
+          "holds": true
+        },
+        {
+          "tail": "centre",
+          "listSide": "right",
+          "flipped": false,
+          "clamped": false,
+          "clear": 7,
+          "union": [
+            217,
+            124
+          ],
+          "panelOccludesPx": 0,
+          "tailTipToInk": 3,
+          "holds": true
+        },
+        {
+          "tail": "right",
+          "listSide": "left",
+          "flipped": false,
+          "clamped": false,
+          "clear": 7,
+          "union": [
+            183,
+            125
+          ],
+          "panelOccludesPx": 0,
+          "tailTipToInk": 3,
+          "holds": true
+        },
+        {
+          "tail": "leftUp",
+          "listSide": "right",
+          "flipped": false,
+          "clamped": false,
+          "clear": 36,
+          "union": [
+            183,
+            125
+          ],
+          "panelOccludesPx": 0,
+          "tailTipToInk": 3,
+          "holds": true
+        },
+        {
+          "tail": "centreUp",
+          "listSide": "right",
+          "flipped": false,
+          "clamped": false,
+          "clear": 36,
+          "union": [
+            217,
+            124
+          ],
+          "panelOccludesPx": 0,
+          "tailTipToInk": 3,
+          "holds": true
+        },
+        {
+          "tail": "rightUp",
+          "listSide": "left",
+          "flipped": false,
+          "clamped": false,
+          "clear": 36,
+          "union": [
+            183,
+            125
+          ],
+          "panelOccludesPx": 0,
+          "tailTipToInk": 3,
+          "holds": true
+        }
+      ],
+      "holds": true
+    },
+    "screen": {
+      "assumption": "output 1920×1080, per-tier pixel-perfect zoom (ruling #327). If the shipped tier ladder differs, pass tiers[] — the arithmetic does not change.",
+      "worstUnion": [
+        217,
+        124
+      ],
+      "tiers": [
+        {
+          "zoom": 2,
+          "worldPx": [
+            960,
+            540
+          ],
+          "unionPct": [
+            22.6,
+            23
+          ],
+          "areaPct": 5.2,
+          "fits": true,
+          "closest": false
+        },
+        {
+          "zoom": 3,
+          "worldPx": [
+            640,
+            360
+          ],
+          "unionPct": [
+            33.9,
+            34.4
+          ],
+          "areaPct": 11.7,
+          "fits": true,
+          "closest": false
+        },
+        {
+          "zoom": 4,
+          "worldPx": [
+            480,
+            270
+          ],
+          "unionPct": [
+            45.2,
+            45.9
+          ],
+          "areaPct": 20.8,
+          "fits": true,
+          "closest": true
+        }
+      ]
+    }
+  },
+  "hitBoxes": {
+    "speechLines": "layout.rows[] = [{ i, x, y, text }] — one per drawn line at its cell origin; layout.chars is the fill total",
+    "optionRows": "layout.rows[] = [{ i, label, y, h, pill:{x,y,w,h}, text:{x,y}, cursor:{x,y} }] — pill is the pressable rect",
+    "workedExample": {
+      "speakerAnchor": {
+        "x": 138,
+        "y": 96
+      },
+      "mount": {
+        "x": 129,
+        "y": 33,
+        "gap": 3,
+        "clear": 7,
+        "lift": 10,
+        "layoutW": 119,
+        "layoutH": 48,
+        "tailDir": "down"
+      },
+      "speech": {
+        "x": 129,
+        "y": 33,
+        "w": 119,
+        "h": 48,
+        "cols": 22,
+        "lines": 4,
+        "chars": 66,
+        "textBox": {
+          "x": 134,
+          "y": 38,
+          "w": 109,
+          "h": 38,
+          "cols": 22,
+          "rows": 4
+        },
+        "tailTip": {
+          "x": 138,
+          "y": 86
+        },
+        "chip": {
+          "x": 133,
+          "y": 25,
+          "w": 32,
+          "h": 12,
+          "side": "top"
+        },
+        "marker": {
+          "x": 237,
+          "y": 79
+        },
+        "top": 25,
+        "bottom": 86
+      },
+      "optionsMount": {
+        "x": 157,
+        "y": 90,
+        "w": 111,
+        "h": 47,
+        "side": "right",
+        "away": "right",
+        "vSide": "below",
+        "clamped": false,
+        "clearFromTail": 20
+      },
+      "optionRows": [
+        {
+          "i": 0,
+          "label": "ABOUT THE LEDGE",
+          "pill": {
+            "x": 161,
+            "y": 94,
+            "w": 103,
+            "h": 13
+          },
+          "text": {
+            "x": 173,
+            "y": 98
+          },
+          "cursor": {
+            "x": 159,
+            "y": 96
+          }
+        },
+        {
+          "i": 1,
+          "label": "THE HERRING PRICE",
+          "pill": {
+            "x": 161,
+            "y": 107,
+            "w": 103,
+            "h": 13
+          },
+          "text": {
+            "x": 173,
+            "y": 111
+          },
+          "cursor": {
+            "x": 159,
+            "y": 109
+          }
+        },
+        {
+          "i": 2,
+          "label": "NOTHING TODAY",
+          "pill": {
+            "x": 161,
+            "y": 120,
+            "w": 103,
+            "h": 13
+          },
+          "text": {
+            "x": 173,
+            "y": 124
+          },
+          "cursor": {
+            "x": 159,
+            "y": 122
+          }
+        }
+      ]
+    }
+  },
+  "talkCues": {
+    "cadence": {
+      "beatMs": 385,
+      "liftFrac": 0.45,
+      "lift": "1 px — at 32 px/m a 2 px talk bounce reads as a nod, not as speech",
+      "emphasisEvery": 4,
+      "emphasisFrac": 0.7,
+      "settleMs": 210,
+      "startMs": 90,
+      "settle": "210 ms: one last lift, then still — the line ending has to be visible without the text",
+      "integer": "whole pixels only; the sprite is blitted, never scaled"
+    },
+    "mouth": {
+      "state": "ALREADY SHIPPING — no rig edit needed",
+      "call": "CharacterIso6.render(dir, {t, talk:true, expr}) — pose() forwards opts to HeadIso.look() as its `rock` argument",
+      "cadence": "~7.2 Hz jittered mouth flip (headIsoRig3.js freeLook)",
+      "drive": "talk = (fill < 1). The mouth stops the instant the bubble finishes populating.",
+      "probe": "TalkCue.probeMouth(CharacterIso6) — renders the same frame twice at one t, talk on and off, and asserts the diff is mouth-sized and sits in the lower face. The claim is a test; run it in the import PR and fail on it."
+    },
+    "facings": {
+      "count": 8,
+      "bearings": "GROUND (ADR 0034) — untouched by this layer",
+      "why": "the cue is a screen-VERTICAL offset, the one axis that does not rotate with the ground bearing, so one cue is correct at all eight rows with nothing authored per row",
+      "marker": "anchored to CharacterIso.anchors(dir).head, which the body rig already resolves per facing"
+    },
+    "emotes": [
+      {
+        "key": "surprise",
+        "label": "SURPRISE",
+        "expr": "oh",
+        "ms": 620,
+        "hop": [
+          [
+            0,
+            -2
+          ],
+          [
+            130,
+            -1
+          ],
+          [
+            240,
+            0
+          ]
+        ],
+        "glyph": "bang",
+        "box": "9x11",
+        "note": "The hop is the read; the marker only confirms it."
+      },
+      {
+        "key": "laugh",
+        "label": "LAUGH",
+        "expr": "grin",
+        "ms": 900,
+        "hop": [
+          [
+            0,
+            -1
+          ],
+          [
+            110,
+            0
+          ],
+          [
+            220,
+            -1
+          ],
+          [
+            330,
+            0
+          ],
+          [
+            440,
+            -1
+          ],
+          [
+            550,
+            0
+          ]
+        ],
+        "glyph": "burst",
+        "box": "11x11",
+        "note": "Four bobs on the beat — the only cue that repeats."
+      },
+      {
+        "key": "think",
+        "label": "THINK",
+        "expr": "worry",
+        "ms": 1100,
+        "hop": [
+          [
+            0,
+            0
+          ]
+        ],
+        "glyph": "dots",
+        "box": "13x11",
+        "note": "Stillness IS the cue. The body stops bouncing and the dots do the work."
+      }
+    ],
+    "markerMount": {
+      "anchor": "anchors(dir).head",
+      "place": "'above' with no bubble up, 'side' (beside the head, centred on the anchor) while a speech bubble owns the space above",
+      "gap": 4,
+      "dx": "5 above / 9 beside",
+      "side": "pass the side away from the bubble tail",
+      "pop": "2 frames — inset 1 px for the first ~12% of the emote, then full"
+    },
+    "exprMap": {
+      "surprise": "oh",
+      "laugh": "grin",
+      "think": "worry (closest of the eight in headIsoRig3.EXPRS; a real \"pondering\" expression would be a head-rig ask, not a cue-layer one)"
+    }
+  },
+  "bind": {
+    "fill": "talk = fill < layout.chars; feed fill in characters (or a 0-1 fraction). One cell per character, no reflow.",
+    "clock": "drive the fill and the cue from ONE wall clock; the caret hands off to the continue marker at completion",
+    "audio": "the sound IS the bubble populating — per-speaker cps belongs to the dialogue system, not to the art",
+    "grade": "one lit state ships; the day/night grade is the in-engine layer (art bible §6)"
+  },
+  "openAsks": [
+    "A one-line rig courtesy: characterIsoRig6 reaches the head talk channel through its `rock` argument. It works — probeMouth() proves it — but the name lies. Rename or alias it in the rig PR, KEEPING THE STABLE IDS: `rock` is the sixth positional argument of pose() and is read as arguments[5]; render() / pose() / anchors() signatures and the opts keys (t, talk, expr) must stay exactly as they are, or every consumer page and this kit break at once. Alias first, deprecate later.",
+    "Emphasis beats are uniform every 4th beat. Punctuation-driven emphasis (a beat held on a comma) wants the line parsed, which belongs to the dialogue system, not to art."
+  ]
+}

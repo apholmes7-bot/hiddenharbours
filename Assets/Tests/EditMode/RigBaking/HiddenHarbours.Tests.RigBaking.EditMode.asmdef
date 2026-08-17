@@ -11,7 +11,8 @@
         "HiddenHarbours.Core",
         "HiddenHarbours.Boats",
         "HiddenHarbours.Vehicles",
-        "Unity.2D.Sprite.Editor"
+        "Unity.2D.Sprite.Editor",
+        "HiddenHarbours.World"
     ],
     "includePlatforms": [
         "Editor"

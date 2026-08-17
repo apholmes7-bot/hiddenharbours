@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=IM+Fell+DW+Pica:ital@0;1&display=swap" rel="stylesheet">
+<script src="Art/eyeIsoRig.js"></script>
+<script src="Art/headIsoRig3.js"></script>
+<script src="Art/characterIsoRig6.js"></script>
+<script src="Art/dialogueBubbleRig.js"></script>
+<script src="Art/talkCueRig.js"></script>
+<script>
+  /* PAINT PUMP. The scene's clock is the wall clock, but something still has to ask for a frame, and
+     in a hidden document requestAnimationFrame never fires. This timer lives in the page itself and
+     only calls the hook the harness registers, so the scene keeps advancing in a background tab, in
+     an offscreen preview pane and while printing. */
+  (function () {
+    var pump = function () { try { if (window.__hhPaint) window.__hhPaint(); } catch (e) {} };
+    setInterval(pump, 100);
+    document.addEventListener('visibilitychange', pump);
+    window.addEventListener('focus', pump);
+  })();
+</script>
+<style>
+  *{box-sizing:border-box;}
+  html,body{margin:0;background:#0b1216;}
+  canvas{image-rendering:pixelated;image-rendering:crisp-edges;display:block;}
+  a{color:#7fd6c9;text-decoration:none;} a:hover{color:#a9e7dd;}
+  input[type=range]{-webkit-appearance:none;appearance:none;height:3px;background:#2a3b43;border-radius:2px;outline:none;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:18px;background:#c9d6d4;border:1px solid #0b1216;cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:12px;height:18px;background:#c9d6d4;border:1px solid #0b1216;cursor:pointer;border-radius:0;}
+</style>
+</helmet>
+<div style="min-height:100vh;background:#0b1216;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#aeb9bb;padding:30px 24px 64px;display:flex;flex-direction:column;align-items:center;gap:26px;">
+
+  <div style="width:100%;max-width:1140px;display:flex;align-items:flex-end;justify-content:space-between;border-bottom:1px solid #243137;padding-bottom:13px;gap:16px;flex-wrap:wrap;">
+    <div style="display:flex;flex-direction:column;gap:5px;">
+      <div style="font-family:'IM Fell English SC',serif;font-size:25px;color:#eef3f2;letter-spacing:0.5px;line-height:1;">The Speech Bubble Kit</div>
+      <div style="font-size:10.5px;letter-spacing:0.16em;color:#6f7e83;">HIDDEN&nbsp;HARBOURS&nbsp;&middot;&nbsp;DIALOGUE&nbsp;BUBBLE&nbsp;+&nbsp;OPTION&nbsp;BUBBLE&nbsp;+&nbsp;TALK&nbsp;CUES&nbsp;&middot;&nbsp;32&nbsp;PX&nbsp;=&nbsp;1&nbsp;M</div>
+    </div>
+    <div style="font-family:'IM Fell DW Pica',serif;font-style:italic;font-size:13.5px;color:#c9a86a;max-width:440px;text-align:right;line-height:1.45;">The bubble comes from the character. No portrait, no panel over the speaker &mdash; the world stays visible behind the exchange, and the tail tip is a measured pixel aimed at her head.</div>
+  </div>
+
+  <div style="width:100%;max-width:1140px;display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start;">
+
+    <div style="display:flex;flex-direction:column;gap:11px;">
+      <div style="position:relative;border:1px solid #243137;background:#0e181d;">
+        <canvas ref="{{ heroRef }}" data-hero="1" width="720" height="560"></canvas>
+        <div style="position:absolute;left:11px;top:10px;font-size:10.5px;letter-spacing:0.1em;background:rgba(11,18,22,0.62);padding:4px 9px;color:#9fb0b4;">{{ dirLabel }}</div>
+        <div style="position:absolute;right:11px;top:10px;font-size:10.5px;letter-spacing:0.1em;background:rgba(11,18,22,0.62);padding:4px 9px;color:{{ stateFg }};">{{ stateLabel }}</div>
+      </div>
+      <div style="font-size:9.5px;color:#5f6e73;letter-spacing:0.05em;line-height:1.6;max-width:720px;">Greybox deck behind her, on purpose &mdash; the bubble has to stay legible against the scene without covering it. <span style="color:#9fb0b4;">BubbleKit.mount(anchor)</span> places the panel so the tail tip lands on <span style="color:#9fb0b4;">CharacterIso6.anchors(dir).head</span>; the pins show both pixels. The mouth cadence is the head rig's own, driven by <span style="color:#9fb0b4;">talk = (fill &lt; 1)</span>.</div>
+
+      <div style="display:flex;gap:9px;flex-wrap:wrap;">
+        <div onClick="{{ replay }}" style="font-size:10.5px;letter-spacing:0.1em;padding:9px 15px;border:1px solid #2f6079;background:#122530;color:#7fd6c9;cursor:pointer;user-select:none;">&#8635; REPLAY LINE</div>
+        <div onClick="{{ togglePlay }}" style="font-size:10.5px;letter-spacing:0.1em;padding:9px 15px;border:1px solid #243137;background:#0f191e;color:#9fb0b4;cursor:pointer;user-select:none;">{{ playLabel }}</div>
+        <sc-for list="{{ emoteOpts }}" as="e" hint-placeholder-count="3">
+          <div onClick="{{ e.fire }}" style="font-size:10.5px;letter-spacing:0.1em;padding:9px 13px;border:1px solid {{ e.bd }};background:{{ e.bg }};color:{{ e.fg }};cursor:pointer;user-select:none;">{{ e.label }}</div>
+        </sc-for>
+        <div onClick="{{ togglePins }}" style="font-size:10.5px;letter-spacing:0.1em;padding:9px 13px;border:1px solid {{ pinsBd }};background:{{ pinsBg }};color:{{ pinsFg }};cursor:pointer;user-select:none;">{{ pinsLabel }}</div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:15px;width:336px;">
+
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#e0b13a;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">The line</div></div>
+        <div style="display:flex;flex-direction:column;gap:5px;">
+          <sc-for list="{{ lineOpts }}" as="l" hint-placeholder-count="3">
+            <div onClick="{{ l.set }}" style="padding:7px 10px;cursor:pointer;user-select:none;font-size:10px;line-height:1.5;border:1px solid {{ l.bd }};background:{{ l.bg }};color:{{ l.fg }};">{{ l.label }}</div>
+          </sc-for>
+        </div>
+        <div style="display:flex;align-items:center;gap:9px;"><span style="font-size:9px;color:#5f6e73;width:44px;">FILL</span><input type="range" min="8" max="60" step="1" value="{{ cps }}" onInput="{{ onCps }}" style="flex:1;" /><span style="font-size:10px;color:#c4cdcd;width:62px;text-align:right;">{{ cps }} CH/S</span></div>
+        <div style="display:flex;align-items:center;gap:9px;"><span style="font-size:9px;color:#5f6e73;width:44px;">FACING</span><input type="range" min="0" max="7" step="1" value="{{ dir }}" onInput="{{ onDir }}" style="flex:1;" /><span style="font-size:10px;color:#c4cdcd;width:62px;text-align:right;">{{ dirShort }}</span></div>
+        <div style="display:flex;align-items:center;gap:9px;"><span style="font-size:9px;color:#5f6e73;width:44px;">ZOOM</span><input type="range" min="2" max="5" step="1" value="{{ zoom }}" onInput="{{ onZoom }}" style="flex:1;" /><span style="font-size:10px;color:#c4cdcd;width:62px;text-align:right;">{{ zoom }}&times;</span></div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#7fd6c9;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Tail &middot; the anchored move</div></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;">
+          <sc-for list="{{ tailOpts }}" as="t" hint-placeholder-count="3">
+            <div onClick="{{ t.set }}" style="text-align:center;padding:8px 0;cursor:pointer;user-select:none;font-size:10px;letter-spacing:0.04em;border:1px solid {{ t.bd }};background:{{ t.bg }};color:{{ t.fg }};">{{ t.label }}</div>
+          </sc-for>
+        </div>
+        <div style="font-size:9px;color:#586970;line-height:1.6;">Speaker below-left / below-centre / below-right of the bubble. The presenter picks; the bubble sits above the head by default.</div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#a8412c;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Option bubble</div></div>
+        <div style="display:flex;align-items:center;gap:9px;"><span style="font-size:9px;color:#5f6e73;width:44px;">ROWS</span><input type="range" min="2" max="4" step="1" value="{{ rows }}" onInput="{{ onRows }}" style="flex:1;" /><span style="font-size:10px;color:#c4cdcd;width:62px;text-align:right;">{{ rows }} &middot; {{ optH }}PX</span></div>
+        <div style="display:flex;align-items:center;gap:9px;"><span style="font-size:9px;color:#5f6e73;width:44px;">CHOICE</span><input type="range" min="0" max="3" step="1" value="{{ sel }}" onInput="{{ onSel }}" style="flex:1;" /><span style="font-size:10px;color:#c4cdcd;width:62px;text-align:right;">ROW {{ selLabel }}</span></div>
+      </div>
+
+      <div style="border:1px solid #243137;display:grid;grid-template-columns:auto 1fr;font-size:10.5px;">
+        <sc-for list="{{ readout }}" as="r" hint-placeholder-count="9">
+          <div style="padding:5px 10px;color:#6f7e83;letter-spacing:0.06em;border-top:{{ r.border }};background:#0f191e;">{{ r.k }}</div>
+          <div style="padding:5px 10px;color:{{ r.fg }};border-top:{{ r.border }};border-left:1px solid #243137;">{{ r.v }}</div>
+        </sc-for>
+      </div>
+
+      <div style="font-size:9px;color:#586970;letter-spacing:0.04em;line-height:1.65;border-left:2px solid #243137;padding-left:9px;">RULINGS HELD &middot; no portraits, ever &mdash; the in-world character IS the portrait &middot; the world stays visible behind the exchange &middot; the sound IS the bubble populating, so the text box is a monospace cell grid with a caret cell &middot; no new colours (ADR 0015) &middot; no keyline pass (ADR 0031) &middot; one lit state; the day-night grade is the engine's layer.</div>
+
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <div onClick="{{ dlSheet }}" style="font-size:10.5px;letter-spacing:0.1em;padding:9px 15px;border:1px solid #2f6079;background:#122530;color:#7fd6c9;text-align:center;cursor:pointer;user-select:none;">&darr; REFERENCE SHEET &middot; PNG</div>
+        <div onClick="{{ dlSlice }}" style="font-size:10.5px;letter-spacing:0.1em;padding:9px 15px;border:1px solid #243137;background:#0f191e;color:#9fb0b4;text-align:center;cursor:pointer;user-select:none;">&darr; 9-SLICE TILE &middot; 18&times;18</div>
+        <div onClick="{{ dlPieces }}" style="font-size:10.5px;letter-spacing:0.1em;padding:9px 15px;border:1px solid #243137;background:#0f191e;color:#9fb0b4;text-align:center;cursor:pointer;user-select:none;">&darr; PIECE STRIP &middot; TAILS+CURSORS</div>
+        <div onClick="{{ dlContract }}" style="font-size:10.5px;letter-spacing:0.1em;padding:9px 15px;border:1px solid #243137;background:#0f191e;color:#9fb0b4;text-align:center;cursor:pointer;user-select:none;">&darr; CONTRACT &middot; JSON</div>
+        <div style="display:flex;gap:6px;">
+          <a href="Art/dialogueBubbleRig.js" download="dialogueBubbleRig.js" style="flex:1;font-size:9px;letter-spacing:0.06em;padding:8px 6px;border:1px solid #243137;background:#0f191e;color:#8a969b;text-align:center;">&darr; BUBBLE RIG</a>
+          <a href="Art/talkCueRig.js" download="talkCueRig.js" style="flex:1;font-size:9px;letter-spacing:0.06em;padding:8px 6px;border:1px solid #243137;background:#0f191e;color:#8a969b;text-align:center;">&darr; TALK CUES</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="width:100%;max-width:1140px;display:flex;flex-direction:column;gap:13px;border-top:1px solid #243137;padding-top:22px;">
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+      <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#e8ebe5;"></div><div style="font-size:14px;color:#e7eceb;letter-spacing:0.05em;">The three taste calls</div></div>
+      <div style="font-size:9.5px;color:#5f6e73;letter-spacing:0.05em;">CLICK ANY TILE TO MAKE IT THE LIVE ONE ABOVE &middot; SHIPPED PICK MARKED</div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:9px;">
+      <div style="font-size:11px;color:#9fb0b4;letter-spacing:0.1em;">1 &middot; STOCK &mdash; what the bubble is made of</div>
+      <div style="border:1px solid #243137;background:#0e181d;padding:0;"><canvas ref="{{ stockRef }}" width="1088" height="150"></canvas></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:9px;">
+        <sc-for list="{{ stockOpts }}" as="s" hint-placeholder-count="4">
+          <div onClick="{{ s.set }}" style="cursor:pointer;border:1px solid {{ s.bd }};background:{{ s.bg }};padding:9px 10px;display:flex;flex-direction:column;gap:5px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;"><span style="font-size:10px;letter-spacing:0.06em;color:{{ s.fg }};">{{ s.label }}</span><span style="font-size:8.5px;color:#c9a86a;">{{ s.flag }}</span></div>
+            <div style="display:flex;gap:2px;"><div style="width:16px;height:8px;background:{{ s.paper }};"></div><div style="width:16px;height:8px;background:{{ s.hi }};"></div><div style="width:16px;height:8px;background:{{ s.lo }};"></div><div style="width:16px;height:8px;background:{{ s.ink }};"></div></div>
+            <div style="font-size:9px;color:#7d8b90;line-height:1.55;">{{ s.note }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:9px;margin-top:8px;">
+      <div style="font-size:11px;color:#9fb0b4;letter-spacing:0.1em;">2 &middot; SELECTION CURSOR &mdash; drawn at 6&times; and at 1&times;</div>
+      <div style="border:1px solid #243137;background:#0e181d;"><canvas ref="{{ cursorRef }}" width="1088" height="132"></canvas></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:9px;">
+        <sc-for list="{{ cursorOpts }}" as="c" hint-placeholder-count="4">
+          <div onClick="{{ c.set }}" style="cursor:pointer;border:1px solid {{ c.bd }};background:{{ c.bg }};padding:9px 10px;display:flex;flex-direction:column;gap:5px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;"><span style="font-size:10px;letter-spacing:0.06em;color:{{ c.fg }};">{{ c.label }}</span><span style="font-size:8.5px;color:#c9a86a;">{{ c.flag }}</span></div>
+            <div style="font-size:9px;color:#7d8b90;line-height:1.55;">{{ c.note }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:9px;margin-top:8px;">
+      <div style="font-size:11px;color:#9fb0b4;letter-spacing:0.1em;">3 &middot; SELECTED ROW &mdash; how the choice reads</div>
+      <div style="border:1px solid #243137;background:#0e181d;"><canvas ref="{{ hlRef }}" width="1088" height="176"></canvas></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:9px;">
+        <sc-for list="{{ hlOpts }}" as="h" hint-placeholder-count="4">
+          <div onClick="{{ h.set }}" style="cursor:pointer;border:1px solid {{ h.bd }};background:{{ h.bg }};padding:9px 10px;display:flex;flex-direction:column;gap:5px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;"><span style="font-size:10px;letter-spacing:0.06em;color:{{ h.fg }};">{{ h.label }}</span><span style="font-size:8.5px;color:#c9a86a;">{{ h.flag }}</span></div>
+            <div style="font-size:9px;color:#7d8b90;line-height:1.55;">{{ h.note }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+
+  <div style="width:100%;max-width:1140px;display:flex;gap:22px;flex-wrap:wrap;border-top:1px solid #243137;padding-top:22px;">
+    <div style="flex:1;min-width:430px;display:flex;flex-direction:column;gap:10px;">
+      <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#e8ebe5;"></div><div style="font-size:14px;color:#e7eceb;letter-spacing:0.05em;">Type metrics &mdash; the line arithmetic</div></div>
+      <div style="font-size:10px;color:#8a969b;line-height:1.65;">Speech is set in <span style="color:#c4cdcd;">sentence case</span> (owner ruling). The face is <span style="color:#c4cdcd;">newly drawn for this kit</span> &mdash; nothing borrowed, no licence to carry &mdash; with a full lowercase a&ndash;z, ascenders to cap height and two descender rows. Caps stay on the name chip and the option rows, which are labels.</div>
+      <div style="font-size:9.5px;color:#7fd6c9;letter-spacing:0.06em;">{{ typeLine }}</div>
+      <div style="border:1px solid #243137;display:grid;grid-template-columns:auto auto auto auto auto;font-size:10px;">
+        <div style="padding:5px 9px;color:#6f7e83;letter-spacing:0.08em;background:#0f191e;">CELLS</div>
+        <div style="padding:5px 9px;color:#6f7e83;letter-spacing:0.08em;background:#0f191e;border-left:1px solid #243137;">PANEL PX</div>
+        <div style="padding:5px 9px;color:#6f7e83;letter-spacing:0.08em;background:#0f191e;border-left:1px solid #243137;">METRES</div>
+        <div style="padding:5px 9px;color:#6f7e83;letter-spacing:0.08em;background:#0f191e;border-left:1px solid #243137;">TEXT BOX</div>
+        <div style="padding:5px 9px;color:#6f7e83;letter-spacing:0.08em;background:#0f191e;border-left:1px solid #243137;">CH/LINE</div>
+        <sc-for list="{{ ladderRows }}" as="r" hint-placeholder-count="12">
+          <div style="padding:4px 9px;color:#c4cdcd;border-top:1px solid #243137;background:{{ r.bg }};">{{ r.cells }}</div>
+          <div style="padding:4px 9px;color:#9fb0b4;border-top:1px solid #243137;border-left:1px solid #243137;background:{{ r.bg }};">{{ r.panel }}</div>
+          <div style="padding:4px 9px;color:#8a969b;border-top:1px solid #243137;border-left:1px solid #243137;background:{{ r.bg }};">{{ r.metres }}</div>
+          <div style="padding:4px 9px;color:#8a969b;border-top:1px solid #243137;border-left:1px solid #243137;background:{{ r.bg }};">{{ r.textBox }}</div>
+          <div style="padding:4px 9px;color:#c4cdcd;border-top:1px solid #243137;border-left:1px solid #243137;background:{{ r.bg }};">{{ r.chars }}</div>
+        </sc-for>
+      </div>
+      <div style="font-size:9.5px;color:#5f6e73;line-height:1.6;">Option ladder: <span style="color:#9fb0b4;">{{ optLadder }}</span>. The two costs of mixed case, separately: drawing the lowercase set is done and moves no other number; the taller line box (cell 4&times;8 &rarr; 5&times;10) is what re-derives the ladder &mdash; taken once, before the freeze.</div>
+    </div>
+
+    <div style="flex:1;min-width:430px;display:flex;flex-direction:column;gap:10px;">
+      <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#7fd6c9;"></div><div style="font-size:14px;color:#e7eceb;letter-spacing:0.05em;">The invariant, as arithmetic</div></div>
+      <div style="font-size:10px;color:#8a969b;line-height:1.65;">{{ budgetRule }}</div>
+      <div style="border:1px solid #243137;display:grid;grid-template-columns:auto auto auto auto;font-size:10px;">
+        <div style="padding:5px 9px;color:#6f7e83;letter-spacing:0.08em;background:#0f191e;">TIER</div>
+        <div style="padding:5px 9px;color:#6f7e83;letter-spacing:0.08em;background:#0f191e;border-left:1px solid #243137;">WORLD PX</div>
+        <div style="padding:5px 9px;color:#6f7e83;letter-spacing:0.08em;background:#0f191e;border-left:1px solid #243137;">WORST UNION</div>
+        <div style="padding:5px 9px;color:#6f7e83;letter-spacing:0.08em;background:#0f191e;border-left:1px solid #243137;">SCREEN</div>
+        <sc-for list="{{ tierRows }}" as="t" hint-placeholder-count="3">
+          <div style="padding:4px 9px;color:{{ t.fg }};border-top:1px solid #243137;">{{ t.tier }}</div>
+          <div style="padding:4px 9px;color:#9fb0b4;border-top:1px solid #243137;border-left:1px solid #243137;">{{ t.world }}</div>
+          <div style="padding:4px 9px;color:#9fb0b4;border-top:1px solid #243137;border-left:1px solid #243137;">{{ t.union }}</div>
+          <div style="padding:4px 9px;color:{{ t.fg }};border-top:1px solid #243137;border-left:1px solid #243137;">{{ t.pct }} &middot; {{ t.fits }}</div>
+        </sc-for>
+      </div>
+      <div style="display:flex;align-items:center;gap:9px;"><span style="font-size:10px;letter-spacing:0.08em;color:{{ budgetFg }};">{{ budgetHolds }}</span><span style="font-size:9.5px;color:#5f6e73;">measured on the placement this page actually draws, at all six tails &mdash; the table above prices the rig&rsquo;s own worst case</span></div>
+      <div style="border:1px solid #243137;display:grid;grid-template-columns:auto 1fr;font-size:10px;">
+        <sc-for list="{{ occRows }}" as="r" hint-placeholder-count="6">
+          <div style="padding:4px 9px;color:#6f7e83;letter-spacing:0.06em;border-top:{{ r.border }};background:#0f191e;">{{ r.k }}</div>
+          <div style="padding:4px 9px;color:{{ r.fg }};border-top:{{ r.border }};border-left:1px solid #243137;">{{ r.v }}</div>
+        </sc-for>
+      </div>
+      <div style="font-size:9.5px;color:#5f6e73;line-height:1.6;">Speaker rect: <span style="color:#9fb0b4;">{{ speakerRect }}</span>. {{ budgetNote }}</div>
+      <div style="border:1px solid #243137;padding:9px 11px;display:flex;flex-direction:column;gap:5px;background:#0f191e;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;"><span style="font-size:10.5px;color:#e7eceb;letter-spacing:0.06em;">MOUTH-CHANNEL PROBE</span><span style="font-size:10.5px;letter-spacing:0.1em;color:{{ probeFg }};">{{ probeLabel }}</span></div>
+        <div style="font-size:9.5px;color:#8a969b;line-height:1.6;">{{ probeDetail }}</div>
+        <div style="font-size:9px;color:#5f6e73;line-height:1.55;">The measured claim is a test: <span style="color:#9fb0b4;">TalkCue.probeMouth(CharacterIso6)</span> renders one frame twice at the same t, talk on and talk off, so any changed pixel is the talk channel. Run it in the import PR and fail on it. The rename must keep the stable ids &mdash; render / pose / anchors signatures and the opts keys t, talk, expr.</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="width:100%;max-width:1140px;display:flex;flex-direction:column;gap:13px;border-top:1px solid #243137;padding-top:22px;">
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+      <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#66d585;"></div><div style="font-size:14px;color:#e7eceb;letter-spacing:0.05em;">Reference sheet &middot; every piece, 1&times;, with its crop box</div></div>
+      <div style="font-size:9.5px;color:#5f6e73;letter-spacing:0.05em;">DRAWN BY THE KIT ITSELF &mdash; BubbleKit.sheet() / sheetSpec()</div>
+    </div>
+    <div style="border:1px solid #243137;background:#0e181d;overflow:auto;"><canvas ref="{{ sheetRef }}" width="1088" height="640"></canvas></div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid #243137;font-size:10px;">
+      <sc-for list="{{ crops }}" as="c" hint-placeholder-count="12">
+        <div style="padding:5px 9px;border-top:{{ c.border }};border-left:{{ c.leftBorder }};display:flex;justify-content:space-between;gap:8px;background:{{ c.bg }};"><span style="color:#8a969b;">{{ c.name }}</span><span style="color:#c4cdcd;">{{ c.box }}</span></div>
+      </sc-for>
+    </div>
+    <div style="font-size:9.5px;color:#5f6e73;letter-spacing:0.05em;line-height:1.6;">The sheet is not a screenshot: it is drawn by the same functions the game calls, so a piece cannot look one way here and another way in the scene. <span style="color:#9fb0b4;">sheetSpec()</span> returns this table as data for the import PR to cut from.</div>
+  </div>
+
+  <div style="width:100%;max-width:1140px;display:flex;gap:22px;flex-wrap:wrap;border-top:1px solid #243137;padding-top:22px;">
+    <div style="flex:1;min-width:330px;display:flex;flex-direction:column;gap:9px;">
+      <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#c9a86a;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Talk cues &middot; the character side</div></div>
+      <div style="font-size:10px;color:#8a969b;line-height:1.7;">A cue layer, not a new clip set. The bounce is a whole-pixel <em>screen-vertical</em> offset &mdash; the one axis that does not rotate with a ground bearing (ADR 0034) &mdash; so one cue is right at all eight facings with nothing authored per row and no re-bake.</div>
+      <div style="border:1px solid #243137;display:grid;grid-template-columns:auto 1fr;font-size:10.5px;">
+        <sc-for list="{{ cueRows }}" as="r" hint-placeholder-count="6">
+          <div style="padding:5px 10px;color:#6f7e83;letter-spacing:0.06em;border-top:{{ r.border }};background:#0f191e;">{{ r.k }}</div>
+          <div style="padding:5px 10px;color:#c4cdcd;border-top:{{ r.border }};border-left:1px solid #243137;line-height:1.5;">{{ r.v }}</div>
+        </sc-for>
+      </div>
+    </div>
+    <div style="flex:1;min-width:330px;display:flex;flex-direction:column;gap:9px;">
+      <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#a8412c;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Flagged for the owner, not built</div></div>
+      <div style="display:flex;flex-direction:column;gap:7px;">
+        <sc-for list="{{ flags }}" as="f" hint-placeholder-count="4">
+          <div style="border-left:2px solid #2f4a55;padding:2px 0 2px 9px;font-size:10px;color:#8a969b;line-height:1.6;"><span style="color:#c4cdcd;">{{ f.k }}</span> &mdash; {{ f.v }}</div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 1190, &quot;height&quot;: 1980 },
+  &quot;stock&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;cream&quot;, &quot;options&quot;: [&quot;cream&quot;,&quot;newsprint&quot;,&quot;sailcloth&quot;,&quot;enamel&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Kit&quot; },
+  &quot;tail&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;left&quot;, &quot;options&quot;: [&quot;left&quot;,&quot;centre&quot;,&quot;right&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Kit&quot; },
+  &quot;highlight&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;pill&quot;, &quot;options&quot;: [&quot;pill&quot;,&quot;invert&quot;,&quot;rule&quot;,&quot;press&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Kit&quot; },
+  &quot;cursor&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;hand&quot;, &quot;options&quot;: [&quot;hand&quot;,&quot;glove&quot;,&quot;tack&quot;,&quot;hook&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Kit&quot; },
+  &quot;rows&quot;: { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 3, &quot;min&quot;: 2, &quot;max&quot;: 4, &quot;step&quot;: 1, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Kit&quot; },
+  &quot;cps&quot;: { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 26, &quot;min&quot;: 8, &quot;max&quot;: 60, &quot;step&quot;: 1, &quot;unit&quot;: &quot;ch/s&quot;, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Harness&quot; },
+  &quot;zoom&quot;: { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 3, &quot;min&quot;: 2, &quot;max&quot;: 5, &quot;step&quot;: 1, &quot;unit&quot;: &quot;\u00d7&quot;, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Harness&quot; },
+  &quot;pins&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Harness&quot; }
+}">
+class Component extends DCLogic {
+  constructor(props){
+    super(props);
+    const s = this._load();
+    this.LINES = [
+      { name:'GINNY', text:"Wind's backing round by dusk. Take the inside channel past the ledge." },
+      { name:'GINNY', text:"Two crates of herring at the shed door, and I'll not haggle." },
+      { name:'NED',   text:"You brought the punt back in that squall? Sit down before you fall." },
+    ];
+    this.ROWS = ['ABOUT THE LEDGE','THE HERRING PRICE','NOTHING TODAY','GOODBYE'];
+    this.DIRS = ['N','NE','E','SE','S','SW','W','NW'];
+    /* the scene is sized to the RIG's worst case (union 217 x 124 plus tail clear and half a
+       speaker), not to a layout that happened to fit: nothing in here is ever clamped. */
+    this.SW = 276; this.SH = 200; this.COLS = 22; this.GX = 138;
+    /* an up tail IS the "speaker near the top of the screen" case, so the harness stands her there */
+    this.GY = 168; this.GY_UP = 58;
+    this.state = Object.assign({
+      dir: 4, tail: props.tail || 'left', stock: props.stock || 'cream',
+      hl: props.highlight || 'pill', cursor: props.cursor || 'hand',
+      rows: props.rows || 3, sel: 0, line: 0, cps: props.cps || 26,
+      zoom: props.zoom || 3, pins: props.pins !== false, playing: true, emote: null,
+    }, s);
+    this._cache = {}; this._sig = '';
+    /* THE CLOCK IS THE WALL CLOCK. Accumulating per-callback deltas ties scene time to how often a
+       callback happens to fire, and in a hidden document rAF never fires while timers throttle to ~1/s —
+       which silently ran the fill at under 1% speed. Scene time now comes from performance.now(), so a
+       throttled callback costs frames, never seconds. */
+    this._epoch = (typeof performance !== 'undefined' ? performance.now() : Date.now());
+    this._pausedMs = 0; this._pausedAt = this.state.playing ? null : this._epoch;
+    this._emoteAt = -99;
+    /* stable ref callbacks that ignore the null the runtime hands back on re-render */
+    const keep = (k) => (n) => { if (!n || this[k] === n) return; this[k] = n; this._sig = ''; this._boards(); };
+    this.heroRef = (n) => { if (n) this.hero = n; };
+    this.stockRef = keep('stock'); this.cursorRef = keep('cursor');
+    this.hlRef = keep('hl'); this.sheetRef = keep('sheet');
+  }
+  _load(){ try { const j = JSON.parse(localStorage.getItem('hh.bubble') || '{}'); return (j && typeof j === 'object') ? j : {}; } catch(e){ return {}; } }
+  _save(){ try { const S = this.state; localStorage.setItem('hh.bubble', JSON.stringify({
+    dir:S.dir, tail:S.tail, stock:S.stock, hl:S.hl, cursor:S.cursor, rows:S.rows, sel:S.sel, line:S.line, cps:S.cps, zoom:S.zoom, pins:S.pins })); } catch(e){} }
+
+  componentDidMount(){
+    this._hero();          /* paint once immediately — never depend on the first frame callback */
+    this._loop(); this._boards();
+    /* rAF does not fire at all in a hidden document (background tab, print, offscreen preview), so the
+       timer runs UNCONDITIONALLY as the paint of record. Both paths only draw; neither owns the clock. */
+    this._tickOn();
+    /* register with the page's paint pump (see the helmet script) — newest instance wins */
+    this._pump = () => this._paint();
+    window.__hhPaint = this._pump;
+    this._vis = () => this._paint();
+    document.addEventListener('visibilitychange', this._vis);
+    setTimeout(() => this._diagnose(), 500);
+  }
+
+  /* ONE placement path for the drawn scene and for the verdict printed under it, so the readout can
+     never disagree with the pixels. The bounds go INTO the mount, in x AND y — the harness does not
+     clamp anything itself, because a clamped draw beside an unclamped verdict is how a proof lies. */
+  _place(kind, anchor, rows){
+    const K = window.BubbleKit, S = this.state, SW = this.SW, SH = this.SH;
+    const up = (K.TAILS[kind] || {}).dir === 'up';
+    const sp = this._sp || { dx: -8, dy: -7, w: 16, h: 43 };
+    const L0 = this.LINES[S.line];
+    const sayO = { text: L0.text, cols: this.COLS, name: L0.name, tail: kind, stock: S.stock };
+    const mt = K.mount(anchor, Object.assign({ clear: up ? (sp.dy + sp.h) : Math.max(0, -sp.dy) }, sayO));
+    const lay = K.layoutSay(mt.x, mt.y, sayO);
+    const optO = { rows: this.ROWS.slice(0, rows), cols: 18, sel: Math.min(S.sel, rows - 1),
+      stock: S.stock, highlight: S.hl, cursor: S.cursor,
+      bounds: { x0: 2, x1: SW - 2, y0: 2, y1: SH - 2 } };
+    const om = K.optionsMount(lay, optO);
+    const s0 = { x0: anchor.x + sp.dx, x1: anchor.x + sp.dx + sp.w,
+                 y0: anchor.y + sp.dy, y1: anchor.y + sp.dy + sp.h };
+    const hit = (r) => Math.max(0, Math.min(r.x1, s0.x1) - Math.max(r.x0, s0.x0)) *
+                       Math.max(0, Math.min(r.y1, s0.y1) - Math.max(r.y0, s0.y0));
+    const panels = [{ x0: lay.x, x1: lay.x + lay.w, y0: lay.y, y1: lay.y + lay.h },
+                    { x0: om.x, x1: om.x + om.w, y0: om.y, y1: om.y + om.h }];
+    if (lay.chip) panels.push({ x0: lay.chip.x, x1: lay.chip.x + lay.chip.w, y0: lay.chip.y, y1: lay.chip.y + lay.chip.h });
+    const inScene = lay.x >= 0 && lay.x + lay.w <= SW && lay.top >= 0 && lay.bottom < SH &&
+                    om.x >= 0 && om.x + om.w <= SW && om.y >= 0 && om.y + om.h <= SH;
+    return { up, sayO, optO, lay, om, sp, inScene, occl: panels.reduce((n, r) => n + hit(r), 0) };
+  }
+
+  /* the verdict, measured on the placement that is actually drawn, at all six tails */
+  _drawnVerdict(){
+    const K = window.BubbleKit; if (!K) return null;
+    const pv = (window.CharacterIso6 && window.CharacterIso6.pivot) || { x: 32, y: 82 };
+    const rows = K.TAIL_ORDER.map(k => {
+      const gy = K.TAILS[k].dir === 'up' ? this.GY_UP : this.GY;
+      const anchor = { x: this.GX - pv.x + (this._headX == null ? 32 : this._headX),
+                       y: gy - pv.y + (this._headY == null ? 45 : this._headY) };
+      const P2 = this._place(k, anchor, this.state.rows);
+      return { tail: k, side: P2.om.side, flipped: P2.om.side !== P2.om.away, vSide: P2.om.vSide,
+        clamped: !!P2.om.clamped, inScene: P2.inScene, occl: P2.occl,
+        holds: P2.occl === 0 && P2.inScene && !P2.om.clamped };
+    });
+    return { rows, holds: rows.every(r => r.holds) };
+  }
+
+  /* measure the speaker's own ink rect off the rig, then run the talk-channel probe. Both feed the
+     tables below, so the invariant and the "already shipping" claim are arithmetic, not assertions. */
+  _diagnose(){
+    const D = window.CharacterIso6, T = window.TalkCue;
+    if (!D || !T) return;
+    try {
+      const o = { elev: 40, anim: 'idle', frame: 0, build: { preset: 'ginny' } };
+      const rgba = D.render(4, o);
+      let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+      for (let p = 3; p < rgba.length; p += 4) {
+        if (rgba[p] > 8) { const i = (p - 3) / 4, px = i % D.W, py = (i / D.W) | 0;
+          if (px < x0) x0 = px; if (px > x1) x1 = px; if (py < y0) y0 = py; if (py > y1) y1 = py; }
+      }
+      const a = D.anchors(4, o);
+      this._headX = a.head.x; this._headY = a.head.y;
+      this._sp = { dx: Math.round(x0 - a.head.x), dy: Math.round(y0 - a.head.y), w: x1 - x0 + 1, h: y1 - y0 + 1 };
+      this._probe = T.probeMouth(D, { dir: 4 });
+    } catch(e) { this._probe = { pass: false, reason: String(e) }; }
+    this.forceUpdate();
+  }
+  componentWillUnmount(){
+    if (this._raf) cancelAnimationFrame(this._raf);
+    if (this._chain) { clearTimeout(this._chain); this._chain = null; }
+    if (window.__hhPaint === this._pump) window.__hhPaint = null;
+    if (this._vis) document.removeEventListener('visibilitychange', this._vis);
+  }
+  componentDidUpdate(){ this._boards(); this._save(); this._tickOn(); this._paint(); }
+
+  /* ---------------- clock ---------------- */
+  _ms(){ return (typeof performance !== 'undefined' ? performance.now() : Date.now()); }
+  /* scene seconds, read off the wall clock minus whatever time was spent paused */
+  _clock(){
+    const now = this._pausedAt != null ? this._pausedAt : this._ms();
+    return Math.max(0, (now - this._epoch - this._pausedMs) / 1000);
+  }
+  _restart(){ this._epoch = this._ms(); this._pausedMs = 0; if (this._pausedAt != null) this._pausedAt = this._epoch; }
+  _setPlaying(on){
+    if (on && this._pausedAt != null) { this._pausedMs += this._ms() - this._pausedAt; this._pausedAt = null; }
+    else if (!on && this._pausedAt == null) { this._pausedAt = this._ms(); }
+    this.setState({ playing: on });
+  }
+  _paint(){ try { this._hero(); } catch(e) { if (!this._err) { this._err = 1; console.warn('hero draw', e); } } }
+  /* A SELF-RE-ARMING CHAIN, not a single interval. rAF is dead in a hidden document and a lone
+     interval dies with whichever instance created it, so the chain is (re)started from both
+     componentDidMount and componentDidUpdate — any live render revives the paint. */
+  _tickOn(){
+    if (this._chain) return;
+    const step = () => { this._chain = setTimeout(step, 100); this._paint(); };
+    this._chain = setTimeout(step, 100);
+  }
+  _loop(){ this._raf = requestAnimationFrame(() => { this._paint(); this._loop(); }); }
+
+  /* ---------------- the speaker, cached per facing / frame / mouth ---------------- */
+  _char(dir, frame, open){
+    const D = window.CharacterIso6; if (!D) return null;
+    const key = dir + '|' + frame + '|' + (open ? 1 : 0);
+    if (this._cache[key]) return this._cache[key];
+    const cv = document.createElement('canvas'); cv.width = D.W; cv.height = D.H;
+    const o = { elev: 40, anim: 'idle', frame: frame, build: { preset: this.LINES[this.state.line].name === 'NED' ? 'skipper' : 'ginny' } };
+    if (open) o.expr = 'oh';
+    cv.getContext('2d').putImageData(new ImageData(D.render(dir, o), D.W, D.H), 0, 0);
+    this._cache[key] = cv; return cv;
+  }
+
+  _fill(t){
+    const K = window.BubbleKit, S = this.state, L = this.LINES[S.line];
+    const lay = K.layoutSay(0, 0, { text: L.text, cols: this.COLS, name: L.name, tail: S.tail, stock: S.stock });
+    const chars = Math.floor((t == null ? this._clock() : t) * S.cps);
+    const done = chars >= lay.chars;
+    return { lay, chars, done, stoppedAt: lay.chars / S.cps };
+  }
+
+  /* ---------------- hero scene ---------------- */
+  _hero(){
+    /* the ref can hold a canvas that has been replaced in the DOM; the live one is the truth */
+    if (!this.hero || !this.hero.isConnected) {
+      const live = document.querySelector('canvas[data-hero]');
+      if (live) this.hero = live;
+    }
+    const cv = this.hero, K = window.BubbleKit, T = window.TalkCue, D = window.CharacterIso6;
+    if (!cv || !K) return;
+    const S = this.state, SW = this.SW, SH = this.SH;
+    /* never let the scene outgrow the canvas — a clipped scene reads as a broken bubble */
+    const Z = Math.max(1, Math.min(S.zoom, Math.floor(cv.width / SW), Math.floor(cv.height / SH)));
+    const sc = this._scene || (this._scene = document.createElement('canvas'));
+    if (sc.width !== SW) { sc.width = SW; sc.height = SH; }
+    const c = sc.getContext('2d');
+    c.clearRect(0, 0, SW, SH);
+
+    const upTail = (K.TAILS[S.tail] || {}).dir === 'up';
+    const gy = upTail ? this.GY_UP : this.GY, gx = this.GX, deck = gy - 36;
+
+    /* greybox world: a deck, a wall behind it, one plank rhythm. Muted on purpose. */
+    c.fillStyle = '#353d43'; c.fillRect(0, 0, SW, deck);
+    c.fillStyle = '#5d564c'; c.fillRect(0, deck, SW, SH - deck);
+    c.fillStyle = '#6f665a'; c.fillRect(0, deck, SW, 1);
+    for (let y = deck + 6; y < SH; y += 7) { c.fillStyle = '#4c463f'; c.fillRect(0, y, SW, 1); }
+    for (let x = 12; x < SW; x += 31) { c.fillStyle = '#4c463f'; c.fillRect(x, deck + 1, 1, SH - deck - 1); }
+
+    const t = this._clock();
+    const F = this._fill(t);
+    const talking = !F.done;
+    const open = talking && (Math.floor(t * 7.2) % 3) !== 0;
+    const cue = T ? T.body({ t: t, talking: talking, startedAt: 0, stoppedAt: F.stoppedAt,
+      emote: S.emote, emoteAt: this._emoteAt }) : { dy: 0, state: 'still' };
+
+    const bodyFrames = (D && D.ANIMS && D.ANIMS.idle) ? D.ANIMS.idle.frames : 6;
+    const frame = Math.floor(t * 5.8) % bodyFrames;
+    const sprite = this._char(S.dir, frame, open);
+
+    /* contact shadow — three stepped rows, no alpha, no dither */
+    c.fillStyle = '#443f39'; c.fillRect(gx - 9, gy - 1, 18, 1);
+    c.fillStyle = '#3b3731'; c.fillRect(gx - 7, gy, 14, 1);
+    c.fillStyle = '#332f2a'; c.fillRect(gx - 4, gy + 1, 8, 1);
+
+    let anchor = { x: gx, y: gy - 40 };
+    if (sprite && D) {
+      const ox = gx - D.pivot.x, oy = gy - D.pivot.y;
+      c.drawImage(sprite, ox, oy + cue.dy);
+      const a = D.anchors(S.dir, { elev: 40, anim: 'idle', frame: frame });
+      anchor = { x: ox + a.head.x, y: oy + a.head.y + cue.dy };
+    }
+
+    /* one placement path, bounds passed in, nothing clamped here */
+    const PL = this._place(S.tail, anchor, S.rows);
+    const lay = K.say(c, PL.lay.x, PL.lay.y, Object.assign({}, PL.sayO,
+      { fill: F.chars, frame: Math.floor(t * 1000 / K.M.marker.ms) }));
+    this._om = PL.om;
+    if (F.done) K.options(c, PL.om.x, PL.om.y, PL.optO);
+
+    if (T && S.emote) {
+      const E = T.EMOTE[S.emote], ms = (t - this._emoteAt) * 1000;
+      if (ms >= 0 && ms < E.ms) {
+        const side = S.tail === 'right' ? 'right' : 'left';
+        const box = T.markerAt(anchor, { emote: S.emote, side: side, place: 'side' });
+        T.marker(c, box.x, box.y, S.emote, { t: ms / E.ms, stock: S.stock });
+      }
+    }
+
+    if (S.pins) {
+      const pin = (x, y, col) => { c.fillStyle = col; c.fillRect(x - 2, y, 5, 1); c.fillRect(x, y - 2, 1, 5); };
+      pin(anchor.x, anchor.y, '#7fd6c9');
+      pin(lay.tail.tip.x, lay.tail.tip.y, '#e0503a');
+    }
+
+    const g = cv.getContext('2d');
+    g.imageSmoothingEnabled = false;
+    g.fillStyle = '#0b1216'; g.fillRect(0, 0, cv.width, cv.height);
+    const dx = Math.round((cv.width - SW * Z) / 2), dy = Math.round((cv.height - SH * Z) / 2);
+    g.drawImage(sc, dx, dy, SW * Z, SH * Z);
+    g.fillStyle = '#1b2a30'; g.fillRect(dx, dy, SW * Z, 1); g.fillRect(dx, dy + SH * Z - 1, SW * Z, 1);
+  }
+
+  /* ---------------- taste boards + reference sheet ---------------- */
+  _tile(c, x, y, z, w, h, draw, label){
+    const K = window.BubbleKit;
+    const off = document.createElement('canvas'); off.width = w; off.height = h;
+    const oc = off.getContext('2d'); draw(oc);
+    c.imageSmoothingEnabled = false;
+    c.drawImage(off, x, y, w * z, h * z);
+    if (label) K.text(c, label, x, y + h * z + 5, '#55666d');
+    return { w: w * z, h: h * z };
+  }
+  _boards(){
+    const K = window.BubbleKit, S = this.state;
+    const sig = [S.stock, S.cursor, S.hl, S.rows].join('|');
+    if (!K || sig === this._sig) return;
+    this._sig = sig;
+
+    if (this.stock) {
+      const c = this.stock.getContext('2d');
+      c.fillStyle = '#0e181d'; c.fillRect(0, 0, this.stock.width, this.stock.height);
+      let x = 10;
+      for (const k of K.STOCK_ORDER) {
+        const o = { text: 'The inside channel, then. Mind the ledge.', cols: 16, name: 'GINNY', tail: 'centre', stock: k, marker: true, fill: 999 };
+        const L = K.layoutSay(0, 0, o), pad = K.M.chip.h - K.M.chip.overlap;
+        const w = L.w, h = L.h + L.tail.h + pad;
+        const t = this._tile(c, x, 14, 2.4, w, h, (oc) => K.say(oc, 0, pad, o), (k + (k === S.stock ? ' *LIVE' : '')).toUpperCase());
+        x += t.w + 14;
+      }
+    }
+    if (this.cursor) {
+      const c = this.cursor.getContext('2d');
+      c.fillStyle = '#0e181d'; c.fillRect(0, 0, this.cursor.width, this.cursor.height);
+      let x = 12;
+      for (const k of K.CURSOR_ORDER) {
+        const C = K.CURSORS[k];
+        const label = (C.label + (k === S.cursor ? ' *LIVE' : '')).toUpperCase();
+        this._tile(c, x, 16, 6, C.w, C.h, (oc) => { oc.fillStyle = K.STOCKS[S.stock].paper; oc.fillRect(0, 0, C.w, C.h); K.cursor(oc, 0, 0, k, { stock: S.stock }); }, label);
+        this._tile(c, x, 16 + C.h * 6 + 22, 1, C.w, C.h, (oc) => { oc.fillStyle = K.STOCKS[S.stock].paper; oc.fillRect(0, 0, C.w, C.h); K.cursor(oc, 0, 0, k, { stock: S.stock }); }, null);
+        K.text(c, '1x', x + C.w + 5, 16 + C.h * 6 + 22 + 1, '#3f4d53');
+        x += Math.max(C.w * 6, K.textW(label)) + 26;
+      }
+    }
+    if (this.hl) {
+      const c = this.hl.getContext('2d');
+      c.fillStyle = '#0e181d'; c.fillRect(0, 0, this.hl.width, this.hl.height);
+      let x = 12;
+      const rows = ['ABOUT THE LEDGE', 'NOTHING TODAY'];
+      for (const k of K.HL_ORDER) {
+        const o = { rows: rows, cols: 16, sel: 0, stock: S.stock, highlight: k, cursor: S.cursor };
+        const L = K.layoutOptions(0, 0, o);
+        const t = this._tile(c, x, 14, 2.4, L.w, L.h, (oc) => K.options(oc, 0, 0, o), (K.HIGHLIGHTS[k].label + (k === S.hl ? ' *LIVE' : '')).toUpperCase());
+        x += t.w + 14;
+      }
+    }
+    if (this.sheet) {
+      const cv = K.sheet({ stock: S.stock });
+      const z = Math.min(2, this.sheet.width / cv.width);
+      const h = Math.ceil(cv.height * z) + 4;
+      if (this.sheet.height !== h) this.sheet.height = h;
+      const c = this.sheet.getContext('2d');
+      c.imageSmoothingEnabled = false;
+      c.fillStyle = '#0e181d'; c.fillRect(0, 0, this.sheet.width, h);
+      c.drawImage(cv, 2, 2, cv.width * z, cv.height * z);
+    }
+  }
+
+  /* ---------------- exports ---------------- */
+  _dl(cv, name){ cv.toBlob((b) => { const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); }); }
+  _strip(){
+    const K = window.BubbleKit, gap = 3;
+    let w = 0, h = 0;
+    const items = [];
+    for (const k of K.TAIL_ORDER) items.push({ w: K.M.tail.w, h: K.TAILS[k].mask.length, d: (c, x) => K.tail(c, x, 0, k, { stock: this.state.stock }) });
+    for (const k of K.CURSOR_ORDER) items.push({ w: K.CURSORS[k].w, h: K.CURSORS[k].h, d: (c, x) => K.cursor(c, x, 0, k, { stock: this.state.stock }) });
+    items.push({ w: K.M.marker.w, h: K.M.marker.h + 1, d: (c, x) => K.marker(c, x, 0, 0, { stock: this.state.stock }) });
+    items.push({ w: K.M.caret.w, h: K.M.caret.h, d: (c, x) => K.caret(c, x, 0, { stock: this.state.stock }) });
+    for (const it of items) { w += it.w + gap; h = Math.max(h, it.h); }
+    const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+    const c = cv.getContext('2d'); let x = 0;
+    for (const it of items) { it.d(c, x); x += it.w + gap; }
+    return cv;
+  }
+
+  renderVals(){
+    const K = window.BubbleKit, T = window.TalkCue, S = this.state;
+    const on = (b) => b ? { bd:'#2f6079', bg:'#122530', fg:'#7fd6c9' } : { bd:'#243137', bg:'#0f191e', fg:'#8a969b' };
+    const L = this.LINES[S.line];
+    const lay = K ? K.layoutSay(0, 0, { text: L.text, cols: this.COLS, name: L.name, tail: S.tail, stock: S.stock }) : null;
+    const optL = K ? K.layoutOptions(0, 0, { rows: this.ROWS.slice(0, S.rows), cols: 18 }) : null;
+    const M = K ? K.M : null;
+    const m2 = (px) => (px / 32).toFixed(2) + ' M';
+    const rd = [];
+    if (lay) {
+      rd.push(['BUBBLE', lay.w + ' \u00d7 ' + lay.h + ' PX \u00b7 ' + m2(lay.w) + ' \u00d7 ' + m2(lay.h), '#c4cdcd']);
+      rd.push(['TEXT BOX', lay.text.w + ' \u00d7 ' + lay.text.h + ' PX \u00b7 ' + lay.cols + ' \u00d7 ' + lay.shown + ' CELLS', '#c4cdcd']);
+      rd.push(['CELL', M.panel.insetL + '/' + M.panel.insetT + '/' + M.panel.insetR + '/' + M.panel.insetB + ' INSET \u00b7 ' + K.CELL.adv + ' \u00d7 ' + K.CELL.line + ' PX CELL', '#8a969b']);
+      rd.push(['TYPE', 'CAP ' + K.CELL.cap + ' \u00b7 X-HT ' + K.CELL.xh + ' \u00b7 DESC ' + K.CELL.desc + ' \u00b7 SENTENCE CASE', '#c4cdcd']);
+      rd.push(['TAIL TIP', '+' + (lay.tail.tip.x - lay.x) + ', +' + (lay.tail.tip.y - lay.y) + ' \u00b7 GAP ' + M.tail.gap, '#e0b13a']);
+      rd.push(['CHIP', (lay.chip ? lay.chip.w + ' \u00d7 ' + lay.chip.h : '\u2014') + ' \u00b7 MOUNT +4, \u22127', '#8a969b']);
+      rd.push(['OPTION', optL.w + ' \u00d7 ' + optL.h + ' PX \u00b7 ROW ' + M.opt.rowH + ' \u00b7 GUTTER ' + M.opt.gutter, '#c4cdcd']);
+      const om = this._om;
+      if (om) rd.push(['OPT SIDE', om.side.toUpperCase() + (om.side === om.away ? '' : ' (FLIPPED)') +
+        ' ' + String(om.vSide).toUpperCase() + ' \u00b7 CLEAR +' + om.clearFromTail + (om.clamped ? ' \u00b7 CLAMPED' : ''),
+        om.clamped ? '#e0503a' : '#8a969b']);
+      rd.push(['MARKER', M.marker.w + ' \u00d7 ' + M.marker.h + ' \u00b7 BOB +1 \u00b7 ' + M.marker.ms + ' MS', '#8a969b']);
+      rd.push(['CARET', M.caret.w + ' \u00d7 ' + M.caret.h + ' IN A 4 \u00d7 8 CELL', '#8a969b']);
+      rd.push(['CHARS', lay.chars + ' \u00b7 ' + (lay.chars / S.cps).toFixed(1) + ' S AT ' + S.cps + ' CH/S', '#7fd6c9']);
+    }
+    const cueRows = T ? [
+      ['BOUNCE', T.CUE.lift + ' px lift, ' + Math.round(1000 / T.CUE.beatMs * 10) / 10 + ' Hz beat, every 4th beat held longer'],
+      ['SETTLE', T.CUE.settleMs + ' ms at line end \u2014 one last lift, then still'],
+      ['MOUTH', 'already shipping: render(dir,{t,talk:true}) \u2192 head rig\u2019s 7.2 Hz flip'],
+      ['EMOTES', T.EMOTE_ORDER.map(k => T.EMOTE[k].label.toLowerCase()).join(' \u00b7 ') + ' \u2014 hop + a small bubble from this kit'],
+      ['FACINGS', 'all 8, nothing authored per row (screen-vertical offset)'],
+      ['RE-BAKE', 'none \u2014 draw-time layer over the existing idle'],
+    ] : [];
+    const flags = [
+      { k: 'MIXED CASE', v: 'the bubble prints in the town\u2019s 3\u00d75 caps. Lowercase needs an 8-row line box (cap 6 + x-height 4 + 2 descenders) and grows every bubble ~33% in height \u2014 an owner call, costed, not taken.' },
+      { k: 'PER-SPEAKER CHIP TINT', v: 'held. The chip is one gold ramp; a tint would slot at chip.paper alone, leaving ink and steps intact.' },
+      { k: 'CURSOR ALTERNATES', v: 'the wool glove, the brass tack and the fish hook are drawn and measured above \u2014 the hook points with its barb, which reads as a threat.' },
+      { k: 'ROW HIGHLIGHT', v: 'gold pill ships. The pressed row is the only alternative that costs no colour, if the grade ever fights the gold.' },
+      { k: 'EMPHASIS BEATS', v: 'uniform every 4th beat. Punctuation-driven emphasis needs the line parsed \u2014 dialogue system, not art.' },
+    ];
+    /* type metrics + the invariant as arithmetic */
+    const MT = K ? K.metricsTable() : null;
+    const ladderRows = MT ? MT.ladder.filter(r => r.lines === 1 || r.lines === 4).map((r, i) => ({
+      cells: r.cols + ' \u00d7 ' + r.lines, panel: r.panel.join(' \u00d7 '), metres: r.metres[0] + ' \u00d7 ' + r.metres[1],
+      textBox: r.textBox.join(' \u00d7 '), chars: String(r.charsPerLine),
+      border: i < 2 ? 'none' : '1px solid #243137', bg: (i % 2) ? '#0f191e' : '#0d1519' })) : [];
+    const budget = K ? K.screenBudget(this._sp ? { speaker: this._sp } : {}) : null;
+    const tierRows = budget ? budget.tiers.map((t, i) => ({
+      tier: t.zoom + '\u00d7' + (t.closest ? ' \u00b7 CLOSEST' : ''), world: t.worldPx.join(' \u00d7 '),
+      union: budget.worst.union.join(' \u00d7 '), pct: t.unionPct[0] + '% \u00d7 ' + t.unionPct[1] + '% \u00b7 ' + t.areaPct + '% area',
+      fits: t.fits ? 'FITS' : 'OVER', fg: t.fits ? (t.closest ? '#7fd6c9' : '#8a969b') : '#e0503a',
+      border: i ? '1px solid #243137' : 'none' })) : [];
+    const drawn = K ? this._drawnVerdict() : null;
+    const occRows = drawn ? drawn.rows.map((r, i) => ({
+      k: r.tail, v: 'list ' + r.side + (r.flipped ? ' (flipped)' : '') + ' ' + r.vSide +
+        ' \u00b7 panels occlude ' + r.occl + ' px' + (r.inScene ? '' : ' \u00b7 OFF-SCENE') + (r.clamped ? ' \u00b7 CLAMPED' : ''),
+      fg: r.holds ? '#8a969b' : '#e0503a', border: i ? '1px solid #243137' : 'none' })) : [];
+    const pr = this._probe;
+    const probe = { label: pr ? (pr.pass ? 'PASS' : 'FAIL') : 'RUNNING\u2026',
+      fg: pr ? (pr.pass ? '#66d585' : '#e0503a') : '#c9a86a',
+      detail: pr ? (pr.pass
+        ? pr.px + ' px differ at t=' + pr.t + ', rows +' + pr.rowsBelowHeadAnchor[0] + '\u2026+' + pr.rowsBelowHeadAnchor[1] + ' below the head anchor \u2014 mouth-sized, in the lower face'
+        : (pr.reason || pr.note || 'see console')) : 'rendering the same frame twice, talk on and talk off' };
+    const spLabel = this._sp ? (this._sp.w + ' \u00d7 ' + this._sp.h + ' px (' + (this._sp.w/32).toFixed(2) + ' \u00d7 ' + (this._sp.h/32).toFixed(2) + ' m), measured off the rig\u2019s own alpha')
+      : 'measuring\u2026';
+    const crops = [];
+    if (K) {
+      const spec = K.sheetSpec({ stock: S.stock });
+      spec.items.forEach((it, i) => crops.push({ name: it.name, box: it.w + '\u00d7' + it.h,
+        border: i < 4 ? 'none' : '1px solid #243137', leftBorder: (i % 4) ? '1px solid #243137' : 'none',
+        bg: (Math.floor(i / 4) % 2) ? '#0f191e' : '#0d1519' }));
+    }
+    return {
+      heroRef: this.heroRef, stockRef: this.stockRef,
+      cursorRef: this.cursorRef, hlRef: this.hlRef, sheetRef: this.sheetRef,
+      dir: S.dir, dirShort: this.DIRS[S.dir] + ' \u00b7 ' + S.dir,
+      dirLabel: 'SPEAKER \u00b7 ' + this.DIRS[S.dir] + ' \u00b7 8 FACINGS \u00b7 GROUND BEARING',
+      zoom: S.zoom, cps: S.cps, rows: S.rows, sel: Math.min(S.sel, S.rows - 1),
+      selLabel: String(Math.min(S.sel, S.rows - 1) + 1) + '/' + S.rows,
+      optH: optL ? optL.h : 0,
+      stateLabel: S.playing ? 'FILLING \u00b7 TALK = FILL < 1' : 'PAUSED',
+      stateFg: S.playing ? '#7fd6c9' : '#c9a86a',
+      playLabel: S.playing ? '\u2016 PAUSE' : '\u25b6 PLAY',
+      pinsLabel: S.pins ? 'PINS ON' : 'PINS OFF',
+      pinsBd: on(S.pins).bd, pinsBg: on(S.pins).bg, pinsFg: on(S.pins).fg,
+      readout: rd.map((r, i) => ({ k: r[0], v: r[1], fg: r[2], border: i ? '1px solid #243137' : 'none' })),
+      cueRows: cueRows.map((r, i) => ({ k: r[0], v: r[1], border: i ? '1px solid #243137' : 'none' })),
+      flags, crops, ladderRows, tierRows, occRows,
+      probeLabel: probe.label, probeFg: probe.fg, probeDetail: probe.detail, speakerRect: spLabel,
+      typeLine: MT ? ('CELL ' + MT.cell.w + ' \u00d7 ' + MT.cell.h + ' \u00b7 CAP ' + MT.cell.capHeight + ' \u00b7 X-HEIGHT ' + MT.cell.xHeight
+        + ' \u00b7 DESC ' + MT.cell.descender + ' \u00b7 LEADING ' + MT.cell.leading + ' \u00b7 BASELINE ROW ' + MT.cell.baselineRow) : '',
+      optLadder: MT ? MT.optionFormula.step : '',
+      budgetRule: budget ? budget.rule : '',
+      budgetNote: budget ? budget.assumption : '',
+      budgetHolds: drawn ? (drawn.holds ? 'HOLDS AS DRAWN, ALL SIX TAILS' : 'VIOLATED AS DRAWN \u2014 SEE ROWS') : '',
+      budgetFg: drawn && drawn.holds ? '#66d585' : '#e0503a',
+      lineOpts: this.LINES.map((l, i) => Object.assign({
+        label: l.name + ' \u2014 ' + (l.text.length > 58 ? l.text.slice(0, 58) + '\u2026' : l.text),
+        set: () => { this._restart(); this.setState({ line: i }); },
+      }, on(i === S.line))),
+      tailOpts: K ? K.TAIL_ORDER.map(k => Object.assign({
+        label: (K.TAILS[k].dir === 'up' ? '\u2191 ' : '\u2193 ') + K.TAILS[k].label.replace('BELOW-', '').replace('ABOVE-', ''),
+        set: () => this.setState({ tail: k }) }, on(k === S.tail))) : [],
+      stockOpts: K ? K.STOCK_ORDER.map(k => Object.assign({
+        label: K.STOCKS[k].label, note: K.STOCKS[k].note, flag: K.STOCKS[k].ship ? 'SHIPS' : '',
+        paper: K.STOCKS[k].paper, hi: K.STOCKS[k].hi, lo: K.STOCKS[k].lo, ink: K.STOCKS[k].ink,
+        set: () => this.setState({ stock: k }) }, on(k === S.stock))) : [],
+      cursorOpts: K ? K.CURSOR_ORDER.map(k => Object.assign({
+        label: K.CURSORS[k].label, note: K.CURSORS[k].note, flag: K.CURSORS[k].ship ? 'SHIPS' : '',
+        set: () => this.setState({ cursor: k }) }, on(k === S.cursor))) : [],
+      hlOpts: K ? K.HL_ORDER.map(k => Object.assign({
+        label: K.HIGHLIGHTS[k].label, note: K.HIGHLIGHTS[k].note, flag: K.HIGHLIGHTS[k].ship ? 'SHIPS' : '',
+        set: () => this.setState({ hl: k }) }, on(k === S.hl))) : [],
+      emoteOpts: T ? T.EMOTE_ORDER.map(k => Object.assign({
+        label: T.EMOTE[k].label, fire: () => { this._emoteAt = this._clock(); this.setState({ emote: k }); } }, on(S.emote === k))) : [],
+      onDir: (e) => this.setState({ dir: +e.target.value }),
+      onZoom: (e) => this.setState({ zoom: +e.target.value }),
+      onCps: (e) => { this._restart(); this.setState({ cps: +e.target.value }); },
+      onRows: (e) => this.setState({ rows: +e.target.value, sel: 0 }),
+      onSel: (e) => this.setState({ sel: +e.target.value }),
+      replay: () => { this._restart(); this.setState({ emote: null }); },
+      togglePlay: () => this._setPlaying(!S.playing),
+      togglePins: () => this.setState({ pins: !S.pins }),
+      dlSheet: () => this._dl(K.sheet({ stock: S.stock }), 'BubbleKit_reference_' + S.stock + '.png'),
+      dlSlice: () => this._dl(K.render('slice', { stock: S.stock }), 'BubbleKit_9slice_18.png'),
+      dlPieces: () => this._dl(this._strip(), 'BubbleKit_pieces.png'),
+      dlContract: () => {
+        const j = Object.assign({}, K.contract(), { talkCues: T ? T.contract() : null });
+        const b = new Blob([JSON.stringify(j, null, 2)], { type: 'application/json' });
+        const a = document.createElement('a'); a.href = URL.createObjectURL(b);
+        a.download = 'dialogueBubble.contract.json'; a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+      },
+    };
+  }
+}
+
+</script>
+</body>
+</html>
