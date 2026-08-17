@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.HomeDef
   Id: home.ginny_lot_camper
   DisplayName: The camper on Ginny's lot
-  Flavor: 'A second-hand travel trailer, parked on the back of your aunt's land. Not much, but the door locks and the rain stays outside.'
+  Flavor: 'A second-hand travel trailer, parked on the back of your aunt''s land. Not
+    much, but the door locks and the rain stays outside.'
   Acquisition: 0
   Price: 900
   Variant: clipper

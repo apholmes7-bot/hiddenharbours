@@ -40,6 +40,10 @@ namespace HiddenHarbours.Tests.EditMode
         public void TearDown()
         {
             if (_go != null) Object.DestroyImmediate(_go);
+            if (_fixtureSprite != null) Object.DestroyImmediate(_fixtureSprite);
+            if (_fixtureTexture != null) Object.DestroyImmediate(_fixtureTexture);
+            _fixtureSprite = null;
+            _fixtureTexture = null;
         }
 
         // =================================================================================
@@ -429,14 +433,36 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsNull(StPetersCamperLot.TryLoadCamperSprite(null, 0));
         }
 
+        /// <summary>
+        /// 🔴 <b>The meadow must not grow through the newest building on the island.</b> This is the
+        /// exact shape of the post-office bug <see cref="StPetersGrass.BuildingSites"/>'s own note is
+        /// about: a site left off that list is silent from outside and swallows the building.
+        /// </summary>
+        [Test]
+        public void TheLot_HasItsOwnGrassClearing()
+        {
+            bool cleared = false;
+            foreach (var site in StPetersGrass.BuildingSites)
+                if (Vector2.Distance(site, StPetersCamperLot.LotPos) < 0.01f) { cleared = true; break; }
+
+            Assert.IsTrue(cleared,
+                $"the camper stands at {StPetersCamperLot.LotPos} and StPetersGrass.BuildingSites has no " +
+                "clearing for it, so the meadow grows through its ground");
+        }
+
         /// <summary>Places the lot on its own root and returns the camper's door. The fixture passes no
         /// terrain (the dry-ground guard has its own test above) and no occupant.</summary>
         private (GameObject root, HomeDoor door) PlaceLot()
         {
             var root = new GameObject("CamperLotFixture");
-            var sprite = Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, 1, 1), new Vector2(0.5f, 0.5f));
-            Assert.IsTrue(StPetersCamperLot.Place(root.transform, null, sprite), "the lot did not place");
+            _fixtureTexture = new Texture2D(2, 2);
+            _fixtureSprite = Sprite.Create(_fixtureTexture, new Rect(0, 0, 2, 2), new Vector2(0.5f, 0.5f), 32f);
+            Assert.IsTrue(StPetersCamperLot.Place(root.transform, null, _fixtureSprite),
+                          "the lot did not place");
             return (root, root.GetComponentInChildren<HomeDoor>());
         }
+
+        private Sprite _fixtureSprite;
+        private Texture2D _fixtureTexture;
     }
 }
