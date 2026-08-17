@@ -243,6 +243,88 @@ namespace HiddenHarbours.Tests.RigBaking
             }
         }
 
+        /// <summary>
+        /// ⭐ <b>THE TRIPWIRE: a registered vehicle's DEF has a mesh exactly when her bake is not
+        /// excused</b> — in both directions, so neither half can be forgotten.
+        ///
+        /// <para><b>Why a def can exist without a mesh at all.</b> The Otter's mechanics are built and
+        /// tested (skid steer, the drive⇄swim swap, her handling tunables) while her PICTURE is
+        /// blocked on something no vehicle-side change can fix: 17 materials against the facet
+        /// shader's 16 ramps. So she is authored, tested and <b>unplaceable</b> —
+        /// <c>VehicleDef.IsUsable</c> refuses a def with no mesh, which is the honest state rather
+        /// than a machine that would ship half-wired and silently.</para>
+        ///
+        /// <para>The pairing is what makes it a tripwire rather than a note. The day the material
+        /// merge lands and her <see cref="VehicleRigFleet.NotBaked"/> entry is deleted, THIS fails
+        /// until somebody bakes her and points the def at the result — and if a mesh is wired while
+        /// the blocker still stands, it fails the other way and the stale excuse gets deleted.</para>
+        /// </summary>
+        [Test]
+        public void EveryRegisteredVehiclesDef_HasAMeshExactlyWhenHerBakeIsNotExcused()
+        {
+            foreach (VehicleRigFleet.Vehicle v in VehicleRigFleet.Vehicles)
+            {
+                if (string.IsNullOrEmpty(v.VehicleDefPath)) continue;   // art-only, wears no def
+
+                var def = UnityEditor.AssetDatabase
+                                     .LoadAssetAtPath<HiddenHarbours.Vehicles.VehicleDef>(v.VehicleDefPath);
+                Assert.That(def, Is.Not.Null,
+                    $"VehicleRigFleet lists '{v.Key}' with def {v.VehicleDefPath}, which does not " +
+                    "load. A table that names a def nobody committed explains a vehicle nobody has.");
+
+                Assert.That(def.Id, Is.EqualTo(v.VehicleId),
+                    $"'{v.Key}': the committed def says '{def.Id}' and the table says " +
+                    $"'{v.VehicleId}'. Ids are stable and append-only — one of the two is a typo.");
+
+                bool excused = VehicleRigFleet.NotBaked.ContainsKey(v.Key);
+                Assert.That(def.Mesh == null, Is.EqualTo(excused),
+                    $"'{v.Key}': her def and her bake status disagree.\n" +
+                    "· mesh null + excused → the expected state for a vehicle whose art is blocked: " +
+                    "her mechanics ship, her picture does not, and IsUsable refuses to place her.\n" +
+                    "· mesh null + NOT excused → the blocker was lifted and nobody wired her mesh. " +
+                    "Bake her, point VehicleDef.Mesh at the result, and fill her flotation fields " +
+                    "from her sidecar.\n" +
+                    "· mesh set + still excused → the NotBaked entry is stale. Delete it.");
+
+                if (def.Mesh == null)
+                    Assert.That(def.IsUsable(), Is.False,
+                        $"'{v.Key}' has no mesh but reports usable. She would be placed invisible, " +
+                        "and the mesh is where her wheelbase, her track and her flotation live.");
+            }
+        }
+
+        /// <summary>Every committed vehicle def declares a kind this repo maps — the discriminator
+        /// that decides whether water is a wall or a road, pinned so a typo is a red test rather than
+        /// a machine held out of the water she was built for.</summary>
+        [Test]
+        public void EveryRegisteredVehiclesDef_DeclaresAKindThisRepoRecognises()
+        {
+            foreach (VehicleRigFleet.Vehicle v in VehicleRigFleet.Vehicles)
+            {
+                if (string.IsNullOrEmpty(v.VehicleDefPath)) continue;
+
+                var def = UnityEditor.AssetDatabase
+                                     .LoadAssetAtPath<HiddenHarbours.Vehicles.VehicleDef>(v.VehicleDefPath);
+                if (def == null) continue;   // the test above owns that failure
+
+                Assert.That(HiddenHarbours.Core.VehicleKinds.TryFromToken(def.KindToken,
+                                                                          out var fromDef),
+                    Is.True,
+                    $"'{v.Key}' declares kind '{def.KindToken}', which VehicleKinds does not map. " +
+                    "Known today: " +
+                    string.Join(", ", HiddenHarbours.Core.VehicleKinds.KnownTokens) + ".");
+
+                string shipped = TopLevelKind(File.ReadAllText(Path.Combine(RepoRoot, v.SidecarPath)));
+                Assert.That(HiddenHarbours.Core.VehicleKinds.TryFromToken(shipped, out var fromSidecar),
+                    Is.True, $"'{v.Key}' ships kind '{shipped}', which VehicleKinds does not map.");
+
+                Assert.That(fromDef, Is.EqualTo(fromSidecar),
+                    $"'{v.Key}': her def says {fromDef} and her sidecar says {fromSidecar}. The two " +
+                    "files may say different WORDS — the art side's is never hand-edited — but they " +
+                    "must mean the same machine, and VehicleKinds is what reconciles them.");
+            }
+        }
+
         /// <summary>A reason may not name a vehicle that is not registered — the same anti-folklore
         /// rule <c>HullMeshFleetTests.TheExclusionList_OnlyNamesRigsThatExist</c> applies to hulls.
         /// </summary>

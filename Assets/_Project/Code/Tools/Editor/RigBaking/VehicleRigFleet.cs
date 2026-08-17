@@ -282,6 +282,14 @@ namespace HiddenHarbours.Tools.RigBaking
                 "docs/art/rigs/otter-iso-kit/amphibIsoRig.js",
                 SidecarFolder + "/amphibIsoRig.otter8x8.gameplay.json",
                 "AmphibIso",
+                // Her DEF is committed and her mechanics are built (the skid-steer math, the
+                // drive⇄swim swap, her handling tunables) — what is missing is the picture. So the
+                // path is named here while the bake fields stay empty, and the def itself carries a
+                // null Mesh, which VehicleDef.IsUsable refuses: she is authored, tested, and
+                // unplaceable until the material merge lands. AmphibiousVehicleTests pins that
+                // pairing in BOTH directions, so the day NotBaked loses her entry it goes red rather
+                // than shipping a machine with no wheels.
+                vehicleDefPath: "Assets/_Project/Data/Vehicles/Otter8x8.asset",
                 vehicleId: "vehicle.otter_8x8",
                 label: "Otter 8x8"),
         };

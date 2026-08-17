@@ -40,6 +40,31 @@ namespace HiddenHarbours.Core
         /// <summary>Remove a previously installed vehicle renderer (and its wheels) from
         /// <paramref name="host"/>. Safe when none is present.</summary>
         void Remove(GameObject host);
+
+        /// <summary>
+        /// ⭐ <b>Cut her at her waterline — or stop.</b> Set the installed renderer's watertight clamp
+        /// (ADR 0035 / the amphibian's follow-up): the line the drawn sea may never climb past, and
+        /// how far abeam of her root the clamp must protect.
+        ///
+        /// <para><b>Why this is a live toggle and not part of <see cref="Install"/>.</b> An amphibian
+        /// is the first thing in the fleet whose relationship with the water CHANGES while she is
+        /// alive. Ashore she must carry the road vehicle's <c>0/0</c> — the documented "clamp off",
+        /// and the render #560 shipped — because a truck on gravel has no waterline to hold the sea
+        /// below; afloat she must carry her OWN published numbers, so the sea cuts her at her hull and
+        /// never over her transom. Baking either into the install would be permanently wrong for half
+        /// her life, and re-installing on every water's edge would rebuild her whole GPU state to
+        /// change two floats.</para>
+        ///
+        /// <para><b>Additive and non-breaking</b>, exactly as <c>IEnvironmentService.WaterLevelAt</c>
+        /// is: a <i>default interface method</i> whose body does nothing, so every existing
+        /// implementer and test double compiles unchanged and a service that cannot clamp simply
+        /// does not — which is the honest answer for one, and byte-identical to before this
+        /// existed.</para>
+        /// </summary>
+        /// <param name="host">The object <see cref="Install"/> was called on.</param>
+        /// <param name="deckHeightMeters">The clamp line above rig z = 0; 0 turns the clamp off.</param>
+        /// <param name="halfBeamMeters">The clamp's abeam reach.</param>
+        void SetWaterlineClamp(GameObject host, float deckHeightMeters, float halfBeamMeters) { }
     }
 
     /// <summary>

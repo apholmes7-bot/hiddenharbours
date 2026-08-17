@@ -29,6 +29,16 @@ namespace HiddenHarbours.Vehicles
 
         public string DisplayName = "Unnamed Vehicle";
 
+        [Tooltip("WHAT KIND of machine she is, as a token VehicleKinds translates: 'road_vehicle' " +
+                 "(roads and yards only — water is a wall) or 'amphibious_vehicle' (drives ashore " +
+                 "and swims). The art side's own shipped spellings are accepted too; " +
+                 "VehicleKinds.CanonicalToken is what an asset we WRITE should carry.\n\n" +
+                 "⚠️ A token, not the enum, and it reaches code through the one translation table " +
+                 "rather than through a literal at a call site — the rule VehicleKinds exists to " +
+                 "enforce. An unrecognised word makes the whole def unusable (see IsUsable) rather " +
+                 "than quietly becoming a road vehicle.")]
+        public string KindToken = "road_vehicle";
+
         [Header("Art")]
         [Tooltip("The baked mesh and the chassis geometry the controller solves against. Without one " +
                  "she cannot be drawn OR driven — the wheelbase and lock angles live there.")]
@@ -75,14 +85,134 @@ namespace HiddenHarbours.Vehicles
                  "0 disables the falloff and leaves the pure geometric model.")]
         [Min(0f)] public float SteerFalloffHalfSpeedMetersPerSecond = 9f;
 
+        [Header("Skid steer (a machine with no steering axle — SkidSteerMath)")]
+        [Tooltip("How fast she spins ON THE SPOT at full stick, degrees per second, on the ground. " +
+                 "The skid machine's whole steering feel in one number: a differential's yaw rate " +
+                 "does not depend on how fast she is going, so this is not a maximum she works up " +
+                 "to — it is what full stick means.\n\n" +
+                 "Ignored by a machine with a steering axle: hers comes off the rig's lock angles, " +
+                 "which are art and not the owner's to tune.")]
+        [Min(0f)] public float SpinRateDegreesPerSecond = 75f;
+
+        [Tooltip("The same, AFLOAT. Lower: she is pushing water with eight tires rather than " +
+                 "digging into gravel, and a machine that pivots as briskly in a cove as in a yard " +
+                 "reads as weightless.")]
+        [Min(0f)] public float AfloatSpinRateDegreesPerSecond = 30f;
+
+        [Header("Afloat (an amphibian's second set of pedals)")]
+        [Tooltip("Top speed swimming, metres per second. Her propulsion afloat is the TIRES — the " +
+                 "rig publishes no prop, no jet and no rudder — so this is a walking pace at best " +
+                 "and is meant to be: crossing water is a decision, not a shortcut (P5).")]
+        [Min(0.1f)] public float AfloatMaxSpeedMetersPerSecond = 1.6f;
+
+        [Tooltip("Top speed swimming astern, metres per second.")]
+        [Min(0.1f)] public float AfloatMaxReverseSpeedMetersPerSecond = 0.9f;
+
+        [Tooltip("How hard she gathers way afloat, metres per second squared. Small — eight tires " +
+                 "are a poor paddle.")]
+        [Min(0.1f)] public float AfloatAccelerationMetersPerSecondSquared = 0.8f;
+
+        [Tooltip("How fast the water takes her way off, metres per second squared, with the " +
+                 "throttle shut.\n\n" +
+                 "⚠️ It is ALSO what the brake does afloat, because there is no brake afloat: a " +
+                 "wheel brake in the water stops the tires and nothing else. The pedal is not " +
+                 "refused — refusing an input the player is holding reads as a bug — it simply has " +
+                 "the same authority the water already had.")]
+        [Min(0.1f)] public float AfloatDragDecelerationMetersPerSecondSquared = 1.2f;
+
+        [Tooltip("The dead band either side of her float draft, in metres, that keeps the water's " +
+                 "edge from being a flicker line. She floats past (draft + this) and takes the " +
+                 "beach again below (draft − this), so a wave, a tide inch or a wheel-radius " +
+                 "sample cannot swap her medium several times a second.\n\n" +
+                 "Feel, not art: the DRAFT is measured off the rig (VehicleMeshDef.FloatDraftMeters) " +
+                 "and is not the owner's; this band is.")]
+        [Min(0f)] public float SwimHysteresisMeters = 0.06f;
+
         [Header("Camera")]
         [Tooltip("How much world the camera shows while driving her, in metres of height. Wider than " +
                  "a boat's default: she covers ground faster than anything else the player controls.")]
         [Min(1f)] public float CameraWorldHeightMeters = 18f;
 
+        /// <summary>
+        /// What kind of machine she is — resolved through <see cref="VehicleKinds"/>, the ONE table
+        /// that turns a token into a kind, never a literal here.
+        ///
+        /// <para><b>An unresolvable token reads as <see cref="VehicleKind.RoadVehicle"/>, and the
+        /// direction of that fallback is the whole argument for it.</b> <see cref="VehicleKinds"/>
+        /// refuses an unknown SHIPPED token because either mistake is possible there — an amphibian
+        /// read as a truck, or a truck read as an amphibian. Here only one of the two can happen: a
+        /// def whose token did not resolve is already refused by <see cref="IsUsable"/> and never
+        /// reaches the road, and if she somehow did, an amphibian mis-read as a road vehicle is
+        /// simply held at the water's edge — an unbuilt feature. The opposite default would drive a
+        /// three-and-a-half-tonne truck into the harbour.</para>
+        /// </summary>
+        public VehicleKind Kind =>
+            VehicleKinds.TryFromToken(KindToken, out VehicleKind kind) ? kind : VehicleKind.RoadVehicle;
+
+        /// <summary>Her drive envelope on the ground — what the pedals mean on gravel.</summary>
+        public DriveEnvelope LandEnvelope => new(
+            MaxSpeedMetersPerSecond, MaxReverseSpeedMetersPerSecond,
+            AccelerationMetersPerSecondSquared, BrakingMetersPerSecondSquared,
+            CoastDecelerationMetersPerSecondSquared);
+
+        /// <summary>
+        /// Her drive envelope AFLOAT. The drag rate stands in for both the brake and the coast,
+        /// because in the water they are the same thing (see
+        /// <see cref="AfloatDragDecelerationMetersPerSecondSquared"/>).
+        /// </summary>
+        public DriveEnvelope AfloatEnvelope => new(
+            AfloatMaxSpeedMetersPerSecond, AfloatMaxReverseSpeedMetersPerSecond,
+            AfloatAccelerationMetersPerSecondSquared, AfloatDragDecelerationMetersPerSecondSquared,
+            AfloatDragDecelerationMetersPerSecondSquared);
+
         /// <summary>True when this def can actually be placed and driven. A vehicle without a usable
         /// mesh is refused rather than spawned invisible — and the mesh is also where her wheelbase
-        /// lives, so a missing one would leave the drive model dividing by a default.</summary>
-        public bool IsUsable() => Mesh != null && Mesh.IsUsable();
+        /// lives, so a missing one would leave the drive model dividing by a default. A def whose
+        /// <see cref="KindToken"/> nobody recognises is refused for the same reason: the kind decides
+        /// whether water is a wall or a road, and guessing it is how something drowns.</summary>
+        public bool IsUsable() =>
+            Mesh != null && Mesh.IsUsable() && VehicleKinds.IsVehicleToken(KindToken);
+    }
+
+    /// <summary>
+    /// <b>What the pedals mean in one medium</b> — the five numbers <c>VehicleController.StepSpeed</c>
+    /// integrates against, lifted out of <see cref="VehicleDef"/> so the SAME integrator serves gravel
+    /// and water.
+    ///
+    /// <para>A struct rather than a second copy of the integrator, deliberately. An amphibian's speed
+    /// really does obey one law with two sets of constants — she accelerates to a ceiling, she stops
+    /// under the brake, she coasts down with nothing pressed — and the alternative (a
+    /// <c>StepSpeedAfloat</c> beside <c>StepSpeed</c>) is two bodies of arithmetic that must be kept
+    /// in step by hand for ever. The land overload's signature is unchanged, so every existing caller
+    /// and every test written against it is untouched.</para>
+    /// </summary>
+    public readonly struct DriveEnvelope
+    {
+        /// <summary>Top speed ahead, m/s.</summary>
+        public readonly float MaxAheadMetersPerSecond;
+        /// <summary>Top speed astern, m/s — its own, lower ceiling.</summary>
+        public readonly float MaxAsternMetersPerSecond;
+        /// <summary>How hard she pulls away, m/s².</summary>
+        public readonly float AccelerationMetersPerSecondSquared;
+        /// <summary>How hard she stops under the brake, m/s².</summary>
+        public readonly float BrakingMetersPerSecondSquared;
+        /// <summary>How hard she slows with nothing pressed, m/s².</summary>
+        public readonly float CoastDecelerationMetersPerSecondSquared;
+
+        public DriveEnvelope(float maxAhead, float maxAstern, float acceleration, float braking,
+                             float coast)
+        {
+            MaxAheadMetersPerSecond = maxAhead;
+            MaxAsternMetersPerSecond = maxAstern;
+            AccelerationMetersPerSecondSquared = acceleration;
+            BrakingMetersPerSecondSquared = braking;
+            CoastDecelerationMetersPerSecondSquared = coast;
+        }
+
+        /// <summary>The ceiling in whichever direction <paramref name="speed"/> is going — what a
+        /// track's own top speed is, and what the skid model's give-and-take is measured
+        /// against.</summary>
+        public float CeilingFor(float speed)
+            => speed >= 0f ? MaxAheadMetersPerSecond : MaxAsternMetersPerSecond;
     }
 }
