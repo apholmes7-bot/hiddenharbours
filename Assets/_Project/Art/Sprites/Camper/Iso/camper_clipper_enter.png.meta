@@ -1,0 +1,1453 @@
+fileFormatVersion: 2
+guid: ffb7dc7b0aca16d47ae845b815e9bf32
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -5975949273751429129
+    second: camper_clipper_enter_0
+  - first:
+      213: -967155218035223188
+    second: camper_clipper_enter_1
+  - first:
+      213: 2688183603948749145
+    second: camper_clipper_enter_2
+  - first:
+      213: 6927105380567646690
+    second: camper_clipper_enter_3
+  - first:
+      213: 8695895594690459948
+    second: camper_clipper_enter_4
+  - first:
+      213: 7462654854773171265
+    second: camper_clipper_enter_5
+  - first:
+      213: 7985880985296482545
+    second: camper_clipper_enter_6
+  - first:
+      213: 3824564627710220122
+    second: camper_clipper_enter_7
+  - first:
+      213: 3338739012367894297
+    second: camper_clipper_enter_8
+  - first:
+      213: -2666179873617478472
+    second: camper_clipper_enter_9
+  - first:
+      213: -4364449154231196886
+    second: camper_clipper_enter_10
+  - first:
+      213: -5904238187584304321
+    second: camper_clipper_enter_11
+  - first:
+      213: 6785345074175483999
+    second: camper_clipper_enter_12
+  - first:
+      213: -7296596862365802574
+    second: camper_clipper_enter_13
+  - first:
+      213: 9014222250994750017
+    second: camper_clipper_enter_14
+  - first:
+      213: 7581734176817581153
+    second: camper_clipper_enter_15
+  - first:
+      213: -5112046411758530498
+    second: camper_clipper_enter_16
+  - first:
+      213: -6396222424736789697
+    second: camper_clipper_enter_17
+  - first:
+      213: -489296371189505600
+    second: camper_clipper_enter_18
+  - first:
+      213: -8743912383824717675
+    second: camper_clipper_enter_19
+  - first:
+      213: 2958059779294082126
+    second: camper_clipper_enter_20
+  - first:
+      213: -1548158434708634716
+    second: camper_clipper_enter_21
+  - first:
+      213: 717737130243310032
+    second: camper_clipper_enter_22
+  - first:
+      213: -5392550702558204958
+    second: camper_clipper_enter_23
+  - first:
+      213: -6788047070476010474
+    second: camper_clipper_enter_24
+  - first:
+      213: 2302899498581136261
+    second: camper_clipper_enter_25
+  - first:
+      213: 7669621190608378363
+    second: camper_clipper_enter_26
+  - first:
+      213: 4641094222162833308
+    second: camper_clipper_enter_27
+  - first:
+      213: -7227244693141382964
+    second: camper_clipper_enter_28
+  - first:
+      213: -2966033247084851300
+    second: camper_clipper_enter_29
+  - first:
+      213: 8988275236926601424
+    second: camper_clipper_enter_30
+  - first:
+      213: 1545589538626965551
+    second: camper_clipper_enter_31
+  - first:
+      213: -4125259570773434106
+    second: camper_clipper_enter_32
+  - first:
+      213: 3490527174458198283
+    second: camper_clipper_enter_33
+  - first:
+      213: 4150242468247671380
+    second: camper_clipper_enter_34
+  - first:
+      213: -1497037763318404611
+    second: camper_clipper_enter_35
+  - first:
+      213: -5059358514401631841
+    second: camper_clipper_enter_36
+  - first:
+      213: 2524600566862938043
+    second: camper_clipper_enter_37
+  - first:
+      213: -3739201660014320765
+    second: camper_clipper_enter_38
+  - first:
+      213: 6571518124691825609
+    second: camper_clipper_enter_39
+  - first:
+      213: -6448034043521265115
+    second: camper_clipper_enter_40
+  - first:
+      213: 6383468882141727437
+    second: camper_clipper_enter_41
+  - first:
+      213: 3715217808310302141
+    second: camper_clipper_enter_42
+  - first:
+      213: 1017562693769952594
+    second: camper_clipper_enter_43
+  - first:
+      213: -8988673049618192311
+    second: camper_clipper_enter_44
+  - first:
+      213: 9169711275170796084
+    second: camper_clipper_enter_45
+  - first:
+      213: -7448291818939895445
+    second: camper_clipper_enter_46
+  - first:
+      213: -796387969050915399
+    second: camper_clipper_enter_47
+  - first:
+      213: 3131750507213481044
+    second: camper_clipper_enter_48
+  - first:
+      213: 3425104782166853958
+    second: camper_clipper_enter_49
+  - first:
+      213: -1651944296245382623
+    second: camper_clipper_enter_50
+  - first:
+      213: -8560473387650353650
+    second: camper_clipper_enter_51
+  - first:
+      213: -7935772112956671191
+    second: camper_clipper_enter_52
+  - first:
+      213: 125269535865714843
+    second: camper_clipper_enter_53
+  - first:
+      213: -3934907064523075401
+    second: camper_clipper_enter_54
+  - first:
+      213: 1949856003088220813
+    second: camper_clipper_enter_55
+  - first:
+      213: -2833266185330884551
+    second: camper_clipper_enter_56
+  - first:
+      213: -1966637964641751754
+    second: camper_clipper_enter_57
+  - first:
+      213: 7673927563271283164
+    second: camper_clipper_enter_58
+  - first:
+      213: 2485543637897181263
+    second: camper_clipper_enter_59
+  - first:
+      213: 117405756210566742
+    second: camper_clipper_enter_60
+  - first:
+      213: -3264060659346187595
+    second: camper_clipper_enter_61
+  - first:
+      213: -1701678883694748971
+    second: camper_clipper_enter_62
+  - first:
+      213: 4122978634347692101
+    second: camper_clipper_enter_63
+  - first:
+      213: 2029178740747132185
+    second: camper_clipper_enter_64
+  - first:
+      213: 5561704158249906281
+    second: camper_clipper_enter_65
+  - first:
+      213: -8854951043860094709
+    second: camper_clipper_enter_66
+  - first:
+      213: -7239188816396228968
+    second: camper_clipper_enter_67
+  - first:
+      213: 5059367650773160118
+    second: camper_clipper_enter_68
+  - first:
+      213: -2731799698007006703
+    second: camper_clipper_enter_69
+  - first:
+      213: -5203086215209057326
+    second: camper_clipper_enter_70
+  - first:
+      213: -4822347562305267561
+    second: camper_clipper_enter_71
+  - first:
+      213: -8352988965244103082
+    second: camper_clipper_enter_72
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: camper_clipper_enter_d0_s0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1617
+        width: 322
+        height: 231
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41125542}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f82f1b10f1a339240a0ce12ae8643914
+      internalID: -1734063726
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_clipper_enter_d0_s1
+      rect:
+        serializedVersion: 2
+        x: 322
+        y: 1617
+        width: 322
+        height: 231
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41125542}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c62b55990b96fd049b3b42de50f9b2bd
+      internalID: -483712732
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_clipper_enter_d0_s2
+      rect:
+        serializedVersion: 2
+        x: 644
+        y: 1617
+        width: 322
+        height: 231
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41125542}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 19d84a4f24d3b5c43a3c02e8986aa520
+      internalID: 421947897
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_clipper_enter_d0_s3
+      rect:
+        serializedVersion: 2
+        x: 966
+        y: 1617
+        width: 322
+        height: 231
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41125542}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: abda994a236eca640930ffde80b089e8
+      internalID: -1675515752
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_clipper_enter_d0_s4
+      rect:
+        serializedVersion: 2
+        x: 1288
+        y: 1617
+        width: 322
+        height: 231
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41125542}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cb75057e9638a994995016a2b20fffe1
+      internalID: 1338368627
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_clipper_enter_d0_s5
+      rect:
+        serializedVersion: 2
+        x: 1610
+        y: 1617
+        width: 322
+        height: 231
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41125542}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 71a0cb2c8b6f22f4d9b960a2472c9468
+      internalID: -951373930
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_clipper_enter_d1_s0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1386
+        width: 322
+        height: 231
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41125542}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cbf6dcbf4b3bd1c4d81f42a952dafde6
+      internalID: 1260547316
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_clipper_enter_d1_s1
+      rect:
+        serializedVersion: 2
+        x: 322
+        y: 1386
+        width: 322
+        height: 231
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41125542}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 72ae63447debb0b4f8e7e9d8a8fa6638
+      internalID: 590167197
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_clipper_enter_d1_s2
+      rect:
+        serializedVersion: 2
+        x: 644
+        y: 1386
+        width: 322
+        height: 231
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41125542}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aef95bbb9cccced46add4827da68a4c1
+      internalID: 244842840
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_clipper_enter_d1_s3
+      rect:
+        serializedVersion: 2
+        x: 966
+        y: 1386
+        width: 322
+        height: 231
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41125542}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 68d1518b476870346bef368c5d45a90e
+      internalID: 1559143201
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_clipper_enter_d1_s4
+      rect:
+        serializedVersion: 2
+        x: 1288
+        y: 1386
+        width: 322
+        height: 231
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41125542}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 90fad5b19209c4c4b92dc7d8a5bd113c
+      internalID: -1215492719
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_clipper_enter_d1_s5
+      rect:
+        serializedVersion: 2
+        x: 1610
+        y: 1386
+        width: 322
+        height: 231
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41125542}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 708cb0e46aef63b4e984c969478bc71b
+      internalID: 428902255
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_clipper_enter_d2_s0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1155
+        width: 322
+        height: 231
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41125542}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6c3c60e215a94374e9f1ea0618183c34
+      internalID: 1325062248
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_clipper_enter_d2_s1
+      rect:
+        serializedVersion: 2
+        x: 322
+        y: 1155
+        width: 322
+        height: 231
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41125542}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2f3eae39a4030184aa5f20f654917116
+      internalID: -103172121
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_clipper_enter_d2_s2
+      rect:
+        serializedVersion: 2
+        x: 644
+        y: 1155
+        width: 322
+        height: 231
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41125542}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ebf900ab155b5044596a45627b0ca9e8
+      internalID: 154324657
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_clipper_enter_d2_s3
+      rect:
+        serializedVersion: 2
+        x: 966
+        y: 1155
+        width: 322
+        height: 231
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41125542}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 320339971315afe4cb64d5b5ebbfc8ef
+      internalID: -1500235036
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_clipper_enter_d2_s4
+      rect:
+        serializedVersion: 2
+        x: 1288
+        y: 1155
+        width: 322
+        height: 231
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41125542}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c67f4e72a7160424aa29c69d5bfb06a8
+      internalID: -1915636703
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_clipper_enter_d2_s5
+      rect:
+        serializedVersion: 2
+        x: 1610
+        y: 1155
+        width: 322
+        height: 231
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41125542}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4262a9c4fb0342d43887fc2e0194c259
+      internalID: -902638484
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_clipper_enter_d3_s0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 924
+        width: 322
+        height: 231
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41125542}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 855c73ad798232f468417ba8e3efd1e3
+      internalID: 2019374687
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_clipper_enter_d3_s1
+      rect:
+        serializedVersion: 2
+        x: 322
+        y: 924
+        width: 322
+        height: 231
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41125542}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e4e3a20150b18584baaf2697a738c5f9
+      internalID: -1093458890
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_clipper_enter_d3_s2
+      rect:
+        serializedVersion: 2
+        x: 644
+        y: 924
+        width: 322
+        height: 231
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41125542}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 832186ba2d58ec249bb2a58803351a14
+      internalID: -969537201
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_clipper_enter_d3_s3
+      rect:
+        serializedVersion: 2
+        x: 966
+        y: 924
+        width: 322
+        height: 231
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41125542}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f6fd1718384789d4a9b27e4b014b98a8
+      internalID: 1640425570
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_clipper_enter_d3_s4
+      rect:
+        serializedVersion: 2
+        x: 1288
+        y: 924
+        width: 322
+        height: 231
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41125542}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a04cf1b05732e3048826384c576f6747
+      internalID: 1492341330
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_clipper_enter_d3_s5
+      rect:
+        serializedVersion: 2
+        x: 1610
+        y: 924
+        width: 322
+        height: 231
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41125542}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 36e06403084e7864a89163b80d86683f
+      internalID: -874089139
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_clipper_enter_d4_s0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 693
+        width: 322
+        height: 231
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41125542}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b2b16e8c112fea540bf28f7bca11db1b
+      internalID: -1997800014
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_clipper_enter_d4_s1
+      rect:
+        serializedVersion: 2
+        x: 322
+        y: 693
+        width: 322
+        height: 231
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41125542}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dd1025e55ce0ef44490a0022114b6894
+      internalID: -298182679
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_clipper_enter_d4_s2
+      rect:
+        serializedVersion: 2
+        x: 644
+        y: 693
+        width: 322
+        height: 231
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41125542}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 11c2312ee011cc846803974f6dc6e804
+      internalID: -100198869
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_clipper_enter_d4_s3
+      rect:
+        serializedVersion: 2
+        x: 966
+        y: 693
+        width: 322
+        height: 231
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41125542}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f4aab2aaf611f834f8146e9c8e0feef1
+      internalID: 615771583
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_clipper_enter_d4_s4
+      rect:
+        serializedVersion: 2
+        x: 1288
+        y: 693
+        width: 322
+        height: 231
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41125542}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 572e08bf682cd4943a7e6d9eb8edc784
+      internalID: -1864337149
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_clipper_enter_d4_s5
+      rect:
+        serializedVersion: 2
+        x: 1610
+        y: 693
+        width: 322
+        height: 231
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41125542}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 213b2dca1227f4a43bf0a0f6475e3c04
+      internalID: 122639416
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_clipper_enter_d5_s0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 462
+        width: 322
+        height: 231
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41125542}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 045748bf470149540aa5cc36743f7216
+      internalID: 1158184819
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_clipper_enter_d5_s1
+      rect:
+        serializedVersion: 2
+        x: 322
+        y: 462
+        width: 322
+        height: 231
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41125542}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: af90e4b6409b29240bb8adc3f624ff99
+      internalID: 1088985689
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_clipper_enter_d5_s2
+      rect:
+        serializedVersion: 2
+        x: 644
+        y: 462
+        width: 322
+        height: 231
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41125542}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 509adfce28ac6c847be0ee0a42a045c6
+      internalID: 1010024756
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_clipper_enter_d5_s3
+      rect:
+        serializedVersion: 2
+        x: 966
+        y: 462
+        width: 322
+        height: 231
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41125542}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8d0db5bd0a6695541bd332b8404424d9
+      internalID: -1849117519
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_clipper_enter_d5_s4
+      rect:
+        serializedVersion: 2
+        x: 1288
+        y: 462
+        width: 322
+        height: 231
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41125542}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 68e2ddb784ad25a48b1ad0cd2742e590
+      internalID: -855074420
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_clipper_enter_d5_s5
+      rect:
+        serializedVersion: 2
+        x: 1610
+        y: 462
+        width: 322
+        height: 231
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41125542}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d3c8aeb59ed14304cb0a9f703c720fe8
+      internalID: -436724385
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_clipper_enter_d6_s0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 231
+        width: 322
+        height: 231
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41125542}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e84c687ba3d790a48b0f1282565b4c4e
+      internalID: -519842895
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_clipper_enter_d6_s1
+      rect:
+        serializedVersion: 2
+        x: 322
+        y: 231
+        width: 322
+        height: 231
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41125542}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 561a0e2874f46ef47877c7144408dbd4
+      internalID: -324124463
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_clipper_enter_d6_s2
+      rect:
+        serializedVersion: 2
+        x: 644
+        y: 231
+        width: 322
+        height: 231
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41125542}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 296ffa47e94bd1a42a36a069e9255e34
+      internalID: -1072152944
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_clipper_enter_d6_s3
+      rect:
+        serializedVersion: 2
+        x: 966
+        y: 231
+        width: 322
+        height: 231
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41125542}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c22be1bf7a9022d4ca48beef768b5258
+      internalID: -1841396816
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_clipper_enter_d6_s4
+      rect:
+        serializedVersion: 2
+        x: 1288
+        y: 231
+        width: 322
+        height: 231
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41125542}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 00169a4c6b73eb949b653d797dd39d30
+      internalID: 539213452
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_clipper_enter_d6_s5
+      rect:
+        serializedVersion: 2
+        x: 1610
+        y: 231
+        width: 322
+        height: 231
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41125542}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: af7fd8826bf27ab4081a8e09e3fe8fea
+      internalID: 1782640154
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_clipper_enter_d7_s0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 322
+        height: 231
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41125542}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3630829f4ad20b74dbaaba2ee051bc0d
+      internalID: 1383498172
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_clipper_enter_d7_s1
+      rect:
+        serializedVersion: 2
+        x: 322
+        y: 0
+        width: 322
+        height: 231
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41125542}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7fde06c77594dfc4dbf01f36f8ced5de
+      internalID: 810529490
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_clipper_enter_d7_s2
+      rect:
+        serializedVersion: 2
+        x: 644
+        y: 0
+        width: 322
+        height: 231
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41125542}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 94a8ebf02d3ccb14f8caee9c372ba669
+      internalID: -1191543977
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_clipper_enter_d7_s3
+      rect:
+        serializedVersion: 2
+        x: 966
+        y: 0
+        width: 322
+        height: 231
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41125542}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 088a8ae5b96b2004fa3b6d79f3979db2
+      internalID: 656084623
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_clipper_enter_d7_s4
+      rect:
+        serializedVersion: 2
+        x: 1288
+        y: 0
+        width: 322
+        height: 231
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41125542}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dbcc9daffe2092e43989a28866cfe35e
+      internalID: 92637167
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_clipper_enter_d7_s5
+      rect:
+        serializedVersion: 2
+        x: 1610
+        y: 0
+        width: 322
+        height: 231
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41125542}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0d2a21253c25b6b4baa4e5adc966f926
+      internalID: -245927440
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 6a4c2f4bd499b624a828bf71bd484ba9
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      camper_clipper_enter_d0_s0: -1734063726
+      camper_clipper_enter_d0_s1: -483712732
+      camper_clipper_enter_d0_s2: 421947897
+      camper_clipper_enter_d0_s3: -1675515752
+      camper_clipper_enter_d0_s4: 1338368627
+      camper_clipper_enter_d0_s5: -951373930
+      camper_clipper_enter_d1_s0: 1260547316
+      camper_clipper_enter_d1_s1: 590167197
+      camper_clipper_enter_d1_s2: 244842840
+      camper_clipper_enter_d1_s3: 1559143201
+      camper_clipper_enter_d1_s4: -1215492719
+      camper_clipper_enter_d1_s5: 428902255
+      camper_clipper_enter_d2_s0: 1325062248
+      camper_clipper_enter_d2_s1: -103172121
+      camper_clipper_enter_d2_s2: 154324657
+      camper_clipper_enter_d2_s3: -1500235036
+      camper_clipper_enter_d2_s4: -1915636703
+      camper_clipper_enter_d2_s5: -902638484
+      camper_clipper_enter_d3_s0: 2019374687
+      camper_clipper_enter_d3_s1: -1093458890
+      camper_clipper_enter_d3_s2: -969537201
+      camper_clipper_enter_d3_s3: 1640425570
+      camper_clipper_enter_d3_s4: 1492341330
+      camper_clipper_enter_d3_s5: -874089139
+      camper_clipper_enter_d4_s0: -1997800014
+      camper_clipper_enter_d4_s1: -298182679
+      camper_clipper_enter_d4_s2: -100198869
+      camper_clipper_enter_d4_s3: 615771583
+      camper_clipper_enter_d4_s4: -1864337149
+      camper_clipper_enter_d4_s5: 122639416
+      camper_clipper_enter_d5_s0: 1158184819
+      camper_clipper_enter_d5_s1: 1088985689
+      camper_clipper_enter_d5_s2: 1010024756
+      camper_clipper_enter_d5_s3: -1849117519
+      camper_clipper_enter_d5_s4: -855074420
+      camper_clipper_enter_d5_s5: -436724385
+      camper_clipper_enter_d6_s0: -519842895
+      camper_clipper_enter_d6_s1: -324124463
+      camper_clipper_enter_d6_s2: -1072152944
+      camper_clipper_enter_d6_s3: -1841396816
+      camper_clipper_enter_d6_s4: 539213452
+      camper_clipper_enter_d6_s5: 1782640154
+      camper_clipper_enter_d7_s0: 1383498172
+      camper_clipper_enter_d7_s1: 810529490
+      camper_clipper_enter_d7_s2: -1191543977
+      camper_clipper_enter_d7_s3: 656084623
+      camper_clipper_enter_d7_s4: 92637167
+      camper_clipper_enter_d7_s5: -245927440
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

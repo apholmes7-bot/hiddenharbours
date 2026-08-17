@@ -1,0 +1,365 @@
+fileFormatVersion: 2
+guid: 387ead539721b2d46802a06097049182
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 1192276295522172606
+    second: camper_bantam_rest_0
+  - first:
+      213: -6114780841038032939
+    second: camper_bantam_rest_1
+  - first:
+      213: 5338041630285708398
+    second: camper_bantam_rest_2
+  - first:
+      213: -6335105286052632121
+    second: camper_bantam_rest_3
+  - first:
+      213: -7530338503920289125
+    second: camper_bantam_rest_4
+  - first:
+      213: 5432492091338996940
+    second: camper_bantam_rest_5
+  - first:
+      213: 2073000842648926756
+    second: camper_bantam_rest_6
+  - first:
+      213: -6803057231793687757
+    second: camper_bantam_rest_7
+  - first:
+      213: 6903444120099291827
+    second: camper_bantam_rest_8
+  - first:
+      213: -8117375416809045412
+    second: camper_bantam_rest_9
+  - first:
+      213: -4304268590639265425
+    second: camper_bantam_rest_10
+  - first:
+      213: 1750986233843303994
+    second: camper_bantam_rest_11
+  - first:
+      213: 423461399597497259
+    second: camper_bantam_rest_12
+  - first:
+      213: -3564704477059469731
+    second: camper_bantam_rest_13
+  - first:
+      213: 4684850927397953443
+    second: camper_bantam_rest_14
+  - first:
+      213: -6364872650609344127
+    second: camper_bantam_rest_15
+  - first:
+      213: 8962959887875870675
+    second: camper_bantam_rest_16
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: camper_bantam_rest_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1113
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e6f6871ce6ed92f439ba206473b76fc3
+      internalID: -1583757768
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_rest_d1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 954
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e75dd189284bd544c9e03adb64e89466
+      internalID: 1067401518
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_rest_d2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 795
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 74ddf3ded60f64c4db61824a35b012d3
+      internalID: 659470772
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_rest_d3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 636
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ff4889421f80bde439a2fc1f45884ef5
+      internalID: -247153759
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_rest_d4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 477
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aedf615315346d5458a738d6994857db
+      internalID: 263731827
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_rest_d5
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 318
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1266209f76e0d9c459723856dfb5944f
+      internalID: 2013514518
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_rest_d6
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 159
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ce365356d110b4b41a48317ae18eec7b
+      internalID: 2105590466
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: camper_bantam_rest_d7
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 220
+        height: 159
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3899371}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 83e388ff8e81d354883f7f7a4417b698
+      internalID: -1322796836
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 34df1f530ff8f7149a3afb9d7432e3bd
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      camper_bantam_rest_d0: -1583757768
+      camper_bantam_rest_d1: 1067401518
+      camper_bantam_rest_d2: 659470772
+      camper_bantam_rest_d3: -247153759
+      camper_bantam_rest_d4: 263731827
+      camper_bantam_rest_d5: 2013514518
+      camper_bantam_rest_d6: 2105590466
+      camper_bantam_rest_d7: -1322796836
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
