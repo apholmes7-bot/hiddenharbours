@@ -1,6 +1,8 @@
 #if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
+using HiddenHarbours.Core;
+using UnityEngine;
 
 namespace HiddenHarbours.Tools.RigBaking
 {
@@ -50,6 +52,51 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <summary>The top-level <c>kind</c> that marks a sidecar as this table's business.</summary>
         public const string RoadVehicleKind = "road_vehicle";
 
+        /// <summary>
+        /// <b>One pose axis that lifts a fitting out of the body mesh.</b>
+        ///
+        /// <para>A baked mesh is static geometry at ONE pose, so every part that articulates has to
+        /// become its own mesh — otherwise the body draws a second, frozen copy of it. This says
+        /// WHICH part by naming a probe pose: the faces that move when this axis alone moves are
+        /// that fitting's. Measured, never transcribed.</para>
+        ///
+        /// <para>⚠️ <b>The order of these in <see cref="Vehicle.Axes"/> is load-bearing.</b> Each
+        /// axis claims only what no earlier one took, so the SPECIFIC axes come first: a steer axis
+        /// moves the wheel AND its knuckle, so the per-wheel roll axes must take the tyres before
+        /// the steer axes are asked what is left over.</para>
+        /// </summary>
+        public readonly struct Axis
+        {
+            /// <summary>Instance name — "WheelFL". Names the attachment slot and the asset.</summary>
+            public readonly string Slot;
+
+            /// <summary>The probe pose, as a JS object literal — <c>{wFL:0.25}</c>.
+            /// ⚠️ A roll axis is CYCLIC with period 1: <c>{wFL:1}</c> ties with rest EXACTLY and
+            /// reads as a dead axis. Probe at a quarter.</summary>
+            public readonly string Probe;
+
+            public readonly VehicleFitmentMotion Motion;
+            public readonly VehicleFitmentSide Side;
+
+            /// <summary>−1 / +1 keeps only the faces whose centroid is on that side of the
+            /// centreline; 0 keeps everything the axis moves. A steer axis moves both front corners
+            /// at once and needs the filter; a per-wheel roll axis does not.</summary>
+            public readonly int SideSign;
+
+            /// <summary>The point this fitting turns about, in rig metres. For a front wheel this is
+            /// the hub centre, which is ALSO a point on its own vertical steer axis (the rig models
+            /// no kingpin offset, caster or scrub radius) — so ONE pivot serves both rotations, and
+            /// the fitting needs no articulation machinery beyond a single local rotation.</summary>
+            public readonly Vector3 Pivot;
+
+            public Axis(string slot, string probe, VehicleFitmentMotion motion,
+                        VehicleFitmentSide side, int sideSign, Vector3 pivot)
+            {
+                Slot = slot; Probe = probe; Motion = motion; Side = side;
+                SideSign = sideSign; Pivot = pivot;
+            }
+        }
+
         /// <summary>One road vehicle: where its rig and sidecar are, and what installs it.</summary>
         public readonly struct Vehicle
         {
@@ -63,11 +110,125 @@ namespace HiddenHarbours.Tools.RigBaking
             /// <summary>The global the rig's IIFE installs.</summary>
             public readonly string GlobalName;
 
-            public Vehicle(string key, string scriptPath, string sidecarPath, string globalName)
+            /// <summary>Where the baked <see cref="VehicleMeshDef"/> is written.</summary>
+            public readonly string MeshAssetPath;
+            /// <summary>The baked def's stable id (<c>vehiclemesh.snake_case</c>), append-only.</summary>
+            public readonly string MeshId;
+
+            /// <summary>
+            /// The rig's private face builder — <c>build</c>. Named separately from
+            /// <see cref="Extraction"/> because the articulation probes CALL it directly at several
+            /// poses, while the extraction's field is a whole call expression.
+            /// </summary>
+            public readonly string FaceBuilderName;
+
+            /// <summary>
+            /// How to reach the rig's face list. A vehicle rig is a GENERATOR — it exports no static
+            /// <c>F</c> — so the private builder is widened onto the global and called at the rest
+            /// pose. ⚠️ The inner <c>resolve</c> must be QUALIFIED: the shim widens symbols onto the
+            /// global, it does not put them in scope, and an unqualified call dies with
+            /// <c>ReferenceError: resolve is not defined</c>.
+            /// </summary>
+            public readonly RigHullExtraction Extraction;
+
+            /// <summary>The pose axes that lift her fittings out — see <see cref="Axis"/> for why
+            /// their order matters.</summary>
+            public readonly IReadOnlyList<Axis> Axes;
+
+            /// <summary>
+            /// ⭐ <b>Probe poses under which the BODY must not move at all</b> — the independent
+            /// check that every articulating face was claimed by some fitting.
+            ///
+            /// <para>The partition check ("body + fittings = the rig's face count") cannot see the
+            /// failure this catches: a vehicle whose <see cref="Axes"/> came out empty partitions
+            /// perfectly, with the body simply taking everything, and bakes a truck whose wheels are
+            /// welded on. These are the MASTER axes — <c>{roll:0.25}</c>, <c>{steer:1}</c> — so they
+            /// cover every wheel at once and do not need to be kept in step with the per-wheel list.</para>
+            /// </summary>
+            public readonly IReadOnlyList<string> BodyMustNotMove;
+
+            /// <summary>Where the <c>VehicleDef</c> the world places lives. Empty = the bake produces
+            /// a mesh and nothing wears it (a vehicle that is art-only, so far).</summary>
+            public readonly string VehicleDefPath;
+
+            /// <summary>Her stable gameplay id — <c>vehicle.snake_case</c>, append-only once
+            /// shipped. Owner-ruled per vehicle; the Dually is <c>vehicle.dually_3500</c>.</summary>
+            public readonly string VehicleId;
+
+            /// <summary>Human-readable, for the created asset and for log lines. Never parsed.</summary>
+            public readonly string Label;
+
+            public Vehicle(string key, string scriptPath, string sidecarPath, string globalName,
+                           string meshAssetPath = null, string meshId = null,
+                           string faceBuilderName = null, RigHullExtraction extraction = null,
+                           IReadOnlyList<Axis> axes = null,
+                           IReadOnlyList<string> bodyMustNotMove = null,
+                           string vehicleDefPath = null, string vehicleId = null, string label = null)
             {
                 Key = key; ScriptPath = scriptPath; SidecarPath = sidecarPath; GlobalName = globalName;
+                MeshAssetPath = meshAssetPath; MeshId = meshId;
+                FaceBuilderName = faceBuilderName;
+                Extraction = extraction;
+                Axes = axes ?? Array.Empty<Axis>();
+                BodyMustNotMove = bodyMustNotMove ?? Array.Empty<string>();
+                VehicleDefPath = vehicleDefPath; VehicleId = vehicleId; Label = label;
             }
         }
+
+        /// <summary>The one vehicle by key. Throws rather than returning a default — a bake asked for
+        /// a vehicle that is not in the table is a typo, not an empty result.</summary>
+        public static Vehicle Get(string key)
+        {
+            foreach (Vehicle v in Vehicles)
+                if (string.Equals(v.Key, key, StringComparison.Ordinal)) return v;
+            throw new KeyNotFoundException(
+                $"No road vehicle '{key}' in VehicleRigFleet.Vehicles. Known: " +
+                string.Join(", ", System.Linq.Enumerable.Select(Vehicles, x => x.Key)));
+        }
+
+        // ⚠️ DECLARED BEFORE `Vehicles`, AND THAT IS NOT STYLE. C# runs static field
+        // initialisers in DECLARATION ORDER, so a `Vehicles` declared first would capture
+        // this array while it was still null — and the constructor's `axes ?? Empty` would
+        // turn that into a vehicle with NO articulation, which bakes a truck whose wheels are
+        // frozen into her body. Measured 2026-08-17: it did exactly that, and the partition
+        // assert PASSED (body 1153 = 1153) because the body had simply taken everything.
+        // The guard in VehicleMeshAssetBaker.Partition now catches it on its own; this order
+        // stops it happening.
+        /// <summary>
+        /// ⭐ <b>The Dually's articulation, in the order the split must ask about it.</b>
+        ///
+        /// <para><b>The four roll axes first.</b> Each takes one tyre-and-hub group; the two rear
+        /// entries each drive a DUAL PAIR, which is why there are four axes for six wheels. Measured
+        /// 2026-08-17: 103 faces apiece, disjoint, and their union is exactly what the master
+        /// <c>roll</c> moves (412).</para>
+        ///
+        /// <para><b>Then the two steer axes.</b> <c>steer</c> moves 286 faces — both front corners —
+        /// so by the time it is asked, the 206 tyre faces are already claimed and each side's entry
+        /// finds only its 40-face knuckle: the fender lip, hub cover and mudflap that swing with the
+        /// corner but do not turn with the tyre. Listing steer FIRST would swallow both front wheels
+        /// and leave the roll axes empty (the baker fails loudly on that rather than shipping it).</para>
+        ///
+        /// <para><b>Every pivot is a hub centre</b>, read off the rig's own <c>G</c> rather than
+        /// typed here — see the note on <see cref="Axis.Pivot"/> for why one point serves both the
+        /// steer and the roll. The rear pair's pivot x is the mean of the inner and outer wheels';
+        /// for a rotation about the axle its x is arbitrary, and the mean is the honest label.</para>
+        /// </summary>
+        static readonly Axis[] DuallyAxes =
+        {
+            new Axis("WheelFL", "{wFL:0.25}", VehicleFitmentMotion.SteerAndRoll,
+                     VehicleFitmentSide.Left, 0, new Vector3(-0.90f, 2.18f, 0.42f)),
+            new Axis("WheelFR", "{wFR:0.25}", VehicleFitmentMotion.SteerAndRoll,
+                     VehicleFitmentSide.Right, 0, new Vector3(0.90f, 2.18f, 0.42f)),
+            new Axis("WheelRL", "{wRL:0.25}", VehicleFitmentMotion.RollOnly,
+                     VehicleFitmentSide.Left, 0, new Vector3(-0.885f, -2.12f, 0.42f)),
+            new Axis("WheelRR", "{wRR:0.25}", VehicleFitmentMotion.RollOnly,
+                     VehicleFitmentSide.Right, 0, new Vector3(0.885f, -2.12f, 0.42f)),
+
+            new Axis("KnuckleFL", "{steer:1}", VehicleFitmentMotion.SteerOnly,
+                     VehicleFitmentSide.Left, -1, new Vector3(-0.90f, 2.18f, 0.42f)),
+            new Axis("KnuckleFR", "{steer:1}", VehicleFitmentMotion.SteerOnly,
+                     VehicleFitmentSide.Right, +1, new Vector3(0.90f, 2.18f, 0.42f)),
+        };
 
         /// <summary>
         /// Every road vehicle whose rig and sidecar are committed. Being here means the drop has
@@ -80,64 +241,51 @@ namespace HiddenHarbours.Tools.RigBaking
                 "dually3500",
                 "docs/art/rigs/dually-iso-kit/vehicleIsoRig.js",
                 SidecarFolder + "/vehicleIsoRig.dually3500.gameplay.json",
-                "VehicleIso"),
+                "VehicleIso",
+                meshAssetPath: "Assets/_Project/Data/Vehicles/Meshes/Dually3500VehicleMesh.asset",
+                meshId: "vehiclemesh.dually_3500",
+                faceBuilderName: "build",
+                extraction: new RigHullExtraction
+                {
+                    // ⚠️ `VehicleIso.resolve`, QUALIFIED. WidenExportedLiteral puts `build` on the
+                    // GLOBAL; it does not put the closure's other privates in scope, so an
+                    // unqualified `resolve({})` dies with "resolve is not defined" — which reads
+                    // like the rig lacking the symbol rather than the shim missing.
+                    FaceExpression = "build(VehicleIso.resolve({}))",
+                    ExtraSymbols = new[] { "build" },
+                },
+                axes: DuallyAxes,
+                bodyMustNotMove: new[] { "{roll:0.25}", "{steer:1}" },
+                vehicleDefPath: "Assets/_Project/Data/Vehicles/Dually3500.asset",
+                vehicleId: "vehicle.dually_3500",
+                label: "Dually 3500"),
         };
 
+
         /// <summary>
-        /// Vehicles that currently have a baked mesh. <b>Empty, on purpose</b> — see
-        /// <see cref="NotBaked"/> for the reason, which is an architecture decision and not a
-        /// technical obstacle.
+        /// Vehicles that currently have a baked mesh — a <c>VehicleMeshDef</c> and its wheel fittings
+        /// committed under <c>Assets/_Project/Data/Vehicles/</c>, produced by
+        /// <c>VehicleMeshAssetBaker</c>.
         /// </summary>
-        public static readonly IReadOnlyList<string> Baked = Array.Empty<string>();
+        public static readonly IReadOnlyList<string> Baked = new[] { "dually3500" };
 
         /// <summary>
         /// ⭐ <b>Registered refusals: a vehicle that is not baked, and why.</b> The coverage test reads
         /// this, so nothing can be quietly left out — a vehicle in neither <see cref="Baked"/> nor here
         /// fails.
         ///
-        /// <para><b>The Dually's bake is BLOCKED ON A DECISION, NOT ON A DIFFICULTY.</b> That distinction
-        /// is the whole content of this entry, and it was measured rather than assumed —
-        /// <c>DuallyIsoKitProbeTests</c> runs the rig in the repo's own V8 and proves the mesh path
-        /// reaches it.</para>
+        /// <para><b>Empty, and that is the good outcome.</b> It held one entry from #548 until
+        /// 2026-08-17: the Dually, blocked on an architecture ruling rather than on any technical
+        /// obstacle. The ruling was given (lead-architect, on #548) and ADR 0035 records it, so the
+        /// entry went away rather than being reworded — which is what that entry said should happen
+        /// to it.</para>
+        ///
+        /// <para>A new drop that is in neither list fails <c>VehicleRigFleetTests</c>. That is the
+        /// whole point of the table: art arrives by PR, and this is the thing that stops one arriving
+        /// unnoticed.</para>
         /// </summary>
         public static readonly IReadOnlyDictionary<string, string> NotBaked =
-            new Dictionary<string, string>(StringComparer.Ordinal)
-            {
-                ["dually3500"] =
-                    "NOT a technical obstacle — the mesh path demonstrably reaches her. " +
-                    "DuallyIsoKitProbeTests measures, in the repo's own V8, that she is a GENERATOR of " +
-                    "exactly the shape RigHullExtraction already serves (the lobster pack and the " +
-                    "zodiac): no static F, faces from a private build(resolve({})) that returns 200+ " +
-                    "faces in the {v, mat, b, db} shape the packer reads, and a MATS whose first key " +
-                    "is 'paint', which is the default-ramp-first ordering the face packer requires. " +
-                    "The one real difference from every hull is that her MATS is an OBJECT KEYED BY " +
-                    "NAME rather than an index-ordered array, so the fleet's 'MATS order IS the baked " +
-                    "material index' law does not transfer and a Reconstructions entry supplies it.\n" +
-                    "\n" +
-                    "The ARCHITECTURE RULING this entry waited on has since been GIVEN (lead-architect, " +
-                    "2026-08-16, posted on #548): module HiddenHarbours.Vehicles with its own asmdef, " +
-                    "Core-mediated per rule 4; per-domain def types (VehicleMeshDef / VehicleDef) over " +
-                    "the SHARED bake tooling; id family 'vehicle.*', append-only once shipped. So what " +
-                    "is left here is the BUILD, not a decision — she stays listed only until the pass " +
-                    "that bakes her lands, and this entry goes away rather than being reworded.\n" +
-                    "\n" +
-                    "⭐ THE STEERING LIMIT RECORDED HERE IS CLOSED. The 2026-08-16 night revision adds " +
-                    "a `steer` axis (Ackermann-split: inner 30°, outer 24.94° at full lock, +1 = full " +
-                    "LEFT) and a `yaw` axis, and the sidecar arrived already re-stamped to the revised " +
-                    "rig — no re-pinning was needed. DuallyIsoKitProbeTests measures all of it. Three " +
-                    "facts from that pass shape the bake, and each was measured because the obvious " +
-                    "reading is wrong:\n" +
-                    "  · `steer` moves 286 of 1153 faces, ALL inside the front axle's envelope and not " +
-                    "    one of them 'paint'. The front wheels are separable exactly as an outboard is, " +
-                    "    so HullPropMeshDef + IHullPropRenderer carry them and no new articulation " +
-                    "    machinery is needed.\n" +
-                    "  · `yaw` moves ZERO faces — it is folded into camBasis, i.e. a CAMERA rotation. " +
-                    "    That is already what IHullMeshRenderer.HeadingDirUnits does ('fractional " +
-                    "    allowed — continuous is the point'), so a mesh vehicle reads at any heading " +
-                    "    for free. Baking yaw into vertices would yaw her twice.\n" +
-                    "  · wheel roll is in REVOLUTIONS, cyclic with period 1 — so the rate is v/(2πr), " +
-                    "    NOT the v/r that 'angular velocity' invites. 2π too fast is not subtle.",
-            };
+            new Dictionary<string, string>(StringComparer.Ordinal);
     }
 }
 #endif

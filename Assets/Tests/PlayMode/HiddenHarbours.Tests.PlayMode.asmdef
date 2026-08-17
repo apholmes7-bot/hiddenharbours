@@ -9,6 +9,7 @@
         "HiddenHarbours.App",
         "HiddenHarbours.UI",
         "HiddenHarbours.Boats",
+        "HiddenHarbours.Vehicles",
         "HiddenHarbours.Fishing",
         "HiddenHarbours.Economy",
         "HiddenHarbours.Player",

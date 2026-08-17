@@ -1,0 +1,7 @@
+{
+    "name": "HiddenHarbours.Vehicles",
+    "rootNamespace": "HiddenHarbours.Vehicles",
+    "references": ["HiddenHarbours.Core", "Unity.InputSystem"],
+    "allowUnsafeCode": false,
+    "autoReferenced": true
+}

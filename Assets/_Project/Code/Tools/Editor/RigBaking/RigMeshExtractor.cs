@@ -531,6 +531,52 @@ namespace HiddenHarbours.Tools.RigBaking
                     ["MATS"] = "palette({}).mats",
                 },
 
+                // ---- the DUALLY 3500 — the first ROAD VEHICLE (ADR 0035) -------------------------
+                // Same gap as the five hulls above and for the same reason: she has no `MATS` const
+                // at all, because her table depends on a paint axis (`makeMats(s)` reads s.paint and
+                // s.weather). Widening `MATS:MATS` fails outright with "ReferenceError: MATS is not
+                // defined", which is what her first bake did on 2026-08-17.
+                //
+                // `resolve({})` is her own resolver called with no options, so this is the table she
+                // would use for her default build (`paint:'white'`, `weather:0.32`) — not one
+                // transcribed here. It is the SAME pose her face list is extracted at
+                // (`build(resolve({}))`), which is what keeps the geometry and the palette describing
+                // one truck.
+                //
+                // ⚠️ Both names are unqualified ON PURPOSE. This expression is inserted INSIDE the
+                // rig's own closure, so `makeMats` and `resolve` are in scope. Qualifying them as
+                // `VehicleIso.makeMats(...)` is the shape a PROBE needs (the widening puts symbols on
+                // the global, it does not put them in scope) and it is wrong here.
+                //
+                // ⚠️ Her MATS is an OBJECT KEYED BY NAME, so the fleet's "MATS order IS the baked
+                // material index" law does not transfer. What DOES carry over is the part that
+                // matters: the packer resolves an unknown material name to index 0, so the default
+                // ramp must be FIRST — and `paint` is her first key, which her own fallback
+                // (`MATS[f.mat] || MATS.paint`) agrees with. Pinned by DuallyIsoKitProbeTests.
+                // ⚠️ AND SHE DOES NOT FIT THE SHADER EITHER, exactly as the zodiac does not: she
+                // declares SEVENTEEN materials and `_RampMeta` is a `float4[16]`, so the plain
+                // `makeMats(resolve({}))` bakes a def that is "not usable" and no vehicle-side change
+                // could fix it. Same fix, and it is a MEASUREMENT rather than a hand-written list.
+                //
+                // Measured in the repo's own V8, 2026-08-17: her faces reference exactly SIXTEEN of
+                // the seventeen. The one nothing names is `glow`, and it is not an oversight — it is
+                // the LIT variant of her lamps, belonging to the rig's night pass, which this mesh
+                // does not carry. A ramp no face references cannot colour a pixel.
+                //
+                // Order is preserved and therefore still load-bearing: `paint` is first in her MATS
+                // and IS used (172 faces), so it stays index 0 — which is what the face packer
+                // resolves an unknown material name to, and what her own `MATS[f.mat] || MATS.paint`
+                // fallback agrees with.
+                ["vehicleIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
+                {
+                    ["MATS"] =
+                        "(function(){var M=makeMats(resolve({})),F=build(resolve({}))," +
+                        "used={},out={};" +
+                        "for(var i=0;i<F.length;i++)used[F[i].mat]=1;" +
+                        "for(var k in M)if(used[k])out[k]=M[k];" +
+                        "return out;})()",
+                },
+
                 // The skiff motor is a LAYER, not a hull, so its export omits two things every hull
                 // rig publishes and the extractor reads unconditionally: the pixel scale and the bake
                 // elevation. Both exist under the rig's own names (`S`, `DEFAULT_ELEV`) — this is a
