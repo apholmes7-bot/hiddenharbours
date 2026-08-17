@@ -24,6 +24,13 @@ namespace HiddenHarbours.App
         /// <summary>On deck with a trap haul LIVE — one more step so the rope-and-buoy action is the
         /// star. Released the moment the pot surfaces or the haul goes idle. Optional (owner-tunable).</summary>
         DeckHaul,
+
+        /// <summary>Behind the wheel of a road vehicle — the machine's own data-driven framing
+        /// (<c>VehicleDef.CameraWorldHeightMeters</c>, arriving on <see cref="ActiveVehicleChanged"/>).
+        /// Wider than any of the above, and it has to be: a truck at 11 m/s covers ground faster than
+        /// anything else the player controls, and a view framed for a walking fisher would be a wall of
+        /// scenery arriving with no time to read it.</summary>
+        Vehicle,
     }
 
     /// <summary>
@@ -54,6 +61,7 @@ namespace HiddenHarbours.App
         public static CameraFraming DesiredFraming(ControlMode mode, bool haulLive, bool haulTightensZoom)
         {
             if (mode == ControlMode.Aboard) return CameraFraming.Boat;
+            if (mode == ControlMode.Driving) return CameraFraming.Vehicle;
             if (mode == ControlMode.OnDeck)
                 return (haulLive && haulTightensZoom) ? CameraFraming.DeckHaul : CameraFraming.Deck;
             return CameraFraming.OnFoot;

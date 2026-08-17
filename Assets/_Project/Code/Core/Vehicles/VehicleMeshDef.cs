@@ -130,6 +130,16 @@ namespace HiddenHarbours.Core
                  "crate in the bed) takes the same correction, and t extrapolates past both axles.")]
         [Min(0f)] public float SuspensionTravelFrontMeters, SuspensionTravelRearMeters;
 
+        [Tooltip("Where the driver stands to open her door, in rig metres (+x curb side, +y nose) — the " +
+                 "gameplay sidecar's INTERACT 'drive' reach_point. Used both to get IN and to be put " +
+                 "DOWN on getting out, so the two can never drift apart.\n\n" +
+                 "Measured art, not feel: the art side derives it to sit outside the door leaf's swept " +
+                 "disc, so it is no more the owner's to tune than the wheelbase is. (0,0) means this " +
+                 "machine publishes no driver's door and cannot be got into — the honest answer for a " +
+                 "def baked before the field existed, and one VehicleDoor refuses rather than putting " +
+                 "the player inside the cab wall.")]
+        public Vector2 DriveDoorLocal;
+
         [Header("Wheels (the articulated fittings lifted out of the body mesh)")]
         [Tooltip("Every part that moves relative to the body, with the motion it takes. Written by " +
                  "the baker; the driver poses each one every LateUpdate.")]

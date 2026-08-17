@@ -44,14 +44,26 @@ namespace HiddenHarbours.Core
         public static InteractActor For(Vector2 position, Vector2 facing, ControlMode mode)
             => new InteractActor(position, facing, ContextFor(mode));
 
-        /// <summary>Which context a control mode is. <see cref="ControlMode.Aboard"/> is the HELM (the enum
-        /// predates the deck state and kept its name for save compatibility) — see
-        /// <see cref="ControlMode"/>.</summary>
+        /// <summary>
+        /// Which context a control mode is. <see cref="ControlMode.Aboard"/> is the HELM (the enum predates
+        /// the deck state and kept its name for save compatibility) — see <see cref="ControlMode"/>.
+        ///
+        /// <para><b>Every mode is named, and the default arm THROWS rather than guessing.</b> This used to
+        /// end in <c>_ =&gt; AtHelm</c>, which is a trap on an append-only enum: <see cref="ControlMode"/>
+        /// is a Core contract that grows, and the next mode appended to it would have been silently
+        /// reported as standing at a boat's helm — compile-clean, and wrong in a way no test asks about.
+        /// (<see cref="ControlMode.Driving"/> was that next mode.) A mode with no context is an
+        /// unfinished contract, so it fails loudly here instead of resolving candidates in the wrong
+        /// place.</para>
+        /// </summary>
         public static InteractContext ContextFor(ControlMode mode) => mode switch
         {
             ControlMode.OnFoot => InteractContext.OnFoot,
             ControlMode.OnDeck => InteractContext.OnDeck,
-            _ => InteractContext.AtHelm,
+            ControlMode.Aboard => InteractContext.AtHelm,
+            ControlMode.Driving => InteractContext.Driving,
+            _ => throw new System.ArgumentOutOfRangeException(
+                     nameof(mode), mode, "ControlMode has grown a member with no InteractContext."),
         };
     }
 }
