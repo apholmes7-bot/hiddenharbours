@@ -65,6 +65,12 @@ namespace HiddenHarbours.App.Editor
 
             public int HedgeTrees, FieldTrees;
 
+            /// <summary>How many of <see cref="Trees"/> stand in a WOOD LOT rather than on the farmed
+            /// ground. Counted apart because the two are different claims about this coast, and because
+            /// the hinterland's whole canon rests on the farmed population having no stands in it —
+            /// see <see cref="NineMileCreekWoodLots"/>.</summary>
+            public int LotTrees;
+
             public string GrassSummary() => Summarise(PerGrassHabitat);
             public string ShrubSummary() => Summarise(PerShrubHabitat);
             public string TreeSummary() => Summarise(PerTreeSpecies);
@@ -98,14 +104,22 @@ namespace HiddenHarbours.App.Editor
                 $"{result.GrassTufts:N0} grass tufts ({result.GrassSummary()}) baked as a FIELD into " +
                 $"{result.GrassPayloadCharacters:N0} characters of scene, {result.Shrubs:N0} hedgerow " +
                 $"shrubs ({result.ShrubSummary()}), {result.Trees:N0} trees " +
-                $"({result.HedgeTrees} standing in hedges, {result.FieldTrees} alone in fields — " +
+                $"({result.HedgeTrees} standing in hedges, {result.FieldTrees} alone in fields, " +
+                $"{result.LotTrees} in the {NineMileCreekWoodLots.LotCount} wood lots — " +
                 $"{result.TreeSummary()}), and {result.MarshPlants:N0} marsh plants round the two ponds " +
                 $"({result.MarshSummary()}).\n" +
                 "⭐ FIELDS, NOT FOREST — there is no stand field in this region and there must not be " +
                 "one: the mainland doc's first photograph is of a farmed coast. The strips come off a " +
                 $"{NineMileCreekFields.FieldStripMetres:0} m lattice, the hedges walk those boundaries " +
                 "and the two GRAVEL roads' own published corridors, the trees stand mostly in the hedges, " +
-                "and nothing at all stands on the wharf's made ground.");
+                "and nothing at all stands on the wharf's made ground.\n" +
+                $"⭐ AND THREE WOOD LOTS STAND ALONGSIDE THEM (owner, 2026-08-16) — bounded blocks squared " +
+                $"against the field boundaries {NineMileCreekWoodLots.ShoreSetbackMetres:0} m back from " +
+                "the shore, each with a lane cut along its own boundary, together covering " +
+                $"{NineMileCreekWoodLots.MaxHinterlandShare:P0} of the plantable hinterland at most. The " +
+                "hedges GIVE WAY to a lot rather than running through it. A farm wood lot is part of a " +
+                "farmed coast, not a contradiction of one — but the FARMED trees above are still " +
+                "measurably stand-free, which is what keeps the photograph true.");
 
             return result;
         }
@@ -346,34 +360,54 @@ namespace HiddenHarbours.App.Editor
 
             var root = new GameObject(TreeRootName);
             var spriteCache = new Dictionary<(string, int), Sprite>();
+            System.Func<string, int> variantsFor =
+                species => bySpecies.TryGetValue(species, out var pl)
+                           ? AcadianTreeCatalog.VariantCount(pl.Entry) : 1;
 
-            foreach (var site in NineMileCreekFields.ScatterTrees(
-                         terrain, bySpecies.Keys,
-                         species => bySpecies.TryGetValue(species, out var pl)
-                                    ? AcadianTreeCatalog.VariantCount(pl.Entry) : 1))
+            // ⚠ ONE instantiation path for the farmed trees and the wood lots' — same pivot, same
+            // Configure, same material, same sorting. Two tree pipelines on one coast is the defect this
+            // region's own builder warns about at length; two on one REGION would be worse.
+            bool Stand(Vector2 at, string species, int variant)
             {
-                if (!bySpecies.TryGetValue(site.Species, out var placement)) continue;
+                if (!bySpecies.TryGetValue(species, out var placement)) return false;
 
-                var key = (site.Species, site.Variant);
+                var key = (species, variant);
                 if (!spriteCache.TryGetValue(key, out Sprite sprite))
                 {
-                    sprite = AcadianTreeCatalog.LoadVariant(placement, site.Variant);
+                    sprite = AcadianTreeCatalog.LoadVariant(placement, variant);
                     spriteCache[key] = sprite;
                 }
-                if (sprite == null) continue;
+                if (sprite == null) return false;
 
-                var go = new GameObject($"{site.Species}_{site.Variant}");
+                var go = new GameObject($"{species}_{variant}");
                 go.transform.SetParent(root.transform, worldPositionStays: false);
                 // The rig's pivot is the TRUNK FOOT (ADR 0026), so the site position IS where the tree
                 // is planted — no offset, and no rescale: the bake is at honest metric size.
-                go.transform.position = new Vector3(site.Position.x, site.Position.y, 0f);
+                go.transform.position = new Vector3(at.x, at.y, 0f);
                 AcadianTreeCatalog.Configure(go, placement, sprite, material);
 
                 result.Trees++;
-                if (site.InHedge) result.HedgeTrees++; else result.FieldTrees++;
-                result.PerTreeSpecies[site.Species] =
-                    result.PerTreeSpecies.TryGetValue(site.Species, out int n) ? n + 1 : 1;
+                result.PerTreeSpecies[species] =
+                    result.PerTreeSpecies.TryGetValue(species, out int n) ? n + 1 : 1;
+                return true;
             }
+
+            var farmed = NineMileCreekFields.ScatterTrees(terrain, bySpecies.Keys, variantsFor);
+            foreach (var site in farmed)
+            {
+                if (!Stand(site.Position, site.Species, site.Variant)) continue;
+                if (site.InHedge) result.HedgeTrees++; else result.FieldTrees++;
+            }
+
+            // ---- THE WOOD LOTS ----------------------------------------------------------------------
+            // ⭐ The owner's 2026-08-16 ruling that woodland zones go ALONGSIDE these fields, as bounded
+            // lots. A SEPARATE pass on purpose — see NineMileCreekWoodLots' own remarks: the farmed
+            // scatter above stays provably stand-free, so the region's load-bearing "FIELDS, NOT FOREST"
+            // test still measures what it always measured. Handed the farmed sites so a lot infills
+            // around the hedgerow trees on its rim instead of planting inside one.
+            var lots = NineMileCreekWoodLots.ScatterTrees(terrain, bySpecies.Keys, variantsFor, farmed);
+            foreach (var site in lots)
+                if (Stand(site.Position, site.Species, site.Variant)) result.LotTrees++;
         }
 
         // =============================================================================================
