@@ -315,6 +315,14 @@ Shader "HiddenHarbours/TreeWind"
                     col.rgb += _LightResponse * SpriteLitDecorResponse(IN.uv, IN.rootWS, litParams);
                 }
 
+                // ---- the fisher, read through this canopy (owner ruling 2026-08-16) ----------------
+                // LAST, on the final colour, and deliberately outside the light block above: a
+                // silhouette is a COMPOSITING operation, not a light — it must apply whether or not
+                // this tree bound a light sheet, and it must not be scaled by _LightResponse. Costs
+                // one scalar compare while the dial is 0. See SilhouetteThrough in the shared include
+                // for why the "is the tree in front?" test is the sprite queue's job and not ours.
+                col.rgb = SilhouetteThrough(col.rgb, IN.positionCS.xy);
+
                 return col;
             }
             ENDHLSL

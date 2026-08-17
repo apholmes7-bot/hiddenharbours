@@ -14,6 +14,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.IsoFacetHullFeature
   m_Active: 1
   _resolveShader: {fileID: 4800000, guid: 67d9d1239e5587841bf1d251b3a2a947, type: 3}
+--- !u!114 &-6204418839172553902
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8147f4c29b0cce443b8ae81562d68a23, type: 3}
+  m_Name: SilhouetteMaskFeature
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.SilhouetteMaskFeature
+  m_Active: 1
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -40,7 +53,8 @@ MonoBehaviour:
     probeVolumeBlendStatesCS: {fileID: 0}
   m_RendererFeatures:
   - {fileID: -7977607938393361094}
-  m_RendererFeatureMap: 3a35bae2d8d74991
+  - {fileID: -6204418839172553902}
+  m_RendererFeatureMap: 3a35bae2d8d7499152e3602df079e5a9
   m_LayerMask:
     serializedVersion: 2
     m_Bits: 4294967295
