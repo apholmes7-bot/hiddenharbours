@@ -394,28 +394,49 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         /// <summary>
-        /// The greybox fallback DRAWS. The bake lane's sheets are not in yet, so the fisher who walks up
-        /// to the lot has to meet something — a tinted marker of the right size, on the same convention
-        /// the sheds and the freezer use, not an empty renderer.
+        /// ⭐ <b>The sheets are BAKED, and the lot draws the parked frame at its own facing.</b> This
+        /// test shipped as <c>WithNoBakedSheets_TheLotStillDrawsAMarkerOfTheRightSize</c> — a greybox
+        /// assertion with a tripwire that fired the moment #553's sheets reached the merged tree, by
+        /// design. This is its flipped form.
+        ///
+        /// <para>The name assert is the naming law doing its job: the <c>rest</c> sheet drops the frame
+        /// index, so <c>_d&lt;facing&gt;</c> resolves to exactly ONE sprite — the parked frame — and a
+        /// camper can never draw with its door half open. The scale assert is the building kit's first
+        /// guardrail: baked art is honest metric size (32 px = 1 m with the camera's foreshortening
+        /// baked in); scaling it to the footprint would break the pixel grid.</para>
+        ///
+        /// <para>The greybox branch is now unreachable in a full checkout and keeps no direct coverage
+        /// here — its contract (draw the RIGHT art or none, fall back to the sheds' tinted marker) is
+        /// pinned by <see cref="TheSpriteLookup_RefusesAFacingItCannotFind"/>, and if the sheets ever
+        /// leave the tree this test's first assert fires with the map back.</para>
         /// </summary>
         [Test]
-        public void WithNoBakedSheets_TheLotStillDrawsAMarkerOfTheRightSize()
+        public void WithTheSheetsBaked_TheLotDrawsTheParkedFrameAtItsOwnFacing()
         {
-            Assert.IsNull(StPetersCamperLot.TryLoadCamperSprite(StPetersCamperLot.Variant,
-                                                                StPetersCamperLot.DoorFacing),
-                "camper sheets ARE baked now — the bake lane's PR has landed. Check on screen that the " +
-                "facing is right, then update this test to assert the baked path instead.");
+            Sprite baked = StPetersCamperLot.TryLoadCamperSprite(StPetersCamperLot.Variant,
+                                                                 StPetersCamperLot.DoorFacing);
+            Assert.IsNotNull(baked,
+                "no baked camper sheet found — if the sheets left the tree the lot falls back to the " +
+                "tinted greybox marker (that branch still ships), and this test should flip back to " +
+                "its pre-#553 greybox form.");
+
+            Assert.AreEqual(
+                $"camper_{StPetersCamperLot.Variant}_rest_d{StPetersCamperLot.DoorFacing}", baked.name,
+                "the lookup resolved something other than the unique parked frame. The rest sheet " +
+                "drops the frame index precisely so _d<facing> has ONE answer — matching an enter-cue " +
+                "frame here means the camper can draw with its door half open and look finished.");
 
             var (root, door) = PlaceLot();
             try
             {
                 var sr = door.GetComponent<SpriteRenderer>();
-                Assert.IsNotNull(sr.sprite, "the camper draws nothing at all — an invisible home");
+                Assert.AreSame(baked, sr.sprite,
+                    "the placed camper is not drawing the parked frame the lookup resolved");
 
-                var d = StPetersCamperLot.Dimensions;
-                Vector3 s = door.transform.localScale;
-                Assert.AreEqual(d.HalfSpanMetres * 2f, s.x, 1e-3f, "the marker is not the camper's width");
-                Assert.AreEqual(d.OverallLengthMetres, s.y, 1e-3f, "the marker is not the camper's length");
+                Assert.AreEqual(Vector3.one, door.transform.localScale,
+                    "baked art must draw at honest metric size — scaling it to the footprint breaks " +
+                    "the pixel grid (the building kit's first guardrail). Footprint-sized scaling is " +
+                    "the GREYBOX branch's job only.");
 
                 Assert.IsNotNull(door.GetComponent<YSortSprite>(),
                     "a thing you walk around must Y-sort (ADR 0032) or the meadow buries it");

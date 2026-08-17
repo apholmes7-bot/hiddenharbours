@@ -39,11 +39,11 @@ namespace HiddenHarbours.App.Editor
     /// are held off. Everything downstream (the tree planter, the erratics, the grass) follows that one
     /// number, and <c>StPetersVillageTests</c> re-derives what is needed rather than trusting it.</para>
     ///
-    /// <para><b>Greybox-tolerant by construction.</b> Both variants are in
-    /// <c>DwellingRigFleet.NotBaked</c> and the sheets are a separate lane's PR. Nothing here waits on
-    /// it: <see cref="TryLoadCamperSprite"/> is the ONE lookup, it falls through to the same tinted
-    /// marker the sheds and the freezer already use, and the day the bake lands the camper draws itself
-    /// with no line changing here.</para>
+    /// <para><b>Greybox-tolerant by construction — and the bake landed while this PR was open.</b> This
+    /// was written with both variants in <c>DwellingRigFleet.NotBaked</c>; #553 baked them mid-flight,
+    /// and exactly as designed the camper now draws itself with no line changing here:
+    /// <see cref="TryLoadCamperSprite"/> is the ONE lookup, and its tinted-marker fallback (the sheds'
+    /// and the freezer's convention) remains as the path for any checkout the sheets ever leave.</para>
     ///
     /// <para><b>Everything derives from two points and one asset.</b> The site is
     /// <see cref="StPetersGinnyPlot.CottagePos"/> plus <see cref="LotOffset"/>; the size, the spacing,
