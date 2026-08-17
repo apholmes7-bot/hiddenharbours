@@ -49,8 +49,21 @@ namespace HiddenHarbours.Tools.RigBaking
         /// </summary>
         public const string SidecarFolder = "docs/art/rigs/gameplay/vehicles";
 
-        /// <summary>The top-level <c>kind</c> that marks a sidecar as this table's business.</summary>
+        /// <summary>The top-level <c>kind</c> that marks a sidecar as this table's business.
+        ///
+        /// <para>⚠️ <b>Kept for the Dually, but it is NO LONGER the whole population.</b> The Otter
+        /// ships <c>"kind": "amphibious_xtv"</c>, so a scan looking only for this string would not
+        /// see her — and an amphibian landing unnoticed is precisely the failure this table exists
+        /// to prevent. Ask <see cref="HiddenHarbours.Core.VehicleKinds"/> instead, which is the ONE
+        /// place a shipped token becomes a kind.</para></summary>
         public const string RoadVehicleKind = "road_vehicle";
+
+        /// <summary>
+        /// Is this sidecar's top-level <c>kind</c> a vehicle at all? The population test, and the
+        /// only one — boat sidecars carry no top-level <c>kind</c>, so the two cannot overlap.
+        /// </summary>
+        public static bool IsVehicleKindToken(string token) =>
+            HiddenHarbours.Core.VehicleKinds.IsVehicleToken(token);
 
         /// <summary>
         /// <b>One pose axis that lifts a fitting out of the body mesh.</b>
@@ -259,6 +272,18 @@ namespace HiddenHarbours.Tools.RigBaking
                 vehicleDefPath: "Assets/_Project/Data/Vehicles/Dually3500.asset",
                 vehicleId: "vehicle.dually_3500",
                 label: "Dually 3500"),
+
+            // ⭐ THE OTTER 8x8 — the second vehicle, and the first amphibian. INTAKE ONLY: her rig
+            // and sidecar are landed and hash-verified, and she carries no bake fields because she
+            // is not baked (see NotBaked for the reason, which is a hard blocker rather than a
+            // decision). When she is baked, this entry grows the same fields the Dually's has.
+            new Vehicle(
+                "otter8x8",
+                "docs/art/rigs/otter-iso-kit/amphibIsoRig.js",
+                SidecarFolder + "/amphibIsoRig.otter8x8.gameplay.json",
+                "AmphibIso",
+                vehicleId: "vehicle.otter_8x8",
+                label: "Otter 8x8"),
         };
 
 
@@ -285,7 +310,34 @@ namespace HiddenHarbours.Tools.RigBaking
         /// unnoticed.</para>
         /// </summary>
         public static readonly IReadOnlyDictionary<string, string> NotBaked =
-            new Dictionary<string, string>(StringComparer.Ordinal);
+            new Dictionary<string, string>(StringComparer.Ordinal)
+            {
+                ["otter8x8"] =
+                    "INTAKE ONLY, and blocked on something no vehicle-side change can fix: HER " +
+                    "PALETTE DOES NOT FIT THE FACET SHADER.\n\n" +
+                    "Measured in the repo's own V8, 2026-08-17 (OtterIsoKitProbeTests pins it): she " +
+                    "declares 22 materials and her faces reference SEVENTEEN of them. `_RampMeta` is " +
+                    "a float4[16] — a real uniform array, guarded in VehicleMeshDef.IsUsable, " +
+                    "HullMeshDef.IsUsable and IsoFacetHullRenderer.Configure — so a bake would " +
+                    "produce a def that is 'not usable' and she would be refused at install.\n\n" +
+                    "⚠️ THE TRICK THAT SAVED THE DUALLY AND THE ZODIAC DOES NOT SAVE HER. Both of " +
+                    "those declared more materials than they used (17 declared / 16 used, and 18 / " +
+                    "14), so filtering the table to the USED set brought them under the cap without " +
+                    "changing a pixel — a ramp no face references cannot colour one. The Otter uses " +
+                    "seventeen in EVERY build: wheeled, tracked and afloat all reference exactly 17, " +
+                    "and the five she leaves out (trim, canvas, glass, glow, plus whichever of " +
+                    "alloy/track the other build uses) are already excluded. She is one over, " +
+                    "genuinely.\n\n" +
+                    "So the fix is a DECISION, not a pass: either widen `_RampMeta` past 16 (it " +
+                    "costs uniform space on every hull in the fleet, and the number is load-bearing " +
+                    "in three guards), or ask the art director to merge two of her materials. That " +
+                    "is an ADR-level call and an art-side conversation, and it is not this table's " +
+                    "to make. Everything else about her bake is READY: the extraction shape is the " +
+                    "Dually's exactly (a generator with a private build/makeMats), her azimuth is " +
+                    "measured COUNTER-CLOCKWISE off her own front-axle anchors on exact 45° steps, " +
+                    "and her articulation splits cleanly (rollL/rollR, 188 faces a side, perfectly " +
+                    "disjoint by side).",
+            };
     }
 }
 #endif

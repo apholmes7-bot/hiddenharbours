@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Otter 8x8 — bake + assert harness</title>
+<style>
+  html,body{margin:0;background:#0b1216;color:#aeb9bb;font:12px ui-monospace,SFMono-Regular,Menlo,monospace;}
+  body{padding:26px 22px 60px;display:flex;flex-direction:column;gap:18px;align-items:flex-start;}
+  h1{font-size:17px;color:#eef3f2;margin:0;letter-spacing:0.04em;font-weight:400;}
+  .sub{font-size:10.5px;letter-spacing:0.15em;color:#6f7e83;}
+  canvas{image-rendering:pixelated;display:block;}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-start;}
+  .panel{border:1px solid #243137;background:#0e181d;padding:12px;}
+  .grp{font-size:10px;letter-spacing:0.14em;color:#c9a86a;margin:14px 0 5px;}
+  .t{border-collapse:collapse;font-size:11.5px;}
+  .t td{padding:3px 10px 3px 0;vertical-align:top;}
+  .ok{color:#6fd6a8;} .no{color:#f0655a;} .sk{color:#6f7e83;}
+  .tot{font-size:13px;color:#eef3f2;padding:8px 12px;border:1px solid #243137;background:#0f191e;}
+  .note{font-size:10.5px;color:#5f6e73;line-height:1.6;max-width:760px;}
+</style>
+<script src="amphibIsoRig.js"></script>
+</head>
+<body>
+<h1>Otter 8&times;8 &mdash; bake + assert harness</h1>
+<div class="sub">AMPHIBIOUS ISO &middot; amphibIsoRig.js &middot; NO BUILD, NO DEPS &middot; OPEN IT AND IT RUNS</div>
+<div class="note">Serve this over http to include the JSON group: it fetches the contract and the gameplay sidecar, cross-checks them against the live rig and re-hashes the rig source. Opened off disk those fetches are blocked and the group reports <b>skipped</b>, never passed.</div>
+<div id="total" class="tot">running&hellip;</div>
+<div id="out"></div>
+<div class="grp">EIGHT FACINGS &middot; AT REST</div>
+<div class="panel"><canvas id="strip"></canvas></div>
+<div class="grp">TRACKED &middot; AFLOAT &middot; HATCH</div>
+<div class="panel"><canvas id="strip2"></canvas></div>
+
+<script>
+const R = window.AmphibIso, W = R.W, H = R.H, PV = R.pivot;
+const BASE = { paint:'sage', weather:0.44 };
+const out = document.getElementById('out');
+let pass=0, fail=0, skip=0, tbl=null;
+function group(name){ const h=document.createElement('div'); h.className='grp'; h.textContent=name; out.appendChild(h);
+  tbl=document.createElement('table'); tbl.className='t'; out.appendChild(tbl); }
+function row(ok, what, detail){
+  const tr=tbl.insertRow(); const a=tr.insertCell(), b=tr.insertCell(), c=tr.insertCell();
+  if(ok===null){ skip++; a.className='sk'; a.textContent='SKIP'; } else if(ok){ pass++; a.className='ok'; a.textContent='PASS'; }
+  else { fail++; a.className='no'; a.textContent='FAIL'; }
+  b.textContent=what; c.textContent=detail||''; c.className='sk';
+}
+function done(){ const t=document.getElementById('total');
+  t.innerHTML = pass+' passed &middot; <span class="'+(fail?'no':'ok')+'">'+fail+' failed</span> &middot; '+skip+' skipped';
+  t.style.borderColor = fail?'#5a2420':'#24413a'; }
+
+const bake=(d,o)=>R.render(d, Object.assign({}, BASE, o||{}));
+function bbox(p){ let x0=1e9,y0=1e9,x1=-1,y1=-1,n=0;
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++) if(p[(y*W+x)*4+3]){ n++; if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; }
+  return {x0,y0,x1,y1,n}; }
+function diffPx(a,b){ let d=0,al=0;
+  for(let i=0;i<W*H;i++){ const p=a[i*4+3]>0, q=b[i*4+3]>0; if(p!==q) al++;
+    if(p&&q&&(a[i*4]!==b[i*4]||a[i*4+1]!==b[i*4+1]||a[i*4+2]!==b[i*4+2])) d++; }
+  return {d, al}; }
+
+// ---------- geometry ----------
+group('GEOMETRY \u00b7 CELL, PIVOT, CONTAINMENT');
+const rest=[], bb=[];
+for(let d=0;d<8;d++){ rest.push(bake(d)); bb.push(bbox(rest[d])); }
+let pivOK=true, pivMax=0;
+for(let d=0;d<8;d++){ const p=R.project(d,[0,0,0]);
+  const e=Math.max(Math.abs(p.x-PV.x), Math.abs(p.y-PV.y)); pivMax=Math.max(pivMax,e); if(e>0.001) pivOK=false; }
+row(pivOK, 'model origin projects to the pivot in all 8 facings', 'max error '+pivMax.toFixed(4)+' px \u00b7 pivot ('+PV.x+','+PV.y+')');
+let inside=true, low=0;
+for(let d=0;d<8;d++){ const b=bb[d];
+  if(b.x0<0||b.y0<0||b.x1>=W||b.y1>=H) inside=false; low=Math.max(low, b.y1-PV.y); }
+row(inside, 'nothing paints outside its '+W+'\u00d7'+H+' cell', '8 facings, at rest');
+row(low<=30, 'nothing paints more than 30 px below the pivot at rest', 'deepest '+low+' px');
+row(bb.every(b=>b.n>3000), 'every facing paints a body', 'min '+Math.min.apply(null,bb.map(b=>b.n))+' px');
+const wid=Math.max.apply(null,bb.map(b=>b.x1))-Math.min.apply(null,bb.map(b=>b.x0))+1;
+const hei=Math.max.apply(null,bb.map(b=>b.y1))-Math.min.apply(null,bb.map(b=>b.y0))+1;
+row(wid===104&&hei===89, 'union at rest is the published 104 \u00d7 89', 'measured '+wid+' \u00d7 '+hei);
+
+// ---------- cues ----------
+group('CUES \u00b7 EVERY ONE MOVES PIXELS');
+for(const cue of Object.keys(R.CUES)){
+  const a=R.render(6, Object.assign({}, BASE, R.CUES[cue](0)));
+  const b=R.render(6, Object.assign({}, BASE, R.CUES[cue](cue==='roll'||cue==='spin'?0.5:1)));
+  const {d,al}=diffPx(a,b);
+  row(d+al>200, 'cue "'+cue+'" changes the sprite', d+' colour px, '+al+' alpha px');
+}
+
+// ---------- roll loop ----------
+group('ROLL \u00b7 ONE REVOLUTION CLOSES');
+{ const a=bake(6,{roll:0}), b=bake(6,{roll:1}), {d,al}=diffPx(a,b), n=bbox(a).n;
+  row(d/n<0.006, 'roll:1 matches roll:0 to better than 0.6% of painted', d+' of '+n+' px = '+(100*d/n).toFixed(2)+'%');
+  row(al===0, 'the roll loop changes no alpha', al+' px'); }
+{ const a=bake(6,{rollL:0.25,rollR:-0.25}), b=bake(6,{rollL:-0.25,rollR:0.25}), {d}=diffPx(a,b);
+  row(d>100, 'skid steer drives the two sides apart', d+' px differ between opposite splits'); }
+
+// ---------- tracks ----------
+group('TRACKS \u00b7 THE BELT TAKES THE GROUND');
+{ const dry=bbox(bake(1)), tr=bbox(bake(1,{tracks:true}));
+  row(Math.abs(tr.y1-dry.y1)<=1, 'tracked build still sits on the ground row', 'bottom '+dry.y1+' \u2192 '+tr.y1);
+  row(tr.y0<dry.y0, 'the body stands taller on tracks', 'top '+dry.y0+' \u2192 '+tr.y0+' (lift 0.07 m \u2248 '+(0.07*32*Math.cos(40*Math.PI/180)).toFixed(1)+' px)');
+  row(tr.x1-tr.x0 >= dry.x1-dry.x0, 'tracks are no narrower than the tires', (dry.x1-dry.x0+1)+' \u2192 '+(tr.x1-tr.x0+1)+' px'); }
+
+// ---------- float ----------
+group('FLOAT \u00b7 A DRY BAKE, LOWERED BY ITS DRAFT');
+{ const exp = 0.52*32*Math.cos(40*Math.PI/180);
+  let okTop=true, okBot=true, seen=[];
+  for(let d=0;d<8;d++){ const a=bbox(bake(d)), f=bbox(bake(d,{float:1}));
+    const dt=f.y0-a.y0, db=f.y1-a.y1; seen.push(dt);
+    if(Math.abs(dt-exp)>1.5) okTop=false; if(Math.abs(db-exp)>1.5) okBot=false; }
+  row(okTop&&okBot, 'float:1 lowers the whole sprite by 0.52 m and nothing else', 'expected '+exp.toFixed(1)+' px, saw '+seen.join('/'));
+  const a=bbox(bake(6)), f=bbox(bake(6,{float:1}));
+  row(f.n>a.n*0.95, 'nothing is clipped at the waterline \u2014 the bake is DRY', 'painted '+a.n+' \u2192 '+f.n+' px');
+  row(f.y1>PV.y, 'the hull paints below the pivot row, for the shader to cut', f.y1-PV.y+' px below'); }
+
+// ---------- yaw ----------
+group('YAW \u00b7 A HEADING, NOT A ROTATED SPRITE');
+{ const a=bake(1,{yaw:45}), b=bake(2), {d,al}=diffPx(a,b);
+  row(d===0&&al===0, 'yaw 45\u00b0 at NE is bit-identical to the E facing', d+' colour px, '+al+' alpha px differ');
+  const p=R.project(1,[0,0,0],null,22.5);
+  row(Math.abs(p.x-PV.x)<0.001&&Math.abs(p.y-PV.y)<0.001, 'the pivot survives yaw', 'at 22.5\u00b0: ('+p.x.toFixed(2)+','+p.y.toFixed(2)+')');
+  let ok=true, big=[0,0];
+  for(let dd=0;dd<8;dd++) for(const y of [-22.5,22.5]){ const b2=bbox(bake(dd,{yaw:y}));
+    if(b2.x0<0||b2.y0<0||b2.x1>=W||b2.y1>=H) ok=false;
+    big=[Math.max(big[0],b2.x1-b2.x0+1), Math.max(big[1],b2.y1-b2.y0+1)]; }
+  row(ok, 'a \u00b122.5\u00b0 sweep stays inside the cell in all 8 facings', 'largest painted '+big[0]+' \u00d7 '+big[1]+' px');
+  const s=bake(1,{rollL:R.G.revPerYaw45, rollR:-R.G.revPerYaw45, yaw:45}), e=bake(2);
+  row(diffPx(s,e).al<60, 'the spin cue lands her squarely on the next facing', 'a quarter-turn of split = 45\u00b0, tires included'); }
+
+// ---------- anchors ----------
+group('ANCHORS');
+{ let inCell=true, count=0, names=[];
+  for(let d=0;d<8;d++){ const A=R.anchors(d, BASE);
+    for(const k of Object.keys(A)){ const v=A[k]; if(!v||typeof v!=='object'||!('x' in v)) continue;
+      if(d===0){ count++; names.push(k); }
+      if(v.x<0||v.x>=W||v.y<0||v.y>=H) inCell=false; } }
+  row(inCell, 'all '+count+' anchors land inside the cell in all 8 facings', names.join(' '));
+  const dry=R.anchors(6,BASE).helm, wet=R.anchors(6,Object.assign({},BASE,{float:1})).helm;
+  row(Math.abs((wet.y-dry.y)-0.52*32*Math.cos(40*Math.PI/180))<0.01, 'anchors ride the float offset', 'helm drops '+(wet.y-dry.y).toFixed(1)+' px'); }
+
+// ---------- json ----------
+async function jsonGroup(){
+  group('CONTRACT + SIDECAR \u00b7 http only');
+  let contract=null, sidecar=null, srcTxt=null, blocked=false;
+  try{
+    const [a,b,c]=await Promise.all([
+      fetch('otter8x8.contract.json').then(r=>r.json()),
+      fetch('amphibIsoRig.otter8x8.gameplay.json').then(r=>r.json()),
+      fetch('amphibIsoRig.js').then(r=>r.text())]);
+    contract=a; sidecar=b; srcTxt=c;
+  }catch(e){ blocked=true; }
+  if(blocked){
+    row(null,'contract fetched','file:// blocks it — serve over http');
+    row(null,'sidecar fetched',''); row(null,'rig re-hashed','');
+    done(); return;
+  }
+  let bboxOK=true, worst='';
+  for(let d=0;d<8;d++){ const n=R.order[d], c=contract.painted_bbox.at_rest[n], m=bb[d];
+    const got=[m.x0,m.y0,m.x1,m.y1];
+    if(c.join()!==got.join()){ bboxOK=false; worst=n+' contract '+c.join(',')+' vs bake '+got.join(','); } }
+  row(bboxOK, 'contract painted_bbox matches a fresh bake, per facing', worst||'8/8 exact');
+  row(contract.bake.cell.W===W && contract.bake.cell.H===H && contract.bake.pivot.x===PV.x && contract.bake.pivot.y===PV.y,
+    'contract cell + pivot match the rig', contract.bake.cell.W+'\u00d7'+contract.bake.cell.H+' @ '+contract.bake.pivot.x+','+contract.bake.pivot.y);
+  const G=R.G;
+  const checks=[
+    ['sidecar rail_z', sidecar.BODY.rail_z, G.railZ],
+    ['sidecar keel_z', sidecar.BODY.keel_z, G.keelZ],
+    ['sidecar cockpit floor z', sidecar.COCKPIT.floor.z, G.floorZ],
+    ['sidecar sink at float 1', sidecar.FLOAT.sink_m_at_float_1, G.sinkMax],
+    ['sidecar tracks lift', sidecar.TRACKS.lift_m, G.trackLift],
+    ['sidecar wheel radius', sidecar.WHEELS.radius_m, G.wheelR],
+    ['sidecar tire width', sidecar.WHEELS.tire_width_m, G.tireW],
+    ['sidecar axle spacing', sidecar.WHEELS.axle_spacing_m, +(G.axY[0]-G.axY[1]).toFixed(2)],
+    ['sidecar hatch opening y0', sidecar.DECK.bow.hatch.opening.y[0], G.hatchY[0]],
+    ['sidecar hatch half width', sidecar.DECK.bow.hatch.opening.x[1], G.hatchHW],
+    ['sidecar LOA', sidecar.BODY.loa_m, +(G.bowY-G.tailY).toFixed(2)],
+  ];
+  for(const [what,a,b] of checks) row(Math.abs(a-b)<1e-6, what+' = rig', a+' vs '+b);
+  let wheelsOK=true;
+  for(const w of sidecar.WHEELS.list){ if(Math.abs(Math.abs(w.pos[0])-G.wheelX)>1e-6 || !G.axY.some(y=>Math.abs(y-w.pos[1])<1e-6) || Math.abs(w.pos[2]-G.wheelR)>1e-6) wheelsOK=false; }
+  row(wheelsOK, 'all 8 sidecar wheel positions sit on rig axles', G.axY.join(' / ')+' @ \u00b1'+G.wheelX);
+  const wl=sidecar.FLOAT.waterline_polygon_at_float_1.points;
+  row(wl.every(p=>p[1]<=G.beam+1e-6), 'waterline polygon never exceeds the hull beam', 'max '+Math.max.apply(null,wl.map(p=>p[1]))+' vs beam '+G.beam);
+  const h=await crypto.subtle.digest('SHA-256', new TextEncoder().encode(srcTxt));
+  const hex=Array.from(new Uint8Array(h)).map(x=>x.toString(16).padStart(2,'0')).join('');
+  row(hex===contract.rigSha256, 'contract rigSha256 matches the shipped rig', hex.slice(0,16)+'\u2026');
+  row(hex===sidecar.derivedFromRigSha256, 'sidecar derivedFromRigSha256 matches the shipped rig', sidecar.derivedFromRigSha256.slice(0,16)+'\u2026');
+  done();
+}
+
+// ---------- contact sheets ----------
+function strip(id, cells, labels){
+  const cv=document.getElementById(id), S=1.1, gap=6, cw=W*S, ch=H*S;
+  cv.width=Math.ceil(cells.length*(cw+gap)); cv.height=Math.ceil(ch+18);
+  const ctx=cv.getContext('2d'); ctx.imageSmoothingEnabled=false;
+  const t=document.createElement('canvas'); t.width=W; t.height=H; const tc=t.getContext('2d');
+  cells.forEach((rgba,i)=>{ const x=i*(cw+gap);
+    ctx.fillStyle=(i&1)?'#111d23':'#16232b'; ctx.fillRect(x,0,cw,ch);
+    tc.clearRect(0,0,W,H); tc.putImageData(new ImageData(rgba,W,H),0,0);
+    ctx.drawImage(t,x,0,cw,ch);
+    ctx.fillStyle='rgba(240,90,80,0.5)'; ctx.fillRect(x, PV.y*S, cw, 1);
+    ctx.fillStyle='#6f7e83'; ctx.font='10px ui-monospace,monospace'; ctx.textAlign='center';
+    ctx.fillText(labels[i], x+cw/2, ch+13); });
+  ctx.textAlign='left';
+}
+strip('strip', rest, R.order);
+strip('strip2', [bake(1,{tracks:true}), bake(6,{tracks:true}), bake(1,{float:1}), bake(6,{float:1}), bake(3,{hatch:1}), bake(1,{bimini:true,screen:true})],
+  ['tracked NE','tracked W','afloat NE','afloat W','hatch SE','canopy NE']);
+done();
+jsonGroup();
+</script>
+</body>
+</html>
