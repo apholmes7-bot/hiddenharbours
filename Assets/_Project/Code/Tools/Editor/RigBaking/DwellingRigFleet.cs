@@ -99,53 +99,39 @@ namespace HiddenHarbours.Tools.RigBaking
         };
 
         /// <summary>
-        /// Dwellings that currently have baked sheets. <b>Empty, on purpose</b> — see
-        /// <see cref="NotBaked"/>.
+        /// Dwellings that currently have baked sheets.
+        ///
+        /// <para>Both lengths, as of the camper bake. Each gets TWO sheets — a <c>rest</c> at the
+        /// variant's own default fit-out and an <c>enter</c> carrying the door cue — laid out columns
+        /// = swing frames, rows = facings. <see cref="HiddenHarbours.Art.Editor.CamperKit"/> owns the
+        /// build table, <c>CamperSheetBaker</c> writes them and <c>CamperBakeTests</c> checks that this
+        /// list is a claim with files behind it.</para>
+        ///
+        /// <para><b>Both of the traps the earlier refusal recorded are now guards in the baker rather
+        /// than warnings in a comment</b>, each with a sabotage test that fires it: a compass string
+        /// for <c>dir</c> trips an opaque-pixel floor (<c>MinOpaquePixelsPerCell</c>), and an awninged
+        /// enter build trips a cue-motion floor (<c>MinCueDeltaPx</c>).</para>
+        ///
+        /// <para>⚠ <b>What the bake did NOT solve, because it is upstream art:</b> the kit still has
+        /// no interior — <i>"No interior. This is the shell."</i> The room belongs to
+        /// <c>camperInteriorRig.js</c>, which is not in the repo. A camper used as a HOME needs it
+        /// before it can have a seamless interior (the owner's 2026-07-30 ruling); no amount of
+        /// placement or baking works around a rig that was never dropped.</para>
         /// </summary>
-        public static readonly IReadOnlyList<string> Baked = Array.Empty<string>();
+        public static readonly IReadOnlyList<string> Baked = new[] { "bantam", "clipper" };
 
         /// <summary>
         /// ⭐ <b>Registered refusals: a dwelling that is not baked, and why.</b> The coverage test reads
         /// this, so nothing can be quietly left out — a dwelling in neither <see cref="Baked"/> nor here
         /// fails.
         ///
-        /// <para>Both entries share one reason, and it is a plain fact from the kit rather than a
-        /// judgement: <b>the drop ships no sheets and no harness to bake them from.</b></para>
+        /// <para><b>Empty, and an entry is DELETED rather than reworded when its dwelling is baked</b> —
+        /// a refusal that outlives its cause goes on explaining a blocker somebody already cleared.
+        /// The camper's two entries lived here between its import and its bake; what they recorded that
+        /// still matters has moved into <see cref="Baked"/> and into the baker's own guards.</para>
         /// </summary>
         public static readonly IReadOnlyDictionary<string, string> NotBaked =
-            new Dictionary<string, string>(StringComparer.Ordinal)
-            {
-                ["bantam"] = NoSheetsReason,
-                ["clipper"] = NoSheetsReason,
-            };
-
-        const string NoSheetsReason =
-            "NOT baked, and the kit says why in its own words: \"No harness or baked sheets in this " +
-            "kit. The rig and its two sidecars are the whole export; bake sheets from the demo page.\" " +
-            "Every other rig drop this repo has taken arrived with a harness.html and reference sheets " +
-            "(see docs/art/rigs/dually-iso-kit/); this one did not, so there is nothing to slice and " +
-            "no committed image to check a bake against.\n" +
-            "\n" +
-            "The rig itself is sound and that was MEASURED, not assumed — CamperIsoKitProbeTests runs " +
-            "it in the repo's own V8 and reproduces all sixteen of the README's per-facing crop boxes " +
-            "exactly, plus the drawbar overhang below the pivot (61 px bantam, 94 px clipper at S). So " +
-            "this is a missing-artefact blocker, not a broken-rig one, and the bake is a follow-up that " +
-            "needs no new mechanism.\n" +
-            "\n" +
-            "⚠ TWO THINGS THE BAKER WILL HIT, both measured:\n" +
-            "  1. render(dir, opts) takes an INTEGER INDEX 0..7, not the compass string the README " +
-            "talks in — camBasis does dir*PI/4, so render('N') makes the angle NaN and returns a fully " +
-            "TRANSPARENT cell with no error. A baker that loops over order[] by name bakes 8 empty " +
-            "sheets and nothing says so.\n" +
-            "  2. The Clipper fits an AWNING by default, and it occludes the door's own enter cue at " +
-            "exactly the facings the door is supposed to read at. Measured: the swing-0-to-1 pixel " +
-            "delta at W is 253 with the awning and 1535 without. Bake the cue with the awning off, or " +
-            "the enter animation is a handful of pixels.\n" +
-            "\n" +
-            "⚠ AND THE KIT HAS NO INTERIOR: \"No interior. This is the shell.\" The room belongs to " +
-            "camperInteriorRig.js, which is NOT in this drop. A camper used as a HOME needs it before " +
-            "it can have a seamless interior (the owner's 2026-07-30 ruling) — that is an upstream art " +
-            "ask, not something placement can work around.";
+            new Dictionary<string, string>(StringComparer.Ordinal);
     }
 }
 #endif
