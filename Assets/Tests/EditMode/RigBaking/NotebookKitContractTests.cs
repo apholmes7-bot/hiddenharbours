@@ -47,13 +47,20 @@ namespace HiddenHarbours.Tests.RigBaking.EditMode
         public void EveryLadderRowSpansTheLegalRange()
         {
             var ladder = Contract().Data.type.ladder;
-            Assert.Multiple(() =>
+            var wrong = new List<string>();
+            void Span(string what, int got, int want)
             {
-                Assert.That(ladder.Min(r => r.cols), Is.EqualTo(NotebookKit.MinCols));
-                Assert.That(ladder.Max(r => r.cols), Is.EqualTo(NotebookKit.MaxCols));
-                Assert.That(ladder.Min(r => r.lines), Is.EqualTo(NotebookKit.MinLines));
-                Assert.That(ladder.Max(r => r.lines), Is.EqualTo(NotebookKit.MaxLines));
-            });
+                if (got != want) wrong.Add($"{what}: ladder has {got}, NotebookKit says {want}");
+            }
+
+            Span("min cols", ladder.Min(r => r.cols), NotebookKit.MinCols);
+            Span("max cols", ladder.Max(r => r.cols), NotebookKit.MaxCols);
+            Span("min lines", ladder.Min(r => r.lines), NotebookKit.MinLines);
+            Span("max lines", ladder.Max(r => r.lines), NotebookKit.MaxLines);
+
+            Assert.That(wrong, Is.Empty,
+                "The ladder no longer spans the legal range, so the formulae are being checked over " +
+                "a narrower window than the presenter can actually ask for:\n  " + string.Join("\n  ", wrong));
         }
 
         [Test]
@@ -88,13 +95,12 @@ namespace HiddenHarbours.Tests.RigBaking.EditMode
         {
             // The kit publishes this so the presenter chooses the occupancy knowingly: at the closest
             // tier (4× on a 480×270 screen) the book is 410×232 = 73.4% of the screen.
-            Assert.Multiple(() =>
-            {
-                Assert.That(NotebookKit.SpreadWidthFor(NotebookKit.ClosestTierCols), Is.EqualTo(410));
-                Assert.That(NotebookKit.SpreadHeightFor(NotebookKit.ClosestTierLines), Is.EqualTo(232));
-                Assert.That(NotebookKit.StepCharsAtClosestTier, Is.EqualTo(31),
-                    "31 is the number the writing lane was told to write to");
-            });
+            Assert.That(NotebookKit.SpreadWidthFor(NotebookKit.ClosestTierCols), Is.EqualTo(410),
+                "the open book is 410 px wide at the closest tier");
+            Assert.That(NotebookKit.SpreadHeightFor(NotebookKit.ClosestTierLines), Is.EqualTo(232),
+                "the open book is 232 px tall at the closest tier");
+            Assert.That(NotebookKit.StepCharsAtClosestTier, Is.EqualTo(31),
+                "31 is the number the writing lane was told to write to");
         }
 
         [Test]
@@ -103,14 +109,21 @@ namespace HiddenHarbours.Tests.RigBaking.EditMode
             // Compile-time aliasing is the real enforcement (NotebookKit.CellWidth IS
             // DialogueBubbleKit.CellWidth); this states the intent so a future edit that replaces the
             // alias with a literal is caught by a failing test rather than by a player.
-            Assert.Multiple(() =>
+            var drifted = new List<string>();
+            void Same(string what, int notebook, int bubble)
             {
-                Assert.That(NotebookKit.CellWidth, Is.EqualTo(DialogueBubbleKit.CellWidth));
-                Assert.That(NotebookKit.CellHeight, Is.EqualTo(DialogueBubbleKit.CellHeight));
-                Assert.That(NotebookKit.GlyphWidth, Is.EqualTo(DialogueBubbleKit.GlyphWidth));
-                Assert.That(NotebookKit.GlyphHeight, Is.EqualTo(DialogueBubbleKit.GlyphHeight));
-                Assert.That(NotebookKit.BaselineRow, Is.EqualTo(DialogueBubbleKit.BaselineRow));
-            });
+                if (notebook != bubble) drifted.Add($"{what}: notebook {notebook}, bubble kit {bubble}");
+            }
+
+            Same("cell width", NotebookKit.CellWidth, DialogueBubbleKit.CellWidth);
+            Same("cell height", NotebookKit.CellHeight, DialogueBubbleKit.CellHeight);
+            Same("glyph width", NotebookKit.GlyphWidth, DialogueBubbleKit.GlyphWidth);
+            Same("glyph height", NotebookKit.GlyphHeight, DialogueBubbleKit.GlyphHeight);
+            Same("baseline row", NotebookKit.BaselineRow, DialogueBubbleKit.BaselineRow);
+
+            Assert.That(drifted, Is.Empty,
+                "The notebook has grown a face of its own. These must stay aliases of " +
+                "DialogueBubbleKit, not literals:\n  " + string.Join("\n  ", drifted));
         }
 
         [Test]
@@ -133,7 +146,11 @@ namespace HiddenHarbours.Tests.RigBaking.EditMode
             // never imports, or imports and never bakes.
             var exprNames = NotebookKitBaker.PieceExpressions().Select(e => e.Name).ToArray();
             Assert.That(exprNames, Is.EquivalentTo(NotebookKit.Pieces));
-            Assert.That(exprNames, Is.Unique);
+
+            var dupes = exprNames.GroupBy(n => n).Where(g => g.Count() > 1).Select(g => g.Key).ToList();
+            Assert.That(dupes, Is.Empty,
+                "The same piece is baked twice — the second write silently wins:\n  " +
+                string.Join("\n  ", dupes));
         }
 
         [Test]
@@ -154,14 +171,22 @@ namespace HiddenHarbours.Tests.RigBaking.EditMode
         [Test]
         public void SheetKeysAreDerivedNotTabulated()
         {
-            Assert.Multiple(() =>
+            var cases = new (string Piece, string Key)[]
             {
-                Assert.That(NotebookKitContract.SheetKeyFor("Notebook_Box_Pencil"), Is.EqualTo("box.pencil"));
-                Assert.That(NotebookKitContract.SheetKeyFor("Notebook_Stock_Ruled"), Is.EqualTo("stock.ruled"));
-                Assert.That(NotebookKitContract.SheetKeyFor("Notebook_Caret"), Is.EqualTo("caret"));
-                Assert.That(NotebookKitContract.SheetKeyFor("Notebook_Dogear"), Is.EqualTo("dogear"));
-                Assert.That(NotebookKitContract.SheetKeyFor("Notebook_Select_Pill"), Is.EqualTo("select.pill"));
-            });
+                ("Notebook_Box_Pencil", "box.pencil"),
+                ("Notebook_Stock_Ruled", "stock.ruled"),
+                ("Notebook_Caret", "caret"),          // no underscore: the whole name is the key
+                ("Notebook_Dogear", "dogear"),
+                ("Notebook_Select_Pill", "select.pill"),
+            };
+
+            var wrong = cases
+                .Select(c => (c.Piece, c.Key, Got: NotebookKitContract.SheetKeyFor(c.Piece)))
+                .Where(t => t.Got != t.Key)
+                .Select(t => $"{t.Piece} → '{t.Got}', expected '{t.Key}'")
+                .ToList();
+
+            Assert.That(wrong, Is.Empty, string.Join("\n  ", wrong));
         }
 
         // ---- the kit's bundled copies must not fork from the shipping rigs ----------------------
