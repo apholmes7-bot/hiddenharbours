@@ -1,0 +1,1066 @@
+{
+  "kit": "notebook-kit",
+  "version": 3,
+  "generated": "read out of Art/notebookRig3.js at its defaults — regenerate, never hand-edit",
+  "purpose": "the gameplay-facing half of the contract: the numbers a presenter needs to size the book, wrap a quest, place a step, hit-test a row, drive the write-on, turn a page and mount the tabs",
+  "loadOrder": [
+    "Art/dialogueBubbleRig.js",
+    "Art/isoSolid.js",
+    "Art/notebookRig3.js"
+  ],
+  "globals": {
+    "dialogueBubbleRig": "BubbleKit (the FACE — required)",
+    "isoSolid": "IsoSolid (the closed object only)",
+    "notebookRig3": "NotebookKit / NotebookIsoKit"
+  },
+  "grid": {
+    "ppu": 32,
+    "unit": "32 px = 1 m",
+    "declared": "THIS KIT IS AUTHORED AT 32 px/m — the assets grid, same as every shipped rig and the bubble kit. 24 px/m is the camera-side number and authoring there would put UI pixels on a different pitch from world pixels.",
+    "scaleRule": "INTEGER scale only — fit() picks it. A fractional scale puts the hand on a half cell and the wobble stops reading as a hand and starts reading as a bug."
+  },
+  "cell": {
+    "adv": 5,
+    "w": 4,
+    "box": 8,
+    "cap": 6,
+    "xh": 4,
+    "desc": 2,
+    "baseline": 5,
+    "line": 10,
+    "leading": 2,
+    "slack": 1,
+    "rule": 7,
+    "pitch": 10,
+    "from": "BubbleKit.CELL — imported, never redeclared",
+    "glyph": [
+      4,
+      8
+    ],
+    "note": "IMPORTED from BubbleKit.CELL. advance is EXACT; the crowding that reads as an uneven hand is a 1 px nudge inside the cell (glyph 4 wide in a 5 wide cell). The printed rule sits at row 7 of the line box, one under the baseline, so descenders cross it as they do on real ruled stock."
+  },
+  "case": {
+    "body": "sentence case — knowledge pages are the longest running text in the game and mixed case is what makes them readable",
+    "labels": "CAPS on tab chips, running heads and the DONE stamp — those are labels, not voice",
+    "was": "pass 2 set the whole book in CAPS on a 4 × 8 caps-only cell"
+  },
+  "wrap": "charsPerLine = cols = floor((textLaneWidth + s) / (5·s)) · NotebookKit.colsFor(px, s) · wrap() is BubbleKit.wrap, shared",
+  "fill": "one cell per character, left to right, line by line; layout().leaves[i].rows[] gives each ruled line its cell origin",
+  "lanes": {
+    "padL": 4,
+    "cursor": 12,
+    "box": 10,
+    "boxSize": 6,
+    "padR": 4,
+    "marginRuleAt": 5,
+    "note": "a TITLE starts at titleX and runs titleCols wide; a STEP box sits at boxX and its text at textX, cols wide. titleCols = cols + boxLane/adv = cols + 2 exactly — the box lane is two cells for that reason and no other."
+  },
+  "formula": {
+    "pageW": "padL + cursorLane + boxLane + (cols × 5 − 1) + padR = 5c + 29",
+    "pageH": "headH + lines × 10 + padB = 10L + 24",
+    "spreadW": "2 × pageW + gutter + 2 × (coverPad + edge) + tabCol = 10c + 100",
+    "spreadH": "pageH + 2 × (coverPad + edge) = 10L + 32",
+    "step": "one more line = +10 px of height; one more column = +10 px of width (both leaves)"
+  },
+  "placement": {
+    "fit": "fit(availW, availH, o) → the integer scale and the cols/lines that fill the room",
+    "rule": "INTEGER scale only — fit() picks it. A fractional scale puts the hand on a half cell and the wobble stops reading as a hand and starts reading as a bug.",
+    "clampNote": "never clamp a returned rect yourself. Pass the room in and read `clamped`, or the flag becomes a lie about what is on screen.",
+    "min": {
+      "cols": 16,
+      "lines": 6,
+      "px": [
+        260,
+        92
+      ]
+    },
+    "max": {
+      "cols": 40,
+      "lines": 22,
+      "px": [
+        500,
+        252
+      ],
+      "note": "past 40 columns the line wants the facing leaf, not a wider book"
+    },
+    "ladder": [
+      {
+        "cols": 16,
+        "lines": 6,
+        "titleCols": 18,
+        "spreadPx": [
+          260,
+          92
+        ],
+        "metres": [
+          8.13,
+          2.88
+        ],
+        "pagePx": [
+          109,
+          84
+        ],
+        "cellsPerSpread": 192,
+        "atScale2": [
+          520,
+          184
+        ],
+        "atScale3": [
+          780,
+          276
+        ]
+      },
+      {
+        "cols": 16,
+        "lines": 10,
+        "titleCols": 18,
+        "spreadPx": [
+          260,
+          132
+        ],
+        "metres": [
+          8.13,
+          4.13
+        ],
+        "pagePx": [
+          109,
+          124
+        ],
+        "cellsPerSpread": 320,
+        "atScale2": [
+          520,
+          264
+        ],
+        "atScale3": [
+          780,
+          396
+        ]
+      },
+      {
+        "cols": 16,
+        "lines": 16,
+        "titleCols": 18,
+        "spreadPx": [
+          260,
+          192
+        ],
+        "metres": [
+          8.13,
+          6
+        ],
+        "pagePx": [
+          109,
+          184
+        ],
+        "cellsPerSpread": 512,
+        "atScale2": [
+          520,
+          384
+        ],
+        "atScale3": [
+          780,
+          576
+        ]
+      },
+      {
+        "cols": 16,
+        "lines": 22,
+        "titleCols": 18,
+        "spreadPx": [
+          260,
+          252
+        ],
+        "metres": [
+          8.13,
+          7.88
+        ],
+        "pagePx": [
+          109,
+          244
+        ],
+        "cellsPerSpread": 704,
+        "atScale2": [
+          520,
+          504
+        ],
+        "atScale3": [
+          780,
+          756
+        ]
+      },
+      {
+        "cols": 20,
+        "lines": 6,
+        "titleCols": 22,
+        "spreadPx": [
+          300,
+          92
+        ],
+        "metres": [
+          9.38,
+          2.88
+        ],
+        "pagePx": [
+          129,
+          84
+        ],
+        "cellsPerSpread": 240,
+        "atScale2": [
+          600,
+          184
+        ],
+        "atScale3": [
+          900,
+          276
+        ]
+      },
+      {
+        "cols": 20,
+        "lines": 10,
+        "titleCols": 22,
+        "spreadPx": [
+          300,
+          132
+        ],
+        "metres": [
+          9.38,
+          4.13
+        ],
+        "pagePx": [
+          129,
+          124
+        ],
+        "cellsPerSpread": 400,
+        "atScale2": [
+          600,
+          264
+        ],
+        "atScale3": [
+          900,
+          396
+        ]
+      },
+      {
+        "cols": 20,
+        "lines": 16,
+        "titleCols": 22,
+        "spreadPx": [
+          300,
+          192
+        ],
+        "metres": [
+          9.38,
+          6
+        ],
+        "pagePx": [
+          129,
+          184
+        ],
+        "cellsPerSpread": 640,
+        "atScale2": [
+          600,
+          384
+        ],
+        "atScale3": [
+          900,
+          576
+        ]
+      },
+      {
+        "cols": 20,
+        "lines": 22,
+        "titleCols": 22,
+        "spreadPx": [
+          300,
+          252
+        ],
+        "metres": [
+          9.38,
+          7.88
+        ],
+        "pagePx": [
+          129,
+          244
+        ],
+        "cellsPerSpread": 880,
+        "atScale2": [
+          600,
+          504
+        ],
+        "atScale3": [
+          900,
+          756
+        ]
+      },
+      {
+        "cols": 24,
+        "lines": 6,
+        "titleCols": 26,
+        "spreadPx": [
+          340,
+          92
+        ],
+        "metres": [
+          10.63,
+          2.88
+        ],
+        "pagePx": [
+          149,
+          84
+        ],
+        "cellsPerSpread": 288,
+        "atScale2": [
+          680,
+          184
+        ],
+        "atScale3": [
+          1020,
+          276
+        ]
+      },
+      {
+        "cols": 24,
+        "lines": 10,
+        "titleCols": 26,
+        "spreadPx": [
+          340,
+          132
+        ],
+        "metres": [
+          10.63,
+          4.13
+        ],
+        "pagePx": [
+          149,
+          124
+        ],
+        "cellsPerSpread": 480,
+        "atScale2": [
+          680,
+          264
+        ],
+        "atScale3": [
+          1020,
+          396
+        ]
+      },
+      {
+        "cols": 24,
+        "lines": 16,
+        "titleCols": 26,
+        "spreadPx": [
+          340,
+          192
+        ],
+        "metres": [
+          10.63,
+          6
+        ],
+        "pagePx": [
+          149,
+          184
+        ],
+        "cellsPerSpread": 768,
+        "atScale2": [
+          680,
+          384
+        ],
+        "atScale3": [
+          1020,
+          576
+        ]
+      },
+      {
+        "cols": 24,
+        "lines": 22,
+        "titleCols": 26,
+        "spreadPx": [
+          340,
+          252
+        ],
+        "metres": [
+          10.63,
+          7.88
+        ],
+        "pagePx": [
+          149,
+          244
+        ],
+        "cellsPerSpread": 1056,
+        "atScale2": [
+          680,
+          504
+        ],
+        "atScale3": [
+          1020,
+          756
+        ]
+      },
+      {
+        "cols": 30,
+        "lines": 6,
+        "titleCols": 32,
+        "spreadPx": [
+          400,
+          92
+        ],
+        "metres": [
+          12.5,
+          2.88
+        ],
+        "pagePx": [
+          179,
+          84
+        ],
+        "cellsPerSpread": 360,
+        "atScale2": [
+          800,
+          184
+        ],
+        "atScale3": [
+          1200,
+          276
+        ]
+      },
+      {
+        "cols": 30,
+        "lines": 10,
+        "titleCols": 32,
+        "spreadPx": [
+          400,
+          132
+        ],
+        "metres": [
+          12.5,
+          4.13
+        ],
+        "pagePx": [
+          179,
+          124
+        ],
+        "cellsPerSpread": 600,
+        "atScale2": [
+          800,
+          264
+        ],
+        "atScale3": [
+          1200,
+          396
+        ]
+      },
+      {
+        "cols": 30,
+        "lines": 16,
+        "titleCols": 32,
+        "spreadPx": [
+          400,
+          192
+        ],
+        "metres": [
+          12.5,
+          6
+        ],
+        "pagePx": [
+          179,
+          184
+        ],
+        "cellsPerSpread": 960,
+        "atScale2": [
+          800,
+          384
+        ],
+        "atScale3": [
+          1200,
+          576
+        ]
+      },
+      {
+        "cols": 30,
+        "lines": 22,
+        "titleCols": 32,
+        "spreadPx": [
+          400,
+          252
+        ],
+        "metres": [
+          12.5,
+          7.88
+        ],
+        "pagePx": [
+          179,
+          244
+        ],
+        "cellsPerSpread": 1320,
+        "atScale2": [
+          800,
+          504
+        ],
+        "atScale3": [
+          1200,
+          756
+        ]
+      },
+      {
+        "cols": 40,
+        "lines": 6,
+        "titleCols": 42,
+        "spreadPx": [
+          500,
+          92
+        ],
+        "metres": [
+          15.63,
+          2.88
+        ],
+        "pagePx": [
+          229,
+          84
+        ],
+        "cellsPerSpread": 480,
+        "atScale2": [
+          1000,
+          184
+        ],
+        "atScale3": [
+          1500,
+          276
+        ]
+      },
+      {
+        "cols": 40,
+        "lines": 10,
+        "titleCols": 42,
+        "spreadPx": [
+          500,
+          132
+        ],
+        "metres": [
+          15.63,
+          4.13
+        ],
+        "pagePx": [
+          229,
+          124
+        ],
+        "cellsPerSpread": 800,
+        "atScale2": [
+          1000,
+          264
+        ],
+        "atScale3": [
+          1500,
+          396
+        ]
+      },
+      {
+        "cols": 40,
+        "lines": 16,
+        "titleCols": 42,
+        "spreadPx": [
+          500,
+          192
+        ],
+        "metres": [
+          15.63,
+          6
+        ],
+        "pagePx": [
+          229,
+          184
+        ],
+        "cellsPerSpread": 1280,
+        "atScale2": [
+          1000,
+          384
+        ],
+        "atScale3": [
+          1500,
+          576
+        ]
+      },
+      {
+        "cols": 40,
+        "lines": 22,
+        "titleCols": 42,
+        "spreadPx": [
+          500,
+          252
+        ],
+        "metres": [
+          15.63,
+          7.88
+        ],
+        "pagePx": [
+          229,
+          244
+        ],
+        "cellsPerSpread": 1760,
+        "atScale2": [
+          1000,
+          504
+        ],
+        "atScale3": [
+          1500,
+          756
+        ]
+      }
+    ]
+  },
+  "copyBudget": "THE NUMBER THE WRITING LANE NEEDS: at the closest tier a step line holds 31 characters and a title line 33, with 20 ruled lines a leaf. A step longer than that is not clipped — it wraps and eats a line, and a quest whose block outgrows a leaf moves whole to the facing leaf. Write to 31 and nothing surprises anybody.",
+  "occupancy": "at the CLOSEST tier (4×) the open book occupies 73.4% of the screen (410 × 232 px of 480 × 270), leaving 26.6% of the world visible. It DOMINATES, by design — it is held up in front of her — and the presenter now chooses that knowing the fraction.",
+  "tiers": [
+    {
+      "zoom": 2,
+      "worldPx": [
+        960,
+        540
+      ],
+      "roomPx": [
+        825,
+        464
+      ],
+      "scale": 3,
+      "cols": 17,
+      "lines": 12,
+      "spreadPx": [
+        810,
+        456
+      ],
+      "cellsPerSpread": 408,
+      "pctOfScreen": [
+        84.4,
+        84.4
+      ],
+      "areaPct": 71.3,
+      "worldVisiblePct": 28.7,
+      "clamped": false,
+      "holds": true,
+      "closest": false
+    },
+    {
+      "zoom": 3,
+      "worldPx": [
+        640,
+        360
+      ],
+      "roomPx": [
+        550,
+        309
+      ],
+      "scale": 2,
+      "cols": 17,
+      "lines": 12,
+      "spreadPx": [
+        540,
+        304
+      ],
+      "cellsPerSpread": 408,
+      "pctOfScreen": [
+        84.4,
+        84.4
+      ],
+      "areaPct": 71.3,
+      "worldVisiblePct": 28.7,
+      "clamped": false,
+      "holds": true,
+      "closest": false
+    },
+    {
+      "zoom": 4,
+      "worldPx": [
+        480,
+        270
+      ],
+      "roomPx": [
+        412,
+        232
+      ],
+      "scale": 1,
+      "cols": 31,
+      "lines": 20,
+      "spreadPx": [
+        410,
+        232
+      ],
+      "cellsPerSpread": 1240,
+      "pctOfScreen": [
+        85.4,
+        85.9
+      ],
+      "areaPct": 73.4,
+      "worldVisiblePct": 26.6,
+      "clamped": false,
+      "holds": true,
+      "closest": true
+    }
+  ],
+  "dataModel": {
+    "quest": "{ kind:\"quest\", title, context?, steps:[{ text, state:\"todo\"|\"done\"|\"current\" }], done?, fill? }",
+    "section": "{ kind:\"section\", head, body, slot?, slotLines?, slotCaption? }",
+    "note": "{ kind:\"note\", text, box?, state? }",
+    "newNote": "{ kind:\"newnote\" }",
+    "tabs": "[{ key, label, page:\"quests\"|\"done\"|\"knowledge\"|\"notes\", style?, subs? }] — labels and the sub-tab COUNT are yours",
+    "writeOn": "block.fill = a cell count or a 0..1 fraction; cells reveal left to right across the whole block and a caret sits in the next cell"
+  },
+  "hitBoxes": "flow().placed[k].hit is the whole block (a quest that wraps is one thing to click); .rows[j].r.hit is the ruled line; .rows[j].r.box is the box a mouse actually aims at",
+  "tabs": {
+    "families": [
+      {
+        "key": "active",
+        "placeholderLabel": "OPEN",
+        "page": "quests",
+        "subs": 0
+      },
+      {
+        "key": "done",
+        "placeholderLabel": "DONE",
+        "page": "done",
+        "subs": 0
+      },
+      {
+        "key": "know",
+        "placeholderLabel": "KNOW",
+        "page": "knowledge",
+        "subs": 3
+      },
+      {
+        "key": "notes",
+        "placeholderLabel": "MINE",
+        "page": "notes",
+        "subs": 0
+      }
+    ],
+    "ruling": "FOUR families ship as furniture: Active · Done · Knowledge · My Notes. Knowledge takes N SUB-TABS and N is DATA — the kit ships the chip and the label rect, never a label.",
+    "mount": "layout().tabMountX is the mount line (the fore-edge). layout().tabs[i] is chip + label rect + cursor rest, i in 0..7.",
+    "chip": {
+      "w": 37,
+      "h": 12,
+      "pad": 3,
+      "gap": 3,
+      "top": 7,
+      "max": 8
+    },
+    "maxLabelChars": "colsFor(tabW − pad − 1) — 5 characters at scale 1, clipped not shrunk. Sub-tabs lose one to the narrower stub.",
+    "states": [
+      "on — pulled out, inked edge, lit top row",
+      "off — flush, unlit",
+      "cursor — the pointing hand rests on the stub at layout().tabs[i].cursor"
+    ],
+    "styles": [
+      {
+        "key": "card",
+        "label": "HAND-LETTERED CARD",
+        "ship": true,
+        "note": "Cut card, hand-lettered in ink. The four family tabs are these."
+      },
+      {
+        "key": "tape",
+        "label": "PENCIL ON TAPE",
+        "ship": false,
+        "note": "A strip of masking tape, pencilled. Right for tabs SHE added later — knowledge sub-tabs, most likely."
+      },
+      {
+        "key": "cloth",
+        "label": "STITCHED CLOTH",
+        "ship": false,
+        "note": "Oat cloth stub, no lettering room to speak of. Best as a colour-coded family marker if labels move onto the page instead."
+      }
+    ]
+  },
+  "quest": {
+    "anatomy": "block = { kind:\"quest\", title, context?, steps:[{text, state}], done? }. blockRows() turns it into ruled lines; flow() places it.",
+    "titleRow": "starts at leaf.titleX, titleCols wide, ink, the hand at press 0.9",
+    "contextLine": "optional, same x, pencil at press 0.68 — the asker or the deadline, never a second title",
+    "step": {
+      "box": "leaf.rows[i].box · 6 × 6 px at scale 1",
+      "text": "leaf.rows[i].text · cols wide",
+      "states": [
+        "unchecked — the box, empty",
+        "checked — the box + a tick, and the text struck through",
+        "current — the CURRENT marker (see currents)"
+      ]
+    },
+    "currents": [
+      {
+        "key": "arrow",
+        "label": "INK ARROW",
+        "ship": true,
+        "note": "The box lane carries a solid ink arrowhead instead of a box. Costs no colour, cannot collide with the selection gold, and reads at one glance because nothing else on the page is solid."
+      },
+      {
+        "key": "pill",
+        "label": "GOLD PILL",
+        "ship": false,
+        "note": "The bubble kit’s emphasis, on the step row. Strongest read on the page — and the reason it does not ship by default: gold already means SELECTED. Two meanings for one colour on one page is the owner’s call, not the rig’s."
+      },
+      {
+        "key": "dot",
+        "label": "INKED BOX",
+        "ship": false,
+        "note": "The box stays and takes a heavy ink dot. Quietest and most diegetic — she blacked in the one she is on — but at 6 px it is a smudge, not a signal."
+      }
+    ],
+    "done": [
+      {
+        "key": "strike",
+        "label": "STRUCK + TICKED",
+        "ship": true,
+        "note": "A pencil line through the title and a tick in every box. Carried from pass 2, costs nothing, and keeps a finished quest legible — the page is a record of what she did, so nothing is deleted."
+      },
+      {
+        "key": "stamp",
+        "label": "HARBOUR STAMP",
+        "ship": false,
+        "note": "A stamped DONE in the printed margin ink, over the title row. The best read on a Done tab at a glance and the most characterful — but it is the harbourmaster’s mark on HER book, so it implies someone else signs her work off. Owner’s call."
+      },
+      {
+        "key": "fade",
+        "label": "INK FADE",
+        "ship": false,
+        "note": "The whole block redrawn at a light press, as if the ink has gone. Quietest, cheapest, and the most honest about time passing — loses the tick, which is the satisfying part."
+      }
+    ],
+    "checkboxFamily": [
+      {
+        "key": "pencil",
+        "label": "PENCIL SQUARE",
+        "ship": true,
+        "note": "Four pencil strokes with the corners not quite meeting. She ruled it herself, so it wobbles."
+      },
+      {
+        "key": "printed",
+        "label": "PRINTED SQUARE",
+        "ship": false,
+        "note": "A clean printed box with a hand tick in it. Reads as a form she was given — wrong for her own lists, arguably right for quests."
+      },
+      {
+        "key": "round",
+        "label": "PENCIL CIRCLE",
+        "ship": false,
+        "note": "A scratched ring. Softer, and a filled ring makes a strong CURRENT marker — but a circle at 6 px costs a pixel of legibility."
+      }
+    ],
+    "reuse": "the checkbox family is drawn ONCE here and reused verbatim by the player’s own note lines — same function, same rect, different ink weight",
+    "hitBoxes": "flow().placed[k].hit is the whole block (a quest that wraps is one thing to click); .rows[j].r.hit is the ruled line; .rows[j].r.box is the box a mouse actually aims at"
+  },
+  "knowledge": {
+    "header": "block = { kind:\"section\", head, body, slot? } — head in ink with a ruled underline, body in the hand at titleCols",
+    "rules": "the printed ruled stock carries the body; the facing leaf is squared so a diagram lands on the same lattice as the type",
+    "slot": {
+      "rect": "the rows the section RESERVED (slotLines, default 5) — the frame flows with the text, so knowledge copy can never run through it. layout().plate is the default full-leaf rect for a plate that is not part of a section.",
+      "api": "plate(ctx, layout, {rect, caption, fill}) · block = { kind:\"section\", head, body, slot:true, slotLines?, slotCaption? }",
+      "note": "ART RESERVES THE ROOM AND SAYS WHERE. The frame, the corner ticks and the caption ship now; what goes inside is a later content drop (knots, a fish plate, a rigged line)."
+    }
+  },
+  "notes": {
+    "stock": "the leaves are stock \"mine\" — the same paper, ruled by HER in pencil, wobbling, with no printed margin rule. Distinct by drawing, not by a new colour.",
+    "lines": "block = { kind:\"note\", text, box?, state? } — prose lines run titleCols wide with no box; task lines take the shared checkbox family at cols wide",
+    "newNote": "block = { kind:\"newnote\" } — newNoteMark() draws a fresh box and a pencil cross in the margin lane; its rect is the affordance’s hit-box",
+    "playerText": [
+      {
+        "key": "clean",
+        "label": "THE BUBBLE KIT’S FACE",
+        "ship": true,
+        "note": "The page is set in exactly the face the bubbles are set in — same glyphs, same cell, same weight. SHIPS (owner, 2026-08-17): the roughened hand was unreadable at page sizes, and knowledge pages are the longest running text in the game. What makes the book HERS is the furniture — her pencil rules, her wobbling boxes, her strikes — not damaged letters."
+      },
+      {
+        "key": "rough",
+        "label": "THE ROUGHENED HAND",
+        "ship": false,
+        "note": "The same glyphs with baseline wobble, dropped strokes, crowding inside the cell and per-line drift. Reads as written rather than typeset and holds up enlarged — and at one cell it costs legibility, which is why it is a flag and not the default. Still drawn and still measured: probeHand() runs against this mode."
+      }
+    ]
+  },
+  "flow": {
+    "api": "flow(blocks, layout) → { placed[], overflow, used[], capacity, filled }",
+    "rule": "blocks are kept whole. A quest that fits a leaf but not the remaining rows moves to the facing leaf; a quest that fits neither is split, because the alternative is not drawing it.",
+    "overflow": "what is left over is NOT drawn and NOT shrunk: overflowMark() writes a pencil \"n more\" with an arrow, and the answer is pageTurn(). There is no scroll state in this kit.",
+    "proof": "probeFlow()"
+  },
+  "selection": {
+    "shared": "the pointing hand and the cove gold are BubbleKit.CURSORS / BubbleKit.GOLD, imported — one selection vocabulary across the talking UI and the book UI",
+    "cursors": [
+      {
+        "key": "hand",
+        "label": "POINTING HAND",
+        "ship": true,
+        "w": 10,
+        "h": 9,
+        "point": [
+          9,
+          3
+        ],
+        "note": "BubbleKit.CURSORS.hand, unchanged and imported. One selection vocabulary across the talking UI and the book UI — the player learns the pointer once. It rests in the margin lane, over the printed margin rule, which is where a hand actually goes on a page."
+      },
+      {
+        "key": "cuff",
+        "label": "HAND + CUFF",
+        "ship": false,
+        "w": 10,
+        "h": 9,
+        "point": [
+          9,
+          3
+        ],
+        "note": "The bubble kit’s knitted-cuff alternate. Still on the owner’s board there; if it wins there it wins here, because there is only one cursor family."
+      },
+      {
+        "key": "tack",
+        "label": "BRASS TACK",
+        "ship": false,
+        "w": 6,
+        "h": 6,
+        "point": [
+          5,
+          2
+        ],
+        "note": "An object pressed into the page — no anatomy to get wrong. Reads as a rivet before it reads as a pointer."
+      }
+    ],
+    "highlights": [
+      {
+        "key": "pill",
+        "label": "GOLD PILL",
+        "ship": true,
+        "note": "The bubble kit’s selected row in the same cove gold. Selection must never be missed and the owner ruled on it once; this rig does not re-open it. NOTE the collision below: if the CURRENT step also takes gold, gold stops meaning \"you are here\"."
+      },
+      {
+        "key": "bracket",
+        "label": "PENCIL BRACKET",
+        "ship": false,
+        "note": "Hand-drawn brackets round the row, as if she marked it. The most diegetic of the four and the strongest contender if gold ever reads as UI on paper stock."
+      },
+      {
+        "key": "rule",
+        "label": "GOLD RULE",
+        "ship": false,
+        "note": "Paper stays, a gold rule under the row. Lightest touch, leans hardest on the cursor."
+      },
+      {
+        "key": "press",
+        "label": "PRESSED ROW",
+        "ship": false,
+        "note": "The row is inset a pixel, shade above and light below. Costs no colour; quietest."
+      }
+    ],
+    "rests": "a row cursor rests at rows[i].cursor (the margin lane, 12 px, sized for the bubble kit’s 10 px hand); a tab cursor rests at tabs[i].cursor",
+    "collision": "GOLD MEANS SELECTED. If the CURRENT step also takes gold (currents.pill), one colour carries two meanings on one page — flagged, not decided."
+  },
+  "book": {
+    "closed": "NotebookIsoKit — the world prop AND the icon gameplay mounts wherever the open verb lives. ~3 × 5 px in the world, 8 facings, cover ramp from the cover board.",
+    "spread": "drawUnit() — two leaves, a gutter, a fore-edge, tabs off the edge. layout().leaves[i] publishes each leaf’s text inset rect (x, y, w, h) and its row grid.",
+    "turn": {
+      "frames": 3,
+      "api": "pageTurn(ctx, layout, frame 1..3)",
+      "note": "a flip, not a scroll: lift off the right leaf, stand at the gutter, land on the left. ~70 ms a frame at 3 frames is a page turn you can read; slower reads as a cutscene."
+    },
+    "ribbon": "ribbon(ctx, layout, {at}) — the bookmark, 3 px, cover-height plus a tail. It is also the only thing that reads on a dark cover, which is why the cover board matters.",
+    "wear": {
+      "api": "wear(ctx, layout, level 1..2)",
+      "ships": "CHEAP — nibbled fore-edge at level 1, plus a stain at level 2. Flagged not gold-plated: per-page wear, ring stains and a cracked spine are a separate ask."
+    },
+    "pageNumbers": "pageNumber(ctx, leaf, n) — pencil, in the outside corner of each leaf. layout().leaves[i].pageNo is the rect.",
+    "cornerMarks": "cornerMark(ctx, rect, \"next\"|\"prev\") — layout().cornerNext / cornerPrev. The dog-ear is decoration; these two are the affordance."
+  },
+  "api": {
+    "drawUnit": "drawUnit(ctx, X, Y, W, H, o) → layout + flow · the spread into any rect, cell-exact and centred",
+    "layout": "layout(X, Y, W, H, o) → rects and hit-boxes, nothing drawn",
+    "fit": "fit(availW, availH, o) → the integer scale and the cols/lines that fill the room",
+    "flow": "flow(blocks, layout) → placement and overflow, nothing drawn",
+    "render": "render({cols, lines, scale}) → canvas sized from the CELLS · render({W, H}) fits the biggest legal spread",
+    "pieces": "tickBox · tickMark · currentMark · strike · doneStamp · caret · cursor · highlight · tabStub · drawStock · plate · newNoteMark · ribbon · dogEar · cornerMark · pageNumber · wear · pageTurn · overflowMark",
+    "type": "hand(ctx, str, x, y, s, col, colLo, seed, {limit, press, skew, rough}) → {w, cells, adv, origins[]} · ROUGH DEFAULTS TO 0: the clean shared face, pixel-identical to BubbleKit.text(). press and skew apply only when rough is 1 — ink and pencil are told apart by COLOUR, never by holes in the letters. text() is the same glyphs unroughened, used by probeHand() and the sheet captions · wrap() and FONT are the bubble kit’s",
+    "numbers": "metricsTable() · readBudget({out, tiers, share}) · probes() · boards() · sheet()/sheetSpec() · contract()"
+  },
+  "probesToRun": [
+    "NotebookKit.probeType()",
+    "NotebookKit.probeHand()",
+    "NotebookKit.probeWrite()",
+    "NotebookKit.probeFlow()"
+  ],
+  "probeResults": {
+    "type": {
+      "pass": true,
+      "sameFontObject": true,
+      "mismatched": [],
+      "glyphs": 81,
+      "cell": [
+        5,
+        10
+      ],
+      "bubbleCell": [
+        5,
+        10
+      ],
+      "lowercase": true,
+      "claim": "the notebook’s cell and glyph set ARE the bubble kit’s, by reference — one voice across the talking UI and the book UI, enforced rather than promised.",
+      "fails": null
+    },
+    "hand": {
+      "pass": true,
+      "cellsExact": true,
+      "glyphs": 32,
+      "diffPct": 92.1,
+      "wobblePct": 46.9,
+      "crowdedGlyphs": 12,
+      "droppedPx": 25,
+      "inkHand": 215,
+      "inkPrint": 240,
+      "claim": "the ROUGHENED mode (flagged OFF) differs from the clean face pixel by pixel — wobble, crowding, dropped strokes — while every cell origin stays exactly x + i·5·s. The page ships clean, so what this proves is that switching roughness back on cannot break the arithmetic.",
+      "fails": null
+    },
+    "write": {
+      "pass": true,
+      "steps": 21,
+      "firstBreak": -1,
+      "growingSteps": 17,
+      "marksOk": true,
+      "midWrite": {
+        "caret": 1
+      },
+      "finished": {
+        "strike": 3,
+        "tick": 2
+      },
+      "claim": "ink at fill k is a subset of ink at fill k+1; a part-written block carries exactly ONE caret and no strike or tick on text that has not been written yet; a finished one carries its marks and no caret.",
+      "fails": null
+    },
+    "flow": {
+      "pass": true,
+      "given": 5,
+      "placed": 1,
+      "overflow": 4,
+      "rowsUsed": [
+        8,
+        4
+      ],
+      "capacity": 16,
+      "straddled": 0,
+      "claim": "blocks are kept whole across the gutter when they could fit a leaf, nothing is drawn past the last ruled line, and placed + overflow = given — so the pencil \"n more\" is a fact and the page turn is the only answer to a long list.",
+      "fails": null
+    }
+  },
+  "openQuestions": [
+    "THE DONE TREATMENT. Struck + ticked ships by default (cheapest, carried, keeps the tick). The harbour stamp is the best read on a Done tab and the most characterful, but it is the harbourmaster’s mark in HER book — that is a fiction call, not an art call. Ink fade is quietest and loses the tick. All three are drawn and on the board.",
+    "THE CURRENT STEP. The ink arrow ships because gold already means SELECTED, and spending it twice on one page is how a colour stops meaning anything. If the owner wants the bubble kit’s gold-pill emphasis on the current step, the swap is one string — and then selection needs its own mark (the pencil bracket is drawn and measured).",
+    "THE FACE ON THE PAGE — RESOLVED 2026-08-17, recorded here because it reverses pass 1 and 2. The page is set in the bubble kit’s face CLEAN: the roughened hand (wobble, dropped strokes, crowding, drift) was unreadable at page sizes, and knowledge pages are the longest running text in the game. The roughening is still drawn, still measured by probeHand(), and one flag away (`rough`) if the owner wants it back for short pages. What carries \"she wrote this\" now is the furniture: her pencil-ruled leaves, her wobbling boxes, her strikes, pencil weight for her own lines.",
+    "THE COVER. Waxed dark teal ships (pass 1). Oxblood reads instantly against water and is the best closed-icon at 3 × 5 px; oiled canvas reads as a ledger rather than a diary. Whichever wins, the ribbon stays — it is the only thing that reads on a dark cover.",
+    "HOW MUCH SCREEN THE OPEN BOOK TAKES. readBudget().occupancyAnswer states the fraction at the closest tier instead of asserting a screenshot. The kit’s position: it is a held object and it may dominate; the number is published so the presenter chooses knowingly.",
+    "KNOWLEDGE SUB-TAB COUNT. N is data. The chip clips at 5 characters and 8 stubs fit the fore-edge at any legal size — past that the tab column needs a second bank, which is a layout change, not a label change.",
+    "WEAR. Two levels ship cheap. Per-page wear, ring stains, a cracked spine and a swollen block are a separate ask with real art in them.",
+    "THE ILLUSTRATION SLOT’S CONTENTS. The rect, the frame and the caption ship. Nobody has said what draws inside it."
+  ],
+  "face": "the page is set in BubbleKit.FONT CLEAN (roughness ships off, 2026-08-17) — NotebookKit.hand(..., {rough:1}) is the roughened alternate",
+  "doctrine": {
+    "law": "knowledge lives in things and people — so the notebook is a thing she writes in, and it must never read as a menu or a panel",
+    "consequence": "the page is set in the SHARED face, clean — the bubble kit’s glyphs pixel for pixel, no second face in the game and no roughened variant on the page by default. What carries “she wrote this” is the FURNITURE: her pencil-ruled leaves, her wobbling checkboxes, her strikes, pencil weight for her own lines, and the write-on laying a line down a cell at a time. Damaged letters were tried in passes 1–2 and reversed — they cost legibility, which is the one thing a knowledge page cannot spend.",
+    "noBakedText": "NOTHING in this kit contains a word of game text. Titles, steps, knowledge lines, tab labels and notes are caller data; what ships is furniture with measured rects. The strings in NotebookKit.SAMPLE exist for the harness and the reference sheet and are not part of this contract.",
+    "object": "never chrome, never a panel: paper, ink, pencil, tabs, a ribbon. Overflow is MORE PAGES — pageTurn() has the frames and there is no scrollbar anywhere in the kit."
+  },
+  "finding": {
+    "pass1": "true cursive does not survive this cap height with no anti-aliasing — the joins fill and the line greys out. An upright hand-set letterform with baseline wobble, dropped pixels and per-line drift reads as written and stays legible enlarged.",
+    "pass2": "the four irregularities are not equal. Wobble, dropped pixels and drift cost nothing but paper; uneven ADVANCE costs the arithmetic — no wrap, no caret, no fill, no hit-box. The irregularity moved INSIDE the cell.",
+    "pass3": "the face itself was the last thing left to share. It is now imported from the bubble kit rather than declared here, so \"one voice\" is a reference, not a promise — and mixed case arrived with it, which is what knowledge pages needed. The same pass REVERSED THE ROUGHENING: the page ships clean (owner, 2026-08-17), because wobble and dropped strokes at one cell cost more legibility than they buy character. probeHand() still runs against the roughened mode, so switching it back on cannot break the arithmetic.",
+    "test": "probeType() · probeHand() · probeWrite() · probeFlow(). Run all four in the import PR and fail on them."
+  }
+}

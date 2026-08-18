@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=IM+Fell+DW+Pica:ital@0;1&display=swap" rel="stylesheet">
+<script src="Art/dialogueBubbleRig.js"></script>
+<script src="Art/isoSolid.js"></script>
+<script src="Art/notebookRig3.js"></script>
+<style>
+  *{box-sizing:border-box;}
+  html,body{margin:0;background:#0b1216;}
+  canvas{image-rendering:pixelated;image-rendering:crisp-edges;display:block;}
+  a{color:#7fd6c9;text-decoration:none;} a:hover{color:#a9e7dd;}
+</style>
+</helmet>
+<div style="min-height:100vh;background:#0b1216;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#aeb9bb;padding:30px 24px 60px;display:flex;flex-direction:column;align-items:center;gap:22px;">
+
+  <div style="width:100%;max-width:1200px;display:flex;align-items:flex-end;justify-content:space-between;border-bottom:1px solid #243137;padding-bottom:13px;gap:16px;flex-wrap:wrap;">
+    <div style="display:flex;flex-direction:column;gap:5px;">
+      <div style="font-family:'IM Fell English SC',serif;font-size:25px;color:#eef3f2;letter-spacing:0.5px;line-height:1;">The Notebook &middot; pass 3 &middot; the main UI surface</div>
+      <div style="font-size:10.5px;letter-spacing:0.16em;color:#6f7e83;">ACTIVE&nbsp;&middot;&nbsp;DONE&nbsp;&middot;&nbsp;KNOWLEDGE&nbsp;&middot;&nbsp;MY&nbsp;NOTES&nbsp;&mdash;&nbsp;NO&nbsp;MENUS,&nbsp;A&nbsp;PHYSICAL&nbsp;BOOK</div>
+    </div>
+    <div style="font-family:'IM Fell DW Pica',serif;font-style:italic;font-size:13.5px;color:#c9a86a;max-width:470px;text-align:right;line-height:1.45;">The face is no longer this kit&rsquo;s. It is imported from the bubble kit, so one voice is a reference rather than a promise &mdash; and mixed case arrived with it, which is what knowledge pages needed.</div>
+  </div>
+
+  <div style="width:100%;max-width:1200px;display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start;justify-content:center;">
+
+    <div style="display:flex;flex-direction:column;gap:12px;align-items:flex-start;">
+      <div style="position:relative;border:1px solid #243137;background:#0e181d;">
+        <canvas ref="{{ faceRef }}" width="800" height="470"></canvas>
+        <div style="position:absolute;left:11px;top:10px;font-size:10.5px;letter-spacing:0.1em;background:rgba(11,18,22,0.62);padding:4px 9px;color:#c9a86a;">{{ faceLabel }}</div>
+        <div style="position:absolute;right:11px;top:10px;font-size:10.5px;letter-spacing:0.1em;background:rgba(11,18,22,0.62);padding:4px 9px;color:#9fb0b4;">{{ faceFit }}</div>
+      </div>
+
+      <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;">
+        <div style="position:relative;border:1px solid #243137;background:#0e181d;">
+          <canvas ref="{{ smallRef }}" width="310" height="250"></canvas>
+          <div style="position:absolute;left:8px;top:7px;font-size:9px;letter-spacing:0.08em;background:rgba(11,18,22,0.62);padding:3px 7px;color:#9fb0b4;">SAME RIG &middot; SCALE 1</div>
+        </div>
+        <div style="border:1px solid #243137;background:#0f191e;padding:11px 12px;width:466px;display:flex;flex-direction:column;gap:7px;">
+          <div style="font-size:10px;letter-spacing:0.1em;color:#c9a86a;">THE FLOW &middot; OVERFLOW IS MORE PAGES</div>
+          <div style="font-size:9.5px;color:#8a969b;line-height:1.6;">A quest is a block, not a row. Blocks are kept whole: one that fits a leaf but not the rows left moves to the facing leaf. What is left over is not drawn small &mdash; it is a pencil count and a page turn. There is no scroll state anywhere in this kit.</div>
+          <div style="display:grid;grid-template-columns:auto 1fr;font-size:10.5px;border:1px solid #243137;">
+            <sc-for list="{{ flowRows }}" as="f" hint-placeholder-count="5">
+              <div style="padding:5px 9px;color:#6f7e83;letter-spacing:0.06em;border-top:{{ f.border }};background:#0e181d;">{{ f.k }}</div>
+              <div style="padding:5px 9px;color:{{ f.fg }};border-top:{{ f.border }};border-left:1px solid #243137;">{{ f.v }}</div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+
+      <div style="position:relative;border:1px solid #243137;background:#0e181d;">
+        <canvas ref="{{ turnRef }}" width="800" height="240"></canvas>
+        <div style="position:absolute;left:11px;top:9px;font-size:10.5px;letter-spacing:0.1em;background:rgba(11,18,22,0.62);padding:4px 9px;color:#9fb0b4;">THE PAGE TURN &middot; 3 FRAMES &middot; A FLIP, NOT A SCROLL</div>
+      </div>
+
+      <div style="position:relative;border:1px solid #243137;background:#0e181d;">
+        <canvas onClick="{{ boardClick }}" ref="{{ boardRef }}" width="800" height="600" style="cursor:pointer;"></canvas>
+        <div style="position:absolute;left:11px;top:9px;font-size:10.5px;letter-spacing:0.1em;background:rgba(11,18,22,0.62);padding:4px 9px;color:#c9a86a;">SEVEN TASTE BOARDS &middot; CLICK A TILE &middot; THE SHIPPED PICK IS MARKED</div>
+      </div>
+
+      <div style="border:1px solid #243137;background:#0f191e;padding:11px 12px;width:800px;display:flex;flex-direction:column;gap:9px;">
+        <div style="font-size:10px;letter-spacing:0.1em;color:#c9a86a;">WHAT EACH BOARD IS ASKING</div>
+        <sc-for list="{{ boardNotes }}" as="b" hint-placeholder-count="7">
+          <div style="display:grid;grid-template-columns:120px 1fr;gap:10px;font-size:9.5px;line-height:1.6;">
+            <div style="color:#6f7e83;letter-spacing:0.06em;">{{ b.label }}</div>
+            <div style="color:#8a969b;"><span style="color:{{ b.fg }};">{{ b.pick }}</span> &middot; {{ b.note }}</div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="position:relative;border:1px solid #243137;background:#0e181d;">
+        <canvas ref="{{ isoRef }}" width="800" height="200"></canvas>
+        <div style="position:absolute;left:11px;top:9px;font-size:10.5px;letter-spacing:0.1em;background:rgba(11,18,22,0.62);padding:4px 9px;color:#9fb0b4;">CLOSED &middot; ALSO THE ICON THE OPEN VERB MOUNTS &middot; 0.10 &times; 0.145 m</div>
+      </div>
+
+      <div style="position:relative;border:1px solid #243137;background:#0e181d;">
+        <canvas ref="{{ sheetRef }}" width="600" height="600"></canvas>
+        <div style="position:absolute;right:11px;top:9px;font-size:10.5px;letter-spacing:0.1em;background:rgba(11,18,22,0.62);padding:4px 9px;color:#9fb0b4;">REFERENCE SHEET &middot; DRAWN BY THE KIT ITSELF</div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:15px;width:352px;">
+
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#7fd6c9;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">The four families</div></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+          <sc-for list="{{ pageOpts }}" as="p" hint-placeholder-count="4">
+            <div onClick="{{ p.set }}" style="text-align:center;padding:9px 0;cursor:pointer;user-select:none;font-size:10px;letter-spacing:0.06em;border:1px solid {{ p.bd }};background:{{ p.bg }};color:{{ p.fg }};">{{ p.label }}</div>
+          </sc-for>
+        </div>
+        <div style="font-size:9px;color:#586970;line-height:1.65;">{{ pageNote }}</div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#e6b53f;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Prove the layout</div></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+          <sc-for list="{{ dataOpts }}" as="d" hint-placeholder-count="5">
+            <div onClick="{{ d.set }}" style="text-align:center;padding:9px 3px;cursor:pointer;user-select:none;font-size:9.5px;letter-spacing:0.04em;border:1px solid {{ d.bd }};background:{{ d.bg }};color:{{ d.fg }};">{{ d.label }}</div>
+          </sc-for>
+        </div>
+        <div style="font-size:9px;color:#586970;line-height:1.65;">{{ dataNote }}</div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#e0b13a;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Selection &amp; state</div></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
+          <sc-for list="{{ cursorOpts }}" as="c" hint-placeholder-count="3">
+            <div onClick="{{ c.set }}" style="text-align:center;padding:8px 0;cursor:pointer;user-select:none;font-size:9.5px;letter-spacing:0.04em;border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }};">{{ c.label }}</div>
+          </sc-for>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+          <sc-for list="{{ hlOpts }}" as="h" hint-placeholder-count="4">
+            <div onClick="{{ h.set }}" style="text-align:center;padding:8px 0;cursor:pointer;user-select:none;font-size:9.5px;letter-spacing:0.04em;border:1px solid {{ h.bd }};background:{{ h.bg }};color:{{ h.fg }};">{{ h.label }}</div>
+          </sc-for>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <div onClick="{{ selUp }}" style="flex:1;text-align:center;padding:8px 0;cursor:pointer;user-select:none;font-size:10px;border:1px solid #243137;background:#0f191e;color:#8a969b;">&#9650; BLOCK</div>
+          <div onClick="{{ selDown }}" style="flex:1;text-align:center;padding:8px 0;cursor:pointer;user-select:none;font-size:10px;border:1px solid #243137;background:#0f191e;color:#8a969b;">&#9660; BLOCK</div>
+          <div onClick="{{ tabWalk }}" style="flex:1;text-align:center;padding:8px 0;cursor:pointer;user-select:none;font-size:10px;border:1px solid #243137;background:#0f191e;color:#8a969b;">&#8594; ON A TAB</div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <div onClick="{{ replay }}" style="flex:1;text-align:center;padding:9px 0;cursor:pointer;user-select:none;font-size:10px;letter-spacing:0.08em;border:1px solid #2f6079;background:#122530;color:#7fd6c9;">&#9998; WRITE IT AGAIN</div>
+          <div onClick="{{ toggleNight }}" style="flex:1;text-align:center;padding:9px 0;cursor:pointer;user-select:none;font-size:10px;letter-spacing:0.08em;border:1px solid {{ nightBd }};background:{{ nightBg }};color:{{ nightFg }};">{{ nightLabel }}</div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <sc-for list="{{ wearOpts }}" as="w" hint-placeholder-count="3">
+            <div onClick="{{ w.set }}" style="flex:1;text-align:center;padding:8px 0;cursor:pointer;user-select:none;font-size:9.5px;letter-spacing:0.04em;border:1px solid {{ w.bd }};background:{{ w.bg }};color:{{ w.fg }};">{{ w.label }}</div>
+          </sc-for>
+        </div>
+        <div style="font-size:9px;color:#586970;line-height:1.65;">The write-on is the bubble&rsquo;s per-character fill on paper: cells left to right, a caret in the next one. Wear is cheap and flagged &mdash; two levels, no new art.</div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#a8503c;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Four claims, as tests</div></div>
+        <sc-for list="{{ probeRows }}" as="p" hint-placeholder-count="4">
+          <div style="border:1px solid {{ p.bd }};background:#0f191e;padding:9px 11px;display:flex;flex-direction:column;gap:5px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;"><div style="font-size:10.5px;letter-spacing:0.08em;color:#c4cdcd;">{{ p.name }}</div><div style="font-size:9.5px;letter-spacing:0.1em;color:{{ p.fg }};">{{ p.verdict }}</div></div>
+            <div style="font-size:9px;color:#7d8a8e;line-height:1.6;">{{ p.claim }}</div>
+            <div style="font-size:9px;color:#586970;letter-spacing:0.04em;">{{ p.nums }}</div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#7fd6c9;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">One type system</div></div>
+        <div style="border:1px solid #243137;display:grid;grid-template-columns:auto 1fr;font-size:10px;">
+          <sc-for list="{{ typeRows }}" as="t" hint-placeholder-count="6">
+            <div style="padding:5px 8px;color:#6f7e83;border-top:{{ t.border }};background:#0e181d;">{{ t.k }}</div>
+            <div style="padding:5px 8px;color:{{ t.fg }};border-top:{{ t.border }};border-left:1px solid #243137;">{{ t.v }}</div>
+          </sc-for>
+        </div>
+        <div style="font-size:9px;color:#586970;line-height:1.65;">{{ costNote }}</div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#c9a86a;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Lanes &amp; rects</div></div>
+        <div style="border:1px solid #243137;display:grid;grid-template-columns:auto 1fr;font-size:10px;">
+          <sc-for list="{{ laneRows }}" as="l" hint-placeholder-count="7">
+            <div style="padding:5px 8px;color:#6f7e83;border-top:{{ l.border }};background:#0e181d;">{{ l.k }}</div>
+            <div style="padding:5px 8px;color:#8a969b;border-top:{{ l.border }};border-left:1px solid #243137;">{{ l.v }}</div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#7fd6c9;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Read budget</div></div>
+        <div style="font-size:9px;color:#586970;line-height:1.65;">{{ occupancy }}</div>
+        <div style="border:1px solid #243137;display:grid;grid-template-columns:auto auto 1fr auto;font-size:10px;">
+          <sc-for list="{{ budgetRows }}" as="b" hint-placeholder-count="3">
+            <div style="padding:5px 8px;color:#6f7e83;border-top:{{ b.border }};background:#0e181d;">{{ b.tier }}</div>
+            <div style="padding:5px 8px;color:#c4cdcd;border-top:{{ b.border }};border-left:1px solid #243137;">{{ b.scale }}</div>
+            <div style="padding:5px 8px;color:#8a969b;border-top:{{ b.border }};border-left:1px solid #243137;">{{ b.cells }}</div>
+            <div style="padding:5px 8px;color:{{ b.fg }};border-top:{{ b.border }};border-left:1px solid #243137;">{{ b.verdict }}</div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:9px;"><div style="width:8px;height:8px;background:#e6b53f;"></div><div style="font-size:13px;color:#e7eceb;letter-spacing:0.05em;">Flagged, not decided</div></div>
+        <sc-for list="{{ flags }}" as="f" hint-placeholder-count="8">
+          <div style="font-size:9px;color:#7d8a8e;line-height:1.6;border-left:2px solid #3a4c52;padding-left:9px;">{{ f }}</div>
+        </sc-for>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:7px;">
+        <div onClick="{{ dlSpread }}" style="font-size:10.5px;letter-spacing:0.1em;padding:9px 15px;border:1px solid #2f6079;background:#122530;color:#7fd6c9;text-align:center;cursor:pointer;user-select:none;">&darr; THIS SPREAD &middot; PNG</div>
+        <div onClick="{{ dlSheet }}" style="font-size:10.5px;letter-spacing:0.1em;padding:9px 15px;border:1px solid #243137;background:#0f191e;color:#9fb0b4;text-align:center;cursor:pointer;user-select:none;">&darr; REFERENCE SHEET &middot; PNG</div>
+        <div onClick="{{ dlContract }}" style="font-size:10.5px;letter-spacing:0.1em;padding:9px 15px;border:1px solid #243137;background:#0f191e;color:#9fb0b4;text-align:center;cursor:pointer;user-select:none;">&darr; CONTRACT &middot; JSON</div>
+        <a href="Art/notebookRig3.js" download="notebookRig3.js" style="font-size:9.5px;letter-spacing:0.08em;padding:8px 8px;border:1px solid #243137;background:#0f191e;color:#8a969b;text-align:center;">&darr; RIG SOURCE &middot; notebookRig3.js</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 1240, &quot;height&quot;: 2400 },
+  &quot;page&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;quests&quot;, &quot;options&quot;: [&quot;quests&quot;,&quot;done&quot;,&quot;knowledge&quot;,&quot;notes&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Page&quot; },
+  &quot;data&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;normal&quot;, &quot;options&quot;: [&quot;normal&quot;,&quot;steps&quot;,&quot;title&quot;,&quot;know&quot;,&quot;notes&quot;,&quot;many&quot;,&quot;empty&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Page&quot; },
+  &quot;night&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: false, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Page&quot; },
+  &quot;player&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;clean&quot;, &quot;options&quot;: [&quot;clean&quot;,&quot;rough&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Taste calls&quot; },
+  &quot;current&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;arrow&quot;, &quot;options&quot;: [&quot;arrow&quot;,&quot;pill&quot;,&quot;dot&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Taste calls&quot; },
+  &quot;done&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;strike&quot;, &quot;options&quot;: [&quot;strike&quot;,&quot;stamp&quot;,&quot;fade&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Taste calls&quot; },
+  &quot;box&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;pencil&quot;, &quot;options&quot;: [&quot;pencil&quot;,&quot;printed&quot;,&quot;round&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Taste calls&quot; },
+  &quot;cover&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;waxed&quot;, &quot;options&quot;: [&quot;waxed&quot;,&quot;oxblood&quot;,&quot;canvas&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Taste calls&quot; },
+  &quot;cursor&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;hand&quot;, &quot;options&quot;: [&quot;hand&quot;,&quot;cuff&quot;,&quot;tack&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Selection&quot; },
+  &quot;highlight&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;default&quot;: &quot;pill&quot;, &quot;options&quot;: [&quot;pill&quot;,&quot;bracket&quot;,&quot;rule&quot;,&quot;press&quot;], &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Selection&quot; }
+}">
+class Component extends DCLogic {
+  constructor(props){
+    super(props);
+    const s=this._load();
+    this.state={
+      page:s.page ?? (props.page||'quests'), data:props.data||'normal',
+      sel:s.sel==null?0:s.sel, tabCursor:s.tabCursor ?? null,
+      cursor:s.cursor ?? (props.cursor||'hand'), highlight:s.highlight ?? (props.highlight||'pill'),
+      night:s.night ?? !!props.night, wear:s.wear==null?0:s.wear,
+      picks:Object.assign({ cover:props.cover||'waxed', stock:'ruled', tab:'card',
+        box:props.box||'pencil', current:props.current||'arrow', done:props.done||'strike',
+        player:props.player||'clean' }, s.picks||{}),
+    };
+    this._t0=performance.now(); this._boardHits=[];
+    const mk=(k)=>(n)=>{ if(!n||this['_'+k]===n) return; this['_'+k]=n; this['_x'+k]=n.getContext('2d'); this._draw(); };
+    this.faceRef=mk('fc'); this.smallRef=mk('sm'); this.turnRef=mk('tn');
+    this.boardRef=mk('bd'); this.isoRef=mk('is'); this.sheetRef=mk('sh');
+  }
+  _load(){ try{ return JSON.parse(localStorage.getItem('hh.notebook3')||'{}'); }catch(e){ return {}; } }
+  _save(){ try{ localStorage.setItem('hh.notebook3', JSON.stringify(this.state)); }catch(e){} }
+  _set(p){ this.setState(p, ()=>{ this._save(); this._draw(); }); }
+  _pick(board,key){ this._set({ picks:Object.assign({}, this.state.picks, {[board]:key}) }); }
+
+  /* wall clock, not rAF time: a preview pane can be frozen outright, and whenever a paint does
+     happen it should show the correct time rather than a clock that crawled. */
+  componentDidMount(){
+    this._alive=true;
+    const loop=()=>{ if(!this._alive) return; this._draw(); this._raf=requestAnimationFrame(loop); };
+    this._raf=requestAnimationFrame(loop);
+    this._iv=setInterval(()=>this._draw(), 240);
+    this._vis=()=>this._draw(); document.addEventListener('visibilitychange', this._vis);
+  }
+  componentWillUnmount(){ this._alive=false; cancelAnimationFrame(this._raf); clearInterval(this._iv);
+    document.removeEventListener('visibilitychange', this._vis); }
+  componentDidUpdate(){ this._draw(); }
+  _now(){ return (performance.now()-this._t0)/1000; }
+  replay=()=>{ this._t0=performance.now(); this._draw(); };
+
+  /* ---------- the caller's data. Every string here is DATA; none of it is in the kit. ---------- */
+  _blocks(){
+    const N=window.NotebookKit; if(!N) return [];
+    const P=this.state.page, D=this.state.data;
+    const S=N.SAMPLE;
+    const LONG_STEPS=[{ kind:'quest', title:'Set the whole north string before the weather turns',
+      context:'Moss - nine traps, one tide',
+      steps:['bait every pot the night before','load six on the punt, three on the skiff','run the inside line first',
+        'mark the shoal end with the red buoy','let them soak two tides, no more','haul the inside line at slack water',
+        'band anything over the measure','the rest go back over the rail','tell Moss what the ground was like']
+        .map((t,i)=>({ text:t, state:i<3?'done':(i===3?'current':'todo') })) }];
+    const LONG_TITLE=[{ kind:'quest',
+      title:'Ask the harbourmaster whether the old mooring off the fish house still belongs to anybody at all',
+      context:'nobody has said yes and nobody has said no',
+      steps:[{ text:'catch him before the ferry', state:'current' },{ text:'bring the chart', state:'todo' }] },
+      { kind:'quest', title:'Paint the punt', steps:[{ text:'before the frost', state:'todo' }] }];
+    const KNOW_FULL=[
+      { kind:'section', head:'THE FLATS', body:'They dry two days after a new moon, and the clams sit a hand under the surface wherever the water still runs off. Walk the edge of the channel, not the middle of the bar.' },
+      { kind:'section', head:'READING THE WATER', body:'A dark patch that does not move is weed. A dark patch that moves with the wind is a cloud. A dark patch that moves against it is fish, and you have about a minute.' },
+      { kind:'section', head:'A HERRING NET', body:'Wants forty fathom of cork line, no less. Moss says less and it fishes like a fence.', slot:true },
+      { kind:'section', head:'THE BAR AT LOW WATER', body:'Two feet at the middle, less on a spring. Do not trust the chart here; it was drawn before the storm moved the sand.' }];
+    const NOTES_MIX=[
+      { kind:'note', text:'rope, if the store has it', box:true, state:'todo' },
+      { kind:'note', text:'paint for the punt', box:true, state:'done' },
+      { kind:'note', text:'ask about the old mooring', box:true, state:'current' },
+      { kind:'note', text:'The tide was wrong all week and nobody in the co-op would say why, so either it is the sand or it is the moon and I cannot tell which yet.', gap:true },
+      { kind:'note', text:'spare plugs, two', box:true, state:'todo' },
+      { kind:'note', text:'Moss owes me a hand with the traps.', gap:true },
+      { kind:'newnote' }];
+    const MANY=Array.from({length:7},(_,i)=>({ kind:'quest', title:'Quest number '+(i+1)+', with a title long enough to wrap the lane',
+      context:i%2?'harbourmaster':'Ella, at the co-op',
+      steps:[{ text:'the first thing', state:i?'todo':'done' },{ text:'the second thing', state:i?'current':'current' }] }));
+    let b = D==='steps'?LONG_STEPS : D==='title'?LONG_TITLE : D==='know'?KNOW_FULL
+          : D==='notes'?NOTES_MIX : D==='many'?MANY : D==='empty'?[]
+          : (S[P]||S.quests);
+    if(D==='normal' && P==='knowledge') b=S.knowledge;
+    if(D==='normal' && P==='notes') b=S.notes;
+    if(D==='normal' && P==='done') b=S.done;
+    /* the last block writes itself on the wall clock: 16 cells a second, then it sits written */
+    b=b.map(x=>Object.assign({}, x));
+    const last=b[b.length-1];
+    if(last && last.kind!=='newnote'){
+      const dt=this._now();
+      const total=(last.title?last.title.length:0)+(last.context?last.context.length:0)+
+        (last.body?last.body.length:0)+(last.head?last.head.length:0)+
+        (last.text?last.text.length:0)+((last.steps||[]).reduce((n,s)=>n+s.text.length,0));
+      const cells=Math.round((dt-0.7)*44);
+      if(cells<total) last.fill=Math.max(0,cells);
+    }
+    return b;
+  }
+  _pageFor(){ const D=this.state.data;
+    return D==='know'?'knowledge' : D==='notes'?'notes' : D==='steps'||D==='title'||D==='many'?'quests' : this.state.page; }
+  _opts(){ const S=this.state, N=window.NotebookKit;
+    const page=this._pageFor();
+    const heads={ quests:['ACTIVE',''], done:['FINISHED',''], knowledge:['HOW IT IS DONE','AS DRAWN'], notes:['MY OWN LISTS',''] }[page];
+    const blocks=this._blocks();
+    return { page, blocks, heads, night:S.night, sel:S.sel, cursor:S.cursor, highlight:S.highlight,
+      wear:S.wear, tabCursor:S.tabCursor, pageNo:12,
+      active:{ quests:'active', done:'done', knowledge:'know', notes:'notes' }[page],
+      subLabels:['TI','KN','WX'],
+      box:S.picks.box, current:S.picks.current, done:S.picks.done, tabStyle:S.picks.tab,
+      rough:S.picks.player==='rough'?1:0,
+      count:page==='quests'? (blocks.length? blocks.length+' open':'') : '' };
+  }
+
+  _draw(){ const N=window.NotebookKit; if(!N) return;
+    this._drawFace(N); this._drawSmall(N); this._drawTurn(N); this._drawBoards(N);
+    this._drawIso(N); this._drawSheet(N); }
+  _bg(ctx,cv){ ctx.imageSmoothingEnabled=false;
+    ctx.fillStyle=this.state.night?'#0a0f12':'#0e181d'; ctx.fillRect(0,0,cv.width,cv.height); }
+
+  _drawFace(N){ const ctx=this._xfc, cv=this._fc; if(!ctx) return;
+    this._bg(ctx,cv);
+    const L=N.drawUnit(ctx, 6, 24, cv.width-12, cv.height-60, Object.assign(this._opts(), {scale:2}));
+    this._lastFace=L;
+    ctx.fillStyle='#5f6e73'; ctx.font='10px ui-monospace,monospace';
+    ctx.fillText('scale '+L.s+'  \u00b7  '+L.cols+' \u00d7 '+L.lines+' cells a leaf (title lane '+L.titleCols+')  \u00b7  '+L.w+' \u00d7 '+L.h+' px  \u00b7  cell-exact, centred in the rect it was given', 10, cv.height-21);
+    const f=L.flow;
+    ctx.fillText(L.overflow? L.overflow+' block(s) did not fit \u2014 the pencil count says so and the corner mark is the answer'
+      : f.filled+' of '+f.capacity+' ruled lines used across both leaves', 10, cv.height-7);
+  }
+  /* the REAL in-game read: scale 1, in the room the closest zoom tier leaves. Everything above is
+     the same spread at 2x so a human can see the furniture. */
+  _drawSmall(N){ const ctx=this._xsm, cv=this._sm; if(!ctx) return;
+    this._bg(ctx,cv);
+    const B=N.readBudget().closest;
+    const L=N.drawUnit(ctx, 4, 4, cv.width-8, cv.height-22, Object.assign(this._opts(),
+      {sel:-1, scale:1, maxCols:B.cols, maxLines:B.lines}));
+    ctx.fillStyle='#5f6e73'; ctx.font='9px ui-monospace,monospace';
+    ctx.fillText(L.cols+'\u00d7'+L.lines+' cells \u00b7 '+L.w+'\u00d7'+L.h+' px \u00b7 '+B.areaPct+'% of the '+B.zoom+'\u00d7 screen', 6, cv.height-6);
+  }
+
+  _drawTurn(N){ const ctx=this._xtn, cv=this._tn; if(!ctx) return;
+    this._bg(ctx,cv);
+    ctx.fillStyle='#5f6e73'; ctx.font='10px ui-monospace,monospace';
+    const live=1+(Math.floor(this._now()*4)%N.TURN_FRAMES);
+    const z=N.sizeFor(14,6,1);
+    for(let f=1;f<=N.TURN_FRAMES;f++){
+      const x=12+(f-1)*(z.w+16), y=44;
+      N.drawUnit(ctx, x, y, z.w, z.h, Object.assign(this._opts(), { align:'topleft', scale:1, minCols:14, minLines:6,
+        heads:['',''], sel:-1, turn:f, wear:0 }));
+      ctx.fillStyle=f===live?'#e0b13a':'#55666d';
+      ctx.fillText('frame '+f+' \u00b7 '+['lifts off the right','stands at the gutter','lands on the left'][f-1], x, y+z.h+16);
+    }
+    ctx.fillStyle='#5f6e73';
+    ctx.fillText('a flip, not a scroll \u00b7 the gold label is the frame a 4/sec turn would be on right now \u00b7 ~70 ms a frame', 12, 30);
+  }
+
+  _drawBoards(N){ const ctx=this._xbd, cv=this._bd; if(!ctx) return;
+    this._bg(ctx,cv);
+    ctx.font='10px ui-monospace,monospace';
+    const BD=N.boards(Object.assign({night:this.state.night}, this.state.picks));
+    const hits=[]; let y=34;
+    for(const b of BD){
+      ctx.fillStyle='#c9a86a'; ctx.fillText(b.label, 12, y-8);
+      let x=12, rowH=0;
+      for(const t of b.tiles){
+        const on=this.state.picks[b.key]===t.key;
+        ctx.fillStyle=on?'#e0b13a':'#243137'; ctx.fillRect(x-2, y-2, t.w+4, t.h+4);
+        ctx.fillStyle='#0e181d'; ctx.fillRect(x-1, y-1, t.w+2, t.h+2);
+        t.draw(ctx, x, y, 1);
+        ctx.fillStyle=on?'#e0b13a':(t.ship?'#8a969b':'#55666d');
+        ctx.font='10px ui-monospace,monospace';
+        const lab=t.label.toLowerCase()+(t.ship?' \u00b7 ships':'');
+        ctx.fillText(lab, x, y+t.h+13);
+        hits.push({ board:b.key, key:t.key, x:x-2, y:y-2, w:t.w+4, h:t.h+4 });
+        x+=Math.max(t.w, ctx.measureText(lab).width)+18; rowH=Math.max(rowH, t.h);
+      }
+      y+=rowH+40;
+    }
+    this._boardHits=hits;
+    ctx.fillStyle='#55666d';
+    ctx.fillText('every tile is drawn by the same functions the page calls \u2014 a tile cannot look one way here and another way on the page', 12, cv.height-10);
+  }
+  boardClick=(e)=>{
+    const r=e.currentTarget.getBoundingClientRect();
+    const x=(e.clientX-r.left)*(e.currentTarget.width/r.width);
+    const y=(e.clientY-r.top)*(e.currentTarget.height/r.height);
+    for(const h of this._boardHits) if(x>=h.x&&x<=h.x+h.w&&y>=h.y&&y<=h.y+h.h){ this._pick(h.board,h.key); return; }
+  };
+
+  _drawIso(N){ const I=window.NotebookIsoKit, ctx=this._xis, cv=this._is; if(!I||!ctx) return;
+    this._bg(ctx,cv);
+    const cover=this.state.picks.cover;
+    const put=(dir,x,y,z)=>{ const rgba=I.render(dir,{cover}); const im=new ImageData(rgba,I.W,I.H);
+      const t=document.createElement('canvas'); t.width=I.W; t.height=I.H;
+      t.getContext('2d').putImageData(im,0,0); ctx.imageSmoothingEnabled=false;
+      ctx.drawImage(t, x, y, I.W*z, I.H*z); };
+    const DIRS=['N','NE','E','SE','S','SW','W','NW'];
+    ctx.fillStyle='#5f6e73'; ctx.font='10px ui-monospace,monospace';
+    ctx.fillText('actual size \u00b7 1:1 \u00b7 cover: '+cover, 20, 30);
+    for(let d=0;d<8;d++) put(d, 20+d*22, 38, 1);
+    ctx.fillText('6\u00d7', 20, 74);
+    for(let d=0;d<8;d++){ const x=20+d*(I.W*6+12), y=82; put(d, x, y, 6);
+      ctx.fillStyle='#4a585d'; ctx.fillText(DIRS[d], x, y+I.H*6+14); ctx.fillStyle='#5f6e73'; }
+    ctx.fillText('pivot = ground under the centre \u00b7 the pale sliver of page edge and the ribbon tail are the whole read', 20, 194);
+  }
+
+  _drawSheet(N){ const ctx=this._xsh, cv=this._sh; if(!ctx) return;
+    const key=String(this.state.night)+'|'+JSON.stringify(this.state.picks);
+    if(this._sheetKey===key) return;
+    const c=N.sheet({night:this.state.night});
+    if(cv.height!==c.height) cv.height=c.height;
+    ctx.imageSmoothingEnabled=false;
+    ctx.fillStyle='#141a1e'; ctx.fillRect(0,0,cv.width,cv.height);
+    ctx.drawImage(c,0,0);
+    this._sheetKey=key;
+  }
+
+  _dl(c,name){ c.toBlob((b)=>{ if(!b) return; const u=URL.createObjectURL(b), a=document.createElement('a');
+    a.href=u; a.download=name; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(u),2000); }); }
+
+  renderVals(){
+    const S=this.state, N=window.NotebookKit, border='1px solid #243137';
+    const MT=N?N.metricsTable():null, BG=N?N.readBudget():null, PR=N?N.probes():null;
+    const C=N?N.contract():null;
+    const tab=(on)=>({ bd:on?'#2f6079':'#243137', bg:on?'#122530':'#0f191e', fg:on?'#7fd6c9':'#8a969b' });
+    const gold=(on)=>({ bd:on?'#6b5a24':'#243137', bg:on?'#211b0e':'#0f191e', fg:on?'#e6c96a':'#8a969b' });
+    const page=this._pageFor();
+    const L=this._lastFace;
+    const PN={ quests:'Title, an optional context line, then the step list. The CURRENT step is the one the eye must find first \u2014 its marker is a board call, not a rig call.',
+      done:'The same anatomy under the done treatment. Nothing is deleted: the page is a record of what she did.',
+      knowledge:'Section header with a ruled underline, body in the hand at the title lane, and a measured illustration slot on the squared leaf. The slot ships; its contents are a later drop.',
+      notes:'Her paper: same stock, but the rules are hers \u2014 pencil, wobbling, no printed margin. The checkbox family is reused verbatim, and the last line is the new-note affordance.' }[page];
+    const DN={ normal:'The default set for the family on the left.', steps:'Nine steps, one tide \u2014 the longest step list, spilling onto the facing leaf.',
+      title:'A title that wraps three lines, plus a second quest, so the keep-whole rule has to make a decision.',
+      know:'Four knowledge sections at full text, one carrying the illustration slot.',
+      notes:'Prose and checkboxes mixed on her own ruled leaves, ending in the new-note mark.',
+      many:'Seven quests into two leaves: the pencil count and the corner mark, not a scrollbar.',
+      empty:'No data at all. The furniture still draws, so an empty book reads as NOT YET WRITTEN rather than as missing art.' }[S.data];
+    const flow=L?L.flow:null;
+    const boardsMeta=C?C.boards:[];
+    return {
+      faceRef:this.faceRef, smallRef:this.smallRef, turnRef:this.turnRef,
+      boardRef:this.boardRef, isoRef:this.isoRef, sheetRef:this.sheetRef,
+      boardClick:this.boardClick,
+      faceLabel:(N?N.PAGES[page].label:'')+' \u00b7 '+(S.data==='normal'?'DEFAULT SET':S.data.toUpperCase()),
+      faceFit:L?(L.cols+'\u00d7'+L.lines+' cells \u00b7 scale '+L.s):'',
+      pageOpts:(N?N.PAGE_ORDER:[]).map(k=>Object.assign({label:N.PAGES[k].label.split(' ')[0],
+        set:()=>this._set({page:k, data:'normal', sel:0})}, tab(page===k))),
+      pageNote:PN,
+      dataOpts:[['normal','DEFAULT'],['steps','LONGEST STEPS'],['title','LONGEST TITLE'],['know','KNOWLEDGE FULL'],['notes','NOTES MIXED'],['many','OVERFLOW \u00d7 7'],['empty','EMPTY BOOK']]
+        .map(([k,l])=>Object.assign({label:l, set:()=>this._set({data:k, sel:0})}, gold(S.data===k))),
+      dataNote:DN,
+      cursorOpts:(N?N.CURSOR_ORDER:[]).map(k=>Object.assign({label:N.CURSORS[k].label.split(' ').pop(),
+        set:()=>this._set({cursor:k})}, gold(S.cursor===k))),
+      hlOpts:(N?N.HL_ORDER:[]).map(k=>Object.assign({label:N.HIGHLIGHTS[k].label,
+        set:()=>this._set({highlight:k})}, gold(S.highlight===k))),
+      wearOpts:[[0,'NEW'],[1,'USED'],[2,'WORN']].map(([k,l])=>Object.assign({label:l,
+        set:()=>this._set({wear:k})}, gold(S.wear===k))),
+      selUp:()=>this._set({sel:Math.max(-1,S.sel-1)}), selDown:()=>this._set({sel:S.sel+1}),
+      tabWalk:()=>{ const keys=['active','done','know','notes',null];
+        const i=keys.indexOf(S.tabCursor); this._set({tabCursor:keys[(i+1)%keys.length]}); },
+      replay:this.replay,
+      toggleNight:()=>this._set({night:!S.night}),
+      nightLabel:S.night?'\u263e LAMPLIT':'\u2600 DAYLIGHT',
+      nightBd:S.night?'#3f6f49':'#243137', nightBg:S.night?'#12241a':'#0f191e', nightFg:S.night?'#8fe0a0':'#8a969b',
+      flowRows:flow?[
+        { k:'GIVEN', v:flow.placed.length+flow.overflow+' block(s) of caller data', fg:'#c4cdcd', border:'none' },
+        { k:'PLACED', v:flow.placed.length+' whole \u00b7 '+flow.used[0]+' ruled lines left leaf, '+flow.used[1]+' right', fg:'#c4cdcd', border },
+        { k:'OVERFLOW', v:flow.overflow? flow.overflow+' \u2014 pencil count + corner mark, then a page turn' : 'none \u00b7 it all fits this spread', fg:flow.overflow?'#e6c96a':'#8fe0a0', border },
+        { k:'CAPACITY', v:flow.capacity+' ruled lines a spread ('+(L?L.lines:0)+' a leaf)', fg:'#8a969b', border },
+        { k:'CLAMPED', v:L&&L.fit.clamped?'YES \u2014 the room is too small for a legal spread':'no \u00b7 pass the room in, read clamped, never clamp a returned rect', fg:L&&L.fit.clamped?'#e07a5f':'#8fe0a0', border },
+      ]:[],
+      boardNotes:boardsMeta.map(b=>{ const pick=S.picks[b.key]||b.ships;
+        const t=b.tiles.filter(x=>x.key===pick)[0]||b.tiles[0];
+        return { label:b.label, pick:t.label+(t.ship?' (ships)':' (not shipped)'),
+          fg:t.ship?'#8fe0a0':'#e6c96a', note:t.note }; }),
+      probeRows:PR?[['type','probeType() \u00b7 one type system',PR.type],['hand','probeHand() \u00b7 written, and gridded',PR.hand],
+        ['write','probeWrite() \u00b7 the write-on is stable',PR.write],['flow','probeFlow() \u00b7 overflow is more pages',PR.flow]]
+        .map(([k,name,p])=>({ name, verdict:p.pass?'PASS':'FAIL', fg:p.pass?'#8fe0a0':'#e07a5f',
+          bd:p.pass?'#2b4a35':'#5c2f28', claim:p.claim,
+          nums: k==='type' ? ('cell '+p.cell.join('\u00d7')+' = bubble '+p.bubbleCell.join('\u00d7')+' \u00b7 same FONT object '+(p.sameFontObject?'yes':'NO')+' \u00b7 '+p.glyphs+' glyphs \u00b7 lowercase '+(p.lowercase?'complete':'MISSING'))
+            : k==='hand' ? ('origins '+(p.cellsExact?'exact':'MOVED')+' \u00b7 '+p.diffPct+'% off print \u00b7 '+p.wobblePct+'% of glyphs off the rule \u00b7 '+p.droppedPx+' px skipped')
+            : k==='write' ? ('steps '+p.steps+' \u00b7 growing '+p.growingSteps+' \u00b7 first regression '+(p.firstBreak<0?'none':p.firstBreak))
+            : ('given '+p.given+' \u00b7 placed '+p.placed+' \u00b7 overflow '+p.overflow+' \u00b7 straddled '+p.straddled+' \u00b7 rows '+p.rowsUsed.join('+')+' of '+p.capacity) })):[],
+      typeRows:MT?[
+        { k:'CELL', v:MT.cell.adv+' \u00d7 '+MT.cell.line+' px \u00b7 glyph '+MT.cell.glyph.join(' \u00d7 ')+' \u00b7 slack '+MT.cell.slack, fg:'#c4cdcd', border:'none' },
+        { k:'SOURCE', v:'BubbleKit.CELL / BubbleKit.FONT \u2014 imported by reference', fg:'#8fe0a0', border },
+        { k:'RULE AT', v:'row '+MT.cell.rule+' of the line box \u2014 one under the baseline, so descenders cross it', fg:'#8a969b', border },
+        { k:'CASE', v:'sentence case in the body \u00b7 CAPS on tabs, heads, the stamp', fg:'#8a969b', border },
+        { k:'WAS', v:MT.cost.cellWas+' caps-only (pass 2)', fg:'#8a969b', border },
+        { k:'COST', v:MT.cost.example, fg:'#e6c96a', border },
+      ]:[],
+      costNote:MT?MT.shared.what+'. '+MT.shared.probe+'.':'',
+      laneRows:MT?[
+        { k:'padL', v:MT.lanes.padL+' px', border:'none' },
+        { k:'cursor lane', v:MT.lanes.cursor+' px \u00b7 sized for the bubble kit\u2019s 10 px hand', border },
+        { k:'box lane', v:MT.lanes.box+' px = 2 cells \u00b7 box '+MT.lanes.boxSize+' \u00d7 '+MT.lanes.boxSize, border },
+        { k:'title lane', v:'titleCols = cols + 2, starting at titleX', border },
+        { k:'step lane', v:'cols, starting at textX', border },
+        { k:'tab chip', v:(N?N.GEO.tabCol+9:0)+' \u00d7 '+(N?N.GEO.tabH:0)+' px \u00b7 max '+(C?C.tabs.maxLabelChars.split(' ')[2]:'')+' chars \u00b7 '+(N?N.GEO.maxTabs:0)+' stubs', border },
+        { k:'slot', v:L?(L.plate.w+' \u00d7 '+L.plate.h+' px at scale '+L.s+' \u00b7 '+L.plate.lines+' lines'):'\u2014', border },
+      ]:[],
+      occupancy:BG?BG.occupancyAnswer:'',
+      budgetRows:BG?BG.cases.map((c,i)=>({ tier:c.zoom+'\u00d7'+(c.closest?' \u00b7 closest':''),
+        scale:'s'+c.scale, cells:c.cols+'\u00d7'+c.lines+' a leaf \u00b7 '+c.areaPct+'% of screen \u00b7 '+c.worldVisiblePct+'% world left',
+        verdict:c.holds?'holds':'fails', fg:c.holds?'#8fe0a0':'#e07a5f', border:i?border:'none' })):[],
+      flags:C?C.flagged:[],
+      dlSpread:()=>{ const o=this._opts();
+        this._dl(N.render(Object.assign({}, o, {cols:30, lines:20, scale:2, align:'topleft'})), 'NotebookSpread.png'); },
+      dlSheet:()=>this._dl(N.sheet({night:S.night}), 'NotebookSheet.png'),
+      dlContract:()=>{ const j=N.contract(); j.iso=window.NotebookIsoKit?window.NotebookIsoKit.contract():null;
+        const b=new Blob([JSON.stringify(j,null,2)],{type:'application/json'});
+        const a=document.createElement('a'); a.href=URL.createObjectURL(b);
+        a.download='notebook.contract.json'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),4000); },
+    };
+  }
+}
+
+</script>
+</body>
+</html>
