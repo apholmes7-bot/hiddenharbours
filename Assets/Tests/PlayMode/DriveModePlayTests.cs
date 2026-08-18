@@ -327,5 +327,72 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.That(rig.Switcher.Mode, Is.EqualTo(ControlMode.Driving),
                         "the ONE interact verb is what gets you in — no key of its own");
         }
+
+#if UNITY_EDITOR
+        /// <summary>
+        /// 🔴 <b>The SHIPPED truck answers the verb — not a synthetic stand-in.</b> Every other test in
+        /// this file builds its def in code, which is exactly the gap a shipped-asset defect hides in:
+        /// the owner stood at the placed truck's door (#567) and E was dead, while all of this stayed
+        /// green. This test is that walk, in code: the SHIPPED `Dually3500.asset` (and through it the
+        /// shipped mesh asset), the builder's exact placement shape, a player at her real
+        /// <see cref="VehicleDoor.DoorWorldPosition"/>, the real verb. Each gate is asserted separately
+        /// so a failure names the broken term instead of shrugging.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator TheShippedDuallyAssetsAnswerTheVerbAtHerRealDoor()
+        {
+            var shipped = UnityEditor.AssetDatabase.LoadAssetAtPath<VehicleDef>(
+                "Assets/_Project/Data/Vehicles/Dually3500.asset");
+            Assert.IsNotNull(shipped, "the shipped Dually def is missing from Data/Vehicles.");
+
+            // The gates IsDrivable ANDs together, each named. A single false from the composite is
+            // the owner's dead E press; decomposed, it is a diagnosis.
+            Assert.IsNotNull(shipped.Mesh, "the shipped def carries no mesh asset.");
+            Assert.IsTrue(shipped.Mesh.Mesh != null && shipped.Mesh.Mesh.vertexCount > 0,
+                "the mesh ASSET's baked Mesh is null/empty — IsUsable refuses her and the door " +
+                "reports unavailable: E is dead with no error anywhere.");
+            Assert.IsTrue(shipped.IsUsable(),
+                "the shipped def fails IsUsable — the door registers but IsAvailable is false, so " +
+                "the resolver skips her silently. Decompose against VehicleMeshDef.IsUsable's terms.");
+            Assert.AreNotEqual(Vector2.zero, shipped.Mesh.DriveDoorLocal,
+                "the shipped mesh asset publishes no driver's door (the (0,0) sentinel) — HasDoor " +
+                "refuses and E is dead exactly as observed.");
+
+            // The builder's placement shape, byte-for-byte (NineMileCreekTruckPark.Place lives in an
+            // editor assembly this one cannot reference; what it DOES is four lines, mirrored here).
+            var truckGo = new GameObject("DuallyAtThePark_ShippedRepro", typeof(Rigidbody2D));
+            _spawned.Add(truckGo);
+            truckGo.transform.position = Vector3.zero;
+            truckGo.GetComponent<Rigidbody2D>().gravityScale = 0f;
+            var parked = truckGo.AddComponent<HiddenHarbours.Vehicles.ParkedVehicle>();
+            parked.Configure(shipped, drivable: true);
+            yield return null;
+
+            var door = truckGo.GetComponent<HiddenHarbours.Vehicles.VehicleDoor>();
+            Assert.IsNotNull(door, "the parked truck grew no door at play.");
+            Assert.IsTrue(door.IsDrivable, "her door reports NOT drivable with the shipped assets.");
+
+            var playerGo = new GameObject("Player", typeof(SpriteRenderer), typeof(Rigidbody2D));
+            _spawned.Add(playerGo);
+            playerGo.transform.position = door.DoorWorldPosition;
+            var walk = playerGo.AddComponent<PlayerWalkController>();
+
+            var switcherGo = new GameObject("Switcher");
+            _spawned.Add(switcherGo);
+            var switcher = switcherGo.AddComponent<ControlSwitcher>();
+            switcher.Configure(walk, null, null, null, 0f, null);
+            yield return null;
+
+            var actor = new InteractActor(playerGo.transform.position, Vector2.zero,
+                                          InteractContext.OnFoot);
+            Assert.IsTrue(InteractVerb.TryPerform(actor, 180f),
+                "standing ON the shipped door point, the verb resolved nothing — the owner's dead E, " +
+                "reproduced.");
+            yield return null;
+
+            Assert.That(switcher.Mode, Is.EqualTo(ControlMode.Driving),
+                "the verb acted but nobody took the wheel — the request/subscription seam broke.");
+        }
+#endif
     }
 }

@@ -1190,6 +1190,23 @@ namespace HiddenHarbours.App.Editor
             cameraFollow.Target = playerGo.transform;
             SetRef(cameraFollow, "_onFootTarget", playerGo.transform);
 
+            // ⭐ THE CONTROL SWITCHER — the interact VERB'S PUMP, and this dev core never had one.
+            // Found 2026-08-18 by the owner standing at the placed Dually (#567) with a dead E and no
+            // prompt: this bootstrap "mirrors PersistentCoreBuilder's player + gauge wiring" (its own
+            // words, above) and the mirror predates the verb — so direct-playing this scene had NO
+            // component calling InteractVerb.PublishCandidate/TryPerform, and every registered
+            // interactable in the region (the truck's door, the buyer, the fuel pump) was silently
+            // unreachable while St Peters — whose core carries the switcher — worked. A hand-mirrored
+            // second implementation drifting from its source is exactly the two-definitions failure
+            // this file's own geography block warns about; the real fix is this bootstrap CALLING
+            // PersistentCoreBuilder instead of mirroring it, chipped as a follow-up. Walk-only wiring
+            // (no dev boat here): the verb needs only the walk controller and Mode's default IS
+            // OnFoot, which the shipped-assets PlayMode repro proves sufficient.
+            var devSwitcherGo = new GameObject("ControlSwitcher");
+            devSwitcherGo.transform.SetParent(devCore.transform, false);
+            var devSwitcher = devSwitcherGo.AddComponent<ControlSwitcher>();
+            SetRef(devSwitcher, "_playerWalk", walk);
+
             // The dev toast channel (cast/bite/no-water feedback on screen). No rod gauge: the fight has no
             // UI at all now (owner's ruling 2026-07-23) — it is read off the rod, the line, the sound and
             // the camera.
