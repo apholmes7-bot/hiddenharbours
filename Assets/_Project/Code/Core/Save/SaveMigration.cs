@@ -13,7 +13,7 @@ namespace HiddenHarbours.Core
     public static class SaveMigration
     {
         /// <summary>The schema version this build writes. Bump when you add a field + a migration step.</summary>
-        public const int CurrentVersion = 10;
+        public const int CurrentVersion = 11;
 
         /// <summary>
         /// The region id Port Greywick was saved under before it was renamed Nine Mile Creek, and the id
@@ -216,6 +216,28 @@ namespace HiddenHarbours.Core
                 data.SchemaVersion = 10;
             }
 
+            // v10 -> v11: the player's own notebook lines (the My Notes tab). One new list; nothing
+            // existing is reinterpreted. A v10 save simply had no notebook, so it gets an empty list —
+            // a loaded v10 game shows a blank My Notes page, which is exactly what that player had.
+            // Nothing is invented for them.
+            //
+            // ⚠ DELIBERATELY NOT A HealNotesData(). Every sibling step above heals what it adds —
+            // nav trims over-cap lists and rewrites unrenderable rows — and copying that here would be
+            // the natural thing to do and would be WRONG. PlayerNoteDto.Text is the player's own prose,
+            // the only such field in the file, and the only correct transformation of it is none: no
+            // trim, no truncation, no re-encoding, no whitespace collapsing. A cap belongs at the point
+            // of entry where she can see it, never at rest. If a later lane adds a heal here in good
+            // faith, SaveMigrationV11Tests is what should stop it.
+            //
+            // ⚠ Deliberately NOT here: quests or knowledge pages. Those are a VIEW over flags that
+            // already exist (QuestBoard), so they have no save surface to migrate — which is the whole
+            // reason a quest added later is retroactively correct.
+            if (data.SchemaVersion < 11)
+            {
+                data.PlayerNotes ??= new System.Collections.Generic.List<PlayerNoteDto>();
+                data.SchemaVersion = 11;
+            }
+
             // ---- future steps go here, each guarded by `if (data.SchemaVersion < N)` and bumping to N.
 
             // Defensive null-repair (a hand-edited or partial JSON can omit reference-typed fields).
@@ -236,6 +258,7 @@ namespace HiddenHarbours.Core
             data.NavWaypoints ??= new System.Collections.Generic.List<NavWaypointDto>();
             data.NavRoute ??= new System.Collections.Generic.List<NavRoutePointDto>();
             data.NavTrack ??= new System.Collections.Generic.List<NavTrackPointDto>();
+            data.PlayerNotes ??= new System.Collections.Generic.List<PlayerNoteDto>();
             data.ActiveHullId ??= "";
             // Same defensive spirit as the null-repair above, for the one field where a zero is not a
             // value but a crash: a hand-edited JSON, or a row written by a build between the field landing
