@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c091397c0f4f4bfa9698f05d4fe04fd3, type: 3}
+  m_Name: SettingATrap
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.KnowledgePageDef
+  Id: knowledge.setting_a_trap
+  TabId: tab.gear
+  TabLabel: GEAR
+  Head: 'Setting a trap'
+  Body:
+  - 'Bait it, sink it, and mark it. A trap you cannot find again is a trap you have given away.'
+  - 'Set on the slack where you can. Set on the run and the tide will walk your gear down the shore.'
+  SlotKey: slot.trap_rig
+  SlotLines: 5
