@@ -239,7 +239,21 @@ namespace HiddenHarbours.Vehicles
             Brake = false;
         }
 
-        private void Awake() => _rb = GetComponent<Rigidbody2D>();
+        private void Awake()
+        {
+            _rb = GetComponent<Rigidbody2D>();
+
+            // ⚠️ This is a TOP-DOWN world: 2D gravity points down the SCREEN — south, on this ground
+            // plane — and a Rigidbody2D ships with gravityScale 1. The player's own body zeroes it
+            // (PlayerWalkController: "Drives a Rigidbody2D (gravityScale 0)"); nothing on the vehicle
+            // path did, and no scene ever exposed it because nothing PLACED a vehicle until the truck
+            // park gained hers. It surfaced first as a flaky test rather than a falling truck:
+            // DriveModePlayTests' fixture trucks accumulated exactly one fixed step of g between a
+            // teleport and a read (9.81 × 0.02 ≈ the "~0.2 m/s of residual" the #566 lane diagnosed),
+            // so the flake was this bug's shadow. Zeroed here, where the reference is taken, so no
+            // spawner — builder, test, or dev tool — can forget it.
+            _rb.gravityScale = 0f;
+        }
 
         private void FixedUpdate() => StepPhysics(Time.fixedDeltaTime);
 
