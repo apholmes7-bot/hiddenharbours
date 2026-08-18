@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c091397c0f4f4bfa9698f05d4fe04fd3, type: 3}
+  m_Name: ReadingTheTide
+  m_EditorClassIdentifier: HiddenHarbours.World::HiddenHarbours.World.KnowledgePageDef
+  Id: knowledge.reading_the_tide
+  TabId: tab.water
+  TabLabel: TIDE
+  Head: 'Reading the tide'
+  Body:
+  - 'The water does not sit still. Twice a day it climbs the shore and twice it falls back, and the difference between the two is greater here than almost anywhere.'
+  - 'Slack water is the hour either side of the turn. Little moves; gear set then stays close to where you put it.'
+  - 'The run is the rest of it. Set across a running tide and your gear will not be where you left it.'
+  SlotKey: slot.tide_curve
+  SlotLines: 5
