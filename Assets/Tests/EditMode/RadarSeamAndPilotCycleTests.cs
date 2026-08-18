@@ -194,10 +194,28 @@ namespace HiddenHarbours.Tests.EditMode
             SaveData save = SaveMigration.NewGame();
             Assert.IsNotNull(save.HullRadarPrefs, "a fresh save carries the (empty) list");
             Assert.IsEmpty(save.HullRadarPrefs);
-            Assert.AreEqual(10, SaveMigration.CurrentVersion,
-                            "the radar's row is ADDITIVE on v10 — if this ever needs a bump, it needs an " +
-                            "ADR and a migration step, not a quiet edit here");
             Assert.AreEqual(SaveMigration.CurrentVersion, save.SchemaVersion);
+
+            // ⚠ THE CLAIM, STATED DIRECTLY RATHER THAN THROUGH THE VERSION COUNTER.
+            //
+            // This used to assert `CurrentVersion == 10`, meaning "the radar's row needed no bump of
+            // its own". That is still true — but the counter has since moved to 11 for the notebook's
+            // PlayerNotes, a DIFFERENT feature with its own migration step and its own sign-off, and
+            // pinning the global number made the radar's claim break every time an unrelated lane
+            // bumped. The claim was never about the number.
+            //
+            // So it is now tested as what it actually is: a save from BEFORE the radar existed
+            // migrates to current and comes back with an empty list, purely from the unconditional
+            // null-repair — no radar-specific step anywhere. The original warning still stands: if
+            // the radar's row ever DOES need a step, that needs an ADR and a migration step, not a
+            // quiet edit here.
+            SaveData beforeRadar = SaveMigration.Migrate(
+                JsonUtility.FromJson<SaveData>("{\"SchemaVersion\":9,\"WorldSeed\":1}"));
+
+            Assert.IsNotNull(beforeRadar.HullRadarPrefs,
+                             "a pre-radar save must gain the list without a radar migration step");
+            Assert.IsEmpty(beforeRadar.HullRadarPrefs, "and it must be empty — nothing is invented");
+            Assert.AreEqual(SaveMigration.CurrentVersion, beforeRadar.SchemaVersion);
         }
 
         // ---- the pilot-deck cycle (SHIFT+K) --------------------------------------------------------

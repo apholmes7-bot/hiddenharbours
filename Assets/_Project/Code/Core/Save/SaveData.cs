@@ -159,6 +159,24 @@ namespace HiddenHarbours.Core
         public List<NavTrackPointDto> NavTrack = new();
 
         /// <summary>
+        /// The lines the player has written in her notebook's My Notes tab, IN HER ORDER. Added in
+        /// v11.
+        ///
+        /// <para><b>⭐ This is the only player-authored PROSE in the save file, and the only list
+        /// here that is UNCAPPED.</b> Every other list above has a ceiling because the game generates
+        /// its contents — waypoints, track crumbs, catch — and an unbounded generator is a leak. This
+        /// one is typed by a person, a line at a time, so it cannot run away; and a cap enforced at
+        /// rest would silently delete something she wrote. If a limit is ever wanted it belongs at
+        /// the point of ENTRY, where she can see it, never in a loader. See
+        /// <see cref="PlayerNoteDto"/>.</para>
+        ///
+        /// <para>Quests and knowledge pages are deliberately NOT here: those are a view over flags
+        /// that already exist (<c>QuestBoard</c>), so they need no save surface at all. Her own notes
+        /// are the one part of the notebook that nothing else could reconstruct.</para>
+        /// </summary>
+        public List<PlayerNoteDto> PlayerNotes = new();
+
+        /// <summary>
         /// Per-hull chartplotter PREFERENCES — night backlight, orientation and range rung. Sparse like
         /// <see cref="HullSounderPrefs"/> (absent hull = the owner's configured defaults) and
         /// read/written only through <see cref="InstrumentLocker"/>.
@@ -331,6 +349,42 @@ namespace HiddenHarbours.Core
         }
 
         public NavTrackPoint ToPoint() => new NavTrackPoint(RegionId, new UnityEngine.Vector2(X, Y));
+    }
+
+    /// <summary>
+    /// One line the PLAYER wrote in her notebook — her own list, in her own order.
+    ///
+    /// <para>Flat scalars, the <see cref="NavWaypointDto"/> / <see cref="HullInstrument"/> precedent:
+    /// JsonUtility cannot do nested or nullable, and a note is human-readable in the on-disk JSON
+    /// this way.</para>
+    ///
+    /// <para><b>⚠ NOTHING MAY NORMALISE <see cref="Text"/>.</b> Not the migration, not a loader, not
+    /// a "tidy" pass: no trimming, no truncation, no re-encoding, no collapsing of whitespace. This
+    /// is the one field in the save file that is the player's own prose rather than the game's
+    /// record of itself, and the only correct transformation is none. A cap belongs at the point of
+    /// ENTRY, where she can see it happen, never at rest — which is also why this DTO deliberately
+    /// does NOT follow nav's <c>HealNavData</c>, the one part of its precedent that does not apply.
+    /// <c>SaveMigrationV11Tests</c> pins it with prose that a tidying pass would visibly damage.</para>
+    ///
+    /// <para><b>No id, deliberately.</b> Order in <see cref="SaveData.PlayerNotes"/> IS the order on
+    /// her page, exactly as nav's rows are positional. If a stable handle is ever needed — reordering
+    /// by drag, say — an id is an append-only field away.</para>
+    /// </summary>
+    [Serializable]
+    public struct PlayerNoteDto
+    {
+        /// <summary>What she wrote. Never normalised — see the type remarks.</summary>
+        public string Text;
+
+        /// <summary>Does this line carry a checkbox at all? The kit distinguishes a PROSE line (no
+        /// box, runs the full title width) from a TASK line (the shared checkbox, text at step
+        /// width), so the two are different drawings and not merely different states.</summary>
+        public bool IsTask;
+
+        /// <summary>Ticked. Meaningless unless <see cref="IsTask"/> — a prose line has nothing to
+        /// tick — and preserved rather than forced, so toggling a line between prose and task does
+        /// not silently lose the tick.</summary>
+        public bool Done;
     }
 
     /// <summary>
