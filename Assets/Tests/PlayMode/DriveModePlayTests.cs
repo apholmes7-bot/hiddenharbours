@@ -145,6 +145,33 @@ namespace HiddenHarbours.Tests.PlayMode
 
         // =============================================================================================
 
+        /// <summary>
+        /// ⭐ <b>A truck does not fall south through a top-down world.</b> A Rigidbody2D ships with
+        /// gravityScale 1, the player's own body zeroes it, and nothing on the vehicle path did —
+        /// which no scene exposed while nothing placed a vehicle, and which surfaced instead as this
+        /// file's ride test flaking: the fixture trucks were accumulating exactly one fixed step of g
+        /// between a teleport and a read (the "~0.2 m/s of residual" #566 diagnosed). The flake was
+        /// the bug's shadow. <c>VehicleController.Awake</c> now zeroes it where the reference is
+        /// taken; this pins that through the REAL Awake, on a body deliberately created dirty.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator HerBodyIgnoresGravity_BecauseAwakeZeroesIt_NotBecauseAFixtureDid()
+        {
+            Rig rig = BuildRig(Vector3.zero);
+            var rb = rig.TruckGo.GetComponent<Rigidbody2D>();
+            Assert.AreEqual(0f, rb.gravityScale,
+                "VehicleController.Awake did not zero her gravityScale — in a top-down world that " +
+                "is a truck accelerating south, and in this file it is the ride test flaking.");
+
+            rig.TruckGo.transform.position = Vector3.zero;
+            rb.linearVelocity = Vector2.zero;
+            yield return new WaitForFixedUpdate();
+            yield return null;
+            Assert.That(((Vector2)rig.TruckGo.transform.position).magnitude, Is.LessThanOrEqualTo(1e-4f),
+                "a parked truck with no throttle moved on its own — something is still applying a " +
+                "force to a machine nobody is driving.");
+        }
+
         /// <summary>The driver rides the machine: move her, pump a frame, and the player is on her.</summary>
         [UnityTest]
         public IEnumerator TheDriverRidesTheMachineAcrossFrames()

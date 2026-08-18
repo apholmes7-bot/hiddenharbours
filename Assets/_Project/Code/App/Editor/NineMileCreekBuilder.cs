@@ -683,6 +683,12 @@ namespace HiddenHarbours.App.Editor
             // It places and does NOT draw, for the same reason the fleet above does not.
             FleetReviewMoorage.Place();
 
+            // ⭐ THE DUALLY, PARKED AT THE PARK — closing the reachability gap #560 left ("the
+            // dev-picker path only", and there is no picker). Places and does NOT draw, per the
+            // moorage law above; the site is still the owner's PROPOSAL and she derives from its one
+            // constant, so the walk verdict moves her with the park. See NineMileCreekTruckPark.
+            NineMileCreekTruckPark.Place();
+
             // --- (NO SHORELINE FENCE — the coast is the terrain now) -------------------------
             // The region used to trace a hand-made EdgeCollider2D at x = -4 that dipped around the wharf,
             // because a rectangular quay standing on a flat -6 m dredged floor gave a hull nothing to

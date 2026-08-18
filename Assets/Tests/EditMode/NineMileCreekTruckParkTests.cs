@@ -386,5 +386,76 @@ namespace HiddenHarbours.Tests.EditMode
 
         static string RectText(Rect r) =>
             $"x[{r.xMin:0.#}..{r.xMax:0.#}] y[{r.yMin:0.#}..{r.yMax:0.#}]";
+
+        // =============================================================================================
+        //  4. THE TRUCK IS ON IT — the reachability gap #560 left, closed and pinned
+        // =============================================================================================
+
+        /// <summary>
+        /// ⭐ <b>A park with no truck was the shipped state, and nothing failed.</b> #560 shipped the
+        /// entire drive mode "on the dev-picker path only" — and there is no picker, so the Dually was
+        /// drivable in every test and reachable in no scene. The owner found it by standing in the
+        /// world and not finding her. This pins the placement the builder now makes: one drivable
+        /// <see cref="HiddenHarbours.Vehicles.ParkedVehicle"/>, on the park's own published constant,
+        /// carrying the def #556 baked.
+        ///
+        /// <para>Position is asserted against <see cref="NineMileCreekMainland.TruckParkPos"/> — the
+        /// PROPOSAL constant — not a coordinate, so the owner's walk verdict moves the truck with the
+        /// park and this test follows both.</para>
+        /// </summary>
+        [Test]
+        public void TheBuilderParksADrivableDuallyOnTheParksOwnConstant()
+        {
+            GameObject truck = NineMileCreekTruckPark.Place();
+            try
+            {
+                Assert.IsNotNull(truck,
+                    "Place() returned nothing — the Dually's def is missing from " +
+                    NineMileCreekTruckPark.DuallyDefPath + ", so the park builds empty.");
+
+                Assert.AreEqual((Vector2)NineMileCreekMainland.TruckParkPos,
+                                (Vector2)truck.transform.position,
+                    "the truck is not on the park's published constant. She must derive from " +
+                    "TruckParkPos so the owner's walk verdict moves her with the park.");
+
+                var parked = truck.GetComponent<HiddenHarbours.Vehicles.ParkedVehicle>();
+                Assert.IsNotNull(parked, "no ParkedVehicle — she would never skin at play.");
+                Assert.IsNotNull(parked.Vehicle, "no def on her — a truck with no identity.");
+                Assert.AreEqual("vehicle.dually_3500", parked.Vehicle.Id,
+                    "the park carries something other than the Dually.");
+
+                Assert.IsNotNull(truck.GetComponent<HiddenHarbours.Vehicles.VehicleDoor>(),
+                    "no driver's door — parked scenery, not the drivable truck the gap was about.");
+
+                // ⚠️ Top-down world: a Rigidbody2D ships with gravityScale 1 and would pull her
+                // south forever. VehicleController.Awake re-zeroes at play; the SERIALIZED state
+                // must be zero too, so the committed scene never carries a falling truck.
+                Assert.AreEqual(0f, truck.GetComponent<Rigidbody2D>().gravityScale,
+                    "her serialized gravityScale is not 0 — in a top-down world that is a truck " +
+                    "accelerating south through the village.");
+            }
+            finally { if (truck != null) Object.DestroyImmediate(truck); }
+        }
+
+        /// <summary>The def that parks here fits the park — the binding the roads file declares in one
+        /// direction ("this file must not depend on vehicle content") and delegates to the vehicle
+        /// pass in the other. Asserted through the placed truck so the two can never drift.</summary>
+        [Test]
+        public void TheParkedDuallyFitsInsideTheParksDeclaredEnvelope()
+        {
+            GameObject truck = NineMileCreekTruckPark.Place();
+            try
+            {
+                Assert.IsNotNull(truck, "no truck to measure — see the placement test.");
+                var mesh = truck.GetComponent<HiddenHarbours.Vehicles.ParkedVehicle>().Vehicle.Mesh;
+                Assert.IsNotNull(mesh, "the Dually's def carries no mesh — the bake regressed.");
+
+                float loaMetres = mesh.CellH / (float)mesh.PxPerMetre;
+                Assert.LessOrEqual(loaMetres, NineMileCreekRoads.ParkedVehicleLengthMetres + 4f,
+                    "sanity ceiling only — the exact envelope claim lives with the vehicle pass; " +
+                    "this guards against a def whose cell arithmetic went wild.");
+            }
+            finally { if (truck != null) Object.DestroyImmediate(truck); }
+        }
     }
 }
