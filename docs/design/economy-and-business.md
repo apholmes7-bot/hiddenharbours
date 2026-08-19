@@ -411,6 +411,16 @@ station — P2 and P4 converging.
 | **Shop / market stall** | A *sell channel you own* (vs. taking the buyer's spot price): a staffed shopkeeper sells your goods (and maybe others') at retail margins to townsfolk/tourists. |
 | **Auction house access** | Not owned, but a key channel (§1.4). |
 | **Freight terminal / quay** (Shipping Lanes) | Load/dispatch point for freight runs; staging + contract fulfillment hub (§6). |
+| **Shellfish lease** (water, not land) — *capture only, not built* | The first property that **produces** rather than stores or converts: a plot of leased water over a musselbed that grows a crop while you are elsewhere, then pays out through the freshness chain (§3) and the ordinary sell channels. The purest **P4** engine in the game — hand-tended first, crewed later (§5.5). Loop, phase and contracts: [`mussel-lease-and-longline.md`](mussel-lease-and-longline.md) |
+
+> **The lease needs almost nothing new from this doc.** It is an **`ILicenseService` licence** of the
+> same shape as the clam and cod licences (§9.1a) — held or not held, `SaveData.OwnedLicenses`, **no
+> new save machinery** — plus a plot polygon and a placed longline whose crop is **recomputed, never
+> stored** (rule 5). What it *will* want from economy when it is scheduled: the **lease fee /
+> renewal** price, **seed** as a purchasable input (bought socked seed vs. free-but-slow spat
+> collectors), farmed mussels as their **own commodity row** (a harvested crop, not a
+> [`fish-and-content.md`](fish-and-content.md) catch roll), and the §5 staff roles that eventually
+> tend and harvest it. **M3 today** — the open starter-ruin ruling is the only thing that moves it.
 
 The chain of capability is deliberately **legible** (P2): *more berths → more boats → more catch → which
 overwhelms selling/spoilage → so you need storage + processing → which produces export goods → which

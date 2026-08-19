@@ -284,7 +284,13 @@ based, "manage by exception" (`ui-ux`). Offshore art (big boats, banks, weather 
 **Owner-ratified additions folded into M3 (2026).** **Mussel/oyster aquaculture leasing** — lease a patch of
 water, set buoys-in-series with grow-ropes, season-grow the crop, harvest at maturity — sits beside the staff /
 automation layer as another P4 "earn it, then automate it" engine (`economy-sim` + `world-content`;
-[`design/fish-and-content.md`](design/fish-and-content.md) §3.5(c)). The **advanced rendering pass**
+[`design/fish-and-content.md`](design/fish-and-content.md) §3.5(c)). **The full loop is captured in
+[`design/mussel-lease-and-longline.md`](design/mussel-lease-and-longline.md)** (owner drop 2026-08-18:
+*"large sections of buoys with individual ropes"* — PEI longline culture, and the crop's readiness read
+**diegetically** off the float run riding lower). *Capture only — nothing built.* **This M3 slot stands**;
+the one thing that could move it is the open **starter-ruin ruling** (is the *lapsed shellfish lease* the
+game's first ownable ruin, or is it the camper lot / Ginny's sheds?) — if the lease wins, a first slice
+(lease + one line + harvest) pulls into **M1** and the coordinator re-scopes. The **advanced rendering pass**
 ([`design/art-and-audio-bible.md`](design/art-and-audio-bible.md) §6.1) — **3D water baked to a 2D surface**,
 **dynamic shadows on the 24-h clock**, **cloud shadows**, and the **parallax underwater / shallow-water preview** —
 deepens the look as the world scales offshore, held to the desktop perf budget (`art-pipeline` + `lead-architect`).

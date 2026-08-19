@@ -91,6 +91,7 @@ Representative licenses (full list lives with the data; see §6):
 | **Instrument Pilotage Cert** | Navigation: Navigator | Navigate **The Smother** by instrument |
 | **Freight Carrier's License** | Business: Manager + freighter-tier hull | Take cargo contracts on **The Shipping Lanes** |
 | **Processing / Warehouse Permits** | Business: Trader+ | Own & operate plants/warehouses (see `economy-and-business.md`) |
+| **Shellfish Lease** *(capture only, not built)* | fee + renewal — **or inherited**, if the owner rules the **lapsed lease** is the starter ruin | **A plot of water over a musselbed**: the right to set longlines on it and grow a crop ([`mussel-lease-and-longline.md`](mussel-lease-and-longline.md)) |
 
 > **Licence *system* ownership.** This table names the *progression gates*; the **runtime licence
 > system** (the wallet of held licences, the buy interaction, the gate check) is a **real, minimal
@@ -277,6 +278,14 @@ effects, staffing economics) lives in `economy-and-business.md`.
 | **Warehouses** | Buy/build; upgrade capacity tier & climate (cold storage); add loading docks | Shelving layout, signage, your mark | Bulk storage to time sales; logistics hub |
 | **Processing plants** | Buy/build; upgrade processing lines & quality; add machines | Floor layout of stations | Refine raw catch → value-add goods |
 | **Shops / market stalls** | Buy a Nine Mile Creek storefront; upgrade frontage & shelf count | Window dressing, sign, stock display | Sell direct; passive retail income |
+| **Shellfish lease** (water) *(capture only, not built)* | Take over a lapsed lease or buy/renew one; "upgrade" is **more lines set and more floats added**, not a building tier | The plot is **drawn on your own chart**; the corner buoys are your mark on the water | Grows a crop while you are elsewhere ([`mussel-lease-and-longline.md`](mussel-lease-and-longline.md)) |
+
+> **A lease is the odd one out in this table, deliberately.** It has **no building, no sprite to
+> enlarge, and no tier ladder** — what you own is **water**, what you improve is **gear you set on
+> it**, and its "acquire" row may not be a purchase at all: if the owner rules the **lapsed shellfish
+> lease** is the game's starter ruin, it is **inherited** and becomes the first thing the player owns
+> rather than a mid-game property. Both doors, and the phase fork, are in
+> [`mussel-lease-and-longline.md`](mussel-lease-and-longline.md) §3.1/§6.
 
 **Ownership mechanics shared by all commercial property:**
 
