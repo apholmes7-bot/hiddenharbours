@@ -129,18 +129,21 @@ namespace HiddenHarbours.UI
             PaperUi.MakeRule(_host, MarginX, RuleY, 520f);
 
             float y = FirstY;
-            var items = new Selectable[4];
+            var items = new Selectable[5];
 
             items[0] = PaperUi.MakeMenuItem(_host, "Resume", ShellStrings.Resume,
                                             MarginX, y, ItemW, ItemH, OnResume);
             y -= ItemStep;
-            items[1] = PaperUi.MakeMenuItem(_host, "Settings", ShellStrings.Settings,
+            items[1] = PaperUi.MakeMenuItem(_host, "Notebook", ShellStrings.Notebook,
+                                            MarginX, y, ItemW, ItemH, OnNotebook);
+            y -= ItemStep;
+            items[2] = PaperUi.MakeMenuItem(_host, "Settings", ShellStrings.Settings,
                                             MarginX, y, ItemW, ItemH, OnSettings);
             y -= ItemStep + 12f;
-            items[2] = PaperUi.MakeMenuItem(_host, "QuitToTitle", ShellStrings.QuitToTitle,
+            items[3] = PaperUi.MakeMenuItem(_host, "QuitToTitle", ShellStrings.QuitToTitle,
                                             MarginX, y, ItemW, ItemH, OnQuitToTitle);
             y -= ItemStep;
-            items[3] = PaperUi.MakeMenuItem(_host, "QuitToDesktop", ShellStrings.QuitToDesktop,
+            items[4] = PaperUi.MakeMenuItem(_host, "QuitToDesktop", ShellStrings.QuitToDesktop,
                                             MarginX, y, ItemW, ItemH, OnQuitToDesktop);
             y -= ItemStep;
 
@@ -157,6 +160,30 @@ namespace HiddenHarbours.UI
         // ---- choices ----------------------------------------------------------------------------
 
         private void OnResume() => Close();
+
+        /// <summary>
+        /// Take the notebook out.
+        ///
+        /// <para><b>This row is the whole of the book's binding, and that is the point.</b> The dev-key
+        /// ledger is spent A-Z, so the notebook adds NO key: it rides the one control the player
+        /// already has for "stop and deal with something", and anything else that ever wants to open
+        /// the book publishes the same signal (a desk, a bedside table) without touching this file.</para>
+        ///
+        /// <para><b>The menu goes away first, and the world starts again.</b> The book is a thing she
+        /// holds while standing in the world, not another page of the menu — so the pause is released
+        /// on the way out and the book takes the interact verb instead (via
+        /// <c>InteractionGate</c>), which is how every modal in this repo says the key is its own.
+        /// ⚠️ Whether the world should instead STOP behind the open book is a taste call the owner
+        /// owes; it is one line here and one in the presenter either way.</para>
+        ///
+        /// <para>Published rather than called: <c>NotebookPresenter</c> lives in World and this is UI,
+        /// and neither module may reach into the other (rule 4).</para>
+        /// </summary>
+        private void OnNotebook()
+        {
+            Close();
+            EventBus.Publish(new NotebookRequested("menu.pause"));
+        }
 
         /// <summary>Open the settings over the menu and hide it, so Back lands here rather than in the
         /// world. The world stays stopped throughout — the pause is not released until Resume.</summary>

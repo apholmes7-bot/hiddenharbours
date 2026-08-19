@@ -55,6 +55,62 @@ namespace HiddenHarbours.Tools.RigBaking
             Debug.Log("[notebook-bake] BAKE + IMPORT + VERIFY COMPLETE");
         }
 
+        // ---- the face ---------------------------------------------------------------------------
+
+        /// <summary>
+        /// Bake the one face and build the Font asset over it.
+        ///
+        /// <para><b>Separate from the kit bake on purpose.</b> The face is not a notebook piece — it
+        /// belongs to the dialogue bubble kit, which drew it, and the book imports it by reference.
+        /// Two entry points means a face failure reads as a face failure rather than as "the notebook
+        /// bake broke", and either can be re-run without the other.</para>
+        ///
+        /// <para>The refresh between the two halves is load-bearing: the Font asset references the
+        /// atlas TEXTURE, which does not exist as an asset until Unity has imported the PNG this bake
+        /// just wrote.</para>
+        /// </summary>
+        [MenuItem("Hidden Harbours/Art/Bake The Face (the one type, shared with the bubbles)",
+                  priority = 78)]
+        public static void BakeFace()
+        {
+            try
+            {
+                var report = HarbourTypeBaker.Bake();
+                AssetDatabase.Refresh();
+                HarbourTypeBaker.BuildFontAsset(report);
+                AssetDatabase.Refresh();
+                Debug.Log("[face-bake] " + HarbourTypeBaker.Summarise(report));
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Face bake FAILED: {e.Message}\n{e}");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// The <c>-executeMethod</c> entry for the face.
+        ///
+        /// <para>Same law as its sibling: <b>a Unity exit code does not tell you whether the method
+        /// fired</b>, so the marker on the last line is what a run is verified by, and a fresh
+        /// worktree wants two runs.</para>
+        /// </summary>
+        public static void BakeFaceHeadless()
+        {
+            try
+            {
+                BakeFace();
+            }
+            catch (Exception)
+            {
+                Debug.LogError("[face-bake] BAKE FAILED — see the exception above.");
+                EditorApplication.Exit(1);
+                return;
+            }
+
+            Debug.Log("[face-bake] FACE BAKE + FONT BUILD COMPLETE");
+        }
+
         /// <summary>Import + verify only, for when the PNGs are already on disk (a fresh clone of a
         /// branch that carries them, where nothing needs re-rendering).</summary>
         [MenuItem("Hidden Harbours/Art/Import (after a new drop)/Set Notebook Import Settings",
