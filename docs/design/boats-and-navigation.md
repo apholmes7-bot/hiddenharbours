@@ -970,8 +970,7 @@ fighting the ruled framings above it for the same orthographic size.
 - **A modal refuses the wheel.** While `InteractionGate` is raised (dialogue, the wardrobe, the pause
   menu) a notch does nothing and banks nothing, so one wheel can never scroll a list and zoom the world
   at the same time — the case that would otherwise arrive the day a kit UI grows a scrollable page.
-  The dialogue bubble needs no re-fit of its own: it is a **screen-space canvas tracked through the
-  camera each `LateUpdate`**, so it re-places itself at any zoom by construction.
+  A blocked wheel also banks no scroll, so nothing fires the instant the modal closes.
 - **Bindings.** Mouse wheel (unread anywhere else in the project; the only claim on `Mouse.scroll` is
   the stock UI map's `ScrollWheel`, which serves the EventSystem, not the world) and, on the pad,
   **LB / RB** — the one pair unclaimed in both code and `InputSystem_Actions`, and the right *shape*
@@ -981,16 +980,16 @@ fighting the ruled framings above it for the same orthographic size.
 - **Presentation, never simulation** (rule 5). The tier drives nothing, publishes nothing and is not
   saved — the same standing as tide and weather, which are recomputed rather than stored.
 
-> ⚠️ **Handoff to the notebook lane — the wheel reaches tiers `NotebookKit.fit()` does not cover.**
-> The kit's read budget tables three tiers (2× / 3× / 4×) and calls **4× "closest"**, because its hand
-> never draws below scale 1 and the spread is 410 × 232 px — which does not fit a 5× (384 × 216) or
-> 6× (320 × 180) screen. On foot the wheel can now stop at both. Nothing is broken today (the notebook
-> has no presenter yet), and the exposure is not new either — the deck and live-haul steps have been at
-> 5× and 6× since the 2026-07-08 playtest. But the walking view is where a notebook actually gets
-> opened, so when the presenter lands it must do one of two things: extend `fit()` past 4×, or refuse
-> to open below its floor and say so. The modal gate above only covers a zoom **while** a page is open;
-> it cannot help a page opened at a tier it cannot fit.
->
+**The kit UIs are out of reach of this, and that was checked rather than assumed.** The obvious worry
+is a kit that sizes itself against the *camera* — zoom in and the book no longer fits. Neither does:
+the dialogue bubble is a screen-space canvas tracked through the camera each `LateUpdate`, and the
+notebook presenter (PR #578) fits against `Screen.width`/`Screen.height` × `RoomFraction`, i.e. real
+window pixels. Camera zoom moves neither, so an open page needs no re-fit at any tier and there is no
+tier a page can be opened at that it cannot fit. (The kit README's "closest tier 4×" is the *notional*
+pixel screen its read budget is priced in, not something the presenter measures.) The modal gate above
+is therefore belt-and-braces for these two — it earns its keep the day a kit UI grows a scrollable
+list and wants the wheel for itself.
+
 > ⚠️ **Two open questions for the owner, deliberately not decided here.**
 > 1. **Should an interior CLAMP the far end** — no zooming out through a roof? The camera cannot answer
 >    that today: `BuildingInterior.IsInside` is World-side and the camera (App) reaches it only through
