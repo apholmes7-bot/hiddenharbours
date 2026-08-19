@@ -1,0 +1,195 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee76649f87a8cfd4890261ca9a64ffa3, type: 3}
+  m_Name: SportSkiffMk2Iso_Graphite
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.HullPaintSchemeDef
+  Id: paint.sport_skiff_mk2_graphite
+  Label: Graphite
+  Note: dark glass, grey stripe, black top
+  HullMeshId: hullmesh.sport_skiff_mk2_iso
+  SourceRigPath: docs/art/rigs/sportSkiffMk2IsoRig.js
+  RigPaintId: graphite
+  Ramps:
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4280688665
+    - serializedVersion: 2
+      rgba: 4281149216
+    - serializedVersion: 2
+      rgba: 4281543974
+    - serializedVersion: 2
+      rgba: 4281872939
+    - serializedVersion: 2
+      rgba: 4282201904
+    - serializedVersion: 2
+      rgba: 4283517764
+    - serializedVersion: 2
+      rgba: 4287004792
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4284507745
+    - serializedVersion: 2
+      rgba: 4286942342
+    - serializedVersion: 2
+      rgba: 4289047720
+    - serializedVersion: 2
+      rgba: 4291087561
+    - serializedVersion: 2
+      rgba: 4292403165
+    Offset: -1
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4278476638
+    - serializedVersion: 2
+      rgba: 4281373863
+    - serializedVersion: 2
+      rgba: 4286566129
+    Offset: -1
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279500884
+    - serializedVersion: 2
+      rgba: 4280162154
+    - serializedVersion: 2
+      rgba: 4280626300
+    - serializedVersion: 2
+      rgba: 4281089932
+    - serializedVersion: 2
+      rgba: 4285169863
+    Offset: -1
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4280688665
+    - serializedVersion: 2
+      rgba: 4281149216
+    - serializedVersion: 2
+      rgba: 4281543974
+    - serializedVersion: 2
+      rgba: 4281872939
+    - serializedVersion: 2
+      rgba: 4282201904
+    - serializedVersion: 2
+      rgba: 4283517764
+    - serializedVersion: 2
+      rgba: 4287004792
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4282599488
+    - serializedVersion: 2
+      rgba: 4284507486
+    - serializedVersion: 2
+      rgba: 4286087032
+    - serializedVersion: 2
+      rgba: 4287863444
+    - serializedVersion: 2
+      rgba: 4290100150
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4280688665
+    - serializedVersion: 2
+      rgba: 4281280802
+    - serializedVersion: 2
+      rgba: 4281807145
+    - serializedVersion: 2
+      rgba: 4282333489
+    - serializedVersion: 2
+      rgba: 4282794040
+    - serializedVersion: 2
+      rgba: 4284109900
+    - serializedVersion: 2
+      rgba: 4287399807
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4280688665
+    - serializedVersion: 2
+      rgba: 4281609767
+    - serializedVersion: 2
+      rgba: 4282465075
+    - serializedVersion: 2
+      rgba: 4283583556
+    - serializedVersion: 2
+      rgba: 4287399807
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4281877571
+    - serializedVersion: 2
+      rgba: 4283588191
+    - serializedVersion: 2
+      rgba: 4285167225
+    - serializedVersion: 2
+      rgba: 4286811795
+    - serializedVersion: 2
+      rgba: 4289377721
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4282925370
+    - serializedVersion: 2
+      rgba: 4284899158
+    - serializedVersion: 2
+      rgba: 4287399290
+    - serializedVersion: 2
+      rgba: 4289833887
+    - serializedVersion: 2
+      rgba: 4292005571
+    - serializedVersion: 2
+      rgba: 4293848550
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4282135318
+    - serializedVersion: 2
+      rgba: 4284108836
+    - serializedVersion: 2
+      rgba: 4286608954
+    - serializedVersion: 2
+      rgba: 4289110879
+    - serializedVersion: 2
+      rgba: 4291086735
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279702288
+    - serializedVersion: 2
+      rgba: 4280754461
+    - serializedVersion: 2
+      rgba: 4282004011
+    - serializedVersion: 2
+      rgba: 4283319613
+    - serializedVersion: 2
+      rgba: 4284701778
+    - serializedVersion: 2
+      rgba: 4286281323
+    - serializedVersion: 2
+      rgba: 4288255114
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279702288
+    - serializedVersion: 2
+      rgba: 4280754461
+    - serializedVersion: 2
+      rgba: 4282004011
+    - serializedVersion: 2
+      rgba: 4283319613
+    - serializedVersion: 2
+      rgba: 4284701778
+    - serializedVersion: 2
+      rgba: 4286281323
+    - serializedVersion: 2
+      rgba: 4288255114
+    Offset: -2

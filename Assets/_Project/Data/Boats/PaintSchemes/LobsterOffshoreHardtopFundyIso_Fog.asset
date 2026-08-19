@@ -1,0 +1,165 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee76649f87a8cfd4890261ca9a64ffa3, type: 3}
+  m_Name: LobsterOffshoreHardtopFundyIso_Fog
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.HullPaintSchemeDef
+  Id: paint.lobster_offshore_hardtop_fundy_fog
+  Label: FOG GREY
+  Note: Pale cool grey topsides, white house, oxblood boot.
+  HullMeshId: hullmesh.lobster_offshore_hardtop_fundy_iso
+  SourceRigPath: docs/art/rigs/lobsterBoatVariantsIsoRig.js
+  RigPaintId: fog
+  Ramps:
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4285162844
+    - serializedVersion: 2
+      rgba: 4286281325
+    - serializedVersion: 2
+      rgba: 4287465598
+    - serializedVersion: 2
+      rgba: 4288649873
+    - serializedVersion: 2
+      rgba: 4289899683
+    - serializedVersion: 2
+      rgba: 4291084214
+    - serializedVersion: 2
+      rgba: 4292400073
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4278518329
+    - serializedVersion: 2
+      rgba: 4279176772
+    - serializedVersion: 2
+      rgba: 4279835215
+    - serializedVersion: 2
+      rgba: 4280558937
+    - serializedVersion: 2
+      rgba: 4281217380
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4287597961
+    - serializedVersion: 2
+      rgba: 4288716186
+    - serializedVersion: 2
+      rgba: 4289834667
+    - serializedVersion: 2
+      rgba: 4291018940
+    - serializedVersion: 2
+      rgba: 4292137422
+    - serializedVersion: 2
+      rgba: 4293321696
+    - serializedVersion: 2
+      rgba: 4294506226
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4284441951
+    - serializedVersion: 2
+      rgba: 4285758582
+    - serializedVersion: 2
+      rgba: 4287206029
+    - serializedVersion: 2
+      rgba: 4288522146
+    - serializedVersion: 2
+      rgba: 4289772470
+    - serializedVersion: 2
+      rgba: 4290956488
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4281284403
+    - serializedVersion: 2
+      rgba: 4281942847
+    - serializedVersion: 2
+      rgba: 4282666827
+    - serializedVersion: 2
+      rgba: 4283390807
+    - serializedVersion: 2
+      rgba: 4284114787
+    - serializedVersion: 2
+      rgba: 4284838767
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4280359955
+    - serializedVersion: 2
+      rgba: 4281937953
+    - serializedVersion: 2
+      rgba: 4283319091
+    - serializedVersion: 2
+      rgba: 4286211400
+    - serializedVersion: 2
+      rgba: 4288778603
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4280164192
+    - serializedVersion: 2
+      rgba: 4281282929
+    - serializedVersion: 2
+      rgba: 4282335875
+    - serializedVersion: 2
+      rgba: 4283454612
+    - serializedVersion: 2
+      rgba: 4284638886
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4282925370
+    - serializedVersion: 2
+      rgba: 4284899158
+    - serializedVersion: 2
+      rgba: 4287399290
+    - serializedVersion: 2
+      rgba: 4289833887
+    - serializedVersion: 2
+      rgba: 4292005571
+    - serializedVersion: 2
+      rgba: 4293848550
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279505166
+    - serializedVersion: 2
+      rgba: 4280359703
+    - serializedVersion: 2
+      rgba: 4281477667
+    - serializedVersion: 2
+      rgba: 4282793011
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4278518329
+    - serializedVersion: 2
+      rgba: 4279176772
+    - serializedVersion: 2
+      rgba: 4279835215
+    - serializedVersion: 2
+      rgba: 4280558937
+    - serializedVersion: 2
+      rgba: 4281217380
+    Offset: -1
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4278518329
+    - serializedVersion: 2
+      rgba: 4279176772
+    - serializedVersion: 2
+      rgba: 4279835215
+    - serializedVersion: 2
+      rgba: 4280558937
+    - serializedVersion: 2
+      rgba: 4281217380
+    Offset: -2

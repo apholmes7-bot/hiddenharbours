@@ -1,6 +1,9 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
@@ -274,6 +277,92 @@ namespace HiddenHarbours.Tests.RigBaking
             foreach (var kv in byRigId)
                 CollectionAssert.AllItemsAreUnique(kv.Value,
                     $"rig scheme '{kv.Key}' baked two assets with the same id: {string.Join(", ", kv.Value)}");
+        }
+
+        // ---- coverage: no rig can gain a paint axis unnoticed -----------------------------------
+
+        /// <summary>One case per rig this baker declares unpainted, named by file so a failure says
+        /// which boat.</summary>
+        static IEnumerable<TestCaseData> UnpaintedFleet() => HullPaintSchemeBaker.UnpaintedRigs.Keys
+            .Select(f => new TestCaseData(f).SetName($"{{m}}({f})"));
+
+        /// <summary>
+        /// <b>Every hull rig is either PAINTED or declared unpainted with a reason.</b> The paint
+        /// side of <c>HullMeshFleetCoverageTests</c>, and the guard whose absence let twenty-one
+        /// hulls sit unpainted through three merged art drops with nothing going red — the fleet rig
+        /// pack shipped meshes for all of them, and only a hand-audit found that three of those rigs
+        /// had carried a paint axis all along.
+        /// </summary>
+        [Test]
+        public void EveryHullRigIsEitherPaintedOrDeclaredUnpainted()
+        {
+            var painted = new HashSet<string>(
+                HullPaintSchemeBaker.Fleet.Select(
+                    h => Path.GetFileName(HullPaintSchemeBaker.RigFor(h).ScriptPath)),
+                StringComparer.Ordinal);
+            var declared = HullPaintSchemeBaker.UnpaintedRigs;
+            var hullRigs = HullMeshFleet.BakedRigFileNames.Distinct().ToArray();
+
+            foreach (string rig in hullRigs)
+                Assert.IsTrue(painted.Contains(rig) || declared.ContainsKey(rig),
+                    $"'{rig}' bakes a hull mesh but is neither painted nor listed in " +
+                    "HullPaintSchemeBaker.UnpaintedRigs. If its rig carries a paint axis, add a Fleet " +
+                    "row; if it does not, say so there with the reason. An art drop must not be able " +
+                    "to bring in a hull whose colours nobody bakes.");
+
+            foreach (var kv in declared)
+            {
+                Assert.IsFalse(painted.Contains(kv.Key),
+                    $"'{kv.Key}' is BOTH painted and declared unpainted. One of the two is stale.");
+                CollectionAssert.Contains(hullRigs, kv.Key,
+                    $"'{kv.Key}' is declared unpainted but bakes no hull mesh either — it is not in " +
+                    "HullMeshFleet at all, so this entry is dead and should go.");
+                Assert.IsNotEmpty(kv.Value, $"'{kv.Key}' is declared unpainted with no reason given.");
+            }
+        }
+
+        /// <summary>
+        /// <b>⚠️ The half that catches an ART DROP: each declared-unpainted rig is RUN and asked.</b>
+        /// A list of names would have gone stale the first time the art director added <c>SCHEMES</c>
+        /// to one of these files — which is precisely what happened to the sport skiff Mk2, whose
+        /// axis shipped with the fleet pack and went unbaked for a week.
+        ///
+        /// <para>Two probes, because "not exported" is NOT the same as "not there": the shim can
+        /// widen a module-level symbol by name, so a rig could carry a fully PRIVATE axis that the
+        /// live probe cannot see. The source check catches that case; the live probe catches the
+        /// ordinary one and is the authoritative test of what the baker could actually reach.</para>
+        /// </summary>
+        [TestCaseSource(nameof(UnpaintedFleet))]
+        public void UnpaintedRigsReallyHaveNoAxis(string rigFile)
+        {
+            var fleet = HullMeshFleet.Hulls.First(h => Path.GetFileName(h.ScriptPath) == rigFile);
+            string source = HullPaintSchemeBaker.ReadRigSource(fleet.ScriptPath);
+
+            int declares = Regex.Matches(
+                source, @"(?:const|let|var)\s+(?:PAINTS|SCHEMES)\b|function\s+(?:matsFor|palette)\b").Count;
+            Assert.Zero(declares,
+                $"'{rigFile}' is declared unpainted but its source DECLARES a paint axis " +
+                $"({declares} match(es) on PAINTS/SCHEMES/matsFor/palette). Even a private one is " +
+                "reachable — RigMeshExtractor.WidenExportedLiteral widens by name. Give it a Fleet row " +
+                "with the right ShimSymbols instead of leaving it off.");
+
+            using IRigScriptHost host = RigScriptHostFactory.Create();
+            host.Execute(source);
+            string g = fleet.GlobalName;
+            Assert.IsTrue(host.EvaluateBool($"typeof {g} === 'object' && {g} !== null"),
+                $"'{rigFile}' ran but installed no globalThis.{g} — this fixture is probing nothing.");
+
+            Assert.IsFalse(
+                host.EvaluateBool($"typeof {g}.palette === 'function' && !!{g}.schemeIds && " +
+                                  $"{g}.schemeIds.length > 0"),
+                $"'{rigFile}' now exposes the small-craft paint API (schemeIds + palette). It has " +
+                "gained an axis: add a Fleet row (the Cape Islander's line, verbatim) and drop it " +
+                "from UnpaintedRigs.");
+
+            Assert.IsFalse(
+                host.EvaluateBool($"!!{g}.PAINTS && {g}.PAINTS.length > 0"),
+                $"'{rigFile}' now exposes the lobster paint API (PAINTS). It has gained an axis: add " +
+                "a Fleet row with shimSymbols matsFor and drop it from UnpaintedRigs.");
         }
 
         /// <summary>
