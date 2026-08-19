@@ -168,7 +168,14 @@ namespace HiddenHarbours.World
                 return false;
             }
 
+            // The SAVE half, unchanged from #574/#580 — same signal, same fields, same order.
             EventBus.Publish(new RestSaveRequested(_placeName, wakePosition, Level));
+
+            // The PRESENTATION half, additive: where the MATTRESS is, which the save signal deliberately
+            // does not carry (it carries the wake spot, which is the player's feet — the opposite
+            // point). Published second so the day is already kept before any pose is shown: a beat that
+            // is interrupted, or a scene with no sleep art at all, still rests exactly as it did before.
+            EventBus.Publish(new SleepBeatRequested(WorldPosition, Level, _placeName));
             return true;
         }
 

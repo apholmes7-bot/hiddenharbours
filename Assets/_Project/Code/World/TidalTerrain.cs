@@ -24,6 +24,10 @@ namespace HiddenHarbours.World
     /// <item><description><b>Channel</b> — a deeper trough cut THROUGH the sandbar: boat-crossable at higher
     /// tide, narrowing as the tide falls. The showcase's boat passage — inverse of the flats over the tide.</description></item>
     /// <item><description><b>Deep harbour</b> — a low seabed everywhere else (never bares; always boatable).</description></item>
+    /// <item><description><b>Dredged approach</b> — a flat-bottomed cut from the drop-off in to the
+    /// berth pocket at the dock. Unlike every zone above it it NEVER bares: it is a dredge, authored
+    /// deep enough to carry its region's arrival hull at the lowest spring water, so it NARROWS
+    /// rather than dries as the tide falls.</description></item>
     /// </list>
     /// The zones are smoothly blended (the ridge and channel are raised-cosine bumps, not hard steps) so the
     /// shoreline and channel banks creep across the flats continuously as the tide moves — the continuous
@@ -67,7 +71,7 @@ namespace HiddenHarbours.World
         [Tooltip("Shelf bed at its OUTER edge (m above datum), where it drops away to the deep floor.")]
         [SerializeField] private float _reefShelfOuterElevation = -1.5f;
 
-        [Header("Berth (the ONE door in the reef — a dredged slip a boat comes home through)")]
+        [Header("Berth (the ONE door in the reef — the beach slip a boat comes home through)")]
         [Tooltip("Half-width (m) of the berth channel. 0 = ABSENT. This is a LOCAL DEPRESSION carved from " +
                  "deep water to the shore, so it cuts a door through the reef ring; without it a ringed " +
                  "island has no way in for anything that floats.")]
@@ -76,10 +80,39 @@ namespace HiddenHarbours.World
         [SerializeField] private Vector2 _berthFrom = Vector2.zero;
         [Tooltip("Shoreward end of the berth channel's centre-line (world XY) — at the shoreline.")]
         [SerializeField] private Vector2 _berthTo = Vector2.zero;
-        [Tooltip("Berth bed elevation (m above datum). Shallow ENOUGH that the slip dries near spring low — " +
-                 "the dock keeps its own gentle tide gate, so even coming home under power means reading " +
-                 "the tide — and deep enough to clear the skiff/punt tier for most of the cycle.")]
+        [Tooltip("Berth bed elevation (m above datum). The BEACH slip's own bed: shallow enough that it " +
+                 "dries near spring low, so wading out to it is a tide-gated thing, and deep enough to " +
+                 "clear the skiff/punt tier for most of the cycle. The DOCK's water is the dredged " +
+                 "approach below, which is a separate cut and never dries.")]
         [SerializeField] private float _berthBedElevation = -1.0f;
+        [Tooltip("Half-width (m) of the berth's FLAT bottom. 0 = the original single-slope trough, " +
+                 "byte-identical to the profile that predates the dredged approach. Above 0 the cut " +
+                 "becomes a trapezoid: flat at the bed out to here, then shouldering up to the natural " +
+                 "seabed by the half-width — which is what gives a channel a navigable WIDTH at low " +
+                 "water instead of a single deep point.")]
+        [SerializeField] private float _berthThalwegHalfWidth = 0f;
+
+        [Header("Dredged approach (the way to the dock — the cut that never dries)")]
+        [Tooltip("Half-width (m) of the dredged approach channel. 0 = ABSENT, and the region is exactly " +
+                 "the one that predates it. This is a SECOND cut on the same line as the berth: the " +
+                 "berth slip is the beach landing, this is the working boat's way to the wharf. Both " +
+                 "only ever cut DOWN, so the deeper of the two wins wherever they overlap and the pair " +
+                 "still reads as ONE door through the reef.")]
+        [SerializeField] private float _approachHalfWidth = 0f;
+        [Tooltip("Seaward end of the approach's centre-line (world XY) — authored ON the contour where " +
+                 "the natural seabed is already at the design depth, so the cut lands flush on the " +
+                 "harbour floor rather than ending in a sill nothing can cross.")]
+        [SerializeField] private Vector2 _approachFrom = Vector2.zero;
+        [Tooltip("Shoreward end of the approach's centre-line (world XY) — the head of the berth " +
+                 "pocket, far enough in that the hull it is dredged for lies wholly in dredged water.")]
+        [SerializeField] private Vector2 _approachTo = Vector2.zero;
+        [Tooltip("Half-width (m) of the approach's FLAT dredged bottom — the navigable width the " +
+                 "channel keeps at the lowest water. Sized from the beam of the hull it is cut for.")]
+        [SerializeField] private float _approachThalwegHalfWidth = 0f;
+        [Tooltip("Approach bed elevation (m above datum). Authored as spring low MINUS (the arrival " +
+                 "hull's draught + her under-keel clearance), so the channel carries her at EVERY state " +
+                 "of tide — the owner's 2026-08-19 ruling that the east dock always has water.")]
+        [SerializeField] private float _approachBedElevation = -4.0f;
 
         [Header("Sandbar ridge (the tide-gated walking path to Nine Mile Creek)")]
         [Tooltip("One end of the sandbar's centre-line (world XY) — toward the island.")]
@@ -162,7 +195,8 @@ namespace HiddenHarbours.World
         /// The pure zone composition (no Unity calls, no RNG) — exposed so an EditMode test can assert the
         /// authored zones without a scene. Composes the deep-harbour floor with the island plateau, the
         /// sandbar ridge, and the channel trough by taking the max ground (whichever feature is highest at
-        /// the position wins), then carving the channel back down through the bar.
+        /// the position wins), then carving the channel back down through the bar and the
+        /// berth and its dredged approach back down through the reef.
         /// </summary>
         public float ElevationAtZones(Vector2 worldPos)
         {
@@ -196,18 +230,65 @@ namespace HiddenHarbours.World
             // deep water to the shore, carved the same way the channel is — so a hull can reach the slip
             // without crossing the shelf, while everywhere else the ring still gates it. Only ever cuts
             // DOWN (Mathf.Min), so it cannot raise the seabed anywhere, and never below the deep floor.
-            if (_berthHalfWidth > 0f)
-            {
-                float dBerth = DistanceToSegment(worldPos, _berthFrom, _berthTo);
-                if (dBerth < _berthHalfWidth && e > _berthBedElevation)
-                {
-                    float carve = SmoothFalloff(dBerth, _berthHalfWidth);
-                    float carved = Mathf.Lerp(e, _berthBedElevation, carve);
-                    e = Mathf.Max(Mathf.Min(e, carved), _deepHarbourElevation);
-                }
-            }
+            //
+            // ⭐ TWO CUTS ON ONE LINE, and that is the ruling wearing geometry's clothes. The BERTH is
+            // the beach slip: it bares near spring low, which is what makes wading out to it mean
+            // reading the tide. The APPROACH is the dredged channel and berth pocket that serves the
+            // WHARF, and the owner ruled (2026-08-19) that it always holds water — it is the game's
+            // front door, and being piloted in at dead low tide must not run you aground on your own
+            // arrival. Both only ever cut DOWN, so the deeper wins where they overlap and the pair
+            // reads as one door rather than two.
+            e = Carve(e, worldPos, _berthFrom, _berthTo,
+                      _berthHalfWidth, _berthThalwegHalfWidth, _berthBedElevation);
+            e = Carve(e, worldPos, _approachFrom, _approachTo,
+                      _approachHalfWidth, _approachThalwegHalfWidth, _approachBedElevation);
 
             return e;
+        }
+
+        /// <summary>
+        /// Cut a channel along <paramref name="from"/>→<paramref name="to"/> into the ground at
+        /// <paramref name="e"/>. <b>The one carve</b> — the berth slip and the dredged approach are the
+        /// same shape at different numbers, and two copies of this arithmetic is two places for a
+        /// dredge to disagree with itself.
+        ///
+        /// <para><b>The section is a TRAPEZOID</b>: flat at <paramref name="bed"/> out to
+        /// <paramref name="thalwegHalf"/>, then shouldering up to the ground it found by
+        /// <paramref name="half"/>. With <c>thalwegHalf = 0</c> the flat vanishes and the shape is
+        /// exactly the single-slope trough that predates the approach, so a channel that authors no
+        /// thalweg answers bit-for-bit what it answered before.</para>
+        ///
+        /// <para><b>Why a flat bottom is the whole point.</b> A pure smoothstep trough has its design
+        /// depth at ONE point — the centre-line — so the width that actually carries a hull at low
+        /// water is whatever the slope happens to give, and for this island that was 3.7 m against a
+        /// 4.8 m beam. The flat states the navigable width instead of leaving it to fall out of a
+        /// falloff curve, and the shoulders still narrow it as the tide drops, which is the
+        /// "shrinks but never dries" reading the ruling asks for.</para>
+        ///
+        /// <para>Only ever cuts DOWN (<see cref="Mathf.Min"/>), so it cannot raise the seabed anywhere.
+        /// The floor is the deep harbour OR the bed itself, whichever is lower: a dredged cut is
+        /// allowed to be deeper than the natural floor around it — that is what dredging is — and
+        /// clamping it at the ambient floor would silently cap a future retune.</para>
+        /// </summary>
+        private float Carve(float e, Vector2 worldPos, Vector2 from, Vector2 to,
+                            float half, float thalwegHalf, float bed)
+        {
+            if (half <= 0f || e <= bed) return e;
+
+            float d = DistanceToSegment(worldPos, from, to);
+            if (d >= half) return e;
+
+            float floor = Mathf.Min(_deepHarbourElevation, bed);
+            float flat = Mathf.Clamp(thalwegHalf, 0f, half);
+
+            // ⚠ The flat bottom returns the BED ITSELF, not Lerp(e, bed, 1). They differ by an ULP
+            // or so — Mathf.Lerp is a + (b − a) · t, which is not exactly b at t = 1 — and an ULP is
+            // enough to turn "carries 1.80 m" into "carries 1.7999994 m" and fail a depth test that
+            // is right. A dredged bottom is flat AT the depth it was dredged to; say so exactly.
+            if (d <= flat) return Mathf.Max(Mathf.Min(e, bed), floor);
+
+            float carved = Mathf.Lerp(e, bed, SmoothFalloff(d - flat, half - flat));
+            return Mathf.Max(Mathf.Min(e, carved), floor);
         }
 
         /// <summary>

@@ -289,8 +289,12 @@ namespace HiddenHarbours.App.Editor
         public const float ShoreGradient           = 0.5f;
 
         // The berth: §5.1a's "dock approach / berth bed ≈ −1.0 m", which clears the 0.6 m tier whenever
-        // the water is above −0.4 m and DRIES near spring low — so the dock keeps its own gentle tide
-        // gate, and even coming home under power means reading the tide.
+        // the water is above −0.4 m and DRIES near spring low — so the BEACH SLIP keeps its own gentle
+        // tide gate, and wading out to it means reading the tide.
+        //
+        // ⚠ §5.1a's other half — "even coming home under power means reading the tide" — was OVERRULED
+        // for this dock on 2026-08-19 (see the dredged approach below). The slip's own numbers are
+        // unchanged; what changed is that the slip is no longer the only water here.
         public const float BerthBedElevation       = -1.0f;
         // ⚠ Also not in the ruling: a slip wide enough for the skiff tier to enter without threading a
         // needle, narrow enough to read as one door in the ring rather than a gap in it.
@@ -303,6 +307,100 @@ namespace HiddenHarbours.App.Editor
         // the beach; the carve's own falloff ramps it up onto the shore from there.
         public static readonly Vector2 BerthFrom    = new Vector2(240f, 0f);   // 170 m out — past the reef
         public static readonly Vector2 BerthTo      = new Vector2(190f, 0f);   // 120 m out — the shoreline
+
+        // ================================================================================================
+        //  ⭐ THE DREDGED APPROACH — "the east dock always has water" (OWNER RULING, 2026-08-19)
+        // ================================================================================================
+        // The owner ruled that St Peters' east dock holds water at EVERY state of tide, spring low
+        // included, because it is the game's front door: a new game pilots you in aboard a cape islander
+        // and puts you ashore on these planks, and an arrival that grounds on its own doorstep at dead
+        // low tide is not an opening. It is stated here as GEOMETRY — a dredged channel and a berth
+        // pocket — rather than as a special case in the sim, so the water the player reads is the water
+        // the hull floats in (ADR 0014: paint = sail).
+        //
+        // ⚠ WHAT THIS DOES **NOT** CHANGE. The reef ring still bares (ReefShelfInner/Outer −1.0/−1.5),
+        // the flats still bare, the bar guts still bare, and the BEACH SLIP above still dries near
+        // spring low. The §5.1a draught ladder is untouched: the cut is 16 m wide on the SAME line as
+        // the slip, so the island still has exactly ONE door, and a hull too deep for the ring is still
+        // a hull that cannot come home. What changed is that the one door is now dredged.
+        //
+        // --- THE ARITHMETIC (re-derived by StPetersEastBerthTests, never trusted to this comment) -----
+        //   spring low water                = TideMean − TideAmplitude       = 0 − 2.2   = −2.20 m
+        //   the arrival hull                = boat.cape_islander, DraughtMeters          =  1.40 m
+        //   under-keel clearance            = BerthUnderKeelClearance                    =  0.40 m
+        //   REQUIRED bed                    = −2.20 − (1.40 + 0.40)                      = −4.00 m
+        //   authored bed                    = ApproachBedElevation                       = −4.00 m
+        //
+        // ⭐ THE CLEARANCE IS NOT INVENTED. 0.40 m is exactly what this region's own deep-harbour floor
+        // (DeepHarbourElevation −4.0 m) gives that hull at that tide: −2.20 − (−4.00) − 1.40 = 0.40. So
+        // the channel offers the water the APPROACH offers and not a centimetre more — the dredge digs
+        // the slip down to the harbour floor and stops. Naming it as a requirement rather than writing
+        // "dig to the floor" is what makes the whole thing re-derive if the tide, the floor or the
+        // arrival hull ever moves: the test fails WITH the number to use.
+
+        /// <summary>
+        /// Water under the arrival hull's keel at the LOWEST water, in metres — the margin the dredged
+        /// approach is cut to hold. See the arithmetic above for why it is 0.40 and not a taste.
+        /// </summary>
+        public const float BerthUnderKeelClearance  = 0.4f;
+
+        /// <summary>
+        /// The hull the opening is sailed in on — the def id, so the sequencer that drives the
+        /// arrival and the dredge that has to float her cannot come to disagree about which boat
+        /// this channel was cut for.
+        /// </summary>
+        public const string ArrivalHullId = "boat.cape_islander";
+
+        /// <summary>
+        /// Her draught, in metres. ⚠ A MIRROR of <c>CapeIslander.asset</c>'s <c>DraughtMeters</c> and
+        /// not a second opinion: a <c>const</c> cannot load an asset, and the seabed arithmetic below
+        /// has to be a compile-time expression. StPetersEastBerthTests holds the two equal, so moving
+        /// the def and forgetting this one fails loudly instead of quietly leaving her aground.
+        /// </summary>
+        public const float ArrivalHullDraughtMetres = 1.4f;
+
+        /// <summary>Seaward end of the dredged approach — 185 m out, ON the −4 m contour, so the cut
+        /// lands flush on the harbour floor instead of ending in a sill nothing can cross. (The beach
+        /// slip's own mouth at <see cref="BerthFrom"/> measures −1.89 m, which is why it was a door
+        /// that shut twice a month.)</summary>
+        public static readonly Vector2 ApproachFrom = new Vector2(255f, 0f);
+
+        /// <summary>
+        /// Shoreward end of the dredged approach — the head of the berth pocket.
+        ///
+        /// <para>⚠ 206 is MEASURED against two things, not chosen. (a) The arrival hull is 12.9 m long
+        /// and lies at <see cref="DoryMooredPos"/> (215, 0), so her bow reaches 208.6 — the pocket's
+        /// flat bottom runs 4 m past this end (the cut is a capsule, not a segment), so it holds her
+        /// whole length with room over. (b) The far side: the cut's shoulder dies out 8 m west of here,
+        /// at x = 198, which is 15 m clear of <see cref="StPetersWharf.RootCellX"/> — so the pier root's
+        /// MEASURED +5.35 m deck elevation, and the dry ground the pier launches from, do not move by a
+        /// millimetre. Both are asserted, not trusted.</para>
+        /// </summary>
+        public static readonly Vector2 ApproachTo   = new Vector2(206f, 0f);
+
+        /// <summary>Half-width of the dredged cut — the SAME 8 m as the slip it shares a line with, so
+        /// the reef still reads as having exactly one door through it.</summary>
+        public const float ApproachHalfWidth        = 8f;
+
+        /// <summary>
+        /// Half-width of the approach's FLAT dredged bottom — the navigable width the channel keeps at
+        /// the lowest water, 8 m of it against the cape islander's 4.80 m beam.
+        ///
+        /// <para>⚠ This is the constant a pure falloff curve cannot express. Carving to −4 m with the
+        /// old single-slope trough gives the design depth at ONE point and only 3.7 m of water wide
+        /// enough to swim her at spring low — narrower than she is. The flat states the width; the
+        /// shoulders beyond it still close in as the tide drops (8.00 m at spring low → 11.5 at neap
+        /// low → 13.4 at mean → the whole shelf floods above that), which is the owner's "shrinks in
+        /// width at low tide but stays navigable" exactly.</para>
+        /// </summary>
+        public const float ApproachThalwegHalfWidth = 4f;
+
+        /// <summary>Bed of the dredged approach — see the arithmetic above. Equal to
+        /// <see cref="DeepHarbourElevation"/> by construction, not by coincidence — and written as
+        /// the arithmetic rather than as its answer, so it cannot be right today and stale tomorrow.
+        /// (In float this folds to exactly −4.0; the test says so rather than trusting it.)</summary>
+        public const float ApproachBedElevation =
+            TideMean - TideAmplitude - (ArrivalHullDraughtMetres + BerthUnderKeelClearance);
         // West end of the island's land → west toward the passage. (From is ON the island so the bar
         // actually joins it — at (−45, 0) the elliptical distance is 115 against a 120 radius, so the
         // bar head stands on the plateau; To is short of the scene edge so the passage band has room.
@@ -1626,6 +1724,22 @@ namespace HiddenHarbours.App.Editor
             // 'onboarded' (on the dory being REPAIRED) so the opening never re-triggers on reload.
             new GameObject("Onboarding").AddComponent<OnboardingDirector>();
 
+            // --- ⭐ THE ARRIVAL (owner ruling, 2026-08-19) ------------------------------------------
+            // Onboarding's step ZERO, and the reason the east berth was dredged: a new game does not
+            // begin on this beach, it arrives at it. A skipper runs the player in down the buoyed
+            // fairway, ties up at the wharf and points them up the path to Ginny — which is exactly
+            // where the director above picks the thread up ("meet Aunt Ginny"). Placed at the SCENE
+            // root and emphatically NOT in the dev core, which is a grave: everything parented there
+            // dies on the travel path, and this must survive a player who arrives by sea.
+            //
+            // It PLACES and does not draw — the hull, her paint and the man on her deck are all
+            // skinned at runtime, for the reason MooredBoat spells out (a builder that instantiated
+            // the hull would bake the sprite fallback into the committed scene).
+            StPetersArrivalOpening.Place(parent: null);
+
+            // …and the World side of its one line, beside the dialogue view it drives.
+            new GameObject("ArrivalLine").AddComponent<ArrivalLineSpeaker>();
+
             // --- REGION DISPLAY NAME (the world registrar → Core) ---------------------------------------
             // Register "St Peters Island" / "Nine Mile Creek" so the UI crossing-card resolves them by scene
             // name or id without referencing World (the RegionDisplayNames seam, #59/#54).
@@ -1818,6 +1932,11 @@ namespace HiddenHarbours.App.Editor
             SetV2(so, "_berthFrom", BerthFrom);
             SetV2(so, "_berthTo", BerthTo);
             SetF(so, "_berthBedElevation", BerthBedElevation);
+            SetF(so, "_approachHalfWidth", ApproachHalfWidth);
+            SetV2(so, "_approachFrom", ApproachFrom);
+            SetV2(so, "_approachTo", ApproachTo);
+            SetF(so, "_approachThalwegHalfWidth", ApproachThalwegHalfWidth);
+            SetF(so, "_approachBedElevation", ApproachBedElevation);
             SetF(so, "_islandFalloff", IslandFalloff);
             SetF(so, "_islandElevation", IslandElevation);
             SetV2(so, "_sandbarFrom", SandbarFrom);

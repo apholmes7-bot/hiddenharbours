@@ -450,6 +450,12 @@ namespace HiddenHarbours.App.Editor
                 SetFloat(submerge, "_maxSubmerge", IsoNeckDeepFraction);
             }
 
+            // SLEEPING (rig 6.5). Lays the player on the mattress and plays the sleep clip for a beat
+            // when they turn in. Added unconditionally on the same null-safe greybox rule as the clip
+            // player: with no sleep art CanPlay answers false and the beat never starts, leaving #580's
+            // instantaneous rest exactly as it shipped.
+            playerGo.AddComponent<PlayerSleepPresenter>();
+
             // The on-foot CLAM HOLD + STARTING GEAR (St Peters opening). Without these the dig chain is dead:
             // ClamDig writes a dug clam into an IHold (the bucket) and gates on owning gear.shovel — so the
             // player carries a ClamBucket (the hand-held hold) and a StartingGear grant that writes
@@ -584,6 +590,11 @@ namespace HiddenHarbours.App.Editor
             if (cfWorldH != null) { cfWorldH.floatValue = CameraFollow.OnFootWorldHeightMeters; cfSo.ApplyModifiedPropertiesWithoutUndo(); }
             SetRef(cameraFollow, "_onFootTarget", playerGo.transform);
             SetRef(cameraFollow, "_boatTarget", doryGo.transform);
+
+            // The wheel is the player's eye (owner ruling 2026-08-19): scroll steps the WALKING view
+            // through the camera's integer pixel-perfect tiers. It finds the CameraFollow beside it,
+            // so there is nothing to wire; the range and feel are the owner's on GameConfig.PlayerZoom.
+            camGo.AddComponent<CameraZoomInput>();
 
             // --- CONTROL SWITCHER (board/disembark; the scene re-points its dock via the RegionAnchor) -----
             var switcherGo = new GameObject("ControlSwitcher");

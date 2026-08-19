@@ -65,6 +65,10 @@ jobs:
   tests:
     name: EditMode + PlayMode tests
     runs-on: ubuntu-latest
+    # A wedged run otherwise rides GitHub's 6-hour default while the queue stacks up behind it —
+    # 2026-08-19 saw FOUR runs hang the same way in one afternoon (see the step timeout below).
+    # A full healthy run is ~25–45 min; 75 leaves headroom without letting a hang own the runner.
+    timeout-minutes: 75
     steps:
       # WHY LFS IS CACHED (not `lfs: true` on checkout): checkout with `lfs: true` downloads
       # the full ~227 MB LFS object set from GitHub's LFS store on EVERY run. At ~164 runs in
@@ -116,6 +120,11 @@ jobs:
 
       - name: Set up Unity
         id: setup_unity
+        # A healthy setup takes ~3 min (cache hit) and the install path is the workflow's one
+        # documented environment-fault class: on 2026-08-19 four separate runs wedged HERE for
+        # 1–2.5 h each (a cancel + re-run cleared every one). 15 min converts that hang into a
+        # fast, obviously-infrastructure failure instead of a silent queue block.
+        timeout-minutes: 15
         uses: buildalon/unity-setup@30fcbcb56c10ea5d64298e970d952b8d29bc268b # v2
         with:
           version-file: 'ProjectSettings/ProjectVersion.txt'   # resolves to 6000.5.0f1

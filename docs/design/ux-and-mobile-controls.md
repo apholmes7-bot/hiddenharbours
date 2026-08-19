@@ -416,9 +416,15 @@ gamepad **without a rewrite** (per `../architecture/tech-architecture.md`).
   intents. Use Unity's **Input System** (action maps per device, runtime rebinding).
 - **Touch → mouse/keyboard:** virtual joystick → WASD; throttle slider → W/S or scroll; tap-heading →
   mouse-click/point; Action Button → E/F/Space (context); pinch → scroll-zoom; HUD widgets are
-  identical (just mouse-hover tooltips added).
+  identical (just mouse-hover tooltips added). The `Zoom` intent is **built and shipped** as the mouse
+  wheel stepping the walking view through the camera's discrete pixel-perfect tiers — see
+  [`boats-and-navigation.md` §9.8](boats-and-navigation.md#98-on-deck-camera-zoom-control-mode-keyed-pixel-perfect-steps)
+  (owner ruling 2026-08-19). It is **tiered, not continuous**, which is also what a later pinch must
+  be: a pinch resolves to whole tier steps, never an arbitrary scale.
 - **Touch → gamepad:** left stick → move/throttle-axis; right stick → heading; face button →
-  context Action; bumpers/triggers → throttle or secondary; d-pad → menu nav. Assists carry over;
+  context Action; bumpers/triggers → throttle or secondary; d-pad → menu nav. **LB/RB are now the
+  walking `Zoom` intent** (one tier per press — a discrete button for a discrete tier), the one pair
+  found unclaimed in both code and `InputSystem_Actions` when the wheel landed. Assists carry over;
   the set-&-drift predictor and tide/wind HUD are platform-agnostic.
 - **Responsive UI for big screens:** the same **summary-first card** screens reflow to multi-column
   on desktop/console (more cards visible at once), and the HUD spreads out — but the *information set*

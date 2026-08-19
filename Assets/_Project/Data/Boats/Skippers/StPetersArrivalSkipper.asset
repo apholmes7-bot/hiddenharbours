@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b7c1e94a2f04d1e9c8a5f2d6b147a30, type: 3}
+  m_Name: StPetersArrivalSkipper
+  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.BoatOwnerDef
+  Id: owner.chiasson_armand
+  DisplayName: Armand Chiasson
+  Boat: {fileID: 11400000, guid: 7e864d8d672203e4abddc9e592d9aa95, type: 2}
+  BuoyScheme: CapeIslander
+  HullPaint: {fileID: 11400000, guid: a2e96b40683a0304a88f7da7ef4d3f5b, type: 2}
+  Prosperity: 3
+  ShedFootprintMetres: 9.0
+  LotIndex: 0
+  BerthIndex: 0
+  Skipper: {fileID: 11400000, guid: d9524c99b3334ef45b8fddc702972736, type: 2}

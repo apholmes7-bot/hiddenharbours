@@ -250,6 +250,48 @@ floats where `waterLevel − bedElevation > draught`):
 > implemented exactly; **whether it should land harder is the owner's call**, and this section already
 > says which lever to pull. Deferred until he plays at size.
 
+#### ⭐⭐ OVERRULED for the east dock — the arrival berth is always wet (owner, 2026-08-19)
+
+> *"The St Peters EAST dock always has water, even at spring low — cut a small cove or channel if
+> the bed needs it. It is the game's front door: at new game the player is piloted in by a SKIPPER
+> driving a cape islander, who approaches the dock, slows, throws his lines, ties up — and the
+> player steps off."*
+
+This **reverses the "gentle tide gate" above for this one berth**, and gives the reason: an arrival
+that grounds on its own doorstep at dead low water is not an opening. Everything else in §5.1a
+stands — the reef ring, the draught ladder, the one-door reading, and the beach slip's own gate.
+
+**What was built** (`StPetersBuilder.Approach*`, `TidalTerrain.Carve`):
+
+- A **dredged channel and berth pocket** on the *same line* as the slip, from the −4 m contour
+  (`ApproachFrom` = 255, 0) in to the wharf head (`ApproachTo` = 206, 0), at the **same ±8 m
+  half-width** — so the reef still has exactly one door, now dredged.
+- Bed **−4.00 m**, and it is the arithmetic rather than a taste:
+  `springLow (−2.20) − (cape islander 1.40 + clearance 0.40)`. The **0.40 m clearance is not
+  invented** — it is exactly what this region's own −4 m harbour floor gives that hull at that tide,
+  so the dredge cuts the slip down to the floor and stops. The channel offers the water the approach
+  offers and no more.
+- A **flat bottom** (`ApproachThalwegHalfWidth` 4 m), because a falloff curve cannot state a width:
+  carving to −4 m with the old single-slope trough left 3.7 m of usable water against a **4.80 m
+  beam**. The flat states the navigable width; the shoulders still narrow it as the tide drops —
+  **8.00 m at spring low → 11.80 at neap low → 39 at mean** — which is the owner's *"shrinks in
+  width at low tide but stays navigable"*.
+
+**What did NOT change.** The reef apron (−1.0/−1.5) still bares. The flats still bare. The bar guts
+still bare. **The beach slip still dries** — wading out to it still means reading the tide — so the
+gate moved to the beach rather than evaporating. The draught table above is unchanged for every
+hull *crossing the ring*; what changed is that the one door is dredged. The pier root's measured
++5.354 m and every other authored point are **bit-identical** (`StPetersEastBerthTests`).
+
+**Consequences already banked:** the entrance channel now claims 1.40 m at *spring low* instead of
+0.6 m at mean and is buoyed in to the dock rather than stopped at the drop-off; a **floating dock**
+becomes possible at this wharf (the "it would sit on the mud" reason expired — it is now only a
+question of the bob-frame driver and the owner's taste).
+
+**Still open (owner):** whether the channel reads as a channel at low tide, whether 8 m of navigable
+water is the right room coming in, and whether a wet berth beside a dry landing reads or looks like
+a bug.
+
 ### 5.2 The sandbar as its own scene — sized by the tide, and the tide is generous
 
 The owner asked for the bar to be a whole scene. It should be. But its length is not a comfort

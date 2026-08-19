@@ -466,6 +466,15 @@ namespace HiddenHarbours.Core
             new PotStarterEntry("trap.crab", 1),
         };
 
+        [Header("Player zoom (the wheel is the player's eye — owner ruling 2026-08-19)")]
+        [Tooltip("How far the mouse wheel may take the WALKING view in and out, in metres of world " +
+                 "height. Closest is the interior close-up (you are reading a room); farthest is the " +
+                 "outdoor walk-and-look. Both quantise to the camera's integer pixel-perfect steps, so " +
+                 "typing any number picks the nearest crisp stop rather than a blurry one — and the " +
+                 "wheel only ever moves the ON-FOOT view: the helm keeps the hull's ruled framing, the " +
+                 "deck keeps its own. Untick WheelEnabled to take the wheel out of the game entirely.")]
+        public PlayerZoomSettings PlayerZoom = PlayerZoomSettings.Default;
+
         // Convenience
         /// <summary>
         /// THE shared displacement exaggeration (ADR 0023 §(2)) — the accessor every water-riding
@@ -1845,6 +1854,76 @@ namespace HiddenHarbours.Core
             TrapDefId = trapDefId;
             Count = count;
         }
+    }
+
+    /// <summary>
+    /// THE WHEEL IS THE PLAYER'S EYE (<see cref="GameConfig.PlayerZoom"/> — owner ruling 2026-08-19):
+    /// <i>"Mouse wheel modifies player zoom — closer to look at interiors, out when outside."</i>
+    ///
+    /// <para><b>A range, not a free zoom.</b> Pixel art shimmers at a fractional camera scale, so the
+    /// camera only ever stops on the integer pixel-perfect steps the follow-cam's ladder defines. These
+    /// two heights name the ENDS of the walking player's stretch of that ladder; the wheel walks the
+    /// whole-number stops between them and nothing in between exists. Type any number you like — it
+    /// quantises to the nearest crisp stop, so the worst a hand-typed value can do is pick a
+    /// neighbouring tier, never a blurry framing.</para>
+    ///
+    /// <para><b>Metres, deliberately, and never step numbers.</b> Ladder steps count UPWARD as the view
+    /// gets CLOSER, which reads backwards to anybody tuning a camera. Every other camera dial in the
+    /// project is world height in metres and so is this one: smaller number = closer in. The reference
+    /// stops at the locked PPU 32 on a 1080p screen are 33.75 / 16.88 / 11.25 / 8.44 / 6.75 / 5.63 /
+    /// 4.82 / 4.22 m, and the walking defaults below pick the 11.25 → 5.63 band: one stop WIDER than
+    /// today's on-foot framing at the far end, and at the near end the closest framing the game already
+    /// ships (the step a live trap haul uses).</para>
+    ///
+    /// <para><b>The wheel moves the ON-FOOT view only.</b> The helm keeps the hull's ruled framing (the
+    /// "whole vessel visible" derivation), the deck keeps the deck step, a live haul keeps its tighten,
+    /// and a road vehicle keeps her def's framing. So these clamps are the walker's range and no other
+    /// framing's — and stepping aboard cannot be "stuck" at a zoom the wheel left behind.</para>
+    /// </summary>
+    [System.Serializable]
+    public struct PlayerZoomSettings
+    {
+        [Tooltip("Let the mouse wheel (and the gamepad's shoulder buttons) change the walking view at " +
+                 "all. Off = the on-foot framing is fixed, exactly as it was before this existed.")]
+        public bool WheelEnabled;
+
+        [Tooltip("CLOSEST the wheel may take the walking view, in metres of world height — the interior " +
+                 "close-up. Smaller = further in. 5.625 is the tightest framing the game already " +
+                 "ships (the live-haul step).")]
+        [Min(0.5f)] public float ClosestWorldHeightMeters;
+
+        [Tooltip("FARTHEST the wheel may take the walking view, in metres of world height. Larger = " +
+                 "further out. 11.25 is one crisp stop wider than the standing on-foot framing — enough " +
+                 "to see where you are going outdoors without the fisher shrinking to a speck.")]
+        [Min(0.5f)] public float FarthestWorldHeightMeters;
+
+        [Tooltip("How much raw scroll earns ONE tier. A mouse wheel reports 120 per detent, so 120 = " +
+                 "one tier per click; a trackpad reports a stream of small values and has to travel the " +
+                 "same distance to earn the same tier. Lower = a twitchier wheel.")]
+        [Min(1f)] public float WheelUnitsPerNotch;
+
+        [Tooltip("Seconds to ease one tier step. 0 = snap. Either way the view LANDS on a crisp " +
+                 "pixel-perfect stop — the ease only bridges the frames between two stops.")]
+        [Min(0f)] public float StepSeconds;
+
+        /// <summary>
+        /// The shipping range: 11.25 m out (one stop wider than standing on foot) to 5.625 m in (the
+        /// live-haul step, the closest framing already in the game), 120 units of scroll to the tier,
+        /// and a short ease so a step reads as a move rather than a cut.
+        ///
+        /// <para>⚠️ The two heights are the ×3 and ×6 PPU-32 stops at 1080p written out as literals,
+        /// because the ladder that derives them lives in the App camera and Core may not reach it.
+        /// <c>PlayerZoomTierTests</c> is the tripwire that fires if the ladder and these defaults ever
+        /// drift apart.</para>
+        /// </summary>
+        public static PlayerZoomSettings Default => new PlayerZoomSettings
+        {
+            WheelEnabled = true,
+            ClosestWorldHeightMeters = 5.625f,   // 1080 / (6 x 32)
+            FarthestWorldHeightMeters = 11.25f,  // 1080 / (3 x 32)
+            WheelUnitsPerNotch = 120f,           // one mouse detent
+            StepSeconds = 0.18f,
+        };
     }
 
     /// <summary>

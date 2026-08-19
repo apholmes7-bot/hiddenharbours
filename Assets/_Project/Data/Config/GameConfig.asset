@@ -303,3 +303,9 @@ MonoBehaviour:
     Count: 2
   - TrapDefId: trap.crab
     Count: 1
+  PlayerZoom:
+    WheelEnabled: 1
+    ClosestWorldHeightMeters: 5.625
+    FarthestWorldHeightMeters: 11.25
+    WheelUnitsPerNotch: 120
+    StepSeconds: 0.18
