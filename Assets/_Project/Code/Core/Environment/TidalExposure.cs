@@ -115,6 +115,34 @@ namespace HiddenHarbours.Core
             => BandForDepth(WaterDepth(waterLevel, terrainElevation), wadeDepth, swimLimit);
 
         /// <summary>
+        /// <b>Can an on-foot fisher be in this band at all?</b> True for everything but
+        /// <see cref="DepthBand.Deep"/>, which is boat-only water — the owner's hard rule (water travel is
+        /// boats only; swimming is an escape valve, never a travel mode).
+        ///
+        /// <para><b>Why this exists as a named predicate rather than a <c>!= Deep</c> at each call site.</b>
+        /// Three places now decide "may a person be here on foot": the walk controller's soft wall, the
+        /// on-foot water state, and — since drivable vehicles — the point a driver is SET DOWN when they
+        /// get out. They must agree, because a rule that admits you somewhere the walk model would have
+        /// walled you out of is a way to put the fisher somewhere the game has no story for. Naming the law
+        /// once means the next consumer inherits it instead of re-deriving it.</para>
+        ///
+        /// <para>Note what it does <em>not</em> say: it is not "is this comfortable" and not "is this dry".
+        /// <see cref="DepthBand.Swim"/> is admitted deliberately — being in the swim band is a bad place to
+        /// be, and the model's answer to that is the crawl speed and the vulnerability, not a refusal.</para>
+        /// </summary>
+        public static bool IsOnFootTraversable(DepthBand band) => band switch
+        {
+            DepthBand.Dry => true,
+            DepthBand.Wade => true,
+            DepthBand.Swim => true,    // the escape valve — allowed, and slow, and meant to be left
+            DepthBand.Deep => false,   // boat-only water (the owner's hard rule)
+            _ => throw new System.ArgumentOutOfRangeException(
+                     nameof(band), band,
+                     "DepthBand has grown a band this rule cannot classify — an unclassified band must be " +
+                     "decided deliberately, not inherited from a default arm."),
+        };
+
+        /// <summary>
         /// The on-foot <b>move-speed multiplier</b> (0..1) for a raw water <paramref name="depth"/> — the
         /// "more slow as it deepens" feel curve. <b>Full (1)</b> on dry ground; ramps <em>linearly</em>
         /// from 1 down to <paramref name="wadeSlowFactor"/> across the wade band (0→<paramref name="wadeDepth"/>);

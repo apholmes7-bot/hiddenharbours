@@ -433,6 +433,202 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         // =============================================================================================
+        //  3b. GETTING OUT OVER WATER — the amphibian's door opens somewhere a person can be
+        // =============================================================================================
+        //
+        //  Until the Otter there was no way to be Driving over water at all, so LeaveDriving never asked
+        //  what was under the door. She swims by design, which turns "get out" into a question the walk
+        //  model already had an answer for and the switcher was not consulting: the fisher was set down on
+        //  open water, in a band whose whole purpose is to keep people out of it.
+        //
+        //  The rule is the owner's ratified three-band wading model, read at the LANDING point:
+        //    Dry / Wade  → step out (unchanged)
+        //    Swim        → step out into the existing slow-swim escape state (allowed, and slow)
+        //    Deep        → refused, with the reason, and you stay behind the wheel
+        //
+        //  ⚠️ It is a DEPTH FACT, not a lock: the machine the player is sitting in is the way out of it.
+
+        /// <summary>Deep water under the door: the exit is declined, the player is still Driving, and they
+        /// are told why. Nothing is given up — the seat keeps its controls, so she can be driven off.</summary>
+        [Test]
+        public void OverBoatOnlyWaterTheDoorIsRefusedAndTheReasonIsGiven()
+        {
+            var notices = new List<DevNotice>();
+            void OnNotice(DevNotice n) => notices.Add(n);
+            EventBus.Subscribe<DevNotice>(OnNotice);
+            try
+            {
+                Rig rig = BuildRig(Vector3.zero);
+                rig.Switcher.TryEnterDriving(rig.Door);
+
+                // Drown the world under her: 6 m of water everywhere, far past SwimLimit (2 m).
+                GameServices.TidalTerrain = new FlatTerrain { Elevation = -6f };
+                GameServices.Environment = new FlatEnv { Level = 0f };
+
+                Vector3 seated = rig.PlayerGo.transform.position;
+
+                Assert.IsFalse(rig.Switcher.LeaveDriving(), "the door must decline over boat-only water");
+                Assert.That(rig.Switcher.Mode, Is.EqualTo(ControlMode.Driving),
+                            "a declined exit leaves the player exactly where they were — behind the wheel");
+                Assert.That((Vector3)rig.PlayerGo.transform.position, Is.EqualTo(seated),
+                            "and does not move them a millimetre toward the door");
+                Assert.That(notices.ConvertAll(n => n.Text),
+                            Contains.Item(ControlSwitcher.NoticeTooDeepToStepOut),
+                            "a refusal without a reason is indistinguishable from a broken key");
+            }
+            finally { EventBus.Unsubscribe<DevNotice>(OnNotice); EventBus.Clear<DevNotice>(); }
+        }
+
+        /// <summary>
+        /// ⭐ <b>The refusal CLEARS when she is driven into the shallows — it is a depth fact, not a gate.</b>
+        /// The same press, the same machine, one drive: the no-locks doctrine says the player is never
+        /// holding a key that has stopped working, only one whose answer depends on where they are.
+        /// </summary>
+        [Test]
+        public void DrivingHerIntoTheShallowsOpensTheDoorAgain()
+        {
+            Rig rig = BuildRig(Vector3.zero);
+            rig.Switcher.TryEnterDriving(rig.Door);
+
+            // West of the shore line is 6 m of ground; east is 6 m under. She starts drowned.
+            GameServices.TidalTerrain = new HalfDrownedCoast();
+            GameServices.Environment = new FlatEnv { Level = 0f };
+            rig.TruckGo.transform.position = new Vector3(HalfDrownedCoast.ShoreX + 20f, 0f, 0f);
+
+            Assert.IsFalse(rig.Switcher.LeaveDriving(), "fixture: out over the drowned half she is refused");
+            Assert.That(rig.Switcher.Mode, Is.EqualTo(ControlMode.Driving));
+
+            // Driven ashore — far enough west that her DOOR (1.75 m off her centreline) clears too.
+            rig.TruckGo.transform.position = new Vector3(HalfDrownedCoast.ShoreX - 20f, 0f, 0f);
+
+            Assert.IsTrue(rig.Switcher.LeaveDriving(), "ashore, the very same press must let her go");
+            Assert.That(rig.Switcher.Mode, Is.EqualTo(ControlMode.OnFoot));
+        }
+
+        /// <summary>The wade band is not water you are refused over — it is water you stand in. Ankle-deep
+        /// at a beach landing must behave exactly as dry ground did.</summary>
+        [Test]
+        public void WadeDepthUnderTheDoorStillLetsYouOut()
+        {
+            Rig rig = BuildRig(Vector3.zero);
+            rig.Switcher.TryEnterDriving(rig.Door);
+
+            // 0.3 m — inside WadeDepth (0.5).
+            GameServices.TidalTerrain = new FlatTerrain { Elevation = -0.3f };
+            GameServices.Environment = new FlatEnv { Level = 0f };
+
+            Assert.IsTrue(rig.Switcher.LeaveDriving(), "wading is walking; the door opens onto it");
+            Assert.That(rig.Switcher.Mode, Is.EqualTo(ControlMode.OnFoot));
+        }
+
+        /// <summary>
+        /// The slow-swim band is admitted DELIBERATELY — it is the escape valve the wading model already
+        /// runs, and the alternative (refusing it) would mean the only way out of chest-deep water was to
+        /// find dry land first, which is exactly the trap the model exists to prevent.
+        /// </summary>
+        [Test]
+        public void TheSlowSwimBandIsAdmittedBecauseItIsTheEscapeValve()
+        {
+            Rig rig = BuildRig(Vector3.zero);
+            rig.Switcher.TryEnterDriving(rig.Door);
+
+            // 1.2 m — past WadeDepth (0.5), inside SwimLimit (2.0).
+            GameServices.TidalTerrain = new FlatTerrain { Elevation = -1.2f };
+            GameServices.Environment = new FlatEnv { Level = 0f };
+
+            Assert.IsTrue(rig.Switcher.LeaveDriving(), "the swim band is a bad place to be, not a closed door");
+            Assert.That(rig.Switcher.Mode, Is.EqualTo(ControlMode.OnFoot));
+        }
+
+        /// <summary>
+        /// ⭐ <b>SABOTAGE ARM — a seat that died under the player is NEVER refused.</b> There is no door
+        /// left to read and no machine left to drive off in, so a depth check there would seal the player
+        /// inside a vehicle that no longer exists: a softlock strictly worse than a wet landing, and the
+        /// exact failure the "never trapped" clause of the wading model exists to forbid.
+        /// </summary>
+        [Test]
+        public void ADeadSeatOverDeepWaterStillHandsControlBack()
+        {
+            Rig rig = BuildRig(Vector3.zero);
+            rig.Switcher.TryEnterDriving(rig.Door);
+
+            GameServices.TidalTerrain = new FlatTerrain { Elevation = -6f };
+            GameServices.Environment = new FlatEnv { Level = 0f };
+
+            // The machine is destroyed under the driver — a region hop, a dev picker, a despawn.
+            Object.DestroyImmediate(rig.TruckGo);
+
+            Assert.IsTrue(rig.Switcher.LeaveDriving(),
+                "with no seat left the exit must ALWAYS succeed — refusing is a softlock with no way out");
+            Assert.That(rig.Switcher.Mode, Is.EqualTo(ControlMode.OnFoot));
+        }
+
+        /// <summary>
+        /// A region with no height map or no tide service is not tide-gated at all, so the exit gate is OFF
+        /// — the same self-disabling default <see cref="TidalWalkability"/> applies everywhere else. An
+        /// unwired gate must never be the thing that traps the player.
+        /// </summary>
+        [Test]
+        public void WithNoTideServiceTheGateIsOffRatherThanClosed()
+        {
+            Rig rig = BuildRig(Vector3.zero);
+            rig.Switcher.TryEnterDriving(rig.Door);
+
+            // SetUp already reset GameServices — no terrain, no environment.
+            Assert.IsTrue(rig.Switcher.LeaveDriving(),
+                "no tide service means no shoreline to enforce; the gate self-disables");
+            Assert.That(rig.Switcher.Mode, Is.EqualTo(ControlMode.OnFoot));
+        }
+
+        /// <summary>
+        /// ⭐ The press is CONSUMED by a refusal. Returning "not handled" would drop the same E through to
+        /// the interact registry, so a driver sitting in open water could reach something on the far side of
+        /// the hull with the key that was meant to open the door.
+        /// </summary>
+        [Test]
+        public void ARefusedExitStillConsumesThePress()
+        {
+            Rig rig = BuildRig(Vector3.zero);
+            rig.Switcher.TryEnterDriving(rig.Door);
+
+            GameServices.TidalTerrain = new FlatTerrain { Elevation = -6f };
+            GameServices.Environment = new FlatEnv { Level = 0f };
+
+            Assert.IsTrue(rig.Switcher.TryInteract(),
+                "the verb answered the player (with a reason); it must not also fall through to the registry");
+            Assert.That(rig.Switcher.Mode, Is.EqualTo(ControlMode.Driving), "and nothing moved");
+        }
+
+        /// <summary>
+        /// ⭐ <b>The threshold the door reads is the WALKER'S OWN, whatever it has been tuned to.</b> The
+        /// edge is straddled against <see cref="PlayerWalkController.SwimLimit"/> as a variable rather than
+        /// against the literal 2.0, so this stays true the day the owner retunes it — and goes red if the
+        /// switcher ever grows its own second <c>GameConfig</c> read and the two drift apart.
+        /// </summary>
+        [Test]
+        public void TheDoorsEdgeIsTheWalkersOwnSwimLimit()
+        {
+            Rig rig = BuildRig(Vector3.zero);
+            rig.Switcher.TryEnterDriving(rig.Door);
+
+            float limit = rig.Walk.SwimLimit;
+            var terrain = new FlatTerrain();
+            GameServices.TidalTerrain = terrain;
+            GameServices.Environment = new FlatEnv { Level = 0f };
+
+            // A hair PAST her limit — boat-only water. (depth = level − elevation.)
+            terrain.Elevation = -(limit + 0.01f);
+            Assert.IsFalse(rig.Switcher.LeaveDriving(),
+                $"{limit + 0.01f:0.###} m is past the walker's own {limit:0.###} m limit — refuse");
+            Assert.That(rig.Switcher.Mode, Is.EqualTo(ControlMode.Driving));
+
+            // Exactly AT it — the bands are inclusive on the shallow side, so this is still the swim band.
+            terrain.Elevation = -limit;
+            Assert.IsTrue(rig.Switcher.LeaveDriving(),
+                $"exactly {limit:0.###} m is the deep edge of the SWIM band, not the deep band — admit");
+        }
+
+        // =============================================================================================
         //  4. THE DOOR AS AN INTERACT CANDIDATE
         // =============================================================================================
 

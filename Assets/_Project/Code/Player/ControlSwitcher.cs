@@ -163,6 +163,11 @@ namespace HiddenHarbours.Player
                  "request, so with this off the mode is simply unreachable.")]
         [SerializeField] private bool _driveMode = true;
 
+        /// <summary>What the fisher is told when the water under the door is boat-only. A REASON, not a
+        /// scolding, and it names the fix — the machine is the way out, so the answer is to drive her in.
+        /// A const so tests assert the behaviour without transcribing the string (BoatAnchor's pattern).</summary>
+        public const string NoticeTooDeepToStepOut = "Too deep to step out — take her in to the shallows";
+
         public ControlMode Mode { get; private set; } = ControlMode.OnFoot;
 
         private Text _hint;
@@ -349,6 +354,13 @@ namespace HiddenHarbours.Player
                     return false;
 
                 case ControlMode.Driving:  // behind the wheel → get out at her door
+                    // ⚠️ The press is CONSUMED either way, which is why the result is deliberately not
+                    // returned. LeaveDriving can now decline (boat-only water under the door), and a
+                    // declined exit has still answered the player — it put the reason on screen. Returning
+                    // false here would drop the same press through to the interact registry, so a driver
+                    // sitting in open water could reach something on the far side of the hull with the key
+                    // that was meant to open the door. Refusing to move is an answer; passing the key on
+                    // to whatever else is nearby is not.
                     LeaveDriving();
                     return true;
 
@@ -702,6 +714,23 @@ namespace HiddenHarbours.Player
                 ? seat.DoorWorldPosition - (Vector2)seat.Root.position
                 : Vector2.zero;
 
+            // ⭐ THE DOOR OPENS ONTO SOMEWHERE A PERSON CAN BE. Without this, E mid-crossing sets the
+            // fisher down on open water: the amphibian swims by design, so her door can be over boat-only
+            // depth, and the walk model has no story for a person out there (its own soft wall exists to
+            // keep them out of it). The refusal is a DEPTH FACT, not a lock — it names the reason, it
+            // clears the moment she is driven into the shallows, and the machine the player is already
+            // sitting in is the way out. Wade and the slow-swim band are both admitted: being waist-deep
+            // is a bad place to be, and the model answers that with the crawl, not with a closed door.
+            //
+            // ⚠️ Only on the ALIVE path. A seat that died under the player has no door to read and no
+            // machine left to drive off in — refusing there would seal them inside a vehicle that no
+            // longer exists, which is the one failure worse than a wet landing. See AbandonDriving.
+            if (alive && !TidalExposure.IsOnFootTraversable(ExitBandAt(landing)))
+            {
+                EventBus.Publish(new DevNotice(NoticeTooDeepToStepOut));
+                return false;                     // still Driving — nothing has been given up yet
+            }
+
             if (alive) seat.ReleaseControls();
             _seat = null;
 
@@ -718,6 +747,27 @@ namespace HiddenHarbours.Player
             // it was given and the MODE signal is what moves it back to the on-foot step.
             EventBus.Publish(new ControlModeChanged(ControlMode.OnFoot));
             return true;
+        }
+
+        /// <summary>
+        /// The on-foot <see cref="DepthBand"/> at a would-be step-out point, read through the very seam
+        /// <see cref="PlayerWalkController"/> walks on — <see cref="TidalWalkability.DepthNow"/>, which
+        /// resolves a registered deck FIRST (so the wharf you park on is dry at every tide) and otherwise
+        /// the authored ground against the deterministic water level. The thresholds come from the walk
+        /// controller's own RESOLVED values rather than from a second <c>GameConfig</c> read, so the rule
+        /// that decides where you may be SET DOWN and the rule that decides where you may WALK cannot be
+        /// tuned apart.
+        ///
+        /// <para>With no walk controller wired there is nothing to classify against and nothing to be
+        /// consistent with, so this reads <see cref="DepthBand.Dry"/> — the gate OFF. That is the same
+        /// answer <see cref="TidalWalkability"/> gives a region with no height map or no tide service, and
+        /// for the same reason: an unwired gate must never be the thing that traps the player.</para>
+        /// </summary>
+        private DepthBand ExitBandAt(Vector2 worldPos)
+        {
+            if (_playerWalk == null) return DepthBand.Dry;
+            return TidalExposure.BandForDepth(TidalWalkability.DepthNow(worldPos),
+                                              _playerWalk.WadeDepth, _playerWalk.SwimLimit);
         }
 
         /// <summary>
