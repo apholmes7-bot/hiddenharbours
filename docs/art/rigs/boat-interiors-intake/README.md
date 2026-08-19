@@ -110,26 +110,40 @@ and safe without it — she is refused, and the refusal arms hold.
 5. **The kit's cape interior sidecar then re-stamps `hullRigSha256`** to the third sha — no
    re-measure, per the byte-identity proof above.
 
-### ⚠️ Amendment proposed to point 3 — it conflicts with point 1
+### Point 3, as RULED (lead-architect, 2026-08-19)
 
-Point 1 requires a door addition; point 3 forbids any exterior pixel from moving. **The door is
-exterior-visible by construction**, so both cannot hold:
+The bar's original point 3 — "exterior sheets byte-identical to main's, any diff = refused" —
+conflicted with its own point 1, which *requires* a door addition. The door is exterior-visible by
+construction:
 
 | | main `92c3061b` | kit `a3be1d61` (and any merge carrying its door) |
 |---|---|---|
 | aft doorway | ONE flat `'dark'` panel — an **open** doorway (`backPanel(AY,-0.34,0.40,HZ0+0.02,2.34)`) | cream jambs + header, `'wood'` sill, `'moto'` track tube, `'iron'` rail |
-| the leaf | none | a sliding leaf, **closed** at `doorOpen=0` (`doorFaces()`, `Lf.x0=-0.40 … x1=0.46`) |
+| the leaf | none | a sliding leaf posed by `doorOpen` (`doorFaces()`) |
 
-**Proposed restatement, preserving the intent:** require byte-identity on **every pixel outside the
-aft doorway's bounding box**, and full byte-identity on the **bow-on facings (N, NE, NW)** where the
-house occludes the aft face entirely. That still proves both survivals decisively — #508's paint
-touches every hull pixel, so a paint regression cannot hide in a doorway; #247's washboards are side
-decks, visible on most facings and outside the box. What it stops doing is failing the merge for
-doing the one thing it is for.
+**The ruled point 3 is therefore:** byte-identity on every exterior pixel **outside the aft
+doorway's bounding box** across all shipped poses, **plus** full byte-identity on the **bow-on
+facings (N/NE/NW)** where the house occludes the aft face entirely.
 
-**Also worth an owner glance, independent of the merge:** her *resting appearance changes*. She
-currently sits with an open doorway; the merged rig closes it by default. That is a visible change to
-a shipped hull, not a regression — but it is a look, and looks are the owner's call.
+That is sufficient, and this is why: #508's paint touches every hull pixel, so a paint regression
+cannot hide inside a doorway box; #247's washboards are side-deck geometry well outside it. Both
+survivals stay proven, and the door is allowed to exist.
+
+### Open, promoted to the owner: her resting look
+
+Not a regression — a look, and therefore his call. **It cannot be settled by picking a `doorOpen`
+for the resting pose**, which was the hope; measured against the rig's own numbers:
+
+| resting pose | the opening (−0.34 … +0.40) | the leaf | the surround |
+|---|---|---|---|
+| main today | open, one flat dark panel | none | none |
+| `doorOpen = 0` | **covered** — she rests closed | spans −0.40 … +0.46 | always drawn |
+| `doorOpen = 1` | clear, as today | **parked, visible** at +0.40 … +1.26 (inside `HX`=1.32) | always drawn |
+
+The jambs, header, sill, track tube and rail are `doorOpen`-independent — they are drawn at every
+value. So the aft face changes whichever pose ships; `doorOpen = 1` changes it *less* (the opening
+still reads open, as today) at the cost of a parked leaf that main does not have. The owner is
+choosing **how** she changes, not whether.
 
 ## The phantom renderer
 
