@@ -13,7 +13,7 @@ namespace HiddenHarbours.Core
     public static class SaveMigration
     {
         /// <summary>The schema version this build writes. Bump when you add a field + a migration step.</summary>
-        public const int CurrentVersion = 11;
+        public const int CurrentVersion = 12;
 
         /// <summary>
         /// The region id Port Greywick was saved under before it was renamed Nine Mile Creek, and the id
@@ -238,6 +238,24 @@ namespace HiddenHarbours.Core
                 data.SchemaVersion = 11;
             }
 
+            // v11 -> v12: what the player is WEARING. One new string; nothing existing is reinterpreted.
+            // A v11 save was written before there was a wardrobe, so it gets the empty id — which reads
+            // as "the outfit the sheets were baked in", i.e. exactly how that player looked. Nothing is
+            // invented for them, and nobody is retroactively dressed in something they never chose.
+            //
+            // ⚠ NOT healed against the shipped wardrobe, deliberately. It is tempting to check the id
+            // resolves here and reset it if not — and that would be wrong twice over: a loader has no
+            // business deciding a retired outfit means "wear the default", and an id that fails to
+            // resolve because an asset failed to LOAD would be permanently erased from the save on the
+            // next write. Resolution belongs at the point of use, where the fisher can fall back to the
+            // baked look for one session and say so, and the player's choice survives to be honoured
+            // when the content is back. SaveMigrationV12Tests is what should stop a heal landing here.
+            if (data.SchemaVersion < 12)
+            {
+                data.WornOutfitId ??= "";
+                data.SchemaVersion = 12;
+            }
+
             // ---- future steps go here, each guarded by `if (data.SchemaVersion < N)` and bumping to N.
 
             // Defensive null-repair (a hand-edited or partial JSON can omit reference-typed fields).
@@ -260,6 +278,7 @@ namespace HiddenHarbours.Core
             data.NavTrack ??= new System.Collections.Generic.List<NavTrackPointDto>();
             data.PlayerNotes ??= new System.Collections.Generic.List<PlayerNoteDto>();
             data.ActiveHullId ??= "";
+            data.WornOutfitId ??= "";
             // Same defensive spirit as the null-repair above, for the one field where a zero is not a
             // value but a crash: a hand-edited JSON, or a row written by a build between the field landing
             // and this heal, would otherwise divide by it. Idempotent — after the v9 step there is nothing

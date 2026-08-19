@@ -177,6 +177,28 @@ namespace HiddenHarbours.Core
         public List<PlayerNoteDto> PlayerNotes = new();
 
         /// <summary>
+        /// What the player is WEARING — the stable <c>CharacterOutfitDef</c> id chosen at the wardrobe
+        /// (e.g. <c>outfit.harbour_teal</c>). Empty means "as the sheets were baked", which is both the
+        /// new-game state and the honest answer for every save written before there was a wardrobe.
+        /// Added in v12.
+        ///
+        /// <para><b>One string is the whole cost of the wardrobe.</b> The fisher's appearance is a
+        /// palette swap over one set of baked sheets (ADR 0029), so what has to persist is the NAME of a
+        /// colour choice and never any pixels — the same economy that lets a boat's paint ride as a
+        /// ~250-byte ramp table over an unchanged hull mesh.</para>
+        ///
+        /// <para><b>An id, not the colour keys.</b> Storing <c>outfit</c>/<c>shirt</c> keys directly
+        /// would freeze a pairing the art director may want to retune, and would let a save name a
+        /// combination no preset ever offered. An id resolves through <c>CharacterWardrobeDef</c>, so a
+        /// preset can be recoloured and every save wearing it follows — and a RETIRED id is a content
+        /// migration, exactly as a retired ramp key is.</para>
+        ///
+        /// <para>⚠ An id the wardrobe cannot resolve falls back to the baked look and says so in the
+        /// log; it is never silently remapped to a neighbouring outfit.</para>
+        /// </summary>
+        public string WornOutfitId = "";
+
+        /// <summary>
         /// Per-hull chartplotter PREFERENCES — night backlight, orientation and range rung. Sparse like
         /// <see cref="HullSounderPrefs"/> (absent hull = the owner's configured defaults) and
         /// read/written only through <see cref="InstrumentLocker"/>.
