@@ -5,7 +5,7 @@
     "capeIslanderIsoRig"
   ],
   "interior_rig": "boatInteriorRig.js",
-  "derivedFromRigSha256": "560aa92e28d27719577ed07efec212ede9b33f58636fe5770836f8f729d260ae",
+  "derivedFromRigSha256": "34bb781303b9de9a47c7029a685bf83d357adefe2ffb95ff54451233ea7c46a7",
   "hullRigSha256": {
     "capeIslanderIsoRig": "a3be1d618091695949a1d7ddb74fe7e796fe87f3c55665afdd699c52488c75d5"
   },
@@ -478,6 +478,7 @@
         "id": "cuddy_companionway",
         "from": "house_sole",
         "to": "cuddy_sole",
+        "mechanism": "InteriorStair",
         "opening": {
           "x0": -0.3,
           "x1": 0.3,
@@ -572,36 +573,15 @@
         "NW"
       ],
       "_note": "mechanism: InteriorBed (rest + save) · cuddy level · footprint + obstructions in the hull gameplay sidecar"
-    },
-    {
-      "id": "companionway",
-      "action": "stair",
-      "at": "cuddy_companionway",
-      "reach_point": [
-        0,
-        1.94,
-        0.72
-      ],
-      "visible_facings": [
-        "N",
-        "NE",
-        "E",
-        "SE",
-        "S",
-        "SW",
-        "W",
-        "NW"
-      ],
-      "_note": "mechanism: InteriorStair · house→cuddy, 2 tread(s)"
     }
   ],
   "mechanism_map": {
     "helm": "existing helm (enter_helm)",
     "bunk": "InteriorBed (sleep, rest + save)",
     "locker": "InteriorWardrobe (storage)",
-    "stove": "camper stove pattern (cook)",
-    "companionway": "InteriorStair"
+    "stove": "camper stove pattern (cook)"
   },
+  "_interact_scope": "INTERACT is object interactables only. Stair routes are declared in STAIRS (each carries its own mechanism: InteriorStair) and are deliberately absent here — see README, Corrections.",
   "_excluded": {
     "LADDER": "no ladder on a 12.8 m wheelhouse boat — the washboards are the route forward and the roof is gear, not deck"
   }

@@ -1151,7 +1151,7 @@
     let stairs=null;
     if(C){ const st=C.step, treads=[];
       for(let i=1;i<=st.treads;i++) treads.push({ top_z:r3(C.soleZ+(Hh.soleZ-C.soleZ)*i/(st.treads+1)), going_m:0.24 });
-      stairs={ companionways:[{ id:'cuddy_companionway', from:'house_sole', to:'cuddy_sole',
+      stairs={ companionways:[{ id:'cuddy_companionway', from:'house_sole', to:'cuddy_sole', mechanism:'InteriorStair',
         opening:{ x0:C.opening.x0, x1:C.opening.x1, at_y:r3(Hh.front.kind==='rake'?Hh.front.yBot:Hh.yFwd), z0:r3(C.soleZ), z1:r3(C.opening.z1) },
         total_rise_m:r3(Hh.soleZ-C.soleZ), treads, direction:'down going forward (+y)',
         provenance:'HOUSE.cuddy published by the exterior rig; treads placed by boatInteriorRig' }] }; }
@@ -1307,19 +1307,11 @@
       visible_facings:h.visible_facings, exterior:h.exterior, dressed:h.dressed,
       _note:(h.exterior&&h._note) ? h._note
         : 'mechanism: '+(ITEMS[h.id]?ITEMS[h.id].mech:'—')+' · '+h.level+' level · footprint + obstructions in the hull gameplay sidecar' }));
-    if((Hh.kind==='ship'||Hh.kind==='sport')&&lay.stairs){ const mid=(a)=>r3((a.x0+a.x1)/2), zH=Hh.decks.house.soleZ;
-      IN.push({ id:'companionway_up', action:'stair', at:'house_to_bridge',
-        reach_point:[mid(lay.stairs.up), r3(lay.stairs.up.yBot-0.55), r3(zH)], visible_facings:DIRL.slice(),
-        _note:'mechanism: InteriorStair · house→bridge' });
-      IN.push({ id:'companionway_down', action:'stair', at:'house_to_below',
-        reach_point:[mid(lay.stairs.down), r3(lay.stairs.down.yTop+0.55), r3(zH)], visible_facings:DIRL.slice(),
-        _note:'mechanism: InteriorStair · house→below' });
-    }
-    if(Hh.kind!=='ship'&&Hh.kind!=='sport'&&Hh.cuddy){ const o=Hh.cuddy.opening, yb=(Hh.front&&Hh.front.kind==='rake')?Hh.front.yBot:Hh.yFwd;
-      IN.push({ id:'companionway', action:'stair', at:'cuddy_companionway',
-        reach_point:[r3((o.x0+o.x1)/2), r3(yb-0.60), r3(Hh.soleZ)], visible_facings:DIRL.slice(),
-        _note:'mechanism: InteriorStair · house→cuddy, '+Hh.cuddy.step.treads+' tread(s)' });
-    }
+    /* Stair routes are NOT INTERACT entries (ruling 2026-08-19). Each companionway is already fully
+       declared in STAIRS — endpoints, opening, rise, treads, direction, mechanism — so listing it here
+       too was two spellings of one fact, and the two generators had drifted into disagreeing about it
+       (the merged gameplay files omitted them; these carried them). The engine makes the stairwell
+       pressable from STAIRS, as land interiors already do. INTERACT is object interactables only. */
     const doc={
       schema:'hidden-harbours/boat-interior@1', hull_stem:hullStem, fits_hulls:[hullStem],
       interior_rig:'boatInteriorRig.js',
@@ -1337,7 +1329,8 @@
       FOOTPRINT, WALKABLE,
       THRESHOLD:gs.THRESHOLD, STAIRS:gs.STAIRS||null, INTERACT:IN,
       mechanism_map:{ helm:'existing helm (enter_helm)', bunk:'InteriorBed (sleep, rest + save)',
-        locker:'InteriorWardrobe (storage)', stove:'camper stove pattern (cook)', companionway:'InteriorStair' },
+        locker:'InteriorWardrobe (storage)', stove:'camper stove pattern (cook)' },
+      _interact_scope:'INTERACT is object interactables only. Stair routes are declared in STAIRS (each carries its own mechanism: InteriorStair) and are deliberately absent here — see README, Corrections.',
     };
     doc.hullRigSha256[stem]='STAMP_AT_EXPORT_LF_SHA256_OF_'+env.meta.rig;
     if(s.variant) doc.variant={ size:s.variant.size||'standard', style:s.variant.style||'hardtop', region:s.variant.region||'northumberland' };

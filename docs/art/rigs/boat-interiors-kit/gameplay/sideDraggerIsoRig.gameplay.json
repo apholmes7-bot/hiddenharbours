@@ -915,6 +915,6 @@
     "side_doors": "the lower-house side doors are dressed closed — not routes this pass",
     "focsle_deck": "the whaleback foc'sle rises with the sheer; a flat-z DECK entry cannot carry it — forward work stays on main_deck this pass"
   },
-  "interiorDerivedFromRigSha256": "560aa92e28d27719577ed07efec212ede9b33f58636fe5770836f8f729d260ae",
+  "interiorDerivedFromRigSha256": "34bb781303b9de9a47c7029a685bf83d357adefe2ffb95ff54451233ea7c46a7",
   "_supersedes": "b52237484f241f200656c5480ca63f81d3a1a70d20f7b649c06ad25dfd97d9e0"
 }

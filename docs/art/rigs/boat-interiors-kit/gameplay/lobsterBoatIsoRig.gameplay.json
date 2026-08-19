@@ -3,7 +3,7 @@
   "rig": "lobsterBoatIsoRig.js",
   "exportSymbol": "LobsterBoatIso",
   "derivedFromRigSha256": "77a2e16f1c2f18ebc5e8ac784fce258e6ef838d3a05a781b602cf8958f2c4729",
-  "interiorDerivedFromRigSha256": "560aa92e28d27719577ed07efec212ede9b33f58636fe5770836f8f729d260ae",
+  "interiorDerivedFromRigSha256": "34bb781303b9de9a47c7029a685bf83d357adefe2ffb95ff54451233ea7c46a7",
   "_supersedes": "d8bb0caa3f3152ed78daf69e2705989b4092d64a5d8d2711396af1bac4823610",
   "units": "metres",
   "frame": {
@@ -661,6 +661,7 @@
         "id": "cuddy_companionway",
         "from": "house_sole",
         "to": "cuddy_sole",
+        "mechanism": "InteriorStair",
         "opening": {
           "x0": -0.35,
           "x1": 0.35,

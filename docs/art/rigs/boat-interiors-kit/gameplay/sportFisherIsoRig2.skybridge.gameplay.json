@@ -2246,7 +2246,7 @@
     ]
   },
   "_supersedes": "152eb5f3cf1f4f38fba781161e86320cd7e06f0d0cdc98a82b14d6973e3b4061",
-  "interiorDerivedFromRigSha256": "3297674f4802c366d11d0813a75ca378bc21a698f2e2e4dda55dccd8b0ae28b1",
+  "interiorDerivedFromRigSha256": "34bb781303b9de9a47c7029a685bf83d357adefe2ffb95ff54451233ea7c46a7",
   "LADDER": [
     {
       "id": "aft_deck_ladder",

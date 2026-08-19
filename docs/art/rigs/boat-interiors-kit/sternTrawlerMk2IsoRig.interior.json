@@ -5,7 +5,7 @@
     "sternTrawlerMk2IsoRig"
   ],
   "interior_rig": "boatInteriorRig.js",
-  "derivedFromRigSha256": "560aa92e28d27719577ed07efec212ede9b33f58636fe5770836f8f729d260ae",
+  "derivedFromRigSha256": "34bb781303b9de9a47c7029a685bf83d357adefe2ffb95ff54451233ea7c46a7",
   "hullRigSha256": {
     "sternTrawlerMk2IsoRig": "e7fa9ea69a310ab03be5640cf89c4c18c1fd92b5b8b074056b5208f1eeb64628"
   },
@@ -855,57 +855,15 @@
         "NW"
       ],
       "_note": "mechanism: InteriorBed (rest + save) · below level · footprint + obstructions in the hull gameplay sidecar"
-    },
-    {
-      "id": "companionway_up",
-      "action": "stair",
-      "at": "house_to_bridge",
-      "reach_point": [
-        2.675,
-        5.55,
-        3.5
-      ],
-      "visible_facings": [
-        "N",
-        "NE",
-        "E",
-        "SE",
-        "S",
-        "SW",
-        "W",
-        "NW"
-      ],
-      "_note": "mechanism: InteriorStair · house→bridge"
-    },
-    {
-      "id": "companionway_down",
-      "action": "stair",
-      "at": "house_to_below",
-      "reach_point": [
-        0,
-        4.8,
-        3.5
-      ],
-      "visible_facings": [
-        "N",
-        "NE",
-        "E",
-        "SE",
-        "S",
-        "SW",
-        "W",
-        "NW"
-      ],
-      "_note": "mechanism: InteriorStair · house→below"
     }
   ],
   "mechanism_map": {
     "helm": "existing helm (enter_helm)",
     "bunk": "InteriorBed (sleep, rest + save)",
     "locker": "InteriorWardrobe (storage)",
-    "stove": "camper stove pattern (cook)",
-    "companionway": "InteriorStair"
+    "stove": "camper stove pattern (cook)"
   },
+  "_interact_scope": "INTERACT is object interactables only. Stair routes are declared in STAIRS (each carries its own mechanism: InteriorStair) and are deliberately absent here — see README, Corrections.",
   "LADDER": [
     {
       "id": "boat_deck_ladder",

@@ -5,8 +5,9 @@
     "sportFisherIsoRig2.skybridge"
   ],
   "interior_rig": "boatInteriorRig.js",
-  "derivedFromRigSha256": "3297674f4802c366d11d0813a75ca378bc21a698f2e2e4dda55dccd8b0ae28b1",
+  "derivedFromRigSha256": "34bb781303b9de9a47c7029a685bf83d357adefe2ffb95ff54451233ea7c46a7",
   "hullRigSha256": {
+    "sportFisherIsoRig2.skybridge": "STAMP_AT_EXPORT_LF_SHA256_OF_sportFisherIsoRig2.js",
     "sportFisherIsoRig2": "ebc77bace833361b578f5315e175e10de61d1acf77b5037390217ceb09221bcb"
   },
   "frame": {
@@ -1141,57 +1142,15 @@
       ],
       "exterior": true,
       "_note": "mechanism: the existing helm · open control coaming helm pod — reached by the aft-deck ladder (extractor bridge_sole._notes.bridge_ladder)"
-    },
-    {
-      "id": "companionway_up",
-      "action": "stair",
-      "at": "house_to_bridge",
-      "reach_point": [
-        0.95,
-        -7.1,
-        2.83
-      ],
-      "visible_facings": [
-        "N",
-        "NE",
-        "E",
-        "SE",
-        "S",
-        "SW",
-        "W",
-        "NW"
-      ],
-      "_note": "mechanism: InteriorStair · house→bridge"
-    },
-    {
-      "id": "companionway_down",
-      "action": "stair",
-      "at": "house_to_below",
-      "reach_point": [
-        -0.925,
-        0.85,
-        2.83
-      ],
-      "visible_facings": [
-        "N",
-        "NE",
-        "E",
-        "SE",
-        "S",
-        "SW",
-        "W",
-        "NW"
-      ],
-      "_note": "mechanism: InteriorStair · house→below"
     }
   ],
   "mechanism_map": {
     "helm": "existing helm (enter_helm)",
     "bunk": "InteriorBed (sleep, rest + save)",
     "locker": "InteriorWardrobe (storage)",
-    "stove": "camper stove pattern (cook)",
-    "companionway": "InteriorStair"
+    "stove": "camper stove pattern (cook)"
   },
+  "_interact_scope": "INTERACT is object interactables only. Stair routes are declared in STAIRS (each carries its own mechanism: InteriorStair) and are deliberately absent here — see README, Corrections.",
   "LADDER": [
     {
       "id": "aft_deck_ladder",

@@ -49,3 +49,23 @@ architecture handoff's motion question in the direction the proposal favoured) �
 cell/pivot contract + anchors: in README §1–§7 — the intake verifies against the actual
 JS, README-lies pattern is three-for-three · tanker at 16 px/m: a SECOND pixel grid
 inside one kit — never conflate with the 32 px/m hulls.
+
+## Re-export gate (2026-08-19 evening — the drop above is SUPERSEDED in place by this)
+
+`Pixel art capabilitiesboatinteriorsreexport.zip`, verified before landing:
+
+- **Renderer**: `boatInteriorRig.js` LF sha256 `34bb7813…` — the generator moved (the
+  cuddy-branch `mechanism` fix was made at the source and everything regenerated).
+- **Finding 1 CLOSED**: all 27 `.interior.json` pin `derivedFromRigSha256` = `34bb7813…`
+  (27/27, zero strays — the `560aa92e…` mixed-hash pin is gone).
+- **Gameplay provenance coherent**: all 27 gameplay sidecars pin their own bundled hull
+  rig by exact LF sha (27/27 verified computationally, not by reading the README).
+- **Finding 3 (companionway ruling) APPLIED**: no stair id remains in any INTERACT
+  section (the one textual match is a `_note` pointing AT its STAIRS entry);
+  `mechanism` now binds throughout.
+- **Hull rigs BYTE-IDENTICAL to the first drop, all nine** — the re-export changed
+  sidecars, renderer and docs only. The cape remains FORKED-RIG per the intake ledger;
+  her merge is upstream work under the ruled acceptance bar (see PR #589's comments).
+
+The S0 ledger's 24 `REFUSED-PIN` verdicts may now be re-adjudicated AGAINST THESE
+FILES — which is the intake lane's job, on this branch, not a report-flip.

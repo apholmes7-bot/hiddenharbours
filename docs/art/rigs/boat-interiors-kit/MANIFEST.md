@@ -15,6 +15,8 @@ it was measured against) are the only provenance you need to check.
     <hullStem>.interior.json          ×9   per-hull interior sidecars
     lobsterBoatVariants/*.interior.json ×18 per-variant interior sidecars
     hull-rigs/*.js                    ×9   exterior rigs (published HOUSE/loft/DOOR live here)
+                                           ⚠ capeIslanderIsoRig.js is OUR branch — do NOT adopt it;
+                                             see README Corrections 3 (two divergent pass-2 branches)
     gameplay/*.gameplay.json          ×9   hull gameplay sidecars, interiors merged in
     gameplay/lobsterBoatVariants/     ×18  variant gameplay sidecars, interiors merged in
 
@@ -22,7 +24,7 @@ it was measured against) are the only provenance you need to check.
 | hull | door | interior levels | routes up |
 |---|---|---|---|
 | Lobster 12 m | slide, aft | house + cuddy | — (washboards) |
-| Cape Islander | slide, aft | house + cuddy | — |
+| Cape Islander ⚠ | slide, aft | house + cuddy | — |
 | Side dragger 25 m | hinge 110°, fwd | bridge/house/below | boat-deck ladder |
 | Stern trawler 34 m | hinge 110°, fwd | bridge/house/below | boat-deck ladder |
 | Stern trawler Mk II 38 m | hinge 110°, fwd | bridge/house/below | boat-deck ladder |
@@ -34,7 +36,9 @@ it was measured against) are the only provenance you need to check.
 
 ## Consuming the sidecars
 Sections are additive against the hull's existing gameplay file: DECK entries replace by `id`,
-THRESHOLD/STAIRS/LADDER/INTERACT replace wholesale, `_excluded` merges. `_supersedes` carries the
+THRESHOLD/STAIRS/LADDER/INTERACT replace wholesale, `_excluded` merges. **INTERACT carries object
+interactables only** — stair routes are declared in STAIRS, which carries each companionway's own
+`mechanism: InteriorStair`; they are not INTERACT entries (ruled 2026-08-19, see README Corrections). `_supersedes` carries the
 previous hull-rig sha so a stale merge is detectable. Door animation is an 8-frame baked cue
 (`doorOpen` = k/7, ~70 ms/frame), reversed on exit; interiors ride the hull's `rock(i)` on the same
 camera basis, so exterior and interior sheets stay in register mid-wave.
