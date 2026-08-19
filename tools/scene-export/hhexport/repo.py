@@ -1,0 +1,388 @@
+"""Reading the repo's own facts: GUIDs, sprite import settings, region defs, rigs.
+
+Every fact here is read from its **source of truth**:
+
+  * region frame        -> ``Assets/_Project/Data/Regions/*.asset`` (the RegionDef)
+  * sprite cell + pivot -> the ``.png.meta`` import settings the baker wrote
+  * rig identity        -> ``docs/art/rigs/**`` bytes, LF-normalised, sha256
+  * height map          -> the PaintedHeightMap asset, and the Git LFS pointer's own oid
+
+Nothing here re-derives a value the repo already states once.
+"""
+
+import hashlib
+import json
+import os
+import re
+
+from . import unityyaml as U
+
+RIG_ROOT = "docs/art/rigs"
+REGION_DIR = "Assets/_Project/Data/Regions"
+TERRAIN_DIR = "Assets/_Project/Data/Terrain"
+
+# CameraFollow.AssetsPPU — "one PPU never changes" (const int 32). Not the water shader's
+# _PixelsPerUnit = 24 sampling grid, which is a different quantity entirely.
+ASSETS_PPU = 32
+
+_GUID = re.compile(r"^guid:\s*([0-9a-f]{32})\s*$", re.M)
+_RIG_PATH = re.compile(r"docs/art/rigs/[A-Za-z0-9_\-./]+\.js")
+_LFS_OID = re.compile(r"^oid sha256:([0-9a-f]{64})\s*$", re.M)
+
+# Unity's SpriteAlignment enum -> normalised (bottom-left origin) pivot.
+_ALIGNMENT_PIVOTS = {
+    0: (0.5, 0.5),    # Center
+    1: (0.0, 1.0),    # TopLeft
+    2: (0.5, 1.0),    # TopCenter
+    3: (1.0, 1.0),    # TopRight
+    4: (0.0, 0.5),    # LeftCenter
+    5: (1.0, 0.5),    # RightCenter
+    6: (0.0, 0.0),    # BottomLeft
+    7: (0.5, 0.0),    # BottomCenter
+    8: (1.0, 0.0),    # BottomRight
+}
+
+
+def sha256_lf(path):
+    """sha256 of a text file with CR stripped — the repo's rig-pinning convention.
+
+    Matches ``tr -d '\\r' | sha256sum`` exactly, which is how every existing sidecar's
+    ``derivedFromRigSha256`` was produced.
+    """
+    with open(path, "rb") as fh:
+        return hashlib.sha256(fh.read().replace(b"\r", b"")).hexdigest()
+
+
+def sha256_bytes(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+class Repo:
+    """An index over the committed repo, built once per run."""
+
+    def __init__(self, root):
+        self.root = os.path.abspath(root)
+        self._guid_to_path = None
+        self._meta_cache = {}
+        self._contract_cache = {}
+        self._sidecar_cache = {}
+        self._rig_link_cache = {}
+        self._rig_sha_cache = {}
+
+    # --- paths ---------------------------------------------------------------------------
+
+    def abs(self, rel):
+        return os.path.join(self.root, rel)
+
+    def exists(self, rel):
+        return os.path.exists(self.abs(rel))
+
+    # --- GUIDs ---------------------------------------------------------------------------
+
+    @property
+    def guid_to_path(self):
+        if self._guid_to_path is None:
+            self._guid_to_path = self._index_guids()
+        return self._guid_to_path
+
+    def _index_guids(self):
+        index = {}
+        for base in ("Assets", "Packages"):
+            top = self.abs(base)
+            if not os.path.isdir(top):
+                continue
+            for dirpath, dirnames, filenames in os.walk(top):
+                dirnames[:] = sorted(d for d in dirnames if d not in ("Library", "Temp", "obj"))
+                for name in sorted(filenames):
+                    if not name.endswith(".meta"):
+                        continue
+                    meta = os.path.join(dirpath, name)
+                    try:
+                        with open(meta, "r", encoding="utf-8", errors="replace") as fh:
+                            head = fh.read(512)
+                    except OSError:
+                        continue
+                    found = _GUID.search(head)
+                    if found:
+                        rel = os.path.relpath(meta[:-5], self.root).replace(os.sep, "/")
+                        index[found.group(1)] = rel
+        return index
+
+    def path_for_guid(self, guid):
+        return self.guid_to_path.get(guid)
+
+    # --- sprite import settings ------------------------------------------------------------
+
+    def sprite_table(self, asset_rel):
+        """``{internalID: {...}}`` for one texture, from its ``.meta`` import settings.
+
+        The pivot returned is the **normalised, bottom-left** form Unity itself will use — which
+        is `unityPivot` in the editor's own terms. Reading it here rather than re-deriving it
+        from a rig sidesteps the review's §8.1 defect class entirely: the baker already resolved
+        each rig's anchor into the import settings, so there is no fallback-to-cell-box path.
+        """
+        if asset_rel in self._meta_cache:
+            return self._meta_cache[asset_rel]
+        table = {}
+        meta_path = self.abs(asset_rel + ".meta")
+        if os.path.exists(meta_path):
+            table = _sprite_entries(_read_meta(meta_path).get("TextureImporter", {}))
+        self._meta_cache[asset_rel] = table
+        return table
+
+    # --- region defs ------------------------------------------------------------------------
+
+    def region_def(self, name):
+        rel = f"{REGION_DIR}/{name}.asset"
+        docs = U.parse_file(self.abs(rel))
+        data = docs[0].data if docs else {}
+        size = U.vec(data.get("WorldSizeMeters"), "x", "y")
+        centre = U.vec(data.get("WorldCenter"), "x", "y")
+        return {
+            "asset": rel,
+            "id": data.get("Id", ""),
+            "displayName": data.get("DisplayName", ""),
+            "sceneName": data.get("SceneName", ""),
+            "worldSizeMeters": [size[0], size[1]],
+            "worldCenter": [centre[0], centre[1]],
+            "seabedPixelsPerMetre": U.as_float(data.get("SeabedPixelsPerMetre"), 0.0),
+            "tideAmplitude": U.as_float(data.get("TideAmplitude"), 0.0),
+        }
+
+    # --- painted height ----------------------------------------------------------------------
+
+    def painted_height(self, asset_name):
+        """The PaintedHeightMap asset plus the LFS identity of its texture, if committed.
+
+        The texture bytes are a Git LFS object and are not present in a fresh checkout, so the
+        map is pinned by the pointer's own ``oid sha256`` — an exact content identity that needs
+        no bytes.
+        """
+        rel = f"{TERRAIN_DIR}/{asset_name}.asset"
+        if not self.exists(rel):
+            return None
+        docs = U.parse_file(self.abs(rel))
+        data = docs[0].data if docs else {}
+        size = U.vec(data.get("_worldSize"), "x", "y")
+        centre = U.vec(data.get("_worldCenter"), "x", "y")
+        tex_guid = U.ref_guid(data.get("_heightTexture"))
+        tex_rel = self.path_for_guid(tex_guid) if tex_guid else None
+        out = {
+            "asset": rel,
+            "worldSizeMeters": [size[0], size[1]],
+            "worldCenter": [centre[0], centre[1]],
+            "minElevation": U.as_float(data.get("_minElevation")),
+            "maxElevation": U.as_float(data.get("_maxElevation")),
+            "texture": tex_rel,
+            "textureBytesPresent": False,
+            "textureLfsOidSha256": None,
+        }
+        if tex_rel and self.exists(tex_rel):
+            with open(self.abs(tex_rel), "rb") as fh:
+                head = fh.read(256)
+            if head.startswith(b"version https://git-lfs"):
+                found = _LFS_OID.search(head.decode("utf-8", "replace"))
+                out["textureLfsOidSha256"] = found.group(1) if found else None
+            else:
+                out["textureBytesPresent"] = True
+                out["textureSha256"] = sha256_bytes(open(self.abs(tex_rel), "rb").read())
+        return out
+
+    # --- rigs --------------------------------------------------------------------------------
+
+    def sidecars_for_sheet(self, sheet_rel):
+        """Sidecar JSONs that may speak for a baked sheet, most specific first.
+
+        The bakers write a JSON next to what they bake — ``*.contract.json`` for the iso-pack
+        kits, ``<Sheet>.json`` / ``<Family>.json`` for the trees, buildings, interiors and
+        character builds — and every one names the rig it was measured from. That committed data
+        is the repo's answer to the review's Q2 finding that the editor's flattened ``rigSource``
+        does not resolve, so the exporter needs no ``family -> filename`` table of its own.
+
+        A sidecar only speaks for a sheet if it plainly covers it: the same stem, a kit
+        ``*.contract.json``, an index named for its own folder (``Trees/Trees.json``), or a
+        folder's lone sidecar that is not itself a per-sheet file. ``Art/Boats/`` holds four
+        per-hull anchor files and no index, so a dory resolves to nothing there rather than to
+        whichever hull sorts first — which is the failure this rule exists to prevent.
+        """
+        stem = _stem(sheet_rel)
+        folder = os.path.dirname(sheet_rel)
+        ordered = []
+        while folder and folder.startswith("Assets"):
+            if folder not in self._contract_cache:
+                names = []
+                abs_folder = self.abs(folder)
+                if os.path.isdir(abs_folder):
+                    names = sorted(n for n in os.listdir(abs_folder) if n.endswith(".json"))
+                self._contract_cache[folder] = names
+            names = self._contract_cache[folder]
+            folder_name = os.path.basename(folder)
+            exact = [n for n in names if n[:-5] == stem]
+            contracts = [n for n in names if n.endswith(".contract.json") and n not in exact]
+            index = [
+                n for n in names
+                if n not in exact and n not in contracts
+                and (n[:-5] == folder_name
+                     or (len(names) == 1 and not self.exists(f"{folder}/{n[:-5]}.png")))
+            ]
+            ordered += [f"{folder}/{n}" for n in exact + contracts + index]
+            folder = os.path.dirname(folder)
+        return ordered
+
+    def rig_for_sheet(self, sheet_rel):
+        """``(rigName, rigSourcePath, evidencePath, candidates)`` for a baked sheet.
+
+        Resolution is by **verified existence**, never by guess: a sidecar must name a
+        ``docs/art/rigs/**.js`` that is on disk. The first sidecar that names any resolvable rig
+        decides — and if it names more than one, the sheet is reported ambiguous with the list
+        rather than assigned one of them. The review's own lesson from the sport-skiff rename is
+        that a confident wrong link costs more than an admitted gap.
+        """
+        if sheet_rel in self._rig_link_cache:
+            return self._rig_link_cache[sheet_rel]
+        stem = _stem(sheet_rel).lower()
+        result = (None, None, None, [])
+        for sidecar in self.sidecars_for_sheet(sheet_rel):
+            found = self._rigs_named_by(sidecar)
+            if not found:
+                continue
+            rigs = [rig for _, rig in found]
+            if len(found) == 1:
+                result = (_stem(found[0][1]), found[0][1], sidecar, rigs)
+                break
+            # Several rigs in one kit: let the sheet's own name pick, by the longest owner key
+            # it starts with. A tie or a miss stays ambiguous rather than picking the first.
+            matches = []
+            for labels, rig in found:
+                hit = max((label for label in labels if stem.startswith(label.lower())),
+                          key=len, default=None)
+                if hit:
+                    matches.append((len(hit), hit, rig))
+            matches.sort(key=lambda m: m[0], reverse=True)
+            if len(matches) == 1 or (len(matches) > 1 and matches[0][0] > matches[1][0]):
+                _, hit, rig = matches[0]
+                result = (_stem(rig), rig, f"{sidecar}#{hit}", rigs)
+            else:
+                result = (None, None, sidecar, rigs)
+            break
+        self._rig_link_cache[sheet_rel] = result
+        return result
+
+    def _rigs_named_by(self, sidecar_rel):
+        """Every rig a sidecar names that exists on disk — **declared keys first, prose second**.
+
+        ``Foliage/Trees/Trees.json`` is why the order matters: its ``rig`` key says
+        ``treeIsoRig2.js`` while its prose ``note`` still credits the v1 rig it was ported from.
+        A declared field is the sidecar speaking; prose is the sidecar reminiscing.
+        """
+        if sidecar_rel in self._sidecar_cache:
+            return self._sidecar_cache[sidecar_rel]
+        try:
+            with open(self.abs(sidecar_rel), "r", encoding="utf-8", errors="replace") as fh:
+                raw = fh.read()
+        except OSError:
+            raw = ""
+        try:
+            data = json.loads(raw) if raw else None
+        except ValueError:
+            data = None
+        found = self._resolve_all(_declared_rig_blocks(data))
+        if not found:
+            # Nothing declared resolves — fall back to any rig path the sidecar's prose names.
+            found = self._resolve_all([{"labels": [], "names": _RIG_PATH.findall(raw)}])
+        self._sidecar_cache[sidecar_rel] = found
+        return found
+
+    def _resolve_all(self, blocks):
+        """``(labels, rigPath)`` for each declaring block whose rig exists on disk."""
+        out, seen = [], set()
+        for block in blocks:
+            for name in block["names"]:
+                for candidate in (name, f"{RIG_ROOT}/{name}.js"):
+                    if (candidate.startswith(RIG_ROOT) and candidate.endswith(".js")
+                            and candidate not in seen and self.exists(candidate)):
+                        seen.add(candidate)
+                        out.append((tuple(block["labels"]), candidate))
+                        break
+        return out
+
+    def rig_sha(self, rig_rel):
+        if rig_rel not in self._rig_sha_cache:
+            self._rig_sha_cache[rig_rel] = sha256_lf(self.abs(rig_rel))
+        return self._rig_sha_cache[rig_rel]
+
+
+def _stem(path):
+    return os.path.splitext(os.path.basename(path))[0]
+
+
+# Sidecar keys whose value names the rig a sheet was baked from.
+_RIG_KEYS = ("rig", "rigs", "rigsource", "rigpath", "rigscript", "derivedfrom", "source")
+
+
+def _declared_rig_blocks(data, owner="", out=None):
+    """One record per block of the sidecar that declares a rig: ``{"labels", "names"}``.
+
+    A multi-family kit declares its rigs side by side and labels each one — ``Interiors.json``
+    has ``rooms[i].rig = "interior"`` next to the full ``interiorIsoRig.js`` path, and ``props[i]``
+    the same for ``interiorPropRig.js``. Keeping the labels with the path is what lets a sheet
+    called ``InteriorProp_chair`` claim its own rig instead of the folder reading as ambiguous.
+    """
+    if out is None:
+        out = []
+    if isinstance(data, dict):
+        names = []
+        for key, value in data.items():
+            if str(key).lower() in _RIG_KEYS:
+                for item in (value if isinstance(value, list) else [value]):
+                    if isinstance(item, str) and item:
+                        names.append(item)
+            else:
+                _declared_rig_blocks(value, str(key), out)
+        if names:
+            labels = [owner] if owner else []
+            labels += [n for n in names if "/" not in n]
+            out.append({"labels": labels, "names": names})
+    elif isinstance(data, list):
+        for item in data:
+            _declared_rig_blocks(item, owner, out)
+    return out
+
+
+def _read_meta(path):
+    """A ``.meta`` is one top-level mapping with no document header."""
+    with open(path, "r", encoding="utf-8", errors="replace") as fh:
+        return U.parse_mapping(fh.read())
+
+
+def _sprite_entries(importer):
+    """``{internalID: entry}`` from a TextureImporter block."""
+    out = {}
+    ppu = U.as_float(importer.get("spritePixelsToUnits"), float(ASSETS_PPU))
+    sheet = importer.get("spriteSheet") or {}
+    sprites = sheet.get("sprites") or []
+    for entry in sprites:
+        if not isinstance(entry, dict):
+            continue
+        internal = U.as_int(entry.get("internalID"), 0)
+        rect = entry.get("rect") or {}
+        width = U.as_float(rect.get("width"))
+        height = U.as_float(rect.get("height"))
+        alignment = U.as_int(entry.get("alignment"), 0)
+        pivot = entry.get("pivot") or {}
+        if alignment in _ALIGNMENT_PIVOTS:
+            px, py = _ALIGNMENT_PIVOTS[alignment]
+            pivot_source = "sprite-import.alignment"
+        else:
+            px, py = U.as_float(pivot.get("x"), 0.5), U.as_float(pivot.get("y"), 0.5)
+            pivot_source = "sprite-import.customPivot"
+        out[internal] = {
+            "name": entry.get("name", ""),
+            "rect": [U.as_float(rect.get("x")), U.as_float(rect.get("y")), width, height],
+            "cell": [width, height],
+            "unityPivot": [px, py],
+            "pivotSource": pivot_source,
+            "alignment": alignment,
+            "ppu": ppu,
+        }
+    return out
