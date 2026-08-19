@@ -361,4 +361,31 @@ namespace HiddenHarbours.Core
         public readonly TrapHaulState State;
         public TrapHaulStateChanged(TrapHaulState state) { State = state; }
     }
+
+    // =====================================================================================
+    //  THE WARDROBE — what the player is wearing
+    // =====================================================================================
+
+    /// <summary>
+    /// <b>The player has changed clothes.</b> Published by <see cref="OutfitLocker.Wear(string)"/>
+    /// after the choice is persisted, and answered by whoever is drawing the fisher.
+    ///
+    /// <para><b>Why a signal rather than the picker setting a material.</b> The recolour is a palette
+    /// swap on the player's own renderer (ADR 0029), which lives in the Art lane; the picker lives in
+    /// UI and the wardrobe fixture in World. None of the three may reference the others (rule 4), and
+    /// none of them should have to know how many renderers a fisher has — today the on-foot sprite,
+    /// tomorrow a deck rider and a mirror's preview. Core states WHAT is worn; presentation answers
+    /// with HOW. It is the shape <c>ActiveBoatChanged</c> already uses to move a hull's paint.</para>
+    ///
+    /// <para>Raised only on a real change (re-picking what is already on publishes nothing), so a
+    /// subscriber may treat every one of these as work worth doing.</para>
+    /// </summary>
+    public readonly struct OutfitChanged
+    {
+        /// <summary>The <c>CharacterOutfitDef</c> id now worn. Never null; EMPTY means the outfit the
+        /// sheets were baked in, which is a real answer and not an absence.</summary>
+        public readonly string OutfitId;
+
+        public OutfitChanged(string outfitId) { OutfitId = outfitId ?? ""; }
+    }
 }

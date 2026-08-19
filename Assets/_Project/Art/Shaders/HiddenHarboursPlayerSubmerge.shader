@@ -32,8 +32,16 @@
 // facing is mirrored on the MESH (SpriteRenderer.flipX), and this shader only ever reads/clips on uv.y
 // (feet→head) — never uv.x sign — so a mirrored sprite submerges identically.
 //
+// IT ALSO WEARS THE WARDROBE. Include/CharacterPalette.hlsl recolours the baked sheet's own palette to
+// whatever the player chose at the wardrobe (ADR 0029: structure is baked, colour is a ramp swap). It is
+// applied to the RAW _MainTex sample, before the vertex colour and before any underwater treatment,
+// because the swap matches the sheet's authored colours and a pixel that has already been tinted is no
+// longer on that palette. The passthrough guarantee below therefore has two halves, not one:
+// _WaterlineFrac == 0 AND _CharPaletteCount == 0 is the shipped fisher, pixel for pixel.
+//
 // Visual-only: drives no sim, saves nothing (rule 5). HLSL-trap-safe: no [unroll] over a runtime count, no
-// dynamic-length loop, a single texture fetch (the refraction just offsets the sample coord), all branches on
+// dynamic-length loop (the palette loop is bounded by a COMPILE-TIME constant and early-outs at the live
+// count), a single texture fetch (the refraction just offsets the sample coord), all branches on
 // per-material uniforms. Force-compiled by WaterShaderCompileGuardTests via the shipped
 // Resources/PlayerSubmerge.mat (the magenta guard scans every project material) — a break fails CI RED.
 Shader "HiddenHarbours/PlayerSubmerge"
@@ -52,6 +60,13 @@ Shader "HiddenHarbours/PlayerSubmerge"
         _WaterlineFoamWidth ("Waterline foam half-width (uv.y)", Range(0.001,0.2)) = 0.03
         _PixelsPerUnit      ("Pixels per unit (pixel snap)", Float) = 32
         _SpriteHeightPx     ("Sprite height (px, pixel snap)", Float) = 64
+
+        // THE WARDROBE (Include/CharacterPalette.hlsl). Declared here only so the shipped material
+        // carries explicit defaults — 0 swaps is the pixel-identical passthrough. The pairs themselves
+        // are float4 arrays, which Properties cannot express, so they arrive from PlayerOutfitVisual by
+        // MaterialPropertyBlock and never sit on the material at all.
+        _CharPaletteCount   ("Outfit swaps in use (0 = as baked)", Float) = 0
+        _CharPaletteEpsSq   ("Outfit colour match tolerance (squared, linear)", Float) = 0.0000031
     }
 
     SubShader
@@ -85,6 +100,12 @@ Shader "HiddenHarbours/PlayerSubmerge"
                 float4 color      : COLOR;
                 float2 uv         : TEXCOORD0;
             };
+
+            // THE WARDROBE. The character recolour is a shared include, not a player-only branch: a
+            // deck rider or a mirror preview attaches the same file. With no palette uploaded
+            // (_CharPaletteCount == 0) it is a pixel-identical passthrough, so the fisher in the
+            // outfit she was baked in renders exactly as she did before this line existed.
+            #include "Include/CharacterPalette.hlsl"
 
             TEXTURE2D(_MainTex);
             SAMPLER(sampler_MainTex);
@@ -143,6 +164,14 @@ Shader "HiddenHarbours/PlayerSubmerge"
 
                 // Sample the CURRENT animation frame (refracted coord under the line, raw coord above it).
                 half4 src = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, sampleUV);
+
+                // THE WARDROBE, applied to the BAKED colour and nothing else. It has to sit here, before
+                // the vertex colour and before the underwater look: the swap matches the sheet's own
+                // palette, so anything that has already tinted, dimmed or faded the pixel would put it
+                // off that palette and the match would silently stop happening. Wading in a rust coat
+                // therefore tints the rust, exactly as it tints the teal today.
+                src.rgb = ApplyCharacterPalette(src.rgb);
+
                 src *= IN.color;                               // fold in the SpriteRenderer colour/alpha
 
                 // Above the line (or dry): return the sprite UNCHANGED. This early-out guarantees the exact
