@@ -39,12 +39,9 @@ namespace HiddenHarbours.App
                  "GameConfig.PlayerZoom.WheelEnabled; this is the per-rig one.")]
         [SerializeField] private bool _wheelSteps = true;
 
-        [Tooltip("Gamepad button that steps the walking view OUT one tier (wider). LB by default — " +
-                 "audited free of every other binding in code and in InputSystem_Actions.")]
-        [SerializeField] private GamepadButton _zoomOutButton = GamepadButton.LeftShoulder;
-
-        [Tooltip("Gamepad button that steps the walking view IN one tier (closer). RB by default.")]
-        [SerializeField] private GamepadButton _zoomInButton = GamepadButton.RightShoulder;
+        [Tooltip("Let the pad's shoulder buttons step the walking view — LB out (wider), RB in " +
+                 "(closer), one tier per press. Off = mouse wheel only.")]
+        [SerializeField] private bool _padShouldersStep = true;
 
         // Un-spent scroll, carried between frames so a trackpad's fine-grained stream earns tiers at
         // the same rate a wheel's detents do. Cleared whenever the wheel is not live, so a modal can
@@ -73,11 +70,18 @@ namespace HiddenHarbours.App
                         ref _scrollCarry, mouse.scroll.ReadValue().y, _camera.WheelUnitsPerNotch);
             }
 
+            // ⚠️ NAMED CONTROLS, NOT A SERIALIZED GamepadButton. The first cut serialized the binding
+            // the way TidePanelInput serializes its Key — but `GamepadButton` lives in
+            // UnityEngine.InputSystem.LowLevel, and dragging a LowLevel namespace into a gameplay
+            // component to buy a rebind nobody asked for is the wrong trade. Keyboard letters are
+            // scarce and contested (the exhausted A–Z ledger), which is why THAT binding is
+            // serialized; the pad's shoulders are neither, and the binding decision is recorded in
+            // the audit above and in the design doc.
             Gamepad pad = Gamepad.current;
-            if (pad != null)
+            if (pad != null && _padShouldersStep)
             {
-                if (pad[_zoomInButton].wasPressedThisFrame) notches += 1;   // +1 tier = closer
-                if (pad[_zoomOutButton].wasPressedThisFrame) notches -= 1;
+                if (pad.rightShoulder.wasPressedThisFrame) notches += 1;   // RB: +1 tier = closer
+                if (pad.leftShoulder.wasPressedThisFrame) notches -= 1;    // LB: one tier wider
             }
 
             if (notches != 0) _camera.NudgePlayerZoom(notches);
