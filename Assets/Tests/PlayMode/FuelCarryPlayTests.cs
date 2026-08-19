@@ -61,6 +61,8 @@ namespace HiddenHarbours.Tests.PlayMode
             InteractVerb.Reset();
             InteractionGate.Reset();
             InteractActionClaim.Reset();
+            InteractOffer.Reset();
+            InteractActorProbe.Reset();
 
             _performed.Clear();
             EventBus.Clear<InteractPerformed>();
@@ -116,6 +118,8 @@ namespace HiddenHarbours.Tests.PlayMode
             InteractVerb.Reset();
             InteractionGate.Reset();
             InteractActionClaim.Reset();
+            InteractOffer.Reset();
+            InteractActorProbe.Reset();
             GameServices.Reset();
 
             foreach (var o in _spawned)

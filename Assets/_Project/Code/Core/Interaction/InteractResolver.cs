@@ -18,7 +18,8 @@ namespace HiddenHarbours.Core
     ///   <item><b>Availability</b> — the candidate's own gate says yes.</item>
     ///   <item><b>Reach</b> — horizontal distance ≤ the candidate's own <see cref="IInteractable.ReachMeters"/>.</item>
     ///   <item><b>Arc</b> — if the candidate <see cref="IInteractable.RequiresFacing"/> and the actor's
-    ///   facing is known, it lies within <paramref name="facingArcDegrees"/> centred on that facing.</item>
+    ///   facing is known, it lies within <paramref name="facingArcDegrees"/> centred on that facing. The
+    ///   test itself is <see cref="InteractArc"/>, shared with the conversation filter.</item>
     /// </list>
     /// Survivors are then ranked, and the winner is the first of these to differ:
     /// <list type="number">
@@ -54,9 +55,9 @@ namespace HiddenHarbours.Core
         /// </summary>
         public const float DefaultFacingArcDegrees = 180f;
 
-        // Below this squared distance the actor is standing ON the candidate and the direction to it is
-        // numerically meaningless (0.1 mm). Facing cannot exclude something you are standing on.
-        private const float SameSpotSqrMeters = 1e-8f;
+        // The arc test itself — the same-spot guard, the unknown-facing rule and the un-normalised angle
+        // comparison — lives in InteractArc, because WorldInteractor now asks the identical question of
+        // its conversation partners and two hand-written copies of an angle test is one too many.
 
         /// <summary>
         /// The one selection rule, over a caller-supplied list. Returns false — with
@@ -75,13 +76,11 @@ namespace HiddenHarbours.Core
             best = null;
             if (candidates == null || candidates.Count == 0) return false;
 
-            // The half-angle as a cosine, computed once. A facing of exactly zero means "unknown", and
-            // every arc test is then skipped (see InteractActor.Facing).
-            float halfArcRad = Mathf.Clamp(facingArcDegrees, 0f, 360f) * 0.5f * Mathf.Deg2Rad;
-            float cosHalfArc = Mathf.Cos(halfArcRad);
+            // The half-angle as a cosine, computed ONCE for the whole scan — never per candidate, which
+            // would be a Mathf.Cos on a hot path for no gain (rule 7). A facing of exactly zero means
+            // "unknown", and InteractArc then passes everything (see InteractActor.Facing).
+            float cosHalfArc = InteractArc.CosHalfArc(facingArcDegrees);
             Vector2 facing = actor.Facing;
-            bool facingKnown = facing.sqrMagnitude > 0f;
-            if (facingKnown) facing = facing.normalized;
 
             int bestPriority = 0;
             float bestSqr = 0f;
@@ -104,14 +103,9 @@ namespace HiddenHarbours.Core
                 float reach = Mathf.Max(0f, c.ReachMeters);
                 if (sqr > reach * reach) continue;
 
-                // 4) The forward arc, for candidates that ask for it. dot(delta, facing) >= cos·|delta|
-                //    is the un-normalised form of the usual angle test — one sqrt, and correct for
-                //    obtuse arcs too, since |delta| is never negative.
-                if (c.RequiresFacing && facingKnown && sqr > SameSpotSqrMeters)
-                {
-                    float dot = delta.x * facing.x + delta.y * facing.y;
-                    if (dot < cosHalfArc * Mathf.Sqrt(sqr)) continue;
-                }
+                // 4) The forward arc, for candidates that ask for it — InteractArc.Contains, which is the
+                //    same rule WorldInteractor's conversation filter runs, stated once.
+                if (c.RequiresFacing && !InteractArc.Contains(delta, facing, cosHalfArc)) continue;
 
                 if (best == null || Beats(c, c.Priority, sqr, best, bestPriority, bestSqr))
                 {

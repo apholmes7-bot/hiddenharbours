@@ -78,6 +78,11 @@ namespace HiddenHarbours.World
         /// fixture you operate by walking up to (see <c>WetBucketPoint</c>).</summary>
         public bool RequiresFacing => false;
 
+        /// <summary>Which way this half of the stairwell goes, said as the player would say it. Derived
+        /// from the two authored storeys rather than a third field to keep in step with them — a stair
+        /// whose levels are re-authored says the right thing with no second edit (rule 6).</summary>
+        public string VerbLabel => _toLevel > _fromLevel ? "Go up" : "Go down";
+
         /// <summary>
         /// Available only when the occupant is INSIDE this building and standing on the storey this
         /// half serves.

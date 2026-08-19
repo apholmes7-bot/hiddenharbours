@@ -152,6 +152,10 @@ namespace HiddenHarbours.Player
         /// </summary>
         public bool IsAvailable => HeldCatch() != null;
 
+        /// <summary>Only offered with something in your hands to put in (see <see cref="IsAvailable"/>),
+        /// so the words can assume it.</summary>
+        public string VerbLabel => "Put it in the bucket";
+
         /// <summary>The catch in the fisher's hands right now, or null. Written out rather than as
         /// <c>GameServices.Hands?.Carried as CarriableCatch</c> so the fake-null question is answered
         /// where a reader can see it: both <c>Hands</c> and <c>Carried</c> launder a destroyed object into

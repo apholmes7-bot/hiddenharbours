@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
 using HiddenHarbours.Core;
 using HiddenHarbours.Boats;
 using HiddenHarbours.Economy;   // RepairLedger only — the boarding gate's single source of truth (see BoardableNow)
@@ -170,7 +169,13 @@ namespace HiddenHarbours.Player
 
         public ControlMode Mode { get; private set; } = ControlMode.OnFoot;
 
-        private Text _hint;
+        // Was: a screen-space "E: Board" label this component built and parked over the world. Retired by
+        // the owner's 2026-08-19 ruling — the answer now goes out as a Core offer (InteractOffer) on the
+        // Transit slot and the one interaction popup draws it. See UpdateOffer.
+        //
+        // The damaged-boat REFUSAL that used to share that label is not an offer and did not move with it:
+        // the popup names what a press WILL do, and "nothing, and here is why" is not that. It is now
+        // earned by the press instead — see the tail of BeginInteract.
 
         private Transform Player => _playerWalk != null ? _playerWalk.transform : null;
         private Transform Boat   => _boatController != null ? _boatController.transform : null;
@@ -406,7 +411,27 @@ namespace HiddenHarbours.Player
             if (TryInteract()) return true;
 
             // ...and only then, the registry (M2-39). See TryInteractCandidate for why LAST.
-            return TryInteractCandidate();
+            if (TryInteractCandidate()) return true;
+
+            // ⭐ THE PRESS FOUND NOTHING — and if the reason is a boat you have not repaired yet, say so
+            // rather than answering with silence (P5 cozy). This is the line the screen-space hint used to
+            // carry passively, moved to where this codebase already says refusals belong: earned by the
+            // press, as CarriableTool's "a refusal is something the press EARNS a sentence for" puts it.
+            //
+            // ⚠ LAST of everything on purpose. Placed any higher it would take the press away from a clam
+            // hole at your feet just because a damaged hull happens to be within board reach — and the
+            // whole point of the ladder above is that the most specific answer wins.
+            //
+            // ⚠ AND IT STILL RETURNS FALSE. This method's return value means "a move started or a
+            // transition happened" — nothing else — and SAYING something is neither. An earlier draft
+            // returned true here on the reasoning that the press had been answered, which reads well and is
+            // wrong: it makes a damaged hull report the verb as consumed, and BoardingMoveTests
+            // .AnUnboardableHull_NeverStartsAMove is the assertion that says so. The notice is a side
+            // effect of a refused press, not a transition.
+            if (Mode == ControlMode.OnFoot && WithinBoardReach() && !BoardableNow())
+                EventBus.Publish(new DevNotice(ControlStrings.BoatNeedsRepairs));
+
+            return false;
         }
 
         // ---- the one interact VERB (M2-39) --------------------------------------------------
@@ -1717,9 +1742,7 @@ namespace HiddenHarbours.Player
             _disembarkPoint = disembarkPoint;
         }
 
-        // ---- lifecycle (greybox dev input + prompt) -----------------------------------------
-
-        private void Awake() => BuildHint();
+        // ---- lifecycle (greybox dev input) --------------------------------------------------
 
         /// <summary>Listen for a worked driver's door (ADR 0035). The Vehicles lane publishes; this
         /// answers. An EventBus subscription, NOT a Core service registration — the region-travel law about
@@ -1734,13 +1757,20 @@ namespace HiddenHarbours.Player
         ///
         /// <para>A driver is put back on their feet rather than left in a cab nothing is ticking: with this
         /// component gone there is nobody to read the wheel, nobody to seat them, and nobody to answer the
-        /// key that would let them out.</para></summary>
+        /// key that would let them out.</para>
+        ///
+        /// <para>The <see cref="InteractActorProbe"/> goes too: this is the one publisher, so a stale actor
+        /// left standing here would have <c>WorldInteractor</c>'s facing filter measuring from a player who
+        /// is no longer anywhere. Clearing it returns the filter to "facing unknown", which passes
+        /// everything — the degraded mode fails open, exactly as the contract says it must.</para></summary>
         private void OnDisable()
         {
             EventBus.Unsubscribe<DriveSeatRequested>(OnDriveSeatRequested);
             CancelBoardingMove(restorePosition: true);
             if (Mode == ControlMode.Driving) { ReleaseDriveInput(); AbandonDriving(); }
             InteractVerb.ClearCandidate();
+            ClearOffer();
+            InteractActorProbe.Clear();
         }
 
         /// <summary>
@@ -1797,7 +1827,7 @@ namespace HiddenHarbours.Player
             // rather than merely deaf. A pause you can sail through is not a pause.
             // Every early-out below drops the interact candidate as well as the hint: a diegetic highlight
             // left burning on a thing you can no longer act on teaches the player a lie (M2-39).
-            if (ApplyShellInputBlock()) { InteractVerb.ClearCandidate(); ReleaseDriveInput(); return; }
+            if (ApplyShellInputBlock()) { ClearOffer(); InteractVerb.ClearCandidate(); ReleaseDriveInput(); return; }
 
             // A truck that has died under the driver (despawned by a region hop, a dev picker, a test).
             // Checked FIRST of everything below, because every branch after this may dereference the seat,
@@ -1809,7 +1839,7 @@ namespace HiddenHarbours.Player
             // freezes the fisher mid-vault and resumes them there rather than teleporting them on.
             if (IsBoardingMove)
             {
-                if (_hint != null && _hint.enabled) _hint.enabled = false;
+                ClearOffer();
                 InteractVerb.ClearCandidate();
                 TickBoardingMove(Time.deltaTime);
                 return;
@@ -1820,7 +1850,7 @@ namespace HiddenHarbours.Player
             // the other (see InteractionGate). Hide our board/dock hint too while blocked.
             if (InteractionGate.IsBlocked)
             {
-                if (_hint != null && _hint.enabled) _hint.enabled = false;
+                ClearOffer();
                 InteractVerb.ClearCandidate();
                 ReleaseDriveInput();   // a modal owns the key; the truck brakes and waits
                 return;
@@ -1834,7 +1864,13 @@ namespace HiddenHarbours.Player
             if (kb != null && kb.eKey.wasPressedThisFrame) BeginInteract();
             // Q holds/roots the rope of a moored boat you're standing by (the mooring interaction).
             if (kb != null && kb.qKey.wasPressedThisFrame) ToggleMooring();
-            UpdateHint();
+
+            // ⭐ WHO IS REACHING, published for anyone outside this lane who needs it. WorldInteractor's
+            // facing filter is the first customer: it lives in HiddenHarbours.World, which may not name a
+            // Player type (rule 4), so the actor this component already composes for the verb is relayed
+            // through Core rather than reached for. One composition, one mode→context mapping, one facing.
+            InteractActorProbe.Set(ActorNow());
+            UpdateOffer();
 
             // What the verb WOULD act on, republished only when it changes — the signal the diegetic
             // outline rides (M2-39; no screen-space prompt). Resolved after the press so the highlight
@@ -1879,7 +1915,6 @@ namespace HiddenHarbours.Player
 
                 if (_playerWalk != null) _playerWalk.enabled = false;
                 if (_boatInput != null) _boatInput.enabled = false;
-                if (_hint != null) _hint.enabled = false;   // no "E: Board" prompt under a title page
             }
             else
             {
@@ -1889,73 +1924,83 @@ namespace HiddenHarbours.Player
             return blocked;
         }
 
-        private void UpdateHint()
-        {
-            if (_hint == null) return;
+        // ---- the transit offer (what the interaction popup draws) ----------------------------
 
-            // Cozy feedback (P5): when standing near a damaged, unrepaired boat, say why you can't board
-            // rather than showing nothing — the opening nudges the player to the shipwright.
-            bool atDamagedBoat = Mode == ControlMode.OnFoot && WithinBoardReach() && !BoardableNow();
-            bool canMoor = CanToggleMooring();
-            bool show = CanInteract() || atDamagedBoat || canMoor;
-            if (_hint.enabled != show) _hint.enabled = show;
-            if (show)
+        /// <summary>
+        /// State this component's answer on the Core offer channel — <b>what the interact press would do
+        /// with the player's whole body right now</b>, and the replacement for the screen-space
+        /// "E: Board" / "E: Dock" label the 2026-08-19 ruling retired.
+        ///
+        /// <para><b>It decides nothing.</b> Every branch below is the same predicate
+        /// <see cref="BeginInteract"/> and <see cref="TryInteract"/> already dispatch on, read in the same
+        /// order — so the popup says what the press does, rather than holding a second opinion about it.
+        /// The one thing it adds is the <see cref="ControlMode.OnDeck"/> split between a wharf and a
+        /// beach, which <see cref="CanStepAshore"/> already distinguishes and the old hint already
+        /// said.</para>
+        ///
+        /// <para><b>Nothing is offered at the helm or from a cab.</b> Not because the press does nothing
+        /// there — it does, it steps you back — but because the owner's ruling is that the boat's own
+        /// instruments rule those two views, and a popup over a dash is the band coming back by the side
+        /// door. <see cref="ControlMode.OnDeck"/> is NOT in that exclusion: the deck is a place you work,
+        /// its offers are ordinary offers, and there is no dash up.</para>
+        ///
+        /// <para><b>Rule 7.</b> Every label is an interned literal from <see cref="ControlStrings"/> and
+        /// the publish inside <see cref="InteractOffer"/> is edge-triggered, so a settled player costs a
+        /// handful of predicate reads a frame and no allocation and no event traffic.</para>
+        /// </summary>
+        private void UpdateOffer()
+        {
+            string id = null, label = null;
+            Vector2 at = Player != null ? (Vector2)Player.position : Vector2.zero;
+
+            switch (Mode)
             {
-                string text;
-                if (atDamagedBoat) text = "She needs repairs before she'll sail";
-                else if (Mode == ControlMode.Driving) text = "E: Get out";
-                else if (Mode == ControlMode.OnFoot) text = CanInteract() ? "E: Board" : null;
-                else if (Mode == ControlMode.Aboard) text = "E: Leave the helm";
-                else if (WithinHelmReach()) text = "E: Take the helm";
-                else text = InDockZone() ? "E: Dock" : "E: Get off";   // step ashore from the deck
+                case ControlMode.OnFoot:
+                    if (CanInteract())
+                    {
+                        id = ControlStrings.IdBoard;
+                        label = ControlStrings.Board;
+                        at = BoatAnchor(at);
+                    }
+                    break;
 
-                // Rope prompt (the mooring interaction): while holding the rope, offer to root it to the
-                // ground; while rooted, offer to take it back in hand. Shown alongside the board prompt when
-                // both apply (on foot beside a moored boat).
-                if (canMoor)
-                {
-                    string rope = Mooring.IsHeld ? "Q: Tie to ground" : "Q: Take rope";
-                    text = string.IsNullOrEmpty(text) ? rope : text + "    " + rope;
-                }
-                if (_hint.text != text) _hint.text = text;
+                case ControlMode.OnDeck:
+                    if (WithinHelmReach()) { id = ControlStrings.IdTakeHelm; label = ControlStrings.TakeHelm; }
+                    else if (CanStepAshore())
+                    {
+                        id = ControlStrings.IdStepAshore;
+                        label = InDockZone() ? ControlStrings.Dock : ControlStrings.StepAshore;
+                    }
+                    break;
+
+                // At the helm and behind a wheel the press still works — it just is not advertised here.
+                // See the remarks: those two views belong to the instruments.
+                case ControlMode.Aboard:
+                case ControlMode.Driving:
+                    break;
+
+                // ⚠ NO default ARM, and unlike TryInteract's this one does not throw. ControlMode is an
+                // append-only Core contract, and the two treatments are deliberately different: DISPATCH
+                // must never guess what a new mode does, so it fails loudly; a PRESENTATION surface that
+                // threw would take the whole frame down over a missing line of copy. A mode nobody has
+                // given words to simply offers nothing, which is the honest picture of exactly that.
             }
+
+            if (label == null) { ClearOffer(); return; }
+
+            Vector2 from = Player != null ? (Vector2)Player.position : at;
+            InteractOffer.Set(InteractOfferSource.Transit, id, label, at, (at - from).sqrMagnitude);
         }
 
-        // A tiny screen-space prompt shown only when a board/dock is available (nice-to-have; ui-ux polishes).
-        private void BuildHint()
-        {
-            var canvasGo = new GameObject("ControlHint_Canvas", typeof(Canvas), typeof(CanvasScaler));
-            canvasGo.transform.SetParent(transform, false);
-            var canvas = canvasGo.GetComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvas.sortingOrder = 95;
-            var scaler = canvasGo.GetComponent<CanvasScaler>();
-            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution = new Vector2(1280f, 720f);
-            scaler.matchWidthOrHeight = 0.5f;
+        /// <summary>Where a transit offer POINTS — the boat you would climb onto, so the affordance lane
+        /// has something to draw at, falling back to the player when there is no hull to name. Read live
+        /// off the boat's transform, never stored: a moored dory rides her own swell.</summary>
+        private Vector2 BoatAnchor(Vector2 fallback)
+            => _boatController != null ? (Vector2)_boatController.transform.position : fallback;
 
-            var go = new GameObject("Hint", typeof(RectTransform), typeof(Text), typeof(Outline));
-            go.transform.SetParent(canvasGo.transform, false);
-            var rt = go.GetComponent<RectTransform>();
-            rt.anchorMin = new Vector2(0.5f, 0f);
-            rt.anchorMax = new Vector2(0.5f, 0f);
-            rt.pivot = new Vector2(0.5f, 0f);
-            rt.anchoredPosition = new Vector2(0f, 160f);
-            rt.sizeDelta = new Vector2(400f, 60f);
-
-            _hint = go.GetComponent<Text>();
-            _hint.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            _hint.fontSize = 34;
-            _hint.alignment = TextAnchor.LowerCenter;
-            _hint.color = Color.white;
-            _hint.horizontalOverflow = HorizontalWrapMode.Overflow;
-            _hint.verticalOverflow = VerticalWrapMode.Overflow;
-            _hint.raycastTarget = false;
-
-            var outline = go.GetComponent<Outline>();
-            outline.effectColor = new Color(0f, 0f, 0f, 0.85f);
-            outline.effectDistance = new Vector2(2f, -2f);
-            _hint.enabled = false;
-        }
+        /// <summary>Offer nothing. Said out loud on every path that used to hide the hint — a feeder that
+        /// merely went quiet would leave the popup naming a rail the player has walked away from (see
+        /// <see cref="InteractOffer.Set"/>).</summary>
+        private void ClearOffer() => InteractOffer.Clear(InteractOfferSource.Transit);
     }
 }

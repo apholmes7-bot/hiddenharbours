@@ -357,6 +357,11 @@ namespace HiddenHarbours.Fishing
         /// </summary>
         public bool IsAvailable => !_consumed && ShovelInHand() && IsExposedNow();
 
+        /// <summary>One word, because it is one action and the shovel in your hands has already said the
+        /// rest. Only reachable with the shovel held and the flat bared — see <see cref="IsAvailable"/> —
+        /// so the popup never offers a dig the tide has taken away.</summary>
+        public string VerbLabel => "Dig";
+
         /// <summary>The press: one clam, this hole. The resolver has already picked the nearest qualifying
         /// hole, which is what <c>ClamDigger.NearestDiggable</c> used to do by hand.</summary>
         public void Interact(in InteractActor actor) => TryDig();
