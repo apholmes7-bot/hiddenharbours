@@ -553,9 +553,11 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.Contains(StPetersWharf.DeckMaterial, WharfKitCatalog.DeckMaterials,
                 "the deck material must be one the kit bakes");
             Assert.AreNotEqual("float", StPetersWharf.DeckMaterial,
-                "the slip DRIES near spring low (§5.1a: the berth bed is -1.0 m against a -2.2 m low), so a " +
-                "floating dock would spend part of every tide aground — and it would need a driver for its " +
-                "four bob frames that nothing here provides");
+                "a floating dock needs a driver for its four bob frames that nothing here provides, and " +
+                "this coast works fixed timber piers. ⚠ The other half of this reason EXPIRED on " +
+                "2026-08-19: the berth used to dry near spring low (§5.1a, bed -1.0 m against a -2.2 m " +
+                "low) so a float would have sat on the mud, and the owner has since ruled the dock wet " +
+                "at every tide. A float is now POSSIBLE here; it is still not chosen.");
 
             // A fixed deck has no bob frames, and asking for one is a caller bug the kit refuses.
             Assert.Throws<System.ArgumentOutOfRangeException>(

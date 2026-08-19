@@ -48,6 +48,12 @@ namespace HiddenHarbours.App.Editor
         // boat lies just off the planks, and the ratified disembark at (213, 0) lands ON the deck rather
         // than beside it.
         //
+        // ⭐ 2026-08-19: a SECOND cut now runs the same line — StPetersBuilder.ApproachFrom/To, the
+        // dredged channel and berth pocket that keeps water alongside this pier head at every tide.
+        // It is deliberately kept 15 m clear of RootCellX (its shoulder dies out at x = 198), so
+        // every measured number below — the root's +5.35 m, and the deck elevation taken from it —
+        // is UNMOVED. StPetersEastBerthTests asserts that rather than leaving it to this comment.
+        //
         // ⚠ THE ROOT IS MEASURED, NOT ESTIMATED. The carve reaches PAST the slip's shoreward end — it
         // falls off smoothly over the half-width, so it is still pulling the ground down several metres
         // inland of x = 190. Rooting the pier just two cells further east, at 185, puts the bed at
@@ -79,7 +85,15 @@ namespace HiddenHarbours.App.Editor
         /// and timber; sheet pile and concrete are "what money and machinery look like"
         /// (<see cref="WharfKitCatalog.ArmourTypes"/>'s own note), and St Peters has neither.
         /// Deliberately NOT <c>float</c>: a floating dock animates (four bob frames) and would need a
-        /// driver, and the slip DRIES near spring low — a float would sit on the mud.
+        /// driver, and this is a fixed timber pier on a coast that works one.
+        ///
+        /// <para>⚠ The second half of that reason EXPIRED on 2026-08-19. It used to read "and the
+        /// slip DRIES near spring low — a float would sit on the mud", which was true of
+        /// <see cref="StPetersBuilder.BerthBedElevation"/> and is still true of the beach slip; it is
+        /// no longer true alongside the pier head, where
+        /// <see cref="StPetersBuilder.ApproachBedElevation"/> now holds 1.80 m at the lowest water. A
+        /// float is therefore POSSIBLE here now. It is still not chosen — that wants the driver, and
+        /// it wants the owner — but the reason is means and taste, not mud.</para>
         /// </summary>
         public const string DeckMaterial = "lowpier";
 
