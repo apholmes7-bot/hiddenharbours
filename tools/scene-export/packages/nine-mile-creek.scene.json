@@ -7910,10 +7910,11 @@
     "sceneLastBuiltSubject": "chore(scenes): bank the owner's two builds — St Peters learns its day, the creek opens its doors (#518)",
     "sceneWorkingTreeDirty": false,
     "builderDrift": {
-      "builderCommitsSinceScene": 19,
-      "measuredTo": "cb2e3f5bcb5e3249bbcd5a3d2a772a7585c6dd1b",
+      "builderCommitsSinceScene": 20,
+      "measuredTo": "9411bf317c482a5a912f8177dc346f0e6a29f947",
       "exact": true,
       "builderCommits": [
+        "9411bf31 feat(world): the float rides the tide — a deck whose height is the water's, and the brow that reaches it (#594)",
         "cb2e3f5b feat(camera): the wheel is the player's eye — the walking view steps the same integer ladder (#590)",
         "b721e3d0 feat(world): the Otter is staged at the boat ramp — pointed at the water, and the tide never takes her (#587)",
         "ff4a134f feat(world): the bullpen keeps its water — a meandering channel, derived from the boat that needs it (#583)",
