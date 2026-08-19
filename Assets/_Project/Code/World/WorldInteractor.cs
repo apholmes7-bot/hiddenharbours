@@ -88,6 +88,17 @@ namespace HiddenHarbours.World
                 return;
             }
 
+            // A modal that is not ours is up (the wardrobe picker). Offer nothing and claim nothing while
+            // it is: an "E: Talk" prompt hanging over its panel would be advertising a press that panel
+            // has already taken. BeginInteract refuses the press too — this is the half the player sees.
+            if (InteractionGate.IsBlocked)
+            {
+                _nearest = null;
+                Claim(false);
+                ShowPrompt(null);
+                return;
+            }
+
             _nearest = FindNearest();
             Claim(_nearest != null);
             ShowPrompt(_nearest);
@@ -119,6 +130,19 @@ namespace HiddenHarbours.World
         public bool BeginInteract()
         {
             if (_presenter != null && _presenter.IsShowing) { _presenter.Advance(); return true; }
+
+            // ⭐ A MODAL THAT IS NOT OURS OWNS THIS PRESS. Unlike every other reader of the interact key
+            // (ControlSwitcher, InteractVerb), this component never consulted the gate — it only RAISES
+            // it, through the presenter. That was harmless while the dialogue was the only modal, because
+            // the branch above already covers "our own bubble is up". It stopped being harmless when a
+            // second modal arrived: the wardrobe picker confirms on E while you stand at a fixture, and
+            // Aunt Ginny is demonstrably within this component's 1.8 m radius of her own furniture — so
+            // one press would both wear a coat and start a conversation.
+            //
+            // ⚠ ORDER IS load-BEARING: this sits BELOW the advance branch on purpose. The presenter
+            // raises the gate itself while a conversation is running, so a flag read placed above would
+            // refuse to advance the very dialogue that set it.
+            if (InteractionGate.IsBlocked) return false;
 
             Interactable target = FindNearest();
             if (target == null) return false;

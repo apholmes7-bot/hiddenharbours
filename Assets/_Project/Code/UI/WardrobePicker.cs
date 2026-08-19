@@ -76,6 +76,9 @@ namespace HiddenHarbours.UI
 
         private static WardrobePicker _instance;
 
+        /// <summary>The frame a panel was last closed on. See <see cref="OwnsCancelKey"/>.</summary>
+        private static int _closedFrame = -1;
+
         [Tooltip("The wardrobe to list. Left empty (the runtime case) it is loaded from Resources, the " +
                  "same way the icon / fish / seaweed libraries reach the game.")]
         [SerializeField] private CharacterWardrobeDef _wardrobe;
@@ -154,6 +157,23 @@ namespace HiddenHarbours.UI
         /// <c>==</c>.</para>
         /// </summary>
         public static WardrobePicker Instance => _instance != null ? _instance : null;
+
+        /// <summary>
+        /// <b>Esc belongs to the wardrobe right now</b> — true while a panel is up, AND on the frame one
+        /// was closed. Read by <c>ShellPresenter.CanTogglePause</c>, in the shape it already uses for
+        /// <c>TidePanel.IsOpen</c>: a page that closes itself with Esc must not also open the pause menu
+        /// underneath.
+        ///
+        /// <para><b>Why the closing frame counts too, and why <see cref="IsOpen"/> alone is not enough.</b>
+        /// Both components read <c>escapeKey.wasPressedThisFrame</c> in their own <c>Update</c>, in an
+        /// order Unity does not define — two <c>DontDestroyOnLoad</c> singletons installed by the same
+        /// <c>AfterSceneLoad</c> hook. Whichever runs first wins, so on the frame Esc closes the panel the
+        /// shell might read a gate this picker has ALREADY lowered and open the pause menu on the way out.
+        /// That is a coin toss, not a rare race. Remembering the frame settles it in one direction for
+        /// both orderings.</para>
+        /// </summary>
+        public static bool OwnsCancelKey =>
+            (_instance != null && _instance.IsOpen) || Time.frameCount == _closedFrame;
 
         /// <summary>True while the panel is up.</summary>
         public bool IsOpen => _model != null;
@@ -300,6 +320,7 @@ namespace HiddenHarbours.UI
 
         private void Close()
         {
+            _closedFrame = Time.frameCount;
             _model = null;
             _fixture = null;
             OpenFixtureId = "";

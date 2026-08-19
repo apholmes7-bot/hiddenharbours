@@ -460,6 +460,53 @@ namespace HiddenHarbours.Tests.PlayMode
         }
 
         // =============================================================================
+        //  the Esc key, which the pause menu also wants
+        // =============================================================================
+
+        [UnityTest]
+        public IEnumerator The_wardrobe_owns_the_cancel_key_while_it_is_up_AND_on_the_frame_it_closes()
+        {
+            Assert.IsFalse(WardrobePicker.OwnsCancelKey, "nothing is up, so Esc belongs to the shell");
+
+            _fixture.Open();
+            yield return null;
+            Assert.IsTrue(WardrobePicker.OwnsCancelKey, "the panel's Esc leaves the wardrobe");
+
+            _picker.CancelAndClose();
+
+            // ⭐ NO YIELD. This is the frame the press landed on, and it is the whole point: the shell
+            // reads the same key in its own Update, in an order Unity does not define, so on this frame
+            // the answer must still be "mine" even though the panel has already gone. Without it, whether
+            // Esc also opened the pause menu would be a coin toss on component order.
+            Assert.IsFalse(_picker.IsOpen, "…the panel really is closed");
+            Assert.IsTrue(WardrobePicker.OwnsCancelKey,
+                          "⭐ but the key is still spent — the shell must not open the pause menu behind it");
+
+            yield return null;
+            Assert.IsFalse(WardrobePicker.OwnsCancelKey, "and by the next frame Esc is the shell's again");
+        }
+
+        [UnityTest]
+        public IEnumerator While_the_panel_is_up_the_world_interactor_refuses_the_confirm_press()
+        {
+            // The other half of the same press: the wardrobe's E must not also start a conversation with
+            // whoever is standing next to the furniture. The gate is the mechanism; this pins that the
+            // picker actually raises it for the whole time the panel is up.
+            _fixture.Open();
+            yield return null;
+
+            Assert.IsTrue(InteractionGate.IsBlocked, "raised on open");
+
+            _picker.MoveSelection(-1f); _picker.MoveSelection(0f);
+            yield return null;
+            Assert.IsTrue(InteractionGate.IsBlocked, "…and still up while the player browses");
+
+            _picker.Confirm();
+            yield return null;
+            Assert.IsFalse(InteractionGate.IsBlocked, "released the moment the choice is made");
+        }
+
+        // =============================================================================
         //  the mouse
         // =============================================================================
 
