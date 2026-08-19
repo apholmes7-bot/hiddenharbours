@@ -517,6 +517,17 @@ the prologue dory begins **broken and hauled out** — the opening's whole goal 
 [`world-and-regions.md`](world-and-regions.md) §6.0 — after which it burns fuel like any outboard
 craft. Phased **M2**.)*
 
+> **The same verb, at a different weight — the MUSSEL LONGLINE (capture only, not built).** The
+> owner's mussel fishery (2026-08-18: *"large sections of buoys with individual ropes"*) harvests by
+> **laying alongside a longline and hauling the backbone over the gunwale** — which is steps 2–4
+> above, unchanged: hold station off the mark, work the rail, **hold on the lift and ease on the
+> fall** off the shared wave field, hand-hauled first and winched later (P4). A backbone is longer
+> and heavier than a pot, so it is a **tuning difference, not a second minigame**. The one real
+> extension this doc will owe: placed gear here is a **LINE SEGMENT, not a point** — two endpoints
+> and a length that must fit the lease and clear the depth band along its whole run, where every
+> shipped placement check today takes a single position. Loop, phase and the rest of the contract:
+> [`mussel-lease-and-longline.md`](mussel-lease-and-longline.md).
+
 ---
 
 ## 7. Cross-doc data flow (summary)

@@ -323,10 +323,19 @@ then automate it") and **P2** scale — and leans on the **leasing / property** 
 [`progression-and-housing.md`](progression-and-housing.md) §4.4 and the **value-add / contracts** in
 [`economy-and-business.md`](economy-and-business.md). *Content shape:* farmed mussel/oyster are **not**
 new wild `FishSpecies` rolls — they are **harvested from a lease at maturity** (a grow-timer + yield),
-so they live closer to the production/economy layer than the catch resolver. Capture only — **design
-the full lease → grow → harvest loop at M3** with the economy doc (where the grow-timer, water-lease
-cost, and seasonal yield live is an M3 joint pass). Natural home grounds: sheltered inshore (Coddle
-Cove, the Sunkers, the Drownded Lands edges).
+so they live closer to the production/economy layer than the catch resolver. Natural home grounds:
+sheltered inshore (Coddle Cove, the Sunkers, the Drownded Lands edges) — and the **Nine Mile Creek
+musselbeds**, which are painted ground already (ADR 0028, shipped).
+
+> ⭐ **The full loop is now captured — [`mussel-lease-and-longline.md`](mussel-lease-and-longline.md)**
+> (owner drop **2026-08-18**: *"large sections of buoys with individual ropes"* — PEI longline
+> culture: backbone, float run, dropper socks, corner buoys). That doc is now **where the lease →
+> seed → grow → read → tend → harvest → automate design lives**, and it replaces this paragraph's
+> "design it at M3 with the economy doc" line as a *location*, **not** as a phase: **M3 still
+> stands**, and the open **starter-ruin ruling** is the only thing that could pull a first slice
+> earlier (that doc §6). **Nothing is built.** What stays owned *here* is the **content shape** above
+> — a farmed mussel is a **harvested crop, not a `CatchResolver` roll** — and the wild `blue-mussel`
+> row in §4.2 is untouched by any of it.
 
 ---
 
