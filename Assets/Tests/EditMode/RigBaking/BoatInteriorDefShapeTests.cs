@@ -26,6 +26,11 @@ namespace HiddenHarbours.Tests.RigBaking
         static string RepoRoot => Directory.GetParent(Application.dataPath)!.FullName;
         const string KitFolder = "docs/art/rigs/boat-interiors-kit";
 
+        /// <summary>A SYNTHETIC catalogue, for the resolution unit tests only — small enough to reason
+        /// about, and deliberately holding both variant conventions plus a hull no sidecar names. It is
+        /// not the fleet: anything reading real sidecars off disk must use <see cref="CommittedCatalogue"/>,
+        /// because resolving an end-to-end case against a hand-written list proves nothing about the
+        /// intake and rots the moment the cleared set grows.</summary>
         static readonly HullSidecarIdentity[] Catalogue =
         {
             new HullSidecarIdentity("capeIslanderIsoRig", "capeIslanderIsoRig.js", ""),
@@ -35,6 +40,24 @@ namespace HiddenHarbours.Tests.RigBaking
             new HullSidecarIdentity("lobsterStandardOpenFundyIso", "lobsterBoatVariantsIsoRig.js",
                                     "standard_open_fundy"),
         };
+
+        /// <summary>The catalogue the builder actually resolves against: every committed hull gameplay
+        /// sidecar, enumerated NON-recursively exactly as the boat-deck parity tests do — the kit's own
+        /// gameplay files live under the kit and must not be swept in from here.</summary>
+        static List<HullSidecarIdentity> CommittedCatalogue()
+        {
+            var catalogue = new List<HullSidecarIdentity>();
+            string gameplay = Path.Combine(RepoRoot, "docs/art/rigs/gameplay");
+            foreach (string f in Directory.GetFiles(gameplay, "*.gameplay.json"))
+            {
+                object root = DeckSidecarJson.Parse(File.ReadAllText(f));
+                catalogue.Add(new HullSidecarIdentity(
+                    Path.GetFileName(f).Replace(".gameplay.json", ""),
+                    DeckSidecarJson.String(DeckSidecarJson.Member(root, "rig")),
+                    BoatInteriorHullResolver.VariantKeyOf(DeckSidecarJson.Member(root, "variant"))));
+            }
+            return catalogue;
+        }
 
         // ---- resolution -------------------------------------------------------------------------------
 
@@ -243,7 +266,7 @@ namespace HiddenHarbours.Tests.RigBaking
             Assert.IsTrue(read.Ok, string.Join(" | ", read.Errors));
 
             BoatInteriorHullResolver.Resolution resolved =
-                BoatInteriorHullResolver.Resolve(read.HullStem, Catalogue);
+                BoatInteriorHullResolver.Resolve(read.HullStem, CommittedCatalogue());
             Assert.IsTrue(resolved.Ok, resolved.Error);
 
             BoatInteriorDef def = DefFrom(read, resolved.HullFileStem);
@@ -389,16 +412,7 @@ namespace HiddenHarbours.Tests.RigBaking
         {
             // End to end against the real committed catalogue: all 27 sidecars must find exactly one
             // hull. Eighteen of them did not before VariantKeyOf existed.
-            var catalogue = new List<HullSidecarIdentity>();
-            string gameplay = Path.Combine(RepoRoot, "docs/art/rigs/gameplay");
-            foreach (string f in Directory.GetFiles(gameplay, "*.gameplay.json"))
-            {
-                object root = DeckSidecarJson.Parse(File.ReadAllText(f));
-                catalogue.Add(new HullSidecarIdentity(
-                    Path.GetFileName(f).Replace(".gameplay.json", ""),
-                    DeckSidecarJson.String(DeckSidecarJson.Member(root, "rig")),
-                    BoatInteriorHullResolver.VariantKeyOf(DeckSidecarJson.Member(root, "variant"))));
-            }
+            List<HullSidecarIdentity> catalogue = CommittedCatalogue();
 
             string kit = Path.Combine(RepoRoot, KitFolder);
             var ids = new List<string>();
