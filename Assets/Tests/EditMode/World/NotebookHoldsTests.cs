@@ -26,6 +26,14 @@ namespace HiddenHarbours.Tests.World.EditMode
     /// the pages, and an empty book flows and draws exactly as a full one does — while a book reading the
     /// shipped quest assets would go red the day the owner authored a quest, for no reason connected to
     /// what is under test.</para>
+    ///
+    /// <para><b>⚠ Nothing here asserts on LIFECYCLE — EditMode fires none of it.</b> A plain
+    /// MonoBehaviour added in an EditMode test gets no <c>Awake</c>, no <c>OnEnable</c> and no
+    /// <c>OnDisable</c>, so <c>Instance</c> registration, the <c>NotebookRequested</c> subscription and
+    /// the torn-down/disabled close funnel CANNOT be honestly tested in this file — a first draft tried
+    /// and produced four reds against a correct product. Those four claims live in
+    /// <c>NotebookPlayTests</c>, where the real lifecycle runs them: the pause row opening the book, a
+    /// second ask shutting it, and a disabled host giving the player back.</para>
     /// </summary>
     public class NotebookHoldsTests
     {
@@ -62,38 +70,6 @@ namespace HiddenHarbours.Tests.World.EditMode
                              () => new List<NotebookNote>(),
                              new InMemoryFlagStore());
             return book;
-        }
-
-        // =============================================================================
-        //  installation
-        // =============================================================================
-
-        [Test]
-        public void The_one_that_is_up_is_the_one_a_caller_finds()
-        {
-            Assert.IsNull(NotebookPresenter.Instance, "the control arm: nothing is installed yet");
-
-            var book = StandABook();
-            Assert.AreSame(book, NotebookPresenter.Instance,
-                           "a book that exists is THE book — there is only ever one");
-
-            Object.DestroyImmediate(book.gameObject);
-            Assert.IsNull(NotebookPresenter.Instance,
-                          "⭐ and a destroyed one is null rather than fake-null, or the next caller " +
-                          "sails straight past Unity's overloaded ==");
-        }
-
-        [Test]
-        public void The_signal_is_what_opens_it_and_what_shuts_it_again()
-        {
-            var book = StandABook();
-
-            // Exactly what the pause menu's Notebook row publishes — the whole seam between UI and World.
-            EventBus.Publish(new NotebookRequested("test.row"));
-            Assert.IsTrue(book.IsOpen, "the row published into a room that now has a book in it");
-
-            EventBus.Publish(new NotebookRequested("test.row"));
-            Assert.IsFalse(book.IsOpen, "and asking again puts it away");
         }
 
         // =============================================================================
@@ -174,39 +150,6 @@ namespace HiddenHarbours.Tests.World.EditMode
             Assert.IsFalse(InteractionGate.IsBlocked);
             Assert.IsFalse(MoveActionClaim.IsClaimed);
             Assert.IsFalse(book.IsOpen);
-        }
-
-        // =============================================================================
-        //  the way out nobody presses
-        // =============================================================================
-
-        [Test]
-        public void A_book_torn_down_while_it_is_open_cannot_leave_the_player_wedged()
-        {
-            var book = StandABook();
-            book.Open();
-
-            Assert.IsTrue(MoveActionClaim.IsClaimed, "…having genuinely taken the axis first");
-
-            // The host going away: a scene teardown, a domain reload, a test's own cleanup. Nobody
-            // pressed anything, and this is exactly the path a hold gets left up on.
-            Object.DestroyImmediate(book.gameObject);
-
-            Assert.IsFalse(InteractionGate.IsBlocked, "⭐ the verb came back with no press at all");
-            Assert.IsFalse(MoveActionClaim.IsClaimed, "⭐ and so did the axis — she is not frozen in place");
-        }
-
-        [Test]
-        public void Disabling_the_component_is_the_same_close_path()
-        {
-            var book = StandABook();
-            book.Open();
-
-            book.enabled = false;
-
-            Assert.IsFalse(book.IsOpen, "one close funnel, taken by OnDisable as well");
-            Assert.IsFalse(InteractionGate.IsBlocked);
-            Assert.IsFalse(MoveActionClaim.IsClaimed);
         }
 
         // =============================================================================
