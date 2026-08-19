@@ -294,6 +294,17 @@ and one shed per boat-owner — and **Harris & Sons**, the boatyard, drawn from 
 at the `smallYard` tier. The moored fleet lies at the berths as floating mesh hulls presented from
 data, each with her skipper standing on deck.
 
+> ⭐ **And since 2026-08-19 the float is FLOOR, not only a position.** That pass drew the dock and
+> positioned its fittings but deliberately built neither the walk onto it nor the tie-off, because both
+> `StandablePlatform` and `ShoreCleat` take one fixed elevation and a float swings through 4.4 m — "a
+> wrong number that nothing would fail on". S2 landed the variants that do not: `World.FloatingPlatform`
+> (deck = `max(water − draught, bed) + hull depth`, so grounding is the same expression from the other
+> side), `World.GangwayPlatform` (a brow that re-solves its slope from the float it lands on), and
+> `World.FloatCleat` (a tie-off that rides the planks it is bolted to). **Core did not move** —
+> `IStandableSurface` was already a query, and always claimed a moving deck was an implementation of it.
+> The numbers are the rig's own, scraped from `wharfIsoRig.js` by test. Full derivation, and the reason
+> the brow is steeper than the rig's own rule: `nine-mile-creek-mainland.md` §6a.
+
 **The scale.** Derived, not felt: the moored hulls in the photograph are lobster boats and this
 repo's own `LobsterBoat.asset` says a lobster boat is 12 m, so the close aerial runs at ≈ 4.25 px/m.
 The photograph's main quay arm measures 86 m against the region's authored 84 — within 2 %, so the

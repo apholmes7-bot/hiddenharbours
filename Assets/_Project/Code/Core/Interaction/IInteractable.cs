@@ -107,7 +107,9 @@ namespace HiddenHarbours.Core
     /// <para><b>Nothing here is presentation.</b> A candidate says what it IS, never how it looks. The
     /// highlight (M2-39's other half, art-pipeline's) rides <see cref="InteractCandidateChanged"/> and
     /// matches on <see cref="Id"/> — so the interaction lane never references a renderer and the art lane
-    /// never references a registrant (rule 4).</para>
+    /// never references a registrant (rule 4). <see cref="VerbLabel"/> is not an exception to that: it is
+    /// what the thing OFFERS, in words, which only the thing can know — it carries no font, no colour, no
+    /// position and no key name, and the popup that draws it is a subscriber like any other.</para>
     /// </summary>
     public interface IInteractable
     {
@@ -123,6 +125,32 @@ namespace HiddenHarbours.Core
         /// the <see cref="IMooringCleat.Id"/> convention: <c>fixture.st_peters.wet_bucket</c>.</para>
         /// </summary>
         string Id { get; }
+
+        /// <summary>
+        /// <b>What the player is offered, in words</b> — the one line the interaction popup shows when this
+        /// is the candidate: "Sleep", "Open the wardrobe", "Dig", "Pick up the shovel".
+        ///
+        /// <para><b>Why the candidate owns its own words.</b> The owner's 2026-08-19 ruling replaced every
+        /// floating "E: …" prompt with a single small popup that names the interaction on the thing you are
+        /// FACING. Something has to say what a bed offers, and the only honest author is the bed: a lookup
+        /// table keyed on <see cref="Id"/> would be a second place to edit for every new registrant and a
+        /// silent blank for every one that forgot. This is a required member for exactly that reason —
+        /// a new candidate cannot compile without answering "and what does it say?".</para>
+        ///
+        /// <para><b>Say the ACTION, not the key.</b> There is one interact key and the popup never names
+        /// it; "E: Sleep" is the plain-text habit being retired. Present tense, no trailing punctuation, a
+        /// few words at most — it is read at a glance from the corner of the screen, and
+        /// <c>InteractPopupLayout</c> trims anything longer rather than wrapping.</para>
+        ///
+        /// <para><b>Read LIVE, like <see cref="WorldPosition"/>.</b> A carriable answers "Pick up the pail"
+        /// or "Set the pail down" depending on whose hands it is in, and the popup follows because it is
+        /// asked again whenever the offer changes.</para>
+        ///
+        /// <para><b>Null or empty is legal and means "offer nothing".</b> The candidate still resolves and
+        /// still acts — this governs only whether the player is TOLD about it. That is the right answer for
+        /// a candidate that is purely a fallback, and it keeps the popup from advertising machinery.</para>
+        /// </summary>
+        string VerbLabel { get; }
 
         /// <summary>Where the thing is right now, in world metres. Read LIVE — a pail on a deck moves with
         /// the hull under it.</summary>

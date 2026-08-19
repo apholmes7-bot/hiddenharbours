@@ -133,6 +133,16 @@ namespace HiddenHarbours.Core
         public CharacterGait Gait => _gait;
 
         /// <summary>
+        /// The SMOOTHED speed (m/s) this skin is animating to — the same value
+        /// <see cref="IsoCharacterMath.GaitFor"/> is asked with, after the damping in
+        /// <c>LateUpdate</c>. Read-only and published rather than recomputed: a consumer that measured
+        /// its own speed from position deltas would get an unsmoothed number that disagrees with the
+        /// one actually picking the gait, and the two would drift apart the first time the damping
+        /// moved. Held while <see cref="HoldSpeed"/> is in force, like the gait it feeds.
+        /// </summary>
+        public float Speed => _speed;
+
+        /// <summary>
         /// <b>What the body is doing besides travelling</b> — braced on a deck, at a helm, at the oars, or
         /// free (the default, and byte-identical to the pre-stance presenter). Set by whoever knows the
         /// context: the <c>ControlSwitcher</c>'s deck rider on boarding, an NPC's routine later.

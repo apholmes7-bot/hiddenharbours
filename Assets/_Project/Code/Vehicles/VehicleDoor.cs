@@ -210,6 +210,10 @@ namespace HiddenHarbours.Vehicles
         /// falls through to whatever else is nearby.</summary>
         public bool IsAvailable => IsDrivable;
 
+        /// <summary>What you do at a door you can open. Scenery never gets here — it is not
+        /// <see cref="IsAvailable"/>, so the popup never offers a truck that is only dressing.</summary>
+        public string VerbLabel => "Climb in";
+
         /// <summary>Ask for the wheel. The switcher re-reads its own gates before honouring it, so this
         /// never itself puts anyone behind one.</summary>
         public void Interact(in InteractActor actor) => EventBus.Publish(new DriveSeatRequested(this));

@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace HiddenHarbours.Core
 {
     /// <summary>
@@ -77,22 +79,54 @@ namespace HiddenHarbours.Core
         public static void PublishCandidate(in InteractActor actor, float facingArcDegrees)
         {
             string id = null;
+            IInteractable best = null;
             if (!InteractionGate.IsBlocked && !InteractActionClaim.IsClaimed
-                && InteractResolver.TryResolveNow(actor, facingArcDegrees, out IInteractable best))
+                && InteractResolver.TryResolveNow(actor, facingArcDegrees, out best))
                 id = best.Id;
 
             SetCandidate(id);
+            OfferCandidate(actor, best);
         }
 
         /// <summary>Drop the candidate (and publish the change, if there was one). Called by the driver
         /// whenever it is not in a position to offer the verb at all — paused, mid-boarding-move, disabled
         /// — so a highlight can never be left burning on a thing you can no longer act on.</summary>
-        public static void ClearCandidate() => SetCandidate(null);
+        public static void ClearCandidate()
+        {
+            SetCandidate(null);
+            InteractOffer.Clear(InteractOfferSource.Fixture);
+        }
 
         /// <summary>Clear the verb's own state (scene teardown / test isolation). Does NOT touch the
         /// registry — <see cref="Interactables.Clear"/> is its own call, so a fixture can reset one without
-        /// the other.</summary>
-        public static void Reset() => CurrentCandidateId = null;
+        /// the other. It DOES release the verb's offer slot, because a stale line in the popup naming a
+        /// fixture nobody can reach is exactly the lie the highlight rules forbid.</summary>
+        public static void Reset()
+        {
+            CurrentCandidateId = null;
+            InteractOffer.Clear(InteractOfferSource.Fixture);
+        }
+
+        /// <summary>
+        /// State the verb's half of the interaction popup — the same resolved candidate, said in words
+        /// (<see cref="IInteractable.VerbLabel"/>) on the <see cref="InteractOfferSource.Fixture"/> slot.
+        ///
+        /// <para><b>The resolve is not repeated.</b> It rides the answer <see cref="PublishCandidate"/> has
+        /// already computed this frame, which is the whole point of the seam: the popup, the highlight and
+        /// the press are three views of ONE resolution, never three opinions about it.</para>
+        ///
+        /// <para>A candidate with no label offers nothing — see <see cref="IInteractable.VerbLabel"/>. It
+        /// still resolves and still acts; the player is simply not told, which is the honest state for a
+        /// registrant that has not been given words yet.</para>
+        /// </summary>
+        private static void OfferCandidate(in InteractActor actor, IInteractable best)
+        {
+            if (best == null) { InteractOffer.Clear(InteractOfferSource.Fixture); return; }
+
+            Vector2 at = best.WorldPosition;
+            InteractOffer.Set(InteractOfferSource.Fixture, best.Id, best.VerbLabel, at,
+                              (at - actor.Position).sqrMagnitude);
+        }
 
         private static void SetCandidate(string id)
         {

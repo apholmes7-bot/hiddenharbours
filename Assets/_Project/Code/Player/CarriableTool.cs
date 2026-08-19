@@ -170,6 +170,36 @@ namespace HiddenHarbours.Player
         /// reason to vanish from the resolver.</summary>
         public bool IsAvailable => true;
 
+        /// <summary>
+        /// "Pick up the shovel" / "Set the shovel down" — the same two states <see cref="Priority"/> and
+        /// <see cref="Interact"/> are derived from, so the words, the rung and the action can never
+        /// disagree.
+        ///
+        /// <para><b>⚠ Cached, because this is read on the offer path, not on the press.</b>
+        /// <c>InteractVerb</c> asks for a label every frame it has a candidate, and an interpolated string
+        /// built there would be one allocation per frame for as long as the player stands near a pail —
+        /// exactly the per-frame garbage rule 7 rules out. The two lines are built ONCE and rebuilt only if
+        /// the display name they were made from changes (a def swapped in by <c>Configure</c> after
+        /// Awake), which is the only way they can go stale.</para>
+        /// </summary>
+        public string VerbLabel
+        {
+            get
+            {
+                string what = _tool != null && !string.IsNullOrEmpty(_tool.DisplayName) ? _tool.DisplayName : "it";
+                if (!string.Equals(what, _labelledWhat, System.StringComparison.Ordinal))
+                {
+                    _labelledWhat = what;
+                    _pickUpLabel = "Pick up the " + what;
+                    _setDownLabel = "Set the " + what + " down";
+                }
+                return IsCarried ? _setDownLabel : _pickUpLabel;
+            }
+        }
+
+        // The label pair above, and the display name they were built from. Never read outside VerbLabel.
+        private string _labelledWhat, _pickUpLabel, _setDownLabel;
+
         /// <summary>True while this is the thing in the fisher's hands. Derived from the hands, never
         /// stored — a second copy of "am I carried" is a copy that can disagree.</summary>
         public bool IsCarried => _hands != null && ReferenceEquals(_hands.Carried, this);

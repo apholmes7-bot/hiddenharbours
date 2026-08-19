@@ -73,6 +73,17 @@ namespace HiddenHarbours.Player
         /// what the pre-verb F-key path did. See <see cref="IInteractable.IsAvailable"/>.</summary>
         public bool IsAvailable => true;
 
+        /// <summary>
+        /// The spot's own name for itself, and NOT a reading of what the bucket holds.
+        ///
+        /// <para><b>Why it does not say "Wet the bucket" / "Tip it out" the way <see cref="Toggle"/>
+        /// branches.</b> Working out which way the toggle will go means walking every item in the bucket,
+        /// and <see cref="IInteractable.VerbLabel"/> is read whenever the offer changes — a per-item scan
+        /// behind a label is a rule-7 trap waiting for a full bucket. The press answers out loud either
+        /// way, which is where that detail belongs.</para>
+        /// </summary>
+        public string VerbLabel => "Use the seawater";
+
         /// <inheritdoc/>
         public void Interact(in InteractActor actor) => Toggle();
 

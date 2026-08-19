@@ -44,6 +44,39 @@ namespace HiddenHarbours.Art
         }
 
         /// <summary>
+        /// <b>The waterline for a FLOATING pose, which the depth cannot answer.</b> A wading fisher has
+        /// their feet on the bottom, so the sea climbs their body as it deepens and
+        /// <see cref="WaterlineFraction"/> is the whole story. A SWIMMING one floats: the water cuts them
+        /// at the same place whether the bottom is two metres down or twenty, and that place is a
+        /// property of the POSE, measured by the rig and exported per build in
+        /// <c>OffDeck_mounts.json</c>. Feeding depth into a floating pose would sink the swimmer as the
+        /// tide made.
+        ///
+        /// <para><paramref name="waterRowLane"/> is a row counted from the CELL TOP; the shader wants a
+        /// fraction of the cell from the BOTTOM (it compares against raw <c>uv.y</c>), so this is the
+        /// flip — <c>(cellH − lane)/cellH</c>. ⚠️ The lane is measured in the off-deck cell's own
+        /// height, which is why <paramref name="cellHeightPx"/> is read off the live sprite rather than
+        /// typed in: the off-deck sheets are 88 px where the locomotion sheets are 92, and a lane read
+        /// against the wrong cell is wrong by two rows.</para>
+        ///
+        /// <para>Out-of-range input yields <b>0</b> — a dry passthrough — rather than a plausible wrong
+        /// line, so a malformed mount row shows an unclipped swimmer instead of one clipped at the neck.</para>
+        /// </summary>
+        /// <param name="waterRowLane">The waterline as a row from the cell top (the sidecar's value).</param>
+        /// <param name="cellHeightPx">The sprite cell's own height in px.</param>
+        public static float FloatingWaterlineFraction(int waterRowLane, float cellHeightPx)
+        {
+            if (cellHeightPx <= 0f || float.IsNaN(cellHeightPx)) return 0f;
+            if (waterRowLane <= 0 || waterRowLane >= cellHeightPx) return 0f;
+            return Mathf.Clamp01((cellHeightPx - waterRowLane) / cellHeightPx);
+        }
+
+        /// <summary>Whether a clip is one of the two FLOATING poses, whose waterline comes from the mount
+        /// table rather than from the depth. Sleep and drive are not in the water at all.</summary>
+        public static bool IsFloatingClip(CharacterClip clip) =>
+            clip == CharacterClip.Swim || clip == CharacterClip.Tread;
+
+        /// <summary>
         /// Whether a control mode WADES — i.e. the player's own feet are in the water, so the water depth
         /// under them may drive the submersion shader. Only <see cref="ControlMode.OnFoot"/> does: on the
         /// DECK or at the helm the fisher stands on planking ABOVE the water, so however deep the sea under
@@ -122,6 +155,11 @@ namespace HiddenHarbours.Art
         [Tooltip("The body height (m) the wade depth is measured against — the depth at which the waterline " +
                  "would reach the top of the sprite before the neck cap clamps it. FisherSheet ≈ 1.8 m of body.")]
         [Min(0.1f)] [SerializeField] private float _bodyHeightMeters = 1.8f;
+
+        [Tooltip("The rig's off-deck mount table — where the sea cuts a SWIMMING or TREADING body, per " +
+                 "build. Leave it empty and the swim poses simply keep the depth-driven waterline: the " +
+                 "feature degrades whole rather than half-wiring. Built by CharacterOffDeckMountsBuilder.")]
+        [SerializeField] private CharacterOffDeckMountsDef _offDeckMounts;
 
         [Tooltip("The NECK-DEEP cap (0..1): the highest the waterline ever climbs, so the head + hat NEVER " +
                  "submerge — even in the swim band at ~2 m of water the line stops at the neck (~0.85).")]
@@ -275,8 +313,16 @@ namespace HiddenHarbours.Art
             // the depth drive the waterline — on the deck / at the helm the fisher stands on planking above the
             // water, so the body is forced fully dry (a pixel-identical passthrough) however deep the sea under
             // the hull. The buoys' bobbing waterline uses its own driver and is untouched.
-            float depth = PlayerSubmergeMath.GatedDepth(_mode, DepthOverFeet(transform.position));
-            _waterlineFrac = PlayerSubmergeMath.WaterlineFraction(depth, _bodyHeightMeters, _maxSubmerge);
+            // A FLOATING pose (swim / tread) sets its own line from the rig's mount table; only a body
+            // with its feet on the bottom takes the line from the depth. Read off the clip actually on the
+            // renderer rather than from a parallel state machine, so the line can never describe a pose
+            // that is not being drawn — and so no Player-module reference is needed here (the seam this
+            // component has always kept).
+            if (!TryFloatingWaterline(out _waterlineFrac))
+            {
+                float depth = PlayerSubmergeMath.GatedDepth(_mode, DepthOverFeet(transform.position));
+                _waterlineFrac = PlayerSubmergeMath.WaterlineFraction(depth, _bodyHeightMeters, _maxSubmerge);
+            }
 
             // The sprite may animate every frame; keep the material's texture + pixel height in sync so the
             // refraction snaps to the CURRENT frame's grid and the [PerRendererData] _MainTex renders it.
@@ -301,6 +347,41 @@ namespace HiddenHarbours.Art
 
         /// <summary>The last-computed waterline fraction (0 dry .. neck cap). Exposed for tests / tooling.</summary>
         public float WaterlineFrac => _waterlineFrac;
+
+        /// <summary>
+        /// The mount table's waterline for the floating pose on the renderer right now, or false when
+        /// there is no such pose (or no table, or no row for this build) and the depth should answer.
+        /// Every miss is a plain false — a swimmer with no measured line keeps the depth-driven one,
+        /// which is the picture the game already shipped.
+        /// </summary>
+        private bool TryFloatingWaterline(out float frac)
+        {
+            frac = 0f;
+            if (_offDeckMounts == null) return false;
+
+            if (!_clipPlayerResolved)
+            {
+                _clipPlayerResolved = true;
+                _clipPlayer = GetComponent<CharacterClipPlayer>();
+            }
+            if (_clipPlayer == null) return false;
+            if (!PlayerSubmergeMath.IsFloatingClip(_clipPlayer.Clip)) return false;
+
+            // Explicit null checks, never ?. or ?? — a destroyed UnityEngine.Object is fake-null and the
+            // null-propagating operators do not see it.
+            var visual = _clipPlayer.ResolvedVisual();
+            if (visual == null) return false;
+            if (!_offDeckMounts.TryGetWaterLine(visual.Id, _clipPlayer.Clip, out var line)) return false;
+
+            Sprite spr = _renderer != null ? _renderer.sprite : null;
+            if (spr == null) return false;
+
+            frac = PlayerSubmergeMath.FloatingWaterlineFraction(line.WaterRowLane, spr.rect.height);
+            return frac > 0f;
+        }
+
+        private CharacterClipPlayer _clipPlayer;
+        private bool _clipPlayerResolved;
 
         /// <summary>
         /// Water depth (m) over a world position — the SAME single on-foot composition the walk gate reads

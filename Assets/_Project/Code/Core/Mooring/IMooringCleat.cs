@@ -7,8 +7,17 @@ namespace HiddenHarbours.Core
     /// (rafting is explicitly out of M2-38's scope).</summary>
     public enum CleatSide
     {
-        /// <summary>Fixed to the land: a wharf bollard, a quay cleat, a ring on a piling. Its elevation
-        /// does NOT move with the tide — that asymmetry is the whole mechanic.</summary>
+        /// <summary>The LANDWARD end of a rope: a wharf bollard, a quay cleat, a ring on a piling — and
+        /// the cleat run on a floating dock. A line is only ever made fast between opposing sides, and
+        /// this is the side you tie TO.
+        /// <para>⚠ This used to read "its elevation does NOT move with the tide — that asymmetry is the
+        /// whole mechanic". That was true of every shore cleat there was, and it is still true of the
+        /// wharf: a bollard is bolted to planks at one height above chart datum, the boat falls away from
+        /// it on the ebb, and a short scope slips. But it was a claim about the WHARF wearing a claim
+        /// about the SIDE, and the float broke them apart — <c>World.FloatCleat</c> is shore-side and
+        /// rides the tide, which is exactly why a float is the forgiving berth (the drop to a boat's own
+        /// cleat is the difference of two freeboards, so it never grows). The asymmetry is the wharf's
+        /// property, not this enum's.</para></summary>
         Shore = 0,
         /// <summary>A fitting on a hull: the rig's own <c>CLEATS</c>. It rides the water, so its
         /// elevation moves with every tide.</summary>

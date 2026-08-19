@@ -1,17 +1,31 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
 using HiddenHarbours.Core;
 
 namespace HiddenHarbours.World
 {
     /// <summary>
     /// The on-foot INTERACT driver for world things (VS-21): when the player is near an
-    /// <see cref="Interactable"/> (Aunt Ginny, the neighbour, Ned's logbook), it shows a floating
-    /// "E: …" prompt and, on the Interact key, starts that conversation in the
+    /// <see cref="Interactable"/> (Aunt Ginny, the neighbour, Ned's logbook) <b>and looking at them</b>,
+    /// it OFFERS that conversation — and, on the Interact key, starts it in the
     /// <see cref="DialoguePresenter"/>. While a conversation is up it forwards the key to advance the
     /// lines.
+    ///
+    /// <para><b>It no longer draws anything.</b> The floating "E: Talk to …" label this component used to
+    /// build and park over the world was retired by the owner's 2026-08-19 ruling: the whole of the UI is
+    /// four surfaces plus one small popup, lower right, naming the interaction on the trigger you are
+    /// facing. So the answer goes out as a Core offer (<see cref="InteractOffer"/>) on the
+    /// <see cref="InteractOfferSource.Conversation"/> slot and <c>InteractPopup</c> — in the UI lane,
+    /// which this module may not name (rule 4) — draws it. <b>This component stays the single computer of
+    /// conversational candidacy</b>; the popup and, later, the affordance highlight are subscribers to the
+    /// one answer, never second opinions about it.</para>
+    ///
+    /// <para><b>FACING is a filter, not a tie-break</b> (see <see cref="_facingArcDegrees"/>). Standing
+    /// between Aunt Ginny and her freezer, the one you are looking at is the one offered — which is the
+    /// whole reason the popup can show a single line without lying. When the player's facing is unknown
+    /// (nothing published an actor — see <see cref="InteractActorProbe"/>) the filter passes everything and
+    /// this behaves exactly as it did before facing existed: proximity only, failing open.</para>
     ///
     /// Context-aware by PROXIMITY so it never fights the dock's board/disembark (also E): NPCs/logbook
     /// sit up by the cottage, the dock zone is down at the water, and the two ranges don't overlap, so
@@ -42,16 +56,48 @@ namespace HiddenHarbours.World
         [SerializeField] private Interactable[] _interactables;
 
         [Header("Tuning")]
-        [Tooltip("How close (m) the player must be to an interactable for the prompt to show.")]
+        [Tooltip("How close (m) the player must be to an interactable for it to be offered.")]
         [SerializeField] private float _radius = 1.8f;
+
+        [Tooltip("The FULL forward arc (degrees) an interactable must lie within to be offered — the " +
+                 "half-angle is half of this, centred on the way the fisher is facing. See " +
+                 "DefaultFacingArcDegrees for why the shipped value is 120.")]
+        [SerializeField, Range(0f, 360f)] private float _facingArcDegrees = DefaultFacingArcDegrees;
+
+        /// <summary>
+        /// The shipped forward arc for a conversation: <b>120° full, so a half-angle of ±60°</b>.
+        ///
+        /// <para><b>Why not the resolver's 180.</b> <see cref="InteractResolver.DefaultFacingArcDegrees"/>
+        /// is deliberately generous — ±90° is the whole half-plane in front of you, which is right for a
+        /// fixture you operate by standing at it. A conversation is different: the popup shows ONE line,
+        /// and at ±90° two people standing either side of you are both dead ahead, so the line would be
+        /// decided by a centimetre of distance rather than by where you are looking. The filter has to be
+        /// tight enough to actually pick.</para>
+        ///
+        /// <para><b>Why not tighter than 120 either.</b> The fisher has FOUR facings, so the quadrants tile
+        /// at exactly ±45°. An arc of 90 would leave a candidate sitting on a diagonal on the knife-edge
+        /// between two facings, flickering as she turns. ±60° overlaps each quadrant boundary by 15°, which
+        /// is a forgiving margin (P5 cozy) that still excludes anything abeam or behind — you cannot talk
+        /// to somebody by turning your back on them, and you do not have to be pixel-aligned either.</para>
+        ///
+        /// <para>Named, serialized and tunable per interactor (rule 6): set it to
+        /// <see cref="InteractResolver.DefaultFacingArcDegrees"/> for the old half-plane behaviour, or to
+        /// 360 to switch the filter off entirely.</para>
+        /// </summary>
+        public const float DefaultFacingArcDegrees = 120f;
 
         // Onboarding flags, backed by the save file (VS-08) so the 'met before' variants persist across reload.
         // The STORE itself is kept beside them because a DialogueDef's conditional beat is gated on an
         // arbitrary authored key, not just the three named onboarding flags — see Begin().
         private IFlagStore _flagStore;
         private OnboardingFlags _flags;
-        private Text _prompt;
         private Interactable _nearest;
+
+        // The offered line, cached against the speaker it was built for: WorldStrings.OfferLabel
+        // interpolates, and the offer is stated every frame there is a candidate, so building it per frame
+        // would be one allocation a frame for as long as you stand in front of a neighbour (rule 7).
+        private Interactable _labelledFor;
+        private string _label;
 
         // Who is currently talking, and their day — looked up ONCE when the conversation opens rather
         // than per frame (rule 7). Null for an interactable with no routine (a letter, a logbook, an
@@ -64,7 +110,6 @@ namespace HiddenHarbours.World
         {
             _flagStore = new SaveFlagStore();                    // VS-08: persisted via the save file, not PlayerPrefs
             _flags = new OnboardingFlags(_flagStore);
-            BuildPrompt();
         }
 
         private void Update()
@@ -72,12 +117,13 @@ namespace HiddenHarbours.World
             var kb = Keyboard.current;
             bool interact = kb != null && kb.eKey.wasPressedThisFrame;
 
-            // While a conversation is up, the key advances it (and no prompt shows).
+            // While a conversation is up, the key advances it (and nothing is offered — the bubble IS the
+            // surface, and a popup beside it would be naming the press the bubble has already taken).
             if (_presenter != null && _presenter.IsShowing)
             {
                 Claim(true);
                 _nearest = null;
-                ShowPrompt(null);
+                Offer(null);
                 // ⚠️ THE DEV-KEY LEDGER IS EXHAUSTED A–Z (sweep 2026-08-17), so choosing an option binds
                 // NOTHING new: it is the move axis the player already walks with, and Interact confirms.
                 // The presenter ignores the axis unless rows are actually up, so this is inert in an
@@ -89,19 +135,19 @@ namespace HiddenHarbours.World
             }
 
             // A modal that is not ours is up (the wardrobe picker). Offer nothing and claim nothing while
-            // it is: an "E: Talk" prompt hanging over its panel would be advertising a press that panel
+            // it is: a popup naming a conversation over its panel would be advertising a press that panel
             // has already taken. BeginInteract refuses the press too — this is the half the player sees.
             if (InteractionGate.IsBlocked)
             {
                 _nearest = null;
                 Claim(false);
-                ShowPrompt(null);
+                Offer(null);
                 return;
             }
 
             _nearest = FindNearest();
             Claim(_nearest != null);
-            ShowPrompt(_nearest);
+            Offer(_nearest);
             if (interact) BeginInteract();
         }
 
@@ -144,6 +190,10 @@ namespace HiddenHarbours.World
             // refuse to advance the very dialogue that set it.
             if (InteractionGate.IsBlocked) return false;
 
+            // ⭐ SAME FindNearest THE OFFER USES, facing filter and all — so the press and the popup can
+            // never disagree. That is a real behaviour change and it is the ruling's whole point: you now
+            // have to be LOOKING at somebody to talk to them. A popup that named one neighbour while the
+            // key started a conversation with the other would be worse than no popup at all.
             Interactable target = FindNearest();
             if (target == null) return false;
             Begin(target);
@@ -173,6 +223,10 @@ namespace HiddenHarbours.World
         private void OnDisable()
         {
             InteractActionClaim.Reset();
+            // ...and a torn-down region must not leave the popup naming a neighbour who is no longer in
+            // the scene. Same reason the claim is released here: a dead reader that holds a global on is
+            // worse than one that never spoke.
+            Offer(null);
             // A region torn down mid-conversation must not leave a villager standing in one forever.
             ReleaseSpeaker();
         }
@@ -215,11 +269,37 @@ namespace HiddenHarbours.World
             return GameServices.PlayerTransform;   // already laundered to a REAL null by the accessor
         }
 
+        /// <summary>
+        /// The nearest interactable <b>inside the forward arc</b>, or null.
+        ///
+        /// <para><b>The order is filter-then-rank</b>, the same shape <see cref="InteractResolver"/> uses:
+        /// switched-off, then reach, then the arc, and only survivors compete on distance. Facing is a
+        /// FILTER and never a tie-break — a neighbour behind you does not win by being a centimetre
+        /// nearer.</para>
+        ///
+        /// <para><b>The arc's cosine is computed once for the whole scan</b>, never per candidate (rule 7),
+        /// which is exactly why <see cref="InteractArc"/> splits into two calls.</para>
+        ///
+        /// <para><b>Where the facing comes from.</b> <see cref="InteractActorProbe"/> — the Player lane
+        /// publishes the same <see cref="InteractActor"/> it hands the interact verb, so the conversation
+        /// filter and the verb cannot disagree about which way she is looking, and this module never names
+        /// a Player type (rule 4). With no probe the facing is <see cref="Vector2.zero"/>, which
+        /// <see cref="InteractArc"/> reads as "unknown" and passes — so a region scene played directly, with
+        /// no persistent rig, behaves exactly as it did before facing existed.</para>
+        ///
+        /// <para><b>Position still comes from <see cref="ResolvePlayer"/>, not from the probe.</b> The
+        /// probe is written by a different component's <c>Update</c> in undefined order, so its position
+        /// could be a frame stale — invisible for a facing, but for a reach test measured in centimetres it
+        /// would put the edge of the radius one frame behind the player. The transform is authoritative and
+        /// free; only the facing has to be relayed.</para>
+        /// </summary>
         private Interactable FindNearest()
         {
             Transform player = ResolvePlayer();
             if (player == null || _interactables == null) return null;
             Vector2 p = player.position;
+            Vector2 facing = InteractActorProbe.Has ? InteractActorProbe.Current.Facing : Vector2.zero;
+            float cosHalfArc = InteractArc.CosHalfArc(_facingArcDegrees);
             Interactable best = null;
             float bestSq = _radius * _radius;
             for (int i = 0; i < _interactables.Length; i++)
@@ -228,12 +308,20 @@ namespace HiddenHarbours.World
                 // ⭐ SWITCHED OFF MEANS NOT THERE. You cannot talk to somebody you cannot see, and since
                 // routines landed there are people who genuinely are not there: a villager inside a house
                 // the player is not in is hidden, and her spot is a metre past a door the player can stand
-                // at — so without this you would get an "E: Talk" prompt on an invisible neighbour through
-                // her own wall, and she would answer. VillagerRoutine switches her Interactable with her
+                // at — so without this the popup would offer a conversation with an invisible neighbour
+                // through her own wall, and she would answer. VillagerRoutine switches her Interactable with her
                 // renderer; this is the half that makes that mean something.
                 if (it == null || !it.isActiveAndEnabled) continue;
-                float sq = ((Vector2)it.transform.position - p).sqrMagnitude;
-                if (sq <= bestSq) { bestSq = sq; best = it; }
+                Vector2 delta = (Vector2)it.transform.position - p;
+                float sq = delta.sqrMagnitude;
+                if (sq > bestSq) continue;
+
+                // ⭐ FACING, and it is a filter: the one you are LOOKING at, not the one you are marginally
+                // nearer to. Without it the popup standing between two fixtures would name whichever
+                // happened to be a centimetre closer, which is a coin toss dressed up as an affordance.
+                if (!InteractArc.Contains(delta, facing, cosHalfArc)) continue;
+
+                bestSq = sq; best = it;
             }
             return best;
         }
@@ -353,63 +441,82 @@ namespace HiddenHarbours.World
             return axis;
         }
 
-        /// <summary>Wire the interactor in one call (editor / tests).</summary>
-        public void Configure(Transform player, DialoguePresenter presenter, Interactable[] interactables, float radius)
+        /// <summary>Wire the interactor in one call (editor / tests). The arc keeps its shipped default
+        /// so every existing caller compiles and behaves as it did — except that it now filters by facing,
+        /// which is the point.</summary>
+        public void Configure(Transform player, DialoguePresenter presenter, Interactable[] interactables,
+                              float radius, float facingArcDegrees = DefaultFacingArcDegrees)
         {
             _player = player;
             _presenter = presenter;
             _interactables = interactables;
             _radius = radius;
+            _facingArcDegrees = Mathf.Clamp(facingArcDegrees, 0f, 360f);
         }
 
-        // ---- floating prompt ----------------------------------------------------------------
+        /// <summary>The forward arc this interactor is filtering on, in degrees (full angle). Public so a
+        /// test can assert the shipped default rather than restate it.</summary>
+        public float FacingArcDegrees => _facingArcDegrees;
 
-        private void ShowPrompt(Interactable target)
+        // ---- the offer (what the popup draws) -------------------------------------------------
+
+        /// <summary>
+        /// State this component's answer on the Core offer channel — <b>the only thing it now publishes to
+        /// the player</b>, and the replacement for the floating "E: Talk to …" label the 2026-08-19 ruling
+        /// retired.
+        ///
+        /// <para><b>Null means "nothing", and it is said out loud every frame it is true.</b> A feeder that
+        /// simply went quiet would leave its slot holding the last neighbour it saw — see
+        /// <see cref="InteractOffer.Set"/>. So this is called on every path <c>ShowPrompt(null)</c> was,
+        /// gate included, and on disable.</para>
+        ///
+        /// <para><b>Rule 7.</b> The label interpolates, so it is cached against the speaker it was built
+        /// for; standing in front of Aunt Ginny costs a reference compare a frame and nothing else. The
+        /// publish itself is edge-triggered inside <see cref="InteractOffer"/>.</para>
+        /// </summary>
+        private void Offer(Interactable target)
         {
-            if (_prompt == null) return;
-            bool show = target != null;
-            if (_prompt.enabled != show) _prompt.enabled = show;
-            if (show)
+            if (target == null) { InteractOffer.Clear(InteractOfferSource.Conversation); return; }
+
+            Vector2 at = target.transform.position;
+            Transform player = ResolvePlayer();
+            float distSq = player != null ? ((Vector2)player.position - at).sqrMagnitude : 0f;
+
+            InteractOffer.Set(InteractOfferSource.Conversation, OfferIdFor(target), OfferLabelFor(target),
+                              at, distSq);
+        }
+
+        /// <summary>
+        /// The offered line for an interactable, built ONCE per speaker.
+        ///
+        /// <para>Cached on the reference rather than on the composed string: the two things it is made of
+        /// (kind and speaker name) come off an <see cref="NpcDef"/> that does not change under a live
+        /// interactable, and the reference changing is the only way the answer can. Same shape as the
+        /// carriables' label pair, for the same rule-7 reason.</para>
+        /// </summary>
+        private string OfferLabelFor(Interactable target)
+        {
+            if (!ReferenceEquals(target, _labelledFor))
             {
-                string text = WorldStrings.Prompt(target.Kind, target.Speaker);
-                if (_prompt.text != text) _prompt.text = text;
+                _labelledFor = target;
+                _label = WorldStrings.OfferLabel(target.Kind, target.Speaker);
             }
+            return _label;
         }
 
-        private void BuildPrompt()
+        /// <summary>
+        /// A stable id for the offered interactable, for the affordance lane to match its own registrant
+        /// on — the <see cref="NpcDef"/>'s id where there is one, else the legacy conversation id.
+        ///
+        /// <para>Allocation-free: both are authored strings read straight off the asset, never composed.
+        /// An interactable with neither returns null, which the offer carries happily — the LABEL is what
+        /// the popup needs, and the id is for a listener that has something to match.</para>
+        /// </summary>
+        private static string OfferIdFor(Interactable target)
         {
-            var canvasGo = new GameObject("WorldInteract_Canvas", typeof(Canvas), typeof(CanvasScaler));
-            canvasGo.transform.SetParent(transform, false);
-            var canvas = canvasGo.GetComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvas.sortingOrder = 96;
-            var scaler = canvasGo.GetComponent<CanvasScaler>();
-            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution = new Vector2(1280f, 720f);
-            scaler.matchWidthOrHeight = 0.5f;
-
-            var go = new GameObject("Prompt", typeof(RectTransform), typeof(Text), typeof(Outline));
-            go.transform.SetParent(canvasGo.transform, false);
-            var rt = go.GetComponent<RectTransform>();
-            rt.anchorMin = new Vector2(0.5f, 0f);
-            rt.anchorMax = new Vector2(0.5f, 0f);
-            rt.pivot = new Vector2(0.5f, 0f);
-            rt.anchoredPosition = new Vector2(0f, 230f); // above the board/dock hint and onboarding line
-            rt.sizeDelta = new Vector2(560f, 50f);
-
-            _prompt = go.GetComponent<Text>();
-            _prompt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            _prompt.fontSize = 30;
-            _prompt.alignment = TextAnchor.LowerCenter;
-            _prompt.color = Color.white;
-            _prompt.horizontalOverflow = HorizontalWrapMode.Overflow;
-            _prompt.verticalOverflow = VerticalWrapMode.Overflow;
-            _prompt.raycastTarget = false;
-
-            var outline = go.GetComponent<Outline>();
-            outline.effectColor = new Color(0f, 0f, 0f, 0.85f);
-            outline.effectDistance = new Vector2(2f, -2f);
-            _prompt.enabled = false;
+            NpcDef npc = target.Npc;
+            if (npc != null && !string.IsNullOrEmpty(npc.Id)) return npc.Id;
+            return target.ConversationId;
         }
     }
 }

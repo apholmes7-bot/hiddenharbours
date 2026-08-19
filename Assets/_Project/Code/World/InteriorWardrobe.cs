@@ -57,6 +57,10 @@ namespace HiddenHarbours.World
         /// answers that out loud — see <see cref="IInteractable.IsAvailable"/>.</summary>
         public bool IsAvailable => true;
 
+        /// <summary>What it offers, not what is in it — an empty wardrobe still opens, and says so out
+        /// loud when it does (see <see cref="IsAvailable"/>).</summary>
+        public string VerbLabel => "Open the wardrobe";
+
         /// <inheritdoc/>
         public void Interact(in InteractActor actor) => Open();
 

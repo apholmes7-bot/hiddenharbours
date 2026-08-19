@@ -79,6 +79,8 @@ namespace HiddenHarbours.Tests.EditMode
             Interactables.Clear();
             InteractVerb.Reset();
             InteractActionClaim.Reset();
+            InteractOffer.Reset();
+            InteractActorProbe.Reset();
             EventBus.Clear<FishCaught>();
 
             _env = new FlatEnv();

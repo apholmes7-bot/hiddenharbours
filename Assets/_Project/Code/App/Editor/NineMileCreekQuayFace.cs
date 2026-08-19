@@ -157,6 +157,71 @@ namespace HiddenHarbours.App.Editor
         /// the rig's default rather than leaving it as a correction applied afterwards.</summary>
         public static float ClearanceShortfallMetres => RequiredClearanceMetres - BakedRigClearance;
 
+        // --- THE FLOAT: the one family whose deck is NOT tideRange + clearance -------------------------
+        // ⚠️ Quoted from the rig with their source, exactly like the three above, and pinned to the JS
+        // by NineMileCreekFloatTests so a re-bake that re-shapes the float cannot leave the SIM standing
+        // on planks the PIXELS no longer draw. The rig states the rule itself:
+        //     "FLOATS RIDE IT: deck z = tide + freeboard"          (wharfIsoRig.js header)
+        //     resolve():  s.floatDeckZ = s.tide + s.freeboard;
+        // A float is therefore the one family that ignores BakedDeckZMetres entirely. It is NOT immune to
+        // the re-bake, though: the rig's baked water level is itself a fraction of the range
+        // (s.tide = s.tideRange * 0.55, which the contract records as tide.baked = 2.42), so #478 moved
+        // the float cells too — it moved where their WET MASK sits, not what their deck rule is. The game
+        // drives the deck from the live tide, so only the two numbers below have to agree with the art.
+
+        /// <summary>The rig's default float <c>freeboard</c> (<c>DEFAULTS.freeboard</c>) — <b>0.40 m</b>,
+        /// how high a float's deck rides above her own waterline. The rig clamps it to 0.25–0.80.</summary>
+        public const float BakedRigFloatFreeboard = 0.40f;
+
+        // The timber float's structural depth, read straight off the float family's own build(). Four
+        // literals, in the order the rig applies them, so the arithmetic below IS the rig's chain rather
+        // than a remembered total:
+        //     const top = s.floatDeckZ, t = 0.05, frameD = 0.26, fz1 = top - t, fz0 = fz1 - frameD;
+        //     ...flotation: const z1 = fz0 + 0.02, bh = 0.42, z0 = z1 - bh;
+
+        /// <summary>The deck planking's thickness (<c>t</c>) — 0.05 m below the walking surface.</summary>
+        public const float BakedRigFloatDeckPlankMetres = 0.05f;
+        /// <summary>The perimeter frame's depth (<c>frameD</c>) — 0.26 m more.</summary>
+        public const float BakedRigFloatFrameDepthMetres = 0.26f;
+        /// <summary>How far the billets are slung UP into the frame (<c>z1 = fz0 + 0.02</c>).</summary>
+        public const float BakedRigFloatBilletRiseMetres = 0.02f;
+        /// <summary>And the flotation billets' own depth (<c>bh</c>) — 0.42 m of poly-shelled foam.</summary>
+        public const float BakedRigFloatBilletDepthMetres = 0.42f;
+
+        /// <summary>The timber float's whole structural depth, deck to the bottom of her billets:
+        /// <b>0.71 m</b>. What she grounds on is the billets, so this is where her underside is.</summary>
+        public static float BakedRigFloatHullDepthMetres =>
+            BakedRigFloatDeckPlankMetres + BakedRigFloatFrameDepthMetres
+            - BakedRigFloatBilletRiseMetres + BakedRigFloatBilletDepthMetres;
+
+        /// <summary>
+        /// ⭐ <b>THE FLOAT'S DRAUGHT — 0.31 m</b>, and the only number in this pass that decides when she
+        /// takes the ground: her hull depth less the freeboard the same drawing gives her. Derived, so a
+        /// re-bake that makes the billets deeper grounds her earlier instead of leaving the sim floating
+        /// a float the art has already put on the mud.
+        /// </summary>
+        public static float BakedRigFloatDraughtMetres =>
+            BakedRigFloatHullDepthMetres - BakedRigFloatFreeboard;
+
+        /// <summary>
+        /// The gangway run the rig would solve for THIS coast if it were left to itself:
+        /// <c>clamp((tideRange + freeboard + 0.9) × 2.4, 3, 14)</c> = <b>13.68 m</b> (the float family's
+        /// own <c>gRun</c> auto, for a brow it hangs itself). Quoted so the region can say by how much its
+        /// authored brow differs from what the art would have chosen — see
+        /// <c>NineMileCreekWharf.GangwayRunMetres</c>, which is shorter, and says so.
+        /// </summary>
+        public static float RigAutoGangwayRunMetres =>
+            Mathf.Clamp((BakedRigTideRange + BakedRigFloatFreeboard + 0.9f) * 2.4f, 3f, 14f);
+
+        /// <summary>The rig's default gangway walking width (<c>DEFAULTS.gangWidth</c>) — <b>0.95 m</b>,
+        /// inside the gangway family's own 0.80–1.40 band. The narrowest walking surface this region
+        /// has.</summary>
+        public const float BakedRigGangwayWidthMetres = 0.95f;
+
+        /// <summary>The rig's default float WIDTH (<c>FAMILIES.float.dims.width</c> = [1.8, 3.6, 2.4]) —
+        /// <b>2.4 m</b> across, which is what a chained run of float modules measures.</summary>
+        public const float BakedRigFloatWidthMetres = 2.4f;
+
         // --- the growth bands: the half no stack could ever have fixed --------------------------------
         // The rig pins growth to the tidal FRAME as fractions of the range (frame(): barnTop = R×0.80,
         // barnBot = R×0.40, weedTop = R×0.40, weedBot = R×0.06), never to the water level. So the ONE

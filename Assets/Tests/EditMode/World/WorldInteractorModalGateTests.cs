@@ -27,13 +27,23 @@ namespace HiddenHarbours.Tests.World.EditMode
         readonly List<GameObject> _spawned = new List<GameObject>();
 
         [SetUp]
-        public void SetUp() => InteractionGate.Reset();
+        public void SetUp()
+        {
+            InteractionGate.Reset();
+            // The conversation filter now reads the actor probe; a facing leaked from another suite would
+            // otherwise decide this one's candidate for it. Reset on the way IN as well as out.
+            InteractActorProbe.Reset();
+            InteractOffer.Reset();
+            InteractActionClaim.Reset();
+        }
 
         [TearDown]
         public void TearDown()
         {
             InteractionGate.Reset();
             InteractActionClaim.Reset();
+            InteractOffer.Reset();
+            InteractActorProbe.Reset();
             foreach (var go in _spawned) if (go != null) Object.DestroyImmediate(go);
             _spawned.Clear();
         }

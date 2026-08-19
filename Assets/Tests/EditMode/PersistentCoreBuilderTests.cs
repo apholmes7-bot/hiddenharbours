@@ -408,6 +408,45 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsNotNull(hull, "the hull SpriteRenderer still exists (kept for OwnedFleet's sprite swap)");
             Assert.IsFalse(hull.enabled, "but it's DISABLED so it isn't drawn under the directional facing");
         }
+
+        // ---- the off-deck swimmer (rig 6.5) --------------------------------------------------------
+
+        [Test]
+        public void ThePlayer_CarriesTheSwimAnimator()
+        {
+            // Builder-wired, not scene-wired: the component only reaches a REGION when that region's
+            // scene is rebuilt through this builder, so this is the pin that says the builder itself is
+            // right. Added unconditionally on the null-safe greybox rule — with no art every Play()
+            // answers false and it costs one early-out per frame.
+            Assert.IsNotNull(_core.PlayerGo.GetComponent<PlayerSwimAnimator>(),
+                             "the player must carry PlayerSwimAnimator, or nothing ever draws the swim " +
+                             "or tread sheet however deep the water gets");
+        }
+
+        [Test]
+        public void TheSubmergeVisual_IsWiredToTheOffDeckMountTable()
+        {
+            // ⚠️ The failure this catches is SILENT and looks like a tuning problem: with the table
+            // unwired the swimmer still draws, still animates and still gets a waterline — just the
+            // WADE one, which is a function of depth, so the fisher sinks as the tide makes instead of
+            // floating. Reflection because the field is serialized-private, which is exactly what a
+            // builder-wiring test is for.
+            var submerge = _core.PlayerGo.GetComponent<HiddenHarbours.Art.PlayerSubmergeVisual>();
+            if (submerge == null)
+                Assert.Ignore("no iso character art imported — the submerge visual is not added at all.");
+
+            var field = typeof(HiddenHarbours.Art.PlayerSubmergeVisual).GetField(
+                "_offDeckMounts",
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+            Assert.IsNotNull(field, "PlayerSubmergeVisual._offDeckMounts was renamed — the builder's " +
+                                    "SetRef call names it as a STRING and will now silently wire nothing");
+
+            var table = field.GetValue(submerge) as CharacterOffDeckMountsDef;
+            Assert.IsNotNull(table,
+                             "the off-deck mount table is not wired onto the player's submerge visual, so " +
+                             "a swimming fisher takes the wade waterline and sinks with the tide");
+            Assert.IsNotEmpty(table.Rows, "the wired mount table carries no water lines");
+        }
     }
 }
 #endif

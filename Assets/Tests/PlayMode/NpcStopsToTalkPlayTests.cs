@@ -89,6 +89,11 @@ namespace HiddenHarbours.Tests.PlayMode
 
             GameServices.Reset();
             InteractionGate.Reset();
+            // The conversation filter now reads the actor probe; a facing leaked from another suite would
+            // decide this one's candidate for it. Unset means "unknown", which passes everything — the
+            // proximity-only behaviour these tests were written against.
+            InteractActorProbe.Reset();
+            InteractOffer.Reset();
             _clock = new DrivenClock { Hour = 6f };
             GameServices.Clock = _clock;
             GameServices.Environment = new FakeEnvironment();
