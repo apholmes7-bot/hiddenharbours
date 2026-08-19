@@ -148,6 +148,21 @@ class PackageTests(unittest.TestCase):
                 self.assertTrue(0.0 <= x <= 1.0 and 0.0 <= y <= 1.0, f"{name} {entity['id']}")
                 self.assertTrue(entity["x-pivotSource"].startswith("sprite-import."))
 
+    def test_the_ppu_is_the_sprite_grid_and_never_the_water_shader_grid(self):
+        """Two grids live in this repo and conflating them is a whole class of bug.
+
+        32 is ``CameraFollow.AssetsPPU`` (``const int``, "one PPU never changes") and is what
+        every sheet's import settings carry. 24 is a *material property* — every water material
+        and preset sets ``_PixelsPerUnit: 24`` for the shader's own sampling grid, over a shader
+        whose declared default is 32. The export takes its number from the import settings, so
+        the water grid has no path into a placement.
+        """
+        for name, document in self.documents.items():
+            self.assertEqual(document["frame"]["ppu"], 32, name)
+            for entity in document["entities"]:
+                if "x-ppu" in entity:
+                    self.assertEqual(entity["x-ppu"], 32, f"{name} {entity['id']}")
+
     def test_every_named_rig_is_pinned_and_on_disk(self):
         for name, document in self.documents.items():
             for rig in document["x-rigs"]:
