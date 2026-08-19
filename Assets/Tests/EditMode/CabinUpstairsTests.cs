@@ -466,18 +466,25 @@ namespace HiddenHarbours.Tests.EditMode
         // =============================================================================
 
         [Test]
-        public void The_wardrobe_raises_its_signal_and_says_there_is_nothing_to_change_into()
+        public void The_wardrobe_raises_its_signal_and_says_nothing_else_at_all()
         {
             var wardrobe = Spawn<InteriorWardrobe>("wardrobe");
             wardrobe.Configure("fixture.test.wardrobe", 1.2f);
 
             wardrobe.Open();
 
-            Assert.AreEqual(1, _wardrobe.Count, "the customization lane's seam fires");
+            Assert.AreEqual(1, _wardrobe.Count, "the picker's seam fires");
             Assert.AreEqual("fixture.test.wardrobe", _wardrobe[0].FixtureId,
-                            "and names which wardrobe, so a later consumer can tell yours from a shop's");
-            Assert.AreEqual(1, _notices.Count);
-            Assert.AreEqual(InteriorWardrobe.NothingYetText, _notices[0].Text);
+                            "and names which wardrobe, so the picker can tell yours from a shop's — and " +
+                            "can find this fixture in the world to hang its panel beside");
+
+            // ⭐ THE STUB LINE IS GONE, AND ITS ABSENCE IS THE POINT. This fixture used to publish
+            // "only what you stand up in" unconditionally; the picker now says that, and only when the
+            // wardrobe genuinely holds nothing (WardrobeStrings.NothingToWear). A fixture that still
+            // announced it would be telling the player something it cannot know, over the top of a panel
+            // that had just opened.
+            Assert.AreEqual(0, _notices.Count,
+                            "the fixture states WHICH wardrobe and nothing about its contents");
         }
 
         // =============================================================================

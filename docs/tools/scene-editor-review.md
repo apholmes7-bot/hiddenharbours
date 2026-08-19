@@ -275,23 +275,48 @@ validated.
 | | Count | Detail |
 |---|---|---|
 | Byte-identical to repo | **35** | The parity claim, honoured |
-| Divergent | **15** | `buoyIsoRig`, `capeIslanderIsoRig`, `deckGearRig`, `lobsterBoatIsoRig`, `shipyardIsoRig`, `shoreFindsRig`, `shorePlantRig`, `shrubIsoRig`, `sportSkiffIsoRig`, `trapIsoRig`, `trayIsoRig`, `treeIsoRig2`, `utilityIsoRig`, `wharfDecorRig`, `wharfIsoRig` |
+| Divergent | **15** | `buoyIsoRig`, `capeIslanderIsoRig`, `deckGearRig`, `lobsterBoatIsoRig`, `shipyardIsoRig`, `shoreFindsRig`, `shorePlantRig`, `shrubIsoRig`, `sportSkiffIsoRig`†, `trapIsoRig`, `trayIsoRig`, `treeIsoRig2`, `utilityIsoRig`, `wharfDecorRig`, `wharfIsoRig` |
 | Not in the repo at all | **1** | `grassTuftRig.js` (repo has `grassRig.js`, `grassSpeciesRig.js`) |
 
-**None of the 15 matches any blob in the repo's entire history** — so they are not "the editor is
-behind at commit X". They are working copies from the art workspace that never landed. The drift runs
-**both ways**:
+† **`sportSkiffIsoRig` is divergent by *filename* only — its content landed.** The count of 15 is a
+filename count and stays literally true, but this entry is resolved and owes the art workspace
+nothing. See the "Editor ahead — withdrawn" bullet below.
+
+**Fourteen of the 15 match no blob in the repo's history *for their own path*** — so those are not
+"the editor is behind at commit X"; they are working copies from the art workspace that never landed.
+The fifteenth, `sportSkiffIsoRig`, is the exception, and it exposes a blind spot in the method: §2
+hashed each bundled rig against every blob **for that path**, which cannot see a file that landed
+under a different name. The other fourteen **have** since been re-checked by content — each was
+matched against the whole of `docs/art/rigs/**`, and each best-matches its own same-named file
+(ratio 0.83–0.99), with no near-match anywhere else. So the rename explanation is **excluded** for
+them and their rows stand; the sport skiff is the only rename case. The drift runs **both ways**:
 
 - **Repo ahead:** `lobsterBoatIsoRig` gained the 12-scheme `paint` axis (`PAINTS` / `paintRamps`) —
   a shipped feature the editor's copy predates, so *the artist cannot choose a hull colour in the
   editor at all*. `trayIsoRig` gained the `keyline`/`outline` alias fix (#463, #477) and now defers to
   `isoSolid`'s `KEYLINE_DEFAULT`; the editor's copy hardcodes `keyline: false`, so a tray previews
   differently from how it bakes.
-- **Editor ahead:** `sportSkiffIsoRig` is **PASS 5** in the editor (66 KB) and **PASS 1** in the repo
-  (19 KB, untouched since #227). Four passes of rig work exist only in the art workspace.
+- **Editor ahead — *withdrawn*.** This review first read `sportSkiffIsoRig` as **PASS 5** in the
+  editor (66 KB) against **PASS 1** in the repo (19 KB, untouched since #227) and concluded that four
+  passes of rig work existed only in the art workspace. **That conclusion is wrong.** The editor's
+  PASS 5 *did* land — as `docs/art/rigs/sportSkiffMk2IsoRig.js` (67,537 B), which is a **ruled second
+  hull**, not a replacement. The editor's copy differs from the landed rig by a **two-line rename**:
+  #534 re-issued the exported global as `SportSkiffMk2Iso` because the Mk2 was installing
+  `globalThis.SportSkiffIso` — the shipped skiff's name — and that commit moved zero pixels
+  (LF sha256 `2aa8fe2b…` → `fc0dcbc9…`). `sportSkiffIsoRig.js` remains PASS 1 **by design**: it is the
+  original 7.0 m hull and still the shipped one, and the Mk2 is its sibling. **Do not land the
+  editor's copy over `sportSkiffIsoRig.js`** — there is nothing to reconcile on this file.
 
-That last point is worth the owner's attention independently of this review: **the package is
-evidence that rig work has been done that never reached the repo.**
+**What survives is a lesson about the audit, not a debt owed by the art workspace.** A rig that
+landed under a **new name** was invisible to a path-scoped comparison, exactly as a rename always is.
+Drift audits must therefore match by **content across the whole history** — hash first, path second
+(`git rev-list --all --objects`) — which is precisely how this was caught. Recorded on the merge of
+#571:
+
+> "the 'editor ahead: sportSkiff PASS 5 never landed' claim is wrong — PASS 5 landed as
+> `docs/art/rigs/sportSkiffMk2IsoRig.js` (#534 renamed the global to fix a collision; only the
+> identifier differs). The comparison was by filename, so the rename read as unlanded. The other
+> divergent-rig findings stand. Nothing is owed by the art workspace on that file."
 
 **Fix direction — the repo already has the idiom.** Road kit v3 pins its rig by LF sha256
 (`d45e9ac6…`) and the sidecar convention treats an absent hash as grounds for refusal. Apply it here:

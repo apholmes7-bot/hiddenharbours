@@ -23,27 +23,38 @@ namespace HiddenHarbours.Art.Editor
     /// hard-coded per file, so a re-export with a different frame count still slices correctly (and a
     /// width that is not a whole number of cells fails loudly).</para>
     ///
-    /// <para><b>Every body sheet is the SAME cell: 64 × 92 as of the pass-6 kit (was 64 × 88).</b> They
-    /// used to disagree — the rod poses (<c>Fisher_hold</c>, <c>Fisher_cast_short</c>,
-    /// <c>Fisher_cast_long</c>) were 128 × 128, because the rod and the flying lure were baked INTO the
-    /// body and needed the headroom. The art director has since split the rod out into its own overlay
-    /// sheet, so the body sheets are uniformly the plain character cell. <see cref="CellOverrides"/> is
-    /// deliberately kept — and is simply empty of body sheets today — because the incoming
-    /// <c>Rod_*</c> overlay sheets need a bigger canvas again: the per-sheet capability is the point,
-    /// not the entries.</para>
+    /// <para><b>Body sheets come in TWO cells, and each carries its own ground inset.</b> The ordinary
+    /// locomotion cell is <see cref="DefaultCell"/> — 64 × 92, ground contact 10 px up — as
+    /// of the pass-6 kit (it was 64 × 88 at pass 1). The rig-6.5 OFF-DECK anims (swim, tread, sleep,
+    /// drive) ship at <see cref="OffDeckCell"/> — 64 × 88, ground contact <b>8</b> px up —
+    /// which is that same 92-cell re-windowed 2 rows top and 2 bottom. Mixed cells are FINE and the
+    /// inset moving with the cell is the whole point: both land the SAME ground-contact point, so a
+    /// character that walks on the 92 sheet and treads water on the 88 one never hops.
+    /// <see cref="CellFor"/> is the one place that decides, and it is the only thing that should.</para>
+    ///
+    /// <para>⚠️ <b>The inset is not a constant.</b> It was written as one — a single
+    /// <c>GroundInsetPx</c> "on every sheet regardless of cell size" — which held only while
+    /// exactly one cell existed at a time, and was silently wrong the moment a second arrived: crop two
+    /// rows off the BOTTOM of a cell and ground contact has two fewer pixels beneath it. It is
+    /// <c>H − pivotY</c> per cell (ADR 0026), and it lives on <see cref="CharacterCell"/> beside
+    /// the size for that reason.</para>
+    ///
+    /// <para><see cref="CellOverrides"/> stays as the per-STEM escape hatch — empty of body sheets
+    /// today — because the incoming <c>Rod_*</c> overlay sheets need a bigger canvas again: the
+    /// per-sheet capability is the point, not the entries.</para>
     ///
     /// <para><b>This tool also slices the CAST, one subfolder per preset</b>
     /// (<c>Iso/ginny/Ginny_idle.png</c>, …). The folder scan is recursive and the grid rule is the
     /// same for all of them — a preset's body is a different SHAPE, never a different cell.</para>
     ///
-    /// <para><b>Pivot = ground contact, one rule for any cell size:
-    /// <c>(cellW/2, cellH − GroundInsetPx)</c> in TOP-LEFT canvas coordinates — i.e. always
-    /// <see cref="GroundInsetPx"/> above the cell bottom, on the centreline.</b> Unity normalizes
-    /// pivots from the <b>BOTTOM-LEFT</b>, so the Unity pivot is <c>(0.5, GroundInsetPx/cellH)</c> =
-    /// <c>(0.5, 10/92 ≈ 0.1087)</c> on every body sheet today (it was <c>8/88 ≈ 0.0909</c>).
-    /// ⚠️ Getting this inverted plants the character ~72 px into the ground;
-    /// <c>CharacterIsoSheetSliceTests</c> asserts it in PIXELS, so the one rule still holds for any
-    /// future cell size.</para>
+    /// <para><b>Pivot = ground contact, one rule for any cell:
+    /// <c>(Width/2, Height − GroundInsetPx)</c> in TOP-LEFT canvas coordinates — i.e. the
+    /// cell's own inset above its own bottom, on the centreline.</b> Unity normalizes pivots from the
+    /// <b>BOTTOM-LEFT</b>, so the Unity pivot is <c>(0.5, GroundInsetPx/Height)</c>:
+    /// <c>(0.5, 10/92 ≈ 0.1087)</c> on a locomotion sheet and <c>(0.5, 8/88 ≈ 0.0909)</c> on an
+    /// off-deck one. ⚠️ Getting this inverted plants the character ~72 px into the ground;
+    /// <c>CharacterIsoSheetSliceTests</c> asserts it in PIXELS against each sheet's own cell, so the
+    /// one rule holds for any future cell size.</para>
     ///
     /// <para>✅ <b>THE COUNTER-CLOCKWISE BAKE IS FIXED AT SOURCE — these rows now run CLOCKWISE.</b>
     /// The rig used to rotate the model counter-clockwise while LABELLING the rows clockwise, so row
@@ -117,22 +128,129 @@ namespace HiddenHarbours.Art.Editor
         /// the plain 64 × 92 cell. The incoming <c>Rod_*</c> overlay sheets are the bigger canvas again
         /// and will register here — deleting the mechanism would only mean rebuilding it next PR.</para>
         /// </summary>
-        public static readonly IReadOnlyDictionary<string, Vector2Int> CellOverrides =
-            new Dictionary<string, Vector2Int>
+        /// <summary>
+        /// <b>One sheet family's cell: its size AND where ground contact sits inside it.</b> The two
+        /// travel together because they are not independent — re-window a cell and the inset moves
+        /// with it — and keeping them apart is precisely how a sheet slices, imports and
+        /// dimension-tests as perfectly valid while planting the character off the ground.
+        ///
+        /// <para>⚠️ <b>The inset is NOT a constant across cell sizes</b>, which the old single
+        /// <see cref="GroundInsetPx"/> quietly assumed. It is <c>H − pivotY</c> read off the rig
+        /// (ADR 0026), so a cell cropped at the BOTTOM carries a smaller inset: the 6.5 off-deck cell is
+        /// the 92-cell re-windowed 2 rows off the top and 2 off the bottom, and those two bottom rows
+        /// are two pixels the ground point no longer has beneath it — 10 becomes 8.</para>
+        /// </summary>
+        public readonly struct CharacterCell
+        {
+            /// <summary>Cell width in source pixels.</summary>
+            public readonly int Width;
+
+            /// <summary>Cell height in source pixels.</summary>
+            public readonly int Height;
+
+            /// <summary>Ground contact this many px above the cell bottom — the rig's
+            /// <c>H − pivotY</c>.</summary>
+            public readonly int GroundInsetPx;
+
+            public CharacterCell(int width, int height, int groundInsetPx)
+            {
+                Width = width;
+                Height = height;
+                GroundInsetPx = groundInsetPx;
+            }
+
+            /// <summary>The cell as a size, for the grid maths.</summary>
+            public Vector2Int Size => new Vector2Int(Width, Height);
+
+            /// <summary>
+            /// Ground-contact pivot, normalized BOTTOM-LEFT the way Unity stores it:
+            /// <c>(0.5, GroundInsetPx / Height)</c> — ADR 0026's <c>(H − pivotY)/H</c>.
+            /// </summary>
+            public Vector2 UnityPivot => new Vector2(0.5f, GroundInsetPx / (float)Height);
+        }
+
+        /// <summary>
+        /// The rig's own locomotion cell — 64 × 92, ground contact 10 px up. Pinned to the LIVE
+        /// rig by <c>CharacterSlicerMatchesRigTests</c>, so this pair is measured, not declared.
+        /// </summary>
+        public static readonly CharacterCell DefaultCell = new CharacterCell(CellW, CellH, GroundInsetPx);
+
+        /// <summary>
+        /// <b>The 6.5 OFF-DECK cell — 64 × 88, ground contact 8 px up.</b> The four anims a
+        /// character plays with its feet off the ground (swim, tread, sleep, drive) ship at the rig's
+        /// 92-cell re-windowed 2 rows top and 2 bottom; the sidecar <c>OffDeck_mounts.json</c> states
+        /// the cell and the pivot in words.
+        ///
+        /// <para><b>The drop's bytes import VERBATIM.</b> Padding these back to 92 to "unify the cell"
+        /// would mean editing generated art, and the mount sidecar's <c>waterRowLane</c> values are lane
+        /// px in the <b>88</b> cell — they would all silently become wrong by two.</para>
+        ///
+        /// <para>⚠️ <b>A DECLARATION that no test can cross-check yet.</b> Every other cell
+        /// here is pinned to the live rig, but the repo's <c>characterIsoRig6.js</c> is rev <b>6.0</b>
+        /// (H = 92) while these sheets are rev 6.5 — the 6.5 source did not ship with the drop (it
+        /// is an open owner ask). Until it lands, 88/8 rests on the sidecar plus a measurement recorded
+        /// in the import PR: the sidecar's own <c>waterZ</c> (metres) and <c>waterRowLane</c> (px)
+        /// over-determine the pivot row across 20 preset × anim pairs, and a least-squares fit puts
+        /// it at <b>80.14</b> — i.e. inset 8 — with a 0.26 px rms residual against
+        /// integer-rounded lane values. When the 6.5 rig lands, extend
+        /// <c>CharacterSlicerMatchesRigTests</c> to pin this pair the same way.</para>
+        /// </summary>
+        public static readonly CharacterCell OffDeckCell = new CharacterCell(64, 88, 8);
+
+        /// <summary>
+        /// The anim suffixes baked at <see cref="OffDeckCell"/>. Matched by SUFFIX rather than listed
+        /// per file because the family is a property of the ANIM, not of the character: all ten cast
+        /// presets bake all four, and a preset added later inherits the rule with no edit here.
+        /// </summary>
+        public static readonly string[] OffDeckAnimSuffixes = { "_swim", "_tread", "_sleep", "_drive" };
+
+        /// <summary>
+        /// Per-sheet cell, by exact file stem — the escape hatch for a single sheet whose canvas
+        /// matches neither family rule.
+        ///
+        /// <para>A declaration, not a guess: a sheet width is usually a whole number of several
+        /// plausible cell widths, so the grid genuinely cannot be recovered from the pixels. Declaring
+        /// it here — and validating it in <see cref="SliceOne"/> — is how a wrong grid becomes
+        /// a loud failure instead of a few hundred plausible-looking wrong sprites.</para>
+        ///
+        /// <para><b>Empty today, and deliberately still here.</b> It used to carry the three
+        /// 128 × 128 rod poses; the art director split the rod out of the body. The incoming
+        /// <c>Rod_*</c> overlay sheets are the bigger canvas again and will register here —
+        /// deleting the mechanism would only mean rebuilding it next PR.</para>
+        /// </summary>
+        public static readonly IReadOnlyDictionary<string, CharacterCell> CellOverrides =
+            new Dictionary<string, CharacterCell>
             {
                 // (Rod overlay sheets land here when they import — see the note above.)
             };
 
-        /// <summary>The authored cell size for a sheet stem.</summary>
-        public static Vector2Int CellSizeFor(string stem) =>
-            CellOverrides.TryGetValue(stem, out var cell) ? cell : new Vector2Int(CellW, CellH);
+        /// <summary>
+        /// The authored cell for a sheet stem: an exact override first, then the off-deck anim family,
+        /// then the rig's ordinary locomotion cell.
+        /// </summary>
+        public static CharacterCell CellFor(string stem)
+        {
+            if (!string.IsNullOrEmpty(stem))
+            {
+                if (CellOverrides.TryGetValue(stem, out var exact)) return exact;
+
+                foreach (string suffix in OffDeckAnimSuffixes)
+                    if (stem.EndsWith(suffix, StringComparison.Ordinal))
+                        return OffDeckCell;
+            }
+
+            return DefaultCell;
+        }
+
+        /// <summary>The authored cell SIZE for a sheet stem.</summary>
+        public static Vector2Int CellSizeFor(string stem) => CellFor(stem).Size;
 
         /// <summary>
-        /// Ground-contact pivot for a given cell size, normalized bottom-left:
-        /// <c>(0.5, GroundInsetPx / cellH)</c>. One rule, both cell sizes.
+        /// Ground-contact pivot for a cell, normalized bottom-left. Takes the whole
+        /// <see cref="CharacterCell"/> — never a bare size — because the inset is part of the
+        /// cell and a size alone cannot answer the question.
         /// </summary>
-        public static Vector2 GroundPivotFor(Vector2Int cell) =>
-            new Vector2(0.5f, GroundInsetPx / (float)cell.y);
+        public static Vector2 GroundPivotFor(CharacterCell cell) => cell.UnityPivot;
 
         // ---- entry points -------------------------------------------------------------------------
 
@@ -213,7 +331,8 @@ namespace HiddenHarbours.Art.Editor
         private static SliceResult SliceOne(string path)
         {
             string stem = Path.GetFileNameWithoutExtension(path);
-            Vector2Int cell = CellSizeFor(stem);
+            CharacterCell cellSpec = CellFor(stem);
+            Vector2Int cell = cellSpec.Size;
 
             var importer = AssetImporter.GetAtPath(path) as TextureImporter;
             if (importer == null)
@@ -248,7 +367,7 @@ namespace HiddenHarbours.Art.Editor
             }
 
             int cols = tex.width / cell.x;
-            Vector2 pivot = GroundPivotFor(cell);
+            Vector2 pivot = GroundPivotFor(cellSpec);
 
             importer.spriteImportMode = SpriteImportMode.Multiple;
 
@@ -265,7 +384,7 @@ namespace HiddenHarbours.Art.Editor
                                 .GroupBy(r => r.name)
                                 .ToDictionary(g => g.Key, g => g.First().spriteID);
 
-            SpriteRect[] rects = BuildRects(stem, cols, cell, existingIds);
+            SpriteRect[] rects = BuildRects(stem, cols, cellSpec, existingIds);
             dp.SetSpriteRects(rects);
 
             // Keep name→fileID stable across future reimports (mirrors the package's own slicer) so any
@@ -297,10 +416,11 @@ namespace HiddenHarbours.Art.Editor
         /// already carries; those are re-used so a re-bake of unchanged art is a no-op on the
         /// <c>.meta</c>. Only genuinely new names get a fresh GUID.</para>
         /// </summary>
-        public static SpriteRect[] BuildRects(string stem, int cols, Vector2Int cell,
+        public static SpriteRect[] BuildRects(string stem, int cols, CharacterCell cellSpec,
                                               IReadOnlyDictionary<string, GUID> existingIds = null)
         {
-            Vector2 pivot = GroundPivotFor(cell);
+            Vector2Int cell = cellSpec.Size;
+            Vector2 pivot = GroundPivotFor(cellSpec);
             var rects = new SpriteRect[DirectionRows * cols];
             for (int r = 0; r < DirectionRows; r++)
             {
