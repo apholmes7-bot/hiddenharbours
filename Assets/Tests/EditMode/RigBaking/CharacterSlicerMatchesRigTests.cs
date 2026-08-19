@@ -65,8 +65,11 @@ namespace HiddenHarbours.Tests.RigBaking
             using var host = RigScriptHostFactory.Create();
             var geo = RigCatalog.Install(host, RigCatalog.Get("character"));
 
-            Vector2 fromSlicer = CharacterSheetSlicer.GroundPivotFor(
-                new Vector2Int(CharacterSheetSlicer.CellW, CharacterSheetSlicer.CellH));
+            // The DEFAULT (locomotion) cell is the one the live rig describes. The off-deck 88-cell
+            // family is rev 6.5 art whose rig source has not shipped, so it is deliberately NOT
+            // asserted here — see CharacterSheetSlicer.OffDeckCell. Pin it the same way the day
+            // characterIsoRig6.js goes to 6.5.
+            Vector2 fromSlicer = CharacterSheetSlicer.GroundPivotFor(CharacterSheetSlicer.DefaultCell);
 
             Assert.AreEqual(geo.UnityNormalisedPivot.x, fromSlicer.x, 1e-5f);
             Assert.AreEqual(geo.UnityNormalisedPivot.y, fromSlicer.y, 1e-5f,
