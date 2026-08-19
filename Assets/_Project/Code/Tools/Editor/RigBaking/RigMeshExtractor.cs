@@ -577,6 +577,39 @@ namespace HiddenHarbours.Tools.RigBaking
                         "return out;})()",
                 },
 
+                // ---- the OTTER 8x8 — the second road vehicle, and the first amphibian ----------
+                // Same gap and the same fix as the Dually's above: no `MATS` const, because her table
+                // is built per-pose by `makeMats(s)` off her paint and weather axes. The expression is
+                // character-for-character the Dually's — build the table, build the face list at the
+                // SAME pose, and keep only the ramps some face actually names.
+                //
+                // ⚠️ FOR HER THE FILTER IS NOT WHAT MAKES HER FIT, and that distinction is the whole
+                // history of this vehicle. She declared 22 and USED 17 — one over the shader's 16 — so
+                // filtering could not save her the way it saved the Dually (17/16) and the zodiac
+                // (18/14), and she sat unbakeable from #558. The fix was an ART merge, landed
+                // 2026-08-19: the cockpit `mat` folded into `mesh`. She now declares 21 and uses 16,
+                // and the filter drops only the five no face names — `trim`, `canvas`, `track`,
+                // `glass` and `glow`. Each is genuinely absent from THIS build: `track` belongs to the
+                // tracked variant (a different face list entirely, 1224 vs 1296), `canvas` to the
+                // canopy fittings, and `glow`/`glass` to her night pass.
+                //
+                // ⚠️ So the used count is 16 EXACTLY, with no headroom. A 17th ramp reaching a face
+                // makes her unplaceable again, which is why OtterIsoKitProbeTests pins the count in
+                // both directions rather than only asserting she fits.
+                //
+                // Order is load-bearing here as everywhere: `paint` is her first key and IS used
+                // (116 faces), so it stays index 0 — which is what the face packer resolves an unknown
+                // material name to, and what her own `MATS[f.mat] || MATS.paint` fallback agrees with.
+                ["amphibIsoRig.js"] = new Dictionary<string, string>(StringComparer.Ordinal)
+                {
+                    ["MATS"] =
+                        "(function(){var M=makeMats(resolve({})),F=build(resolve({}))," +
+                        "used={},out={};" +
+                        "for(var i=0;i<F.length;i++)used[F[i].mat]=1;" +
+                        "for(var k in M)if(used[k])out[k]=M[k];" +
+                        "return out;})()",
+                },
+
                 // The skiff motor is a LAYER, not a hull, so its export omits two things every hull
                 // rig publishes and the extractor reads unconditionally: the pixel scale and the bake
                 // elevation. Both exist under the rig's own names (`S`, `DEFAULT_ELEV`) — this is a

@@ -247,17 +247,18 @@ namespace HiddenHarbours.Tests.RigBaking
         /// ⭐ <b>THE TRIPWIRE: a registered vehicle's DEF has a mesh exactly when her bake is not
         /// excused</b> — in both directions, so neither half can be forgotten.
         ///
-        /// <para><b>Why a def can exist without a mesh at all.</b> The Otter's mechanics are built and
-        /// tested (skid steer, the drive⇄swim swap, her handling tunables) while her PICTURE is
-        /// blocked on something no vehicle-side change can fix: 17 materials against the facet
-        /// shader's 16 ramps. So she is authored, tested and <b>unplaceable</b> —
-        /// <c>VehicleDef.IsUsable</c> refuses a def with no mesh, which is the honest state rather
-        /// than a machine that would ship half-wired and silently.</para>
+        /// <para><b>Why a def can exist without a mesh at all.</b> The Otter spent #558 to #562 in
+        /// exactly that state: her mechanics built and tested (skid steer, the drive⇄swim swap, her
+        /// handling tunables) while her PICTURE was blocked on something no vehicle-side change could
+        /// fix — 17 colour ramps against the facet shader's 16. She was authored, tested and
+        /// <b>unplaceable</b>, because <c>VehicleDef.IsUsable</c> refuses a def with no mesh, which is
+        /// the honest state rather than a machine that ships half-wired and silently.</para>
         ///
-        /// <para>The pairing is what makes it a tripwire rather than a note. The day the material
-        /// merge lands and her <see cref="VehicleRigFleet.NotBaked"/> entry is deleted, THIS fails
-        /// until somebody bakes her and points the def at the result — and if a mesh is wired while
-        /// the blocker still stands, it fails the other way and the stale excuse gets deleted.</para>
+        /// <para>The pairing is what made it a tripwire rather than a note, and it did its job: when
+        /// the art merge landed on 2026-08-19 and her <see cref="VehicleRigFleet.NotBaked"/> entry was
+        /// deleted, THIS went red until she was baked and her def pointed at the result. It still
+        /// guards the other direction — a mesh wired while a blocker stands fails here too, and the
+        /// stale excuse gets deleted rather than the assert nudged.</para>
         /// </summary>
         [Test]
         public void EveryRegisteredVehiclesDef_HasAMeshExactlyWhenHerBakeIsNotExcused()

@@ -2,7 +2,7 @@
   "kit": "vehicle-rig-pack/otter-8x8",
   "rig": "amphibIsoRig.js",
   "exportSymbol": "AmphibIso",
-  "rigSha256": "ffa7191a31f409f12aa14cb1fbaa74ff9dbd7c99bfed7130ba14e2f8a74a56df",
+  "rigSha256": "f71a01b8f04097948d7e54286d7851de304b6a52ee1585d4268c8f57961eb9f3",
   "body": "otter8x8",
   "label": "Otter 8x8",
   "kind": "amphibious_xtv",

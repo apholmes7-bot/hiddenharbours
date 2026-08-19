@@ -35,12 +35,14 @@ namespace HiddenHarbours.Tests.EditMode
     /// MODEL rather than the owner's tuning — with two deliberate exceptions at the end, which pin the
     /// shipped ASSET, and the numbers this fixture uses, back to the art side's own published file.</para>
     ///
-    /// <para><b>⚠️ Her mesh is not baked</b> (<c>VehicleRigFleet.NotBaked["otter8x8"]</c>: 17 materials
-    /// against the facet shader's 16). Nothing below needs it — every number here is published in her
-    /// sidecar, and none of the mechanics depends on her geometry being on disk. The pairing of "no
-    /// mesh" with "excused bake" is pinned in both directions by
-    /// <c>VehicleRigFleetTests.TheOttersDefIsMeshLessExactlyWhileHerBakeIsBlocked</c>, which lives
-    /// beside the fleet table it reads.</para>
+    /// <para><b>Her mesh is baked</b> since 2026-08-19, when the art side's <c>mat</c>→<c>mesh</c>
+    /// merge brought her from 17 colour ramps to the facet shader's 16. Nothing below needs it —
+    /// every number here is published in her sidecar, and none of the mechanics depends on her
+    /// geometry being on disk, which is exactly why these tests could be written while she was still
+    /// unbakeable. That a registered vehicle's def carries a mesh exactly when her bake is not
+    /// excused is pinned in both directions by
+    /// <c>VehicleRigFleetTests.EveryRegisteredVehiclesDef_HasAMeshExactlyWhenHerBakeIsNotExcused</c>,
+    /// which lives beside the fleet table it reads.</para>
     /// </summary>
     public class AmphibiousVehicleTests
     {
@@ -875,6 +877,65 @@ namespace HiddenHarbours.Tests.EditMode
             var def = UnityEditor.AssetDatabase.LoadAssetAtPath<VehicleDef>(OtterDefPath);
             Assert.That(def, Is.Not.Null, $"her committed def is missing at {OtterDefPath}");
             return def;
+        }
+
+        /// <summary>
+        /// ⭐⭐ <b>HER BAKED MESH CARRIES THE FLOTATION AND THE DOOR, and neither comes from the
+        /// bake.</b> The vehicle baker writes geometry and chassis — wheelbase, track, wheel radius,
+        /// the axle stations — because those it can read off the rig. It does NOT write the four
+        /// flotation numbers or the drive door: they are the art side's published derivations
+        /// (an integrated waterline polygon, a downflooding survey), and a bake cannot rediscover
+        /// them from a face list.
+        ///
+        /// <para><b>Which means they are typed onto the asset, and typed numbers drift.</b> That is
+        /// the whole reason this test exists. Without it the Otter bakes green with
+        /// <c>FloatSinkMeters</c> at zero — <see cref="VehicleMeshDef.Floats"/> reads false,
+        /// <c>VehicleMeshDriver</c> returns before touching a channel and <c>VehicleGrounding</c>
+        /// solves her afloat check against a draft of nothing. She would be an amphibian that drives
+        /// into the water and never floats, and every existing test would still pass: they build
+        /// their defs in code, so none of them reads this asset.</para>
+        ///
+        /// <para>Read from the sidecar rather than restated, so the art side moving a number moves
+        /// this pin with it.</para>
+        /// </summary>
+        [Test]
+        public void HerBakedMeshCarriesTheFlotationAndDoorHerSidecarPublishes()
+        {
+            var def = UnityEditor.AssetDatabase.LoadAssetAtPath<VehicleDef>(OtterDefPath);
+            Assert.That(def, Is.Not.Null, $"her committed def is missing at {OtterDefPath}");
+
+            VehicleMeshDef mesh = def.Mesh;
+            Assert.That(mesh, Is.Not.Null,
+                "her def wears no mesh. She is baked — VehicleRigFleet.Baked lists her — so a null " +
+                "mesh here means the bake did not wire it, and VehicleDef.IsUsable refuses her.");
+
+            string json = ReadSidecar();
+
+            Assert.That(mesh.FloatSinkMeters,
+                        Is.EqualTo(Number(json, "\"sink_m_at_float_1\"")).Within(1e-4f),
+                        "how far she settles onto her waterline — the offset VehicleMeshDriver " +
+                        "applies, and the one number that gates the whole flotation path.");
+            Assert.That(mesh.FloatDraftMeters,
+                        Is.EqualTo(Number(json, "\"draft_above_keel_m\"")).Within(1e-4f),
+                        "draft above the keel — what VehicleGrounding.IsAfloatNow solves against.");
+            Assert.That(mesh.WatertightHalfBeamMeters,
+                        Is.EqualTo(Number(json, "\"max_half_beam_m\"",
+                                          after: "\"waterline_polygon_at_float_1\"")).Within(1e-4f));
+            Assert.That(mesh.WatertightDeckHeightMeters,
+                        Is.EqualTo(Number(json, "\"z\"", after: "\"lowest_gunwale_point\"")).Within(1e-4f),
+                        "her lowest gunwale — the transom top she would flood over.");
+
+            Assert.That(mesh.Floats, Is.True,
+                        "she reports that she does not float. Floats is FloatSink > 0 && FloatDraft " +
+                        "> 0, so one of the two above is zero and she is an amphibian who cannot swim.");
+
+            // The drive door, from the same file — INTERACT[id=drive].reach_point, her centre-steer
+            // boarding point. Zero here is not a neutral default: VehicleDoor treats Vector2.zero as
+            // "no door published" and falls back, which silently loses the measured point.
+            Assert.That(mesh.DriveDoorLocal, Is.Not.EqualTo(Vector2.zero),
+                        "her drive door is zero, which VehicleDoor reads as 'not published'.");
+            Assert.That(mesh.DriveDoorLocal.x, Is.EqualTo(-1.4f).Within(1e-4f));
+            Assert.That(mesh.DriveDoorLocal.y, Is.EqualTo(0.2f).Within(1e-4f));
         }
 
         static string ReadSidecar()

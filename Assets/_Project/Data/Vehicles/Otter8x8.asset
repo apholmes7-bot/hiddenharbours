@@ -15,7 +15,7 @@ MonoBehaviour:
   Id: vehicle.otter_8x8
   DisplayName: Otter 8x8
   KindToken: amphibious_vehicle
-  Mesh: {fileID: 0}
+  Mesh: {fileID: 11400000, guid: 14ddece5e1c0ea54bbe5534c75bbb635, type: 2}
   MassKg: 620
   MaxSpeedMetersPerSecond: 8
   MaxReverseSpeedMetersPerSecond: 3

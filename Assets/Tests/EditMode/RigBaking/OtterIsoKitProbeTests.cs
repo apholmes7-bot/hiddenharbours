@@ -311,34 +311,62 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         /// <summary>
-        /// ⚠️⚠️ <b>SHE DOES NOT FIT THE FACET SHADER, and the trick that saved the Dually and the
-        /// zodiac does not save her.</b> `_RampMeta` is a <c>float4[16]</c>; her faces reference
-        /// SEVENTEEN materials in every build.
+        /// ⭐⭐ <b>SHE FITS THE FACET SHADER — in every build the game can place, and in none of the
+        /// canopy ones.</b> <c>_RampMeta</c> is a <c>float4[16]</c>, and this pins both halves.
         ///
-        /// <para>Both earlier rigs declared more than they used, so filtering the table to the used
-        /// set brought them under the cap without changing a pixel. The Otter is genuinely one over.
-        /// The fix is a decision — widen the array (it costs uniform space on every hull, and 16 is
-        /// load-bearing in three guards) or have the art director merge two materials — and it is
-        /// recorded as her <c>NotBaked</c> reason rather than guessed at here.</para>
+        /// <para><b>What changed.</b> She painted SEVENTEEN ramps from #558 until 2026-08-19 and was
+        /// unbakeable for it. The trick that saved the Dually (17 declared / 16 used) and the zodiac
+        /// (18 / 14) never applied to her — she USED all seventeen — so the fix had to be an art
+        /// merge, and the art side made it: the cockpit <c>mat</c> is folded into <c>mesh</c>, one
+        /// face recoloured by ≤ 3/255. She now measures 16.</para>
         ///
-        /// <para>Pinned so that the day either happens, this test fails and the blocker is lifted
-        /// deliberately instead of someone rediscovering it at a bake.</para>
+        /// <para>⚠️ <b>The canopy builds are still over, and that is deliberate.</b> Fitting
+        /// <c>screen</c> or <c>bimini</c> brings in <c>canvas</c> and <c>glass</c>. Measured: either
+        /// alone is 17, both together is 18 — and "both" is the shipped <c>harbourHaul</c> PRESET.
+        /// The base machine is what bakes; a canopy Otter needs its own ruling. Pinned here so that
+        /// the day someone fits one, this says why it cannot be baked rather than leaving them to
+        /// rediscover it at a bake.</para>
+        ///
+        /// <para>Both halves are asserted because either drifting is a real event: a 17th ramp added
+        /// to the base machine makes her unplaceable again, and a canopy that quietly came under the
+        /// cap is a blocker that should be lifted.</para>
         /// </summary>
         [Test]
-        public void HerPaletteExceedsTheFacetShadersSixteenRamps_InEveryBuild()
+        public void HerPaletteFitsTheFacetShader_ExceptWithACanopyFitted()
         {
             using IRigScriptHost host = BuilderHost();
 
-            const int shaderCap = 16;
-            foreach (string build in new[] { "{}", "{tracks:true}", "{float:1}" })
+            const int ShaderCap = 16;
+
+            // Every build the game can place her in — including the two the sidecar drives
+            // (tracks, float) and the two that only restyle her (night, hatch).
+            foreach (string build in new[] { "{}", "{tracks:true}", "{float:1}", "{night:1}",
+                                             "{hatch:1}", "{rack:false,winch:false}" })
             {
                 double used = host.EvaluateNumber($"__usedMaterialCount({build})");
-                Assert.That(used, Is.EqualTo(17d),
-                    $"her used-material count for build {build} changed from 17. If it dropped to " +
-                    $"{shaderCap} or below she now FITS, and VehicleRigFleet.NotBaked['otter8x8'] " +
-                    "should be deleted and her bake built.");
-                Assert.That(used, Is.GreaterThan(shaderCap),
-                    "she fits the shader now — lift the blocker.");
+                Assert.That(used, Is.EqualTo((double)ShaderCap),
+                    $"build {build} paints {used} ramps, not {ShaderCap}. Over the cap she is " +
+                    "unplaceable (VehicleMeshDef.IsUsable refuses her); under it, something stopped " +
+                    "painting. Either way the bake needs re-measuring, not a nudged number.");
+            }
+
+            // The canopy builds. Named individually because they differ: one fitting is 17, both are 18.
+            foreach ((string build, double expected) in new[]
+                     {
+                         ("{screen:true}", 17d),
+                         ("{bimini:true}", 17d),
+                         ("{screen:true,bimini:true}", 18d),
+                         ("AmphibIso.PRESETS.harbourHaul", 18d),
+                     })
+            {
+                double used = host.EvaluateNumber($"__usedMaterialCount({build})");
+                Assert.That(used, Is.EqualTo(expected),
+                    $"canopy build {build} paints {used} ramps, expected {expected}. If it came " +
+                    $"DOWN to {ShaderCap} the canopy blocker is lifted — bake her canopy variant and " +
+                    "delete this half. If it went up, a fitting gained a material.");
+                Assert.That(used, Is.GreaterThan((double)ShaderCap),
+                    $"canopy build {build} now fits the shader. Lift the blocker deliberately " +
+                    "rather than letting a bake discover it.");
             }
         }
     }

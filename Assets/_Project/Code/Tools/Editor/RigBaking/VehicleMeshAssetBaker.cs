@@ -128,7 +128,7 @@ namespace HiddenHarbours.Tools.RigBaking
 
             VehiclePartition split = Partition(host, v, data.Faces.Count);
             AzimuthConvention convention = MeasureAzimuth(host, v, data.DefaultElev);
-            Chassis chassis = ReadChassis(host, v.GlobalName);
+            Chassis chassis = ReadChassis(host, v);
 
             EnsureFolder(MeshFolder);
             EnsureFolder(WheelFolder);
@@ -290,9 +290,13 @@ namespace HiddenHarbours.Tools.RigBaking
             // `sideSign` 0 keeps every face this axis moves; ±1 keeps only those whose centroid is
             // on that side of the centreline. A per-wheel roll axis moves one wheel and needs no
             // filter; a STEER axis moves both front corners at once and does.
+            // `yMin`/`yMax` narrow the same claim to ONE AXLE STATION — the filter a side-sign cannot
+            // be. A skid-steer machine exports roll per SIDE (the Otter's `rollL`/`rollR`), so one
+            // probe moves four wheels that share a side and only their fore-aft station separates
+            // them. Defaults are ±Infinity, so a vehicle that does not need it is unaffected.
             host.Execute($@"
                 function __vfaces(o){{ return {g}.{v.FaceBuilderName}({g}.resolve(o)); }}
-                function __vmoved(pose, sideSign){{
+                function __vmoved(pose, sideSign, yMin, yMax){{
                   var a = __vfaces({{}}), b = __vfaces(pose), out = [];
                   for (var i = 0; i < a.length; i++) {{
                     var fa = a[i].v, fb = b[i].v, d = false;
@@ -305,6 +309,12 @@ namespace HiddenHarbours.Tools.RigBaking
                       for (var m = 0; m < fa.length; m++) cx += fa[m][0];
                       cx /= fa.length;
                       if (sideSign < 0 ? cx >= 0 : cx < 0) continue;
+                    }}
+                    if (yMin > -Infinity || yMax < Infinity) {{
+                      var cy = 0;
+                      for (var n = 0; n < fa.length; n++) cy += fa[n][1];
+                      cy /= fa.length;
+                      if (cy < yMin || cy > yMax) continue;
                     }}
                     out.push(i);
                   }}
@@ -322,7 +332,7 @@ namespace HiddenHarbours.Tools.RigBaking
             foreach (VehicleRigFleet.Axis axis in v.Axes)
             {
                 var mine = new List<int>();
-                foreach (int i in MovedFaces(host, axis.Probe, axis.SideSign))
+                foreach (int i in MovedFaces(host, axis.Probe, axis.SideSign, axis.YMin, axis.YMax))
                     if (!claimed.Contains(i)) mine.Add(i);
 
                 if (mine.Count == 0)
@@ -360,7 +370,8 @@ namespace HiddenHarbours.Tools.RigBaking
             foreach (string axis in v.BodyMustNotMove)
             {
                 var stuck = new List<int>();
-                foreach (int i in MovedFaces(host, axis, 0))
+                foreach (int i in MovedFaces(host, axis, 0,
+                                             float.NegativeInfinity, float.PositiveInfinity))
                     if (!claimed.Contains(i)) stuck.Add(i);
 
                 if (stuck.Count > 0)
@@ -380,15 +391,28 @@ namespace HiddenHarbours.Tools.RigBaking
             return new VehiclePartition(body, fitments);
         }
 
-        static List<int> MovedFaces(IRigScriptHost host, string probePose, int sideSign)
+        static List<int> MovedFaces(IRigScriptHost host, string probePose, int sideSign,
+                                    float yMin, float yMax)
         {
-            string csv = host.EvaluateString($"__vmoved({probePose},{sideSign.ToString(Inv)})");
+            // ⚠️ The bounds are written as JS SOURCE, so they are emitted explicitly rather than
+            // left to ToString: a culture or runtime that spells infinity any other way would
+            // produce a script that does not parse, and the window is usually infinite.
+            string csv = host.EvaluateString(
+                $"__vmoved({probePose},{sideSign.ToString(Inv)}," +
+                $"{JsNumber(yMin)},{JsNumber(yMax)})");
             var list = new List<int>();
             if (string.IsNullOrEmpty(csv)) return list;
             foreach (string s in csv.Split(','))
                 list.Add(int.Parse(s, Inv));
             return list;
         }
+
+        /// <summary>A float as a JS numeric literal. Infinities are spelled the way JS spells
+        /// them, because these go into script source rather than into a message.</summary>
+        static string JsNumber(float f) =>
+            float.IsPositiveInfinity(f) ? "Infinity"
+            : float.IsNegativeInfinity(f) ? "-Infinity"
+            : f.ToString("R", Inv);
 
         static List<RigFace> Subset(RigMeshData data, List<int> indices)
         {
@@ -420,12 +444,18 @@ namespace HiddenHarbours.Tools.RigBaking
         /// taken straight off screen coordinates is wrong by up to 12°, and the un-squash is
         /// self-checking — only the correct divisor lands the eight headings on exact 45° steps.</para>
         ///
-        /// <para><b>Confirmed by a second, independent oracle</b> — the centreline fore-and-aft pair
-        /// (<c>hitch</c> aft, <c>hoodLatch</c> forward, both on x = 0), read as a SIGN on the
-        /// horizontal axis, which the projection leaves alone. Measured on the Dually 2026-08-17:
-        /// bearing exactly −90.00° and nose 202.24 px WEST at a quarter turn. Both counter-clockwise;
-        /// a disagreement is an ERROR, because a wrong convention drives her backwards at E/W and
-        /// this project has shipped that defect five times.</para>
+        /// <para><b>Confirmed by a second, independent oracle</b> — the centreline fore-and-aft pair,
+        /// read as a SIGN on the horizontal axis, which the projection leaves alone. ⚠️ Those two
+        /// anchors are named PER VEHICLE (<see cref="VehicleRigFleet.Vehicle.AzimuthAftAnchor"/>):
+        /// the abeam pair is <c>wheelFL</c>/<c>wheelFR</c> on every vehicle rig, but the fore-aft one
+        /// is each rig's own vocabulary — the Dually says <c>hitch</c>→<c>hoodLatch</c>, the Otter,
+        /// being a boat with wheels, says <c>transom</c>→<c>bow</c>. Asking one rig for the other's
+        /// anchors reads <c>undefined.x</c>, which is what the Otter's first bake did on 2026-08-19.</para>
+        ///
+        /// <para>Measured on the Dually 2026-08-17: bearing exactly −90.00° and nose 202.24 px WEST at
+        /// a quarter turn. Both counter-clockwise; a disagreement is an ERROR, because a wrong
+        /// convention drives her backwards at E/W and this project has shipped that defect five
+        /// times.</para>
         /// </summary>
         static AzimuthConvention MeasureAzimuth(IRigScriptHost host, in VehicleRigFleet.Vehicle v,
                                                 double elevationDeg)
@@ -454,8 +484,25 @@ namespace HiddenHarbours.Tools.RigBaking
             AzimuthConvention abeam = bearing > 0 ? AzimuthConvention.Clockwise
                                                   : AzimuthConvention.CounterClockwise;
 
+            string aft = v.AzimuthAftAnchor, fore = v.AzimuthForeAnchor;
+            if (string.IsNullOrEmpty(aft) || string.IsNullOrEmpty(fore))
+                throw new InvalidOperationException(
+                    $"{v.Key}: no centreline azimuth anchors declared. The abeam pair alone is ONE " +
+                    "oracle, and this bake refuses to map a heading on one — declare her aft and fore " +
+                    "anchor names in VehicleRigFleet (the Dually's are hitch/hoodLatch, the Otter's " +
+                    "transom/bow).");
+
+            if (!host.EvaluateBool(
+                    $"(function(a){{return !!a && !!a.{aft} && !!a.{fore} && " +
+                    $"Math.abs(a.{fore}.x - a.{aft}.x) < 1e-6;}})({g}.anchors(0,{{}}))"))
+                throw new InvalidOperationException(
+                    $"{v.Key}: '{aft}' and '{fore}' are not an admissible CENTRELINE pair at heading 0 " +
+                    "(both present, same screen x). One of them is missing from her anchors(), or it " +
+                    "sits off the centreline — either way the nose dx below would not be a fore-aft " +
+                    "signal.");
+
             double noseDx = host.EvaluateNumber(
-                $"(function(a){{return a.hoodLatch.x - a.hitch.x;}})({g}.anchors(2,{{}}))");
+                $"(function(a){{return a.{fore}.x - a.{aft}.x;}})({g}.anchors(2,{{}}))");
             AzimuthConvention foreAft = noseDx > 0 ? AzimuthConvention.Clockwise
                                                    : AzimuthConvention.CounterClockwise;
 
@@ -463,14 +510,14 @@ namespace HiddenHarbours.Tools.RigBaking
                 throw new InvalidOperationException(
                     $"{v.Key}: THE TWO AZIMUTH ORACLES DISAGREE — her front-axle abeam pair says " +
                     $"{abeam} (ground bearing {bearing:F2}° at a quarter turn), her centreline " +
-                    $"hitch→hood pair says {foreAft} (nose screen dx {noseDx:F1} px). Both are " +
+                    $"{aft}→{fore} pair says {foreAft} (nose screen dx {noseDx:F1} px). Both are " +
                     "analytic and neither is a heuristic, so one of them is measuring something " +
                     "other than what it is named. Do not guess: render her beside a registered " +
                     "reference in one host and compare bearings before baking anything.");
 
             Debug.Log($"[rig-vehicle] {v.Key} azimuth {abeam} — CONFIRMED by two independent oracles: " +
                       $"front-axle abeam ground bearing {bearing:F2}° at a quarter turn, and " +
-                      $"centreline hitch→hood screen dx {noseDx:F1} px. The silhouette taper was NOT " +
+                      $"centreline {aft}→{fore} screen dx {noseDx:F1} px. The silhouette taper was NOT " +
                       "consulted: she is a box and it carries no signal.");
             return abeam;
         }
@@ -498,22 +545,42 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <summary>Every number the controller solves against, read off the rig's own exports.
         /// Transcription, not tuning — and it is what makes the picture and the physics agree by
         /// construction rather than by two people typing the same value.</summary>
-        static Chassis ReadChassis(IRigScriptHost host, string g)
+        static Chassis ReadChassis(IRigScriptHost host, in VehicleRigFleet.Vehicle v)
         {
-            float axF = (float)host.EvaluateNumber($"{g}.G.axF");
-            float axR = (float)host.EvaluateNumber($"{g}.G.axR");
-            float frontWX = (float)host.EvaluateNumber($"{g}.G.frontWX");
+            VehicleRigFleet.VehicleChassisSource src = v.ChassisSource;
+            if (src == null)
+                throw new InvalidOperationException(
+                    $"{v.Key}: no ChassisSource. Every number the controller solves against is read " +
+                    "off the rig's own exports, and the expressions are per-vehicle because the two " +
+                    "vehicles do not share a vocabulary — the Dually publishes G.axF/G.axR/G.frontWX " +
+                    "and a steer block, the Otter an axle ARRAY and no steer at all. Declare hers " +
+                    "in VehicleRigFleet rather than teaching this method to guess.");
+
+            // `v` is an `in` parameter and cannot be captured by a local function, so the one field
+            // the message needs is copied out first.
+            string key = v.Key;
+
+            float Read(string expr, string what)
+            {
+                double d = host.EvaluateNumber(expr);
+                if (double.IsNaN(d))
+                    throw new InvalidOperationException(
+                        $"{key}: chassis expression for {what} — `{expr}` — evaluated to NaN, which " +
+                        "is what a missing export reads as. The rig does not publish what this " +
+                        "expression asks for; fix the expression rather than the number it feeds.");
+                return (float)d;
+            }
 
             return new Chassis(
-                wheelbase: axF - axR,
-                frontTrack: frontWX * 2f,
-                wheelRadius: (float)host.EvaluateNumber($"{g}.G.wheelR"),
-                frontAxleY: axF,
-                rearAxleY: axR,
-                maxInnerDeg: (float)host.EvaluateNumber($"{g}.steer.maxInnerDeg"),
-                maxOuterDeg: (float)host.EvaluateNumber($"{g}.steer.maxOuterDeg"),
-                travelFront: (float)host.EvaluateNumber($"{g}.travel.F"),
-                travelRear: (float)host.EvaluateNumber($"{g}.travel.R"));
+                wheelbase: Read(src.Wheelbase, "wheelbase"),
+                frontTrack: Read(src.FrontTrack, "front track"),
+                wheelRadius: Read(src.WheelRadius, "wheel radius"),
+                frontAxleY: Read(src.FrontAxleY, "front axle y"),
+                rearAxleY: Read(src.RearAxleY, "rear axle y"),
+                maxInnerDeg: Read(src.MaxInnerDeg, "max inner steer"),
+                maxOuterDeg: Read(src.MaxOuterDeg, "max outer steer"),
+                travelFront: Read(src.TravelFront, "front travel"),
+                travelRear: Read(src.TravelRear, "rear travel"));
         }
 
         // =============================================================================================
