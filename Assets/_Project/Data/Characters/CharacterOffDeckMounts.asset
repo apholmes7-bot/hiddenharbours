@@ -1,0 +1,91 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24cca427e0dd23b448b12692f9d7b2cb, type: 3}
+  m_Name: CharacterOffDeckMounts
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.CharacterOffDeckMountsDef
+  Id: offdeckmounts.character_iso
+  Rig: characterIsoRig6.js rev 6.5
+  Rows:
+  - VisualId: visual.boy_iso
+    Swim:
+      WaterZ: 0.3231
+      WaterRowLane: 72
+    Tread:
+      WaterZ: 0.7234
+      WaterRowLane: 62
+  - VisualId: visual.cutter_iso
+    Swim:
+      WaterZ: 0.3677
+      WaterRowLane: 71
+    Tread:
+      WaterZ: 0.8231
+      WaterRowLane: 60
+  - VisualId: visual.deckboss_iso
+    Swim:
+      WaterZ: 0.4488
+      WaterRowLane: 69
+    Tread:
+      WaterZ: 1.0047
+      WaterRowLane: 55
+  - VisualId: visual.fisher_iso
+    Swim:
+      WaterZ: 0.4488
+      WaterRowLane: 69
+    Tread:
+      WaterZ: 1.0047
+      WaterRowLane: 55
+  - VisualId: visual.ginny_iso
+    Swim:
+      WaterZ: 0.4202
+      WaterRowLane: 70
+    Tread:
+      WaterZ: 0.9407
+      WaterRowLane: 57
+  - VisualId: visual.girl_iso
+    Swim:
+      WaterZ: 0.3025
+      WaterRowLane: 73
+    Tread:
+      WaterZ: 0.6773
+      WaterRowLane: 63
+  - VisualId: visual.hand_iso
+    Swim:
+      WaterZ: 0.3927
+      WaterRowLane: 70
+    Tread:
+      WaterZ: 0.8791
+      WaterRowLane: 58
+  - VisualId: visual.nan_iso
+    Swim:
+      WaterZ: 0.4013
+      WaterRowLane: 70
+    Tread:
+      WaterZ: 0.8983
+      WaterRowLane: 58
+  - VisualId: visual.packer_iso
+    Swim:
+      WaterZ: 0.4202
+      WaterRowLane: 70
+    Tread:
+      WaterZ: 0.9407
+      WaterRowLane: 57
+  - VisualId: visual.skipper_iso
+    Swim:
+      WaterZ: 0.4286
+      WaterRowLane: 69
+    Tread:
+      WaterZ: 0.9595
+      WaterRowLane: 56
+  SleepBedZ: 0.3
+  DriveSeatZ: 0.4
+  DriveWheelZ: 0.655
+  DriveWheelY: 0.315

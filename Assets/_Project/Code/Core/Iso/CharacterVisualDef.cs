@@ -137,6 +137,39 @@ namespace HiddenHarbours.Core
         /// Authored for a POT going over a rail — the rig's known-open list is explicit that a light
         /// object thrown flat is not the same arc, so do not reuse this for one.</summary>
         Toss = 10,
+
+        // ---- the OFF-DECK family, rig pass 6.5 (drop of 2026-08-19) -------------------------------
+        // The four anims a character plays with their feet OFF THE GROUND. They are clips like any
+        // other here, but they differ from every clip above in one way worth stating: the clips above
+        // are things you do while STANDING somewhere, so the character's own ground pivot places them.
+        // These four are placed by something else — the sea surface, a mattress, a driver's seat — and
+        // that geometry is NOT here. It is measured art, exported alongside the sheets, and it lives in
+        // CharacterOffDeckMountsDef. Playing one of these without reading that def draws the pose at
+        // ground level, which is a character swimming on the beach.
+        //
+        // ⚠️ These four bake at a DIFFERENT CELL: 64 × 88 with ground contact 8 px up, the rig's
+        // ordinary 92 cell re-windowed 2 rows top and 2 bottom (CharacterSheetSlicer.OffDeckCell). That
+        // is invisible from here — the pivot lands the same ground point either way, which is the whole
+        // reason mixed cells are safe — but it is why the mount sidecar's row numbers are 88-cell rows.
+
+        /// <summary>Swimming, from the rig's <c>swim</c> (8 f, 130 ms, LOOPING). PRONE: the body lies
+        /// along its heading. The sheet is baked DRY — no water pixel — so the sea line comes from
+        /// <c>CharacterOffDeckMountsDef</c> and the submersion shader does the rest.</summary>
+        Swim = 11,
+
+        /// <summary>Treading water, from the rig's <c>tread</c> (6 f, 170 ms, LOOPING). UPRIGHT, so the
+        /// water cuts much higher up the body than <see cref="Swim"/> — the swim/tread pair is one
+        /// character at two attitudes, not one pose at two speeds. Baked DRY, same as swim.</summary>
+        Tread = 12,
+
+        /// <summary>Asleep, from the rig's <c>sleep</c> (6 f, 640 ms, LOOPING — the slowest clip the
+        /// rig bakes, because it is breathing). Baked LYING on a 0.30 m mattress.</summary>
+        Sleep = 13,
+
+        /// <summary>At the wheel of a vehicle, from the rig's <c>drive</c> (6 f, 170 ms, LOOPING).
+        /// ⚠️ The facing row is the VEHICLE's, re-derived every frame — a driver faces where the
+        /// machine points, and boarding input must never be cached as a heading.</summary>
+        Drive = 14,
     }
 
     /// <summary>
@@ -215,8 +248,12 @@ namespace HiddenHarbours.Core
     /// sheets' own row-major slice order, element <c>direction·frameCount + frame</c> — i.e. one ROW per
     /// direction, one COLUMN per frame, exactly as <c>CharacterSheetSlicer</c> cuts them and as the
     /// <c>&lt;Stem&gt;_d&lt;dir&gt;_f&lt;frame&gt;</c> sub-sprite names say. Cell 64×92 at PPU 32 (the
-    /// slicer's <c>CellW</c>×<c>CellH</c>; 64×88 was the pass-1 cell, retired 2026-08-02) with the
-    /// pivot on GROUND CONTACT, so swapping frames never moves the feet — do not add per-frame Y offsets.</para>
+    /// slicer's <c>CellW</c>×<c>CellH</c>) for the locomotion and deck sheets, and 64×88 for the
+    /// rig-6.5 OFF-DECK four (swim / tread / sleep / drive), which re-window that same cell 2 rows top
+    /// and 2 bottom. Both pivot on GROUND CONTACT — at 10 px and 8 px above their own cell bottom
+    /// respectively — so the two cells land the SAME point and swapping between them never moves
+    /// the feet. Do not add per-frame Y offsets, and do not "unify" the cells: the 88 sheets are
+    /// generated art and the mount sidecar's row numbers are 88-cell rows.</para>
     ///
     /// <para><b>All-or-nothing per sheet</b>, mirroring <c>BoatVisualDef</c>: a sheet counts as wired only
     /// when it is COMPLETE (<see cref="HasGait"/>). A partial set would index a stale cell mid-stride, so a
@@ -358,6 +395,32 @@ namespace HiddenHarbours.Core
                  "POT over a rail; a light object thrown flat is a different arc and is not this.")]
         public CharacterClipSheets TossClip = new CharacterClipSheets
         { FrameCount = 8, FramesPerSecond = 1000f / 95f, Loops = false };
+
+        // ---- the OFF-DECK family (rig 6.5) --------------------------------------------------------
+        // Counts and rates are the mount sidecar's own ANIMS values — swim 8 f / 130 ms, tread and
+        // drive 6 f / 170 ms, sleep 6 f / 640 ms — restated as field initialisers the way every clip
+        // family before them is. All four LOOP: none of them is a transition, they are all states you
+        // remain in. The geometry that places them is in CharacterOffDeckMountsDef, not here.
+
+        [Tooltip("SWIMMING — the rig's 'swim' clip (prone, looping). Baked DRY: no water pixel. The sea " +
+                 "line comes from CharacterOffDeckMountsDef, never from this sheet.")]
+        public CharacterClipSheets SwimClip = new CharacterClipSheets
+        { FrameCount = 8, FramesPerSecond = 1000f / 130f, Loops = true };
+
+        [Tooltip("TREADING WATER — the rig's 'tread' clip (upright, looping). The water cuts higher up " +
+                 "the body than on the swim sheet; both lines are measured per build in the mounts def.")]
+        public CharacterClipSheets TreadClip = new CharacterClipSheets
+        { FrameCount = 6, FramesPerSecond = 1000f / 170f, Loops = true };
+
+        [Tooltip("ASLEEP — the rig's 'sleep' clip (looping, and very slow: it is breathing). Baked " +
+                 "lying on a 0.30 m mattress.")]
+        public CharacterClipSheets SleepClip = new CharacterClipSheets
+        { FrameCount = 6, FramesPerSecond = 1000f / 640f, Loops = true };
+
+        [Tooltip("AT THE WHEEL — the rig's 'drive' clip (looping). ⚠️ The facing row is the VEHICLE's " +
+                 "and is re-derived every frame; never cache the heading a driver boarded at.")]
+        public CharacterClipSheets DriveClip = new CharacterClipSheets
+        { FrameCount = 6, FramesPerSecond = 1000f / 170f, Loops = true };
 
         // ---- the all-or-nothing gates + lookups (pure; EditMode-testable without a scene) ----------
 
@@ -553,6 +616,10 @@ namespace HiddenHarbours.Core
             CharacterClip.Lift => LiftClip,
             CharacterClip.Place => PlaceClip,
             CharacterClip.Toss => TossClip,
+            CharacterClip.Swim => SwimClip,
+            CharacterClip.Tread => TreadClip,
+            CharacterClip.Sleep => SleepClip,
+            CharacterClip.Drive => DriveClip,
             _ => null,
         };
 

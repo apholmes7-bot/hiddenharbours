@@ -1,0 +1,149 @@
+{
+  "_lane": "8 direction rows (N top) x frame cols, 64x88 cell, pivot (32,80) — matches Fisher_walk. Rows below are LANE px (the rig 92-cell cropped 2 top/2 bottom).",
+  "_bake": "DRY — no water pixel baked. Pin waterRow to the sea surface; the submersion shader tints below it. waterZ is BODY-relative (scales with the build).",
+  "rig": "characterIsoRig6.js rev 6.5",
+  "anims": {
+    "swim": {
+      "mount": "water",
+      "frames": 8,
+      "ms": 130
+    },
+    "tread": {
+      "mount": "water",
+      "frames": 6,
+      "ms": 170
+    },
+    "sleep": {
+      "mount": "bed",
+      "frames": 6,
+      "ms": 640
+    },
+    "drive": {
+      "mount": "wheel",
+      "frames": 6,
+      "ms": 170
+    }
+  },
+  "presets": {
+    "Fisher": {
+      "swim": {
+        "waterZ": 0.4488,
+        "waterRowLane": 69,
+        "speed": "0.18-0.60 m/s by surge"
+      },
+      "tread": {
+        "waterZ": 1.0047,
+        "waterRowLane": 55
+      }
+    },
+    "Ginny": {
+      "swim": {
+        "waterZ": 0.4202,
+        "waterRowLane": 70,
+        "speed": "0.18-0.60 m/s by surge"
+      },
+      "tread": {
+        "waterZ": 0.9407,
+        "waterRowLane": 57
+      }
+    },
+    "Skipper": {
+      "swim": {
+        "waterZ": 0.4286,
+        "waterRowLane": 69,
+        "speed": "0.18-0.60 m/s by surge"
+      },
+      "tread": {
+        "waterZ": 0.9595,
+        "waterRowLane": 56
+      }
+    },
+    "Nan": {
+      "swim": {
+        "waterZ": 0.4013,
+        "waterRowLane": 70,
+        "speed": "0.18-0.60 m/s by surge"
+      },
+      "tread": {
+        "waterZ": 0.8983,
+        "waterRowLane": 58
+      }
+    },
+    "Deckboss": {
+      "swim": {
+        "waterZ": 0.4488,
+        "waterRowLane": 69,
+        "speed": "0.18-0.60 m/s by surge"
+      },
+      "tread": {
+        "waterZ": 1.0047,
+        "waterRowLane": 55
+      }
+    },
+    "Packer": {
+      "swim": {
+        "waterZ": 0.4202,
+        "waterRowLane": 70,
+        "speed": "0.18-0.60 m/s by surge"
+      },
+      "tread": {
+        "waterZ": 0.9407,
+        "waterRowLane": 57
+      }
+    },
+    "Cutter": {
+      "swim": {
+        "waterZ": 0.3677,
+        "waterRowLane": 71,
+        "speed": "0.18-0.60 m/s by surge"
+      },
+      "tread": {
+        "waterZ": 0.8231,
+        "waterRowLane": 60
+      }
+    },
+    "Hand": {
+      "swim": {
+        "waterZ": 0.3927,
+        "waterRowLane": 70,
+        "speed": "0.18-0.60 m/s by surge"
+      },
+      "tread": {
+        "waterZ": 0.8791,
+        "waterRowLane": 58
+      }
+    },
+    "Boy": {
+      "swim": {
+        "waterZ": 0.3231,
+        "waterRowLane": 72,
+        "speed": "0.18-0.60 m/s by surge"
+      },
+      "tread": {
+        "waterZ": 0.7234,
+        "waterRowLane": 62
+      }
+    },
+    "Girl": {
+      "swim": {
+        "waterZ": 0.3025,
+        "waterRowLane": 73,
+        "speed": "0.18-0.60 m/s by surge"
+      },
+      "tread": {
+        "waterZ": 0.6773,
+        "waterRowLane": 63
+      }
+    }
+  },
+  "drive": {
+    "seatZ": 0.4,
+    "wheelZ": 0.655,
+    "wheelY": 0.315,
+    "note": "world metres; opts.seatZ/wheelZ/wheelY; soft-clamped, driveMount reports clamped + steer + wheel/pedal pins"
+  },
+  "sleep": {
+    "bedZ": 0.3,
+    "note": "baked lying on a 0.30 m mattress; pivot = bed floor contact; sleepMount gives head/hip/feet pins + body axis"
+  }
+}
