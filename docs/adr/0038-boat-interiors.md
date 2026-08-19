@@ -1,10 +1,28 @@
 # ADR 0038 — Boat interiors: a cabin is a level that RIDES
 
-**Status:** **Proposed** (art-pipeline intake, with a lead-architect hat — written to be ruled on,
-not presumed) · **Date:** 2026-08-19 · **Deciders:** lead-architect (to rule), art-pipeline (this
-PR) · **Supersedes nothing** · **Related:** ADR 0036 (interior levels as layers), ADR 0032 (sorting
-band rebase), ADR 0033 (hull depth shear), ADR 0026 (rig pivot conventions), the owner's 2026-07-30
-seamless-interiors ruling
+**Status:** **Accepted** · **Date:** 2026-08-19 · **Deciders:** lead-architect (ruling, 2026-08-19),
+art-pipeline (proposal, this PR) · **Supersedes nothing** · **Related:** ADR 0036 (interior levels
+as layers), ADR 0032 (sorting band rebase), ADR 0033 (hull depth shear), ADR 0026 (rig pivot
+conventions), the owner's 2026-07-30 seamless-interiors ruling
+
+## Ruling (lead-architect, 2026-08-19)
+
+**All four proposals accepted**, ruled as a set — 1 and 3 couple, and the scale in 1 is safe
+*because* the swap in 3 means the two poses are never co-visible.
+
+1. **Motion** — accepted as stated. `InteriorRockScale` on `GameConfig`, default 0.45, floor 0.0 as
+   the accessibility setting, with the rule-5 boundary exactly as written below: a comfort filter on
+   one draw, never feeding back into pose, handling, or the save.
+2. **Water mask** — accepted. The hull is the mask; no second authority to disagree with the depth
+   shear. The 16 px/m tanker caveat noted: px/m per def, builder refuses an omission.
+3. **Occlusion** — accepted. Off-not-sorted, ADR 0036's property carried verbatim.
+   ⚠️ The compositing-window-at-frame-edge problem **stays OPEN and recorded** — no future runtime
+   PR may close it silently.
+4. **Region hop** — accepted. The interior shares the hull's lifetime; the `OnDisable` law stands.
+
+The proposal text below is kept **verbatim**, in the "Propose:" voice it was written in. The
+judgment record is never rewritten after the fact — provenance is the point (the sidecar contract's
+own `_confirm` → `_ruled` convention, applied to an ADR).
 
 ## Context
 
@@ -143,13 +161,16 @@ that happens).
   interiors at all. That is upstream re-measure work, not an architecture question.
 - The runtime component itself. This PR ships the **def, the reader and the merge** — data intake
   only. Nothing here draws a cabin.
-- The compositing-window-at-frame-edge problem above. Flagged, open.
+- **The compositing-window-at-frame-edge problem above. Still OPEN after the ruling**, and recorded
+  here so whoever builds the runtime meets it on purpose rather than discovering it.
 
 ## Consequences
 
-- One tunable enters `GameConfig` (`InteriorRockScale`) if Proposal 1 is accepted; nothing else in
-  this ADR adds a constant.
+- `InteriorRockScale` is an accepted tunable on `GameConfig`. It is deliberately **not added in this
+  PR**: a constant nothing reads is the later-phase scope creep CLAUDE.md §8 warns about, and the
+  field belongs in the runtime change that consumes it. Recorded here so it reads as scheduled, not
+  forgotten. Nothing else in this ADR adds a constant.
 - `BoatInteriorDef` lands in **Core** (`HiddenHarbours.Core`) because Boats poses the hull and Art
   draws it and neither may reference the other — the same reason `HullMeshDef` lives there (rule 4).
-- Proposals 1 and 3 are **coupled** (see Proposal 1's second bullet) and should be ruled on
-  together; 2 and 4 stand alone.
+- Proposals 1 and 3 are **coupled** (see Proposal 1's second bullet); they were ruled on together,
+  2 and 4 stand alone.
