@@ -58,7 +58,27 @@ afloat attitude is included, and **104 × 90** over a ±22.5° yaw sweep — cro
 | `Otter8x8_hatch_SE.png` | 8 × (256 × 192) — the engine hatch 0 → 52° at SE. |
 | `Otter8x8_paints_NE.png` | 5 × 2 grid — the ten harbour paints at NE, weather 0.22. |
 
-Pivot is pinned identically in every cell of every sheet.
+Pivot is pinned identically in every cell of every sheet. All seven were re-baked off the merged rig
+(below) on 2026-08-19 — recipes are in the sheet manifest in the contract.
+
+## The ramp budget — 16, and she is at it (#558)
+
+A placed Otter paints **16 colour ramps**, the fleet-wide cap. She paints 17 no longer:
+
+| Build | Materials that paint | Distinct ramps |
+| --- | --- | --- |
+| at rest (`sage`) · `tracked` · `afloat` · `night` | 16 | **16** ✓ |
+| `screen` or `bimini` fitted, incl. the `harbourHaul` preset | 18 | **18** ✗ |
+
+The fix per **#558** is an art merge, not a wider cap: the cockpit **`mat`** is folded into **`mesh`**.
+The two were the same dark rubber authored twice — `RUBBER` mixed 30% to `#24292d` against 35% to
+`#20262b`, which is **0/255 apart at the bottom step and 3/255 at the top**. `mesh` survives unchanged,
+so the four side screens keep their exact bytes; the one face that moves is the **cockpit sole slab**,
+by ≤ 3/255. Across all seven sheets that is 8,527 pixels recoloured, worst delta 3/255, and **zero
+alpha changed** — every painted bbox in the contract still holds.
+
+**The canvas builds are still over.** Fitting `screen` or `bimini` brings in `canvas` and `glass` and
+takes her to 18. #558 covered the base build; a canopy Otter needs its own ruling.
 
 ## Load order
 

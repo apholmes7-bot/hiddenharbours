@@ -23,6 +23,9 @@
 
    FITTED: tracks(false) rack(true) winch(true) screen(false) bimini(false) lamps via night.
 
+   RAMP BUDGET: a placed Otter paints 16 ramps — the fleet cap. It was 17 until #558 merged the
+   cockpit MAT into MESH (see makeMats). A 17th ramp added here makes her unplaceable again.
+
    ORIGIN / PIVOT: ground-centre of the hull footprint. +x curb side, +y bow, +z up.
    Facing 0 (N) shows the TRANSOM; facing 4 (S) shows the bow.
 
@@ -286,7 +289,7 @@
 
   function buildTub(out,s){
     const y0=G.cockpit[0]+0.04, y1=G.cockpit[1]-0.06, hx=0.53, fz=G.floorZ;
-    slab(out, [[-hx,y0],[hx,y0],[hx,y1],[-hx,y1]], fz, 'mat', -0.30, meshTex());
+    slab(out, [[-hx,y0],[hx,y0],[hx,y1],[-hx,y1]], fz, 'mesh', -0.30, meshTex());
     wallX(out,  hx, y0,y1, fz, G.railZ-0.02, 'liner', -0.30, -1);
     wallX(out, -hx, y0,y1, fz, G.railZ-0.02, 'liner', -0.30, +1);
     wallY(out, y0, -hx,hx, fz, G.railZ-0.02, 'liner', -0.26, +1);
@@ -454,7 +457,9 @@
       trim  :{ ramp:t(TRIM) },
       leaf  :{ ramp:cool(TRIM.map(c=>mix(desat(c,0.34),'#4a4f52',0.40))) },
       liner :{ ramp:t((BODY[s.paint]||BODY.sage).map(c=>mix(desat(c,0.28),'#2b3130',0.30))) },
-      mat   :{ ramp:cool(RUBBER.map(c=>mix(c,'#24292d',0.30))) },
+      // #558 — MAT is merged into MESH: one dark-rubber ramp, not two. The cockpit mat was RUBBER
+      // mixed 30% to #24292d, the screens 35% to #20262b — the same ramp to within 3/255 at the
+      // top step and 0/255 at the bottom. The sole slab takes MESH; the screens are untouched.
       mesh  :{ ramp:cool(RUBBER.map(c=>mix(c,'#20262b',0.35))) },
       dash  :{ ramp:cool(RUBBER.map(c=>mix(c,'#4a4f52',0.20))) },
       cloth :{ ramp:cool(CLOTH) }, shade:{ ramp:cool(SHADE) },

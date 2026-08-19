@@ -96,6 +96,24 @@ namespace HiddenHarbours.Tools.RigBaking
             /// at once and needs the filter; a per-wheel roll axis does not.</summary>
             public readonly int SideSign;
 
+            /// <summary>
+            /// ⭐ <b>Fore-aft station window (centroid y, rig metres) — the filter <see cref="SideSign"/>
+            /// cannot be.</b> Defaults to the whole machine, so a vehicle that does not need it says
+            /// nothing.
+            ///
+            /// <para><b>Why it exists.</b> The Dually exports a roll axis PER WHEEL (<c>{wFL:0.25}</c>),
+            /// so one probe isolates one wheel and no window is needed. The Otter exports roll per
+            /// <b>SIDE</b> only — <c>rollL</c>/<c>rollR</c>, because a skid-steer machine drives a side
+            /// as one unit — so a single probe moves FOUR wheels that share a side, and no x-filter can
+            /// tell them apart. The window separates them by axle station instead.</para>
+            ///
+            /// <para>⚠️ Windows must not overlap, or two fittings claim the same wheel and the partition
+            /// assert fires. Measured on the Otter: her four stations sit at y = ±1.02, ±0.34 and the
+            /// geometry that actually rolls spans only ±0.122 about each, so a ±0.30 window clears its
+            /// neighbour by a wide margin and captures exactly 47 faces apiece.</para>
+            /// </summary>
+            public readonly float YMin, YMax;
+
             /// <summary>The point this fitting turns about, in rig metres. For a front wheel this is
             /// the hub centre, which is ALSO a point on its own vertical steer axis (the rig models
             /// no kingpin offset, caster or scrub radius) — so ONE pivot serves both rotations, and
@@ -103,11 +121,42 @@ namespace HiddenHarbours.Tools.RigBaking
             public readonly Vector3 Pivot;
 
             public Axis(string slot, string probe, VehicleFitmentMotion motion,
-                        VehicleFitmentSide side, int sideSign, Vector3 pivot)
+                        VehicleFitmentSide side, int sideSign, Vector3 pivot,
+                        float yMin = float.NegativeInfinity,
+                        float yMax = float.PositiveInfinity)
             {
                 Slot = slot; Probe = probe; Motion = motion; Side = side;
                 SideSign = sideSign; Pivot = pivot;
+                YMin = yMin; YMax = yMax;
             }
+        }
+
+        /// <summary>
+        /// ⭐ <b>Where a vehicle's chassis numbers come from, in her own rig's words.</b> Every entry
+        /// is a JS expression evaluated against the widened rig host.
+        ///
+        /// <para><b>Why this is declared per vehicle rather than read by the baker.</b> The first
+        /// version read <c>G.axF</c>, <c>G.axR</c>, <c>G.frontWX</c>, <c>steer.*</c> and
+        /// <c>travel.*</c> directly — which is the DUALLY's vocabulary, not "a vehicle's". The Otter
+        /// publishes an axle ARRAY (<c>G.axY</c>) and a single <c>G.wheelX</c>, and exports neither
+        /// <c>steer</c> nor <c>travel</c> at all, because a skid-steer machine has no steering axle
+        /// and her rig models no suspension travel. Asking her rig the Dually's questions returns
+        /// <c>undefined</c>, and the wheelbase of an eight-wheeler is not a thing to guess at.</para>
+        ///
+        /// <para>⚠️ <b>Expressions are FULLY QUALIFIED</b> — they are not prefixed with the global the
+        /// way <see cref="RigHullExtraction.FaceExpression"/> is, because several of them are compound
+        /// (<c>AmphibIso.G.axY[0] - AmphibIso.G.axY[3]</c>) and a prefix would qualify only the first
+        /// term and silently read a global that does not exist.</para>
+        ///
+        /// <para>A machine with no steering axle and no modelled travel leaves the last four at their
+        /// default <c>"0"</c>. That is a measured zero — her sidecar's <c>_excluded</c> block says
+        /// <i>steering_geometry: not modelled</i> — rather than an absent number.</para>
+        /// </summary>
+        public sealed class VehicleChassisSource
+        {
+            public string Wheelbase, FrontTrack, WheelRadius, FrontAxleY, RearAxleY;
+            public string MaxInnerDeg = "0", MaxOuterDeg = "0";
+            public string TravelFront = "0", TravelRear = "0";
         }
 
         /// <summary>One road vehicle: where its rig and sidecar are, and what installs it.</summary>
@@ -148,6 +197,23 @@ namespace HiddenHarbours.Tools.RigBaking
             /// their order matters.</summary>
             public readonly IReadOnlyList<Axis> Axes;
 
+            /// <summary>Her chassis numbers, in her own rig's vocabulary — see
+            /// <see cref="VehicleChassisSource"/> for why this is not the baker's business.</summary>
+            public readonly VehicleChassisSource ChassisSource;
+
+            /// <summary>
+            /// ⭐ <b>Two CENTRELINE anchors, aft and fore — the second azimuth oracle.</b> The first
+            /// is her front-axle abeam pair, which every vehicle rig publishes under the same two
+            /// names; this one has to be declared because the names are each rig's own. The Dually
+            /// runs stern-to-bow as <c>hitch</c>→<c>hoodLatch</c>; the Otter, a boat with wheels,
+            /// as <c>transom</c>→<c>bow</c>.
+            ///
+            /// <para>The point of a SECOND oracle is that it is independent: if the two disagree the
+            /// baker refuses rather than picking one, because a mirrored heading map is the kind of
+            /// wrong that looks fine until she drives backwards.</para>
+            /// </summary>
+            public readonly string AzimuthAftAnchor, AzimuthForeAnchor;
+
             /// <summary>
             /// ⭐ <b>Probe poses under which the BODY must not move at all</b> — the independent
             /// check that every articulating face was claimed by some fitting.
@@ -175,6 +241,8 @@ namespace HiddenHarbours.Tools.RigBaking
                            string meshAssetPath = null, string meshId = null,
                            string faceBuilderName = null, RigHullExtraction extraction = null,
                            IReadOnlyList<Axis> axes = null,
+                           VehicleChassisSource chassisSource = null,
+                           string azimuthAftAnchor = null, string azimuthForeAnchor = null,
                            IReadOnlyList<string> bodyMustNotMove = null,
                            string vehicleDefPath = null, string vehicleId = null, string label = null)
             {
@@ -183,6 +251,8 @@ namespace HiddenHarbours.Tools.RigBaking
                 FaceBuilderName = faceBuilderName;
                 Extraction = extraction;
                 Axes = axes ?? Array.Empty<Axis>();
+                ChassisSource = chassisSource;
+                AzimuthAftAnchor = azimuthAftAnchor; AzimuthForeAnchor = azimuthForeAnchor;
                 BodyMustNotMove = bodyMustNotMove ?? Array.Empty<string>();
                 VehicleDefPath = vehicleDefPath; VehicleId = vehicleId; Label = label;
             }
@@ -244,6 +314,66 @@ namespace HiddenHarbours.Tools.RigBaking
         };
 
         /// <summary>
+        /// ⭐ <b>The Otter's articulation — eight wheels claimed by TWO probes and a station window.</b>
+        ///
+        /// <para><b>Why this does not look like the Dually's.</b> She is a SKID STEER: there is no
+        /// steer axle at all, and her rig exports roll per <b>side</b> (<c>rollL</c>/<c>rollR</c>)
+        /// rather than per wheel, because driving a side as one unit IS her drivetrain. So one probe
+        /// moves four wheels, and <see cref="Axis.SideSign"/> cannot separate them — they share a
+        /// side. <see cref="Axis.YMin"/>/<see cref="Axis.YMax"/> separate them by axle station.</para>
+        ///
+        /// <para><b>Measured 2026-08-19, in the repo's own V8.</b> <c>rollL</c> and <c>rollR</c> move
+        /// 188 faces each, perfectly disjoint, and their union is exactly what the master
+        /// <c>roll</c> moves (376). Each ±0.30 station window then takes exactly <b>47</b> of them,
+        /// eight groups covering all 376 with no overlap and nothing left over. Her stations sit
+        /// 0.68 m apart and the rolling geometry spans ±0.122 about each, so the windows clear
+        /// their neighbours by a wide margin.</para>
+        ///
+        /// <para>⚠️ <b>What actually rolls is small, and that is the rig, not a mistake.</b> Her tyre
+        /// is a fixed 14-segment tube whose tread is a procedural <c>lugTex</c> keyed on roll — and
+        /// the mesh path drops procedural <c>tex</c> entirely. The only geometry that moves is the
+        /// five wheel bolts and one index stud per hub. The shipped Dually is built the same way
+        /// (a <c>treadTex</c> tube plus lugs, hand-holes and a notch), so this is the established
+        /// behaviour of the vehicle mesh path rather than something new here.</para>
+        ///
+        /// <para><b>Every pivot is the axle centre</b> — <c>G.wheelX</c> = 0.63 and <c>G.wheelR</c> =
+        /// 0.32, read off the rig rather than typed, and the station y is <c>G.axY</c> exactly. The
+        /// solved centre of rotation reproduces (y, z) = (station, 0.3200) to four decimals. For a
+        /// RollOnly fitting the pivot's x is arbitrary — the rotation is about the axle — so the
+        /// axle centre is the honest label even though the bolts themselves sit outboard at 0.80.</para>
+        /// </summary>
+        static readonly Axis[] OtterAxes = BuildOtterAxes();
+
+        /// <summary>Eight entries that differ only by side and station, so they are generated from
+        /// the rig's own axle table rather than typed out eight times — a transcription slip in one
+        /// of eight near-identical literals is exactly the kind of thing that bakes a wheel in the
+        /// wrong place and looks almost right.</summary>
+        static Axis[] BuildOtterAxes()
+        {
+            // G.axY, bow to stern, and G.wheelX / G.wheelR — the rig's own numbers.
+            float[] axY = { 1.02f, 0.34f, -0.34f, -1.02f };
+            const float WheelX = 0.63f, WheelR = 0.32f;
+
+            // Half-window. Stations are 0.68 apart and the rolling geometry spans ±0.122, so this
+            // sits comfortably between "captures the whole wheel" and "never reaches its neighbour".
+            const float Half = 0.30f;
+
+            var axes = new Axis[8];
+            for (int i = 0; i < 4; i++)
+            {
+                axes[i] = new Axis(
+                    $"WheelL{i + 1}", "{rollL:0.25}", VehicleFitmentMotion.RollOnly,
+                    VehicleFitmentSide.Left, -1, new Vector3(-WheelX, axY[i], WheelR),
+                    axY[i] - Half, axY[i] + Half);
+                axes[4 + i] = new Axis(
+                    $"WheelR{i + 1}", "{rollR:0.25}", VehicleFitmentMotion.RollOnly,
+                    VehicleFitmentSide.Right, +1, new Vector3(WheelX, axY[i], WheelR),
+                    axY[i] - Half, axY[i] + Half);
+            }
+            return axes;
+        }
+
+        /// <summary>
         /// Every road vehicle whose rig and sidecar are committed. Being here means the drop has
         /// LANDED and is hash-verified — it does <b>not</b> mean it is baked to a mesh. What is baked
         /// is <see cref="Baked"/>; why anything is not is <see cref="NotBaked"/>.
@@ -268,27 +398,71 @@ namespace HiddenHarbours.Tools.RigBaking
                     ExtraSymbols = new[] { "build" },
                 },
                 axes: DuallyAxes,
+                chassisSource: new VehicleChassisSource
+                {
+                    Wheelbase = "VehicleIso.G.axF - VehicleIso.G.axR",
+                    FrontTrack = "VehicleIso.G.frontWX * 2",
+                    WheelRadius = "VehicleIso.G.wheelR",
+                    FrontAxleY = "VehicleIso.G.axF",
+                    RearAxleY = "VehicleIso.G.axR",
+                    MaxInnerDeg = "VehicleIso.steer.maxInnerDeg",
+                    MaxOuterDeg = "VehicleIso.steer.maxOuterDeg",
+                    TravelFront = "VehicleIso.travel.F",
+                    TravelRear = "VehicleIso.travel.R",
+                },
+                azimuthAftAnchor: "hitch", azimuthForeAnchor: "hoodLatch",
                 bodyMustNotMove: new[] { "{roll:0.25}", "{steer:1}" },
                 vehicleDefPath: "Assets/_Project/Data/Vehicles/Dually3500.asset",
                 vehicleId: "vehicle.dually_3500",
                 label: "Dually 3500"),
 
-            // ⭐ THE OTTER 8x8 — the second vehicle, and the first amphibian. INTAKE ONLY: her rig
-            // and sidecar are landed and hash-verified, and she carries no bake fields because she
-            // is not baked (see NotBaked for the reason, which is a hard blocker rather than a
-            // decision). When she is baked, this entry grows the same fields the Dually's has.
+            // ⭐ THE OTTER 8x8 — the second vehicle, and the first amphibian. BAKED since #558's
+            // material merge landed (2026-08-19): the art side folded the cockpit `mat` into `mesh`
+            // and she paints 16 ramps instead of 17, so the facet shader takes her and
+            // VehicleMeshDef.IsUsable stops refusing her.
+            //
+            // ⚠️ HER CANOPY BUILDS ARE STILL OVER THE CAP and are deliberately not baked: fitting
+            // `screen` or `bimini` brings in `canvas` and `glass`, measured 17 for either alone and
+            // 18 for both — which is also the `harbourHaul` PRESET. The base machine (plus tracked,
+            // afloat, night and hatch, all measured 16) is what ships. A canopy Otter needs its own
+            // ruling, and OtterIsoKitProbeTests pins both halves so neither can drift unnoticed.
             new Vehicle(
                 "otter8x8",
                 "docs/art/rigs/otter-iso-kit/amphibIsoRig.js",
                 SidecarFolder + "/amphibIsoRig.otter8x8.gameplay.json",
                 "AmphibIso",
-                // Her DEF is committed and her mechanics are built (the skid-steer math, the
-                // drive⇄swim swap, her handling tunables) — what is missing is the picture. So the
-                // path is named here while the bake fields stay empty, and the def itself carries a
-                // null Mesh, which VehicleDef.IsUsable refuses: she is authored, tested, and
-                // unplaceable until the material merge lands. AmphibiousVehicleTests pins that
-                // pairing in BOTH directions, so the day NotBaked loses her entry it goes red rather
-                // than shipping a machine with no wheels.
+                meshAssetPath: "Assets/_Project/Data/Vehicles/Meshes/Otter8x8VehicleMesh.asset",
+                meshId: "vehiclemesh.otter_8x8",
+                faceBuilderName: "build",
+                extraction: new RigHullExtraction
+                {
+                    // ⚠️ `AmphibIso.resolve`, QUALIFIED — same reason as the Dually's: the shim widens
+                    // `build` onto the global but does not put the closure's other privates in scope.
+                    FaceExpression = "build(AmphibIso.resolve({}))",
+                    ExtraSymbols = new[] { "build" },
+                },
+                axes: OtterAxes,
+                chassisSource: new VehicleChassisSource
+                {
+                    // Her axles are an ARRAY, bow to stern, so the wheelbase is first-to-last:
+                    // 1.02 - (-1.02) = 2.04, which is her sidecar's WHEELS.axles_y span.
+                    Wheelbase = "AmphibIso.G.axY[0] - AmphibIso.G.axY[3]",
+                    // One wheelX serves all four axles — her tracks are parallel, unlike the
+                    // Dually's front/rear split. 0.63 * 2 = 1.26 = sidecar WHEELS.track_width_m.
+                    FrontTrack = "AmphibIso.G.wheelX * 2",
+                    WheelRadius = "AmphibIso.G.wheelR",
+                    FrontAxleY = "AmphibIso.G.axY[0]",
+                    RearAxleY = "AmphibIso.G.axY[3]",
+                    // Steer and travel stay "0": she is a SKID STEER with no steering axle
+                    // (her sidecar's _excluded block says so in as many words) and her rig models
+                    // no suspension travel. Measured zeros, not missing numbers.
+                },
+                // Her hull's two ends, both on the centreline — the boat vocabulary, because she is
+                // a boat with wheels. transom sits at G.tailY, bow at G.bowY.
+                azimuthAftAnchor: "transom", azimuthForeAnchor: "bow",
+                // The master roll covers all eight wheels at once, so this does not need to be kept
+                // in step with the eight per-wheel entries. She has no steer axis to check.
+                bodyMustNotMove: new[] { "{roll:0.25}" },
                 vehicleDefPath: "Assets/_Project/Data/Vehicles/Otter8x8.asset",
                 vehicleId: "vehicle.otter_8x8",
                 label: "Otter 8x8"),
@@ -300,52 +474,36 @@ namespace HiddenHarbours.Tools.RigBaking
         /// committed under <c>Assets/_Project/Data/Vehicles/</c>, produced by
         /// <c>VehicleMeshAssetBaker</c>.
         /// </summary>
-        public static readonly IReadOnlyList<string> Baked = new[] { "dually3500" };
+        public static readonly IReadOnlyList<string> Baked = new[] { "dually3500", "otter8x8" };
 
         /// <summary>
         /// ⭐ <b>Registered refusals: a vehicle that is not baked, and why.</b> The coverage test reads
         /// this, so nothing can be quietly left out — a vehicle in neither <see cref="Baked"/> nor here
         /// fails.
         ///
-        /// <para><b>Empty, and that is the good outcome.</b> It held one entry from #548 until
-        /// 2026-08-17: the Dually, blocked on an architecture ruling rather than on any technical
-        /// obstacle. The ruling was given (lead-architect, on #548) and ADR 0035 records it, so the
-        /// entry went away rather than being reworded — which is what that entry said should happen
-        /// to it.</para>
+        /// <para><b>Empty, and that is the good outcome.</b> Two entries have lived here and both
+        /// left the way an entry here should — deleted, not reworded.</para>
+        ///
+        /// <para>The <b>Dually</b> held one from #548 until 2026-08-17, blocked on an architecture
+        /// ruling rather than any technical obstacle; the ruling was given (lead-architect, on #548)
+        /// and ADR 0035 records it.</para>
+        ///
+        /// <para>The <b>Otter</b> held one from #558 until 2026-08-19, blocked on something no
+        /// vehicle-side change could fix: she painted 17 colour ramps against the facet shader's
+        /// <c>float4[16]</c> <c>_RampMeta</c>, and unlike the Dually and the zodiac she used every
+        /// one she declared, so filtering to the used set could not save her. It was an ART fix, and
+        /// the art side made it — the cockpit <c>mat</c> folded into <c>mesh</c>, one face moved by
+        /// ≤ 3/255 — so she measures 16 and bakes. ⚠️ Her CANOPY builds are still over (17 with
+        /// <c>screen</c> or <c>bimini</c>, 18 with both) and that limit lives in
+        /// <c>OtterIsoKitProbeTests</c> and on her <see cref="Vehicles"/> entry, not here: this table
+        /// is about whole vehicles that are not baked, and she is.</para>
         ///
         /// <para>A new drop that is in neither list fails <c>VehicleRigFleetTests</c>. That is the
         /// whole point of the table: art arrives by PR, and this is the thing that stops one arriving
         /// unnoticed.</para>
         /// </summary>
         public static readonly IReadOnlyDictionary<string, string> NotBaked =
-            new Dictionary<string, string>(StringComparer.Ordinal)
-            {
-                ["otter8x8"] =
-                    "INTAKE ONLY, and blocked on something no vehicle-side change can fix: HER " +
-                    "PALETTE DOES NOT FIT THE FACET SHADER.\n\n" +
-                    "Measured in the repo's own V8, 2026-08-17 (OtterIsoKitProbeTests pins it): she " +
-                    "declares 22 materials and her faces reference SEVENTEEN of them. `_RampMeta` is " +
-                    "a float4[16] — a real uniform array, guarded in VehicleMeshDef.IsUsable, " +
-                    "HullMeshDef.IsUsable and IsoFacetHullRenderer.Configure — so a bake would " +
-                    "produce a def that is 'not usable' and she would be refused at install.\n\n" +
-                    "⚠️ THE TRICK THAT SAVED THE DUALLY AND THE ZODIAC DOES NOT SAVE HER. Both of " +
-                    "those declared more materials than they used (17 declared / 16 used, and 18 / " +
-                    "14), so filtering the table to the USED set brought them under the cap without " +
-                    "changing a pixel — a ramp no face references cannot colour one. The Otter uses " +
-                    "seventeen in EVERY build: wheeled, tracked and afloat all reference exactly 17, " +
-                    "and the five she leaves out (trim, canvas, glass, glow, plus whichever of " +
-                    "alloy/track the other build uses) are already excluded. She is one over, " +
-                    "genuinely.\n\n" +
-                    "So the fix is a DECISION, not a pass: either widen `_RampMeta` past 16 (it " +
-                    "costs uniform space on every hull in the fleet, and the number is load-bearing " +
-                    "in three guards), or ask the art director to merge two of her materials. That " +
-                    "is an ADR-level call and an art-side conversation, and it is not this table's " +
-                    "to make. Everything else about her bake is READY: the extraction shape is the " +
-                    "Dually's exactly (a generator with a private build/makeMats), her azimuth is " +
-                    "measured COUNTER-CLOCKWISE off her own front-axle anchors on exact 45° steps, " +
-                    "and her articulation splits cleanly (rollL/rollR, 188 faces a side, perfectly " +
-                    "disjoint by side).",
-            };
+            new Dictionary<string, string>(StringComparer.Ordinal);
     }
 }
 #endif
