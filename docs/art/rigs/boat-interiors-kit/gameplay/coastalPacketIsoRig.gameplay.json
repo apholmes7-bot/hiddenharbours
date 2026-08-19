@@ -1,0 +1,987 @@
+{
+  "schema": "hidden-harbours/boat-gameplay-geometry@1",
+  "rig": "coastalPacketIsoRig.js",
+  "exportSymbol": "CoastalPacketIso",
+  "derivedFromRigSha256": "ba4119da06269e967096b0e3853c0cd79a31017f9a4ef435d2ef5d39faf445b0",
+  "cell": {
+    "w": 2112,
+    "h": 1760,
+    "pivot": {
+      "x": 1056,
+      "y": 976
+    }
+  },
+  "px_per_m": 32,
+  "frame": {
+    "units": "m",
+    "scale_px_per_m": 32,
+    "origin": "amidships, keel bottom, centreline",
+    "axes": "+x starboard, +y bow, +z up",
+    "heading_independent": true
+  },
+  "authoring": "Generated whole in the boat-interiors program (2026-08-19) — this hull had no prior sidecar. The hull rig owns the shell (derivedFromRigSha256); boatInteriorRig.js authored DECK/THRESHOLD/STAIRS/LADDER/INTERACT (interiorDerivedFromRigSha256).",
+  "DECK": [
+    {
+      "id": "main_deck",
+      "z": 5,
+      "winding": "as_listed",
+      "polygon": [
+        [
+          -3.223,
+          -29.45
+        ],
+        [
+          -3.875,
+          -24.565
+        ],
+        [
+          -4.3,
+          -19.68
+        ],
+        [
+          -4.555,
+          -14.795
+        ],
+        [
+          -4.686,
+          -9.91
+        ],
+        [
+          -4.75,
+          -5.025
+        ],
+        [
+          -4.75,
+          -0.14
+        ],
+        [
+          -4.75,
+          4.745
+        ],
+        [
+          -4.693,
+          9.63
+        ],
+        [
+          -4.563,
+          14.515
+        ],
+        [
+          -3.847,
+          19.4
+        ],
+        [
+          3.847,
+          19.4
+        ],
+        [
+          4.563,
+          14.515
+        ],
+        [
+          4.693,
+          9.63
+        ],
+        [
+          4.75,
+          4.745
+        ],
+        [
+          4.75,
+          -0.14
+        ],
+        [
+          4.75,
+          -5.025
+        ],
+        [
+          4.686,
+          -9.91
+        ],
+        [
+          4.555,
+          -14.795
+        ],
+        [
+          4.3,
+          -19.68
+        ],
+        [
+          3.875,
+          -24.565
+        ],
+        [
+          3.223,
+          -29.45
+        ]
+      ],
+      "note": "Working deck inside the bulwark liner (deckHalf = halfAtZ(y, DECK+0.35) - 0.45). Loose deck gear colliders are game-side (owner ruling); the authored obstructions are in _notes.",
+      "_notes": [
+        {
+          "id": "deckhouse",
+          "footprint": [
+            [
+              -4.2,
+              -28.6
+            ],
+            [
+              4.2,
+              -28.6
+            ],
+            [
+              4.2,
+              -17.8
+            ],
+            [
+              -4.2,
+              -17.8
+            ]
+          ],
+          "height_above_sole_m": 2.6,
+          "treatment": "wall"
+        },
+        {
+          "id": "hold_coaming",
+          "footprint": [
+            [
+              -3.55,
+              -15.5
+            ],
+            [
+              3.55,
+              -15.5
+            ],
+            [
+              3.55,
+              18.5
+            ],
+            [
+              -3.55,
+              18.5
+            ]
+          ],
+          "height_above_sole_m": 1.1,
+          "treatment": "wall"
+        },
+        {
+          "id": "crane_pedestal",
+          "footprint": [
+            [
+              0.8,
+              -17
+            ],
+            [
+              1.6,
+              -17
+            ],
+            [
+              1.6,
+              -16.2
+            ],
+            [
+              0.8,
+              -16.2
+            ]
+          ],
+          "height_above_sole_m": 2,
+          "treatment": "wall"
+        }
+      ]
+    },
+    {
+      "id": "house_sole",
+      "z": 5,
+      "winding": "ccw_from_above",
+      "polygon": [
+        [
+          -4.13,
+          -28.53
+        ],
+        [
+          4.13,
+          -28.53
+        ],
+        [
+          4.13,
+          -17.87
+        ],
+        [
+          -4.13,
+          -17.87
+        ]
+      ],
+      "note": "Deckhouse interior — galley/mess. Stair flight and opening carried as obstructions.",
+      "_notes": [
+        {
+          "id": "stove_counter",
+          "footprint": [
+            [
+              -3.55,
+              -27.6
+            ],
+            [
+              -2.95,
+              -27.6
+            ],
+            [
+              -2.95,
+              -26.4
+            ],
+            [
+              -3.55,
+              -26.4
+            ]
+          ],
+          "height_above_sole_m": 0.92,
+          "treatment": "waist_block"
+        },
+        {
+          "id": "locker",
+          "footprint": [
+            [
+              2.95,
+              -27.5
+            ],
+            [
+              3.55,
+              -27.5
+            ],
+            [
+              3.55,
+              -26.4
+            ],
+            [
+              2.95,
+              -26.4
+            ]
+          ],
+          "height_above_sole_m": 1.7,
+          "treatment": "wall"
+        },
+        {
+          "id": "bench",
+          "footprint": [
+            [
+              -3.55,
+              -22.2
+            ],
+            [
+              -2.2,
+              -22.2
+            ],
+            [
+              -2.2,
+              -21.7
+            ],
+            [
+              -3.55,
+              -21.7
+            ]
+          ],
+          "height_above_sole_m": 0.46,
+          "treatment": "step_over"
+        },
+        {
+          "id": "table_port",
+          "footprint": [
+            [
+              -3.3,
+              -21.4
+            ],
+            [
+              -2.3,
+              -21.4
+            ],
+            [
+              -2.3,
+              -20.5
+            ],
+            [
+              -3.3,
+              -20.5
+            ]
+          ],
+          "height_above_sole_m": 0.78,
+          "treatment": "waist_block"
+        },
+        {
+          "id": "companionway_up_flight",
+          "footprint": [
+            [
+              2.3,
+              -25.9
+            ],
+            [
+              3.1,
+              -25.9
+            ],
+            [
+              3.1,
+              -22.9
+            ],
+            [
+              2.3,
+              -22.9
+            ]
+          ],
+          "height_above_sole_m": 1.2,
+          "treatment": "stair_flight"
+        },
+        {
+          "id": "companionway_down_opening",
+          "footprint": [
+            [
+              -3.3,
+              -25.9
+            ],
+            [
+              -2.55,
+              -25.9
+            ],
+            [
+              -2.55,
+              -24.3
+            ],
+            [
+              -3.3,
+              -24.3
+            ]
+          ],
+          "height_above_sole_m": 0,
+          "treatment": "stair_opening"
+        }
+      ]
+    },
+    {
+      "id": "bridge_sole",
+      "z": 10,
+      "winding": "ccw_from_above",
+      "polygon": [
+        [
+          -3.18,
+          -27.73
+        ],
+        [
+          3.18,
+          -27.73
+        ],
+        [
+          3.18,
+          -19.86
+        ],
+        [
+          -3.18,
+          -19.86
+        ]
+      ],
+      "note": "Wheelhouse, reached by the internal companionway.",
+      "_notes": [
+        {
+          "id": "helm_console",
+          "footprint": [
+            [
+              -0.62,
+              -20.95
+            ],
+            [
+              0.62,
+              -20.95
+            ],
+            [
+              0.62,
+              -20.45
+            ],
+            [
+              -0.62,
+              -20.45
+            ]
+          ],
+          "height_above_sole_m": 1.06,
+          "treatment": "wall"
+        },
+        {
+          "id": "helm_seat",
+          "footprint": [
+            [
+              -0.24,
+              -21.96
+            ],
+            [
+              0.24,
+              -21.96
+            ],
+            [
+              0.24,
+              -21.48
+            ],
+            [
+              -0.24,
+              -21.48
+            ]
+          ],
+          "height_above_sole_m": 1.02,
+          "treatment": "wall"
+        },
+        {
+          "id": "chart_stbd",
+          "footprint": [
+            [
+              1.35,
+              -27.3
+            ],
+            [
+              2.55,
+              -27.3
+            ],
+            [
+              2.55,
+              -26.6
+            ],
+            [
+              1.35,
+              -26.6
+            ]
+          ],
+          "height_above_sole_m": 0.98,
+          "treatment": "wall"
+        },
+        {
+          "id": "companionway_up_opening",
+          "footprint": [
+            [
+              2.3,
+              -23.8
+            ],
+            [
+              3.1,
+              -23.8
+            ],
+            [
+              3.1,
+              -22.75
+            ],
+            [
+              2.3,
+              -22.75
+            ]
+          ],
+          "height_above_sole_m": 0,
+          "treatment": "stair_opening"
+        }
+      ]
+    },
+    {
+      "id": "below_sole",
+      "z": 2.2,
+      "winding": "ccw_from_above",
+      "polygon": [
+        [
+          -3.027,
+          -28
+        ],
+        [
+          -3.191,
+          -27
+        ],
+        [
+          -3.354,
+          -26
+        ],
+        [
+          -3.517,
+          -25
+        ],
+        [
+          -3.679,
+          -24
+        ],
+        [
+          -3.841,
+          -23
+        ],
+        [
+          -3.96,
+          -22
+        ],
+        [
+          -4.037,
+          -21
+        ],
+        [
+          -4.115,
+          -20
+        ],
+        [
+          4.115,
+          -20
+        ],
+        [
+          4.037,
+          -21
+        ],
+        [
+          3.96,
+          -22
+        ],
+        [
+          3.841,
+          -23
+        ],
+        [
+          3.679,
+          -24
+        ],
+        [
+          3.517,
+          -25
+        ],
+        [
+          3.354,
+          -26
+        ],
+        [
+          3.191,
+          -27
+        ],
+        [
+          3.027,
+          -28
+        ]
+      ],
+      "note": "Crew flat below the house; headroom to the deck beams 2.6 m.",
+      "_notes": [
+        {
+          "id": "bunk",
+          "footprint": [
+            [
+              -3.05,
+              -27.7
+            ],
+            [
+              -1.95,
+              -27.7
+            ],
+            [
+              -1.95,
+              -25.6
+            ],
+            [
+              -3.05,
+              -25.6
+            ]
+          ],
+          "height_above_sole_m": 0.5,
+          "treatment": "step_over"
+        },
+        {
+          "id": "bunk_stbd",
+          "footprint": [
+            [
+              1.95,
+              -27.7
+            ],
+            [
+              3.05,
+              -27.7
+            ],
+            [
+              3.05,
+              -25.6
+            ],
+            [
+              1.95,
+              -25.6
+            ]
+          ],
+          "height_above_sole_m": 0.5,
+          "treatment": "step_over"
+        },
+        {
+          "id": "engine_stbd",
+          "footprint": [
+            [
+              -0.7,
+              -24.8
+            ],
+            [
+              0.8,
+              -24.8
+            ],
+            [
+              0.8,
+              -22.6
+            ],
+            [
+              -0.7,
+              -22.6
+            ]
+          ],
+          "height_above_sole_m": 1.55,
+          "treatment": "wall"
+        }
+      ]
+    }
+  ],
+  "THRESHOLD": {
+    "id": "entry",
+    "side": "forward",
+    "door_clear_width_m": 0.8,
+    "door_clear_height_m": 1.9,
+    "threshold_point": [
+      -1.25,
+      -17.8,
+      5
+    ],
+    "hinge_axis": {
+      "x": -1.65,
+      "y": -17.8,
+      "vertical": true
+    },
+    "swing": {
+      "outward": true,
+      "toward": "+y (forward, onto the working deck)",
+      "open_deg": 110,
+      "arc_radius_m": 0.8,
+      "keep_clear": [
+        [
+          -1.65,
+          -17.8
+        ],
+        [
+          -0.85,
+          -17.8
+        ],
+        [
+          -1.191,
+          -17.145
+        ],
+        [
+          -1.924,
+          -17.048
+        ]
+      ],
+      "note": "Collider is the swept arc, not the leaf. 8-frame cue (doorOpen = k/7), played reversed on exit."
+    },
+    "door_cue": {
+      "frames": 8,
+      "played_reversed_on_exit": true,
+      "doorOpen_per_frame": "k/7 for k in 0..7",
+      "suggested_ms_per_frame": 70
+    },
+    "provenance": "rig DOOR const (published as HOUSE.door)"
+  },
+  "STAIRS": {
+    "companionways": [
+      {
+        "id": "house_to_bridge",
+        "from": "house_sole",
+        "to": "bridge_sole",
+        "mechanism": "InteriorStair",
+        "opening": {
+          "x0": 2.3,
+          "x1": 3.1,
+          "y0": -23.8,
+          "y1": -22.75,
+          "in": "bridge_sole"
+        },
+        "total_rise_m": 5,
+        "treads": [
+          {
+            "top_z": 5.455,
+            "going_m": 0.24
+          },
+          {
+            "top_z": 5.909,
+            "going_m": 0.24
+          },
+          {
+            "top_z": 6.364,
+            "going_m": 0.24
+          },
+          {
+            "top_z": 6.818,
+            "going_m": 0.24
+          },
+          {
+            "top_z": 7.273,
+            "going_m": 0.24
+          },
+          {
+            "top_z": 7.727,
+            "going_m": 0.24
+          },
+          {
+            "top_z": 8.182,
+            "going_m": 0.24
+          },
+          {
+            "top_z": 8.636,
+            "going_m": 0.24
+          },
+          {
+            "top_z": 9.091,
+            "going_m": 0.24
+          },
+          {
+            "top_z": 9.545,
+            "going_m": 0.24
+          }
+        ],
+        "direction": "up going forward (+y)",
+        "provenance": "boatInteriorRig LAYOUT.packet.stairs.up",
+        "note": "one companionway carries house→bridge whole — the accommodation deck(s) it passes are dressed (game abstraction, flagged)"
+      },
+      {
+        "id": "house_to_below",
+        "from": "house_sole",
+        "to": "below_sole",
+        "mechanism": "InteriorStair",
+        "opening": {
+          "x0": -3.3,
+          "x1": -2.55,
+          "y0": -25.9,
+          "y1": -24.3,
+          "in": "house_sole"
+        },
+        "total_rise_m": 2.8,
+        "treads": [
+          {
+            "top_z": 2.667,
+            "going_m": 0.24
+          },
+          {
+            "top_z": 3.133,
+            "going_m": 0.24
+          },
+          {
+            "top_z": 3.6,
+            "going_m": 0.24
+          },
+          {
+            "top_z": 4.067,
+            "going_m": 0.24
+          },
+          {
+            "top_z": 4.533,
+            "going_m": 0.24
+          }
+        ],
+        "direction": "down going aft (-y)",
+        "provenance": "boatInteriorRig LAYOUT.packet.stairs.down"
+      }
+    ]
+  },
+  "INTERACT": [
+    {
+      "id": "helm",
+      "action": "enter_helm",
+      "label": "Helm",
+      "prompt": "Take the wheel",
+      "level": "bridge",
+      "footprint": [
+        [
+          -0.62,
+          -22
+        ],
+        [
+          0.62,
+          -22
+        ],
+        [
+          0.62,
+          -20.45
+        ],
+        [
+          -0.62,
+          -20.45
+        ]
+      ],
+      "height_above_sole_m": 1.36,
+      "anchor": [
+        0,
+        -21.225,
+        10.68
+      ],
+      "reach_point": [
+        0,
+        -22.5,
+        10
+      ],
+      "backs_onto": "fwd",
+      "visible_facings": [
+        "N",
+        "NE",
+        "E",
+        "W",
+        "NW"
+      ],
+      "mechanism": "the existing helm",
+      "provenance": "boatInteriorRig LAYOUT.packet entry \"helm\", measured against the published loft"
+    },
+    {
+      "id": "stove",
+      "action": "cook",
+      "label": "Stove",
+      "prompt": "Cook · brew up",
+      "level": "house",
+      "footprint": [
+        [
+          -3.55,
+          -27.6
+        ],
+        [
+          -2.95,
+          -27.6
+        ],
+        [
+          -2.95,
+          -26.4
+        ],
+        [
+          -3.55,
+          -26.4
+        ]
+      ],
+      "height_above_sole_m": 1.12,
+      "anchor": [
+        -3.25,
+        -27,
+        5.56
+      ],
+      "reach_point": [
+        -2.53,
+        -27,
+        5
+      ],
+      "backs_onto": "port",
+      "visible_facings": [
+        "N",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "mechanism": "camper stove pattern (cook)",
+      "provenance": "boatInteriorRig LAYOUT.packet entry \"stove\", measured against the published loft"
+    },
+    {
+      "id": "locker",
+      "action": "storage",
+      "label": "Locker",
+      "prompt": "Store · retrieve",
+      "level": "house",
+      "footprint": [
+        [
+          2.95,
+          -27.5
+        ],
+        [
+          3.55,
+          -27.5
+        ],
+        [
+          3.55,
+          -26.4
+        ],
+        [
+          2.95,
+          -26.4
+        ]
+      ],
+      "height_above_sole_m": 1.7,
+      "anchor": [
+        3.25,
+        -26.95,
+        5.85
+      ],
+      "reach_point": [
+        2.53,
+        -26.95,
+        5
+      ],
+      "backs_onto": "star",
+      "visible_facings": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S"
+      ],
+      "mechanism": "InteriorWardrobe (storage)",
+      "provenance": "boatInteriorRig LAYOUT.packet entry \"locker\", measured against the published loft"
+    },
+    {
+      "id": "bunk",
+      "action": "sleep",
+      "label": "Bunk",
+      "prompt": "Sleep · save",
+      "level": "below",
+      "footprint": [
+        [
+          -3.05,
+          -27.7
+        ],
+        [
+          -1.95,
+          -27.7
+        ],
+        [
+          -1.95,
+          -25.6
+        ],
+        [
+          -3.05,
+          -25.6
+        ]
+      ],
+      "height_above_sole_m": 0.64,
+      "anchor": [
+        -2.5,
+        -26.65,
+        2.52
+      ],
+      "reach_point": [
+        -2.5,
+        -28.2,
+        2.2
+      ],
+      "backs_onto": "fwd",
+      "visible_facings": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "mechanism": "InteriorBed (rest + save)",
+      "provenance": "boatInteriorRig LAYOUT.packet entry \"bunk\", measured against the published loft"
+    }
+  ],
+  "LADDER": [
+    {
+      "id": "boat_deck_ladder",
+      "kind": "vertical_ladder",
+      "exterior": true,
+      "base": [
+        -3.3,
+        -17.8
+      ],
+      "z0": 5,
+      "z1": 7.63,
+      "face": "fwd",
+      "rungs": 8,
+      "rung_spacing_m": 0.31,
+      "note": "Main deck to the boat deck, fixed to the house front wall port of the crew door.",
+      "provenance": "exterior rig HOUSE.ladder"
+    }
+  ],
+  "_excluded": {
+    "side_doors": "the lower-house side doors are dressed closed — not routes this pass",
+    "focsle_deck": "the whaleback foc'sle rises with the sheer; a flat-z DECK entry cannot carry it — forward work stays on main_deck this pass",
+    "level_2": "the L2 cabin deck is dressed — one stairwell trunk carries house→bridge whole (game abstraction, flagged)"
+  },
+  "interiorDerivedFromRigSha256": "560aa92e28d27719577ed07efec212ede9b33f58636fe5770836f8f729d260ae"
+}

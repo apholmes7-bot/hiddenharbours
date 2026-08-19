@@ -1,0 +1,637 @@
+{
+  "schema": "hidden-harbours/boat-interior@1",
+  "hull_stem": "lobsterBoatVariantsIsoRig.inshore_hardtop_northumberland",
+  "fits_hulls": [
+    "lobsterBoatVariantsIsoRig.inshore_hardtop_northumberland"
+  ],
+  "interior_rig": "boatInteriorRig.js",
+  "derivedFromRigSha256": "560aa92e28d27719577ed07efec212ede9b33f58636fe5770836f8f729d260ae",
+  "hullRigSha256": {
+    "lobsterBoatVariantsIsoRig": "f5fa042997c21414bd9adcf558b0a2adde541849dce3f4b1ce399156940b0682"
+  },
+  "frame": {
+    "units": "m",
+    "scale_px_per_m": 32,
+    "origin": "amidships, keel bottom, centreline",
+    "axes": "+x starboard, +y bow, +z up",
+    "heading_independent": true
+  },
+  "cell": {
+    "w": 480,
+    "h": 420,
+    "pivot": {
+      "x": 240,
+      "y": 232
+    },
+    "facings": [
+      "N",
+      "NE",
+      "E",
+      "SE",
+      "S",
+      "SW",
+      "W",
+      "NW"
+    ],
+    "levels": [
+      "house",
+      "cuddy"
+    ],
+    "note": "One sheet per level per facing, baked to the full hull cell at the hull pivot — composites under the exterior 1:1."
+  },
+  "motion": {
+    "rides_hull_rock": true,
+    "source": "exterior rig ROCK + rock(i) — pass the SAME roll/pitch/heave to both renders and registration holds mid-wave",
+    "level_floor_assumptions": "none — nothing is gimballed; the lamp, kettle and door tilt with the hull (diegetic)",
+    "comfort_clamp_compatible": true
+  },
+  "FOOTPRINT": {
+    "house": [
+      [
+        -1.012,
+        0.172
+      ],
+      [
+        -1.012,
+        0.46
+      ],
+      [
+        -1.012,
+        0.748
+      ],
+      [
+        -1.012,
+        1.036
+      ],
+      [
+        -1.012,
+        1.324
+      ],
+      [
+        -1.012,
+        1.612
+      ],
+      [
+        -1.012,
+        1.901
+      ],
+      [
+        -1.012,
+        2.189
+      ],
+      [
+        -1.012,
+        2.477
+      ],
+      [
+        -0.968,
+        2.765
+      ],
+      [
+        -0.879,
+        3.053
+      ],
+      [
+        0.879,
+        3.053
+      ],
+      [
+        0.968,
+        2.765
+      ],
+      [
+        1.012,
+        2.477
+      ],
+      [
+        1.012,
+        2.189
+      ],
+      [
+        1.012,
+        1.901
+      ],
+      [
+        1.012,
+        1.612
+      ],
+      [
+        1.012,
+        1.324
+      ],
+      [
+        1.012,
+        1.036
+      ],
+      [
+        1.012,
+        0.748
+      ],
+      [
+        1.012,
+        0.46
+      ],
+      [
+        1.012,
+        0.172
+      ]
+    ]
+  },
+  "WALKABLE": {
+    "house_sole": {
+      "z": 0.44,
+      "polygon": [
+        [
+          -0.942,
+          0.242
+        ],
+        [
+          -0.942,
+          0.522
+        ],
+        [
+          -0.942,
+          0.801
+        ],
+        [
+          -0.942,
+          1.081
+        ],
+        [
+          -0.942,
+          1.36
+        ],
+        [
+          -0.942,
+          1.64
+        ],
+        [
+          -0.942,
+          1.92
+        ],
+        [
+          -0.942,
+          2.199
+        ],
+        [
+          -0.942,
+          2.479
+        ],
+        [
+          -0.9,
+          2.758
+        ],
+        [
+          -0.814,
+          3.038
+        ],
+        [
+          0.814,
+          3.038
+        ],
+        [
+          0.9,
+          2.758
+        ],
+        [
+          0.942,
+          2.479
+        ],
+        [
+          0.942,
+          2.199
+        ],
+        [
+          0.942,
+          1.92
+        ],
+        [
+          0.942,
+          1.64
+        ],
+        [
+          0.942,
+          1.36
+        ],
+        [
+          0.942,
+          1.081
+        ],
+        [
+          0.942,
+          0.801
+        ],
+        [
+          0.942,
+          0.522
+        ],
+        [
+          0.942,
+          0.242
+        ]
+      ],
+      "obstructions": [
+        {
+          "id": "helm_console",
+          "footprint": [
+            [
+              -0.39,
+              1.96
+            ],
+            [
+              0.39,
+              1.96
+            ],
+            [
+              0.39,
+              2.32
+            ],
+            [
+              -0.39,
+              2.32
+            ]
+          ],
+          "height_above_sole_m": 1.06,
+          "treatment": "wall"
+        },
+        {
+          "id": "helm_seat",
+          "footprint": [
+            [
+              -0.24,
+              1.06
+            ],
+            [
+              0.24,
+              1.06
+            ],
+            [
+              0.24,
+              1.54
+            ],
+            [
+              -0.24,
+              1.54
+            ]
+          ],
+          "height_above_sole_m": 1.02,
+          "treatment": "wall"
+        },
+        {
+          "id": "stove_counter",
+          "footprint": [
+            [
+              -0.91,
+              0.63
+            ],
+            [
+              -0.35,
+              0.63
+            ],
+            [
+              -0.35,
+              1.35
+            ],
+            [
+              -0.91,
+              1.35
+            ]
+          ],
+          "height_above_sole_m": 0.9,
+          "treatment": "waist_block"
+        },
+        {
+          "id": "locker",
+          "footprint": [
+            [
+              0.39,
+              0.46
+            ],
+            [
+              0.93,
+              0.46
+            ],
+            [
+              0.93,
+              1.1
+            ],
+            [
+              0.39,
+              1.1
+            ]
+          ],
+          "height_above_sole_m": 1.65,
+          "treatment": "wall"
+        },
+        {
+          "id": "bench",
+          "footprint": [
+            [
+              0.46,
+              1.44
+            ],
+            [
+              0.93,
+              1.44
+            ],
+            [
+              0.93,
+              2.26
+            ],
+            [
+              0.46,
+              2.26
+            ]
+          ],
+          "height_above_sole_m": 0.44,
+          "treatment": "step_over"
+        }
+      ]
+    },
+    "cuddy_sole": {
+      "z": 0.07,
+      "polygon": [
+        [
+          -0.238,
+          3.053
+        ],
+        [
+          -0.21,
+          3.14
+        ],
+        [
+          -0.182,
+          3.226
+        ],
+        [
+          -0.156,
+          3.313
+        ],
+        [
+          -0.131,
+          3.399
+        ],
+        [
+          -0.106,
+          3.486
+        ],
+        [
+          -0.081,
+          3.573
+        ],
+        [
+          -0.06,
+          3.659
+        ],
+        [
+          -0.06,
+          3.746
+        ],
+        [
+          0.06,
+          3.746
+        ],
+        [
+          0.06,
+          3.659
+        ],
+        [
+          0.081,
+          3.573
+        ],
+        [
+          0.106,
+          3.486
+        ],
+        [
+          0.131,
+          3.399
+        ],
+        [
+          0.156,
+          3.313
+        ],
+        [
+          0.182,
+          3.226
+        ],
+        [
+          0.21,
+          3.14
+        ],
+        [
+          0.238,
+          3.053
+        ]
+      ],
+      "obstructions": [
+        {
+          "id": "v_berth",
+          "footprint": [
+            [
+              -0.9,
+              3.273
+            ],
+            [
+              0.9,
+              3.273
+            ],
+            [
+              0.4,
+              3.626
+            ],
+            [
+              -0.4,
+              3.626
+            ]
+          ],
+          "height_above_sole_m": 0.42,
+          "treatment": "waist_block"
+        }
+      ]
+    }
+  },
+  "THRESHOLD": {
+    "id": "entry",
+    "side": "aft",
+    "door_clear_width_m": 0.529,
+    "door_clear_height_m": 1.74,
+    "threshold_point": [
+      -0.021,
+      0.172,
+      0.44
+    ],
+    "mechanism": "sliding",
+    "slide": {
+      "outward": false,
+      "toward": "+x (starboard) along an exterior track; parks over the aft wall",
+      "travel_m": 0.508,
+      "clear_at_open_fraction": 0.55,
+      "keep_clear": [
+        [
+          -0.286,
+          0.172
+        ],
+        [
+          0.751,
+          0.172
+        ],
+        [
+          0.751,
+          0.022
+        ],
+        [
+          -0.286,
+          0.022
+        ]
+      ],
+      "note": "No swept arc — the collider is the leaf itself (proud of the wall 0.085 m), riding doorOpen*travel along +x. 8-frame cue (doorOpen = k/7), played reversed on exit. hinge_axis/swing omitted: this leaf slides — flagged for intake."
+    },
+    "door_cue": {
+      "frames": 8,
+      "played_reversed_on_exit": true,
+      "doorOpen_per_frame": "k/7 for k in 0..7",
+      "suggested_ms_per_frame": 70
+    },
+    "provenance": "rig DOOR const (published as HOUSE.door)"
+  },
+  "STAIRS": {
+    "companionways": [
+      {
+        "id": "cuddy_companionway",
+        "from": "house_sole",
+        "to": "cuddy_sole",
+        "opening": {
+          "x0": -0.315,
+          "x1": 0.315,
+          "at_y": 3.053,
+          "z0": 0.07,
+          "z1": 1.69
+        },
+        "total_rise_m": 0.37,
+        "treads": [
+          {
+            "top_z": 0.193,
+            "going_m": 0.24
+          },
+          {
+            "top_z": 0.317,
+            "going_m": 0.24
+          }
+        ],
+        "direction": "down going forward (+y)",
+        "provenance": "HOUSE.cuddy published by the exterior rig; treads placed by boatInteriorRig"
+      }
+    ]
+  },
+  "INTERACT": [
+    {
+      "id": "helm",
+      "action": "enter_helm",
+      "reach_point": [
+        0,
+        0.521,
+        0.44
+      ],
+      "visible_facings": [
+        "N",
+        "NE",
+        "E",
+        "W",
+        "NW"
+      ],
+      "_note": "mechanism: the existing helm · house level · footprint + obstructions in the hull gameplay sidecar"
+    },
+    {
+      "id": "stove",
+      "action": "cook",
+      "reach_point": [
+        0.068,
+        0.989,
+        0.44
+      ],
+      "visible_facings": [
+        "N",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "_note": "mechanism: camper stove pattern (cook) · house level · footprint + obstructions in the hull gameplay sidecar"
+    },
+    {
+      "id": "locker",
+      "action": "storage",
+      "reach_point": [
+        -0.028,
+        0.779,
+        0.44
+      ],
+      "visible_facings": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S"
+      ],
+      "_note": "mechanism: InteriorWardrobe (storage) · house level · footprint + obstructions in the hull gameplay sidecar"
+    },
+    {
+      "id": "bunk",
+      "action": "sleep",
+      "reach_point": [
+        0,
+        2.773,
+        0.07
+      ],
+      "visible_facings": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "_note": "mechanism: InteriorBed (rest + save) · cuddy level · footprint + obstructions in the hull gameplay sidecar"
+    },
+    {
+      "id": "companionway",
+      "action": "stair",
+      "at": "cuddy_companionway",
+      "reach_point": [
+        0,
+        2.453,
+        0.44
+      ],
+      "visible_facings": [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SW",
+        "W",
+        "NW"
+      ],
+      "_note": "mechanism: InteriorStair · house→cuddy, 2 tread(s)"
+    }
+  ],
+  "mechanism_map": {
+    "helm": "existing helm (enter_helm)",
+    "bunk": "InteriorBed (sleep, rest + save)",
+    "locker": "InteriorWardrobe (storage)",
+    "stove": "camper stove pattern (cook)",
+    "companionway": "InteriorStair"
+  },
+  "variant": {
+    "size": "inshore",
+    "style": "hardtop",
+    "region": "northumberland"
+  },
+  "_excluded": {
+    "LADDER": "no ladder on a 8.6 m wheelhouse boat — the washboards are the route forward and the roof is gear, not deck"
+  },
+  "_stem_note": "Stem lobsterBoatVariantsIsoRig.inshore_hardtop_northumberland is not yet in the gameplay repo list — new stem, flagged for intake."
+}
