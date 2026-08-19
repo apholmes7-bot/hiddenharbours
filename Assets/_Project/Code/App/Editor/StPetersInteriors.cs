@@ -45,6 +45,16 @@ namespace HiddenHarbours.App.Editor
         /// <summary>The child object name of the wall colliders.</summary>
         public const string WallsChildName = "Walls";
 
+        /// <summary>The child object name of the UPPER storey's room sprite.</summary>
+        public const string UpperRoomChildName = "InteriorUpper";
+
+        /// <summary>The child object name of the upper storey's furniture root.</summary>
+        public const string UpperPropsChildName = "FurnitureUpper";
+
+        /// <summary>The child object name of the colliders that exist only upstairs — the partitions
+        /// and the plug that closes the front doorway. The building's own walls are NOT in here.</summary>
+        public const string UpperWallsChildName = "WallsUpper";
+
         /// <summary>
         /// Wall thickness (m) the colliders are built with and the inside test uses.
         ///
@@ -76,11 +86,224 @@ namespace HiddenHarbours.App.Editor
             public readonly int FacingOffset;
             public readonly string Why;
 
+            /// <summary>What this piece of furniture also IS, if anything — a bed you can turn in at,
+            /// the stairwell, the wardrobe. <see cref="InteriorFixture.None"/> for the great majority,
+            /// which are scenery with a collider and nothing more.</summary>
+            public readonly InteriorFixture Fixture;
+
             public Furnishing(string propKey, Vector2 roomMetres, int facingOffset, string why)
+                : this(propKey, roomMetres, facingOffset, why, InteriorFixture.None)
+            {
+            }
+
+            public Furnishing(string propKey, Vector2 roomMetres, int facingOffset, string why,
+                              InteriorFixture fixture)
             {
                 PropKey = propKey; RoomMetres = roomMetres; FacingOffset = facingOffset; Why = why;
+                Fixture = fixture;
             }
         }
+
+        /// <summary>
+        /// What a placed prop can additionally BE. The prop is still an ordinary sprite with an ordinary
+        /// collider; this only decides which behaviour rides along on it.
+        ///
+        /// <para>One enum rather than five parallel placement tables, because the alternative was five
+        /// lists that all had to agree about the room's coordinate frame — and the first one to disagree
+        /// would put a bed you can sleep in half a metre from the bed you can see.</para>
+        /// </summary>
+        public enum InteriorFixture
+        {
+            /// <summary>Scenery. The overwhelming default.</summary>
+            None = 0,
+            /// <summary>The foot of the stairs, on the lower storey: press to go up.</summary>
+            StairUp,
+            /// <summary>The head of the stairs, on the upper storey: press to come down.</summary>
+            StairDown,
+            /// <summary>The player's own bed — the one that offers to keep the day.</summary>
+            PlayerBed,
+            /// <summary>Somebody else's bed. Interacting is a polite refusal, never a save.</summary>
+            OwnerBed,
+            /// <summary>The wardrobe: raises the customization signal and says there is nothing to
+            /// change into yet.</summary>
+            Wardrobe,
+        }
+
+        /// <summary>
+        /// A rectangle of extra WALL, in the room's own model frame (metres), that exists only on an
+        /// upper storey — the partition between two bedrooms.
+        ///
+        /// <para>Model-frame numbers rather than world ones for the same reason every furnishing is: the
+        /// room is drawn at a facing the builder chooses and the owner reads these against the picture,
+        /// where <c>y</c> runs toward the hearth. <see cref="InteriorFootprint.Quad"/> does the rotation
+        /// and the squash.</para>
+        /// </summary>
+        public readonly struct WallRect
+        {
+            public readonly float X0, X1, Y0, Y1;
+            public readonly string Why;
+
+            public WallRect(float x0, float x1, float y0, float y1, string why)
+            {
+                X0 = x0; X1 = x1; Y0 = y0; Y1 = y1; Why = why;
+            }
+        }
+
+        /// <summary>
+        /// <b>A building's storey above</b>, as data: what furnishes it, what extra walls divide it, and
+        /// what the lower storey gains so you can get up there.
+        ///
+        /// <para><b>⚠ Why this is keyed separately from the room key, and not off it.</b> Ginny's
+        /// cottage and the village's pilot cottage are the SAME build — both are
+        /// <c>sageCottage</c>, deliberately (see <c>StPetersGinnyPlot.CottageKey</c>). Hanging the
+        /// upstairs off the room key would therefore have given the village cottage an upstairs too:
+        /// two beds, a wardrobe and a stairwell inside a house nobody lodges in, with the player able to
+        /// save in a stranger's bedroom. The plan is asked for BY NAME by the site that wants one, and
+        /// every other building on the island is untouched by construction.</para>
+        /// </summary>
+        public readonly struct UpperLevelPlan
+        {
+            /// <summary>Which baked room the upper storey draws. Empty = the same room sheet as the
+            /// storey below, which is what the greybox uses: the footprint is identical, so the floor
+            /// and far walls are already the right size and shape.</summary>
+            public readonly string RoomKey;
+
+            /// <summary>Furniture added to the storey BELOW — in practice just the foot of the stairs,
+            /// which has to exist downstairs or there is no way up.</summary>
+            public readonly IReadOnlyList<Furnishing> GroundAdditions;
+
+            /// <summary>What furnishes the storey above.</summary>
+            public readonly IReadOnlyList<Furnishing> Furnishings;
+
+            /// <summary>Walls that exist only up here — the partition. The building's OWN walls are not
+            /// listed and are not rebuilt: they are the same walls on both storeys.</summary>
+            public readonly IReadOnlyList<WallRect> Partitions;
+
+            public UpperLevelPlan(string roomKey,
+                                  IReadOnlyList<Furnishing> groundAdditions,
+                                  IReadOnlyList<Furnishing> furnishings,
+                                  IReadOnlyList<WallRect> partitions)
+            {
+                RoomKey = roomKey ?? "";
+                GroundAdditions = groundAdditions;
+                Furnishings = furnishings;
+                Partitions = partitions;
+            }
+        }
+
+        /// <summary>The plan key Ginny's cottage asks for. Named after the SITE, not the build, because
+        /// the build (<c>sageCottage</c>) is shared with the village's pilot cottage and only one of the
+        /// two has anyone living upstairs.</summary>
+        public const string GinnyCottagePlanKey = "ginnyCottage";
+
+        /// <summary>
+        /// <b>The storey above, per site.</b> Returns an empty plan for everything not listed, which is
+        /// every building on the island but one.
+        ///
+        /// <para><b>The cottage's numbers, so the geometry below can be read.</b> <c>sageCottage</c> is
+        /// 6.6 × 8.05 m, so the model frame runs x ±3.3 and y ±4.025, and the 0.3 m walls leave a floor
+        /// of x ∈ [−3.0, 3.0], y ∈ [−3.725, 3.725]. <c>y</c> runs toward the hearth (the top of the
+        /// room picture); the front door is the gap at the bottom, centred on x = 0.</para>
+        ///
+        /// <para><b>The plan, in words.</b> A landing runs up the right-hand side, wide enough to walk
+        /// two abreast past the stair head. A north–south partition closes it off from the two bedrooms,
+        /// with a door into each; an east–west partition divides those two from one another. The result
+        /// is that <b>neither bedroom is a corridor to the other</b> — you reach both from the landing,
+        /// and Ginny does not walk through the room she is lending you. That cost 1.8 m of floor and is
+        /// the single thing about this layout worth defending.</para>
+        ///
+        /// <para><b>Where the stairwell had to go, and why it is not prettier.</b> It stands at
+        /// (2.50, −0.90) on BOTH storeys — that is what makes the level swap need no teleport — so it
+        /// has to be clear of the ground floor's shipped furniture as well as of the landing. The
+        /// ground floor is already furnished (the dresser at (2.75, 0.50), the table and its two chairs
+        /// across the middle) and that furniture is the VILLAGE cottage's too, so it cannot be moved to
+        /// suit this one. (2.50, −0.90) is the gap that leaves: hard against the right wall, a clear
+        /// 0.68 m south of the dresser, and well outside the doorway lane.</para>
+        ///
+        /// <para><b>⚠ Greybox, and it looks like one.</b> The upper storey draws the SAME baked room
+        /// sheet as the one below, because the footprint is identical and the floor and far walls are
+        /// therefore already the right size — but that sheet has a front door drawn in it, and upstairs
+        /// that door goes nowhere. It is plugged solid (see <see cref="InteriorFootprint.DoorwayPlugQuad"/>)
+        /// so you cannot walk out of it, but it is still DRAWN. That is the one honest ugliness here and
+        /// it is the art lane's to fix: an <c>upstairs</c> room bake, named in <see cref="UpperLevelPlan.RoomKey"/>,
+        /// replaces it without touching a line of this file.</para>
+        /// </summary>
+        public static UpperLevelPlan UpperLevelFor(string planKey) => planKey switch
+        {
+            GinnyCottagePlanKey => new UpperLevelPlan(
+                // Empty = draw the storey below's own room sheet. See the greybox note above.
+                roomKey: "",
+
+                // ---- what the GROUND floor gains: the foot of the stairs ---------------------------
+                groundAdditions: new[]
+                {
+                    new Furnishing("seaChest", new Vector2(2.50f, -0.90f), 0,
+                                   "the foot of the stairs, against the right wall in the gap between " +
+                                   "the dresser and the chairs — a sea chest STANDING IN for the stair " +
+                                   "art, because it is the only prop in the kit you would plausibly " +
+                                   "step up onto, and a bare interact point would be a way upstairs " +
+                                   "with nothing to see",
+                                   InteriorFixture.StairUp),
+                },
+
+                // ---- the storey above ---------------------------------------------------------------
+                furnishings: new[]
+                {
+                    new Furnishing("seaChest", new Vector2(2.50f, -0.90f), 0,
+                                   "the head of the same stairs — the SAME model coordinate as the foot, " +
+                                   "which is precisely why coming up needs no teleport",
+                                   InteriorFixture.StairDown),
+
+                    new Furnishing("bed", new Vector2(-2.10f, -2.30f), 0,
+                                   "THE PLAYER'S BED, in the front room: along the left wall, the far " +
+                                   "corner from the landing door, which is where a bed goes in a room " +
+                                   "this size — and is the arrangement the ground floor already uses",
+                                   InteriorFixture.PlayerBed),
+
+                    new Furnishing("dresser", new Vector2(0.35f, -0.60f), 2,
+                                   "the wardrobe, STANDING IN as a dresser (the kit has no wardrobe " +
+                                   "yet). Turned a quarter so its back is to the landing partition — " +
+                                   "against the one wall in the player's room that is not the outside " +
+                                   "of the house, and across the room from the bed so both are " +
+                                   "reachable without threading between them",
+                                   InteriorFixture.Wardrobe),
+
+                    new Furnishing("bed", new Vector2(-2.10f, 2.30f), 0,
+                                   "GINNY'S BED, in the back room over the hearth — the warm end of the " +
+                                   "house, which is the host's, and the same left-wall line as the " +
+                                   "player's so the two rooms read as one plan",
+                                   InteriorFixture.OwnerBed),
+                },
+
+                // ---- the walls that exist only up here -----------------------------------------------
+                // The building's OWN four walls are NOT here: they are the same walls on both storeys
+                // and BuildWalls already stood them. Only the partitions and the doorway plug ride the
+                // level. Each rect deliberately runs INTO the outer wall band it meets (±4.025, ∓3.3)
+                // so there is no hairline gap at the join — the quads are separate colliders, so an
+                // overlap is safe, whereas a shared edge is what leaks a player through a corner.
+                partitions: new[]
+                {
+                    new WallRect(0.90f, 1.20f, -4.025f, -3.10f,
+                                 "the landing partition, front run — from the front wall to the " +
+                                 "player's door"),
+                    new WallRect(0.90f, 1.20f, -1.90f, 1.40f,
+                                 "the landing partition, middle run — between the two bedroom doors, " +
+                                 "and what the east-west partition tees into"),
+                    new WallRect(0.90f, 1.20f, 2.60f, 4.025f,
+                                 "the landing partition, back run — from Ginny's door to the back wall"),
+                    new WallRect(-3.30f, 1.20f, 0.40f, 0.70f,
+                                 "the partition BETWEEN the two bedrooms, running west from the landing " +
+                                 "to the left wall. Solid: each room is entered from the landing, so " +
+                                 "neither is a way through to the other"),
+                }),
+
+            _ => default,
+        };
+
+        /// <summary>Whether a plan key names a storey above. <c>default(UpperLevelPlan)</c> — everything
+        /// not listed — has null lists and is the "no upstairs" answer.</summary>
+        public static bool HasUpperLevel(string planKey) =>
+            !string.IsNullOrEmpty(planKey) && UpperLevelFor(planKey).Furnishings != null;
 
         /// <summary>
         /// How each room is furnished. A handful per room, honestly placed — enough that a house reads
@@ -210,7 +433,7 @@ namespace HiddenHarbours.App.Editor
         /// the whole of "non-destructive" here: the builder owns these objects and rebuilds them.</para>
         /// </summary>
         public static bool Stand(GameObject buildingGo, SpriteRenderer shell, string buildingKey,
-                                 int exteriorFacing, Transform occupant)
+                                 int exteriorFacing, Transform occupant, string upperPlanKey = null)
         {
             if (buildingGo == null) return false;
 
@@ -258,8 +481,8 @@ namespace HiddenHarbours.App.Editor
             var propsGo = new GameObject(PropsChildName);
             propsGo.transform.SetParent(buildingGo.transform, worldPositionStays: false);
             propsGo.transform.localPosition = Vector3.zero;
-            int furnished = Furnish(propsGo.transform, room.Entry.key, footprint, interiorFacing,
-                                    room.Entry.facings);
+            int furnished = Furnish(propsGo.transform, FurnishingsFor(room.Entry.key), room.Entry.key,
+                                    footprint, interiorFacing, room.Entry.facings);
 
             // --- the behaviour.
             var interior = buildingGo.AddComponent<BuildingInterior>();
@@ -271,13 +494,20 @@ namespace HiddenHarbours.App.Editor
                                doorOnPlusY: doorSign > 0f, doorAcrossMetres: door.x);
             interior.SetOccupant(occupant);
 
+            // --- THE STOREY ABOVE, if this SITE asked for one. Keyed by plan and not by room, because
+            //     Ginny's cottage and the village's pilot cottage are the same build — see UpperLevelFor.
+            int upstairs = StandUpperLevel(buildingGo, interior, room, roomSprite, footprint,
+                                           interiorFacing, propsGo.transform, upperPlanKey);
+            if (upstairs > 0) furnished += upstairs;
+
             Debug.Log(
                 $"[StPetersInteriors] '{buildingKey}' is enterable: room d{interiorFacing} under shell " +
                 $"d{exteriorFacing} (the contract's MEASURED offset), " +
                 $"{room.Entry.footprintWidthMetres:0.#}×{room.Entry.footprintLengthMetres:0.#} m of " +
                 $"floor, {furnished} piece(s) of furniture, doorway on the " +
                 $"{(doorSign > 0f ? "+Y" : "−Y")} wall {door.x:+0.00;-0.00} m off its centre, threshold " +
-                $"at ({footprint.DoorWorld.x:0.#},{footprint.DoorWorld.y:0.#}).");
+                $"at ({footprint.DoorWorld.x:0.#},{footprint.DoorWorld.y:0.#})" +
+                (interior.HasUpperLevel ? ", AND a storey above it." : "."));
             return true;
         }
 
@@ -292,7 +522,8 @@ namespace HiddenHarbours.App.Editor
             {
                 Transform child = buildingRoot.GetChild(i);
                 if (child.name == RoomChildName || child.name == PropsChildName ||
-                    child.name == WallsChildName)
+                    child.name == WallsChildName || child.name == UpperRoomChildName ||
+                    child.name == UpperPropsChildName || child.name == UpperWallsChildName)
                     Object.DestroyImmediate(child.gameObject);
             }
         }
@@ -323,11 +554,14 @@ namespace HiddenHarbours.App.Editor
 
         /// <summary>Stand the furniture. Each prop is its own sprite with its own Y-sort and its own
         /// footprint collider — the two things that make walking round a table work.</summary>
-        static int Furnish(Transform propsRoot, string roomKey, in InteriorFootprint footprint,
-                           int interiorFacing, int facings)
+        static int Furnish(Transform propsRoot, IReadOnlyList<Furnishing> furnishings, string roomKey,
+                           in InteriorFootprint footprint, int interiorFacing, int facings,
+                           BuildingInterior interior = null, string fixtureIdPrefix = null)
         {
+            if (furnishings == null) return 0;
+
             int placed = 0;
-            foreach (Furnishing f in FurnishingsFor(roomKey))
+            foreach (Furnishing f in furnishings)
             {
                 InteriorCatalog.Placement prop = InteriorCatalog.FindProp(f.PropKey);
                 if (!prop.IsValid)
@@ -367,11 +601,208 @@ namespace HiddenHarbours.App.Editor
                                        prop.Entry.propFootprintDepth, f.FacingOffset),
                     world));
 
+                Fit(go, f, interior, fixtureIdPrefix);
+
                 placed++;
             }
 
             return placed;
         }
+
+        // =====================================================================================
+        //  THE STOREY ABOVE
+        // =====================================================================================
+
+        /// <summary>
+        /// Stand the upper storey, if this site's plan declares one. Returns how many pieces of
+        /// furniture went up there (0 for the great majority of buildings, which have no plan).
+        ///
+        /// <para><b>What an upper storey actually IS here.</b> A second room sprite, a second furniture
+        /// root and a small set of extra colliders, all parented to the same building and all switched
+        /// as one by <see cref="BuildingInterior"/>. It shares the footprint, the facing and the walls
+        /// with the storey below — which is what "true to the footprint" means when the footprint has
+        /// two floors in it — so nothing here re-derives any of those.</para>
+        ///
+        /// <para><b>The three colliders that differ, and why only three.</b> The house's four walls are
+        /// the same walls upstairs and are already standing, so the upper level adds only what is
+        /// genuinely different about it: the partitions from the plan, and a PLUG over the front
+        /// doorway, because there is nothing outside a first-floor door but air. Building a whole second
+        /// wall set for the sake of one missing gap would have been two places for the door's position
+        /// to live.</para>
+        ///
+        /// <para><b>Why the stair is placed twice.</b> Once in each storey's furniture root, at the same
+        /// model coordinate. The two are separate objects carrying opposite halves of the stairwell
+        /// (<see cref="InteriorFixture.StairUp"/> / <see cref="InteriorFixture.StairDown"/>), and
+        /// because the inactive storey's root is switched OFF, the half you are not standing on
+        /// un-registers itself from <see cref="Interactables"/> entirely. The press can therefore never
+        /// resolve to the wrong direction — not because the resolver was careful, but because only one
+        /// of them is in the room.</para>
+        /// </summary>
+        static int StandUpperLevel(GameObject buildingGo, BuildingInterior interior,
+                                   InteriorCatalog.Placement room, Sprite groundRoomSprite,
+                                   in InteriorFootprint footprint, int interiorFacing,
+                                   Transform groundProps, string planKey)
+        {
+            if (!HasUpperLevel(planKey)) return 0;
+
+            UpperLevelPlan plan = UpperLevelFor(planKey);
+            string idPrefix = "fixture." + planKey;
+
+            // --- the upper room sprite. An empty RoomKey means "the same sheet as downstairs", which is
+            //     the greybox: identical footprint, so the floor and far walls are already correct.
+            Sprite upperSprite = groundRoomSprite;
+            InteriorCatalog.Placement upperRoom = room;
+            if (!string.IsNullOrEmpty(plan.RoomKey))
+            {
+                InteriorCatalog.Placement named = InteriorCatalog.FindRoom(plan.RoomKey);
+                if (named.IsValid)
+                {
+                    Sprite s = InteriorCatalog.LoadFacing(named, interiorFacing);
+                    if (s != null) { upperRoom = named; upperSprite = s; }
+                    else
+                        Debug.LogWarning(
+                            $"[StPetersInteriors] upper-level plan '{planKey}' names room " +
+                            $"'{plan.RoomKey}', but it has no facing-{interiorFacing} sprite. Falling " +
+                            "back to the storey below's sheet.");
+                }
+                else
+                    Debug.LogWarning(
+                        $"[StPetersInteriors] upper-level plan '{planKey}' names room '{plan.RoomKey}', " +
+                        "which the interior contract does not have. Falling back to the storey below's " +
+                        "sheet — re-bake the kit.");
+            }
+
+            var upperRoomGo = new GameObject(UpperRoomChildName);
+            upperRoomGo.transform.SetParent(buildingGo.transform, worldPositionStays: false);
+            upperRoomGo.transform.localPosition = Vector3.zero;
+            SpriteRenderer upperRenderer =
+                InteriorCatalog.ConfigureRoom(upperRoomGo, upperRoom, upperSprite);
+
+            // --- the upper furniture.
+            var upperPropsGo = new GameObject(UpperPropsChildName);
+            upperPropsGo.transform.SetParent(buildingGo.transform, worldPositionStays: false);
+            upperPropsGo.transform.localPosition = Vector3.zero;
+            int placed = Furnish(upperPropsGo.transform, plan.Furnishings, room.Entry.key, footprint,
+                                 interiorFacing, room.Entry.facings, interior, idPrefix);
+
+            // --- the colliders that exist only up here.
+            var upperWallsGo = new GameObject(UpperWallsChildName);
+            upperWallsGo.transform.SetParent(buildingGo.transform, worldPositionStays: false);
+            upperWallsGo.transform.localPosition = Vector3.zero;
+            BuildUpperWalls(upperWallsGo.transform, footprint, plan);
+
+            // --- the foot of the stairs, added to the storey BELOW.
+            placed += Furnish(groundProps, plan.GroundAdditions, room.Entry.key, footprint,
+                              interiorFacing, room.Entry.facings, interior, idPrefix);
+
+            // ⚠ AFTER both furniture roots exist and BEFORE anything else looks at the interior:
+            //   ConfigureUpperLevel applies the swap immediately, which is what leaves the upstairs
+            //   switched OFF in the editor instead of drawn straight over the ground floor.
+            interior.ConfigureUpperLevel(upperRenderer, upperPropsGo.transform, upperWallsGo.transform);
+
+            Debug.Log(
+                $"[StPetersInteriors] upper level '{planKey}': {placed} piece(s) of furniture, " +
+                $"{plan.Partitions.Count} partition(s) plus the doorway plug, drawing " +
+                $"{(string.IsNullOrEmpty(plan.RoomKey) ? "the storey below's room sheet (greybox)" : "'" + plan.RoomKey + "'")}.");
+            return placed;
+        }
+
+        /// <summary>
+        /// The colliders that exist only on the upper storey: the plan's partitions, and the plug that
+        /// closes the front doorway.
+        ///
+        /// <para>One <see cref="PolygonCollider2D"/> per rect, exactly as <see cref="BuildWalls"/> does
+        /// and for the same reason — several paths on one collider turn their overlaps into holes, and
+        /// these rects DO overlap the house's walls on purpose (each partition runs into the wall it
+        /// meets, so the join cannot leak).</para>
+        /// </summary>
+        static void BuildUpperWalls(Transform root, in InteriorFootprint footprint, in UpperLevelPlan plan)
+        {
+            Vector2 origin = root.parent != null ? (Vector2)root.parent.position : Vector2.zero;
+
+            foreach (WallRect r in plan.Partitions)
+            {
+                var collider = root.gameObject.AddComponent<PolygonCollider2D>();
+                collider.pathCount = 1;
+                collider.SetPath(0, ToLocal(footprint.Quad(r.X0, r.X1, r.Y0, r.Y1), origin));
+            }
+
+            // The doorway, closed. Derived from the same arithmetic that cut the gap, so the two can
+            // never disagree about where the door is.
+            var plug = root.gameObject.AddComponent<PolygonCollider2D>();
+            plug.pathCount = 1;
+            plug.SetPath(0, ToLocal(
+                footprint.DoorwayPlugQuad(WallThicknessMetres, DoorwayWidthMetres), origin));
+        }
+
+        /// <summary>
+        /// Give a placed prop the behaviour its <see cref="Furnishing.Fixture"/> asks for — a stair you
+        /// can climb, a bed you can turn in at, the wardrobe. Does nothing at all for
+        /// <see cref="InteriorFixture.None"/>, which is every prop in the village.
+        ///
+        /// <para><b>Ids are derived, not authored.</b> Each is the site's plan key plus the fixture's
+        /// role, so they are unique among live registrants by construction — which is the one property
+        /// <see cref="IInteractable.Id"/> genuinely requires, and the one an author retyping strings
+        /// into a table would eventually break.</para>
+        /// </summary>
+        static void Fit(GameObject go, in Furnishing f, BuildingInterior interior, string idPrefix)
+        {
+            if (f.Fixture == InteriorFixture.None) return;
+
+            if (string.IsNullOrEmpty(idPrefix)) idPrefix = "fixture.interior";
+
+            switch (f.Fixture)
+            {
+                case InteriorFixture.StairUp:
+                    go.AddComponent<InteriorStair>().Configure(
+                        interior, idPrefix + ".stair_up", fromLevel: 0, toLevel: 1,
+                        reachMeters: StairReachMetres, arrivalText: "You go up.");
+                    break;
+
+                case InteriorFixture.StairDown:
+                    go.AddComponent<InteriorStair>().Configure(
+                        interior, idPrefix + ".stair_down", fromLevel: 1, toLevel: 0,
+                        reachMeters: StairReachMetres, arrivalText: "You come back down.");
+                    break;
+
+                case InteriorFixture.PlayerBed:
+                    go.AddComponent<InteriorBed>().Configure(
+                        idPrefix + ".bed_player", isPlayerBed: true, ownerName: "",
+                        placeName: PlayerBedPlaceName, reachMeters: BedReachMetres);
+                    break;
+
+                case InteriorFixture.OwnerBed:
+                    go.AddComponent<InteriorBed>().Configure(
+                        idPrefix + ".bed_owner", isPlayerBed: false, ownerName: BedOwnerName,
+                        placeName: "", reachMeters: BedReachMetres);
+                    break;
+
+                case InteriorFixture.Wardrobe:
+                    go.AddComponent<InteriorWardrobe>().Configure(
+                        idPrefix + ".wardrobe", reachMeters: WardrobeReachMetres);
+                    break;
+            }
+        }
+
+        /// <summary>How close (m) you must stand to take the stairs. Tighter than a shore fixture's
+        /// reach: a stairwell is a specific place in a small room, and a generous radius would have it
+        /// outranking the wardrobe a stride away.</summary>
+        public const float StairReachMetres = 1.2f;
+
+        /// <summary>How close (m) you must stand to turn in. A bed is big and you sit down on it, so
+        /// this is a step-up distance.</summary>
+        public const float BedReachMetres = 1.4f;
+
+        /// <summary>How close (m) you must stand to open the wardrobe.</summary>
+        public const float WardrobeReachMetres = 1.2f;
+
+        /// <summary>Whose bed the one you may NOT sleep in is. Authored here rather than in the
+        /// component so the refusal names the host, and so the day a second lodging exists it is a plan
+        /// field rather than a second string in a component.</summary>
+        public const string BedOwnerName = "Ginny";
+
+        /// <summary>Where the player is turning in, for the notice.</summary>
+        public const string PlayerBedPlaceName = "your bed at Ginny's";
 
         /// <summary>World-space quad → collider-local points. <see cref="PolygonCollider2D.SetPath"/>
         /// takes LOCAL coordinates, and handing it world ones puts every wall an entire village away

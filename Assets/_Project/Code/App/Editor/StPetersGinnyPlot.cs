@@ -332,7 +332,14 @@ namespace HiddenHarbours.App.Editor
                     // THE INSIDE. The owner ruled her cottage enterable, and interiors are seamless and
                     // true-to-footprint — so this is the same call the village's pilot cottage makes, with
                     // the same occupant, and the #512 runtime re-bind applies to it unchanged.
-                    bool enterable = StPetersInteriors.Stand(go, shell, CottageKey, facing, occupant);
+                    //
+                    // ⭐ AND A STOREY ABOVE IT, which the village's cottage does NOT get. The plan is asked
+                    // for by SITE key, not by build key, and this is the reason why: the two cottages are
+                    // the same build (see CottageKey), so a plan hung off 'sageCottage' would have put the
+                    // player's bed — and a save point — inside a stranger's house on the green as well.
+                    // Ginny's is the one with a lodger in it.
+                    bool enterable = StPetersInteriors.Stand(go, shell, CottageKey, facing, occupant,
+                                                             StPetersInteriors.GinnyCottagePlanKey);
                     if (!enterable)
                         Debug.LogWarning(
                             $"[StPetersGinnyPlot] {CottageKey} has no baked room, so Ginny's door does not " +

@@ -61,12 +61,18 @@ namespace HiddenHarbours.Core
 
             EventBus.Subscribe<BoatPurchased>(OnBoatPurchased);
             EventBus.Subscribe<ActiveBoatChanged>(OnActiveBoatChanged);
+
+            // The player's own bed is a manual save, and this is what answers it. Installed here rather
+            // than by the bed, because the responder must outlive any one region's fixtures — you can
+            // sail away from the bedroom and the request seam should still exist when you walk back in.
+            RestSaveResponder.Install();
         }
 
         private void OnDestroy()
         {
             EventBus.Unsubscribe<BoatPurchased>(OnBoatPurchased);
             EventBus.Unsubscribe<ActiveBoatChanged>(OnActiveBoatChanged);
+            RestSaveResponder.Uninstall();
 
             if (ReferenceEquals(GameServices.Save, this)) GameServices.Save = null;
             if (_instance == this) _instance = null;

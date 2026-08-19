@@ -231,6 +231,26 @@ portfolio of residences.
 > **The uncle's cottage is never taken away.** Even after you own grander homes it remains a
 > furnishable, ownable space — the emotional baseline of the whole game.
 
+#### R−1 — lodging, before you own anything (M2 St Peters opening)
+
+The St Peters prologue puts a rung **below** R0: you arrive owning nothing and **lodge with Aunt
+Ginny**. Her cottage gained a second storey on 2026-08-18 — her bedroom and yours — and **your bed
+there is the game's first manual save point**.
+
+Three properties of this rung, because it is deliberately not ownership:
+
+- **No deed.** The bed works because your host offered it, not because you bought anything;
+  `HomeDeeds` is not consulted. The **camper** is still the first thing the player owns.
+- **Hers is hers.** Ginny's bed is in the same room plan and gives a polite refusal — the ladder
+  starts with a home you are a *guest* in, and the game says so when you try the wrong bed.
+- **No comfort buff.** §4.2's sleeping buffs are a later-phase system and are not wired here; the
+  bed keeps the day and nothing else.
+
+The mechanism — a storey is a second interior *layer* on one footprint, not a place you travel to —
+is [ADR 0036](../adr/0036-interior-levels-as-layers.md). ⚠️ It does **not** yet make you wake where
+you slept: `SaveData` carries no player position, so that is a save-schema change (v11 → v12) still
+owed.
+
 ### 4.2 What you do with a home
 
 Three layers, in order of importance:

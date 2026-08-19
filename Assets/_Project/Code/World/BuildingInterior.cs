@@ -42,6 +42,22 @@ namespace HiddenHarbours.World
     /// player exists (and Unity will not serialize a reference across scenes anyway), so a room that
     /// could only be wired at build time was a room that opened in the start scene and nowhere else.</para>
     ///
+    /// <para><b>⭐ A SECOND STOREY IS A SECOND LAYER, NOT A SECOND PLACE (ADR 0036).</b> A building may
+    /// carry an upper level: another room sprite and another furniture root over the SAME footprint,
+    /// with <see cref="Level"/> saying which of the two is drawn. Going up hides the ground floor and
+    /// shows the storey above; coming down reverses it. There is no scene load, no teleport, no pocket
+    /// room somewhere off the map, and — the part that makes it cheap — <b>nothing moves</b>: the
+    /// stairwell stands at the same footprint position on both storeys, so the occupant is already
+    /// where the other storey's stair is.
+    ///
+    /// <para>Three consequences worth stating, because each is a bug that did not have to be written.
+    /// <b>Y-sort never has to rank the two storeys</b> against each other, because the one you are not
+    /// on is switched OFF rather than sorted behind — the band (ADR 0032) is never asked a question it
+    /// has no answer to. <b>The inside test does not change at all</b>: it is the same footprint, so
+    /// <see cref="Footprint"/>, the walls and the threshold are shared and there is exactly one
+    /// definition of being in this building. And <b>the level resets on the way out</b>, so a house can
+    /// never be re-entered into its bedroom.</para></para>
+    ///
     /// <para>Visual + collision only: no sim, no save, no allocation per frame (rule 5, rule 7).</para>
     /// </summary>
     [DisallowMultipleComponent]
@@ -56,6 +72,19 @@ namespace HiddenHarbours.World
 
         [Tooltip("Parent of the furniture sprites. Switched with the room.")]
         [SerializeField] private Transform _props;
+
+        [Header("The storey above (OPTIONAL — a single-storey building leaves all three empty)")]
+        [Tooltip("The upper storey's room sprite. Shown INSTEAD of the ground room while Level is 1.")]
+        [SerializeField] private SpriteRenderer _upperRoom;
+
+        [Tooltip("Parent of the upper storey's furniture. Switched with the upper room.")]
+        [SerializeField] private Transform _upperProps;
+
+        [Tooltip("Parent of the colliders that exist ONLY upstairs — the partition between the two " +
+                 "bedrooms, and the plug that closes the front doorway so you cannot walk out of a " +
+                 "first-floor bedroom into open air. The building's own walls are NOT in here: they are " +
+                 "the same walls on both storeys and stay on throughout.")]
+        [SerializeField] private Transform _upperWalls;
 
         [Header("Who can be inside")]
         [Tooltip("The on-foot player, AS THIS SCENE'S BUILDER KNEW THEM. Serialized rather than searched " +
@@ -114,6 +143,27 @@ namespace HiddenHarbours.World
         /// in is through the door.</summary>
         public bool IsInside { get; private set; }
 
+        /// <summary>
+        /// <b>Which storey the occupant is on</b> — 0 the ground floor, 1 the storey above. Always 0 in a
+        /// building with no upper level, and forced back to 0 the moment the occupant steps outside
+        /// (<see cref="Update"/>), so you can never re-enter a house and find yourself already upstairs.
+        ///
+        /// <para>An int rather than a bool because the mechanism is a LADDER, not a toggle: a third
+        /// storey, a cellar (−1 would need the floor set widening, not the type changing) or a loft are
+        /// all the same swap one rung further, and a bool would have to be replaced rather than
+        /// extended. Only 0 and 1 are reachable today — <see cref="TryGoToLevel"/> is the only writer
+        /// and it refuses anything else.</para>
+        /// </summary>
+        public int Level { get; private set; }
+
+        /// <summary>Whether this building has a storey above at all. False for every building but one,
+        /// and the gate on every level-changing path — a stair wired to a single-storey house is inert
+        /// rather than wrong.</summary>
+        public bool HasUpperLevel => _upperRoom != null || _upperProps != null;
+
+        /// <summary>The topmost storey that exists here: 1 with an upper level, 0 without.</summary>
+        public int TopLevel => HasUpperLevel ? 1 : 0;
+
         /// <summary>The room's footprint in world units, rebuilt from the serialized fields. Cheap
         /// (a struct of floats) and deliberately not cached: the builder may re-face a room in the
         /// editor and a stale cache would keep the old walls.</summary>
@@ -153,6 +203,50 @@ namespace HiddenHarbours.World
             // has nothing to switch off. Nothing then runs Update outside play mode, and the owner is
             // left looking at a cottage with its furniture stacked on the roof after every build.
             Apply(IsInside);
+        }
+
+        /// <summary>
+        /// Give this building a storey above. Called by the builder AFTER <see cref="Configure"/>, and
+        /// only for a building whose plan declares an upper level — everything else keeps exactly the
+        /// behaviour it had, with all three references null and <see cref="HasUpperLevel"/> false.
+        ///
+        /// <para>Applies immediately for the same reason <see cref="Configure"/> does: nothing runs
+        /// Update outside play mode, so an upper storey that waited for a tick would sit switched ON in
+        /// the editor, drawn straight over the ground floor, from the moment the builder ran.</para>
+        /// </summary>
+        public void ConfigureUpperLevel(SpriteRenderer upperRoom, Transform upperProps, Transform upperWalls)
+        {
+            _upperRoom = upperRoom;
+            _upperProps = upperProps;
+            _upperWalls = upperWalls;
+            Level = 0;
+            Apply(IsInside);
+        }
+
+        /// <summary>
+        /// <b>Change storey.</b> The stairwell's entry point, and the only writer of <see cref="Level"/>.
+        /// Returns false — changing nothing — when the move is not on:
+        /// <list type="bullet">
+        /// <item>the occupant is not inside (you cannot climb a stair from the dooryard),</item>
+        /// <item>there is no storey above (a stair in a single-storey house),</item>
+        /// <item>the level asked for is out of range, or is the one already occupied.</item>
+        /// </list>
+        ///
+        /// <para><b>Nothing moves.</b> The occupant is not teleported and the camera is not cut: the
+        /// stairwell is at the SAME footprint position on both storeys, so a player standing at the foot
+        /// of the stairs is already standing at the head of them. That is the whole reason a second
+        /// storey can be a layer swap rather than a room to travel to — and it is why the builder places
+        /// the two stair fixtures on one shared model coordinate rather than two.</para>
+        /// </summary>
+        public bool TryGoToLevel(int level)
+        {
+            if (!IsInside) return false;
+            if (level < 0 || level > TopLevel) return false;
+            if (level == Level) return false;
+
+            Level = level;
+            Apply(true);
+            return true;
         }
 
         /// <summary>The wall thickness and doorway gap this room's colliders must be built with — read
@@ -208,6 +302,7 @@ namespace HiddenHarbours.World
             // Start OUTSIDE and show it, so a room that is never entered is never visible and a scene
             // that was saved mid-visit does not open with the roof off.
             IsInside = false;
+            Level = 0;
             Apply(false);
         }
 
@@ -227,15 +322,45 @@ namespace HiddenHarbours.World
             if (inside == IsInside) return;
 
             IsInside = inside;
+
+            // Leaving puts you back on the ground floor. You cannot normally walk OUT while upstairs —
+            // the doorway is plugged up there — but a spawn, a region travel or a dev teleport can all
+            // move an occupant across the threshold without using the door, and a house that remembered
+            // "upstairs" would then open on its first-floor bedroom the next time you walked in.
+            if (!inside) Level = 0;
+
             Apply(inside);
         }
 
+        /// <summary>
+        /// Show exactly one storey, or the shell.
+        ///
+        /// <para><b>The inactive storey is switched OFF, not sorted behind.</b> That is what keeps a
+        /// second level out of the Y-sort argument entirely: there is never a frame in which a bed
+        /// upstairs and a table downstairs are both drawn and have to be ranked against each other, so
+        /// the band (ADR 0032) is not asked a question it has no answer to. It is also why the swap
+        /// stays a swap and not a fade — a half-transparent upstairs would be exactly that frame.</para>
+        ///
+        /// <para><b>The building's walls are absent from here on purpose.</b> They are the same walls on
+        /// both storeys and they are never switched off (see the class remarks). Only
+        /// <see cref="_upperWalls"/> — the partition and the doorway plug, which exist upstairs and
+        /// nowhere else — rides the level.</para>
+        /// </summary>
         void Apply(bool inside)
         {
+            bool ground = inside && Level == 0;
+            bool upper = inside && Level == 1;
+
             if (_shell != null) _shell.enabled = !inside;
-            if (_room != null) _room.enabled = inside;
-            if (_props != null && _props.gameObject.activeSelf != inside)
-                _props.gameObject.SetActive(inside);
+            if (_room != null) _room.enabled = ground;
+            if (_props != null && _props.gameObject.activeSelf != ground)
+                _props.gameObject.SetActive(ground);
+
+            if (_upperRoom != null) _upperRoom.enabled = upper;
+            if (_upperProps != null && _upperProps.gameObject.activeSelf != upper)
+                _upperProps.gameObject.SetActive(upper);
+            if (_upperWalls != null && _upperWalls.gameObject.activeSelf != upper)
+                _upperWalls.gameObject.SetActive(upper);
         }
 
 #if UNITY_EDITOR
