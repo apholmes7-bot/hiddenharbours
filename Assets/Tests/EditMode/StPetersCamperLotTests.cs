@@ -1,4 +1,6 @@
+using System.IO;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 using HiddenHarbours.App.Editor;
 using HiddenHarbours.Art;                 // YSortSprite
@@ -399,11 +401,16 @@ namespace HiddenHarbours.Tests.EditMode
         /// assertion with a tripwire that fired the moment #553's sheets reached the merged tree, by
         /// design. This is its flipped form.
         ///
-        /// <para>The name assert is the naming law doing its job: the <c>rest</c> sheet drops the frame
-        /// index, so <c>_d&lt;facing&gt;</c> resolves to exactly ONE sprite — the parked frame — and a
-        /// camper can never draw with its door half open. The scale assert is the building kit's first
-        /// guardrail: baked art is honest metric size (32 px = 1 m with the camera's foreshortening
-        /// baked in); scaling it to the footprint would break the pixel grid.</para>
+        /// <para><b>The parked frame is the door CUE's first frame, not the rest sheet</b> — the
+        /// owner's 2026-08-18 no-awning ruling, and the reason the expected name carries a role and a
+        /// swing index. It is built from <see cref="CamperKit.Build.Key"/> rather than spelled out, so
+        /// a renamed role fails here with the name to use instead of passing on a stale string. A cue
+        /// frame other than <see cref="StPetersCamperLot.ParkedFrame"/> would stand the camper in the
+        /// world with its door half open, which looks finished and is wrong.</para>
+        ///
+        /// <para>The scale assert is the building kit's first guardrail: baked art is honest metric
+        /// size (32 px = 1 m with the camera's foreshortening baked in); scaling it to the footprint
+        /// would break the pixel grid.</para>
         ///
         /// <para>The greybox branch is now unreachable in a full checkout and keeps no direct coverage
         /// here — its contract (draw the RIGHT art or none, fall back to the sheds' tinted marker) is
@@ -420,11 +427,14 @@ namespace HiddenHarbours.Tests.EditMode
                 "tinted greybox marker (that branch still ships), and this test should flip back to " +
                 "its pre-#553 greybox form.");
 
+            var parked = new CamperKit.Build(StPetersCamperLot.Variant, StPetersCamperLot.ParkedRole);
             Assert.AreEqual(
-                $"camper_{StPetersCamperLot.Variant}_rest_d{StPetersCamperLot.DoorFacing}", baked.name,
-                "the lookup resolved something other than the unique parked frame. The rest sheet " +
-                "drops the frame index precisely so _d<facing> has ONE answer — matching an enter-cue " +
-                "frame here means the camper can draw with its door half open and look finished.");
+                $"{parked.Key}_d{StPetersCamperLot.DoorFacing}_s{StPetersCamperLot.ParkedFrame}",
+                baked.name,
+                "the lookup resolved something other than the parked frame. It must be the door cue's " +
+                "first frame — that is the one the kit bakes with no awning (the owner's ruling) and " +
+                "with the door shut and the step stowed. The rest sheet is the awninged fit-out and a " +
+                "later cue frame is mid-swing; either would be wrong in the world.");
 
             var (root, door) = PlaceLot();
             try
@@ -452,6 +462,166 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsNull(StPetersCamperLot.TryLoadCamperSprite(StPetersCamperLot.Variant, 99));
             Assert.IsNull(StPetersCamperLot.TryLoadCamperSprite("schooner", 0));
             Assert.IsNull(StPetersCamperLot.TryLoadCamperSprite(null, 0));
+        }
+
+        /// <summary>
+        /// 🔴 <b>THE PARKED CAMPER HAS NO AWNING</b> — the owner's ruling of 2026-08-18, pinned in the
+        /// two independent ways it can go wrong.
+        ///
+        /// <para><b>1. The wrong sheet.</b> The build the lot parks from must be one the kit bakes
+        /// unawninged. <c>CamperKit.Build.AwningOverride</c> is a hard <c>false</c> for
+        /// <see cref="CamperKit.Role.Enter"/> and <c>null</c> for <see cref="CamperKit.Role.Rest"/> —
+        /// "defer to the rig", i.e. fit whatever the variant's default is, which for the Clipper is an
+        /// awning. Reading the flag rather than restating the role means a kit that ever starts baking
+        /// the cue awninged fails here instead of quietly shipping.</para>
+        ///
+        /// <para><b>2. The right sheet, re-baked wrong.</b> A name assert cannot see an <c>enter</c>
+        /// sheet that has grown an awning, so the pixels are checked too: the parked cell and the rest
+        /// cell must differ by more than <see cref="AwningPixelsFloor"/>. Measured on the sheets in the
+        /// tree, the Clipper's rest/cue-frame-0 difference runs <b>2858–5083 px per facing</b>
+        /// (<c>CamperKit.AwningPop</c> records the same range) and is <b>5083 px at facing 2</b>, the one
+        /// this lot parks at; 2000 sits below that with margin. Point the lookup back at the rest sheet
+        /// and this collapses to 0 — which is the swap this test exists to catch.</para>
+        ///
+        /// <para>⚠ Compares DIFFERING pixels, not an ink count. The awning is drawn largely OVER the
+        /// body rather than beyond its silhouette, so at facing 2 it adds only 634 opaque pixels while
+        /// changing 5083 — an opaque-count guard would sit under any sane floor and go red on correct
+        /// code.</para>
+        ///
+        /// <para>⚠ And which way that pixel test reads is asked of the CONTRACT, not assumed from the
+        /// variant. The Bantam fits no awning in either role, so for it the two must be pixel-IDENTICAL
+        /// and a difference is the bug; hard-coding the Clipper's direction would fail on correct art
+        /// the moment the owner flips the Def to the Bantam.</para>
+        /// </summary>
+        [Test]
+        public void TheParkedFrame_IsBakedWithoutTheAwning()
+        {
+            Assert.That(new CamperKit.Build(CamperSidecar.Clipper, StPetersCamperLot.ParkedRole)
+                            .AwningOverride, Is.False,
+                $"the lot parks from the '{StPetersCamperLot.ParkedRole}' sheet, which the kit does NOT " +
+                "bake unawninged. The owner ruled the awning is never drawn; a sheet that defers its " +
+                "awning to the rig cannot honour that.");
+
+            // BOTH lengths, not just the one the Def happens to name. The variant is one of the owner's
+            // two open decisions and he flips it on an asset, so a guard that only covered today's
+            // choice would go quiet exactly when he exercised it.
+            foreach (string variant in CamperKit.Variants)
+            {
+                var parked = new CamperKit.Build(variant, StPetersCamperLot.ParkedRole);
+                var fitted = new CamperKit.Build(variant, CamperKit.Role.Rest);
+
+                Sprite baked = StPetersCamperLot.TryLoadCamperSprite(variant,
+                                                                     StPetersCamperLot.DoorFacing);
+                Assert.IsNotNull(baked, $"no baked '{variant}' sheet found — see the parked-frame test.");
+                Assert.IsTrue(baked.name.StartsWith(parked.Key, System.StringComparison.Ordinal),
+                    $"'{baked.name}' did not come from the '{parked.Key}' sheet");
+
+                Sprite restFrame = FindSprite($"{fitted.Key}_d{StPetersCamperLot.DoorFacing}");
+                Assert.IsNotNull(restFrame,
+                    $"'{fitted.Key}_d{StPetersCamperLot.DoorFacing}' is gone. The rest sheet is " +
+                    "deliberately kept baked and named as it was — nothing in the no-awning ruling " +
+                    "deletes art, and a later consumer may want the fitted-out look.");
+
+                Color[] parkedPixels = CellPixels(baked), restPixels = CellPixels(restFrame);
+                if (parkedPixels == null || restPixels == null)
+                {
+                    Assert.Ignore("the camper sheets did not decode — they are LFS-backed, so a " +
+                                  "pointer-only checkout cannot run this. `git lfs pull`. Ignored " +
+                                  "rather than passed, so an unfetched checkout cannot look green.");
+                    return;
+                }
+
+                Assert.AreEqual(restPixels.Length, parkedPixels.Length,
+                    $"the '{variant}' rest and enter sheets no longer share a cell size. That identity " +
+                    "is what makes the parked frame the same camper on the same ground minus the " +
+                    "awning — without it the camper shifts when its door opens, and #553's union-crop " +
+                    "argument is broken.");
+
+                int differing = 0;
+                for (int i = 0; i < parkedPixels.Length; i++)
+                    if (parkedPixels[i] != restPixels[i]) differing++;
+
+                // ⚠ Which way this reads depends on the VARIANT, and the contract is asked rather than
+                // assumed. The Clipper fits an awning by default so its two roles must differ; the
+                // Bantam fits none either way, so for IT they must be identical (measured: 0 px at
+                // every facing) — hard-coding the Clipper's direction would fail on correct art.
+                if (RestSheetIsAwninged(fitted.Key))
+                    Assert.That(differing, Is.GreaterThan(AwningPixelsFloor),
+                        $"only {differing} px separate the '{variant}' parked frame from its awninged " +
+                        $"rest frame at facing {StPetersCamperLot.DoorFacing} (expected " +
+                        $">{AwningPixelsFloor}; measured 5083). Either the lot is parking from the rest " +
+                        "sheet again, or the cue has been re-baked WITH an awning. Both put a wall of " +
+                        "canvas over the door.");
+                else
+                    Assert.That(differing, Is.Zero,
+                        $"{differing} px separate the '{variant}' parked frame from its rest frame, on " +
+                        "a variant whose rest sheet fits NO awning — the two roles should be the same " +
+                        "build. Something other than the awning now splits them; see CamperBakeTests." +
+                        "OnlyTheAwningSeparatesARestSheetFromItsEnterSheetsFirstFrame.");
+            }
+        }
+
+        /// <summary>Whether the kit baked this sheet with an awning fitted, <b>read off the contract the
+        /// bake wrote</b> rather than inferred from the variant name — a drop that changes which length
+        /// fits an awning then moves this test with it. See <c>CamperKit.Build.AwningOverride</c>: only
+        /// the cue decides its own awning; a rest sheet defers to the rig.</summary>
+        static bool RestSheetIsAwninged(string sheetKey)
+        {
+            var json = AssetDatabase.LoadAssetAtPath<TextAsset>(CamperKit.ContractPath);
+            Assert.IsNotNull(json,
+                $"no camper contract at {CamperKit.ContractPath}. It is written BY the bake, so a " +
+                "missing one means these sheets were never baked by this code.");
+
+            var contract = JsonUtility.FromJson<CamperKit.Contract>(json.text);
+            foreach (var sheet in contract.sheets)
+                if (sheet.key == sheetKey) return sheet.awning;
+
+            Assert.Fail($"the contract has no entry for '{sheetKey}' — CamperKit.Builds and the sheets " +
+                        "on disk have drifted apart; re-bake rather than editing the JSON.");
+            return false;
+        }
+
+        /// <summary>The floor the awning's own footprint clears with margin — see
+        /// <see cref="TheParkedFrame_IsBakedWithoutTheAwning"/> for the measurement it sits under.</summary>
+        const int AwningPixelsFloor = 2000;
+
+        /// <summary>A baked sub-sprite by exact name, or null. Sheets import spriteMode MULTIPLE, so they
+        /// come out of <c>LoadAllAssetsAtPath</c> and are matched by name.</summary>
+        static Sprite FindSprite(string exactName)
+        {
+            foreach (string guid in AssetDatabase.FindAssets("camper t:Texture2D",
+                                                             new[] { "Assets/_Project/Art" }))
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                foreach (Object o in AssetDatabase.LoadAllAssetsAtPath(path))
+                    if (o is Sprite s && s.name == exactName) return s;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// One sprite's cell, read from the PNG on disk rather than through the imported texture.
+        ///
+        /// <para>⚠ The sheets import <c>isReadable: 0</c>, so <c>sprite.texture.GetPixels</c> throws.
+        /// Decoding the file gives the same bytes without turning on a CPU copy of a 14 MB sheet for
+        /// every build the owner runs. Returns null when the file cannot be read or decoded — an
+        /// LFS-pointer checkout, which the caller reports as Ignore rather than green.</para>
+        /// </summary>
+        static Color[] CellPixels(Sprite sprite)
+        {
+            string path = AssetDatabase.GetAssetPath(sprite.texture);
+            if (string.IsNullOrEmpty(path) || !File.Exists(path)) return null;
+
+            var decoded = new Texture2D(2, 2);
+            try
+            {
+                if (!decoded.LoadImage(File.ReadAllBytes(path))) return null;
+
+                Rect r = sprite.rect;
+                if (r.xMax > decoded.width || r.yMax > decoded.height) return null;
+                return decoded.GetPixels((int)r.x, (int)r.y, (int)r.width, (int)r.height);
+            }
+            finally { Object.DestroyImmediate(decoded); }
         }
 
         /// <summary>
