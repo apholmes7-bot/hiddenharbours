@@ -265,6 +265,11 @@ This single rule produces *every* tidal gameplay consequence:
 > This is what makes St Peters' one dock usable: it stands over a **dredged −1.0 m slip** in a region with a
 > **±3.5 m** tide, so without the seam the sim read **4.5 m of open sea at spring high water** over the
 > ratified disembark point and sailing home meant swimming across your own pier.
+>
+> *(Both numbers are the ones the defect was measured at and are kept for that reason. The tide has
+> since been re-ruled to ±2.2 m (2026-08-01) and the berth dredged to −4.0 m (2026-08-19, the
+> always-wet east dock — `scene-sizing-and-world-scale.md` §5.1a). The seam matters MORE at the new
+> numbers, not less: the water over the planks is now 6.2 m at spring high.)*
 
 > **Tide range & the wet-reveal tell (owner-ratified vision; art lands M2/M3).** Sablewick's working
 > harbours run a **big tide** — author **marina/wharf tide ranges of ~3–4 m** so the water visibly

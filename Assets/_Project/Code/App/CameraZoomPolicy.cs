@@ -164,5 +164,106 @@ namespace HiddenHarbours.App
             float needed = Mathf.Max(0f, hullLengthMeters) * Mathf.Max(1f, marginFactor) * footprint;
             return Mathf.Max(authoredWorldHeightMeters, needed);
         }
+
+        // ================= PLAYER ZOOM: the wheel is the player's eye (owner ruling 2026-08-19) =====
+        //
+        // *"Mouse wheel modifies player zoom — closer to look at interiors, out when outside."*
+        //
+        // ⚠️ THIS IS A SECOND HAND ON THE SAME LADDER, NOT A SECOND LADDER. The failure mode the
+        // ruling could have produced is a free player zoom fighting the RULED framings above: the
+        // helm's per-hull step (§9.8's "whole vessel visible"), the deck step, the haul tighten. So
+        // the player's wheel owns exactly ONE framing — <see cref="CameraFraming.OnFoot"/> — and every
+        // stop it can reach is a step on the same integer ladder <see cref="WorldHeightForStep"/>
+        // defines. Boarding does not "hand back" anything it has to remember to release: the boat
+        // framing was never the player's to move, so a helm-take simply commits the hull's step as it
+        // always did. Disembarking restores the walker's last tier because that tier IS the on-foot
+        // framing — nothing saves or reinstates it.
+        //
+        // ⚠️ STEPS ASCEND AS YOU ZOOM IN (step 4 = 8.44 m, step 6 = 5.63 m). Nothing owner-facing is
+        // ever expressed in steps for that reason — the clamps are METRES on the GameConfig asset, the
+        // same units every other camera dial uses, and they quantise through StepForWorldHeight.
+
+        /// <summary>
+        /// Whether the PLAYER's wheel owns <paramref name="framing"/>. Only the on-foot framing is the
+        /// player's; the helm, the deck, a live haul and a road vehicle are all RULED by their own
+        /// authority (hull data, deck work, the machine's def) and the wheel must never move them.
+        /// </summary>
+        public static bool PlayerOwnsFraming(CameraFraming framing) => framing == CameraFraming.OnFoot;
+
+        /// <summary>
+        /// Does a wheel notch do anything at all this frame? Three gates, all of which must pass:
+        /// the camera has committed a framing (before the first commit the builder-authored framing
+        /// rules and there is no tier to step from), the framing is one the player owns
+        /// (<see cref="PlayerOwnsFraming"/> — this is the boat-authority handoff, expressed as a
+        /// refusal rather than a handover), and no modal is holding the interaction gate.
+        ///
+        /// <para><b>Why the modal gate.</b> A wheel turned over an open notebook or a dialogue must not
+        /// do two things at once — and the moment any of those UIs grows a scrollable list, the same
+        /// wheel would scroll the list AND zoom the world. Refusing here is the cheap half of that
+        /// problem; the UI keeping the gate raised is the other half, and it already does.</para>
+        /// </summary>
+        public static bool WheelIsLive(CameraFraming committed, bool hasCommitted, bool modalBlocked)
+            => hasCommitted && !modalBlocked && PlayerOwnsFraming(committed);
+
+        /// <summary>
+        /// Clamp a ladder step into the player's range. The bounds arrive as the steps the owner's
+        /// METRE clamps quantised to, so they may land either way round (closest is the LARGER step
+        /// number); this normalises rather than trusting the caller, because a config asset with the
+        /// two heights typed the wrong way round must still produce a usable range, not an empty one.
+        /// Both ends are held inside the ladder's own <see cref="MinStep"/>/<see cref="MaxStep"/>
+        /// FIRST and independently — clamping only one end (or clamping after taking min/max) lets a
+        /// nonsense config carry a bound straight past the ladder and hand back a step that does not
+        /// exist. Because the two clamps are monotonic, lo ≤ hi always holds afterwards, so a range
+        /// typed as a single repeated value pins the wheel to that one tier rather than to none.
+        /// Steps 0 and -1 (which are not steps — see the const doc) stay unreachable because the
+        /// player's range never crosses the 1:1 pivot.
+        /// </summary>
+        public static int ClampPlayerStep(int step, int closestStep, int farthestStep)
+        {
+            int lo = Mathf.Clamp(Mathf.Min(closestStep, farthestStep), MinStep, MaxStep);
+            int hi = Mathf.Clamp(Mathf.Max(closestStep, farthestStep), MinStep, MaxStep);
+            return Mathf.Clamp(step, lo, hi);
+        }
+
+        /// <summary>
+        /// Step the player's tier by whole wheel notches. <b>+1 notch = one step CLOSER</b> (scroll up
+        /// / push away = zoom in, the near-universal convention), which is +1 on the ladder because
+        /// steps ascend inward. Saturates at the clamps rather than wrapping: a wheel spun hard at the
+        /// closest tier simply stays there.
+        /// </summary>
+        public static int StepPlayerZoom(int currentStep, int notches, int closestStep, int farthestStep)
+            => ClampPlayerStep(currentStep + notches, closestStep, farthestStep);
+
+        /// <summary>
+        /// Whole notches out of a raw scroll reading, carrying the remainder in
+        /// <paramref name="carry"/> so a fine-grained device is accumulated instead of quantised away.
+        ///
+        /// <para><b>Why an accumulator and not <c>Mathf.Sign</c>.</b> A mouse wheel reports ±120 per
+        /// detent, but a trackpad's two-finger scroll reports a stream of small values — sign alone
+        /// would fire a whole tier per FRAME there, blowing through the range in a flick. Threshold and
+        /// carry gives both devices the same feel: one tier per detent, and a trackpad has to travel
+        /// the same distance to earn one.</para>
+        ///
+        /// <para>Deterministic and frame-rate independent by construction — it reads no clock and the
+        /// carry is the only state. A non-positive <paramref name="unitsPerNotch"/> is treated as
+        /// "every non-zero reading is one notch" rather than dividing by zero.</para>
+        /// </summary>
+        public static int NotchesFromScroll(ref float carry, float scrollY, float unitsPerNotch)
+        {
+            if (unitsPerNotch <= 0f)
+            {
+                carry = 0f;
+                return scrollY > 0f ? 1 : (scrollY < 0f ? -1 : 0);
+            }
+
+            // A reversal must not be paid for out of the other direction's banked carry: flicking up
+            // then down should step down immediately, not spend three notches undoing the bank.
+            if (carry != 0f && Mathf.Sign(scrollY) != Mathf.Sign(carry) && scrollY != 0f) carry = 0f;
+
+            carry += scrollY;
+            int notches = (int)(carry / unitsPerNotch);   // truncates toward zero — the sign is preserved
+            carry -= notches * unitsPerNotch;
+            return notches;
+        }
     }
 }

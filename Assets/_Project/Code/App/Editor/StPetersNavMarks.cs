@@ -16,17 +16,21 @@ namespace HiddenHarbours.App.Editor
     /// buoyed line onto the only door, and its declared claim — the skiff tier, 0.6 m, at mean water —
     /// is the ruled reef gate written down where a test can check it.</para>
     ///
-    /// <para><b>⚠ THE REEF BARES, SLIP AND ALL.</b> Spring low here is −2.2 m and the apron is −1.0 to
-    /// −1.5 m, so the whole ring — including the slip mouth at
-    /// <see cref="StPetersBuilder.BerthFrom"/>, measured −1.89 m — stands out of the water twice a
-    /// month. Nothing floats on it. The laterals therefore stop at the outer edge of the drop-off,
-    /// where a skipper needs them anyway, and every mark the geometry wanted further in is REFUSED and
-    /// logged. The inner slip wants a PERCH or a WITHY on a pole, which the kit does not bake — an art
-    /// ask, not something to improvise out of a floating can.</para>
+    /// <para><b>⚠ THE REEF STILL BARES — THE WAY IN NO LONGER DOES.</b> Spring low here is −2.2 m and
+    /// the apron is −1.0 to −1.5 m, so the ring itself stands out of the water twice a month and
+    /// nothing floats on it. What changed on 2026-08-19 is the door through it: the owner ruled the
+    /// east dock holds water at every tide, and
+    /// <see cref="StPetersBuilder.ApproachFrom"/>→<see cref="StPetersBuilder.ApproachTo"/> is the
+    /// dredged channel that makes that true — 1.80 m of it at the LOWEST water, all the way to the
+    /// wharf. So the entrance is buoyed in to the dock rather than stopped at the drop-off, and the
+    /// perch/withy art ask is no longer load-bearing here (the beach slip at
+    /// <see cref="StPetersBuilder.BerthTo"/> still dries, but nothing is asked to float on it).</para>
     ///
-    /// <para><b>⚠ NO MOORING BUOYS IN v1.</b> This island moors one dory, and she lies in the slip
-    /// (<see cref="StPetersBuilder.DoryMooredPos"/>) — which dries. There is no mooring field here to
-    /// mark, so the kit's <c>Mooring</c> type stays unplaced.</para>
+    /// <para><b>⚠ NO MOORING BUOYS IN v1.</b> This island moors one dory, and she lies alongside the
+    /// wharf (<see cref="StPetersBuilder.DoryMooredPos"/>) rather than on a mooring. There is no
+    /// mooring field here to mark, so the kit's <c>Mooring</c> type stays unplaced. (Her berth no
+    /// longer dries, so the reason is now simply that there is no field — not that a buoy would sit
+    /// on mud.)</para>
     ///
     /// <para><b>IALA Region B</b> — red to starboard returning from seaward. The direction of buoyage
     /// is the WAYPOINT ORDER; see <see cref="NavChannelGeometry.IsRed"/>.</para>
@@ -69,14 +73,23 @@ namespace HiddenHarbours.App.Editor
         // =================================================================================================
 
         /// <summary>
-        /// <b>The entrance</b> — in from the open bay, round onto the slip's own line, and up to the
-        /// beach. The last leg IS the slip: its inner end is
-        /// <see cref="StPetersBuilder.BerthTo"/>, read from the region's plan rather than re-typed, so
-        /// re-siting the dock re-routes the channel that serves it.
+        /// <b>The entrance</b> — in from the open bay, round onto the dredged channel's line, and up
+        /// to the dock. Both ends are READ from the region's plan rather than re-typed, so re-siting
+        /// the dock or re-cutting the channel re-routes the fairway that serves them.
         ///
-        /// <para>The claim is the ruled reef gate: <b>0.6 m of draught</b> — every skiff/punt-tier hull
-        /// — at MEAN water. The slip bed is −1.0 m, so she carries them with 0.20 m to spare and the
-        /// content test says so by name if anyone raises it.</para>
+        /// <para>⭐ The claim is the DREDGE's, and it is a much stronger statement than the one this
+        /// route used to make. It was <b>0.6 m at MEAN water</b> — the skiff tier, over a slip that
+        /// bared twice a month. It is now <b>the arrival hull's 1.40 m at SPRING LOW</b>: the worst
+        /// water this region ever has, carrying the biggest hull that comes home. The margin is thin
+        /// on purpose — the open bay itself is only −4 m, so 1.80 m at spring low is the CEILING any
+        /// route here could claim, and the declared 0.20 m clearance is the kit's standard rather
+        /// than the 0.40 m the cut was dredged to (a route may not promise the whole of its own
+        /// margin). EveryChannelCarriesTheDraughtItClaims walks every metre of it.</para>
+        ///
+        /// <para>⚠ The inner end is the DOCK, not <see cref="StPetersBuilder.BerthTo"/>. The beach
+        /// slip still dries near spring low and a fairway may not be marked over it at a tide it
+        /// does not hold; the dredged pocket alongside the wharf is where a hull that draws anything
+        /// actually stops.</para>
         /// </summary>
         public static NavChannel Entrance => new NavChannel
         {
@@ -87,17 +100,18 @@ namespace HiddenHarbours.App.Editor
             {
                 new Vector2(340f, 40f),          // the landfall, out in the −4 m bay
                 new Vector2(262f, 26f),          // the turn onto the approach
-                new Vector2(250f,  0f),          // square onto the slip's line, outside the drop-off
-                StPetersBuilder.BerthTo,         // the slip head, at the beach — derived, never typed
+                StPetersBuilder.ApproachFrom,    // square onto the channel's line, ON the −4 m contour
+                new Vector2(StPetersBuilder.DockZonePos.x,
+                            StPetersBuilder.DockZonePos.y),  // the dock — derived, never typed
             },
-            HalfWidthMetres = 10f,               // the slip is 8 m each side; the marked fairway is a
+            HalfWidthMetres = 10f,               // the cut is 8 m each side; the marked fairway is a
                                                  // touch wider so a mark is not IN the cut
             SearchHalfWidthMetres = 14f,
             SizeId = "s12",                      // 1.2 m, the harbour rung — this is an island slip
             LitLandfall = true,
-            DeclaredDraughtMetres = 0.6f,        // the skiff tier — the ruled reef gate
-            NavigableTideFraction = 0f,          // …at MEAN water
-            KeelClearanceMetres = 0.2f,
+            DeclaredDraughtMetres = StPetersBuilder.ArrivalHullDraughtMetres,  // the cape islander
+            NavigableTideFraction = -1f,         // …at SPRING LOW — the dredge's whole point
+            KeelClearanceMetres = 0.2f,          // the kit's standard, NOT the 0.40 m dredged margin
         };
 
         /// <summary>

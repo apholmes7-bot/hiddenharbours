@@ -689,6 +689,13 @@ namespace HiddenHarbours.App.Editor
             // constant, so the walk verdict moves her with the park. See NineMileCreekTruckPark.
             NineMileCreekTruckPark.Place();
 
+            // ⭐ THE OTTER, STAGED AT THE BOAT RAMP — the same gap, one machine along: #562 built her
+            // drive⇄swim model and #581 baked her, and she stood nowhere. Places and does NOT draw.
+            // Her site is a PROPOSAL derived from the ramp's own two ends, and the one thing to walk
+            // and judge is written on it: this basin BARES at spring low. See
+            // NineMileCreekOtterLanding and NineMileCreekMainland.OtterLandingPos.
+            NineMileCreekOtterLanding.Place();
+
             // ⭐ THE NAV MARKS — the channels a skipper reads coming home. Places and does NOT decide:
             // every position, colour, size and facing is derived by NavMarkPlan against THIS terrain,
             // the same ElevationAt the boat's depth gate reads, so "paint = sail" (ADR 0014) extends to
@@ -1200,6 +1207,7 @@ namespace HiddenHarbours.App.Editor
             var cameraFollow = devCamGo.AddComponent<CameraFollow>();
             cameraFollow.Target = playerGo.transform;
             SetRef(cameraFollow, "_onFootTarget", playerGo.transform);
+            devCamGo.AddComponent<CameraZoomInput>();   // the wheel steps the walking view (ruling 2026-08-19)
 
             // ⭐ THE CONTROL SWITCHER — the interact VERB'S PUMP, and this dev core never had one.
             // Found 2026-08-18 by the owner standing at the placed Dually (#567) with a dead E and no

@@ -11,7 +11,8 @@ namespace HiddenHarbours.Tests.EditMode
 {
     /// <summary>
     /// <b>THE PIER MUST BE WALKABLE — the sail-home beat.</b> St Peters is tide-gated
-    /// (<c>TideGatedWalk = true</c>) and its one dock stands over a dredged <b>−1.0 m</b> slip, so with the
+    /// (<c>TideGatedWalk = true</c>) and its one dock stands over a dredged berth — <b>−1.0 m</b> when
+    /// these were written, <b>−4.0 m</b> since the 2026-08-19 ruling made it wet at every tide — so with the
     /// on-foot sim reading only (ground vs water level) the ratified disembark at <c>(328, 0)</c> was open
     /// water for most of every tide: you sailed home to your own island and swam across your own pier.
     ///
@@ -99,13 +100,19 @@ namespace HiddenHarbours.Tests.EditMode
                 TidalWalkability.BandAt(_terrain, highTide, 0.0, disembark, WadeDepth, SwimLimit),
                 "and it classified as the BOAT-ONLY band — on the planks");
 
-            // It was not merely a high-water problem: the water only leaves the planks near spring low.
+            // It was not merely a high-water problem — and since 2026-08-19 it is not even a MOSTLY
+            // problem. The disembark point stands over the dredged berth pocket, which the owner ruled
+            // wet at every state of tide, so the pre-seam sim saw water here at EVERY hour of the
+            // month. The sabotage got stronger, not weaker: there is no longer a low-water window in
+            // which the player could have walked out and pretended the defect was seasonal.
             float bed = _terrain.ElevationAt(disembark);
             Assert.Less(bed, 0f,
-                $"the ground under the disembark point is the dredged slip at {bed:0.00} m — below datum, so " +
-                "it is wet through most of the tide by design (boats need the depth; the fix is not to fill it in)");
-            Assert.Greater(bed, SpringLowWater,
-                "…and only bares near spring low water, which is the window the player used to have");
+                $"the ground under the disembark point is the dredged berth at {bed:0.00} m — below datum, so " +
+                "it is wet by design (boats need the depth; the fix is not to fill it in)");
+            Assert.Less(bed, SpringLowWater,
+                $"the berth bed reads {bed:0.00} m against spring low water {SpringLowWater:0.00} m, so it " +
+                "bares — the owner ruled this dock wet at every tide (StPetersEastBerthTests), and a " +
+                "drying berth would put the arrival aground on its own doorstep");
         }
 
         // =================================================================================
@@ -159,8 +166,10 @@ namespace HiddenHarbours.Tests.EditMode
             // dry ground rather than water and is not part of this check).
             //
             // ⚠ THE THREE LIPS ARE NOT OVER THE SAME GROUND, and this test used to claim they were. Only
-            // the EAST lip, off the pier head, stands over the dredged slip: measured bed −1.05 m. The
-            // north and south lips are over the shoal beside it, at +1.09 m — a metre ABOVE datum. They
+            // the EAST lip, off the pier head, stands over the dredged berth: measured bed −1.05 m when
+            // this was written, −4.00 m since the dredge. The north and south lips are over the shoal
+            // beside it, at +1.09 m — a metre ABOVE datum, and 8.5 m off the dredged centre-line so the
+            // cut (half-width 8) does not reach them, which StPetersEastBerthTests pins. They
             // read as Deep under the old ±3.5 m tide only because it put 2.4 m of water over them, not
             // because anything was dredged there; the 2026-08-01 amplitude ruling leaves 1.1 m and they
             // read as Swim. So the shared invariant is the one that was always true and always mattered —
