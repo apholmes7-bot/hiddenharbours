@@ -186,6 +186,9 @@ class PackageTests(unittest.TestCase):
             drift = document["x-provenance"]["builderDrift"]
             self.assertIsNotNone(document["x-provenance"]["sceneLastBuiltCommit"])
             self.assertIsNotNone(drift["builderCommitsSinceScene"])
+            # A shallow clone can only give a floor; the package must say which it gave.
+            self.assertEqual(drift["exact"], document["x-provenance"]["historyIsComplete"])
+            self.assertEqual("x-note" in drift, not drift["exact"])
 
     def test_the_height_map_is_pinned_even_though_its_bytes_are_absent(self):
         for document in self.documents.values():

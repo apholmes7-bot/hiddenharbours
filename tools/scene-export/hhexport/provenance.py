@@ -39,6 +39,11 @@ def collect(repo, region_name, scene_rel, height_map):
     scene_subject = _git(root, "log", "-1", "--format=%s", "--", scene_rel)
     dirty = _git(root, "status", "--porcelain", "--", scene_rel)
 
+    # A shallow clone (the usual shape in a CI or agent container) can only see back to its
+    # graft point, so "last built at X" may really mean "at or before X" and the drift count is
+    # a floor rather than a total. Saying which it is costs one git call.
+    shallow = _git(root, "rev-parse", "--is-shallow-repository") == "true"
+
     drift = None
     if scene_commit:
         globs = BUILDER_GLOBS.get(region_name, [])
@@ -46,11 +51,17 @@ def collect(repo, region_name, scene_rel, height_map):
         subjects = _git(root, "log", "--format=%h %s", f"{scene_commit}..HEAD", "--", *globs)
         drift = {
             "builderCommitsSinceScene": int(commits) if commits and commits.isdigit() else None,
+            "exact": not shallow,
             "builderCommits": subjects.split("\n") if subjects else [],
         }
+        if shallow:
+            drift["x-note"] = ("shallow clone: this is a LOWER BOUND. Commits before the graft "
+                               "point are invisible, so the scene may have been banked earlier "
+                               "than sceneLastBuiltCommit says. Run `git fetch --unshallow`.")
 
     return {
         "sourceCommit": head,
+        "historyIsComplete": not shallow,
         "sceneFile": scene_rel,
         "sceneFileSha256": _file_sha(os.path.join(root, scene_rel)),
         "sceneLastBuiltCommit": scene_commit,
