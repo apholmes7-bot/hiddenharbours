@@ -85,8 +85,17 @@ namespace HiddenHarbours.Tests.PlayMode
             _interactor.Configure(_player, null, new[] { _ginny, _bram }, Reach);
         }
 
-        [TearDown]
-        public void TearDown()
+        /// <summary>
+        /// ⚠ <b><see cref="UnityTearDownAttribute"/>, and the unload is AWAITED.</b>
+        /// <see cref="SceneManager.UnloadSceneAsync"/> is asynchronous: a plain <c>[TearDown]</c> that
+        /// fired it and returned left the scene still resident when the next test's <c>SetUp</c> ran, and
+        /// <see cref="SceneManager.CreateScene"/> threw <i>"Scene with name … already exists"</i> on every
+        /// test after the first. Yielding on it is the convention every other scene-building suite here
+        /// already uses (<c>WardrobePickerPlayTests</c>, <c>RegionDialogueTravelPlayTests</c>) — and it is
+        /// not optional politeness, it is the difference between one test passing and six failing.
+        /// </summary>
+        [UnityTearDown]
+        public IEnumerator TearDown()
         {
             InteractOffer.Reset();
             InteractActorProbe.Reset();
@@ -100,7 +109,7 @@ namespace HiddenHarbours.Tests.PlayMode
             _spawned.Clear();
             if (_popupHost != null) { Object.Destroy(_popupHost); _popupHost = null; }
 
-            if (_scene.IsValid() && _scene.isLoaded) SceneManager.UnloadSceneAsync(_scene);
+            if (_scene.IsValid() && _scene.isLoaded) yield return SceneManager.UnloadSceneAsync(_scene);
         }
 
         GameObject Spawn(string name)

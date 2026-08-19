@@ -421,11 +421,15 @@ namespace HiddenHarbours.Player
             // ⚠ LAST of everything on purpose. Placed any higher it would take the press away from a clam
             // hole at your feet just because a damaged hull happens to be within board reach — and the
             // whole point of the ladder above is that the most specific answer wins.
+            //
+            // ⚠ AND IT STILL RETURNS FALSE. This method's return value means "a move started or a
+            // transition happened" — nothing else — and SAYING something is neither. An earlier draft
+            // returned true here on the reasoning that the press had been answered, which reads well and is
+            // wrong: it makes a damaged hull report the verb as consumed, and BoardingMoveTests
+            // .AnUnboardableHull_NeverStartsAMove is the assertion that says so. The notice is a side
+            // effect of a refused press, not a transition.
             if (Mode == ControlMode.OnFoot && WithinBoardReach() && !BoardableNow())
-            {
                 EventBus.Publish(new DevNotice(ControlStrings.BoatNeedsRepairs));
-                return true;   // spent: it answered the player, which is what a press is for
-            }
 
             return false;
         }
