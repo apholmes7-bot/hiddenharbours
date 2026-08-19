@@ -30,12 +30,28 @@ namespace HiddenHarbours.App
     /// is the most load-bearing thing in the player module and an opening has no business reaching into
     /// it. What is suppressed is her INPUT (<see cref="PlayerWalkController.enabled"/>), not her.</para>
     ///
-    /// <para><b>Gating.</b> A fresh save and only a fresh save. Two facts, because one is not enough:
-    /// <see cref="ISaveService.LoadedExistingSave"/> (false only after <c>BeginNewGame</c> — the same
-    /// fact <c>RestSaveResponder</c> and <c>ShellFlow.EnterWorld</c> already read) AND a save-backed flag
-    /// set the moment control is handed over. The first alone would replay the arrival on a
-    /// quit-to-title → Continue inside one session; the second alone would replay it for every save
-    /// written before this feature existed. Together they are exactly "a fresh save".</para>
+    /// <para><b>⭐ GATING, AND ITS RELATIONSHIP TO THE REST ANCHOR (ADR 0037).</b> There are exactly
+    /// two things that may decide where a loading player stands, and they must never both act. The
+    /// discriminator is the anchor:</para>
+    ///
+    /// <list type="bullet">
+    /// <item><b>Anchor SET</b> → <see cref="RestWakeRestorer"/> wakes them where they slept. The
+    /// arrival stands down, unconditionally. Landing a player who went to bed at Ginny's would undo
+    /// the whole point of #580.</item>
+    /// <item><b>Anchor UNSET</b> → nobody is being woken (<c>Wake()</c> returns
+    /// <see cref="RestAnchor.None"/> and "the authored spawn stands"). That is the arrival's path, and
+    /// replacing that authored spawn is exactly what it is for.</item>
+    /// </list>
+    ///
+    /// <para><b>⚠ But "no anchor" is NOT the same as "never played", and the second flag is what covers
+    /// the difference.</b> ADR 0037 is precise about this: <c>RestRegion == ""</c> means <i>has never
+    /// turned in</i>. A player can reach the wharf, walk up to Ginny, buy a rod and quit without ever
+    /// having slept — and the save is on disk either way, because roughly a dozen paths write it
+    /// (every shop, the licence service, the outfit locker, <c>ShellFlow.QuitToTitle</c>, and
+    /// <c>StartingGear</c>, which fires on the first boot before the player has done anything at all).
+    /// Continue would then re-land somebody who has been ashore for an hour. So the arrival records
+    /// ITSELF, in <see cref="ArrivedFlagKey"/>, which is not a second opinion about freshness — it is
+    /// the only witness to a thing that has no other record.</para>
     ///
     /// <para><b>It fails by not happening.</b> Every input is checked and a missing one logs and hands
     /// the player their ordinary spawn. An opening that throws halfway through is worse than an opening
@@ -158,12 +174,16 @@ namespace HiddenHarbours.App
         /// <summary>
         /// <b>Does this save get an arrival?</b> Pure and static, so the whole gating rule is one
         /// expression an EditMode test can drive through every combination without a scene, a save file
-        /// or a boat.
+        /// or a boat — and so the mutual exclusion with the wake path is a thing you can read rather
+        /// than a thing you have to trace.
         /// </summary>
-        /// <param name="loadedExistingSave"><see cref="ISaveService.LoadedExistingSave"/>.</param>
-        /// <param name="alreadyArrived">The <see cref="ArrivedFlagKey"/> flag.</param>
-        public static bool ShouldPlay(bool loadedExistingSave, bool alreadyArrived) =>
-            !loadedExistingSave && !alreadyArrived;
+        /// <param name="hasRestAnchor"><c>RestLocker.Anchor(save).IsSet</c> — ADR 0037. True means
+        /// <see cref="RestWakeRestorer"/> is about to put this player where they slept, and the arrival
+        /// must not also move them.</param>
+        /// <param name="alreadyArrived">The <see cref="ArrivedFlagKey"/> flag — this player has been
+        /// landed before, whether or not they have ever slept since.</param>
+        public static bool ShouldPlay(bool hasRestAnchor, bool alreadyArrived) =>
+            !hasRestAnchor && !alreadyArrived;
 
         private void OnEnable()
         {
@@ -198,13 +218,20 @@ namespace HiddenHarbours.App
         {
             var save = GameServices.Save;
             bool already = save != null && save.GetFlag(ArrivedFlagKey);
-            bool loaded = save != null && save.LoadedExistingSave;
 
-            bool run = ShouldPlay(loaded, already) || (_alwaysRunInEditor && Application.isEditor);
+            // The anchor, off the live service — RestAnchor.None (and so IsSet false) when there is no
+            // save at all, which is the greybox posture every sibling locker keeps and reads correctly
+            // here as "nobody is being woken".
+            RestAnchor anchor = RestLocker.Anchor();
+
+            bool run = ShouldPlay(anchor.IsSet, already) || (_alwaysRunInEditor && Application.isEditor);
             if (!run)
             {
-                Debug.Log("[ArrivalOpening] this save has already made landfall — the ordinary spawn " +
-                          $"stands (loadedExistingSave={loaded}, {ArrivedFlagKey}={already}).");
+                Debug.Log("[ArrivalOpening] not landing this player — " +
+                          (anchor.IsSet
+                               ? $"they turned in at {anchor} and RestWakeRestorer is waking them there"
+                               : $"they have made landfall before ({ArrivedFlagKey}), so the ordinary " +
+                                 "spawn stands"));
                 return false;
             }
 

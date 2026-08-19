@@ -52,25 +52,43 @@ namespace HiddenHarbours.Tests.EditMode
         // =============================================================================================
 
         /// <summary>
-        /// 🔴 <b>Two facts, because neither is enough alone.</b> A save-backed flag alone would replay
-        /// the arrival for every save written before the feature existed. <c>LoadedExistingSave</c> alone
-        /// would replay it on a quit-to-title → Continue inside one session, where the service has minted
-        /// no new blob and the flag is the only thing that remembers. The whole truth table, driven
-        /// through the pure decision so it needs no save file.
+        /// 🔴 <b>ONLY ONE THING MAY PLACE A LOADING PLAYER, and the rest anchor is the referee.</b>
+        /// ADR 0037 gave the save a <c>(region, storey, x, y)</c> anchor and
+        /// <see cref="RestWakeRestorer"/> to honour it. Its own rule is that an UNSET anchor means
+        /// "never rested — the authored spawn stands", and replacing that authored spawn is precisely
+        /// what the arrival is for. So the two are exclusive by construction rather than by agreement:
+        /// anchor set → she is woken where she slept; anchor unset → she may be landed.
         /// </summary>
         [Test]
-        public void OnlyAFreshSaveIsBroughtIn()
+        public void APlayerWithARestAnchorIsWokenRatherThanLanded()
         {
-            Assert.IsTrue(ArrivalOpening.ShouldPlay(loadedExistingSave: false, alreadyArrived: false),
-                "a brand-new game must be brought in — this IS the opening");
-            Assert.IsFalse(ArrivalOpening.ShouldPlay(loadedExistingSave: true, alreadyArrived: false),
-                "a save loaded off disk has already lived here; it must not be re-landed. (This is the " +
-                "arm that covers every save written before the arrival existed.)");
-            Assert.IsFalse(ArrivalOpening.ShouldPlay(loadedExistingSave: false, alreadyArrived: true),
-                "the arrival already ran this session — quit to the title and Continue must not replay " +
-                "it, and the service has minted no new blob to say so, so the FLAG is the only witness");
-            Assert.IsFalse(ArrivalOpening.ShouldPlay(loadedExistingSave: true, alreadyArrived: true),
-                "both say no");
+            Assert.IsFalse(ArrivalOpening.ShouldPlay(hasRestAnchor: true, alreadyArrived: false),
+                "she went to bed somewhere and RestWakeRestorer is about to wake her there — landing " +
+                "her on the wharf as well would undo the whole of #580, and would do it silently");
+            Assert.IsFalse(ArrivalOpening.ShouldPlay(hasRestAnchor: true, alreadyArrived: true),
+                "…and no more so when she has also arrived before");
+            Assert.IsTrue(ArrivalOpening.ShouldPlay(hasRestAnchor: false, alreadyArrived: false),
+                "no anchor and no landfall is a new game — this IS the opening");
+        }
+
+        /// <summary>
+        /// 🔴 <b>"No anchor" is NOT "never played", and this is the test that says so.</b> ADR 0037 is
+        /// precise: <c>RestRegion == ""</c> means <i>has never turned in</i>. But the save reaches disk
+        /// down about a dozen paths that have nothing to do with sleeping — every shop, the licence
+        /// service, the outfit locker, <c>ShellFlow.QuitToTitle</c>, and <c>StartingGear</c>, which
+        /// fires on the FIRST BOOT before the player has done anything at all. So a player can be an
+        /// hour ashore, with a save on disk, and still carry no anchor.
+        ///
+        /// <para>Gating on the anchor alone would re-land her: she would be picked up off Ginny's
+        /// doorstep and put back on a boat. The flag is not a second opinion about freshness — it is
+        /// the only witness to a thing nothing else records.</para>
+        /// </summary>
+        [Test]
+        public void APlayerWhoLandedButHasNeverSlept_IsNotLandedAgain()
+        {
+            Assert.IsFalse(ArrivalOpening.ShouldPlay(hasRestAnchor: false, alreadyArrived: true),
+                "she has been landed once and has simply never gone to bed since — buying a rod and " +
+                "quitting writes the save without an anchor, and Continue must not put her back aboard");
         }
 
         // =============================================================================================

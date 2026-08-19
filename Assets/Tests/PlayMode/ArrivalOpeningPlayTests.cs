@@ -41,9 +41,7 @@ namespace HiddenHarbours.Tests.PlayMode
         private sealed class FakeSave : ISaveService
         {
             private readonly Dictionary<string, bool> _flags = new Dictionary<string, bool>();
-            public FakeSave(bool loadedExistingSave) { LoadedExistingSave = loadedExistingSave; }
             public SaveData Current { get; } = new SaveData();
-            public bool LoadedExistingSave { get; }
             public int Saves;
             public bool GetFlag(string key) => _flags.TryGetValue(key, out bool v) && v;
             public void SetFlag(string key, bool value) => _flags[key] = value;
@@ -86,10 +84,15 @@ namespace HiddenHarbours.Tests.PlayMode
             GameServices.Reset();
         }
 
-        private ArrivalOpening Build(bool loadedExistingSave, bool alreadyArrived)
+        private ArrivalOpening Build(bool hasRestAnchor, bool alreadyArrived)
         {
-            var save = new FakeSave(loadedExistingSave);
+            var save = new FakeSave();
             if (alreadyArrived) save.SetFlag(ArrivalOpening.ArrivedFlagKey, true);
+            // The anchor goes on through its own locker, never by writing the four fields — they only
+            // mean anything together, which is the reason RestLocker exists (ADR 0037).
+            if (hasRestAnchor)
+                RestLocker.Stamp(save.Current,
+                                 new RestAnchor("region.st_peters", new Vector2(12f, 34f), level: 1));
             GameServices.Save = save;
 
             var go = new GameObject("ArrivalOpening");
@@ -145,7 +148,7 @@ namespace HiddenHarbours.Tests.PlayMode
         public IEnumerator AFreshSave_IsPilotedIn_AndEndsAshoreWithTheControls()
         {
             Assert.IsNotNull(_skipper, "the arrival skipper Def must exist for this to mean anything");
-            var opening = Build(loadedExistingSave: false, alreadyArrived: false);
+            var opening = Build(hasRestAnchor: false, alreadyArrived: false);
 
             Assert.IsTrue(opening.TryBegin(), "a fresh save must be brought in");
             Assert.AreEqual(ArrivalOpening.Phase.Approaching, opening.Current,
@@ -185,15 +188,17 @@ namespace HiddenHarbours.Tests.PlayMode
                 "…and it was not written to disk, so a crash on the walk up to Ginny replays the opening");
         }
 
-        /// <summary>The other half of the ruling: a save that has already lived here starts where it left
-        /// off, with no boat, no skipper and no interruption.</summary>
+        /// <summary>⭐ The seam with #580: a player who went to bed somewhere is WOKEN there by
+        /// <see cref="RestWakeRestorer"/>, and the arrival must not also move her. Only one thing may
+        /// place a loading player.</summary>
         [UnityTest]
-        public IEnumerator AProgressedSave_StartsAshoreWithNoArrivalAtAll()
+        public IEnumerator APlayerWithARestAnchor_IsLeftToTheWakeRestorer()
         {
-            var opening = Build(loadedExistingSave: true, alreadyArrived: false);
+            var opening = Build(hasRestAnchor: true, alreadyArrived: false);
             Vector3 wherePlayerWas = _player.transform.position;
 
-            Assert.IsFalse(opening.TryBegin(), "a loaded save must not be re-landed");
+            Assert.IsFalse(opening.TryBegin(),
+                "she turned in somewhere — landing her on the wharf would undo #580");
             Assert.AreEqual(ArrivalOpening.Phase.Dormant, opening.Current);
             Assert.IsNull(opening.Boat, "no boat should have been spawned for a save that already lives here");
 
@@ -204,12 +209,13 @@ namespace HiddenHarbours.Tests.PlayMode
                 "the player was moved by an arrival that was not supposed to run");
         }
 
-        /// <summary>…and the same for a fresh session that has already been through the opening once —
-        /// quit to the title, Continue, and you are not landed twice.</summary>
+        /// <summary>…and for the player who has landed but has never slept — an hour ashore, a save on
+        /// disk (a shop wrote it), and no anchor. Gating on the anchor alone would pick her up off
+        /// Ginny's doorstep and put her back on a boat.</summary>
         [UnityTest]
         public IEnumerator AnAlreadyArrivedSave_IsNotLandedAgain()
         {
-            var opening = Build(loadedExistingSave: false, alreadyArrived: true);
+            var opening = Build(hasRestAnchor: false, alreadyArrived: true);
             Assert.IsFalse(opening.TryBegin(),
                 "the flag says this player has already been brought in");
             Assert.AreEqual(ArrivalOpening.Phase.Dormant, opening.Current);
