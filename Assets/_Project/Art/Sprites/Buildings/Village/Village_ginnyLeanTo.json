@@ -1,0 +1,32 @@
+{
+  "sheet": "Village_ginnyLeanTo.png",
+  "rig": "wharfBuilding",
+  "build": "ginnyLeanTo",
+  "facings": 8,
+  "cols": 5,
+  "rows": 2,
+  "cellW": 388,
+  "cellH": 346,
+  "pivotNote": "cell px from the cell's TOP-LEFT; Unity wants (x/cellW, (cellH-y)/cellH)",
+  "pivotX": 194,
+  "pivotY": 221,
+  "nativeCellW": 1200,
+  "nativeCellH": 1160,
+  "cropX": 406,
+  "cropY": 559,
+  "convention": "CounterClockwise",
+  "conventionNote": "MEASURED at bake time from the door anchor; the correction is already applied, so cell i genuinely depicts +45*i",
+  "footprintWd": 4.02,
+  "footprintLn": 5.4,
+  "stackKey": "stacks",
+  "anchors": [
+    { "cell": 0, "door": {"x": 194, "y": 131.1444}, "ridge": {"x": 194, "y": 67.9627}, "stacks": [] },
+    { "cell": 1, "door": {"x": 255.094, "y": 147.4107}, "ridge": {"x": 194, "y": 67.9627}, "stacks": [] },
+    { "cell": 2, "door": {"x": 280.4, "y": 186.6812}, "ridge": {"x": 194, "y": 67.9627}, "stacks": [] },
+    { "cell": 3, "door": {"x": 255.094, "y": 225.9517}, "ridge": {"x": 194, "y": 67.9627}, "stacks": [] },
+    { "cell": 4, "door": {"x": 194, "y": 242.2181}, "ridge": {"x": 194, "y": 67.9627}, "stacks": [] },
+    { "cell": 5, "door": {"x": 132.906, "y": 225.9517}, "ridge": {"x": 194, "y": 67.9627}, "stacks": [] },
+    { "cell": 6, "door": {"x": 107.6, "y": 186.6812}, "ridge": {"x": 194, "y": 67.9627}, "stacks": [] },
+    { "cell": 7, "door": {"x": 132.906, "y": 147.4107}, "ridge": {"x": 194, "y": 67.9627}, "stacks": [] }
+  ]
+}

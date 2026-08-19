@@ -883,9 +883,11 @@
 
   function render(dir, opts){
     opts = (typeof opts==='number')?{elev:opts}:(opts||{});
-    const b=resolve(opts);
+    let b=resolve(opts);
     const MATS=makeMats(b);
-    const faces=build(b);
+    let faces=build(b);
+    const LC=root.BuildingLifecycle;                       // construction phase / dereliction pass
+    if(LC && LC.active(opts)){ const r=LC.apply(faces, MATS, b, opts); faces=r.faces; b=r.b; }
     const bufs=paint(faces, {dir, elev:opts.elev}, MATS);
     return toRGBA(post(bufs, b));
   }

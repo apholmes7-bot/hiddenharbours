@@ -1,0 +1,545 @@
+fileFormatVersion: 2
+guid: f05d7832a7b52df448ec2c17233df66f
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -64265475683971146
+    second: Village_stPetersCannery_0
+  - first:
+      213: -13500509835141166
+    second: Village_stPetersCannery_1
+  - first:
+      213: -9097903872772978539
+    second: Village_stPetersCannery_2
+  - first:
+      213: 965952076739182329
+    second: Village_stPetersCannery_3
+  - first:
+      213: -6607522387988942913
+    second: Village_stPetersCannery_4
+  - first:
+      213: 4225720541889631755
+    second: Village_stPetersCannery_5
+  - first:
+      213: 6806444490282924103
+    second: Village_stPetersCannery_6
+  - first:
+      213: 7248588344562908946
+    second: Village_stPetersCannery_7
+  - first:
+      213: -4895861459020231546
+    second: Village_stPetersCannery_8
+  - first:
+      213: 5881683997713447076
+    second: Village_stPetersCannery_9
+  - first:
+      213: -8740644095426534352
+    second: Village_stPetersCannery_10
+  - first:
+      213: 768590660014295124
+    second: Village_stPetersCannery_11
+  - first:
+      213: 2333507959569358872
+    second: Village_stPetersCannery_12
+  - first:
+      213: -3666351806236223003
+    second: Village_stPetersCannery_13
+  - first:
+      213: 6955360442007405781
+    second: Village_stPetersCannery_14
+  - first:
+      213: -3849084177299452512
+    second: Village_stPetersCannery_15
+  - first:
+      213: -4969372877557480467
+    second: Village_stPetersCannery_16
+  - first:
+      213: -8040353818027982323
+    second: Village_stPetersCannery_17
+  - first:
+      213: -5371493959218540546
+    second: Village_stPetersCannery_18
+  - first:
+      213: 7912402541627990821
+    second: Village_stPetersCannery_19
+  - first:
+      213: 3356049124539462694
+    second: Village_stPetersCannery_20
+  - first:
+      213: 5997379877086291599
+    second: Village_stPetersCannery_21
+  - first:
+      213: -1866240809543874591
+    second: Village_stPetersCannery_22
+  - first:
+      213: 8135715212664993609
+    second: Village_stPetersCannery_23
+  - first:
+      213: 5475073561728757878
+    second: Village_stPetersCannery_24
+  - first:
+      213: -1240296260143401461
+    second: Village_stPetersCannery_25
+  - first:
+      213: -3087038029084995332
+    second: Village_stPetersCannery_26
+  - first:
+      213: -3854647181688954249
+    second: Village_stPetersCannery_27
+  - first:
+      213: -84590937953864948
+    second: Village_stPetersCannery_28
+  - first:
+      213: 8885094256371946544
+    second: Village_stPetersCannery_29
+  - first:
+      213: -6350397213638006979
+    second: Village_stPetersCannery_30
+  - first:
+      213: -4340019040947076460
+    second: Village_stPetersCannery_31
+  - first:
+      213: 1226319834193456863
+    second: Village_stPetersCannery_32
+  - first:
+      213: 577187240785293474
+    second: Village_stPetersCannery_33
+  - first:
+      213: -556297531057442823
+    second: Village_stPetersCannery_34
+  - first:
+      213: 6275894650225057298
+    second: Village_stPetersCannery_35
+  - first:
+      213: -6252058100143792747
+    second: Village_stPetersCannery_36
+  - first:
+      213: -3380916347240320071
+    second: Village_stPetersCannery_37
+  - first:
+      213: 5028332644022866014
+    second: Village_stPetersCannery_38
+  - first:
+      213: 7121468128005705148
+    second: Village_stPetersCannery_39
+  - first:
+      213: 2298159873375631677
+    second: Village_stPetersCannery_40
+  - first:
+      213: 6820935495248435057
+    second: Village_stPetersCannery_41
+  - first:
+      213: 5500866217931062108
+    second: Village_stPetersCannery_42
+  - first:
+      213: 8970737122532533192
+    second: Village_stPetersCannery_43
+  - first:
+      213: -3941874498664088596
+    second: Village_stPetersCannery_44
+  - first:
+      213: 2540020125800239935
+    second: Village_stPetersCannery_45
+  - first:
+      213: 8552668898692601879
+    second: Village_stPetersCannery_46
+  - first:
+      213: 5461332238708066921
+    second: Village_stPetersCannery_47
+  - first:
+      213: 22779096520705039
+    second: Village_stPetersCannery_48
+  - first:
+      213: -1345952281735361882
+    second: Village_stPetersCannery_49
+  - first:
+      213: -8532342629387708977
+    second: Village_stPetersCannery_50
+  - first:
+      213: -20454252755552180
+    second: Village_stPetersCannery_51
+  - first:
+      213: 6628735118253472083
+    second: Village_stPetersCannery_52
+  - first:
+      213: -8364357179518397341
+    second: Village_stPetersCannery_53
+  - first:
+      213: 214451775851324122
+    second: Village_stPetersCannery_54
+  - first:
+      213: -3994744825984994156
+    second: Village_stPetersCannery_55
+  - first:
+      213: 5357791006885606065
+    second: Village_stPetersCannery_56
+  - first:
+      213: -4684585119417367293
+    second: Village_stPetersCannery_57
+  - first:
+      213: -1299429843381781819
+    second: Village_stPetersCannery_58
+  - first:
+      213: -1217618830785466811
+    second: Village_stPetersCannery_59
+  - first:
+      213: 8497089465413683568
+    second: Village_stPetersCannery_60
+  - first:
+      213: 1879106033284251834
+    second: Village_stPetersCannery_61
+  - first:
+      213: 5192029750355914242
+    second: Village_stPetersCannery_62
+  - first:
+      213: 5222632751373343489
+    second: Village_stPetersCannery_63
+  - first:
+      213: -8251939552445404960
+    second: Village_stPetersCannery_64
+  - first:
+      213: 1877513518240854598
+    second: Village_stPetersCannery_65
+  - first:
+      213: 3646719998858845116
+    second: Village_stPetersCannery_66
+  - first:
+      213: 7554892181933541293
+    second: Village_stPetersCannery_67
+  - first:
+      213: -4827182997793585295
+    second: Village_stPetersCannery_68
+  - first:
+      213: 387979877536494124
+    second: Village_stPetersCannery_69
+  - first:
+      213: 3902120276135774559
+    second: Village_stPetersCannery_70
+  - first:
+      213: 2096712287315502441
+    second: Village_stPetersCannery_71
+  - first:
+      213: 2789586814180164351
+    second: Village_stPetersCannery_72
+  - first:
+      213: 7396047885575067712
+    second: Village_stPetersCannery_73
+  - first:
+      213: 8964839368160059860
+    second: Village_stPetersCannery_74
+  - first:
+      213: -8713212102726047593
+    second: Village_stPetersCannery_75
+  - first:
+      213: -770635884813739764
+    second: Village_stPetersCannery_76
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Village_stPetersCannery_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 673
+        width: 840
+        height: 673
+      alignment: 9
+      pivot: {x: 0.5, y: 0.39970282}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8e7b13d318a119b43bc77fee8519342a
+      internalID: 1840841110
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_stPetersCannery_d1
+      rect:
+        serializedVersion: 2
+        x: 840
+        y: 673
+        width: 840
+        height: 673
+      alignment: 9
+      pivot: {x: 0.5, y: 0.39970282}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c0040078e76e6ac4999ceb8b7939d697
+      internalID: -1533199216
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_stPetersCannery_d2
+      rect:
+        serializedVersion: 2
+        x: 1680
+        y: 673
+        width: 840
+        height: 673
+      alignment: 9
+      pivot: {x: 0.5, y: 0.39970282}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 458cca98418776041a312db92dd2c76c
+      internalID: 602435247
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_stPetersCannery_d3
+      rect:
+        serializedVersion: 2
+        x: 2520
+        y: 673
+        width: 840
+        height: 673
+      alignment: 9
+      pivot: {x: 0.5, y: 0.39970282}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e600117fa38367f42bb9c34ace0b2c1d
+      internalID: 1300891738
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_stPetersCannery_d4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 840
+        height: 673
+      alignment: 9
+      pivot: {x: 0.5, y: 0.39970282}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5bcdca013977f1d41b7f700610d90c66
+      internalID: -975831026
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_stPetersCannery_d5
+      rect:
+        serializedVersion: 2
+        x: 840
+        y: 0
+        width: 840
+        height: 673
+      alignment: 9
+      pivot: {x: 0.5, y: 0.39970282}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 217d687a6f59e9b489537b7deef93038
+      internalID: -750568822
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_stPetersCannery_d6
+      rect:
+        serializedVersion: 2
+        x: 1680
+        y: 0
+        width: 840
+        height: 673
+      alignment: 9
+      pivot: {x: 0.5, y: 0.39970282}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 07937d1644abf2b48aa38241179e3641
+      internalID: -1561133779
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_stPetersCannery_d7
+      rect:
+        serializedVersion: 2
+        x: 2520
+        y: 0
+        width: 840
+        height: 673
+      alignment: 9
+      pivot: {x: 0.5, y: 0.39970282}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 35015615ac3a9624b84f203c0e8661be
+      internalID: -475556918
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 50004074c642fa34ba0e6f36d197b8e7
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Village_stPetersCannery_d0: 1840841110
+      Village_stPetersCannery_d1: -1533199216
+      Village_stPetersCannery_d2: 602435247
+      Village_stPetersCannery_d3: 1300891738
+      Village_stPetersCannery_d4: -975831026
+      Village_stPetersCannery_d5: -750568822
+      Village_stPetersCannery_d6: -1561133779
+      Village_stPetersCannery_d7: -475556918
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

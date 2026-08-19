@@ -45,6 +45,9 @@ namespace HiddenHarbours.App.Editor
         /// <summary>Aunt Ginny's land, declared in <see cref="StPetersGinnyPlot"/> and held open here.</summary>
         public const string GinnyPlotZone = "GinnyPlot";
 
+        /// <summary>The ground the derelict cannery stands on, out by the pier root.</summary>
+        public const string CanneryZone = "Cannery";
+
         /// <summary>The cut lane from the village green out to her dooryard.</summary>
         public const string GinnyLaneZone = "GinnyLane";
 
@@ -135,6 +138,21 @@ namespace HiddenHarbours.App.Editor
                     reason: "Aunt Ginny's plot — her cottage, dooryard, garden, freezer and three derelict " +
                             "sheds. Declared in StPetersGinnyPlot and only read here, so the day her land " +
                             "moves or grows this row moves with it."));
+
+                // ⭐ THE CANNERY'S GROUND (2026-08-19). It already falls inside StPetersWoods'
+                // 30 m DockClearance, so no tree plants there today and this row changes nothing —
+                // which is exactly why it is here. That clearance exists to keep the woods off the
+                // PIER; the cannery is 20.6 m inland of the pier root and its cover is incidental, so
+                // the day the dock clearance is retuned (or the building moves) an incidental clearing
+                // is the one that gets forgotten. Declared, and read from the building's own file, so
+                // moving the cannery moves its clearing.
+                rows.Add(WoodlandZone.Circle(
+                    CanneryZone, WoodlandZoneKind.Clearing,
+                    StPetersCannery.Site, StPetersCannery.ClearingRadiusMetres,
+                    coreFraction: 1f, coreSpacingMetres: 0f,
+                    reason: "the derelict fish cannery beside the wharf — the island's biggest building, " +
+                            "9.5 × 15.4 m of it, with room to walk round. Declared in StPetersCannery " +
+                            "and only read here."));
 
                 // ---- the cut lanes -------------------------------------------------------------------
                 // ⭐ THE COMMUTE StPetersRoutines LEFT TO THIS LANE, in its own words: "No via-bends:

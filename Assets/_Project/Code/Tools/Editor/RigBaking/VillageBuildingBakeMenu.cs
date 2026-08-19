@@ -37,7 +37,7 @@ namespace HiddenHarbours.Tools.RigBaking
         // Priority 59 continues the unbroken 38–58 bake/slice run in the Art menu. Unity draws a
         // separator at any priority gap over 10, so a "sensible" 70 would render the command off in its
         // own island and read as missing — the exact trap that made "Bake Buildings" look absent at 23.
-        [MenuItem("Hidden Harbours/Art/Bake Village Buildings (M1 set)", priority = 59)]
+        [MenuItem("Hidden Harbours/Art/Bake Village Buildings (M1 set + derelicts)", priority = 59)]
         public static void BakeAllMenu()
         {
             var report = BakeAll(out int failed);
@@ -67,7 +67,7 @@ namespace HiddenHarbours.Tools.RigBaking
             long croppedBytes = 0, uncroppedBytes = 0, pngBytes = 0;
             int ppu = 0;
 
-            foreach (var build in VillageBuildingKit.M1Set)
+            foreach (var build in VillageBuildingKit.AllBuilds)
             {
                 try
                 {
@@ -136,17 +136,82 @@ namespace HiddenHarbours.Tools.RigBaking
             // of them would have imported SILENTLY DOWNSCALED with the sprite count still correct. The
             // measurement is what caught it — the cap this kit imports at has to be the cap the pack is
             // solved for, or the two agree only by luck.
+            // ---- a LIFECYCLE build: the underlying build, plus a state laid over it ------------
+            //
+            // Neither of the two paths below can express this. A preset build spreads the rig's table
+            // and has nowhere to put a decay key; a dialled build would mean hand-copying the preset
+            // into C# and forking it. So the options expression is BOTH — Object.assign of the rig's
+            // own PRESETS entry and the state — and the tripwire is the one that actually catches the
+            // failure that matters here: the SAME build with the state taken off. See
+            // BuildingBakeRequest.UnderlyingOptsJs.
+            if (build.HasLifecycle)
+            {
+                string g = RigCatalog.Get(build.RigKey).GlobalName;
+                string bare = BaseOptionsLiteralFor(build, g);
+
+                return BuildingBakeRequest.FromOptions(
+                    build.RigKey, LifecycleOptionsLiteralFor(build, g), build.Key,
+                    outputFolder, baseName, VillageBuildingKit.Facings,
+                    requireDistinctFromDefault: true,
+                    maxSheetDimension: VillageBuildingKit.ImportCapFor(build),
+                    underlyingOptsJs: bare,
+                    layerReason:
+                        $"'{build.Key}' is baked at lifecycle state '{build.StateTag}', and it came " +
+                        "back identical to the same building in repair. Two known causes, both " +
+                        "silent: the lifecycle PASS is not loaded into the host (the hook reads " +
+                        "root.BuildingLifecycle and no-ops when it is absent - check that the rig " +
+                        "declares 'buildingLifecycle' as a prerequisite in RigCatalog), or a state id " +
+                        "is misspelled (normPhase/normDecay fall back to finished/sound without a " +
+                        "word). BuildingLifecycleStates.AssertKnown covers the second.");
+            }
+
             if (build.IsPreset)
                 return BuildingBakeRequest.FromPreset(
                     build.RigKey, build.Preset, RigCatalog.Get(build.RigKey).GlobalName,
                     outputFolder, baseName, VillageBuildingKit.Facings,
-                    maxSheetDimension: VillageBuildingKit.ImportSizeCap);
+                    maxSheetDimension: VillageBuildingKit.ImportCapFor(build));
 
             return BuildingBakeRequest.FromOptions(
                 build.RigKey, OptionsLiteralFor(build), build.Key,
                 outputFolder, baseName, VillageBuildingKit.Facings,
                 requireDistinctFromDefault: true,
-                maxSheetDimension: VillageBuildingKit.ImportSizeCap);
+                maxSheetDimension: VillageBuildingKit.ImportCapFor(build));
+        }
+
+        /// <summary>
+        /// The build WITHOUT its lifecycle state — the rig preset spread, or the dialled axes. The
+        /// "before" half of the did-the-state-apply comparison, and the base
+        /// <see cref="LifecycleOptionsLiteralFor"/> layers onto.
+        /// </summary>
+        public static string BaseOptionsLiteralFor(VillageBuildingKit.Build build, string rigGlobal)
+            => build.IsPreset
+                ? $"Object.assign({{}},{rigGlobal}.PRESETS['{build.Preset.Replace("'", "\\'")}'])"
+                : OptionsLiteralFor(build);
+
+        /// <summary>
+        /// The build WITH its state: <c>Object.assign({}, Rig.PRESETS['x'], {decay:'ruin'})</c>.
+        ///
+        /// <para>Only the keys the build actually sets are emitted. The pass reads a missing key as
+        /// "leave this axis alone", so writing <c>phase:'finished'</c> explicitly would be harmless —
+        /// but the options expression is the contract's audit trail, and an audit trail that lists
+        /// axes nobody chose is one more thing to talk a future reader out of.</para>
+        /// </summary>
+        public static string LifecycleOptionsLiteralFor(VillageBuildingKit.Build build, string rigGlobal)
+        {
+            var parts = new List<string>(3);
+            if (!string.IsNullOrEmpty(build.Phase) &&
+                build.Phase != BuildingLifecycleStates.FinishedPhase)
+                parts.Add($"phase:'{build.Phase}'");
+            if (!string.IsNullOrEmpty(build.Decay) &&
+                build.Decay != BuildingLifecycleStates.SoundDecay)
+                parts.Add($"decay:'{build.Decay}'");
+            if (build.Burnt) parts.Add("burnt:true");
+
+            if (parts.Count == 0)
+                throw new ArgumentException(
+                    $"'{build.Key}' claims a lifecycle state but emits no keys.", nameof(build));
+
+            return $"Object.assign({BaseOptionsLiteralFor(build, rigGlobal)},{{{string.Join(",", parts)}}})";
         }
 
         /// <summary>The dialled options as the JS literal <c>render()</c> takes, through the same
@@ -207,9 +272,15 @@ namespace HiddenHarbours.Tools.RigBaking
                 cropSaving = (float)r.CropSaving,
             };
 
-            entry.optionsJs = build.IsPreset
-                ? $"Object.assign({{}},{rig.GlobalName}.PRESETS['{build.Preset}'])"
-                : OptionsLiteralFor(build);
+            entry.optionsJs = build.HasLifecycle
+                ? LifecycleOptionsLiteralFor(build, rig.GlobalName)
+                : BaseOptionsLiteralFor(build, rig.GlobalName);
+
+            entry.importCap = VillageBuildingKit.ImportCapFor(build);
+            entry.phase = build.Phase ?? "";
+            entry.decay = build.Decay ?? "";
+            entry.burnt = build.Burnt;
+            entry.state = build.StateTag;
 
             // The Unity pivot is DERIVED from the cropped pivot rather than stored independently, so the
             // two can never disagree — VillageBuildingKit.NormalizedPivot is the single definition and a
@@ -270,7 +341,8 @@ namespace HiddenHarbours.Tools.RigBaking
             $"  ✓ {build.Key,-15} {r.CellWidth,4}×{r.CellHeight,-4} cell ({r.Columns}×{r.Rows}) → " +
             $"{r.SheetWidth}×{r.SheetHeight}, {r.PngBytes / 1024.0:F0} KB png, " +
             $"crop saved {r.CropSaving:P0}, pivot ({r.PivotX:F0},{r.PivotY:F0}), " +
-            $"{r.FootprintWidthMeters:F1}×{r.FootprintLengthMeters:F1} m, {r.MeasuredConvention}";
+            $"{r.FootprintWidthMeters:F1}×{r.FootprintLengthMeters:F1} m, {r.MeasuredConvention}" +
+            (build.HasLifecycle ? $", state {build.StateTag}" : "");
 
         /// <summary>
         /// Headless entry point for <c>-executeMethod</c>. Exits non-zero if any build fails, so a batch

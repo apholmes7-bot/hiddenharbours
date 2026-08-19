@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using HiddenHarbours.Art.Editor;   // BuildingLifecycleStates
 
 namespace HiddenHarbours.Tools.RigBaking
 {
@@ -147,6 +148,32 @@ namespace HiddenHarbours.Tools.RigBaking
             new BuildingAxis("garage",     "Garage",      BuildingAxisKind.Flag,   false),
             new BuildingAxis("weather",    "Weathering",  BuildingAxisKind.Unit,   0.0),
             new BuildingAxis("night",      "Night (lit)", BuildingAxisKind.Flag,   false),
+        };
+
+        /// <summary>
+        /// The LIFECYCLE dials - construction phase, dereliction and the burnt modifier.
+        ///
+        /// <para><b>A THIRD TABLE, deliberately not folded into <see cref="Wharf"/> and
+        /// <see cref="House"/>.</b> Every other axis here is read by the host rig's own
+        /// <c>resolve()</c>, which is what <c>BuildingAxesTests</c> greps for. These three are read by
+        /// the PASS (<c>docs/art/rigs/building-lifecycle-kit/buildingLifecycleRig.js</c>), which the
+        /// host only consults through a two-line hook - so grepping the host source for them would
+        /// fail, correctly. They are cross-rig: the same three keys drive all three hosts.</para>
+        ///
+        /// <para>⚠️ The values are ids, not labels, and they are APPEND-ONLY - see
+        /// <see cref="BuildingLifecycleStates"/>, which owns the tables and the guard that refuses an
+        /// unknown one. The lists here are built FROM that type rather than retyped, so a fourth decay
+        /// step arrives in one place.</para>
+        /// </summary>
+        public static readonly BuildingAxis[] Lifecycle =
+        {
+            new BuildingAxis("phase", "Construction phase", BuildingAxisKind.Choice,
+                             BuildingLifecycleStates.FinishedPhase,
+                             inline: BuildingLifecycleStates.Phases),
+            new BuildingAxis("decay", "Dereliction", BuildingAxisKind.Choice,
+                             BuildingLifecycleStates.SoundDecay,
+                             inline: BuildingLifecycleStates.Decays),
+            new BuildingAxis("burnt", "Burnt out", BuildingAxisKind.Flag, false),
         };
 
         /// <summary>The dial set for a catalog rig key.</summary>

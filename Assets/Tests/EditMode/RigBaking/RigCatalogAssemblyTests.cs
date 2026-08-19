@@ -74,6 +74,15 @@ namespace HiddenHarbours.Tests.RigBaking
                          "RodBobber", AzimuthConvention.Clockwise),
             new Snapshot("bucket", "docs/art/rigs/bucketRig.js",
                          "BucketIso", AzimuthConvention.CounterClockwise),
+            // Added by the building lifecycle kit (drop 2026-08-19), not present at 18b67d1c. NOT A
+            // RIG — a PASS that runs between a host rig's build(b) and paint(), so it draws nothing
+            // of its own and the Clockwise convention is the placeholder every non-directional entry
+            // carries (dialogueBubble, shellfish, catchKit); nothing probes it. Standalone: it needs
+            // only the faces the host hands it. It is named as a PREREQUISITE by house,
+            // wharfBuilding and shopfront below, because the hook that reads it NO-OPS when it is
+            // absent — a bake without it writes the finished building to a sheet named `collapsing`.
+            new Snapshot("buildingLifecycle", "docs/art/rigs/building-lifecycle-kit/buildingLifecycleRig.js",
+                         "BuildingLifecycle", AzimuthConvention.Clockwise),
             new Snapshot("buoyIso", "docs/art/rigs/deck-loop-kit/Art/buoyIsoRig.js",
                          "BuoyIso", AzimuthConvention.Clockwise, "deckIsoSolid"),
             // Added by the camper iso kit (drop 2026-08-16, imported #552, baked here), not present
@@ -124,7 +133,7 @@ namespace HiddenHarbours.Tests.RigBaking
             new Snapshot("fuel", "docs/art/rigs/fuel-storage-kit/fuelRig.js",
                          "FuelIso", AzimuthConvention.Clockwise, "deckIsoSolid"),
             new Snapshot("house", "docs/art/rigs/houseIsoRig.js",
-                         "HouseIso", AzimuthConvention.CounterClockwise),
+                         "HouseIso", AzimuthConvention.CounterClockwise, "buildingLifecycle"),
             new Snapshot("interior", "docs/art/rigs/interiorIsoRig.js",
                          "InteriorIso", AzimuthConvention.CounterClockwise),
             new Snapshot("interiorProp", "docs/art/rigs/interiorPropRig.js",
@@ -158,7 +167,8 @@ namespace HiddenHarbours.Tests.RigBaking
             new Snapshot("shopInterior", "docs/art/rigs/shop-building-kit/shopInteriorRig.js",
                          "ShopInterior", AzimuthConvention.CounterClockwise),
             new Snapshot("shopfront", "docs/art/rigs/shop-building-kit/shopfrontRig.js",
-                         "Shopfront", AzimuthConvention.CounterClockwise, "shopInterior"),
+                         "Shopfront", AzimuthConvention.CounterClockwise,
+                         "buildingLifecycle", "shopInterior"),
             new Snapshot("shoreFinds", "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
                          "ShoreFinds", AzimuthConvention.CounterClockwise),
             // Added by the dialogue bubble kit (#561). ⚠️ The prerequisite is the SHIPPING character
@@ -176,7 +186,7 @@ namespace HiddenHarbours.Tests.RigBaking
             new Snapshot("utilityIso", "docs/art/rigs/iso-rig-pack/utility-iso/utilityIsoRig.js",
                          "UtilityIso", AzimuthConvention.CounterClockwise),
             new Snapshot("wharfBuilding", "docs/art/rigs/wharfBuildingRig.js",
-                         "WharfBuilding", AzimuthConvention.CounterClockwise),
+                         "WharfBuilding", AzimuthConvention.CounterClockwise, "buildingLifecycle"),
             new Snapshot("wharfDecor", "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
                          "WharfDecor", AzimuthConvention.CounterClockwise),
             new Snapshot("wharfIso", "docs/art/rigs/iso-rig-pack/wharf-kit-iso/wharfIsoRig.js",

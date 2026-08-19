@@ -368,6 +368,25 @@
 | M3-25 | Dispersion — wave speed DERIVED from wavelength, shallow-limited near shore (ADR 0027 P1, rides with M3-18) | art-pipeline → gameplay-systems | Per-octave speeds are hand-set independents (0.09/0.025/0.018) with no link to wavelength; derive `c = √(gλ/2π)`, shallow branch `c = √(g·d)` off the existing read-only depth | Unrelated rates are why a multi-scale sea reads as **stacked sliding layers** not one body. `_DispersionScale = 0` = today's speeds exactly. Waves slow + bunch approaching shore — ⚠️ may partly subsume §5.12's `_ShorewardBias`; **measure, don't assume**. Twin: monotone in λ, shallow branch → 0 at zero depth, branches agree at the transition |
 | M3-26 | Capillary ripple band — wind- and steepness-gated (ADR 0027 P3) | art-pipeline | Finest band today is `_WindChopScale` 0.7 = **chop, not ripples**; add a ~0.08–0.15 m octave riding **on** the larger waves, on windward faces only | **Tier A permanently** — a ripple is surface texture, never a force, never in the field hulls ride. ⚠️ **Most alias-prone layer in the shader**: ~3 px at PPU=32, so world-grid quantized + threshold-dithered **and amplitude faded per discrete zoom tier** or it is pure shimmer. **Prototype the zoom fade first — if it can't be made stable, DROP the item** |
 
+### Epic M3-F — Building lifecycle: repair, land, construction, the cannery (`economy-sim` / `world-content`)
+> Owner-ruled 2026-08-19. **The ART LANDED FIRST** — the building lifecycle pass gives every iso building
+> 7 construction phases and 4 states of dereliction, and four derelict buildings now stand at St Peters as
+> scenery. **Full detail, the measured traps, and what the pass does NOT do:**
+> [`building-lifecycle-gameplay.md`](building-lifecycle-gameplay.md). Nothing here is started; do not pull
+> these before M3 (CLAUDE.md rule 8).
+>
+> ⚠️ M3-27 makes a building's state the first world fact that is **saved rather than recomputed from
+> `(worldSeed, gameTime)`** — a save-format change, so `lead-architect` gates it. And every item inherits the
+> pass's one measured trap: an unrecognised state id is *silently ignored* and draws a building in perfect
+> repair, so anything reading a state out of a save needs the same refusal the bake already has.
+
+| ID | Title | Owner | One-liner | Key AC (seed) |
+|---|---|---|---|---|
+| M3-27 | Building repair — derelict → sound | economy-sim + gameplay-systems | Pay materials + cash to walk a derelict you own back up the decay ladder, one rung at a time | **P2.** State is SAVED and versioned; one rung per job (`ruin → collapsing → abandoned → neglected → sound`); cost scales with the rung; the art is a sprite swap through the existing kit; an unknown id from an old save is refused, never normalised to `sound` |
+| M3-28 | Vacant lots you can buy | economy-sim + world-content | Named, priced parcels the player can own, which then permit building | **P2/P3.** ⚠️ There is NO land-ownership system today (a sweep finds only `BoatOwnerDef`) — this is a Core data-model change, ADR + `lead-architect` gate. A lot is a Def asset with a stable id, not code. The woodland clearing mechanism has to learn about buildings placed at RUNTIME |
+| M3-29 | Erect a building phase by phase on a lot you own | gameplay-systems + economy-sim | Commission a build and watch it go up through the kit's seven construction phases | **P4.** The visible build IS the kit's `PHASES` ladder; advance gated on materials + game time, not a menu confirm; a stalled site is a real saved state (decay composes with phase). Depends on M3-28 |
+| M3-30 | The cannery restart | economy-sim + world-content | Buy, repair and restart the fish plant that shut when the work went to the mainland — and employ the village | **P2/P3/P4.** Repair first (M3-27); runs on the M3 production-chain machinery, not a bespoke system; **employment must be VISIBLE** — villager routines that start at the cannery door; the village knows the difference; it must be possible to fail (P5) |
+
 ---
 
 # M4 — Dynasty
