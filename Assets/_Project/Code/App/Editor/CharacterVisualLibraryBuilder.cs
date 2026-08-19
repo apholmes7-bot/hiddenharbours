@@ -126,6 +126,18 @@ namespace HiddenHarbours.App.Editor
         const int TossFrames = 8;
         const float TossFps = 1000f / 95f;         // 10.53
 
+        // The OFF-DECK family (rig 6.5). The sidecar states MILLISECONDS PER FRAME, not fps — 130 ms is
+        // 7.7 fps, and reading it as 130 fps would run the swim stroke seventeen times too fast.
+        // CharacterOffDeckMountsTests holds these against the sidecar's own anims block.
+        const int SwimFrames = 8;
+        const float SwimFps = 1000f / 130f;        // 7.69
+        const int TreadFrames = 6;
+        const float TreadFps = 1000f / 170f;       // 5.88
+        const int SleepFrames = 6;
+        const float SleepFps = 1000f / 640f;       // 1.56 — the slowest clip the rig bakes: breathing
+        const int DriveFrames = 6;
+        const float DriveFps = 1000f / 170f;       // 5.88
+
         /// <summary>One character's worth of sheets on disk → one <see cref="CharacterVisualDef"/> asset.</summary>
         struct Kit
         {
@@ -278,6 +290,24 @@ namespace HiddenHarbours.App.Editor
             def.PlaceClip = TakeClip(folder, kit.Stem, "_place", PlaceFrames, PlaceFps, loops: false);
             def.TossClip = TakeClip(folder, kit.Stem, "_toss", TossFrames, TossFps, loops: false);
 
+            // The OFF-DECK family (rig 6.5, this PR) — swim, tread, sleep, drive. Same terms as every
+            // clip above: an absent sheet yields an empty block, the all-or-nothing gate drops it whole,
+            // and the clip never plays. Unlike the deck families these DO have art for the whole cast on
+            // day one, so all ten kits wire all four here.
+            //
+            // ⚠️ These sheets are the 64 x 88 OFF-DECK cell, not the 64 x 92 locomotion one, and the
+            // slicer routes them by suffix (CharacterSheetSlicer.OffDeckAnimSuffixes). That is invisible
+            // from here on purpose — the def stores SPRITES, and both cells pivot on the same ground
+            // point — but it is why these four must be sliced before this builder can find their frames.
+            //
+            // ⚠️ Wired ART only. Where a swimmer's waterline sits, how high the mattress is, and where
+            // the driving seat is are NOT here: they are CharacterOffDeckMountsDef, built from
+            // OffDeck_mounts.json by CharacterOffDeckMountsBuilder. A consumer needs both.
+            def.SwimClip = TakeClip(folder, kit.Stem, "_swim", SwimFrames, SwimFps, loops: true);
+            def.TreadClip = TakeClip(folder, kit.Stem, "_tread", TreadFrames, TreadFps, loops: true);
+            def.SleepClip = TakeClip(folder, kit.Stem, "_sleep", SleepFrames, SleepFps, loops: true);
+            def.DriveClip = TakeClip(folder, kit.Stem, "_drive", DriveFrames, DriveFps, loops: true);
+
             if (created) AssetDatabase.CreateAsset(def, path);
             else EditorUtility.SetDirty(def);
 
@@ -309,6 +339,10 @@ namespace HiddenHarbours.App.Editor
                       $"lift {ClipState(def, CharacterClip.Lift)}, " +
                       $"place {ClipState(def, CharacterClip.Place)}, " +
                       $"toss {ClipState(def, CharacterClip.Toss)}" +
+                      $"; off-deck swim {ClipState(def, CharacterClip.Swim)}, " +
+                      $"tread {ClipState(def, CharacterClip.Tread)}, " +
+                      $"sleep {ClipState(def, CharacterClip.Sleep)}, " +
+                      $"drive {ClipState(def, CharacterClip.Drive)}" +
                       $"{(def.FacingsAreCounterClockwise ? ", rows UN-MIRRORED (art bakes CCW)" : ", rows as labelled (art bakes CW)")}.");
             return true;
         }
