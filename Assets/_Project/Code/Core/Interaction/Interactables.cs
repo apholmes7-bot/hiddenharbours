@@ -52,5 +52,55 @@ namespace HiddenHarbours.Core
         /// <summary>Empty the registry (scene teardown / test isolation). A leaked registration would let
         /// the verb act on a thing that is no longer loaded, so tests clear this in their fixture.</summary>
         public static void Clear() => Registered.Clear();
+
+        /// <summary>
+        /// <b>Where the registrant with this id lives in the scene</b> — the seam the affordance lane
+        /// resolves an offer to a thing it can draw on.
+        ///
+        /// <para><b>Why this lookup belongs HERE and not in the art lane.</b> The highlight's contract
+        /// (see <see cref="IInteractable"/>) is that "the interaction lane never references a renderer and
+        /// the art lane never references a registrant". A presenter that walked <see cref="Active"/> and
+        /// cast the winner to a <see cref="UnityEngine.Component"/> would be doing exactly the second of
+        /// those. So the registry — which already holds registrants, and is Core — answers the question
+        /// instead, and hands back a bare <see cref="UnityEngine.Transform"/>. The art lane learns WHERE,
+        /// never WHAT: it cannot reach a registrant's members through this, and adding a fixture type
+        /// needs no art-side change.</para>
+        ///
+        /// <para><b>Why a transform and not the position.</b> <see cref="IInteractable.WorldPosition"/>
+        /// already says where a thing IS, and <see cref="InteractOfferChanged"/> carries it. What the
+        /// affordance needs is the scene NODE — the renderers hang off it, and it keeps following the
+        /// fixture without anything having to republish as it moves.</para>
+        ///
+        /// <para><b>A registrant that is not a <see cref="UnityEngine.Component"/> answers false</b> rather
+        /// than throwing. Plain-object registrants are legal (the resolver's tests use them) and simply
+        /// have nowhere to draw — which the caller must handle anyway, since an id may name something that
+        /// is not in this registry at all (a transit key, an NPC).</para>
+        ///
+        /// <para><b>Rule 7.</b> A linear walk of a list that is small by construction, called only when the
+        /// offer CHANGES, and allocating nothing.</para>
+        /// </summary>
+        public static bool TryGetTransform(string id, out UnityEngine.Transform transform)
+        {
+            transform = null;
+            if (string.IsNullOrEmpty(id)) return false;
+
+            for (int i = 0; i < Registered.Count; i++)
+            {
+                IInteractable candidate = Registered[i];
+                if (candidate == null) continue;
+                if (!string.Equals(candidate.Id, id, System.StringComparison.Ordinal)) continue;
+
+                // ⚠️ `as` then `== null`, never `??`: a destroyed Component is "fake null" and the
+                // null-coalescing operator tests the real C# reference, so it would hand back a dead
+                // transform (memory: unity-null-coalescing-defeats-fake-null).
+                var component = candidate as UnityEngine.Component;
+                if (component == null) return false;
+
+                transform = component.transform;
+                return true;
+            }
+
+            return false;
+        }
     }
 }
