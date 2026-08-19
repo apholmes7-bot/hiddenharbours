@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using HiddenHarbours.Core;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 namespace HiddenHarbours.World
@@ -31,6 +32,22 @@ namespace HiddenHarbours.World
     /// <para><b>Headless-safe.</b> Everything up to and including pagination runs with no canvas, no
     /// camera and no art — which is how the layout is proven in batch mode. Only
     /// <see cref="Rebuild"/> touches Unity objects.</para>
+    ///
+    /// <para><b>Self-installing</b>, in <c>ShellPresenter</c>'s and <c>WardrobePicker</c>'s shape and for
+    /// their reason: the book is PLAYER-GLOBAL, not regional, so there is no region builder to add it and
+    /// no scene to carry it. It installs at <c>AfterSceneLoad</c> onto a <c>DontDestroyOnLoad</c> host,
+    /// which is what makes the pause menu's row reach something — before this, the row published
+    /// <see cref="NotebookRequested"/> into an empty room. Nothing is BUILT until the book is first
+    /// opened (rule 7): a save that never opens it pays for a subscription and an <c>Update</c> that
+    /// early-outs.</para>
+    ///
+    /// <para><b>While it is up it owns three things, and gives all three back on every way out.</b>
+    /// <see cref="InteractionGate"/> (the interact verb, so the press that turns a page cannot also board
+    /// a boat), <see cref="MoveActionClaim"/> (the move axis, because the dev-key ledger is spent A–Z and
+    /// the book steers on the keys that walk the fisher), and <see cref="CancelKeyClaim"/> (Esc, so the
+    /// press that shuts the book does not also open the pause menu underneath it). There is exactly ONE
+    /// close path — <see cref="Close"/> — and <c>OnDisable</c> takes it too, so a book torn down mid-read
+    /// can never leave the player unable to walk.</para>
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class NotebookPresenter : MonoBehaviour
@@ -105,14 +122,75 @@ namespace HiddenHarbours.World
         private IFlagStore _flags;
 
         private bool _gateWasBlocked;
+        private bool _moveWasClaimed;
         private Vector2 _lastAxis;
+        private int _openedFrame = -1;
+        private bool _artResolved;
+        private bool _contentWired;
+
+        private static NotebookPresenter _instance;
+
+        // ---- installation ---------------------------------------------------------------------------
+
+        /// <summary>
+        /// Put a book in the game. The <c>ShellPresenter</c> / <c>WardrobePicker</c> hook, at the same
+        /// load point and for the same reason: after every scene <c>Awake</c> and before any
+        /// <c>Start</c>, so the subscription is live before anything can ask for the book.
+        /// </summary>
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        private static void Bootstrap()
+        {
+            if (_instance != null) return;
+            var go = new GameObject("[Notebook]");
+            DontDestroyOnLoad(go);
+            _instance = go.AddComponent<NotebookPresenter>();
+        }
+
+        private void Awake()
+        {
+            if (_instance != null && _instance != this) { Destroy(gameObject); return; }
+            _instance = this;
+        }
+
+        private void OnDestroy()
+        {
+            if (_instance == this) _instance = null;
+        }
+
+        /// <summary>
+        /// The live book, or null before it installs. For tests and tooling — the installed one is the
+        /// only one there is (<see cref="Awake"/> destroys a second), so a test drives THIS rather than
+        /// standing up a rival that would be torn down under it.
+        ///
+        /// <para><b>⚠ Explicit <c>!= null</c></b>: a destroyed presenter is fake-null, and a caller doing
+        /// <c>Instance?.Foo()</c> on the raw field would sail straight past Unity's overloaded
+        /// <c>==</c>.</para>
+        /// </summary>
+        public static NotebookPresenter Instance => _instance != null ? _instance : null;
+
+        /// <summary>
+        /// <b>Esc belongs to the book right now</b> — true while it is up, AND on the frame it was shut.
+        /// Read by <c>ShellPresenter.CanTogglePause</c> through <see cref="CancelKeyClaim"/>, because UI
+        /// may not reference World (rule 4) and so cannot ask this type directly.
+        ///
+        /// <para><b>It asks the Core claim rather than keeping a latch of its own</b>, deliberately: the
+        /// shell and this component must not be able to disagree about whose key it is, and two mirrors
+        /// of one frame number is exactly how they would. The book is the claim's only claimant today —
+        /// see <see cref="CancelKeyClaim"/> for why the closing FRAME counts and not merely the open
+        /// state.</para>
+        /// </summary>
+        public static bool OwnsCancelKey => CancelKeyClaim.OwnedThisFrame;
 
         // ---- wiring ---------------------------------------------------------------------------------
 
         /// <summary>
-        /// Hand the book its art. Every argument is optional; a null leaves that piece on its tinted-rect
-        /// fallback. Called by the region builder at build time, so nothing here reads an asset path at
-        /// runtime.
+        /// Hand the book its art directly — a test, or tooling with the sprites already in hand. Every
+        /// argument is optional, and a null leaves that piece alone.
+        ///
+        /// <para><b>This is not how the shipped book gets dressed.</b> There is no region builder to call
+        /// it: the book installs itself and outlives every scene, so what it is not given here it resolves
+        /// from Resources the first time it opens (<see cref="EnsureArt"/>). Anything wired here WINS —
+        /// only the nulls are filled in.</para>
         /// </summary>
         public void WireKitArt(Sprite stock = null, Sprite box = null, Sprite boxTicked = null,
                                Sprite currentMark = null, Sprite tab = null, Sprite ribbon = null,
@@ -149,6 +227,79 @@ namespace HiddenHarbours.World
             _knowledge = knowledge;
             _notes = notes;
             _flags = flags;
+
+            // Wired EXPLICITLY, so the runtime defaults stand down — including when an argument is null.
+            // A test that wants an empty book must be able to say so, and "you passed nothing" and "you
+            // said nothing" are different sentences.
+            _contentWired = true;
+        }
+
+        // ---- what the book resolves for itself --------------------------------------------------------
+
+        /// <summary>
+        /// Fill in whatever art was not handed in, from Resources. Runs ONCE, on the first open, so a
+        /// save that never opens the book never pays for it (rule 7).
+        ///
+        /// <para><b>Right art or no art, never wrong art.</b> Each load is independent and each may fail;
+        /// a null leaves that piece on the tinted-rect fallback drawn at the kit's own measured size —
+        /// obviously unfinished, rather than finished and wrong. An unbaked project therefore gets a book
+        /// with the right SHAPE and a grey surface, which is what the tripwire tests are for.</para>
+        ///
+        /// <para><b>⚠ Explicit <c>!= null</c> on every result</b>: <c>Resources.Load</c> returns Unity's
+        /// fake-null on a miss, and a field holding one would sail past every <c>?.</c> and <c>??</c> in
+        /// the drawing code.</para>
+        /// </summary>
+        private void EnsureArt()
+        {
+            if (_artResolved) return;
+            _artResolved = true;
+
+            if (_stock == null) _stock = LoadPiece(NotebookKit.ShippedStock);
+            if (_box == null) _box = LoadPiece(NotebookKit.ShippedBox);
+            if (_boxTicked == null) _boxTicked = LoadPiece(NotebookKit.PieceBoxTicked);
+            if (_currentMark == null) _currentMark = LoadPiece(NotebookKit.ShippedCurrentMark);
+            if (_tab == null) _tab = LoadPiece(NotebookKit.ShippedTab);
+            if (_ribbon == null) _ribbon = LoadPiece(NotebookKit.PieceRibbon);
+            if (_select == null) _select = LoadPiece(NotebookKit.ShippedSelect);
+            if (_cursor == null) _cursor = LoadPiece(NotebookKit.PieceCursorHand);
+            if (_markNext == null) _markNext = LoadPiece(NotebookKit.PieceMarkNext);
+            if (_markPrev == null) _markPrev = LoadPiece(NotebookKit.PieceMarkPrev);
+            if (_stampDone == null) _stampDone = LoadPiece(NotebookKit.PieceStampDone);
+            if (_face == null) _face = LoadFace();
+        }
+
+        /// <summary>One baked piece by name, or null when the kit has not been baked.</summary>
+        public static Sprite LoadPiece(string piece)
+        {
+            if (string.IsNullOrEmpty(piece)) return null;
+            Sprite sprite = Resources.Load<Sprite>(NotebookKit.ResourceKeyFor(piece));
+            return sprite != null ? sprite : null;
+        }
+
+        /// <summary>The kit's face, or null when it has not been baked — a real answer, and the one the
+        /// built-in legacy fallback stands behind.</summary>
+        public static Font LoadFace()
+        {
+            Font face = Resources.Load<Font>(HarbourType.ResourceKey);
+            return face != null ? face : null;
+        }
+
+        /// <summary>
+        /// Point the book at the running game's own contents, unless it was told otherwise. Runs once,
+        /// on the first open, for the same reason <see cref="EnsureArt"/> does.
+        ///
+        /// <para>Suppliers rather than snapshots, so this resolves the SOURCES and never the values —
+        /// what is on the page is still read fresh every time the book opens.</para>
+        /// </summary>
+        private void EnsureContent()
+        {
+            if (_contentWired) return;
+            _contentWired = true;
+
+            _quests = NotebookContentSource.Quests;
+            _knowledge = NotebookContentSource.Knowledge;
+            _notes = NotebookContentSource.Notes;
+            _flags = NotebookContentSource.Flags();
         }
 
         // ---- open / close ----------------------------------------------------------------------------
@@ -174,31 +325,67 @@ namespace HiddenHarbours.World
         ///
         /// <para><b>It takes the interact verb with it.</b> <see cref="InteractionGate"/> is how a modal
         /// says "the key is mine" in this repo, and the book up is exactly that: the pump, the ladder
-        /// and every other candidate stand down until it is shut. That is also what keeps Esc from
-        /// reaching the pause menu, so the book's own close is reached first with no change to the
-        /// shell.</para>
+        /// and every other candidate stand down until it is shut.</para>
+        ///
+        /// <para><b>And the move axis, and Esc.</b> <see cref="MoveActionClaim"/> because the book steers
+        /// on the keys that walk the fisher (the dev-key ledger is spent A–Z), so without it turning a
+        /// page would walk her off the wharf while she read. <see cref="CancelKeyClaim"/> because the
+        /// press that shuts the book must not ALSO open the pause menu underneath it — the gate alone
+        /// cannot say that, since the book lowers the gate on the very frame the press lands.</para>
+        ///
+        /// <para><b>Both holds are RESTORED on the way out, not cleared</b> — see <see cref="Close"/>.</para>
         /// </summary>
         public void Open()
         {
             if (IsOpen) return;
 
             IsOpen = true;
+            _openedFrame = Time.frameCount;
+
             _gateWasBlocked = InteractionGate.IsBlocked;
+            _moveWasClaimed = MoveActionClaim.IsClaimed;
+
+            // ⭐ TAKE ALL THREE BEFORE ANYTHING ELSE — the press that asked for the book is still down
+            // this frame (see the _openedFrame guard in Update), and these are what stop the world's
+            // other readers spending it a second time meanwhile.
             InteractionGate.IsBlocked = true;
+            MoveActionClaim.IsClaimed = true;
+            CancelKeyClaim.Hold();
+
+            EnsureArt();
+            EnsureContent();
 
             SpreadIndex = 0;
             RebuildModel();
             Rebuild();
         }
 
+        /// <summary>
+        /// Shut the book. <b>The one close path</b>, taken by Esc, by the interact verb, by the pause
+        /// row's second press and by <c>OnDisable</c> — because a hold released on only some of the ways
+        /// out is a player who cannot walk, and the way she gets there is always the way nobody tested.
+        /// Safe to call when nothing is open.
+        /// </summary>
         public void Close()
         {
             if (!IsOpen) return;
 
             IsOpen = false;
-            // Restore rather than clear: a book opened over something that already owned the key must
-            // not hand the key back to the world on its way out.
+            _openedFrame = -1;
+
+            // Restore rather than clear, both of them: a book opened over something that already owned
+            // the key — or the axis — must not hand either back to the world on its way out.
             InteractionGate.IsBlocked = _gateWasBlocked;
+            MoveActionClaim.IsClaimed = _moveWasClaimed;
+
+            // Not restored, and deliberately: the cancel key is not a hold that predates the book, it is
+            // a press being SPENT. Release latches this frame so the shell sees it as spent for the rest
+            // of it, whichever Update ran first.
+            CancelKeyClaim.Release();
+
+            // The axis latch goes with the book. Otherwise a stick still held when it shut would be read
+            // as a fresh push the next time it opens, and the book would open on the wrong tab.
+            _lastAxis = Vector2.zero;
 
             if (_root != null) _root.SetActive(false);
         }
@@ -292,6 +479,88 @@ namespace HiddenHarbours.World
             _lastAxis = axis;
         }
 
+        // ---- the frame --------------------------------------------------------------------------------
+
+        /// <summary>
+        /// The book's own keys, read only while it is up. Every one of them is a key that already
+        /// exists: the book binds NOTHING new, because the dev-key ledger is spent A–Z.
+        ///
+        /// <para><b>Esc / East shuts it</b>, the close key every overlay in this project already uses
+        /// (the chartplotter, the sounder, the tide table, the wardrobe).</para>
+        ///
+        /// <para><b>⭐ INTERACT SHUTS IT TOO, and that is a decision rather than a convenience.</b> The
+        /// book is not a chooser: there is nothing on a page to confirm, so E has no second meaning here
+        /// to compete with. Meanwhile the book takes the interact verb the whole time it is up, so a
+        /// player who opened it at a desk and presses the desk's own key would otherwise get NOTHING at
+        /// all — a key that has visibly just worked, going dead. "Put it down" is the only sentence E can
+        /// mean while the book is open, so it is the one it means. If a page ever grows something to
+        /// press — a note to tick, a link to follow — this is the line that gives way, and Esc alone
+        /// closes.</para>
+        ///
+        /// <para><b>The move axis turns pages and picks tabs</b>, through <see cref="DriveAxis"/>, which
+        /// is edge-latched: a held key steps once, not once per frame. The claim raised in
+        /// <see cref="Open"/> is what stops the same push also walking the fisher.</para>
+        /// </summary>
+        private void Update()
+        {
+            if (!IsOpen) return;
+
+            // ⭐ THE PRESS THAT OPENED THE BOOK IS STILL DOWN. Interact is read in other components'
+            // Updates in an order nobody defines, so without this a book opened with E at a desk would be
+            // shut by the same E on the same frame and never appear at all.
+            if (Time.frameCount == _openedFrame) return;
+
+            Keyboard kb = Keyboard.current;
+            Gamepad pad = Gamepad.current;
+
+            if (CancelPressed(kb, pad) || InteractPressed(kb, pad)) { Close(); return; }
+
+            DriveAxis(ReadAxis(kb, pad));
+        }
+
+        /// <summary>Esc leaves it. East on a pad — the same pairing the wardrobe picker uses, so one
+        /// gesture means "put it away" everywhere.</summary>
+        private static bool CancelPressed(Keyboard kb, Gamepad pad) =>
+            (kb != null && kb.escapeKey.wasPressedThisFrame) ||
+            (pad != null && pad.buttonEast.wasPressedThisFrame);
+
+        /// <summary>Interact closes it too — see <see cref="Update"/> for why. South on a pad.</summary>
+        private static bool InteractPressed(Keyboard kb, Gamepad pad) =>
+            (kb != null && kb.eKey.wasPressedThisFrame) ||
+            (pad != null && pad.buttonSouth.wasPressedThisFrame);
+
+        /// <summary>
+        /// This frame's steering, as the book reads it: <b>up/down changes TAB, left/right turns the
+        /// PAGE</b> — the axes a physical book has, so the gesture matches the object.
+        ///
+        /// <para>The SAME keys that walk the fisher (<c>PlayerWalkController.ReadInput</c>), which is why
+        /// <see cref="Open"/> claims the move axis. The pad is read alongside on the stick and the d-pad;
+        /// on-foot walking is keyboard-only today, so a pad cannot fight the claim.</para>
+        /// </summary>
+        private static Vector2 ReadAxis(Keyboard kb, Gamepad pad)
+        {
+            var axis = Vector2.zero;
+
+            if (kb != null)
+            {
+                if (kb.wKey.isPressed || kb.upArrowKey.isPressed) axis.y += 1f;
+                if (kb.sKey.isPressed || kb.downArrowKey.isPressed) axis.y -= 1f;
+                if (kb.dKey.isPressed || kb.rightArrowKey.isPressed) axis.x += 1f;
+                if (kb.aKey.isPressed || kb.leftArrowKey.isPressed) axis.x -= 1f;
+            }
+
+            if (pad != null)
+            {
+                if (pad.dpad.up.isPressed) axis.y += 1f;
+                if (pad.dpad.down.isPressed) axis.y -= 1f;
+                if (pad.dpad.right.isPressed) axis.x += 1f;
+                if (pad.dpad.left.isPressed) axis.x -= 1f;
+                if (axis.sqrMagnitude < 0.01f) axis = pad.leftStick.ReadValue();
+            }
+
+            return axis;
+        }
+
         // ---- the drawing -------------------------------------------------------------------------------
 
         /// <summary>
@@ -315,7 +584,11 @@ namespace HiddenHarbours.World
                 GameObject child = _bookRect.GetChild(i).gameObject;
                 child.transform.SetParent(null, false);
                 child.SetActive(false);
-                Destroy(child);
+                // Deferred Destroy needs a frame to defer TO. Outside play mode there is not one, and
+                // Unity refuses the call by name — so an EditMode test or an editor preview that opens
+                // the book a second time would log an error rather than redraw. The detach above has
+                // already made the swap atomic; this only chooses who collects the corpses.
+                if (Application.isPlaying) Destroy(child); else DestroyImmediate(child);
             }
 
             int cols = Fit.Cols, lines = Fit.Lines;
