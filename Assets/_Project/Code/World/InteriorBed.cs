@@ -104,6 +104,14 @@ namespace HiddenHarbours.World
         public bool IsAvailable => true;
 
         /// <summary>
+        /// The same word for both beds, deliberately. Someone else's bed still OFFERS a sleep — pressing it
+        /// is how you find out whose it is, and that refusal is the cozy beat (P5). A popup that read
+        /// "Whose bed?" would answer the question before the player had asked it, and turn a small warm
+        /// moment into a label.
+        /// </summary>
+        public string VerbLabel => "Sleep";
+
+        /// <summary>
         /// Turn in — or be told whose bed this is.
         ///
         /// <para>The actor's own context is re-checked before anything happens. See the class remarks:

@@ -29,6 +29,10 @@ namespace HiddenHarbours.World
         public const string ConvoLogbook   = "logbook";
 
         // ---- prompts ------------------------------------------------------------------------
+        /// <summary>⚠ The interact key's letter, kept ONLY for <see cref="ContinueHint"/> — the one place a
+        /// key is still named, and it is named inside the dialogue bubble rather than floating over the
+        /// world. Nothing else may spell a key at the player: the 2026-08-19 ruling retired every
+        /// "E: …" surface in favour of the interaction popup, which names the ACTION.</summary>
         public const string InteractKey  = "E";
         public const string ContinueHint = "E ▸";   // "press E to continue", shown on the bubble
 
@@ -44,11 +48,34 @@ namespace HiddenHarbours.World
         /// bubble kit may replace this glyph with a drawn motif; one const, one edit.</summary>
         public const string OptionCursor = "▸ ";
 
-        /// <summary>The floating "E: Talk to …" / "E: Read …" prompt for an interactable in range.</summary>
-        public static string Prompt(InteractKind kind, string who)
-            => kind == InteractKind.Read
-                ? $"{InteractKey}: Read {who}"
-                : $"{InteractKey}: Talk to {who}";
+        /// <summary>
+        /// The one line the interaction popup shows for an interactable you are facing — "Talk — Aunt
+        /// Ginny", "Read — Ned's Letter".
+        ///
+        /// <para><b>It no longer names the key</b> (the owner's 2026-08-19 ruling). There is one interact
+        /// key; a floating "E: …" over the world was the plain-text habit the popup replaced, and the
+        /// popup's whole job is to say what is on offer, not which button to hunt for. The em dash carries
+        /// the verb/subject split without punctuation the eye has to parse — the same shape the shell's
+        /// value rows use.</para>
+        ///
+        /// <para><b>⚠ This allocates</b>, and it is on the offer path, which is read every frame there is a
+        /// candidate — so <c>WorldInteractor</c> caches the result per speaker rather than calling it per
+        /// frame (rule 7). See <c>WorldInteractor.OfferLabelFor</c>.</para>
+        /// </summary>
+        public static string OfferLabel(InteractKind kind, string who)
+        {
+            string verb = kind == InteractKind.Read ? ReadVerb : TalkVerb;
+            return string.IsNullOrEmpty(who) ? verb : verb + LabelSeparator + who;
+        }
+
+        /// <summary>The popup's verb for a person. ⚑ OWNER TASTE — one const, one edit.</summary>
+        public const string TalkVerb = "Talk";
+
+        /// <summary>The popup's verb for a thing you read — a letter, a logbook.</summary>
+        public const string ReadVerb = "Read";
+
+        /// <summary>What sits between the verb and who/what it is about.</summary>
+        public const string LabelSeparator = " — ";
 
         // ---- conversations ------------------------------------------------------------------
         // Each returns the lines for a single-speaker exchange. `metBefore` gives a shorter, warmer

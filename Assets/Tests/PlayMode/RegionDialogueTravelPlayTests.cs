@@ -77,6 +77,8 @@ namespace HiddenHarbours.Tests.PlayMode
             GameServices.Reset();
             InteractionGate.Reset();
             InteractActionClaim.Reset();
+            InteractOffer.Reset();
+            InteractActorProbe.Reset();
 
             _origin = SceneManager.GetActiveScene();
             _source = SceneManager.CreateScene(SourceSceneName);
@@ -209,6 +211,8 @@ namespace HiddenHarbours.Tests.PlayMode
 
             InteractionGate.Reset();
             InteractActionClaim.Reset();
+            InteractOffer.Reset();
+            InteractActorProbe.Reset();
             GameServices.Reset();
         }
 

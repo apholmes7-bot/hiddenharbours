@@ -39,6 +39,7 @@ namespace HiddenHarbours.Tests.EditMode
             public InteractContext Contexts { get; set; } = InteractContext.OnFoot;
             public bool RequiresFacing { get; set; }
             public bool IsAvailable { get; set; } = true;
+            public string VerbLabel { get; set; } = "Do the thing";
 
             public int Calls;
             public InteractActor LastActor;
@@ -69,6 +70,8 @@ namespace HiddenHarbours.Tests.EditMode
             InteractVerb.Reset();
             InteractionGate.Reset();
             InteractActionClaim.Reset();
+            InteractOffer.Reset();
+            InteractActorProbe.Reset();
             _candidateEvents.Clear();
             _performed.Clear();
             EventBus.Clear<InteractCandidateChanged>();
@@ -86,6 +89,8 @@ namespace HiddenHarbours.Tests.EditMode
             InteractVerb.Reset();
             InteractionGate.Reset();
             InteractActionClaim.Reset();
+            InteractOffer.Reset();
+            InteractActorProbe.Reset();
         }
 
         // =====================================================================================
@@ -426,6 +431,8 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsFalse(InteractVerb.TryPerform(Actor(), 360f),
                            "…and a press already spoken for by an older direct reader is not spent twice");
             InteractActionClaim.Reset();
+            InteractOffer.Reset();
+            InteractActorProbe.Reset();
 
             Assert.AreEqual(0, candidate.Calls);
             Assert.IsTrue(InteractVerb.TryPerform(Actor(), 360f), "with both clear, the verb fires");
@@ -482,6 +489,8 @@ namespace HiddenHarbours.Tests.EditMode
             InteractVerb.PublishCandidate(Actor(), arc);
             Assert.IsNull(InteractVerb.CurrentCandidateId, "and likewise while an older consumer holds the press");
             InteractActionClaim.Reset();
+            InteractOffer.Reset();
+            InteractActorProbe.Reset();
 
             InteractVerb.PublishCandidate(Actor(), arc);
             Assert.AreEqual("spot", InteractVerb.CurrentCandidateId, "…and it comes back when the press does");

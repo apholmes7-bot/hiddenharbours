@@ -71,6 +71,7 @@ namespace HiddenHarbours.Tests.PlayMode
             public InteractContext Contexts { get; set; } = InteractContext.OnFoot;
             public bool RequiresFacing { get; set; }
             public bool IsAvailable { get; set; } = true;
+            public string VerbLabel { get; set; } = "Do the thing";
             public int Calls;
             public void Interact(in InteractActor actor) => Calls++;
         }
@@ -93,6 +94,8 @@ namespace HiddenHarbours.Tests.PlayMode
             InteractVerb.Reset();
             InteractionGate.Reset();
             InteractActionClaim.Reset();
+            InteractOffer.Reset();
+            InteractActorProbe.Reset();
 
             _performed.Clear();
             _candidates.Clear();
@@ -152,6 +155,8 @@ namespace HiddenHarbours.Tests.PlayMode
             InteractVerb.Reset();
             InteractionGate.Reset();
             InteractActionClaim.Reset();
+            InteractOffer.Reset();
+            InteractActorProbe.Reset();
             GameServices.Reset();
 
             foreach (var o in _spawned)
