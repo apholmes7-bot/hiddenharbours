@@ -295,6 +295,7 @@ not touched.
 | Open bay floor | **−6.0 m** | nothing grounds out there |
 | Foreshore shelf | −1.0 → −2.6 m over 60 m | the overhead shows a **broad brown shoal**, not a deep frontage |
 | **Harbour shoal (the basin, the approach)** | **−1.6 m** | ⭐ **the ruled gate** — the lobster-boat berth |
+| **Harbour channel (thalweg)** | **−3.9 m** | ⭐ derived: spring low − (1.40 deepest resident + 0.20 clearance + 0.10 over-cut) |
 | Barachois | −0.8 m | a mirror at high water, red mudflat at low |
 | Marsh pool | −0.4 m | the second pond; its job is to leave the road a neck |
 | Bar crest | +0.88 m | = 0.4 × amplitude — a **ratio**, not a height |
@@ -304,8 +305,28 @@ not touched.
 | Fields | +6.0 m | dry at every tide |
 | Cliff toe / ledge bench | −3.19 m / −1.65 m | authored as **tide fractions** (0.45 / 0.25), never metres |
 
-Two findings worth stating plainly:
+Three findings worth stating plainly:
 
+- ⭐ **The bullpen keeps a channel (owner's ruling, 2026-08-19).** Referencing the real Nine Mile Creek
+  chart: the wharf's bullpen and its channel **always hold water, even at spring low**; the channel
+  **shrinks in width** as the tide falls but always leaves enough to navigate out, and it **meanders**
+  — an underwater river. It is authored as a third terrain primitive, `MainlandChannel`, and it composes
+  **after the fills**, because the harbour's water *is* a fill and a carve through it would simply be
+  built over again (the mirror of the shoal finding below). Three consequences, all measured:
+  - The **width-shrink is free**: the section is a smoothstep trough, so the waterline narrows from
+    **24 m to 16 m** over the last 0.6 m of ebb and never closes. Nothing animates it.
+  - The **ruled gate is untouched.** The lane is routed 14 m clear of the berths, the dock zone and the
+    arrival park, so the fleet still floats on the flood and takes the ground on the ebb. **The reversal
+    is the channel, not the harbour** — the flats either side still bare, which is the only reason there
+    is a meander to see.
+  - A channel may only cut **seabed** (`CuttableCeiling`), never a quay, so the route runs hard against
+    the apron the float hangs off without dredging the wharf away.
+  - ⚠⚠ **A lane is only a channel if it JOINS something.** The first draft stopped at the basin
+    entrance and left **7 m of drying ground** between the lane and the bay — the shoal's seaward flank
+    does not fall past spring low until x ≈ 196. Every station on the channel measured 1.70 m and the
+    fleet was still shut in. The route now runs out to the entrance's own waypoint at (204, 50), where
+    the natural bottom is −5.31 m and the cut stops mattering of its own accord. **A depth-along-the-
+    line test cannot see this** — the guard is a walk of the whole authored way to sea.
 - ⭐ **The basin is a SHOAL, not a dredging** — the correction that fell out of measuring the first
   draft. Authored as a *carve* to −1.6 m it did nothing at all, because the bay floor here is −6 m and a
   carve can only cut: the "dredged" basin came out four and a half metres **deeper** than its own gate
@@ -314,10 +335,17 @@ Two findings worth stating plainly:
   the bay to −1.6 m under the walls, the breakwater and the approach; the walls stand on top of it. One
   number gates the berth and the entrance alike.
 - ⚠ **The quay face is 4.6 m tall** (deck −1.6 m basin), and 5.2 m of it stands exposed at spring low.
-  The ISO wharf kit bakes a **24 px** overhanging face — **0.75 m** at PPU 32 — so **the kit cannot draw
-  this wall in one course**. Phase B must tile/stack the face vertically, or the deck must come down
-  toward the water. Phase A authors the honest terrain and reports the mismatch rather than quietly
-  flattening a big-tide wharf to suit a sprite. **Flagged for `art-pipeline` / Phase B.**
+  The flag as first written — that the kit's 24 px face could not draw this wall in one course — was
+  **RESOLVED by re-baking the pack at this coast's own tide** (#477/#478): the ISO presets now stand at
+  `tideRange 4.4 + clearance 0.8` = 5.20 m, so the shortfall is **zero** and the face is drawn in ONE
+  course. Phase A authored the honest terrain and reported the mismatch rather than quietly flattening a
+  big-tide wharf to suit a sprite, and that is what got the sprite fixed instead.
+  - ⚠ **THE OWNER OWES ONE RULING HERE.** The re-baked face reaches down to the rig's mud line, rig
+    z −1.4 m = **−3.60 m** of game elevation. Floating the *working* fleet at its **wall berths** at
+    spring low would need **−3.70 m** (the 1.30 m lobster boat) or **−3.80 m** (Marie Gallant's 1.40 m
+    Cape Islander) — **0.10 to 0.20 m past what the art draws**. That is an art re-bake plus a retune of
+    the three-harbour depth ladder, not a terrain edit, which is why the 2026-08-19 pass cut a *lane*
+    and left the berths on the gate. Say the word and both move together.
 
 ⚠ **The cliffs are still walkable-by-sim** until the slope gate lands. Flagged, not fixed, per the
 handoff.

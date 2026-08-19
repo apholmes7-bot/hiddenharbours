@@ -469,6 +469,139 @@ namespace HiddenHarbours.App.Editor
             HarbourShoalFill, SpitFill, NorthWallFill, WestWallFill, BreakwaterFill,
         };
 
+        // =================================================================================================
+        //  8b½. THE CHANNEL — the water the bullpen keeps when everything else has drained
+        // =================================================================================================
+        // ⭐ THE OWNER'S RULING, 2026-08-19, against the real Nine Mile Creek chart: the bullpen and its
+        // channel ALWAYS hold water, even at spring low. The channel SHRINKS IN WIDTH as the tide falls
+        // but always leaves enough to navigate out, and it MEANDERS — an underwater river, the dark-blue
+        // lane in the satellite photograph curving away south-east from the wharf.
+        //
+        // ⚠ THIS REVERSES A STANDING FACT AT EXACTLY TWO PLACES AND NOWHERE ELSE. The flats, the reef
+        // ring, the tidal bar, the crossing and the ponds all still bare on the big tides; so do the
+        // BERTHS, and that is deliberate rather than an omission — see the ruled-gate note below.
+        //
+        // ⭐ AND IT IS A CHANNEL, NOT A DEEPER BASIN, because the ruling's own description requires the
+        // flats either side to dry: a uniformly deep bullpen has no meander to reveal and no width to
+        // shrink. What the ebb uncovers here is the shape of the lane.
+
+        /// <summary>
+        /// The deepest draught any boat that LIVES at this wharf actually draws — <b>1.40 m</b>, Marie
+        /// Gallant's Cape Islander at berth 3.
+        ///
+        /// <para>⚠ <b>It is NOT the 1.30 m lobster boat</b> that <c>NineMileCreekNavMarks.Entrance</c>
+        /// calls "the owner's stated ceiling for the starter world", and the 0.10 m between them is a
+        /// real finding rather than a rounding: the Cape Islander is a committed resident with a berth,
+        /// so a channel cut for the lobster boat would strand her one boat short of the fleet it exists
+        /// for. Stated here as a constant and PINNED to the owner defs by
+        /// <c>NineMileCreekChannelTests</c>, so adding a deeper resident fails a test by name instead of
+        /// quietly grounding her.</para>
+        /// </summary>
+        public const float DeepestResidentDraughtMetres = 1.40f;
+
+        /// <summary>Water under the deepest resident's keel on the channel's centre-line — the region's
+        /// own authored clearance, the same 0.20 m <c>NineMileCreekNavMarks.Entrance</c> declares, so the
+        /// approach and the lane it leads into are gated by one number rather than two.</summary>
+        public const float ChannelKeelClearanceMetres = 0.20f;
+
+        /// <summary>
+        /// The dredger's over-cut: <b>0.10 m</b> below what the claim strictly needs.
+        ///
+        /// <para>⚠ It is not padding. A fairway's claim is probed along the STRAIGHT legs between
+        /// stations, and a chord across a bend lies inside the bend — a hair off the thalweg, and
+        /// therefore a hair shallower. Cut exactly to the claim, a meandering channel fails its own
+        /// depth test at every corner by millimetres. Real channels are over-dredged for the same
+        /// reason: nobody can hold a line to the centimetre.</para>
+        /// </summary>
+        public const float ChannelDredgeMarginMetres = 0.10f;
+
+        /// <summary>
+        /// ⭐ <b>THE THALWEG — the one number this whole pass exists to derive, and it is arithmetic:</b>
+        /// spring low (−2.20 m) less the deepest resident (1.40 m), her clearance (0.20 m) and the
+        /// over-cut (0.10 m) = <b>−3.90 m</b>. So the centre-line carries 1.70 m at the worst hour of the
+        /// month, and the Cape Islander leaves on any tide there is.
+        ///
+        /// <para>Well clear of <see cref="BayFloorElevation"/> (−6 m), so the cut never bottoms out on
+        /// the floor and the channel keeps a real gradient out into the bay.</para>
+        /// </summary>
+        public static float ChannelThalwegElevation =>
+            SpringLowWater - (DeepestResidentDraughtMetres + ChannelKeelClearanceMetres
+                              + ChannelDredgeMarginMetres);
+
+        /// <summary>
+        /// Half-width of the CUT — 12 m, which is <c>NineMileCreekNavMarks.Entrance</c>'s own authored
+        /// half-width rather than a new number. The bank slopes from the thalweg back up to the shoal
+        /// across it, and that slope is the entire width-shrink mechanism.
+        /// </summary>
+        public const float ChannelHalfWidthMetres = 12f;
+
+        /// <summary>The widest beam in the resident fleet — <b>5.0 m</b>, the lobster boat's (twice her
+        /// hull mesh's 2.5 m watertight half-beam). Pinned to the assets by the channel tests.</summary>
+        public const float WidestResidentBeamMetres = 5.0f;
+
+        /// <summary>
+        /// How narrow the channel is allowed to get at dead low spring: <b>10.0 m</b> — one beam, with
+        /// half a beam of water either side of her. The floor the width-shrink must never cross, and the
+        /// honest reading of "always leaves enough to navigate out".
+        /// </summary>
+        public static float NavigableWidthFloorMetres => WidestResidentBeamMetres * 2f;
+
+        /// <summary>A channel cuts SEABED. The shoal is the deepest ground here that is not structure,
+        /// so anything standing above it — the quay decks, the yard, the breakwater crest — is immune,
+        /// and the route may run hard against the apron the float hangs off.</summary>
+        public static float ChannelCuttableCeiling => BasinBedElevation;
+
+        /// <summary>
+        /// ⭐ <b>THE MEANDER</b>, traced from the chart's own lane: out of the bullpen's head by the
+        /// float run, wandering east down the basin, then curving away SOUTH-EAST past the breakwater
+        /// head to meet the entrance.
+        ///
+        /// <para><b>SEAWARD → HARBOUR</b>, the convention <c>NineMileCreekNavMarks</c> already holds every
+        /// channel to, so this array can be handed to a <c>NavChannel</c> without reversing it — and
+        /// reversing it would change every buoy's hand.</para>
+        ///
+        /// <para><b>Three constraints decided the route, and all three are measurable:</b></para>
+        /// <list type="number">
+        /// <item><description><b>It carries the float run.</b> Every metre of the float (y = 70,
+        /// x = 104 → 152) lies within 3 m of the centre-line, so the small craft on the fingers float at
+        /// 1.34 m at spring low against the deepest of them (the punt, 0.50 m).</description></item>
+        /// <item><description><b>It leaves the RULED GATE alone.</b> The nearest berth and the dock zone
+        /// are 14 m off the line — past the 12 m half-width, so the cut is exactly zero there. The
+        /// −1.6 m shoal still gates the fleet and the basin still bares under it at spring low, which is
+        /// the region's whole teeth and is asserted by four committed tests.</description></item>
+        /// <item><description><b>It clears the slipway and the breakwater</b> by more than the
+        /// half-width, so neither the ramp's toe nor the crib's foot is undercut.</description></item>
+        /// </list>
+        ///
+        /// <para>⚠⚠ <b>AND IT RUNS OUT PAST THE SHOAL'S EDGE, WHICH IS NOT COSMETIC.</b> The first draft
+        /// stopped at the basin entrance (182, 62) and left a SILL: the shoal's own seaward flank does not
+        /// fall below spring low until x ≈ 196, so between the lane's east limit and the deep bay lay
+        /// <b>7 m of ground that bares</b>. Every station on the channel was wet and the channel still did
+        /// not go anywhere — the ruling's "always leaves enough to navigate out" was false by a metre of
+        /// mud, and no depth-along-the-line test could see it. Carrying the route out to (204, 50) — the
+        /// entrance's own waypoint, where the natural bottom is already −5.31 m — closes it: the cut
+        /// simply stops mattering the moment the bay is deeper than the thalweg, because a channel can
+        /// only ever lower. <c>TheChannelReachesDeepWater...</c> is the test that now holds this.</para>
+        /// </summary>
+        public static readonly Vector2[] ChannelWaypoints =
+        {
+            new Vector2(204f, 50f),   // ⚠ out on the bay's own floor — see the SILL note above
+            new Vector2(182f, 62f),   // the basin entrance — Entrance's own innermost waypoint
+            new Vector2(170f, 58f),   // south around the shoulder: the SE curve of the photograph
+            new Vector2(152f, 67f),   // the float run's east end
+            new Vector2(132f, 71f),   // …and its middle, the northern swing of the meander
+            new Vector2(116f, 67f),   // the southern swing
+            new Vector2(100f, 70f),   // the head, off the apron where the gangway comes down
+        };
+
+        /// <summary>The harbour channel, assembled from the derivations above.</summary>
+        public static MainlandChannel HarbourChannel =>
+            new MainlandChannel(ChannelWaypoints, ChannelThalwegElevation,
+                                ChannelHalfWidthMetres, ChannelCuttableCeiling);
+
+        /// <summary>Every channel cut through this region's made ground.</summary>
+        public static MainlandChannel[] Channels => new[] { HarbourChannel };
+
         // --- the wharf PLAN, for Phase B ---------------------------------------------------------------
 
         /// <summary>Berths along the north wall's south face: 14 at 5.5 m spacing, which is the fleet in
@@ -977,18 +1110,8 @@ namespace HiddenHarbours.App.Editor
 
         /// <summary>Shortest distance from a point to a polyline route — what "is this lot on the road?"
         /// and "is this road on dry ground?" both ask.</summary>
-        public static float DistanceToRoute(Vector2[] route, Vector2 point)
-        {
-            if (route == null || route.Length == 0) return float.MaxValue;
-            if (route.Length == 1) return Vector2.Distance(route[0], point);
-            float best = float.MaxValue;
-            for (int i = 0; i < route.Length - 1; i++)
-            {
-                float d = MainlandTidalTerrain.DistanceToSegment(point, route[i], route[i + 1]);
-                if (d < best) best = d;
-            }
-            return best;
-        }
+        public static float DistanceToRoute(Vector2[] route, Vector2 point) =>
+            MainlandTidalTerrain.DistanceToPolyline(route, point);
 
         /// <summary>
         /// Build the region's terrain exactly as the scene carries it — the ONE place the plan above is
@@ -1009,7 +1132,7 @@ namespace HiddenHarbours.App.Editor
                 BarFrom, BarTo, BarHalfWidth, BarCrestElevation,
                 BarFlankToeElevation, BarFlankFalloff,
                 GutAlong, GutHalfWidth, GutBedElevation,
-                Carves, Fills);
+                Carves, Fills, Channels);
         }
     }
 }
