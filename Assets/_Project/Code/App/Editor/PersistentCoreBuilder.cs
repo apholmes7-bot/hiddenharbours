@@ -443,12 +443,36 @@ namespace HiddenHarbours.App.Editor
             // 10/92 = 0.109): the near foot projects under ground contact at the 40° camera, the same way a
             // tree's root flare does. Both are serialized tunables, so the owner can still taste-tune them
             // in the inspector without a code change.
+            //
+            // ⚠️ BOTH numbers above describe a body whose FEET ARE ON THE BOTTOM, and they are bypassed
+            // entirely for the two FLOATING poses. A swimmer is cut by the sea at the same place whatever
+            // the depth, so swim/tread take their waterline from the rig's measured mount table below
+            // instead; feeding depth into a floating pose would sink the swimmer as the tide made. See
+            // PlayerSubmergeMath.FloatingWaterlineFraction.
             if (isoVisual != null && isoVisual.HasAnyArt())
             {
                 var submerge = playerGo.AddComponent<HiddenHarbours.Art.PlayerSubmergeVisual>();
                 SetFloat(submerge, "_bodyHeightMeters", IsoCellHeightMeters);
                 SetFloat(submerge, "_maxSubmerge", IsoNeckDeepFraction);
+
+                // The off-deck mount table (rig 6.5). Missing is legal and quiet-ish: the swim poses keep
+                // the depth-driven waterline, which is exactly the picture that shipped before them.
+                var offDeck = AssetDatabase.LoadAssetAtPath<HiddenHarbours.Core.CharacterOffDeckMountsDef>(
+                    CharacterOffDeckMountsBuilder.MountsPath);
+                if (offDeck != null) SetRef(submerge, "_offDeckMounts", offDeck);
+                else
+                    Debug.LogWarning($"[PersistentCoreBuilder] No off-deck mount table at " +
+                                     $"'{CharacterOffDeckMountsBuilder.MountsPath}' — a swimming fisher " +
+                                     "will take the WADE waterline, which sinks with the tide instead of " +
+                                     "floating. Run Hidden Harbours \u25b8 Art \u25b8 Import (after a new " +
+                                     "drop) \u25b8 Build Off-Deck Mounts.");
             }
+
+            // SWIMMING (rig 6.5). Watches the three-band water state and puts the prone swim / upright
+            // tread clip on the renderer while the player is in the swim band; wading is untouched.
+            // Added unconditionally on the same null-safe greybox rule as the clip player above: with no
+            // art every Play() answers false and the component costs one early-out per frame.
+            playerGo.AddComponent<PlayerSwimAnimator>();
 
             // SLEEPING (rig 6.5). Lays the player on the mattress and plays the sleep clip for a beat
             // when they turn in. Added unconditionally on the same null-safe greybox rule as the clip
