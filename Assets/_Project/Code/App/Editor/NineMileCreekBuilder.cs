@@ -689,6 +689,17 @@ namespace HiddenHarbours.App.Editor
             // constant, so the walk verdict moves her with the park. See NineMileCreekTruckPark.
             NineMileCreekTruckPark.Place();
 
+            // ⭐ THE NAV MARKS — the channels a skipper reads coming home. Places and does NOT decide:
+            // every position, colour, size and facing is derived by NavMarkPlan against THIS terrain,
+            // the same ElevationAt the boat's depth gate reads, so "paint = sail" (ADR 0014) extends to
+            // "paint = sail = marked". IALA Region B — red to starboard returning from seaward — with
+            // the handedness derived from each channel's authored seaward end rather than hand-typed.
+            //
+            // ⚠ It will REFUSE marks, loudly, every build: this basin bares 0.6 m at spring low and a
+            // floating mark cannot stand in it. That is the finding, not a gap — see
+            // NineMileCreekNavMarks' class note and the art ask it states.
+            NineMileCreekNavMarks.Place(terrain);
+
             // --- (NO SHORELINE FENCE — the coast is the terrain now) -------------------------
             // The region used to trace a hand-made EdgeCollider2D at x = -4 that dipped around the wharf,
             // because a rectangular quay standing on a flat -6 m dredged floor gave a hull nothing to

@@ -1389,6 +1389,17 @@ namespace HiddenHarbours.App.Editor
             // dredged (boats need the depth) and only the ON-FOOT reads consult the deck.
             StPetersWharf.Place(terrain);
 
+            // ⭐ THE NAV MARKS — the buoyed line onto the ONE door in the reef, and the gap in the bar
+            // you cross to Nine Mile Creek. Places and does NOT decide: NavMarkPlan derives every
+            // position, colour, size and facing against THIS terrain — the same ElevationAt the reef
+            // gate itself reads — so the marks can never disagree with the water they stand in. IALA
+            // Region B, handedness derived from each channel's authored seaward end.
+            //
+            // ⚠ It will REFUSE marks every build: the reef apron and the slip both bare at spring low,
+            // so nothing floats inside the ring. That is the finding, not a gap — see StPetersNavMarks'
+            // class note and the perch/withy art ask it states.
+            StPetersNavMarks.Place(terrain);
+
             // --- THE VILLAGE, at last (§5.1's three houses + the school + the general store) --------------
             // The last item on the owner's dressing list. #345 relocated the village's PROPS but deferred
             // the buildings themselves because the building kit had no consumer; #352 built one, so the
