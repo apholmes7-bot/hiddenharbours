@@ -35,6 +35,59 @@ namespace HiddenHarbours.World
     }
 
     /// <summary>
+    /// A CHANNEL — a lane of water cut along a polyline, deepest on its centre-line (the thalweg) and
+    /// easing back up to the surrounding ground at <see cref="HalfWidthMetres"/>. The third primitive
+    /// after the carve and the fill, and the only one that is not a rectangle.
+    ///
+    /// <para><b>Why it cannot be a carve.</b> A carve composes BEFORE the fills, which is right for a
+    /// pond behind the shore and useless for a harbour: at Nine Mile Creek the basin's water is a FILL
+    /// (the shoal that raises the −6 m bay to the ruled −1.6 m gate), so a carve authored through it is
+    /// max-composed straight back out again — the mirror image of the defect that made the first draft's
+    /// basin four metres too deep. A channel is what cuts made ground, so it composes LAST.</para>
+    ///
+    /// <para><b>Why it stops at <see cref="CuttableCeiling"/>.</b> Dredging removes seabed, never
+    /// structure. Ground already standing above the ceiling — a quay deck, a breakwater crest, the
+    /// spit's yard — is left exactly where it is, so a channel may be authored hard against a wharf
+    /// without eating the wharf. That guard is what lets the route hug the apron the float hangs off.</para>
+    ///
+    /// <para><b>Why the profile is smoothstep rather than a hard V.</b> It is the gut's own idiom
+    /// (<see cref="MainlandTidalTerrain.SmoothFalloff"/>, the cut through the tidal bar), and it earns
+    /// its keep twice: the trough is flat enough that a snapped fairway station finds an INTERIOR
+    /// minimum rather than sliding to an edge, and the banks feather into the flats instead of ending in
+    /// a crease no seabed has.</para>
+    ///
+    /// <para><b>The width shrinks with the tide BY CONSTRUCTION.</b> Nothing animates: the waterline is
+    /// wherever the falling water meets the sloping bank, so a channel whose bed is below the lowest
+    /// water narrows as the tide drops and never closes. What the ebb reveals is geometry, not state.</para>
+    /// </summary>
+    [System.Serializable]
+    public class MainlandChannel
+    {
+        [Tooltip("The channel's centre-line (world XY), in order. Fewer than two points = ABSENT.")]
+        public Vector2[] Waypoints = new Vector2[0];
+        [Tooltip("Thalweg elevation (m above chart datum) — the bed on the centre-line, and the deepest " +
+                 "the channel ever cuts.")]
+        public float BedElevation;
+        [Tooltip("Half-width (m): how far either side of the centre-line the cut reaches before the bed " +
+                 "is back at the surrounding ground. 0 = ABSENT.")]
+        public float HalfWidthMetres;
+        [Tooltip("The channel only cuts ground at or below this elevation (m). Anything higher is " +
+                 "STRUCTURE — a deck, a crest, a yard — and a channel does not dredge a wharf away.")]
+        public float CuttableCeiling;
+
+        public MainlandChannel() { }
+
+        public MainlandChannel(Vector2[] waypoints, float bedElevation, float halfWidthMetres,
+                               float cuttableCeiling)
+        {
+            Waypoints = waypoints ?? new Vector2[0];
+            BedElevation = bedElevation;
+            HalfWidthMetres = halfWidthMetres;
+            CuttableCeiling = cuttableCeiling;
+        }
+    }
+
+    /// <summary>
     /// The authored <b>height map</b> for a MAINLAND region — the concrete <see cref="ITidalTerrain"/>
     /// Nine Mile Creek stands on, and the third member of the family after <see cref="TidalTerrain"/>
     /// (an island: a plateau on an ellipse, ringed by a coast plan) and <see cref="RectTidalTerrain"/>
@@ -55,12 +108,21 @@ namespace HiddenHarbours.World
     /// <item><description><b>min</b> every CARVE — the ponds and lagoons behind the shore — never
     /// below the floor;</description></item>
     /// <item><description><b>max</b> every FILL — the harbour shoal, the spit, the wharf decks, the
-    /// breakwater.</description></item>
+    /// breakwater;</description></item>
+    /// <item><description><b>min</b> every CHANNEL — the lanes dredged or scoured back through the
+    /// made ground, and the only step that composes after the fills.</description></item>
     /// </list>
     /// <para>Carves before fills is the whole reason a deck can stand over water the tide has already
     /// claimed: take the ground DOWN first, then build on it. Fills before carves would hand a pond a
     /// deck to eat. (<see cref="TidalTerrain"/> has the same hazard and solves it the same way, with the
     /// berth carve clamped by <c>Mathf.Min</c> so it can only cut.)</para>
+    ///
+    /// <para><b>Channels after fills, for the opposite reason</b>, and the two are not in tension: a
+    /// carve is ground the tide got to BEFORE anyone built, a channel is a lane cut THROUGH what was
+    /// built. Authoring a harbour's channel as a carve does nothing at all, because the harbour's own
+    /// water is a fill that max-composes it away again. <see cref="MainlandChannel.CuttableCeiling"/> is
+    /// what keeps the last word from being a destructive one: a channel may only cut seabed, so it
+    /// cannot dredge away the wharf it runs alongside.</para>
     ///
     /// <para><b>Deterministic, never saved.</b> Elevation is a pure function of world position — no RNG,
     /// nothing serialized at runtime; the field is reconstructed geometry, recomputed not persisted
@@ -171,6 +233,9 @@ namespace HiddenHarbours.World
 
         [Header("Fills (shoals, spits, wharf decks, breakwaters — these can only RAISE it)")]
         [SerializeField] private MainlandZone[] _fills = new MainlandZone[0];
+
+        [Header("Channels (lanes cut back through the fills — these can only LOWER it, and only seabed)")]
+        [SerializeField] private MainlandChannel[] _channels = new MainlandChannel[0];
 
         // The run's length is needed by EVERY elevation sample (the blend needs to know where the last
         // sector ends) and it is a sum over the whole polyline. A painted-seabed bake at 2 px/m over
@@ -369,7 +434,8 @@ namespace HiddenHarbours.World
                               Vector2 barFrom, Vector2 barTo, float barHalfWidth, float barCrestElevation,
                               float barFlankToeElevation, float barFlankFalloff,
                               float gutAlong, float gutHalfWidth, float gutBedElevation,
-                              MainlandZone[] carves, MainlandZone[] fills)
+                              MainlandZone[] carves, MainlandZone[] fills,
+                              MainlandChannel[] channels = null)
         {
             _deepElevation = deepElevation;
             _coastPoints = coastPoints ?? new Vector2[0];
@@ -398,6 +464,7 @@ namespace HiddenHarbours.World
             _gutBedElevation = gutBedElevation;
             _carves = carves ?? new MainlandZone[0];
             _fills = fills ?? new MainlandZone[0];
+            _channels = channels ?? new MainlandChannel[0];
         }
 
         // ---- the composition (pure; no Unity object state beyond the serialized plan) ------------------
@@ -458,6 +525,28 @@ namespace HiddenHarbours.World
                 float d = DistanceOutsideRect(worldPos, z.Center, z.HalfSize);
                 float built = Lerped(d, 0f, z.Falloff, z.Elevation, _deepElevation);
                 if (built > e) e = built;
+            }
+
+            // 5. Channels: the lanes cut back through the made ground. LAST, because the harbour's own
+            //    water is a fill and a cut composed before it would simply be built over again — and
+            //    only ever DOWN (Mathf.Min), never below the floor, exactly like a carve.
+            for (int i = 0; i < _channels.Length; i++)
+            {
+                MainlandChannel c = _channels[i];
+                if (c == null || c.HalfWidthMetres <= 0f) continue;
+                if (c.Waypoints == null || c.Waypoints.Length < 2) continue;
+
+                // ⚠ THE GUARD THAT MAKES "LAST" SAFE: a channel dredges SEABED. Ground standing above
+                // the ceiling is structure — a deck, a crest, a yard — and stays exactly where it is,
+                // so a route may be authored hard against a quay without eating the quay.
+                if (e > c.CuttableCeiling) continue;
+                if (e <= c.BedElevation) continue;          // already deeper than this channel asks for
+
+                float d = DistanceToPolyline(c.Waypoints, worldPos);
+                float w = SmoothFalloff(d, c.HalfWidthMetres);
+                if (w <= 0f) continue;
+                float cut = Mathf.Lerp(e, c.BedElevation, w);
+                e = Mathf.Max(Mathf.Min(e, cut), _deepElevation);
             }
 
             return e;
@@ -614,6 +703,24 @@ namespace HiddenHarbours.World
             float len2 = ab.sqrMagnitude;
             float t = len2 <= 1e-6f ? 0f : Mathf.Clamp01(Vector2.Dot(p - a, ab) / len2);
             return Vector2.Distance(p, a + t * ab);
+        }
+
+        /// <summary>Shortest distance from <paramref name="p"/> to a polyline — the minimum over its
+        /// segments. <see cref="float.MaxValue"/> for an empty route, so "no route" reads as
+        /// "infinitely far" and every caller's falloff resolves to nothing rather than to everything.
+        /// </summary>
+        public static float DistanceToPolyline(Vector2[] points, Vector2 p)
+        {
+            if (points == null || points.Length == 0) return float.MaxValue;
+            if (points.Length == 1) return Vector2.Distance(points[0], p);
+
+            float best = float.MaxValue;
+            for (int i = 0; i < points.Length - 1; i++)
+            {
+                float d = DistanceToSegment(p, points[i], points[i + 1]);
+                if (d < best) best = d;
+            }
+            return best;
         }
 
         /// <summary>How far "along" the a→b axis <paramref name="p"/> is from

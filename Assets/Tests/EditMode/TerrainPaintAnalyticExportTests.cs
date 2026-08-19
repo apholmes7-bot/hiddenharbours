@@ -325,12 +325,28 @@ namespace HiddenHarbours.Tests.EditMode
             // The quay fill, the harbour shoal that gates the berth, the open bay, the fields.
             Matches(NineMileCreekMainland.WestWallFill.Center, "the west wall's deck");
             Matches(NineMileCreekMainland.NorthWallFill.Center, "the north wall's deck");
-            Matches(NineMileCreekMainland.HarbourShoalFill.Center, "the harbour shoal");
             Matches(new Vector2(330f, 200f), "the open bay");
             Matches(new Vector2(-300f, 0f), "the fields inland");
 
+            // ⭐ THE HARBOUR CHANNEL — sampled ON the thalweg, where the section's gradient is zero and a
+            // bilinear read of a 2 px/m map is therefore at its most faithful. A bake that dropped the
+            // channel would strand the fleet in the SIM while the analytic plan still said otherwise,
+            // which is precisely the "paint = sail" promise this file exists to hold.
+            Vector2 thalweg = NineMileCreekMainland.ChannelWaypoints[3];
+            Matches(thalweg, "the harbour channel's thalweg");
+            Assert.That(field.ElevationAt(thalweg),
+                Is.LessThan(NineMileCreekMainland.SpringLowWater
+                            - NineMileCreekMainland.DeepestResidentDraughtMetres),
+                "the baked map has lost the channel — the bullpen would dry out under the fleet again");
+
+            // ⚠ SAMPLED AT A BERTH, NOT AT THE SHOAL RECTANGLE'S CENTRE, and the move is the 2026-08-19
+            // channel ruling rather than a weakening. The harbour channel now meanders through the
+            // middle of the bullpen, so the rectangle's centre-point sits in the LANE (about −2.6 m) and
+            // no longer reports the gate at all. The gate was always a claim about where the fleet
+            // LIES — and a berth is where it lies, so this now measures the thing it always meant.
+            Matches(NineMileCreekMainland.BerthPos(0), "the berth on the ruled gate");
             Assert.AreEqual(NineMileCreekMainland.BasinBedElevation,
-                field.ElevationAt(NineMileCreekMainland.HarbourShoalFill.Center), tol,
+                field.ElevationAt(NineMileCreekMainland.BerthPos(0)), tol,
                 "the ruled −1.6 m gate — the one number every hull here is measured against");
             Assert.AreEqual(NineMileCreekMainland.BayFloorElevation,
                 field.ElevationAt(new Vector2(330f, 200f)), tol,
