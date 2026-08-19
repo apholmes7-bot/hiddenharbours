@@ -45,6 +45,12 @@ namespace HiddenHarbours.App.Editor
     /// <see cref="TryLoadCamperSprite"/> is the ONE lookup, and its tinted-marker fallback (the sheds'
     /// and the freezer's convention) remains as the path for any checkout the sheets ever leave.</para>
     ///
+    /// <para><b>⚠ AND THE CAMPER PARKS WITH NO AWNING.</b> The owner ruled on 2026-08-18 that the
+    /// awning is never drawn, because on the Clipper it stands over the door and hides the one thing
+    /// you walk up to. That costs no art — the parked frame simply moved to the door cue's first
+    /// frame, which the kit already bakes unawninged. <see cref="ParkedRole"/> carries the whole
+    /// argument.</para>
+    ///
     /// <para><b>Everything derives from two points and one asset.</b> The site is
     /// <see cref="StPetersGinnyPlot.CottagePos"/> plus <see cref="LotOffset"/>; the size, the spacing,
     /// the clearing and the doorstep all come from the chosen variant's own gameplay sidecar
@@ -278,7 +284,9 @@ namespace HiddenHarbours.App.Editor
                 sr.sprite = baked;
                 go.transform.localScale = Vector3.one;
                 Debug.Log($"[StPetersCamperLot] Baked camper art found ('{baked.name}') — drawing the " +
-                          $"{d.Label} at facing {DoorFacing}. ⚠ That facing index is DECLARED, not read " +
+                          $"{d.Label} at facing {DoorFacing}, parked on the {ParkedRole} sheet's frame " +
+                          $"{ParkedFrame} so NO AWNING is drawn (the owner's 2026-08-18 ruling; see " +
+                          "StPetersCamperLot.ParkedRole). ⚠ That facing index is DECLARED, not read " +
                           "from a contract (the kit ships none): confirm on screen that the door faces " +
                           "the cottage, and correct StPetersCamperLot.DoorFacing if it does not.");
             }
@@ -364,12 +372,26 @@ namespace HiddenHarbours.App.Editor
         /// <para>⚠ Sheets import spriteMode MULTIPLE, so <c>LoadAssetAtPath&lt;Sprite&gt;</c> returns null
         /// for them — the sub-sprites come out of <see cref="AssetDatabase.LoadAllAssetsAtPath"/>, matched
         /// BY NAME because Unity does not promise that array's order.</para>
+        ///
+        /// <para><b>⭐ It asks for the DOOR CUE's first frame, not the rest sheet — see
+        /// <see cref="ParkedRole"/>.</b> The suffix therefore carries the role and the swing index as
+        /// well as the facing, and both come from the kit's own naming law
+        /// (<c>CamperKit.Contract.SheetEntry.SpriteName</c>: a multi-frame sheet ends in the frame, a
+        /// single-frame sheet ends at the facing) rather than being spelled out here. Naming the role
+        /// matters as much as the frame: <c>_d2_s0</c> alone would match any future multi-frame camper
+        /// sheet, which is the very ambiguity the naming law was written to prevent.</para>
         /// </summary>
         public static Sprite TryLoadCamperSprite(string variant, int facing)
         {
             if (string.IsNullOrEmpty(variant) || facing < 0) return null;
 
-            string facingSuffix = "_d" + facing;
+            // The role token is read off the same enum CamperKit.Build.Key is built from, so a renamed
+            // role moves the sheets and this lookup together instead of silently missing.
+            string role = ParkedRole.ToString().ToLowerInvariant();
+            var parked = new CamperKit.Build(variant, ParkedRole);
+            string facingSuffix = parked.Frames > 1
+                ? $"_{role}_d{facing}_s{ParkedFrame}"
+                : $"_{role}_d{facing}";
             foreach (string guid in AssetDatabase.FindAssets("camper t:Texture2D",
                                                              new[] { "Assets/_Project/Art" }))
             {
@@ -382,6 +404,39 @@ namespace HiddenHarbours.App.Editor
             }
             return null;
         }
+
+        /// <summary>
+        /// <b>⭐ WHICH SHEET THE PARKED CAMPER IS DRAWN FROM — the door cue, not the rest sheet.</b>
+        /// The owner ruled (2026-08-18) <i>"no awning because you can't see the door"</i>, and on this
+        /// variant that is literal: the Clipper's default awning is a canvas panel stretched on poles
+        /// directly over its own door, so the parked camper showed a wall of canvas where the thing you
+        /// walk up to should be.
+        ///
+        /// <para><b>The fix costs no art, because the kit already anticipated it.</b> A
+        /// <see cref="CamperKit.Role.Rest"/> sheet bakes the variant's DEFAULT fit-out — awning fitted —
+        /// while a <see cref="CamperKit.Role.Enter"/> sheet always bakes unawninged
+        /// (<c>CamperKit.Build.AwningOverride</c> is hard <c>false</c> for the cue, because the awning is
+        /// what hides the cue). The two sheets share cell size and pivot EXACTLY — 322×231 on pivot
+        /// (161,136) for the Clipper, asserted by the bake — so the cue's first frame is the same camper
+        /// on the same ground, minus the awning. <c>CamperKit.AwningPop</c> says so in its own words:
+        /// <i>"a presenter that wants no pop can simply use camper_clipper_enter frame 0 as its parked
+        /// frame and never draw the awning."</i> This is that presenter.</para>
+        ///
+        /// <para><b>Nothing is deleted.</b> The rest sheet stays baked and named as it was — a later
+        /// consumer may well want the fitted-out look (a camper you have moved into, awning out, in
+        /// summer). Only this lot's parked lookup moved.</para>
+        ///
+        /// <para>⚠ The awning is now never drawn in ANY state the game reaches: parked is cue frame 0
+        /// and every other cue frame is unawninged by construction. That is the ruling, and it is why
+        /// there is no cross-fade problem to solve — there is no sheet where the awning furls.</para>
+        /// </summary>
+        public const CamperKit.Role ParkedRole = CamperKit.Role.Enter;
+
+        /// <summary>Which frame of <see cref="ParkedRole"/>'s swing is "parked": the first, door shut.
+        /// The cue runs 0 → 5 opening the door and unfolding the step, so frame 0 is the camper at
+        /// rest — shut, step stowed — and is the only frame that may stand in the world unanimated.
+        /// </summary>
+        public const int ParkedFrame = 0;
 
         /// <summary>
         /// Which of the rig's eight facings shows the camper parked the way this lot parks it.
