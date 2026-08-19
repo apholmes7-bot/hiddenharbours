@@ -106,6 +106,10 @@ namespace HiddenHarbours.UI
             if (SettingsSheet.IsOpen) return false;
             if (PauseMenu.IsOpen) return true;          // Esc closes the menu it opened
             if (TidePanel.IsOpen) return false;         // its Esc puts the page away
+            // The wardrobe's Esc leaves the wardrobe. Asked as "owns the key THIS frame" rather than
+            // "is open", because the picker closes itself on that same press and the two Updates run in
+            // an order nobody defines — see WardrobePicker.OwnsCancelKey.
+            if (WardrobePicker.OwnsCancelKey) return false;
             if (InteractionGate.IsBlocked) return false; // a modal (dialogue) owns the key
             return true;
         }

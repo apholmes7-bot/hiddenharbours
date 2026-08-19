@@ -453,8 +453,24 @@ namespace HiddenHarbours.Player
             EventBus.Publish(new OnFootWaterStateChanged(next, prev, deepening, Mathf.Max(0f, depth)));
         }
 
+        /// <summary>
+        /// This frame's move input from the walk keys.
+        ///
+        /// <para><b>Zero while a UI owns the axis</b> (<see cref="MoveActionClaim"/>). The dev-key ledger
+        /// is exhausted A–Z, so an in-world picker steers on these same keys — and without this, arrowing
+        /// down a wardrobe's list would walk the fisher out of the wardrobe she is standing at. The claim
+        /// is raised for as long as such a UI is open and released on every path that closes it, so this
+        /// cannot wedge: a torn-down picker resets the flag.</para>
+        ///
+        /// <para><b>Read here rather than in <c>Update</c> on purpose.</b> This is the one function that
+        /// turns keys into movement, so gating it means the claim cannot be honoured in one place and
+        /// missed in another — the facing, the walk cycle and the velocity all derive from what this
+        /// returns.</para>
+        /// </summary>
         private static Vector2 ReadInput()
         {
+            if (MoveActionClaim.IsClaimed) return Vector2.zero;
+
             var kb = Keyboard.current;
             if (kb == null) return Vector2.zero;
             Vector2 m = Vector2.zero;
