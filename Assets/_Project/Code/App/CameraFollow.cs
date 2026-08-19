@@ -27,6 +27,14 @@ namespace HiddenHarbours.App
     /// The decisions live in <see cref="CameraZoomPolicy"/> (a tested POCO with a commit hold so rapid
     /// helm⇄deck hops don't thrash); inputs arrive only via the Core <see cref="ControlModeChanged"/> /
     /// <see cref="TrapHaulStateChanged"/> signals — App never references Player/Boats/Fishing (rule 4).
+    ///
+    /// PLAYER ZOOM (owner ruling 2026-08-19, "the wheel is the player's eye"): the mouse wheel walks the
+    /// WALKING view up and down the same integer ladder — closer to read an interior, wider to see where
+    /// you are going outdoors. It is a second hand on one ladder, not a second zoom system: it owns the
+    /// on-foot framing and nothing else, so the helm's ruled per-hull framing, the deck step and the haul
+    /// tighten are all untouchable by it, and stepping ashore simply lands back on the rung the walker
+    /// left. The range and the wheel's feel are owner-tunable on <c>GameConfig.PlayerZoom</c> (rule 6);
+    /// the device is read by <see cref="CameraZoomInput"/>, so this class still knows nothing about input.
     /// </summary>
     public class CameraFollow : MonoBehaviour
     {
@@ -219,6 +227,13 @@ namespace HiddenHarbours.App
         // with no vehicle ever announced this framing is unreachable (nothing can be Driving), and if it
         // somehow were reached, showing what a walker sees is the harmless answer.
         private float _vehicleWorldHeightMeters = OnFootWorldHeightMeters;
+
+        // PLAYER ZOOM (the wheel, owner ruling 2026-08-19) — the walker's chosen rung on the SAME
+        // ladder every other framing lands on. Seeded lazily from the authored on-foot height so a
+        // camera nobody ever scrolls behaves byte-for-byte as it did before this existed. Not saved
+        // and never read by the sim: this is presentation (rule 5), the same as the deck step above.
+        private int _playerZoomStep;
+        private bool _playerZoomStepKnown;
 
         private void Awake()
         {
@@ -475,7 +490,7 @@ namespace HiddenHarbours.App
                 case CameraFraming.Deck: return _deckWorldHeightMeters;
                 case CameraFraming.DeckHaul: return _haulWorldHeightMeters;
                 case CameraFraming.Vehicle: return _vehicleWorldHeightMeters;
-                default: return OnFootWorldHeightMeters;
+                default: return PlayerZoomWorldHeightMeters;   // the walker's rung — the wheel's ONLY framing
             }
         }
 
@@ -483,6 +498,123 @@ namespace HiddenHarbours.App
         private float TweenSecondsFor(CameraFraming framing)
             => framing == CameraFraming.Deck || framing == CameraFraming.DeckHaul
                 ? _deckZoomTweenSeconds : _framingTweenSeconds;
+
+        // ================= PLAYER ZOOM: the wheel is the player's eye (owner ruling 2026-08-19) =====
+        //
+        // The rules are all in CameraZoomPolicy (pure, EditMode-tested); this half only APPLIES them,
+        // exactly as the deck step above does. Three facts worth stating here because they are
+        // properties of the wiring rather than of the rules:
+        //
+        //  1. THE WHEEL DOES NOT GO THROUGH TickZoom. The policy commits on a CHANGE of framing, and a
+        //     wheel turn while already on foot changes nothing about which framing is wanted — only
+        //     which rung of it. So a nudge re-frames directly. It is gated on the committed framing
+        //     being one the player owns, which is what keeps it from ever touching a boat tier.
+        //  2. DISEMBARKING RESTORES THE WALKER'S TIER FOR FREE. Stepping ashore commits OnFoot, and
+        //     TickZoom asks WorldHeightFor(OnFoot) — which is the remembered rung. Nothing saves,
+        //     reinstates, or even notices the restore; there is simply no other on-foot height.
+        //  3. THE CLAMPS ARE READ LIVE, not cached. The owner tunes them on the GameConfig asset while
+        //     the game runs (rule 6), and a range edited to exclude the current rung must pull the view
+        //     back inside on the very next nudge rather than at the next scene load.
+
+        /// <summary>The owner's walking-zoom range and wheel feel, live from the config asset — with
+        /// the shipped defaults when no asset is wired (EditMode, a bare test rig), the same
+        /// null-tolerant read every other consumer of <see cref="GameServices.Config"/> makes.</summary>
+        private static PlayerZoomSettings ZoomSettings
+            => GameServices.Config != null ? GameServices.Config.PlayerZoom : PlayerZoomSettings.Default;
+
+        /// <summary>The ladder step the walking view sits on. Seeded from the authored on-foot framing
+        /// the first time it is asked for, so a camera nobody scrolls frames exactly as it always
+        /// did.</summary>
+        public int PlayerZoomStep
+        {
+            get
+            {
+                if (!_playerZoomStepKnown)
+                {
+                    _playerZoomStep = CameraZoomPolicy.StepForWorldHeight(
+                        OnFootWorldHeightMeters, CurrentPpu(), DesignScreenHeightPx);
+                    _playerZoomStepKnown = true;
+                }
+                return CameraZoomPolicy.ClampPlayerStep(_playerZoomStep, ClosestStep, FarthestStep);
+            }
+        }
+
+        /// <summary>The rung the walking view sits on with the wheel untouched — the ladder step the
+        /// AUTHORED on-foot framing quantises to. The wheel's home, and the rung a fresh camera
+        /// starts on.</summary>
+        private int DefaultPlayerZoomStep => CameraZoomPolicy.StepForWorldHeight(
+            OnFootWorldHeightMeters, CurrentPpu(), DesignScreenHeightPx);
+
+        /// <summary>
+        /// World height (m) the walking view currently frames — the player's rung of the ladder. This
+        /// IS the on-foot framing; there is no second, unzoomed one behind it.
+        ///
+        /// <para>⚠️ <b>At the home rung it answers the AUTHORED height, not the rung's height.</b> The
+        /// two frame identically (both quantise to the same pixel-perfect step, and
+        /// <c>PixelPerfectCamera</c> re-imposes it every frame), but <see cref="ApplyFramingHard"/>
+        /// deliberately drives the raw orthographic size from the REQUEST rather than the snapped step
+        /// — its own comment records that snapping it "moved the on-foot and deck framings, which two
+        /// existing tests caught immediately". Returning 8.4375 where the camera has always asked for
+        /// 9 would move the standing view for every player who never touches the wheel. So the wheel
+        /// at home is byte-for-byte the camera that shipped, and only a player who actually scrolls
+        /// leaves the authored number behind.</para>
+        /// </summary>
+        public float PlayerZoomWorldHeightMeters
+        {
+            get
+            {
+                int step = PlayerZoomStep;
+                return step == DefaultPlayerZoomStep
+                    ? OnFootWorldHeightMeters
+                    : CameraZoomPolicy.WorldHeightForStep(step, CurrentPpu(), DesignScreenHeightPx);
+            }
+        }
+
+        /// <summary>How much raw scroll earns one tier (owner-tunable). Read by the wheel reader so
+        /// there is one config lookup for the whole rig, not one per component.</summary>
+        public float WheelUnitsPerNotch => Mathf.Max(1f, ZoomSettings.WheelUnitsPerNotch);
+
+        /// <summary>
+        /// Whether a wheel notch would do anything RIGHT NOW: the wheel is enabled, a modal is not
+        /// holding the interaction gate, and the committed framing is one the player owns (on foot —
+        /// never the helm, the deck, a live haul or a vehicle). The reader checks this before touching
+        /// the device so a blocked wheel also banks no scroll.
+        /// </summary>
+        public bool WheelIsLive
+            => ZoomSettings.WheelEnabled
+               && CameraZoomPolicy.WheelIsLive(_zoomPolicy.Committed, _zoomPolicy.HasCommitted,
+                                               InteractionGate.IsBlocked);
+
+        /// <summary>
+        /// Step the walking view by whole wheel notches — <b>+1 = one tier CLOSER</b>. Returns true
+        /// when the tier actually moved (false at a clamp, or when <see cref="WheelIsLive"/> is not).
+        /// Public so the wheel reader, the tests and any future in-world control all drive the one
+        /// entry point.
+        /// </summary>
+        public bool NudgePlayerZoom(int notches)
+        {
+            if (notches == 0 || !WheelIsLive) return false;
+
+            int from = PlayerZoomStep;          // also seeds the rung on the first ever nudge
+            int to = CameraZoomPolicy.StepPlayerZoom(from, notches, ClosestStep, FarthestStep);
+            if (to == from) return false;       // saturated at a clamp — no re-frame, no tween
+
+            _playerZoomStep = to;
+            // Through WorldHeightFor, not the ladder directly: scrolling back to the home rung must
+            // land on the AUTHORED on-foot height, exactly where a player who never scrolled sits.
+            SetFraming(WorldHeightFor(CameraFraming.OnFoot), Mathf.Max(0f, ZoomSettings.StepSeconds));
+            return true;
+        }
+
+        /// <summary>The owner's CLOSEST clamp as a ladder step. Metres in the config, steps here — the
+        /// conversion is the ladder's own nearest-step search, so a hand-typed height can only ever
+        /// pick a neighbouring crisp stop, never a blurry framing.</summary>
+        private int ClosestStep => CameraZoomPolicy.StepForWorldHeight(
+            ZoomSettings.ClosestWorldHeightMeters, CurrentPpu(), DesignScreenHeightPx);
+
+        /// <inheritdoc cref="ClosestStep"/>
+        private int FarthestStep => CameraZoomPolicy.StepForWorldHeight(
+            ZoomSettings.FarthestWorldHeightMeters, CurrentPpu(), DesignScreenHeightPx);
 
         private void FollowTarget()
         {

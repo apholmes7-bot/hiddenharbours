@@ -585,6 +585,11 @@ namespace HiddenHarbours.App.Editor
             SetRef(cameraFollow, "_onFootTarget", playerGo.transform);
             SetRef(cameraFollow, "_boatTarget", doryGo.transform);
 
+            // The wheel is the player's eye (owner ruling 2026-08-19): scroll steps the WALKING view
+            // through the camera's integer pixel-perfect tiers. It finds the CameraFollow beside it,
+            // so there is nothing to wire; the range and feel are the owner's on GameConfig.PlayerZoom.
+            camGo.AddComponent<CameraZoomInput>();
+
             // --- CONTROL SWITCHER (board/disembark; the scene re-points its dock via the RegionAnchor) -----
             var switcherGo = new GameObject("ControlSwitcher");
             var switcher = switcherGo.AddComponent<ControlSwitcher>();

@@ -947,6 +947,59 @@ tall / 240 m wide — wider than plenty of regions — so the per-axis *centre* 
 stops being an edge case and becomes the normal state for big vessels in small waters.
 `HelmFramingTests` exercises framing × bounds together for exactly that reason.
 
+**Owner ruling (2026-08-19): the wheel is the player's eye.** Verbatim: *"Mouse wheel modifies player
+zoom — closer to look at interiors, out when outside."* Built as **a second hand on the SAME ladder,
+not a second zoom system** — the failure mode a free player zoom would have produced is a wheel
+fighting the ruled framings above it for the same orthographic size.
+
+- **The wheel owns the ON-FOOT framing and nothing else.** The helm keeps the hull's "whole vessel
+  visible" derivation, the deck keeps its step, a live haul keeps its tighten, a road vehicle keeps her
+  def's framing. Boarding therefore needs no hand-back: the boat framing was never the walker's to
+  move. **Disembarking restores her last tier for free** — that tier *is* the on-foot framing, so
+  stepping ashore commits `OnFoot` and lands on it with nothing saved or reinstated.
+- **Four discrete stops, all crisp.** The range is `11.25 m → 5.625 m` of world height: the ×3, ×4, ×5
+  and ×6 PPU-32 steps at 1080p. One stop wider than standing on foot at the far end; at the near end
+  the tightest framing the game already ships (the live-haul step) — so the interior close-up is a
+  framing the game has already been played at, not a new number. Nothing between two stops exists,
+  because a fractional camera scale shimmers on pixel art.
+- **Owner-tunable in metres, never in steps** (rule 6): `GameConfig.PlayerZoom` carries the two clamps,
+  the wheel enable, the scroll-per-tier and the step ease. Metres because ladder steps count *upward* as
+  the view gets *closer*, which reads backwards to anybody tuning a camera; every other camera dial in
+  the project is world height in metres and so is this one. A hand-typed height quantises to the nearest
+  crisp stop, so the worst it can do is pick a neighbouring tier — never a blurry framing.
+- **A modal refuses the wheel.** While `InteractionGate` is raised (dialogue, the wardrobe, the pause
+  menu) a notch does nothing and banks nothing, so one wheel can never scroll a list and zoom the world
+  at the same time — the case that would otherwise arrive the day a kit UI grows a scrollable page.
+  The dialogue bubble needs no re-fit of its own: it is a **screen-space canvas tracked through the
+  camera each `LateUpdate`**, so it re-places itself at any zoom by construction.
+- **Bindings.** Mouse wheel (unread anywhere else in the project; the only claim on `Mouse.scroll` is
+  the stock UI map's `ScrollWheel`, which serves the EventSystem, not the world) and, on the pad,
+  **LB / RB** — the one pair unclaimed in both code and `InputSystem_Actions`, and the right *shape*
+  for a discrete tier where a stick axis would need a deadzone and a repeat rate to say the same thing.
+  (The exhausted A–Z dev-key ledger is about keyboard letters and does not bear on either.)
+  New Input System only. The reader is `App/CameraZoomInput`; the rules are `CameraZoomPolicy`.
+- **Presentation, never simulation** (rule 5). The tier drives nothing, publishes nothing and is not
+  saved — the same standing as tide and weather, which are recomputed rather than stored.
+
+> ⚠️ **Handoff to the notebook lane — the wheel reaches tiers `NotebookKit.fit()` does not cover.**
+> The kit's read budget tables three tiers (2× / 3× / 4×) and calls **4× "closest"**, because its hand
+> never draws below scale 1 and the spread is 410 × 232 px — which does not fit a 5× (384 × 216) or
+> 6× (320 × 180) screen. On foot the wheel can now stop at both. Nothing is broken today (the notebook
+> has no presenter yet), and the exposure is not new either — the deck and live-haul steps have been at
+> 5× and 6× since the 2026-07-08 playtest. But the walking view is where a notebook actually gets
+> opened, so when the presenter lands it must do one of two things: extend `fit()` past 4×, or refuse
+> to open below its floor and say so. The modal gate above only covers a zoom **while** a page is open;
+> it cannot help a page opened at a tier it cannot fit.
+>
+> ⚠️ **Two open questions for the owner, deliberately not decided here.**
+> 1. **Should an interior CLAMP the far end** — no zooming out through a roof? The camera cannot answer
+>    that today: `BuildingInterior.IsInside` is World-side and the camera (App) reaches it only through
+>    a Core signal that does not exist yet. Ruling it "yes" is a small Core contract (an occupancy
+>    signal) plus a second clamp pair, not a tweak to what shipped here.
+> 2. **Should the wheel work at the helm at all** — a per-hull ± of one or two stops around the ruled
+>    framing, rather than being inert? Inert is what the ruling asked for and what is built; the
+>    alternative is one more clamp pair and the same policy.
+
 ### 9.9 The ambient fisher fleet (decor tier — canon M2-33, P3 "Living Working Coast")
 
 Owner ask (2026-07-08): *"a few npc fishers… 3-5 boats sailing that can place their own buoys and haul

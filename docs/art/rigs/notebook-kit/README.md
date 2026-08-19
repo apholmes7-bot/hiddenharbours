@@ -168,6 +168,8 @@ the book is READ, not glanced at: the hand never draws below one cell (scale 1),
 
 **at the CLOSEST tier (4×) the open book occupies 73.4% of the screen (410 × 232 px of 480 × 270), leaving 26.6% of the world visible. It DOMINATES, by design — it is held up in front of her — and the presenter now chooses that knowing the fraction.**
 
+⚠️ **THE PLAYER CAN NOW STAND CLOSER THAN 4×.** The mouse wheel steps the walking view through the camera's tiers (owner ruling 2026-08-19 — `docs/design/boats-and-navigation.md` §9.8), and its shipped range reaches **6×** (a 320 × 180 screen); the deck and live-haul framings have sat at 5× and 6× since 2026-07-08. A 410 × 232 spread does not fit either, and `fit()` tables nothing past 4×. This is a note for the **presenter lane**, not a change to the kit: when the book gets an open binding it must either extend `fit()` past 4× or refuse to open below its floor and say so. The camera refuses a *zoom* while a modal is open, which does not help a book *opened* at a tier it cannot fit.
+
 **THE NUMBER THE WRITING LANE NEEDS: at the closest tier a step line holds 31 characters and a title line 33, with 20 ruled lines a leaf. A step longer than that is not clipped — it wraps and eats a line, and a quest whose block outgrows a leaf moves whole to the facing leaf. Write to 31 and nothing surprises anybody.**
 
 ## The probes — run these in the import PR and fail on them
