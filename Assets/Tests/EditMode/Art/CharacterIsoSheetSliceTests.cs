@@ -14,16 +14,21 @@ namespace HiddenHarbours.Tests.Art.EditMode
     /// drifts the grid, a re-slice that loses the ground pivot, or an importer setting that downscales
     /// the sheet all land as silently wrong sprites.
     ///
-    /// <para><b>ONE CELL SIZE: 64 × 92, every sheet — pass 6, 2026-08-02. It was 64 × 88.</b> There
-    /// used to be two sizes: the rod poses were <b>128 × 128</b>, the same figure on a canvas padded
-    /// for the rod arc and the flying lure. The art director split the rod out into its own overlay
-    /// sheet, so the bodies are uniformly the plain character cell. <b>The pivot rule is unchanged in
-    /// form and moved in value: <c>GroundInset</c> px above the cell bottom, on the centreline</b> →
-    /// <c>(0.5, 10/92 ≈ 0.1087)</c>, where it used to be <c>8/88 ≈ 0.0909</c>. The inset is
-    /// <c>H − pivotY</c> read off the rig and it moved with the cell; leaving it at 8 plants every
-    /// character two pixels into the ground while every other assert here still passes. Inverting it
-    /// buries them ~72 px. Both numbers are restated as literals here rather than imported from
-    /// <c>CharacterSheetSlicer</c> — the duplication is the test.</para>
+    /// <para><b>TWO CELL SIZES, and each carries its own ground inset.</b> The locomotion and deck
+    /// sheets are <b>64 × 92, inset 10</b> (pass 6, 2026-08-02; it was 64 × 88 at pass 1). The
+    /// rig-6.5 OFF-DECK four — swim, tread, sleep, drive — are <b>64 × 88, inset 8</b>: the
+    /// same 92 cell re-windowed 2 rows top and 2 bottom, so cropping two rows off the BOTTOM leaves
+    /// ground contact two pixels nearer it. <b>The pivot rule is one rule at both cells:
+    /// <c>GroundInset</c> px above the cell bottom, on the centreline</b> →
+    /// <c>(0.5, 10/92 ≈ 0.1087)</c> and <c>(0.5, 8/88 ≈ 0.0909)</c>. Both land the SAME ground
+    /// point, which is what lets a character walk on one cell and tread water on the other without
+    /// hopping.</para>
+    ///
+    /// <para>⚠️ <b>The inset is per-cell, not global.</b> It is <c>H − pivotY</c> read off
+    /// the rig, so it moves whenever the cell is re-windowed at the bottom. Pairing 88 with the 92
+    /// cell's inset of 10 plants every character two pixels into the ground while every other assert
+    /// here still passes; inverting it buries them ~72 px. Every number is restated as a literal here
+    /// rather than imported from <c>CharacterSheetSlicer</c> — the duplication is the test.</para>
     ///
     /// <para><b>Expectations come from the ART, not from the slicer.</b> Row counts and total sprite
     /// counts are derived from the actual PNG dimensions read off disk (<c>cols = width / cellW</c>,
@@ -42,14 +47,43 @@ namespace HiddenHarbours.Tests.Art.EditMode
     {
         private const string Iso = "Assets/_Project/Art/Characters/Iso/";
 
-        /// <summary>Ground contact sits this many px above the cell bottom on EVERY sheet.
-        /// 92 − 82 = 10, from the rig's own pivot. Was 8 when the cell was 88 tall.</summary>
-        private const float GroundInsetPx = 10f;
+        /// <summary>Cell width and direction-row count are the same on every sheet the rig bakes.</summary>
+        private const int CellW = 64, Rows = 8;
 
-        private const int CellW = 64, CellH = 92, Rows = 8;
+        /// <summary>
+        /// One sheet family's cell: the size, and ground contact this many px above the cell BOTTOM.
+        /// The two travel together because the inset is <c>H − pivotY</c> and moves whenever the
+        /// cell is re-windowed at the bottom — holding them apart is what lets an 88-px sheet pass
+        /// every other assert here while standing two pixels into the ground.
+        /// </summary>
+        private readonly struct Cell
+        {
+            public readonly int W, H, GroundInset;
 
-        /// <summary>Every sheet's height: 8 direction rows × 92.</summary>
-        private const int SheetHeight = Rows * CellH;   // 736
+            public Cell(int w, int h, int groundInset) { W = w; H = h; GroundInset = groundInset; }
+
+            /// <summary>The whole sheet: 8 direction rows of this cell.</summary>
+            public int SheetHeight => Rows * H;
+
+            /// <summary>ADR 0026's <c>(H − pivotY)/H</c>, which is what lands in the .meta.</summary>
+            public float NormalizedPivotY => GroundInset / (float)H;
+
+            public override string ToString() => $"{W}×{H} inset {GroundInset}";
+        }
+
+        /// <summary>The ordinary locomotion / deck cell — pass 6.</summary>
+        private static readonly Cell Locomotion = new Cell(64, 92, 10);
+
+        /// <summary>The rig-6.5 OFF-DECK cell — the 92 cell re-windowed 2 rows top and 2 bottom.</summary>
+        private static readonly Cell OffDeck = new Cell(64, 88, 8);
+
+        /// <summary>The four states baked at <see cref="OffDeck"/> — everything a character does
+        /// with its feet off the ground.</summary>
+        private static readonly string[] OffDeckStates = { "swim", "tread", "sleep", "drive" };
+
+        /// <summary>Which cell a sheet is baked at, from its STATE name.</summary>
+        private static Cell CellOf(string path) =>
+            OffDeckStates.Contains(StateOf(path)) ? OffDeck : Locomotion;
 
         /// <summary>
         /// The frame count of every state, restated as the contract. Cross-checked against the RIG's
@@ -89,6 +123,11 @@ namespace HiddenHarbours.Tests.Art.EditMode
             { "idle_tray", 6 },    { "walk_tray", 8 },    { "run_tray", 6 },
             { "idle_helm", 6 },    { "walk_helm", 8 },
             { "idle_oars", 6 },    { "walk_oars", 8 },
+
+            // The pass-6.5 OFF-DECK family: the two water attitudes, the bed, and the wheel. Counts
+            // are the mount sidecar's own anims block, cross-checked against it by
+            // CharacterOffDeckMountsTests. ⚠️ These four are the 64 × 88 cell, not 64 × 92 — see CellOf.
+            { "swim", 8 }, { "tread", 6 }, { "sleep", 6 }, { "drive", 6 },
         };
 
         /// <summary>The player's thirty-seven: every state the rig declares, plus its carry stances and
@@ -104,10 +143,17 @@ namespace HiddenHarbours.Tests.Art.EditMode
             "board", "boardDown", "haul", "ladderDown",
             "hauler", "bench", "chop", "lift", "place", "toss",
             "idle_pot", "walk_pot",
+            "swim", "tread", "sleep", "drive",
         };
 
-        /// <summary>What a cast standee gets: the gaits, not the gear. (See the bake menu for why.)</summary>
-        private static readonly string[] CastStates = { "idle", "walk" };
+        /// <summary>
+        /// What a cast standee gets: the gaits, not the gear (see the bake menu for why) — plus the
+        /// whole OFF-DECK four, which the 6.5 drop baked for all ten presets at once. That asymmetry is
+        /// real and not an oversight: the deck families are the PLAYER's working animations, while
+        /// anyone can end up in the water, in a bed, or behind a wheel.
+        /// </summary>
+        private static readonly string[] CastStates =
+            { "idle", "walk", "swim", "tread", "sleep", "drive" };
 
         /// <summary>The nine NPC presets: subfolder, then sheet stem. <c>fisher</c> is absent because
         /// he is the player, baked at the root.</summary>
@@ -161,15 +207,17 @@ namespace HiddenHarbours.Tests.Art.EditMode
                             $"{path}: must stay grid-sliced (Multiple), not a Single sprite");
 
             var tex = LoadSheet(path);
+            Cell cell = CellOf(path);
 
             // Derived from the art, not asserted against a constant.
-            Assert.AreEqual(0, tex.width % CellW,
-                            $"{path}: {tex.width} px wide is not a whole number of {CellW} px cells");
-            Assert.AreEqual(0, tex.height % CellH,
-                            $"{path}: {tex.height} px tall is not a whole number of {CellH} px cells");
+            Assert.AreEqual(0, tex.width % cell.W,
+                            $"{path}: {tex.width} px wide is not a whole number of {cell.W} px cells");
+            Assert.AreEqual(0, tex.height % cell.H,
+                            $"{path}: {tex.height} px tall is not a whole number of {cell.H} px cells " +
+                            $"(this sheet is baked at {cell})");
 
-            int cols = tex.width / CellW;
-            int rows = tex.height / CellH;
+            int cols = tex.width / cell.W;
+            int rows = tex.height / cell.H;
 
             Assert.AreEqual(Rows, rows, $"{path}: an iso character sheet must have 8 direction rows");
             Assert.AreEqual(rows * cols, LoadSlices(path).Length,
@@ -201,20 +249,23 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // ⚠️ Pixels, not normalized — one rule for any cell size: centreline, GroundInsetPx above
             // the cell bottom. A flipped pivot (10/92 → 82/92) reads as a plausible number but buries
             // the character 72 px in the ground on every frame.
-            float pivotPxX = CellW / 2f;
-            float pivotPxY = GroundInsetPx;
+            Cell cell = CellOf(path);
+            float pivotPxX = cell.W / 2f;
+            float pivotPxY = cell.GroundInset;
 
             var slices = LoadSlices(path);
             Assert.IsNotEmpty(slices, $"{path}: no slices loaded");
             foreach (var s in slices)
             {
-                Assert.AreEqual(CellW, s.rect.width, 0.01f, $"{s.name}: cell width drifted");
-                Assert.AreEqual(CellH, s.rect.height, 0.01f, $"{s.name}: cell height drifted");
+                Assert.AreEqual(cell.W, s.rect.width, 0.01f, $"{s.name}: cell width drifted");
+                Assert.AreEqual(cell.H, s.rect.height, 0.01f,
+                                $"{s.name}: cell height drifted — this sheet is baked at {cell}");
                 Assert.AreEqual(pivotPxX, s.pivot.x, 0.01f, $"{s.name}: pivot.x off the character centreline");
                 Assert.AreEqual(pivotPxY, s.pivot.y, 0.01f,
-                                $"{s.name}: pivot.y off ground contact — is it inverted, or still on the " +
-                                $"old 8 px inset? ground contact is ({pivotPxX}, {CellH - GroundInsetPx}) " +
-                                $"TOP-LEFT; Unity wants bottom-origin {pivotPxY}");
+                                $"{s.name}: pivot.y off ground contact — is it inverted, or on the OTHER " +
+                                $"cell's inset? this sheet is {cell}, so ground contact is " +
+                                $"({pivotPxX}, {cell.H - cell.GroundInset}) TOP-LEFT; Unity wants " +
+                                $"bottom-origin {pivotPxY}");
             }
         }
 
@@ -225,14 +276,16 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // The same rule again in NORMALIZED terms, because that is the number actually stored in the
             // .meta and the number a presenter reasons about: (0.5, 10/92 ≈ 0.1087). This is the assert
             // that goes red if the cell height moves and the inset does not follow it.
-            float expectedY = GroundInsetPx / CellH;
+            Cell cell = CellOf(path);
+            float expectedY = cell.NormalizedPivotY;
 
             foreach (var s in LoadSlices(path))
             {
                 Vector2 norm = new Vector2(s.pivot.x / s.rect.width, s.pivot.y / s.rect.height);
                 Assert.AreEqual(0.5f, norm.x, 0.0005f, $"{s.name}: normalized pivot.x must be 0.5");
                 Assert.AreEqual(expectedY, norm.y, 0.0005f,
-                                $"{s.name}: normalized pivot.y must be {GroundInsetPx}/{CellH} = {expectedY}");
+                                $"{s.name}: normalized pivot.y must be {cell.GroundInset}/{cell.H} = " +
+                                $"{expectedY} — this sheet is baked at {cell}");
             }
         }
 
@@ -242,15 +295,16 @@ namespace HiddenHarbours.Tests.Art.EditMode
         {
             // Every (col,row) origin the sheet's own dimensions imply must be covered exactly once.
             var tex = LoadSheet(path);
-            int cols = tex.width / CellW;
-            int rows = tex.height / CellH;
+            Cell cell = CellOf(path);
+            int cols = tex.width / cell.W;
+            int rows = tex.height / cell.H;
 
             var occupied = new HashSet<(int, int)>();
             foreach (var s in LoadSlices(path))
             {
-                Assert.AreEqual(0, Mathf.RoundToInt(s.rect.x) % CellW, $"{s.name}: x not on the cell grid");
-                Assert.AreEqual(0, Mathf.RoundToInt(s.rect.y) % CellH, $"{s.name}: y not on the cell grid");
-                var c = (Mathf.RoundToInt(s.rect.x) / CellW, Mathf.RoundToInt(s.rect.y) / CellH);
+                Assert.AreEqual(0, Mathf.RoundToInt(s.rect.x) % cell.W, $"{s.name}: x not on the cell grid");
+                Assert.AreEqual(0, Mathf.RoundToInt(s.rect.y) % cell.H, $"{s.name}: y not on the cell grid");
+                var c = (Mathf.RoundToInt(s.rect.x) / cell.W, Mathf.RoundToInt(s.rect.y) / cell.H);
                 Assert.IsTrue(occupied.Add(c), $"{s.name}: two slices overlap cell {c}");
             }
 
@@ -269,8 +323,9 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // FacingsAreCounterClockwise flag instead, as per-artwork data.
             string stem = StemOf(path);
             var tex = LoadSheet(path);
-            int cols = tex.width / CellW;
-            int rows = tex.height / CellH;
+            Cell cell = CellOf(path);
+            int cols = tex.width / cell.W;
+            int rows = tex.height / cell.H;
 
             var seen = new HashSet<string>();
             foreach (var s in LoadSlices(path))
@@ -288,10 +343,10 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 Assert.Less(f, cols, $"{s.name}: frame index out of range");
 
                 // Row 0 is the TOP row of the canvas; Unity rects are bottom-origin.
-                int rectRowFromTop = rows - 1 - Mathf.RoundToInt(s.rect.y) / CellH;
+                int rectRowFromTop = rows - 1 - Mathf.RoundToInt(s.rect.y) / cell.H;
                 Assert.AreEqual(d, rectRowFromTop,
                                 $"{s.name}: name says row {d} but the rect sits at row {rectRowFromTop} from the top");
-                Assert.AreEqual(f, Mathf.RoundToInt(s.rect.x) / CellW,
+                Assert.AreEqual(f, Mathf.RoundToInt(s.rect.x) / cell.W,
                                 $"{s.name}: name says frame {f} but the rect sits in a different column");
             }
         }
@@ -307,29 +362,36 @@ namespace HiddenHarbours.Tests.Art.EditMode
                 Assert.IsTrue(Frames.TryGetValue(state, out int expected),
                               $"{path}: no frame count declared for state '{state}'");
                 var tex = LoadSheet(path);
-                int cols = tex.width / CellW;
+                int cols = tex.width / CellOf(path).W;
                 Assert.AreEqual(expected, cols,
                                 $"{path}: expected {expected} frames but the sheet is {tex.width} px " +
-                                $"wide = {cols} cells of {CellW} px");
+                                $"wide = {cols} cells of {CellOf(path).W} px");
             }
         }
 
         [Test]
-        public void EveryBodySheet_IsThePassSixCell_736PxTall()
+        public void EveryBodySheet_IsItsFamilysCell_ByHeight()
         {
-            // The shape half of the port, asserted against the pixels. A pass-1 sheet is 704 px tall
-            // (8 × 88) and a pre-rod-split one is 1024 (8 × 128); both fail here, so a half-applied
-            // re-bake cannot hide. Reading a 736 px sheet on the 88 px grid gives 8.36 rows and fails
-            // the row assert too — this catches the drift from either direction.
+            // The shape half of the port, asserted against the pixels. A locomotion sheet is 736 px
+            // (8 × 92) and an off-deck one 704 (8 × 88); a pre-rod-split sheet is 1024 (8 × 128)
+            // and fails whichever family it claims, so a half-applied re-bake cannot hide.
+            //
+            // ⚠️ 704 is the RIGHT answer for the off-deck four and the WRONG one everywhere else
+            // — it is also exactly what a stale pass-1 locomotion sheet measures. That is why this
+            // asserts each sheet against ITS OWN family rather than one number: the two cells are told
+            // apart by the state name, never by the height.
             foreach (string path in AllSheets())
             {
                 var tex = LoadSheet(path);
-                Assert.AreEqual(SheetHeight, tex.height,
-                                $"{path}: every iso character BODY sheet must be 8 rows × {CellH} px = " +
-                                $"{SheetHeight} px tall. 704 means the pass-1 art is still on disk; " +
-                                "1024 means the rod-baked-in art is.");
-                Assert.AreEqual(0, tex.width % CellW,
-                                $"{path}: {tex.width} px wide is not a whole number of {CellW} px cells");
+                Cell cell = CellOf(path);
+                Assert.AreEqual(cell.SheetHeight, tex.height,
+                                $"{path}: this sheet's family bakes at {cell}, so it must be 8 rows × " +
+                                $"{cell.H} px = {cell.SheetHeight} px tall. On a locomotion sheet 704 means " +
+                                "the pass-1 art is still on disk and 1024 means the rod-baked-in art is; " +
+                                "on an off-deck sheet 736 means it was padded back to the 92 cell, which " +
+                                "also invalidates the mount sidecar's 88-cell row numbers.");
+                Assert.AreEqual(0, tex.width % cell.W,
+                                $"{path}: {tex.width} px wide is not a whole number of {cell.W} px cells");
             }
         }
 
