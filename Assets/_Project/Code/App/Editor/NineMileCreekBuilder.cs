@@ -1207,6 +1207,7 @@ namespace HiddenHarbours.App.Editor
             var cameraFollow = devCamGo.AddComponent<CameraFollow>();
             cameraFollow.Target = playerGo.transform;
             SetRef(cameraFollow, "_onFootTarget", playerGo.transform);
+            devCamGo.AddComponent<CameraZoomInput>();   // the wheel steps the walking view (ruling 2026-08-19)
 
             // ⭐ THE CONTROL SWITCHER — the interact VERB'S PUMP, and this dev core never had one.
             // Found 2026-08-18 by the owner standing at the placed Dually (#567) with a dead E and no
