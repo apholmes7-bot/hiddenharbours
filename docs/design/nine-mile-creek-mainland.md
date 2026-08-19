@@ -105,9 +105,12 @@ one list, `NineMileCreekRoads.PublicTownLots`.
 ⚠ **No boardwalk anywhere, deliberately.** The kit bakes one, and the only decking the wharf plan
 names is the **floating** dock and its gangway — a tilemap cell is nailed to one elevation and a
 float swings through 4.4 m of tide, so a boardwalk laid there would be swallowed at high water or
-left standing over dry mud at low. The float wants the wave-field treatment the moored hulls already
-get, which is a Boats seam. The breakwater's plank catwalk is the plan's other decking and the ISO
-crib run already draws that structure.
+left standing over dry mud at low. ⭐ **Resolved for the SIM (2026-08-19, S2):** the float and its
+brow are `World.FloatingPlatform` / `World.GangwayPlatform` — standable surfaces whose deck height is
+the tide's — so the walk exists without a tile anywhere near it (§6a). The **drawing** is still open
+and still wants the wave-field treatment the moored hulls get, which is a Boats seam. The
+breakwater's plank catwalk is the plan's other decking and the ISO crib run already draws that
+structure.
 
 ### 1.3 Town lots
 
@@ -367,6 +370,93 @@ is the coordinator's open question**, not world-content's to close.
 
 ---
 
+## 6a. The float — the one deck here whose height is the tide's
+
+⭐ **S2 of the wet-wharf arc, and the thing S1's channel was cut to carry.** The floating dock in the
+basin (`y = 70`, `x = 104 → 152`) is now real floor: you can walk onto it, stand on it at any hour, and
+tie to it. Everything below is derived — from the fleet, from the terrain, or from the art.
+
+**The whole mechanic is one line.** `deck = max(waterLevel − draught, bed) + (draught + freeboard)`.
+Afloat, her underside rides one draught below the water and her deck one freeboard above it; when the
+ebb takes the water down to where the underside meets the ground the `max` pins her to the bed and she
+**takes the ground** like any other hull. Grounding is not a second rule that could disagree with the
+first — it *is* the same expression, from the other side. Nothing animates and nothing is saved.
+
+**It needed no Core change**, which is worth recording because the wharf builder's own note predicted
+one. `IStandableSurface` is a *query* — "am I over you, and if so how high is your deck?" — and its doc
+always claimed a moving deck was an implementation of that contract rather than a change to it. The
+float is the first registrant to prove it: `StandableSurfaces`, the walk gate, the wade bands and the
+body's waterline are untouched, and they read the float through the same one number as the quay.
+
+| Number | Value | Where it comes from |
+|---|---|---|
+| Float freeboard | **0.40 m** | the wharf rig's `DEFAULTS.freeboard`, the height the committed sheets draw her deck at |
+| Float draught | **0.31 m** | *derived*: her 0.71 m structural depth (`0.05` plank + `0.26` frame − `0.02` billet rise + `0.42` billet) less that freeboard |
+| Float width | **2.4 m** | the rig's `FAMILIES.float.dims.width` default — the walkable footprint is cut to what is drawn |
+| Bed under her | **≈ −3.29 m** | **MEASURED** off the terrain: the *shallowest* point anywhere under her, because a raft is rigid and rests on the highest ground beneath it |
+| Water at spring low | **≈ 1.09 m** | which clears her draught by **0.78 m** — she never takes the ground |
+| Brow run | **12 m** | *derived*: the gap between the apron's east face (`x = 92`) and her west end |
+| Brow width | **0.95 m** | the rig's `DEFAULTS.gangWidth`, and the narrowest walking surface in the region |
+
+Three consequences worth stating:
+
+- ⭐ **The channel is what floats her.** On the bare −1.6 m shoal a 0.31 m float would ground for part of
+  every big tide. S1 routed the lane *through* the float run for exactly this, and S2 is the first pass
+  that could check it **under her edges** rather than along her centre-line — 1.09 m against the
+  centre-line's 1.35 m, both clear.
+- ⭐ **A float is the kind berth, and nothing implements that.** A boat's cleat sits at
+  `water + her freeboard` and a float's at `water + the float's`, so the drop between them is the
+  *difference of two freeboards* — constant, whatever the tide does. A line made fast at the float never
+  comes tight on the ebb. At the wall berths the same drop swings by the whole 4.4 m range and a short
+  scope slips. That contrast is the mechanic, and it fell out of the arithmetic.
+- ⚠ **The brow is 0.95 m wide, and that is the narrowest walking surface in the region.** It is the
+  rig's own `gangWidth` default, and the walkable brow is cut to exactly the drawn one — a walkway wider
+  in the sim than in the picture is a player standing on air (ADR 0010's render==sim discipline). The
+  honest consequence is that stepping off the apron a metre north or south of `y = 70` puts you in the
+  basin rather than on the brow. **The one-number fix, if the owner wants a kinder door, is the rig's own
+  ceiling: `gangWidth` bands 0.80–1.40, so 1.4 m is available without any new art.** Not taken — that is
+  a feel call, and the owner's walk decides it.
+- ⚠ **The brow is steeper than the art's own rule, and the slope is ungated.** The rig solves its own
+  gangway run at `(tideRange + freeboard + 0.9) × 2.4` = **13.68 m** for this coast; the geography leaves
+  **12**. So the walk down stands at **1:2.5** at dead low spring against the rig's 1:2.85 — both inside
+  its hard 3–14 m clamp, and both steep, which is what a 4.4 m tide on a short brow means. Lengthening it
+  moves the float east and S1's meander is pinned to the run's present ends, so this is **reported, not
+  taken**. And there is still **no slope gate** in the on-foot sim — the same open flag the cliffs carry
+  — so today the brow walks at any angle.
+
+### 6a.1 ⚠ The refused entrance pair — the cheap fix does not exist
+
+S1 measured that `Entrance`'s **innermost pair** stands on drying ground at its declared 12 m half-width
+and is refused. The obvious remedy is to narrow that half-width until the marks fall back into water.
+**Measured, there is no such number**, and the reason is a genuine conflict this harbour cannot resolve:
+
+1. **A mark must float.** Outside the cut is the −1.6 m shoal, which bares by 0.60 m at spring low — so
+   every half-width at or beyond the lane's own 12 m is dry ground. (±8 m, the figure the arithmetic
+   suggests from the lane's spring-low waterline width, still refuses: the starboard mark stands in
+   ≈0.00 m.) The widest half-width that floats both marks is **≈5.8 m**.
+2. **A mark must not stand IN the fairway.** The repo's own convention, stated at the other harbour —
+   *"the cut is 8 m each side; the marked fairway is a touch wider so a mark is not IN the cut"* — because
+   a buoy moored inside the lane is an obstruction in the water a skipper is told to steer down. St Peters
+   can honour it because the ground outside *its* cut is −4 m; here it is a drying flat.
+
+So the window where a mark floats lies **entirely inside the lane**, and narrowing would trade a refused
+buoy for a buoy in the fairway — at dead low spring, on the very edges of the 10 m of water the ruling
+promises to leave. That is worse than the refusal. Two things would actually resolve it, both the
+owner's:
+
+- **Perches or withies** for the inner lane — staffs driven into the bed, which may stand on ground that
+  bares precisely *because* they do not float. #575's art ask, which the channel answered for the lane's
+  **width** and, it turns out, not for its **edges**.
+- **End the buoyed channel at the basin entrance** — drop the innermost waypoint so the last pair stands
+  at `(204, 50)`, where the natural bottom is −5.31 m and a 12 m mark floats at any tide. The wharf itself
+  becomes the mark from there in, and a refusal that can otherwise only ever repeat on every build goes
+  away.
+
+`NineMileCreekChannelTests.NarrowingTheEntranceCannotSaveItsInnermostPair_TheLaneHasNoWetGroundOutsideItself`
+holds all of this, and fails loudly the day a terrain edit makes the cheap fix real after all.
+
+---
+
 ## 7. What Phase B needs, already positioned
 
 Nothing in this list has to be re-decided, and nothing Phase B lands on has to be torn out first. All of
@@ -385,6 +475,7 @@ it is in `NineMileCreekMainland.cs`.
 | The quay from ISO pieces | **North wall** 84 × 10 m at `(128, 92)`; **west wall** 10 × 48 m at `(87, 68)`; deck +3.0 m; the tall face measured (§6). **A-2 makes both STANDABLE and cleated; the drawing is Phase B's** |
 | Moorings, finger piers, fenders, ladders | **14 berths** at 5.5 m spacing from `(98, 85)` along the north wall's **south** face — the one edge the kit gives a tall face to |
 | **Bollards / shore cleats** ⭐ *added 2026-08-06* | **A-2 must carry these, not Phase B.** #451 made shore cleats real: `NineMileCreekWharf.PlaceMooringCleats` gives every mooring fitting on the quay a `ShoreCleat`, derived from the **same fittings table that positions the bollard sprites** — so the bollard you can see is the bollard you can tie to. When A-2 moves the wharf onto this geography the fittings table moves with it, or that guarantee quietly breaks. It takes `deckElevation`, which is now **+3.0 m** here rather than St Peters' +5.35 m |
+| **The floating dock + its brow** ⭐ *built 2026-08-19 (S2)* | **Not Phase B's any more — it is FLOOR.** A 48 × 2.4 m float at `y = 70`, `x = 104 → 152`, riding the tide off a MEASURED bed; a 12 m brow hinged on the apron's east face; eight `FloatCleat`s that ride the planks they are bolted to. Phase B still draws it (`floatSet`), and the drawing must use the rig's own `freeboard` 0.40 / `gangWidth` 0.95 or the pixels and the sim part company — see §6a |
 | The crib breakwater | A **92 m south arm** at `(140, 38)`, crest +3.4 m, and the ~50 m entrance it leaves |
 | The winch + unloading apron | `(87, 84)` / `(87, 74)` on the west wall — and the note that its water side faces **east**, a curb-only edge, so the winch wants to be a **tall legible object**, not a detail on a wall |
 | Bait shed · trap store · fish holds | `(136, 132)` · `(148, 130)` · `(120, 112)`. **No `fishPlant` / `cannery`** — the owner's "no processing here yet" |

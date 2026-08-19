@@ -425,10 +425,10 @@ namespace HiddenHarbours.Tests.EditMode
         /// <b>No new art is needed to mark this channel.</b></para>
         ///
         /// <para>⚠ It also states the other half of the finding: <c>Entrance</c>'s authored 12 m
-        /// half-width is now WIDER than the lane itself at spring low (about 16 m across, so ±8 m), so
-        /// its innermost marks would still stand on the flats. Buoying the inner channel means declaring
-        /// a narrower one, not re-using the approach's width. Left to the owner — this pass measures the
-        /// window rather than spending his buoys inside it.</para>
+        /// half-width is WIDER than the lane itself at spring low, so its innermost marks stand on the
+        /// flats and are refused. <b>S2 followed that up and found the obvious fix does not work</b> —
+        /// see <see cref="NarrowingTheEntranceCannotSaveItsInnermostPair_TheLaneHasNoWetGroundOutsideItself"/>,
+        /// which measures why. Left to the owner, with the two moves that WOULD resolve it named there.</para>
         /// </summary>
         [Test]
         public void AFloatingMarkNowFitsTheInnerChannel_WhichAnswersThePerchAndWithyQuestion()
@@ -447,6 +447,92 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(atEntranceWidth, Is.LessThan(MarkFloorAtSpringLow),
                 "if a mark at the ENTRANCE channel's 12 m half-width now floats too, this finding is " +
                 "stale and the PR body's advice to declare a narrower inner channel is wrong");
+        }
+
+        /// <summary>
+        /// ⚠⚠ <b>THE OBVIOUS FIX FOR THE REFUSED PAIR DOES NOT WORK, AND THIS IS THE MEASUREMENT.</b>
+        ///
+        /// <para>The finding above is that <c>Entrance</c>'s innermost pair stands on drying ground at its
+        /// declared 12 m half-width. The natural remedy is to narrow the declared half-width until the
+        /// marks fall back into water. <b>There is no such number.</b> Two constraints meet here and this
+        /// harbour cannot satisfy both:</para>
+        /// <list type="number">
+        /// <item><description><b>A mark must float.</b> Outside the cut is the −1.6 m shoal, which bares
+        /// by 0.60 m at spring low — so every half-width at or beyond the channel's own
+        /// <see cref="NineMileCreekMainland.ChannelHalfWidthMetres"/> is dry ground.</description></item>
+        /// <item><description><b>A mark must not stand IN the fairway.</b> The repo's own convention,
+        /// stated at the other harbour (<c>StPetersNavMarks.Entrance</c>: <i>"the cut is 8 m each side;
+        /// the marked fairway is a touch wider so a mark is not IN the cut"</i>) — because a buoy moored
+        /// inside the lane is an obstruction in the water a skipper is being told to steer down. St
+        /// Peters can honour it because the ground outside ITS cut is −4 m; here it is a drying
+        /// flat.</description></item>
+        /// </list>
+        ///
+        /// <para><b>So the window where a mark floats is entirely inside the lane</b>, and the fix would
+        /// trade a refused buoy for a buoy in the fairway — at dead low spring, on the very edges of the
+        /// 10 m of water the ruling promises to leave. That is worse than the refusal.</para>
+        ///
+        /// <para><b>What would actually resolve it</b>, both owner-level and neither this pass's:</para>
+        /// <list type="bullet">
+        /// <item><description><b>Perches or withies</b> for the inner lane — staffs driven into the bed,
+        /// which may stand on ground that bares precisely because they do not float. #575's art ask,
+        /// which the channel answered for the lane's WIDTH and, it turns out, not for its
+        /// EDGES.</description></item>
+        /// <item><description><b>End the buoyed channel at the basin entrance</b> — drop the innermost
+        /// waypoint so the last pair stands at (204, 50), where the natural bottom is −5.31 m and a
+        /// 12 m mark floats at any tide. That makes the wharf itself the mark from there in, and it
+        /// removes a refusal that can otherwise only ever repeat on every build (the noise
+        /// <c>NavChannel.StraightSpacingMetres</c> warns about).</description></item>
+        /// </list>
+        /// </summary>
+        [Test]
+        public void NarrowingTheEntranceCannotSaveItsInnermostPair_TheLaneHasNoWetGroundOutsideItself()
+        {
+            float floor = NineMileCreekNavMarks.Tuning.MinDepthAtSpringLowMetres;
+            Vector2[] route = NineMileCreekNavMarks.Entrance.Waypoints;
+            Assert.That(route.Length, Is.GreaterThan(1));
+
+            // The innermost station and the direction a skipper meets it on — an END station, so
+            // NavMarkPlan does not snap it and the pair really does hang off this exact point.
+            Vector2 station = route[route.Length - 1];
+            Vector2 course = (station - route[route.Length - 2]).normalized;
+            var normal = new Vector2(-course.y, course.x);
+
+            // The worst of the pair's two marks, as a function of the declared half-width.
+            float WorstOfThePair(float half)
+            {
+                float worst = float.MaxValue;
+                foreach (float side in new[] { 1f, -1f })
+                    worst = Mathf.Min(worst, Depth(station + normal * (half * side), SpringLow));
+                return worst;
+            }
+
+            float declared = NineMileCreekNavMarks.Entrance.HalfWidthMetres;
+            Assert.That(WorstOfThePair(declared), Is.LessThanOrEqualTo(floor),
+                "the innermost pair is no longer refused at its declared half-width — this whole finding " +
+                "is stale, and the two remedies named above are no longer owed");
+
+            // ⭐ The largest half-width at which BOTH marks still float, found by walking in from the
+            // declared one. Measured rather than asserted, so the number in the note cannot go stale.
+            float widestThatFloats = 0f;
+            for (float half = declared; half >= 0.5f; half -= 0.1f)
+                if (WorstOfThePair(half) > floor) { widestThatFloats = half; break; }
+
+            Assert.That(widestThatFloats, Is.GreaterThan(0f),
+                "no half-width floats this pair at all, which would be a stronger finding than the one " +
+                "recorded above — re-read it before acting");
+            Assert.That(widestThatFloats, Is.LessThan(NineMileCreekMainland.ChannelHalfWidthMetres),
+                $"the widest half-width that floats the innermost pair is {widestThatFloats:0.0} m, and " +
+                $"the dredged lane is {NineMileCreekMainland.ChannelHalfWidthMetres:0.0} m each side. If " +
+                "this ever passes the other way, a mark can stand OUTSIDE the cut and still float, and " +
+                "narrowing the declared half-width becomes the right fix after all.");
+
+            // …and specifically: the figure a re-narrowing would reach for first does NOT work. Half the
+            // lane's own waterline width at spring low (24 m → 16 m across, so ±8 m) still refuses,
+            // because ±8 m is where the bank has climbed back to within a hair of the bared shoal.
+            Assert.That(WorstOfThePair(8f), Is.LessThanOrEqualTo(floor),
+                "a mark at ±8 m — the lane's own waterline half-width at spring low — floats after all, " +
+                "which would make the cheap fix real; re-measure before trusting this note");
         }
 
         // =============================================================================================
