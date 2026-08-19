@@ -48,19 +48,21 @@ namespace HiddenHarbours.Tests.EditMode
         /// and eats a ruled line — so these are failures for the WRITING lane rather than hard
         /// rendering limits.
         ///
-        /// <para>⚠ These mirror the notebook kit's published numbers, and they are defined HERE
-        /// rather than imported because the kit's C# constants (<c>NotebookKit</c>) land with the
-        /// art-import PR, which is parked awaiting a Unity bake. This lane must not depend on a
-        /// parked branch. When that PR lands, these three become <c>NotebookKit.StepCharsAtClosestTier</c>,
-        /// its title equivalent and <c>tabs.chip</c>'s label cap, and a test should assert the two
-        /// agree — a second definition of a shared number is exactly how content and layout drift
-        /// apart.</para>
+        /// <para>These were literals while <c>NotebookKit</c> sat on the parked art-import branch,
+        /// with a note that they must become the kit's own constants the day it landed — a second
+        /// definition of a shared number is exactly how content and layout drift apart. #563 landed
+        /// the kit, so that reconciliation is DONE: these are now the kit's published numbers read
+        /// from the kit, and there is nothing left to keep in step by hand.</para>
         /// </summary>
-        private const int StepCols = 31, TitleCols = 33, TabLabelCols = 5;
+        private const int StepCols = NotebookKit.StepCharsAtClosestTier,
+                          TabLabelCols = NotebookKit.ChipChars;
+
+        /// <inheritdoc cref="StepCols"/>
+        private static readonly int TitleCols = NotebookKit.TitleColsFor(NotebookKit.ClosestTierCols);
 
         /// <summary>The kit reserves at least this many ruled lines for an illustration frame and its
-        /// caption. Same provenance and same reconciliation note as the copy budget above.</summary>
-        private const int SlotMinLines = 5;
+        /// caption. Same provenance as the copy budget above, reconciled the same day.</summary>
+        private const int SlotMinLines = NotebookKit.PlateMinLines;
 
         private static List<T> LoadAll<T>() where T : Object
         {

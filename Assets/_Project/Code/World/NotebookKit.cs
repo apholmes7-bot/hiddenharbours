@@ -105,6 +105,13 @@ namespace HiddenHarbours.World
         /// <summary>The chip is the tab column plus the 9 px it stands proud of the fore-edge.</summary>
         public const int TabChipWidth = TabCol + 9;
 
+        /// <summary>A chip letters at most this many characters — CLIPPED, never shrunk, so a longer
+        /// label loses its tail rather than its legibility. The kit's published number: content
+        /// validation holds authored labels to it and the presenter clips at it, and both read it from
+        /// HERE — a second spelling of this cap is exactly how a label that validates fine ends up
+        /// clipped on the page.</summary>
+        public const int ChipChars = 5;
+
         public const int RibbonWidth = 3;
         public const int PlateMinLines = 5;
 

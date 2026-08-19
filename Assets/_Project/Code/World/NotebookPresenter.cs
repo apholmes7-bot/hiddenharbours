@@ -416,10 +416,10 @@ namespace HiddenHarbours.World
                                               NotebookKit.TabCol, NotebookKit.TabHeight,
                                               i == TabIndex ? GoldInk : TabInk);
 
-                // The chip clips at 5 characters — the kit's number, applied here rather than at the
-                // model, so the full label stays readable to anything that wants it.
+                // The chip clips at the kit's cap, applied here rather than at the model, so the full
+                // label stays readable to anything that wants it.
                 string label = _tabs[i].Label ?? "";
-                if (label.Length > 5) label = label.Substring(0, 5);
+                if (label.Length > NotebookKit.ChipChars) label = label.Substring(0, NotebookKit.ChipChars);
 
                 AddText(chip, label, NotebookKit.TabPad, NotebookKit.TabPad - 1,
                         NotebookKit.TabCol - 2 * NotebookKit.TabPad,
