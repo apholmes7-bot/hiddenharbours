@@ -305,6 +305,34 @@ data, each with her skipper standing on deck.
 > The numbers are the rig's own, scraped from `wharfIsoRig.js` by test. Full derivation, and the reason
 > the brow is steeper than the rig's own rule: `nine-mile-creek-mainland.md` §6a.
 
+> ⭐⭐ **And since 2026-08-19 the wharf has TWO MOORINGS, which is what the photograph always
+> showed** (S3). Small craft lie on the float fingers in the middle of the bullpen; the working fleet
+> lies against the tall quay walls. `BoatOwnerDef` gained a `Moorage` (`QuayWall` · `Float`), and her
+> `BerthIndex` now indexes whichever table it names — the wall's 14 at 5.5 m, or the float's 8, one
+> per cleat, so a berth at the float IS the place a rope goes round. **Both readings of "unset" are
+> the wall** (the field initializer and `default`), so the owners written before the field existed
+> did not have to be touched.
+>
+> **Which side of the finger a boat lies on is MEASURED, not picked.** S1's lane does not run down
+> the float's latitude — it meanders across it (y = 70 at the head, 67 at the southern swing, 71 at
+> the northern one) — so the deeper side changes along the run, and a constant would have berthed
+> part of the fleet on the bank of the cut. The builder samples both sides of each berth and takes
+> the deeper. It also draws the picture: boats end up on **both** sides of the finger.
+>
+> **Two gates decide who may lie there, and they are different questions.** *Depth*: her draught
+> against the water measured **at her own berth** at spring low, less the region's own 0.20 m keel
+> clearance. ⚠ The dock's own guarantee is NOT that number and does not bound it in either
+> direction — the dock's is the shallowest ground anywhere under a rigid raft (a worst point over a
+> rectangle, 1.09 m today, set by one corner of her footprint), a berth's is a single point beside
+> her on whichever side measured deeper (1.36–1.68 m today). Measured, the berths come out the
+> deeper of the two; on another cut it could go the other way. Which is the point: gate the hull
+> where the hull is.
+> *Beam*: her hull's watertight half-beam against the standoff, because a wider hull is drawn lying
+> **on** a 2.4 m pontoon rather than beside it. The beam gate is the one that actually refuses the
+> working fleet — at the meander's deepest reach the lane genuinely carries a Cape Islander's
+> draught, so depth alone would let her lie there. Between them the fleet sorts itself into the
+> photograph's two moorings and nobody typed a list of who goes where.
+
 **The scale.** Derived, not felt: the moored hulls in the photograph are lobster boats and this
 repo's own `LobsterBoat.asset` says a lobster boat is 12 m, so the close aerial runs at ≈ 4.25 px/m.
 The photograph's main quay arm measures 86 m against the region's authored 84 — within 2 %, so the
@@ -316,10 +344,24 @@ the breakwater head with `ToWestWaterPassagePos` deriving its whole latitude fro
 basin **moves the sea door**. The basin therefore keeps its authored depth. The visible cost is
 named: the photograph shows two float runs in the basin and the plan has room for one.
 
-**⚠ Finding 2 — the register is capped at eight by the buoy art.** A boat owner's buoy paint scheme
-is their ownership mark, and the deck-loop kit bakes exactly eight. A ninth fisher cannot be told
-apart from one of the first eight, so eight is the ceiling until the kit is re-baked. This is the
-real constraint on the ~16-boat vision below, and it is an **art** ask, not a data one.
+**⚠ Finding 2 — the register is capped at SEVEN, and the binding cap is GROUND rather than art.**
+Two caps sit on the register and it is worth keeping them apart. A boat owner's buoy paint scheme is
+their ownership mark and the deck-loop kit bakes exactly eight, so eight fishers is the ceiling until
+the kit is re-baked — an **art** ask. But the owner's own ruling is that every owner has a shed, and
+the shed row walked along the spit yields **seven** lots (the shanty row's five, then two east of the
+trap store; the bait shed and the trap store each eat a step and the spit's east edge stops the
+walk). So the register is full at seven today, the eighth buoy scheme is spare, and growing the fleet
+is a **ground** ask before it is an art one — which collides with the fish market's own 0.38 m
+clearance finding, i.e. with the same shortage of yard.
+
+> ⭐ **This is what S3 ran into.** The float berths eight and the photograph shows a finger crowded
+> with small craft; the two that could go there are the two small craft already on the register
+> (Celeste Bernard's skiff and Dan Peters' punt), and a third resident needs a shed lot the spit does
+> not have. The float therefore carries two rather than six, deliberately and reportedly. What
+> unblocks a third, in order: **ground on the spit** for an eighth shed lot, then the spare buoy
+> scheme, then one new asset — or a ruling that a float-berthed owner keeps no shed at all, which
+> would be a change to the 2026-08-10 "a more successful owner has a larger building" ruling and is
+> the owner's call, not this file's.
 
 ### 9. Captains and crews — VISION, phase-gated, build nothing
 
