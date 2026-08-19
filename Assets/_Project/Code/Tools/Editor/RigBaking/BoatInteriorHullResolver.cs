@@ -11,14 +11,23 @@ namespace HiddenHarbours.Tools.RigBaking
         public readonly string FileStem;
         /// <summary>The sidecar's own <c>rig</c> field — <c>sportFisherIsoRig2.js</c>.</summary>
         public readonly string RigFileName;
-        /// <summary>The sidecar's <c>variant.hull</c>, or empty for a rig that makes one boat.</summary>
-        public readonly string VariantHull;
+        /// <summary>
+        /// This hull's variant identity, canonicalised — empty for a rig that makes one boat.
+        ///
+        /// <para><b>Two conventions live in this repo and the resolver has to speak both.</b> The sport
+        /// fishers name their variant with a single <c>variant.hull</c> ("convertible"); the eighteen
+        /// lobster variants have no <c>hull</c> field at all and identify themselves by a
+        /// <c>{size, style, region}</c> triple. Knowing only the first convention silently fails to
+        /// resolve all eighteen, which reads as "refused" rather than as a bug. See
+        /// <see cref="BoatInteriorHullResolver.VariantKeyOf"/> for the canonical form both collapse to.</para>
+        /// </summary>
+        public readonly string VariantKey;
 
-        public HullSidecarIdentity(string fileStem, string rigFileName, string variantHull)
+        public HullSidecarIdentity(string fileStem, string rigFileName, string variantKey)
         {
             FileStem = fileStem ?? "";
             RigFileName = rigFileName ?? "";
-            VariantHull = variantHull ?? "";
+            VariantKey = variantKey ?? "";
         }
     }
 
@@ -79,7 +88,7 @@ namespace HiddenHarbours.Tools.RigBaking
             {
                 HullSidecarIdentity id = catalogue[i];
                 if (!string.Equals(id.RigFileName, wantRigFile, StringComparison.Ordinal)) continue;
-                if (!string.Equals(id.VariantHull, variant, StringComparison.Ordinal)) continue;
+                if (!string.Equals(id.VariantKey, variant, StringComparison.Ordinal)) continue;
                 matches.Add(id.FileStem);
             }
 
@@ -112,6 +121,35 @@ namespace HiddenHarbours.Tools.RigBaking
             return string.IsNullOrEmpty(stripped)
                 ? stripped
                 : char.ToUpperInvariant(stripped[0]) + stripped.Substring(1);
+        }
+
+        /// <summary>
+        /// The canonical variant key for a gameplay sidecar's <c>variant</c> node, matching the form an
+        /// interior sidecar's <c>hull_stem</c> suffix already uses.
+        ///
+        /// <para><c>{"hull":"convertible"}</c> → <c>convertible</c> (the sport fishers).
+        /// <c>{"size":"standard","style":"hardtop","region":"fundy","paint":"gelcoat"}</c> →
+        /// <c>standard_hardtop_fundy</c> (the eighteen lobster variants). Absent or unrecognised →
+        /// empty, which is what a one-boat rig carries.</para>
+        ///
+        /// <para><b><c>paint</c> is deliberately not part of the key.</b> Two paint builds of one hull
+        /// share one interior for the same reason they share one deck — paint does not move a bulkhead.</para>
+        /// </summary>
+        public static string VariantKeyOf(object variantNode)
+        {
+            if (variantNode == null) return "";
+
+            string hull = DeckSidecarJson.String(DeckSidecarJson.Member(variantNode, "hull"));
+            if (!string.IsNullOrWhiteSpace(hull)) return hull.Trim();
+
+            string size = DeckSidecarJson.String(DeckSidecarJson.Member(variantNode, "size"));
+            string style = DeckSidecarJson.String(DeckSidecarJson.Member(variantNode, "style"));
+            string region = DeckSidecarJson.String(DeckSidecarJson.Member(variantNode, "region"));
+            if (!string.IsNullOrWhiteSpace(size) && !string.IsNullOrWhiteSpace(style) &&
+                !string.IsNullOrWhiteSpace(region))
+                return $"{size.Trim()}_{style.Trim()}_{region.Trim()}";
+
+            return "";
         }
 
         /// <summary>Split <c>sportFisherIsoRig2.convertible</c> into rig stem and variant. A stem with

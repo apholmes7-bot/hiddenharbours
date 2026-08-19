@@ -1,7 +1,22 @@
 # Boat-interiors intake — the S0 adjudication and what it cleared
 
-This folder belongs to the **intake**, not to the drop. The drop itself is at
-`docs/art/rigs/boat-interiors-kit/`, landed verbatim at `d2950cef`, and nothing here modifies it.
+This folder belongs to the **intake**, not to the drop. The drop is at
+`docs/art/rigs/boat-interiors-kit/` — landed verbatim at `d2950cef` and **superseded in place by the
+re-export at `74be6b70`** — and nothing here modifies it.
+
+> ## Current state, after the re-export (2026-08-19 evening)
+>
+> **24 of 27 sidecars CLEAR · 2 refused · 1 forked.** The re-export re-stamped every sidecar to the
+> renderer that shipped, which cleared the 24 — and, in the same pass, shipped an unsubstituted
+> generator template into the two hulls that were already clean.
+>
+> | verdict | hulls | what it needs |
+> |---|---|---|
+> | **CLEAN** (24 sidecars, 7 families) | coastalPacket · lobsterBoat · lobsterBoatVariants ×18 · sideDragger · sternTrawler · sternTrawlerMk2 · tanker | nothing |
+> | **REFUSED-PIN** (2) | both sport fishers | one substitution — see the re-export section |
+> | **FORKED-RIG** (1) | capeIslander | a rig merge, upstream, under the ruled bar |
+>
+> Every claim below was verified against the bytes on this branch, never accepted from a report.
 
 Read `../boat-interiors-kit/VERIFICATION.md` first — it is the coordinator's gate report and it is
 what set this work. `s0-verdicts.json` beside this file is the answer, as data the builder reads.
@@ -144,6 +159,58 @@ The jambs, header, sill, track tube and rail are `doorOpen`-independent — they
 value. So the aft face changes whichever pose ships; `doorOpen = 1` changes it *less* (the opening
 still reads open, as today) at the cost of a parked leaf that main does not have. The owner is
 choosing **how** she changes, not whether.
+
+## The re-export (commit `74be6b70`) — verified, not taken on trust
+
+The coordinator's gate report is appended to the kit's own `VERIFICATION.md`. Everything it claims
+was re-checked here against the files:
+
+| claim | result |
+|---|---|
+| renderer LF sha `34bb7813…` | ✅ verified |
+| all 27 interior sidecars pin it, zero strays | ✅ verified — the `560aa92e…` phantom is gone |
+| companionway ruling applied | ✅ 0 stair ids remain in any `INTERACT` |
+| all 9 bundled hull rigs byte-identical to drop 1 | ✅ verified via `git show d2950cef:…` |
+| gameplay-vs-hull-rig 27/27 | ✅ true — **of the gameplay sidecars, which is what it checked** |
+| committed kit == delivered zip | ✅ identical; only `VERIFICATION.md` is repo-side |
+
+Because the nine hull rigs are byte-identical to drop 1, **every Axis B finding in this document
+still stands unchanged** — which is what makes clearing the 24 a re-stamp question and not a
+re-measure.
+
+### ⚠️ What the gate missed: an unstamped stamp on the two hulls that were already clean
+
+Both sport-fisher **interior** sidecars gained a *second* `hullRigSha256` entry whose value is the
+literal generator template:
+
+```json
+"hullRigSha256": {
+  "sportFisherIsoRig2.convertible": "STAMP_AT_EXPORT_LF_SHA256_OF_sportFisherIsoRig2.js",
+  "sportFisherIsoRig2":             "ebc77bace833361b578f5315e175e10de61d1acf77b5037390217ceb09221bcb"
+}
+```
+
+The gate's "27/27" is true of the **gameplay** sidecars; the **interior** sidecars' hull pins were
+not checked on that axis. It is present in the delivered zip, so it is upstream, not the landing.
+
+**An unstamped stamp is worse than an absent one** — it occupies a provenance field looking like a
+value — so the reader now has an arm that refuses it *by name* and quotes the placeholder, because
+the fix is one substitution and a vaguer message would send somebody hunting a geometry problem that
+does not exist. Two tests pin the regression from both sides: it must not spread, and it must not
+vanish silently either (when upstream substitutes it, the test fails and gets updated in the same
+change that re-clears those hulls).
+
+**Net: the re-export cleared 24 and broke the 2 that were already good.**
+
+### Also found: the resolver spoke only one of two variant conventions
+
+Not upstream's — mine, and it would have been invisible. The eighteen lobster variants have **no**
+`variant.hull` field; they identify by a `{size, style, region}` triple, where the sport fishers use
+a single `hull` string. The resolver knew only the latter, so all eighteen failed to resolve and
+would have been **refused while adjudicated clean** — 6 defs built instead of 24, reported as a
+refusal rather than as a bug. `BoatInteriorHullResolver.VariantKeyOf` now canonicalises both
+(`paint` deliberately excluded — it does not move a bulkhead), and a test resolves all 27 against
+the real committed catalogue and asserts 27 unique def ids.
 
 ## The phantom renderer
 

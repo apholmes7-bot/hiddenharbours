@@ -146,15 +146,47 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         [Test]
-        public void OnlyTheTwoSportFishersAreCleanToday()
+        public void TheReExportClearedTwentyFourAndBrokeTheTwoThatWereAlreadyClean()
         {
-            // ⚠️ If upstream re-stamps the sidecars or re-measures the cape, this list GROWS and this
-            // test is the thing that says so. Update it in the same PR as the re-adjudication.
-            string[] clean = Committed().Values.Where(e => e.IsClean).Select(e => e.HullStem)
-                                        .OrderBy(s => s, System.StringComparer.Ordinal).ToArray();
+            // Drop 1: 2 clean (both sport fishers), 24 refused on the phantom renderer pin, 1 forked.
+            // The re-export re-stamped all 27 to the renderer that shipped — clearing the 24 — and in
+            // the same pass shipped an unsubstituted export template into the sport fishers' hull pins,
+            // which refuses exactly the two that were already good. Both halves pinned here, because a
+            // re-adjudication that quietly moved a hull either way is the thing this ledger exists to
+            // prevent. Update in the same change as any future re-export.
+            var byVerdict = Committed().Values
+                .GroupBy(e => e.Verdict)
+                .ToDictionary(g => g.Key, g => g.Select(e => e.HullStem)
+                                                .OrderBy(x => x, System.StringComparer.Ordinal).ToArray());
 
             CollectionAssert.AreEqual(
-                new[] { "sportFisherIsoRig2.convertible", "sportFisherIsoRig2.skybridge" }, clean);
+                new[] { "sportFisherIsoRig2.convertible", "sportFisherIsoRig2.skybridge" },
+                byVerdict[BoatInteriorS0Verdict.RefusedPin],
+                "only the two sport fishers carry the re-export's unstamped pin");
+
+            CollectionAssert.AreEqual(
+                new[] { "capeIslanderIsoRig" }, byVerdict[BoatInteriorS0Verdict.ForkedRig]);
+
+            CollectionAssert.AreEqual(
+                new[] { "coastalPacketIsoRig", "lobsterBoatIsoRig", "lobsterBoatVariantsIsoRig",
+                        "sideDraggerIsoRig", "sternTrawlerIsoRig", "sternTrawlerMk2IsoRig",
+                        "tankerIsoRig" },
+                byVerdict[BoatInteriorS0Verdict.Clean],
+                "seven families clear — 24 sidecars once the eighteen variants are counted");
+        }
+
+        [Test]
+        public void TheSportFishersRefusalNamesTheTemplateAndNotSomethingVaguer()
+        {
+            // The upstream fix is one substitution. A refusal that said "pin mismatch" would send
+            // somebody hunting a geometry problem that does not exist.
+            foreach (string stem in new[] { "sportFisherIsoRig2.convertible", "sportFisherIsoRig2.skybridge" })
+            {
+                BoatInteriorS0Entry e = BoatInteriorS0Ledger.For(Committed(), stem);
+                Assert.AreEqual(BoatInteriorS0Verdict.RefusedPin, e.Verdict);
+                StringAssert.Contains("STAMP_AT_EXPORT", e.Evidence);
+                StringAssert.Contains("template", e.UpstreamAsk.ToLowerInvariant());
+            }
         }
 
         [Test]

@@ -195,6 +195,47 @@ namespace HiddenHarbours.Tests.RigBaking
             Assert.IsTrue(read.Errors.Any(e => e.Contains("names 2 hull rigs")), string.Join(" | ", read.Errors));
         }
 
+        [Test]
+        public void AnUnsubstitutedExportTemplateIsRefusedByName()
+        {
+            // The re-export's real defect: hullRigSha256 carrying the literal generator template. An
+            // unstamped stamp is worse than an absent one — it sits in a provenance field looking like
+            // a value — so it is named exactly, because the fix is one substitution upstream.
+            string json = Sidecar().Replace(
+                $"\"testBoatIsoRig\": \"{HullSha}\"",
+                "\"testBoatIsoRig\": \"STAMP_AT_EXPORT_LF_SHA256_OF_testBoatIsoRig.js\"");
+            BoatInteriorRead read = Read(json);
+
+            Assert.IsFalse(read.Ok);
+            Assert.IsTrue(read.Errors.Any(e => e.Contains("UNSTAMPED hull-rig pin")),
+                          string.Join(" | ", read.Errors));
+            Assert.IsTrue(read.Errors.Any(e => e.Contains("STAMP_AT_EXPORT")),
+                          "the refusal must quote the placeholder, not paraphrase it");
+            Assert.IsEmpty(read.Levels);
+        }
+
+        [Test]
+        public void AnUnstampedRendererPinIsRefusedToo()
+        {
+            BoatInteriorRead read = Read(Sidecar(interiorSha: "STAMP_AT_EXPORT_LF_SHA256_OF_rig.js"));
+
+            Assert.IsFalse(read.Ok);
+            Assert.IsTrue(read.Errors.Any(e => e.Contains("UNSTAMPED renderer pin")),
+                          string.Join(" | ", read.Errors));
+        }
+
+        [Test]
+        public void OnlySixtyFourHexCharactersCountAsAStamp()
+        {
+            Assert.IsTrue(BoatInteriorSidecarReader.IsSha256Hex(new string('a', 64)));
+            Assert.IsTrue(BoatInteriorSidecarReader.IsSha256Hex(new string('F', 64)), "case-insensitive");
+            Assert.IsFalse(BoatInteriorSidecarReader.IsSha256Hex(new string('a', 63)), "too short");
+            Assert.IsFalse(BoatInteriorSidecarReader.IsSha256Hex(new string('a', 65)), "too long");
+            Assert.IsFalse(BoatInteriorSidecarReader.IsSha256Hex(new string('g', 64)), "not hex");
+            Assert.IsFalse(BoatInteriorSidecarReader.IsSha256Hex(null));
+            Assert.IsFalse(BoatInteriorSidecarReader.IsSha256Hex(""));
+        }
+
         // ---- refusal 3: unknown sections ---------------------------------------------------------------
 
         [Test]

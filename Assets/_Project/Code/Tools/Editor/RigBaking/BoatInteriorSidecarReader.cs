@@ -171,10 +171,28 @@ namespace HiddenHarbours.Tools.RigBaking
                                 "not moved. Absent is a refusal (the sidecar-hash law). Not imported.");
                 return;
             }
+
+            // An UNSTAMPED stamp is checked before anything else, because it is worse than an absent
+            // one: absence is visibly nothing, whereas a template the generator never substituted is a
+            // string sitting in a provenance field looking like a value. Naming it exactly is the
+            // difference between a one-line generator fix and an afternoon.
+            foreach (var kv in pin)
+            {
+                if (IsSha256Hex(kv.Value as string)) continue;
+                read.Errors.Add(
+                    $"UNSTAMPED hull-rig pin: hullRigSha256['{kv.Key}'] is " +
+                    $"'{Clip(kv.Value as string)}', which is not a 64-character hex SHA-256. The export " +
+                    "shipped a placeholder where the hash belongs, so this sidecar's loft cannot be " +
+                    "verified against anything. art-director: substitute it at export. Not imported.");
+            }
+            if (read.Errors.Count > 0) return;
+
             if (pin.Count > 1)
             {
-                read.Errors.Add($"hullRigSha256 names {pin.Count} hull rigs; one interior is measured " +
-                                "against one loft. Not imported.");
+                read.Errors.Add($"hullRigSha256 names {pin.Count} hull rigs " +
+                                $"({string.Join(", ", pin.Keys)}); one interior is measured against one " +
+                                "loft, and a second pin is either a duplicate or a mistake nothing here " +
+                                "can adjudicate. Not imported.");
                 return;
             }
             foreach (var kv in pin)
@@ -182,9 +200,24 @@ namespace HiddenHarbours.Tools.RigBaking
                 read.HullRigStem = kv.Key;
                 read.ExpectedHullRigSha = kv.Value as string ?? "";
             }
-            if (string.IsNullOrWhiteSpace(read.ExpectedHullRigSha))
-                read.Errors.Add($"hullRigSha256['{read.HullRigStem}'] is empty. Not imported.");
         }
+
+        /// <summary>A value that is exactly 64 hex characters — the only shape a SHA-256 stamp may
+        /// take. Anything else in a provenance field is a stamp that was never applied.</summary>
+        public static bool IsSha256Hex(string value)
+        {
+            if (value == null || value.Length != 64) return false;
+            for (int i = 0; i < value.Length; i++)
+            {
+                char c = char.ToLowerInvariant(value[i]);
+                bool hex = (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f');
+                if (!hex) return false;
+            }
+            return true;
+        }
+
+        static string Clip(string s)
+            => s == null ? "(null)" : (s.Length <= 56 ? s : s.Substring(0, 56) + "…");
 
         /// <summary>Both SHA arms. Returns false when the read must stop.</summary>
         static bool CheckHashes(BoatInteriorRead read, byte[] interiorRigBytes, byte[] hullRigBytes)
@@ -194,6 +227,14 @@ namespace HiddenHarbours.Tools.RigBaking
                 read.Errors.Add("no derivedFromRigSha256 — the sidecar does not say which interior " +
                                 "renderer generated it. Absent is a refusal (the sidecar-hash law). " +
                                 "Not imported.");
+                return false;
+            }
+            if (!IsSha256Hex(read.ExpectedInteriorRigSha))
+            {
+                read.Errors.Add(
+                    $"UNSTAMPED renderer pin: derivedFromRigSha256 is " +
+                    $"'{Clip(read.ExpectedInteriorRigSha)}', which is not a 64-character hex SHA-256 — " +
+                    "a placeholder the export never substituted. Not imported.");
                 return false;
             }
 

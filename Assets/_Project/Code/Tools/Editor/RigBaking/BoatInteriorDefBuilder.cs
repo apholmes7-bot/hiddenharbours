@@ -274,8 +274,7 @@ namespace HiddenHarbours.Tools.RigBaking
                     catalogue.Add(new HullSidecarIdentity(
                         Path.GetFileName(f).Replace(".gameplay.json", ""),
                         DeckSidecarJson.String(DeckSidecarJson.Member(root, "rig")),
-                        DeckSidecarJson.String(
-                            DeckSidecarJson.Member(DeckSidecarJson.Member(root, "variant"), "hull"))));
+                        BoatInteriorHullResolver.VariantKeyOf(DeckSidecarJson.Member(root, "variant"))));
                 }
                 catch (Exception e)
                 {
