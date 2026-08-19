@@ -453,4 +453,31 @@ namespace HiddenHarbours.Core
 
         public OutfitChanged(string outfitId) { OutfitId = outfitId ?? ""; }
     }
+
+    /// <summary>
+    /// <b>Show the player wearing this, without deciding that they own the choice.</b> Published by the
+    /// wardrobe picker as the highlight moves, and answered by whoever is drawing the fisher — the same
+    /// subscriber, the same code path and the same refusals as <see cref="OutfitChanged"/>.
+    ///
+    /// <para><b>Why a second signal rather than reusing <see cref="OutfitChanged"/>.</b> Because they say
+    /// different things, and exactly one of them is durable. <see cref="OutfitChanged"/> is published by
+    /// <c>OutfitLocker.Wear</c> AFTER the save is written, so a subscriber may treat it as settled: this
+    /// is what the player owns, and what a reload will bring back. A preview is the opposite — it is true
+    /// only until the picker closes, and it must never reach the save. Overloading one signal to carry
+    /// both would mean every future subscriber (a mirror, a shop's changing room, an NPC who remarks on
+    /// your coat) having to ask which kind it just got, and getting that wrong would persist a colour the
+    /// player was only looking at.</para>
+    ///
+    /// <para><b>The revert is a preview too.</b> Cancelling re-publishes this with the SAVED id rather
+    /// than reaching for a separate undo path, so there is one way for a preview to end and it is the
+    /// same way it began. An empty id is the baked look, exactly as everywhere else.</para>
+    /// </summary>
+    public readonly struct OutfitPreviewRequested
+    {
+        /// <summary>The <c>CharacterOutfitDef</c> id to DRAW. Never null; EMPTY means the outfit the
+        /// sheets were baked in. Persisted by nobody — see the type summary.</summary>
+        public readonly string OutfitId;
+
+        public OutfitPreviewRequested(string outfitId) { OutfitId = outfitId ?? ""; }
+    }
 }

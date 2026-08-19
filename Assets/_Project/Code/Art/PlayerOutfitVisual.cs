@@ -80,15 +80,34 @@ namespace HiddenHarbours.Art
         private void OnEnable()
         {
             EventBus.Subscribe<OutfitChanged>(OnOutfitChanged);
+            EventBus.Subscribe<OutfitPreviewRequested>(OnOutfitPreviewRequested);
             Apply(OutfitLocker.WornOutfitId());
         }
 
         private void OnDisable()
         {
             EventBus.Unsubscribe<OutfitChanged>(OnOutfitChanged);
+            EventBus.Unsubscribe<OutfitPreviewRequested>(OnOutfitPreviewRequested);
         }
 
         private void OnOutfitChanged(OutfitChanged e) => Apply(e.OutfitId);
+
+        /// <summary>
+        /// The wardrobe picker is SHOWING an outfit the player has not chosen yet — draw it, and change
+        /// nothing else.
+        ///
+        /// <para><b>The same method answers both signals, on purpose.</b> A preview and a worn outfit are
+        /// the same pixels; the only difference is who owns the decision, and that difference lives
+        /// entirely on the other side of this seam (the picker persists through
+        /// <see cref="OutfitLocker"/>; this component has never written a save field and still does not).
+        /// Sharing <see cref="Apply"/> means a preview cannot be drawn by a second, subtly different code
+        /// path — it gets the same resolution, the same refusals and the same fall back to the baked look
+        /// as the real thing, which is the whole point of previewing on the actual character.</para>
+        ///
+        /// <para>Nothing here has to undo a preview: the picker re-publishes this with the SAVED id when
+        /// the player cancels or walks off, so the revert arrives by the same route as the preview did.</para>
+        /// </summary>
+        private void OnOutfitPreviewRequested(OutfitPreviewRequested e) => Apply(e.OutfitId);
 
         /// <summary>
         /// Dress the fisher in <paramref name="outfitId"/>. Public so a picker can PREVIEW an outfit on
