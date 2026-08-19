@@ -213,27 +213,102 @@ namespace HiddenHarbours.App.Editor
         }
 
         // =====================================================================================
-        //  THE FLOATING DOCK — positioned here, BUILT when the tide can carry it
+        //  THE FLOATING DOCK — the one deck here whose height is the TIDE's
         // =====================================================================================
+        // ⭐ THE SURFACE THIS SECTION WAS WAITING FOR HAS LANDED, and it cost Core nothing.
+        // The note below used to end "when a tide-following surface lands (a Core change, and
+        // lead-architect's call) the layout is already authored and tested here". It landed as
+        // World.FloatingPlatform / World.GangwayPlatform / World.FloatCleat and Core did not move a
+        // line: IStandableSurface is a QUERY ("am I over you, and if so how high is your deck?"), and
+        // its own doc always claimed a moving deck was an implementation of that contract rather than a
+        // change to it. This is the first registrant to prove the claim.
+
+        /// <summary>Stable id of the floating dock as a standable surface.</summary>
+        public const string FloatSurfaceId = "wharf.nine_mile_creek.float";
+        /// <summary>…and of the brow you walk down to reach it. Its own id because it is its own
+        /// structure, with its own rule for how high it is (a ramp, not a height).</summary>
+        public const string GangwaySurfaceId = "wharf.nine_mile_creek.gangway";
+
+        /// <summary>
+        /// The float's plan outline: the authored run (y = 70, x = 104 → 152) given the width the ART
+        /// draws it at — <see cref="NineMileCreekQuayFace.BakedRigFloatWidthMetres"/>, the wharf rig's
+        /// own float-family default. Taken from the kit rather than picked, because a walkable footprint
+        /// wider than the drawn dock is a player standing on water that merely looks solid.
+        /// </summary>
+        public static Rect FloatFootprint()
+        {
+            float width = NineMileCreekQuayFace.BakedRigFloatWidthMetres;
+            return new Rect(NineMileCreekMainland.FloatRunWestX,
+                            NineMileCreekMainland.FloatRunY - width * 0.5f,
+                            NineMileCreekMainland.FloatRunLengthMetres, width);
+        }
+
+        /// <summary>How far apart the bed is sampled when measuring what the float grounds on: one metre.
+        /// <para>Not a tunable — a numerical resolution, and the resolution the geometry asks for. The
+        /// bank of the harbour channel climbs from the −3.90 m thalweg to the −1.60 m shoal across a 12 m
+        /// half-width, i.e. under 0.2 m per metre at its steepest, so a one-metre grid cannot step over a
+        /// shoal deep enough to matter against a 0.31 m draught.</para></summary>
+        public const float FloatBedSampleStepMetres = 1f;
+
+        /// <summary>
+        /// ⭐ <b>WHAT THE FLOAT GROUNDS ON, MEASURED</b> — the SHALLOWEST ground anywhere under her, not
+        /// the deepest and not the middle. A raft is rigid: the water surface is flat so every bay rides
+        /// at the same height, and a rigid thing rests on the highest point beneath it. Sampling the
+        /// centre-line alone would miss a shoal under one edge and float her through it.
+        ///
+        /// <para>Measured off the terrain for the same reason <see cref="DeckElevationFrom"/> is: a
+        /// terrain edit that shoals this berth must ground the float, not leave it hovering over ground
+        /// the region no longer has.</para>
+        /// </summary>
+        public static float FloatBedElevationFrom(ITidalTerrain terrain)
+        {
+            if (terrain == null) return float.NegativeInfinity;   // no terrain, no claim about grounding
+
+            Rect box = FloatFootprint();
+            float step = Mathf.Max(0.01f, FloatBedSampleStepMetres);
+            float shallowest = float.NegativeInfinity;
+            for (float x = box.xMin; x <= box.xMax + 1e-4f; x = Mathf.Min(x + step, box.xMax))
+            {
+                for (float y = box.yMin; y <= box.yMax + 1e-4f; y = Mathf.Min(y + step, box.yMax))
+                {
+                    float bed = terrain.ElevationAt(new Vector2(x, y));
+                    if (bed > shallowest) shallowest = bed;
+                    if (y >= box.yMax) break;      // Min() pins the last row ON the edge; break after it
+                }
+                if (x >= box.xMax) break;
+            }
+            return shallowest;
+        }
+
+        /// <summary>The brow's hinge and landing, straight off the plan — the apron's east face and the
+        /// float's west end, so re-siting either takes the gangway with it.</summary>
+        public static Vector2 GangwayShoreEnd => NineMileCreekMainland.GangwayShoreEnd;
+        /// <inheritdoc cref="GangwayShoreEnd"/>
+        public static Vector2 GangwayFloatEnd => NineMileCreekMainland.GangwayFloatEnd;
+
+        /// <summary>How long the brow is: <b>12 m</b>, and DERIVED — the gap the geography leaves between
+        /// the apron's face and the float's west end.
+        ///
+        /// <para>⚠ <b>The art would have chosen 13.68 m</b> — the rig's own <c>gRun</c> auto for a 4.4 m
+        /// range (<see cref="NineMileCreekQuayFace.RigAutoGangwayRunMetres"/>). So this brow is
+        /// 1.68 m short of the rig's rule and correspondingly steeper — 1:2.5 at dead low spring against
+        /// the rig's 1:2.85, both inside its hard 3–14 m clamp. Lengthening it means moving the float
+        /// east, and the harbour channel's meander is pinned to the float run's present ends. REPORTED,
+        /// not taken.</para></summary>
+        public static float GangwayRunMetres => Vector2.Distance(GangwayShoreEnd, GangwayFloatEnd);
 
         /// <summary>
         /// Where the floating dock's fittings go — a cleat run along it at the berth spacing, from half a
         /// pitch in so the first one is not hanging off the end. Pure and public, so the layout can be
         /// asserted without a scene.
         ///
-        /// <para><b>⚠ DELIBERATELY NOT IN <see cref="Fittings"/>, AND NOT PLACED.</b> Everything in that
-        /// table is a QUAY fitting: it stands on one of the two walls, its cleat is registered at the
-        /// deck's MEASURED elevation, and <c>EveryFitting_StandsOnTheQuay_NotOverTheBasin</c> holds it to
-        /// exactly that. A float is none of those things — <b>its deck height is the TIDE's</b>, rising
-        /// 4.4 m over the cycle, and both <see cref="HiddenHarbours.World.StandablePlatform"/> and
-        /// <see cref="HiddenHarbours.World.ShoreCleat"/> take ONE fixed elevation. Registering either at
-        /// any single height would put the player standing two metres over the water at low tide, or a
-        /// rope made fast two metres under it at high — a wrong number that nothing would fail on.</para>
-        ///
-        /// <para>So this pass DRAWS the dock and positions its fittings, and builds neither the walk onto
-        /// it nor the tie-off. That is the same "Phase A positions what Phase B builds" arrangement the
-        /// rest of this region already runs on: when a tide-following surface lands (a Core change, and
-        /// lead-architect's call) the layout is already authored and tested here.</para>
+        /// <para><b>⚠ STILL DELIBERATELY NOT IN <see cref="Fittings"/>.</b> Everything in that table is a
+        /// QUAY fitting: it stands on one of the two walls, its cleat is registered at the deck's
+        /// MEASURED elevation, and <c>EveryFitting_StandsOnTheQuay_NotOverTheBasin</c> holds it to exactly
+        /// that. A float is none of those things — <b>its deck height is the TIDE's</b>, rising 4.4 m over
+        /// the cycle — so its cleats are placed by <see cref="PlaceFloat"/> as
+        /// <see cref="HiddenHarbours.World.FloatCleat"/>s, which read that height off the float itself
+        /// instead of carrying a fixed one that would be wrong at every hour but two.</para>
         /// </summary>
         public static List<Vector2> FloatCleatPositions()
         {
@@ -392,8 +467,21 @@ namespace HiddenHarbours.App.Editor
             // …and WHERE YOU CAN CLIMB DOWN, for exactly the same reason: the ladder is how you get aboard
             // once the ebb has dropped the boat below the planks, and that must not depend on art either.
             int ladders = PlaceLadders(root, deckElevation);
+            // …and THE FLOAT, whose deck is the one here that is not a number at all but the tide. Built
+            // after the apron because it hinges its brow off the apron's MEASURED height.
+            float floatBed = FloatBedElevationFrom(terrain);
+            int floatCleats = PlaceFloat(root, floatBed, apronElevation);
             int armour = PlaceBreakwater(root);
             int shoreArmour = PlaceShoreArmour(root);
+
+            float lowDeck = HiddenHarbours.World.FloatingPlatform.DeckElevation(
+                NineMileCreekMainland.SpringLowWater, floatBed,
+                NineMileCreekQuayFace.BakedRigFloatDraughtMetres,
+                NineMileCreekQuayFace.BakedRigFloatFreeboard);
+            float highDeck = HiddenHarbours.World.FloatingPlatform.DeckElevation(
+                NineMileCreekMainland.SpringHighWater, floatBed,
+                NineMileCreekQuayFace.BakedRigFloatDraughtMetres,
+                NineMileCreekQuayFace.BakedRigFloatFreeboard);
 
             Debug.Log(
                 $"[NineMileCreekWharf] Built the squared-U quay as GROUND: the north wall " +
@@ -404,6 +492,13 @@ namespace HiddenHarbours.App.Editor
                 $"{fittings} fitting sprite(s) placed, {cleats} of them real mooring cleats (the " +
                 $"bollard you see IS the bollard you tie to) and {ladders} real climbable ladder(s) at " +
                 $"deck +{deckElevation:0.00} m (the ladder you see IS the ladder you climb). " +
+                $"THE FLOAT RIDES THE TIDE: a {FloatFootprint().width:0.0} × " +
+                $"{FloatFootprint().height:0.0} m dock over a MEASURED bed of {floatBed:0.00} m, her deck " +
+                $"swinging {lowDeck:0.00} → {highDeck:0.00} m over the cycle and taking the ground only " +
+                $"if the water ever fell to {floatBed + NineMileCreekQuayFace.BakedRigFloatDraughtMetres:0.00} m " +
+                $"(draught {NineMileCreekQuayFace.BakedRigFloatDraughtMetres:0.00} m), reached by a " +
+                $"{GangwayRunMetres:0.#} m brow hinged on the apron at +{apronElevation:0.00} m, with " +
+                $"{floatCleats} float cleat(s) that ride the planks they are bolted to. " +
                 $"{armour} block(s) of '{BreakwaterArmour}' " +
                 $"breakwater along y={BreakwaterY:0.#}, and {shoreArmour} block(s) of shore armour on the " +
                 "two faces of made ground the photograph shows exposed (the wharf head and the spit's " +
@@ -516,6 +611,66 @@ namespace HiddenHarbours.App.Editor
                 go.transform.position = new Vector3(f.Position.x, f.Position.y, 0f);
                 go.AddComponent<HiddenHarbours.World.WharfLadder>()
                   .Configure($"{SurfaceId}.ladder_{n}", deckElevation, MooringFaceHeadingDegrees);
+                n++;
+            }
+            return n;
+        }
+
+        /// <summary>
+        /// ⭐ <b>BUILD THE FLOAT AS FLOOR</b> — the dock, the brow you reach it by, and the cleats you tie
+        /// to, all three riding one number. Returns the count of float cleats registered, which is the
+        /// same "places a rope can be made fast" measure <see cref="PlaceMooringCleats"/> returns and does
+        /// not depend on any art having imported.
+        ///
+        /// <para><b>The order is load-bearing:</b> the float is configured FIRST because both of the other
+        /// two read their height off it — the brow lerps its landing end from
+        /// <see cref="HiddenHarbours.World.FloatingPlatform.DeckElevationNow"/> and every cleat IS that
+        /// number. One float, one deck height, and nothing downstream that can hold a stale copy of
+        /// it.</para>
+        ///
+        /// <para><b>What the numbers are and where each comes from:</b> the footprint is the plan's
+        /// authored run at the ART's float width; the freeboard and draught are the wharf rig's committed
+        /// defaults (<see cref="NineMileCreekQuayFace.BakedRigFloatFreeboard"/> /
+        /// <see cref="NineMileCreekQuayFace.BakedRigFloatDraughtMetres"/>, the second derived from the
+        /// billets the first is drawn above); the bed is MEASURED off the terrain by
+        /// <see cref="FloatBedElevationFrom"/> and passed in; and the abutment is the
+        /// apron's own measured deck, so the brow meets the concrete rather than stepping above it — which
+        /// is the rig's stated rule for a gangway hinge (<c>abut = T.R + s.clearance</c>).</para>
+        /// </summary>
+        static int PlaceFloat(GameObject root, float bedElevation, float apronElevation)
+        {
+            var floatRoot = new GameObject("FloatingDock");
+            floatRoot.transform.SetParent(root.transform, worldPositionStays: false);
+
+            Rect box = FloatFootprint();
+            var floatGo = new GameObject("Float");
+            floatGo.transform.SetParent(floatRoot.transform, worldPositionStays: false);
+            floatGo.transform.position = new Vector3(box.center.x, box.center.y, 0f);
+            var dock = floatGo.AddComponent<HiddenHarbours.World.FloatingPlatform>();
+            dock.Configure(FloatSurfaceId, box, bedElevation,
+                           NineMileCreekQuayFace.BakedRigFloatDraughtMetres,
+                           NineMileCreekQuayFace.BakedRigFloatFreeboard);
+
+            var browGo = new GameObject("Gangway");
+            browGo.transform.SetParent(floatRoot.transform, worldPositionStays: false);
+            browGo.transform.position = new Vector3((GangwayShoreEnd.x + GangwayFloatEnd.x) * 0.5f,
+                                                    (GangwayShoreEnd.y + GangwayFloatEnd.y) * 0.5f, 0f);
+            browGo.AddComponent<HiddenHarbours.World.GangwayPlatform>()
+                  .Configure(GangwaySurfaceId, GangwayShoreEnd, GangwayFloatEnd,
+                             NineMileCreekQuayFace.BakedRigGangwayWidthMetres * 0.5f,
+                             apronElevation, dock);
+
+            var cleatRoot = new GameObject("FloatCleats");
+            cleatRoot.transform.SetParent(floatRoot.transform, worldPositionStays: false);
+
+            int n = 0;
+            foreach (Vector2 at in FloatCleatPositions())
+            {
+                var go = new GameObject($"FloatCleat_{n}");
+                go.transform.SetParent(cleatRoot.transform, worldPositionStays: false);
+                go.transform.position = new Vector3(at.x, at.y, 0f);
+                go.AddComponent<HiddenHarbours.World.FloatCleat>()
+                  .Configure($"{FloatSurfaceId}.cleat_{n}", dock);
                 n++;
             }
             return n;
