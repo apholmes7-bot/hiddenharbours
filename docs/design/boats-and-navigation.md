@@ -705,6 +705,24 @@ The on-foot ⇄ aboard control loop is the `ControlSwitcher` (Player lane); seve
   by design and the hull needs that depth. This is also the contract the **M2 walkable deck / washboards**
   (the deck/cleats/interact vision) need: the footprint is a *query*, so a deck that moves and rotates with
   the hull is a later implementation, not a change to the seam.
+- **Getting out of a VEHICLE reads the same question, and currently gives a different answer.** Since
+  drivable machines (ADR 0035) — and especially the amphibious Otter, who swims by design —
+  `ControlSwitcher.LeaveDriving()` checks what is under the **door** before setting the fisher down there,
+  through the on-foot depth seam the walk model uses (`TidalWalkability.DepthNow`, so a registered deck
+  counts as floor exactly as above). The rule is the ratified three-band wading model
+  (`time-tides-weather.md` §3.5): **Dry/Wade → step out · slow-swim band → step out into the existing
+  escape state · boat-only water (> `SwimLimit`) → declined**, with the reason, and you stay behind the
+  wheel. It is a **depth fact, not a lock** — the machine you are sitting in is the way out of it, so the
+  refusal clears as soon as she is driven into the shallows. Two exceptions, both deliberate: a seat that
+  has **died** under the player is never refused (no door to read and no machine to drive off in — that
+  would be a softlock strictly worse than a wet landing), and a region with no height map or tide service
+  reads Dry, so the gate self-disables rather than trapping the walker. Named once in Core as
+  `TidalExposure.IsOnFootTraversable(DepthBand)`, shared with the walk model's soft wall.
+  ⚠️ **OPEN — one question, two answers (owner's ruling).** The boat rule above is **stricter**: `OnLand()`
+  requires `depth ≤ 0`, dry land only, after the playtest tightening. The vehicle rule admits wade and
+  slow-swim. Both are defensible — an amphibian's driver refused ankle-deep at a beach landing would read
+  as a bug, and stepping off a dory into the sea read as one — but they should be **one** rule, not two
+  behaviours that happen to differ by which seat you were in.
 - **Board from anywhere** within reach of the boat (`WithinBoardReach()` — a pure proximity radius), not only
   at a dock zone (owner playtest). So you can step aboard a boat nudged up to a beach, not just one at the
   wharf. (The damaged-dory repair gate still applies on top, P5.)
