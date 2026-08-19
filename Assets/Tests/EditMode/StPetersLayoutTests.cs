@@ -170,50 +170,60 @@ namespace HiddenHarbours.Tests.EditMode
         // =========================================================================================
 
         /// <summary>
-        /// ⭐ THE BERTH'S OWN TIDE GATE, which is a RULING and not a bug.
+        /// ⭐ THE BERTH THAT NO LONGER SHUTS — the owner's ruling of 2026-08-19, which OVERTURNS half
+        /// of §5.1a here.
         ///
-        /// <para>§5.1a: *"Dock approach / berth bed ≈ −1.0 m. Clears 0.6 m draught whenever the water is
-        /// above −0.4 m — most of the cycle — and dries near spring low, so the dock has its own gentle
-        /// tide gate rather than being a permanent open door. Deliberate: even coming home under power
-        /// should mean reading the tide."*</para>
+        /// <para>§5.1a authored this dock with a gate: <i>"berth bed ≈ −1.0 m … dries near spring low,
+        /// so the dock has its own gentle tide gate rather than being a permanent open door.
+        /// Deliberate: even coming home under power should mean reading the tide."</i> The owner ruled
+        /// the opposite for THIS dock, and gave the reason: it is the game's front door. A new game
+        /// pilots the player in aboard a cape islander and lands them on these planks, and an arrival
+        /// that grounds on its own doorstep at dead low water is not an opening.</para>
         ///
-        /// <para>⚠ This test previously demanded the dory float at EVERY tide, which was right while the
-        /// mooring sat on the bare −4 m floor and is wrong now: it would forbid the very gate the owner
-        /// ruled in. What it holds instead is both halves of the ruling — the skiff tier clears the slip
-        /// for MOST of the cycle, AND the slip dries near spring low. The old assertion would have
-        /// passed a berth dredged to −4 m, which is exactly the "permanent open door" §5.1a rejects.</para>
+        /// <para><b>⚠ The gate did not disappear — it moved to the BEACH.</b> The slip at
+        /// <see cref="StPetersBuilder.BerthTo"/> still bares by 1.20 m at spring low, so wading out to
+        /// it still means reading the tide; what is always wet is the dredged pocket alongside the
+        /// pier head. <see cref="StPetersEastBerthTests"/> holds both halves and derives the depths
+        /// from the arrival hull's own def. This test holds the LAYOUT consequence: that the mooring
+        /// is in that pocket, and not on the reef beside it or out on the harbour floor beyond it.</para>
         /// </summary>
         [Test]
-        public void TheBerthClearsTheSkiffTierForMostOfTheCycle_AndStillDriesNearSpringLow()
+        public void TheMooringLiesInTheDredgedPocket_AndFloatsHerAtEveryTide()
         {
             float bed = _terrain.ElevationAt(
                 new Vector2(StPetersBuilder.DoryMooredPos.x, StPetersBuilder.DoryMooredPos.y));
 
-            // ⚠ At or a little BELOW the berth bed, not exactly on it. The carve only ever cuts DOWN
-            // (it must never raise the seabed), so where the reef already lies deeper than −1.0 m the
-            // slip simply keeps the reef's own depth — measured −1.05 m at the mooring. What must not
-            // happen is the mooring sitting on the shallow beach above the slip, or out on the −4 m
-            // floor beyond it; both would mean the dock geometry and the terrain had come apart.
-            Assert.LessOrEqual(bed, StPetersBuilder.BerthBedElevation + 0.05f,
-                "the mooring sits ABOVE the berth bed — the carve has not reached it, so the boat is " +
-                "parked on the reef instead of in the slip");
-            Assert.Greater(bed, StPetersBuilder.ReefShelfOuterElevation - 0.5f,
-                "the mooring has fallen past the reef into open water — the slip is supposed to hold " +
-                "her against the shore, and a dock zone out on the harbour floor cannot be stepped off");
+            // In the pocket: at its dredged bed, not perched on the reef above it.
+            Assert.LessOrEqual(bed, StPetersBuilder.ApproachBedElevation + 0.05f,
+                $"the mooring sits at {bed:F2} m, ABOVE the dredged bed " +
+                $"({StPetersBuilder.ApproachBedElevation:F2} m) — the cut has not reached it, so the " +
+                "boat is parked on the reef instead of in the berth");
 
-            float draught = DoryDraughtMetres();
+            // …and not BEYOND it either. The pocket is dredged to the harbour floor and stops; a
+            // mooring deeper than that has fallen out the seaward end into open water, where nothing
+            // can be stepped off onto.
+            Assert.GreaterOrEqual(bed, StPetersBuilder.DeepHarbourElevation - 0.05f,
+                "the mooring has fallen past the pocket into open water — the berth is supposed to " +
+                "hold her against the pier, and a dock zone out on the harbour floor cannot be " +
+                "stepped off");
 
-            // Half the ruling: usable for most of the cycle.
-            float fraction = FractionOfCycleAfloat(bed, draught);
-            Assert.Greater(fraction, 0.5f,
-                $"the dory ({draught:F2} m) floats at the slip for only {fraction:P0} of the cycle — " +
-                "§5.1a wants the skiff tier in and out for MOST of it, with the gate as seasoning.");
+            // The ruling itself: she floats at the WORST water this region has, not for a fraction
+            // of the cycle. Asserted for the dory who lives here AND for the hull the opening arrives
+            // on, because the dredge was cut for the deeper of the two.
+            float springLow = Water(-1f);
+            foreach ((string who, float draught) in new[]
+                     { ("the dory", DoryDraughtMetres()),
+                       ("the arrival cape islander", StPetersBuilder.ArrivalHullDraughtMetres) })
+            {
+                Assert.Greater(springLow - bed, draught,
+                    $"{who} ({draught:F2} m) grounds at the mooring at spring low — there is " +
+                    $"{springLow - bed:F2} m of water over a {bed:F2} m bed. The owner ruled this dock " +
+                    "wet at EVERY state of tide; a berth that shuts twice a month is the thing that " +
+                    "was ruled out.");
 
-            // The other half: it is a GATE, not an open door.
-            Assert.Less(Water(-1f) - bed, draught,
-                $"the slip does NOT dry at spring low (bed {bed:F2} m against {Water(-1f):F2} m of " +
-                "water) — that is a permanent open door, and §5.1a rules the dock keeps its own gentle " +
-                "tide gate so that coming home under power still means reading the tide.");
+                Assert.AreEqual(1f, FractionOfCycleAfloat(bed, draught), 1e-4f,
+                    $"{who} is afloat for only part of the cycle here — the ruling is 'always'");
+            }
 
             // …and she must not be so far out that the arrival point misses the dock zone.
             float arrivalToDock = Vector2.Distance(
@@ -223,11 +233,17 @@ namespace HiddenHarbours.Tests.EditMode
                 "the sail-home arrival must land INSIDE the dock zone — ControlSwitcher.InDockZone() " +
                 "is a pure distance test, so a metre too far and you can never step ashore (#52).");
 
-            Debug.Log($"[st-peters] berth bed {bed:F2} m; dory draught {draught:F2} m → afloat " +
-                      $"{fraction:P1} of the cycle, needs the water above {bed + draught:F2} m; " +
-                      $"{Water(-1f) - bed:F2} m of water at spring low (dries), " +
-                      $"{Water(1f) - bed:F2} m at spring high. Arrival is {arrivalToDock:F2} m from the " +
-                      $"dock zone (radius {StPetersBuilder.DockZoneRadius}).");
+            // The gate that MOVED, checked where it moved to — so this test cannot pass on a region
+            // that simply drowned the whole coast.
+            float slip = _terrain.ElevationAt(new Vector2(StPetersBuilder.BerthTo.x + 5f, 0f));
+            Assert.Greater(slip, springLow,
+                $"the beach slip sits at {slip:F2} m and no longer bares at spring low " +
+                $"({springLow:F2} m) — the tide gate moved to the beach, it did not evaporate");
+
+            Debug.Log($"[st-peters] berth bed {bed:F2} m; {springLow - bed:F2} m of water at spring low, " +
+                      $"{Water(1f) - bed:F2} m at spring high — afloat at every tide. The beach slip " +
+                      $"({slip:F2} m) still bares. Arrival is {arrivalToDock:F2} m from the dock zone " +
+                      $"(radius {StPetersBuilder.DockZoneRadius}).");
         }
 
         /// <summary>
@@ -275,7 +291,7 @@ namespace HiddenHarbours.Tests.EditMode
 
             Debug.Log($"[st-peters] SABOTAGE — old mooring: bed {bed:F2} m, so a {draught:F2} m dory " +
                       $"needed the tide above {floatsAbove:F2} m — the top {(1f - fractionOfSwing) * 100f:F0}% " +
-                      $"of the swing. The berth it was replaced by floats her for 57% of the cycle.");
+                      $"of the swing. The berth it was replaced by floats her at every tide (2026-08-19).");
         }
 
         private static float DoryDraughtMetres()
@@ -512,23 +528,33 @@ namespace HiddenHarbours.Tests.EditMode
         /// 1.3–1.4 m, the dragger is 2.9 m — *"the island you start on becomes the island your big boat
         /// can never come home to."*
         ///
-        /// <para>⚠ This test reports the band each hull lands in and asserts only the ORDERING plus the
-        /// two ends, because §5.1a itself flags the middle as a thing to look at once authored: *"the
-        /// lobster boat and Cape Islander land in a sometimes band, not a never band… If it should land
-        /// harder, raise the shelf rather than lowering the boats."* Pinning a percentage here would
-        /// freeze a number the owner has explicitly reserved.</para>
+        /// <para><b>⚠ THE GATE MOVED OFF THE BERTH ON 2026-08-19, and this test moved with it.</b> It
+        /// used to measure the ladder AT THE DOCK, which was a −1.0 m slip that bared twice a month.
+        /// The owner then ruled the east dock wet at every tide, and no geometry can honour that and
+        /// still gate the working hulls there: the region's tide range is 4.4 m and the whole gap
+        /// between the arrival cape islander (1.40 m) and the lobster boat (1.30 m) is 0.10 m. Floating
+        /// her at spring low floats every hull under her, necessarily.</para>
+        ///
+        /// <para><b>So the ladder is now measured where it still lives — the REEF RING</b>, which the
+        /// ruling did not touch and which is the whole coast except one 16 m door. Every hull that
+        /// wants the island anywhere but that door still meets §5.1a's apron, and the ordering there is
+        /// exactly what it always was. <see cref="StPetersEastBerthTests"/> holds the door's own,
+        /// different ladder (admission by BEAM through the cut, where the tanker is still barred at
+        /// every state of tide).</para>
         /// </summary>
         [Test]
-        public void TheBerthGatesTheHullLadder_SkiffTierHomeWorkingHullsTideGatedDraggerNever()
+        public void TheReefRingStillGatesTheHullLadder_SkiffTierHomeWorkingHullsTideGated()
         {
-            float bed = _terrain.ElevationAt(
-                new Vector2(StPetersBuilder.DockZonePos.x, StPetersBuilder.DockZonePos.y));
+            // The apron's OUTER edge — the shallowest thing a hull crossing the ring anywhere but the
+            // door has to clear. Read from the region, never re-typed.
+            float apron = StPetersBuilder.ReefShelfOuterElevation;
 
             var hulls = new[] { "Dory", "FishingSkiff", "Punt", "PuntUpgraded", "SportSkiff",
-                                "SportSkiffTwin", "ConsoleSkiff", "LobsterBoat", "CapeIslander" };
+                                "SportSkiffTwin", "ConsoleSkiff", "LobsterBoat", "CapeIslander",
+                                "SideDragger" };
 
             var report = new System.Text.StringBuilder(
-                $"[st-peters] the berth at {bed:F2} m against the fleet:\n");
+                $"[st-peters] the reef apron at {apron:F2} m against the fleet:\n");
             float skiffTierWorst = 1f, workingHullBest = 0f;
 
             foreach (string name in hulls)
@@ -537,19 +563,20 @@ namespace HiddenHarbours.Tests.EditMode
                     $"Assets/_Project/Data/Boats/{name}.asset");
                 if (hull == null) continue;
 
-                float f = FractionOfCycleAfloat(bed, hull.DraughtMeters);
+                float f = FractionOfCycleAfloat(apron, hull.DraughtMeters);
                 bool skiffTier = hull.DraughtMeters <= 0.6f;
                 if (skiffTier) skiffTierWorst = Mathf.Min(skiffTierWorst, f);
                 else workingHullBest = Mathf.Max(workingHullBest, f);
 
-                report.AppendLine($"  {name,-15} draught {hull.DraughtMeters:F2} m → afloat {f,6:P1} " +
-                                  $"of the cycle (needs the water above {bed + hull.DraughtMeters:F2} m)" +
+                report.AppendLine($"  {name,-15} draught {hull.DraughtMeters:F2} m → over the apron " +
+                                  $"{f,6:P1} of the cycle (needs the water above " +
+                                  $"{apron + hull.DraughtMeters:F2} m)" +
                                   (skiffTier ? "   [skiff tier]" : "   [working hull]"));
             }
 
             Assert.Greater(skiffTierWorst, 0.5f,
-                "every hull in the ≤ 0.6 m tier must get in and out for most of the cycle — that tier " +
-                "is the one you learn on, and home has to be usable");
+                "every hull in the ≤ 0.6 m tier must cross the ring for most of the cycle — that tier " +
+                "is the one you learn on, and the coast has to be reachable");
             Assert.Less(workingHullBest, skiffTierWorst,
                 "a working hull must be gated HARDER than every skiff — otherwise the geography does " +
                 "not separate the tier you learn on from the tier you graduate to, and the whole point " +
