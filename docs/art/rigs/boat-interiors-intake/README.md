@@ -86,6 +86,51 @@ tr -d '\r' < path/to/rig.js | sha256sum
   `hull-rigs/capeIslanderIsoRig.js` carries a **do-not-adopt** flag: adopting it reverts #247 and
   #508; adopting main's deletes her from the kit. Neither file can be taken whole.
 
+## The cape rig merge — ruled, and its acceptance bar
+
+**Sequencing (owner, 2026-08-19): a SEPARATE PR, after the intake lands.** This intake is complete
+and safe without it — she is refused, and the refusal arms hold.
+
+**Acceptance bar (lead-architect, 2026-08-19), verbatim in substance:**
+
+1. **Repo as base.** Diff merged-vs-repo-main classifies to EXACTLY: door addition + loft/HOUSE
+   publication. Zero hunks touch #508's OKLCH paint tables or #247's washboard geometry — assert by
+   classification, not by eye.
+2. **The interior-measured inputs** (`T`, `L`/`TH`/`DECK`, `NSEG`, house envelope, `ROOFZ`,
+   `SOLE_U`, `station()`, `skin()`, `dfrac()`, `FYb`/`FYt`) byte-identical to **both** parents. The
+   parents already agree (proved above); the merge must not break that.
+3. **The pixel proof:** exterior sheets from the merged rig, rendered in the V8 harness, byte-identical
+   to main's for the shipped poses. ⚠️ **See the amendment below — as written this cannot hold.**
+4. **The third sha lands as ONE repo PR:** rig + deck sidecar re-stamp + deck asset re-import, in a
+   real Unity session, both suites green including `MatchRigHash` and the parity tests.
+   ⚠️ **Re-stamp in the convention the deck import actually compares.** Her existing pin is a CRLF
+   hash of an LF file (`425ff37d…`) and `DeckSidecarImportParityTests` asserts string equality —
+   **match that convention, do not switch it to LF in this PR.** (The LF re-stamp is the gameplay
+   README's separate standing ask; an intake suggestion to fold it in here was explicitly overruled.)
+5. **The kit's cape interior sidecar then re-stamps `hullRigSha256`** to the third sha — no
+   re-measure, per the byte-identity proof above.
+
+### ⚠️ Amendment proposed to point 3 — it conflicts with point 1
+
+Point 1 requires a door addition; point 3 forbids any exterior pixel from moving. **The door is
+exterior-visible by construction**, so both cannot hold:
+
+| | main `92c3061b` | kit `a3be1d61` (and any merge carrying its door) |
+|---|---|---|
+| aft doorway | ONE flat `'dark'` panel — an **open** doorway (`backPanel(AY,-0.34,0.40,HZ0+0.02,2.34)`) | cream jambs + header, `'wood'` sill, `'moto'` track tube, `'iron'` rail |
+| the leaf | none | a sliding leaf, **closed** at `doorOpen=0` (`doorFaces()`, `Lf.x0=-0.40 … x1=0.46`) |
+
+**Proposed restatement, preserving the intent:** require byte-identity on **every pixel outside the
+aft doorway's bounding box**, and full byte-identity on the **bow-on facings (N, NE, NW)** where the
+house occludes the aft face entirely. That still proves both survivals decisively — #508's paint
+touches every hull pixel, so a paint regression cannot hide in a doorway; #247's washboards are side
+decks, visible on most facings and outside the box. What it stops doing is failing the merge for
+doing the one thing it is for.
+
+**Also worth an owner glance, independent of the merge:** her *resting appearance changes*. She
+currently sits with an open doorway; the merged rig closes it by default. That is a visible change to
+a shipped hull, not a regression — but it is a look, and looks are the owner's call.
+
 ## The phantom renderer
 
 `README.md §1` of the kit claims the interior renderer's LF sha256 is
