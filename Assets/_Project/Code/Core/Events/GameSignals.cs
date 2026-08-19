@@ -387,7 +387,75 @@ namespace HiddenHarbours.Core
         /// <summary>Where the player is turning in, for the notice ("your bed at Ginny's"). Never null;
         /// may be empty, which reads as an unnamed bed.</summary>
         public readonly string Place;
-        public RestSaveRequested(string place) { Place = place ?? ""; }
+
+        /// <summary>
+        /// <b>Where the player will wake</b> — the spot they are standing on to turn in, world metres.
+        ///
+        /// <para><b>Their own position, not the bed's, and that is the whole trick.</b> A bed's transform
+        /// is the middle of its footprint, so waking there is waking in the mattress; an offset from it
+        /// would be a tuned number guessing at furniture and partitions the save system cannot see (rule
+        /// 6). The player, meanwhile, is standing on floor they walked to and is within the bed's own
+        /// reach by construction — so "feet at the bedside" is not computed at all, it is simply read.
+        /// It is also the SAME quantity the wake will write back (the player transform's position), which
+        /// keeps this off the project's most-repeated rake: never compute one number two ways.</para>
+        /// </summary>
+        public readonly UnityEngine.Vector2 WakePosition;
+
+        /// <summary>
+        /// Which STOREY they are turning in on — 0 the ground floor and everywhere outdoors, 1 the floor
+        /// above (<c>BuildingInterior.Level</c>'s ladder).
+        ///
+        /// <para>Load-bearing, not decoration: ADR 0036 made a second storey a LAYER over the same
+        /// footprint, and the one authored player bed sits directly above the room you walk into. Without
+        /// this the wake lands on the ground floor at the bedroom's coordinates.</para>
+        /// </summary>
+        public readonly int WakeLevel;
+
+        /// <summary>The full request: where you are turning in, where you will wake, and on which
+        /// storey.</summary>
+        public RestSaveRequested(string place, UnityEngine.Vector2 wakePosition, int wakeLevel)
+        {
+            Place = place ?? "";
+            WakePosition = wakePosition;
+            WakeLevel = wakeLevel;
+        }
+
+        /// <summary>
+        /// A request that names no wake spot — the shape this signal had before there was one.
+        ///
+        /// <para>Kept because it is honest rather than merely compatible: a caller that cannot say where
+        /// the player is standing must not get to invent it, and <see cref="UnityEngine.Vector2.zero"/>
+        /// is a real place on the map. The responder treats a rest with no live region as one that
+        /// records nothing and still writes the file, so such a request saves the day exactly as it
+        /// always did and leaves the anchor alone.</para>
+        /// </summary>
+        public RestSaveRequested(string place) : this(place, UnityEngine.Vector2.zero, 0) { }
+    }
+
+    /// <summary>
+    /// <b>The player has just been put back where they went to sleep</b> — published by
+    /// <see cref="RestWakeRestorer"/> once, on load, AFTER it has moved the player rig to the anchor
+    /// (ADR 0037). Not published when there is no anchor, when the anchor belongs to another region, or
+    /// when there is no player to move: it says a wake HAPPENED, so nothing may fire it speculatively.
+    ///
+    /// <para><b>What it is for.</b> The position is already applied by the time this lands — the signal
+    /// exists for what Core cannot do itself, which is everything about the BUILDING the player woke up
+    /// in. <c>BuildingInterior</c> lives in World and owns the storey ladder; it answers this by opening
+    /// on the storey the anchor names, so a player who slept upstairs wakes upstairs. Core states where
+    /// the player is; whoever owns the room decides what that means — the same seam
+    /// <see cref="OutfitChanged"/> uses to re-skin the fisher without Core knowing what a sprite
+    /// is.</para>
+    ///
+    /// <para>It is also the natural place for the beats this feature will grow: a fade up from black, a
+    /// "morning" line, the <c>Fisher_sleep</c> animation playing out its last frames. None of them
+    /// belong to the save system, and every one of them wants exactly this edge.</para>
+    /// </summary>
+    public readonly struct PlayerWokeAt
+    {
+        /// <summary>Where the player was put, in full — region, storey and position. Always
+        /// <see cref="RestAnchor.IsSet"/>, because an unset anchor is never applied.</summary>
+        public readonly RestAnchor Anchor;
+        public PlayerWokeAt(in RestAnchor anchor) { Anchor = anchor; }
     }
 
     /// <summary>

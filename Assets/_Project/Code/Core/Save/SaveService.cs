@@ -66,6 +66,12 @@ namespace HiddenHarbours.Core
             // than by the bed, because the responder must outlive any one region's fixtures — you can
             // sail away from the bedroom and the request seam should still exist when you walk back in.
             RestSaveResponder.Install();
+
+            // ...and this is the other half: the load that puts the player back at that bed. Installed
+            // here for the same reason and with the same lifetime — the two are a pair, and a game that
+            // could record where you slept but not wake you there would be the half-built version of the
+            // feature that is hardest to notice is half-built.
+            RestWakeRestorer.Install();
         }
 
         private void OnDestroy()
@@ -73,6 +79,7 @@ namespace HiddenHarbours.Core
             EventBus.Unsubscribe<BoatPurchased>(OnBoatPurchased);
             EventBus.Unsubscribe<ActiveBoatChanged>(OnActiveBoatChanged);
             RestSaveResponder.Uninstall();
+            RestWakeRestorer.Uninstall();
 
             if (ReferenceEquals(GameServices.Save, this)) GameServices.Save = null;
             if (_instance == this) _instance = null;

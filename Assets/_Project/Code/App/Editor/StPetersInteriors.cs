@@ -766,15 +766,18 @@ namespace HiddenHarbours.App.Editor
                     break;
 
                 case InteriorFixture.PlayerBed:
+                    // The interior comes along so the bed can report which STOREY it is on when the
+                    // player turns in (ADR 0037) — the player's bed is upstairs, and an anchor that did
+                    // not say so would wake them in the room below it.
                     go.AddComponent<InteriorBed>().Configure(
                         idPrefix + ".bed_player", isPlayerBed: true, ownerName: "",
-                        placeName: PlayerBedPlaceName, reachMeters: BedReachMetres);
+                        placeName: PlayerBedPlaceName, reachMeters: BedReachMetres, interior: interior);
                     break;
 
                 case InteriorFixture.OwnerBed:
                     go.AddComponent<InteriorBed>().Configure(
                         idPrefix + ".bed_owner", isPlayerBed: false, ownerName: BedOwnerName,
-                        placeName: "", reachMeters: BedReachMetres);
+                        placeName: "", reachMeters: BedReachMetres, interior: interior);
                     break;
 
                 case InteriorFixture.Wardrobe:

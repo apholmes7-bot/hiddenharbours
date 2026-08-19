@@ -244,12 +244,16 @@ Three properties of this rung, because it is deliberately not ownership:
 - **Hers is hers.** Ginny's bed is in the same room plan and gives a polite refusal — the ladder
   starts with a home you are a *guest* in, and the game says so when you try the wrong bed.
 - **No comfort buff.** §4.2's sleeping buffs are a later-phase system and are not wired here; the
-  bed keeps the day and nothing else.
+  bed keeps the day and **wakes you at it** — nothing else.
 
 The mechanism — a storey is a second interior *layer* on one footprint, not a place you travel to —
-is [ADR 0036](../adr/0036-interior-levels-as-layers.md). ⚠️ It does **not** yet make you wake where
-you slept: `SaveData` carries no player position, so that is a save-schema change (v11 → v12) still
-owed.
+is [ADR 0036](../adr/0036-interior-levels-as-layers.md). **You now wake where you slept**: the save
+carries a rest anchor — region, storey and position, all three, because a bare position names the
+wrong room in a house with an upstairs — which is
+[ADR 0037](../adr/0037-rest-anchor.md), schema v12 → v13. One limit worth knowing: the anchor is
+honoured only when the game boots into the region it names, and declines out loud otherwise. That
+costs nothing today (the one player bed is in the start region) and cross-region wake is a travel-rig
+change the anchor is already shaped for.
 
 ### 4.2 What you do with a home
 

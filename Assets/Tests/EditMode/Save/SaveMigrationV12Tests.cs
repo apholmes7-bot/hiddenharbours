@@ -24,11 +24,24 @@ namespace HiddenHarbours.Tests.EditMode
                 ? new SaveData { SchemaVersion = 11 }
                 : JsonUtility.FromJson<SaveData>(json);
 
+        /// <summary>
+        /// The wardrobe appended <see cref="SaveData.WornOutfitId"/>, so the schema had to move to 12 —
+        /// and may never move back below it, because rolling under 12 is a build that drops the field.
+        ///
+        /// <para><b>AT LEAST, not exactly, and that is the lesson of the v13 bump.</b> This file
+        /// originally pinned <c>== 12</c> in five places, so the next schema change (ADR 0037's rest
+        /// anchor) turned five green tests red at once for no reason but the passage of time — while
+        /// <c>SaveMigrationV11Tests</c>, which asserts <see cref="SaveMigration.CurrentVersion"/>
+        /// wherever it means "migrated to current", sailed through untouched. The version-agnostic form
+        /// is the right one everywhere except the ONE test per bump that exists to say the bump
+        /// happened, and that one belongs in the newest bump's file.</para>
+        /// </summary>
         [Test]
-        public void CurrentVersion_IsTwelve()
+        public void CurrentVersion_IsAtLeastTwelve_BecauseTheOutfitFieldShipped()
         {
-            Assert.AreEqual(12, SaveMigration.CurrentVersion,
-                "The wardrobe appended SaveData.WornOutfitId, so the schema moved.");
+            Assert.GreaterOrEqual(SaveMigration.CurrentVersion, 12,
+                "The wardrobe appended SaveData.WornOutfitId at v12; the schema is append-only and " +
+                "only ever moves forward.");
         }
 
         [Test]
@@ -36,7 +49,7 @@ namespace HiddenHarbours.Tests.EditMode
         {
             var data = SaveMigration.NewGame();
 
-            Assert.AreEqual(12, data.SchemaVersion);
+            Assert.AreEqual(SaveMigration.CurrentVersion, data.SchemaVersion);
             Assert.AreEqual("", data.WornOutfitId,
                 "An empty id reads as 'the outfit the sheets were baked in'. A new game must NOT name " +
                 "a preset: the shipped art is the look, and naming an id would make a new player's " +
@@ -44,11 +57,11 @@ namespace HiddenHarbours.Tests.EditMode
         }
 
         [Test]
-        public void AV11Save_GainsAnEmptyOutfit_AndIsStampedV12()
+        public void AV11Save_GainsAnEmptyOutfit_AndIsStampedCurrent()
         {
             var data = SaveMigration.Migrate(V11());
 
-            Assert.AreEqual(12, data.SchemaVersion);
+            Assert.AreEqual(SaveMigration.CurrentVersion, data.SchemaVersion);
             Assert.AreEqual("", data.WornOutfitId,
                 "A v11 save was written before there was a wardrobe, so its player wore the baked " +
                 "outfit. Nothing is invented for them.");
@@ -115,7 +128,7 @@ namespace HiddenHarbours.Tests.EditMode
             // Exactly what a v11 file on disk looks like: the field simply is not there.
             var data = SaveMigration.Migrate(V11("{\"SchemaVersion\":11,\"Money\":50}"));
 
-            Assert.AreEqual(12, data.SchemaVersion);
+            Assert.AreEqual(SaveMigration.CurrentVersion, data.SchemaVersion);
             Assert.AreEqual(50, data.Money);
             Assert.IsNotNull(data.WornOutfitId, "An absent field must never surface as null.");
             Assert.AreEqual("", data.WornOutfitId);
@@ -130,7 +143,7 @@ namespace HiddenHarbours.Tests.EditMode
             var after = JsonUtility.FromJson<SaveData>(JsonUtility.ToJson(before));
 
             Assert.AreEqual("outfit.rust_and_cream", after.WornOutfitId);
-            Assert.AreEqual(12, after.SchemaVersion);
+            Assert.AreEqual(SaveMigration.CurrentVersion, after.SchemaVersion);
         }
 
         // ---- the locker over the top of it ------------------------------------------------------
