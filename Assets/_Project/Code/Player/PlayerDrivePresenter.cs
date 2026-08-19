@@ -93,9 +93,25 @@ namespace HiddenHarbours.Player
         /// <summary>Wire the clip seam explicitly (tests). Null hands it back to the auto-resolve.</summary>
         public void ConfigureClipPlayer(CharacterClipPlayer clipPlayer) => _clipPlayer = clipPlayer;
 
-        private void Awake()
+        /// <summary>
+        /// The clip seam this plays through — the wired one, else the one beside it.
+        ///
+        /// <para>⚠️ <b>Resolved on FIRST USE, not in <c>Awake</c>, and that is a correctness fix rather
+        /// than a convenience.</b> <c>Awake</c> does not run on a component in EDIT MODE, and this
+        /// presenter is reachable there: <c>ControlSwitcher.TryEnterDriving</c> is public and EditMode
+        /// suites drive it directly, so an <c>Awake</c>-only reference would leave this answering "no
+        /// driver" at edit time while answering yes in a build — the same fact, decided two ways by which
+        /// lifecycle happened to have run. The same lazy shape <c>ControlSwitcher.DeckRider</c> and
+        /// <c>CharacterClipPlayer.ResolvedVisual</c> already use, and it self-caches, so the hot path
+        /// costs one null test.</para>
+        /// </summary>
+        private CharacterClipPlayer ClipPlayer
         {
-            if (_clipPlayer == null) _clipPlayer = GetComponent<CharacterClipPlayer>();
+            get
+            {
+                if (_clipPlayer == null) _clipPlayer = GetComponent<CharacterClipPlayer>();
+                return _clipPlayer;
+            }
         }
 
         /// <summary>
@@ -118,7 +134,8 @@ namespace HiddenHarbours.Player
             if (seat == null || !seat.IsAlive || seat.Root == null) return false;
             if (!seat.ShowsDriver) return false;
             if (_mounts == null) return false;
-            return _clipPlayer != null && _clipPlayer.CanPlay(CharacterClip.Drive);
+            CharacterClipPlayer clip = ClipPlayer;
+            return clip != null && clip.CanPlay(CharacterClip.Drive);
         }
 
         /// <summary>
@@ -137,7 +154,7 @@ namespace HiddenHarbours.Player
             Stop();                                   // a DIFFERENT machine: start her cleanly on that one
             _seat = seat;
 
-            if (!_clipPlayer.Play(CharacterClip.Drive, HeadingDegrees()))
+            if (!ClipPlayer.Play(CharacterClip.Drive, HeadingDegrees()))
             {
                 _seat = null;                         // refused: change nothing, and stay hidden
                 return false;
@@ -161,7 +178,7 @@ namespace HiddenHarbours.Player
         {
             if (!_showing) return;
             if (!Alive()) { Stop(); return; }
-            _clipPlayer.SetHeading(HeadingDegrees());
+            ClipPlayer.SetHeading(HeadingDegrees());
         }
 
         /// <summary>Seat her, AFTER <c>ControlSwitcher.LateUpdate</c> has put the driver on the machine's
