@@ -19,6 +19,20 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <summary>The hull baseline is fine but the sidecar's renderer pin cannot be verified —
         /// it names a renderer that did not ship. Cheap to fix upstream, still a refusal here.</summary>
         RefusedPin = 3,
+        /// <summary>
+        /// The rooms are SOUND, but the exterior rig they were measured against and the one in the
+        /// repository are two FORKS of different features that never merged — neither can be adopted
+        /// whole.
+        ///
+        /// <para>Distinct from <see cref="StaleFatal"/> in what it asks for, which is why it is its own
+        /// verdict rather than a flavour of that one. Stale means the measurement is wrong and must be
+        /// retaken. Forked means the measurement is right and there is nothing to retake — what is
+        /// missing is a merged rig, carrying both branches' features, that can land in the repository.
+        /// Telling upstream to "re-measure" a forked hull sends them to do work that would not help and
+        /// may be impossible (a repo-side rig that publishes no loft cannot be measured against at
+        /// all).</para>
+        /// </summary>
+        ForkedRig = 4,
     }
 
     /// <summary>One hull's row in the ledger.</summary>
@@ -145,6 +159,11 @@ namespace HiddenHarbours.Tools.RigBaking
                 case BoatInteriorS0Verdict.RefusedPin:
                     return $"S0 REFUSED (unverifiable renderer pin): '{entry.HullStem}'. {entry.Evidence} " +
                            $"UPSTREAM: {entry.UpstreamAsk}";
+                case BoatInteriorS0Verdict.ForkedRig:
+                    return $"S0 FORKED RIG — REFUSED: '{entry.HullStem}'. The rooms are sound; the rig they " +
+                           "were measured against and the repository's are two forks that never merged, so " +
+                           $"neither can be adopted whole. {entry.Evidence} " +
+                           $"UPSTREAM (a merge, NOT a re-measure): {entry.UpstreamAsk}";
                 default:
                     return $"S0 UNKNOWN — REFUSED: '{entry.HullStem}' has no row in {LedgerPath}. An " +
                            "unadjudicated hull is not a cleared one; adjudicate it, then re-run.";
@@ -158,6 +177,7 @@ namespace HiddenHarbours.Tools.RigBaking
                 case "CLEAN": return BoatInteriorS0Verdict.Clean;
                 case "STALE-FATAL": return BoatInteriorS0Verdict.StaleFatal;
                 case "REFUSED-PIN": return BoatInteriorS0Verdict.RefusedPin;
+                case "FORKED-RIG": return BoatInteriorS0Verdict.ForkedRig;
                 default: return BoatInteriorS0Verdict.Unknown;
             }
         }

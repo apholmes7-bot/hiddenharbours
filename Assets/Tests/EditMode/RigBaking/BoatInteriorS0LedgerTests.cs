@@ -33,11 +33,13 @@ namespace HiddenHarbours.Tests.RigBaking
                 "    { \"hull_stem\": \"a\", \"verdict\": \"CLEAN\" },\n" +
                 "    { \"hull_stem\": \"b\", \"verdict\": \"STALE-FATAL\" },\n" +
                 "    { \"hull_stem\": \"c\", \"verdict\": \"REFUSED-PIN\" },\n" +
+                "    { \"hull_stem\": \"e\", \"verdict\": \"FORKED-RIG\" },\n" +
                 "    { \"hull_stem\": \"d\", \"verdict\": \"something new\" }"));
 
             Assert.AreEqual(BoatInteriorS0Verdict.Clean, map["a"].Verdict);
             Assert.AreEqual(BoatInteriorS0Verdict.StaleFatal, map["b"].Verdict);
             Assert.AreEqual(BoatInteriorS0Verdict.RefusedPin, map["c"].Verdict);
+            Assert.AreEqual(BoatInteriorS0Verdict.ForkedRig, map["e"].Verdict);
             Assert.AreEqual(BoatInteriorS0Verdict.Unknown, map["d"].Verdict,
                             "a word this reader does not know is UNKNOWN, which does not build");
         }
@@ -53,6 +55,7 @@ namespace HiddenHarbours.Tests.RigBaking
             Assert.IsTrue(map["a"].IsClean);
             Assert.IsFalse(map["b"].IsClean);
             Assert.IsFalse(map["c"].IsClean);
+            Assert.IsFalse(BoatInteriorS0Ledger.For(map, "nobody").IsClean);
         }
 
         [Test]
@@ -155,14 +158,39 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         [Test]
-        public void TheCapeIsStaleFatalAndSaysWhy()
+        public void TheCapeIsForkedNotStaleAndAsksForAMergeNotAReMeasure()
         {
+            // The distinction this pins cost a wrong verdict to learn. Her rooms are SOUND: every input
+            // they are measured from is identical across both branches, and the washboards #247 moved
+            // are not in the published loft at all. What is broken is that main's rig and the kit's are
+            // two forks — main has the paint and the washboards but publishes no loft; the kit publishes
+            // the loft but has neither. Calling that "stale" sends upstream to re-measure, which would
+            // not help and cannot even be done: boatInteriorRig.js drops a hull whose rig has no loft.
             BoatInteriorS0Entry cape = BoatInteriorS0Ledger.For(Committed(), "capeIslanderIsoRig");
 
-            Assert.AreEqual(BoatInteriorS0Verdict.StaleFatal, cape.Verdict);
-            StringAssert.Contains("WASHBOARD", cape.Evidence.ToUpperInvariant(),
-                                  "the fatal drift is her washboards running to the foredeck");
-            Assert.IsNotEmpty(cape.UpstreamAsk);
+            Assert.AreEqual(BoatInteriorS0Verdict.ForkedRig, cape.Verdict);
+            Assert.IsFalse(cape.IsClean, "forked still does not build — the rig cannot land as-is");
+            StringAssert.Contains("merge", cape.UpstreamAsk.ToLowerInvariant(),
+                                  "the ask is a rig merge, and saying 're-measure' here is the bug");
+            Assert.IsFalse(cape.UpstreamAsk.ToLowerInvariant().Contains("re-measure against main"),
+                           "main's rig publishes no loft — measuring against it deletes her from the kit");
+        }
+
+        [Test]
+        public void TheForkedVerdictReadsDifferentlyFromTheStaleOne()
+        {
+            // Two refusals that need opposite upstream work must not print the same sentence.
+            var map = BoatInteriorS0Ledger.Parse(Ledger(
+                "    { \"hull_stem\": \"stale\", \"verdict\": \"STALE-FATAL\" },\n" +
+                "    { \"hull_stem\": \"forked\", \"verdict\": \"FORKED-RIG\" }"));
+
+            string stale = BoatInteriorS0Ledger.RefusalMessage(BoatInteriorS0Ledger.For(map, "stale"));
+            string forked = BoatInteriorS0Ledger.RefusalMessage(BoatInteriorS0Ledger.For(map, "forked"));
+
+            StringAssert.Contains("STALE-FATAL", stale);
+            StringAssert.Contains("FORKED RIG", forked);
+            StringAssert.Contains("NOT a re-measure", forked);
+            Assert.AreNotEqual(stale, forked);
         }
 
         [Test]

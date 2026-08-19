@@ -15,7 +15,7 @@ Two independent axes decide it, and a hull needs **both**:
 | axis | question | refusal rule |
 |---|---|---|
 | **A — interior-rig pin** | Is `derivedFromRigSha256` the LF sha256 of the `boatInteriorRig.js` that actually shipped in the kit? | A pin naming a renderer that is not in the drop cannot be checked against anything. Unverifiable is refused, exactly as absent is. |
-| **B — hull baseline** | Establish the exterior rig the rooms were measured against, diff main's current rig against it, and classify every hunk. | Loft/house/door geometry that MOVED is fatal. Paint, materials, cues and comments are not. |
+| **B — hull baseline** | Establish the exterior rig the rooms were measured against, diff main's current rig against it, and classify every hunk. | Geometry the interior actually READS (what the rig's published `loft` exposes) moving is fatal. Paint, materials, cues, comments — and exterior surface outside the loft — are not. |
 
 ## How the baselines were established
 
@@ -48,13 +48,43 @@ tr -d '\r' < path/to/rig.js | sha256sum
   `gelcoat` scheme reuses the original literal ramps. **Axis B clean.**
 
 - **capeIslanderIsoRig** — two commits. `1b35453d` (#508) is paint. `be83274b` (#247, 2026-07-22)
-  **moved washboard geometry**: side decks that stopped at the house front now run the full sheer to
-  the foredeck, their inboard edge clamped against the **house** half-width. That was an owner
-  ruling — *"capes washboards go all the way to foredeck"*. **Axis B fatal.**
+  moved washboard geometry: side decks that stopped at the house front now run the full sheer to the
+  foredeck, their inboard edge clamped against the **house** half-width. That was an owner ruling —
+  *"capes washboards go all the way to foredeck"*.
 
-  Worse than stale: the kit's own bundled `capeIslanderIsoRig.js` still carries the pre-#247 line
-  verbatim (`if(station(u0).y > HY0-0.05) continue;   // stop at the house front`), so adopting the
-  bundled rig would silently revert the ruling.
+  ### ⚠️ Correction (2026-08-19, same day): she is FORKED, not stale
+
+  The observation above is right; the **verdict first drawn from it was wrong, twice**, and upstream
+  caught both. Recorded rather than quietly rewritten — provenance is the point.
+
+  1. **The washboards are not measured geometry for the interior.** The kit rig publishes
+     `loft:{ station, skin, dfrac, halfAtZ, sheerZ, L, TH, DECK, SOLE_U, NSEG, house:HOUSE, shade,
+     cell }`, and `WB` appears **only** inside the washboard face-emission loop (lines 191/197/198),
+     never in that loft. #247 moved exterior deck surface the interior rig cannot read.
+  2. **"Re-measure against main's rig" was not merely unnecessary — it was impossible.** Main's rig
+     publishes no `loft`, no `HOUSE`, no `halfAtZ`, no `sheerZ` (grep count **0** for each), and
+     `boatInteriorRig.js:268` reads `if(!E || !E.loft) return null;` with `list()` filtering on that.
+     Adopting main's rig as the hull rig would **delete the cape from the kit**, not re-measure her.
+
+  **What she actually is: two "pass 2" forks of different features that never merged.**
+
+  | | publishes loft/HOUSE | aft DOOR | #508 OKLCH paint | #247 washboards |
+  |---|:--:|:--:|:--:|:--:|
+  | repo `92c3061b` (33,162 B) | ✗ 0 refs | ✗ | ✅ 9 refs | ✅ |
+  | kit `a3be1d61` (28,482 B) | ✅ 3/6/2/2 refs | ✅ | ✗ 0 refs | ✗ |
+
+  **Her rooms are SOUND.** Every input they are measured from is identical across both branches —
+  `L=12.8`, `TH=0.05`, `DECK=0.72`, `NSEG=24`, `ROOFZ=3.02`, `SOLE_U=0.74`, `HX=1.32`, `HY0=0.5`,
+  `HY1=2.9`, `HZ1=2.98`, `FYb=2.54`, `FYt=3.10` (same values; the kit hoists `FYb`/`FYt` to module
+  scope so `HOUSE` can read them), plus `station()`, `skin()`, `dfrac()` and `dw()` verbatim. `HOUSE`
+  is built only from those constants; `halfAtZ`/`sheerZ` only from `station()` and `L`.
+
+  **So the remedy is a RIG MERGE, not a re-measure**: main as base, the aft door and the published
+  loft re-applied, producing a **third sha that must land in `docs/art/rigs/capeIslanderIsoRig.js`** —
+  not only in the kit. That is an owner call, because it rewrites a committed fleet rig. Until it
+  lands she stays refused, under her own verdict word `FORKED-RIG`, and
+  `hull-rigs/capeIslanderIsoRig.js` carries a **do-not-adopt** flag: adopting it reverts #247 and
+  #508; adopting main's deletes her from the kit. Neither file can be taken whole.
 
 ## The phantom renderer
 
@@ -75,9 +105,21 @@ yet all 18 pin the pre-tranche-4 renderer. There the stale pin is substantive, n
 ## Result
 
 **2 of 27 sidecars cleared** — `sportFisherIsoRig2.convertible` and `sportFisherIsoRig2.skybridge`.
-Seven families pass axis B and fail axis A; the cape fails both. Every refusal carries an
-`upstream_ask` naming the fix. For seven families that fix is a re-stamp; for the cape it is a real
-re-measure against main's current loft.
+Seven families pass axis B and fail axis A. The cape is her own case: her rooms are sound on both
+axes' *substance*, and she is refused because the rig she is measured against cannot land in the
+repository as-is.
+
+Every refusal carries an `upstream_ask`, and the three classes want **different** work:
+
+| class | hulls | what upstream must do |
+|---|---|---|
+| `REFUSED-PIN` | 7 families (+18 variants) | Re-stamp `derivedFromRigSha256` from the renderer that shipped. Clerical. |
+| `FORKED-RIG` | capeIslander | A **rig merge** — repo as base, door + published loft re-applied, landing a third sha in `docs/art/rigs/`. An owner call; **not** a re-measure. |
+| `CLEAN` | both sport fishers | Nothing. |
+
+Naming these apart is the point of having three words instead of two: telling upstream to
+"re-measure" a forked hull sends them to do work that would not help and, in the cape's case,
+cannot be done at all.
 
 ## A separate warning: do not adopt the bundled hull rigs
 
@@ -88,7 +130,10 @@ publishing — they are **not** rebased onto main. Verified by diff:
   wall face behind it, and publish real DOOR geometry in its place. `lobsterBoatVariantsIsoRig`
   keeps its paint kit intact and adds `doorFaces(V,t)`.
 - **`lobsterBoatIsoRig` has no paint kit** — replacing main's would revert #497's 12 schemes.
-- **`capeIslanderIsoRig` reverts the washboard ruling**, as above.
+- **`capeIslanderIsoRig` reverts BOTH #247's washboards and #508's paint** — and, unlike the
+  others, the reverse swap is no better: main's copy publishes no loft, so adopting *it* drops
+  her out of the kit entirely. She needs the merge described above, not a choice between two
+  files. Her copy of main's rig is staged upstream at `scraps/capeIslanderIsoRig.repo.js`.
 
 Nothing in this PR copies a bundled rig over `docs/art/rigs/`.
 

@@ -48,15 +48,17 @@
     },
     {
       "hull_stem": "capeIslanderIsoRig",
-      "verdict": "STALE-FATAL",
+      "verdict": "FORKED-RIG",
       "axis_a_interior_pin": "REFUSED",
-      "axis_b_hull_baseline": "REFUSED",
+      "axis_b_hull_baseline": "ROOMS SOUND - but the rig she is measured against cannot land as-is",
       "baseline_source": "_supersedes (verified real)",
       "baseline_lf_sha256": "47714ce015891dbe38b4bc536412ff42339f5f0b849bce4f1259db174529382c",
       "main_lf_sha256": "92c3061b69fb5e29f537e2bfd40bbe9b5863f83252452af82c1a97989d0a14ac",
-      "drift": "TWO commits, one of them geometry",
-      "evidence": "Baseline is the blob at 4f048395 (2026-07-19), exactly as the gate report claimed. Since then: be83274b (#247, 2026-07-22) MOVED WASHBOARD GEOMETRY - side decks previously stopped at the house front ('if(station(u0).y > HY0-0.05) continue;') and now run the full sheer to the foredeck, their inboard edge clamped against the HOUSE half-width (Math.max(st.ws-TH-WB, HX+0.02)). That is an owner ruling ('capes washboards go all the way to foredeck'). 1b35453d (#508) is paint only. The kit's own bundled capeIslanderIsoRig.js still carries the PRE-#247 line verbatim at line 195, so the interior was measured against a hull main abandoned - and adopting the bundled rig would silently revert the owner's ruling.",
-      "upstream_ask": "Re-measure the cape interior against main's current capeIslanderIsoRig.js (92c3061b), and re-cut the bundled rig from main rather than from the 4f048395 source."
+      "drift": "a FORK, not drift: two pass-2 branches of different features that never merged",
+      "evidence": "VERIFIED by diff, both directions. Main's capeIslanderIsoRig.js (92c3061b, 33162 B) publishes NO loft, NO HOUSE, NO halfAtZ, NO sheerZ (grep count 0 for each) and carries #247's washboard clamp plus #508's OKLCH paint (9 refs). The kit's (a3be1d61, 28482 B) publishes all four (3/6/2/2 refs), carries the real aft DOOR, and has NO paint (0 refs) and NO #247 clamp. Every input the room is measured from is identical across both: L=12.8, TH=0.05, DECK=0.72, NSEG=24, ROOFZ=3.02, SOLE_U=0.74, HX=1.32, HY0=0.5, HY1=2.9, HZ1=2.98, FYb=2.54, FYt=3.10 (same values; the kit hoists FYb/FYt to module scope so HOUSE can read them), and station(), skin(), dfrac(), dw() verbatim. HOUSE is built only from those; halfAtZ/sheerZ only from station() and L. WB is absent from the published loft. So the rooms are SOUND -- the refusal is not about the measurement, it is that neither rig file can be adopted whole.",
+      "upstream_ask": "A RIG MERGE, not a re-measure: main as base, the aft DOOR and the published loft re-applied on top, producing a THIRD sha that must land in docs/art/rigs/capeIslanderIsoRig.js -- not only in the kit. Until it does, her sidecar stays refused and hull-rigs/capeIslanderIsoRig.js carries a do-not-adopt flag: adopting it reverts #247 and #508, adopting main's deletes her from the kit.",
+      "_superseded_verdict": "STALE-FATAL (2026-08-19, corrected the same day -- see _corrections)",
+      "_do_not_adopt": "docs/art/rigs/boat-interiors-kit/hull-rigs/capeIslanderIsoRig.js"
     },
     {
       "hull_stem": "lobsterBoatIsoRig",
@@ -139,5 +141,22 @@
       "evidence": "No provenance stamp; discovery gives one distinct blob across all refs. The bundled revision replaces the poop aft wall face, its painted aft door and four painted port lights with published DOOR geometry. Axis A refuses on the phantom pin. NOTE: this hull works at 16 px/m where the rest of the fleet is 32 - two pixel grids in one kit, never to be conflated.",
       "pixels_per_metre": 16
     }
+  ],
+  "_corrections": [
+    "2026-08-19, capeIslanderIsoRig: STALE-FATAL -> FORKED-RIG. The original verdict's OBSERVATION was",
+    "  right (main's rig carries #247's washboard clamp; the kit's carries the pre-#247 line verbatim)",
+    "  but the INFERENCE from it was wrong twice over, and upstream caught both.",
+    "  (a) The washboards are not measured geometry for the interior. The kit rig publishes",
+    "      loft:{station, skin, dfrac, halfAtZ, sheerZ, L, TH, DECK, SOLE_U, NSEG, house:HOUSE, shade,",
+    "      cell} and WB appears ONLY inside the washboard face-emission loop (lines 191/197/198), never",
+    "      in the published loft. #247 moved exterior deck surface the interior rig cannot read.",
+    "  (b) 'Re-measure against main's current rig' was not merely unnecessary, it was impossible:",
+    "      main's rig publishes no loft and no HOUSE at all, and boatInteriorRig.js line 268 reads",
+    "      'if(!E || !E.loft) return null;' with list() filtering on that. Adopting main's rig as the",
+    "      hull rig would DELETE the cape from the kit rather than re-measure her.",
+    "  The two files are not stale-vs-current, they are two 'pass 2' FORKS that never merged: main =",
+    "  OKLCH paint (#508) + #247 washboards, no loft/HOUSE; kit = the real aft DOOR + published loft,",
+    "  no paint, no #247. Neither can be adopted whole. The original judgment is kept below rather than",
+    "  deleted -- provenance is the point."
   ]
 }
