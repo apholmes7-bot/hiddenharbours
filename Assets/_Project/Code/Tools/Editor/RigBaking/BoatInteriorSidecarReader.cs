@@ -55,10 +55,11 @@ namespace HiddenHarbours.Tools.RigBaking
     /// <para><b>Four things are refusals, not warnings</b>, and they are the reason this class exists
     /// rather than a JsonUtility call:</para>
     /// <list type="number">
-    /// <item><b>An absent or mismatched interior-renderer SHA.</b> The sidecar-hash law: a sidecar you
-    /// cannot check against the renderer that generated it is a sidecar you cannot trust. Twenty-five of
-    /// the drop's twenty-seven pin a renderer that is in neither the kit nor the repository's history,
-    /// so this arm is not hypothetical — it is most of the drop.</item>
+    /// <item><b>An absent, unstamped or mismatched interior-renderer SHA.</b> The sidecar-hash law: a
+    /// sidecar you cannot check against the renderer that generated it is a sidecar you cannot trust.
+    /// Neither half of this arm is hypothetical — drop 1 had twenty-five of twenty-seven pinning a
+    /// renderer present in neither the kit nor the repository, and the re-export that fixed those
+    /// shipped an unsubstituted export template into two others.</item>
     /// <item><b>An absent or mismatched exterior hull SHA.</b> Same law, other axis — and note WHICH
     /// rig it checks: the REVISED one bundled beside the sidecar in the kit, the one that publishes the
     /// loft the rooms were measured from. It asks "does this sidecar describe the rig that shipped with
@@ -497,18 +498,7 @@ namespace HiddenHarbours.Tools.RigBaking
                 return null;
             }
 
-            string mech = (DeckSidecarJson.String(DeckSidecarJson.Member(node, "mechanism")) ?? "")
-                .Trim().ToLowerInvariant();
-            BoatInteriorDoorMechanism mechanism;
-            switch (mech)
-            {
-                case "sliding": mechanism = BoatInteriorDoorMechanism.Sliding; break;
-                case "hinged": mechanism = BoatInteriorDoorMechanism.Hinged; break;
-                default:
-                    read.Errors.Add($"{where}: mechanism '{mech}' is neither 'sliding' nor 'hinged'. " +
-                                    "Guessing which way a door opens is not a thing an importer may do.");
-                    return null;
-            }
+            if (!TryReadMechanism(node, where, read, out BoatInteriorDoorMechanism mechanism)) return null;
 
             // A slider states its keep-clear inside `slide`; a hinged leaf inside `swing`.
             object motionBlock = DeckSidecarJson.Member(node, mechanism == BoatInteriorDoorMechanism.Sliding
@@ -537,6 +527,50 @@ namespace HiddenHarbours.Tools.RigBaking
                 CueReversedOnExit =
                     DeckSidecarJson.Member(cue, "played_reversed_on_exit") as bool? ?? true,
             };
+        }
+
+        /// <summary>
+        /// Which way this door opens — read from the kit's own convention, which is not a single field.
+        ///
+        /// <para><b>Hinged is the unmarked norm here.</b> The five hinged hulls (dragger, both trawlers,
+        /// packet, tanker) carry <c>hinge_axis</c> + <c>swing</c> and NO <c>mechanism</c> key at all; the
+        /// twenty-two sliders carry <c>mechanism: "sliding"</c> plus a <c>slide</c> block standing where
+        /// swing would be. The kit README says exactly this — the slider is the annotated exception and
+        /// the hinge is the default — so demanding an explicit <c>mechanism</c> on both refuses five
+        /// hulls that declared themselves perfectly well.</para>
+        ///
+        /// <para>This is still not guessing. An explicit <c>mechanism</c> wins where present; otherwise
+        /// the shape decides, and it must be UNAMBIGUOUS. A threshold carrying both blocks, or neither,
+        /// is refused — that is a door whose behaviour the file does not actually state.</para>
+        /// </summary>
+        static bool TryReadMechanism(object node, string where, BoatInteriorRead read,
+                                     out BoatInteriorDoorMechanism mechanism)
+        {
+            mechanism = BoatInteriorDoorMechanism.Sliding;
+
+            string declared = (DeckSidecarJson.String(DeckSidecarJson.Member(node, "mechanism")) ?? "")
+                .Trim().ToLowerInvariant();
+            bool hasSlide = DeckSidecarJson.Member(node, "slide") != null;
+            bool hasSwing = DeckSidecarJson.Member(node, "swing") != null ||
+                            DeckSidecarJson.Member(node, "hinge_axis") != null;
+
+            if (declared.Length > 0)
+            {
+                if (declared == "sliding") { mechanism = BoatInteriorDoorMechanism.Sliding; return true; }
+                if (declared == "hinged") { mechanism = BoatInteriorDoorMechanism.Hinged; return true; }
+                read.Errors.Add($"{where}: mechanism '{declared}' is neither 'sliding' nor 'hinged'. " +
+                                "Guessing which way a door opens is not a thing an importer may do.");
+                return false;
+            }
+
+            if (hasSlide && !hasSwing) { mechanism = BoatInteriorDoorMechanism.Sliding; return true; }
+            if (hasSwing && !hasSlide) { mechanism = BoatInteriorDoorMechanism.Hinged; return true; }
+
+            read.Errors.Add($"{where}: no 'mechanism', and the shape does not settle it either — " +
+                            $"slide block {(hasSlide ? "present" : "absent")}, swing/hinge_axis " +
+                            $"{(hasSwing ? "present" : "absent")}. A door must declare how it opens, " +
+                            "either by naming a mechanism or by carrying exactly one of the two blocks.");
+            return false;
         }
 
         static void ReadStairs(object root, BoatInteriorRead read)

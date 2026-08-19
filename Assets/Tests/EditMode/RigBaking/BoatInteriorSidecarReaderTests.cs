@@ -168,7 +168,7 @@ namespace HiddenHarbours.Tests.RigBaking
             BoatInteriorRead read = Read(Sidecar(hullSha: new string('b', 64)));
 
             Assert.IsFalse(read.Ok);
-            Assert.IsTrue(read.Errors.Any(e => e.Contains("STALE HULL RIG")), string.Join(" | ", read.Errors));
+            Assert.IsTrue(read.Errors.Any(e => e.Contains("HULL RIG MISMATCH")), string.Join(" | ", read.Errors));
             Assert.IsEmpty(read.Levels);
         }
 
@@ -234,6 +234,48 @@ namespace HiddenHarbours.Tests.RigBaking
             Assert.IsFalse(BoatInteriorSidecarReader.IsSha256Hex(new string('g', 64)), "not hex");
             Assert.IsFalse(BoatInteriorSidecarReader.IsSha256Hex(null));
             Assert.IsFalse(BoatInteriorSidecarReader.IsSha256Hex(""));
+        }
+
+        [Test]
+        public void AHingedDoorDeclaresItselfByShapeWithNoMechanismField()
+        {
+            // The five hinged hulls carry hinge_axis + swing and NO mechanism key — that is the kit's
+            // convention, not an omission, and demanding the field refused all five.
+            string json = Sidecar().Replace(
+                "    \"mechanism\": \"sliding\",\n" +
+                "    \"slide\": { \"travel_m\": 0.8, \"keep_clear\": [[-0.4, 0.47], [1.26, 0.47], [1.26, 0.32], [-0.4, 0.32]] },\n",
+                "    \"hinge_axis\": { \"x\": 0.4, \"y\": 0.47, \"vertical\": true },\n" +
+                "    \"swing\": { \"outward\": true, \"open_deg\": 110, \"keep_clear\": [[-0.4, 0.47], [1.26, 0.47], [1.26, 0.32], [-0.4, 0.32]] },\n");
+            BoatInteriorRead read = Read(json);
+
+            Assert.IsTrue(read.Ok, string.Join(" | ", read.Errors));
+            Assert.AreEqual(BoatInteriorDoorMechanism.Hinged, read.Door.Mechanism);
+            Assert.AreEqual(4, read.Door.KeepClear.Length, "a hinge's keep_clear is the swept arc, in `swing`");
+        }
+
+        [Test]
+        public void ADoorWhoseShapeDoesNotSettleItIsRefused()
+        {
+            // Neither block, no mechanism: the file does not state how this door behaves.
+            string json = Sidecar().Replace(
+                "    \"mechanism\": \"sliding\",\n" +
+                "    \"slide\": { \"travel_m\": 0.8, \"keep_clear\": [[-0.4, 0.47], [1.26, 0.47], [1.26, 0.32], [-0.4, 0.32]] },\n",
+                "");
+            BoatInteriorRead read = Read(json);
+
+            Assert.IsFalse(read.Ok);
+            Assert.IsTrue(read.Errors.Any(e => e.Contains("does not settle it")), string.Join(" | ", read.Errors));
+        }
+
+        [Test]
+        public void ADoorCarryingBothBlocksIsRefusedRatherThanPreferringOne()
+        {
+            string json = Sidecar().Replace("    \"mechanism\": \"sliding\",\n",
+                "    \"swing\": { \"open_deg\": 110 },\n");
+            BoatInteriorRead read = Read(json);
+
+            Assert.IsFalse(read.Ok);
+            Assert.IsTrue(read.Errors.Any(e => e.Contains("does not settle it")), string.Join(" | ", read.Errors));
         }
 
         // ---- refusal 3: unknown sections ---------------------------------------------------------------

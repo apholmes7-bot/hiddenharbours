@@ -15,9 +15,11 @@ namespace HiddenHarbours.Tests.RigBaking
     /// fields, never computed from a name), and what a <see cref="BoatInteriorDef"/> guarantees to a
     /// consumer that has one.
     ///
-    /// <para>It also reads the two CLEARED sidecars off disk end to end. That is the only test here
-    /// that touches the kit, and it is worth it: the synthetic fixtures prove the reader's rules, and
-    /// this proves the rules admit the real files the intake cleared.</para>
+    /// <para>It also reads representative CLEARED sidecars off disk end to end, and asserts the kit's
+    /// pin contract across all twenty-seven. Those are the only tests here that touch the kit, and they
+    /// are worth it: the synthetic fixtures prove the reader's rules, and these prove the rules admit
+    /// the real files the intake cleared — which is where a rule that is subtly wrong about a real
+    /// convention shows up.</para>
     /// </summary>
     public class BoatInteriorDefShapeTests
     {
