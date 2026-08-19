@@ -95,7 +95,8 @@
       "baseline_lf_sha256": "3e82a11e9677126cc50347f8322c90bbae53bd2c006e89cfe73e36aca9374552",
       "main_lf_sha256": "3e82a11e9677126cc50347f8322c90bbae53bd2c006e89cfe73e36aca9374552",
       "drift": "none possible - one version across the entire history",
-      "evidence": "The gameplay sidecar's _supersedes points at the kit's OWN new rig, so the stamp says nothing. Discovery settles it anyway: one distinct blob across all refs. The bundled revision removes the deckhouse front wall face and its painted-on 'deck door' frontPanel and replaces them with published DOOR geometry - the additive revision the manifest claims. Axis A refuses on the phantom pin."
+      "evidence": "The gameplay sidecar's _supersedes points at the kit's OWN new rig, so the stamp says nothing. Discovery settles it anyway: one distinct blob across all refs. The bundled revision removes the deckhouse front wall face and its painted-on 'deck door' frontPanel and replaces them with published DOOR geometry - the additive revision the manifest claims. Axis A refuses on the phantom pin.",
+      "upstream_ask": "Re-stamp derivedFromRigSha256 on this hull's interior sidecar from the boatInteriorRig.js that actually shipped (3297674f\u2026), or ship the renderer the sidecar names (560aa92e\u2026) so the pin can be verified against something. Clerical \u2014 Axis B is already clean for this hull, and no re-measure is wanted."
     },
     {
       "hull_stem": "sternTrawlerIsoRig",
@@ -106,7 +107,8 @@
       "baseline_lf_sha256": "5bd2b3d474add41b94b4483df68d64a89048a6390a4f80eb8751b98c4499ed9b",
       "main_lf_sha256": "5bd2b3d474add41b94b4483df68d64a89048a6390a4f80eb8751b98c4499ed9b",
       "drift": "none possible - one version across the entire history",
-      "evidence": "One distinct blob across all refs. Bundled revision swaps the aft wall face + painted backPanel door for real DOOR geometry. Axis A refuses on the phantom pin."
+      "evidence": "One distinct blob across all refs. Bundled revision swaps the aft wall face + painted backPanel door for real DOOR geometry. Axis A refuses on the phantom pin.",
+      "upstream_ask": "Re-stamp derivedFromRigSha256 on this hull's interior sidecar from the boatInteriorRig.js that actually shipped (3297674f\u2026), or ship the renderer the sidecar names (560aa92e\u2026) so the pin can be verified against something. Clerical \u2014 Axis B is already clean for this hull, and no re-measure is wanted."
     },
     {
       "hull_stem": "sternTrawlerMk2IsoRig",
@@ -117,7 +119,8 @@
       "baseline_lf_sha256": "4656fd3d5ef1ccc491e715847121c842a83657d75e4f60205198d27596ce3057",
       "main_lf_sha256": "4656fd3d5ef1ccc491e715847121c842a83657d75e4f60205198d27596ce3057",
       "drift": "none possible - one version across the entire history",
-      "evidence": "One distinct blob across all refs. Same additive door revision as the mk1. Axis A refuses on the phantom pin."
+      "evidence": "One distinct blob across all refs. Same additive door revision as the mk1. Axis A refuses on the phantom pin.",
+      "upstream_ask": "Re-stamp derivedFromRigSha256 on this hull's interior sidecar from the boatInteriorRig.js that actually shipped (3297674f\u2026), or ship the renderer the sidecar names (560aa92e\u2026) so the pin can be verified against something. Clerical \u2014 Axis B is already clean for this hull, and no re-measure is wanted."
     },
     {
       "hull_stem": "coastalPacketIsoRig",
@@ -128,7 +131,8 @@
       "baseline_lf_sha256": "8cd1c053d13f1682c2b2914a51370eefe8ca0ea4dcdd84e45c4bdac7a21b191b",
       "main_lf_sha256": "8cd1c053d13f1682c2b2914a51370eefe8ca0ea4dcdd84e45c4bdac7a21b191b",
       "drift": "none possible - one version across the entire history",
-      "evidence": "The sidecar carries no provenance stamp at all, so discovery is the only route: one distinct blob across all refs, which is main's current. The bundled revision removes the HOUSE level-1 front face and its painted 'deck door at the house front' and publishes real DOOR geometry. Axis A refuses on the phantom pin."
+      "evidence": "The sidecar carries no provenance stamp at all, so discovery is the only route: one distinct blob across all refs, which is main's current. The bundled revision removes the HOUSE level-1 front face and its painted 'deck door at the house front' and publishes real DOOR geometry. Axis A refuses on the phantom pin.",
+      "upstream_ask": "Re-stamp derivedFromRigSha256 on this hull's interior sidecar from the boatInteriorRig.js that actually shipped (3297674f\u2026), or ship the renderer the sidecar names (560aa92e\u2026) so the pin can be verified against something. Clerical \u2014 Axis B is already clean for this hull, and no re-measure is wanted."
     },
     {
       "hull_stem": "tankerIsoRig",
@@ -140,7 +144,8 @@
       "main_lf_sha256": "deec4594ede7fd75b47e5eb1888bba038b61d18044daef74f43f4dcedc85ec3c",
       "drift": "none possible - one version across the entire history",
       "evidence": "No provenance stamp; discovery gives one distinct blob across all refs. The bundled revision replaces the poop aft wall face, its painted aft door and four painted port lights with published DOOR geometry. Axis A refuses on the phantom pin. NOTE: this hull works at 16 px/m where the rest of the fleet is 32 - two pixel grids in one kit, never to be conflated.",
-      "pixels_per_metre": 16
+      "pixels_per_metre": 16,
+      "upstream_ask": "Re-stamp derivedFromRigSha256 on this hull's interior sidecar from the boatInteriorRig.js that actually shipped (3297674f\u2026), or ship the renderer the sidecar names (560aa92e\u2026) so the pin can be verified against something. Clerical \u2014 Axis B is already clean for this hull, and no re-measure is wanted."
     }
   ],
   "_corrections": [

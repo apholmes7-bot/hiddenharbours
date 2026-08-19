@@ -19,7 +19,9 @@ namespace HiddenHarbours.Tools.RigBaking
     /// <item><b>S0.</b> The hull's row in <c>docs/art/rigs/boat-interiors-intake/s0-verdicts.json</c>
     /// must say CLEAN. Absent means UNKNOWN means refused.</item>
     /// <item><b>The interior renderer's SHA</b> must match the <c>boatInteriorRig.js</c> that shipped.</item>
-    /// <item><b>The exterior loft's SHA</b> must match the hull rig the sidecar names.</item>
+    /// <item><b>The exterior loft's SHA</b> must match the hull rig the sidecar names — which is the
+    /// REVISED rig bundled in the kit's <c>hull-rigs/</c>, never the repository's copy. See
+    /// <see cref="ReadHullRig"/>: confusing the two refuses every sidecar in the drop.</item>
     /// <item><b>Every section must be understood.</b> A key this builder would drop stops the hull.</item>
     /// </list>
     /// Gates 2–4 live in <see cref="BoatInteriorSidecarReader"/>, which is pure and tested without an
@@ -185,6 +187,7 @@ namespace HiddenHarbours.Tools.RigBaking
                        $"{def.Anchors.Length} anchor(s), {def.Routes.Length} route(s), " +
                        $"{def.PixelsPerMetre} px/m)\n");
             foreach (string n in read.Notes) log.Append($"      note: {n}\n");
+            ReportRigDivergence(repo, read.HullRigStem, hullRigBytes, log);
 
             ReportMerge(repo, resolved.HullFileStem, json, log);
             return true;
@@ -283,8 +286,24 @@ namespace HiddenHarbours.Tools.RigBaking
             return catalogue;
         }
 
-        /// <summary>The exterior rig an interior sidecar names, as bytes; null when it is not on disk
-        /// (which the reader turns into the STALE HULL RIG refusal).</summary>
+        /// <summary>
+        /// The exterior rig an interior sidecar names, as bytes; null when it is not on disk (which the
+        /// reader turns into a hull-rig refusal).
+        ///
+        /// <para><b>This reads the rig from the KIT, not from <c>docs/art/rigs/</c>, and the distinction
+        /// is the whole point.</b> Every sidecar's <c>hullRigSha256</c> pins the REVISED rig shipped
+        /// beside it in <c>hull-rigs/</c> — the one that publishes the loft the rooms were measured
+        /// from. None of them pins the repository's copy, and none ever could: the repository's copy is
+        /// by definition the version *before* the drop added the door and the loft. Hashing
+        /// <c>docs/art/rigs/</c> here would therefore refuse all twenty-seven sidecars, including the
+        /// ones that are perfectly consistent — which is exactly what it did until CI caught it.</para>
+        ///
+        /// <para>So this arm asks the question it can actually answer: <b>does this sidecar describe the
+        /// rig that shipped with it?</b> Whether the REPOSITORY has since diverged from that rig is a
+        /// different question, it is Axis B of the S0 adjudication, and it is already answered — per
+        /// hull, with evidence — in the committed ledger. Conflating the two is what produced a wrong
+        /// verdict for the cape.</para>
+        /// </summary>
         static byte[] ReadHullRig(string repo, string interiorJson, out string repoRelative)
         {
             repoRelative = "";
@@ -295,13 +314,47 @@ namespace HiddenHarbours.Tools.RigBaking
                 if (pin == null || pin.Count != 1) return null;
                 foreach (var kv in pin)
                 {
-                    repoRelative = $"{RigFolder}/{kv.Key}.js";
-                    string p = Path.Combine(repo, RigFolder, kv.Key + ".js");
+                    repoRelative = $"{KitFolder}/hull-rigs/{kv.Key}.js";
+                    string p = Path.Combine(repo, KitFolder, "hull-rigs", kv.Key + ".js");
                     return File.Exists(p) ? File.ReadAllBytes(p) : null;
                 }
             }
             catch (Exception) { /* the reader reports an unparseable sidecar properly */ }
             return null;
+        }
+
+        /// <summary>
+        /// Say whether the repository's copy of this hull's rig differs from the bundled one, and by how
+        /// much. Reported on every run, never a refusal: for most hulls it differs precisely because the
+        /// bundled revision ADDS the door and the published loft, which is the drop's entire purpose.
+        ///
+        /// <para>It is reported because the difference is the thing that decides whether a bundled rig
+        /// may ever be copied over <c>docs/art/rigs/</c> — and because a hull where the two have
+        /// diverged for some OTHER reason is the cape's situation, which cost a wrong verdict to find by
+        /// hand. Printing it every run means the next one is noticed by reading the log.</para>
+        /// </summary>
+        static void ReportRigDivergence(string repo, string hullRigStem, byte[] bundled, StringBuilder log)
+        {
+            if (bundled == null || string.IsNullOrEmpty(hullRigStem)) return;
+            string mainPath = Path.Combine(repo, RigFolder, hullRigStem + ".js");
+            if (!File.Exists(mainPath))
+            {
+                log.Append($"      rig: {RigFolder}/{hullRigStem}.js is not in the repository — the " +
+                           "bundled rig has no counterpart to diverge from.\n");
+                return;
+            }
+
+            byte[] inRepo = File.ReadAllBytes(mainPath);
+            if (DeckSidecarReader.MatchRigHash(inRepo, DeckSidecarReader.Sha256Hex(bundled), out string _)
+                != RigHashMatch.None)
+            {
+                log.Append($"      rig: the repository's {hullRigStem}.js is IDENTICAL to the bundled one.\n");
+                return;
+            }
+            log.Append($"      rig: the repository's {hullRigStem}.js DIFFERS from the bundled one " +
+                       $"({inRepo.Length} B vs {bundled.Length} B). Expected where the revision adds the " +
+                       "door and the published loft — but see the S0 ledger before anything copies the " +
+                       "bundled file over the repository's.\n");
         }
 
         /// <summary>The sidecar's <c>hull_stem</c> without a full parse — gate 1 runs before the reader

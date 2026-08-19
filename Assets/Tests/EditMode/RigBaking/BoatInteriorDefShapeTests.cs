@@ -213,8 +213,14 @@ namespace HiddenHarbours.Tests.RigBaking
             Assert.IsTrue(File.Exists(sidecarPath), $"cleared sidecar missing: {sidecarPath}");
 
             byte[] interiorRig = File.ReadAllBytes(Path.Combine(kit, "boatInteriorRig.js"));
+
+            // The BUNDLED rig, not the repository's. Every sidecar's hullRigSha256 pins the revised rig
+            // shipped beside it — the one publishing the loft it measured — and none of them pins
+            // docs/art/rigs/, which is by definition the version before the drop added the door and the
+            // loft. Feeding the repository's copy here is what reds this fixture, and it reds it with the
+            // same message the builder would have printed for all 27 sidecars.
             byte[] hullRig = File.ReadAllBytes(
-                Path.Combine(RepoRoot, "docs/art/rigs", "sportFisherIsoRig2.js"));
+                Path.Combine(kit, "hull-rigs", "sportFisherIsoRig2.js"));
 
             BoatInteriorRead read = BoatInteriorSidecarReader.Read(
                 File.ReadAllText(sidecarPath), $"{KitFolder}/{stem}.interior.json", interiorRig, hullRig);
@@ -263,6 +269,62 @@ namespace HiddenHarbours.Tests.RigBaking
                     DeckSidecarJson.Member(root, "derivedFromRigSha256"));
                 Assert.AreEqual(shipped, pinned, $"{stem} does not pin the renderer that shipped");
             }
+        }
+
+        [Test]
+        public void EverySidecarPinsTheBUNDLEDHullRigAndNotTheRepositorysCopy()
+        {
+            // The regression this exists for: the builder originally hashed docs/art/rigs/<stem>.js
+            // against hullRigSha256 and would have refused ALL 27 sidecars — including the two clean
+            // ones — building nothing. The pin names the REVISED rig shipped in the kit's hull-rigs/,
+            // which is the only file that can carry the loft the rooms were measured from. The
+            // repository's copy is by definition the version before the drop added it.
+            string kit = Path.Combine(RepoRoot, KitFolder);
+            string[] sidecars = Directory.GetFiles(kit, "*.interior.json", SearchOption.AllDirectories);
+            Assert.IsNotEmpty(sidecars, "no interior sidecars found — the kit moved");
+
+            int checkedCount = 0;
+            foreach (string path in sidecars)
+            {
+                object root = DeckSidecarJson.Parse(File.ReadAllText(path));
+                var pin = DeckSidecarJson.AsObject(DeckSidecarJson.Member(root, "hullRigSha256"));
+                Assert.IsNotNull(pin, $"{Path.GetFileName(path)} has no hullRigSha256");
+                Assert.AreEqual(1, pin.Count, $"{Path.GetFileName(path)} pins more than one loft");
+
+                foreach (var kv in pin)
+                {
+                    string bundled = Path.Combine(kit, "hull-rigs", kv.Key + ".js");
+                    Assert.IsTrue(File.Exists(bundled),
+                                  $"{Path.GetFileName(path)} names a rig the kit does not ship: {kv.Key}.js");
+
+                    Assert.AreNotEqual(RigHashMatch.None,
+                        DeckSidecarReader.MatchRigHash(File.ReadAllBytes(bundled), kv.Value as string, out _),
+                        $"{Path.GetFileName(path)} does not describe the {kv.Key}.js shipped beside it");
+                    checkedCount++;
+                }
+            }
+            Assert.AreEqual(27, checkedCount, "the kit ships 27 interior sidecars");
+        }
+
+        [Test]
+        public void TheRepositorysCopyOfAHullRigIsNotWhatTheSidecarsPin()
+        {
+            // The other half of the same contract, asserted from the failing side so the distinction
+            // cannot quietly collapse back: main's sportFisherIsoRig2.js must NOT satisfy the pin.
+            // If this ever starts passing, the repository has adopted a bundled rig and the builder's
+            // two hash arms have become the same question.
+            string kit = Path.Combine(RepoRoot, KitFolder);
+            object root = DeckSidecarJson.Parse(
+                File.ReadAllText(Path.Combine(kit, "sportFisherIsoRig2.convertible.interior.json")));
+            string pinned = null;
+            foreach (var kv in DeckSidecarJson.AsObject(DeckSidecarJson.Member(root, "hullRigSha256")))
+                pinned = kv.Value as string;
+
+            byte[] inRepo = File.ReadAllBytes(Path.Combine(RepoRoot, "docs/art/rigs/sportFisherIsoRig2.js"));
+            Assert.AreEqual(RigHashMatch.None,
+                DeckSidecarReader.MatchRigHash(inRepo, pinned, out _),
+                "the repository's rig satisfied a pin that names the bundled one — if the merge landed, " +
+                "update this test deliberately rather than letting the two arms merge by accident");
         }
 
         static byte[] NormaliseLf(byte[] bytes)

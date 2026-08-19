@@ -59,12 +59,15 @@ namespace HiddenHarbours.Tools.RigBaking
     /// cannot check against the renderer that generated it is a sidecar you cannot trust. Twenty-five of
     /// the drop's twenty-seven pin a renderer that is in neither the kit nor the repository's history,
     /// so this arm is not hypothetical — it is most of the drop.</item>
-    /// <item><b>An absent or mismatched exterior hull SHA.</b> Same law, other axis: rooms measured
-    /// against a loft that has moved are rooms in the wrong place.</item>
+    /// <item><b>An absent or mismatched exterior hull SHA.</b> Same law, other axis — and note WHICH
+    /// rig it checks: the REVISED one bundled beside the sidecar in the kit, the one that publishes the
+    /// loft the rooms were measured from. It asks "does this sidecar describe the rig that shipped with
+    /// it?". Whether the REPOSITORY has since diverged is a separate question, answered per hull in the
+    /// S0 ledger.</item>
     /// <item><b>A hull the S0 adjudication marked refused</b>
-    /// (<c>docs/art/rigs/boat-interiors-intake/s0-verdicts.json</c>). The cape's washboards moved by
-    /// owner ruling after her interior was measured; no def may be built for her until she is
-    /// re-measured.</item>
+    /// (<c>docs/art/rigs/boat-interiors-intake/s0-verdicts.json</c>). The cape is the live example: her
+    /// rooms are sound, but the rig they were measured against and the repository's are two forks that
+    /// never merged, so no def may be built for her until a merged rig lands.</item>
     /// <item><b>An unknown field it would otherwise drop.</b> Silently ignoring a section the drop
     /// thought it was shipping is how a feature goes missing without anyone noticing. Every key this
     /// reader does not understand is named.</item>
@@ -223,9 +226,13 @@ namespace HiddenHarbours.Tools.RigBaking
             if (hullMatch == RigHashMatch.None)
             {
                 read.Errors.Add(
-                    $"STALE HULL RIG: '{read.HullRigStem}.js' hashes to {Short(actualHull)} but these " +
-                    $"rooms were measured against {Short(read.ExpectedHullRigSha)}. The loft moved " +
-                    "since; art-director must re-measure. Not imported.");
+                    $"HULL RIG MISMATCH: the bundled '{read.HullRigStem}.js' hashes to " +
+                    $"{Short(actualHull)} but these rooms were measured against " +
+                    $"{Short(read.ExpectedHullRigSha)}. The sidecar and the rig shipped BESIDE it in the " +
+                    "kit disagree, so the drop is internally inconsistent and this hull's rooms cannot " +
+                    "be trusted against any loft. (Whether the REPOSITORY's copy of this rig has since " +
+                    "diverged is a different question — that is the S0 ledger's Axis B, not this arm.) " +
+                    "Not imported.");
                 return false;
             }
             if (hullMatch == RigHashMatch.LineEndingNormalized)
