@@ -80,7 +80,7 @@ def main(argv=None):
             "entities": document["stats"]["entities"],
             "paths": document["stats"]["paths"],
             "rigsPinned": document["stats"]["x-rigsPinned"],
-            "sourceCommit": document["x-provenance"]["sourceCommit"],
+            "sceneLastBuiltCommit": document["x-provenance"]["sceneLastBuiltCommit"],
         })
         written.append((filename, text))
 

@@ -1,5 +1,11 @@
 """What vintage of the world a package is a picture of.
 
+Nothing here is keyed to ``HEAD``. A package pinned to whatever commit happened to be checked
+out could never be self-consistent — committing it moves ``HEAD`` and invalidates it — so every
+field is a function of the **inputs**: the commit the scene was last banked at, the scene file's
+own hash, and the newest builder commit that has landed since. Those move when the answer moves
+and at no other time, which is what lets ``--check`` mean something.
+
 The committed ``.unity`` is a **banked build**, not hand-authored: the builders rebuild from an
 empty scene, so a scene file is only ever as current as the last time somebody ran the builder
 and committed the result. That gap is the single most decision-relevant fact about an export,
@@ -33,7 +39,6 @@ def _git(repo_root, *args):
 
 def collect(repo, region_name, scene_rel, height_map):
     root = repo.root
-    head = _git(root, "rev-parse", "HEAD")
     scene_commit = _git(root, "log", "-1", "--format=%H", "--", scene_rel)
     scene_date = _git(root, "log", "-1", "--format=%ad", "--date=short", "--", scene_rel)
     scene_subject = _git(root, "log", "-1", "--format=%s", "--", scene_rel)
@@ -49,8 +54,13 @@ def collect(repo, region_name, scene_rel, height_map):
         globs = BUILDER_GLOBS.get(region_name, [])
         commits = _git(root, "rev-list", "--count", f"{scene_commit}..HEAD", "--", *globs)
         subjects = _git(root, "log", "--format=%h %s", f"{scene_commit}..HEAD", "--", *globs)
+        # Measured to the newest BUILDER commit, not to HEAD. The number only changes when the
+        # answer changes, so a package does not go stale every time an unrelated commit lands —
+        # and the exporter's own commits cannot invalidate its own output.
+        newest = _git(root, "log", "-1", "--format=%H", f"{scene_commit}..HEAD", "--", *globs)
         drift = {
             "builderCommitsSinceScene": int(commits) if commits and commits.isdigit() else None,
+            "measuredTo": newest or scene_commit,
             "exact": not shallow,
             "builderCommits": subjects.split("\n") if subjects else [],
         }
@@ -60,7 +70,6 @@ def collect(repo, region_name, scene_rel, height_map):
                                "than sceneLastBuiltCommit says. Run `git fetch --unshallow`.")
 
     return {
-        "sourceCommit": head,
         "historyIsComplete": not shallow,
         "sceneFile": scene_rel,
         "sceneFileSha256": _file_sha(os.path.join(root, scene_rel)),

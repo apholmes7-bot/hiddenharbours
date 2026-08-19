@@ -7902,7 +7902,6 @@
     "x-note": "counts of records in this document. Not a checksum of anything painted (review §5 Q1: stats.tiles was mistaken for one)."
   },
   "x-provenance": {
-    "sourceCommit": "be756697104559b5bcdd0428ae75ffc5c4c3e6b5",
     "historyIsComplete": true,
     "sceneFile": "Assets/_Project/Scenes/NineMileCreek.unity",
     "sceneFileSha256": "26a2db1dd58f4ee77d072264eb03c86af53e0894068cd483d342f6641b06f35d",
@@ -7912,6 +7911,7 @@
     "sceneWorkingTreeDirty": false,
     "builderDrift": {
       "builderCommitsSinceScene": 17,
+      "measuredTo": "ff4a134f0dd28730f39c7f726a7028e28fbad2a7",
       "exact": true,
       "builderCommits": [
         "ff4a134f feat(world): the bullpen keeps its water — a meandering channel, derived from the boat that needs it (#583)",

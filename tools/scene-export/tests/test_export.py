@@ -200,6 +200,7 @@ class PackageTests(unittest.TestCase):
         for document in self.documents.values():
             drift = document["x-provenance"]["builderDrift"]
             self.assertIsNotNone(document["x-provenance"]["sceneLastBuiltCommit"])
+            self.assertIsNotNone(drift["measuredTo"])
             self.assertIsNotNone(drift["builderCommitsSinceScene"])
             # A shallow clone can only give a floor; the package must say which it gave.
             self.assertEqual(drift["exact"], document["x-provenance"]["historyIsComplete"])
@@ -227,6 +228,16 @@ class DeterminismTests(unittest.TestCase):
         """``--check`` is the gate: a stale package in the repo fails here, not in the editor."""
         self.assertEqual(hh_scene_export.main(["--check"]), 0,
                          "tools/scene-export/packages is stale — re-run the exporter and commit")
+
+    def test_nothing_in_a_package_is_keyed_to_the_checked_out_commit(self):
+        """Otherwise committing a package invalidates it, and --check can never pass."""
+        repo = Repo(REPO)
+        head = subprocess.run(["git", "rev-parse", "HEAD"], cwd=REPO,
+                              capture_output=True, text=True).stdout.strip()
+        self.assertTrue(head)
+        for name, scene, height in hh_scene_export.REGIONS:
+            text = package.dumps(hh_scene_export.export_region(repo, name, scene, height))
+            self.assertNotIn(head, text, f"{name} pins the checked-out commit")
 
     def test_the_output_is_valid_json(self):
         repo = Repo(REPO)

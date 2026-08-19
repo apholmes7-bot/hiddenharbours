@@ -27714,7 +27714,6 @@
     "x-note": "counts of records in this document. Not a checksum of anything painted (review §5 Q1: stats.tiles was mistaken for one)."
   },
   "x-provenance": {
-    "sourceCommit": "be756697104559b5bcdd0428ae75ffc5c4c3e6b5",
     "historyIsComplete": true,
     "sceneFile": "Assets/_Project/Scenes/StPeters.unity",
     "sceneFileSha256": "0a6516c6dc65f896de6d1e77b4aae40e759365b79a03a5e002c968136b4e660a",
@@ -27724,6 +27723,7 @@
     "sceneWorkingTreeDirty": false,
     "builderDrift": {
       "builderCommitsSinceScene": 18,
+      "measuredTo": "38fdb3d7cca0302339edf4ae4b86973c9e78ea35",
       "exact": true,
       "builderCommits": [
         "38fdb3d7 feat(save): you wake where you slept — region, storey and spot, because a position alone names the wrong room (#580)",
