@@ -58,7 +58,7 @@
       "maxElevation": 6.0,
       "texture": "Assets/_Project/Data/Terrain/StPetersSeabed_HeightTex.png",
       "textureBytesPresent": false,
-      "textureLfsOidSha256": "6e0bee1438ee77b93d47d5954b09765033ac0d14cf5a1f43d9b36092faa9bb7e"
+      "textureLfsOidSha256": "b0f629f3d5fcc9775de9c5407dad80094fcf1edad2d2e7761fbfd59d9a94debf"
     }
   },
   "paths": [
@@ -27722,10 +27722,12 @@
     "sceneLastBuiltSubject": "chore(scenes): bank the owner's two builds — St Peters learns its day, the creek opens its doors (#518)",
     "sceneWorkingTreeDirty": false,
     "builderDrift": {
-      "builderCommitsSinceScene": 18,
-      "measuredTo": "38fdb3d7cca0302339edf4ae4b86973c9e78ea35",
+      "builderCommitsSinceScene": 20,
+      "measuredTo": "f020a8a19d746ddf37d66bf13af3411062fbff5f",
       "exact": true,
       "builderCommits": [
+        "f020a8a1 feat(world): the game opens on an arrival — a skipper brings you in, ties up, and points you up the path (#584)",
+        "a136655f feat(world): the east berth keeps its water — a dredged door, and the ladder moves to the reef (#582)",
         "38fdb3d7 feat(save): you wake where you slept — region, storey and spot, because a position alone names the wrong room (#580)",
         "5ed69a36 feat(world): Ginny's cottage gains an upstairs — two bedrooms, and the player's bed keeps the day (#574)",
         "dda6eff0 feat(world): the channels get their marks — buoyed off the painted seabed, and both harbours turn out to dry (#575)",
@@ -27754,7 +27756,7 @@
       "maxElevation": 6.0,
       "texture": "Assets/_Project/Data/Terrain/StPetersSeabed_HeightTex.png",
       "textureBytesPresent": false,
-      "textureLfsOidSha256": "6e0bee1438ee77b93d47d5954b09765033ac0d14cf5a1f43d9b36092faa9bb7e"
+      "textureLfsOidSha256": "b0f629f3d5fcc9775de9c5407dad80094fcf1edad2d2e7761fbfd59d9a94debf"
     },
     "readFrom": {
       "regionFrame": "Assets/_Project/Data/Regions/*.asset (source of truth)",
