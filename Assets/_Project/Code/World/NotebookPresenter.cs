@@ -305,8 +305,18 @@ namespace HiddenHarbours.World
 
             _root.SetActive(true);
 
+            // ⚠️ Detached AND deactivated before Destroy, which the teardown sites elsewhere do not
+            // need to do. Destroy is deferred to the end of the frame, and this method REBUILDS in
+            // place — so the old spread would still be parented and drawing while the new one was
+            // added under it, and a page turn would show both leaves at once for a frame. Taking them
+            // out of the hierarchy now makes the swap atomic; the deferred Destroy still collects them.
             for (int i = _bookRect.childCount - 1; i >= 0; i--)
-                Destroy(_bookRect.GetChild(i).gameObject);
+            {
+                GameObject child = _bookRect.GetChild(i).gameObject;
+                child.transform.SetParent(null, false);
+                child.SetActive(false);
+                Destroy(child);
+            }
 
             int cols = Fit.Cols, lines = Fit.Lines;
             _bookRect.sizeDelta = new Vector2(NotebookKit.SpreadWidthFor(cols), NotebookKit.SpreadHeightFor(lines));
