@@ -67,6 +67,17 @@ namespace HiddenHarbours.Player
         [Tooltip("Move-speed multiplier in the slow-swim band (0..1). Fallback for _config.SwimSlowFactor.")]
         [SerializeField, Range(0f, 1f)] private float _swimSlowFactor = 0.25f;
 
+        /// <summary>The RESOLVED wade threshold (m) this walker is actually using — the shared
+        /// <see cref="GameConfig"/>'s value once <see cref="Awake"/> has read it, else the serialized
+        /// fallback. Exposed so anything that must agree with the walk model reads the SAME number rather
+        /// than resolving GameConfig a second time: <see cref="ControlSwitcher"/> asks it before setting a
+        /// driver down, and a second resolution is a second place for the owner's tuning to be missed.</summary>
+        public float WadeDepth => _wadeDepth;
+
+        /// <summary>The RESOLVED boat-only threshold (m) this walker is using — see
+        /// <see cref="WadeDepth"/> for why it is read from here rather than from the config again.</summary>
+        public float SwimLimit => _swimLimit;
+
         [Tooltip("Seconds per animation frame (~230 ms — a gentle, readable walk).")]
         [SerializeField] private float _frameSeconds = 0.23f;
 

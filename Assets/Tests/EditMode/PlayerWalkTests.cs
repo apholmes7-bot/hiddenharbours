@@ -190,6 +190,54 @@ namespace HiddenHarbours.Tests.EditMode
                 "on foot the deep band is soft-walled → it reads as Swim (get to shore), never a Deep state");
         }
 
+        /// <summary>
+        /// ⭐ <b>The one law about where a person may be: everything but the boat-only band.</b> Named in
+        /// Core so the walk model's soft wall and the point a driver is set down cannot be tuned apart —
+        /// before this, "may a person be here" was a <c>&gt; swimLimit</c> spelled out at each call site,
+        /// and the drive-mode exit simply never asked.
+        /// </summary>
+        [Test]
+        public void OnFootTraversable_AdmitsEveryBandButBoatOnlyWater()
+        {
+            Assert.IsTrue(TidalExposure.IsOnFootTraversable(DepthBand.Dry));
+            Assert.IsTrue(TidalExposure.IsOnFootTraversable(DepthBand.Wade));
+            Assert.IsTrue(TidalExposure.IsOnFootTraversable(DepthBand.Swim),
+                "the swim band is the ESCAPE VALVE — admitted deliberately. The model answers a bad place " +
+                "to be with the crawl speed, not with a refusal");
+            Assert.IsFalse(TidalExposure.IsOnFootTraversable(DepthBand.Deep),
+                "boat-only water — the owner's hard rule (water travel is boats only)");
+        }
+
+        /// <summary>
+        /// ⭐ <b>SABOTAGE ARM — the new predicate must be the SAME law the soft wall already enforces</b>,
+        /// not a second opinion that happens to agree today. Driven through
+        /// <see cref="PlayerWalkController.ApplyWaterEdge"/> at a depth sampled from each band: wherever the
+        /// wall lets you step in, the predicate admits you; where it walls you out, it refuses.
+        /// </summary>
+        [Test]
+        public void OnFootTraversable_AgreesWithTheSoftWallItWasNamedFrom()
+        {
+            // A depth squarely inside each band, plus both boundaries (inclusive on the shallow side).
+            float[] depths = { -1f, 0f, 0.01f, Wade * 0.5f, Wade, Wade + 0.01f, Swim, Swim + 0.01f, 99f };
+
+            foreach (float depth in depths)
+            {
+                DepthBand band = TidalExposure.BandForDepth(depth, Wade, Swim);
+
+                // The wall's own verdict: step from DRY ground toward a probe at this depth. Blocked
+                // means the model considers that water no place for a person on foot.
+                Vector2 moved = PlayerWalkController.ApplyWaterEdge(
+                    new Vector2(1f, 0f), Vector2.zero,
+                    p => p.x > 0.5f ? depth : -1f,   // dry underfoot, `depth` a step ahead
+                    1f, Wade, Swim, WadeF, SwimF);
+
+                bool wallAdmits = moved.x != 0f;
+                Assert.AreEqual(wallAdmits, TidalExposure.IsOnFootTraversable(band),
+                    $"at depth {depth} m (band {band}) the soft wall says admits={wallAdmits} but the " +
+                    "predicate disagrees — they are supposed to be the same law wearing two hats");
+            }
+        }
+
         // ---- sprint: the ONE speed signal that lights the run sheet ---------------------------------
 
         const float WalkSpeed = 3f;      // the controller's walk speed
