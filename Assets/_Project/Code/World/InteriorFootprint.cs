@@ -205,6 +205,33 @@ namespace HiddenHarbours.World
             };
         }
 
+        /// <summary>
+        /// <b>The doorway gap, as a solid quad</b> — exactly the piece <see cref="WallQuads"/> leaves
+        /// out, so a storey with no front door of its own can close it.
+        ///
+        /// <para>An upper storey shares this footprint and therefore shares its walls, but it does NOT
+        /// share the door: there is nothing outside a first-floor doorway but air. Rather than build a
+        /// second, subtly different wall set for the upper level, the upper level adds this ONE quad and
+        /// the house is solid. Deriving it here — from the same <c>gap0</c>/<c>gap1</c> arithmetic that
+        /// cuts the gap — is the point: a plug computed independently would be a second place for the
+        /// door's position to live, and the two would drift the first time a rig moved a door off
+        /// centre.</para>
+        /// </summary>
+        public Vector2[] DoorwayPlugQuad(float thickness, float doorwayWidth)
+        {
+            float hw = WidthMetres * 0.5f, hl = LengthMetres * 0.5f;
+            float t = Mathf.Clamp(thickness, 0.01f, Mathf.Min(hw, hl));
+            float half = Mathf.Clamp(doorwayWidth, 0f, WidthMetres) * 0.5f;
+
+            float gap0 = Mathf.Clamp(DoorAcrossMetres - half, -hw, hw);
+            float gap1 = Mathf.Clamp(DoorAcrossMetres + half, -hw, hw);
+
+            float doorOuter = DoorSign * hl;
+            float doorInner = DoorSign * (hl - t);
+
+            return Quad(gap0, gap1, Mathf.Min(doorInner, doorOuter), Mathf.Max(doorInner, doorOuter));
+        }
+
         /// <summary>A model-frame axis-aligned rectangle as a world-space quad (sheared by the
         /// squash at any non-orthogonal facing).</summary>
         public Vector2[] Quad(float x0, float x1, float y0, float y1) => new[]

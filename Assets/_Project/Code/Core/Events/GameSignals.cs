@@ -361,4 +361,69 @@ namespace HiddenHarbours.Core
         public readonly TrapHaulState State;
         public TrapHaulStateChanged(TrapHaulState state) { State = state; }
     }
+
+    // =====================================================================================
+    //  RESTING — the player's own bed, and the manual save it offers
+    // =====================================================================================
+
+    /// <summary>
+    /// <b>The player has asked to turn in at their own bed</b> — the manual save entry point, and the
+    /// first one the game has had (every write until now was an autosave on suspend/quit, or the
+    /// shell's own).
+    ///
+    /// <para><b>Why a signal and not a call on <see cref="ISaveService"/>.</b> The World lane could
+    /// legally reach <c>GameServices.Save.Save()</c> — it is a Core interface, so rule 4 is satisfied
+    /// either way — but a bed is not a save button. What the owner ruled is a diegetic beat: you walk
+    /// to the bed, you lie down, the day is kept. That beat wants a fade, later an animation
+    /// (<c>Fisher_sleep</c>), and eventually a "slept until morning" clock move — none of which the
+    /// bed should own and none of which belong in the save service either. A signal is the seam those
+    /// arrive on: the bed states the INTENT, and whoever is presenting the game answers it. It also
+    /// means the bed is EditMode-testable with no save service in the scene at all.</para>
+    ///
+    /// <para>Answered by <see cref="RestSaveResponder"/>, which is what actually writes.</para>
+    /// </summary>
+    public readonly struct RestSaveRequested
+    {
+        /// <summary>Where the player is turning in, for the notice ("your bed at Ginny's"). Never null;
+        /// may be empty, which reads as an unnamed bed.</summary>
+        public readonly string Place;
+        public RestSaveRequested(string place) { Place = place ?? ""; }
+    }
+
+    /// <summary>
+    /// <b>The outcome of a save the player ASKED for</b>, so a surface can say so. Raised only for a
+    /// requested save (<see cref="RestSaveRequested"/>) — the silent autosaves on suspend and quit
+    /// stay silent, because a toast nobody asked for during a background is noise.
+    ///
+    /// <para><see cref="Ok"/> false is a real and expected outcome, not only a fault: a save requested
+    /// while the shell is at the title is refused by the service's own write gate. The reason is
+    /// player-facing prose.</para>
+    /// </summary>
+    public readonly struct GameSaved
+    {
+        /// <summary>True if a blob actually reached the disk.</summary>
+        public readonly bool Ok;
+        /// <summary>Player-facing prose for what happened. Never null.</summary>
+        public readonly string Reason;
+        public GameSaved(bool ok, string reason) { Ok = ok; Reason = reason ?? ""; }
+    }
+
+    /// <summary>
+    /// <b>The player has opened a wardrobe.</b> Published by the wardrobe fixture and answered by the
+    /// character-customization lane when it lands; until then nothing subscribes and the fixture's own
+    /// <see cref="DevNotice"/> is the whole of the feedback.
+    ///
+    /// <para><b>Why the signal exists before its consumer.</b> The wardrobe is placed and interactable
+    /// in this PR and wired to customization in the next one. Publishing into an empty room is the
+    /// cheapest possible seam between the two — the customization PR subscribes and changes nothing
+    /// here — and it is exactly what <see cref="Interactables"/> does for a region with no fixtures:
+    /// an unanswered signal is a valid state, not a fault.</para>
+    /// </summary>
+    public readonly struct WardrobeRequested
+    {
+        /// <summary>Which wardrobe — the fixture's <see cref="IInteractable.Id"/>, so a later
+        /// consumer can tell the player's own from one in a shop.</summary>
+        public readonly string FixtureId;
+        public WardrobeRequested(string fixtureId) { FixtureId = fixtureId ?? ""; }
+    }
 }
