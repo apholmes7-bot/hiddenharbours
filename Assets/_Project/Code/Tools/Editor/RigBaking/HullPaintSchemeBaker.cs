@@ -41,7 +41,7 @@ namespace HiddenHarbours.Tools.RigBaking
         public const string SchemeFolder = "Assets/_Project/Data/Boats/PaintSchemes";
 
         /// <summary>
-        /// A hull whose rig carries a paint axis. TWENTY-SIX of them now, across TWO different paint
+        /// A hull whose rig carries a paint axis. TWENTY-FIVE of them now, across TWO different paint
         /// APIs — which is the design working harder than it was asked to: the second, third and
         /// fourth hulls cost a line each, and the twenty-one that arrived with the fleet rig pack
         /// cost two <see cref="Painted(LobsterVariant)"/> helpers and no new baker at all.
