@@ -689,6 +689,13 @@ namespace HiddenHarbours.App.Editor
             // constant, so the walk verdict moves her with the park. See NineMileCreekTruckPark.
             NineMileCreekTruckPark.Place();
 
+            // ⭐ THE OTTER, STAGED AT THE BOAT RAMP — the same gap, one machine along: #562 built her
+            // drive⇄swim model and #581 baked her, and she stood nowhere. Places and does NOT draw.
+            // Her site is a PROPOSAL derived from the ramp's own two ends, and the one thing to walk
+            // and judge is written on it: this basin BARES at spring low. See
+            // NineMileCreekOtterLanding and NineMileCreekMainland.OtterLandingPos.
+            NineMileCreekOtterLanding.Place();
+
             // ⭐ THE NAV MARKS — the channels a skipper reads coming home. Places and does NOT decide:
             // every position, colour, size and facing is derived by NavMarkPlan against THIS terrain,
             // the same ElevationAt the boat's depth gate reads, so "paint = sail" (ADR 0014) extends to

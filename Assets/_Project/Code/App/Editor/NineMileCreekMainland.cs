@@ -593,6 +593,104 @@ namespace HiddenHarbours.App.Editor
         /// <summary>How wide the ramp is — a hull's beam plus her cradle, either side of the centre line.</summary>
         public const float SlipwayHalfWidthMetres = 4f;
 
+        // -------------------------------------------------------------------------------------------
+        //  THE OTTER'S LANDING — a PROPOSAL, and it wants the owner's walk
+        // -------------------------------------------------------------------------------------------
+
+        /// <summary>
+        /// How far to one side of the boat ramp the amphibian stands. Six metres: off the ramp's own
+        /// centre line so she is not parked across the thing hulls are dragged up, and close enough
+        /// that she reads as staged AT it rather than merely near it.
+        /// </summary>
+        public const float OtterLandingBesideRampMetres = 6f;
+
+        /// <summary>
+        /// ⚠⚠ <b>WHERE THE OTTER LIVES — A PROPOSAL, AND THE OWNER'S WALK DECIDES IT.</b> Nothing
+        /// below is a ruling. She is placed here so she can be found and driven at all; the site itself
+        /// is the first thing to argue with, and moving her is a one-line change to this property.
+        ///
+        /// <para><b>Why the boat ramp.</b> She is the machine that drives into water, so her spot has to
+        /// read as a LAUNCH. The region publishes exactly two structures for getting a hull between land
+        /// and water, and they were both measured against the built terrain (2026-08-19) rather than
+        /// chosen by name:</para>
+        /// <list type="bullet">
+        /// <item>The <see cref="SlipwayHeadPos">boatyard slipway</see> is drawn as a 20 m ramp, but the
+        /// GROUND under it steps from +3.00 m to the −1.60 m shoal within a single metre — a wall, not a
+        /// grade. It is also the yard's working ramp, and an amphibian parked on it is a machine left
+        /// across the boatyard's own door.</item>
+        /// <item>The <see cref="BoatRampHeadPos">boat ramp</see> is a real slope in the terrain: +3.60 m
+        /// at its head falling to the −1.60 m shoal over about six metres. Steep for a slipway, and
+        /// honestly so — the same finding the slipway's own note records — but it is a continuous grade
+        /// into water, which is the thing she needs and the only one the region has.</item>
+        /// </list>
+        ///
+        /// <para><b>Measured at this exact point</b> (<c>NineMileCreekOtterLandingTests</c> re-measures
+        /// all of it against the terrain rather than trusting these numbers):</para>
+        /// <list type="bullet">
+        /// <item><b>Dry at every tide with 1.2 m to spare</b> — ground at +3.44 m against a spring high
+        /// of <see cref="SpringHighWater"/> (2.2 m). She is never found underwater.</item>
+        /// <item><b>Five metres from water she floats in</b> at mean tide, straight down the ramp's own
+        /// axis. Her draft is 0.28 m and her hysteresis 0.06, so she lifts at 0.34 m of depth.</item>
+        /// <item><b>16.7 m from the nearest working site</b> (the shipwright's dory yard), well outside
+        /// the 10 m the wharf's own sites keep from each other, and clear of
+        /// <see cref="IsWorkingSiteInTheWay"/> entirely.</item>
+        /// <item><b>6 m off the ramp's centre line</b> — beside the ramp, not on it.</item>
+        /// </list>
+        ///
+        /// <para><b>⭐ There is water here at EVERY tide, including the lowest one</b> — which was NOT
+        /// what this note first claimed, and the correction is worth keeping. The obvious reading is
+        /// that the basin bares: its bed is <see cref="BasinBedElevation"/> (−1.6 m) against a spring
+        /// low of <see cref="SpringLowWater"/> (−2.2 m), and both harbours drying out is the region's
+        /// ruled character. But her ramp does not run onto the basin shoal. It runs across a GUT — the
+        /// ground falls to −3.67 m about eight metres down her axis before rising to the shoal beyond —
+        /// and that gut still holds <b>1.47 m at spring low</b>. The test asserting the shoal-bares
+        /// story failed the first time it ran, which is the only reason this paragraph is right.</para>
+        ///
+        /// <para>⚠️ <b>THE THING TO WALK AND JUDGE: how NARROW the stepping-off band is.</b> Because
+        /// that gut is close in and steep, the stretch where she is afloat AND the fisher can still
+        /// stand up is about a metre of ramp face, and it moves with the tide. It always exists — that
+        /// is asserted at low, mean and high water — but "drive in, stop, step off" means stopping ON
+        /// the face rather than anywhere out in the water. A metre or two further out at mean tide and
+        /// he is over 2–3 m of gut, where <see cref="HiddenHarbours.Core.TidalExposure"/> refuses the
+        /// exit outright (correctly — it is boat-only water). Whether that reads as precision or as
+        /// fiddliness is a thing to feel with hands on the controls, not to settle here.</para>
+        ///
+        /// <para><b>Derived, never typed.</b> The position is the ramp head plus a quarter-turn off the
+        /// ramp's own axis, on the side away from the dory yard, so moving either end of the ramp moves
+        /// her with it — the discipline <see cref="TruckParkPos"/> established.</para>
+        /// </summary>
+        public static Vector3 OtterLandingPos
+        {
+            get
+            {
+                Vector2 head = BoatRampHeadPos, toe = BoatRampToePos;
+                Vector2 beside = OtterLandingBesideRamp(head, toe);
+                Vector2 p = head + beside * OtterLandingBesideRampMetres;
+                return new Vector3(p.x, p.y, 0f);
+            }
+        }
+
+        /// <summary>The ramp's axis rotated a quarter turn, pointing to the side of it the dory yard is
+        /// NOT on. Separated out so the landing and the heading cannot disagree about which way is
+        /// which.</summary>
+        static Vector2 OtterLandingBesideRamp(Vector2 head, Vector2 toe)
+        {
+            Vector2 down = (toe - head).normalized;
+            return new Vector2(down.y, -down.x);
+        }
+
+        /// <summary>Down the ramp — the way she is pointed, so she reads as staged to launch rather
+        /// than merely parked near water. Derived from the ramp's own axis for the same reason the
+        /// position is.</summary>
+        public static float OtterLandingHeadingDegrees
+        {
+            get
+            {
+                Vector2 down = ((Vector2)BoatRampToePos - (Vector2)BoatRampHeadPos).normalized;
+                return Mathf.Atan2(-down.x, down.y) * Mathf.Rad2Deg;
+            }
+        }
+
         /// <summary>
         /// THE ROCK ARMOUR — the rubble line the photograph shows wherever made ground meets open water.
         /// Two runs, and only two, because those are the only faces of this wharf that are EXPOSED: the
