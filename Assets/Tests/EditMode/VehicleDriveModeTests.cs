@@ -953,6 +953,32 @@ namespace HiddenHarbours.Tests.EditMode
                         "the asset's door y has drifted from the sidecar's INTERACT 'drive' reach_point");
         }
 
+        /// <summary>
+        /// ⭐ <b>She publishes NO open driver's seat, and that is a decision rather than a gap.</b>
+        ///
+        /// <para>Her sidecar has three of them — two buckets and a rear bench — but it files them under
+        /// <c>CAB</c>, "a seated interior, not a walkable room", with a liner, a roof panel and glass. At
+        /// 32 px/m that glass is opaque, so a figure drawn in there is a fisher standing on the roofline
+        /// rather than a driver anyone can see. The Otter's are under <c>COCKPIT</c>, "an open tub … not a
+        /// room", and hers ARE published (<c>AmphibiousVehicleTests</c> pins that side).</para>
+        ///
+        /// <para>So her driver stays hidden, exactly as ADR 0035 shipped, and the whole difference between
+        /// the two machines is one unpublished field. If a future hard-cab machine ever gets a seat filled
+        /// in "for completeness", this is the test that objects.</para>
+        /// </summary>
+        [Test]
+        public void SheShowsNoDriverBecauseHerSeatsAreInsideACab()
+        {
+            const string assetPath = "Assets/_Project/Data/Vehicles/Meshes/Dually3500VehicleMesh.asset";
+            var def = UnityEditor.AssetDatabase.LoadAssetAtPath<VehicleMeshDef>(assetPath);
+            Assert.IsNotNull(def, $"the baked mesh def is missing at {assetPath}");
+
+            Assert.That(def.DriverSeatLocal, Is.EqualTo(Vector3.zero),
+                        "her seat has been filled in. Her cab is enclosed — the seat point is not " +
+                        "missing, it is deliberately not published.");
+            Assert.That(def.ShowsDriver, Is.False);
+        }
+
         /// <summary>Pull <c>INTERACT[id=drive].reach_point</c>'s first two numbers out of the sidecar.
         /// A deliberately small scan rather than a JSON dependency — the same hand-rolled approach
         /// <c>DuallyIsoKitProbeTests</c> takes over this very file.</summary>

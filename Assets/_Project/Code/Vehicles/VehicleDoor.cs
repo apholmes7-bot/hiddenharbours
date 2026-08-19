@@ -124,6 +124,36 @@ namespace HiddenHarbours.Vehicles
         }
 
         /// <inheritdoc/>
+        public bool ShowsDriver
+        {
+            get { VehicleMeshDef m = Mesh; return m != null && m.ShowsDriver; }
+        }
+
+        /// <inheritdoc/>
+        public Vector2 DriverSeatWorldPosition
+        {
+            get
+            {
+                VehicleMeshDef m = Mesh;
+                if (m == null) return transform.position;
+                Vector3 seat = m.DriverSeatLocal;
+                // Through the ROOT, and with the HEIGHT dropped, for the same two reasons the door is:
+                // the root carries her true heading (transform.up is the nose), and the visual child is
+                // stomped back to screen-identity every LateUpdate so a point read off it would not swing
+                // with her at all. The z that goes into TransformPoint is deliberately 0 — the seat's
+                // HEIGHT is not a place on the ground and must never be turned by her heading.
+                Vector3 world = transform.TransformPoint(new Vector3(seat.x, seat.y, 0f));
+                return new Vector2(world.x, world.y);
+            }
+        }
+
+        /// <inheritdoc/>
+        public float DriverSeatHeightMeters
+        {
+            get { VehicleMeshDef m = Mesh; return m != null ? m.DriverSeatLocal.z : 0f; }
+        }
+
+        /// <inheritdoc/>
         public bool IsAlive => this != null;   // MonoBehaviour's Unity-aware ==, which the interface's is not
 
         /// <inheritdoc/>

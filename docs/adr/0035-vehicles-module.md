@@ -105,7 +105,7 @@ quietly.
 
 ## What the mesh path cannot draw, and we are shipping anyway
 
-Two honest limits, both measured, both stated here rather than discovered later.
+Three honest limits, all measured, all stated here rather than discovered later.
 
 **1. Procedural `tex` is dropped entirely.** The rig shades 144 of her 1153 faces through
 *procedural texture closures* — 84 rubber faces carry the tyre tread (`(u+phase) % c`), 58 paint
@@ -128,6 +128,25 @@ that never turn. The rate is `v / (2π·r)` **revolutions** — not `v/r`, which
 
 ⚠️ A related measurement trap, now pinned: `roll:1` ties with `roll:0` **exactly**, so a probe that
 tests the axis at 1 concludes it is dead. Probe at a quarter.
+
+**3. A drawn driver is not occluded by the machine she is sitting in.** The mode shipped with the
+player hidden in every machine, which was right while the only one was a hard cab. An OPEN machine
+draws her driver now (rig 6.5's `drive` clip, placed on the seat her rig publishes — see
+`VehicleMeshDef.DriverSeatLocal` and `PlayerDrivePresenter`), and the figure is Y-sorted in the decor
+band while the vehicle composes at her own whole-object slot beneath it — so the driver draws over
+**all** of the machine, gunwale and rack included, rather than being cut by the parts genuinely in
+front of her. The hull fleet solved the same problem per pixel, against the mesh's own z-buffer
+(`IsoFacetHullRenderer.SetDeckOccupant`, and the vehicle path uses that very renderer), but reaching
+it needs the PLAYER's body renderer to carry the occludable material — a change to the character's
+whole presentation stack, shared with the wardrobe swap and the submersion shader, and not something
+to bolt on beside a pose.
+
+We ship it anyway, and the choice of first machine is why it is affordable: the Otter's cockpit is an
+open tub, her seat sits 0.76 m up in it and her rails top out at 0.86 m, so what should cover the
+driver is a few pixels of near gunwale at some facings — against a driver who was not drawn at all
+before. A hard-cab machine, where the error would be the whole figure, publishes no open seat and is
+untouched. Wiring the occluder is the follow-up, and it is a character-presentation task rather than
+a vehicle one.
 
 ## The articulation split
 

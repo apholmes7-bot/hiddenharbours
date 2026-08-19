@@ -118,6 +118,11 @@ namespace HiddenHarbours.Player
                  "behaviour exactly: the fisher stands square on deck and vanishes at the helm.")]
         [SerializeField] private DeckRiderVisual _deckRider;
 
+        [Tooltip("The DRIVE PRESENTER on the player — what draws the fisher at a machine's wheel. " +
+                 "Auto-resolved off the walk controller's object if left empty. Absent = the old " +
+                 "behaviour exactly: the driver is hidden in every machine, as ADR 0035 shipped.")]
+        [SerializeField] private PlayerDrivePresenter _drivePresenter;
+
         [Header("The boarding MOVE (owner ask 2026-08-06 — you climb aboard, you are not teleported)")]
         [Tooltip("Play the boarding MOVE at all. Off restores the instant reposition exactly (E → you are " +
                  "simply on the deck), which is the A/B for whether the move reads better than the snap, " +
@@ -212,6 +217,19 @@ namespace HiddenHarbours.Player
                 if (_deckRider == null && _playerWalk != null)
                     _deckRider = _playerWalk.GetComponent<DeckRiderVisual>();
                 return _deckRider;
+            }
+        }
+
+        /// <summary>The player's drive presenter — the explicit wired reference, else auto-resolved off the
+        /// walk controller's object, exactly like <see cref="DeckRider"/>. Null on a rig that has none,
+        /// where the driver stays hidden in every machine.</summary>
+        private PlayerDrivePresenter DrivePresenter
+        {
+            get
+            {
+                if (_drivePresenter == null && _playerWalk != null)
+                    _drivePresenter = _playerWalk.GetComponent<PlayerDrivePresenter>();
+                return _drivePresenter;
             }
         }
 
@@ -1569,6 +1587,9 @@ namespace HiddenHarbours.Player
         ///   <item><b>Aboard (helm)</b> — both walk controllers dead, physics off, still parented. The
         ///   figure is now DRAWN at the helm by the deck rider (see below); without one wired it is hidden,
         ///   as it always was.</item>
+        ///   <item><b>Driving</b> — the helm's frozen, un-simulated shape, but riding no boat and parented
+        ///   to nothing. The figure is drawn only on a machine that SHOWS her driver, and the drive
+        ///   presenter is asked rather than told — see the star comment in the body.</item>
         ///   <item><b>In transit (the boarding move)</b> — the fisher is between the wharf and the deck and
         ///   belongs to neither: drawn as the ordinary ashore figure (a rider leans with a deck they are
         ///   not standing on), un-parented so the arc is a plain world path, and with both walk
@@ -1586,13 +1607,35 @@ namespace HiddenHarbours.Player
             bool onDeck = mode == ControlMode.OnDeck;
             // DRIVING is aboard-like in every respect but one: the driver rides a machine, not a hull, and
             // is seated by position rather than by parenting (see the drive block for why a Unity child of
-            // a despawnable vehicle is not survivable). So it takes the frozen, hidden, un-simulated shape
-            // the helm takes, and rides no boat.
+            // a despawnable vehicle is not survivable). So it takes the frozen, un-simulated shape the helm
+            // takes, and rides no boat. Whether she is DRAWN in it is the one question below.
             bool driving = mode == ControlMode.Driving;
 
+            // ⭐ THE DRIVER IS DRAWN ON A MACHINE THAT SHOWS ONE — and hidden in one that does not.
+            //
+            // ADR 0035 hid her in every machine, which was right for the one it was written against: the
+            // Dually's crew cab is a room with a roof panel and glass that is opaque at 32 px/m, so a body
+            // left drawing would be a fisher standing ON the truck's roofline. It is wrong for an open
+            // machine — the Otter's cockpit is "an open tub with two benches, not a room", and her driver
+            // is genuinely on screen sitting in it.
+            //
+            // ⚠️ THE PRESENTER ANSWERS, NOT THIS, and it is asked rather than told for a reason: the
+            // question is not only "does she publish an open seat" (that is the machine's half) but also
+            // "is there ART to draw" — clip sheets are all-or-nothing, and this method has no business
+            // knowing about them. A yes it could not honour would be a fisher drawn STANDING on a truck.
+            // Handing the seat over in the same call is what keeps ONE owner of the renderer's `enabled`
+            // flag: the presenter poses her, this decides whether she is visible, and neither can be
+            // wrong about the other. Every path through this method re-asks — entry, exit, a truck dying
+            // under the driver, a region hop's re-assert — so a null hand-over is also her tear-down.
+            var drive = DrivePresenter;
+            bool driverDrawn = drive != null && drive.SetSeat(driving && SeatAlive ? _seat : null);
+
             // The three things the transit shape actually changes, named once so the rest reads as before:
-            // it is drawn ashore, it moves under nobody's power but the move's, and it rides no boat.
-            bool drawnAshore = onFoot || inTransit;
+            // it is drawn by the ordinary root rule, it moves under nobody's power but the move's, and it
+            // rides no boat. A DRIVER an open machine shows joins the first of those: like a fisher
+            // mid-vault she is drawn on her own renderer rather than as a boat's rider, because she is on
+            // a machine and there is no hull rock for a rider to lean with.
+            bool drawnOnRoot = onFoot || inTransit || driverDrawn;
             bool free = onFoot && !inTransit;
             bool ridesBoat = !onFoot && !driving && !inTransit;
 
@@ -1606,12 +1649,12 @@ namespace HiddenHarbours.Player
             var rider = DeckRider;
             if (rider != null && rider.HasRider)
             {
-                rider.SetMode(drawnAshore ? ControlMode.OnFoot : mode, ridesBoat ? Boat : null);
+                rider.SetMode(drawnOnRoot ? ControlMode.OnFoot : mode, ridesBoat ? Boat : null);
             }
             else
             {
                 var sr = _playerWalk.GetComponent<SpriteRenderer>();
-                if (sr != null) sr.enabled = drawnAshore || onDeck;
+                if (sr != null) sr.enabled = drawnOnRoot || onDeck;
             }
 
             var rb = _playerWalk.GetComponent<Rigidbody2D>();

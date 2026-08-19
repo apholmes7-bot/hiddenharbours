@@ -456,6 +456,23 @@ namespace HiddenHarbours.App.Editor
             // instantaneous rest exactly as it shipped.
             playerGo.AddComponent<PlayerSleepPresenter>();
 
+            // DRIVING (rig 6.5). Draws the fisher at the wheel of a machine that SHOWS her driver — the
+            // Otter's open cockpit does, the Dually's crew cab does not, and the machine's own published
+            // art decides which. Wired with the SAME mount contract the sleep beat's mattress height comes
+            // off, because one number on it (DriveSeatZ, the seat the pose was baked sitting on) is what
+            // places her on a cushion of any other height. No asset, no drive art, or no open seat →
+            // WouldShow answers false, the switcher keeps hiding the driver, and the drive mode is exactly
+            // what ADR 0035 shipped.
+            var drivePresenter = playerGo.AddComponent<PlayerDrivePresenter>();
+            var offDeckMounts = AssetDatabase.LoadAssetAtPath<HiddenHarbours.Core.CharacterOffDeckMountsDef>(
+                CharacterOffDeckMountsBuilder.MountsPath);
+            drivePresenter.ConfigureMounts(offDeckMounts);
+            if (offDeckMounts == null)
+                Debug.LogWarning($"[PersistentCoreBuilder] No off-deck mount contract at " +
+                                 $"'{CharacterOffDeckMountsBuilder.MountsPath}' — the fisher stays hidden " +
+                                 "at every wheel (the pre-6.5 picture). Run Hidden Harbours ▸ Art ▸ " +
+                                 "Import (after a new drop) ▸ Build Off-Deck Mounts.");
+
             // The on-foot CLAM HOLD + STARTING GEAR (St Peters opening). Without these the dig chain is dead:
             // ClamDig writes a dug clam into an IHold (the bucket) and gates on owning gear.shovel — so the
             // player carries a ClamBucket (the hand-held hold) and a StartingGear grant that writes
@@ -604,6 +621,7 @@ namespace HiddenHarbours.App.Editor
             SetRef(switcher, "_boatInput", devBoat);
             SetRef(switcher, "_deckWalk", deckWalk);   // Build 5: board → deck; walk to the helm to drive
             SetRef(switcher, "_deckRider", deckRider); // …and the figure that rides her rock / mans the helm
+            SetRef(switcher, "_drivePresenter", drivePresenter);   // …and the one that sits her at a wheel
             // _dockZone / _disembarkPoint are left for the scene to wire via its RegionAnchor (SetDock on
             // arrival) — a start scene that wants an immediate cove-style dock can SetRef them after Build.
 
