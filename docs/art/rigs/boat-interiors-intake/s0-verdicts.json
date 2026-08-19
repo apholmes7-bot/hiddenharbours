@@ -1,0 +1,143 @@
+{
+  "schema": "hidden-harbours/boat-interior-s0@1",
+  "adjudicated": "2026-08-19",
+  "lane": "art-pipeline intake (cloud; no Unity)",
+  "kit": "docs/art/rigs/boat-interiors-kit",
+  "_method": [
+    "Two INDEPENDENT axes decide whether a hull's interior may become a def.",
+    "AXIS A - interior-rig pin. The sidecar's derivedFromRigSha256 must be the LF sha256 of the",
+    "  boatInteriorRig.js actually shipped in the kit. A pin naming a renderer that is not in the",
+    "  drop cannot be checked against anything, so it is refused (the sidecar-hash law: an",
+    "  unverifiable pin is a refusal, exactly as an absent one is).",
+    "AXIS B - hull baseline. The interior was measured against SOME version of the exterior hull",
+    "  rig. Establish it (the gameplay sidecar's _supersedes where sane, else by hashing every",
+    "  version of that rig in the repo's whole history), then diff main's current rig against it",
+    "  and classify every hunk as loft/house/door geometry or not. Geometry that MOVED is fatal;",
+    "  paint, materials, cues and comments are not.",
+    "A hull needs BOTH axes to pass. All hashes are LF-normalised sha256 (tr -d '\\r' | sha256sum)."
+  ],
+  "interior_rig": {
+    "path": "docs/art/rigs/boat-interiors-kit/boatInteriorRig.js",
+    "lf_sha256": "3297674f4802c366d11d0813a75ca378bc21a698f2e2e4dda55dccd8b0ae28b1",
+    "bytes": 101528,
+    "_note": "The kit README section 1 claims 560aa92e28d27719577ed07efec212ede9b33f58636fe5770836f8f729d260ae for this same file. That sha is not this file, is not the copy inside the delivered zip, and is not any blob in the repository's history. It is a phantom."
+  },
+  "phantom_interior_rig_sha": "560aa92e28d27719577ed07efec212ede9b33f58636fe5770836f8f729d260ae",
+  "hulls": [
+    {
+      "hull_stem": "sportFisherIsoRig2.convertible",
+      "verdict": "CLEAN",
+      "axis_a_interior_pin": "PASS",
+      "axis_b_hull_baseline": "PASS",
+      "baseline_source": "_supersedes",
+      "baseline_lf_sha256": "152eb5f3cf1f4f38fba781161e86320cd7e06f0d0cdc98a82b14d6973e3b4061",
+      "main_lf_sha256": "152eb5f3cf1f4f38fba781161e86320cd7e06f0d0cdc98a82b14d6973e3b4061",
+      "drift": "none - the stamped baseline IS main's current rig",
+      "evidence": "docs/art/rigs/sportFisherIsoRig2.js at origin/main hashes to the _supersedes value exactly. Cut against current main, as the gate report claimed."
+    },
+    {
+      "hull_stem": "sportFisherIsoRig2.skybridge",
+      "verdict": "CLEAN",
+      "axis_a_interior_pin": "PASS",
+      "axis_b_hull_baseline": "PASS",
+      "baseline_source": "_supersedes",
+      "baseline_lf_sha256": "152eb5f3cf1f4f38fba781161e86320cd7e06f0d0cdc98a82b14d6973e3b4061",
+      "main_lf_sha256": "152eb5f3cf1f4f38fba781161e86320cd7e06f0d0cdc98a82b14d6973e3b4061",
+      "drift": "none - the stamped baseline IS main's current rig",
+      "evidence": "Same rig and same stamp as the convertible; both sport-fisher sidecars are the only two in the kit pinned to the shipped interior renderer."
+    },
+    {
+      "hull_stem": "capeIslanderIsoRig",
+      "verdict": "STALE-FATAL",
+      "axis_a_interior_pin": "REFUSED",
+      "axis_b_hull_baseline": "REFUSED",
+      "baseline_source": "_supersedes (verified real)",
+      "baseline_lf_sha256": "47714ce015891dbe38b4bc536412ff42339f5f0b849bce4f1259db174529382c",
+      "main_lf_sha256": "92c3061b69fb5e29f537e2bfd40bbe9b5863f83252452af82c1a97989d0a14ac",
+      "drift": "TWO commits, one of them geometry",
+      "evidence": "Baseline is the blob at 4f048395 (2026-07-19), exactly as the gate report claimed. Since then: be83274b (#247, 2026-07-22) MOVED WASHBOARD GEOMETRY - side decks previously stopped at the house front ('if(station(u0).y > HY0-0.05) continue;') and now run the full sheer to the foredeck, their inboard edge clamped against the HOUSE half-width (Math.max(st.ws-TH-WB, HX+0.02)). That is an owner ruling ('capes washboards go all the way to foredeck'). 1b35453d (#508) is paint only. The kit's own bundled capeIslanderIsoRig.js still carries the PRE-#247 line verbatim at line 195, so the interior was measured against a hull main abandoned - and adopting the bundled rig would silently revert the owner's ruling.",
+      "upstream_ask": "Re-measure the cape interior against main's current capeIslanderIsoRig.js (92c3061b), and re-cut the bundled rig from main rather than from the 4f048395 source."
+    },
+    {
+      "hull_stem": "lobsterBoatIsoRig",
+      "verdict": "REFUSED-PIN",
+      "axis_a_interior_pin": "REFUSED",
+      "axis_b_hull_baseline": "PASS",
+      "baseline_source": "_supersedes (verified real)",
+      "baseline_lf_sha256": "d8bb0caa3f3152ed78daf69e2705989b4092d64a5d8d2711396af1bac4823610",
+      "main_lf_sha256": "5316f053bc6e3e8bbd28411daa93c61407279bf895cf883574f54f465ef0e301",
+      "drift": "ONE commit, paint only",
+      "evidence": "Baseline is the blob at 4f048395, as claimed. Only 4be92de9 (#497, the 12-scheme paint kit) has touched the rig since: +97/-8, entirely PAINTS/paintRamps/matsFor plus one extra parameter on _paint and a longer export list. Geometry, cell, pivot, camera, rock and every deck anchor are untouched, and the default 'gelcoat' scheme reuses the original literal ramps. Axis B is clean. Axis A refuses it: the sidecar pins the phantom interior renderer.",
+      "upstream_ask": "Re-stamp derivedFromRigSha256 from the shipped boatInteriorRig.js (or ship the 560aa92e renderer). Note separately that the bundled lobsterBoatIsoRig.js has no paint kit and must not replace main's."
+    },
+    {
+      "hull_stem": "lobsterBoatVariantsIsoRig",
+      "verdict": "REFUSED-PIN",
+      "axis_a_interior_pin": "REFUSED",
+      "axis_b_hull_baseline": "PASS",
+      "baseline_source": "discovered - main has exactly one version, ever",
+      "baseline_lf_sha256": "ff8414f844f19d3a1ae0cceb30dadb98ea98e06109393eb6419aa1b22048c8a0",
+      "main_lf_sha256": "ff8414f844f19d3a1ae0cceb30dadb98ea98e06109393eb6419aa1b22048c8a0",
+      "drift": "none possible - one version across the entire history",
+      "evidence": "Hashing every blob of this rig across all 588 commits and every ref yields exactly ONE distinct version, which is main's current. Main cannot have drifted out from under the measurement. The bundled revision keeps the paint kit intact and adds doorFaces(V,t) - purely additive. Axis A refuses: all 18 variant sidecars pin the phantom renderer, and the kit README says tranche 4 changed the rig's 'variant-aware envs + parametric variant layout' - the very thing that lays these 18 out - so the stale pin is substantive here, not clerical.",
+      "inherits_to": "all 18 lobsterBoatVariants sidecars",
+      "upstream_ask": "Regenerate the 18 variant sidecars against the shipped renderer and re-stamp."
+    },
+    {
+      "hull_stem": "sideDraggerIsoRig",
+      "verdict": "REFUSED-PIN",
+      "axis_a_interior_pin": "REFUSED",
+      "axis_b_hull_baseline": "PASS",
+      "baseline_source": "discovered - main has exactly one version, ever (the _supersedes stamp is self-referential and useless)",
+      "baseline_lf_sha256": "3e82a11e9677126cc50347f8322c90bbae53bd2c006e89cfe73e36aca9374552",
+      "main_lf_sha256": "3e82a11e9677126cc50347f8322c90bbae53bd2c006e89cfe73e36aca9374552",
+      "drift": "none possible - one version across the entire history",
+      "evidence": "The gameplay sidecar's _supersedes points at the kit's OWN new rig, so the stamp says nothing. Discovery settles it anyway: one distinct blob across all refs. The bundled revision removes the deckhouse front wall face and its painted-on 'deck door' frontPanel and replaces them with published DOOR geometry - the additive revision the manifest claims. Axis A refuses on the phantom pin."
+    },
+    {
+      "hull_stem": "sternTrawlerIsoRig",
+      "verdict": "REFUSED-PIN",
+      "axis_a_interior_pin": "REFUSED",
+      "axis_b_hull_baseline": "PASS",
+      "baseline_source": "discovered - main has exactly one version, ever (self-referential stamp)",
+      "baseline_lf_sha256": "5bd2b3d474add41b94b4483df68d64a89048a6390a4f80eb8751b98c4499ed9b",
+      "main_lf_sha256": "5bd2b3d474add41b94b4483df68d64a89048a6390a4f80eb8751b98c4499ed9b",
+      "drift": "none possible - one version across the entire history",
+      "evidence": "One distinct blob across all refs. Bundled revision swaps the aft wall face + painted backPanel door for real DOOR geometry. Axis A refuses on the phantom pin."
+    },
+    {
+      "hull_stem": "sternTrawlerMk2IsoRig",
+      "verdict": "REFUSED-PIN",
+      "axis_a_interior_pin": "REFUSED",
+      "axis_b_hull_baseline": "PASS",
+      "baseline_source": "discovered - main has exactly one version, ever (self-referential stamp)",
+      "baseline_lf_sha256": "4656fd3d5ef1ccc491e715847121c842a83657d75e4f60205198d27596ce3057",
+      "main_lf_sha256": "4656fd3d5ef1ccc491e715847121c842a83657d75e4f60205198d27596ce3057",
+      "drift": "none possible - one version across the entire history",
+      "evidence": "One distinct blob across all refs. Same additive door revision as the mk1. Axis A refuses on the phantom pin."
+    },
+    {
+      "hull_stem": "coastalPacketIsoRig",
+      "verdict": "REFUSED-PIN",
+      "axis_a_interior_pin": "REFUSED",
+      "axis_b_hull_baseline": "PASS",
+      "baseline_source": "discovered - main has exactly one version, ever (no _supersedes at all)",
+      "baseline_lf_sha256": "8cd1c053d13f1682c2b2914a51370eefe8ca0ea4dcdd84e45c4bdac7a21b191b",
+      "main_lf_sha256": "8cd1c053d13f1682c2b2914a51370eefe8ca0ea4dcdd84e45c4bdac7a21b191b",
+      "drift": "none possible - one version across the entire history",
+      "evidence": "The sidecar carries no provenance stamp at all, so discovery is the only route: one distinct blob across all refs, which is main's current. The bundled revision removes the HOUSE level-1 front face and its painted 'deck door at the house front' and publishes real DOOR geometry. Axis A refuses on the phantom pin."
+    },
+    {
+      "hull_stem": "tankerIsoRig",
+      "verdict": "REFUSED-PIN",
+      "axis_a_interior_pin": "REFUSED",
+      "axis_b_hull_baseline": "PASS",
+      "baseline_source": "discovered - main has exactly one version, ever (no _supersedes at all)",
+      "baseline_lf_sha256": "deec4594ede7fd75b47e5eb1888bba038b61d18044daef74f43f4dcedc85ec3c",
+      "main_lf_sha256": "deec4594ede7fd75b47e5eb1888bba038b61d18044daef74f43f4dcedc85ec3c",
+      "drift": "none possible - one version across the entire history",
+      "evidence": "No provenance stamp; discovery gives one distinct blob across all refs. The bundled revision replaces the poop aft wall face, its painted aft door and four painted port lights with published DOOR geometry. Axis A refuses on the phantom pin. NOTE: this hull works at 16 px/m where the rest of the fleet is 32 - two pixel grids in one kit, never to be conflated.",
+      "pixels_per_metre": 16
+    }
+  ]
+}
