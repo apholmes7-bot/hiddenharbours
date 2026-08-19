@@ -17,6 +17,14 @@ namespace HiddenHarbours.World
         public const string ReadLogbookKey = "read_logbook";
         public const string OnboardedKey   = "onboarded";
 
+        // ⭐ A FOURTH FLAG LIVES IN THIS SAME STORE AND IS NOT DECLARED HERE:
+        // HiddenHarbours.App.ArrivalOpening.ArrivedFlagKey ("arrived_st_peters"), which says the player
+        // has been piloted in (owner's ruling, 2026-08-19 — the opening's step ZERO, the one before
+        // MetGinny). It is written through ISaveService.SetFlag into the very same OnboardingFlags list,
+        // so a reader on either side sees it; it is DECLARED over there only because HiddenHarbours.App
+        // may not reference HiddenHarbours.World (rule 4) and the arrival holds a boat, a player and a
+        // save. Named here so the set of opening flags can still be found in one place.
+
         private readonly IFlagStore _store;
 
         public OnboardingFlags(IFlagStore store)

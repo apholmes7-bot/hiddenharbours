@@ -1724,6 +1724,22 @@ namespace HiddenHarbours.App.Editor
             // 'onboarded' (on the dory being REPAIRED) so the opening never re-triggers on reload.
             new GameObject("Onboarding").AddComponent<OnboardingDirector>();
 
+            // --- ⭐ THE ARRIVAL (owner ruling, 2026-08-19) ------------------------------------------
+            // Onboarding's step ZERO, and the reason the east berth was dredged: a new game does not
+            // begin on this beach, it arrives at it. A skipper runs the player in down the buoyed
+            // fairway, ties up at the wharf and points them up the path to Ginny — which is exactly
+            // where the director above picks the thread up ("meet Aunt Ginny"). Placed at the SCENE
+            // root and emphatically NOT in the dev core, which is a grave: everything parented there
+            // dies on the travel path, and this must survive a player who arrives by sea.
+            //
+            // It PLACES and does not draw — the hull, her paint and the man on her deck are all
+            // skinned at runtime, for the reason MooredBoat spells out (a builder that instantiated
+            // the hull would bake the sprite fallback into the committed scene).
+            StPetersArrivalOpening.Place(parent: null);
+
+            // …and the World side of its one line, beside the dialogue view it drives.
+            new GameObject("ArrivalLine").AddComponent<ArrivalLineSpeaker>();
+
             // --- REGION DISPLAY NAME (the world registrar → Core) ---------------------------------------
             // Register "St Peters Island" / "Nine Mile Creek" so the UI crossing-card resolves them by scene
             // name or id without referencing World (the RegionDisplayNames seam, #59/#54).
