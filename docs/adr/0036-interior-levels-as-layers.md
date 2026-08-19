@@ -120,5 +120,6 @@ service in the scene at all.
 - **The save does not record where the player is.** `SaveData` has no position or region field (it
   carries money, clock, flags, gear, fleet, and so on). Sleeping at the bed therefore persists
   everything the game already persists, and a reload lands the player wherever the shell's start
-  policy puts them — *not* at the bed. Making "wake where you slept" true is a save-format change
-  (schema v11 → v12) and belongs to whoever adds player position, not to this PR.
+  policy puts them — *not* at the bed. Making "wake where you slept" true needs a **save-schema
+  bump** and belongs to whoever adds player position, not to this PR. (Do not assume the next
+  version number is free: the wardrobe PR #573 already claims v12 for `WornOutfitId`.)
