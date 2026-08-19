@@ -206,7 +206,7 @@ namespace HiddenHarbours.Tests.EditMode
             var quests = LoadAll<QuestDef>();
 
             Assert.That(quests, Is.Not.Empty,
-                "no QuestDef assets found — the starter content should be under Data/Quests");
+                "no QuestDef assets found — the starter content should be under Data/Resources/Quests");
 
             var report = quests
                 .Select(q => (q, problems: Problems(q, known)))
@@ -223,7 +223,7 @@ namespace HiddenHarbours.Tests.EditMode
             var pages = LoadAll<KnowledgePageDef>();
 
             Assert.That(pages, Is.Not.Empty,
-                "no KnowledgePageDef assets found — the starter content should be under Data/Knowledge");
+                "no KnowledgePageDef assets found — the starter content should be under Data/Resources/Knowledge");
 
             var report = pages
                 .Select(k => (k, problems: Problems(k)))
