@@ -29,14 +29,41 @@ namespace HiddenHarbours.World
         public const int PixelsPerUnit = 32;
 
         /// <summary>
-        /// Where the baked pieces live. Under <c>Assets/_Project/Art/</c> deliberately, so
-        /// <c>ArtImportPipeline</c>'s import lock (PPU 32 · Point · Uncompressed · no mips) reaches
-        /// them and the kit's importer only has to witness it rather than restate it.
+        /// The <b>Resources root</b> the book's art is baked into, and why it is one.
+        ///
+        /// <para>The book is PLAYER-GLOBAL, not regional: it installs itself at
+        /// <c>AfterSceneLoad</c> onto a <c>DontDestroyOnLoad</c> host, so there is no region builder
+        /// and no scene to bake sprite references into. The dialogue bubble can be dressed at build
+        /// time (<c>DialogueBubbleArt.Dress</c>) because there is one presenter per region scene; the
+        /// notebook has no such moment, and an editor-only <c>AssetDatabase</c> lookup does not exist
+        /// in a player. So the pieces are resolved at runtime from Resources — the way
+        /// <c>WardrobePicker</c> resolves its wardrobe def, and every shipped library before it.</para>
+        ///
+        /// <para>Still under <c>Assets/_Project/Art/</c> deliberately, so <c>ArtImportPipeline</c>'s
+        /// import lock (PPU 32 · Point · Uncompressed · no mips) reaches them and the kit's importer
+        /// only has to witness it rather than restate it.</para>
+        /// </summary>
+        public const string ResourcesRoot = "Assets/_Project/Art/UI/Resources";
+
+        /// <summary>The kit's own folder INSIDE that root — which is also the prefix
+        /// <c>Resources.Load</c> wants, so the runtime key and the disk path have one spelling
+        /// between them.</summary>
+        public const string ResourceFolder = "Notebook";
+
+        /// <summary>
+        /// Where the baked pieces live on disk. Composed rather than typed, so moving the root moves
+        /// the bake, the import, the tripwire test and the runtime load together.
         ///
         /// <para>It lives on the KIT rather than on a presenter because the bake and the import both
         /// need it and neither should have to reference a view to find out where art goes.</para>
         /// </summary>
-        public const string ArtFolder = "Assets/_Project/Art/UI/Notebook";
+        public const string ArtFolder = ResourcesRoot + "/" + ResourceFolder;
+
+        /// <summary>The runtime key for one baked piece — what <c>Resources.Load&lt;Sprite&gt;</c> is
+        /// given. Every piece imports <c>spriteMode: Single</c> (see <c>NotebookKitImporter</c>), so a
+        /// sprite really does come back; the multi-sprite trap that makes
+        /// <c>Resources.Load&lt;Sprite&gt;</c> return null does not apply here.</summary>
+        public static string ResourceKeyFor(string piece) => ResourceFolder + "/" + piece;
 
         // ---- type: IMPORTED from the bubble kit, never redeclared ------------------------------
 

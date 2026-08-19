@@ -22,8 +22,17 @@ namespace HiddenHarbours.World
     /// </summary>
     public static class HarbourType
     {
-        /// <summary>The face's own folder — see the class remarks for why it is not the notebook's.</summary>
-        public const string ArtFolder = "Assets/_Project/Art/UI/Type";
+        /// <summary>The face's own folder — see the class remarks for why it is not the notebook's.
+        ///
+        /// <para><b>Under a <c>Resources</c> root</b>, for the same reason the kit's pieces are: the
+        /// book installs itself and has no builder to bake a font reference into, so the face is
+        /// resolved at runtime. Still inside <c>Assets/_Project/Art/</c>, so the import lock reaches
+        /// the atlas exactly as before.</para></summary>
+        public const string ArtFolder = "Assets/_Project/Art/UI/Resources/Type";
+
+        /// <summary>The face's folder INSIDE that Resources root — the prefix
+        /// <c>Resources.Load</c> wants.</summary>
+        public const string ResourceFolder = "Type";
 
         /// <summary>The glyph atlas, drawn by the rig's own <c>text()</c>.</summary>
         public const string AtlasName = "HarbourType";
@@ -34,6 +43,16 @@ namespace HiddenHarbours.World
 
         public static string AtlasPath => $"{ArtFolder}/{AtlasName}.png";
         public static string FontPath => $"{ArtFolder}/{FontName}.fontsettings";
+
+        /// <summary>
+        /// The runtime key for the face — what <c>Resources.Load&lt;Font&gt;</c> is given.
+        ///
+        /// <para><b>No extension</b>, which is <c>Resources.Load</c>'s rule and not a slip: the key
+        /// names the ASSET, and <c>.fontsettings</c> is how the same asset is spelled on disk. The
+        /// atlas needs no key of its own — a <c>Font</c> carries its material and texture as
+        /// dependencies, so loading the face brings its ink with it.</para>
+        /// </summary>
+        public const string ResourceKey = ResourceFolder + "/" + FontName;
 
         // ---- the cell, imported from the kit that drew it ------------------------------------------
 
