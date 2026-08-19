@@ -24,6 +24,14 @@ namespace HiddenHarbours.World
     /// write (a fade now, the <c>Fisher_sleep</c> animation when the owner's sheet lands, a clock move
     /// to morning after that) arrive without this component changing at all.</para>
     ///
+    /// <para><b>It also says WHERE you will wake up</b> (ADR 0037). The request carries the position the
+    /// actor is standing on and the storey this bed is on, and <see cref="RestSaveResponder"/> stamps the
+    /// region onto them. The position is the PLAYER'S, not the bed's, deliberately: they are standing on
+    /// floor they walked to and are inside this bed's own reach, so "at the bedside" needs no offset to
+    /// be tuned and no furniture to be guessed at. The storey is read live off
+    /// <see cref="BuildingInterior.Level"/>, so nothing here has to agree with the builder about which
+    /// floor it was placed on.</para>
+    ///
     /// <para><b>⚠ The deck-work guard, asserted rather than assumed.</b> A save must never land in the
     /// middle of a deck-work cycle (#193). Being indoors is supposed to make that structurally
     /// impossible, and <see cref="Contexts"/> is what makes it so — <see cref="InteractContext.OnFoot"/>
@@ -52,6 +60,12 @@ namespace HiddenHarbours.World
         [Tooltip("How close (m) you must stand. A bed is a big piece of furniture you sit down on, so " +
                  "this is a step-up distance rather than a precise one.")]
         [SerializeField, Min(0f)] private float _reachMeters = 1.4f;
+
+        [Tooltip("The building this bed stands in — read ONLY for which STOREY it is on, so a rest " +
+                 "upstairs is recorded as a rest upstairs (ADR 0037). OPTIONAL: a bed with no interior " +
+                 "reports the ground floor, which is right for every bed that is not in a house with a " +
+                 "second storey and is a safe answer for one that is.")]
+        [SerializeField] private BuildingInterior _interior;
 
         /// <summary>Whether this bed is the player's own — the one thing that decides save vs refusal.</summary>
         public bool IsPlayerBed => _isPlayerBed;
@@ -106,7 +120,8 @@ namespace HiddenHarbours.World
                 return;
             }
 
-            Rest();
+            // The actor's own position is the wake spot — see Rest.
+            Rest(actor.Position);
         }
 
         private void OnEnable() => Interactables.Register(this);
@@ -115,21 +130,37 @@ namespace HiddenHarbours.World
         /// <summary>Wire this bed from the builder. Public so the placement pass never reaches a
         /// serialized field, and so a test stands one up with no scene.</summary>
         public void Configure(string id, bool isPlayerBed, string ownerName, string placeName,
-                              float reachMeters)
+                              float reachMeters, BuildingInterior interior = null)
         {
             _id = id;
             _isPlayerBed = isPlayerBed;
             _ownerName = ownerName ?? "";
             _placeName = placeName ?? "";
             _reachMeters = Mathf.Max(0f, reachMeters);
+            _interior = interior;
         }
+
+        /// <summary>
+        /// Which storey this bed is on, right now — 0 for a bed in a single-storey building, outdoors, or
+        /// in no building at all.
+        ///
+        /// <para><b>Read live rather than authored, and that is the point.</b> The builder places the
+        /// player's bed in the upper storey's furniture list; it does not also write down "1" somewhere
+        /// this component could disagree with. Asking the building means the two cannot drift, and a bed
+        /// moved downstairs in a later plan is correct with no code change (rule 6 — there is no number
+        /// here to get wrong).</para>
+        ///
+        /// <para>⚠ Unity fake-null: an explicit <c>!= null</c>, never <c>?.</c>, which would sail straight
+        /// past a destroyed interior and throw.</para>
+        /// </summary>
+        public int Level => _interior != null ? _interior.Level : 0;
 
         /// <summary>
         /// Ask to turn in. Returns true if a rest was REQUESTED (the player's own bed) — not whether a
         /// save landed, which is the responder's answer and arrives as <see cref="GameSaved"/>. Public
         /// so tests drive it without input.
         /// </summary>
-        public bool Rest()
+        public bool Rest(Vector2 wakePosition)
         {
             if (!_isPlayerBed)
             {
@@ -137,8 +168,19 @@ namespace HiddenHarbours.World
                 return false;
             }
 
-            EventBus.Publish(new RestSaveRequested(_placeName));
+            EventBus.Publish(new RestSaveRequested(_placeName, wakePosition, Level));
             return true;
         }
+
+        /// <summary>
+        /// Turn in without naming a wake spot — the shape this method had before there was one, kept for
+        /// callers that have no actor in hand (a dev menu, a test asserting the refusal).
+        ///
+        /// <para><b>It falls back to the BED, not to the origin</b>, which is the least wrong thing
+        /// available: a caller who cannot say where the player is standing has still told us which bed,
+        /// and the middle of the mattress is at worst a stride from the bedside. The real path never
+        /// takes it — <see cref="Interact"/> always has the actor.</para>
+        /// </summary>
+        public bool Rest() => Rest(WorldPosition);
     }
 }

@@ -21,6 +21,12 @@ namespace HiddenHarbours.Core
     /// presenting the game, not to a bed and not to the save system. Splitting them here means both
     /// halves grow without touching each other.</para>
     ///
+    /// <para><b>It also records WHERE you slept</b> (ADR 0037). The request carries the spot the player
+    /// is standing on and the storey they are on; this adds the region they are in and stamps all three
+    /// into the blob through <see cref="RestLocker"/> immediately before the write, so a load can wake
+    /// them there instead of at the authored spawn. A rest in a context with no region reported records
+    /// nothing and still saves the day — see <see cref="AnchorFor"/>.</para>
+    ///
     /// <para><b>Refusal is a normal outcome, not a fault.</b> A save asked for at the title is refused by
     /// the service's own write gate, and a context with no save service at all (EditMode, a bare region
     /// scene opened for review) has nothing to write to. Both answer with an <c>Ok:false</c>
@@ -75,11 +81,32 @@ namespace HiddenHarbours.Core
 
             GameSaved outcome = save == null
                 ? new GameSaved(false, NoServiceText)
-                : Write(save);
+                : Write(save, request);
 
             EventBus.Publish(outcome);
             return outcome;
         }
+
+        /// <summary>
+        /// Build the anchor this request should be remembered by: the request's own wake spot and storey,
+        /// stamped with the region the player is CURRENTLY in.
+        ///
+        /// <para><b>Why the region comes from Core and the rest comes from the bed.</b> A bed genuinely
+        /// does not know its region — a region id lives on the scene's <c>RegionAnchor</c> and is
+        /// published to <see cref="GameServices.CurrentRegionId"/> precisely so that content which
+        /// outlives one scene can ask (rule 4). The bed, equally, is the only thing that knows which
+        /// STOREY it is on. Each fact is taken from whoever actually holds it, and neither is inferred
+        /// from the other.</para>
+        ///
+        /// <para><b>No region reported is <see cref="RestAnchor.None"/>, not a guess.</b> That is EditMode,
+        /// a bare region scene opened for review, a test rig — contexts where there is no honest answer,
+        /// and where writing one would put a real save's bed in a region that does not exist. Pure and
+        /// public so the whole rule is assertable without a scene.</para>
+        /// </summary>
+        public static RestAnchor AnchorFor(in RestSaveRequested request, string currentRegionId) =>
+            string.IsNullOrEmpty(currentRegionId)
+                ? RestAnchor.None
+                : new RestAnchor(currentRegionId, request.WakePosition, request.WakeLevel);
 
         /// <summary>
         /// Ask the service to write, and read back whether it did.
@@ -94,8 +121,14 @@ namespace HiddenHarbours.Core
         /// <c>Save</c>) and this PR is not the place for it — the failure it hides is "the player pressed
         /// rest while at the title", which they cannot do from inside a bedroom.</para>
         /// </summary>
-        static GameSaved Write(ISaveService save)
+        static GameSaved Write(ISaveService save, in RestSaveRequested request)
         {
+            // Where you slept goes in BEFORE the write, because the write is what makes it durable —
+            // stamping after it would keep the anchor only until the next save happened to run, and the
+            // next save is an autosave on quit, which is the exact moment the player expects this to
+            // have worked.
+            RestLocker.Stamp(save.Current, AnchorFor(request, GameServices.CurrentRegionId));
+
             save.Save();
             return save.LoadedExistingSave
                 ? new GameSaved(true, SavedText)

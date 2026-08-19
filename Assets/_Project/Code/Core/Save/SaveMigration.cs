@@ -13,7 +13,7 @@ namespace HiddenHarbours.Core
     public static class SaveMigration
     {
         /// <summary>The schema version this build writes. Bump when you add a field + a migration step.</summary>
-        public const int CurrentVersion = 12;
+        public const int CurrentVersion = 13;
 
         /// <summary>
         /// The region id Port Greywick was saved under before it was renamed Nine Mile Creek, and the id
@@ -256,6 +256,28 @@ namespace HiddenHarbours.Core
                 data.SchemaVersion = 12;
             }
 
+            // v12 -> v13: WHERE THE PLAYER WENT TO SLEEP (ADR 0037) — the region, the storey and the
+            // position of the spot they stood on to turn in. Four appended fields; nothing existing is
+            // reinterpreted. A v12 save was written when the only thing a bed did was write the file, so
+            // it gets the empty region — which reads as "never rested", under which the player wakes at
+            // the authored spawn exactly as they did before this field existed. Nothing is invented for
+            // them, and in particular nobody is retroactively put to bed somewhere they never slept.
+            //
+            // ⚠ NOT healed against the world, deliberately, and for the reason the v11→v12 note gives.
+            // It is tempting to check here that the region still exists, or that the position is inside
+            // it — and both would be wrong: a region id that fails to resolve because a scene did not
+            // load is not a corrupt save, and erasing the anchor on the next write would throw away the
+            // player's bed for good. The REGION MISMATCH is checked at the point of USE
+            // (`RestWakeRestorer`), where it can decline out loud for one session and leave the save
+            // alone. What IS repaired is a position that cannot be a position at all — see
+            // `HealRestAnchor`, which drops a NaN anchor on the `HealNavData` precedent rather than
+            // inventing an origin to put the player at.
+            if (data.SchemaVersion < 13)
+            {
+                data.RestRegion ??= "";
+                data.SchemaVersion = 13;
+            }
+
             // ---- future steps go here, each guarded by `if (data.SchemaVersion < N)` and bumping to N.
 
             // Defensive null-repair (a hand-edited or partial JSON can omit reference-typed fields).
@@ -279,6 +301,7 @@ namespace HiddenHarbours.Core
             data.PlayerNotes ??= new System.Collections.Generic.List<PlayerNoteDto>();
             data.ActiveHullId ??= "";
             data.WornOutfitId ??= "";
+            data.RestRegion ??= "";
             // Same defensive spirit as the null-repair above, for the one field where a zero is not a
             // value but a crash: a hand-edited JSON, or a row written by a build between the field landing
             // and this heal, would otherwise divide by it. Idempotent — after the v9 step there is nothing
@@ -288,6 +311,10 @@ namespace HiddenHarbours.Core
             // wrong: a NaN waypoint has no honest position to fall back to, so it is dropped. Idempotent
             // — after the v10 step there is nothing left to fix.
             HealNavData(data);
+            // Same defensive spirit again, for the one anchor in the file: a rest position that is not a
+            // finite number cannot be walked to, and there is no honest place to put the player instead.
+            // Idempotent — a save whose anchor is good is left exactly as it is.
+            HealRestAnchor(data);
 
             // Clamp to the version we actually understand (never claim to be newer than this build).
             if (data.SchemaVersion > CurrentVersion)
@@ -333,6 +360,38 @@ namespace HiddenHarbours.Core
         /// save never depends on a <c>ScriptableObject</c> being wired first — and so this is testable
         /// with no scene.</para>
         /// </summary>
+        /// <summary>
+        /// DROP a rest anchor that cannot be a position — a NaN or infinite coordinate, or a storey below
+        /// the ground — by clearing the region, which is the field that means "there is an anchor at
+        /// all". Called from the v12→v13 step and once more unconditionally, the
+        /// <see cref="HealNavData"/> shape.
+        ///
+        /// <para><b>Drop, never repair</b>, for exactly the reason the nav heal gives: a sounder range has
+        /// an obviously right replacement and a bed does not. Putting an unreadable anchor at the origin
+        /// would wake the player in the corner of the map with no indication anything had gone wrong,
+        /// whereas clearing it wakes them at the authored spawn — the same well-understood place a player
+        /// who has never slept wakes.</para>
+        ///
+        /// <para><b>A wrong-looking anchor is NOT unreadable and is left alone.</b> A region no scene
+        /// claims, a position outside the region's rectangle, a storey in a building that has since lost
+        /// its upstairs: every one of those is a content question a loader cannot answer, and every one
+        /// of them can be true for one build and false for the next. They are declined at the point of
+        /// use, which leaves the save intact for the build that can honour it.</para>
+        /// </summary>
+        private static void HealRestAnchor(SaveData data)
+        {
+            if (data == null || string.IsNullOrEmpty(data.RestRegion)) return;
+
+            bool finite = !float.IsNaN(data.RestPosX) && !float.IsInfinity(data.RestPosX)
+                       && !float.IsNaN(data.RestPosY) && !float.IsInfinity(data.RestPosY);
+            if (finite && data.RestLevel >= 0) return;
+
+            data.RestRegion = "";
+            data.RestPosX = 0f;
+            data.RestPosY = 0f;
+            data.RestLevel = 0;
+        }
+
         private static void HealNavData(SaveData data)
         {
             if (data == null) return;

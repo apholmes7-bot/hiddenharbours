@@ -78,6 +78,10 @@ namespace HiddenHarbours.Tests.PlayMode
 
         const string OwnerName = "Ginny";
 
+        /// <summary>The region this test's cottage stands in. Any stable id will do — what matters is
+        /// that ONE has reported, because an anchor with no region is no anchor (ADR 0037).</summary>
+        const string Region = "region.play_test";
+
         static readonly Vector3 CottageGround = new Vector3(30f, 30f, 0f);
 
         sealed class FakeSaveService : ISaveService
@@ -117,10 +121,16 @@ namespace HiddenHarbours.Tests.PlayMode
             _save = new FakeSaveService();
             GameServices.Save = _save;
             RestSaveResponder.Install();
+            RestWakeRestorer.Install();
 
             _player = new GameObject("player");
             SceneManager.MoveGameObjectToScene(_player, _scene);
             _player.transform.position = CottageGround + new Vector3(0f, -20f, 0f);
+
+            // The two Core relays a rest anchor is written and read through. A region must have reported
+            // or the responder records nothing at all — see RestSaveResponder.AnchorFor.
+            GameServices.CurrentRegionId = Region;
+            GameServices.PlayerTransform = _player.transform;
 
             StandCottage();
 
@@ -134,6 +144,9 @@ namespace HiddenHarbours.Tests.PlayMode
             EventBus.Clear<DevNotice>();
             Interactables.Clear();
             RestSaveResponder.Uninstall();
+            RestWakeRestorer.Uninstall();
+            EventBus.Clear<PlayerWokeAt>();
+            EventBus.Clear<GameLoaded>();
 
             if (_origin.IsValid() && _origin.isLoaded) SceneManager.SetActiveScene(_origin);
             if (_scene.IsValid() && _scene.isLoaded) yield return SceneManager.UnloadSceneAsync(_scene);
@@ -187,13 +200,15 @@ namespace HiddenHarbours.Tests.PlayMode
                 .AddComponent<InteriorStair>();
             down.Configure(_interior, "fixture.play.stair_down", 1, 0, 1.2f, "down");
 
+            // The interior comes along so each bed can report the STOREY it is on when the player turns
+            // in — which is what makes the wake land in this room and not the one below it (ADR 0037).
             Fixture(_upperProps, "player bed", footprint, PlayerBedPoint)
                 .AddComponent<InteriorBed>()
-                .Configure("fixture.play.bed_player", true, "", "your bed at Ginny's", 1.4f);
+                .Configure("fixture.play.bed_player", true, "", "your bed at Ginny's", 1.4f, _interior);
 
             Fixture(_upperProps, "ginny bed", footprint, OwnerBedPoint)
                 .AddComponent<InteriorBed>()
-                .Configure("fixture.play.bed_owner", false, OwnerName, "", 1.4f);
+                .Configure("fixture.play.bed_owner", false, OwnerName, "", 1.4f, _interior);
 
             Fixture(_upperProps, "wardrobe", footprint, WardrobePoint)
                 .AddComponent<InteriorWardrobe>()
@@ -419,6 +434,124 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsTrue(_shell.enabled);
             Assert.IsFalse(_upper.enabled);
             Assert.IsFalse(_upperWalls.activeSelf);
+        }
+
+        // =============================================================================
+        //  waking up where you slept (ADR 0037)
+        // =============================================================================
+
+        /// <summary>
+        /// <b>The whole feature, end to end, in one test.</b> Sleep in your own bed upstairs; come back
+        /// to a session that starts you in the dooryard; load. You should be standing at your own bed,
+        /// in your own room, with the storey above drawn.
+        ///
+        /// <para><b>Three things here are provable ONLY in PlayMode.</b> That the interior really
+        /// subscribes to the wake — that is <c>OnEnable</c>, which EditMode never fires on a plain
+        /// MonoBehaviour, so EditMode can only drive the rule by hand. That the ORDERING works: the wake
+        /// lands while the house still believes nobody is inside, so the storey has to be remembered and
+        /// spent a frame later rather than set. And that <c>Update</c>, not a setter, is what notices the
+        /// player has appeared indoors.</para>
+        /// </summary>
+        [UnityTest]
+        public IEnumerator SleepingUpstairsThenLoading_WakesYouAtYourOwnBed_UpstairsNotUnderIt()
+        {
+            InteriorFootprint f = _interior.Footprint;
+            Vector2 bedside = f.ModelToWorld(PlayerBedPoint);
+
+            yield return GoUpstairs();
+            yield return WalkTo(bedside);
+            Assert.IsTrue(Press(), "precondition: your own bed is the candidate");
+            yield return null;
+            Assert.AreEqual(1, _save.Saves, "precondition: the day was kept");
+
+            RestAnchor written = RestLocker.Anchor(_save.Current);
+            Assert.IsTrue(written.IsSet, "the save now knows where you slept");
+            Assert.AreEqual(Region, written.Region);
+            Assert.AreEqual(1, written.Level,
+                            "AND WHICH STOREY — without this the wake lands in the room below the bed");
+            Assert.AreEqual(bedside.x, written.Position.x, 0.01f,
+                            "at the spot you were standing on, not the middle of the mattress");
+            Assert.AreEqual(bedside.y, written.Position.y, 0.01f);
+
+            // ---- come back to a fresh session: outside, on the ground floor, nothing remembered -----
+            yield return WalkTo(f.ModelToWorld(new Vector2(0f, -FloorLength * 0.5f - 20f)));
+            Assert.IsFalse(_interior.IsInside, "precondition: a new session starts you in the dooryard");
+            Assert.AreEqual(0, _interior.Level, "precondition: and the house opens on its ground floor");
+
+            // ⚠️ SUBSCRIBE, NEVER Clear-then-subscribe. EventBus.Clear<T>() drops EVERY handler on the
+            // channel — including the cottage's own, registered in its OnEnable — so clearing here would
+            // silently unsubscribe the very component under test and the storey would never change.
+            // (It did, once: this test failed with Level 0 while its sibling below, which does not clear,
+            // passed. TearDown owns the cleanup.)
+            var wakes = new List<PlayerWokeAt>();
+            EventBus.Subscribe<PlayerWokeAt>(wakes.Add);
+
+            EventBus.Publish(new GameLoaded());          // the edge the real load restores on
+
+            Assert.AreEqual(1, wakes.Count, "the load announced a wake");
+            Assert.AreEqual(bedside.x, _player.transform.position.x, 0.01f, "and put you at your bed");
+            Assert.AreEqual(bedside.y, _player.transform.position.y, 0.01f);
+            Assert.AreEqual(0, _interior.Level,
+                            "the storey is REMEMBERED, not set: the house has not seen you inside yet, " +
+                            "and TryGoToLevel would rightly refuse someone standing in the dooryard");
+
+            yield return null;                            // the frame Update notices you are indoors
+
+            Assert.IsTrue(_interior.IsInside);
+            Assert.AreEqual(1, _interior.Level, "you wake upstairs, in your own room");
+            Assert.IsTrue(_upper.enabled, "and it is the storey above that is drawn");
+            Assert.IsFalse(_ground.enabled);
+        }
+
+        /// <summary>
+        /// ...and it is spent. Waking upstairs must not turn the front door into a staircase for the rest
+        /// of the session — which is the bug ADR 0036's "the level resets on the way out" exists to
+        /// prevent, and the one a remembered storey could quietly reintroduce.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator TheWokenStoreyIsAOneShot_AndTheFrontDoorStillOpensOnTheGroundFloor()
+        {
+            InteriorFootprint f = _interior.Footprint;
+            Vector2 bedside = f.ModelToWorld(PlayerBedPoint);
+            Vector2 dooryard = f.ModelToWorld(new Vector2(0f, -FloorLength * 0.5f - 20f));
+
+            yield return GoUpstairs();
+            yield return WalkTo(bedside);
+            Assert.IsTrue(Press());
+            yield return null;
+
+            yield return WalkTo(dooryard);
+            EventBus.Publish(new GameLoaded());
+            yield return null;
+            Assert.AreEqual(1, _interior.Level, "precondition: the wake landed upstairs");
+
+            // Walk out and back in the ordinary way.
+            yield return WalkTo(dooryard);
+            Assert.AreEqual(0, _interior.Level);
+            yield return WalkTo(f.ModelToWorld(Vector2.zero));
+
+            Assert.IsTrue(_interior.IsInside);
+            Assert.AreEqual(0, _interior.Level,
+                            "you come in through the front door onto the ground floor, as always");
+            Assert.IsTrue(_ground.enabled);
+        }
+
+        /// <summary>A player who has never turned in is not moved and not announced — the behaviour the
+        /// game had before any of this existed, which is what every save older than v13 must still get.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator LoadingWithNoAnchor_LeavesYouAtTheSpawn()
+        {
+            var wakes = new List<PlayerWokeAt>();     // subscribe only — see the note above on Clear
+            EventBus.Subscribe<PlayerWokeAt>(wakes.Add);
+
+            Vector3 spawn = _player.transform.position;
+            EventBus.Publish(new GameLoaded());
+            yield return null;
+
+            Assert.AreEqual(spawn, _player.transform.position, "nothing moved");
+            Assert.AreEqual(0, wakes.Count, "and nothing was announced");
+            Assert.IsFalse(_interior.IsInside);
         }
 
         [UnityTest]

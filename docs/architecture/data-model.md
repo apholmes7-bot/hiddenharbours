@@ -83,11 +83,31 @@ plain serializable DTOs owned by `SaveService` (`architecture/tech-architecture.
 > `FishFinderSettings.Default.DefaultRangeMetres`. The finder keeps the depth sounder's shallow alarm
 > unchanged, which is why the bump is exactly one field.
 
+> **Save schema v13 (the rest anchor, [ADR 0037](../adr/0037-rest-anchor.md))** — `SaveData` gained
+> FOUR append-only scalars at v13, which only mean anything together: `RestRegion`, `RestLevel`,
+> `RestPosX`, `RestPosY` — where the player last went to sleep, so a load wakes them there instead of
+> at the authored spawn. Read and written only through `RestLocker`, as one `RestAnchor`.
+> **Region-stamped for the reason every position in this file is** (ADR 0004 — a world position only
+> means anything inside its own region's frame), and **storey-stamped** because ADR 0036 made a second
+> floor a *layer* over the same footprint: the one authored player bed is upstairs at Ginny's, directly
+> above her front room, so a position-only anchor would restore the right coordinates into the wrong
+> room. `RestRegion == ""` is **"has never turned in"** — a new game, every save older than v13, and
+> the fallback for an unreadable anchor — under which the player wakes at the spawn exactly as before.
+> The `v12→v13` step **drops but does not repair**: an anchor whose position is not a finite number is
+> cleared (there is no honest place to invent), while a region or storey the loader merely cannot vouch
+> for is left alone and declined at the point of use.
+
 **Recomputed, never saved:** tide height, wind, weather, sea state, visibility (from
 `worldSeed + gameTime`), dormant NPC positions, authored geometry, **a boat's effective helm fit and
 its depth-sounder reading** (ADR 0030), and **fish schools** — where the fish are is a function of
 `(worldSeed, gameTime)` + place + weather like the tide is, so the finder's marks are never stored
 (ADR 0025 S3). This is the determinism dividend — small, robust saves.
+
+**Deliberately NOT in that list:** where the player chose to go to sleep (v13 above). Rule 5 keeps
+tide/wind/weather out of the save because they are *derivable* from `(worldSeed, gameTime)`; a bed is
+derivable from nothing. It is an authored decision by the player, the same family as `WornOutfitId`
+(v12) and `PlacedTraps` (v3) — storing it is not a rule-5 violation, and recomputing it is not
+possible.
 
 ## 5. ID & naming conventions
 

@@ -58,7 +58,15 @@ namespace HiddenHarbours.World
     /// definition of being in this building. And <b>the level resets on the way out</b>, so a house can
     /// never be re-entered into its bedroom.</para></para>
     ///
-    /// <para>Visual + collision only: no sim, no save, no allocation per frame (rule 5, rule 7).</para>
+    /// <para><b>The one exception to that last rule is waking up (ADR 0037).</b> A player who went to
+    /// sleep upstairs is put back at their bed on load, and a house that opened on its ground floor would
+    /// stand them in the room below their own bed — the feature failing in the one way that looks like it
+    /// working. So a <see cref="PlayerWokeAt"/> whose anchor is inside this footprint arms a ONE-SHOT
+    /// storey, spent by the very next inside-transition and by nothing else. Every later walk through the
+    /// front door lands on the ground floor exactly as before.</para>
+    ///
+    /// <para>Visual + collision only: no sim, <b>no save</b> — the wake arrives as a signal, so this class
+    /// still has no idea a save file exists (rule 4) — and no allocation per frame (rule 5, rule 7).</para>
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class BuildingInterior : MonoBehaviour
@@ -142,6 +150,12 @@ namespace HiddenHarbours.World
         /// <summary>Whether the occupant is currently inside. Read-only to everyone else — the only way
         /// in is through the door.</summary>
         public bool IsInside { get; private set; }
+
+        /// <summary>The storey the NEXT inside-transition should land on, armed by a rest wake and spent
+        /// immediately (ADR 0037). 0 — the overwhelming majority of the time — means "nothing armed", so
+        /// the ordinary rule stands and you come in on the ground floor. Not serialized: it describes one
+        /// load, not the building.</summary>
+        int _pendingLevel;
 
         /// <summary>
         /// <b>Which storey the occupant is on</b> — 0 the ground floor, 1 the storey above. Always 0 in a
@@ -303,7 +317,78 @@ namespace HiddenHarbours.World
             // that was saved mid-visit does not open with the roof off.
             IsInside = false;
             Level = 0;
+            _pendingLevel = 0;
             Apply(false);
+
+            // The one exception to "you always come in on the ground floor": a player who went to sleep
+            // upstairs (ADR 0037). Core publishes the wake; this decides whether it was in THIS house.
+            EventBus.Subscribe<PlayerWokeAt>(OnPlayerWokeAt);
+        }
+
+        void OnDisable() => EventBus.Unsubscribe<PlayerWokeAt>(OnPlayerWokeAt);
+
+        /// <summary>
+        /// <b>The player has just been woken at their rest anchor.</b> If that anchor is inside THIS
+        /// building and names the storey above, arm the one-shot so the house opens on it.
+        ///
+        /// <para><b>Why a one-shot rather than opening upstairs now.</b> The wake lands before the
+        /// occupant has been seen inside — <see cref="IsInside"/> is still false, and
+        /// <see cref="TryGoToLevel"/> rightly refuses to move a storey for someone who is not in the
+        /// building. So the level is not set, it is REMEMBERED, and the very next inside-transition
+        /// spends it. That keeps one rule about when a storey may change instead of two, and it means
+        /// the swap still happens in <see cref="Apply"/>, once, on the frame the house opens.</para>
+        ///
+        /// <para><b>Every guard here is a way of declining, not a way of failing.</b> A wake somewhere
+        /// else in the region, a wake on the ground floor, a wake in a house that no longer has an
+        /// upstairs (the plan changed between builds — the save is older than the content): all of them
+        /// leave this building exactly as it was, which is a player waking on the ground floor of a
+        /// house they are standing in. That is a good outcome, so none of them is loud.</para>
+        /// </summary>
+        void OnPlayerWokeAt(PlayerWokeAt woke) => WakeAt(woke.Anchor);
+
+        /// <inheritdoc cref="OnPlayerWokeAt"/>
+        /// <summary>
+        /// The RULE behind <see cref="OnPlayerWokeAt"/>, as a plain call.
+        ///
+        /// <para>⚠️ <b>PUBLIC ON PURPOSE — DO NOT TIDY THIS TO PRIVATE.</b> An EditMode test cannot reach
+        /// the handler through the bus, because EditMode fires no <c>OnEnable</c> on a plain
+        /// MonoBehaviour and so this component is never subscribed there. A test that published the
+        /// signal anyway would assert against a room that could not have heard it — and the "nothing
+        /// happens" cases would pass for exactly the wrong reason. So EditMode drives the rule here and
+        /// PlayMode proves the subscription, the split <c>StandablePlatform</c> already uses.</para>
+        /// </summary>
+        public void WakeAt(in RestAnchor anchor)
+        {
+            if (anchor.Level <= 0 || !HasUpperLevel) return;
+            if (anchor.Level > TopLevel) return;
+            if (!Footprint.Contains(anchor.Position, _wallThicknessMetres)) return;
+
+            _pendingLevel = anchor.Level;
+
+            // Already inside — which the title screen can produce, because the world ticks behind it and
+            // a spawn can stand in a doorway. No inside-transition is coming to spend the one-shot on, so
+            // spend it NOW, and through TryGoToLevel: it is the path that also REDRAWS. Setting Level
+            // here on its own would change the storey the interact registry reports while leaving the
+            // ground floor on screen.
+            if (IsInside) { TryGoToLevel(_pendingLevel); _pendingLevel = 0; }
+        }
+
+        /// <summary>
+        /// Take the armed storey, if there is one, and go there. Clearing FIRST is what makes it a
+        /// one-shot: waking upstairs must not mean every later walk through the front door lands in the
+        /// bedroom.
+        ///
+        /// <para>Called ONLY from <see cref="Update"/>'s inside-transition, which calls
+        /// <see cref="Apply"/> immediately after — so this deliberately does not redraw, and must not be
+        /// called from anywhere that will not. The already-inside case goes through
+        /// <see cref="TryGoToLevel"/> instead, for exactly that reason.</para>
+        /// </summary>
+        void ConsumePendingLevel()
+        {
+            int level = _pendingLevel;
+            _pendingLevel = 0;
+            if (level <= 0 || level > TopLevel) return;
+            Level = level;
         }
 
         void Update()
@@ -327,7 +412,14 @@ namespace HiddenHarbours.World
             // the doorway is plugged up there — but a spawn, a region travel or a dev teleport can all
             // move an occupant across the threshold without using the door, and a house that remembered
             // "upstairs" would then open on its first-floor bedroom the next time you walked in.
-            if (!inside) Level = 0;
+            //
+            // Coming IN is where a rest anchor gets its one chance (ADR 0037): a player who slept
+            // upstairs walks into their own bedroom, once. Everyone else — and that same player on every
+            // later visit — comes in through the front door onto the ground floor, because the one-shot
+            // has been spent. An unspent anchor is dropped on the way out for the same reason the level
+            // is: whatever it was for, it did not happen.
+            if (inside) ConsumePendingLevel();
+            else { Level = 0; _pendingLevel = 0; }
 
             Apply(inside);
         }

@@ -77,6 +77,8 @@ namespace HiddenHarbours.Tests.EditMode
             EventBus.Clear<GameSaved>();
             EventBus.Clear<WardrobeRequested>();
             EventBus.Clear<RestSaveRequested>();
+            EventBus.Clear<PlayerWokeAt>();
+            GameServices.CurrentRegionId = null;
 
             EventBus.Subscribe<DevNotice>(_notices.Add);
             EventBus.Subscribe<GameSaved>(_saved.Add);
@@ -87,12 +89,16 @@ namespace HiddenHarbours.Tests.EditMode
         public void TearDown()
         {
             RestSaveResponder.Uninstall();
+            RestWakeRestorer.Uninstall();
             GameServices.Save = null;
+            GameServices.CurrentRegionId = null;
+            GameServices.PlayerTransform = null;
 
             EventBus.Clear<DevNotice>();
             EventBus.Clear<GameSaved>();
             EventBus.Clear<WardrobeRequested>();
             EventBus.Clear<RestSaveRequested>();
+            EventBus.Clear<PlayerWokeAt>();
 
             Interactables.Clear();
             foreach (var o in _spawned) if (o != null) Object.DestroyImmediate(o);
@@ -459,6 +465,167 @@ namespace HiddenHarbours.Tests.EditMode
             bed.Interact(new InteractActor(Vector2.zero, Vector2.zero, InteractContext.OnDeck));
             Assert.AreEqual(0, requests.Count,
                             "a rest driven from a deck is refused at the bed, not only at the resolver");
+        }
+
+        // =============================================================================
+        //  waking up where you slept (ADR 0037)
+        // =============================================================================
+
+        [Test]
+        public void The_players_bed_names_the_spot_the_actor_is_standing_on_not_its_own()
+        {
+            var requests = new List<RestSaveRequested>();
+            EventBus.Subscribe<RestSaveRequested>(requests.Add);
+
+            var bed = Spawn<InteriorBed>("player bed");
+            bed.transform.position = new Vector3(-2.1f, -2.3f, 0f);        // the middle of the mattress
+            bed.Configure("fixture.test.bed_player", isPlayerBed: true, ownerName: "",
+                          placeName: StPetersInteriors.PlayerBedPlaceName, reachMeters: 1.4f);
+
+            var bedside = new Vector2(-1.35f, -2.3f);                       // where you actually stand
+            bed.Interact(new InteractActor(bedside, Vector2.zero, InteractContext.OnFoot));
+
+            Assert.AreEqual(1, requests.Count);
+            Assert.AreEqual(bedside, requests[0].WakePosition,
+                            "you wake at the bedside you walked to, not inside the mattress — and it " +
+                            "needs no tuned offset, because the reach test already put you there");
+        }
+
+        [Test]
+        public void A_bed_upstairs_reports_the_storey_it_is_standing_on()
+        {
+            BuildingInterior interior = StandTwoStorey(out _, out _, out _, out _,
+                                                       out GameObject upperProps, out _);
+            Transform occupant = WalkInside(interior);
+
+            var bed = Spawn<InteriorBed>("player bed");
+            bed.transform.SetParent(upperProps.transform, worldPositionStays: false);
+            bed.Configure("fixture.test.bed_player", true, "", "here", 1.4f, interior);
+
+            Assert.AreEqual(0, bed.Level, "on the ground floor it is a ground-floor bed");
+
+            interior.TryGoToLevel(1);
+            Assert.AreEqual(1, bed.Level,
+                            "and upstairs it is an upstairs bed — read LIVE off the building, so the " +
+                            "component and the builder cannot disagree about which floor it is on");
+
+            var requests = new List<RestSaveRequested>();
+            EventBus.Subscribe<RestSaveRequested>(requests.Add);
+            bed.Interact(new InteractActor(occupant.position, Vector2.zero, InteractContext.OnFoot));
+
+            Assert.AreEqual(1, requests[0].WakeLevel,
+                            "which is what stops the wake landing in the room BELOW the bed");
+        }
+
+        [Test]
+        public void A_bed_with_no_building_reports_the_ground_floor_rather_than_throwing()
+        {
+            var bed = Spawn<InteriorBed>("bed in a field");
+            bed.Configure("fixture.test.bed_player", true, "", "here", 1.4f);
+
+            Assert.AreEqual(0, bed.Level,
+                            "outdoors, in a single-storey building, or in no building at all");
+        }
+
+        /// <summary>
+        /// The whole point of the storey riding in the anchor: a player who slept upstairs walks back
+        /// into their own bedroom, not into the room underneath it.
+        /// </summary>
+        [Test]
+        public void A_house_opens_on_the_storey_you_slept_on_and_only_the_once()
+        {
+            BuildingInterior interior = StandTwoStorey(out _, out SpriteRenderer ground, out _,
+                                                       out SpriteRenderer upper, out _, out _);
+
+            var occupant = new GameObject("occupant");
+            _spawned.Add(occupant);
+            interior.SetOccupant(occupant.transform);
+            occupant.transform.position = interior.transform.position + new Vector3(0f, -40f, 0f);
+            Tick(interior);
+            Assert.IsFalse(interior.IsInside, "precondition: the load has not put them inside yet");
+
+            // ⚠️ DRIVEN DIRECTLY, AND DO NOT "TIDY THIS AWAY" — the same rule the Register helper above
+            // carries. EditMode fires no OnEnable on a plain MonoBehaviour, so this interior is NOT
+            // subscribed to PlayerWokeAt here; publishing the signal would assert against a room that
+            // could not have heard it, and the "nothing happens" cases below would go green for the
+            // wrong reason. The RULE is proved here; the SUBSCRIPTION is proved in CabinUpstairsPlayTests.
+            //
+            // The wake lands BEFORE the interior has seen anyone inside — which is exactly the ordering
+            // the real load has, and the reason the storey is remembered rather than set.
+            interior.WakeAt(new RestAnchor("region.st_peters", interior.transform.position, 1));
+            Assert.AreEqual(0, interior.Level, "nothing has changed storey yet; nobody is in the house");
+
+            occupant.transform.position = interior.transform.position;
+            Tick(interior);
+
+            Assert.IsTrue(interior.IsInside);
+            Assert.AreEqual(1, interior.Level, "you wake in your own bedroom");
+            Assert.IsTrue(upper.enabled, "and the storey above is what is drawn");
+            Assert.IsFalse(ground.enabled, "the one you are not on is switched OFF, never sorted behind");
+
+            // ...and it is spent. Walk out, walk back in: the front door lands on the ground floor.
+            WalkOutside(interior, occupant.transform);
+            occupant.transform.position = interior.transform.position;
+            Tick(interior);
+
+            Assert.AreEqual(0, interior.Level,
+                            "a one-shot, or every later visit would open on the bedroom — the very bug " +
+                            "ADR 0036's reset rule exists to prevent");
+            Assert.IsTrue(ground.enabled);
+        }
+
+        /// <summary>
+        /// The defensive branch, which is worth a test precisely because it is hard to reach: a wake
+        /// that lands while the occupant is ALREADY indoors has no inside-transition coming to spend
+        /// the one-shot on, so it has to be spent immediately — and through the path that REDRAWS.
+        /// Setting the storey without redrawing would change what the interact registry reports while
+        /// leaving the ground floor on screen, which is a bug you would only ever see in a screenshot.
+        /// </summary>
+        [Test]
+        public void A_wake_that_arrives_while_you_are_already_indoors_redraws_as_well_as_swaps()
+        {
+            BuildingInterior interior = StandTwoStorey(out _, out SpriteRenderer ground, out _,
+                                                       out SpriteRenderer upper, out _, out _);
+            WalkInside(interior);
+            Assert.AreEqual(0, interior.Level, "precondition: indoors, on the ground floor");
+
+            interior.WakeAt(new RestAnchor("region.st_peters",                      // driven — see above
+                                           interior.transform.position, 1));
+
+            Assert.AreEqual(1, interior.Level, "the storey changes");
+            Assert.IsTrue(upper.enabled, "AND the storey above is actually drawn");
+            Assert.IsFalse(ground.enabled, "and the one below it is switched off");
+        }
+
+        [Test]
+        public void A_wake_somewhere_else_leaves_this_house_alone()
+        {
+            BuildingInterior interior = StandTwoStorey(out _, out _, out _, out _, out _, out _);
+
+            interior.WakeAt(new RestAnchor("region.st_peters",                      // driven — see above
+                                           (Vector2)interior.transform.position + new Vector2(0f, 60f), 1));
+
+            Transform occupant = WalkInside(interior);
+
+            Assert.AreEqual(0, interior.Level,
+                            "somebody sleeping in a different building is not a reason to open this " +
+                            "one on its bedroom");
+            Assert.IsNotNull(occupant);
+        }
+
+        [Test]
+        public void A_wake_on_the_ground_floor_changes_nothing()
+        {
+            BuildingInterior interior = StandTwoStorey(out _, out SpriteRenderer ground, out _,
+                                                       out _, out _, out _);
+
+            interior.WakeAt(new RestAnchor("region.st_peters",                      // driven — see above
+                                           interior.transform.position, 0));
+
+            WalkInside(interior);
+
+            Assert.AreEqual(0, interior.Level);
+            Assert.IsTrue(ground.enabled, "which is what walking in through the front door has always done");
         }
 
         // =============================================================================

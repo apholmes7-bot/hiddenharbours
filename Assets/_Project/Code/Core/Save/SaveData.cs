@@ -227,6 +227,43 @@ namespace HiddenHarbours.Core
         /// save written before it existed simply has no rows, which reads as "never touched", so there
         /// is no migration step and no version bump.</para></summary>
         public List<RadarPrefsDto> HullRadarPrefs = new();
+
+        // ---- the rest anchor (ADR 0037, added in v13) ---------------------------------------------
+        // WHERE THE PLAYER WENT TO SLEEP, so that loading wakes them there instead of at the dev spawn.
+        // Four flat fields, deliberately not a nested DTO: there is exactly ONE of these per save (you
+        // sleep in one bed at a time), so a list's shape would promise a plurality that does not exist,
+        // and JsonUtility renders four scalars more legibly than an object for a hand-inspected file.
+        // Read and written only through RestLocker, which hands them out as a single RestAnchor.
+        //
+        // ⚠ A POSITION IS NOT ENOUGH ON ITS OWN, TWICE OVER, which is the whole reason this is four
+        // fields and not two. It is meaningless outside its REGION (the law NavWaypoints states above:
+        // "a world position only means anything inside its own region's frame"), and — new here — it is
+        // meaningless outside its STOREY, because ADR 0036 made a second floor a LAYER over the same
+        // footprint. The one authored player bed in the game is upstairs at Ginny's, and the ground
+        // floor holds that same (x, y): an anchor that stored only the position would wake the player
+        // in her front room and look, exactly, like the feature working.
+
+        /// <summary>Stable region id the player last turned in in (e.g. <c>region.st_peters</c>).
+        /// <b>EMPTY means never rested</b> — the whole switch: a save with no anchor wakes at the
+        /// authored spawn, which is precisely how every save written before v13 behaved. Added in
+        /// v13.</summary>
+        public string RestRegion = "";
+
+        /// <summary>World X of the spot the player stood on to turn in. Flat float on the
+        /// <see cref="PlacedTrapDto.PosX"/> precedent (this file stores no vectors). Meaningless unless
+        /// <see cref="RestRegion"/> is set. Added in v13.</summary>
+        public float RestPosX;
+
+        /// <summary>World Y of that spot (see <see cref="RestPosX"/>). Added in v13.</summary>
+        public float RestPosY;
+
+        /// <summary>Which STOREY of the building that spot is on — 0 the ground floor (and everywhere
+        /// outdoors), 1 the floor above, matching <c>BuildingInterior.Level</c>. Added in v13.
+        ///
+        /// <para><b>Zero is the honest default</b>, which is what lets the field be appended with no
+        /// heal: every save written before there were storeys was written by a player standing on the
+        /// ground.</para></summary>
+        public int RestLevel;
     }
 
     /// <summary>
