@@ -995,6 +995,18 @@ namespace HiddenHarbours.App.Editor
             // actually arrived. Driven end to end by InteriorTravelPlayTests.
             NineMileCreekShops.Place(terrain, devPlayer);
 
+            // --- WHERE THE ISLAND BUYS FUEL (the owner's 2026-08-20 ask) --------------------------------
+            // ⭐ TWO SITES, ONE KIT, TWO PRICES: a couple of dock pedestals on the wharf's service wall
+            // (higher, because they save you the walk) and the full forecourt at Wharf Road's junction
+            // with Route 91 (cheaper, because it does not). Both FuelStationDefs shipped priced in #610;
+            // the pieces and prefabs in #613. Sites, the layout the rig itself produced, and the
+            // WHOLE-SCENE reach pass live in NineMileCreekStation.
+            //
+            // ⚠ PLACED AFTER the wharf economy above, and that order IS load-bearing: a pump charges
+            // through the PersistentWalletProxy this scene stands, and NineMileCreekStation FINDS that
+            // proxy rather than making a second one. Run it earlier and every press refuses.
+            NineMileCreekStation.Place(terrain);
+
             // --- THE DOORYARDS (the lawn ruling's third derivation) ------------------------------------
             // #604 authored one yard POLYGON per property here too, faced at NearestPointOnAnyRoad — the
             // same call the crushed-shell town walks come through — and made the field/wood gates read
