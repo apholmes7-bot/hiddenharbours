@@ -1,7 +1,7 @@
 {
   "schema": "hiddenharbours.scene/1",
   "generatedBy": "tools/scene-export/hh_scene_export.py",
-  "generatedAt": "2026-08-19T18:36:07Z",
+  "generatedAt": "2026-08-20T10:37:08Z",
   "region": {
     "id": "region.st_peters",
     "sceneName": "StPeters",
@@ -32622,7 +32622,7 @@
   ],
   "x-cliffLinesNote": "Empty: cliff lines are an authoring artefact of the editor. The repo's cliffs are placed CliffWallSurface components and ship as entities.",
   "x-provenance": {
-    "generatedAt": "2026-08-19T18:36:07Z",
+    "generatedAt": "2026-08-20T10:37:08Z",
     "historyIsComplete": true,
     "sceneFile": "Assets/_Project/Scenes/StPeters.unity",
     "sceneFileSha256": "0a6516c6dc65f896de6d1e77b4aae40e759365b79a03a5e002c968136b4e660a",
@@ -32631,11 +32631,12 @@
     "sceneLastBuiltSubject": "chore(scenes): bank the owner's two builds — St Peters learns its day, the creek opens its doors (#518)",
     "sceneWorkingTreeDirty": false,
     "builderDrift": {
-      "builderCommitsSinceScene": 20,
-      "measuredTo": "f020a8a19d746ddf37d66bf13af3411062fbff5f",
-      "measuredToDate": "2026-08-19T15:36:07-03:00",
+      "builderCommitsSinceScene": 21,
+      "measuredTo": "78e166032a74a0c0ac9f9dbd6017ee1c0d849b7d",
+      "measuredToDate": "2026-08-20T07:37:08-03:00",
       "exact": true,
       "builderCommits": [
+        "78e16603 feat(world): the mow line — a yard polygon per property, the one wall system, and 62 pieces of dooryard measured (#604)",
         "f020a8a1 feat(world): the game opens on an arrival — a skipper brings you in, ties up, and points you up the path (#584)",
         "a136655f feat(world): the east berth keeps its water — a dredged door, and the ladder moves to the reef (#582)",
         "38fdb3d7 feat(save): you wake where you slept — region, storey and spot, because a position alone names the wrong room (#580)",

@@ -1,7 +1,7 @@
 {
   "schema": "hiddenharbours.scene/1",
   "generatedBy": "tools/scene-export/hh_scene_export.py",
-  "generatedAt": "2026-08-19T21:55:08Z",
+  "generatedAt": "2026-08-20T10:37:08Z",
   "region": {
     "id": "region.nine_mile_creek",
     "sceneName": "NineMileCreek",
@@ -79,7 +79,7 @@
       "minElevation": -6.0,
       "maxElevation": 6.0,
       "texture": "Assets/_Project/Data/Terrain/NineMileCreekSeabed_HeightTex.png",
-      "textureSha256": "99e6d0b95ec00eed6ae1c819240dd40e7eed374b9afb3dbe0d58f002e66a67be"
+      "textureSha256": "c314d79769434652632f8a842bea5332a97c081dd34c1f199f2ef58c2866bf29"
     }
   },
   "entities": [
@@ -9175,7 +9175,7 @@
   ],
   "x-cliffLinesNote": "Empty: cliff lines are an authoring artefact of the editor. The repo's cliffs are placed CliffWallSurface components and ship as entities.",
   "x-provenance": {
-    "generatedAt": "2026-08-19T21:55:08Z",
+    "generatedAt": "2026-08-20T10:37:08Z",
     "historyIsComplete": true,
     "sceneFile": "Assets/_Project/Scenes/NineMileCreek.unity",
     "sceneFileSha256": "26a2db1dd58f4ee77d072264eb03c86af53e0894068cd483d342f6641b06f35d",
@@ -9184,11 +9184,13 @@
     "sceneLastBuiltSubject": "chore(scenes): bank the owner's two builds — St Peters learns its day, the creek opens its doors (#518)",
     "sceneWorkingTreeDirty": false,
     "builderDrift": {
-      "builderCommitsSinceScene": 20,
-      "measuredTo": "9411bf317c482a5a912f8177dc346f0e6a29f947",
-      "measuredToDate": "2026-08-19T18:55:08-03:00",
+      "builderCommitsSinceScene": 22,
+      "measuredTo": "78e166032a74a0c0ac9f9dbd6017ee1c0d849b7d",
+      "measuredToDate": "2026-08-20T07:37:08-03:00",
       "exact": true,
       "builderCommits": [
+        "78e16603 feat(world): the mow line — a yard polygon per property, the one wall system, and 62 pieces of dooryard measured (#604)",
+        "60d34cc2 feat(world): the small craft go to the float — two moorings, and the side is measured (#597)",
         "9411bf31 feat(world): the float rides the tide — a deck whose height is the water's, and the brow that reaches it (#594)",
         "cb2e3f5b feat(camera): the wheel is the player's eye — the walking view steps the same integer ladder (#590)",
         "b721e3d0 feat(world): the Otter is staged at the boat ramp — pointed at the water, and the tide never takes her (#587)",
@@ -9218,7 +9220,7 @@
       "minElevation": -6.0,
       "maxElevation": 6.0,
       "texture": "Assets/_Project/Data/Terrain/NineMileCreekSeabed_HeightTex.png",
-      "textureSha256": "99e6d0b95ec00eed6ae1c819240dd40e7eed374b9afb3dbe0d58f002e66a67be"
+      "textureSha256": "c314d79769434652632f8a842bea5332a97c081dd34c1f199f2ef58c2866bf29"
     },
     "readFrom": {
       "regionFrame": "Assets/_Project/Data/Regions/*.asset (source of truth)",

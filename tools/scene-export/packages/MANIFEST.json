@@ -4,7 +4,7 @@
     {
       "region": "region.nine_mile_creek",
       "file": "NineMileCreek.scene.json",
-      "sha256": "907da36663b4277b24a2b317f57166be8180f1863b1233870bb56acc7fefb407",
+      "sha256": "104f570f54ffe4a802f2177799a8a14d3d118b919f73b4412cd2351b68b0d2d7",
       "entities": 291,
       "paths": 0,
       "rigsPinned": 7,
@@ -13,7 +13,7 @@
     {
       "region": "region.st_peters",
       "file": "StPeters.scene.json",
-      "sha256": "31edd47eae719b9e04d30a64906d39eec3c3618985e2475c8eb47c7d2c850110",
+      "sha256": "6ff2acd9c6ce96e879ed076aafb740a5f327f23306a6e5f6c14780bb5290c263",
       "entities": 1028,
       "paths": 10,
       "rigsPinned": 7,
