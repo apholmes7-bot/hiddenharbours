@@ -23,7 +23,7 @@ sys.path.insert(0, TOOL)
 
 REFERENCE = "docs/tools/reference/sample-scene.json"
 
-from hhexport import package, unityyaml as U  # noqa: E402
+from hhexport import heightmap, package, roads, unityyaml as U  # noqa: E402
 from hhexport.repo import Repo, sha256_lf  # noqa: E402
 from hhexport.scene import Scene  # noqa: E402
 
@@ -325,6 +325,112 @@ class PackageTests(unittest.TestCase):
             height = document["terrain"]["x-heightMap"]
             self.assertIsNotNone(height)
             self.assertIsNotNone(height["textureSha256"])
+
+
+class EnrichmentTests(unittest.TestCase):
+    """Rasterised layers and renderable entities — the coordinator's enrichment spec."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.repo = Repo(REPO)
+        cls.documents = {
+            name: hh_scene_export.export_region(cls.repo, name, scene, height)
+            for name, scene, height in hh_scene_export.REGIONS
+        }
+
+    def test_every_legend_key_is_used_and_every_rle_value_is_a_legend_key(self):
+        """Contract §2 #5: the legend's keys ARE the RLE values. `0` is not one of them."""
+        for name, document in self.documents.items():
+            terrain = document["terrain"]
+            legend = set(terrain["legend"])
+            used = set()
+            for layer_name, layer in terrain["layers"].items():
+                for value, _count in layer["rle"]:
+                    if value == 0:
+                        continue
+                    self.assertIn(value, legend, f"{name}.{layer_name} uses an unlisted {value}")
+                    self.assertEqual(terrain["legend"][value]["layer"], layer_name, f"{name} {value}")
+                    used.add(value)
+            self.assertEqual(used, legend, f"{name} declares a legend key nothing uses")
+            self.assertNotIn(0, legend, f"{name}: 0 is the reserved no-tile value, not a key")
+
+    def test_the_road_layer_is_stroked_from_the_declared_ways(self):
+        """Nine Mile Creek declares four ways; the painted count must match a fresh stroke."""
+        ways, omitted = roads.read_ways(
+            self.repo,
+            "Assets/_Project/Code/App/Editor/NineMileCreekRoads.cs",
+            "Assets/_Project/Code/App/Editor/NineMileCreekMainland.cs")
+        self.assertTrue(ways, "no declared way was found — the reader has drifted off the table")
+        self.assertTrue(omitted, "the computed ways must be reported, not silently dropped")
+        document = self.documents["NineMileCreek"]
+        terrain = document["terrain"]
+        grid = roads.rasterise(ways, terrain["cols"], terrain["rows"], terrain["originNW"])
+        self.assertEqual(document["stats"]["tiles"]["road"], sum(1 for c in grid if c))
+        surfaces = {w.surface for w in ways}
+        listed = {v["material"] for v in terrain["legend"].values() if v["layer"] == "road"}
+        self.assertEqual(listed, surfaces, "every stroked surface needs a legend entry")
+
+    def test_a_region_with_no_road_table_says_so_rather_than_painting_nothing_quietly(self):
+        road = self.documents["StPeters"]["terrain"]["layers"]["road"]
+        self.assertEqual(road["rle"], [[0, 395200]])
+        self.assertIn("declares no road table", road["x-unavailable"])
+
+    def test_the_ground_contour_reads_a_real_height_png(self):
+        """The LFS-present branch, exercised against a PNG built here — the only way to have any
+        confidence in a path this container's pointer-only checkout never takes."""
+        rows = [bytes([0, 128, 255, 255]), bytes([0, 0, 200, 255]), bytes([0, 0, 0, 90])]
+        png = _greyscale_png(4, 3, rows)
+        decoded = heightmap.decode_r8(png)
+        self.assertIsNotNone(decoded)
+        self.assertEqual([list(r) for r in decoded.rows], [list(r) for r in rows])
+        self.assertIsNone(heightmap.decode_r8(b"version https://git-lfs.github.com/spec/v1"),
+                          "an LFS pointer must be refused, not coerced into an elevation field")
+        floor, bands = heightmap.read_bands(self.repo)
+        self.assertIsNotNone(floor)
+        self.assertEqual([n for n, _f in bands], ["grass", "marram", "sand", "ripple"])
+        self.assertEqual(sorted((f for _n, f in bands), reverse=True), [f for _n, f in bands],
+                         "the band floors must descend, or the ladder picks the wrong band")
+
+    def test_the_ground_layer_declares_which_honesty_level_it_produced(self):
+        for name, document in self.documents.items():
+            ground = document["terrain"]["layers"]["ground"]
+            painted = document["stats"]["tiles"]["ground"] > 0
+            if painted:
+                self.assertIn("iso-contour", ground["x-derived"], name)
+                self.assertNotIn("x-unavailable", ground, name)
+            else:
+                self.assertIn("x-unavailable", ground, name)
+
+    def test_a_resolved_rig_gives_the_editor_something_to_call(self):
+        for name, document in self.documents.items():
+            renderable = 0
+            for entity in document["entities"]:
+                if entity["rigSource"] is None:
+                    self.assertIsNone(entity["call"], f"{name} {entity['id']}")
+                    continue
+                self.assertIsNotNone(entity["rig"], f"{name} {entity['id']}")
+                call = entity["call"]
+                self.assertIsNotNone(call, f"{name} {entity['id']} has a rig but nothing to call")
+                self.assertEqual(call["fn"], "render")
+                self.assertEqual(call["opts"], {}, "a guessed opt draws the wrong object")
+                self.assertTrue(call["x-synthesised"])
+                renderable += 1
+            self.assertGreater(renderable, 0, f"{name} renders nothing at all")
+
+
+def _greyscale_png(width, height, rows):
+    import struct as _struct
+    import zlib as _zlib
+
+    def chunk(kind, body):
+        return (_struct.pack(">I", len(body)) + kind + body
+                + _struct.pack(">I", _zlib.crc32(kind + body) & 0xFFFFFFFF))
+
+    raw = b"".join(b"\x00" + row for row in rows)
+    return (b"\x89PNG\r\n\x1a\n"
+            + chunk(b"IHDR", _struct.pack(">IIBBBBB", width, height, 8, 0, 0, 0, 0))
+            + chunk(b"IDAT", _zlib.compress(raw))
+            + chunk(b"IEND", b""))
 
 
 class PortabilityTests(unittest.TestCase):

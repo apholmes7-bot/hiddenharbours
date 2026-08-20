@@ -12,7 +12,7 @@ a separate, gated spike (`docs/tools/scene-editor-review.md` §9) and nothing he
 ```bash
 python3 tools/scene-export/hh_scene_export.py                 # writes tools/scene-export/packages/
 python3 tools/scene-export/hh_scene_export.py --check         # fails if the committed packages are stale
-python3 -m unittest discover -s tools/scene-export/tests -v   # 33 tests
+python3 -m unittest discover -s tools/scene-export/tests -v   # 39 tests
 ```
 
 No arguments needed and no Unity: python3 (3.8+), standard library only. It runs in a bare
@@ -53,13 +53,17 @@ to whichever hull sorts first.
 ```
 hh_scene_export.py          CLI. --out, --region, --check.
 hhexport/unityyaml.py       Unity Force-Text YAML reader (stdlib; keeps every scalar a string)
+hhexport/csharp.py          declared literals out of C# — routes, band floors, rig globals
+hhexport/roads.py           strokes the declared ways into the road layer
+hhexport/heightmap.py       R8 PNG decode + the ground iso-contour (LFS-gated)
 hhexport/repo.py            GUIDs, sprite import settings, region defs, rig resolution + sha256
 hhexport/scene.py           hierarchy, world transforms, the scene's own ordering
 hhexport/package.py         the hiddenharbours.scene/1 emitter
 hhexport/provenance.py      what vintage of the world a package is a picture of
 packages/                   the committed output (regenerate with the command above)
-tests/                      33 tests: parser, rig pinning, the contract compared block-for-block
-                            against docs/tools/reference/sample-scene.json, portability, determinism
+tests/                      39 tests: parser, rig pinning, the contract compared block-for-block
+                            against docs/tools/reference/sample-scene.json, the rasterised
+                            layers, portability, determinism
 ```
 
 The YAML reader is hand-written rather than PyYAML on purpose. Unity serialises `int[]` as a

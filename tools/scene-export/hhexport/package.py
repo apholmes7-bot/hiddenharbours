@@ -19,7 +19,7 @@ import json
 import math
 import os
 
-from . import unityyaml as U
+from . import heightmap, roads, unityyaml as U
 from .repo import ASSETS_PPU
 
 SCHEMA = "hiddenharbours.scene/1"
@@ -57,6 +57,7 @@ def build_document(repo, region, scene, provenance):
     entities, rigs, entity_notes = _entities(
         repo, scene, (centre_x, centre_y), origin_nw, cols, rows)
     paths = _paths(repo, scene)
+    terrain, tile_counts = _terrain(repo, region, cols, rows, origin_nw, provenance)
 
     return {
         "schema": SCHEMA,
@@ -80,7 +81,7 @@ def build_document(repo, region, scene, provenance):
             "sort": "painter, descending world y (north draws first); sortBias breaks ties",
             "pivots": "cell pivot is top-left origin; unityPivot is normalised bottom-left",
         },
-        "terrain": _terrain(cols, rows, origin_nw, provenance),
+        "terrain": terrain,
         "entities": entities,
         "cliffLines": [],
         "paths": paths,
@@ -93,11 +94,12 @@ def build_document(repo, region, scene, provenance):
         },
         "stats": {
             "entities": len(entities),
-            "tiles": {name: 0 for name, _code, _order, _label in TERRAIN_LAYERS},
+            "tiles": tile_counts,
             "x-paths": len(paths),
             "x-rigsPinned": len(rigs),
-            "x-tilesNote": "stamp counts, as in the reference package — not a checksum of the "
-                           "RLE. Zero here because no layer is painted (see terrain.layers).",
+            "x-tilesNote": "painted cell counts per layer. The reference package uses stamp "
+                           "counts here, which double-count overlaps; a true cell count is the "
+                           "more useful number and the review asked for one or the other, said.",
         },
         "x-rigs": rigs,
         "x-cliffLinesNote": "Empty: cliff lines are an authoring artefact of the editor. The "
@@ -109,51 +111,154 @@ def build_document(repo, region, scene, provenance):
 
 # --- terrain ------------------------------------------------------------------------------
 
-def _terrain(cols, rows, origin_nw, provenance):
-    """The grid, one top-level legend, and the three layers.
+def _terrain(repo, region, cols, rows, origin_nw, provenance):
+    """The grid, one top-level legend, and the three layers — painted where the repo declares it.
 
-    Shape follows the reference package: a single ``terrain.legend`` whose prefixed keys (``g1``,
-    ``r3``, ``c2``) ARE the values appearing in every layer's RLE, and layer objects that carry
-    no legend of their own. ``0`` is not a legend key — it is the reserved "no tile" value, and
-    it counts toward full coverage.
+    Ground and road are rasterised from their own sources of truth (see ``heightmap`` and
+    ``roads``); cliff stays unpainted because the repo's cliffs are placed surfaces and ship as
+    entities. Every layer's RLE covers ``cols x rows`` exactly, whether painted or not.
     """
     total = cols * rows
-    layers = {}
+    legend, painted, notes = {}, {}, {}
+
+    road_grid, road_note = _road_grid(repo, region, cols, rows, origin_nw)
+    if road_grid is not None:
+        painted["road"] = road_grid
+    notes["road"] = road_note
+
+    ground_grid, ground_note = heightmap.contour(
+        repo, provenance.get("heightMap"), cols, rows, origin_nw)
+    if ground_grid is not None:
+        painted["ground"] = ground_grid
+    notes["ground"] = ground_note
+
+    layers, tiles = {}, {}
     for name, code, order, label in TERRAIN_LAYERS:
-        layers[name] = {
+        grid = painted.get(name)
+        # An unpainted layer names no kit: claiming a rig for a layer with nothing on it invites
+        # a reader to think the kit was consulted and found empty.
+        kit = _layer_kit(repo, name) if grid else {"rig": None, "cell": None, "layerOpts": None}
+        materials = _legend_for(grid, code, name, kit, legend) if grid else {}
+        layer = {
             "code": code,
             "order": order,
             "label": label,
-            "rig": None,
-            "cell": None,
-            "layerOpts": None,
-            "rle": [[0, total]],
-            "x-readOnly": True,
-            "x-derived": True,
-            "x-authorable": False,
-            "x-unavailable": _LAYER_UNAVAILABLE[name],
+            "rig": kit.get("rig"),
+            "cell": kit.get("cell"),
+            "layerOpts": kit.get("layerOpts"),
+            "rle": _encode(grid, materials, total),
         }
+        tiles[name] = sum(1 for value in grid if value) if grid else 0
+        # Every layer is read-only and derived whether or not it carries cells: painting one
+        # here does not make it authorable, because the gated importer cannot take it back.
+        layer["x-readOnly"] = True
+        layer["x-derived"] = _LAYER_DERIVED[name]
+        layer["x-authorable"] = False
+        if grid is None:
+            layer["x-unavailable"] = notes.get(name) or _LAYER_UNAVAILABLE[name]
         if name == "cliff":
-            # The reference's cliff layer carries this and the others do not; ours is empty for
-            # the same reason its rle is — nothing is painted — and covers the grid all the same.
-            layers[name]["pieces"] = {
+            layer["pieces"] = {
                 "note": "per-cell ledge piece laid by cliff lines; 0 = autotile from neighbours",
                 "legend": {},
                 "rle": [[0, total]],
             }
-    return {
+        layers[name] = layer
+
+    terrain = {
         "cellMeters": 1,
         "cols": cols,
         "rows": rows,
         "originNW": [_num(origin_nw[0]), _num(origin_nw[1])],
         "note": "row 0 = north edge. 0 = no tile (water — never baked, the shader owns it). "
                 "Runs are [value, count]; sum(count) == cols * rows exactly.",
-        "legend": {},
+        "legend": legend,
         "layers": layers,
-        "x-legendNote": "Empty because no layer is painted: the only RLE value in this document "
-                        "is the reserved 0, which is not a legend key.",
         "x-heightMap": provenance.get("heightMap"),
     }
+    return terrain, tiles
+
+
+_LAYER_DERIVED = {
+    "ground": "an iso-contour of the painted height map at the shore map's DECLARED band floors. "
+              "Coarser than what Unity paints, which additionally wiggles the elevation, tests a "
+              "sandbar spine and picks a band table by weather sector. Those are logic, not "
+              "declarations, and reimplementing them here would be a second coastline.",
+    "road": "stroked from the region's declared route table at each way's declared half-width "
+            "and rank. Surface material only — the blob-47 tile index stays derived in the one "
+            "place the repo derives it.",
+    "cliff": "not painted; the repo's cliffs are placed surfaces and ship as entities.",
+}
+
+
+def _road_grid(repo, region, cols, rows, origin_nw):
+    """Rasterised ways for a region that declares a road table, else ``(None, why)``."""
+    scene_name = region["sceneName"]
+    table = f"Assets/_Project/Code/App/Editor/{scene_name}Roads.cs"
+    geometry = f"Assets/_Project/Code/App/Editor/{scene_name}Mainland.cs"
+    if not repo.exists(table):
+        return None, (f"{scene_name} declares no road table — this region has no roads to "
+                      "rasterise, which is a fact about the region and not a gap in the export.")
+    ways, omitted = roads.read_ways(repo, table, geometry)
+    if not ways:
+        return None, f"{scene_name}'s road table declares no way this reader can follow"
+    grid = roads.rasterise(ways, cols, rows, origin_nw)
+    return grid, None
+
+
+def _layer_kit(repo, layer):
+    """``{rig, cell, layerOpts}`` for a layer, from the kit contract that owns it."""
+    if layer != "road":
+        return {"rig": None, "cell": None, "layerOpts": None}
+    contract = "docs/art/rigs/road-path-kit-v3/road.contract.json"
+    if not repo.exists(contract):
+        return {"rig": None, "cell": None, "layerOpts": None}
+    with open(repo.abs(contract), encoding="utf-8", errors="replace") as handle:
+        data = json.load(handle)
+    tile = data.get("tile")
+    return {
+        "rig": "RoadKit3",
+        "cell": {"w": tile, "head": data.get("head"), "plan": tile, "faceH": data.get("skirt")},
+        "layerOpts": data.get("bake") or None,
+    }
+
+
+def _legend_for(grid, code, layer, kit, legend):
+    """Assign this layer's materials their prefixed legend keys, in first-seen grid order."""
+    materials = {}
+    for value in grid:
+        if value and value not in materials:
+            materials[value] = f"{code}{len(materials) + 1}"
+            legend[materials[value]] = {
+                "layer": layer,
+                "rig": kit.get("rig"),
+                "rigSource": _RIG_SOURCES.get(layer),
+                "material": value,
+            }
+    return materials
+
+
+_RIG_SOURCES = {
+    "road": "docs/art/rigs/road-path-kit-v3/roadPathRig3.js",
+    "ground": None,
+}
+
+
+def _encode(grid, materials, total):
+    """Run-length encode a grid to ``[[value, count], …]`` covering every cell exactly once."""
+    if grid is None:
+        return [[0, total]]
+    runs, current, length = [], None, 0
+    for cell in grid:
+        value = materials.get(cell, 0) if cell else 0
+        if value == current:
+            length += 1
+        else:
+            if length:
+                runs.append([current, length])
+            current, length = value, 1
+    if length:
+        runs.append([current, length])
+    return runs
 
 
 # --- entities -----------------------------------------------------------------------------
@@ -206,6 +311,7 @@ def _entities(repo, scene, centre, origin_nw, cols, rows):
         family_counts[family] = index
 
         rig_name, rig_source, evidence, candidates = repo.rig_for_sheet(sheet)
+        rig_global = repo.rig_global(rig_source) if rig_source else None
         if rig_source and rig_source not in rigs:
             rigs[rig_source] = {
                 "rig": rig_name,
@@ -226,8 +332,9 @@ def _entities(repo, scene, centre, origin_nw, cols, rows):
             "id": f"{family}_{index:03d}",
             "family": family,
             "group": parts[-2] if len(parts) > 1 else None,
-            "rig": rig_name,
+            "rig": rig_global or rig_name,
             "rigSource": rig_source,
+            "call": _call(rig_global),
             "pos": [_num(x - centre[0]), _num(y - centre[1])],
             "flipX": U.as_int(renderer.data.get("m_FlipX"), 0) != 0,
             "sortBias": _sort_bias(y_sort, decor_base),
@@ -291,6 +398,30 @@ def _entities(repo, scene, centre, origin_nw, cols, rows):
     }
     ordered_rigs = [rigs[key] for key in sorted(rigs)]
     return entities, ordered_rigs, notes
+
+
+def _call(rig_global):
+    """``{fn, args, opts}`` for an entity the catalog can resolve — or ``null``.
+
+    The editor draws only by calling a rig, so an entity without this is an entity it cannot
+    render. What can honestly be supplied is the **function and the rig's own defaults**:
+    ``opts`` stays empty because a baked sheet does not record which option axes produced a
+    given cell, and the rigs fail *soft* — the review measured a mistyped key rendering a
+    different object at a different cell size rather than throwing. An empty opts draws the
+    rig's default build; a guessed one draws something that is confidently wrong.
+    """
+    if not rig_global:
+        return None
+    return {
+        "fn": "render",
+        "args": ["dir", "opts"],
+        "opts": {},
+        "x-synthesised": True,
+        "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not "
+                      "recorded anywhere, and the rigs resolve an unknown key as a silent "
+                      "fallback rather than an error. Defaults draw something true; a guess "
+                      "draws something confidently wrong.",
+    }
 
 
 def _cell(entry):

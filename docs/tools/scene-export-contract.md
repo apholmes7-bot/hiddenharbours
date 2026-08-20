@@ -76,18 +76,16 @@ Deliberately absent, each for a stated reason:
 
 - **`call` / `opts`** — §0. Reconstructing an invocation from a baked sheet would be a second
   definition of the bake.
-- **Painted terrain** — the ground is an iso-contour of an R8 height texture in Git LFS
-  (ADR 0014), whose bytes are absent from a checkout. Layers ship zero-filled at full coverage,
-  flagged `x-readOnly` / `x-derived` / `x-authorable: false`, with the map pinned by its LFS
-  oid. Inferring height from tiles is the review's §7(c) trap and is not attempted.
 - **`cliffLines`** — empty. Cliff lines are an editor authoring artefact; the repo's cliffs are
   placed `CliffWallSurface` components and ship as entities.
 - **`footprint`, `gameplaySidecar`** — both are rig gameplay measurements, and no rig is
   executed here (rigs are hashed, not evaluated).
+- **`opts` inside `call`** — see §7.
 - **A guessed rig** — a sheet with no sidecar the exporter will trust resolves to `null` and is
   listed by name under `x-provenance`.
 
-One field is honest-but-mismatched, and every entity says so: **`family` is the sprite name's
+See §7 for what the terrain layers now carry. One field is honest-but-mismatched, and every
+entity says so: **`family` is the sprite name's
 stem, not a `RigKit` id** (§2 #10), because a baked sheet does not record which palette family
 drew it. Each entity carries `x-familyIsSpriteStem: true`.
 
@@ -139,3 +137,57 @@ that wrote it. A second run on a Windows full-LFS checkout found three ways it d
   comparing raw bytes. It now reads with universal newlines — what it means is "does this commit
   still produce this document", not "is your working tree LF" — and `.gitattributes` pins the
   packages to LF as well.
+
+
+## 7. Making the package renderable
+
+The editor draws **only** by calling rigs — it loads no images — so an entity with no rig gives
+it nothing, and an empty terrain layer draws nothing. Three enrichments, each derived from a
+source of truth and each declaring how far it goes.
+
+### 7.1 Entities call a rig
+
+Every entity whose sheet resolves to a rig now carries that rig's **installed global** and a
+`call` block. The global comes from `RigCatalog`'s registrations where the catalog knows the rig,
+and otherwise from the rig's own `root.X = …` publication — both are declarations, and the
+second matters because the catalog registers only the rigs the Unity bakers bake, which is a
+fraction of the palette.
+
+**`opts` is deliberately `{}`.** A baked sheet does not record which option axes produced a given
+cell, and the rigs resolve an unknown or wrong key as a *silent fallback* rather than an error —
+the #571 review measured a mistyped species key rendering a different object at a different cell
+size. An empty opts draws the rig's default build, which is true; a guessed one draws something
+confidently wrong. Every `call` carries `x-synthesised: true`: it was reconstructed by the
+exporter, never recorded from a bake.
+
+### 7.2 Roads are stroked from the declared route table
+
+`NineMileCreekMainland` declares each way's vertices and `NineMileCreekRoads` its surface,
+half-width and rank; the exporter strokes them into one-metre cells, lowest rank first. That is a
+**surface-material** raster, which is exactly what the format's road RLE carries — the review is
+explicit that the export ships no mask index and that blob-47 stays derived in one place.
+
+Ways whose route is *computed* rather than declared are **omitted and named**: the truck-park
+spur solves for the nearest point on any road, and the town walks solve from each lot to the
+nearest carriageway. St Peters declares no road table at all, and the package says so rather
+than shipping an empty layer that reads as an oversight.
+
+### 7.3 Ground is an iso-contour, at two honesty levels
+
+The R8 height texture is a Git LFS object. On a pointer-only checkout the ground layer stays
+unpainted with `x-unavailable` naming the reason; on a checkout with the bytes, the exporter
+decodes the PNG and bands each cell by the shore map's **declared floor elevations**.
+
+⚠ **That contour is not the ground Unity paints, and the package says so in
+`layers.ground.x-derived`.** `ShoreMaterialAt` also wiggles the elevation so the rings meander,
+tests a sandbar segment with its own spine rule, and chooses between two band tables by weather
+sector. Those are logic, not declarations. Reimplementing them here would be a second definition
+of the coastline — the review's §7(c) trap, whose failure mode is a shoreline that looks
+approximately right and disagrees with the sim. The contour is true to the height map and
+coarser than the paint, and that is the whole of what it claims.
+
+### 7.4 Region dimensions stand as exported
+
+760 × 560 for Nine Mile Creek is the `RegionDef`'s truth. The editor's own region table is stale
+(review §6.2 measured it at the C# field default). Ruled: **the package declares, the tool
+conforms.** Nothing here compensates for a stale table on the other side.

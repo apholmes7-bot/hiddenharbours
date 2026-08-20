@@ -69,6 +69,8 @@ class Repo:
         self._rig_link_cache = {}
         self._rig_sha_cache = {}
         self._decor_base = None
+        self._rig_globals = None
+        self._rig_global_cache = {}
 
     # --- paths ---------------------------------------------------------------------------
 
@@ -314,6 +316,23 @@ class Repo:
                         out.append((tuple(block["labels"]), candidate))
                         break
         return out
+
+    def rig_global(self, rig_rel):
+        """The global a rig installs (``doryIsoRig.js`` -> ``DoryIso``), per ``RigCatalog``.
+
+        The scene editor renders by calling exactly this global, so without it an entity gives it
+        nothing to draw. Read from the catalog's registrations rather than guessed from the
+        filename — several rigs install a global whose name is not their stem.
+        """
+        if self._rig_globals is None:
+            from .csharp import rig_globals
+            self._rig_globals = rig_globals(self)
+        if rig_rel in self._rig_globals:
+            return self._rig_globals[rig_rel]
+        if rig_rel not in self._rig_global_cache:
+            from .csharp import global_declared_by_rig
+            self._rig_global_cache[rig_rel] = global_declared_by_rig(self, rig_rel)
+        return self._rig_global_cache[rig_rel]
 
     def decor_base(self):
         """``SortingBands.DecorBase``, computed from the constants the C# declares.
