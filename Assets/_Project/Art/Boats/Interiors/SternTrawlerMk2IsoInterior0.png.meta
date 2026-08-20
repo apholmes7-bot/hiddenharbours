@@ -1,0 +1,344 @@
+fileFormatVersion: 2
+guid: 65298b068492d0843af98932ac1fb260
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -2308552376012730137
+    second: SternTrawlerMk2IsoInterior0_0
+  - first:
+      213: -2699557516686727235
+    second: SternTrawlerMk2IsoInterior0_1
+  - first:
+      213: -5178780902941661585
+    second: SternTrawlerMk2IsoInterior0_2
+  - first:
+      213: -7345622678831486062
+    second: SternTrawlerMk2IsoInterior0_3
+  - first:
+      213: -1324740827697379639
+    second: SternTrawlerMk2IsoInterior0_4
+  - first:
+      213: 2057302201615760906
+    second: SternTrawlerMk2IsoInterior0_5
+  - first:
+      213: 6346552444602336441
+    second: SternTrawlerMk2IsoInterior0_6
+  - first:
+      213: 7636954520709202181
+    second: SternTrawlerMk2IsoInterior0_7
+  - first:
+      213: 3032242282876770913
+    second: SternTrawlerMk2IsoInterior0_8
+  - first:
+      213: 5514554370462039834
+    second: SternTrawlerMk2IsoInterior0_9
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: sternTrawlerMk2IsoRig_bridge_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 2304
+        width: 1344
+        height: 1152
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: da08eaf4b6f68594cb27d792c5c440ba
+      internalID: 844722706
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sternTrawlerMk2IsoRig_bridge_d1
+      rect:
+        serializedVersion: 2
+        x: 1344
+        y: 2304
+        width: 1344
+        height: 1152
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7ae5e3d6f6435de47a2c7dfe436520fc
+      internalID: 2144328563
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sternTrawlerMk2IsoRig_bridge_d2
+      rect:
+        serializedVersion: 2
+        x: 2688
+        y: 2304
+        width: 1344
+        height: 1152
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4fd426651474791409c46aad65410e35
+      internalID: 1123145451
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sternTrawlerMk2IsoRig_bridge_d3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1152
+        width: 1344
+        height: 1152
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7075d0fb8a140774ea80ef8240e595ca
+      internalID: 1174705697
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sternTrawlerMk2IsoRig_bridge_d4
+      rect:
+        serializedVersion: 2
+        x: 1344
+        y: 1152
+        width: 1344
+        height: 1152
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 72538421fb85a504fb325df9bf9e8459
+      internalID: 782152372
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sternTrawlerMk2IsoRig_bridge_d5
+      rect:
+        serializedVersion: 2
+        x: 2688
+        y: 1152
+        width: 1344
+        height: 1152
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ec0615f4284634c49abc077881ab92f2
+      internalID: 2119253489
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sternTrawlerMk2IsoRig_bridge_d6
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 1344
+        height: 1152
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 129d14263871aae498634d4b860bfba2
+      internalID: 252678459
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sternTrawlerMk2IsoRig_bridge_d7
+      rect:
+        serializedVersion: 2
+        x: 1344
+        y: 0
+        width: 1344
+        height: 1152
+      alignment: 9
+      pivot: {x: 0.5, y: 0.41666666}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5b26a7dae2eb1dc4d95551049b9ad079
+      internalID: 923007247
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: bee68636976c0ae4b8d62410f3596d71
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      sternTrawlerMk2IsoRig_bridge_d0: 844722706
+      sternTrawlerMk2IsoRig_bridge_d1: 2144328563
+      sternTrawlerMk2IsoRig_bridge_d2: 1123145451
+      sternTrawlerMk2IsoRig_bridge_d3: 1174705697
+      sternTrawlerMk2IsoRig_bridge_d4: 782152372
+      sternTrawlerMk2IsoRig_bridge_d5: 2119253489
+      sternTrawlerMk2IsoRig_bridge_d6: 252678459
+      sternTrawlerMk2IsoRig_bridge_d7: 923007247
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
