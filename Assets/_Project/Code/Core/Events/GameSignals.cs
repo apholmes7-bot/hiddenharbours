@@ -548,4 +548,32 @@ namespace HiddenHarbours.Core
 
         public OutfitPreviewRequested(string outfitId) { OutfitId = outfitId ?? ""; }
     }
+
+    // =====================================================================================
+    //  THE NOTEBOOK — the book she carries
+    // =====================================================================================
+
+    /// <summary>
+    /// <b>Take the notebook out, or put it away.</b> A toggle, not an open: the same request from the
+    /// same control both opens and shuts the book, because that is what reaching for a book you are
+    /// already holding means.
+    ///
+    /// <para><b>Why a signal and not a call.</b> The book is drawn by <c>NotebookPresenter</c> in
+    /// World; the control that asks for it is a row on the pause menu, in UI. Neither module may
+    /// reference the other (rule 4), so Core states WHAT was asked and World answers with HOW — the
+    /// shape <see cref="WardrobeRequested"/> already uses for the same reason.</para>
+    ///
+    /// <para><b>⚠️ It carries no key, because there is no key to carry.</b> The dev-key ledger is
+    /// spent A-Z, so the book deliberately binds NOTHING new: it rides controls that already exist.
+    /// Anything that can reach the player - a menu row, a desk, a later world fixture - publishes
+    /// this, and the book neither knows nor cares which did.</para>
+    /// </summary>
+    public readonly struct NotebookRequested
+    {
+        /// <summary>Where the request came from, for flavour and for tests — a menu row, a fixture id.
+        /// Never null; EMPTY means "no particular place", which is a real answer.</summary>
+        public readonly string SourceId;
+
+        public NotebookRequested(string sourceId) { SourceId = sourceId ?? ""; }
+    }
 }
