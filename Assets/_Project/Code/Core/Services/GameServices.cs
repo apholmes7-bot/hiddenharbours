@@ -45,6 +45,26 @@ namespace HiddenHarbours.Core
         public static IHelmControl HelmControl { get; set; }
 
         /// <summary>
+        /// The active boat's FUEL TANK, as a plain <see cref="IFuelVessel"/> — so the economy can fill a
+        /// boat without ever naming a Boats type, and the Boats lane can be filled without naming an
+        /// economy one (rule 4). <c>FuelPump</c> reads this to answer "what is the player actually
+        /// addressing" when they press it with empty hands on a deck.
+        ///
+        /// <para>Same lifetime + discipline as <see cref="ActiveBoat"/> and <see cref="HelmControl"/>:
+        /// OPTIONAL, NOT part of <see cref="Ready"/>, self-registered by the Boats-lane producer
+        /// (<c>BoatFuelTank</c>) on enable and identity-guarded on disable, null on foot / in EditMode.
+        /// Consumers must null-check (ADR 0007).</para>
+        ///
+        /// <para><b>⚠ A registered tank is not the same as a tank that HOLDS anything.</b> Every hull
+        /// carries the component; a hull with <c>FuelCapacityLitres = 0</c> registers and then reports no
+        /// grade, no capacity and no level — which every consumer already handles, because it is the
+        /// same answer an empty pair of hands gives. Do not add a "does she really have a tank" check
+        /// here; ask the vessel.</para>
+        /// FLAG lead-architect: new Core slot (the §9.4 refuel seam).
+        /// </summary>
+        public static IFuelVessel ActiveBoatFuel { get; set; }
+
+        /// <summary>
         /// The active hull's instrument GLASS seam (ADR 0025 S2): what is fitted in this boat's helm, what
         /// those instruments read from the live sim, and the per-hull display preferences. Sibling of
         /// <see cref="HelmControl"/> — that one MOVES the boat, this one REPORTS the dash — and same
@@ -412,6 +432,16 @@ namespace HiddenHarbours.Core
         /// rig still climbs the rig's real geometry rather than a zeroed one.</summary>
         public static LadderBoardingSettings LadderBoarding =>
             Config != null ? Config.LadderBoarding : LadderBoardingSettings.Default;
+
+        /// <summary>The FUEL curve — how thirst rises with throttle, with the catch aboard and with the
+        /// sea (<c>fuel-and-refuelling.md</c> §9.6.1). Same contract as <see cref="Anchor"/>, including
+        /// the <c>Config != null</c> discipline (never <c>?.</c>/<c>??</c> on a <c>UnityEngine.Object</c>)
+        /// and the resolved-per-read liveness, so dragging BurnScale in Play re-prices the very next
+        /// tick. Falls back to <see cref="FuelSettings.Default"/> with no config wired — which is why an
+        /// unwired test rig burns the authored curve rather than a ZEROED one, and a zeroed one would
+        /// mean fuel is free and nothing ever burns.</summary>
+        public static FuelSettings Fuel =>
+            Config != null ? Config.Fuel : FuelSettings.Default;
 
         /// <summary>The wind-fetch model's tunables (ADR 0027 #1), same contract as
         /// <see cref="WaveField"/> including the <c>Config != null</c> discipline. Read by BOTH the

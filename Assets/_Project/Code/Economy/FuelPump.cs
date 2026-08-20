@@ -175,10 +175,19 @@ namespace HiddenHarbours.Economy
         /// </summary>
         public int Priority => HeldVessel() != null ? InteractPriority.ToolTarget : InteractPriority.Fixture;
 
-        /// <summary>On your own two feet. <see cref="InteractContext.Aboard"/> is NOT offered because there
-        /// is no tank to fill from a deck (see the class remarks) — offering a press that can only ever
-        /// refuse is worse than not offering it.</summary>
-        public InteractContext Contexts => InteractContext.OnFoot;
+        /// <summary>
+        /// On your own two feet, and now <b>on a deck</b> too — you lie alongside and fill her without
+        /// getting off (<c>fuel-and-refuelling.md</c> §9.4).
+        ///
+        /// <para><b>⚠ The bit is <see cref="InteractContext.OnDeck"/>, not the "Aboard" this file and
+        /// §9.12 both name.</b> There is no <c>InteractContext.Aboard</c>: the flags are OnFoot / OnDeck /
+        /// AtHelm / Driving, and <c>ControlMode.Aboard</c> maps to <see cref="InteractContext.AtHelm"/> —
+        /// which is unreachable by construction, because a press at the helm means "step back onto the
+        /// deck" and the switcher answers it before any verb is consulted. Offering AtHelm would be
+        /// offering a press that can never happen. OnDeck is both reachable and the honest place to be
+        /// standing while a hose goes into your filler.</para>
+        /// </summary>
+        public InteractContext Contexts => InteractContext.OnFoot | InteractContext.OnDeck;
 
         /// <inheritdoc/>
         public bool RequiresFacing => _requiresFacing;
@@ -211,7 +220,7 @@ namespace HiddenHarbours.Economy
 
         /// <summary>The no-arg interaction entrypoint (the press / tests): fill whatever the fisher is
         /// carrying, from the wired wallet, to the brim.</summary>
-        public bool TryFill() => TryFill(HeldVessel(), _wallet);
+        public bool TryFill() => TryFill(TargetVessel(), _wallet);
 
         /// <summary>
         /// Core fill seam (testable): quote it, spend, pour, announce.
@@ -287,6 +296,38 @@ namespace HiddenHarbours.Economy
             Transform t = held?.Transform;
             _vesselCache = t != null ? t.GetComponent<IFuelVessel>() : null;
             return _vesselCache;
+        }
+
+        /// <summary>
+        /// <b>What this press is FOR</b> — the can in your hands if there is one, otherwise the tank of
+        /// the boat you are standing on.
+        ///
+        /// <para><b>Hands win, and that ordering is the whole of it.</b> Alongside in your own boat with
+        /// a can in your hands, the thing you meant was the can — you are standing at a hose holding an
+        /// empty container. Empty-handed on the same deck, the only thing you can have meant is her tank.
+        /// Neither reading needs a mode switch or a second button.</para>
+        ///
+        /// <para><b>⚠ §9.12 says this component should be "unchanged except for adding the deck
+        /// context". It needed one line more than that, and the reason is worth recording:</b> a pump can
+        /// only fill what it can NAME, and "the boat you are on" is not something the Economy module is
+        /// allowed to look up — <c>BoatFuelTank</c> lives in Boats, which this module does not reference
+        /// and must not (rule 4). So the tank publishes itself into Core
+        /// (<see cref="GameServices.ActiveBoatFuel"/>) exactly as the heading probe and the helm relay
+        /// already do, and this reads the slot. The pump still names no boat type and the pricing below
+        /// is untouched, which is what the criterion was actually protecting.</para>
+        /// </summary>
+        private IFuelVessel TargetVessel()
+        {
+            IFuelVessel held = HeldVessel();
+            if (held != null) return held;
+
+            // ⚠ NOT `HeldVessel() ?? GameServices.ActiveBoatFuel`. The slot holds a MonoBehaviour behind
+            // an interface, and `??` is a REFERENCE null check — it does not run Unity's overloaded
+            // operator, so a destroyed tank would come back "not null" and then throw on first touch.
+            // The slot is identity-cleared on disable, so this only bites on a torn-down boat that never
+            // got its OnDisable; launder it explicitly rather than rely on that.
+            IFuelVessel tank = GameServices.ActiveBoatFuel;
+            return tank is Object o && o == null ? null : tank;
         }
 
         // The memo behind HeldVessel(). Never read anywhere else.

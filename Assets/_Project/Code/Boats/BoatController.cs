@@ -153,6 +153,20 @@ namespace HiddenHarbours.Boats
                 gameObject.AddComponent<DevAnchorInput>();
             }
 
+            // THE TANK (fuel-and-refuelling.md §9.2): what she carries, and the filler cap a can is
+            // poured into. Same runtime-spawn reasoning as the tackle above — every already-built scene
+            // grows the tank on load, no builder re-run, no prefab churn — and play mode only for the
+            // same reason (EditMode tests build BoatControllers freely and must stay presentation-free;
+            // an EditMode rig that wants the tank adds BoatFuelTank itself).
+            //
+            // ⭐ Mounted UNCONDITIONALLY, on every hull, including the ones with no tank. A hull whose
+            // FuelCapacityLitres is 0 reports no grade, no capacity and no level, and the pour verb never
+            // offers itself — so the component is inert rather than absent, and the owner enrolling a
+            // hull later is a Def edit with nothing to re-wire. That is the whole point of the field
+            // defaulting to "no tank".
+            if (Application.isPlaying && GetComponent<BoatFuelTank>() == null)
+                gameObject.AddComponent<BoatFuelTank>();
+
             _rb = GetComponent<Rigidbody2D>();
             _rb.gravityScale = 0f;
             _rb.linearDamping = 0.2f;
