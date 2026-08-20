@@ -229,10 +229,18 @@ namespace HiddenHarbours.World
             // Walk the closed boundary, emitting points while outside every gap. The subdivision is fine
             // enough that a gap edge lands within a few centimetres of where it was asked for — the
             // fence's own segment length is far coarser, so nothing downstream sees the quantisation.
+            // ⚠ THE WALK IS FINE-GRAINED BUT THE OUTPUT IS NOT. Every step is tested against the gaps;
+            // only three kinds of point are EMITTED — a polygon corner, the point where a run leaves a
+            // gate, and the point where it enters one. Everything between is collinear filler, and a
+            // fence built from a point every 10 cm is a hundred one-decimetre panels.
             const float WalkStep = 0.1f;
             var current = new List<Vector2>();
             float travelled = 0f;
-            bool wasOpen = false;
+
+            // Start as though inside a gap, so whatever the first open point is, it opens a run — corner
+            // 0 when it is clear, the gate's far lip when a gate straddles it.
+            bool prevInGap = true;
+            Vector2 lastOpen = Vector2.zero;
 
             for (int i = 0; i < _vertices.Length; i++)
             {
@@ -242,7 +250,7 @@ namespace HiddenHarbours.World
 
                 for (int s = 0; s <= steps; s++)
                 {
-                    if (i > 0 && s == 0) continue;            // corner already emitted as the last edge's end
+                    if (i > 0 && s == 0) continue;            // corner already walked as the last edge's end
                     float f = (float)s / steps;
                     Vector2 p = Vector2.Lerp(a, b, f);
                     float here = travelled + len * f;
@@ -253,23 +261,28 @@ namespace HiddenHarbours.World
 
                     if (inGap)
                     {
-                        if (current.Count >= 2) runs.Add(current.ToArray());
-                        current = new List<Vector2>();
-                        wasOpen = false;
+                        // Entering a gate: the run ends at the last point that was still outside it —
+                        // which is usually filler, and would otherwise never be emitted at all.
+                        if (!prevInGap)
+                        {
+                            AppendIfNew(current, lastOpen);
+                            if (current.Count >= 2) runs.Add(current.ToArray());
+                            current = new List<Vector2>();
+                        }
                     }
                     else
                     {
-                        // Keep the corners and the two cut ends; drop the collinear filler, so a straight
-                        // stretch comes back as two points rather than a hundred.
                         bool isCorner = s == 0 || s == steps;
-                        if (isCorner || !wasOpen) current.Add(p);
-                        else current[current.Count - 1] = p;
-                        wasOpen = true;
+                        if (prevInGap || current.Count == 0 || isCorner) AppendIfNew(current, p);
+                        lastOpen = p;
                     }
+
+                    prevInGap = inGap;
                 }
                 travelled += len;
             }
 
+            if (!prevInGap) AppendIfNew(current, lastOpen);
             if (current.Count >= 2) runs.Add(current.ToArray());
 
             // The walk started at corner 0. If that corner was NOT in a gap, its run and the final run
@@ -288,6 +301,15 @@ namespace HiddenHarbours.World
             }
 
             return runs;
+        }
+
+        /// <summary>Append unless it would repeat the point already there. A run that carries the same
+        /// point twice becomes a zero-length wall segment, which builds nothing and reads as a gap.
+        /// </summary>
+        static void AppendIfNew(List<Vector2> list, Vector2 p)
+        {
+            if (list.Count > 0 && Vector2.Distance(list[list.Count - 1], p) < 1e-4f) return;
+            list.Add(p);
         }
 
         /// <summary>How far along the perimeter the boundary's nearest point to <paramref name="p"/>
