@@ -1,0 +1,192 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c066b3141c12834eb15805632bcf579, type: 3}
+  m_Name: dispenser_sMpd
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.StationPieceDef
+  Id: station.dispenser_smpd
+  DisplayName: Multi Product
+  PieceType: dispenser
+  SizeKey: sMpd
+  Label: MULTI-PRODUCT
+  IsInterior: 0
+  Facings: 8
+  Fold180: 0
+  Frames:
+  - {fileID: -2059093473, guid: b5932672d14b857408a2f39269a9cdd4, type: 3}
+  - {fileID: -1333862158, guid: b5932672d14b857408a2f39269a9cdd4, type: 3}
+  - {fileID: -871739807, guid: b5932672d14b857408a2f39269a9cdd4, type: 3}
+  - {fileID: -177159911, guid: b5932672d14b857408a2f39269a9cdd4, type: 3}
+  - {fileID: 1421035330, guid: b5932672d14b857408a2f39269a9cdd4, type: 3}
+  - {fileID: -177819186, guid: b5932672d14b857408a2f39269a9cdd4, type: 3}
+  - {fileID: 191528737, guid: b5932672d14b857408a2f39269a9cdd4, type: 3}
+  - {fileID: -1937200903, guid: b5932672d14b857408a2f39269a9cdd4, type: 3}
+  BakedGrades:
+  - gas
+  - diesel
+  - mixed
+  WidthMeters: 1.26
+  DepthMeters: 0.76
+  HeightMeters: 1.94
+  MaxHoses: 6
+  MaxSides: 2
+  HoseReachMeters: 4.6
+  LitresPerMinute: 40
+  Slots: 0
+  LengthMeters: 1.26
+  SlotPitchMeters: 3.3
+  Bays: 0
+  ClearHeightMeters: 0
+  Blockers:
+  - Kind: cabinet
+    Level: 
+    Footprint:
+    - {x: -0.49, y: -0.24}
+    - {x: 0.49, y: -0.24}
+    - {x: 0.49, y: 0.24}
+    - {x: -0.49, y: 0.24}
+    Center: {x: 0, y: 0}
+    Radius: 0
+    HeightAboveGradeMeters: 1.94
+    Treatment: wall
+  - Kind: plinth
+    Level: 
+    Footprint:
+    - {x: -0.63, y: -0.38}
+    - {x: 0.63, y: -0.38}
+    - {x: 0.63, y: 0.38}
+    - {x: -0.63, y: 0.38}
+    Center: {x: 0, y: 0}
+    Radius: 0
+    HeightAboveGradeMeters: 0.1
+    Treatment: flat
+  Walkables: []
+  Interactables:
+  - Id: nozzle_a0
+    Label: "HOSE A1 \xB7 GASOLINE"
+    Action: fuel
+    Position: {x: 0.59, y: 0, z: 0.54}
+    ReachPoint: {x: 1.21, y: -0.34, z: 0}
+    HasReachPoint: 1
+    ReachVerdict: ok
+    Level: apron
+    VisibleFacings:
+    - NE
+    - E
+    - SE
+  - Id: nozzle_a1
+    Label: "HOSE A2 \xB7 DIESEL"
+    Action: fuel
+    Position: {x: 0.59, y: 0, z: 0.91}
+    ReachPoint: {x: 1.21, y: -0.34, z: 0}
+    HasReachPoint: 1
+    ReachVerdict: ok
+    Level: apron
+    VisibleFacings:
+    - NE
+    - E
+    - SE
+  - Id: nozzle_a2
+    Label: "HOSE A3 \xB7 MIXED 50:1"
+    Action: fuel
+    Position: {x: 0.59, y: 0, z: 1.28}
+    ReachPoint: {x: 1.21, y: -0.34, z: 0}
+    HasReachPoint: 1
+    ReachVerdict: ok
+    Level: apron
+    VisibleFacings:
+    - NE
+    - E
+    - SE
+  - Id: nozzle_b0
+    Label: "HOSE B1 \xB7 GASOLINE"
+    Action: fuel
+    Position: {x: -0.59, y: 0, z: 0.54}
+    ReachPoint: {x: -1.21, y: -0.34, z: 0}
+    HasReachPoint: 1
+    ReachVerdict: ok
+    Level: apron
+    VisibleFacings:
+    - SW
+    - W
+    - NW
+  - Id: nozzle_b1
+    Label: "HOSE B2 \xB7 DIESEL"
+    Action: fuel
+    Position: {x: -0.59, y: 0, z: 0.91}
+    ReachPoint: {x: -1.21, y: -0.34, z: 0}
+    HasReachPoint: 1
+    ReachVerdict: ok
+    Level: apron
+    VisibleFacings:
+    - SW
+    - W
+    - NW
+  - Id: nozzle_b2
+    Label: "HOSE B3 \xB7 MIXED 50:1"
+    Action: fuel
+    Position: {x: -0.59, y: 0, z: 1.28}
+    ReachPoint: {x: -1.21, y: -0.34, z: 0}
+    HasReachPoint: 1
+    ReachVerdict: ok
+    Level: apron
+    VisibleFacings:
+    - SW
+    - W
+    - NW
+  - Id: pay_a
+    Label: PAY AT PUMP
+    Action: pay
+    Position: {x: 0.25, y: 0.27, z: 0.85}
+    ReachPoint: {x: 0.25, y: 0.99, z: 0}
+    HasReachPoint: 1
+    ReachVerdict: ok
+    Level: apron
+    VisibleFacings:
+    - SE
+    - S
+    - SW
+  - Id: pay_b
+    Label: PAY AT PUMP
+    Action: pay
+    Position: {x: 0.25, y: -0.27, z: 0.85}
+    ReachPoint: {x: 0.25, y: -0.99, z: 0}
+    HasReachPoint: 1
+    ReachVerdict: ok
+    Level: apron
+    VisibleFacings:
+    - N
+    - NE
+    - NW
+  Entry:
+    Kind: 
+    ClearWidthMeters: 0
+    ClearHeightMeters: 0
+    Threshold: {x: 0, y: 0, z: 0}
+    LeafWidthMeters: 0
+    TravelMeters: 0
+    ClearAtOpenFraction: 0
+    SillStepMeters: 0
+    Treatment: 
+    HasKeepClear: 0
+    KeepClear: []
+  ServiceDoor:
+    Kind: 
+    ClearWidthMeters: 0
+    ClearHeightMeters: 0
+    Threshold: {x: 0, y: 0, z: 0}
+    LeafWidthMeters: 0
+    TravelMeters: 0
+    ClearAtOpenFraction: 0
+    SillStepMeters: 0
+    Treatment: 
+    HasKeepClear: 0
+    KeepClear: []
