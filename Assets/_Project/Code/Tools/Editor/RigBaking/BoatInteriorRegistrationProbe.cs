@@ -328,6 +328,16 @@ namespace HiddenHarbours.Tools.RigBaking
         /// magnitude with the opposite sign, which a silhouette's principal axis simply does not
         /// carry. This is the same oracle, and the same reasoning, that
         /// <c>RigCatalog.LobsterVariants.cs</c> records having used and sabotage-proved.</para>
+        ///
+        /// <para>⚠️ <b><c>RigMeshAssetBaker</c> measures the same thing, privately, and states its sign
+        /// the other way up.</b> Its <c>GroundBearingOfAbeamPair</c> takes ONE bearing at a quarter
+        /// turn without negating the screen Δy, so there <c>bearing &gt; 0</c> means CLOCKWISE and this
+        /// fleet lands on exactly −90.00°; here the Δy is negated and eight bearings are STEPPED, so
+        /// <c>+45°/step</c> means COUNTER-clockwise. <b>The two agree on every hull</b> — they are the
+        /// same measurement written from opposite ends — and the stepped form additionally proves the
+        /// divisor by returning a zero deviation. They are separate only because that one is a private
+        /// static inside another lane's baker; <b>folding both into one shared helper is worth doing,
+        /// and deliberately was not done inside an art PR.</b> If you change one, change both.</para>
         /// </summary>
         public static void MeasureConvention(IRigScriptHost host, string exteriorGlobal,
                                              string extOpts, Report r)
