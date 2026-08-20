@@ -600,7 +600,7 @@ already happened twice on this repo. `BurnScale = 0` would mean *fuel is free an
 
 | Throttle | 0 (idle) | ¼ | ½ | 0.7 (cruise) | 0.85 | full |
 |---|---|---|---|---|---|---|
-| Fraction of full-throttle burn | 0.08 | 0.14 | 0.31 | 0.53 | 0.75 | 1.00 |
+| Fraction of full-throttle burn | 0.08 | 0.14 | 0.31 | 0.53 | 0.74 | 1.00 |
 | …for this fraction of top speed | 0 | 0.25 | 0.50 | 0.70 | 0.85 | 1.00 |
 
 ⭐ **That gap is the lesson.** Half throttle is half the speed for **31%** of the fuel — so easing off

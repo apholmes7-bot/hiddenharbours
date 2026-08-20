@@ -459,6 +459,14 @@ namespace HiddenHarbours.Core
                  "FishSpeciesDef.SpoilPerDay; these are the world-policy dials on top of it.")]
         public FreshnessSettings Freshness = FreshnessSettings.Default;
 
+        [Header("Fuel (fuel-and-refuelling.md §9 — the shape of the burn, whole-fleet)")]
+        [Tooltip("How thirst rises with throttle, with the catch aboard, and with the sea — the " +
+                 "dimensionless curve every hull's burn is multiplied by. A particular boat's thirst is " +
+                 "her own BoatHullDef.FullThrottleLitresPerHour; this is the shape they all share.\n\n" +
+                 "⭐ If fuel feels too thirsty or too free ACROSS THE BOARD, move BurnScale — one " +
+                 "number re-prices fuel for the whole game, instead of re-authoring 38 hull assets.")]
+        public FuelSettings Fuel = FuelSettings.Default;
+
         [Header("Pots (trap-fishing — the starter kit)")]
         [Tooltip("Pots granted ONCE per game as the cozy starter kit (Economy's StartingPots, flag-" +
                  "guarded): a new game starts with these, and an existing save gets them on its first " +
