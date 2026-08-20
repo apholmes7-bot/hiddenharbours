@@ -27,6 +27,17 @@ namespace HiddenHarbours.Boats
     /// <para><b>⚠ Nothing here BURNS fuel.</b> The level only moves when someone fills or pours. Metering
     /// the engine against the fixed tick, and the running-dry states that follow from it, are F5 —
     /// deliberately separate, so the tank can be reviewed as a container before it becomes a clock.</para>
+    ///
+    /// <para><b>The level PERSISTS, per hull</b> (§9.3, save v14). Every mutation pushes a snapshot into
+    /// the save blob and the <c>GameLoaded</c> edge restores it — the <c>ShipHold</c> pattern exactly
+    /// (cheap: one row, event-time only; the DISK write stays <c>SaveService</c>'s autosave). Keyed by
+    /// hull id, so selling her and buying her back finds the fuel where you left it.</para>
+    ///
+    /// <para><b>⭐ A hull with no row is FULL, and that one rule does two jobs.</b> It is how a v13 save
+    /// loads (that player's boat had no tank; deciding she is empty would invent a consequence for them),
+    /// and it is also how <c>GameConfig.Fuel.NewBoatArrivesFull</c> is honoured — a boat you have just
+    /// bought has no row yet, so she arrives fuelled with no separate purchase hook to keep in step. One
+    /// mechanism, two requirements, nothing to drift.</para>
     /// </summary>
     [DisallowMultipleComponent]
     [AddComponentMenu("Hidden Harbours/Boat Fuel Tank")]
@@ -44,6 +55,7 @@ namespace HiddenHarbours.Boats
         private BoatController _controller;
         private float _litres;
         private bool _primed;
+        private string _bankedHullId;
 
         // The memo behind HeldVessel() — the resolver reads Priority/IsAvailable on every offer
         // recompute, so an unguarded GetComponent here would run per boat per frame (rule 7).
@@ -149,6 +161,7 @@ namespace HiddenHarbours.Boats
             if (litres <= 0f || capacity <= 0f) return;
             Prime();
             _litres = Mathf.Min(capacity, _litres + litres);
+            SyncToSave();
         }
 
         /// <inheritdoc/>
@@ -158,6 +171,7 @@ namespace HiddenHarbours.Boats
             float before = Litres;
             float given = Mathf.Min(before, litres);
             _litres = before - given;
+            SyncToSave();
             return given > 0f ? given : 0f;
         }
 
@@ -170,8 +184,10 @@ namespace HiddenHarbours.Boats
         public void SetLitres(float litres)
         {
             _primed = true;
+            _bankedHullId = HullId;
             float capacity = CapacityLitres;
             _litres = capacity <= 0f ? 0f : Mathf.Clamp(litres, 0f, capacity);
+            SyncToSave();
         }
 
         /// <summary>
@@ -188,8 +204,110 @@ namespace HiddenHarbours.Boats
         {
             if (_primed) return;
             _primed = true;
+            _bankedHullId = HullId;
+            _litres = LevelFromSave(_bankedHullId, CapacityLitres);
+        }
+
+        /// <summary>
+        /// The level this hull should start at: her saved row, else brim-full.
+        ///
+        /// <para><b>⭐ The absent row IS the rule</b>, and it answers two questions at once — what a v13
+        /// save's boat has, and what a boat you just bought has
+        /// (<c>GameConfig.Fuel.NewBoatArrivesFull</c>). One mechanism, so the two can never disagree.</para>
+        ///
+        /// <para>Clamped to the CURRENT capacity, because a row is only as good as the Def it was written
+        /// against: an owner who re-tunes a tank smaller must not leave a boat carrying more than she can
+        /// hold. Untick <c>NewBoatArrivesFull</c> and an un-rowed hull starts dry instead — which is a
+        /// harder game, and the owner's to choose.</para>
+        /// </summary>
+        private static float LevelFromSave(string hullId, float capacity)
+        {
+            if (capacity <= 0f) return 0f;
+
+            var rows = GameServices.Save?.Current?.HullFuel;
+            if (rows != null && !string.IsNullOrEmpty(hullId))
+                for (int i = 0; i < rows.Count; i++)
+                    if (string.Equals(rows[i].HullId, hullId, System.StringComparison.Ordinal))
+                        return Mathf.Clamp(rows[i].Litres, 0f, capacity);
+
+            return GameServices.Fuel.NewBoatArrivesFull ? capacity : 0f;
+        }
+
+        /// <summary>This hull's stable id right now, or empty. Not necessarily the id the current level
+        /// belongs to — see <c>_bankedHullId</c> in <see cref="SyncToSave"/>.</summary>
+        private string HullId
+        {
+            get { BoatHullDef h = Hull; return h != null ? (h.Id ?? "") : ""; }
+        }
+
+        // ---- persistence (§9.3, save v14) ---------------------------------------------------------
+
+        /// <summary>
+        /// Bank this hull's level into the save blob — called after every mutation, the
+        /// <c>ShipHold.SyncToSave</c> pattern.
+        ///
+        /// <para><b>The writer rule that keeps the list sparse AND unambiguous</b> (§9.3): write a row for
+        /// a hull whose level is NOT full, and REMOVE the row for one that is. So a dry boat always has an
+        /// explicit <c>0</c>, a brim-full boat costs nothing, and "no row" never has to mean two things.
+        /// Removing rather than leaving a stale full row matters: a hull whose capacity the owner later
+        /// raises would otherwise stay pinned at the old number instead of reading as full.</para>
+        /// </summary>
+        private void SyncToSave()
+        {
+            var save = GameServices.Save;
+            if (save == null || save.Current == null) return;
+
+            // ⚠ THE HULL THE LEVEL BELONGS TO, NOT THE HULL SHE IS WEARING. These differ for exactly one
+            // instant and it is the important one: OwnedFleet.ApplyHull calls BoatController.SetHull
+            // FIRST, so by the time SwitchToHull banks the old level the controller is already reporting
+            // the NEW hull. Writing under HullId there would file the dory's half tank under the Cape
+            // Islander's id — the fuel would appear to teleport up the ladder, and the dory's own row
+            // would never be written at all. _bankedHullId is set wherever _litres is, and moves with it.
+            string hullId = !string.IsNullOrEmpty(_bankedHullId) ? _bankedHullId : HullId;
+            if (string.IsNullOrEmpty(hullId)) return;
+
+            var rows = save.Current.HullFuel ??= new System.Collections.Generic.List<HullFuelDto>();
             float capacity = CapacityLitres;
-            _litres = capacity > 0f && GameServices.Fuel.NewBoatArrivesFull ? capacity : 0f;
+            // A hull with no tank has nothing to record; she is not "full", she simply has no tank, and
+            // the row would be a fiction that a later authoring pass would silently inherit.
+            bool full = capacity <= 0f || _litres >= capacity - FuelVolumes.MinLitres;
+
+            for (int i = 0; i < rows.Count; i++)
+            {
+                if (!string.Equals(rows[i].HullId, hullId, System.StringComparison.Ordinal)) continue;
+                if (full) rows.RemoveAt(i);
+                else rows[i] = new HullFuelDto(hullId, _litres);
+                return;
+            }
+
+            if (!full) rows.Add(new HullFuelDto(hullId, _litres));
+        }
+
+        /// <summary>
+        /// Take on a different hull: bank what the OLD one had, then read what the NEW one has.
+        ///
+        /// <para>Called by <c>OwnedFleet.ApplyHull</c>, which is the one funnel every hull change goes
+        /// through — a purchase and a save-restore both. Doing it there rather than by watching the hull
+        /// change from inside a property getter keeps save I/O off the read path, and mirrors how the hold
+        /// is re-capacitied on the same line.</para>
+        ///
+        /// <para><b>Banking first is what makes the tank per-BOAT rather than per-player.</b> Trade up to
+        /// a Cape Islander with half a tank of gas in the dory and the dory still has half a tank; come
+        /// back to her and it is there.</para>
+        /// </summary>
+        public void SwitchToHull(BoatHullDef hull)
+        {
+            if (_primed) SyncToSave();          // bank the old hull, under the old hull's id
+            Configure(hull);
+            _primed = false;
+            Prime();                            // and read the new one's row, or brim-full
+        }
+
+        private void OnGameLoaded(GameLoaded _)
+        {
+            // The blob under us has been replaced, so whatever was primed is from the previous game.
+            _primed = false;
+            Prime();
         }
 
         // ---- the POUR verb ----------------------------------------------------------------------
@@ -253,6 +371,7 @@ namespace HiddenHarbours.Boats
             // slot to find "the tank the player can address", which is how FILL reaches a boat without
             // the Economy module ever naming a Boats type.
             GameServices.ActiveBoatFuel = this;
+            EventBus.Subscribe<GameLoaded>(OnGameLoaded);
         }
 
         private void OnDisable()
@@ -260,6 +379,7 @@ namespace HiddenHarbours.Boats
             // Identity-guarded, so a boat being torn down cannot clear a slot another boat now owns.
             if (ReferenceEquals(GameServices.ActiveBoatFuel, this))
                 GameServices.ActiveBoatFuel = null;
+            EventBus.Unsubscribe<GameLoaded>(OnGameLoaded);
         }
 
         /// <inheritdoc/>
