@@ -42,7 +42,7 @@ namespace HiddenHarbours.Tests.RigBaking
         /// The schemes baked for THIS hull, and only this hull.
         ///
         /// <para>⚠️ Scoped by <see cref="HullPaintSchemeDef.HullMeshId"/> since the small-craft drop.
-        /// The folder now holds 27 tables across three hulls, and this whole fixture applies them to
+        /// The folder now holds 268 tables across twenty-five hulls, and this whole fixture applies them to
         /// one <see cref="_hull"/> — so an unfiltered read handed the lobster boat the punt's and the
         /// console skiff's tables, which the renderer correctly REFUSES and falls back from, and
         /// <c>EveryBakedSchemeExceptTheDefaultChangesHer</c> then reported them as schemes that "draw

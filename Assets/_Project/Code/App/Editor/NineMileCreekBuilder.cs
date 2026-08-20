@@ -674,7 +674,7 @@ namespace HiddenHarbours.App.Editor
             // so a builder that skinned the hulls here would bake the sprite fallback into the committed
             // scene and the fleet would never be mesh. The berth the player docks in is derived and left
             // clear.
-            NineMileCreekMooredFleet.Place();
+            NineMileCreekMooredFleet.Place(terrain);
 
             // ⭐ THE REVIEW ANCHORAGE — the owner's "every boat model must be VISIBLE in game" ruling
             // (2026-08-14). Twenty-three fleet-pack hulls lying at anchor in the −6 m water east of the
