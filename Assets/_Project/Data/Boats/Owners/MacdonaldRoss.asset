@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.BoatOwnerDef
   Id: owner.macdonald_ross
   DisplayName: Ross MacDonald
-  Boat: {fileID: 11400000, guid: f9a11a1cb8419244bb13983a2862c52f, type: 2}
+  Boat: {fileID: 11400000, guid: 7555b6399837b470c8bdd12806851c97, type: 2}
   BuoyScheme: SternTrawler
-  HullPaint: {fileID: 11400000, guid: 9c65ea3cb713a734eac753b21c503dd6, type: 2}
+  HullPaint: {fileID: 11400000, guid: bfcfa171de101fb4c99978b872a78fe7, type: 2}
   Prosperity: 2
   ShedFootprintMetres: 8.0
   LotIndex: 2
