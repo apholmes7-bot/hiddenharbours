@@ -591,10 +591,15 @@ namespace HiddenHarbours.Tests.RigBaking
             string abs = Path.Combine(RepoRoot, BoatInteriorKit.KitFolder, BoatInteriorKit.InteriorRigFileName);
             Assert.IsTrue(File.Exists(abs), $"{BoatInteriorKit.InteriorRigFileName} is missing from the kit.");
 
-            string actual = DeckSidecarReader.Sha256Hex(File.ReadAllBytes(abs));
-            Assert.AreEqual(actual, Contract().interiorRigSha256,
-                "the contract pins a renderer that is not the one in the kit. Either the kit was " +
-                "revised without a re-bake, or the sheets were baked from a file that is no longer " +
+            // MatchRigHash, not a raw byte compare: the contract was stamped from one machine's
+            // checkout and this assert runs on another's, and CRLF↔LF is the one difference between
+            // those that provably cannot move a vertex. Anything else is still a refusal.
+            var match = DeckSidecarReader.MatchRigHash(
+                File.ReadAllBytes(abs), Contract().interiorRigSha256, out string actual);
+            Assert.AreNotEqual(RigHashMatch.None, match,
+                $"the contract pins a renderer ({Contract().interiorRigSha256}) that is not the one " +
+                $"in the kit ({actual}, and no line-ending form of it matches either). Either the kit " +
+                "was revised without a re-bake, or the sheets were baked from a file that is no longer " +
                 "there — and every sheet's provenance claim is wrong either way.");
         }
 
