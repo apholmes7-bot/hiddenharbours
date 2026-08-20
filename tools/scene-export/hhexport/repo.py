@@ -150,6 +150,12 @@ class Repo:
             "worldCenter": [centre[0], centre[1]],
             "seabedPixelsPerMetre": U.as_float(data.get("SeabedPixelsPerMetre"), 0.0),
             "tideAmplitude": U.as_float(data.get("TideAmplitude"), 0.0),
+            # TideModel.Height is `profile.MeanLevel + amp * carrier`, so MeanLevel IS mean water,
+            # in the same "metres relative to chart datum" the height map's elevations use. Water
+            # level is a FUNCTION OF TIME here (rule 5: recomputed, never saved); this is its mean,
+            # which is the only time-independent number the repo actually declares.
+            "tideMeanLevel": U.as_float(data.get("TideMeanLevel"), 0.0),
+            "tidePhaseHours": U.as_float(data.get("TidePhaseHours"), 0.0),
         }
 
     # --- painted height ----------------------------------------------------------------------

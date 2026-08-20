@@ -24,6 +24,13 @@
     "rows": 560,
     "originNW": [-380, 280],
     "note": "row 0 = north edge. 0 = no tile (water — never baked, the shader owns it). Runs are [value, count]; sum(count) == cols * rows exactly.",
+    "waterLevelMeters": 0,
+    "x-waterDatum": "metres relative to chart datum — the same datum the height map's elevations use, so elevation and water level are directly comparable. TideModel.Height is `MeanLevel + amplitude * carrier`; this is MeanLevel.",
+    "x-tide": {
+      "amplitudeMeters": 2.2,
+      "phaseHours": 1,
+      "x-note": "given so a tide-aware wash can swing; the exporter states the model's declared terms and does not evaluate it (no time, and rule 5 says the tide is recomputed, never stored)."
+    },
     "legend": {
       "r1": {
         "layer": "road",
@@ -1774,11 +1781,16 @@
       "texture": "Assets/_Project/Data/Terrain/NineMileCreekSeabed_HeightTex.png",
       "textureSha256": "c314d79769434652632f8a842bea5332a97c081dd34c1f199f2ef58c2866bf29",
       "textureBytesRead": false
+    },
+    "x-heightField": {
+      "strideMeters": 8,
+      "values": null,
+      "x-unavailable": "the height texture is a Git LFS pointer — its bytes are not in this checkout"
     }
   },
   "entities": [
     {
-      "id": "SeaTile_001",
+      "id": "SeaTile_29291874aa",
       "family": "SeaTile",
       "group": null,
       "rig": null,
@@ -1812,7 +1824,7 @@
       "x-sortingOrder": -5
     },
     {
-      "id": "Grass_001",
+      "id": "Grass_4e074d1cf9",
       "family": "Grass",
       "group": null,
       "rig": null,
@@ -1846,7 +1858,7 @@
       "x-sortingOrder": -7
     },
     {
-      "id": "WharfOverlays_001",
+      "id": "WharfOverlays_b9dae8268a",
       "family": "WharfOverlays",
       "group": "Fittings",
       "rig": null,
@@ -1880,7 +1892,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfOverlays_002",
+      "id": "WharfOverlays_653475a2e0",
       "family": "WharfOverlays",
       "group": "Fittings",
       "rig": null,
@@ -1914,7 +1926,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfOverlays_003",
+      "id": "WharfOverlays_2908ac4ca1",
       "family": "WharfOverlays",
       "group": "Fittings",
       "rig": null,
@@ -1948,7 +1960,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfOverlays_004",
+      "id": "WharfOverlays_880da5ac35",
       "family": "WharfOverlays",
       "group": "Fittings",
       "rig": null,
@@ -1982,7 +1994,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfOverlays_005",
+      "id": "WharfOverlays_8139733da5",
       "family": "WharfOverlays",
       "group": "Fittings",
       "rig": null,
@@ -2016,7 +2028,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfOverlays_006",
+      "id": "WharfOverlays_b62028b18e",
       "family": "WharfOverlays",
       "group": "Fittings",
       "rig": null,
@@ -2050,7 +2062,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfOverlays_007",
+      "id": "WharfOverlays_ac7739e7db",
       "family": "WharfOverlays",
       "group": "Fittings",
       "rig": null,
@@ -2084,7 +2096,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfOverlays_008",
+      "id": "WharfOverlays_3cb46691c5",
       "family": "WharfOverlays",
       "group": "Fittings",
       "rig": null,
@@ -2118,7 +2130,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfOverlays_009",
+      "id": "WharfOverlays_7417fc2033",
       "family": "WharfOverlays",
       "group": "Fittings",
       "rig": null,
@@ -2152,7 +2164,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfOverlays_010",
+      "id": "WharfOverlays_3761fffa5b",
       "family": "WharfOverlays",
       "group": "Fittings",
       "rig": null,
@@ -2186,7 +2198,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfOverlays_011",
+      "id": "WharfOverlays_00dd18c5e8",
       "family": "WharfOverlays",
       "group": "Fittings",
       "rig": null,
@@ -2220,7 +2232,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfOverlays_012",
+      "id": "WharfOverlays_10e512cbef",
       "family": "WharfOverlays",
       "group": "Fittings",
       "rig": null,
@@ -2254,7 +2266,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfOverlays_013",
+      "id": "WharfOverlays_7d38529163",
       "family": "WharfOverlays",
       "group": "Fittings",
       "rig": null,
@@ -2288,7 +2300,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfOverlays_014",
+      "id": "WharfOverlays_cd850a148e",
       "family": "WharfOverlays",
       "group": "Fittings",
       "rig": null,
@@ -2322,7 +2334,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfOverlays_015",
+      "id": "WharfOverlays_91c9f0a39f",
       "family": "WharfOverlays",
       "group": "Fittings",
       "rig": null,
@@ -2356,7 +2368,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfOverlays_016",
+      "id": "WharfOverlays_488933fa00",
       "family": "WharfOverlays",
       "group": "Fittings",
       "rig": null,
@@ -2390,7 +2402,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfOverlays_017",
+      "id": "WharfOverlays_f14870efef",
       "family": "WharfOverlays",
       "group": "Fittings",
       "rig": null,
@@ -2424,7 +2436,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfOverlays_018",
+      "id": "WharfOverlays_64ea150a70",
       "family": "WharfOverlays",
       "group": "Fittings",
       "rig": null,
@@ -2458,7 +2470,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfOverlays_019",
+      "id": "WharfOverlays_2c5fe76390",
       "family": "WharfOverlays",
       "group": "Fittings",
       "rig": null,
@@ -2492,7 +2504,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfOverlays_020",
+      "id": "WharfOverlays_28e2acae0b",
       "family": "WharfOverlays",
       "group": "Fittings",
       "rig": null,
@@ -2526,7 +2538,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfOverlays_021",
+      "id": "WharfOverlays_62bf95c64f",
       "family": "WharfOverlays",
       "group": "Fittings",
       "rig": null,
@@ -2560,7 +2572,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfOverlays_022",
+      "id": "WharfOverlays_5b6281c72c",
       "family": "WharfOverlays",
       "group": "Fittings",
       "rig": null,
@@ -2594,7 +2606,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfOverlays_023",
+      "id": "WharfOverlays_cc93ef45dc",
       "family": "WharfOverlays",
       "group": "Fittings",
       "rig": null,
@@ -2628,7 +2640,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfOverlays_024",
+      "id": "WharfOverlays_8fa24c29fd",
       "family": "WharfOverlays",
       "group": "Fittings",
       "rig": null,
@@ -2662,7 +2674,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfOverlays_025",
+      "id": "WharfOverlays_b9db368357",
       "family": "WharfOverlays",
       "group": "Fittings",
       "rig": null,
@@ -2696,7 +2708,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfBreakwaters_001",
+      "id": "WharfBreakwaters_3cbcc23105",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -2730,7 +2742,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_002",
+      "id": "WharfBreakwaters_bf3ef7a3d8",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -2764,7 +2776,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_003",
+      "id": "WharfBreakwaters_f3e11746c3",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -2798,7 +2810,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_004",
+      "id": "WharfBreakwaters_696df5d81d",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -2832,7 +2844,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_005",
+      "id": "WharfBreakwaters_8368227031",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -2866,7 +2878,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_006",
+      "id": "WharfBreakwaters_1b2aacc864",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -2900,7 +2912,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_007",
+      "id": "WharfBreakwaters_051c9e47bf",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -2934,7 +2946,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_008",
+      "id": "WharfBreakwaters_25394011dd",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -2968,7 +2980,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_009",
+      "id": "WharfBreakwaters_7a3835c81a",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -3002,7 +3014,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_010",
+      "id": "WharfBreakwaters_ebaf2ae4b4",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -3036,7 +3048,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_011",
+      "id": "WharfBreakwaters_b314660599",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -3070,7 +3082,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_012",
+      "id": "WharfBreakwaters_10d9c067c5",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -3104,7 +3116,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_013",
+      "id": "WharfBreakwaters_f7d38b92b9",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -3138,7 +3150,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_014",
+      "id": "WharfBreakwaters_c35cb3be6f",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -3172,7 +3184,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_015",
+      "id": "WharfBreakwaters_98ddda5f03",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -3206,7 +3218,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_016",
+      "id": "WharfBreakwaters_024b46475b",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -3240,7 +3252,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_017",
+      "id": "WharfBreakwaters_dc91bb347f",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -3274,7 +3286,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_018",
+      "id": "WharfBreakwaters_ed7a9a39ec",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -3308,7 +3320,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_019",
+      "id": "WharfBreakwaters_d2490c847b",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -3342,7 +3354,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_020",
+      "id": "WharfBreakwaters_4ff3278bbb",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -3376,7 +3388,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_021",
+      "id": "WharfBreakwaters_4d271e595c",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -3410,7 +3422,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_022",
+      "id": "WharfBreakwaters_a7dcf5fdb9",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -3444,7 +3456,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_023",
+      "id": "WharfBreakwaters_ebe541e7ed",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -3478,7 +3490,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_024",
+      "id": "WharfBreakwaters_d7791751e6",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -3512,7 +3524,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_025",
+      "id": "WharfBreakwaters_c51151e27b",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -3546,7 +3558,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_026",
+      "id": "WharfBreakwaters_99fc2fdd57",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -3580,7 +3592,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_027",
+      "id": "WharfBreakwaters_f62bf6039d",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -3614,7 +3626,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_028",
+      "id": "WharfBreakwaters_b43377033b",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -3648,7 +3660,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_029",
+      "id": "WharfBreakwaters_9833305078",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -3682,7 +3694,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_030",
+      "id": "WharfBreakwaters_a0b55dda1a",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -3716,7 +3728,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_031",
+      "id": "WharfBreakwaters_518ab669e0",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -3750,7 +3762,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_032",
+      "id": "WharfBreakwaters_b2c3ad2337",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -3784,7 +3796,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_033",
+      "id": "WharfBreakwaters_0745c568ac",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -3818,7 +3830,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_034",
+      "id": "WharfBreakwaters_e068258354",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -3852,7 +3864,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_035",
+      "id": "WharfBreakwaters_d26444fe7d",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -3886,7 +3898,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_036",
+      "id": "WharfBreakwaters_c7b0be0bc9",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -3920,7 +3932,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_037",
+      "id": "WharfBreakwaters_f48aefd2d9",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -3954,7 +3966,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_038",
+      "id": "WharfBreakwaters_6ee71791c2",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -3988,7 +4000,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_039",
+      "id": "WharfBreakwaters_8084a1f32b",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -4022,7 +4034,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_040",
+      "id": "WharfBreakwaters_d04d7b69ae",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -4056,7 +4068,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_041",
+      "id": "WharfBreakwaters_eeba385bad",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -4090,7 +4102,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_042",
+      "id": "WharfBreakwaters_a0536806a3",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -4124,7 +4136,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_043",
+      "id": "WharfBreakwaters_48ccbdd309",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -4158,7 +4170,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_044",
+      "id": "WharfBreakwaters_f2493ca893",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -4192,7 +4204,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_045",
+      "id": "WharfBreakwaters_e8ca494dba",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -4226,7 +4238,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_046",
+      "id": "WharfBreakwaters_9f1b81623e",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -4260,7 +4272,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_047",
+      "id": "WharfBreakwaters_f1f4b412f1",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -4294,7 +4306,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_048",
+      "id": "WharfBreakwaters_ab763ca110",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -4328,7 +4340,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_049",
+      "id": "WharfBreakwaters_9c539d8a40",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -4362,7 +4374,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_050",
+      "id": "WharfBreakwaters_d425d6686a",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -4396,7 +4408,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_051",
+      "id": "WharfBreakwaters_7910f1aaa7",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -4430,7 +4442,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_052",
+      "id": "WharfBreakwaters_dc079e1753",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -4464,7 +4476,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_053",
+      "id": "WharfBreakwaters_1709d91f7d",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -4498,7 +4510,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_054",
+      "id": "WharfBreakwaters_eae30a6e25",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -4532,7 +4544,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_055",
+      "id": "WharfBreakwaters_cb84f45672",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -4566,7 +4578,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_056",
+      "id": "WharfBreakwaters_b29b9cbccb",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -4600,7 +4612,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_057",
+      "id": "WharfBreakwaters_494a270138",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -4634,7 +4646,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_058",
+      "id": "WharfBreakwaters_1453a615ae",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -4668,7 +4680,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_059",
+      "id": "WharfBreakwaters_07412382fd",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -4702,7 +4714,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_060",
+      "id": "WharfBreakwaters_0b3569077c",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -4736,7 +4748,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_061",
+      "id": "WharfBreakwaters_8a61754dbb",
       "family": "WharfBreakwaters",
       "group": "Breakwater",
       "rig": null,
@@ -4770,7 +4782,7 @@
       "x-sortingOrder": -4
     },
     {
-      "id": "WharfBreakwaters_062",
+      "id": "WharfBreakwaters_afa17cdbc3",
       "family": "WharfBreakwaters",
       "group": "ShoreArmour",
       "rig": null,
@@ -4804,7 +4816,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfBreakwaters_063",
+      "id": "WharfBreakwaters_539b086b93",
       "family": "WharfBreakwaters",
       "group": "ShoreArmour",
       "rig": null,
@@ -4838,7 +4850,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfBreakwaters_064",
+      "id": "WharfBreakwaters_48980106c3",
       "family": "WharfBreakwaters",
       "group": "ShoreArmour",
       "rig": null,
@@ -4872,7 +4884,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfBreakwaters_065",
+      "id": "WharfBreakwaters_84dfacd36b",
       "family": "WharfBreakwaters",
       "group": "ShoreArmour",
       "rig": null,
@@ -4906,7 +4918,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfBreakwaters_066",
+      "id": "WharfBreakwaters_cb888eb5f9",
       "family": "WharfBreakwaters",
       "group": "ShoreArmour",
       "rig": null,
@@ -4940,7 +4952,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfBreakwaters_067",
+      "id": "WharfBreakwaters_c49b013e3b",
       "family": "WharfBreakwaters",
       "group": "ShoreArmour",
       "rig": null,
@@ -4974,7 +4986,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfBreakwaters_068",
+      "id": "WharfBreakwaters_da6521024e",
       "family": "WharfBreakwaters",
       "group": "ShoreArmour",
       "rig": null,
@@ -5008,7 +5020,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfBreakwaters_069",
+      "id": "WharfBreakwaters_11930c701f",
       "family": "WharfBreakwaters",
       "group": "ShoreArmour",
       "rig": null,
@@ -5042,7 +5054,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfBreakwaters_070",
+      "id": "WharfBreakwaters_f78948b1e1",
       "family": "WharfBreakwaters",
       "group": "ShoreArmour",
       "rig": null,
@@ -5076,7 +5088,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfBreakwaters_071",
+      "id": "WharfBreakwaters_58cc905ff3",
       "family": "WharfBreakwaters",
       "group": "ShoreArmour",
       "rig": null,
@@ -5110,7 +5122,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfBreakwaters_072",
+      "id": "WharfBreakwaters_be09b00e13",
       "family": "WharfBreakwaters",
       "group": "ShoreArmour",
       "rig": null,
@@ -5144,7 +5156,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfBreakwaters_073",
+      "id": "WharfBreakwaters_d1eea89675",
       "family": "WharfBreakwaters",
       "group": "ShoreArmour",
       "rig": null,
@@ -5178,7 +5190,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfBreakwaters_074",
+      "id": "WharfBreakwaters_57da985127",
       "family": "WharfBreakwaters",
       "group": "ShoreArmour",
       "rig": null,
@@ -5212,7 +5224,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfBreakwaters_075",
+      "id": "WharfBreakwaters_7dd76de72a",
       "family": "WharfBreakwaters",
       "group": "ShoreArmour",
       "rig": null,
@@ -5246,7 +5258,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfBreakwaters_076",
+      "id": "WharfBreakwaters_d320230c88",
       "family": "WharfBreakwaters",
       "group": "ShoreArmour",
       "rig": null,
@@ -5280,7 +5292,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfBreakwaters_077",
+      "id": "WharfBreakwaters_27b0dfcc91",
       "family": "WharfBreakwaters",
       "group": "ShoreArmour",
       "rig": null,
@@ -5314,7 +5326,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfBreakwaters_078",
+      "id": "WharfBreakwaters_0d10f4f365",
       "family": "WharfBreakwaters",
       "group": "ShoreArmour",
       "rig": null,
@@ -5348,7 +5360,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfBreakwaters_079",
+      "id": "WharfBreakwaters_f88ef71501",
       "family": "WharfBreakwaters",
       "group": "ShoreArmour",
       "rig": null,
@@ -5382,7 +5394,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfBreakwaters_080",
+      "id": "WharfBreakwaters_56083c964e",
       "family": "WharfBreakwaters",
       "group": "ShoreArmour",
       "rig": null,
@@ -5416,7 +5428,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfBreakwaters_081",
+      "id": "WharfBreakwaters_535b42eec0",
       "family": "WharfBreakwaters",
       "group": "ShoreArmour",
       "rig": null,
@@ -5450,7 +5462,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfBreakwaters_082",
+      "id": "WharfBreakwaters_f45508b3c1",
       "family": "WharfBreakwaters",
       "group": "ShoreArmour",
       "rig": null,
@@ -5484,7 +5496,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfBreakwaters_083",
+      "id": "WharfBreakwaters_9c82651cd3",
       "family": "WharfBreakwaters",
       "group": "ShoreArmour",
       "rig": null,
@@ -5518,7 +5530,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfBreakwaters_084",
+      "id": "WharfBreakwaters_36e017379f",
       "family": "WharfBreakwaters",
       "group": "ShoreArmour",
       "rig": null,
@@ -5552,7 +5564,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfBreakwaters_085",
+      "id": "WharfBreakwaters_86a39c4476",
       "family": "WharfBreakwaters",
       "group": "ShoreArmour",
       "rig": null,
@@ -5586,7 +5598,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfBreakwaters_086",
+      "id": "WharfBreakwaters_2b25c3552a",
       "family": "WharfBreakwaters",
       "group": "ShoreArmour",
       "rig": null,
@@ -5620,7 +5632,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfBreakwaters_087",
+      "id": "WharfBreakwaters_3897b14edf",
       "family": "WharfBreakwaters",
       "group": "ShoreArmour",
       "rig": null,
@@ -5654,7 +5666,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfBreakwaters_088",
+      "id": "WharfBreakwaters_48c3ef5cf7",
       "family": "WharfBreakwaters",
       "group": "ShoreArmour",
       "rig": null,
@@ -5688,7 +5700,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfBreakwaters_089",
+      "id": "WharfBreakwaters_de7a31832a",
       "family": "WharfBreakwaters",
       "group": "ShoreArmour",
       "rig": null,
@@ -5722,7 +5734,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfBreakwaters_090",
+      "id": "WharfBreakwaters_9858376619",
       "family": "WharfBreakwaters",
       "group": "ShoreArmour",
       "rig": null,
@@ -5756,7 +5768,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfBreakwaters_091",
+      "id": "WharfBreakwaters_9e83dc98ee",
       "family": "WharfBreakwaters",
       "group": "ShoreArmour",
       "rig": null,
@@ -5790,7 +5802,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfBreakwaters_092",
+      "id": "WharfBreakwaters_2a0b455d6d",
       "family": "WharfBreakwaters",
       "group": "ShoreArmour",
       "rig": null,
@@ -5824,7 +5836,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfBreakwaters_093",
+      "id": "WharfBreakwaters_0a4252098a",
       "family": "WharfBreakwaters",
       "group": "ShoreArmour",
       "rig": null,
@@ -5858,7 +5870,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfBreakwaters_094",
+      "id": "WharfBreakwaters_60e6e5b563",
       "family": "WharfBreakwaters",
       "group": "ShoreArmour",
       "rig": null,
@@ -5892,7 +5904,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfBreakwaters_095",
+      "id": "WharfBreakwaters_6a61cc32e0",
       "family": "WharfBreakwaters",
       "group": "ShoreArmour",
       "rig": null,
@@ -5926,7 +5938,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WharfBreakwaters_096",
+      "id": "WharfBreakwaters_e5e827ed61",
       "family": "WharfBreakwaters",
       "group": "ShoreArmour",
       "rig": null,
@@ -5960,7 +5972,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "ShipwrightShed_001",
+      "id": "ShipwrightShed_78a5ffeaa3",
       "family": "ShipwrightShed",
       "group": null,
       "rig": null,
@@ -5994,7 +6006,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "FishBuyerStall_001",
+      "id": "FishBuyerStall_1ae291fb61",
       "family": "FishBuyerStall",
       "group": null,
       "rig": null,
@@ -6028,7 +6040,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "Village_001",
+      "id": "Village_e2c81a294e",
       "family": "Village",
       "group": "CreekHouses",
       "rig": null,
@@ -6062,7 +6074,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "Village_002",
+      "id": "Village_0250fd9b1c",
       "family": "Village",
       "group": "CreekHouses",
       "rig": null,
@@ -6096,7 +6108,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "logCrib_001",
+      "id": "logCrib_0809be6b43",
       "family": "logCrib",
       "group": "QuayFace",
       "rig": "WharfIso",
@@ -6136,7 +6148,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "logCrib_002",
+      "id": "logCrib_1b456ed2ed",
       "family": "logCrib",
       "group": "QuayFace",
       "rig": "WharfIso",
@@ -6176,7 +6188,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "logCrib_003",
+      "id": "logCrib_3b3982d739",
       "family": "logCrib",
       "group": "QuayFace",
       "rig": "WharfIso",
@@ -6216,7 +6228,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "logCrib_004",
+      "id": "logCrib_3cbb51caf0",
       "family": "logCrib",
       "group": "QuayFace",
       "rig": "WharfIso",
@@ -6256,7 +6268,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "logCrib_005",
+      "id": "logCrib_d8447bb243",
       "family": "logCrib",
       "group": "QuayFace",
       "rig": "WharfIso",
@@ -6296,7 +6308,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "logCrib_006",
+      "id": "logCrib_1430c97051",
       "family": "logCrib",
       "group": "QuayFace",
       "rig": "WharfIso",
@@ -6336,7 +6348,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "logCrib_007",
+      "id": "logCrib_ae065a50a8",
       "family": "logCrib",
       "group": "QuayFace",
       "rig": "WharfIso",
@@ -6376,7 +6388,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "logCrib_008",
+      "id": "logCrib_b7ba803cc6",
       "family": "logCrib",
       "group": "QuayFace",
       "rig": "WharfIso",
@@ -6416,7 +6428,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "logCrib_009",
+      "id": "logCrib_9efc9e392d",
       "family": "logCrib",
       "group": "QuayFace",
       "rig": "WharfIso",
@@ -6456,7 +6468,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "logCrib_010",
+      "id": "logCrib_a6e4e0d572",
       "family": "logCrib",
       "group": "QuayFace",
       "rig": "WharfIso",
@@ -6496,7 +6508,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "logCrib_011",
+      "id": "logCrib_824a39bc11",
       "family": "logCrib",
       "group": "QuayFace",
       "rig": "WharfIso",
@@ -6536,7 +6548,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "logCrib_012",
+      "id": "logCrib_441d521080",
       "family": "logCrib",
       "group": "QuayFace",
       "rig": "WharfIso",
@@ -6576,7 +6588,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "logCrib_013",
+      "id": "logCrib_8613912490",
       "family": "logCrib",
       "group": "QuayFace",
       "rig": "WharfIso",
@@ -6616,7 +6628,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "logCrib_014",
+      "id": "logCrib_de25cef1fb",
       "family": "logCrib",
       "group": "QuayFace",
       "rig": "WharfIso",
@@ -6656,7 +6668,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "logCrib_015",
+      "id": "logCrib_7cd010d146",
       "family": "logCrib",
       "group": "QuayFace",
       "rig": "WharfIso",
@@ -6696,7 +6708,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "logCrib_016",
+      "id": "logCrib_2b68f37804",
       "family": "logCrib",
       "group": "QuayFace",
       "rig": "WharfIso",
@@ -6736,7 +6748,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "logCrib_017",
+      "id": "logCrib_6e22462072",
       "family": "logCrib",
       "group": "QuayFace",
       "rig": "WharfIso",
@@ -6776,7 +6788,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "logCrib_018",
+      "id": "logCrib_dd33a5ab63",
       "family": "logCrib",
       "group": "QuayFace",
       "rig": "WharfIso",
@@ -6816,7 +6828,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "logCrib_019",
+      "id": "logCrib_20313fb606",
       "family": "logCrib",
       "group": "QuayFace",
       "rig": "WharfIso",
@@ -6856,7 +6868,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "logCrib_020",
+      "id": "logCrib_2ea3589a4c",
       "family": "logCrib",
       "group": "QuayFace",
       "rig": "WharfIso",
@@ -6896,7 +6908,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "logCrib_021",
+      "id": "logCrib_10cf87c80f",
       "family": "logCrib",
       "group": "QuayFace",
       "rig": "WharfIso",
@@ -6936,7 +6948,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "logCrib_022",
+      "id": "logCrib_7b6717f039",
       "family": "logCrib",
       "group": "QuayFace",
       "rig": "WharfIso",
@@ -6976,7 +6988,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "logCrib_023",
+      "id": "logCrib_ca3b17715d",
       "family": "logCrib",
       "group": "QuayFace",
       "rig": "WharfIso",
@@ -7016,7 +7028,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "logCrib_024",
+      "id": "logCrib_386b6a5d4b",
       "family": "logCrib",
       "group": "QuayFace",
       "rig": "WharfIso",
@@ -7056,7 +7068,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "wharfdecor_001",
+      "id": "wharfdecor_e587d00107",
       "family": "wharfdecor",
       "group": "QuayGear",
       "rig": "WharfDecor",
@@ -7094,7 +7106,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "wharfdecor_002",
+      "id": "wharfdecor_9a830cc041",
       "family": "wharfdecor",
       "group": "QuayGear",
       "rig": "WharfDecor",
@@ -7132,7 +7144,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "wharfdecor_003",
+      "id": "wharfdecor_7cce99084f",
       "family": "wharfdecor",
       "group": "QuayGear",
       "rig": "WharfDecor",
@@ -7170,7 +7182,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "wharfdecor_004",
+      "id": "wharfdecor_995390eb66",
       "family": "wharfdecor",
       "group": "QuayGear",
       "rig": "WharfDecor",
@@ -7208,7 +7220,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "wharfdecor_005",
+      "id": "wharfdecor_673459cbcb",
       "family": "wharfdecor",
       "group": "QuayGear",
       "rig": "WharfDecor",
@@ -7246,7 +7258,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "wharfdecor_006",
+      "id": "wharfdecor_0fec144e42",
       "family": "wharfdecor",
       "group": "QuayGear",
       "rig": "WharfDecor",
@@ -7284,7 +7296,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "wharfdecor_007",
+      "id": "wharfdecor_be6e423070",
       "family": "wharfdecor",
       "group": "QuayGear",
       "rig": "WharfDecor",
@@ -7322,7 +7334,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "wharfdecor_008",
+      "id": "wharfdecor_a675d00769",
       "family": "wharfdecor",
       "group": "QuayGear",
       "rig": "WharfDecor",
@@ -7360,7 +7372,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "wharfdecor_009",
+      "id": "wharfdecor_434b21cf17",
       "family": "wharfdecor",
       "group": "QuayGear",
       "rig": "WharfDecor",
@@ -7398,7 +7410,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "wharfdecor_010",
+      "id": "wharfdecor_ec8e327eee",
       "family": "wharfdecor",
       "group": "QuayGear",
       "rig": "WharfDecor",
@@ -7436,7 +7448,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "wharfdecor_011",
+      "id": "wharfdecor_2d93d492ec",
       "family": "wharfdecor",
       "group": "QuayGear",
       "rig": "WharfDecor",
@@ -7474,7 +7486,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "wharfdecor_012",
+      "id": "wharfdecor_3808bb480c",
       "family": "wharfdecor",
       "group": "QuayGear",
       "rig": "WharfDecor",
@@ -7512,7 +7524,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "wharfdecor_013",
+      "id": "wharfdecor_29ee4af09e",
       "family": "wharfdecor",
       "group": "QuayGear",
       "rig": "WharfDecor",
@@ -7550,7 +7562,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "wharfdecor_014",
+      "id": "wharfdecor_0700b6efe4",
       "family": "wharfdecor",
       "group": "QuayGear",
       "rig": "WharfDecor",
@@ -7588,7 +7600,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "wharfdecor_015",
+      "id": "wharfdecor_2d175c0772",
       "family": "wharfdecor",
       "group": "QuayGear",
       "rig": "WharfDecor",
@@ -7626,7 +7638,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "wharfdecor_016",
+      "id": "wharfdecor_84cb20eb3b",
       "family": "wharfdecor",
       "group": "QuayGear",
       "rig": "WharfDecor",
@@ -7664,7 +7676,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "wharfdecor_017",
+      "id": "wharfdecor_47a199b50e",
       "family": "wharfdecor",
       "group": "ApronGear",
       "rig": "WharfDecor",
@@ -7702,7 +7714,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "wharfdecor_018",
+      "id": "wharfdecor_6efa93a1e4",
       "family": "wharfdecor",
       "group": "ApronGear",
       "rig": "WharfDecor",
@@ -7740,7 +7752,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "wharfdecor_019",
+      "id": "wharfdecor_fdcc6b8154",
       "family": "wharfdecor",
       "group": "ApronGear",
       "rig": "WharfDecor",
@@ -7778,7 +7790,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "wharfdecor_020",
+      "id": "wharfdecor_716e3a0a84",
       "family": "wharfdecor",
       "group": "ApronGear",
       "rig": "WharfDecor",
@@ -7816,7 +7828,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "wharfdecor_021",
+      "id": "wharfdecor_2f1e84c323",
       "family": "wharfdecor",
       "group": "ApronGear",
       "rig": "WharfDecor",
@@ -7854,7 +7866,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "wharfdecor_022",
+      "id": "wharfdecor_572e88792f",
       "family": "wharfdecor",
       "group": "ApronGear",
       "rig": "WharfDecor",
@@ -7892,7 +7904,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "wharfdecor_023",
+      "id": "wharfdecor_ebbcf3bc40",
       "family": "wharfdecor",
       "group": "YardGear",
       "rig": "WharfDecor",
@@ -7930,7 +7942,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "wharfdecor_024",
+      "id": "wharfdecor_3de0987ecf",
       "family": "wharfdecor",
       "group": "YardGear",
       "rig": "WharfDecor",
@@ -7968,7 +7980,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "wharfdecor_025",
+      "id": "wharfdecor_df8dc73a63",
       "family": "wharfdecor",
       "group": "YardGear",
       "rig": "WharfDecor",
@@ -8006,7 +8018,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "wharfdecor_026",
+      "id": "wharfdecor_7dbe7243ec",
       "family": "wharfdecor",
       "group": "YardGear",
       "rig": "WharfDecor",
@@ -8044,7 +8056,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "wharfdecor_027",
+      "id": "wharfdecor_399ad67ff7",
       "family": "wharfdecor",
       "group": "YardGear",
       "rig": "WharfDecor",
@@ -8082,7 +8094,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "wharfdecor_028",
+      "id": "wharfdecor_9223dd87ad",
       "family": "wharfdecor",
       "group": "YardGear",
       "rig": "WharfDecor",
@@ -8120,7 +8132,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "utility_001",
+      "id": "utility_66555739c8",
       "family": "utility",
       "group": "Services",
       "rig": "UtilityIso",
@@ -8158,7 +8170,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "utility_002",
+      "id": "utility_d978308b74",
       "family": "utility",
       "group": "Services",
       "rig": "UtilityIso",
@@ -8196,7 +8208,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "utility_003",
+      "id": "utility_bf98739822",
       "family": "utility",
       "group": "Services",
       "rig": "UtilityIso",
@@ -8234,7 +8246,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "utility_004",
+      "id": "utility_23ae973f38",
       "family": "utility",
       "group": "Services",
       "rig": "UtilityIso",
@@ -8272,7 +8284,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "utility_005",
+      "id": "utility_deaca57fe1",
       "family": "utility",
       "group": "Services",
       "rig": "UtilityIso",
@@ -8310,7 +8322,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "utility_006",
+      "id": "utility_d266d1ee49",
       "family": "utility",
       "group": "Services",
       "rig": "UtilityIso",
@@ -8348,7 +8360,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "utility_007",
+      "id": "utility_aa21a412ff",
       "family": "utility",
       "group": "Services",
       "rig": "UtilityIso",
@@ -8386,7 +8398,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "utility_008",
+      "id": "utility_42721d7b94",
       "family": "utility",
       "group": "Services",
       "rig": "UtilityIso",
@@ -8424,7 +8436,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "utility_009",
+      "id": "utility_326de6c919",
       "family": "utility",
       "group": "Services",
       "rig": "UtilityIso",
@@ -8462,7 +8474,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "utility_010",
+      "id": "utility_5eea4cb640",
       "family": "utility",
       "group": "Services",
       "rig": "UtilityIso",
@@ -8500,7 +8512,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "utility_011",
+      "id": "utility_8bc9e4ea46",
       "family": "utility",
       "group": "Services",
       "rig": "UtilityIso",
@@ -8538,7 +8550,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "utility_012",
+      "id": "utility_36932e6ff8",
       "family": "utility",
       "group": "Services",
       "rig": "UtilityIso",
@@ -8576,7 +8588,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "utility_013",
+      "id": "utility_ea7546b02c",
       "family": "utility",
       "group": "Services",
       "rig": "UtilityIso",
@@ -8614,7 +8626,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "utility_014",
+      "id": "utility_af06d1aaaa",
       "family": "utility",
       "group": "Services",
       "rig": "UtilityIso",
@@ -8652,7 +8664,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "utility_015",
+      "id": "utility_f246279b75",
       "family": "utility",
       "group": "Services",
       "rig": "UtilityIso",
@@ -8690,7 +8702,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "utility_016",
+      "id": "utility_ded2b74f54",
       "family": "utility",
       "group": "Services",
       "rig": "UtilityIso",
@@ -8728,7 +8740,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_001",
+      "id": "shorefinds_3c32400bf0",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -8766,7 +8778,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_002",
+      "id": "shorefinds_5f49f905ed",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -8804,7 +8816,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_003",
+      "id": "shorefinds_1789ae4e4c",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -8842,7 +8854,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_004",
+      "id": "shorefinds_2a87c61ab4",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -8880,7 +8892,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_005",
+      "id": "shorefinds_b5fb70d165",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -8918,7 +8930,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_006",
+      "id": "shorefinds_5ce6fe1621",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -8956,7 +8968,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_007",
+      "id": "shorefinds_6e33a1ee7b",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -8994,7 +9006,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_008",
+      "id": "shorefinds_6ac1dd4d06",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -9032,7 +9044,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_009",
+      "id": "shorefinds_50a2917ce6",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -9070,7 +9082,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_010",
+      "id": "shorefinds_1f3e921aaf",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -9108,7 +9120,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_011",
+      "id": "shorefinds_c1030981d9",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -9146,7 +9158,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_012",
+      "id": "shorefinds_425d7407b7",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -9184,7 +9196,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_013",
+      "id": "shorefinds_6c041edf80",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -9222,7 +9234,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_014",
+      "id": "shorefinds_6bbfcd5ad0",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -9260,7 +9272,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_015",
+      "id": "shorefinds_4c43e03e84",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -9298,7 +9310,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_016",
+      "id": "shorefinds_670ef166a8",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -9336,7 +9348,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_017",
+      "id": "shorefinds_8a4c808b72",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -9374,7 +9386,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_018",
+      "id": "shorefinds_9e70a7caee",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -9412,7 +9424,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_019",
+      "id": "shorefinds_ce37be9a0f",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -9450,7 +9462,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_020",
+      "id": "shorefinds_be4d926e77",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -9488,7 +9500,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_021",
+      "id": "shorefinds_5091e744a3",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -9526,7 +9538,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_022",
+      "id": "shorefinds_399a82e879",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -9564,7 +9576,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_023",
+      "id": "shorefinds_d4b1f1c0f8",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -9602,7 +9614,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_024",
+      "id": "shorefinds_ec8b61c614",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -9640,7 +9652,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_025",
+      "id": "shorefinds_f00934325a",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -9678,7 +9690,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_026",
+      "id": "shorefinds_c54a266933",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -9716,7 +9728,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_027",
+      "id": "shorefinds_c77b6f80e2",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -9754,7 +9766,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_028",
+      "id": "shorefinds_ce28b350c4",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -9792,7 +9804,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_029",
+      "id": "shorefinds_f4192c0b35",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -9830,7 +9842,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_030",
+      "id": "shorefinds_3b9f0f4379",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -9868,7 +9880,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_031",
+      "id": "shorefinds_9be165f148",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -9906,7 +9918,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_032",
+      "id": "shorefinds_fbec392ede",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -9944,7 +9956,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_033",
+      "id": "shorefinds_39a34553ed",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -9982,7 +9994,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_034",
+      "id": "shorefinds_16bae34fea",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -10020,7 +10032,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_035",
+      "id": "shorefinds_0db542460f",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -10058,7 +10070,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_036",
+      "id": "shorefinds_2a42b6b24d",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -10096,7 +10108,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_037",
+      "id": "shorefinds_a06afec245",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -10134,7 +10146,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_038",
+      "id": "shorefinds_5264dd39ea",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -10172,7 +10184,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_039",
+      "id": "shorefinds_3fa15bf458",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -10210,7 +10222,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_040",
+      "id": "shorefinds_f29f7f2b7b",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -10248,7 +10260,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_041",
+      "id": "shorefinds_d6e0fffdcf",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -10286,7 +10298,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_042",
+      "id": "shorefinds_f325a09b6d",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -10324,7 +10336,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_043",
+      "id": "shorefinds_6bab833e2a",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -10362,7 +10374,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_044",
+      "id": "shorefinds_a28c571e5e",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -10400,7 +10412,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_045",
+      "id": "shorefinds_fe4ae126d6",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -10438,7 +10450,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_046",
+      "id": "shorefinds_773b288408",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -10476,7 +10488,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_047",
+      "id": "shorefinds_69470af182",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -10514,7 +10526,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_048",
+      "id": "shorefinds_e2e5f3e33e",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -10552,7 +10564,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_049",
+      "id": "shorefinds_66e3c3586e",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -10590,7 +10602,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_050",
+      "id": "shorefinds_961d8dae86",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -10628,7 +10640,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_051",
+      "id": "shorefinds_12e276d9bf",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -10666,7 +10678,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_052",
+      "id": "shorefinds_66b8ba168d",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -10704,7 +10716,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_053",
+      "id": "shorefinds_f1ca9fd58a",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -10742,7 +10754,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_054",
+      "id": "shorefinds_933ce98127",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -10780,7 +10792,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_055",
+      "id": "shorefinds_6cedd325f1",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -10818,7 +10830,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_056",
+      "id": "shorefinds_d1f3759602",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -10856,7 +10868,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_057",
+      "id": "shorefinds_cdc98c2317",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -10894,7 +10906,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_058",
+      "id": "shorefinds_d1a053f610",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -10932,7 +10944,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_059",
+      "id": "shorefinds_8ad8faea34",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -10970,7 +10982,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_060",
+      "id": "shorefinds_9f710ff4d1",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -11008,7 +11020,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_061",
+      "id": "shorefinds_ab7e6673a7",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -11046,7 +11058,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_062",
+      "id": "shorefinds_a599edb9c6",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -11084,7 +11096,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_063",
+      "id": "shorefinds_d5453d50bc",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -11122,7 +11134,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_064",
+      "id": "shorefinds_0f12f0204b",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -11160,7 +11172,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_065",
+      "id": "shorefinds_e9f0d69801",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -11198,7 +11210,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_066",
+      "id": "shorefinds_f6c687bf37",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -11236,7 +11248,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_067",
+      "id": "shorefinds_ce56c9ec8a",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -11274,7 +11286,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_068",
+      "id": "shorefinds_4978317d00",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -11312,7 +11324,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_069",
+      "id": "shorefinds_3ab33d05fe",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -11350,7 +11362,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_070",
+      "id": "shorefinds_e3050b9211",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -11388,7 +11400,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_071",
+      "id": "shorefinds_bfd2eaeac2",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -11426,7 +11438,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_072",
+      "id": "shorefinds_1e2bbeacc2",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -11464,7 +11476,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shorefinds_073",
+      "id": "shorefinds_11d64fdf1f",
       "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
@@ -11502,7 +11514,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "shipyard_001",
+      "id": "shipyard_818f7434d0",
       "family": "shipyard",
       "group": "NineMileCreekLots",
       "rig": "ShipyardIso",
@@ -11540,7 +11552,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "GreywickHouseRed_001",
+      "id": "GreywickHouseRed_62942d5d95",
       "family": "GreywickHouseRed",
       "group": null,
       "rig": null,
@@ -11574,7 +11586,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "GreywickHouseTeal_001",
+      "id": "GreywickHouseTeal_2442b38e6f",
       "family": "GreywickHouseTeal",
       "group": null,
       "rig": null,
@@ -11608,7 +11620,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "ShipwrightShed_002",
+      "id": "ShipwrightShed_1802a7aea7",
       "family": "ShipwrightShed",
       "group": null,
       "rig": null,
@@ -11642,7 +11654,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "DoryIso_001",
+      "id": "DoryIso_6b44b73821",
       "family": "DoryIso",
       "group": null,
       "rig": null,
@@ -11676,7 +11688,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "character_001",
+      "id": "character_c90c7dcdb1",
       "family": "character",
       "group": "CreekPeople",
       "rig": "CharacterIso6",
@@ -11714,7 +11726,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "character_002",
+      "id": "character_07598a1d53",
       "family": "character",
       "group": "CreekPeople",
       "rig": "CharacterIso6",
@@ -11752,7 +11764,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "FisherSheet_001",
+      "id": "FisherSheet_3d86cc9b92",
       "family": "FisherSheet",
       "group": "DevCore",
       "rig": null,
@@ -11786,7 +11798,7 @@
       "x-sortingOrder": 10
     },
     {
-      "id": "shopfront_001",
+      "id": "shopfront_554a7958e6",
       "family": "shopfront",
       "group": "CreekShops",
       "rig": "Shopfront",
@@ -11824,7 +11836,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "ShopLevel_001",
+      "id": "ShopLevel_3197b168e6",
       "family": "ShopLevel",
       "group": "fishMarket",
       "rig": null,
@@ -11858,7 +11870,7 @@
       "x-sortingOrder": 1
     },
     {
-      "id": "shopfront_002",
+      "id": "shopfront_6ad37e73d4",
       "family": "shopfront",
       "group": "CreekShops",
       "rig": "Shopfront",
@@ -11896,7 +11908,7 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "ShopLevel_002",
+      "id": "ShopLevel_4bc57176bd",
       "family": "ShopLevel",
       "group": "restaurant",
       "rig": null,
@@ -11930,7 +11942,7 @@
       "x-sortingOrder": 1
     },
     {
-      "id": "Tree02_001",
+      "id": "Tree02_efbda3a9ff",
       "family": "Tree02",
       "group": "Trees",
       "rig": null,
@@ -11964,7 +11976,7 @@
       "x-sortingOrder": -476
     },
     {
-      "id": "Tree08_001",
+      "id": "Tree08_cb475c72b2",
       "family": "Tree08",
       "group": "Trees",
       "rig": null,
@@ -11998,7 +12010,7 @@
       "x-sortingOrder": -396
     },
     {
-      "id": "Tree25_001",
+      "id": "Tree25_7372d764ef",
       "family": "Tree25",
       "group": "Trees",
       "rig": null,
@@ -12032,7 +12044,7 @@
       "x-sortingOrder": -300
     },
     {
-      "id": "Tree06_001",
+      "id": "Tree06_0bdd28b24e",
       "family": "Tree06",
       "group": "Trees",
       "rig": null,
@@ -12066,7 +12078,7 @@
       "x-sortingOrder": -216
     },
     {
-      "id": "Tree22_001",
+      "id": "Tree22_b74c5e12d4",
       "family": "Tree22",
       "group": "Trees",
       "rig": null,
@@ -12100,7 +12112,7 @@
       "x-sortingOrder": -128
     },
     {
-      "id": "Tree01_001",
+      "id": "Tree01_0f2eaad6bd",
       "family": "Tree01",
       "group": "Trees",
       "rig": null,
@@ -12134,7 +12146,7 @@
       "x-sortingOrder": -32
     },
     {
-      "id": "Tree05_001",
+      "id": "Tree05_12f19dd3a2",
       "family": "Tree05",
       "group": "Trees",
       "rig": null,
@@ -12168,7 +12180,7 @@
       "x-sortingOrder": 80
     },
     {
-      "id": "Tree18_001",
+      "id": "Tree18_7926e96097",
       "family": "Tree18",
       "group": "Trees",
       "rig": null,
@@ -12202,7 +12214,7 @@
       "x-sortingOrder": -332
     },
     {
-      "id": "Tree21_001",
+      "id": "Tree21_23fe8bf4db",
       "family": "Tree21",
       "group": "Trees",
       "rig": null,
@@ -12236,7 +12248,7 @@
       "x-sortingOrder": -344
     },
     {
-      "id": "Tree34_001",
+      "id": "Tree34_1c035c7736",
       "family": "Tree34",
       "group": "Trees",
       "rig": null,
@@ -12270,7 +12282,7 @@
       "x-sortingOrder": -56
     },
     {
-      "id": "Tree35_001",
+      "id": "Tree35_1b2e090b7c",
       "family": "Tree35",
       "group": "Trees",
       "rig": null,
@@ -12372,6 +12384,39 @@
       "x-declaredBy": "Assets/_Project/Art/Sprites/Buildings/Shops/shops.contract.json#shopfront"
     }
   ],
+  "x-rigVersions": {
+    "x-shaRule": "sha256 of the rig's bytes with CR stripped (tr -d '\\r' | sha256sum) — the repo's own convention, the same one docs/art/rigs sidecars publish.",
+    "families": {
+      "character": {
+        "rigSource": "docs/art/rigs/characterIsoRig6.js",
+        "sha256": "c35dbefe2c75cb800dba3821e63fe9c5518786931f149910b3c6430544b2bc9f"
+      },
+      "logCrib": {
+        "rigSource": "docs/art/rigs/iso-rig-pack/wharf-kit-iso/wharfIsoRig.js",
+        "sha256": "a6c80940941fa790951de3867c6194e8b40a56b9d95f974a028881efbacd3a6b"
+      },
+      "shipyard": {
+        "rigSource": "docs/art/rigs/shipyard-iso-kit/shipyardIsoRig.js",
+        "sha256": "7f857dc3fdfb44beb7ecb1dcc27a3ad98619a9f9a5caa3bd36989a3b3959a7d1"
+      },
+      "shopfront": {
+        "rigSource": "docs/art/rigs/shop-building-kit/shopfrontRig.js",
+        "sha256": "e15b0425642a3ff0c036c00e144a1d95ea27c07509c1232535fcef24e0f07e81"
+      },
+      "shorefinds": {
+        "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
+        "sha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477"
+      },
+      "utility": {
+        "rigSource": "docs/art/rigs/iso-rig-pack/utility-iso/utilityIsoRig.js",
+        "sha256": "dbfe677117c16725095b87d282486803da042714f80f53cc85986283a29d629c"
+      },
+      "wharfdecor": {
+        "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
+        "sha256": "dba6ced6644e879e42cf2a3d6340ae76f90acf2cee0a0962cf4bbb0719a1b05a"
+      }
+    }
+  },
   "x-cliffLinesNote": "Empty: cliff lines are an authoring artefact of the editor. The repo's cliffs are placed CliffWallSurface components and ship as entities.",
   "x-provenance": {
     "generatedAt": "2026-08-20T13:32:46Z",
@@ -12432,6 +12477,7 @@
     },
     "entityNotes": {
       "inactiveInHierarchy": 1,
+      "interiorsLinked": 0,
       "offGrid": 1,
       "unresolvedRigPlacements": 145,
       "unresolvedSheets": {

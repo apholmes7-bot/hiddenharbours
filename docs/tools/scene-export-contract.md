@@ -223,3 +223,87 @@ Currently unresolved: `wharf` (24 placements, Nine Mile Creek) and `interior` / 
 760 × 560 for Nine Mile Creek is the `RegionDef`'s truth. The editor's own region table is stale
 (review §6.2 measured it at the C# field default). Ruled: **the package declares, the tool
 conforms.** Nothing here compensates for a stale table on the other side.
+
+
+## 8. The editor's second round (relayed 2026-08-20 evening)
+
+Five additions, and one question that had to be measured before it could be answered.
+
+### 8.1 `x-rigVersions` — one hash per family
+
+Top-level, `family -> {rigSource, sha256}`, for the families the scene actually uses. The editor
+hashes its own copy and badges a mismatch pink rather than refusing to draw. A family that
+resolved through **more than one rig** in a scene gets no single hash — it is reported under
+`x-ambiguous` with each rig named, because one number there would be a lie. Neither region hits
+that case today; the guard is for when one does.
+
+### 8.2 Entity ids are minted from row identity
+
+Formerly `family_001` ordinals — the defect the #571 review warns about in §8.3 and the editor
+now depends on not having, since its write-back matches our rows by `id`. An id is now
+`{family}_{sha256(path|x|y)[:10]}`: the builder names each object and computes where it stands,
+and that pair is the row's identity. Measured on both regions — path alone repeats (94 objects
+are called `ShorePlants/Eelgrass`), path + position does not collide once.
+
+⚠ **The `family` prefix means a VOCABULARY ruling re-keys the entities it renames.** That is not
+a content change, but it is a real cost: publishing `interior`/`interiorprop` re-keyed 30 St
+Peters rows this round, and a ruling on `wharf` will re-key 24 at Nine Mile Creek. Both are
+one-time settling costs, cheapest now, before write-back edits exist to orphan.
+
+### 8.3 `terrain.waterLevelMeters` — and why one number needs three
+
+`RegionDef.TideMeanLevel`, in metres relative to **chart datum** — the same datum the height
+map's elevations use, so elevation and water level compare directly. Both regions declare `0`.
+
+One number is what was asked for and one number ships, but a wash drawn at it is drawn at *mean*
+water, not the water now: `TideModel.Height` is `MeanLevel + amplitude * carrier`, and both
+regions declare an amplitude of 2.2 m — a 4.4 m swing the mean says nothing about. So
+`terrain.x-tide` carries the amplitude and phase alongside. The exporter states the model's
+declared terms and never evaluates it: the tide is recomputed from `(worldSeed, gameTime)` and
+never stored (CLAUDE.md rule 5), and this document has no clock.
+
+### 8.4 `terrain.x-heightField` — a wash, not a survey
+
+The referenced height file is unreadable from the editor's sandbox, so a **downsampled** copy
+ships inline: `strideMeters` 8, nearest texel, no interpolation, row 0 north, metres on the datum
+above. A 760 x 560 region becomes 95 x 70 samples instead of 425,600. `null` marks a sample
+outside the painted map. Full resolution stays in `terrain.x-heightMap`, pinned by `textureSha256`.
+
+Two-state on the LFS bytes, exactly like the ground layer (§6): present, it carries values;
+absent, it carries `x-unavailable` naming why. `x-provenance.heightMap.textureBytesRead` says
+which you are holding.
+
+### 8.5 `x-interiorOf` — hierarchy, not geometry
+
+The editor was drawing interior props on roofs. The builders already answer it: an interior
+stands at `IslandVillage/school/Interior` and its furniture under
+`IslandVillage/school/Furniture/`, so the container is the **nearest ancestor path that is itself
+an exported entity**. All 30 St Peters interiors resolve, to 4 buildings. A point-in-footprint
+test was available and rejected: at a shared wall it would put a prop in the wrong house, and the
+scene already declares the answer.
+
+### 8.6 Is per-instance variety enumerated or continuous? — **both, and the split is the answer**
+
+Asked because the editor's bake cache keys on `family|facing|opts`, and a free-float per-instance
+seed would make that cache 1:1 and useless. Measured against the builder tables rather than
+assumed:
+
+**The bake axes are enumerated.** Every sprite selector in the repo takes integers or enums —
+`SpriteFor(int state)`, `SpriteFor(string kind, int variant)`,
+`SpriteFor(stance, gait, int facingRow, int frame)`. Variant rolls are cast to `int`
+(`GrassFieldScatter.VariantRoll` is `(int)(Hash01(...) * 1024f)`), mirroring is a `bool`, tide
+state is an `int`. **Nothing anywhere selects a sprite by a continuous value.**
+
+**But two genuinely continuous per-instance axes exist**, and neither is a bake key:
+
+| Axis | Where | Reaches the package as |
+|---|---|---|
+| Uniform scale | `Mathf.Lerp(ScaleMin, ScaleMax, Hash01(...))` at five scatter sites, folded into `transform.localScale` | `x-scale` — 384 St Peters shore plants, 387 distinct values in 387 entities |
+| Tint brightness | `Mathf.Lerp(0.9f, 1.1f, shapeRoll)`, a shader multiply over the sprite | **not exported** — applied at runtime; 1,029 of 1,032 banked renderers are pure white |
+
+`NineMileCreekShorePainter` says it outright: *"the species' own PlantedScale x this site's
+jitter, folded into the TRANSFORM"*. So the cache is safe **only if the scale is applied as a
+draw-time transform on the baked sprite and never folded into `opts`**. It ships verbatim and
+unquantised: enumerating it here would be this exporter inventing an axis the pipeline does not
+have, which is what the ask explicitly forbade.
+

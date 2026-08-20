@@ -17,6 +17,7 @@ Two rulings shape the whole file:
 
 import json
 import math
+import hashlib
 import os
 
 from . import families, heightmap, roads, unityyaml as U
@@ -47,6 +48,12 @@ _LAYER_UNAVAILABLE = {
 }
 
 
+# The inline height field is a SHADING WASH, not a survey: the editor shades tide and shore with
+# it and reads the full-resolution map from the referenced file when it needs one. 8 m keeps a
+# 760x560 region at 95x70 samples - a few tens of KB - instead of the 425,600 a per-cell grid costs.
+HEIGHT_FIELD_STRIDE_M = 8
+
+
 def build_document(repo, region, scene, provenance):
     """Assemble one region's document. ``region`` is a :func:`repo.Repo.region_def` mapping."""
     width, height = region["worldSizeMeters"]
@@ -54,7 +61,7 @@ def build_document(repo, region, scene, provenance):
     cols, rows = int(round(width)), int(round(height))
     origin_nw = [centre_x - width / 2.0, centre_y + height / 2.0]
 
-    entities, rigs, entity_notes = _entities(
+    entities, rigs, entity_notes, rig_versions = _entities(
         repo, scene, (centre_x, centre_y), origin_nw, cols, rows)
     paths = _paths(repo, scene)
     terrain, tile_counts = _terrain(repo, region, cols, rows, origin_nw, provenance)
@@ -102,6 +109,7 @@ def build_document(repo, region, scene, provenance):
                            "more useful number and the review asked for one or the other, said.",
         },
         "x-rigs": rigs,
+        "x-rigVersions": rig_versions,
         "x-cliffLinesNote": "Empty: cliff lines are an authoring artefact of the editor. The "
                             "repo's cliffs are placed CliffWallSurface components and ship as "
                             "entities.",
@@ -172,6 +180,8 @@ def _terrain(repo, region, cols, rows, origin_nw, provenance):
             }
         layers[name] = layer
 
+    field, field_note = heightmap.sample_field(
+        repo, provenance.get("heightMap"), cols, rows, origin_nw, HEIGHT_FIELD_STRIDE_M)
     terrain = {
         "cellMeters": 1,
         "cols": cols,
@@ -179,9 +189,28 @@ def _terrain(repo, region, cols, rows, origin_nw, provenance):
         "originNW": [_num(origin_nw[0]), _num(origin_nw[1])],
         "note": "row 0 = north edge. 0 = no tile (water — never baked, the shader owns it). "
                 "Runs are [value, count]; sum(count) == cols * rows exactly.",
+        # Mean water, from the region's own RegionDef.TideMeanLevel. NOT a constant sea: the tide
+        # is recomputed from (worldSeed, gameTime) and swings +/- TideAmplitude about this number,
+        # so a shading wash drawn at this level is drawn at MEAN water, not at the water now.
+        "waterLevelMeters": _num(region.get("tideMeanLevel", 0.0)),
+        "x-waterDatum": "metres relative to chart datum \u2014 the same datum the height map's "
+                        "elevations use, so elevation and water level are directly comparable. "
+                        "TideModel.Height is `MeanLevel + amplitude * carrier`; this is MeanLevel.",
+        "x-tide": {
+            "amplitudeMeters": _num(region.get("tideAmplitude", 0.0)),
+            "phaseHours": _num(region.get("tidePhaseHours", 0.0)),
+            "x-note": "given so a tide-aware wash can swing; the exporter states the model's "
+                      "declared terms and does not evaluate it (no time, and rule 5 says the "
+                      "tide is recomputed, never stored).",
+        },
         "legend": legend,
         "layers": layers,
         "x-heightMap": provenance.get("heightMap"),
+        "x-heightField": field if field is not None else {
+            "strideMeters": HEIGHT_FIELD_STRIDE_M,
+            "values": None,
+            "x-unavailable": field_note,
+        },
     }
     return terrain, tiles
 
@@ -350,7 +379,7 @@ def _entities(repo, scene, centre, origin_nw, cols, rows):
         parts = hierarchy.split("/")
         record = {
             # Key order follows the reference package's own entity records.
-            "id": f"{family}_{index:03d}",
+            "id": _stable_id(family, hierarchy, x - centre[0], y - centre[1]),
             "family": family,
             "group": parts[-2] if len(parts) > 1 else None,
             "rig": rig_global or rig_name,
@@ -397,8 +426,11 @@ def _entities(repo, scene, centre, origin_nw, cols, rows):
             record["x-flipY"] = True
         entities.append(record)
 
+    _link_interiors(entities)
+
     notes = {
         "inactiveInHierarchy": inactive,
+        "interiorsLinked": sum(1 for e in entities if e.get("x-interiorOf")),
         "offGrid": off_grid,
         "unresolvedRigPlacements": sum(v["placements"] for v in unresolved_sheets.values()),
         "unresolvedSheets": dict(sorted(unresolved_sheets.items())),
@@ -426,7 +458,91 @@ def _entities(repo, scene, centre, origin_nw, cols, rows):
                           "family+dir+opts.",
     }
     ordered_rigs = [rigs[key] for key in sorted(rigs)]
-    return entities, ordered_rigs, notes
+    return entities, ordered_rigs, notes, _rig_versions(entities, rigs)
+
+
+def _link_interiors(entities):
+    """Point each interior entity at the building that contains it, by HIERARCHY not geometry.
+
+    The editor was drawing interior props on roofs because nothing said which building they belong
+    to. The builders already answer it: an interior stands at ``IslandVillage/school/Interior`` and
+    its furniture at ``IslandVillage/school/Furniture/...``, so the containing building is the
+    nearest ancestor path that is itself an exported entity. That is a declaration in the scene,
+    not a point-in-footprint test — a guess would put a prop in the wrong house at a shared wall.
+    """
+    by_path = {}
+    for entity in entities:
+        by_path.setdefault(entity.get("x-path"), entity)
+    for entity in entities:
+        family = entity.get("family") or ""
+        candidate = entity.get("x-familyCandidate") or ""
+        if not (family.startswith("interior") or candidate.startswith("interior")):
+            continue
+        parts = (entity.get("x-path") or "").split("/")
+        for cut in range(len(parts) - 1, 0, -1):
+            ancestor = by_path.get("/".join(parts[:cut]))
+            if ancestor is not None and ancestor is not entity:
+                entity["x-interiorOf"] = ancestor["id"]
+                break
+        else:
+            # Said rather than dropped: an interior with no exported container is a fact about
+            # the scene, and the editor still needs to know not to trust a roof for it.
+            entity["x-interiorOf"] = None
+
+
+def _rig_versions(entities, rigs):
+    """``family -> sha256(rig source bytes)``, for the families this scene actually uses.
+
+    The editor hashes its own copy of each rig and badges a mismatch pink rather than refusing to
+    draw. One entry per family is what it asks for; a family that resolved through more than one
+    rig would make that table a lie, so such a family is reported with its rigs named instead.
+    """
+    seen = {}
+    for entity in entities:
+        family, source = entity.get("family"), entity.get("rigSource")
+        if not family or not source:
+            continue
+        seen.setdefault(family, set()).add(source)
+    versions = {}
+    for family in sorted(seen):
+        sources = sorted(seen[family])
+        if len(sources) == 1:
+            versions[family] = {
+                "rigSource": sources[0],
+                "sha256": rigs[sources[0]]["sha256"],
+            }
+        else:
+            versions[family] = {
+                "rigSource": None,
+                "sha256": None,
+                "x-ambiguous": [
+                    {"rigSource": source, "sha256": rigs[source]["sha256"]} for source in sources
+                ],
+                "x-note": "this family resolved through more than one rig in this scene, so no "
+                          "single hash describes it. Badge per entity from x-rigSha256 instead.",
+            }
+    return {
+        "x-shaRule": "sha256 of the rig's bytes with CR stripped (tr -d '\\r' | sha256sum) \u2014 "
+                     "the repo's own convention, the same one docs/art/rigs sidecars publish.",
+        "families": versions,
+    }
+
+
+def _stable_id(family, hierarchy, x, y):
+    """An id minted from the row's own identity, never from its position in the array.
+
+    The editor matches its write-back rows to ours by ``id``, so an id that renumbered when an
+    unrelated entity was inserted would silently re-point every edit after the insertion. The
+    builder names each object and computes where it stands; that pair is the row identity, and it
+    is stable across re-exports of unchanged content. Measured on both regions: path alone repeats
+    (94 objects are called ``ShorePlants/Eelgrass``), path + position does not collide once.
+
+    The ``family`` prefix is cosmetic — it matches the reference package's own ``character_001``
+    shape — but it does mean a change to the FAMILY VOCABULARY re-keys the entities it renames.
+    That is a settling cost, not a content change; see the contract doc.
+    """
+    key = f"{hierarchy}|{x:.3f}|{y:.3f}"
+    return f"{family}_{hashlib.sha256(key.encode('utf-8')).hexdigest()[:10]}"
 
 
 def _call(rig_global):

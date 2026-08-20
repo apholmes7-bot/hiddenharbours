@@ -1,6 +1,6 @@
 {
   "_note": "The scene editor's wire vocabulary for entity.family and the terrain layer codes. TRANSCRIBED VERBATIM from the coordinator's relay of the editor maintainer's scene/family-names.json on PR #588 — this repo has never held their file, so this is a faithful copy rather than the original bytes. The exporter validates against it and refuses to alias: a name that is not in this list is declared unresolved, never bent onto a near neighbour.",
-  "_source": "editor-side scene/family-names.json, relayed 2026-08-20 on apholmes7-bot/hiddenharbours#588",
+  "_source": "editor-side scene/family-names.json, relayed 2026-08-20 on apholmes7-bot/hiddenharbours#588. `interior` and `interiorprop` appended from the coordinator's 2026-08-20 evening relay, which reports the editor published them (45 families). Same standing: a transcription of the relay, not the maintainer's bytes.",
   "families": [
     "clifface", "shorecliff", "dune", "house", "wharfbuilding", "shopfront", "camper",
     "shipyard", "dory", "punt", "lobsterboat", "capeislander", "sportskiff", "console",
@@ -8,7 +8,7 @@
     "shoreplant", "grasstuft", "grassspecies", "flower", "seaweed", "driftweed", "rock",
     "wharfdecor", "utility", "trap", "buoy", "navbuoy", "fuel", "fishtub", "fishtote",
     "fishtray", "bucket", "deckgear", "pot", "rope", "shorefinds", "wharfmodule",
-    "character"
+    "character", "interior", "interiorprop"
   ],
   "layers": {
     "ground": "g",

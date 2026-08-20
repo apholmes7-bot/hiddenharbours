@@ -182,14 +182,23 @@ class PackageTests(unittest.TestCase):
         with open(os.path.join(REPO, REFERENCE), encoding="utf-8") as handle:
             reference = json.load(handle)
 
-        def named(mapping):
-            return [k for k in mapping if not k.startswith("x-")]
+        # Keys the editor RULED IN after the reference sample was written. Named one by one and
+        # dated, so this stays a drift detector: an unruled key still fails here.
+        ruled_in = {
+            "terrain": ("waterLevelMeters",),      # coordinator relay, 2026-08-20 evening, ask 4
+        }
+
+        def named(mapping, block=None):
+            allowed = ruled_in.get(block, ())
+            return [k for k in mapping if not k.startswith("x-") and k not in allowed]
 
         for name, document in self.documents.items():
             self.assertEqual(named(document), named(reference), name)
             for block in ("region", "frame", "terrain"):
-                self.assertEqual(named(document[block]), named(reference[block]),
+                self.assertEqual(named(document[block], block), named(reference[block], block),
                                  f"{name}.{block}")
+            # The ruled-in key must actually be present, or "allowed" would quietly mean "absent".
+            self.assertIn("waterLevelMeters", document["terrain"], f"{name}.terrain")
             for layer in reference["terrain"]["layers"]:
                 self.assertEqual(named(document["terrain"]["layers"][layer]),
                                  named(reference["terrain"]["layers"][layer]),
@@ -403,7 +412,8 @@ class EnrichmentTests(unittest.TestCase):
 
     def test_families_come_from_the_editors_wire_list_or_say_they_do_not(self):
         wire, layers = families.load(self.repo)
-        self.assertEqual(len(wire), 43, "the transcribed wire list has drifted")
+        # 43 at first relay + interior/interiorprop, published by the editor 2026-08-20 evening.
+        self.assertEqual(len(wire), 45, "the transcribed wire list has drifted")
         self.assertEqual(sorted(layers), ["cliff", "ground", "road", "texture", "wharfdeck"])
         for name, document in self.documents.items():
             for entity in document["entities"]:
@@ -431,10 +441,18 @@ class EnrichmentTests(unittest.TestCase):
         self.assertIn("wharf", unlisted)
         self.assertEqual(unlisted["wharf"]["placements"], len(wharf))
 
-    def test_the_known_interior_gap_is_declared_not_aliased(self):
-        unlisted = self.documents["StPeters"]["x-provenance"]["entityNotes"]["unlistedFamilies"]
-        self.assertIn("interior", unlisted)
-        self.assertIn("interiorprop", unlisted)
+    def test_the_interior_gap_closed_when_the_editor_published_the_entries(self):
+        """This used to assert the opposite: `interior`/`interiorprop` had no family and stayed
+        declared. The editor published both on 2026-08-20, so the request list is now empty for
+        St Peters and those 30 placements resolve. Kept as the record of a gap that closed the
+        way the no-aliasing rule intended — by a ruling, not by us bending a name."""
+        peters = self.documents["StPeters"]
+        unlisted = peters["x-provenance"]["entityNotes"]["unlistedFamilies"]
+        self.assertEqual(unlisted, {}, "St Peters has an unlisted family again")
+        resolved = [e for e in peters["entities"] if e["family"] in ("interior", "interiorprop")]
+        self.assertEqual(len(resolved), 30)
+        for entity in resolved:
+            self.assertFalse(entity["x-familyIsSpriteStem"], entity["id"])
 
     def test_a_resolved_rig_gives_the_editor_something_to_call(self):
         for name, document in self.documents.items():
@@ -466,6 +484,131 @@ def _greyscale_png(width, height, rows):
             + chunk(b"IHDR", _struct.pack(">IIBBBBB", width, height, 8, 0, 0, 0, 0))
             + chunk(b"IDAT", _zlib.compress(raw))
             + chunk(b"IEND", b""))
+
+
+class EditorAskTests(unittest.TestCase):
+    """The 2026-08-20 editor-side asks: rig versions, stable ids, water datum, height wash, interiors."""
+
+    @classmethod
+    def setUpClass(cls):
+        repo = Repo(REPO)
+        cls.docs = {name: hh_scene_export.export_region(repo, name, scene, height)
+                    for name, scene, height in hh_scene_export.REGIONS}
+
+    def test_rig_versions_are_one_hash_per_family_and_agree_with_x_rigs(self):
+        for name, doc in self.docs.items():
+            table = doc["x-rigVersions"]["families"]
+            self.assertTrue(table, f"{name} names no rig versions")
+            by_source = {r["rigSource"]: r["sha256"] for r in doc["x-rigs"]}
+            for family, entry in table.items():
+                if entry.get("x-ambiguous"):
+                    continue        # reported, deliberately unhashed — see _rig_versions
+                self.assertEqual(entry["sha256"], by_source[entry["rigSource"]],
+                                 f"{name}/{family} disagrees with x-rigs")
+            # Every family in the table is one an entity actually uses.
+            used = {e["family"] for e in doc["entities"] if e.get("rigSource")}
+            self.assertEqual(set(table) - used, set(), f"{name} lists an unused family")
+
+    def test_entity_ids_are_unique_and_not_positional(self):
+        for name, doc in self.docs.items():
+            ids = [e["id"] for e in doc["entities"]]
+            self.assertEqual(len(ids), len(set(ids)), f"{name} has duplicate ids")
+            # A positional id would count 001, 002, ... — the defect the editor asked us to avoid.
+            self.assertFalse(any(i.endswith("_001") for i in ids),
+                             f"{name} still mints ordinal ids")
+
+    def test_an_unrelated_insert_does_not_rekey_other_rows(self):
+        """The whole point: their write-back matches our rows by id."""
+        doc = self.docs["StPeters"]
+        before = {e["x-path"]: e["id"] for e in doc["entities"]}
+        # Re-mint every id as if one row had been inserted ahead of the others. A positional
+        # scheme shifts every subsequent id; an identity-derived one cannot.
+        after = {}
+        for offset, entity in enumerate(doc["entities"]):
+            del offset
+            after[entity["x-path"]] = package._stable_id(
+                entity["family"], entity["x-path"], entity["pos"][0], entity["pos"][1])
+        self.assertEqual(before, after)
+
+    def test_the_water_level_comes_from_the_region_def(self):
+        repo = Repo(REPO)
+        for name, doc in self.docs.items():
+            declared = repo.region_def(name)["tideMeanLevel"]
+            self.assertEqual(doc["terrain"]["waterLevelMeters"], declared, name)
+            # The tide swings about it, so the amplitude must travel with the number.
+            self.assertEqual(doc["terrain"]["x-tide"]["amplitudeMeters"],
+                             repo.region_def(name)["tideAmplitude"], name)
+            self.assertIn("chart datum", doc["terrain"]["x-waterDatum"])
+
+    def test_the_height_field_states_its_stride_and_is_two_state(self):
+        for name, doc in self.docs.items():
+            field = doc["terrain"]["x-heightField"]
+            self.assertEqual(field["strideMeters"], package.HEIGHT_FIELD_STRIDE_M, name)
+            if field.get("values") is None:
+                self.assertIn("x-unavailable", field,
+                              f"{name} has no height field and does not say why")
+                continue
+            self.assertEqual(len(field["values"]), field["cols"] * field["rows"], name)
+
+    def test_the_height_field_reads_a_real_texture_at_the_declared_stride(self):
+        """Exercised against a synthetic R8 map, since the real one is an LFS pointer here."""
+        stride = 8
+        png = _greyscale_png(16, 12, [bytes([(x * 16) % 256 for x in range(16)]) for _ in range(12)])
+        with tempfile.TemporaryDirectory() as tmp:
+            rel = "height.png"
+            with open(os.path.join(tmp, rel), "wb") as fh:
+                fh.write(png)
+
+            class _Stub:
+                root = tmp
+
+                def exists(self, path):
+                    return os.path.exists(os.path.join(tmp, path))
+
+                def abs(self, path):
+                    return os.path.join(tmp, path)
+
+            height_map = {"texture": rel, "worldSizeMeters": [32.0, 24.0],
+                          "worldCenter": [0.0, 0.0], "minElevation": -2.0, "maxElevation": 6.0}
+            field, note = heightmap.sample_field(_Stub(), height_map, 32, 24, [-16.0, 12.0], stride)
+            self.assertIsNone(note)
+            self.assertEqual(field["strideMeters"], stride)
+            self.assertEqual(len(field["values"]), field["cols"] * field["rows"])
+            values = [v for v in field["values"] if v is not None]
+            self.assertTrue(values)
+            for value in values:
+                self.assertGreaterEqual(value, -2.0)
+                self.assertLessEqual(value, 6.0)
+
+    def test_every_interior_names_the_building_that_contains_it(self):
+        doc = self.docs["StPeters"]
+        by_id = {e["id"]: e for e in doc["entities"]}
+        interiors = [e for e in doc["entities"] if "x-interiorOf" in e]
+        self.assertTrue(interiors, "no interiors found to link")
+        for entity in interiors:
+            container = entity["x-interiorOf"]
+            self.assertIsNotNone(container, f"{entity['id']} names no container")
+            # The link must be an ANCESTOR in the hierarchy, never a geometric neighbour.
+            self.assertTrue(entity["x-path"].startswith(by_id[container]["x-path"] + "/"),
+                            f"{entity['id']} is not inside {container}")
+
+    def test_the_continuous_per_instance_scale_is_exported_not_quantised(self):
+        """Measured, not assumed: the scatter tables jitter scale on a continuous hash.
+
+        The editor's bake cache keys on family|facing|opts, so this axis must reach them as a
+        DRAW-TIME transform and never as a bake key. Exporting it verbatim is what lets them
+        choose that; quantising it here would be us enumerating an axis that is not enumerated.
+        """
+        doc = self.docs["StPeters"]
+        scaled = [e for e in doc["entities"] if e.get("x-scale")]
+        self.assertTrue(scaled, "the shore-plant scatter should carry per-instance scale")
+        distinct = {tuple(e["x-scale"]) for e in scaled}
+        # Continuous by nature: near-1:1 distinct values. If this ever collapses to a handful,
+        # the pipeline changed and the answer to the editor's question changed with it.
+        self.assertGreater(len(distinct), len(scaled) // 2)
+        for entity in scaled:
+            self.assertIsNone(entity.get("call", {}) and entity["call"].get("opts", {}).get("scale"),
+                              "scale must not be folded into call.opts — it would kill their cache")
 
 
 class PortabilityTests(unittest.TestCase):

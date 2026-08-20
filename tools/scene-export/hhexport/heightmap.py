@@ -172,3 +172,62 @@ def contour(repo, height_map, cols, rows, origin_nw):
                     grid[base + col] = name
                     break
     return grid, None
+
+
+def sample_field(repo, height_map, cols, rows, origin_nw, stride_m):
+    """A DOWNSAMPLED elevation grid in metres, or ``None`` when the texture's bytes are absent.
+
+    The editor cannot read the referenced height file from its sandbox but needs elevation to
+    shade tide and shore, so the package carries a coarse copy inline. This is deliberately a
+    wash and not a survey: ``stride_m`` metres between samples, nearest texel, no interpolation
+    and no smoothing. The full-resolution map stays in the referenced file, pinned by its hash.
+
+    Values are metres on the SAME datum as ``terrain.waterLevelMeters``, so a shader can compare
+    the two directly. Row 0 is the north edge, matching the terrain grid.
+    """
+    texture = height_map.get("texture") if height_map else None
+    if not texture or not repo.exists(texture):
+        return None, "the height texture is not on disk"
+    with open(repo.abs(texture), "rb") as handle:
+        data = handle.read()
+    if data.startswith(b"version https://git-lfs"):
+        return None, "the height texture is a Git LFS pointer — its bytes are not in this checkout"
+    png = decode_r8(data)
+    if png is None:
+        return None, "the height texture did not decode as an 8-bit greyscale PNG"
+
+    low = height_map["minElevation"]
+    span = height_map["maxElevation"] - low
+    width_m, height_m = height_map["worldSizeMeters"]
+    centre_x, centre_y = height_map["worldCenter"]
+    left, top = centre_x - width_m / 2.0, centre_y + height_m / 2.0
+
+    # Ceil, so the last partial stride still gets a sample and the field spans the whole region.
+    field_cols = (cols + stride_m - 1) // stride_m
+    field_rows = (rows + stride_m - 1) // stride_m
+    values = []
+    for row in range(field_rows):
+        world_y = origin_nw[1] - min(row * stride_m + stride_m / 2.0, rows - 0.5)
+        ty = int((world_y - (top - height_m)) / height_m * png.height)
+        line = png.rows[png.height - 1 - ty] if 0 <= ty < png.height else None
+        for col in range(field_cols):
+            world_x = origin_nw[0] + min(col * stride_m + stride_m / 2.0, cols - 0.5)
+            tx = int((world_x - left) / width_m * png.width)
+            if line is None or not 0 <= tx < png.width:
+                values.append(None)     # outside the painted map: absent, not zero
+                continue
+            values.append(round(low + (line[tx] / 255.0) * span, 3))
+    field = {
+        "strideMeters": stride_m,
+        "cols": field_cols,
+        "rows": field_rows,
+        "originNW": [round(origin_nw[0], 3), round(origin_nw[1], 3)],
+        "elevationRange": [low, height_map["maxElevation"]],
+        "units": "metres relative to chart datum — the same datum as terrain.waterLevelMeters",
+        "order": "row-major, row 0 = north edge, one sample per stride cell centre",
+        "x-note": "a shading wash, not a survey: nearest texel at a coarse stride, no "
+                  "interpolation. null means the sample fell outside the painted map. The "
+                  "full-resolution source is terrain.x-heightMap, pinned by textureSha256.",
+        "values": values,
+    }
+    return field, None
