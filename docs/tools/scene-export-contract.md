@@ -155,6 +155,33 @@ Closing it properly means regenerating the packages in an LFS-present checkout �
 ship the real coast rather than an empty layer, and is the better fix of the two.
 
 
+### 6.1 A pointer-only re-export must not delete a coastline
+
+Once a package has been exported on a machine holding the Git LFS objects, it carries a ground
+contour and a height field that **no pointer-only checkout can rebuild**. The standing routine on
+this lane is "a builder commit lands → merge, re-export, push", and run unguarded in a
+pointer-only container that routine quietly empties the layer and reports success.
+
+The pointer itself is the fix. An LFS pointer's `oid sha256` **is** the sha256 of the object it
+stands for, so a checkout with no bytes can still prove *which* bytes the committed contour was
+built from. Three outcomes, in order:
+
+| Committed package | This checkout | Result |
+|---|---|---|
+| holds a contour, same `textureSha256` | cannot read the bytes | **carried forward**, stamped `heightCarriedForward: true` |
+| holds a contour, **different** `textureSha256` | cannot read the bytes | **refused** — the contour is genuinely stale and only an LFS-present run can fix it |
+| anything | can read the bytes | recomputed normally, `textureBytesRead: true` |
+
+Carrying is never silently equated with reading: the flags are separate, and a carried package
+says so. A package that was itself carried forward is a valid source for the next carry — it
+holds the same contour pinned to the same hash. (Requiring `textureBytesRead` on the *source*
+was a real bug: the guard fired exactly once, and the next pointer-only run read its own output,
+judged it no richer, and emptied the coast.)
+
+Refusal is all-or-nothing. A `MANIFEST.json` naming sha256s of packages we declined to write
+would be a third state, worse than either honest one.
+
+
 ## 7. Making the package renderable
 
 The editor draws **only** by calling rigs — it loads no images — so an entity with no rig gives

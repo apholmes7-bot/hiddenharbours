@@ -749,6 +749,96 @@ class DeterminismTests(unittest.TestCase):
             self.assertIsNone(
                 hh_scene_export._lfs_state_differs([(filename, package.dumps(doc))], tmp))
 
+    def test_a_pointer_only_export_keeps_a_verified_ground_contour(self):
+        """The routine on this lane re-exports on every builder commit. In a pointer-only
+        container that must not delete a coastline that only another machine can build."""
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Repo(REPO)
+            name, scene, height = hh_scene_export.REGIONS[0]
+            doc = hh_scene_export.export_region(repo, name, scene, height)
+            filename = f"{doc['region']['sceneName']}.scene.json"
+            rich = json.loads(package.dumps(doc))
+            rich["x-provenance"]["heightMap"]["textureBytesRead"] = True
+            rich["terrain"]["layers"]["ground"]["rle"] = [[1, 400], [0, rich["terrain"]["cols"]
+                                                          * rich["terrain"]["rows"] - 400]]
+            rich["terrain"]["x-heightField"] = {"values": [[0, 1], [2, 3]], "strideMeters": 8}
+            with open(os.path.join(tmp, filename), "w", encoding="utf-8", newline="\n") as fh:
+                json.dump(rich, fh)
+
+            fresh = hh_scene_export.export_region(repo, name, scene, height)
+            carried, refusal = hh_scene_export._carry_forward_height(
+                os.path.join(tmp, filename), fresh)
+            self.assertTrue(carried, "a verified contour was not carried forward")
+            self.assertIsNone(refusal)
+            painted = sum(r[1] for r in fresh["terrain"]["layers"]["ground"]["rle"] if r[0])
+            self.assertEqual(painted, 400)
+            self.assertEqual(fresh["terrain"]["x-heightField"]["strideMeters"], 8)
+            block = fresh["x-provenance"]["heightMap"]
+            self.assertTrue(block["heightCarriedForward"])
+            self.assertFalse(block["textureBytesRead"], "carrying is not the same as reading")
+
+    def test_carrying_forward_is_idempotent(self):
+        """The bug this pins: requiring `textureBytesRead` on the SOURCE made the guard fire
+        once, and the next pointer-only run read its own output, judged it no richer, and
+        emptied the coast."""
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Repo(REPO)
+            name, scene, height = hh_scene_export.REGIONS[0]
+            doc = hh_scene_export.export_region(repo, name, scene, height)
+            filename = f"{doc['region']['sceneName']}.scene.json"
+            carried_pkg = json.loads(package.dumps(doc))
+            hm = carried_pkg["x-provenance"]["heightMap"]
+            hm["textureBytesRead"], hm["heightCarriedForward"] = False, True
+            carried_pkg["terrain"]["layers"]["ground"]["rle"] = [
+                [1, 400], [0, carried_pkg["terrain"]["cols"] * carried_pkg["terrain"]["rows"] - 400]]
+            with open(os.path.join(tmp, filename), "w", encoding="utf-8", newline="\n") as fh:
+                json.dump(carried_pkg, fh)
+
+            fresh = hh_scene_export.export_region(repo, name, scene, height)
+            carried, _ = hh_scene_export._carry_forward_height(
+                os.path.join(tmp, filename), fresh)
+            self.assertTrue(carried, "an already-carried package was not accepted as a source")
+            self.assertEqual(
+                sum(r[1] for r in fresh["terrain"]["layers"]["ground"]["rle"] if r[0]), 400)
+
+    def test_a_changed_texture_is_refused_not_carried(self):
+        """Same-hash is the whole proof. A different texture means the contour really is stale,
+        and no local work can rebuild it — so refuse rather than ship it as current."""
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Repo(REPO)
+            name, scene, height = hh_scene_export.REGIONS[0]
+            doc = hh_scene_export.export_region(repo, name, scene, height)
+            filename = f"{doc['region']['sceneName']}.scene.json"
+            stale = json.loads(package.dumps(doc))
+            stale["x-provenance"]["heightMap"]["textureBytesRead"] = True
+            stale["x-provenance"]["heightMap"]["textureSha256"] = "0" * 64
+            stale["terrain"]["layers"]["ground"]["rle"] = [
+                [1, 400], [0, stale["terrain"]["cols"] * stale["terrain"]["rows"] - 400]]
+            with open(os.path.join(tmp, filename), "w", encoding="utf-8", newline="\n") as fh:
+                json.dump(stale, fh)
+
+            fresh = hh_scene_export.export_region(repo, name, scene, height)
+            carried, refusal = hh_scene_export._carry_forward_height(
+                os.path.join(tmp, filename), fresh)
+            self.assertFalse(carried)
+            self.assertIsNotNone(refusal, "a changed texture was silently carried forward")
+            self.assertIn("CHANGED", refusal)
+
+    def test_every_entity_states_its_origin(self):
+        """Their top request: the tool was inferring zones from `x-path` and misclassifying any
+        row whose key ends in a digit. An explicit origin removes the inference."""
+        repo = Repo(REPO)
+        for name, scene, height in hh_scene_export.REGIONS:
+            doc = hh_scene_export.export_region(repo, name, scene, height)
+            digit_keyed = 0
+            for entity in doc["entities"]:
+                self.assertTrue(entity.get("x-origin"), f"{name} {entity['id']} has no origin")
+                self.assertEqual(entity["x-origin"], entity["x-path"].split("/")[0],
+                                 "origin must be the builder's own root, unmodified")
+                if entity["x-path"].split("/")[-1][-1:].isdigit():
+                    digit_keyed += 1
+            self.assertGreater(digit_keyed, 0, f"{name} has no digit-keyed row to protect")
+
     def test_the_output_is_valid_json(self):
         repo = Repo(REPO)
         for name, scene, height in hh_scene_export.REGIONS:

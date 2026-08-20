@@ -391,6 +391,12 @@ def _entities(repo, scene, centre, origin_nw, cols, rows):
             "cell": _cell(entry),
             "x-name": name,
             "x-path": hierarchy,
+            # The builder's OWN grouping — the scene root this object was parented under —
+            # given whole rather than left to be parsed back out of `x-path`. The editor was
+            # inferring zones from the path and misclassifying any row whose key ends in a
+            # digit, which told the owner he could not move a building he can. Nothing here is
+            # normalised, stripped or title-cased: it is the root's name as the builder wrote it.
+            "x-origin": hierarchy.split("/")[0] if hierarchy else None,
             "x-cellAt": [column, row],
             "x-inBounds": in_bounds,
             "x-active": active,
