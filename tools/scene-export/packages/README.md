@@ -15,8 +15,8 @@ until the files match what this commit produces.
 
 | File | Region | Entities | Lanes | Rigs pinned |
 |---|---|---|---|---|
-| `nine-mile-creek.scene.json` | `region.nine_mile_creek` | 291 | 0 | 7 |
-| `st-peters.scene.json` | `region.st_peters` | 1028 | 10 | 7 |
+| `NineMileCreek.scene.json` | `region.nine_mile_creek` | 291 | 0 | 7 |
+| `StPeters.scene.json` | `region.st_peters` | 1028 | 10 | 7 |
 | `MANIFEST.json` | — | sha256 of each package | | |
 
 **The West Water is deliberately absent**: it is unbanked and awaiting rebuild, so there is no
@@ -39,6 +39,7 @@ scenes in Unity and re-run the exporter to close the whole gap at once.
 `x-provenance.historyIsComplete` says whether the checkout could see far enough back to be sure
 of those numbers: in a shallow clone the drift count is a floor, and the package says so.
 
-Fields prefixed `x-` are ours: the review that reconstructs this format
-(`docs/tools/scene-editor-review.md`) does not name them, so they are marked rather than passed
-off as part of the contract. See `docs/tools/scene-export-contract.md`.
+Fields prefixed `x-` are ours. That is allowed by the contract, not a liberty taken with it:
+readers of `hiddenharbours.scene/1` must ignore unknown keys and `x-` is the reserved extension
+prefix (`docs/tools/scene-export-contract.md` §0). Everything under one is a fact the repo can
+state that the format does not name — chiefly provenance and staleness.

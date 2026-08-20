@@ -30,15 +30,6 @@ REGIONS = [
 ]
 
 
-def slug(name):
-    out = []
-    for index, ch in enumerate(name):
-        if ch.isupper() and index:
-            out.append("-")
-        out.append(ch.lower())
-    return "".join(out)
-
-
 def export_region(repo, region_name, scene_rel, height_name):
     region = repo.region_def(region_name)
     height_map = repo.painted_height(height_name)
@@ -65,20 +56,21 @@ def main(argv=None):
     out_dir = os.path.join(repo.root, args.out)
     wanted = set(args.region) if args.region else None
 
-    manifest = {"format": package.FORMAT, "packages": []}
+    manifest = {"schema": package.SCHEMA, "packages": []}
     written = []
     for region_name, scene_rel, height_name in REGIONS:
         if wanted and region_name not in wanted:
             continue
         document = export_region(repo, region_name, scene_rel, height_name)
         text = package.dumps(document)
-        filename = f"{slug(region_name)}.scene.json"
+        # `<sceneName>.scene.json` — the name the editor's own doExport() writes.
+        filename = f"{document['region']['sceneName']}.scene.json"
         manifest["packages"].append({
             "region": document["region"]["id"],
             "file": filename,
             "sha256": hashlib.sha256(text.encode("utf-8")).hexdigest(),
             "entities": document["stats"]["entities"],
-            "paths": document["stats"]["paths"],
+            "paths": document["stats"]["x-paths"],
             "rigsPinned": document["stats"]["x-rigsPinned"],
             "sceneLastBuiltCommit": document["x-provenance"]["sceneLastBuiltCommit"],
         })

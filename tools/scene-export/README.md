@@ -2,7 +2,9 @@
 
 Exports **Nine Mile Creek** and **St Peters** out of the committed repo and into a
 `hiddenharbours.scene/1` document, so the owner can open his own harbours in the Claude-Design
-scene editor and look at them.
+scene editor and look at them. The format is the one settled in
+[`docs/tools/scene-export-contract.md`](../../docs/tools/scene-export-contract.md) — every field
+name there is a citation from the editor's own reference package, not a guess.
 
 This is the **outbound** direction only. Import — the editor authoring back into the repo — is
 a separate, gated spike (`docs/tools/scene-editor-review.md` §9) and nothing here builds it.
@@ -10,7 +12,7 @@ a separate, gated spike (`docs/tools/scene-editor-review.md` §9) and nothing he
 ```bash
 python3 tools/scene-export/hh_scene_export.py                 # writes tools/scene-export/packages/
 python3 tools/scene-export/hh_scene_export.py --check         # fails if the committed packages are stale
-python3 -m unittest discover -s tools/scene-export/tests -v   # 21 tests
+python3 -m unittest discover -s tools/scene-export/tests -v   # 30 tests
 ```
 
 No arguments needed and no Unity: python3 (3.8+), standard library only. It runs in a bare
@@ -35,8 +37,9 @@ outside Unity is stamped as such rather than quietly trusted.
 **The pivots are better than the editor's own.** The review's §8.1 found the editor falls back
 to the cell box for rigs that publish their pivot per render (a measured 10 px error on the
 rock). That failure mode cannot occur here: the pivot comes from the import settings the baker
-wrote, in Unity's normalised bottom-left form, which *is* `unityPivot`. Every entity records
-`x-pivotSource` so a reader can see which it got.
+wrote, in Unity's normalised bottom-left form, which *is* `unityPivot`. Both forms ship in
+`cell` as the format wants, and the top-left one is derived from the normalised one under
+ADR 0026, so the two cannot disagree. Every entity records `x-pivotSource`.
 
 **Half the placements pin to a rig; the rest say so.** 11 kits ship a `*.contract.json` or an
 equivalent sidecar naming the rig they were baked from, and those resolve exactly. Sheets with
@@ -55,7 +58,7 @@ hhexport/scene.py           hierarchy, world transforms, the scene's own orderin
 hhexport/package.py         the hiddenharbours.scene/1 emitter
 hhexport/provenance.py      what vintage of the world a package is a picture of
 packages/                   the committed output (regenerate with the command above)
-tests/                      21 tests: parser, rig pinning, the review's rules, determinism
+tests/                      30 tests: parser, rig pinning, the settled contract, determinism
 ```
 
 The YAML reader is hand-written rather than PyYAML on purpose. Unity serialises `int[]` as a

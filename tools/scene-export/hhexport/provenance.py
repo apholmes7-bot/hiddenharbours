@@ -13,6 +13,7 @@ so it is measured and stamped rather than left for the reader to discover by not
 road.
 """
 
+import datetime
 import hashlib
 import os
 import subprocess
@@ -41,6 +42,7 @@ def collect(repo, region_name, scene_rel, height_map):
     root = repo.root
     scene_commit = _git(root, "log", "-1", "--format=%H", "--", scene_rel)
     scene_date = _git(root, "log", "-1", "--format=%ad", "--date=short", "--", scene_rel)
+    scene_date_iso = _git(root, "log", "-1", "--format=%cI", "--", scene_rel)
     scene_subject = _git(root, "log", "-1", "--format=%s", "--", scene_rel)
     dirty = _git(root, "status", "--porcelain", "--", scene_rel)
 
@@ -58,9 +60,11 @@ def collect(repo, region_name, scene_rel, height_map):
         # answer changes, so a package does not go stale every time an unrelated commit lands —
         # and the exporter's own commits cannot invalidate its own output.
         newest = _git(root, "log", "-1", "--format=%H", f"{scene_commit}..HEAD", "--", *globs)
+        newest_date = _git(root, "log", "-1", "--format=%cI", f"{scene_commit}..HEAD", "--", *globs)
         drift = {
             "builderCommitsSinceScene": int(commits) if commits and commits.isdigit() else None,
             "measuredTo": newest or scene_commit,
+            "measuredToDate": newest_date or None,
             "exact": not shallow,
             "builderCommits": subjects.split("\n") if subjects else [],
         }
@@ -69,7 +73,17 @@ def collect(repo, region_name, scene_rel, height_map):
                                "point are invisible, so the scene may have been banked earlier "
                                "than sceneLastBuiltCommit says. Run `git fetch --unshallow`.")
 
+    # The document's `generatedAt` is the committer date of the newest INPUT commit, never the
+    # wall clock. A timestamp of the run would make the output non-reproducible and the --check
+    # gate meaningless; a timestamp of the inputs says the one useful thing — what vintage of the
+    # repo this is a picture of — and is identical on every re-run at that commit.
+    generated_at = None
+    if drift and drift.get("measuredTo"):
+        generated_at = drift.get("measuredToDate") or scene_date_iso
+    generated_at = _utc_z(generated_at or scene_date_iso)
+
     return {
+        "generatedAt": generated_at,
         "historyIsComplete": not shallow,
         "sceneFile": scene_rel,
         "sceneFileSha256": _file_sha(os.path.join(root, scene_rel)),
@@ -87,6 +101,20 @@ def collect(repo, region_name, scene_rel, height_map):
                           "run outside Unity. Pinned by sceneLastBuiltCommit and builderDrift.",
         },
     }
+
+
+def _utc_z(iso):
+    """Normalise a git ``%cI`` date to the UTC ``…Z`` form the reference package uses."""
+    if not iso:
+        return None
+    try:
+        return (
+            datetime.datetime.fromisoformat(iso)
+            .astimezone(datetime.timezone.utc)
+            .strftime("%Y-%m-%dT%H:%M:%SZ")
+        )
+    except ValueError:
+        return iso
 
 
 def _file_sha(path):

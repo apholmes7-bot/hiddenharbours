@@ -1,11 +1,15 @@
 """Tests for the scene exporter. Run: ``python3 -m unittest discover tools/scene-export/tests``
 
-These pin the rules the review (#571, corrected by #576) rules on — RLE coverage, the region
-table coming from the RegionDef, the LF-sha256 convention, ``unityPivot`` never being the
-cell-box fallback — plus the determinism claim the PR makes.
+These pin the contract lead-architect settled from the editor's reference package (PR #588,
+recorded as citations in ``docs/tools/scene-export-contract.md``) — the envelope's shape, RLE
+coverage and row order, the region table coming from the RegionDef, the LF-sha256 convention,
+``sortBias`` as a tie-break delta rather than an absolute order, and pivots that can never be
+the cell-box fallback — plus the determinism claim the PR makes.
 """
 
+import datetime
 import json
+import math
 import os
 import subprocess
 import sys
@@ -142,11 +146,86 @@ class PackageTests(unittest.TestCase):
         """Review §8.1: the editor falls back to the cell edge for render-anchored rigs."""
         for name, document in self.documents.items():
             for entity in document["entities"]:
-                if entity["unityPivot"] is None:
+                if entity["cell"] is None:
                     continue
-                x, y = entity["unityPivot"]
+                x, y = entity["cell"]["unityPivot"]
                 self.assertTrue(0.0 <= x <= 1.0 and 0.0 <= y <= 1.0, f"{name} {entity['id']}")
                 self.assertTrue(entity["x-pivotSource"].startswith("sprite-import."))
+
+    def test_the_two_pivot_forms_are_exact_inverses(self):
+        """Both ship together (contract §2 #11); ADR 0026 makes disagreement impossible."""
+        for name, document in self.documents.items():
+            for entity in document["entities"]:
+                cell = entity["cell"]
+                if cell is None:
+                    continue
+                px, py = cell["pivot"]
+                ux, uy = cell["unityPivot"]
+                # Both forms are rounded for stable bytes, so they agree to within rounding —
+                # a hundredth of a pixel, which is the invariant that matters: they can never
+                # disagree by anything a reader could see.
+                self.assertLess(abs(px - cell["w"] * ux), 0.01, f"{name} {entity['id']}")
+                self.assertLess(abs(py - cell["h"] * (1.0 - uy)), 0.01, f"{name} {entity['id']}")
+
+    def test_the_envelope_is_the_settled_one(self):
+        """Contract §2 #14: the key is `schema`, and the top level is a fixed set."""
+        expected = ["schema", "generatedBy", "generatedAt", "region", "frame", "terrain",
+                    "entities", "cliffLines", "paths", "collision", "stats"]
+        for name, document in self.documents.items():
+            self.assertEqual(document["schema"], package.SCHEMA, name)
+            self.assertNotIn("format", document, f"{name} still uses the pre-ruling key")
+            keys = [k for k in document if not k.startswith("x-")]
+            self.assertEqual(keys, expected, name)
+            self.assertEqual(sorted(document["region"]),
+                             sorted(["id", "sceneName", "worldCenter", "worldSizeMeters",
+                                     "x-displayName", "x-source"]), name)
+
+    def test_pos_is_metres_from_the_region_centre(self):
+        """Contract §2 #3: `pos: [x, y]`, metres, origin = region centre — and the grid agrees."""
+        for name, document in self.documents.items():
+            centre = document["region"]["worldCenter"]
+            width, height = document["region"]["worldSizeMeters"]
+            for entity in document["entities"]:
+                if not entity["x-inBounds"]:
+                    continue
+                x, y = entity["pos"]
+                self.assertLessEqual(abs(x), width, f"{name} {entity['id']}")
+                self.assertLessEqual(abs(y), height, f"{name} {entity['id']}")
+                # row 0 is the north edge (§2 #6), so the row grows as y falls.
+                column = math.floor(x + centre[0] - (centre[0] - width / 2.0))
+                row = math.floor((centre[1] + height / 2.0) - (y + centre[1]))
+                self.assertEqual([column, row], entity["x-cellAt"], f"{name} {entity['id']}")
+
+    def test_sort_bias_is_a_tie_break_delta_not_an_absolute_order(self):
+        """Contract §2 #12. `YSortSprite._baseOrder` sits around 1202; a bias does not."""
+        decor_base = self.repo.decor_base()
+        self.assertEqual(decor_base, 1202)
+        for name, document in self.documents.items():
+            for entity in document["entities"]:
+                self.assertLess(abs(entity["sortBias"]), decor_base / 2,
+                                f"{name} {entity['id']} looks like an absolute order")
+
+    def test_the_legend_is_top_level_and_layers_carry_none(self):
+        """Contract §2 #5: one `terrain.legend`; layer objects have no legend of their own."""
+        for name, document in self.documents.items():
+            terrain = document["terrain"]
+            self.assertIn("legend", terrain, name)
+            self.assertIn("row 0 = north edge", terrain["note"], name)
+            for layer_name, layer in terrain["layers"].items():
+                self.assertNotIn("legend", layer, f"{name}.{layer_name}")
+                self.assertEqual(
+                    [k for k in layer if not k.startswith("x-")],
+                    ["code", "order", "label", "rig", "cell", "layerOpts", "rle"],
+                    f"{name}.{layer_name}")
+
+    def test_paths_carry_the_settled_shape(self):
+        for name, document in self.documents.items():
+            for lane in document["paths"]:
+                self.assertEqual(
+                    [k for k in lane if not k.startswith("x-")],
+                    ["id", "layer", "material", "widthMeters", "closed", "curve", "nodes",
+                     "polyline"], f"{name} {lane['id']}")
+                self.assertEqual(lane["nodes"], lane["polyline"], f"{name} {lane['id']}")
 
     def test_the_ppu_is_the_sprite_grid_and_never_the_water_shader_grid(self):
         """Two grids live in this repo and conflating them is a whole class of bug.
@@ -205,6 +284,21 @@ class PackageTests(unittest.TestCase):
             # A shallow clone can only give a floor; the package must say which it gave.
             self.assertEqual(drift["exact"], document["x-provenance"]["historyIsComplete"])
             self.assertEqual("x-note" in drift, not drift["exact"])
+
+    def test_generated_at_is_an_input_date_not_a_wall_clock(self):
+        """It must be reproducible, so it is the newest input commit's own committer date."""
+        for name, document in self.documents.items():
+            stamp = document["generatedAt"]
+            self.assertRegex(stamp, r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$", name)
+            commit = document["x-provenance"]["builderDrift"]["measuredTo"]
+            actual = subprocess.run(
+                ["git", "log", "-1", "--format=%cI", commit], cwd=REPO,
+                capture_output=True, text=True).stdout.strip()
+            expected = (
+                datetime.datetime.fromisoformat(actual)
+                .astimezone(datetime.timezone.utc)
+                .strftime("%Y-%m-%dT%H:%M:%SZ"))
+            self.assertEqual(stamp, expected, name)
 
     def test_the_height_map_is_pinned_even_though_its_bytes_are_absent(self):
         for document in self.documents.values():

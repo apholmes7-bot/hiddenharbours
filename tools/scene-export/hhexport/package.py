@@ -1,16 +1,18 @@
 """Emitting a ``hiddenharbours.scene/1`` document for one region.
 
-The contract is reconstructed from ``docs/tools/scene-editor-review.md`` (#571, corrected by
-#576), which is the only description of the format the repo holds. Fields the review names are
-emitted under its names; fields it never names are emitted under ``x-`` prefixed names so a
-consumer can tell a reconstructed field from a specified one at a glance. Every ruling the
-review makes is honoured:
+The contract is the one lead-architect settled from the editor's own reference package on
+PR #588 — all seventeen questions `docs/tools/scene-export-contract.md` §2 used to hold open,
+answered from `sample-scene.json`'s bytes. That doc is the citation for every field name here;
+this module is only its implementation.
 
-  * the region table comes from the ``RegionDef``, never from a hardcoded size (§6.2)
-  * every layer's RLE sums to exactly ``cols x rows`` (§5 Q1, §8.2)
-  * ``unityPivot`` is shipped, the rig's own top-left pivot is not (§5 Q3)
-  * every rig referenced is pinned by the LF sha256 of its bytes (§6.1)
-  * derived layers are marked derived, so nothing unmarked is later trusted (§5 Q5)
+Two rulings shape the whole file:
+
+  * **Readers MUST ignore unknown keys, and ``x-`` is the reserved extension prefix.** So every
+    fact the repo can state but the format does not name — provenance, staleness, which sidecar
+    linked a sheet to its rig — ships under ``x-`` rather than being dropped or disguised.
+  * **``call``/``opts`` are write-only.** The editor renders from its own live state and writes
+    the call record out of it; no renderer reads one back. An export without them is valid, and
+    reconstructing one from a baked sheet would be a second definition of the bake.
 """
 
 import json
@@ -20,12 +22,29 @@ import os
 from . import unityyaml as U
 from .repo import ASSETS_PPU
 
-FORMAT = "hiddenharbours.scene/1"
+SCHEMA = "hiddenharbours.scene/1"
+GENERATED_BY = "tools/scene-export/hh_scene_export.py"
 
-# The layers the review names. All three are terrain pictures the repo does not author as tiles:
-# ground is an iso-contour of the painted height map, cliffs are placed surfaces, and NMC's roads
-# are painted by the builder from centrelines. None can be reconstructed outside Unity.
-TERRAIN_LAYERS = ("ground", "cliff", "road")
+# The three terrain layers, in painter order. All three are pictures the repo does not author as
+# tiles: ground is an iso-contour of the painted height map, cliffs are placed surfaces, and the
+# creek's roads are painted by the builder from centrelines. None survives outside Unity.
+TERRAIN_LAYERS = (
+    ("ground", "g", 0, "Ground"),
+    ("road", "r", 1, "Road"),
+    ("cliff", "c", 2, "Cliff"),
+)
+
+_LAYER_UNAVAILABLE = {
+    "ground": "The ground is not tiles. It is an iso-contour of the painted height map "
+              "(PaintedHeightMap + TerrainSplatSurface, ADR 0014) — an R8 texture stored in Git "
+              "LFS, whose bytes are absent from a plain checkout. The map is pinned by its LFS "
+              "oid under terrain.x-heightMap instead.",
+    "road": "Roads are painted by the region builder from centrelines through RoadKitContract "
+            "into two tilemaps (RoadTop/RoadSkirt). No road tilemap exists in the committed "
+            "scene, and the blob-47 index is deliberately derived in one place only.",
+    "cliff": "Cliffs are placed surfaces (CliffWallSurface components), not painted cells. They "
+             "are exported as entities, where they are authored.",
+}
 
 
 def build_document(repo, region, scene, provenance):
@@ -35,89 +54,108 @@ def build_document(repo, region, scene, provenance):
     cols, rows = int(round(width)), int(round(height))
     origin_nw = [centre_x - width / 2.0, centre_y + height / 2.0]
 
-    entities, rigs, entity_notes = _entities(repo, scene, origin_nw, cols, rows)
+    entities, rigs, entity_notes = _entities(
+        repo, scene, (centre_x, centre_y), origin_nw, cols, rows)
     paths = _paths(repo, scene)
 
-    document = {
-        "format": FORMAT,
+    return {
+        "schema": SCHEMA,
+        "generatedBy": GENERATED_BY,
+        # Deterministic by construction: the committer date of the newest input commit, never the
+        # wall clock. See provenance.collect.
+        "generatedAt": provenance.get("generatedAt"),
         "region": {
             "id": region["id"],
-            "name": region["displayName"],
-            "scene": region["sceneName"],
-            "worldSizeMeters": [_num(width), _num(height)],
+            "sceneName": region["sceneName"],
             "worldCenter": [_num(centre_x), _num(centre_y)],
+            "worldSizeMeters": [_num(width), _num(height)],
+            "x-displayName": region["displayName"],
             "x-source": region["asset"],
         },
         "frame": {
             "ppu": ASSETS_PPU,
             "cellMeters": 1,
             "originNW": [_num(origin_nw[0]), _num(origin_nw[1])],
+            "axes": "+x east, +y north, origin = region centre",
             "camera": "3/4 top-down, ADR-0006/0022. Prose for the reader; never parse it.",
+            "sort": "painter, descending world y (north draws first); sortBias breaks ties",
         },
-        "terrain": _terrain(repo, cols, rows, provenance),
-        "paths": paths,
+        "terrain": _terrain(cols, rows, provenance),
         "entities": entities,
-        "x-rigs": rigs,
+        "cliffLines": [],
+        "paths": paths,
+        "collision": {
+            "note": "Derived, never authored. This export ships no collision sidecars: colliders "
+                    "in the committed scene are builder output, and the shapes that carry "
+                    "gameplay law (quay faces, dock zones, passages) are owned by the region "
+                    "builder rather than by any document.",
+            "sidecars": [],
+        },
         "stats": {
             "entities": len(entities),
-            "paths": len(paths),
-            "x-rigsPinned": len([r for r in rigs if r.get("sha256")]),
-            "x-note": "counts of records in this document. Not a checksum of anything painted "
-                      "(review §5 Q1: stats.tiles was mistaken for one).",
+            "tiles": {name: 0 for name, _code, _order, _label in TERRAIN_LAYERS},
+            "x-paths": len(paths),
+            "x-rigsPinned": len(rigs),
+            "x-tilesNote": "stamp counts, as in the reference package — not a checksum of the "
+                           "RLE. Zero here because no layer is painted (see terrain.layers).",
         },
-        "x-provenance": provenance | {
-            "entityNotes": entity_notes,
-        },
+        "x-rigs": rigs,
+        "x-cliffLinesNote": "Empty: cliff lines are an authoring artefact of the editor. The "
+                            "repo's cliffs are placed CliffWallSurface components and ship as "
+                            "entities.",
+        "x-provenance": provenance | {"entityNotes": entity_notes},
     }
-    return document
 
 
 # --- terrain ------------------------------------------------------------------------------
 
-def _terrain(repo, cols, rows, provenance):
+def _terrain(cols, rows, provenance):
+    """The grid, one top-level legend, and the three layers.
+
+    Shape follows the reference package: a single ``terrain.legend`` whose prefixed keys (``g1``,
+    ``r3``, ``c2``) ARE the values appearing in every layer's RLE, and layer objects that carry
+    no legend of their own. ``0`` is not a legend key — it is the reserved "no tile" value, and
+    it counts toward full coverage.
+    """
     total = cols * rows
     layers = {}
-    for name in TERRAIN_LAYERS:
+    for name, code, order, label in TERRAIN_LAYERS:
         layers[name] = {
-            "legend": {"0": "unpainted — not readable outside Unity (see x-unavailable)"},
+            "code": code,
+            "order": order,
+            "label": label,
+            "rig": None,
+            "cell": None,
+            "layerOpts": None,
             "rle": [[0, total]],
             "x-readOnly": True,
             "x-derived": True,
             "x-authorable": False,
-            "x-unavailable": _LAYER_REASONS[name],
+            "x-unavailable": _LAYER_UNAVAILABLE[name],
         }
     return {
         "cols": cols,
         "rows": rows,
+        "note": "row 0 = north edge. 0 = no tile (water — never baked, the shader owns it). "
+                "Runs are [value, count]; sum(count) == cols * rows exactly.",
+        "legend": {},
         "layers": layers,
-        "x-rleRule": "runs are [value, count]; sum(count) == cols * rows exactly (review §5 Q1).",
+        "x-legendNote": "Empty because no layer is painted: the only RLE value in this document "
+                        "is the reserved 0, which is not a legend key.",
         "x-heightMap": provenance.get("heightMap"),
     }
 
 
-_LAYER_REASONS = {
-    "ground": "The ground is not tiles. It is an iso-contour of the painted height map "
-              "(PaintedHeightMap + TerrainSplatSurface, ADR 0014) — an R8 texture stored in Git "
-              "LFS, whose bytes are absent from a plain checkout. The map is pinned by its LFS "
-              "oid under terrain.x-heightMap instead.",
-    "cliff": "Cliffs are placed surfaces (CliffWallSurface components), not painted cells. They "
-             "are exported as entities, where they are authored.",
-    "road": "Roads are painted by the region builder from centrelines through RoadKitContract "
-            "into two tilemaps (RoadTop/RoadSkirt). No road tilemap exists in the committed "
-            "scene, and the blob-47 index is deliberately derived in one place only (review "
-            "§5 Q5).",
-}
-
-
 # --- entities -----------------------------------------------------------------------------
 
-def _entities(repo, scene, origin_nw, cols, rows):
+def _entities(repo, scene, centre, origin_nw, cols, rows):
     entities = []
     rigs = {}
     family_counts = {}
     unresolved_sheets = {}
     inactive = 0
     off_grid = 0
+    decor_base = repo.decor_base()
 
     for game_object_id in scene.walk():
         renderer = None
@@ -174,15 +212,18 @@ def _entities(repo, scene, origin_nw, cols, rows):
         record = {
             "id": f"{family}_{index:03d}",
             "family": family,
+            "pos": [_num(x - centre[0]), _num(y - centre[1])],
+            "rig": rig_name,
+            "rigSource": rig_source,
+            "cell": _cell(entry),
+            "sortBias": _sort_bias(y_sort, decor_base),
             "x-name": name,
             "x-path": scene.hierarchy_path(game_object_id),
-            "x-atMeters": [_num(x), _num(y)],
             "x-cellAt": [column, row],
             "x-inBounds": in_bounds,
             "x-active": active,
-            "rig": rig_name,
-            "rigSource": rig_source,
             "x-rigSha256": rigs[rig_source]["sha256"] if rig_source else None,
+            "x-familyIsSpriteStem": True,
             "sprite": {
                 "sheet": sheet,
                 "name": entry["name"] if entry else None,
@@ -190,14 +231,16 @@ def _entities(repo, scene, origin_nw, cols, rows):
             },
         }
         if entry:
-            record["cell"] = {"w": _num(entry["cell"][0]), "h": _num(entry["cell"][1])}
-            record["unityPivot"] = [_num(entry["unityPivot"][0]), _num(entry["unityPivot"][1])]
             record["x-pivotSource"] = entry["pivotSource"]
-            record["x-ppu"] = _num(entry["ppu"])
         else:
-            record["cell"] = None
-            record["unityPivot"] = None
-            record["x-pivotSource"] = "unresolved — sprite not found in the sheet's import settings"
+            record["x-pivotSource"] = "unresolved — sprite not in the sheet's import settings"
+        if y_sort is not None:
+            record["x-sortBiasSource"] = (
+                f"YSortSprite._baseOrder minus SortingBands.DecorBase ({decor_base})")
+        else:
+            order = renderer.data.get("m_SortingOrder")
+            if order not in (None, ""):
+                record["x-sortingOrder"] = U.as_int(order)
         if rotation:
             record["x-rotationDegrees"] = _num(rotation)
         if scale_x != 1.0 or scale_y != 1.0:
@@ -206,13 +249,6 @@ def _entities(repo, scene, origin_nw, cols, rows):
         flip_y = U.as_int(renderer.data.get("m_FlipY"), 0) != 0
         if flip_x or flip_y:
             record["x-flip"] = [flip_x, flip_y]
-        if y_sort is not None:
-            record["sortBias"] = _num(U.as_float(y_sort.data.get("_baseOrder"), 0.0))
-            record["x-sortBiasSource"] = "YSortSprite._baseOrder"
-        else:
-            order = renderer.data.get("m_SortingOrder")
-            if order not in (None, ""):
-                record["x-sortingOrder"] = U.as_int(order)
         entities.append(record)
 
     notes = {
@@ -221,16 +257,55 @@ def _entities(repo, scene, origin_nw, cols, rows):
         "unresolvedRigPlacements": sum(v["placements"] for v in unresolved_sheets.values()),
         "unresolvedSheets": dict(sorted(unresolved_sheets.items())),
         "x-unresolvedMeaning": "no sidecar beside these sheets names a rig this exporter will "
-                               "trust — an ambiguous one names several. The 11 kits that ship a "
+                               "trust — an ambiguous one names several. The kits that ship a "
                                "*.contract.json resolve exactly; the rest have no committed link "
                                "from sheet to rig, so nothing is pinned rather than guessed.",
-        "x-noCallRecord": "call/opts are deliberately absent. The sheets are baked; the option "
-                          "axes that produced a given cell are not recorded per instance, and the "
-                          "review rules the call record provenance-only (§5 Q2). Inventing one "
-                          "would be a second definition of the bake.",
+        "x-familyVocabulary": "The format's `family` vocabulary is the editor's RigKit ids "
+                              "(dory, punt, lobsterboat, camper, character, pot, rock, …). These "
+                              "ids are the SPRITE NAME STEM instead, because a baked sheet does "
+                              "not record which palette family drew it. Every entity flags this "
+                              "with x-familyIsSpriteStem so nothing mistakes one for the other.",
+        "x-noCallRecord": "call/opts are absent by ruling: the editor writes them out of its own "
+                          "live state and no renderer reads one back. The cost is that this "
+                          "document can never seed a round-trip INTO the editor, which needs "
+                          "family+dir+opts.",
     }
     ordered_rigs = [rigs[key] for key in sorted(rigs)]
     return entities, ordered_rigs, notes
+
+
+def _cell(entry):
+    """``{w, h, pivot, pxPerM, unityPivot}`` — or ``null``, as the editor itself emits.
+
+    Both pivot forms ship together, as in the reference package: ``pivot`` in the rig's own
+    top-left pixel coordinates and ``unityPivot`` normalised from the bottom left. Only the
+    second is read from the import settings; the first is its exact inverse under ADR 0026's
+    ``unityPivotY = (h - pivotY) / h``, so the two cannot disagree.
+    """
+    if not entry:
+        return None
+    width, height = entry["cell"]
+    ux, uy = entry["unityPivot"]
+    return {
+        "w": _num(width),
+        "h": _num(height),
+        "pivot": [_num(width * ux), _num(height * (1.0 - uy))],
+        "pxPerM": _num(entry["ppu"]),
+        "unityPivot": [_num(ux), _num(uy)],
+    }
+
+
+def _sort_bias(y_sort, decor_base):
+    """A y-sort **tie-break delta**, not an absolute sorting order.
+
+    ``YSortSprite._baseOrder`` is an absolute order around ``SortingBands.DecorBase``; the
+    format's ``sortBias`` only breaks ties between two things at the same world y. Shipping the
+    absolute number would read as a bias of about twelve hundred, so what goes out is the delta
+    from the band base — 0 for everything the builder left at the default.
+    """
+    if y_sort is None:
+        return 0
+    return _num(U.as_float(y_sort.data.get("_baseOrder"), float(decor_base)) - decor_base)
 
 
 def _family(sprite_name):
@@ -244,12 +319,16 @@ def _family(sprite_name):
 # --- paths --------------------------------------------------------------------------------
 
 def _paths(repo, scene):
-    """Walkable lanes, where the region has them, as polylines.
+    """Walkable lanes, where the region has them, in the format's ``paths[]`` shape.
 
     ``RoutineLanes`` already holds the region's lane network — node positions, a parent tree and
-    flattened bend points. The review's §4 is explicit that an imported path should converge on
-    this table rather than sit beside it, so the export reads the lanes rather than minting a
+    flattened bend points — and the review is explicit that an imported path should converge on
+    that table rather than sit beside it. So the export reads the lanes rather than minting a
     third polyline table, and marks them derived so nothing treats them as authorable here.
+
+    ``curve.kind`` is ``polyline``, not the editor's ``catmull-rom``: these segments are straight
+    runs through explicit bend points, so ``polyline`` equals ``nodes`` exactly and no smoothing
+    is implied that the villagers do not walk.
     """
     paths = []
     for component in scene.behaviours.values():
@@ -271,14 +350,22 @@ def _paths(repo, scene):
             start = via_start[index] if index < len(via_start) else 0
             count = via_count[index] if index < len(via_count) else 0
             bends = via[start:start + count]  # stored child -> parent
-            nodes = [position] + list(bends) + [positions[parent]]
+            nodes = [[_num(px), _num(py)]
+                     for px, py in [position] + list(bends) + [positions[parent]]]
             paths.append({
                 "id": f"lane_{names[index] if index < len(names) else index}",
+                "layer": None,
                 "material": "lane",
                 "widthMeters": None,
-                "nodes": [[_num(px), _num(py)] for px, py in nodes],
+                "closed": False,
+                "curve": {"kind": "polyline", "uniform": True, "tangentScale": 0},
+                "nodes": nodes,
+                "polyline": nodes,
                 "x-readOnly": True,
                 "x-derived": "RoutineLanes — the region builder writes it; villagers read it.",
+                "x-layerNote": "null: a walkable lane is not one of the three painted terrain "
+                               "layers. Two of St Peters' lanes are drawn by the terrain "
+                               "painter, but the lane table is not a layer.",
                 "x-from": names[index] if index < len(names) else str(index),
                 "x-to": names[parent] if parent < len(names) else str(parent),
             })
@@ -297,8 +384,7 @@ def _packed_ints(value):
         return []
     out = []
     for i in range(0, len(text), 8):
-        word = int.from_bytes(bytes.fromhex(text[i:i + 8]), "little", signed=True)
-        out.append(word)
+        out.append(int.from_bytes(bytes.fromhex(text[i:i + 8]), "little", signed=True))
     return out
 
 

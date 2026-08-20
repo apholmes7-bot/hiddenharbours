@@ -68,6 +68,7 @@ class Repo:
         self._sidecar_cache = {}
         self._rig_link_cache = {}
         self._rig_sha_cache = {}
+        self._decor_base = None
 
     # --- paths ---------------------------------------------------------------------------
 
@@ -305,6 +306,47 @@ class Repo:
                         out.append((tuple(block["labels"]), candidate))
                         break
         return out
+
+    def decor_base(self):
+        """``SortingBands.DecorBase``, computed from the constants the C# declares.
+
+        Read rather than hardcoded because it is derived there too —
+        ``DecorFloor + (int)(DecorHalfExtentMetres * OrdersPerMetre)`` — so a change to the band
+        moves this with it instead of silently biasing every exported ``sortBias``.
+        """
+        if self._decor_base is None:
+            self._decor_base = self._read_decor_base()
+        return self._decor_base
+
+    def _read_decor_base(self):
+        # Found by name rather than by a path table: a table of where a file lives is exactly
+        # the kind of thing that drifts when somebody moves it.
+        for candidate in self._find_by_name("SortingBands.cs"):
+            with open(self.abs(candidate), encoding="utf-8", errors="replace") as handle:
+                text = handle.read()
+            values = {}
+            for name in ("DecorFloor", "DecorHalfExtentMetres", "OrdersPerMetre"):
+                found = re.search(
+                    rf"\bconst\s+\w+\s+{name}\s*=\s*([0-9.]+)f?\s*;", text)
+                if not found:
+                    break
+                values[name] = float(found.group(1))
+            if len(values) == 3:
+                return int(values["DecorFloor"]
+                           + int(values["DecorHalfExtentMetres"] * values["OrdersPerMetre"]))
+        raise RuntimeError(
+            "SortingBands.DecorBase could not be read. sortBias is a delta from it, so guessing "
+            "a value would bias every entity in the export.")
+
+    def _find_by_name(self, filename):
+        """Every path under ``Assets/`` with this basename, in a stable order."""
+        hits = []
+        for dirpath, dirnames, filenames in os.walk(self.abs("Assets")):
+            dirnames[:] = sorted(d for d in dirnames if d not in ("Library", "Temp", "obj"))
+            if filename in filenames:
+                hits.append(os.path.relpath(
+                    os.path.join(dirpath, filename), self.root).replace(os.sep, "/"))
+        return sorted(hits)
 
     def rig_sha(self, rig_rel):
         if rig_rel not in self._rig_sha_cache:
