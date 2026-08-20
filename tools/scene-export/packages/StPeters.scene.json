@@ -1,7 +1,7 @@
 {
   "schema": "hiddenharbours.scene/1",
   "generatedBy": "tools/scene-export/hh_scene_export.py",
-  "generatedAt": "2026-08-20T12:13:34Z",
+  "generatedAt": "2026-08-20T13:32:46Z",
   "region": {
     "id": "region.st_peters",
     "sceneName": "StPeters",
@@ -32622,7 +32622,7 @@
   ],
   "x-cliffLinesNote": "Empty: cliff lines are an authoring artefact of the editor. The repo's cliffs are placed CliffWallSurface components and ship as entities.",
   "x-provenance": {
-    "generatedAt": "2026-08-20T12:13:34Z",
+    "generatedAt": "2026-08-20T13:32:46Z",
     "historyIsComplete": true,
     "sceneFile": "Assets/_Project/Scenes/StPeters.unity",
     "sceneFileSha256": "0a6516c6dc65f896de6d1e77b4aae40e759365b79a03a5e002c968136b4e660a",
@@ -32631,11 +32631,12 @@
     "sceneLastBuiltSubject": "chore(scenes): bank the owner's two builds — St Peters learns its day, the creek opens its doors (#518)",
     "sceneWorkingTreeDirty": false,
     "builderDrift": {
-      "builderCommitsSinceScene": 22,
-      "measuredTo": "1232cfb44bd99fe3345e16a38ecb66fb9943f042",
-      "measuredToDate": "2026-08-20T09:13:34-03:00",
+      "builderCommitsSinceScene": 23,
+      "measuredTo": "77171687c114706932d8a20f554f4f7973fa5858",
+      "measuredToDate": "2026-08-20T10:32:46-03:00",
       "exact": true,
       "builderCommits": [
+        "77171687 feat(world): the dooryards stand up — a fence on the mow line, aimed by a table the bake measured (#608)",
         "1232cfb4 fix(world): the arrival docks, and the passenger rides as cargo — the two defects off the owner's walk (#601)",
         "78e16603 feat(world): the mow line — a yard polygon per property, the one wall system, and 62 pieces of dooryard measured (#604)",
         "f020a8a1 feat(world): the game opens on an arrival — a skipper brings you in, ties up, and points you up the path (#584)",
