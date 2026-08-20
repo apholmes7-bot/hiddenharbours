@@ -284,14 +284,17 @@ directly. Canon names locked in `vision-and-pillars.md` §5.3, as amended:
 [`harbour-geography.md`](harbour-geography.md) §10; listed here so this document's open list stays
 complete rather than duplicated:
 
-6. ⭐ **Does the town river fit Nine Mile Creek, or does the town move?** The valley needs ≥ 54 m
-   between the lot rows and has 23 m. *(Recommendation: move the civic pair south onto the junction
-   they serve — two lots, and the town is better for it.)* **This one blocks the work.**
-7. **Bridge, causeway, or ferry** at the two big river crossings? *(Recommendation: bridge west, hold
-   the north river open as a possible ferry — a bridge kit is an art ask either way.)*
-8. **When may Nine Mile Creek be re-cut?** The wharf, lifecycle and municipal branches are all open
-   against this exact geometry right now.
-9. **Confirm the marina's placement** — the ruling's phrase *"the landform that separates the West
-   Water from St Peters"* does not parse against the built world; the reading adopted is the
-   peninsula's south shore, north of St Peters Island.
-10. **The name slate** for the three rivers, the point, the cove, the marina and the town river.
+6. ✅ **CLOSED 2026-08-20 — the town moves.** *"The town can move to accommodate this."* The valley
+   needs ≥ 54 m between Nine Mile Creek's lot rows and has 23 m; the lots give way to the river.
+7. ✅ **CLOSED 2026-08-20 — the bridge artwork will be created.** The town river's span is the only
+   bridge M1 needs.
+8. ✅ **CLOSED 2026-08-20 — the marina stands where it was ruled.** Shown the bay map, the owner
+   identified the slip: the **west water** is the strip between Nine Mile Creek and St Peters Island,
+   not anything by the peninsula. The marina's own placement (the peninsula's south shore, north of
+   St Peters Island) was correct all along.
+9. **Bridge, causeway, or ferry at the TWO LARGE river crossings?** — distinct from the town river's
+   bridge, which is settled. M3. *(Recommendation: bridge west, hold the north river open as a
+   possible ferry.)*
+10. **When may Nine Mile Creek be re-cut?** The wharf, lifecycle and municipal branches are all open
+    against this exact geometry right now. **The only thing still gating the town-river work.**
+11. **The name slate** for the three rivers, the point, the cove, the marina and the town river.

@@ -14,6 +14,13 @@
 > **The headline, and it is good news:** five of the six rulings cost the built world *nothing* —
 > they describe land north of Nine Mile Creek's region edge, which has never been built. **One of
 > them, the town river, re-cuts Nine Mile Creek**, and §5 costs that out without flinching.
+>
+> ⭐⭐ **Same-day follow-up rulings (2026-08-20), all folded in below.** The owner ruled that **the
+> town may move** to make room for the river (§5.3 — the document's blocking question, closed), that
+> **the bridge artwork will be created** (§8 — the one asset that was blocking), and — shown the bay
+> map — identified the West Water slip themselves, **confirming the marina exactly where it was
+> ruled** (§6.2). Three of this document's five open questions closed on the day it was written. The
+> only thing still gating the town-river work is **sequencing** (§10 Q5).
 
 ---
 
@@ -28,7 +35,7 @@ it. The 2026-08-07 ruling already made the home world *a variant of Hillsborough
 | 1 | **Route 91** is the road Wharf Road merges onto. It runs **north** and crosses a **west-running river**, making the peninsula/point that heads **east** toward the harbour entrance. | Rte 19 north; the West River | **Nothing — it already exists.** §2 |
 | 2 | Route 91 crosses **two large rivers** (one west, one north) before reaching **Finnigan's Landing**, which has an **east-running river** of its own. | West · North · Hillsborough Rivers | Nothing — all north of the region edge. §3 |
 | 3 | Those **three rivers are shellfish and river-fishing waters** — tidal, carrying leases. | PEI's river mussel leases | Nothing yet; M2+/M3 gameplay. §4 |
-| 4 | **A river runs off the ocean up through Nine Mile Creek town**, dividing it and making small picturesque **boardwalks**. | the real Nine Mile Creek | ⚠⚠ **This one re-cuts the region.** §5 |
+| 4 | **A river runs off the ocean up through Nine Mile Creek town**, dividing it and making small picturesque **boardwalks**. ⭐ *Followed up the same day:* **the town may move to accommodate it**, and **the bridge artwork will be created**. | the real Nine Mile Creek | ⚠⚠ **This one re-cuts the region** — and is now unblocked to do so. §5 |
 | 5 | **A marina** on the **south side of the peninsula**, north of St Peters Island. | the Charlottetown-area marinas | Nothing built; a region-level mark. §6 |
 | 6 | The harbour-mouth shoreline **mirrors Rocky Point**: a point, a small bay behind it, opening to Finnigan's Landing's harbour. | Rocky Point / Fort Amherst | Nothing built. §3.2 |
 
@@ -265,19 +272,23 @@ splat and grass — which is precisely what needs the width. Every law points th
 
 | # | Option | What it costs | Verdict |
 |---|---|---|---|
-| A | **Move the lots** — open the gap to ≥ 54 m | 2–4 of 9 lots re-sited; the municipal lane table's along-distances re-derived; several test files | ⭐ **Recommended** — see below |
+| A | **Move the lots** — open the gap to ≥ 54 m | 2–4 of 9 lots re-sited; the municipal lane table's along-distances re-derived; several test files | ⭐⭐ **RULED 2026-08-20 — "the town can move to accommodate this"** |
 | B | **Lower the town onto a river terrace** (say +3 m instead of +6 m) | Still needs ~30 m per bank at 1:8; re-cuts the whole town's ground, the splat pass and the forest lots | Does not solve it alone |
 | C | **Make the town a valley-floor settlement** — the truest reading of *"a river runs off the ocean up through the town"* | The largest re-cut in this document: the town's ground, Route 91's profile, every lot, the fields' edge | Best-looking, most expensive |
 | D | **Stop the river at the town's east edge** (x ≈ −110) — a tidal creek head, not a river through the town | Nearly free | ⚠ **Fails the ruling** — it would not *divide* the town |
 
-**Recommendation (A, with a touch of B):** move the **civic pair south** — harbourmaster and chandlery
-from y ≈ 117 down to y ≈ 95–100 — which opens a **54 m** gap *and improves the town on its own
-merits*: it puts the civic pair on the Wharf Road junction they serve, which the municipal design
-already calls the place *"where a village green would be if this settlement had one."* Add a modest
-riverside terrace and the banks come in at 1:8. Nothing else in the town moves.
+⭐⭐ **RULED, owner, 2026-08-20: option A — "the town can move to accommodate this."** The town river
+is therefore **not** constrained by the lots as sited; the lots give way to the river.
 
-⚠ **This is a recommendation, not a ruling — §10 Q1.** It re-sites two lots and re-derives two rows
-of the lane table, and that is the owner's call to make, not world-content's to take.
+**How to spend that permission (recommended, and now unblocked):** move the **civic pair south** —
+harbourmaster and chandlery from y ≈ 117 down to y ≈ 95–100 — which opens a **54 m** gap *and improves
+the town on its own merits*: it puts the civic pair on the Wharf Road junction they serve, which the
+municipal design already calls the place *"where a village green would be if this settlement had
+one."* Add a modest riverside terrace and the banks come in at 1:8. **Two lots move; nothing else in
+the town does.**
+
+The owner ruled *that* the town may move, not *which* lots — so the two-lot version above is the
+implementing lane's recommendation, and any equivalent that opens ≥ 54 m satisfies the ruling.
 
 ### 5.4 ⭐ The boardwalks — the art ships, and so does the mechanism
 
@@ -313,8 +324,8 @@ nothing is omitted.
 | 1 | **`NineMileCreekMainland` carves** — the barachois extends inland as a river; a `MainlandChannel` thalweg keeps it wet | moderate — both primitives exist |
 | 2 | **The painted seabed must be re-baked** — `PaintedSeabed`, 760 × 560 m at 2 px/m | mechanical, but it is a bake |
 | 3 | **The coast run** — ⭐ **recommend leaving `CoastPoints` untouched.** The notch is already the mouth; author the river as *terrain* meeting the sea there. Detouring the coast run up the river and back would double its length and invalidate every s-distance in the coast plan's sector table and its tests | **avoidable — take the cheap path** |
-| 4 | **Route 91 needs a bridge at `(-177, 135)`** — and ⚠ **no bridge art ships.** A real art ask (§8) | ⚠ blocking for the town river |
-| 5 | **Town lots** — 0 or 2 move, per §5.3 | the open ruling |
+| 4 | **Route 91 needs a bridge at `(-177, 135)`** — no bridge art ships today, and the owner has ⭐ **commissioned it** (2026-08-20) | ⭐ unblocked; art in hand |
+| 5 | **Town lots** — ⭐ **RULED: the town may move** (2026-08-20). Recommended: the civic pair south, two lots | ⭐ unblocked |
 | 6 | **The municipal lane table** — the bridge lands at **418.8 m** along Route 91, between `road_civic` (400 m) and `road_commercial` (436 m). ⭐ **One new node; the tree stays a tree**, no cycle | ⭐ small |
 | 7 | **The boardwalks** — new routes of a new class, on `StandablePlatform` | small; art ships (§5.4) |
 | 8 | **Splat ground, grass and forest passes** over the new water and its banks | mechanical |
@@ -358,8 +369,13 @@ parse against the built world.** The West Water is the region **between** Nine M
 Peters (760 × 520 m; its east door goes to St Peters, its west door to Nine Mile Creek). No landform
 separates them — the **bar** does, and the bar is the crossing, not a peninsula. **The reading this
 document adopts** — the peninsula's south shore, north of St Peters Island, i.e. across open water
-from the island's north side — matches every other clause the owner gave and matches the chart. It is
-flagged rather than assumed: **§10 Q4**.
+from the island's north side — matches every other clause the owner gave and matches the chart.
+
+⭐ **RESOLVED, owner 2026-08-20:** shown the bay map, the owner identified the slip as their own —
+*"maybe I'm mistaken about the location of West Water"* — and they were: the West Water is the
+760 × 520 m strip **between Nine Mile Creek and St Peters Island**, nowhere near the peninsula. **The
+marina's placement stands exactly as ruled** (peninsula's south shore, north of St Peters Island);
+only the gloss naming the West Water was wrong. Nothing about the marina moves.
 
 **Which water scene owns it, under that reading:** the marina sits off the **northern** edge of home
 water. It is *not* in the built West Water region — a slip harbour there would put a destination
@@ -401,7 +417,7 @@ Per the standing rule that art asks are checked before they are made:
 
 | Ask | For | Notes |
 |---|---|---|
-| ⚠ **A bridge / span kit** | Route 91 over the town river (§5.5 #4), and later over the two large rivers | The only asset actually blocking the town river. Nothing in the repo draws a span |
+| ⭐ **A bridge / span kit** — **COMMISSIONED, owner 2026-08-20:** *"we will create the needed bridge artwork"* | Route 91 over the town river (§5.5 #4), and later over the two large rivers | Nothing in the repo draws a span today. The town river's bridge is the **first and only one M1 needs** — a single ¾ top-down span at the region's road width, crossing a ~20 m channel, carrying Route 91's surface across. The two big-river crossings are M3 and may not even be bridges (§2.2) |
 | A causeway end / abutment treatment | wherever a crossing meets a bank | only if the owner rules causeway over bridge (§10 Q2) |
 | Marina floating slips + finger docks | §6 | **not yet** — the marina has no scene; do not commission ahead of phase |
 
@@ -431,23 +447,30 @@ name a coincidence. **§10 Q5** — but this one barely needs asking.
 
 ## 10. Open questions for the owner
 
-Short and batched, as asked. Q1 and Q3 are the ones that block work.
+Short and batched, as asked. **Three of the five closed on the day this was written**; the rest are
+below.
 
-1. ⭐ **Does the town river fit the town, or does the town move?** §5.2 shows the valley needs ≥ 54 m
-   between the lot rows and has 23 m. The recommendation (§5.3 A) is to **move the civic pair —
-   harbourmaster and chandlery — south to y ≈ 95–100**, onto the junction they serve, opening a 54 m
-   valley and improving the town on its own merits. Two lots move; nothing else does. **Yes, or one
-   of options B/C/D?**
-2. **Bridge, causeway, or ferry** at the two large river crossings? Recommendation: **bridge** at the
-   west river, and hold the **north river** open as a possible ferry — the threshold to the city is
-   the best place in the game for a scheduled crossing. A bridge kit is an art ask either way (§8).
-3. **When may Nine Mile Creek be re-cut?** The wharf, lifecycle and municipal branches are all open
-   against this geometry right now. The town river should land **after** them, and this document
-   recommends it is not started until they merge.
-4. **The marina's placement — confirm the reading.** *"The landform that separates the West Water
-   from St Peters"* does not parse (§6.2); this document reads it as **the peninsula's south shore,
-   north of St Peters Island**, which matches every other clause. Correct?
-5. **Is the town river simply "Nine Mile Creek"?** (§9 — the town is already named for it.) And the
+### ✅ Closed 2026-08-20
+
+1. ✅ **Does the town river fit the town, or does the town move?** — **RULED: the town moves.**
+   *"The town can move to accommodate this."* §5.3 option A. The implementing lane's recommendation
+   (the civic pair south to y ≈ 95–100, two lots) stands as the cheapest way to spend that.
+2. ✅ **The bridge art** — **COMMISSIONED.** *"We will create the needed bridge artwork."* The town
+   river's span is the only bridge M1 needs (§8).
+3. ✅ **The marina's placement** — **CONFIRMED, and the slip identified.** The West Water is the strip
+   between Nine Mile Creek and St Peters Island; the marina is on the peninsula's south shore as
+   ruled. Nothing moves (§6.2).
+
+### Still open
+
+4. **Bridge, causeway, or ferry at the TWO LARGE river crossings?** Distinct from the town river's
+   bridge, which is settled. These are M3 and unbuilt. Recommendation: **bridge** at the west river,
+   and hold the **north river** open as a possible **ferry** — the threshold to the city is the best
+   place in the game for a scheduled crossing.
+5. **When may Nine Mile Creek be re-cut?** The wharf, lifecycle and municipal branches are all open
+   against this geometry right now. The town river should land **after** them; this document
+   recommends it is not started until they merge. **This is now the only thing gating the work.**
+6. **Is the town river simply "Nine Mile Creek"?** (§9 — the town is already named for it.) And the
    three big rivers' names, whenever the name slate comes due.
 
 ---
