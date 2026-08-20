@@ -11,19 +11,43 @@
 > [`lighting-and-daynight.md`](lighting-and-daynight.md) + ADR 0013 / ADR 0016 (why night is the frame the
 > power difference is actually seen in).
 >
+> **Sibling documents this one now depends on** (both in flight, both cross-referencing back):
+> [`harbour-geography.md`](harbour-geography.md) (PR #605) — **Route 91** and Finnigan's Landing; and
+> [`settlement-population.md`](settlement-population.md) (PR #606) — **who lives at Nine Mile Creek**,
+> which is what §4's routes exist to carry. Where those two and this one describe the same fact, they
+> should be reporting it from the same place, not restating it.
+>
 > **What prompted it:** the owner's 2026-08-20 dispatch — *map out municipal routes and design the decor,
 > roads, sidewalks and needed infrastructure for each settlement, and the infrastructure differs by place:
 > St Peters has no mainland power, Nine Mile Creek is on the grid, larger cities later get the full urban
 > treatment.* Serves **P3 A Living Working Coast**, and is the thing that separates a settlement which
 > reads as a place from one that reads as a prop pile.
+>
+> ### ⭐ Later rulings folded in (2026-08-20, after the first draft)
+>
+> Four rulings landed after this document's first commit and are folded in throughout. They are recorded
+> here as relayed by the coordinator, not as a verbatim transcript.
+>
+> | # | ruling | what it changed |
+> |---|---|---|
+> | 1 | **St Peters' energy is a COMBINATION of all types, depending on the use case** | ⚠ **Supersedes the first draft's "off-grid means oil only".** §3.4 is rewritten around *the island makes its own power, and each source has a job*. The night contrast survives, but as **varied vs uniform**, not *fire vs electricity*. **This is a ruling about ENERGY, not an art licence** — the windmill/solar period call is still owed (§8) |
+> | 2 | **Nine Mile Creek HAS residents — more than St Peters, with "all the basic amenities of a town"** | ⚠ **Supersedes the first draft's "the region has nobody to give a routine to".** §4.1 and slice **S6 are unblocked at design level.** Sizing comes from the fleet and is already done: **[`settlement-population.md`](settlement-population.md) (PR #606) puts the roster at 35 working adults vs St Peters' 6** |
+> | 3 | **The trunk road is ROUTE 91**, and Wharf Road merges onto it | The road this document has been calling "the through-road" **is** Route 91 — [`harbour-geography.md`](harbour-geography.md) (PR #605) establishes it is already built, not to be built. Named as such throughout |
+> | 4 | **Lead-architect: alleys are LEAVES through M1–M2**; the graph + tie-break ADR is deferred to the first-city trigger | §2.3's recommendation **is now the ruling.** Recorded as settled rather than proposed |
 
 ---
 
 ## 0. The whole design in one breath
 
-**St Peters burns oil. Nine Mile Creek is on the wire.** Everything below follows from that one sentence,
-and the sentence is only legible at night — so this is as much a *lighting* plan as a routes plan. By day
-the two settlements differ in surface and furniture; by night they differ in kind.
+**St Peters makes its own power, one source per job. Nine Mile Creek takes it off the wire.** Everything
+below follows from that, and it is only legible at night — so this is as much a *lighting* plan as a
+routes plan. By day the two settlements differ in surface and furniture; by night they differ in kind.
+
+⚠ **The contrast is VARIED versus UNIFORM, not fire versus electricity.** Ruling 1 means the island's
+lights are a mixture — a lamp here, a genset there, a battery set on the wharf — scattered, at different
+heights, different colours, different steadinesses. The mainland's are **one thing repeated**: a line of
+identical lamps at a constant height and spacing, all the same colour, all fed from the same wire. *That*
+is the difference the player reads from the water, and it survives the island having some electricity.
 
 ---
 
@@ -35,7 +59,8 @@ is which is the opposite way round in each region**, and that is what shapes thi
 | | **St Peters** (island) | **Nine Mile Creek** (mainland) |
 |---|---|---|
 | Walkable lane network (`RoutineLanes`) | **12 nodes**, a tree rooted at the green | **NONE** |
-| Villagers on `RoutineDef` days | 6 | **0** — two static stallholders (Wendell, Hector) |
+| Villagers on `RoutineDef` days, **built today** | 6 | **0** — two static stallholders (Wendell, Hector) |
+| Working adults the region **implies** (PR #606) | 6 | ⭐ **35** — and none of them can walk anywhere |
 | Drawn roads (RoadsV3 tilemaps) | none | 4 ways + 3 pads + 5 shell walks, all stroked from published routes |
 | Painted walked dirt (terrain splat) | 2 paths — village→slip, village→bar head | none |
 | Utility props placed | **NONE** | 9-pole line, yard light, 2 shore-power pedestals, standpipe, fuel pump, oil tank, yard hydrant |
@@ -44,6 +69,11 @@ is which is the opposite way round in each region**, and that is what shapes thi
 > **St Peters has the movement truth and no infrastructure. Nine Mile Creek has the infrastructure and no
 > movement truth.** Each region is exactly the other's missing half. §3 and §4 are shaped by that
 > asymmetry rather than being two copies of one template.
+>
+> ⭐ **The last row is what the 2026-08-20 residents ruling changed.** Nine Mile Creek's missing half is
+> no longer a tidiness problem — the region's own wharf, lots and shops imply **thirty-five working
+> adults**, and there is not a single lane for one of them to walk. That is what makes slice **S2** the
+> first thing to build.
 
 ### 1.1 ⭐ The art the dispatch asks for very largely already exists
 
@@ -127,21 +157,20 @@ judgement. `RoutineLanes.Validate()` refuses a cycle loudly, naming the offendin
 
 **But an alley that joins two streets is a cycle. So is a green you can walk round. So is a block.**
 
-The dispatch asks which gaps are streets, footpaths and alleys. For the alleys, the honest answer today
-is: *an alley can only be a dead end.* Two ways out, and this is the **lead-architect's call, not
-world-content's**:
+The dispatch asks which gaps are streets, footpaths and alleys. For the alleys, the answer is: *an alley
+can only be a dead end.* Two ways out were put to the lead-architect, **and the call has been made**:
 
-- **(a) Every alley is a leaf.** It goes in from one street and stops — at a woodpile, a privy, a back
-  gate, a boat under a tarp. A real Maritime fishing village is very largely like this: buildings back
-  onto each other and you come out the way you went in. Costs nothing and changes no code.
-  **→ Recommended for M1–M2, and what §3 and §4 below are built on.**
-- **(b) The lane table becomes a graph with a published tie-break.** `RoutineLaneTree`'s own doc already
-  names the day this happens: *the day a village genuinely needs a loop, this becomes a graph and gains a
-  tie-break rule.* Worth doing when a settlement has a real block to walk round — i.e. the larger city
-  (§5) — and not before.
+- ⭐ **(a) Every alley is a LEAF — RULED (lead-architect, 2026-08-20), through M1–M2.** An alley goes in
+  from one street and stops — at a woodpile, a privy, a back gate, a boat under a tarp. A real Maritime
+  fishing village is very largely like this: buildings back onto each other and you come out the way you
+  went in. Costs nothing and changes no code. **§3 and §4 below are built on it.**
+- **(b) The lane table becomes a graph with a published tie-break — DEFERRED to the first-city trigger.**
+  `RoutineLaneTree`'s own doc already names the day this happens: *the day a village genuinely needs a
+  loop, this becomes a graph and gains a tie-break rule.* That day is the first city (§5), and it wants
+  an ADR of its own rather than a slice.
 
-⭐ **Adopting (a) requires no change to anything shipped.** Nine Mile Creek's four published roads already
-form a tree: the bar road T's into Wharf Road at the junction `(−16, 92)`, and the through-road T's into
+⭐ **The ruling requires no change to anything shipped.** Nine Mile Creek's four published roads already
+form a tree: the bar road T's into Wharf Road at the junction `(−16, 92)`, and Route 91 T's into
 Wharf Road at the town end `(−178, 92)`. St Peters' twelve nodes are a tree and are validated as one every
 build. **There is no cycle in the shipped geography of either region.** The constraint costs nothing
 today, and this document's job is to keep it costing nothing — by never proposing a loop a later pass
@@ -168,7 +197,7 @@ decor is §3.3 / §4.3's business, not the route map's.
 
 ---
 
-## 3. St Peters — the off-grid island
+## 3. St Peters — the island that services itself
 
 ### 3.1 The twelve nodes that already exist
 
@@ -260,40 +289,59 @@ them.** The route map's claim is only this: *a fence segment must not cross a la
 §3.2 exists because two fence lines make it.* The yard lane owns the polygons; this doc owns the gaps
 between them. Neither owns both.
 
-### 3.4 ⭐ POWER: off-grid — the differentiator
+### 3.4 ⭐ POWER: the island services itself — the differentiator
 
-**There is not one pole on St Peters. Not one wire. Not one street lamp.** That is the design. The island
-is off the mainland grid, and every lit thing on it is lit because somebody lit it.
+**There is not one pole on St Peters. Not one wire in from the mainland. Not one street lamp.** What
+there *is* — per the owner's 2026-08-20 ruling — is **a combination of every kind of energy, chosen by
+use case.** The island is not pre-electric. It is **un-serviced**: nobody delivers power here, so each
+household and each trade solved the problem its own way, and the mixture is the character.
 
-#### What lights what
+> ⚠ **This supersedes the first draft, which had the island on oil alone.** The rewrite is not a
+> softening: *one source per job* is a stronger read than *one source for everything*, because a mixture
+> is what an un-serviced place actually looks like and a uniform one is what a stylised place looks like.
 
-| what | source | prop | light preset | flicker reads as |
-|---|---|---|---|---|
-| a house window at dusk | an oil lamp on the sill | (the building's own window) | `WindowGlow` | a flame — 0.05, already tuned |
-| the store, the post office | oil lamps, brighter, two of them | — | `WindowGlow` ×2 | a public room |
-| a dooryard where somebody is working late | a hurricane lantern hung on a nail | `lanternPost` (wharf-decor) | **a 4th preset — see §6.2** | a flame |
-| the slip head, at night | a lantern on the post; **nothing else** | `lanternPost` | `WindowGlow`-warm, small | the one light on the shore |
-| the parish hall on a hall night | the genset runs | `genset` | `Worklight` — *only then* | electric, and it is an **event** |
-| the wharf | **nothing** | — | — | the island's working shore is dark |
+#### One source per job — the island's energy, by use case
 
-⭐ **The genset is the whole trick.** One `genset` at the parish hall, running only for a hall night, is
-what makes the rest of the island's darkness read as a *choice* rather than as unfinished lighting. It is
-the only cold, steady, electric light on the island, and it is off almost always. **When it is on, you can
-see it from the water.**
+| the job | the energy, and why *that* one | prop | light preset |
+|---|---|---|---|
+| light in a house at dusk | **oil lamp** — cheap, needs no infrastructure, and it is what you light first | (the building's own window) | `WindowGlow`, flicker 0.05 |
+| cooking | **propane**, bottled and boated in — a stove must light instantly and every day | `propaneTank` at the back door | — |
+| heat | **wood and coal** — free, or nearly, and the island has both | `coalBin`, woodpiles | — |
+| a public room on a hall night | **the genset** — you only run it when there are people to justify the fuel | `genset` + `oilTank` | `Worklight`, *only then* |
+| working after dark in a dooryard | **a hurricane lantern** — portable, which is the whole point | `lanternPost` | **a 4th preset — §6.2 #2** |
+| the slip head | **one lantern**, lit by whoever is last off the water | `lanternPost` | small, warm |
+| ⭐ radio, a light in a boat shed, a trickle charge | **battery + a small charging set** — the modern layer, and the one the first draft missed | `genset` (small), `pedestal` | steady, tiny |
+| the wharf | **nothing standing** — you bring your own light | — | — |
+
+⭐ **The genset is still the trick, and the ruling makes it a better one.** It is not the island's *only*
+electricity now — it is its **loudest**. One at the parish hall, run for a hall night; a small one behind
+the boat shed; and everything else on oil, wood and bottled gas. When the hall's set is running, one
+cooler, brighter, steadier point stands out among a dozen warm scattered ones **and you can see it from
+the water.**
+
+⚠ **"All types" is a ruling about ENERGY, not a licence to place any generating prop.** A windmill or a
+solar panel would date the world in one prop and the owner has not ruled on them (§8 #3). Everything in
+the table above is a source the island could plausibly have had for a century.
 
 #### Fuel — the chain that makes it real
 
-The island's light is a *supply problem*, which ties straight into the gas/diesel design already ruled on:
+The island's light is a *supply problem*, and the mixture makes it a richer one: **four different fuels
+arrive by boat**, which is exactly the kind of thing the gas/diesel design already ruled on wants.
 
 | what | prop | where |
 |---|---|---|
 | lamp oil / kerosene | `drumRack`, `jerryCans` | the store's back yard — the island's lamp oil comes off a boat |
 | propane at the kitchens | `propaneTank` ×1 per household | beside the back door, on a small pad |
 | the parish hall's genset fuel | `oilTank` (2 m) + `fillPipes` | behind the hall |
+| the boat shed's small set | `jerryCans` | inside the shed door |
 | coal / wood for the stoves | `coalBin`, woodpiles | every dooryard |
 
+⭐ **Four fuels, four different containers, four different places they are kept** — and a player who
+looks at a dooryard can tell what that household burns. That is the ruling paying for itself: a single
+fuel would have been one prop repeated six times.
+
 **Wood smoke is the day-time half of the same story.** A chimney with smoke over it says *somebody is
-home and burning something*, which is the off-grid read in daylight when the lamps are out. It is a
+home and burning something*, which is the un-serviced read in daylight when the lamps are out. It is a
 particle ask, not a rig ask (§6.2).
 
 #### Water — wells and rain, no mains
@@ -307,42 +355,75 @@ particle ask, not a rig ask (§6.2).
 
 ⚠ **Nothing from the `sewer` category may be placed at St Peters.** `manhole`, `catchBasin`, `cleanout`,
 `liftStation` — all of them read *municipal*, and one manhole in a dooryard would quietly undo the whole
-off-grid argument. The one legitimate exception is `septicLids`, because an island house does have a
-septic field, and it is the *right* kind of detail: it says "this house handles its own waste".
+un-serviced argument. ⚠ **The energy ruling does not reach this.** "A combination of all types" was said
+of *energy*; water and drainage are a separate service and the island still has neither. The one
+legitimate exception is `septicLids`, because an island house does have a septic field, and it is the
+*right* kind of detail: it says "this house handles its own waste".
 
 #### What the island looks like from a boat, at night
 
-Six or seven small warm points, scattered, at different heights, none of them in a line. No cold light
-anywhere. No glow on the water except under the slip lantern. If the parish hall is running, one cooler
-brighter point stands out among them and you know where everyone is. **That silhouette is the deliverable**
-— if a slice ships and the island looks like a street at night, the slice is wrong.
+**A scatter.** A dozen small points, no two alike: different heights, different warmths, some flickering
+and some steady, **none of them in a line and none of them evenly spaced.** If the parish hall's set is
+running, one cooler brighter point stands out among them and you know where everyone is.
+
+**That silhouette is the deliverable, and the test is a negative one:** if a slice ships and the island
+reads as a *street* at night — anything regular, anything evenly spaced, anything all one colour — the
+slice is wrong, no matter how many of its individual lights are correct. **Regularity is the mainland's
+signature (§4.4), and it is the only thing the island must never borrow.**
 
 ---
 
 ## 4. Nine Mile Creek — the mainland grid
 
-### 4.1 ⚠⚠ The region has no lane network at all
+### 4.1 ⚠⚠ The region has no lane network at all — and now it has 35 people who need one
 
 `NineMileCreekPeople` places **two static stallholders** and nobody walks anywhere. There is no
-`RoutineLanes`, no `RoutineStations`, no `RoutineDef` in this region. It has 564 m of through-road, 322 m
-of Wharf Road, **nine town lots**, a wharf with fourteen berths, a truck park, a shipyard lot, a restaurant
-lot and a fish-market lot — and not one person whose day connects any of them.
+`RoutineLanes`, no `RoutineStations`, no `RoutineDef` in this region. It has **Route 91** running 564.4 m
+through it, 321.8 m of Wharf Road, **nine town lots**, a wharf with fourteen berths, a truck park, a
+shipyard lot, a restaurant lot and a fish-market lot — and not one person whose day connects any of them.
 
-**This is the largest single gap between what the region draws and what it is.** The roads are beautifully
-built and nobody uses them. §4.2 is therefore the most load-bearing part of this document.
+⭐ **The owner's 2026-08-20 ruling makes this urgent rather than merely untidy.** Nine Mile Creek **has
+residents — more than St Peters — with "all the basic amenities of a town"**, and
+[`settlement-population.md`](settlement-population.md) (PR #606) has already sized them off the region's
+own built geography:
+
+| | working adults |
+|---|---:|
+| **Nine Mile Creek** — 7 owners + 11 crew afloat, 17 ashore | **35** |
+| *(with the cannery, once it has a site)* | *(39)* |
+| **St Peters** | **6** |
+
+> ⚠ **Supersedes the first draft**, which said this region had nobody to give a routine to. It has 35 —
+> they simply have not been authored yet. **Slice S6 is unblocked at design level** and the question it
+> was blocked on is answered by another document rather than by this one.
+
+**So this is now the largest single gap between what the region draws and what it is**: 564 m of road, a
+14-berth wharf, nine lots, thirty-five people implied by all of it, and **no network for a single one of
+them to walk.** §4.2 is the most load-bearing part of this document, and slice **S2 is the one to build
+first.**
+
+> ⚠ **Two of the 35 cannot be placed from this document's table.** PR #606 flags that the four processing
+> NPCs need the cannery, which has **no site yet** (§4.2), and that three shipyard jobs ride the unresolved
+> boat-shed question. Both are carried here, neither is this document's to close.
 
 ### 4.2 The lane table this region needs
 
 **Root it at the town, not at the wharf.** The wharf is where the *player's* day starts, but the tree's
 root should be where the *residents'* days start, because that is what makes every walk-up-and-back a
-short climb rather than a traverse. The through-road / Wharf Road junction — `WharfRoad[0]` =
-`ThroughRoad[3]` = `(−178, 92)`, **375.8 m along the through-road** — is the town's centre by
+short climb rather than a traverse. The Route 91 / Wharf Road junction — `WharfRoad[0]` =
+`ThroughRoad[3]` = `(−178, 92)`, **375.8 m along Route 91** — is the town's centre by
 construction: **four of the nine lots stand within 45 m of it** (chandlery 36.9 m, harbourmaster 38.2 m,
 parish hall 39.7 m, the south house 43.9 m). It is where a village green would be if this settlement had
 one.
 
 > ⚠ Not to be confused with `NineMileCreekMainland.RoadJunction` = `(−16, 92)`, which is the **bar road**
 > T, 162.1 m out along Wharf Road. Two junctions, two nodes, and the names must not collapse.
+>
+> ⭐ **`ThroughRoad` is the code constant; ROUTE 91 is the road's name** (owner, 2026-08-20 — PR #605).
+> The array keeps its identifier and the prose uses the name. **Route 91 is not a road to be built** —
+> `harbour-geography.md` §2 establishes that it is already built and is exactly this polyline, leaving the
+> region north at `ThroughRoad[5]` = `(−186, 280)`. Wharf Road *merges onto it* at `town`, which is what
+> makes `town` the root and not merely a convenient node.
 
 ⭐ **Every node below hangs off a route that is already published, at a distance along it — never at a
 copied coordinate.** `MainlandCoast.PositionAt(route, along)` is the primitive; the pole line already uses
@@ -352,7 +433,7 @@ the lot it serves, with the lot's own offset from the road quoted beside it.
 
 | node | parent | class of the edge | derived as | serves |
 |---|---|---|---|---|
-| `town` | — (root) | — | `WharfRoad[0]` = `ThroughRoad[3]` — 375.8 m along the through-road | the town centre |
+| `town` | — (root) | — | `WharfRoad[0]` = `ThroughRoad[3]` — 375.8 m along Route 91 | the town centre |
 | `road_civic` | `town` | **street** | `PositionAt(ThroughRoad, 400 m)` | the civic pair, ~25 m north |
 | `lot_chandlery` | `road_civic` | walk | `Dooryard(ChandleryPos)` — 399.2 m along, 28.5 m off | the rod |
 | `lot_harbourmaster` | `road_civic` | walk | `Dooryard(HarbourmasterPos)` — 402.5 m, 27.4 m off | the cod licence |
@@ -385,7 +466,7 @@ the landing 271.9 m from its far end; the gully path is a 19 m leaf. Wharf Road 
 `town` → `wharf_road_west` → `road_junction` → `wharf_yard` → `wharf_front`, and everything else leaves it
 as a leaf.
 
-⚠ **The through-road is a strung-out settlement, not a square, and the table shows it.** Four nodes sit
+⚠ **Route 91 is a strung-out settlement, not a square, and the table shows it.** Four nodes sit
 *on* the carriageway between 345 m and 480 m, each carrying a pair of lots at ~27 m offset. That is what a
 rural PEI community is — and it is why the lots could not simply hang off `town`: the store and the tavern
 are **66.2 m** from the junction, which is a 22-second walk, not a dooryard.
@@ -417,8 +498,8 @@ metal, and none of it is decorative.
 
 | where | what | why |
 |---|---|---|
-| the through-road, at each junction | `harbourSign` / a route marker | this is Route 19's analogue and a road with a name should show it |
-| the through-road, both sides | shallow ditch + `culvert` ends at every lot entrance | ⭐ **this is the biggest single "reads as mainland" win** — a rural road is defined by its ditch |
+| Route 91, at each junction | ⭐ a **route shield reading 91**, plus `harbourSign` where Wharf Road leaves | the road now has a ruled name, so it should carry it — a numbered shield is the cheapest possible "you are on the mainland" signal, and the island has nothing like it |
+| Route 91, both sides | shallow ditch + `culvert` ends at every lot entrance | ⭐ **this is the biggest single "reads as mainland" win** — a rural road is defined by its ditch |
 | where a road crosses the neck between the ponds | `culvert` ends both sides | the causeway in the owner's first photograph is doing exactly this |
 | the five public lots | the shipped shell walks | ⚠ **owner's ruling still owed** — see §8 |
 | the truck park | `noticeBoard`, `trashBarrel` | where vehicles are left is where notices go up |
@@ -465,14 +546,14 @@ a `LineRenderer`-per-span component fed from the rig's own tie points, sagging o
 
 | what | prop | where | why |
 |---|---|---|---|
-| the transformer | `padTransformer`, or a `powerPole` **transformer variant** at the line's town end | where Wharf Road leaves the through-road | a line has to come from somewhere; this is where the grid enters the region |
+| the transformer | `padTransformer`, or a `powerPole` **transformer variant** at the line's town end | where Wharf Road merges onto Route 91 | a line has to come from somewhere; this is where the grid enters the region |
 | service drops | the `drop` tie on `serviceMast` / `meterBank` | one per building the line passes | ⭐ **a drop to a house is what makes the line look like it is FOR something** |
 | street lighting | `powerPole` **lamp-arm** variant on ~every third pole | Wharf Road | cold, high, evenly spaced — the exact opposite of St Peters' scattered warm points |
 | the wharf floodlight | `floodMast` (7.8 m) | over the apron | the working shore stays lit after dark, because work continues after dark |
 | a guy where the line turns | `guyAnchor` | **one only** — the pole at 200 m, just past the road's single real bend (+15.9° at `(14, 92)`, 192.1 m along, where Wharf Road turns onto the spit; every other vertex turns under 7°) | a line that changes direction is guyed, and guying a straight run would be the tell that nobody measured |
 | telephone | `telecomPed`, `crossBox` | the town end | the mainland has a telephone and the island does not |
-| the town's water | `hydrant` ×2, `curbStop`, `valveVault` | the through-road, in town | mains water is a mainland fact |
-| drainage | `catchBasin` at the road low points, `manhole` on the through-road | in town only | ⭐ **the sewer category is Nine Mile Creek's alone** — it is precisely what St Peters is forbidden |
+| the town's water | `hydrant` ×2, `curbStop`, `valveVault` | Route 91, in town | mains water is a mainland fact |
+| drainage | `catchBasin` at the road low points, `manhole` on Route 91 | in town only | ⭐ **the sewer category is Nine Mile Creek's alone** — it is precisely what St Peters is forbidden |
 
 #### What the mainland looks like from the water, at night
 
@@ -489,9 +570,18 @@ you should not need to be told which is which.
 One page, as asked. No city exists yet and none should be built from this section; it is here so that the
 first city pass does not have to re-derive the vocabulary.
 
+⭐ **The city has a name and a place: FINNIGAN'S LANDING.**
+[`harbour-geography.md`](harbour-geography.md) (PR #605) puts it up **Route 91**, past two river
+crossings, with an east-running river of its own and a harbour the player sails into on the late-game
+city run. **So the road this document has been planning at Nine Mile Creek is literally the road to the
+city** — Route 91 leaves the region north at `(−186, 280)` and Finnigan's Landing is what it goes to.
+That is a better answer than the first draft's guess (Port Greywick) and it costs this section nothing
+but the name. *(Owner: a confirmation would close §8 #2.)*
+
 1. **A city is where the tree becomes a graph.** §2.3(b) is not optional at city scale: a block you can
    walk round is the defining unit of a city and it is a cycle by construction. **The first city is the
-   trigger for the lane table gaining a tie-break rule**, and that should be an ADR, not a slice.
+   trigger for the lane table gaining a tie-break rule** — the lead-architect has already deferred the
+   ADR to exactly this moment, so it is booked rather than merely foreseen.
 2. **Sidewalks, finally, and only here.** A kerbed footway is an *urban* signal. Its arrival should be a
    thing the player notices — the first time you step onto a kerb, the game has told you where you are.
    Paved with `concrete` or `brick` from the road kit, which already bakes both.
@@ -503,10 +593,11 @@ first city pass does not have to re-derive the vocabulary.
 5. **Underground where it is a town centre, overhead where it is a suburb.** The visual difference
    between a wired street and a clean one is one of the cheapest ways to say "this is the good part of
    town" without a single line of dialogue.
-6. **The city is the third term, and it needs the other two to exist first.** Off-grid island, wired
-   village, wired city — the city only reads as a city because the player has walked the other two. **Do
-   not build the city before both §3 and §4 have shipped and been walked**, or its infrastructure has
-   nothing to be a contrast to.
+6. **The city is the third term, and it needs the other two to exist first.** Self-serviced island,
+   wired village, wired city — the city only reads as a city because the player has walked the other two.
+   **Do not build Finnigan's Landing before both §3 and §4 have shipped and been walked**, or its
+   infrastructure has nothing to be a contrast to. ⭐ The player will most likely arrive **up Route 91
+   from Nine Mile Creek**, which means the contrast is not even a memory — it is the road behind them.
 7. **Scale by time-to-cross, as always.** The world-scene sizing rule does not change; a city is denser,
    not necessarily bigger.
 
@@ -526,10 +617,10 @@ art.** An art session spent re-making `powerPole` would be a session wasted.
 |---|---|---|---|---|
 | 1 | **A wire-span renderer** — catenary between two `ties()` points, plus a service drop | **code, not art** | NMC's whole grid read | the rig deliberately bakes no spans and nothing consumes `ties()`. **The single biggest gap in this document.** |
 | 2 | **A `Lantern` light preset** — warm, small range, strong flicker (~0.15) | code, one enum case | StP's hung lanterns | `WindowGlow` (0.05 flicker) reads as a room, not as a flame in the open |
-| 3 | **Chimney smoke** — a slow drifting wisp, wind-driven | VFX / particles | StP's day-time off-grid read | nothing in the ambient-particles pass covers a point-source plume |
+| 3 | **Chimney smoke** — a slow drifting wisp, wind-driven | VFX / particles | StP's day-time un-serviced read | nothing in the ambient-particles pass covers a point-source plume |
 | 4 | **A fence kit** — post-and-rail, picket, wire-and-post; corners, gates, a run primitive | rig | both regions; the yard lane owes it | ⚠ **no fence rig exists at all.** `ropeFence` is wharf furniture, not a boundary. This is the yard lane's ask as much as this one's — **one kit, two consumers.** |
 | 5 | **A roadside ditch profile** — a shallow V with a grass bank, as a *terrain* treatment | terrain / splat | NMC's mainland read | `culvert` gives the ends but nothing gives the run between them |
-| 6 | **A windmill or a solar panel** | rig, small | StP, if the period allows it | not in the catalogue. ⚠ **needs the owner's period ruling first — see §8.** |
+| 6 | **A windmill or a solar panel** | rig, small | StP, **only if the period allows** | not in the catalogue. ⚠⚠ **DO NOT COMMISSION ON THE STRENGTH OF THE ENERGY RULING.** "A combination of all types" was said of *energy use cases*, not of *era*; §3.4 deliberately uses only century-old sources. **Needs the owner's explicit period call — §8 #3.** |
 | 7 | **A rain barrel** — a barrel under a downspout, not a 1.94 m `cistern` | rig, small | every StP house | `cistern` and `waterTank` are both too municipal for a dooryard |
 | 8 | **A leaning marker post** for the bar head | rig, tiny | StP | the way off the island at low water should be *marked* |
 
@@ -547,9 +638,9 @@ scoped once, by whoever gets there first. Items 5–8 are polish.
 | **S1** | **Bend and paint `plot_path`** — give `yard_ginny_plot` its via points along the forest path corridor, and paint it like its two siblings | StP | nothing | the smallest slice in the arc, fixes an actual defect (§3.2), and proves the "route → lane + splat" seam end to end |
 | **S2** | **The NMC lane table** — the 25 nodes of §4.2, builder-wired, validated as a tree, with the dry-ground check the roads already have | NMC | nothing | ⭐ **the highest-value slice in the document.** Everything else at NMC hangs off it, and it unblocks routines, which unblocks the region reading as inhabited at all |
 | **S3** | **The wire-span renderer** (§6.2 #1) + the transformer at the line's town end + lamp arms on every third pole | NMC | S2 not required, but the ask is code | turns nine bare poles into a grid; the single biggest visual change per line of code in this arc |
-| **S4** | **StP off-grid pass** — the well on the green, propane at the kitchens, the genset at the parish hall, lanterns at the slip and the dooryards | StP | the `Lantern` preset (§6.2 #2); best AFTER S3 | the other half of the differentiator — land it after S3 so the two night reads can be compared side by side |
-| **S5** | **NMC ditch + culverts** along the through-road and at the neck | NMC | the ditch profile (§6.2 #5) | the mainland read by daylight |
-| **S6** | **NMC routines** — give the town's residents days that walk S2's lanes | NMC | S2, plus NPC defs that do not exist yet | ⚠ **the region has nobody to give a routine to**; this slice is really "who lives at Nine Mile Creek", which is a content question, not a route one |
+| **S4** | **StP self-serviced pass** — the well on the green, propane at the kitchens, the genset at the parish hall, the small set behind the boat shed, lanterns at the slip and the dooryards | StP | the `Lantern` preset (§6.2 #2); best AFTER S3 | the other half of the differentiator — land it after S3 so the two night reads can be compared side by side. ⭐ **The acceptance test is the negative one in §3.4:** if the result reads as *regular*, it is wrong |
+| **S5** | **NMC ditch + culverts** along Route 91 and at the neck | NMC | the ditch profile (§6.2 #5) | the mainland read by daylight |
+| **S6** | **NMC routines** — give the town's residents days that walk S2's lanes | NMC | S2, plus the `ResidentDef` roster PR #606's own P1 slice produces | ⭐ **UNBLOCKED at design level** by the owner's 2026-08-20 ruling. The question this slice was blocked on — *who lives at Nine Mile Creek* — is answered elsewhere: **35 working adults**, sized off the fleet. It is now sequenced behind PR #606's roster-as-data slice, not behind a decision |
 | **S7** | **Fences and alleys** — both regions | both | the fence kit (§6.2 #4) **and** the yard lane's polygons | ⚠ **must be one slice with the yard lane, not two.** The alleys in §3.2 exist only once the fences do |
 | **S8** | **Route the new destinations** — restaurant, fish market, shipyard, the lifecycle cannery | NMC | those arcs merging | one `lot_*` leaf each; trivial once S2 exists |
 
@@ -560,24 +651,37 @@ if the owner wants the *visible* difference soonest.
 
 ## 8. Nag list for the owner — none of it blocking
 
-1. **Names for the routes.** Everything above is functional, not spoken — `route.stpeters.school_lane`,
-   `road_civic`, "the through-road". Only **Wharf Road** has a real name, and it got one because you gave
-   it one. Real places name their roads, and the names are free characterisation. **Does the through-road
-   have a name?** Does the lane past the store on St Peters? A settlement whose roads have names reads
-   older than one whose roads have functions — and it costs nothing but the naming.
-2. ⚠ **The five crushed-shell town walks at Nine Mile Creek are still awaiting your eye** (carried over
+> ✅ **Two of the original six are answered** by your 2026-08-20 rulings and are struck below rather than
+> deleted, so the record shows what changed: *does Nine Mile Creek have residents* (**yes — 35**), and
+> the trunk road's name (**Route 91**).
+
+1. **Names for the rest of the routes.** **Route 91** and **Wharf Road** now have real names; nothing
+   else does. Everything else above is functional — `route.stpeters.school_lane`, `road_civic`, "the bar
+   road". Real places name their roads, and the names are free characterisation. **Does the lane past the
+   store on St Peters have a name? The bar road? The gully path?** A settlement whose roads have names
+   reads older than one whose roads have functions, and it costs nothing but the naming.
+2. **Confirm the first city is FINNIGAN'S LANDING.** §5 now names it, on PR #605's authority — it sits up
+   Route 91 with a harbour of its own, which makes the road this document plans at Nine Mile Creek
+   literally the road to it. **A yes closes this; a different answer only changes the name in §5.**
+3. **The period question, and it alone decides §6.2 #6.** ⚠ **Your "a combination of all types" ruling is
+   about ENERGY USE CASES and I have not read it as an art licence.** §3.4 uses only sources the island
+   could plausibly have had for a century — oil, wood, coal, bottled propane, a genset, a battery set. **Is
+   a windmill or a solar panel in or out?** A solar panel on a saltbox would date the whole world in one
+   prop, so I would rather have the ruling than guess.
+4. ⚠ **The five crushed-shell town walks at Nine Mile Creek are still awaiting your eye** (carried over
    from the roads pass, not raised fresh here). They are the closest thing to a sidewalk in the game and
    the argument for them is genuinely balanced. **`NineMileCreekRoads.PublicTownLots` is the one list to
    delete if you rule against.** §3.3 defers to whatever you decide.
-3. **Which settlement becomes the "larger city" first?** §5 is deliberately placeless. Port Greywick is
-   the obvious candidate — it already holds the auction, the chart shop, the tavern crowd and the
-   shipwright's yard in canon. **Confirm, and §5 gets a place to be about.**
-4. **The period question, and it decides §6.2 #6.** Is a windmill or a solar panel right for this island,
-   or does the world sit early enough that the answer is only oil, wood and a genset? **The genset alone
-   is the stronger read**, and I would rather have your ruling than guess — a solar panel on a saltbox
-   would date the whole world in one prop.
 5. **Where the shipwright's yard really lives.** Carried, not raised: the boat-shed lot sits in §4.2's
-   table under a neutral name because the 2026-07-25 ruling and the shipped scene disagree.
-6. **Does Nine Mile Creek have residents at all?** S6 has nobody to give a day to. Nine lots, no people.
-   **If the answer is "not yet", say so and S6 drops off the plan** rather than sitting there looking
-   blocked.
+   table under a neutral name because the 2026-07-25 ruling and the shipped scene disagree. ⭐ Now worth
+   more than it was — PR #606 has **three shipyard jobs riding this same unresolved question.**
+6. **The cannery still has no site**, and it is the last thing blocking §4.2's destination table and PR
+   #606's four processing NPCs. Carried from the building-lifecycle arc, where you already owe it.
+
+---
+
+### ~~Answered by the 2026-08-20 rulings~~
+
+- ~~**Does Nine Mile Creek have residents at all?**~~ **Yes — more than St Peters, with all the basic
+  amenities of a town.** 35 working adults, sized off the fleet. S6 unblocked.
+- ~~**Does the through-road have a name?**~~ **Route 91**, and it was already built.
