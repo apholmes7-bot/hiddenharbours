@@ -1,0 +1,117 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c066b3141c12834eb15805632bcf579, type: 3}
+  m_Name: store_sKiosk
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.StationPieceDef
+  Id: station.store_skiosk
+  DisplayName: Pay Booth
+  PieceType: store
+  SizeKey: sKiosk
+  Label: PAY BOOTH
+  IsInterior: 0
+  Facings: 8
+  Fold180: 0
+  Frames:
+  - {fileID: -1620117242, guid: 163cbe988c8a5a14caa2a35fa4c12895, type: 3}
+  - {fileID: -1633620567, guid: 163cbe988c8a5a14caa2a35fa4c12895, type: 3}
+  - {fileID: 1496717096, guid: 163cbe988c8a5a14caa2a35fa4c12895, type: 3}
+  - {fileID: 450301176, guid: 163cbe988c8a5a14caa2a35fa4c12895, type: 3}
+  - {fileID: 1350580637, guid: 163cbe988c8a5a14caa2a35fa4c12895, type: 3}
+  - {fileID: -1341526454, guid: 163cbe988c8a5a14caa2a35fa4c12895, type: 3}
+  - {fileID: 887089364, guid: 163cbe988c8a5a14caa2a35fa4c12895, type: 3}
+  - {fileID: 1956253047, guid: 163cbe988c8a5a14caa2a35fa4c12895, type: 3}
+  BakedGrades:
+  - gas
+  - diesel
+  - mixed
+  WidthMeters: 4.2
+  DepthMeters: 3.4
+  HeightMeters: 3.05
+  MaxHoses: 0
+  MaxSides: 0
+  HoseReachMeters: 0
+  LitresPerMinute: 0
+  Slots: 0
+  LengthMeters: 4.2
+  SlotPitchMeters: 3.3
+  Bays: 0
+  ClearHeightMeters: 0
+  Blockers:
+  - Kind: building
+    Level: 
+    Footprint:
+    - {x: -2.1, y: -1.7}
+    - {x: 2.1, y: -1.7}
+    - {x: 2.1, y: 1.7}
+    - {x: -2.1, y: 1.7}
+    Center: {x: 0, y: 0}
+    Radius: 0
+    HeightAboveGradeMeters: 3.05
+    Treatment: wall
+  Walkables:
+  - Id: walkway
+    HeightMeters: 0.116
+    Outline:
+    - {x: -2.68, y: 1.8}
+    - {x: 2.68, y: 1.8}
+    - {x: 2.68, y: 2.75}
+    - {x: -2.68, y: 2.75}
+    Treatment: step_over
+  - Id: service_stoop
+    HeightMeters: 0.124
+    Outline:
+    - {x: -2, y: -2.42}
+    - {x: -0.48, y: -2.42}
+    - {x: -0.48, y: -1.7}
+    - {x: -2, y: -1.7}
+    Treatment: step_over
+  Interactables:
+  - Id: service_door
+    Label: SERVICE DOOR
+    Action: staff_door
+    Position: {x: -1.24, y: -1.76, z: 1.22}
+    ReachPoint: {x: -1.96, y: -2.25, z: 0.12}
+    HasReachPoint: 1
+    ReachVerdict: ok
+    Level: service_stoop
+    VisibleFacings:
+    - N
+    - NE
+    - NW
+  Entry:
+    Kind: slide_bipart
+    ClearWidthMeters: 0.94
+    ClearHeightMeters: 2.1
+    Threshold: {x: 1.18, y: 1.7, z: 0.18}
+    LeafWidthMeters: 0.47
+    TravelMeters: 0.53
+    ClearAtOpenFraction: 0.85
+    SillStepMeters: 0.18
+    Treatment: step_over
+    HasKeepClear: 0
+    KeepClear: []
+  ServiceDoor:
+    Kind: swing_single_out
+    ClearWidthMeters: 0.84
+    ClearHeightMeters: 2.1
+    Threshold: {x: -1.24, y: -1.7, z: 0.18}
+    LeafWidthMeters: 0
+    TravelMeters: 0
+    ClearAtOpenFraction: 0
+    SillStepMeters: 0.18
+    Treatment: step_over
+    HasKeepClear: 1
+    KeepClear:
+    - {x: -1.66, y: -2.64}
+    - {x: -0.72, y: -2.64}
+    - {x: -0.72, y: -1.7}
+    - {x: -1.66, y: -1.7}

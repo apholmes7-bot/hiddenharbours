@@ -1,0 +1,223 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c066b3141c12834eb15805632bcf579, type: 3}
+  m_Name: store_sStore
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.StationPieceDef
+  Id: station.store_sstore
+  DisplayName: C Store
+  PieceType: store
+  SizeKey: sStore
+  Label: C-STORE
+  IsInterior: 0
+  Facings: 8
+  Fold180: 0
+  Frames:
+  - {fileID: -1627748147, guid: 6fc8297aacee31645beb1d7308b81a7a, type: 3}
+  - {fileID: 1703757479, guid: 6fc8297aacee31645beb1d7308b81a7a, type: 3}
+  - {fileID: 2007404265, guid: 6fc8297aacee31645beb1d7308b81a7a, type: 3}
+  - {fileID: -357673498, guid: 6fc8297aacee31645beb1d7308b81a7a, type: 3}
+  - {fileID: 2058527844, guid: 6fc8297aacee31645beb1d7308b81a7a, type: 3}
+  - {fileID: -1123318663, guid: 6fc8297aacee31645beb1d7308b81a7a, type: 3}
+  - {fileID: -921788621, guid: 6fc8297aacee31645beb1d7308b81a7a, type: 3}
+  - {fileID: -1063233373, guid: 6fc8297aacee31645beb1d7308b81a7a, type: 3}
+  BakedGrades:
+  - gas
+  - diesel
+  - mixed
+  WidthMeters: 12.46
+  DepthMeters: 8.82
+  HeightMeters: 4.35
+  MaxHoses: 0
+  MaxSides: 0
+  HoseReachMeters: 0
+  LitresPerMinute: 0
+  Slots: 0
+  LengthMeters: 12.46
+  SlotPitchMeters: 3.3
+  Bays: 0
+  ClearHeightMeters: 0
+  Blockers:
+  - Kind: building
+    Level: 
+    Footprint:
+    - {x: -5.8, y: -4.1}
+    - {x: 5.8, y: -4.1}
+    - {x: 5.8, y: 4.1}
+    - {x: -5.8, y: 4.1}
+    Center: {x: 0, y: 0}
+    Radius: 0
+    HeightAboveGradeMeters: 4.35
+    Treatment: wall
+  - Kind: ice
+    Level: 
+    Footprint:
+    - {x: 5.82, y: -1.03}
+    - {x: 6.66, y: -1.03}
+    - {x: 6.66, y: 0.21}
+    - {x: 5.82, y: 0.21}
+    Center: {x: 0, y: 0}
+    Radius: 0
+    HeightAboveGradeMeters: 1.62
+    Treatment: wall
+  - Kind: propane_cage
+    Level: 
+    Footprint:
+    - {x: 5.86, y: -3.15}
+    - {x: 6.66, y: -3.15}
+    - {x: 6.66, y: -2.27}
+    - {x: 5.86, y: -2.27}
+    Center: {x: 0, y: 0}
+    Radius: 0
+    HeightAboveGradeMeters: 1.84
+    Treatment: wall
+  - Kind: ladder_cage
+    Level: 
+    Footprint:
+    - {x: -3.53, y: -4.72}
+    - {x: -2.85, y: -4.72}
+    - {x: -2.85, y: -4.1}
+    - {x: -3.53, y: -4.1}
+    Center: {x: 0, y: 0}
+    Radius: 0
+    HeightAboveGradeMeters: 4.35
+    Treatment: wall
+  - Kind: plant
+    Level: roof
+    Footprint:
+    - {x: -3.35, y: -2}
+    - {x: -1.75, y: -2}
+    - {x: -1.75, y: -0.78}
+    - {x: -3.35, y: -0.78}
+    Center: {x: 0, y: 0}
+    Radius: 0
+    HeightAboveGradeMeters: 0.49
+    Treatment: waist_block
+  - Kind: plant
+    Level: roof
+    Footprint:
+    - {x: 1.06, y: -2.26}
+    - {x: 2.42, y: -2.26}
+    - {x: 2.42, y: -1.18}
+    - {x: 1.06, y: -1.18}
+    Center: {x: 0, y: 0}
+    Radius: 0
+    HeightAboveGradeMeters: 0.45
+    Treatment: waist_block
+  - Kind: flue
+    Level: roof
+    Footprint: []
+    Center: {x: 3.83, y: 1.23}
+    Radius: 0.12
+    HeightAboveGradeMeters: 0.6
+    Treatment: waist_block
+  Walkables:
+  - Id: walkway
+    HeightMeters: 0.116
+    Outline:
+    - {x: -6.38, y: 4.2}
+    - {x: 6.38, y: 4.2}
+    - {x: 6.38, y: 5.85}
+    - {x: -6.38, y: 5.85}
+    Treatment: step_over
+  - Id: service_stoop
+    HeightMeters: 0.124
+    Outline:
+    - {x: -5.35, y: -5.02}
+    - {x: -2.85, y: -5.02}
+    - {x: -2.85, y: -4.1}
+    - {x: -5.35, y: -4.1}
+    Treatment: step_over
+  - Id: roof_deck
+    HeightMeters: 3.91
+    Outline:
+    - {x: -5.64, y: -3.94}
+    - {x: 5.64, y: -3.94}
+    - {x: 5.64, y: 3.94}
+    - {x: -5.64, y: 3.94}
+    Treatment: flat
+  Interactables:
+  - Id: ice_box
+    Label: ICE
+    Action: buy_ice
+    Position: {x: 6.68, y: -0.41, z: 1.08}
+    ReachPoint: {x: 7.35, y: -0.41, z: 0}
+    HasReachPoint: 1
+    ReachVerdict: ok
+    Level: apron
+    VisibleFacings:
+    - NE
+    - E
+    - SE
+  - Id: propane_cage
+    Label: PROPANE EXCHANGE
+    Action: buy_propane
+    Position: {x: 6.68, y: -2.71, z: 0.98}
+    ReachPoint: {x: 7.35, y: -2.71, z: 0}
+    HasReachPoint: 1
+    ReachVerdict: ok
+    Level: apron
+    VisibleFacings:
+    - NE
+    - E
+    - SE
+  - Id: service_door
+    Label: SERVICE DOOR
+    Action: staff_door
+    Position: {x: -4.5, y: -4.16, z: 1.22}
+    ReachPoint: {x: -5.31, y: -4.65, z: 0.12}
+    HasReachPoint: 1
+    ReachVerdict: ok
+    Level: service_stoop
+    VisibleFacings:
+    - N
+    - NE
+    - NW
+  - Id: roof_ladder
+    Label: ROOF LADDER
+    Action: climb
+    Position: {x: -3.19, y: -4.36, z: 1.2}
+    ReachPoint: {x: -3.19, y: -4.94, z: 0.12}
+    HasReachPoint: 1
+    ReachVerdict: ok
+    Level: service_stoop
+    VisibleFacings:
+    - N
+    - NE
+    - NW
+  Entry:
+    Kind: slide_bipart
+    ClearWidthMeters: 2.4
+    ClearHeightMeters: 2.37
+    Threshold: {x: 0.3, y: 4.1, z: 0.18}
+    LeafWidthMeters: 1.2
+    TravelMeters: 1.26
+    ClearAtOpenFraction: 0.33
+    SillStepMeters: 0.18
+    Treatment: step_over
+    HasKeepClear: 0
+    KeepClear: []
+  ServiceDoor:
+    Kind: swing_single_out
+    ClearWidthMeters: 1.02
+    ClearHeightMeters: 2.1
+    Threshold: {x: -4.5, y: -4.1, z: 0.18}
+    LeafWidthMeters: 0
+    TravelMeters: 0
+    ClearAtOpenFraction: 0
+    SillStepMeters: 0.18
+    Treatment: step_over
+    HasKeepClear: 1
+    KeepClear:
+    - {x: -5.01, y: -5.22}
+    - {x: -3.89, y: -5.22}
+    - {x: -3.89, y: -4.1}
+    - {x: -5.01, y: -4.1}

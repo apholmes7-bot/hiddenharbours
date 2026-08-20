@@ -1,0 +1,103 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c066b3141c12834eb15805632bcf579, type: 3}
+  m_Name: island_s3
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.StationPieceDef
+  Id: station.island_s3
+  DisplayName: 3 Slots
+  PieceType: island
+  SizeKey: s3
+  Label: 3 SLOTS
+  IsInterior: 0
+  Facings: 4
+  Fold180: 1
+  Frames:
+  - {fileID: 1804508340, guid: e6847804996685c44a973b5b02783b6a, type: 3}
+  - {fileID: -839094603, guid: e6847804996685c44a973b5b02783b6a, type: 3}
+  - {fileID: 450772634, guid: e6847804996685c44a973b5b02783b6a, type: 3}
+  - {fileID: -1810545097, guid: e6847804996685c44a973b5b02783b6a, type: 3}
+  BakedGrades:
+  - gas
+  - diesel
+  - mixed
+  WidthMeters: 11.04
+  DepthMeters: 1.14
+  HeightMeters: 1.15
+  MaxHoses: 0
+  MaxSides: 0
+  HoseReachMeters: 0
+  LitresPerMinute: 0
+  Slots: 3
+  LengthMeters: 11.04
+  SlotPitchMeters: 3.3
+  Bays: 0
+  ClearHeightMeters: 0
+  Blockers:
+  - Kind: kerb
+    Level: 
+    Footprint:
+    - {x: -5.52, y: -0.57}
+    - {x: 5.52, y: -0.57}
+    - {x: 5.52, y: 0.57}
+    - {x: -5.52, y: 0.57}
+    Center: {x: 0, y: 0}
+    Radius: 0
+    HeightAboveGradeMeters: 0.165
+    Treatment: step_over
+  - Kind: bollard
+    Level: 
+    Footprint: []
+    Center: {x: -5.24, y: 0}
+    Radius: 0.11
+    HeightAboveGradeMeters: 1.15
+    Treatment: wall
+  - Kind: bollard
+    Level: 
+    Footprint: []
+    Center: {x: 5.24, y: 0}
+    Radius: 0.11
+    HeightAboveGradeMeters: 1.15
+    Treatment: wall
+  Walkables:
+  - Id: island_top
+    HeightMeters: 0.165
+    Outline:
+    - {x: -5.47, y: -0.52}
+    - {x: 5.47, y: -0.52}
+    - {x: 5.47, y: 0.52}
+    - {x: -5.47, y: 0.52}
+    Treatment: step_over
+  Interactables: []
+  Entry:
+    Kind: 
+    ClearWidthMeters: 0
+    ClearHeightMeters: 0
+    Threshold: {x: 0, y: 0, z: 0}
+    LeafWidthMeters: 0
+    TravelMeters: 0
+    ClearAtOpenFraction: 0
+    SillStepMeters: 0
+    Treatment: 
+    HasKeepClear: 0
+    KeepClear: []
+  ServiceDoor:
+    Kind: 
+    ClearWidthMeters: 0
+    ClearHeightMeters: 0
+    Threshold: {x: 0, y: 0, z: 0}
+    LeafWidthMeters: 0
+    TravelMeters: 0
+    ClearAtOpenFraction: 0
+    SillStepMeters: 0
+    Treatment: 
+    HasKeepClear: 0
+    KeepClear: []
