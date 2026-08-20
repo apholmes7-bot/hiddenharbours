@@ -93,6 +93,28 @@ namespace HiddenHarbours.Art
             Fill = _fill + litres / capacity;
         }
 
+        /// <summary>
+        /// Take fuel out, up to <paramref name="litres"/>, and answer what was ACTUALLY given — the POUR
+        /// half of the seam (<c>fuel-and-refuelling.md</c> §9.4). Writes through <see cref="Fill"/>, so
+        /// the drawn frame empties the same way it fills.
+        ///
+        /// <para><b>⚠ The answer is measured, not assumed, and that matters here more than anywhere.</b>
+        /// This vessel's level is a FRACTION clamped to 0..1 and rendered to a baked frame, so the litres
+        /// that actually leave can differ from the litres asked for by a float's worth. Reporting the
+        /// request instead of the difference would let a can that gave 4.99 L fill a tank by 5.00, and
+        /// fuel would be created one pour at a time. Measure before, measure after, return the gap.</para>
+        /// </summary>
+        public float Draw(float litres)
+        {
+            float capacity = CapacityLitres;
+            if (litres <= 0f || capacity <= 0f) return 0f;
+
+            float before = Litres;
+            Fill = _fill - litres / capacity;      // the Fill setter clamps at empty
+            float given = before - Litres;
+            return given > 0f ? given : 0f;
+        }
+
         void OnEnable() => Apply();
 
         void OnValidate()
