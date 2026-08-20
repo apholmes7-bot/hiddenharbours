@@ -786,12 +786,18 @@ namespace HiddenHarbours.Player
             RequestedStance = CharacterStance.Free;
 
             // The body draws again — EXCEPT where the character is INSIDE something. At the helm that is
-            // the pre-existing "taking the helm hides you" rule (ControlSwitcher's `onFoot || onDeck`)
+            // the pre-existing "taking the helm hides you" rule (ControlSwitcher's own drawn-on-root test)
             // restated by its new owner; DRIVING is the same rule on land (ADR 0035), and it is not
-            // cosmetic: the vehicle rig models no visible driver and her cab glass is opaque at 32 px/m, so
-            // a body left drawing would be a fisher standing ON the truck's roofline, sorted against a
-            // machine she is supposed to be sitting in. Nothing else writes this flag while a rider is
-            // wired, so the two can never disagree.
+            // cosmetic: a hard-cab machine's glass is opaque at 32 px/m, so a body left drawing would be a
+            // fisher standing ON the truck's roofline, sorted against a machine she is supposed to be
+            // sitting in.
+            //
+            // ⚠️ A DRIVER AN OPEN MACHINE SHOWS NEVER REACHES THIS BRANCH AS `Driving`. The switcher hands
+            // this component OnFoot for her — the same thing it does for a fisher mid-boarding-vault, and
+            // for the same reason: she is drawn on her own renderer by her own presenter, not as a rider
+            // leaning with a hull she is nowhere near. So the mode seen here is already the answer, and
+            // this stays a statement about being inside a CAB rather than a statement about driving.
+            // Nothing else writes this flag while a rider is wired, so the two can never disagree.
             if (_bodyRenderer != null)
             {
                 bool bodyVisible = _mode != ControlMode.Aboard && _mode != ControlMode.Driving;

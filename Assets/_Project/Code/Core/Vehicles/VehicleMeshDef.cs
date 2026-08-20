@@ -156,6 +156,36 @@ namespace HiddenHarbours.Core
                  "the player inside the cab wall.")]
         public Vector2 DriveDoorLocal;
 
+        [Tooltip("Where the driver SITS AND IS SEEN, in rig metres (+x curb side, +y nose, +z up) — " +
+                 "the reference point of her seat cushion, off the gameplay sidecar's own SEATS block. " +
+                 "The Otter's is her front bench, seat_ref (0, 0.36, 0.76), the one the centre " +
+                 "handlebar is aimed at.\n\n" +
+                 "⚠️ PUBLISH IT ONLY FOR A SEAT IN THE OPEN — a cockpit, not a cab. This is not 'does " +
+                 "she have a seat': nearly every machine does. The Dually has two buckets and a bench, " +
+                 "and hers stay UNPUBLISHED, because her sidecar calls them a CAB — a seated interior " +
+                 "with a liner, a roof panel and glass that is opaque at 32 px/m. A figure drawn there " +
+                 "would be a fisher standing on the roofline. The Otter's sidecar calls hers a COCKPIT, " +
+                 "'an open tub with two benches, not a room', and a driver in one is genuinely on " +
+                 "screen.\n\n" +
+                 "(0,0,0) = not published, and it is the honest answer for a hard-cab machine as much " +
+                 "as for a def baked before the field existed. Both keep their driver hidden, exactly " +
+                 "as every machine did before this field.\n\n" +
+                 "Measured art, not feel (rule 6): it changes when the rig re-bakes and at no other " +
+                 "time.")]
+        public Vector3 DriverSeatLocal;
+
+        /// <summary>
+        /// <b>Does this machine show her driver?</b> Decided by the ART — a machine that publishes an
+        /// open seat has somewhere a person is visibly sat, and one that does not, does not.
+        ///
+        /// <para>The same shape as <see cref="Floats"/> beside it, and for the same reason: the
+        /// question "can she do this?" is answered by the geometry she actually carries, never by her
+        /// <see cref="HiddenHarbours.Core.VehicleKind"/> and never by a rule in code. An open tub
+        /// draws her driver; a hard cab does not; the day a hard-cab amphibian arrives, nothing here
+        /// needs to learn about her — she simply publishes no open seat.</para>
+        /// </summary>
+        public bool ShowsDriver => DriverSeatLocal != Vector3.zero;
+
         [Header("Flotation (amphibious rigs only — every field 0 means she does not swim)")]
         [Tooltip("How far the WHOLE machine drops onto her waterline afloat, in rig metres (the " +
                  "rig's G.sinkMax; the Otter's 0.52).\n\n" +
