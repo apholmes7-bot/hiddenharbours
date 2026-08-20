@@ -33,6 +33,25 @@ It also closes `municipal-infrastructure.md` §8 nag **#6** — *"Does Nine Mile
 all? Nine lots, no people. If the answer is 'not yet', S6 drops off the plan."* **The answer is yes,
 and more than the island has.** S6 stays on the plan, and §3 below sizes it.
 
+### ⭐ Later rulings folded in (2026-08-20, after the first draft)
+
+Three more rulings landed the same day, after this document's first commit, and **all three move numbers
+this document computes.** They are recorded **as relayed by the coordinator, not as a verbatim
+transcript** — **except** the one fragment set in quotation marks below, which is the owner's own words
+as relayed.
+
+| # | ruling | what it changed here |
+|---|---|---|
+| 6 | ⭐ **THE CANNERY HAS A SITE** — *"east part of the island near the docks — that's where the old exporting likely would've taken place."* Read as: **St Peters, the east shore by the docks**, where the historical exporting happened | ⚠️ **Closes F3 and Q7.** The four processing NPCs finally have ground to stand on — but **it is not in this region**, so they leave the Nine Mile Creek roster (§3.1, §3.2). Where they sleep and which way they cross is the roster slice's, and it lands squarely on **Q8**, which stays open |
+| 7 | **The river lots are APPROVED — *"for now"*** | ⚠️ **Closes Q1, as option (a).** The town-river re-cut supplies Nine Mile Creek's dwellings. §3.3's shortfall is re-derived against it — and it is **bigger than the number the approval was given against**, because of ruling 8 |
+| 8 | **The M2 boat target is TEN, not fourteen.** The owner ruled fourteen too many and **delegated the number**; the coordinator settled **10** (7 today + 3), leaving 4 of the wharf's 14 berths for the mussel class, visitors and the player | ⚠️ **Closes Q4** — which called itself *"the single number that most changes the size of everything above"*, and was right. §2.3 goes **18 afloat → 27**; §3.2 goes **35 → 44**; §3.3's shortfall goes **21 → 30** |
+
+> ⚠️ **Ruling 8 is the only one here the owner did not fix personally, and it is recorded that way on
+> purpose.** The ruling was *fourteen is too many*, plus a delegation of the number; **ten is the
+> coordinator's, settled under that delegation.** It is written as settled so the arithmetic below has
+> something firm to stand on — **and it is the owner's to override.** If it moves, §2.3, §3.2 and §3.3
+> move with it, which is exactly what Q4 predicted.
+
 ---
 
 ## 1. What exists today — counted, not remembered
@@ -92,6 +111,10 @@ them — that slice re-homes two owners onto the float rather than adding any bo
 
 **Seven boats. Five working hulls at the wall, two small craft on the float.** S3 and S4 move and
 spread them; neither adds one.
+
+> ⭐ **Seven is what ships; TEN is the M2 target** (ruling 8). This section counts the working tree and
+> must keep counting it — the three extra boats are not in the register and nothing here pretends they
+> are. **§2.3 is where the ten-boat arithmetic lives.**
 
 > ⚠️ **`LotIndex` is a SHED, not a house.** `NineMileCreekLots` builds *"one shed per boat-owner on
 > the register"* along the wharf. **Not one of the seven registered owners has a dwelling anywhere in
@@ -164,6 +187,36 @@ Sized per hull rather than flat, and the aggregate still lands inside the owner'
 so **11 crew NPCs are new**. Against the owner's flat rule, 7 boats × 2–3 = **14–21**; 18 sits
 comfortably inside it, so the hull-sized reading *satisfies* the ruling rather than bending it.
 
+#### ⭐ And at TEN boats — the M2 target, ruling 8
+
+Ruling 8 adds **three boats** to the register and says nothing about their class, **because class is the
+register's to choose and not this document's to invent.** So the honest output is a band, not a number:
+
+| the three, if they turn out to be… | crew each | total afloat |
+|---|---|---:|
+| all working hulls (lobster boat / Cape Islander) | 3 · 3 · 3 | **27** |
+| two working hulls and a skiff | 3 · 3 · 2 | 26 |
+| all small craft (skiff, punt) | 2 or 1 each | as few as **21** |
+
+⭐ **27 is the planning number, and it is the top of the band on purpose.** The quay wall is where working
+hulls lie, and the float already carries both of the region's small craft; three more boats at a *working*
+wharf are three more working boats until somebody rules otherwise. **Everything downstream is computed on
+27 — and every figure below moves DOWN, never up, if the register picks smaller hulls.**
+
+| | 7 boats (shipped) | **10 boats (M2)** |
+|---|---:|---:|
+| registered owners — named already | 7 | **10** |
+| crew NPCs — new people to author | 11 | **17** |
+| **total afloat** | **18** | **27** |
+
+Against the owner's flat rule, 10 boats × 2–3 = **20–30**, and 27 sits inside it — so the hull-sized
+reading still *satisfies* the ruling at the new target rather than bending it, exactly as it did at seven.
+
+> ⚠️ **The three new boats inherit every constraint the seven carry**, and one of them bites harder: F2's
+> deck-slot arithmetic (§2.2) is **per hull**, so three more working hulls is three more hulls wanting a
+> third crew anchor and three more that overflow 12 slots if the bait crates stay sprites. **The §6.1 art
+> ask does not get bigger; the cost of not doing it does.**
+
 > ⚠️ **Dan Peters' punt is the one exception and it is deliberate.** Prosperity 0, a 4.5 m shed, and
 > a deck def of `floor · bow_1 · stern_port`. Putting two men in a punt to satisfy a rule would read
 > as a mistake. **Owner question Q3.**
@@ -189,15 +242,31 @@ Every line below is a **placed or reserved site in the region**, not an invented
 | **Used outboards** | ✅ Hector Bernard, placed | 1 | *(exists)* |
 | **Freight / shipping** | ✅ Dually 3500 at the truck park | 1 | the trucker who ships |
 | | **subtotal, built sites** | **17** | |
-| **Cannery / processing** | ⚠️ **NO SITE — the owner still owes one** | 4 | the "different equipment" crew |
-| | **subtotal, all** | **21** | |
+| ~~**Cannery / processing**~~ | ⭐ **SITED 2026-08-20 — but on ST PETERS**, the east shore by the docks | ~~4~~ | ⚠️ **leaves this region's roster — see F3** |
+| | **subtotal, this region** | ~~21~~ → **17** | |
 
-> ⚠️ **F3 — processing has no ground to stand on.** The owner's ruling names *"NPCs who run different
-> equipment in processing"*, and the region has **no processing building**. `FishStorePos` is
-> documented as *"holds; **NO processing**"*, and the building-lifecycle arc's cannery is carried in
-> `municipal-infrastructure.md` §4.2 as *"no site yet — the owner still owes one."* **The four
-> processing NPCs are sized here and cannot be placed until the cannery has a site.** This is the
-> single largest thing blocking the ruling from being built in full.
+> ⭐ **F3 — CLOSED, and it closed by MOVING.** The owner's ruling named *"NPCs who run different equipment
+> in processing"* and this region had no processing building. The answer, later the same day, is that the
+> cannery goes *"east part of the island near the docks — that's where the old exporting likely would've
+> taken place."*
+>
+> ~~The four processing NPCs are sized here and cannot be placed until the cannery has a site.~~
+> **They can be placed now — but not here.** Three consequences, and the third is the live one:
+>
+> - ⭐ **Where they process:** the cannery, on **St Peters, the east shore by the docks** —
+>   `cannery_yard` in [`municipal-infrastructure.md`](municipal-infrastructure.md) §3.2, a leaf off
+>   `slip_head`, in the harbour-cove beach sector the island's coast plan already draws. That document
+>   owns the site and the route; **this one owns only the fact that four people work there.**
+> - **What it costs this region:** the four leave the Nine Mile Creek roster entirely. `FishStorePos` is
+>   still documented as *"holds; **NO processing**"* — and that reads as **correct now rather than as a
+>   gap.** ⭐ **The mainland holds, the island processes.** That is a cleaner division of labour than the
+>   one this document assumed, and it gives the crossing a *cargo* reason to exist alongside the
+>   player's.
+> - ⚠️⚠️ **What is still open, and it is the roster slice's, not this section's:** **where the four
+>   sleep, and which way they cross.** St Peters houses six in four roofs with **no spare bed** (§1.2),
+>   so they are either islanders the island has to house, or they come over the water. **That is Q8
+>   arriving from the other direction — and Q8 stays open.** Their names, builds, outfits and days are
+>   P1's and P5's to author; nothing about them is settled here beyond the building they walk into.
 
 > ⚠️ **F4 — the shipyard's three are contingent.** `lot_boat_shed` is flagged in two documents: the
 > 2026-07-25 ruling says there is no shipwright in this region, and the shipped scene has one with the
@@ -208,20 +277,34 @@ Every line below is a **placed or reserved site in the region**, not an invented
 
 | | people |
 |---|---:|
-| Afloat (§2.3) — 7 owners + 11 crew | **18** |
+| Afloat (§2.3) — 10 owners + 17 crew, at ruling 8's ten boats | **27** |
 | Shore, on built sites (§3.1) | **17** |
-| Shore, awaiting a cannery site | *(+4)* |
-| **Working adults, buildable today** | **35** |
-| **Working adults, with the cannery** | **39** |
+| ~~Shore, awaiting a cannery site~~ | ~~*(+4)*~~ ⭐ **the island's now — F3** |
+| **NINE MILE CREEK — working adults** | **44** |
 
-**Nine Mile Creek: 35. St Peters: 6.** Ruling 5 is satisfied roughly six times over, and it is
-satisfied by the region's *own built geography* rather than by decree — the wharf, the lots and the
-shops were already asking for this many people.
+And the island, which is the other half of the comparison ruling 5 turns on:
 
-> **These are working adults, not residents.** A settlement of 35 jobs, with the partners and
-> children a real community carries, is a *population* closer to 55–70. **This document counts only
-> people the world must draw and schedule.** Whether children and non-working partners exist as NPCs
-> at all is **owner question Q6**; the art already has `BoyBuild` / `GirlBuild` / `NanBuild` if they do.
+| | people |
+|---|---:|
+| St Peters, housed and scheduled today (§1.2) | **6** |
+| + the cannery's four, once the building stands (F3) | *(+4)* |
+| **ST PETERS — working adults** | **6 → 10** |
+
+**Nine Mile Creek: 44. St Peters: 6, or 10 with the cannery.** Ruling 5 still holds comfortably —
+**more than four times over even at the island's larger figure** — and it holds for the same reason it
+did at 35: the region's *own built geography* asks for these people, rather than a decree supplying them.
+
+> ⚠️ **Both figures moved on 2026-08-20, in opposite directions, and neither move is this document's
+> invention.** The mainland **grew by nine** (ruling 8's three boats) and **shed four** (ruling 6 put the
+> cannery on the island); the island **gained those same four**. ~~35 buildable / 39 with the cannery~~ is
+> struck rather than corrected so the record shows which ruling did which. Both are the owner's to move
+> again — ruling 8 especially, since ten is a delegated number.
+
+> **These are working adults, not residents.** A settlement of 44 jobs, with the partners and
+> children a real community carries, is a *population* closer to **70–88** — the same **1.6–2.0×** the
+> 35-job reading used (55–70), applied to the new figure. **This document counts only people the world must draw
+> and schedule.** Whether children and non-working partners exist as NPCs at all is **owner question Q6**;
+> the art already has `BoyBuild` / `GirlBuild` / `NanBuild` if they do.
 
 ### 3.3 ⚠️⚠️ F1 — the housing does not remotely fit, and that is the headline finding
 
@@ -241,22 +324,39 @@ the trade:
 | Harbourmaster's quarters | 1 | **2** |
 | **Total, stretching every shipped precedent** | | **14** |
 
-**Roster 35. Housing 14. Short by 21 — the region can house four in ten of the people its own wharf
-implies.** Even counting only the 18 who go to sea, it is short by 4.
+**Roster 44. Housing 14. Short by 30 — the region can house fewer than one in three of the people its
+own wharf implies.** Even counting only the **27** who go to sea, it is short by **13**.
 
-**This is reported, not solved.** Three honest ways forward, none of them this document's to choose:
+> ⚠️ ~~**Roster 35. Housing 14. Short by 21.**~~ **The shortfall grew by nine on 2026-08-20, and it grew
+> for exactly one reason:** ruling 8's three extra boats put nine more people afloat. ⚠️ **The cannery
+> ruling did NOT shrink it** — the four processing hands were never counted in the 35 (§3.2), so moving
+> them to St Peters takes nothing off this region's beds. **The struck line is left standing because the
+> river-lot approval below was given against it, not against 30.**
 
-1. ⭐ **The town river re-cut is the natural answer.** The owner's 2026-08-20 ruling #4 — *a river
-   runs off the ocean up through Nine Mile Creek town, dividing it and making small picturesque
-   boardwalks* — re-cuts the region, and the in-flight `harbour-geography.md` is costing that out.
-   **Waterfront lots along a boardwalk is exactly the shape that houses fishermen.** Deferred to that
-   document; this one only records that the shortfall wants roughly **ten more dwellings**.
+**And on 2026-08-20 the owner picked one of the three ways forward.** All three are kept below, because
+the two that were not picked are now *supplements* to the one that was, rather than alternatives to it:
+
+1. ⭐⭐ **APPROVED, owner 2026-08-20 (Q1) — the river lots, *"for now"*.** The town-river re-cut
+   ([`harbour-geography.md`](harbour-geography.md) §5) supplies Nine Mile Creek's dwellings, and
+   **waterfront lots along a boardwalk is exactly the shape that houses fishermen.** Two things the
+   approval must be read with, and neither is a quibble:
+   - **The hedge is the owner's own, relayed: *"for now".*** It approves the lots. It does not approve a
+     final count of them, and it can be revisited.
+   - ⚠️⚠️ **THE NUMBER IS BIGGER THAN THE ONE THE APPROVAL WAS GIVEN AGAINST.** This option was costed
+     at *"roughly ten more dwellings"* against a shortfall of 21. At **30**, and at this document's own
+     2-adults-per-dwelling rate, the river banks are being asked for **≈ 15 dwellings**. And
+     `harbour-geography.md` §5 sizes the river, the bridge, the bank slopes and the boardwalks but
+     **does not size the lots** — so *nobody has yet checked that fifteen of them fit.* That check
+     belongs to the river slice and should happen **before** the lots are drawn.
 2. **Not everyone lives in town.** Rural PEI strings houses along the road out of the settlement —
    past `road_north` and `road_south`. Cheap: the through-road already runs 564 m and S2's lane table
-   already has the nodes.
+   already has the nodes. ⭐ **Now a supplement, not an alternative** — it is the cheapest way to take
+   pressure off the fifteen if the banks will not hold them.
 3. **Some crew commute from off-region.** Honest, free, and invisible: a hand who drives in from
    Finnigan's Landing needs no bed, only a truck at the truck park. ⚠️ But it weakens *"they all live
-   at places"*, which the owner said plainly. **Owner question Q2.**
+   at places"*, which the owner said plainly. **Owner question Q2 — STILL OPEN**, and it is now the
+   single biggest lever on the fifteen: ⭐ **every hand who commutes is half a dwelling the river does
+   not have to carry.**
 
 ---
 
@@ -384,7 +484,8 @@ The ruling says the boats go out on **different routes**. Two things make that c
 
 **The data shape, by name only:** a **`FishingGroundDef`** (a named patch of water — the ledges, the
 bar, the mussel leases) and a **`RouteAssignment`** on the register binding one owner to one ground
-plus the leg out. Per-boat, so seven boats leave seven ways; append-only ids per CLAUDE.md §5.
+plus the leg out. Per-boat, so **ten boats leave ten ways** at the M2 target — seven today; append-only
+ids per CLAUDE.md §5.
 
 ⭐ **The nav marks are already placed and already computed** (PR #575: channels are data, IALA-B
 buoyage derived). **A boat leaving Nine Mile Creek already has a marked channel to leave by** — the
@@ -431,7 +532,7 @@ of the clock". Whoever owns S6 should expect to touch `RoutineEntry`.
 
 ### 6.2 ⚠️ Do NOT re-ask for these — they ship
 
-The character art for a 35-person town is **almost entirely already baked**:
+The character art for a 44-person town is **almost entirely already baked**:
 
 | what a roster needs | it already ships as |
 |---|---|
@@ -439,11 +540,19 @@ The character art for a 35-person town is **almost entirely already baked**:
 | elders / children | `GinnyBuild`, `NanBuild`, `BoyBuild`, `GirlBuild` |
 | clothing variety | **8 outfits** — Capelin, DeepNavy, Dogwatch, HarbourTeal, Oilskins, RustAndCream, Spruce, SquallGrey |
 
-**5 working builds × 8 outfits = 40 combinations for a roster of 35.** Adequate, but only just, and
-with two caveats carried from the wardrobe arc: **oilskins collide with blond hair** (4 of 5 shades
-byte-identical — owner owes a ruling), and **four of seven owners already share one hull**, so visual
-sameness is a live risk at this wharf from two directions at once. ⚠️ **Assigning build + outfit
-across the roster should be deliberate and recorded, not left to whoever places each NPC.**
+**5 working builds × 8 outfits = 40 combinations for a roster of 44.**
+
+⚠️⚠️ **That is no longer enough to go round, and it stopped being enough on 2026-08-20.** At 35 the
+wardrobe was *adequate, but only just*; at ruling 8's ten boats it is **four short of one-each**, so the
+roster now **must** repeat a build/outfit pair before anybody chooses to. Two caveats carried from the
+wardrobe arc make that worse rather than better: **oilskins collide with blond hair** (4 of 5 shades
+byte-identical — owner owes a ruling), and **four of seven owners already share one hull**. Visual
+sameness is a live risk at this wharf from **three** directions at once now, not two.
+
+⚠️ **Assigning build + outfit across the roster should be deliberate and recorded, not left to whoever
+places each NPC.** ⭐ **And it is a real argument for Q5's generated answer** — a generator can place its
+unavoidable repeats where the player is least likely to read them as duplicates, which a hand-authored
+roster of 44 cannot promise. **Q5 stays the owner's, and this is evidence for it, not a decision.**
 
 ---
 
@@ -454,42 +563,74 @@ across the roster should be deliberate and recorded, not left to whoever places 
 
 | # | slice | waits on | why this order |
 |---|---|---|---|
-| **P0** | ⭐ **Crews on the moored decks** — a second and third figure on the seven registered hulls, arriving and leaving on the tide | nothing but the §6.1 anchor | **the most visible beat for the least work.** The seam is shipped (§2.2), the hulls are moored, the tide is computed. No routine engine, no lanes, no housing. |
-| **P1** | **The roster as data** — `ResidentDef` + `DwellingDef` for the 35, unplaced | the housing ruling (Q1/Q2) | makes the population reviewable before anything is built |
+| **P0** | ⭐ **Crews on the moored decks** — a second and third figure on the **seven** hulls the register ships, arriving and leaving on the tide | nothing but the §6.1 anchor | **the most visible beat for the least work.** The seam is shipped (§2.2), the hulls are moored, the tide is computed. No routine engine, no lanes, no housing. ⭐ **Do it at seven** — ruling 8's three extra boats are an M2 register change and must not be smuggled in here |
+| **P1** | **The roster as data** — `ResidentDef` + `DwellingDef` for the **44**, unplaced | ✅ **Q1 answered** (river lots, 2026-08-20) · ⚠️ **Q2 still open** | makes the population reviewable before anything is built. ⚠️ **P1 cannot finish while Q2 is open** — a `DwellingDef` per resident is exactly the thing a commuter does not have |
 | **P2** | **NMC routines on foot** — this is `municipal-infrastructure.md` **S6**, now sized | **S2** (the 25-node lane table) + P1 | S6 finally has a cast |
 | **P3** | **The commute** — per-leg travel mode, vehicle-as-dependent | §4.4, `gameplay-systems` | the largest engine item; P2 works on foot without it |
-| **P4** | **Different routes** — `FishingGroundDef` + `RouteAssignment`, joined to the ambient fleet | P0 | the boats finally leave |
-| **P5** | **Processing** | ⚠️ **the cannery site the owner owes** | blocked on a ruling, not on work |
+| **P4** | **Different routes** — `FishingGroundDef` + `RouteAssignment`, joined to the ambient fleet | P0, and the three M2 hulls if they have landed | the boats finally leave — **ten ways at the target** |
+| **P5** | **Processing** — the four cannery hands | ~~the cannery site the owner owes~~ ✅ **SITED** · now: the building standing on St Peters, + `municipal-infrastructure.md` **S9** | ⭐ **no longer blocked on a ruling.** It is blocked on *work* now, and on a different region's work: a building placed in the harbour cove and one lane leaf to reach it |
 
 ⭐ **P0 and P2 are the two that make the ruling read.** P0 needs nothing that is not already shipped.
+
+⚠️ **P5 moved regions on 2026-08-20 and the phasing table is the place that is easiest to miss it.**
+Processing is no longer a Nine Mile Creek slice at all — it is a **St Peters** one, sequenced behind that
+island's building-lifecycle work rather than behind S2 or S6. **A slice plan that still reaches for
+`wharf_yard` is reading the pre-ruling draft.**
 
 ---
 
 ## 8. Questions for the owner
 
-1. ⚠️⚠️ **The housing shortfall is the one real blocker (F1).** Nine Mile Creek can house ~14 and the
+> ✅ **Three of the eight are answered** by your later 2026-08-20 rulings. They are **struck in place
+> rather than deleted**, so the record shows what changed and what it was changed from. **Five remain
+> open, and Q2 and Q8 got sharper rather than smaller.**
+
+1. ~~⚠️⚠️ **The housing shortfall is the one real blocker (F1).** Nine Mile Creek can house ~14 and the
    roster is 35. Which way — **(a)** the town-river re-cut adds ~10 waterfront lots on the boardwalks,
-   **(b)** houses string out along the through-road, or **(c)** some crew commute from off-region?
-   **(a) is recommended**, since your own 08-20 ruling already re-cuts the town and waterfront lots are
-   what fishermen's houses are.
-2. **"They all live at places" — does that mean all, strictly?** If a hand may drive in from
-   Finnigan's Landing and never be housed, the shortfall shrinks by a third at no cost. If not, Q1 must
-   supply real beds.
-3. **Dan Peters' punt — one man or two?** Sized at 1 here, against your flat 2–3, because two men in a
-   punt reads as an error. Say the word and it goes to 2.
-4. **How many boats is the M2 target?** Seven today. `nine-mile-creek-wharf.md` carries *"~16 lobster
+   **(b)** houses string out along the through-road, or **(c)** some crew commute from off-region?~~
+   ✅ **ANSWERED 2026-08-20 — (a), the river lots, approved *"for now"*.** §3.3 is rewritten around it.
+   ⚠️ **One thing to know about your own answer:** you approved it against a shortfall of **21**
+   (≈ 10 dwellings). Q4's ten boats moved the shortfall to **30**, so the river banks are now being asked
+   for **≈ 15 dwellings** — and nobody has yet checked that fifteen fit. **Q2 below is the lever that
+   brings that number back down**, which is why it is worth more than it looks.
+2. ⚠️ **STILL OPEN — and it is worth more than it was. "They all live at places" — does that mean all,
+   strictly?** If a hand may drive in from Finnigan's Landing and never be housed, beds come off the
+   river's bill at no cost at all. ⭐ **Every commuter is half a dwelling the river banks do not have to
+   carry**, and Q1's approval is now being asked for ≈ 15 of them. If the answer is *all, strictly*, the
+   river must supply real beds for every one of the 30.
+3. ⚠️ **STILL OPEN — Dan Peters' punt, one man or two?** Sized at 1 here, against your flat 2–3, because
+   two men in a punt reads as an error. Say the word and it goes to 2. **Unaffected by the ten-boat
+   ruling** — this is about the hull that is already in the register, not about the three being added.
+4. ~~**How many boats is the M2 target?** Seven today. `nine-mile-creek-wharf.md` carries *"~16 lobster
    boats and the new mussel-boat class"* as vision, and the wharf has **fourteen berths**. Fourteen
    boats at three crew is 42 afloat alone — which turns Q1 from "short by 21" into "short by 60".
-   **This is the single number that most changes the size of everything above.**
-5. **Are the crews named individuals, or generated?** 35 hand-authored people with dialogue is a very
-   large content bill; **18 named** (the owners and their mates) with the rest as
-   recognisable-but-unnamed working figures is the Animal Crossing-scale answer, and is what the art
-   supports (§6.2).
+   **This is the single number that most changes the size of everything above.**~~
+   ✅ **ANSWERED 2026-08-20 — fourteen is too many, and you delegated the number. ⭐ SETTLED AT TEN**
+   (7 today + 3), which leaves **4 of the 14 berths** for the mussel class, visitors and you.
+   ⚠️ **Recorded as settled under your delegation — ten is the coordinator's number, not yours, and it
+   is yours to override.** It was indeed the single number that most changed the size of everything: 18
+   afloat → **27**, roster 35 → **44**, shortfall 21 → **30**, and the wardrobe (§6.2) ran out.
+5. ⚠️ **STILL OPEN — are the crews named individuals, or generated?** **44** hand-authored people with
+   dialogue is a very large content bill, and it grew by nine on 2026-08-20; **27 named** (the owners
+   and their mates) with the rest as recognisable-but-unnamed working figures is the Animal
+   Crossing-scale answer. ⭐ **§6.2 now argues for the generated half**: 5 builds × 8 outfits = 40
+   combinations no longer covers 44, so *something* repeats — the only question left is whether the
+   repeats are placed deliberately or discovered by the player.
 6. **Do children and non-working partners exist as NPCs?** `BoyBuild` / `GirlBuild` / `NanBuild` are
    baked and unused. A town with no children reads wrong; a town with 20 more scheduled bodies costs.
-7. ⚠️ **The cannery still has no site** (F3), and four processing jobs wait on it. Carried from
-   `municipal-infrastructure.md`, not raised fresh.
-8. **Does anyone live on St Peters and commute BY BOAT?** The island has 6 residents and **zero working
-   hulls in its scene**. A St Peters man who crosses to the Creek to crew would be a lovely thread, and
-   would use the bar-road landing which is already a lane node — **but it needs a boat the island does
-   not have.**
+7. ~~⚠️ **The cannery still has no site** (F3), and four processing jobs wait on it. Carried from
+   `municipal-infrastructure.md`, not raised fresh.~~
+   ✅ **ANSWERED 2026-08-20 — *"east part of the island near the docks — that's where the old exporting
+   likely would've taken place."*** F3 is closed, and it closed by **moving**: the cannery is on
+   **St Peters**, so the four processing hands are the **island's**, not Nine Mile Creek's.
+   ⚠️ **What is left is not yours and is not blocking:** whether the building stands as a relic the
+   building-lifecycle arc restores or as a working plant from the start is that arc's call, and it is
+   what decides *when* the four have a shift. **See Q8, which your ruling just made load-bearing.**
+8. ⚠️⚠️ **STILL OPEN — and your cannery ruling just made it load-bearing. Does anyone live on St Peters
+   and commute BY BOAT?** It used to be a lovely optional thread: the island has 6 residents and **zero
+   working hulls in its scene**, so an islander who crossed to the Creek to crew would use the bar-road
+   landing that is already a lane node — **but it needs a boat the island does not have.**
+   ⭐ **Now the crossing has traffic in the other direction whether or not you take that thread.** The
+   cannery is on St Peters and four people work there; the island houses six in four roofs with **no
+   spare bed** (§1.2). So either the island gains housing, or four people cross to it daily. **This is
+   the question F3 hands you, and P1 cannot finish the roster without an answer.**
