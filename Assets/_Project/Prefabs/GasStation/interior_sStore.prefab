@@ -420,6 +420,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5721710029867915072}
   - component: {fileID: 5911134010334187843}
+  - component: {fileID: 3958629969070541794}
   m_Layer: 0
   m_Name: interior_sStore
   m_TagString: Untagged
@@ -498,7 +499,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: -1
+  m_SortingOrder: 1201
   m_MaskInteraction: 0
   m_Sprite: {fileID: 733562633, guid: 0aefd326d762a0a48b0185fdeff95521, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -511,6 +512,24 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 1
   m_BlendShapeWeights: []
+--- !u!114 &3958629969070541794
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4815406627889179320}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a2b3c4d5e6f70819203a4b5c6d7e8f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.YSortSprite
+  _dynamic: 0
+  _baseOrder: 1201
+  _orderPerUnit: 4
+  _minOrder: 2
+  _maxOrder: 2402
+  _pivotYOffset: 0
 --- !u!1 &5524656599459176349
 GameObject:
   m_ObjectHideFlags: 0

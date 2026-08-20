@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using HiddenHarbours.Art;
 using HiddenHarbours.Art.Editor;
+using HiddenHarbours.Core;
 using UnityEditor;
 using UnityEngine;
 
@@ -455,15 +456,12 @@ namespace HiddenHarbours.Tools.RigBaking
                 sr.sprite = def.Frame(0);
                 sr.spriteSortPoint = SpriteSortPoint.Pivot;
 
-                // The room is a layer UNDER its own shell in the same cell, so it must sort behind it
-                // at the identical world position — otherwise the storefront's walls vanish.
-                sr.sortingOrder = def.IsInterior ? -1 : 0;
+                AddYSort(go, def);
 
-                int colliders = 0;
                 foreach (var b in def.Blockers)
                 {
                     if (!b.Blocks) continue;
-                    if (AddCollider(go, b)) colliders++;
+                    AddCollider(go, b);
                 }
 
                 AddDoorLeaf(go, def.Entry, "Entry");
@@ -476,6 +474,34 @@ namespace HiddenHarbours.Tools.RigBaking
             {
                 UnityEngine.Object.DestroyImmediate(go);
             }
+        }
+
+        /// <summary>
+        /// The ADR 0032 depth band, on every piece — a forecourt stands among boats, buildings and
+        /// people and has to interleave with all of them.
+        ///
+        /// <para><b>⚠️ The room's one-step offset lives in <c>_baseOrder</c>, NOT in
+        /// <c>SpriteRenderer.sortingOrder</c>.</b> A sales floor and its shell occupy the SAME cell at
+        /// the SAME world position — that identity is the whole seamless design — so nothing about
+        /// their positions can separate them, and a hand-set <c>sortingOrder</c> is simply overwritten
+        /// the moment <c>YSortSprite.OnEnable</c> runs. Lowering the room's base by one order is a
+        /// CONSTANT offset at every Y, so the room draws behind its own walls wherever the building is
+        /// placed. At the very ends of the band both clamp and TIE rather than invert, which is the
+        /// harmless direction.</para>
+        ///
+        /// <para>The <c>sortingOrder</c> that lands in the saved prefab is a CACHED band output, not a
+        /// parked constant: <c>YSortSprite</c> is <c>[ExecuteAlways]</c>, so adding it sorts
+        /// immediately and <c>OnEnable</c> recomputes it on every load. Assert on <c>_baseOrder</c>,
+        /// never on that cache.</para>
+        /// </summary>
+        static void AddYSort(GameObject go, StationPieceDef def)
+        {
+            var sort = go.AddComponent<YSortSprite>();
+            if (!def.IsInterior) return;
+
+            var so = new SerializedObject(sort);
+            so.FindProperty("_baseOrder").floatValue = SortingBands.DecorBase - 1;
+            so.ApplyModifiedPropertiesWithoutUndo();
         }
 
         static bool AddCollider(GameObject parent, StationBlocker b)

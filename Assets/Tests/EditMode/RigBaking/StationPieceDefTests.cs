@@ -2,6 +2,7 @@ using System.IO;
 using System.Linq;
 using HiddenHarbours.Art;
 using HiddenHarbours.Art.Editor;
+using HiddenHarbours.Core;
 using HiddenHarbours.Tools.RigBaking;
 using NUnit.Framework;
 using UnityEditor;
@@ -311,17 +312,65 @@ namespace HiddenHarbours.Tests.RigBaking
             }
         }
 
-        /// <summary>The room sorts UNDER its own shell at the identical world position — they share a
-        /// cell and a pivot, so without this the storefront's walls would vanish behind its floor.</summary>
+        /// <summary>
+        /// Every piece Y-sorts in the ADR 0032 band — a forecourt stands among boats, buildings and
+        /// people and has to interleave with all of them.
+        /// </summary>
         [Test]
-        public void A_sales_floor_prefab_sorts_under_its_shell()
+        public void Every_prefab_y_sorts_in_the_band()
         {
-            foreach (var d in Built().Where(x => x.IsInterior))
+            foreach (var d in Built())
             {
                 var go = AssetDatabase.LoadAssetAtPath<GameObject>(
                     $"{StationPieceDefBuilder.PrefabFolder}/{d.name}.prefab");
-                Assert.That(go.GetComponent<SpriteRenderer>().sortingOrder, Is.LessThan(0), d.Id);
+                var sort = go.GetComponent<YSortSprite>();
+                Assert.That(sort, Is.Not.Null,
+                    $"{d.Id}: no YSortSprite, so it would sit on a fixed order and either swallow or " +
+                    "be swallowed by everything it stands next to.");
+
+                var so = new SerializedObject(sort);
+                Assert.That(so.FindProperty("_minOrder").intValue,
+                            Is.EqualTo(SortingBands.DecorFloor), d.Id);
+                Assert.That(so.FindProperty("_maxOrder").intValue,
+                            Is.EqualTo(SortingBands.DecorCeiling), d.Id);
+                Assert.That(so.FindProperty("_orderPerUnit").floatValue,
+                            Is.EqualTo(SortingBands.OrdersPerMetre), d.Id);
             }
+        }
+
+        /// <summary>
+        /// The room sorts UNDER its own shell at the identical world position.
+        ///
+        /// <para>⚠️ The offset has to live in <c>_baseOrder</c>, not in
+        /// <c>SpriteRenderer.sortingOrder</c>: they share a cell AND a pivot, so nothing about their
+        /// positions separates them, and a hand-set <c>sortingOrder</c> is overwritten the moment
+        /// <c>YSortSprite.OnEnable</c> runs. A shipped <c>sortingOrder</c> is a cached band output,
+        /// so this asserts the base rather than that cache.</para>
+        /// </summary>
+        [Test]
+        public void A_sales_floor_sorts_one_step_under_its_shell_at_every_y()
+        {
+            foreach (var room in Built().Where(x => x.IsInterior))
+            {
+                var shell = Built().Single(x => !x.IsInterior && x.PieceType == "store"
+                                                && x.SizeKey == room.SizeKey);
+
+                float roomBase = BaseOrderOf(room);
+                float shellBase = BaseOrderOf(shell);
+
+                Assert.That(shellBase, Is.EqualTo((float)SortingBands.DecorBase), shell.Id);
+                Assert.That(roomBase, Is.EqualTo(shellBase - 1f),
+                    $"{room.Id} must sit exactly one order under {shell.Id} at EVERY y — otherwise " +
+                    "the storefront's walls vanish behind their own floor.");
+            }
+        }
+
+        static float BaseOrderOf(StationPieceDef d)
+        {
+            var go = AssetDatabase.LoadAssetAtPath<GameObject>(
+                $"{StationPieceDefBuilder.PrefabFolder}/{d.name}.prefab");
+            return new SerializedObject(go.GetComponent<YSortSprite>())
+                   .FindProperty("_baseOrder").floatValue;
         }
 
         /// <summary>Doors default SHUT (owner ruling, 2026-08-19), and a shut door is a collider.</summary>

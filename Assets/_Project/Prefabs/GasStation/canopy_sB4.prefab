@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2993392286074544185}
   - component: {fileID: 2505203256403934659}
+  - component: {fileID: 5040844285276032856}
   m_Layer: 0
   m_Name: canopy_sB4
   m_TagString: Untagged
@@ -31,7 +32,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 995469674216218552}
-  - {fileID: 4553997302674775988}
+  - {fileID: 2691162305006019431}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &2505203256403934659
@@ -81,7 +82,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1202
   m_MaskInteraction: 0
   m_Sprite: {fileID: 1679009125, guid: b3c94cf97ee217c489971cbb1a908432, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -94,7 +95,25 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 1
   m_BlendShapeWeights: []
---- !u!1 &4133919216064331795
+--- !u!114 &5040844285276032856
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1815765185734688176}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a2b3c4d5e6f70819203a4b5c6d7e8f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.YSortSprite
+  _dynamic: 0
+  _baseOrder: 1202
+  _orderPerUnit: 4
+  _minOrder: 2
+  _maxOrder: 2402
+  _pivotYOffset: 0
+--- !u!1 &2771880673188089249
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -102,8 +121,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4553997302674775988}
-  - component: {fileID: 7069052393970493562}
+  - component: {fileID: 2691162305006019431}
+  - component: {fileID: 4410198922762778127}
   m_Layer: 0
   m_Name: blocker_post
   m_TagString: Untagged
@@ -111,13 +130,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4553997302674775988
+--- !u!4 &2691162305006019431
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4133919216064331795}
+  m_GameObject: {fileID: 2771880673188089249}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -126,13 +145,13 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2993392286074544185}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!60 &7069052393970493562
+--- !u!60 &4410198922762778127
 PolygonCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4133919216064331795}
+  m_GameObject: {fileID: 2771880673188089249}
   m_Enabled: 1
   serializedVersion: 3
   m_Density: 1

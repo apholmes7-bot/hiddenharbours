@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3171463995152391806}
   - component: {fileID: 8318509511499880634}
+  - component: {fileID: 6266850051391443904}
   m_Layer: 0
   m_Name: dispenser_sMpd
   m_TagString: Untagged
@@ -80,7 +81,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1202
   m_MaskInteraction: 0
   m_Sprite: {fileID: -2059093473, guid: b5932672d14b857408a2f39269a9cdd4, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -93,6 +94,24 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 1
   m_BlendShapeWeights: []
+--- !u!114 &6266850051391443904
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 785078806333245758}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a2b3c4d5e6f70819203a4b5c6d7e8f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.YSortSprite
+  _dynamic: 0
+  _baseOrder: 1202
+  _orderPerUnit: 4
+  _minOrder: 2
+  _maxOrder: 2402
+  _pivotYOffset: 0
 --- !u!1 &8894673490290022231
 GameObject:
   m_ObjectHideFlags: 0

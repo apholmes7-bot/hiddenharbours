@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &3208177371787634016
+--- !u!1 &1247956009820314951
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,8 +8,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 3930483032625911555}
-  - component: {fileID: 6501041818378865428}
+  - component: {fileID: 120823712873189298}
+  - component: {fileID: 5370233259826726848}
   m_Layer: 0
   m_Name: blocker_bollard
   m_TagString: Untagged
@@ -17,13 +17,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &3930483032625911555
+--- !u!4 &120823712873189298
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3208177371787634016}
+  m_GameObject: {fileID: 1247956009820314951}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -32,13 +32,13 @@ Transform:
   m_Children: []
   m_Father: {fileID: 8200257097673309617}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!58 &6501041818378865428
+--- !u!58 &5370233259826726848
 CircleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3208177371787634016}
+  m_GameObject: {fileID: 1247956009820314951}
   m_Enabled: 1
   serializedVersion: 3
   m_Density: 1
@@ -146,6 +146,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8200257097673309617}
   - component: {fileID: 269520527690207402}
+  - component: {fileID: 7808443814864082292}
   m_Layer: 0
   m_Name: island_s4
   m_TagString: Untagged
@@ -167,7 +168,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2392394846126250275}
-  - {fileID: 3930483032625911555}
+  - {fileID: 120823712873189298}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &269520527690207402
@@ -217,7 +218,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1202
   m_MaskInteraction: 0
   m_Sprite: {fileID: -1303236502, guid: 784579228cfec5440be069c5a78a777e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -230,3 +231,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 1
   m_BlendShapeWeights: []
+--- !u!114 &7808443814864082292
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8469974745664067535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a2b3c4d5e6f70819203a4b5c6d7e8f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.YSortSprite
+  _dynamic: 0
+  _baseOrder: 1202
+  _orderPerUnit: 4
+  _minOrder: 2
+  _maxOrder: 2402
+  _pivotYOffset: 0
