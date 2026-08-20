@@ -29,6 +29,24 @@ namespace HiddenHarbours.Tools.RigBaking
         public Vector2Int PivotPixels;
         public bool RidesHullRock;
 
+        /// <summary>
+        /// The sidecar's <c>cell.levels</c> — the levels that BAKE, in the interior RIG's own
+        /// vocabulary (<c>house</c>, <c>cuddy</c>, <c>bridge</c>, <c>below</c>).
+        ///
+        /// <para>⚠️ <b>This is NOT the same list as <see cref="Levels"/>, and conflating them bakes the
+        /// wrong sheets.</b> <see cref="Levels"/> comes from <c>WALKABLE</c>, which is the GAME's list
+        /// of standable planes: a superset, with different ids. The tanker's WALKABLE carries
+        /// <c>main_deck</c> and <c>poop_deck</c> — weather decks the interior rig never draws — beside
+        /// <c>house_sole</c>, <c>bridge_sole</c> and <c>below_sole</c>.</para>
+        ///
+        /// <para>Empty when the sidecar omits the list. The DEF does not need it, so this reader does
+        /// not refuse for it; a sheet bake must, and does.</para>
+        /// </summary>
+        public string[] CellLevels = Array.Empty<string>();
+
+        /// <summary>The sidecar's <c>cell.facings</c> compass, verbatim. Empty when omitted.</summary>
+        public string[] CellFacings = Array.Empty<string>();
+
         public Vector2[] Footprint = Array.Empty<Vector2>();
         public readonly List<BoatInteriorLevel> Levels = new List<BoatInteriorLevel>();
         public BoatInteriorDoor Door;
@@ -370,6 +388,25 @@ namespace HiddenHarbours.Tools.RigBaking
             read.PivotPixels = new Vector2Int(
                 (int)Math.Round(DeckSidecarJson.Float(DeckSidecarJson.Member(pivot, "x"), 0f)),
                 (int)Math.Round(DeckSidecarJson.Float(DeckSidecarJson.Member(pivot, "y"), 0f)));
+
+            read.CellLevels = StringArray(DeckSidecarJson.Member(cell, "levels"));
+            read.CellFacings = StringArray(DeckSidecarJson.Member(cell, "facings"));
+        }
+
+        /// <summary>A JSON array of strings, or empty. Blank entries are dropped rather than carried:
+        /// a level named "" would bake a sheet nothing could ask for.</summary>
+        static string[] StringArray(object node)
+        {
+            var arr = DeckSidecarJson.AsArray(node);
+            if (arr == null) return Array.Empty<string>();
+
+            var list = new List<string>(arr.Count);
+            for (int i = 0; i < arr.Count; i++)
+            {
+                string s = DeckSidecarJson.String(arr[i]);
+                if (!string.IsNullOrWhiteSpace(s)) list.Add(s.Trim());
+            }
+            return list.ToArray();
         }
 
         static void ReadMotion(object root, BoatInteriorRead read)

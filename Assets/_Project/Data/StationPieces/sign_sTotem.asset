@@ -1,0 +1,107 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c066b3141c12834eb15805632bcf579, type: 3}
+  m_Name: sign_sTotem
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.StationPieceDef
+  Id: station.sign_stotem
+  DisplayName: Totem
+  PieceType: sign
+  SizeKey: sTotem
+  Label: TOTEM
+  IsInterior: 0
+  Facings: 8
+  Fold180: 0
+  Frames:
+  - {fileID: 1260829618, guid: 4216d558ce6d5a64096a4264a47dc771, type: 3}
+  - {fileID: 1608207741, guid: 4216d558ce6d5a64096a4264a47dc771, type: 3}
+  - {fileID: -923732634, guid: 4216d558ce6d5a64096a4264a47dc771, type: 3}
+  - {fileID: 492809094, guid: 4216d558ce6d5a64096a4264a47dc771, type: 3}
+  - {fileID: 1762090422, guid: 4216d558ce6d5a64096a4264a47dc771, type: 3}
+  - {fileID: 1404131264, guid: 4216d558ce6d5a64096a4264a47dc771, type: 3}
+  - {fileID: -1411232455, guid: 4216d558ce6d5a64096a4264a47dc771, type: 3}
+  - {fileID: -580957367, guid: 4216d558ce6d5a64096a4264a47dc771, type: 3}
+  BakedGrades:
+  - gas
+  - diesel
+  - mixed
+  WidthMeters: 0.84
+  DepthMeters: 0.84
+  HeightMeters: 0.85
+  MaxHoses: 0
+  MaxSides: 0
+  HoseReachMeters: 0
+  LitresPerMinute: 0
+  Slots: 0
+  LengthMeters: 0.84
+  SlotPitchMeters: 3.3
+  Bays: 0
+  ClearHeightMeters: 0
+  Blockers:
+  - Kind: pole
+    Level: 
+    Footprint:
+    - {x: -0.14, y: -0.12}
+    - {x: 0.14, y: -0.12}
+    - {x: 0.14, y: 0.12}
+    - {x: -0.14, y: 0.12}
+    Center: {x: 0, y: 0}
+    Radius: 0
+    HeightAboveGradeMeters: 0.85
+    Treatment: wall
+  - Kind: base
+    Level: 
+    Footprint: []
+    Center: {x: 0, y: 0}
+    Radius: 0.42
+    HeightAboveGradeMeters: 0.16
+    Treatment: step_over
+  Walkables: []
+  Interactables:
+  - Id: prices
+    Label: PRICE SIGN
+    Action: read
+    Position: {x: 0, y: 0, z: 2.05}
+    ReachPoint: {x: 0, y: 1.4, z: 0}
+    HasReachPoint: 1
+    ReachVerdict: ok
+    Level: apron
+    VisibleFacings:
+    - SE
+    - S
+    - SW
+    - N
+    - NE
+    - NW
+  Entry:
+    Kind: 
+    ClearWidthMeters: 0
+    ClearHeightMeters: 0
+    Threshold: {x: 0, y: 0, z: 0}
+    LeafWidthMeters: 0
+    TravelMeters: 0
+    ClearAtOpenFraction: 0
+    SillStepMeters: 0
+    Treatment: 
+    HasKeepClear: 0
+    KeepClear: []
+  ServiceDoor:
+    Kind: 
+    ClearWidthMeters: 0
+    ClearHeightMeters: 0
+    Threshold: {x: 0, y: 0, z: 0}
+    LeafWidthMeters: 0
+    TravelMeters: 0
+    ClearAtOpenFraction: 0
+    SillStepMeters: 0
+    Treatment: 
+    HasKeepClear: 0
+    KeepClear: []

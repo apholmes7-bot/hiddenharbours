@@ -59,11 +59,28 @@ namespace HiddenHarbours.App
         /// the flag can never tighten any other mode).
         /// </summary>
         public static CameraFraming DesiredFraming(ControlMode mode, bool haulLive, bool haulTightensZoom)
+            => DesiredFraming(mode, haulLive, haulTightensZoom, carriedAboard: false);
+
+        /// <summary>
+        /// The same mapping, told whether she is a PASSENGER on the deck she is standing on
+        /// (<see cref="CarriedAboardChanged"/>) — in which case the deck is a vessel crossing water and
+        /// not a workbench, and the framing is the vessel's.
+        ///
+        /// <para><b>Being carried beats the haul</b>, and not merely by precedence: the two cannot both
+        /// be true. A haul is something you do with your own hands on your own boat, and a passenger has
+        /// neither. Ordering it first states that rather than leaving the reader to work out which flag
+        /// would win.</para>
+        /// </summary>
+        public static CameraFraming DesiredFraming(ControlMode mode, bool haulLive,
+                                                   bool haulTightensZoom, bool carriedAboard)
         {
             if (mode == ControlMode.Aboard) return CameraFraming.Boat;
             if (mode == ControlMode.Driving) return CameraFraming.Vehicle;
             if (mode == ControlMode.OnDeck)
+            {
+                if (carriedAboard) return CameraFraming.Boat;
                 return (haulLive && haulTightensZoom) ? CameraFraming.DeckHaul : CameraFraming.Deck;
+            }
             return CameraFraming.OnFoot;
         }
 

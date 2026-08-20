@@ -18,11 +18,12 @@ namespace HiddenHarbours.Core
     /// quantity. Nothing here caches a second copy — a litre count beside a fill fraction is two numbers
     /// for one fact, and they drift.</para>
     ///
-    /// <para><b>⚠️ Litres, not fuel-units.</b> <c>boats-and-navigation.md</c> measures a boat's tank in
-    /// FUEL-UNITS (FU) and the shipped container Defs measure capacity in LITRES. Nothing reconciles the
-    /// two yet because no tank exists to reconcile with; when the burn model lands, one of the two has to
-    /// give, and the cheap answer is FU = litre. Until then this seam speaks litres, which is what the
-    /// shipped data actually holds.</para>
+    /// <para><b>Litres, and fuel-units are the same thing.</b> <c>boats-and-navigation.md</c> measures a
+    /// boat's tank in FUEL-UNITS (FU) and the shipped container Defs measure capacity in LITRES. That is
+    /// settled, not pending: the two are ONE number, stated in full on
+    /// <c>BoatHullDef.FuelCapacityLitres</c> (<c>fuel-and-refuelling.md</c> §9.1). So this seam speaks
+    /// litres and there is no conversion anywhere — if you are ever tempted to add one, read that field
+    /// first.</para>
     /// </summary>
     public interface IFuelVessel
     {
@@ -44,11 +45,47 @@ namespace HiddenHarbours.Core
         /// Pour <paramref name="litres"/> in. The implementor clamps to <see cref="CapacityLitres"/> and
         /// ignores a non-positive amount — a pump states what it delivered and does not check, exactly as
         /// <see cref="ICarriable.ShowFacing"/> is stated and not checked.
-        ///
-        /// <para>There is deliberately no <c>Drain</c>. Burning fuel is the boat's business and the boat
-        /// has no tank yet; adding the other half now would be a seam with nothing on the far side of it.</para>
         /// </summary>
         void Deliver(float litres);
+
+        /// <summary>
+        /// Take fuel OUT, up to <paramref name="litres"/>, and answer <b>how much was actually given</b> —
+        /// which is never more than <see cref="Litres"/> and never negative. The mirror of
+        /// <see cref="Deliver"/>, and the half that makes a container a container rather than a sink.
+        ///
+        /// <para><b>Why it returns rather than states.</b> <see cref="Deliver"/> can be told and not asked
+        /// because the pump behind it has an infinite supply. Drawing is the other way round: only the
+        /// vessel knows what it has, so only the vessel can say what it gave, and a caller that assumed it
+        /// got what it asked for would quietly invent fuel. The return value IS the contract — move
+        /// exactly that much and no more.</para>
+        ///
+        /// <para><b>This is the seam POUR stands on</b> (<c>fuel-and-refuelling.md</c> §9.4). It was
+        /// deliberately absent while the boat had no tank, because it would have been a seam with nothing
+        /// on the far side of it. The boat has a tank now. Every future vessel wants it too — a wharf
+        /// bowser, a shed drum, a boat pumping into another boat under tow.</para>
+        ///
+        /// <para><b>⚠ Draw does NOT model burning.</b> An engine consuming fuel is the boat's own business
+        /// and goes through its own tank state, not through this. This is TRANSFER: fuel leaving one
+        /// vessel to arrive in another, conserved. See <see cref="FuelTransfer"/>, which is the only
+        /// thing that should be calling it.</para>
+        /// </summary>
+        float Draw(float litres);
+    }
+
+    /// <summary>
+    /// The one volume TOLERANCE the fuel seam works to, stated once so the pump and the pour agree about
+    /// when a vessel counts as full or empty.
+    ///
+    /// <para><b>A tolerance, NOT a tunable</b> (rule 6 is untouched by it): nothing about the game changes
+    /// if it moves, only whether a transfer of a ten-thousandth of a litre counts as a transfer. It lives
+    /// in Core rather than beside the pump because <see cref="FuelTransfer"/> needs the same answer and
+    /// cannot see the Economy module — and two constants for one quantity is exactly how "the can is
+    /// full" and "the can is empty" end up disagreeing at the last bit of a float.</para>
+    /// </summary>
+    public static class FuelVolumes
+    {
+        /// <summary>The smallest quantity that counts as fuel, in litres — a tenth of a millilitre.</summary>
+        public const float MinLitres = 1e-4f;
     }
 
     /// <summary>

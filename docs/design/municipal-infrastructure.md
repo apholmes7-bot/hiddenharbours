@@ -25,15 +25,18 @@
 >
 > ### ⭐ Later rulings folded in (2026-08-20, after the first draft)
 >
-> Four rulings landed after this document's first commit and are folded in throughout. They are recorded
-> here as relayed by the coordinator, not as a verbatim transcript.
+> Six rulings landed after this document's first commit and are folded in throughout. They are recorded
+> here as relayed by the coordinator, not as a verbatim transcript — **except** the one fragment below
+> that is set in quotation marks, which is the owner's own words as relayed.
 >
 > | # | ruling | what it changed |
 > |---|---|---|
 > | 1 | **St Peters' energy is a COMBINATION of all types, depending on the use case** | ⚠ **Supersedes the first draft's "off-grid means oil only".** §3.4 is rewritten around *the island makes its own power, and each source has a job*. The night contrast survives, but as **varied vs uniform**, not *fire vs electricity*. **This is a ruling about ENERGY, not an art licence** — the windmill/solar period call is still owed (§8) |
-> | 2 | **Nine Mile Creek HAS residents — more than St Peters, with "all the basic amenities of a town"** | ⚠ **Supersedes the first draft's "the region has nobody to give a routine to".** §4.1 and slice **S6 are unblocked at design level.** Sizing comes from the fleet and is already done: **[`settlement-population.md`](settlement-population.md) (PR #606) puts the roster at 35 working adults vs St Peters' 6** |
+> | 2 | **Nine Mile Creek HAS residents — more than St Peters, with "all the basic amenities of a town"** | ⚠ **Supersedes the first draft's "the region has nobody to give a routine to".** §4.1 and slice **S6 are unblocked at design level.** Sizing comes from the fleet and is already done: **[`settlement-population.md`](settlement-population.md) (PR #606) puts the roster at 35 working adults vs St Peters' 6** — ⭐ **now 44, on ruling 6's ten boats** |
 > | 3 | **The trunk road is ROUTE 91**, and Wharf Road merges onto it | The road this document has been calling "the through-road" **is** Route 91 — [`harbour-geography.md`](harbour-geography.md) (PR #605) establishes it is already built, not to be built. Named as such throughout |
 > | 4 | **Lead-architect: alleys are LEAVES through M1–M2**; the graph + tie-break ADR is deferred to the first-city trigger | §2.3's recommendation **is now the ruling.** Recorded as settled rather than proposed |
+> | 5 | ⭐ **THE CANNERY HAS A SITE** — *"east part of the island near the docks — that's where the old exporting likely would've taken place."* **St Peters, the east shore by the docks** | ⚠ **Supersedes "no site yet — the owner still owes one"**, which this document carried in §4.1, §4.2, §7 S8 and §8 #6. It also puts the cannery **in the wrong region**: it is **not** a Nine Mile Creek destination, so §4.2's destination table is now **complete without it** and the island gains a route instead (§3.2). The four processing NPCs [`settlement-population.md`](settlement-population.md) sizes are unblocked |
+> | 6 | **The M2 boat target is TEN, not fourteen** — the owner ruled fourteen too many and delegated the number; the coordinator settled **10** (7 today + 3), leaving 4 of the wharf's 14 berths for the mussel class, visitors and the player | Recorded here only because **§4.1 quotes the roster this resizes**: [`settlement-population.md`](settlement-population.md) goes from 35 working adults to **44**. Settled under delegation — **the owner may override the number** |
 
 ---
 
@@ -60,7 +63,7 @@ is which is the opposite way round in each region**, and that is what shapes thi
 |---|---|---|
 | Walkable lane network (`RoutineLanes`) | **12 nodes**, a tree rooted at the green | **NONE** |
 | Villagers on `RoutineDef` days, **built today** | 6 | **0** — two static stallholders (Wendell, Hector) |
-| Working adults the region **implies** (PR #606) | 6 | ⭐ **35** — and none of them can walk anywhere |
+| Working adults the region **implies** (PR #606) | 6 | ⭐ **44** at the ten-boat M2 target — and none of them can walk anywhere |
 | Drawn roads (RoadsV3 tilemaps) | none | 4 ways + 3 pads + 5 shell walks, all stroked from published routes |
 | Painted walked dirt (terrain splat) | 2 paths — village→slip, village→bar head | none |
 | Utility props placed | **NONE** | 9-pole line, yard light, 2 shore-power pedestals, standpipe, fuel pump, oil tank, yard hydrant |
@@ -71,8 +74,9 @@ is which is the opposite way round in each region**, and that is what shapes thi
 > asymmetry rather than being two copies of one template.
 >
 > ⭐ **The last row is what the 2026-08-20 residents ruling changed.** Nine Mile Creek's missing half is
-> no longer a tidiness problem — the region's own wharf, lots and shops imply **thirty-five working
-> adults**, and there is not a single lane for one of them to walk. That is what makes slice **S2** the
+> no longer a tidiness problem — the region's own wharf, lots and shops imply **forty-four working
+> adults** at the ten-boat M2 target (thirty-five on the seven boats shipped today), and there is not a
+> single lane for one of them to walk. That is what makes slice **S2** the
 > first thing to build.
 
 ### 1.1 ⭐ The art the dispatch asks for very largely already exists
@@ -241,6 +245,7 @@ in the woods. The dispatch's warning about sidewalks (§3.3) is the same argumen
 | `route.stpeters.bar_path` | footpath | `green` → `flats_head` (bent) | 48.0 m to the bar head | Junior, Eileen | **shipped, painted** |
 | `route.stpeters.wharf_walk` | footpath | `slip_head` → `wharf_head` | short | Basil | **shipped** |
 | `route.stpeters.plot_path` | footpath | `green` → `yard_ginny_plot` | 84.2 m | Ginny | **shipped as ONE straight edge — see ⚠ below** |
+| `route.stpeters.cannery_walk` | footpath, **leaf** | `slip_head` → `cannery_yard` | short — the cove's own shoulder | the cannery crew; nobody's routine yet | ⭐ **PROPOSED — the 2026-08-20 cannery ruling, below** |
 | `route.stpeters.camper_spur` | footpath, **leaf** | `yard_ginny_plot` → the camper lot | 14.0 m | the player, once the camper is his | **PROPOSED** |
 | `route.stpeters.bucket_walk` | footpath, **leaf** | `flats_head` → the wet bucket | 61.9 m from the green | the player; nobody's routine yet | **PROPOSED** |
 | `route.stpeters.saltbox_alley` | alley, **leaf** | `yard_saltbox` → the woodpile behind it | ~8 m | whoever fetches wood — needs the routine first | **PROPOSED, blocked on §7** |
@@ -257,6 +262,48 @@ reads correctly, but it is by far the longest thing anyone on the island walks, 
 sends a villager green→slip→green spends **2:05 in transit before it does anything**. `StPetersRoutines`
 already validates that no leg overruns its block; this is flagged so the next routine author sizes blocks
 against it rather than discovering it in the log.
+
+#### ⭐ The cannery lands HERE — the 2026-08-20 site ruling
+
+The owner sited the cannery on **St Peters**, not on the mainland: *"east part of the island near the docks
+— that's where the old exporting likely would've taken place."* (The owner's words as relayed by the
+coordinator; everything this section derives from them is the derivation, not the ruling.)
+
+**That is the harbour cove, and the cove is a place this document can point at without guessing**, because
+the coast plan already names it. `StPetersBuilder.CoastSectors` runs a **`Beach` sector from bearing 76.42°
+to 96.60°** — the one stretch of the island's east side that is not cliff, and the sector whose own comment
+says it *"holds the berth (bearing 90)"*. Taken against the island ellipse (centre `(70, 0)`, semi-axes
+**120 × 70**), that sector's shoreline runs from about **`(181, +27)`** round the east tip at **`(190, 0)`**
+to about **`(188, −14)`** — with the pier splitting it: `StPetersWharf.RootCellX = 183` ashore,
+`HeadCellX = 213` at the head, ±3 cells wide.
+
+**The site is the cove's NORTH shoulder** — landward of the pier root, on the beach side of the sector.
+Two reasons, both read off the published geometry rather than chosen: the north shoulder carries
+**26.8 m of northing** from the berth line before the sector runs out, against the south shoulder's
+**13.6 m**; and the south one is what the east weather face — `DeepShoreCliff` from 96.60° — runs
+straight into.
+
+> ⚠ **What is settled here is the REGION, the SHORE SECTOR and the PARENT NODE. The footprint is the
+> placement slice's to measure, not this document's to invent.** The island is 240 × 140 m and the cove is
+> its front door; a building put there by eye rather than by measurement would be the one prop the player
+> sees on the way in from every new game.
+
+**`cannery_yard` hangs off `slip_head`** — and that makes it the island's **second** two-deep branch.
+§3.1's note already says destinations chain off the node that reaches them rather than off the root, with
+`wharf_head`-off-`slip_head` as the precedent; this is the same shape, one branch over. It is a
+**thirteenth** node when it lands, and **nothing in §3.1 moves** — that table counts what is shipped.
+
+⚠ **The building's STATE is not settled, only its site.** The owner's words are about where the *old*
+exporting happened, and the brief this island was built from carries *"a fish stage, later a lobster
+factory — the working relic"* ([`scene-sizing-and-world-scale.md`](scene-sizing-and-world-scale.md) §5.1).
+Whether it stands as a relic the building-lifecycle arc restores, or as a working plant from the start,
+is **that arc's to say** — and it is what decides *when* the four processing NPCs
+[`settlement-population.md`](settlement-population.md) sizes actually have a shift.
+⭐ **The route is the same either way**, which is why it can be drawn now.
+
+> ⭐ **Consequence for a document this PR does not touch.** `scene-sizing-and-world-scale.md` carries
+> *"Cannery: in or out?"* as its own open question 4. The siting reads as answering it — **in** — but
+> folding that in is that document's job, not this one's.
 
 ### 3.3 Street furniture — and ⚠ NO SIDEWALKS. NONE. NOT ONE.
 
@@ -375,7 +422,7 @@ signature (§4.4), and it is the only thing the island must never borrow.**
 
 ## 4. Nine Mile Creek — the mainland grid
 
-### 4.1 ⚠⚠ The region has no lane network at all — and now it has 35 people who need one
+### 4.1 ⚠⚠ The region has no lane network at all — and now it has 44 people who need one
 
 `NineMileCreekPeople` places **two static stallholders** and nobody walks anywhere. There is no
 `RoutineLanes`, no `RoutineStations`, no `RoutineDef` in this region. It has **Route 91** running 564.4 m
@@ -389,22 +436,32 @@ own built geography:
 
 | | working adults |
 |---|---:|
-| **Nine Mile Creek** — 7 owners + 11 crew afloat, 17 ashore | **35** |
-| *(with the cannery, once it has a site)* | *(39)* |
-| **St Peters** | **6** |
+| **Nine Mile Creek** — 10 owners + 17 crew afloat, 17 ashore | **44** |
+| **St Peters** — the six who live there today | **6** |
+| *(+ the cannery's 4 — ⭐ **the ISLAND's now**, not this region's; §3.2)* | *(→ 10)* |
 
-> ⚠ **Supersedes the first draft**, which said this region had nobody to give a routine to. It has 35 —
-> they simply have not been authored yet. **Slice S6 is unblocked at design level** and the question it
-> was blocked on is answered by another document rather than by this one.
+> ⚠ **Supersedes the first draft**, which said this region had nobody to give a routine to. It has
+> **forty-four** — they simply have not been authored yet. **Slice S6 is unblocked at design level** and
+> the question it was blocked on is answered by another document rather than by this one.
+>
+> ⚠ **Two numbers in that table moved on 2026-08-20 and both moved for reasons outside this document.**
+> The roster went **35 → 44** because the M2 boat target settled at **ten** (ruling 6), and the *"(39 with
+> the cannery)"* line is **struck rather than corrected**: ~~the cannery's four were Nine Mile Creek's~~ —
+> **they are St Peters' now** (ruling 5, §3.2). The arithmetic lives in
+> [`settlement-population.md`](settlement-population.md) §3.2; this table quotes it and must not restate it.
 
 **So this is now the largest single gap between what the region draws and what it is**: 564 m of road, a
-14-berth wharf, nine lots, thirty-five people implied by all of it, and **no network for a single one of
+14-berth wharf, nine lots, **forty-four** people implied by all of it, and **no network for a single one of
 them to walk.** §4.2 is the most load-bearing part of this document, and slice **S2 is the one to build
 first.**
 
-> ⚠ **Two of the 35 cannot be placed from this document's table.** PR #606 flags that the four processing
-> NPCs need the cannery, which has **no site yet** (§4.2), and that three shipyard jobs ride the unresolved
-> boat-shed question. Both are carried here, neither is this document's to close.
+> ⭐ **One of the two carried blockers is now CLOSED; the other stands.**
+>
+> - ~~**The four processing NPCs need the cannery, which has no site yet.**~~ ✅ **Sited** — St Peters, the
+>   east shore by the docks (ruling 5, §3.2). They were never going to walk this region's lanes, and now
+>   the table knows it: **they leave the Nine Mile Creek roster entirely.**
+> - ⚠ **Three shipyard jobs still ride the unresolved boat-shed question** (§8 #5). Carried here, not this
+>   document's to close.
 
 ### 4.2 The lane table this region needs
 
@@ -480,16 +537,38 @@ this region, but the shipped scene has one and the economy data hangs off it. `l
 table under the neutral name so nothing breaks; **where the shipwright's yard really lives stays the
 coordinator's open question**, and this document does not close it.
 
-⚠ **The new destinations from the wharf and lifecycle arcs are not in this table yet, on purpose.** Every
-one of them is still landing, and each is a **one-line leaf off `wharf_yard`** when it merges — which is
-exactly what the tree buys. Their offsets are already measurable against the published road:
+#### ⭐ The destination table — BUILT, because the last thing blocking it was ruled
 
-| destination | along Wharf Road | offset | parent, when it lands |
-|---|---|---|---|
-| the fish-market lot | 264.3 m | 9.8 m | `wharf_yard` |
-| the restaurant lot | 287.7 m | 11.6 m | `wharf_yard` |
-| the shipyard lot | 321.8 m (the road's end) | 29.7 m | `wharf_front` |
-| the lifecycle cannery | ⚠ **no site yet — the owner still owes one** | — | `wharf_yard`, presumably |
+The first draft held this table open: *"the new destinations from the wharf and lifecycle arcs are not in
+this table yet, on purpose"*, because one of the four had no site and a table with a hole in it invites
+somebody to fill the hole by guessing. **The 2026-08-20 cannery ruling closes that hole**, so the table is
+written out here in the same shape as the 25-node table above — node id, parent, class, derivation, serves
+— rather than as a list of offsets waiting for a home.
+
+| node | parent | class of the edge | derived as | serves |
+|---|---|---|---|---|
+| `lot_fish_market` | `wharf_yard` | lane, **leaf** | 264.3 m along Wharf Road, 9.8 m off | the grader, the packer, the counter — 3 of the roster |
+| `lot_restaurant` | `wharf_yard` | lane, **leaf** | 287.7 m along Wharf Road, 11.6 m off | the cook, the server, the kitchen hand — 3 |
+| `lot_shipyard` | `wharf_front` | lane, **leaf** | 321.8 m — the road's end — 29.7 m off | Harris & Sons, 3 jobs ⚠ **contingent on §8 #5** |
+| ~~the lifecycle cannery~~ | ~~`wharf_yard`, presumably~~ | — | ⭐ **NOT IN THIS REGION** | — |
+
+> ⚠ **The cannery row is struck, not deleted, and it is struck because the ruling moved it off the
+> mainland altogether.** The owner sited it on **St Peters, the east shore by the docks** — *"that's where
+> the old exporting likely would've taken place"* — which is **§3.2's `cannery_yard`**, hanging off
+> `slip_head`, not anything hanging off `wharf_yard`. The first draft's *"`wharf_yard`, presumably"* was
+> a reasonable guess and it was wrong; the guess is left visible so nobody re-makes it.
+
+**That is 28 nodes and it is still a tree.** The three new ones are all leaves — two off `wharf_yard`, one
+off `wharf_front` — so no node gains a second parent, no cycle is created, and the root is still `town`.
+**The count for slice S2 is 25; S8 adds these 3.** ⭐ **Nine Mile Creek's destination set is now CLOSED**:
+every workplace [`settlement-population.md`](settlement-population.md) puts in this region has a node to
+walk to.
+
+⚠ **The offsets above are the first draft's, quoted and not recomputed.** They were measured against the
+published road when the arcs landed; if the town river re-cut moves a lot
+([`harbour-geography.md`](harbour-geography.md) §5.3, option A), the along-distances are re-derived by the
+same `MainlandCoast.PositionAt(route, along)` call as everything else — which is exactly the property
+§4.2 was built to have.
 
 ### 4.3 Street furniture — a working mainland shore
 
@@ -640,9 +719,10 @@ scoped once, by whoever gets there first. Items 5–8 are polish.
 | **S3** | **The wire-span renderer** (§6.2 #1) + the transformer at the line's town end + lamp arms on every third pole | NMC | S2 not required, but the ask is code | turns nine bare poles into a grid; the single biggest visual change per line of code in this arc |
 | **S4** | **StP self-serviced pass** — the well on the green, propane at the kitchens, the genset at the parish hall, the small set behind the boat shed, lanterns at the slip and the dooryards | StP | the `Lantern` preset (§6.2 #2); best AFTER S3 | the other half of the differentiator — land it after S3 so the two night reads can be compared side by side. ⭐ **The acceptance test is the negative one in §3.4:** if the result reads as *regular*, it is wrong |
 | **S5** | **NMC ditch + culverts** along Route 91 and at the neck | NMC | the ditch profile (§6.2 #5) | the mainland read by daylight |
-| **S6** | **NMC routines** — give the town's residents days that walk S2's lanes | NMC | S2, plus the `ResidentDef` roster PR #606's own P1 slice produces | ⭐ **UNBLOCKED at design level** by the owner's 2026-08-20 ruling. The question this slice was blocked on — *who lives at Nine Mile Creek* — is answered elsewhere: **35 working adults**, sized off the fleet. It is now sequenced behind PR #606's roster-as-data slice, not behind a decision |
+| **S6** | **NMC routines** — give the town's residents days that walk S2's lanes | NMC | S2, plus the `ResidentDef` roster PR #606's own P1 slice produces | ⭐ **UNBLOCKED at design level** by the owner's 2026-08-20 ruling. The question this slice was blocked on — *who lives at Nine Mile Creek* — is answered elsewhere: **44 working adults** at the ten-boat M2 target, sized off the fleet. It is now sequenced behind PR #606's roster-as-data slice, not behind a decision |
 | **S7** | **Fences and alleys** — both regions | both | the fence kit (§6.2 #4) **and** the yard lane's polygons | ⚠ **must be one slice with the yard lane, not two.** The alleys in §3.2 exist only once the fences do |
-| **S8** | **Route the new destinations** — restaurant, fish market, shipyard, the lifecycle cannery | NMC | those arcs merging | one `lot_*` leaf each; trivial once S2 exists |
+| **S8** | **Route the new destinations** — `lot_restaurant`, `lot_fish_market`, `lot_shipyard` | NMC | those arcs merging | one leaf each, all three now written out in §4.2; trivial once S2 exists. ~~and the lifecycle cannery~~ — **the cannery left this region on 2026-08-20; see S9** |
+| **S9** | ⭐ **The cannery walk** — `cannery_yard` off `slip_head`, the island's 13th node, plus the shore-sector footprint the placement slice must measure | **StP** | the cannery's footprint being placed at all — **not** on a ruling any more | ⭐ **NEW, and unblocked by the 2026-08-20 site ruling** (§3.2). It is one leaf, like S8's three; what makes it its own slice is that it is in the *other region* and needs a building placed before a walk to it means anything |
 
 **Suggested first two:** S1 (tiny, proves the seam) and S2 (unblocks the most). S3 is the one to reach for
 if the owner wants the *visible* difference soonest.
@@ -651,9 +731,10 @@ if the owner wants the *visible* difference soonest.
 
 ## 8. Nag list for the owner — none of it blocking
 
-> ✅ **Two of the original six are answered** by your 2026-08-20 rulings and are struck below rather than
-> deleted, so the record shows what changed: *does Nine Mile Creek have residents* (**yes — 35**), and
-> the trunk road's name (**Route 91**).
+> ✅ **Three of the original six are answered** by your 2026-08-20 rulings and are struck below rather
+> than deleted, so the record shows what changed: *does Nine Mile Creek have residents* (**yes — 44 at the
+> ten-boat target**), the trunk road's name (**Route 91**), and **where the cannery goes** (#6, struck in
+> place below rather than moved, because what is left of it is no longer yours).
 
 1. **Names for the rest of the routes.** **Route 91** and **Wharf Road** now have real names; nothing
    else does. Everything else above is functional — `route.stpeters.school_lane`, `road_civic`, "the bar
@@ -675,13 +756,26 @@ if the owner wants the *visible* difference soonest.
 5. **Where the shipwright's yard really lives.** Carried, not raised: the boat-shed lot sits in §4.2's
    table under a neutral name because the 2026-07-25 ruling and the shipped scene disagree. ⭐ Now worth
    more than it was — PR #606 has **three shipyard jobs riding this same unresolved question.**
-6. **The cannery still has no site**, and it is the last thing blocking §4.2's destination table and PR
-   #606's four processing NPCs. Carried from the building-lifecycle arc, where you already owe it.
+6. ~~**The cannery still has no site**, and it is the last thing blocking §4.2's destination table and PR
+   #606's four processing NPCs.~~ ✅ **ANSWERED 2026-08-20 — the east part of the island, near the docks.**
+   §4.2's table is built (and closed *without* the cannery, which is not this region's); §3.2 carries the
+   island's new leaf. ⚠ **What is left is smaller and is the building-lifecycle arc's, not yours:** the
+   site is ruled, the building's *state* — working plant, or relic to restore — is not, and that is what
+   decides when the four processing hands have a shift. Raised only so it is not mistaken for still being
+   owed by you.
 
 ---
 
 ### ~~Answered by the 2026-08-20 rulings~~
 
 - ~~**Does Nine Mile Creek have residents at all?**~~ **Yes — more than St Peters, with all the basic
-  amenities of a town.** 35 working adults, sized off the fleet. S6 unblocked.
+  amenities of a town.** 35 working adults, sized off the fleet — ⭐ **44 once the M2 target settled at ten
+  boats**, later the same day. S6 unblocked.
 - ~~**Does the through-road have a name?**~~ **Route 91**, and it was already built.
+- ~~**Where does the cannery go?**~~ **St Peters — the east part of the island, near the docks**, where the
+  old exporting would have taken place. It is **not** a Nine Mile Creek destination: §4.2's table closes
+  without it and §3.2 gives the island a 13th node instead. §7 gains **S9**.
+- ~~**How many boats at M2?**~~ **Ten** — you ruled fourteen too many and delegated the number; it is
+  **settled at 10** (7 today + 3), leaving 4 of the 14 berths for the mussel class, visitors and you.
+  ⚠ **Settled under your delegation, so it is yours to override** — it is the number §4.1's roster of 44
+  is built on.

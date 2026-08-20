@@ -91,8 +91,14 @@ namespace HiddenHarbours.Economy
         /// The smallest quantity that counts as fuel, in litres — a tenth of a millilitre. A float
         /// tolerance, NOT a balance tunable: it exists so that "the can is full" and "you can afford a
         /// splash" have crisp answers instead of turning on the last bit of a float.
+        ///
+        /// <para><b>Forwards to <see cref="FuelVolumes.MinLitres"/>, which is where it now lives.</b> The
+        /// POUR verb needs the same answer and is in Core, which cannot see this module — and two
+        /// constants for one quantity is exactly how "the can is full" and "the can is empty" end up
+        /// disagreeing at the last bit of a float. Kept as a name here because it reads better at the
+        /// call sites below, and because it is this file's stated "only constant".</para>
         /// </summary>
-        public const float MinLitres = 1e-4f;
+        public const float MinLitres = FuelVolumes.MinLitres;
 
         /// <summary>
         /// Quote a fill of <paramref name="vessel"/> from <paramref name="offer"/>.

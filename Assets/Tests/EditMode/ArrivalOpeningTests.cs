@@ -301,14 +301,14 @@ namespace HiddenHarbours.Tests.EditMode
             // …and a boat sliding AWAY from the berth is stopped, not driven on. 🔴 This is the arm that
             // catches the MIRROR of the crab bug: judged on closing speed alone, a boat past her mark
             // reads as "not arriving" and is given more throttle — measured as a 150 m departure at full
-            // ahead. WayToAccountFor takes the greater of the two, so her ground speed rules here.
+            // ahead. WayToAccountFor is her UNSIGNED ground speed, so way off the mark counts too.
             Assert.Less(ArrivalPilot.Command(at, 268f, new Vector2(2f, 0f), mark, 0f, s).Throttle, 0f,
                 "opening the range at the berth must be answered ASTERN, never ahead");
 
             Assert.AreEqual(2f, ArrivalPilot.WayToAccountFor(at, new Vector2(2f, 0f), mark), 1e-4f,
                 "sliding away at 2 m/s she must be accounted 2 m/s of way, not −2");
             Assert.AreEqual(crabbing.magnitude, ArrivalPilot.WayToAccountFor(at, crabbing, mark), 0.01f,
-                "crabbing she must be accounted her GROUND speed, which is the larger");
+                "crabbing she must be accounted her GROUND speed, not what she is closing the mark at");
         }
 
         // =============================================================================================

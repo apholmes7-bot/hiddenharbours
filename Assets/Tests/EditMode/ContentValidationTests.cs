@@ -4,6 +4,7 @@ using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
 using HiddenHarbours.Boats;
+using HiddenHarbours.Core;
 using HiddenHarbours.Economy;
 using HiddenHarbours.Fishing;
 using HiddenHarbours.World;
@@ -208,6 +209,81 @@ namespace HiddenHarbours.Tests.EditMode
                 Assert.IsFalse(string.IsNullOrWhiteSpace(b.DisplayName), $"{path}: empty DisplayName");
                 // Every hull on the Dory→Dynasty ladder hauls catch; a hold of zero breaks the loop.
                 Assert.GreaterOrEqual(b.HoldUnits, 1, $"{path}: HoldUnits must be at least 1");
+            }
+        }
+
+        /// <summary>
+        /// THE TANK IS COHERENT OR IT IS ABSENT — fuel-and-refuelling.md §9.2/§9.12.
+        ///
+        /// <para>A hull's fuel is three fields that only mean anything together, and every incoherent
+        /// combination is silently harmless at load and wrong in play: a capacity with no grade can never
+        /// be filled by any pump (the grade check refuses first, in words, forever); a capacity with no
+        /// burn rate is a boat with INFINITE RANGE; a grade outside the fixed art contract matches no can
+        /// ever baked. None of those throw. This is what notices.</para>
+        ///
+        /// <para><b>An untouched hull is not an error.</b> All three at their defaults means "no tank",
+        /// which is the correct reading for the rowed dory and the state every asset written before the
+        /// fields existed deserializes to. The rule only bites once a hull has been enrolled.</para>
+        /// </summary>
+        [Test]
+        public void BoatHulls_FuelIsAuthoredCoherently_OrNotAtAll()
+        {
+            foreach (var b in LoadAll<BoatHullDef>())
+            {
+                string path = AssetDatabase.GetAssetPath(b);
+                bool hasTank = b.FuelCapacityLitres > 0f;
+
+                if (!string.IsNullOrEmpty(b.FuelGrade))
+                    Assert.IsTrue(FuelGrades.IsKnown(b.FuelGrade),
+                        $"{path}: FuelGrade '{b.FuelGrade}' is not one of FuelGrades.All " +
+                        "(gas · diesel · mixed · oil · stove_oil). The grade set is a fixed contract " +
+                        "shared with the art lane — an unknown grade is a typo, not a new fuel, and it " +
+                        "would match no can and no pump row in the game.");
+
+                if (hasTank)
+                {
+                    Assert.IsFalse(string.IsNullOrEmpty(b.FuelGrade),
+                        $"{path}: FuelCapacityLitres is {b.FuelCapacityLitres} but FuelGrade is empty. " +
+                        "A tank with no grade can never be filled — every pump refuses on the grade " +
+                        "check before it ever looks at the level. Author the grade, or zero the tank.");
+
+                    Assert.Greater(b.FullThrottleLitresPerHour, 0f,
+                        $"{path}: FuelCapacityLitres is {b.FuelCapacityLitres} but " +
+                        "FullThrottleLitresPerHour is 0 — she carries fuel and burns none, which is " +
+                        "infinite range. Author the reference burn (§9.6.2), or zero the tank.");
+                }
+                else
+                {
+                    // The mirror: a burn rate or a grade with no tank is half-authored, and the half that
+                    // is missing is the one that decides whether the feature exists for this hull at all.
+                    Assert.AreEqual(0f, b.FullThrottleLitresPerHour,
+                        $"{path}: FullThrottleLitresPerHour is authored but FuelCapacityLitres is 0, so " +
+                        "she has no tank and nothing burns. Author the capacity, or zero the rate.");
+                }
+            }
+        }
+
+        /// <summary>
+        /// ⭐ THE ROWED DORY CARRIES NO TANK — named, because she is the one hull whose zero is a
+        /// DESIGN FACT rather than an un-authored default. fuel-and-refuelling.md §9.6.2 lists her as
+        /// "(none — she rows)": the opening boat has no engine, no fuel errand and no way to run dry,
+        /// and canon's first beat is Ginny handing over a motor that turns her into boat.dory_outboard.
+        /// Giving her a tank would quietly delete that beat, so the rule is spelled out rather than left
+        /// to the general coherence sweep above (which she passes either way).
+        /// </summary>
+        [Test]
+        public void TheRowedDory_HasNoTank()
+        {
+            foreach (var b in LoadAll<BoatHullDef>())
+            {
+                if (b.Id != "boat.dory") continue;
+                string path = AssetDatabase.GetAssetPath(b);
+                Assert.AreEqual(0f, b.FuelCapacityLitres,
+                    $"{path}: boat.dory ROWS. She is the pre-motor boat the opening hands you, and a tank " +
+                    "on her erases the beat where Ginny gives you the outboard. The motorised version is " +
+                    "a separate hull, boat.dory_outboard.");
+                Assert.IsEmpty(b.FuelGrade ?? "",
+                    $"{path}: boat.dory has no engine, so she drinks nothing.");
             }
         }
 

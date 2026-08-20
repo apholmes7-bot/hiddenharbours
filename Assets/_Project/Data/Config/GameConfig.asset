@@ -323,6 +323,16 @@ MonoBehaviour:
     FrozenRateMultiplier: 0
     IcedRateMultiplier: 0
     UnsellableSpoil: 0.9
+  Fuel:
+    IdleFraction: 0.08
+    ThrottleExponent: 2
+    LoadSurcharge: 0.35
+    HoldLoadWeight: 0.5
+    SlipLoadWeight: 0
+    SeaSurcharge: 0.6
+    BurnScale: 1
+    LowFuelFraction: 0.15
+    NewBoatArrivesFull: 1
   StarterPotKit:
   - TrapDefId: trap.lobster
     Count: 2
@@ -334,3 +344,4 @@ MonoBehaviour:
     FarthestWorldHeightMeters: 11.25
     WheelUnitsPerNotch: 120
     StepSeconds: 0.18
+  InteriorRockScale: 0.45

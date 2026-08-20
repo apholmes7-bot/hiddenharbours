@@ -25,6 +25,11 @@ namespace HiddenHarbours.Core
         /// length ruling, not a regression.</para></summary>
         public const float DefaultSecondsPerDay = 1800f;
 
+        /// <summary>The ruled default for <see cref="InteriorRockScale"/> (ADR 0038 proposal 1) — read
+        /// by <c>GameServices.InteriorRockScale</c> when no config is wired, so a test rig and a scene
+        /// with no GameConfig draw the same cabin the shipped asset does.</summary>
+        public const float DefaultInteriorRockScale = 0.45f;
+
         [Header("Clock")]
         [Tooltip("Real seconds per in-game day. 1800 = a 30-minute day (the owner's 2026-08-01 tide-pacing " +
                  "ruling; was 1200 = 20 min). Raising this slows EVERY real-time pace in the game — tide, " +
@@ -454,6 +459,14 @@ namespace HiddenHarbours.Core
                  "FishSpeciesDef.SpoilPerDay; these are the world-policy dials on top of it.")]
         public FreshnessSettings Freshness = FreshnessSettings.Default;
 
+        [Header("Fuel (fuel-and-refuelling.md §9 — the shape of the burn, whole-fleet)")]
+        [Tooltip("How thirst rises with throttle, with the catch aboard, and with the sea — the " +
+                 "dimensionless curve every hull's burn is multiplied by. A particular boat's thirst is " +
+                 "her own BoatHullDef.FullThrottleLitresPerHour; this is the shape they all share.\n\n" +
+                 "⭐ If fuel feels too thirsty or too free ACROSS THE BOARD, move BurnScale — one " +
+                 "number re-prices fuel for the whole game, instead of re-authoring 38 hull assets.")]
+        public FuelSettings Fuel = FuelSettings.Default;
+
         [Header("Pots (trap-fishing — the starter kit)")]
         [Tooltip("Pots granted ONCE per game as the cozy starter kit (Economy's StartingPots, flag-" +
                  "guarded): a new game starts with these, and an existing save gets them on its first " +
@@ -474,6 +487,19 @@ namespace HiddenHarbours.Core
                  "wheel only ever moves the ON-FOOT view: the helm keeps the hull's ruled framing, the " +
                  "deck keeps its own. Untick WheelEnabled to take the wheel out of the game entirely.")]
         public PlayerZoomSettings PlayerZoom = PlayerZoomSettings.Default;
+
+        [Header("Boat interiors (ADR 0038 — the cabin that rides)")]
+        [Tooltip("How much of her own rock a boat's INTERIOR draw takes — the comfort clamp ruled by " +
+                 "ADR 0038 proposal 1. 1 = full fidelity (exactly the hull's own roll/pitch/heave, which " +
+                 "is what the kit bakes); 0 = dead flat, the ACCESSIBILITY setting; 0.45 is the ruled " +
+                 "default. A cabin fills the frame in a way a deck does not, so the same rock that reads " +
+                 "as life outdoors reads as nausea indoors.\n\n" +
+                 "⚠ It is a comfort filter on ONE DRAW. It must never feed back into the hull's pose, " +
+                 "her handling, or anything saved (rule 5) — the boat moves exactly as she did at every " +
+                 "value, and only the picture of her inside is calmed. That is safe only because the " +
+                 "interior and the exterior are never co-visible: entering is a LAYER SWAP (ADR 0038 " +
+                 "proposal 3), so the two poses are never on screen together to disagree.")]
+        [Range(0f, 1f)] public float InteriorRockScale = DefaultInteriorRockScale;
 
         // Convenience
         /// <summary>
