@@ -1,8 +1,9 @@
 # Fuel & refuelling — two fuels, and where you can buy them
 
-> **Status:** OWNER DROP, 2026-07-25 — **captured, not built.** The St Peters opening is **M2**
-> ([`world-and-regions.md`](world-and-regions.md) §phasing), so this is design of record for when
-> that phase opens, not a licence to build now (CLAUDE.md rule 8).
+> **Status:** OWNER DROP, 2026-07-25 — **retail is BUILT (2026-08-20); burn is not.** §8 records
+> exactly what ships, what the proposed prices are, and what the owner still has to rule on.
+> Everything from §5 down (the opening beat, the oar gameplay) remains design of record for **M2**
+> ([`world-and-regions.md`](world-and-regions.md) §phasing), not a licence to build (CLAUDE.md rule 8).
 >
 > Subordinate to [`../vision-and-pillars.md`](../vision-and-pillars.md) (canon). Siblings:
 > [`boats-and-navigation.md`](boats-and-navigation.md) §2.6 / §3.6 (fuel burn, running dry,
@@ -186,3 +187,96 @@ rest of the game hang off it (`Data/Shipwright/` is built and shipping today).
 **The opening, end to end, as it now stands:** dig clams at St Peters → cross the bar on foot →
 find the damaged dory at the Nine Mile Creek wharf → earn her, buy her, put her right → **row**
 her home to St Peters → Aunt Ginny hands over Ned's old motor → your first errand is buying gas.
+
+---
+
+## 8. ✅ What is BUILT — fuel retail, 2026-08-20
+
+> **Owner direction, 2026-08-20:** *a couple of fuel pumps at the Nine Mile Creek wharf which charge
+> a HIGHER price; a full gas station at the end of the wharf road's intersection with Route 91.*
+> This section is the record of what that became. **Prices below are PROPOSALS** — they live in Def
+> assets precisely so the owner overrides them without touching code (rule 6).
+
+### 8.1 The five grades
+
+`gas` · `diesel` · `mixed` (two-stroke premix) · `oil` · `stove_oil`. A **fixed contract shared with
+the art lane**: the fuel rig bakes a colourway per grade, `FuelContainerDef.Grade` carries the same
+strings, and `HiddenHarbours.Core.FuelGrades` states them once so nothing spells one as a literal.
+
+`stove_oil` is new here, and it exists because the island **burns oil** — see
+[`municipal-infrastructure.md`](municipal-infrastructure.md). It is a purchasable grade and nothing
+more: **no delivery loop, no furnace, no heating demand** is modelled, and none is implied.
+
+### 8.2 The two sites, and the trade they create
+
+| | **`station.nmc_wharf_pumps`** | **`station.route_91`** |
+|---|---|---|
+| What it is | a couple of hoses on the wharf | the full station, up at the junction |
+| gas | **2.05** /L | 1.55 /L |
+| diesel | **1.85** /L | 1.40 /L |
+| mixed | *authored, switched off* (2.95) | 2.35 /L |
+| oil | *authored, switched off* (10.50) | 8.50 /L |
+| stove_oil | not stocked | 1.20 /L |
+
+⭐ **The wharf is convenient and dear and incomplete; the road station is cheap and complete and a
+walk.** That is the whole design, and it is a decision the player makes every time they need fuel —
+a ~32% markup for not leaving the water, and two grades you simply cannot buy dockside at all. It is
+the same shape as §3's St Peters/Nine Mile Creek split, one zoom level in: geography as a price.
+
+Canon holds: **Nine Mile Creek sells both gas and diesel** (§3), at the wharf, where a boat lies
+alongside. A test pins both the canon and the direction — if a re-price ever made the wharf the
+cheaper option, `FuelStationContentValidationTests` goes red.
+
+**Two rows are authored but switched off** (`mixed`, `oil` at the wharf). Availability and price are
+separate fields for exactly this: the owner ticks one box to open a grade, and the price he tuned is
+already sitting there. Whether a working wharf should sell premix is a taste call — see §8.5 Q3.
+
+### 8.3 The verb
+
+Walk up to a pump **holding a fuel container**, press interact, and it fills and charges you.
+
+- The **level lives on the can**, where the diegetic-UI direction wants it — `FuelLevelPresenter`
+  already drew a fill fraction and now *is* the container's fuel, through the Core seam
+  `IFuelVessel`. There is no fuel screen and no fuel HUD.
+- The charge **rounds up to whole coin, once, on the final figure** — so no fill is ever free and
+  nobody is charged twice for the same rounding.
+- **Short of money the pump pours what you can pay for** rather than refusing, and says so. A pump
+  that gives you nothing because you cannot afford a full tank can strand a broke player. ⏳ The
+  consequence is that "fill her up" with an empty purse spends everything — see §8.5 Q1.
+- **A can's grade is what it holds.** There is nowhere to record "this gas can currently has diesel
+  in it", so the diesel pump refuses a gas can, in words. The art brief's colour split is the
+  warning; this is the consequence.
+
+### 8.4 ⚠️ What is NOT wired — read this before believing fuel works
+
+1. **NO BOAT TANK, and therefore no refuelling a boat.** Nothing on any hull carries fuel today:
+   there is no tank field on `BoatHullDef`, nothing in `SaveData`, and no burn model. §1's canon
+   (fuel-units, burn = `f(throttle, load, seaState)`, running dry → stranded → tow) is **entirely
+   unbuilt**. The pump fills carried containers and nothing else. When a tank arrives it implements
+   `IFuelVessel` and the pricing above does not change.
+2. **Fuel does not persist.** A container's level is session-local, exactly as its position already
+   was. The **money does** persist — so a pump standing in a live scene is a small leak until fuel
+   state is saved, which is why nothing is placed in a scene yet.
+3. **Litres, not fuel-units.** Canon measures a tank in FU; the shipped container Defs measure
+   litres, so retail speaks litres. ⏳ One of the two has to give when the tank lands — see §8.5 Q2.
+4. **No stove-oil container exists.** All 84 baked containers are gas/diesel/mixed/oil; the rig
+   predates the grade. So stove oil is on sale at Route 91 and **you cannot carry any away** until
+   the art lane bakes a colourway. Named as a known gap in the validation test rather than hidden.
+5. **Nothing is placed.** No pump stands anywhere in any scene — placement is the art/world lanes'.
+6. **St Peters' over-the-counter gas is NOT this.** §3's general-store gas is a *filled can sold as
+   an item*, which is a `SupplyDef` beside the ice (as `FuelContainerDef`'s own remarks anticipate),
+   not a station. Separate piece of work; the PR #496 sibling ruling is honoured, not overturned.
+
+### 8.5 ⏳ Open — the owner's calls
+
+1. **Should "fill her up" be allowed to empty the purse?** Today it pours what you can afford and
+   tells you it did. The alternatives are refusing outright (worse — it can strand you) or a
+   how-much dial (ui-ux work, and the seam for it already exists: the quote takes a litres cap).
+2. **Is a fuel-unit a litre?** The cheapest answer is yes, and it keeps one number for one quantity.
+   Needed before the burn model, not before now.
+3. **Should the wharf pumps sell premix and oil?** Rows are authored and switched off. Every
+   outboard on that wharf burns one or the other, so "yes" is defensible; "no" makes the walk up the
+   road mean more. Currently **no**.
+4. **§7 Q4 is still open and now has a price tag.** If Ned's two-stroke needs premix, the player's
+   first errand is buying `mixed` — which the wharf does not currently stock, so their first fuel
+   run would be up Route 91 rather than a step down the dock. Charming or fiddly is still the call.
