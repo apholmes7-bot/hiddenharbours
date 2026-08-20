@@ -1,9 +1,15 @@
 # Hidden Harbours — the larger world map
 
-> **Status: RATIFIED IN PART — 2026-08-07, the Hillsborough Bay rulings.** The owner attached the
-> real chart of Hillsborough Bay, PEI, and ruled the home world onto it (chat, 2026-08-07). What is
-> ruled below is marked **RULED**; §7 lists what is still open. Earlier drafts of this document
-> proposed an abstract "home cluster + eastern arc"; that framing is **superseded** by the bay.
+> **Status: RATIFIED IN PART — 2026-08-07, the Hillsborough Bay rulings; AMENDED 2026-08-20.** The
+> owner attached the real chart of Hillsborough Bay, PEI, and ruled the home world onto it (chat,
+> 2026-08-07). What is ruled below is marked **RULED**; §7 lists what is still open. Earlier drafts
+> of this document proposed an abstract "home cluster + eastern arc"; that framing is **superseded**
+> by the bay.
+>
+> **2026-08-20 — the landform rulings.** Route 91, the three tidal rivers, the peninsula and its
+> point, the harbour mouth, and a marina were ruled onto the bay's north. They are captured in
+> **[`harbour-geography.md`](harbour-geography.md)**, which owns the bay's *landform*; this document
+> goes on owning its *regions and ports*. The sections below carry the marks; the detail lives there.
 >
 > Subordinate to [`../vision-and-pillars.md`](../vision-and-pillars.md) (canon — amended for these
 > rulings in the same PR that rewrote this document) and
@@ -23,13 +29,21 @@ that gradient (P1, P2, P5 stacked into geography) survives from every earlier dr
 real bay for a home end now.
 
 ```
-                the channel inland
+        ~ the EAST river runs inland from the city ~
                        |
               FINNIGAN'S LANDING          (the island's main city — commercial hub,
                        |                   ALL vessel sizes, late-game destination)
+        the small bay + THE POINT         (the harbour mouth: round the point,
+                       |                   a pocket behind it, then the city)
+     ROUTE 91 crosses the NORTH river
+                       |
+              THE PENINSULA               heads EAST to the harbour entrance;
+                       |                  its SOUTH shore carries THE MARINA
+     ROUTE 91 crosses the WEST river         (pleasure craft, slips, fuel)
+                       |
         ~ north shore: coves and points ~
                        |
-   NINE MILE CREEK     |
+   NINE MILE CREEK     |   ← Wharf Road merges onto ROUTE 91, which runs NORTH
    (town + wharf)      |         EAST POINT
         |          GOVERNORS     (commercial fishing port —
         | the bar   ISLAND        "almost mirrors Nine Mile Creek")
@@ -56,6 +70,22 @@ Compass facts, all **RULED** from the chart:
 - **The north shore** (north of St Peters' water, north-east of Nine Mile Creek) is coves and
   points, as the chart draws them. Far enough along it, a **channel heads inland** to the island's
   main city.
+- ⭐ **The trunk north is ROUTE 91** *(RULED 2026-08-20)* — the road Nine Mile Creek's Wharf Road
+  merges onto. It runs **north**, crosses the **west-running river** (which makes the peninsula), then
+  the **north-running river**, and arrives at **Finnigan's Landing**, whose own river runs **east**.
+  Route 91 is not a road to be built: it **is** the shipped `NineMileCreekMainland.ThroughRoad`,
+  which the builder already called *"the overhead's Route 19"*. Naming it costs one display string.
+- ⭐ **The peninsula and the point** *(RULED 2026-08-20)* — the land beyond the west river heads
+  **east** toward the harbour entrance and ends in a **point**, with a **small bay** behind it opening
+  to the city's harbour (the chart's Rocky Point, mirrored). Its **south shore**, north of St Peters
+  Island, carries **a marina** (§2.2). That point is the approach the player sails on the city run.
+- ⭐ **The three rivers are tidal fisheries** *(RULED 2026-08-20)* — the west, north and east rivers
+  are **shellfish and river-fishing waters**, carrying leases. Their reach ladder is §2.3.
+- ⚠ **A river runs off the ocean up through Nine Mile Creek town** *(RULED 2026-08-20)*, dividing it
+  and making small **boardwalks**. This is the **only** ruling that lands on built ground; its
+  estuary already exists (the coast notch and the barachois), but the valley does not fit between the
+  town's lots as sited. Costed in full — with four ways out — in
+  [`harbour-geography.md`](harbour-geography.md) §5.
 - **Governors Island** lies mid-bay: **uninhabited, rocks all around** — the bay's standing hazard,
   square in the way of any sail from home water toward East Point.
 - **The east side of the bay** almost mirrors Nine Mile Creek: land, a working shore, and the
@@ -92,6 +122,14 @@ The bay partitions into **three water scenes**; the channel to the city and the 
 | **The mid-bay** | the home grounds around St Peters | Fish, mussels, lobster, crab — with **Governors Island** as its hazard. |
 | **The east water** | Governors Island across to East Point | The working run: longer, more exposed, the lobster boat's commute. |
 
+⚠ **The MARINA is a mark on home water's NORTHERN edge, and it is not in the west water**
+*(2026-08-20)*. The owner ruled a marina on the **peninsula's south shore, north of St Peters
+Island** — pleasure and small craft, floating slips, fuel; the working wharf's opposite number. It
+belongs to **the mid-bay or to a new scene north of it**, and deliberately **not** to the west water:
+a slip harbour there would put a destination inside the first sail, which is the dory's sheltered
+water and should stay empty of them. Region-level mark only — no layout is proposed, and the ruling's
+own wording needs one confirmation ([`harbour-geography.md`](harbour-geography.md) §6.2).
+
 Extents to be derived by time-to-cross in each scene's gating boat
 ([`scene-sizing-and-world-scale.md`](scene-sizing-and-world-scale.md) §1.3) when the water-scene
 template is built — not picked in advance.
@@ -110,6 +148,7 @@ size entirely — only the 6–10-minute crossing rule constrains them now.
 | **Nine Mile Creek** | **~1.6 m** | + lobster boat 1.30 · Cape Islander 1.40 | side dragger 2.90 |
 | **East Point** | working-port depth (TBD, ≥ NMC) | the fishing fleet | — |
 | **Finnigan's Landing** | deep (dredged) | **everything** | — |
+| **The three rivers** *(2026-08-20)* | by reach: −0.75 / −0.35 / −0.15 × amplitude | mouth: the working fleet, half the cycle · mid: a nagging 42 % · head: the small craft | grounds anything that lingers |
 
 The owner ruled the dragger exclusion stays **emergent** (`waterLevel − bed > draught`): on NMC's
 ±2.2 m tide a dragger *can* nose in near high water (~30 % of the cycle) but can never lie there —
@@ -117,6 +156,15 @@ the ebb grounds her. That loophole is accepted as a story, not patched as a bug.
 logged: **grounding hulls should ride the ground and keel over**, exposing the underside the 3D
 iso rigs already model — flat-bottomed hulls (dory, punt) sit upright as they dry; round-bilged
 hulls lie over. Per-hull resting heel is data.
+
+⭐ **The rivers extend the same gate inland** *(2026-08-20)*. The three tidal rivers are authored as a
+three-step **reach ladder** — mouth, mid, head — in **tide fractions of the amplitude, never metres**
+(the 2026-08-01 pacing ruling). The happy finding is that they need no new depths: Nine Mile Creek's
+own shipped levels (basin −1.60 m, barachois −0.80 m, marsh pool −0.40 m) already *are* −0.73 / −0.36
+/ −0.18 × amplitude. The result is that a lobster boat works a river mouth for over half the cycle,
+the mid reach for a nagging 42 %, and the head barely at all — which is what makes the small
+mussel-boat class a **reason** rather than a purchase. Arithmetic, verified against the builder's own
+published fleet table, in [`harbour-geography.md`](harbour-geography.md) §3.3.
 
 ---
 
@@ -129,7 +177,7 @@ saves stay stable per ADR 0009 — display names are a seam, ids are append-only
 | Port | Where | What it is | When |
 |---|---|---|---|
 | **East Point** | east side of the bay | The **commercial fishing port** — the fleet, the fish trade at scale, a working shore that mirrors Nine Mile Creek. | mid-game |
-| **Finnigan's Landing** | up the channel inland, off the north shore | The island's **main city** — the commercial hub **all vessel sizes can reach**. Business, buildings, the big money. A **late-game destination** — but the player may end up there early *for various reasons*, to see the potential (larger vessels, businesses, building ownership) without being granted it. | late, glimpsed early |
+| **Finnigan's Landing** | up the channel inland, off the north shore. ⭐ *(2026-08-20)* Its **harbour mouth** is the chart's Rocky Point mirrored — **round the point, a small bay behind it, then the city** — and an **east-running river** runs inland from its harbour. Route 91 reaches it by land, over both big rivers. | The island's **main city** — the commercial hub **all vessel sizes can reach**. Business, buildings, the big money. A **late-game destination** — but the player may end up there early *for various reasons*, to see the potential (larger vessels, businesses, building ownership) without being granted it. | late, glimpsed early |
 | **New Scotland** | across the strait, south-east | The **cargo destination** — a long sail, used primarily by the larger cargo vessels. The freight game's far end. | late (freight tier) |
 
 **Shipyards, RULED: multiple — one of varying sizes at each port.** Boats are bought, sold and
@@ -191,6 +239,11 @@ directly. Canon names locked in `vision-and-pillars.md` §5.3, as amended:
 | The cross-strait cargo port | **New Scotland** | **RULED 2026-08-07** |
 | ~~Port Greywick~~ | — | **RETIRED 2026-08-07.** Historical mentions in ADRs and older docs stand as history; player-facing strings (`WorldStrings.OnboardBuyDory` / `OnboardRepairDory`, `OnboardingDirector`) are part of the already-flagged M2 onboarding rework; region ids stay stable (ADR 0009). |
 | The three water scenes | working names only (§2.2) | names owed when the scenes are built. **The west water is built and its name is now owed** — it ships as *"The West Water (working name)"* under the stable id `region.west_water`; renaming it is one string on one asset (ADR 0009) |
+| **Route 91** | **Route 91** | ⭐ **RULED 2026-08-20** — the trunk north (the real Rte 19, digits reversed). It **is** the shipped `ThroughRoad`; naming it costs one display string |
+| The **three rivers** (west · north · east) | — | **owed.** Candidates in [`harbour-geography.md`](harbour-geography.md) §9 — christen nothing yet |
+| The **peninsula / point** and the **small bay** behind it | — | **owed** — same slate |
+| The **marina** | — | **owed** — a marina is a business with a local commercial name, like a yard; never a generic label |
+| The **Nine Mile Creek town river** | — | **owed, but nearly self-answering:** ⭐ the town is already named for a creek, and the built coast already calls the notch "the creek mouth" |
 | Far-arc regions | canon names stand (Banks, Ironbound, Smother…) | geography unruled — §7 |
 
 ---
@@ -226,3 +279,22 @@ directly. Canon names locked in `vision-and-pillars.md` §5.3, as amended:
    *"The West Water (working name)"*. The id `region.west_water` is append-only and never changes
    whatever you pick, so the name costs one string on `Data/Regions/WestWater.asset`.
 5. **Winter** — deferred 2026-08-07 ("that can wait for now").
+
+**From the 2026-08-20 landform rulings** — asked in full, with recommendations, in
+[`harbour-geography.md`](harbour-geography.md) §10; listed here so this document's open list stays
+complete rather than duplicated:
+
+6. ✅ **CLOSED 2026-08-20 — the town moves.** *"The town can move to accommodate this."* The valley
+   needs ≥ 54 m between Nine Mile Creek's lot rows and has 23 m; the lots give way to the river.
+7. ✅ **CLOSED 2026-08-20 — the bridge artwork will be created.** The town river's span is the only
+   bridge M1 needs.
+8. ✅ **CLOSED 2026-08-20 — the marina stands where it was ruled.** Shown the bay map, the owner
+   identified the slip: the **west water** is the strip between Nine Mile Creek and St Peters Island,
+   not anything by the peninsula. The marina's own placement (the peninsula's south shore, north of
+   St Peters Island) was correct all along.
+9. **Bridge, causeway, or ferry at the TWO LARGE river crossings?** — distinct from the town river's
+   bridge, which is settled. M3. *(Recommendation: bridge west, hold the north river open as a
+   possible ferry.)*
+10. **When may Nine Mile Creek be re-cut?** The wharf, lifecycle and municipal branches are all open
+    against this exact geometry right now. **The only thing still gating the town-river work.**
+11. **The name slate** for the three rivers, the point, the cove, the marina and the town river.
