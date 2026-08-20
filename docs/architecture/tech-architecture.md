@@ -351,5 +351,13 @@ parallel-friendly (a new boat = a new Def + prefab, not new subclasses).
 ## 10. Open questions (owned by `lead-architect`)
 - DI framework (manual installer vs VContainer) — start manual, revisit if wiring gets heavy.
 - Addressables adoption point for the content catalog.
+  - On that migration list when it comes: the notebook's two `Resources` roots —
+    `Assets/_Project/Art/UI/Resources` (the baked kit + the face) and
+    `Assets/_Project/Data/Resources` (quest and knowledge Defs). The book is player-global and
+    self-installing, so it has no region builder to bake references for it and no editor-only
+    `AssetDatabase` lookup available in a player — `Resources` is the honest mechanism at this
+    scale, and the thing an Addressables catalog would replace. `QuestContentValidationTests`
+    pins that Defs live inside that root, because outside it the book shows an empty tab and
+    says nothing.
 - Networking/cloud-save: out of scope for now; keep SaveService behind an interface so a cloud
   backend can slot in later.

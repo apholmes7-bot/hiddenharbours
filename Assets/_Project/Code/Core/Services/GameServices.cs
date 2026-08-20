@@ -453,6 +453,28 @@ namespace HiddenHarbours.Core
             Config != null ? Config.WaveFetch : WaveFetchSettings.Default;
 
         /// <summary>
+        /// <b>How much of her own rock a boat's INTERIOR draw takes</b> — ADR 0038 proposal 1's comfort
+        /// clamp, same contract as <see cref="WaveField"/> including the <c>Config != null</c> discipline
+        /// (never <c>?.</c>/<c>??</c> on a <c>UnityEngine.Object</c>) and the resolved-per-read liveness,
+        /// so dragging the slider in Play calms the cabin on the very next frame. Falls back to
+        /// <see cref="GameConfig.DefaultInteriorRockScale"/>, which is the ruled 0.45 — an unwired test
+        /// rig therefore draws the same cabin the shipped asset does.
+        ///
+        /// <para><b>Clamped here, once.</b> The field carries <c>[Range(0, 1)]</c>, which the inspector
+        /// honours and a hand-edited YAML does not; clamping at the single read point means no consumer
+        /// can be handed a 2 (the interior out-rocking the hull it lives in) or a −1 (rocking against
+        /// her).</para>
+        ///
+        /// <para>⚠ <b>Visual only, and one draw wide.</b> Nothing on the sim side may read this: the
+        /// hull's pose, her handling and the save are all computed as if it were 1 (rule 5). It exists
+        /// because a cabin fills the frame in a way a deck does not — see
+        /// <c>BoatInteriorPoseMath</c>, the only thing that should be consuming it.</para>
+        /// </summary>
+        public static float InteriorRockScale =>
+            UnityEngine.Mathf.Clamp01(Config != null ? Config.InteriorRockScale
+                                                     : GameConfig.DefaultInteriorRockScale);
+
+        /// <summary>
         /// The wind-fetch amplitude envelope at a world position — the model resolved against the LIVE
         /// services (<see cref="TidalTerrain"/>, <see cref="Environment"/>, <see cref="WaveFetch"/>).
         /// Returns 1 (the exact passthrough) when the model is off, when there is no sim, or when no
