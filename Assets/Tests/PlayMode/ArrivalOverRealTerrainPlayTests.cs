@@ -60,11 +60,34 @@ namespace HiddenHarbours.Tests.PlayMode
             public float WaterLevelAt(double totalSeconds) => Level;
         }
 
+        /// <summary>
+        /// A sea with WEATHER in it, unlike <see cref="HeldTide"/> — the same still tide, plus a real
+        /// wind vector and a real sea state under her. The calm fixture is the honest bed for "does the
+        /// state machine run", but it cannot answer "does she ever actually come to REST", because
+        /// coming to rest is decided by whatever is still pushing her when the throttle asks for zero.
+        /// The owner's editor has weather in it; this is that, held still so a run is repeatable.
+        /// </summary>
+        private sealed class HeldWeather : IEnvironmentService
+        {
+            public float Level;
+            public Vector2 Wind = Vector2.zero;
+            public float SeaState01;
+            public SeaState State = SeaState.Calm;
+            public int WorldSeed => 0;
+            public TideProfile ActiveTideProfile { get; set; }
+            public EnvironmentSample Sample() =>
+                new EnvironmentSample(Wind, Vector2.zero, Level, State, 1f, SeaState01);
+            public float TideHeightAt(double totalSeconds) => Level;
+            public float WaterLevelAt(double totalSeconds) => Level;
+        }
+
         private GameObject _root;
         private GameObject _player;
         private TidalTerrain _terrain;
         private ArrivalOpening _opening;
         private ModeProbe _probe;
+        private IsoCharacterSprite _skin;
+        private CameraFollow _camera;
 
         [SetUp]
         public void SetUp()
@@ -93,7 +116,26 @@ namespace HiddenHarbours.Tests.PlayMode
             foot.offset = new Vector2(0f, -0.7f);
             GameServices.PlayerTransform = _player.transform;
             GameServices.Save = new FakeSave();
+
+            // ⭐ THE SKIN THE REAL CORE GIVES HER (PersistentCoreBuilder wires exactly this def onto
+            // exactly this component). Without it the walk-in-place question cannot even be ASKED here:
+            // the cell the player is drawn in is chosen by IsoCharacterSprite off her own motion, and a
+            // fixture whose player is a bare transform has no drawer left to be wrong.
+            _skin = _player.AddComponent<IsoCharacterSprite>();
+            _skin.Configure(UnityEditor.AssetDatabase.LoadAssetAtPath<CharacterVisualDef>(FisherIsoPath));
+
+            // …and a camera, because the third defect the owner watched is a FRAMING. It follows the
+            // player (which is what the camera does on foot and on a deck alike) and takes its framing
+            // from the Core signals the arrival publishes — it references the arrival not at all.
+            var camGo = new GameObject("Camera");
+            camGo.transform.SetParent(_root.transform);
+            camGo.AddComponent<Camera>().orthographic = true;
+            _camera = camGo.AddComponent<CameraFollow>();
+            _camera.Target = _player.transform;
         }
+
+        /// <summary>The player's 8-direction skin — the def the persistent core wires.</summary>
+        private const string FisherIsoPath = "Assets/_Project/Data/Characters/FisherIso.asset";
 
         [TearDown]
         public void TearDown()
@@ -109,9 +151,11 @@ namespace HiddenHarbours.Tests.PlayMode
             GameServices.Reset();
         }
 
-        private ArrivalOpening Begin(float tideLevel)
+        private ArrivalOpening Begin(float tideLevel) => Begin(new HeldTide { Level = tideLevel });
+
+        private ArrivalOpening Begin(IEnvironmentService weather)
         {
-            GameServices.Environment = new HeldTide { Level = tideLevel };
+            GameServices.Environment = weather;
 
             var go = new GameObject("ArrivalOpening");
             go.transform.SetParent(_root.transform);
@@ -367,6 +411,233 @@ namespace HiddenHarbours.Tests.PlayMode
             CollectionAssert.Contains(_probe.Heard, ControlMode.OnFoot,
                 "a passage cut short must still put her back on her feet; the bus carried: " +
                 _probe.What);
+        }
+
+        // =============================================================================================
+        //  THE ARRIVAL ENDS ASHORE — the three things the owner watched go wrong on his first sail in
+        // =============================================================================================
+
+        /// <summary>Advance a few frames — the passage is long, and one frame proves nothing about a
+        /// pose that is re-decided every LateUpdate.</summary>
+        private IEnumerator Frames(int n)
+        {
+            for (int i = 0; i < n; i++) yield return null;
+        }
+
+        /// <summary>Run her until she is ashore or the clock runs out; true if she made it.</summary>
+        private IEnumerator RunAshore(ArrivalOpening opening, System.Action<bool> done)
+        {
+            float deadline = Time.realtimeSinceStartup + TimeoutSeconds;
+            while (opening.Current != ArrivalOpening.Phase.HandedOver &&
+                   Time.realtimeSinceStartup < deadline) yield return null;
+            done(opening.Current == ArrivalOpening.Phase.HandedOver);
+        }
+
+        /// <summary>What she was doing when she stopped doing it — for a timeout message that names the
+        /// defect instead of only reporting that time ran out.</summary>
+        private static string Stuck(ArrivalOpening opening)
+        {
+            if (opening.Boat == null) return $"stuck in {opening.Current}; there is no boat";
+            return $"stuck in {opening.Current}, boat at {(Vector2)opening.Boat.transform.position}, " +
+                   $"{Vector2.Distance(opening.Boat.transform.position, StPetersArrivalOpening.Berth()):F1} m " +
+                   $"off the berth, still making {opening.Boat.Velocity.magnitude:F3} m/s (the hand-over " +
+                   $"wants under 0.10), throttle {opening.Boat.Throttle:F2}, aground={opening.Boat.IsAground}";
+        }
+
+        /// <summary>
+        /// 🔴 <b>SHE IS A PASSENGER, NOT A PEDESTRIAN — the walk-in-place the owner watched.</b>
+        ///
+        /// <para>The arrival carries her by writing her world position every LateUpdate, and
+        /// <see cref="IsoCharacterSprite"/> chooses her cell by MEASURING her own local-position step.
+        /// Those two facts together are the defect: a passenger standing still on a hull doing five
+        /// knots is measured at five knots and drawn at a dead run, on the spot, for the whole passage.
+        /// Nothing was lying — the drawer was asked the wrong question.</para>
+        ///
+        /// <para><b>⚠ The microphone is proven BEFORE the claim is made.</b> "The gait is Idle" passes
+        /// just as happily on a skin with no art wired, whose gait never leaves Idle whatever it is
+        /// asked. So the test first MOVES her itself and watches the gait leave Idle; only a drawer
+        /// that has demonstrably answered Walk/Run is allowed to be asked for Idle.</para>
+        /// </summary>
+        [UnityTest]
+        public IEnumerator SheIsNotDrawnWalking_WhileTheBoatCarriesHer()
+        {
+            Assert.IsNotNull(_skin.Visual, "precondition: the fisher's iso def must load, or this " +
+                             "fixture is asking a drawer that cannot answer");
+
+            // --- the microphone: move her by hand and watch the drawer report a gait ---------------
+            for (int i = 0; i < 12; i++)
+            {
+                _player.transform.position += new Vector3(0.25f, 0f, 0f);   // ~ walking pace at 60 Hz
+                yield return null;
+            }
+            Assert.AreNotEqual(CharacterGait.Idle, _skin.Gait,
+                "the fixture's own skin never leaves Idle even when the player is visibly moving — " +
+                "this microphone is deaf, so any 'she is not walking' below would be a false green");
+
+            // --- the claim: while the boat carries her, she is not travelling ----------------------
+            ArrivalOpening opening = Begin(0f);
+            yield return Frames(30);
+
+            Assert.AreEqual(ArrivalOpening.Phase.Approaching, opening.Current,
+                "precondition: she must still be under way for this to be about the passage");
+            Assert.Greater(opening.Boat.Velocity.magnitude, 1f,
+                "precondition: the boat has to be MAKING WAY, or there is no motion to mis-read");
+
+            Assert.AreEqual(CharacterGait.Idle, _skin.Gait,
+                $"she is drawn at a {_skin.Gait} while standing on a deck doing " +
+                $"{opening.Boat.Velocity.magnitude:F1} m/s — the boat's way is being read as her own " +
+                $"stride. Her measured speed is {_skin.Speed:F2} m/s and speed-held={_skin.IsSpeedHeld}; " +
+                "whoever moves a character in a frame that moves must STATE the speed (HoldSpeed).");
+
+            Assert.IsTrue(_skin.IsSpeedHeld,
+                "nobody is stating the passenger's travelling speed, so the drawer is left measuring " +
+                "the hull's way as her stride — the exact seam HoldSpeed exists for");
+        }
+
+        /// <summary>
+        /// 🔴 <b>SHE CAN WALK AWAY — the "no way to get off the boat" the owner reported.</b>
+        ///
+        /// <para>There is no exit BUTTON in this opening and there was never meant to be: the machine
+        /// ties up, waits a beat and hands over. So "no way to exit" is not a missing key — it is the
+        /// machine not finishing, or finishing and still holding her. Both end the same way for the
+        /// player: she is put down and something puts her straight back.</para>
+        ///
+        /// <para><b>The assertion is a PUSH, not a poll.</b> Reading a phase says the code thinks it let
+        /// go; shoving her and finding her still there next frame is the player's own test. The walk
+        /// controller reads the New Input System and a virtual key press is undeliverable in a test —
+        /// so she is moved through her body, which is what her keys would have moved anyway.</para>
+        /// </summary>
+        [UnityTest]
+        public IEnumerator OnceAshore_SheCanActuallyWalkAway()
+        {
+            var body = _player.GetComponent<Rigidbody2D>();
+
+            ArrivalOpening opening = Begin(0f);
+            bool ashore = false;
+            yield return RunAshore(opening, r => ashore = r);
+            Assert.IsTrue(ashore, "she never got ashore — " + Stuck(opening) +
+                          ". A machine that never hands over IS 'there is no way off the boat'.");
+
+            Vector3 before = _player.transform.position;
+            for (int i = 0; i < 30; i++)
+            {
+                body.linearVelocity = new Vector2(1.5f, 0f);       // what her keys would have asked for
+                yield return new WaitForFixedUpdate();
+            }
+            float moved = Vector2.Distance(_player.transform.position, before);
+
+            Assert.Greater(moved, 0.5f,
+                $"she was put ashore and then moved {moved:F2} m under a steady 1.5 m/s — something is " +
+                "putting her back where it wants her every frame. That is what 'there is no way to get " +
+                "off the boat' looks like from the inside.");
+        }
+
+        /// <summary>
+        /// 🔴 <b>THE PASSAGE IS FRAMED FOR A BOAT, NOT FOR DECK WORK.</b>
+        ///
+        /// <para>The arrival says <see cref="ControlMode.OnDeck"/>, which is true and load-bearing — it
+        /// is what keeps her drawn dry on planking. But the camera's zoom policy reads that mode as
+        /// <i>deck work</i> and frames 6.75 m of world height, which is half the LENGTH of the hull she
+        /// is standing on: the player's first two minutes of this game are spent inside a boat she
+        /// cannot see, watching a fairway she cannot read.</para>
+        ///
+        /// <para>The claim is the whole vessel and her water: the hull's own authored framing
+        /// (<c>BoatHullDef.CameraWorldHeightMeters</c>) while she is carried, and the walker's framing
+        /// the moment she is put ashore.</para>
+        /// </summary>
+        [UnityTest]
+        public IEnumerator ThePassageIsFramedForTheHullSheIsRidingOn_AndTheWalkerAfterwards()
+        {
+            var hull = UnityEditor.AssetDatabase.LoadAssetAtPath<BoatOwnerDef>(
+                StPetersArrivalOpening.SkipperPath).Boat;
+
+            ArrivalOpening opening = Begin(0f);
+            yield return Frames(30);
+
+            Assert.AreEqual(ArrivalOpening.Phase.Approaching, opening.Current,
+                "precondition: she must still be under way for this to be about the passage");
+            Assert.IsTrue(_camera.FramingKnown,
+                "the camera never committed a framing at all — nothing told it the control state");
+
+            Assert.AreEqual(CameraFraming.Boat, _camera.Framing,
+                $"the passage is framed as {_camera.Framing} — " +
+                $"{_camera.WorldHeightFor(_camera.Framing):F2} m of world height around a " +
+                $"{hull.LengthMeters:F1} m boat");
+
+            Assert.GreaterOrEqual(_camera.WorldHeightFor(_camera.Framing), hull.LengthMeters,
+                "she cannot see the whole boat she is standing on");
+
+            bool ashore = false;
+            yield return RunAshore(opening, r => ashore = r);
+            Assert.IsTrue(ashore, "she had to get ashore for the hand-back to mean anything — " +
+                          Stuck(opening));
+            yield return Frames(10);
+
+            Assert.AreEqual(CameraFraming.OnFoot, _camera.Framing,
+                $"she stepped ashore and the view stayed at {_camera.Framing} — the boat framing must " +
+                "be handed back with the boat");
+        }
+
+        /// <summary>
+        /// 🔴 <b>SHE COMES TO REST IN WEATHER, NOT ONLY IN A FLAT CALM.</b>
+        ///
+        /// <para>Every other test in this fixture runs her over a dead-still sea, and the hand-over is
+        /// gated on her VELOCITY falling under a threshold. That pairing is a blind spot with a shape:
+        /// a boat that never quite stops never ties up, never hands over, and leaves the player held on
+        /// a deck she cannot leave — the owner's second and first reports, from one cause. So run the
+        /// same passage with wind and a sea running and hold the machine to the same finish.</para>
+        /// </summary>
+        [UnityTest]
+        public IEnumerator SheStillTiesUpAndHandsOver_WithWindAndASeaRunning()
+        {
+            ArrivalOpening opening = Begin(new HeldWeather
+            {
+                Level = StPetersBuilder.TideMean,
+                Wind = new Vector2(-9f, 3f),       // a fresh onshore breeze, straight up the fairway
+                State = SeaState.Moderate,
+                SeaState01 = 0.5f,
+            });
+
+            bool ashore = false;
+            yield return RunAshore(opening, r => ashore = r);
+            Assert.IsTrue(ashore, "in weather the arrival never finished — " + Stuck(opening) + ".");
+        }
+
+        /// <summary>
+        /// 📏 <b>WHERE SHE ACTUALLY LIES, measured against the planks.</b> Not an assertion about what
+        /// is right — the berth geometry is the owner's and this lane does not move it — but a
+        /// measurement, logged, so "the boat drives over the dock" is answered in metres instead of in
+        /// opinions. It fails only if she comes to rest somewhere other than the berth she was sent to,
+        /// which would be a pilot defect rather than an authoring one.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator WhereSheLiesAgainstTheWharf_IsMeasuredAndReported()
+        {
+            var hull = UnityEditor.AssetDatabase.LoadAssetAtPath<BoatOwnerDef>(
+                StPetersArrivalOpening.SkipperPath).Boat;
+
+            ArrivalOpening opening = Begin(0f);
+            bool ashore = false;
+            yield return RunAshore(opening, r => ashore = r);
+            Assert.IsTrue(ashore, "she has to finish before there is a resting place to measure — " +
+                          Stuck(opening));
+
+            Rect deck = StPetersWharf.DeckFootprint();
+            Vector2 berth = StPetersArrivalOpening.Berth();
+            Transform boat = opening.Boat.transform;
+            Vector2 bow = (Vector2)boat.position + (Vector2)(boat.up * (hull.LengthMeters * 0.5f));
+            Vector2 stern = (Vector2)boat.position - (Vector2)(boat.up * (hull.LengthMeters * 0.5f));
+
+            Debug.Log($"[arrival/berth] deck x {deck.xMin}..{deck.xMax}, y {deck.yMin}..{deck.yMax}; " +
+                      $"berth {berth}; she lies centre {(Vector2)boat.position} heading " +
+                      $"{ArrivalPilot.HeadingOf(boat):F0}°, bow {bow}, stern {stern}. " +
+                      $"bow over the planks = {deck.Contains(bow)}; centre over the planks = " +
+                      $"{deck.Contains((Vector2)boat.position)}; the player is put down at " +
+                      $"{StPetersArrivalOpening.StepAshore()} (on the planks = " +
+                      $"{deck.Contains(StPetersArrivalOpening.StepAshore())}).");
+
+            Assert.Less(Vector2.Distance(boat.position, berth), 2f,
+                "she came to rest somewhere other than the berth she was sent to");
         }
     }
 }
