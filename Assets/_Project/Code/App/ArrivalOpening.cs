@@ -163,6 +163,7 @@ namespace HiddenHarbours.App
         private ArrivalDeck _deck;
         private Rigidbody2D _playerBody;
         private bool _playerWasSimulated = true;
+        private bool _holding;
         private int _leg;
         private float _closestSoFar = float.MaxValue;
         private float _mooredTimer;
@@ -545,12 +546,31 @@ namespace HiddenHarbours.App
                 _playerBody.simulated = false;
             }
 
+            _holding = true;
             EventBus.Publish(new ControlModeChanged(ControlMode.OnDeck));
             SeatThePlayer();
         }
 
+        /// <summary>
+        /// 🔴 <b>GIVE HER BACK — but only if this component is the one holding her.</b> The
+        /// <see cref="_holding"/> guard is not defensive tidiness, it is the difference between a
+        /// correct release and a stomped control mode on the standard play path. This component lives
+        /// in the StPeters scene until the region UNLOADS, and the region unloads at the exact moment
+        /// the player sails away — i.e. while she is <see cref="ControlMode.Aboard"/>. Without the
+        /// guard, <see cref="OnDisable"/> would publish <see cref="ControlMode.OnFoot"/> over the top
+        /// of that, and <c>PlayerSubmergeVisual</c> gates the waterline on the mode: she would read as
+        /// a wading body while standing on her own deck at sea.
+        ///
+        /// <para>The mid-arrival unload — the case <see cref="OnDisable"/> is actually here for — still
+        /// releases, because the flag is still set then. Everything this method touches is state only
+        /// <see cref="HoldThePlayer"/> creates, so "did I hold?" is exactly the right question: an
+        /// un-held release has nothing of its own to undo and no standing to speak about the mode.</para>
+        /// </summary>
         private void ReleaseThePlayer()
         {
+            if (!_holding) return;
+            _holding = false;
+
             if (_walk != null) _walk.enabled = true;
             if (_playerBody != null) _playerBody.simulated = _playerWasSimulated;
             _playerBody = null;

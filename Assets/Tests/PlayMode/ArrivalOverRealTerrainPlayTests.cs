@@ -64,6 +64,7 @@ namespace HiddenHarbours.Tests.PlayMode
         private GameObject _player;
         private TidalTerrain _terrain;
         private ArrivalOpening _opening;
+        private ModeProbe _probe;
 
         [SetUp]
         public void SetUp()
@@ -97,6 +98,10 @@ namespace HiddenHarbours.Tests.PlayMode
         [TearDown]
         public void TearDown()
         {
+            // Stop the probe HERE rather than at the end of the test, so a failing assert cannot leave a
+            // handler subscribed to a static bus for the rest of the run.
+            if (_probe != null) { _probe.Stop(); _probe = null; }
+
             if (_root != null) Object.DestroyImmediate(_root);
             GameServices.Save = null;
             GameServices.PlayerTransform = null;
@@ -251,6 +256,117 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.Greater(Vector2.Dot(opening.Boat.Velocity.normalized,
                                        (route[1] - route[0]).normalized), 0.9f,
                 "…and she must be making way ALONG the first leg, not across it");
+        }
+
+        // =============================================================================================
+        //  the release - and who is still entitled to speak for the control mode
+        // =============================================================================================
+
+        /// <summary>Every <see cref="ControlModeChanged"/> the bus carries, in order, until stopped.
+        ///
+        /// <para>⚠⚠ <b>It SUBSCRIBES and nothing else - never <c>EventBus.Clear&lt;T&gt;()</c>
+        /// for a clean slate first.</b> <c>Clear</c> nulls the whole channel, dropping the handlers that
+        /// live MonoBehaviours registered in their own <c>OnEnable</c> - which in a fixture like this
+        /// one means the components under test. That has already turned a fixture bug into what read
+        /// like a production bug once (#580). A fresh list and a fresh subscription is the whole
+        /// need.</para></summary>
+        private sealed class ModeProbe
+        {
+            public readonly List<ControlMode> Heard = new List<ControlMode>();
+            private System.Action<ControlModeChanged> _handler;
+
+            public ModeProbe() { _handler = e => Heard.Add(e.Mode); EventBus.Subscribe(_handler); }
+
+            public void Stop()
+            {
+                if (_handler == null) return;
+                EventBus.Unsubscribe(_handler);
+                _handler = null;
+            }
+
+            public string What => Heard.Count == 0 ? "nothing" : string.Join(", ", Heard);
+        }
+
+        /// <summary>
+        /// 🔴 <b>ONCE SHE IS ASHORE, THIS COMPONENT NO LONGER SPEAKS FOR THE CONTROL MODE.</b>
+        ///
+        /// <para>The arrival lives in the StPeters scene until the region UNLOADS - and the region
+        /// unloads at the moment the player <i>sails away</i>, which is to say while she is
+        /// <see cref="ControlMode.Aboard"/> her own boat. <c>OnDisable</c> calls the same release the
+        /// handover does, so unguarded it publishes <see cref="ControlMode.OnFoot"/> straight over the
+        /// top of the mode she is really in. <c>PlayerSubmergeVisual.DrivesSubmersion</c> is precisely
+        /// <c>mode == OnFoot</c>, so she would read as a wading body while standing on her own deck at
+        /// sea. That is every departure from St Peters, forever - the standard path, not an edge.</para>
+        ///
+        /// <para><b>⚠ Why the probe listens from before she is aboard.</b> The claim under test is
+        /// a NEGATIVE one - "nothing more was said" - and a negative assertion passes just as happily
+        /// when the probe is deaf as when the code is right. So it first has to hear the two words the
+        /// arrival is SUPPOSED to say (<c>OnDeck</c> when she is carried, <c>OnFoot</c> when she is put
+        /// ashore). By the time the silence is asserted, the microphone has been proven live.</para>
+        /// </summary>
+        [UnityTest]
+        public IEnumerator OnceSheIsAshore_DisablingTheArrivalSaysNothingMoreAboutTheControlMode()
+        {
+            _probe = new ModeProbe();                 // listening from before she is even aboard
+
+            ArrivalOpening opening = Begin(0f);
+            float deadline = Time.realtimeSinceStartup + TimeoutSeconds;
+            while (opening.Current != ArrivalOpening.Phase.HandedOver &&
+                   Time.realtimeSinceStartup < deadline) yield return null;
+
+            Assert.AreEqual(ArrivalOpening.Phase.HandedOver, opening.Current,
+                "she had to get ashore first - a release that never happened cannot happen twice");
+
+            // The arrival's OWN two words, which are correct - and which prove this probe can hear.
+            // Asserted as CONTAINS rather than as an exact sequence on purpose: a stray publish from
+            // some other fixture left resident in the shared player loop is not what is on trial here
+            // and should not red this test. What IS on trial is the DELTA across the disable, below.
+            CollectionAssert.Contains(_probe.Heard, ControlMode.OnDeck,
+                $"she was never announced as carried; the bus carried: {_probe.What}");
+            CollectionAssert.Contains(_probe.Heard, ControlMode.OnFoot,
+                $"she was never announced as ashore; the bus carried: {_probe.What}");
+
+            int saidByTheTimeSheWasAshore = _probe.Heard.Count;
+
+            opening.enabled = false;                  // what a region unload does to this component
+            yield return null;
+
+            Assert.AreEqual(saidByTheTimeSheWasAshore, _probe.Heard.Count,
+                $"disabling the finished arrival published {_probe.What} - one word too many. She is " +
+                "ashore and this component has already handed her back; on the real path she is " +
+                "ABOARD her own boat when St Peters unloads, so this publish would put her back on " +
+                "foot and flood her to the waist at sea.");
+        }
+
+        /// <summary>
+        /// ...and the other half of that guard - the half a careless fix breaks. An arrival cut short
+        /// <b>mid-passage</b> is the case <c>OnDisable</c> exists for at all: she is un-simulated and
+        /// her walking is switched off while she is carried, so if the region unloads under her and
+        /// nobody undoes it, she arrives in the next region a frozen ghost with no component left alive
+        /// to notice. Guarding the release must not cost this.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator DisabledMidPassage_SheStillGetsHerBodyAndHerFeetBack()
+        {
+            var body = _player.GetComponent<Rigidbody2D>();
+
+            ArrivalOpening opening = Begin(0f);
+            yield return new WaitForFixedUpdate();
+
+            Assert.IsFalse(body.simulated, "precondition: she is cargo while she is being carried");
+            Assert.AreNotEqual(ArrivalOpening.Phase.HandedOver, opening.Current,
+                "precondition: this is about being cut off UNDER WAY, so she must still be");
+
+            _probe = new ModeProbe();
+            opening.enabled = false;
+            yield return null;
+
+            Assert.IsTrue(body.simulated,
+                "the region unloaded under her mid-passage and left her out of the physics world - " +
+                "she would walk through the next region rather than in it");
+            CollectionAssert.Contains(_probe.Heard, ControlMode.OnFoot,
+                "a passage cut short must still put her back on her feet; the bus carried: " +
+                _probe.What);
         }
     }
 }
