@@ -19,6 +19,15 @@ MonoBehaviour:
   TidalPeriodHours: 12.4206
   LunarMonthDays: 28
   NeapAmplitudeFraction: 0.45
+  TideTable:
+    WindowDays: 2
+    SlopeStepHours: 0.05
+    ScanStepHours: 0.1
+    MaxTurns: 64
+  Telltale:
+    LimpBelowMetresPerSecond: 0.6
+    StiffAtMetresPerSecond: 10
+    ResponsePerSecond: 6
   BaseWindStrength: 4
   WindVariability: 5
   WeatherChangeHours: 6
@@ -82,7 +91,12 @@ MonoBehaviour:
     Bands: 0
   MarketDemandCove: 1
   MarketDemandNineMileCreek: 1.4
+  MarketDemandStPetersStore: 0.7
+  MarketPriceLevelCove: 1
+  MarketPriceLevelNineMileCreek: 1
+  MarketPriceLevelStPetersStore: 0.6
   MarketDailyRecovery: 0.5
+  FrontedLicenceFee: 20
   HelmThrottle:
     AheadNotches: 4
     AsternNotches: 2
@@ -168,6 +182,13 @@ MonoBehaviour:
     CompactScale: 0.55
     MinScale: 0.35
     MaxScale: 3
+  Strike:
+    PressStrikes: 1
+    PullBackStrikes: 1
+    YankMinSpeedMps: 6
+    YankMinMetres: 0.8
+    YankStallFraction01: 0.25
+  BaitSpentOnCatchOnly: 0
   StormRock:
     Enabled: 1
     StormStartSeaState01: 0.4
@@ -226,6 +247,10 @@ MonoBehaviour:
     CapEnvelopeThreshold: 0.62
     EnvelopeBandStrength: 0.35
     DefaultOn: 1
+  HullKeylineFlood: 0
+  FoliageSilhouette: 1
+  FoliageSilhouetteTint: {r: 0.94, g: 0.9, b: 0.82, a: 1}
+  FoliageSilhouetteStrength: 0.55
   DepthDrop:
     SinkSpeedPerKgMps: 2
     MinSinkSpeedMps: 0.5
