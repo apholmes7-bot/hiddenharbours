@@ -237,18 +237,23 @@ resolved through **more than one rig** in a scene gets no single hash — it is 
 `x-ambiguous` with each rig named, because one number there would be a lie. Neither region hits
 that case today; the guard is for when one does.
 
-### 8.2 Entity ids are minted from row identity
+### 8.2 Entity ids are minted from row identity — and carry no vocabulary
 
 Formerly `family_001` ordinals — the defect the #571 review warns about in §8.3 and the editor
 now depends on not having, since its write-back matches our rows by `id`. An id is now
-`{family}_{sha256(path|x|y)[:10]}`: the builder names each object and computes where it stands,
-and that pair is the row's identity. Measured on both regions — path alone repeats (94 objects
-are called `ShorePlants/Eelgrass`), path + position does not collide once.
+`sha256(path|x|y)[:12]`: the builder names each object and computes where it stands, and that
+pair is the row's identity. Measured on both regions — path alone repeats (94 objects are called
+`ShorePlants/Eelgrass`), path + position does not collide once.
 
-⚠ **The `family` prefix means a VOCABULARY ruling re-keys the entities it renames.** That is not
-a content change, but it is a real cost: publishing `interior`/`interiorprop` re-keyed 30 St
-Peters rows this round, and a ruling on `wharf` will re-key 24 at Nine Mile Creek. Both are
-one-time settling costs, cheapest now, before write-back edits exist to orphan.
+**No family prefix**, ruled 2026-08-20. A first draft read `{family}_{hash}`, matching the
+reference package's `character_001` shape — but that re-keyed a row whenever a *vocabulary*
+ruling renamed its family: 30 rows when the editor published `interior`/`interiorprop`, 24 more
+waiting on `wharf`. Stability is the whole point of the field, and the entity already carries
+`family` separately, so the id carries content identity alone.
+
+Twelve hex characters rather than ten. Width can only ever be widened by re-keying, and this
+ruling was the one moment re-keying was free; 48 bits leaves a far larger scene than either of
+these clear of the birthday bound instead of parking a forced re-key in a future region.
 
 ### 8.3 `terrain.waterLevelMeters` — and why one number needs three
 

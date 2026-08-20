@@ -379,7 +379,7 @@ def _entities(repo, scene, centre, origin_nw, cols, rows):
         parts = hierarchy.split("/")
         record = {
             # Key order follows the reference package's own entity records.
-            "id": _stable_id(family, hierarchy, x - centre[0], y - centre[1]),
+            "id": _stable_id(hierarchy, x - centre[0], y - centre[1]),
             "family": family,
             "group": parts[-2] if len(parts) > 1 else None,
             "rig": rig_global or rig_name,
@@ -528,21 +528,30 @@ def _rig_versions(entities, rigs):
     }
 
 
-def _stable_id(family, hierarchy, x, y):
-    """An id minted from the row's own identity, never from its position in the array.
+def _stable_id(hierarchy, x, y):
+    """An id minted from the row's own identity — content only, no vocabulary in it.
 
-    The editor matches its write-back rows to ours by ``id``, so an id that renumbered when an
-    unrelated entity was inserted would silently re-point every edit after the insertion. The
-    builder names each object and computes where it stands; that pair is the row identity, and it
-    is stable across re-exports of unchanged content. Measured on both regions: path alone repeats
-    (94 objects are called ``ShorePlants/Eelgrass``), path + position does not collide once.
+    The editor matches its write-back rows to ours by ``id``, so the id must not move for any
+    reason except the content moving. Two things it therefore is not:
 
-    The ``family`` prefix is cosmetic — it matches the reference package's own ``character_001``
-    shape — but it does mean a change to the FAMILY VOCABULARY re-keys the entities it renames.
-    That is a settling cost, not a content change; see the contract doc.
+    * **Not positional.** An ordinal renumbers when an unrelated entity is inserted ahead of it,
+      silently re-pointing every edit after the insertion (the #571 review's §8.3 warning).
+    * **Not family-prefixed.** An earlier draft read ``{family}_{hash}``, which matched the
+      reference package's ``character_001`` shape but re-keyed whenever a FAMILY VOCABULARY
+      ruling renamed a family — 30 rows when the editor published ``interior``/``interiorprop``,
+      24 more waiting on ``wharf``. Ruled out on 2026-08-20: stability is the whole point of the
+      field, and the entity already carries ``family`` as its own field.
+
+    What remains is the builder's own row identity: it names each object and computes where the
+    object stands. Measured on both regions — path alone repeats (94 objects are called
+    ``ShorePlants/Eelgrass``), path + position does not collide once.
+
+    Twelve hex characters, not ten. The width only ever costs a re-key to widen, and this ruling
+    is the one moment re-keying is free; 48 bits keeps a far larger scene than either of these
+    clear of the birthday bound instead of leaving a forced re-key waiting in a future region.
     """
     key = f"{hierarchy}|{x:.3f}|{y:.3f}"
-    return f"{family}_{hashlib.sha256(key.encode('utf-8')).hexdigest()[:10]}"
+    return hashlib.sha256(key.encode("utf-8")).hexdigest()[:12]
 
 
 def _call(rig_global):

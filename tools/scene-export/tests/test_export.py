@@ -516,6 +516,9 @@ class EditorAskTests(unittest.TestCase):
             # A positional id would count 001, 002, ... — the defect the editor asked us to avoid.
             self.assertFalse(any(i.endswith("_001") for i in ids),
                              f"{name} still mints ordinal ids")
+            # 48 bits: comfortably clear of the birthday bound at this scale, and widening it
+            # later would itself cost a re-key.
+            self.assertTrue(all(len(i) == 12 for i in ids), f"{name} id width drifted")
 
     def test_an_unrelated_insert_does_not_rekey_other_rows(self):
         """The whole point: their write-back matches our rows by id."""
@@ -527,8 +530,27 @@ class EditorAskTests(unittest.TestCase):
         for offset, entity in enumerate(doc["entities"]):
             del offset
             after[entity["x-path"]] = package._stable_id(
-                entity["family"], entity["x-path"], entity["pos"][0], entity["pos"][1])
+                entity["x-path"], entity["pos"][0], entity["pos"][1])
         self.assertEqual(before, after)
+
+    def test_an_id_carries_no_vocabulary(self):
+        """Ruled 2026-08-20: a family rename must never re-key a row.
+
+        The earlier `{family}_{hash}` form re-keyed 30 rows when the editor published
+        `interior`/`interiorprop`. The id is content identity alone; `family` is its own field.
+        """
+        for name, doc in self.docs.items():
+            families_used = {e["family"] for e in doc["entities"] if e.get("family")}
+            for entity in doc["entities"]:
+                self.assertRegex(entity["id"], r"^[0-9a-f]{12}$", f"{name} {entity['id']}")
+                for family in families_used:
+                    if len(family) > 3:
+                        self.assertNotIn(family.lower(), entity["id"].lower(), name)
+            # Re-minting with a different family must not move the id.
+            sample = doc["entities"][0]
+            self.assertEqual(
+                sample["id"],
+                package._stable_id(sample["x-path"], sample["pos"][0], sample["pos"][1]))
 
     def test_the_water_level_comes_from_the_region_def(self):
         repo = Repo(REPO)
