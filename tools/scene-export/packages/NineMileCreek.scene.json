@@ -1,7 +1,7 @@
 {
   "schema": "hiddenharbours.scene/1",
   "generatedBy": "tools/scene-export/hh_scene_export.py",
-  "generatedAt": "2026-08-20T20:35:54Z",
+  "generatedAt": "2026-08-20T22:13:10Z",
   "region": {
     "id": "region.nine_mile_creek",
     "sceneName": "NineMileCreek",
@@ -23717,7 +23717,7 @@
   },
   "x-cliffLinesNote": "Empty: cliff lines are an authoring artefact of the editor. The repo's cliffs are placed CliffWallSurface components and ship as entities.",
   "x-provenance": {
-    "generatedAt": "2026-08-20T20:35:54Z",
+    "generatedAt": "2026-08-20T22:13:10Z",
     "historyIsComplete": true,
     "sceneFile": "Assets/_Project/Scenes/NineMileCreek.unity",
     "sceneFileSha256": "26a2db1dd58f4ee77d072264eb03c86af53e0894068cd483d342f6641b06f35d",
@@ -23726,11 +23726,12 @@
     "sceneLastBuiltSubject": "chore(scenes): bank the owner's two builds — St Peters learns its day, the creek opens its doors (#518)",
     "sceneWorkingTreeDirty": false,
     "builderDrift": {
-      "builderCommitsSinceScene": 25,
-      "measuredTo": "a006a7443c14b3f8912bf783a232e08830596d75",
-      "measuredToDate": "2026-08-20T17:35:54-03:00",
+      "builderCommitsSinceScene": 26,
+      "measuredTo": "7d89e7d35018596f8a5e751cec55d4c6ebf6080c",
+      "measuredToDate": "2026-08-20T19:13:10-03:00",
       "exact": true,
       "builderCommits": [
+        "7d89e7d3 docs(world): the pumps DO fill a boat — correcting a note that went stale six minutes before it merged (#627)",
         "a006a744 feat(world): the island gets its fuel — two hoses on the wharf, a forecourt on Route 91 (#626)",
         "77171687 feat(world): the dooryards stand up — a fence on the mow line, aimed by a table the bake measured (#608)",
         "65bc2a92 feat(world): the quay gets its walls — the fisher stops walking off the Nine Mile Creek wharf (#609)",
