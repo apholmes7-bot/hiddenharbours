@@ -175,19 +175,27 @@ class Repo:
             "minElevation": U.as_float(data.get("_minElevation")),
             "maxElevation": U.as_float(data.get("_maxElevation")),
             "texture": tex_rel,
-            "textureBytesPresent": False,
-            "textureLfsOidSha256": None,
+            "textureSha256": None,
         }
         if tex_rel and self.exists(tex_rel):
-            with open(self.abs(tex_rel), "rb") as fh:
-                head = fh.read(256)
+            out["textureSha256"] = self._content_sha(tex_rel)
+        return out
+
+    def _content_sha(self, rel):
+        """sha256 of a file's content — **from the LFS pointer's oid when that is what is on disk**.
+
+        A Git LFS pointer's ``oid sha256`` IS the sha256 of the object it stands for, so a
+        pointer checkout and a full checkout yield the same hash under the same key. Reporting
+        which of the two was on disk would make the export differ between environments for no
+        gain: it is a fact about the machine, not about the harbour, and it broke ``--check``
+        on a full-LFS clone before this.
+        """
+        with open(self.abs(rel), "rb") as handle:
+            head = handle.read(256)
             if head.startswith(b"version https://git-lfs"):
                 found = _LFS_OID.search(head.decode("utf-8", "replace"))
-                out["textureLfsOidSha256"] = found.group(1) if found else None
-            else:
-                out["textureBytesPresent"] = True
-                out["textureSha256"] = sha256_bytes(open(self.abs(tex_rel), "rb").read())
-        return out
+                return found.group(1) if found else None
+            return sha256_bytes(head + handle.read())
 
     # --- rigs --------------------------------------------------------------------------------
 

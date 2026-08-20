@@ -11,6 +11,7 @@ import datetime
 import json
 import math
 import os
+import tempfile
 import subprocess
 import sys
 import unittest
@@ -19,6 +20,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 TOOL = os.path.dirname(HERE)
 REPO = os.path.dirname(os.path.dirname(TOOL))
 sys.path.insert(0, TOOL)
+
+REFERENCE = "docs/tools/reference/sample-scene.json"
 
 from hhexport import package, unityyaml as U  # noqa: E402
 from hhexport.repo import Repo, sha256_lf  # noqa: E402
@@ -121,10 +124,10 @@ class PackageTests(unittest.TestCase):
         """Review §6.2: the editor's own table had Nine Mile Creek at the C# field default."""
         creek = self.documents["NineMileCreek"]
         self.assertEqual(creek["region"]["worldSizeMeters"], [760, 560])
-        self.assertEqual(creek["frame"]["originNW"], [-380, 280])
+        self.assertEqual(creek["terrain"]["originNW"], [-380, 280])
         peters = self.documents["StPeters"]
         self.assertEqual(peters["region"]["worldSizeMeters"], [760, 520])
-        self.assertEqual(peters["frame"]["originNW"], [-380, 260])
+        self.assertEqual(peters["terrain"]["originNW"], [-380, 260])
 
     def test_every_rle_covers_the_grid_exactly(self):
         """Review §5 Q1 / §8.2: a short stream is indistinguishable from a truncated one."""
@@ -167,18 +170,41 @@ class PackageTests(unittest.TestCase):
                 self.assertLess(abs(px - cell["w"] * ux), 0.01, f"{name} {entity['id']}")
                 self.assertLess(abs(py - cell["h"] * (1.0 - uy)), 0.01, f"{name} {entity['id']}")
 
-    def test_the_envelope_is_the_settled_one(self):
-        """Contract §2 #14: the key is `schema`, and the top level is a fixed set."""
-        expected = ["schema", "generatedBy", "generatedAt", "region", "frame", "terrain",
-                    "entities", "cliffLines", "paths", "collision", "stats"]
+    def test_the_shape_matches_the_reference_package_block_for_block(self):
+        """Against the editor's own `sample-scene.json`, committed under docs/tools/reference/.
+
+        Stronger than a hand-written key list, and the reason that file was worth committing:
+        the reference is the contract, so a drift in either direction shows up here. Entities
+        are a SUBSET check — `call`, `facing`, `facingIndex` and `gameplaySidecar` are
+        unknowable from a baked sheet — but the keys that are present must be the format's, in
+        the format's order.
+        """
+        with open(os.path.join(REPO, REFERENCE), encoding="utf-8") as handle:
+            reference = json.load(handle)
+
+        def named(mapping):
+            return [k for k in mapping if not k.startswith("x-")]
+
         for name, document in self.documents.items():
-            self.assertEqual(document["schema"], package.SCHEMA, name)
+            self.assertEqual(named(document), named(reference), name)
+            for block in ("region", "frame", "terrain"):
+                self.assertEqual(named(document[block]), named(reference[block]),
+                                 f"{name}.{block}")
+            for layer in reference["terrain"]["layers"]:
+                self.assertEqual(named(document["terrain"]["layers"][layer]),
+                                 named(reference["terrain"]["layers"][layer]),
+                                 f"{name}.terrain.layers.{layer}")
+            expected = named(reference["entities"][0])
+            for entity in document["entities"]:
+                keys = named(entity)
+                self.assertEqual(keys, [k for k in expected if k in keys],
+                                 f"{name} {entity['id']} is not the format's order")
+                self.assertTrue(set(keys) <= set(expected), f"{name} {entity['id']}")
+            for lane in document["paths"]:
+                self.assertEqual(named(lane), named(reference["paths"][0]),
+                                 f"{name} {lane['id']}")
+            self.assertEqual(document["schema"], reference["schema"], name)
             self.assertNotIn("format", document, f"{name} still uses the pre-ruling key")
-            keys = [k for k in document if not k.startswith("x-")]
-            self.assertEqual(keys, expected, name)
-            self.assertEqual(sorted(document["region"]),
-                             sorted(["id", "sceneName", "worldCenter", "worldSizeMeters",
-                                     "x-displayName", "x-source"]), name)
 
     def test_pos_is_metres_from_the_region_centre(self):
         """Contract §2 #3: `pos: [x, y]`, metres, origin = region centre — and the grid agrees."""
@@ -213,18 +239,12 @@ class PackageTests(unittest.TestCase):
             self.assertIn("row 0 = north edge", terrain["note"], name)
             for layer_name, layer in terrain["layers"].items():
                 self.assertNotIn("legend", layer, f"{name}.{layer_name}")
-                self.assertEqual(
-                    [k for k in layer if not k.startswith("x-")],
-                    ["code", "order", "label", "rig", "cell", "layerOpts", "rle"],
-                    f"{name}.{layer_name}")
 
-    def test_paths_carry_the_settled_shape(self):
+    def test_a_polyline_lane_needs_no_smoothing(self):
+        """Our lanes are straight runs through explicit bends, so `polyline` == `nodes`."""
         for name, document in self.documents.items():
             for lane in document["paths"]:
-                self.assertEqual(
-                    [k for k in lane if not k.startswith("x-")],
-                    ["id", "layer", "material", "widthMeters", "closed", "curve", "nodes",
-                     "polyline"], f"{name} {lane['id']}")
+                self.assertEqual(lane["curve"]["kind"], "polyline", f"{name} {lane['id']}")
                 self.assertEqual(lane["nodes"], lane["polyline"], f"{name} {lane['id']}")
 
     def test_the_ppu_is_the_sprite_grid_and_never_the_water_shader_grid(self):
@@ -237,7 +257,7 @@ class PackageTests(unittest.TestCase):
         the water grid has no path into a placement.
         """
         for name, document in self.documents.items():
-            self.assertEqual(document["frame"]["ppu"], 32, name)
+            self.assertEqual(document["frame"]["scale_px_per_m"], 32, name)
             for entity in document["entities"]:
                 if "x-ppu" in entity:
                     self.assertEqual(entity["x-ppu"], 32, f"{name} {entity['id']}")
@@ -304,7 +324,44 @@ class PackageTests(unittest.TestCase):
         for document in self.documents.values():
             height = document["terrain"]["x-heightMap"]
             self.assertIsNotNone(height)
-            self.assertTrue(height["textureLfsOidSha256"] or height.get("textureSha256"))
+            self.assertIsNotNone(height["textureSha256"])
+
+
+class PortabilityTests(unittest.TestCase):
+    """Three ways the output stopped being the same on a Windows full-LFS checkout."""
+
+    def test_the_height_map_hash_does_not_depend_on_whether_lfs_is_pulled(self):
+        """An LFS pointer's oid IS the content sha256, so one key serves both checkouts."""
+        repo = Repo(REPO)
+        for _name, _scene, height_name in hh_scene_export.REGIONS:
+            height = repo.painted_height(height_name)
+            self.assertIsNotNone(height["textureSha256"], height_name)
+            self.assertRegex(height["textureSha256"], r"^[0-9a-f]{64}$", height_name)
+            self.assertNotIn("textureBytesPresent", height,
+                             "an environment fact must not reach the compared content")
+            self.assertNotIn("textureLfsOidSha256", height,
+                             "one hash, one key — see PortabilityTests' docstring")
+
+    def test_git_output_is_decoded_as_utf8_not_the_platform_locale(self):
+        """cp1252 turns every em-dash in a commit subject into mojibake in the package."""
+        repo = Repo(REPO)
+        for name, scene, height in hh_scene_export.REGIONS:
+            text = package.dumps(hh_scene_export.export_region(repo, name, scene, height))
+            self.assertNotIn("\u00e2\u20ac\u201d", text, f"{name} carries cp1252 mojibake")
+            self.assertIn("\u2014", text, f"{name} should carry real em-dashes")
+
+    def test_check_compares_content_not_line_endings(self):
+        """A checkout with autocrlf rewrites the committed packages; --check must not care."""
+        with tempfile.TemporaryDirectory() as out:
+            self.assertEqual(hh_scene_export.main(["--out", out]), 0)
+            for filename in os.listdir(out):
+                target = os.path.join(out, filename)
+                with open(target, "rb") as handle:
+                    body = handle.read()
+                with open(target, "wb") as handle:
+                    handle.write(body.replace(b"\n", b"\r\n"))
+            self.assertEqual(hh_scene_export.main(["--check", "--out", out]), 0,
+                             "--check failed on a CRLF working tree")
 
 
 class DeterminismTests(unittest.TestCase):

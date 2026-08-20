@@ -12,7 +12,7 @@ a separate, gated spike (`docs/tools/scene-editor-review.md` §9) and nothing he
 ```bash
 python3 tools/scene-export/hh_scene_export.py                 # writes tools/scene-export/packages/
 python3 tools/scene-export/hh_scene_export.py --check         # fails if the committed packages are stale
-python3 -m unittest discover -s tools/scene-export/tests -v   # 30 tests
+python3 -m unittest discover -s tools/scene-export/tests -v   # 33 tests
 ```
 
 No arguments needed and no Unity: python3 (3.8+), standard library only. It runs in a bare
@@ -58,7 +58,8 @@ hhexport/scene.py           hierarchy, world transforms, the scene's own orderin
 hhexport/package.py         the hiddenharbours.scene/1 emitter
 hhexport/provenance.py      what vintage of the world a package is a picture of
 packages/                   the committed output (regenerate with the command above)
-tests/                      30 tests: parser, rig pinning, the settled contract, determinism
+tests/                      33 tests: parser, rig pinning, the contract compared block-for-block
+                            against docs/tools/reference/sample-scene.json, portability, determinism
 ```
 
 The YAML reader is hand-written rather than PyYAML on purpose. Unity serialises `int[]` as a

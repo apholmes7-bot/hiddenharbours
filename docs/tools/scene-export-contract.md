@@ -3,9 +3,11 @@
 **What this is.** The scene editor's package format. It began as a reconstruction from
 [`scene-editor-review.md`](scene-editor-review.md) (#571, corrected by #576) with seventeen
 fields the review named but never specified; **lead-architect settled all seventeen on PR #588**
-from the editor's own reference package (`sample-scene.json` + the standalone editor HTML,
-`generatedAt` `2026-08-19T01:35:41Z`). §2 below is that ruling — no longer a list of guesses but
-a list of citations. The exporter at `tools/scene-export/` implements exactly this.
+from the editor's own reference package. That package's `sample-scene.json` is now committed at
+[`reference/sample-scene.json`](reference/sample-scene.json), so every row of §2 is checkable
+against bytes in this repo rather than quoted second-hand — and the exporter's tests compare
+their output to it block for block. The exporter at `tools/scene-export/` implements exactly
+this.
 
 **Lane:** tools-editor. **Direction:** outbound only. Import stays gated (review §9).
 
@@ -102,10 +104,38 @@ no key for), `x-cellAt` / `x-inBounds`, `x-name` / `x-path` (the scene hierarchy
 `x-pivotSource`, `x-declaredBy` (which sidecar linked a sheet to its rig), `x-readOnly` /
 `x-derived` / `x-authorable`, `x-heightMap`, `x-familyIsSpriteStem`.
 
-## 5. Still owed
+## 5. What reading the bytes added
 
-The reference `sample-scene.json` (31 KB) is worth committing under `docs/tools/reference/` as
-the canonical bytes — lead-architect's suggestion, and it would end this class of question for
-good. **It is not in this PR because this lane has never held the file**; the coordinator does.
-Every ruling in §2 is quoted from it second-hand, which is why each row names the bytes it came
-from.
+The reference landed in `66f03140` and reading it directly corrected one thing the relay had not
+covered and confirmed everything else:
+
+- **`cellMeters` and `originNW` belong to `terrain`, not `frame`.** The ruling gave the top-level
+  envelope and `frame.axes`, so the two were plausible in either block and the exporter had them
+  in the wrong one. `frame` is `{units, scale_px_per_m, axes, camera, sort, pivots}` — note
+  `scale_px_per_m`, not `ppu`.
+- **Entities carry `group` and `flipX`**, and the cliff layer alone carries a `pieces` block
+  (`{note, legend, rle}`, numeric keys, covering the grid). `paths[]` ends with `tiles`, a stamp
+  count.
+- **The reference itself violates the coverage rule.** Its road RLE sums to 18,879 of 19,200 —
+  exactly the defect review §8.2 reported. So `sum(runs) == cols × rows` is a requirement *on
+  us*, not a description of the sample; this exporter satisfies it and a test enforces it.
+
+Four entity fields the format names are absent here for stated reasons: `call` and `opts` (§0),
+`facing`/`facingIndex` (the editor's own view state), and `gameplaySidecar` (a rig gameplay
+measurement — no rig is executed by this exporter).
+
+## 6. Portability
+
+The output is a pure function of the repo, and that has to hold on any machine, not just the one
+that wrote it. A second run on a Windows full-LFS checkout found three ways it did not:
+
+- **The height-map hash.** A Git LFS pointer's `oid sha256` **is** the sha256 of the content, so
+  a pointer checkout and a full checkout agree — but only if both report it under one key. The
+  document carries `textureSha256` from whichever is on disk, and no longer says which; that was
+  a fact about the machine, not about the harbour.
+- **Subprocess decoding.** `text=True` alone decodes in the platform locale, and every em-dash in
+  a commit subject came back mojibake'd through cp1252. The git calls pass `encoding="utf-8"`.
+- **Line endings.** A checkout with autocrlf rewrites the committed packages, and `--check` was
+  comparing raw bytes. It now reads with universal newlines — what it means is "does this commit
+  still produce this document", not "is your working tree LF" — and `.gitattributes` pins the
+  packages to LF as well.

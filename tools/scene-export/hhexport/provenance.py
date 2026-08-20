@@ -28,8 +28,12 @@ BUILDER_GLOBS = {
 
 def _git(repo_root, *args):
     try:
+        # encoding is explicit: `text=True` alone decodes in the platform locale, and a commit
+        # subject full of em-dashes comes back mojibake'd through cp1252 on Windows — which then
+        # lands in the package and makes the bytes machine-dependent.
         result = subprocess.run(
-            ("git",) + args, cwd=repo_root, capture_output=True, text=True, check=False,
+            ("git",) + args, cwd=repo_root, capture_output=True, check=False,
+            text=True, encoding="utf-8", errors="replace",
         )
     except OSError:
         return None

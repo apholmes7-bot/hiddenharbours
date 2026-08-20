@@ -85,7 +85,11 @@ def main(argv=None):
         if args.check:
             existing = None
             if os.path.exists(target):
-                with open(target, "r", encoding="utf-8", newline="") as fh:
+                # Universal newlines on the READ side: a checkout with autocrlf on rewrites the
+                # committed packages to CRLF, and comparing raw bytes would then fail on line
+                # endings before it ever considered the content. What --check means is "does
+                # this commit still produce this document", not "is your working tree LF".
+                with open(target, "r", encoding="utf-8") as fh:
                     existing = fh.read()
             if existing != text:
                 failures.append(filename)

@@ -180,3 +180,11 @@ LightingData.asset     binary
 # *.asset unity-yaml TEXT rule mis-serves them (56 MB blobs, ~78 MB per re-bake).
 # Path rule wins over the generic one. Ruled by lead-architect on PR #438.
 Assets/_Project/Art/Terrain/Derived/*.asset filter=lfs diff=lfs merge=lfs -text
+
+# The scene-export packages are generated documents whose bytes are compared by
+# `hh_scene_export.py --check`. A checkout with autocrlf on would rewrite them to CRLF, and a
+# tool that regenerates them writes LF — so pin the working-tree form. The gate reads with
+# universal newlines regardless (belt and braces); this keeps the files themselves LF for
+# everyone, so a diff between two machines shows content and not line endings.
+tools/scene-export/packages/** text eol=lf
+docs/tools/reference/*.json    text eol=lf

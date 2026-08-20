@@ -73,14 +73,14 @@ def build_document(repo, region, scene, provenance):
             "x-source": region["asset"],
         },
         "frame": {
-            "ppu": ASSETS_PPU,
-            "cellMeters": 1,
-            "originNW": [_num(origin_nw[0]), _num(origin_nw[1])],
+            "units": "metres",
+            "scale_px_per_m": ASSETS_PPU,
             "axes": "+x east, +y north, origin = region centre",
-            "camera": "3/4 top-down, ADR-0006/0022. Prose for the reader; never parse it.",
+            "camera": "ADR-0006/0022 \u2014 \u00be from the south, elev 40\u00b0, orthographic",
             "sort": "painter, descending world y (north draws first); sortBias breaks ties",
+            "pivots": "cell pivot is top-left origin; unityPivot is normalised bottom-left",
         },
-        "terrain": _terrain(cols, rows, provenance),
+        "terrain": _terrain(cols, rows, origin_nw, provenance),
         "entities": entities,
         "cliffLines": [],
         "paths": paths,
@@ -109,7 +109,7 @@ def build_document(repo, region, scene, provenance):
 
 # --- terrain ------------------------------------------------------------------------------
 
-def _terrain(cols, rows, provenance):
+def _terrain(cols, rows, origin_nw, provenance):
     """The grid, one top-level legend, and the three layers.
 
     Shape follows the reference package: a single ``terrain.legend`` whose prefixed keys (``g1``,
@@ -133,9 +133,19 @@ def _terrain(cols, rows, provenance):
             "x-authorable": False,
             "x-unavailable": _LAYER_UNAVAILABLE[name],
         }
+        if name == "cliff":
+            # The reference's cliff layer carries this and the others do not; ours is empty for
+            # the same reason its rle is — nothing is painted — and covers the grid all the same.
+            layers[name]["pieces"] = {
+                "note": "per-cell ledge piece laid by cliff lines; 0 = autotile from neighbours",
+                "legend": {},
+                "rle": [[0, total]],
+            }
     return {
+        "cellMeters": 1,
         "cols": cols,
         "rows": rows,
+        "originNW": [_num(origin_nw[0]), _num(origin_nw[1])],
         "note": "row 0 = north edge. 0 = no tile (water — never baked, the shader owns it). "
                 "Runs are [value, count]; sum(count) == cols * rows exactly.",
         "legend": {},
@@ -209,25 +219,30 @@ def _entities(repo, scene, centre, origin_nw, cols, rows):
                 sheet, {"placements": 0, "sidecar": evidence, "candidates": candidates})
             note["placements"] += 1
 
+        hierarchy = scene.hierarchy_path(game_object_id)
+        parts = hierarchy.split("/")
         record = {
+            # Key order follows the reference package's own entity records.
             "id": f"{family}_{index:03d}",
             "family": family,
-            "pos": [_num(x - centre[0]), _num(y - centre[1])],
+            "group": parts[-2] if len(parts) > 1 else None,
             "rig": rig_name,
             "rigSource": rig_source,
-            "cell": _cell(entry),
+            "pos": [_num(x - centre[0]), _num(y - centre[1])],
+            "flipX": U.as_int(renderer.data.get("m_FlipX"), 0) != 0,
             "sortBias": _sort_bias(y_sort, decor_base),
+            "cell": _cell(entry),
             "x-name": name,
-            "x-path": scene.hierarchy_path(game_object_id),
+            "x-path": hierarchy,
             "x-cellAt": [column, row],
             "x-inBounds": in_bounds,
             "x-active": active,
             "x-rigSha256": rigs[rig_source]["sha256"] if rig_source else None,
             "x-familyIsSpriteStem": True,
-            "sprite": {
+            "x-sprite": {
                 "sheet": sheet,
                 "name": entry["name"] if entry else None,
-                "x-internalId": internal_id,
+                "internalId": internal_id,
             },
         }
         if entry:
@@ -245,10 +260,10 @@ def _entities(repo, scene, centre, origin_nw, cols, rows):
             record["x-rotationDegrees"] = _num(rotation)
         if scale_x != 1.0 or scale_y != 1.0:
             record["x-scale"] = [_num(scale_x), _num(scale_y)]
-        flip_x = U.as_int(renderer.data.get("m_FlipX"), 0) != 0
-        flip_y = U.as_int(renderer.data.get("m_FlipY"), 0) != 0
-        if flip_x or flip_y:
-            record["x-flip"] = [flip_x, flip_y]
+        if U.as_int(renderer.data.get("m_FlipY"), 0) != 0:
+            # The format names flipX only; a vertical flip has nowhere to go, so it is stated
+            # rather than dropped silently.
+            record["x-flipY"] = True
         entities.append(record)
 
     notes = {
@@ -265,6 +280,10 @@ def _entities(repo, scene, centre, origin_nw, cols, rows):
                               "ids are the SPRITE NAME STEM instead, because a baked sheet does "
                               "not record which palette family drew it. Every entity flags this "
                               "with x-familyIsSpriteStem so nothing mistakes one for the other.",
+        "x-absentEntityFields": "facing, facingIndex and gameplaySidecar are named by the format "
+                                "and absent here. The first two are the editor's own view "
+                                "state; the third is a rig gameplay measurement. A baked sprite "
+                                "records none of them, and no rig is executed by this exporter.",
         "x-noCallRecord": "call/opts are absent by ruling: the editor writes them out of its own "
                           "live state and no renderer reads one back. The cost is that this "
                           "document can never seed a round-trip INTO the editor, which needs "
@@ -328,7 +347,8 @@ def _paths(repo, scene):
 
     ``curve.kind`` is ``polyline``, not the editor's ``catmull-rom``: these segments are straight
     runs through explicit bend points, so ``polyline`` equals ``nodes`` exactly and no smoothing
-    is implied that the villagers do not walk.
+    is implied that the villagers do not walk. ``tiles`` is 0 — it is a stamp count, and a lane
+    paints nothing.
     """
     paths = []
     for component in scene.behaviours.values():
@@ -361,6 +381,7 @@ def _paths(repo, scene):
                 "curve": {"kind": "polyline", "uniform": True, "tangentScale": 0},
                 "nodes": nodes,
                 "polyline": nodes,
+                "tiles": 0,
                 "x-readOnly": True,
                 "x-derived": "RoutineLanes — the region builder writes it; villagers read it.",
                 "x-layerNote": "null: a walkable lane is not one of the three painted terrain "
