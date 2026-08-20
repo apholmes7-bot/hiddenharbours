@@ -182,6 +182,49 @@ Refusal is all-or-nothing. A `MANIFEST.json` naming sha256s of packages we decli
 would be a third state, worse than either honest one.
 
 
+### 6.2 Orientation: the index is a fact, the bearing is not
+
+`scene-writeback-contract.md` §8.1 asked for an explicit facing field, since the index was only
+encoded in `x-sprite.name`'s `_d<n>` and *"a parsed suffix is a convention two programs have to
+keep agreeing about, and a field is not"*. Three things decided the shape, and two came from the
+reference bytes rather than from the ask:
+
+- **`facing` and `facingIndex` are different types.** The reference package carries both:
+  `facing` is a compass name (`"S"`, `"SE"`) and `facingIndex` is the baked step (`3`, `4`).
+  Putting the integer in `facing` would be a confidently wrong value in a field a reader expects
+  to hold a string, so the index goes only where the index belongs, in the reference's own slot
+  between `pos` and `flipX`.
+- **`facing` ships null on purpose.** Deriving a bearing from a step is the one piece of
+  arithmetic this repo has already got wrong: `BuildingFacing`'s remarks record that cell `i` is
+  baked at `dir = (facings − i) mod facings` — bearings *decrease* as the index rises — and the
+  inverted form put the schoolhouse door ~92° off the green it faces, with a green test, because
+  the test was the algebraic inverse of the implementation. The write-back contract's rule is
+  that nothing computes a facing from an angle. This export computes nothing.
+- **The count is read, never assumed.** §2 is emphatic, and `IsoPropSheetBaker` already fails a
+  bake when a rig's measured `NativeDirs` disagrees with its contract's `Facings`. So `x-facings`
+  appears only where a sidecar declares one, with `x-facingsSource` naming the file. The
+  contract's classes then fall out of the data instead of a hardcoded list: baked buildings
+  declare 8; foliage and shore plants declare none, because those rigs publish variants and
+  seasons rather than directions; and the legacy single sprites declare none either — which is
+  exactly the per-entity test §2 describes, rather than a family-name list living in code.
+
+Nine character entities carry an index with no machine-readable count: §2 declares characters as
+8, but in prose (*"8 at 45°, the ADR-0006 recipe"*) rather than in a field this reader can follow.
+They are exported with the index and no count rather than a plausible one.
+
+### 6.3 A road layer names every surface it will not solve
+
+`read_ways` had always built a list of the surfaces it skips — the computed truck-park spur, the
+per-lot town walks — and `_road_grid` **discarded it**, so no package ever carried one. That was
+a claim made in this PR before it was true in the bytes; it is true now, as `layers.road.x-omitted`.
+
+The gap it hid got larger with #626: the paved **rectangles** (`new Pad(…)` — the winch apron,
+the buyers' gravel, the truck park and the new Route 91 forecourt) were not read at all. Every one
+takes a computed area rather than a declared one, because each is derived from geometry authored
+elsewhere, so none can be rasterised here without re-deriving somebody else's rectangle. They are
+named instead. A road layer that silently omits four paved areas reads as a region that has none.
+
+
 ## 7. Making the package renderable
 
 The editor draws **only** by calling rigs — it loads no images — so an entity with no rig gives

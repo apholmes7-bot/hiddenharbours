@@ -18,6 +18,7 @@ Two rulings shape the whole file:
 import json
 import math
 import hashlib
+import re
 import os
 
 from . import families, heightmap, roads, unityyaml as U
@@ -129,7 +130,7 @@ def _terrain(repo, region, cols, rows, origin_nw, provenance):
     total = cols * rows
     legend, painted, notes = {}, {}, {}
 
-    road_grid, road_note = _road_grid(repo, region, cols, rows, origin_nw)
+    road_grid, road_note, road_omitted = _road_grid(repo, region, cols, rows, origin_nw)
     if road_grid is not None:
         painted["road"] = road_grid
     notes["road"] = road_note
@@ -172,6 +173,9 @@ def _terrain(repo, region, cols, rows, origin_nw, provenance):
         layer["x-authorable"] = False
         if grid is None:
             layer["x-unavailable"] = notes.get(name) or _LAYER_UNAVAILABLE[name]
+        if name == "road" and road_omitted:
+            # Named, not solved for. Each entry says what it is and why this reader leaves it.
+            layer["x-omitted"] = road_omitted
         if name == "cliff":
             layer["pieces"] = {
                 "note": "per-cell ledge piece laid by cliff lines; 0 = autotile from neighbours",
@@ -228,18 +232,23 @@ _LAYER_DERIVED = {
 
 
 def _road_grid(repo, region, cols, rows, origin_nw):
-    """Rasterised ways for a region that declares a road table, else ``(None, why)``."""
+    """``(grid, why, omitted)`` — rasterised ways, plus every surface this reader will not solve.
+
+    ``omitted`` is returned rather than dropped because a road layer that quietly leaves out the
+    truck-park spur, the town walks and all four paved pads reads as "the region has no such
+    thing". It does; they are simply computed elsewhere, and the package should say so.
+    """
     scene_name = region["sceneName"]
     table = f"Assets/_Project/Code/App/Editor/{scene_name}Roads.cs"
     geometry = f"Assets/_Project/Code/App/Editor/{scene_name}Mainland.cs"
     if not repo.exists(table):
         return None, (f"{scene_name} declares no road table — this region has no roads to "
-                      "rasterise, which is a fact about the region and not a gap in the export.")
+                      "rasterise, which is a fact about the region and not a gap in the export."), []
     ways, omitted = roads.read_ways(repo, table, geometry)
     if not ways:
-        return None, f"{scene_name}'s road table declares no way this reader can follow"
+        return None, f"{scene_name}'s road table declares no way this reader can follow", omitted
     grid = roads.rasterise(ways, cols, rows, origin_nw)
-    return grid, None
+    return grid, None, omitted
 
 
 def _layer_kit(repo, layer):
@@ -386,6 +395,20 @@ def _entities(repo, scene, centre, origin_nw, cols, rows):
             "rigSource": rig_source,
             "call": _call(rig_global),
             "pos": [_num(x - centre[0]), _num(y - centre[1])],
+            # The reference package carries BOTH, and they are different types: `facing` is a
+            # compass name ("S", "SE") and `facingIndex` is the baked step. An integer in
+            # `facing` would be a confidently wrong value in a field a reader expects to be a
+            # string, so the index goes only where the index belongs.
+            #
+            # `facing` stays null deliberately. Turning a step into a bearing is the one piece of
+            # arithmetic this repo has already got wrong: BuildingFacing's remarks record that
+            # cell `i` is baked at `dir = (facings - i) mod facings` — bearings DECREASE as the
+            # index rises — and the inverted version put the schoolhouse door ~92 degrees off the
+            # green, with a passing test, because the test was the algebraic inverse of the
+            # implementation. The write-back contract's answer is that nothing derives a facing
+            # from an angle; the index is the fact, and a bearing is read back from baked anchors.
+            "facing": None,
+            "facingIndex": _facing_index(entry["name"] if entry else None),
             "flipX": U.as_int(renderer.data.get("m_FlipX"), 0) != 0,
             "sortBias": _sort_bias(y_sort, decor_base),
             "cell": _cell(entry),
@@ -411,6 +434,17 @@ def _entities(repo, scene, centre, origin_nw, cols, rows):
         if wire_family is None:
             record["x-familyCandidate"] = candidate
             record["x-spriteStem"] = stem
+        # Orientation, per the write-back contract §2/§8.1. The index is already encoded in the
+        # sub-sprite's name — `SpriteNameFor(buildKey, facing) => f"{stem}_d{facing}"` — but §8.1
+        # asks for a field, because "a parsed suffix is a convention two programs have to keep
+        # agreeing about, and a field is not". The COUNT is only ever read from a declaration:
+        # §2 is explicit that the importer reads it and never assumes one, so an entity whose
+        # sheet declares nothing carries no count rather than a plausible 8.
+        if sheet:
+            count, evidence = repo.facings_for_sheet(sheet)
+            if count is not None:
+                record["x-facings"] = count
+                record["x-facingsSource"] = evidence
         if entry:
             record["x-pivotSource"] = entry["pivotSource"]
         else:
@@ -616,6 +650,24 @@ def _sort_bias(y_sort, decor_base):
     if y_sort is None:
         return 0
     return _num(U.as_float(y_sort.data.get("_baseOrder"), float(decor_base)) - decor_base)
+
+
+_FACING_SUFFIX = re.compile(r"_d(\d+)(?:_|$)")
+
+
+def _facing_index(sprite_name):
+    """The baked facing step in a sub-sprite's name, or ``None`` when it declares no direction.
+
+    The kits slice as ``{stem}_d{facing}`` (`VillageBuildingKit.SpriteNameFor`), and characters
+    add a frame — ``Cutter_idle_d4_f0`` — so the direction is the `_d<n>` group specifically and
+    not merely the last number in the name. Absence is meaningful and is left as absence: the
+    legacy single sprites end `_0` with no `_d` at all, and foliage rigs publish variants and
+    seasons rather than directions. Neither gets a fabricated zero.
+    """
+    if not sprite_name:
+        return None
+    match = _FACING_SUFFIX.search(sprite_name)
+    return int(match.group(1)) if match else None
 
 
 def _family(sprite_name):

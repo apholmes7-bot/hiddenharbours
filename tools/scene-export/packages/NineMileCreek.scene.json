@@ -1,7 +1,7 @@
 {
   "schema": "hiddenharbours.scene/1",
   "generatedBy": "tools/scene-export/hh_scene_export.py",
-  "generatedAt": "2026-08-20T13:32:46Z",
+  "generatedAt": "2026-08-20T20:35:54Z",
   "region": {
     "id": "region.nine_mile_creek",
     "sceneName": "NineMileCreek",
@@ -5335,7 +5335,39 @@
         ],
         "x-readOnly": true,
         "x-derived": "stroked from the region's declared route table at each way's declared half-width and rank. Surface material only — the blob-47 tile index stays derived in the one place the repo derives it.",
-        "x-authorable": false
+        "x-authorable": false,
+        "x-omitted": [
+          {
+            "name": "TruckParkSpur",
+            "route": "ParkSpurRoute()",
+            "why": "computed, not declared — its vertices are solved for at build time, and solving for them here would be a second definition of where it runs"
+          },
+          {
+            "name": "WinchApron",
+            "route": "WinchApronArea()",
+            "why": "a paved area, not a centreline, and its extent is computed from geometry authored elsewhere rather than declared here — rasterising it would mean re-deriving somebody else's rectangle"
+          },
+          {
+            "name": "BuyersParking",
+            "route": "ParkingArea()",
+            "why": "a paved area, not a centreline, and its extent is computed from geometry authored elsewhere rather than declared here — rasterising it would mean re-deriving somebody else's rectangle"
+          },
+          {
+            "name": "TruckPark",
+            "route": "TruckParkArea()",
+            "why": "a paved area, not a centreline, and its extent is computed from geometry authored elsewhere rather than declared here — rasterising it would mean re-deriving somebody else's rectangle"
+          },
+          {
+            "name": "Route91Forecourt",
+            "route": "NineMileCreekStation.Route91ApronArea()",
+            "why": "a paved area, not a centreline, and its extent is computed from geometry authored elsewhere rather than declared here — rasterising it would mean re-deriving somebody else's rectangle"
+          },
+          {
+            "name": "1 way(s) constructed in a loop",
+            "route": "(inline)",
+            "why": "built per-lot at run time from a nearest-point solve; not declared anywhere this reader can follow"
+          }
+        ]
       },
       "cliff": {
         "code": "c",
@@ -12040,6 +12072,8 @@
       "rigSource": null,
       "call": null,
       "pos": [0, 0],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -12075,6 +12109,8 @@
       "rigSource": null,
       "call": null,
       "pos": [0, 0],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -12110,6 +12146,8 @@
       "rigSource": null,
       "call": null,
       "pos": [98, 87.5],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -12145,6 +12183,8 @@
       "rigSource": null,
       "call": null,
       "pos": [103.5, 87.5],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -12180,6 +12220,8 @@
       "rigSource": null,
       "call": null,
       "pos": [109, 87.5],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -12215,6 +12257,8 @@
       "rigSource": null,
       "call": null,
       "pos": [114.5, 87.5],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -12250,6 +12294,8 @@
       "rigSource": null,
       "call": null,
       "pos": [120, 87.5],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -12285,6 +12331,8 @@
       "rigSource": null,
       "call": null,
       "pos": [125.5, 87.5],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -12320,6 +12368,8 @@
       "rigSource": null,
       "call": null,
       "pos": [131, 87.5],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -12355,6 +12405,8 @@
       "rigSource": null,
       "call": null,
       "pos": [136.5, 87.5],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -12390,6 +12442,8 @@
       "rigSource": null,
       "call": null,
       "pos": [142, 87.5],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -12425,6 +12479,8 @@
       "rigSource": null,
       "call": null,
       "pos": [147.5, 87.5],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -12460,6 +12516,8 @@
       "rigSource": null,
       "call": null,
       "pos": [153, 87.5],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -12495,6 +12553,8 @@
       "rigSource": null,
       "call": null,
       "pos": [158.5, 87.5],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -12530,6 +12590,8 @@
       "rigSource": null,
       "call": null,
       "pos": [164, 87.5],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -12565,6 +12627,8 @@
       "rigSource": null,
       "call": null,
       "pos": [169.5, 87.5],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -12600,6 +12664,8 @@
       "rigSource": null,
       "call": null,
       "pos": [100.75, 87],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -12635,6 +12701,8 @@
       "rigSource": null,
       "call": null,
       "pos": [111.75, 87],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -12670,6 +12738,8 @@
       "rigSource": null,
       "call": null,
       "pos": [122.75, 87],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -12705,6 +12775,8 @@
       "rigSource": null,
       "call": null,
       "pos": [133.75, 87],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -12740,6 +12812,8 @@
       "rigSource": null,
       "call": null,
       "pos": [144.75, 87],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -12775,6 +12849,8 @@
       "rigSource": null,
       "call": null,
       "pos": [155.75, 87],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -12810,6 +12886,8 @@
       "rigSource": null,
       "call": null,
       "pos": [166.75, 87],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -12845,6 +12923,8 @@
       "rigSource": null,
       "call": null,
       "pos": [139.25, 87],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -12880,6 +12960,8 @@
       "rigSource": null,
       "call": null,
       "pos": [169.5, 87.5],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -12915,6 +12997,8 @@
       "rigSource": null,
       "call": null,
       "pos": [169.5, 96.5],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -12950,6 +13034,8 @@
       "rigSource": null,
       "call": null,
       "pos": [91.5, 44.5],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -12985,6 +13071,8 @@
       "rigSource": null,
       "call": null,
       "pos": [94.75, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -13020,6 +13108,8 @@
       "rigSource": null,
       "call": null,
       "pos": [96.25, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -13055,6 +13145,8 @@
       "rigSource": null,
       "call": null,
       "pos": [97.75, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -13090,6 +13182,8 @@
       "rigSource": null,
       "call": null,
       "pos": [99.25, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -13125,6 +13219,8 @@
       "rigSource": null,
       "call": null,
       "pos": [100.75, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -13160,6 +13256,8 @@
       "rigSource": null,
       "call": null,
       "pos": [102.25, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -13195,6 +13293,8 @@
       "rigSource": null,
       "call": null,
       "pos": [103.75, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -13230,6 +13330,8 @@
       "rigSource": null,
       "call": null,
       "pos": [105.25, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -13265,6 +13367,8 @@
       "rigSource": null,
       "call": null,
       "pos": [106.75, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -13300,6 +13404,8 @@
       "rigSource": null,
       "call": null,
       "pos": [108.25, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -13335,6 +13441,8 @@
       "rigSource": null,
       "call": null,
       "pos": [109.75, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -13370,6 +13478,8 @@
       "rigSource": null,
       "call": null,
       "pos": [111.25, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -13405,6 +13515,8 @@
       "rigSource": null,
       "call": null,
       "pos": [112.75, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -13440,6 +13552,8 @@
       "rigSource": null,
       "call": null,
       "pos": [114.25, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -13475,6 +13589,8 @@
       "rigSource": null,
       "call": null,
       "pos": [115.75, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -13510,6 +13626,8 @@
       "rigSource": null,
       "call": null,
       "pos": [117.25, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -13545,6 +13663,8 @@
       "rigSource": null,
       "call": null,
       "pos": [118.75, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -13580,6 +13700,8 @@
       "rigSource": null,
       "call": null,
       "pos": [120.25, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -13615,6 +13737,8 @@
       "rigSource": null,
       "call": null,
       "pos": [121.75, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -13650,6 +13774,8 @@
       "rigSource": null,
       "call": null,
       "pos": [123.25, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -13685,6 +13811,8 @@
       "rigSource": null,
       "call": null,
       "pos": [124.75, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -13720,6 +13848,8 @@
       "rigSource": null,
       "call": null,
       "pos": [126.25, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -13755,6 +13885,8 @@
       "rigSource": null,
       "call": null,
       "pos": [127.75, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -13790,6 +13922,8 @@
       "rigSource": null,
       "call": null,
       "pos": [129.25, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -13825,6 +13959,8 @@
       "rigSource": null,
       "call": null,
       "pos": [130.75, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -13860,6 +13996,8 @@
       "rigSource": null,
       "call": null,
       "pos": [132.25, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -13895,6 +14033,8 @@
       "rigSource": null,
       "call": null,
       "pos": [133.75, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -13930,6 +14070,8 @@
       "rigSource": null,
       "call": null,
       "pos": [135.25, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -13965,6 +14107,8 @@
       "rigSource": null,
       "call": null,
       "pos": [136.75, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -14000,6 +14144,8 @@
       "rigSource": null,
       "call": null,
       "pos": [138.25, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -14035,6 +14181,8 @@
       "rigSource": null,
       "call": null,
       "pos": [139.75, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -14070,6 +14218,8 @@
       "rigSource": null,
       "call": null,
       "pos": [141.25, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -14105,6 +14255,8 @@
       "rigSource": null,
       "call": null,
       "pos": [142.75, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -14140,6 +14292,8 @@
       "rigSource": null,
       "call": null,
       "pos": [144.25, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -14175,6 +14329,8 @@
       "rigSource": null,
       "call": null,
       "pos": [145.75, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -14210,6 +14366,8 @@
       "rigSource": null,
       "call": null,
       "pos": [147.25, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -14245,6 +14403,8 @@
       "rigSource": null,
       "call": null,
       "pos": [148.75, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -14280,6 +14440,8 @@
       "rigSource": null,
       "call": null,
       "pos": [150.25, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -14315,6 +14477,8 @@
       "rigSource": null,
       "call": null,
       "pos": [151.75, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -14350,6 +14514,8 @@
       "rigSource": null,
       "call": null,
       "pos": [153.25, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -14385,6 +14551,8 @@
       "rigSource": null,
       "call": null,
       "pos": [154.75, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -14420,6 +14588,8 @@
       "rigSource": null,
       "call": null,
       "pos": [156.25, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -14455,6 +14625,8 @@
       "rigSource": null,
       "call": null,
       "pos": [157.75, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -14490,6 +14662,8 @@
       "rigSource": null,
       "call": null,
       "pos": [159.25, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -14525,6 +14699,8 @@
       "rigSource": null,
       "call": null,
       "pos": [160.75, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -14560,6 +14736,8 @@
       "rigSource": null,
       "call": null,
       "pos": [162.25, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -14595,6 +14773,8 @@
       "rigSource": null,
       "call": null,
       "pos": [163.75, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -14630,6 +14810,8 @@
       "rigSource": null,
       "call": null,
       "pos": [165.25, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -14665,6 +14847,8 @@
       "rigSource": null,
       "call": null,
       "pos": [166.75, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -14700,6 +14884,8 @@
       "rigSource": null,
       "call": null,
       "pos": [168.25, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -14735,6 +14921,8 @@
       "rigSource": null,
       "call": null,
       "pos": [169.75, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -14770,6 +14958,8 @@
       "rigSource": null,
       "call": null,
       "pos": [171.25, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -14805,6 +14995,8 @@
       "rigSource": null,
       "call": null,
       "pos": [172.75, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -14840,6 +15032,8 @@
       "rigSource": null,
       "call": null,
       "pos": [174.25, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -14875,6 +15069,8 @@
       "rigSource": null,
       "call": null,
       "pos": [175.75, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -14910,6 +15106,8 @@
       "rigSource": null,
       "call": null,
       "pos": [177.25, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -14945,6 +15143,8 @@
       "rigSource": null,
       "call": null,
       "pos": [178.75, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -14980,6 +15180,8 @@
       "rigSource": null,
       "call": null,
       "pos": [180.25, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -15015,6 +15217,8 @@
       "rigSource": null,
       "call": null,
       "pos": [181.75, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -15050,6 +15254,8 @@
       "rigSource": null,
       "call": null,
       "pos": [183.25, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -15085,6 +15291,8 @@
       "rigSource": null,
       "call": null,
       "pos": [184.75, 38],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -15120,6 +15328,8 @@
       "rigSource": null,
       "call": null,
       "pos": [170, 87.75],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -15155,6 +15365,8 @@
       "rigSource": null,
       "call": null,
       "pos": [170, 89.25],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -15190,6 +15402,8 @@
       "rigSource": null,
       "call": null,
       "pos": [170, 90.75],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -15225,6 +15439,8 @@
       "rigSource": null,
       "call": null,
       "pos": [170, 92.25],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -15260,6 +15476,8 @@
       "rigSource": null,
       "call": null,
       "pos": [170, 93.75],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -15295,6 +15513,8 @@
       "rigSource": null,
       "call": null,
       "pos": [170, 95.25],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -15330,6 +15550,8 @@
       "rigSource": null,
       "call": null,
       "pos": [185, 96.75],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -15365,6 +15587,8 @@
       "rigSource": null,
       "call": null,
       "pos": [185, 98.25],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -15400,6 +15624,8 @@
       "rigSource": null,
       "call": null,
       "pos": [185, 99.75],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -15435,6 +15661,8 @@
       "rigSource": null,
       "call": null,
       "pos": [185, 101.25],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -15470,6 +15698,8 @@
       "rigSource": null,
       "call": null,
       "pos": [185, 102.75],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -15505,6 +15735,8 @@
       "rigSource": null,
       "call": null,
       "pos": [185, 104.25],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -15540,6 +15772,8 @@
       "rigSource": null,
       "call": null,
       "pos": [185, 105.75],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -15575,6 +15809,8 @@
       "rigSource": null,
       "call": null,
       "pos": [185, 107.25],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -15610,6 +15846,8 @@
       "rigSource": null,
       "call": null,
       "pos": [185, 108.75],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -15645,6 +15883,8 @@
       "rigSource": null,
       "call": null,
       "pos": [185, 110.25],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -15680,6 +15920,8 @@
       "rigSource": null,
       "call": null,
       "pos": [185, 111.75],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -15715,6 +15957,8 @@
       "rigSource": null,
       "call": null,
       "pos": [185, 113.25],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -15750,6 +15994,8 @@
       "rigSource": null,
       "call": null,
       "pos": [185, 114.75],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -15785,6 +16031,8 @@
       "rigSource": null,
       "call": null,
       "pos": [185, 116.25],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -15820,6 +16068,8 @@
       "rigSource": null,
       "call": null,
       "pos": [185, 117.75],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -15855,6 +16105,8 @@
       "rigSource": null,
       "call": null,
       "pos": [185, 119.25],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -15890,6 +16142,8 @@
       "rigSource": null,
       "call": null,
       "pos": [185, 120.75],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -15925,6 +16179,8 @@
       "rigSource": null,
       "call": null,
       "pos": [185, 122.25],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -15960,6 +16216,8 @@
       "rigSource": null,
       "call": null,
       "pos": [185, 123.75],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -15995,6 +16253,8 @@
       "rigSource": null,
       "call": null,
       "pos": [185, 125.25],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -16030,6 +16290,8 @@
       "rigSource": null,
       "call": null,
       "pos": [185, 126.75],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -16065,6 +16327,8 @@
       "rigSource": null,
       "call": null,
       "pos": [185, 128.25],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -16100,6 +16364,8 @@
       "rigSource": null,
       "call": null,
       "pos": [185, 129.75],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -16135,6 +16401,8 @@
       "rigSource": null,
       "call": null,
       "pos": [185, 131.25],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -16170,6 +16438,8 @@
       "rigSource": null,
       "call": null,
       "pos": [185, 132.75],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -16205,6 +16475,8 @@
       "rigSource": null,
       "call": null,
       "pos": [185, 134.25],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -16240,6 +16512,8 @@
       "rigSource": null,
       "call": null,
       "pos": [185, 135.75],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -16275,6 +16549,8 @@
       "rigSource": null,
       "call": null,
       "pos": [185, 137.25],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -16310,6 +16586,8 @@
       "rigSource": null,
       "call": null,
       "pos": [185, 138.75],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -16345,6 +16623,8 @@
       "rigSource": null,
       "call": null,
       "pos": [-108, 64],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -16380,6 +16660,8 @@
       "rigSource": null,
       "call": null,
       "pos": [88, 110],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -16415,6 +16697,8 @@
       "rigSource": null,
       "call": null,
       "pos": [-148, 196],
+      "facing": null,
+      "facingIndex": 3,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -16439,6 +16723,8 @@
       },
       "x-familyCandidate": null,
       "x-spriteStem": "Village",
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Buildings/Village/Village_redSaltbox.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -16450,6 +16736,8 @@
       "rigSource": null,
       "call": null,
       "pos": [-208, 60],
+      "facing": null,
+      "facingIndex": 2,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -16474,6 +16762,8 @@
       },
       "x-familyCandidate": null,
       "x-spriteStem": "Village",
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Buildings/Village/Village_sageCottage.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -16491,6 +16781,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [96.333336, 84.623535],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -16515,6 +16807,8 @@
       },
       "x-familyCandidate": "wharf",
       "x-spriteStem": "logCrib",
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Iso/wharfIsoRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -16532,6 +16826,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [105, 84.623535],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -16556,6 +16852,8 @@
       },
       "x-familyCandidate": "wharf",
       "x-spriteStem": "logCrib",
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Iso/wharfIsoRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -16573,6 +16871,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [113.66667, 84.623535],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -16597,6 +16897,8 @@
       },
       "x-familyCandidate": "wharf",
       "x-spriteStem": "logCrib",
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Iso/wharfIsoRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -16614,6 +16916,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [122.333336, 84.623535],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -16638,6 +16942,8 @@
       },
       "x-familyCandidate": "wharf",
       "x-spriteStem": "logCrib",
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Iso/wharfIsoRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -16655,6 +16961,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [131, 84.623535],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -16679,6 +16987,8 @@
       },
       "x-familyCandidate": "wharf",
       "x-spriteStem": "logCrib",
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Iso/wharfIsoRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -16696,6 +17006,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [139.66667, 84.623535],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -16720,6 +17032,8 @@
       },
       "x-familyCandidate": "wharf",
       "x-spriteStem": "logCrib",
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Iso/wharfIsoRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -16737,6 +17051,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [148.33334, 84.623535],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -16761,6 +17077,8 @@
       },
       "x-familyCandidate": "wharf",
       "x-spriteStem": "logCrib",
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Iso/wharfIsoRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -16778,6 +17096,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [157, 84.623535],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -16802,6 +17122,8 @@
       },
       "x-familyCandidate": "wharf",
       "x-spriteStem": "logCrib",
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Iso/wharfIsoRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -16819,6 +17141,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [165.66667, 84.623535],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -16843,6 +17167,8 @@
       },
       "x-familyCandidate": "wharf",
       "x-spriteStem": "logCrib",
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Iso/wharfIsoRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -16860,6 +17186,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [89.5, 44.316566],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -16884,6 +17212,8 @@
       },
       "x-familyCandidate": "wharf",
       "x-spriteStem": "logCrib",
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Iso/wharfIsoRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -16901,6 +17231,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [89.5, 52.91657],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -16925,6 +17257,8 @@
       },
       "x-familyCandidate": "wharf",
       "x-spriteStem": "logCrib",
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Iso/wharfIsoRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -16942,6 +17276,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [89.5, 61.516567],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -16966,6 +17302,8 @@
       },
       "x-familyCandidate": "wharf",
       "x-spriteStem": "logCrib",
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Iso/wharfIsoRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -16983,6 +17321,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [89.5, 70.11658],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -17007,6 +17347,8 @@
       },
       "x-familyCandidate": "wharf",
       "x-spriteStem": "logCrib",
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Iso/wharfIsoRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -17024,6 +17366,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [89.5, 78.71657],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -17048,6 +17392,8 @@
       },
       "x-familyCandidate": "wharf",
       "x-spriteStem": "logCrib",
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Iso/wharfIsoRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -17065,6 +17411,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [98.6, 35.62354],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -17089,6 +17437,8 @@
       },
       "x-familyCandidate": "wharf",
       "x-spriteStem": "logCrib",
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Iso/wharfIsoRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -17106,6 +17456,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [107.8, 35.62354],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -17130,6 +17482,8 @@
       },
       "x-familyCandidate": "wharf",
       "x-spriteStem": "logCrib",
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Iso/wharfIsoRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -17147,6 +17501,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [117, 35.62354],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -17171,6 +17527,8 @@
       },
       "x-familyCandidate": "wharf",
       "x-spriteStem": "logCrib",
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Iso/wharfIsoRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -17188,6 +17546,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [126.2, 35.62354],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -17212,6 +17572,8 @@
       },
       "x-familyCandidate": "wharf",
       "x-spriteStem": "logCrib",
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Iso/wharfIsoRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -17229,6 +17591,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [135.4, 35.62354],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -17253,6 +17617,8 @@
       },
       "x-familyCandidate": "wharf",
       "x-spriteStem": "logCrib",
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Iso/wharfIsoRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -17270,6 +17636,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [144.6, 35.62354],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -17294,6 +17662,8 @@
       },
       "x-familyCandidate": "wharf",
       "x-spriteStem": "logCrib",
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Iso/wharfIsoRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -17311,6 +17681,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [153.8, 35.62354],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -17335,6 +17707,8 @@
       },
       "x-familyCandidate": "wharf",
       "x-spriteStem": "logCrib",
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Iso/wharfIsoRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -17352,6 +17726,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [163, 35.62354],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -17376,6 +17752,8 @@
       },
       "x-familyCandidate": "wharf",
       "x-spriteStem": "logCrib",
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Iso/wharfIsoRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -17393,6 +17771,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [172.2, 35.62354],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -17417,6 +17797,8 @@
       },
       "x-familyCandidate": "wharf",
       "x-spriteStem": "logCrib",
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Iso/wharfIsoRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -17434,6 +17816,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [181.4, 35.62354],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -17458,6 +17842,8 @@
       },
       "x-familyCandidate": "wharf",
       "x-spriteStem": "logCrib",
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Iso/wharfIsoRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -17475,6 +17861,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [103.5, 92.75],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -17497,6 +17885,8 @@
         "name": "trapStack_4",
         "internalId": 1849712055156068707
       },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Decor/wharfDecorRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -17514,6 +17904,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [114.5, 92.75],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -17536,6 +17928,8 @@
         "name": "buoyRack_4",
         "internalId": -5469662094238099024
       },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Decor/wharfDecorRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -17553,6 +17947,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [125.5, 92.75],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -17575,6 +17971,8 @@
         "name": "netPile_4",
         "internalId": 7064154231360242020
       },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Decor/wharfDecorRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -17592,6 +17990,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [142, 92.75],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -17614,6 +18014,8 @@
         "name": "trapStack_4",
         "internalId": 1849712055156068707
       },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Decor/wharfDecorRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -17631,6 +18033,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [153, 92.75],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -17653,6 +18057,8 @@
         "name": "ropeCoil_4",
         "internalId": -255378013167995876
       },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Decor/wharfDecorRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -17670,6 +18076,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [164, 92.75],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -17692,6 +18100,8 @@
         "name": "toteStack_4",
         "internalId": -5637020367079816615
       },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Decor/wharfDecorRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -17709,6 +18119,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [109, 95.5],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -17731,6 +18143,8 @@
         "name": "woodStack_4",
         "internalId": -3248486063171984574
       },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Decor/wharfDecorRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -17748,6 +18162,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [136.5, 95.5],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -17770,6 +18186,8 @@
         "name": "netFrame_4",
         "internalId": -6930000969292143242
       },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Decor/wharfDecorRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -17787,6 +18205,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [158.5, 95.5],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -17809,6 +18229,8 @@
         "name": "trapStack_4",
         "internalId": 1849712055156068707
       },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Decor/wharfDecorRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -17826,6 +18248,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [106.25, 88.2],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -17848,6 +18272,8 @@
         "name": "tideStaff_4",
         "internalId": 3367323793477659924
       },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Decor/wharfDecorRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -17865,6 +18291,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [117.25, 88.2],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -17887,6 +18315,8 @@
         "name": "ringStation_4",
         "internalId": -5122270793153680199
       },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Decor/wharfDecorRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -17904,6 +18334,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [150.25, 88.2],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -17926,6 +18358,8 @@
         "name": "ringStation_4",
         "internalId": -5122270793153680199
       },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Decor/wharfDecorRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -17943,6 +18377,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [136, 98.6],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -17965,6 +18401,8 @@
         "name": "harbourSign_2",
         "internalId": 2798907317967017884
       },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Decor/wharfDecorRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -17982,6 +18420,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [138.5, 98.6],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -18004,6 +18444,8 @@
         "name": "noticeBoard_2",
         "internalId": 5845069286375867509
       },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Decor/wharfDecorRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -18021,6 +18463,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [142.5, 98.4],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -18043,6 +18487,8 @@
         "name": "bunting_2",
         "internalId": 3271501192252351982
       },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Decor/wharfDecorRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -18060,6 +18506,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [167, 95.5],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -18082,6 +18530,8 @@
         "name": "flagpole_4",
         "internalId": -6098601759434897355
       },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Decor/wharfDecorRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -18099,6 +18549,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [87, 84],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -18121,6 +18573,8 @@
         "name": "davitHoist_6",
         "internalId": 2160456644760989438
       },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Decor/wharfDecorRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -18138,6 +18592,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [85, 74],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -18160,6 +18616,8 @@
         "name": "sortingTrough_6",
         "internalId": 509577628782945907
       },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Decor/wharfDecorRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -18177,6 +18635,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [89, 76.5],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -18199,6 +18659,8 @@
         "name": "guttingTable_6",
         "internalId": -5409066595802996221
       },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Decor/wharfDecorRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -18216,6 +18678,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [85, 79],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -18238,6 +18702,8 @@
         "name": "weighScale_6",
         "internalId": -6803893066419015305
       },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Decor/wharfDecorRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -18255,6 +18721,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [89, 81.5],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -18277,6 +18745,8 @@
         "name": "iceChest_6",
         "internalId": -2497124340321935793
       },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Decor/wharfDecorRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -18294,6 +18764,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [89, 71.5],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -18316,6 +18788,8 @@
         "name": "dockCart_6",
         "internalId": 1352357580863300174
       },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Decor/wharfDecorRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -18333,6 +18807,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [73, 132],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -18355,6 +18831,8 @@
         "name": "oilskinLine_4",
         "internalId": 5613261359972174812
       },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Decor/wharfDecorRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -18372,6 +18850,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [87, 132],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -18394,6 +18874,8 @@
         "name": "codFlake_4",
         "internalId": 7867542366140415732
       },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Decor/wharfDecorRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -18411,6 +18893,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [101, 132],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -18433,6 +18917,8 @@
         "name": "woodStack_4",
         "internalId": -3248486063171984574
       },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Decor/wharfDecorRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -18450,6 +18936,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [115, 132],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -18472,6 +18960,8 @@
         "name": "herringSticks_4",
         "internalId": -8759446409969365114
       },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Decor/wharfDecorRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -18489,6 +18979,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [133, 128.5],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -18511,6 +19003,8 @@
         "name": "baitBarrel_4",
         "internalId": 1117828748
       },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Decor/wharfDecorRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -18528,6 +19022,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [148, 126],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -18550,6 +19046,8 @@
         "name": "trapStack_4",
         "internalId": 1849712055156068707
       },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Wharf/Decor/wharfDecorRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -18567,6 +19065,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [-177.87184, 96.99836],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -18589,6 +19089,8 @@
         "name": "powerPole_6",
         "internalId": -4374854991387992098
       },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Utility/utilityIsoRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -18606,6 +19108,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [-137.88498, 95.97305],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -18628,6 +19132,8 @@
         "name": "powerPole_6",
         "internalId": -4374854991387992098
       },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Utility/utilityIsoRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -18645,6 +19151,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [-98.193306, 95.062996],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -18667,6 +19175,8 @@
         "name": "powerPole_6",
         "internalId": -4374854991387992098
       },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Utility/utilityIsoRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -18684,6 +19194,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [-58.215508, 96.39559],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -18706,6 +19218,8 @@
         "name": "powerPole_6",
         "internalId": -4374854991387992098
       },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Utility/utilityIsoRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -18723,6 +19237,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [-18.05896, 97],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -18745,6 +19261,8 @@
         "name": "powerPole_6",
         "internalId": -4374854991387992098
       },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Utility/utilityIsoRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -18762,6 +19280,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [20.261894, 98.98919],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -18784,6 +19304,8 @@
         "name": "powerPole_6",
         "internalId": -4374854991387992098
       },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Utility/utilityIsoRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -18801,6 +19323,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [58.79467, 109.9448],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -18823,6 +19347,8 @@
         "name": "powerPole_6",
         "internalId": -4374854991387992098
       },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Utility/utilityIsoRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -18840,6 +19366,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [97.385216, 120.4695],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -18862,6 +19390,8 @@
         "name": "powerPole_6",
         "internalId": -4374854991387992098
       },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Utility/utilityIsoRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -18879,6 +19409,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [137.48401, 126.678535],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -18901,6 +19433,8 @@
         "name": "powerPole_6",
         "internalId": -4374854991387992098
       },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Utility/utilityIsoRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -18918,6 +19452,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [140, 99],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -18940,6 +19476,8 @@
         "name": "yardLight_4",
         "internalId": -5792733292379583511
       },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Utility/utilityIsoRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -18957,6 +19495,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [84, 88],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -18979,6 +19519,8 @@
         "name": "fuelPump_6",
         "internalId": -1207065955015329671
       },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Utility/utilityIsoRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -18996,6 +19538,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [84, 90.5],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -19018,6 +19562,8 @@
         "name": "oilTank_6",
         "internalId": 8820617560659773934
       },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Utility/utilityIsoRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -19035,6 +19581,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [131, 95.5],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -19057,6 +19605,8 @@
         "name": "standpipe_4",
         "internalId": 983765740612850045
       },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Utility/utilityIsoRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -19074,6 +19624,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [109, 92.75],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -19096,6 +19648,8 @@
         "name": "pedestal_4",
         "internalId": -961762885336422075
       },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Utility/utilityIsoRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -19113,6 +19667,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [147.5, 92.75],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -19135,6 +19691,8 @@
         "name": "pedestal_4",
         "internalId": -961762885336422075
       },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Utility/utilityIsoRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -19152,6 +19710,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [92, 121],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -19174,6 +19734,8 @@
         "name": "yardHydrant_4",
         "internalId": -435612538777967382
       },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Utility/utilityIsoRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -19191,6 +19753,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [48.8607, -280.39392],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -19230,6 +19794,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [44.456886, -275.2749],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -19269,6 +19835,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [52.619804, -266.72446],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -19308,6 +19876,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [48.120018, -261.95447],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -19347,6 +19917,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [43.915398, -270.76932],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -19386,6 +19958,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [47.79809, -256.65045],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -19425,6 +19999,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [50.50431, -246.80963],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -19464,6 +20040,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [61.273907, -235.25499],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -19503,6 +20081,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [53.51176, -235.87344],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -19542,6 +20122,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [65.18609, -221.02888],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -19581,6 +20163,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [60.490555, -216.97069],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -19620,6 +20204,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [58.334076, -218.33775],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -19659,6 +20245,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [69.237785, -206.29543],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -19698,6 +20286,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [60.467472, -210.57994],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -19737,6 +20327,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [70.69475, -198.92455],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -19776,6 +20368,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [72.158485, -189.77617],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -19815,6 +20409,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [67.46107, -183.6676],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -19854,6 +20450,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [66.605736, -178.14697],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -19893,6 +20491,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [74.91738, -172.53307],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -19932,6 +20532,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [68.3698, -167.12157],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -19971,6 +20573,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [71.494865, -158.45636],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -20010,6 +20614,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [68.68719, -165.13786],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -20049,6 +20655,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [76.30255, -138.2515],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -20088,6 +20696,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [72.2633, -146.62764],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -20127,6 +20737,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [69.16766, -139.90349],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -20166,6 +20778,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [73.86169, -126.04716],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -20205,6 +20819,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [69.84463, -134.5343],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -20244,6 +20860,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [67.84204, -133.27538],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -20283,6 +20901,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [71.486, -114.168755],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -20322,6 +20942,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [65.8331, -123.23063],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -20361,6 +20983,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [70.74865, -110.48198],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -20400,6 +21024,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [65.29713, -111.79682],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -20439,6 +21065,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [62.68701, -107.500206],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -20478,6 +21106,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [68.30589, -98.269066],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -20517,6 +21147,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [60.384956, -89.70663],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -20556,6 +21188,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [61.431606, -101.22688],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -20595,6 +21229,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [57.62973, -79.526146],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -20634,6 +21270,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [56.0922, -80.279335],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -20673,6 +21311,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [50.391438, -12.284811],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -20712,6 +21352,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [35.967293, -18.14381],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -20751,6 +21393,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [51.26806, -9.035876],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -20790,6 +21434,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [45.495197, -4.048839],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -20829,6 +21475,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [43.74475, -3.067829],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -20868,6 +21516,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [25.575262, 104.289276],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -20907,6 +21557,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [29.124968, 102.31494],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -20946,6 +21598,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [28.678131, 101.72509],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -20985,6 +21639,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [39.16677, 104.289185],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -21024,6 +21680,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [31.129238, 101.724655],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -21063,6 +21721,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [16.409473, 104.288376],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -21102,6 +21762,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [35.750595, 161.7107],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -21141,6 +21803,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [22.690413, 101.72532],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -21180,6 +21844,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [46.559917, 139.76938],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -21219,6 +21885,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [19.550194, 159.7105],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -21258,6 +21926,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [16.774746, 161.68591],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -21297,6 +21967,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [43.562054, 160.04256],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -21336,6 +22008,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [39.9945, 161.91089],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -21375,6 +22049,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [35.596016, 162.28815],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -21414,6 +22090,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [58.28962, 167.92168],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -21453,6 +22131,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [51.46273, 177.46815],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -21492,6 +22172,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [50.39674, 172.79051],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -21531,6 +22213,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [55.817635, 186.60669],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -21570,6 +22254,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [54.61007, 195.05963],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -21609,6 +22295,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [47.204926, 195.13321],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -21648,6 +22336,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [46.610504, 211.44757],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -21687,6 +22377,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [46.190548, 202.23387],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -21726,6 +22418,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [51.085396, 225.78842],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -21765,6 +22459,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [44.21335, 219.89282],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -21804,6 +22500,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [44.76799, 234.48827],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -21843,6 +22541,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [42.542507, 240.77834],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -21882,6 +22582,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [48.586735, 257.02173],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -21921,6 +22623,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [49.3838, 263.6577],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -21960,6 +22664,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [43.972637, 265.17435],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -21999,6 +22705,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [42.23676, 265.24893],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -22038,6 +22746,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [168, 112],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -22060,6 +22770,8 @@
         "name": "smallYard_3",
         "internalId": 3100692853051683604
       },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Shipyard/Iso/shipyardIsoRig.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -22071,6 +22783,8 @@
       "rigSource": null,
       "call": null,
       "pos": [-150, 118],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -22106,6 +22820,8 @@
       "rigSource": null,
       "call": null,
       "pos": [-206, 116],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -22141,6 +22857,8 @@
       "rigSource": null,
       "call": null,
       "pos": [64, 112],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -22176,6 +22894,8 @@
       "rigSource": null,
       "call": null,
       "pos": [70, 118],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -22217,6 +22937,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [89.36788, 109.38445],
+      "facing": null,
+      "facingIndex": 4,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -22256,6 +22978,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [66.3862, 111.25431],
+      "facing": null,
+      "facingIndex": 4,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -22289,6 +23013,8 @@
       "rigSource": null,
       "call": null,
       "pos": [98, 88],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -22330,6 +23056,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [81, 121],
+      "facing": null,
+      "facingIndex": 4,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -22352,6 +23080,8 @@
         "name": "Shopfront_fishMarket_d4",
         "internalId": 1366693676
       },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Buildings/Shops/Shopfront_fishMarket.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -22363,6 +23093,8 @@
       "rigSource": null,
       "call": null,
       "pos": [81, 121],
+      "facing": null,
+      "facingIndex": 4,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -22387,6 +23119,8 @@
       },
       "x-familyCandidate": null,
       "x-spriteStem": "ShopLevel",
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Buildings/Shops/shops.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortingOrder": 1
     },
@@ -22404,6 +23138,8 @@
         "x-optsNote": "empty on purpose: the option axes that produced this baked cell are not recorded anywhere, and the rigs resolve an unknown key as a silent fallback rather than an error. Defaults draw something true; a guess draws something confidently wrong."
       },
       "pos": [108, 105.5],
+      "facing": null,
+      "facingIndex": 0,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -22426,6 +23162,8 @@
         "name": "Shopfront_restaurant_d0",
         "internalId": -1284152299
       },
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Buildings/Shops/Shopfront_restaurant.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -22437,6 +23175,8 @@
       "rigSource": null,
       "call": null,
       "pos": [108, 105.5],
+      "facing": null,
+      "facingIndex": 0,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -22461,6 +23201,8 @@
       },
       "x-familyCandidate": null,
       "x-spriteStem": "ShopLevel",
+      "x-facings": 8,
+      "x-facingsSource": "Assets/_Project/Art/Sprites/Buildings/Shops/shops.contract.json",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortingOrder": 1
     },
@@ -22472,6 +23214,8 @@
       "rigSource": null,
       "call": null,
       "pos": [-244, 238],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -22507,6 +23251,8 @@
       "rigSource": null,
       "call": null,
       "pos": [-240, 198],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -22542,6 +23288,8 @@
       "rigSource": null,
       "call": null,
       "pos": [-246, 150],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -22577,6 +23325,8 @@
       "rigSource": null,
       "call": null,
       "pos": [-238, 108],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -22612,6 +23362,8 @@
       "rigSource": null,
       "call": null,
       "pos": [-244, 64],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -22647,6 +23399,8 @@
       "rigSource": null,
       "call": null,
       "pos": [-240, 16],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -22682,6 +23436,8 @@
       "rigSource": null,
       "call": null,
       "pos": [-236, -40],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -22717,6 +23473,8 @@
       "rigSource": null,
       "call": null,
       "pos": [-72, 166],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -22752,6 +23510,8 @@
       "rigSource": null,
       "call": null,
       "pos": [-34, 172],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -22787,6 +23547,8 @@
       "rigSource": null,
       "call": null,
       "pos": [-52, 28],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -22822,6 +23584,8 @@
       "rigSource": null,
       "call": null,
       "pos": [-4, 26],
+      "facing": null,
+      "facingIndex": null,
       "flipX": false,
       "sortBias": 0,
       "cell": {
@@ -22953,7 +23717,7 @@
   },
   "x-cliffLinesNote": "Empty: cliff lines are an authoring artefact of the editor. The repo's cliffs are placed CliffWallSurface components and ship as entities.",
   "x-provenance": {
-    "generatedAt": "2026-08-20T13:32:46Z",
+    "generatedAt": "2026-08-20T20:35:54Z",
     "historyIsComplete": true,
     "sceneFile": "Assets/_Project/Scenes/NineMileCreek.unity",
     "sceneFileSha256": "26a2db1dd58f4ee77d072264eb03c86af53e0894068cd483d342f6641b06f35d",
@@ -22962,11 +23726,12 @@
     "sceneLastBuiltSubject": "chore(scenes): bank the owner's two builds — St Peters learns its day, the creek opens its doors (#518)",
     "sceneWorkingTreeDirty": false,
     "builderDrift": {
-      "builderCommitsSinceScene": 24,
-      "measuredTo": "77171687c114706932d8a20f554f4f7973fa5858",
-      "measuredToDate": "2026-08-20T10:32:46-03:00",
+      "builderCommitsSinceScene": 25,
+      "measuredTo": "a006a7443c14b3f8912bf783a232e08830596d75",
+      "measuredToDate": "2026-08-20T17:35:54-03:00",
       "exact": true,
       "builderCommits": [
+        "a006a744 feat(world): the island gets its fuel — two hoses on the wharf, a forecourt on Route 91 (#626)",
         "77171687 feat(world): the dooryards stand up — a fence on the mow line, aimed by a table the bake measured (#608)",
         "65bc2a92 feat(world): the quay gets its walls — the fisher stops walking off the Nine Mile Creek wharf (#609)",
         "78e16603 feat(world): the mow line — a yard polygon per property, the one wall system, and 62 pieces of dooryard measured (#604)",

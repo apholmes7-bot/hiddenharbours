@@ -39,6 +39,9 @@ class Way:
         self.source = source
 
 
+_PAD_CALL = re.compile(r"new Pad\(\s*([A-Za-z0-9_.\"]+)\s*,\s*[A-Za-z0-9_.]+\s*,\s*([^,]+?)\s*,")
+
+
 def read_ways(repo, roads_rel, geometry_rel):
     """``(ways, omitted)`` — the declared ways of a region, and the computed ones it skips."""
     roads = CSharpSource(repo, roads_rel)
@@ -72,6 +75,21 @@ def read_ways(repo, roads_rel, geometry_rel):
     # Ways built inside a loop never reach the regex at all (the town walks solve a doorstep and
     # a join point per lot). Counting the `new Way(` sites is how they get reported rather than
     # silently missed — a silent omission reads as "the region has no walks".
+    # Pads — the paved RECTANGLES (aprons, parking, the Route 91 forecourt) — sit in this same
+    # table because a pad is a road-surface thing. Not one of them declares its area: every
+    # `new Pad(...)` takes a method call, because each is derived from geometry somebody else
+    # authored (wharf blocks, a station layout the rig produced). That is the same class as a
+    # computed way and gets the same treatment — named, not solved for. Before this they were
+    # not read at all, so a whole surface class was missing from the layer with nothing saying so.
+    for pad_name_expr, pad_area_expr in _PAD_CALL.findall(roads.text):
+        omitted.append({
+            "name": roads.string(pad_name_expr) or pad_name_expr.strip('"'),
+            "route": pad_area_expr,
+            "why": "a paved area, not a centreline, and its extent is computed from geometry "
+                   "authored elsewhere rather than declared here — rasterising it would mean "
+                   "re-deriving somebody else's rectangle",
+        })
+
     total = roads.text.count("new Way(")
     if total > parsed:
         omitted.append({

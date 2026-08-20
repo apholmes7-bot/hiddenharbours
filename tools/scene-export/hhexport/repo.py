@@ -67,6 +67,7 @@ class Repo:
         self._contract_cache = {}
         self._sidecar_cache = {}
         self._rig_link_cache = {}
+        self._facings_cache = {}
         self._rig_sha_cache = {}
         self._decor_base = None
         self._rig_globals = None
@@ -285,6 +286,36 @@ class Repo:
         self._rig_link_cache[sheet_rel] = result
         return result
 
+    def facings_for_sheet(self, sheet_rel):
+        """``(count, evidencePath)`` — the sheet's DECLARED facing count, or ``(None, None)``.
+
+        The write-back contract §2 is emphatic that the steps are the sheet's and the sheet says
+        how many — *"it reads the count, it does not assume one"* — because `IsoPropSheetBaker`
+        already fails a bake when a rig's measured `NativeDirs` disagrees with its contract's
+        `Facings`. So this reads a declaration or reports nothing; it never falls back to 8.
+
+        Classes fall out of that rule rather than being listed here, which keeps a content
+        question out of code (rule 2): a baked building's sidecar declares `facings: 8`; foliage
+        and shore plants declare none, because those rigs publish variants and seasons rather
+        than directions; and the legacy single sprites declare none either, which is exactly the
+        contract's own per-entity test rather than a family-name list.
+        """
+        if sheet_rel in self._facings_cache:
+            return self._facings_cache[sheet_rel]
+        result = (None, None)
+        for sidecar in self.sidecars_for_sheet(sheet_rel):
+            try:
+                with open(self.abs(sidecar), "r", encoding="utf-8", errors="replace") as fh:
+                    data = json.load(fh)
+            except (OSError, ValueError):
+                continue
+            found = _declared_facings(data)
+            if found is not None:
+                result = (found, sidecar)
+                break
+        self._facings_cache[sheet_rel] = result
+        return result
+
     def _rigs_named_by(self, sidecar_rel):
         """Every rig a sidecar names that exists on disk — **declared keys first, prose second**.
 
@@ -385,6 +416,28 @@ class Repo:
         if rig_rel not in self._rig_sha_cache:
             self._rig_sha_cache[rig_rel] = sha256_lf(self.abs(rig_rel))
         return self._rig_sha_cache[rig_rel]
+
+
+def _declared_facings(node):
+    """The first ``facings``/``Facings`` integer a sidecar declares, at any depth.
+
+    Depth matters: the building kits put it at the top level, while the shop contracts nest it
+    under ``projection``. Both are the sheet declaring its own count, so both count.
+    """
+    if isinstance(node, dict):
+        for key, value in node.items():
+            if key.lower() == "facings" and isinstance(value, int) and value > 0:
+                return value
+        for value in node.values():
+            found = _declared_facings(value)
+            if found is not None:
+                return found
+    elif isinstance(node, list):
+        for value in node:
+            found = _declared_facings(value)
+            if found is not None:
+                return found
+    return None
 
 
 def _stem(path):

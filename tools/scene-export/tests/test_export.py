@@ -839,6 +839,58 @@ class DeterminismTests(unittest.TestCase):
                     digit_keyed += 1
             self.assertGreater(digit_keyed, 0, f"{name} has no digit-keyed row to protect")
 
+    def test_the_road_layer_names_every_surface_it_will_not_solve(self):
+        """A road layer that quietly drops the pads and the spur reads as "there are none".
+
+        This pins a claim I had made and had NOT shipped: `read_ways` built the omitted list and
+        `_road_grid` discarded it, so no package ever carried one.
+        """
+        repo = Repo(REPO)
+        name, scene, height = hh_scene_export.REGIONS[0]          # Nine Mile Creek declares roads
+        doc = hh_scene_export.export_region(repo, name, scene, height)
+        omitted = doc["terrain"]["layers"]["road"].get("x-omitted")
+        self.assertTrue(omitted, "the road layer names nothing it skipped")
+        names = {entry["name"] for entry in omitted}
+        # The computed spur and the paved rectangles are the two classes that must never vanish.
+        self.assertIn("TruckParkSpur", names)
+        self.assertTrue(any("Forecourt" in n or "Apron" in n or "Park" in n for n in names),
+                        f"no paved area is named among {sorted(names)}")
+        for entry in omitted:
+            self.assertTrue(entry.get("why"), f"{entry['name']} is skipped without a reason")
+            self.assertNotIn('"', entry["name"], "a C# string literal leaked its quotes")
+
+    def test_a_facing_is_read_never_assumed(self):
+        """Write-back contract §2: the count is the sheet's, and the sheet says how many.
+
+        Also pins the two type rulings the reference package settled: `facing` is a compass
+        NAME and `facingIndex` is the baked step, so the integer never lands in `facing`; and
+        `facing` stays null because turning a step into a bearing is the sign error that put the
+        schoolhouse door 92 degrees off the green.
+        """
+        repo = Repo(REPO)
+        for name, scene, height in hh_scene_export.REGIONS:
+            doc = hh_scene_export.export_region(repo, name, scene, height)
+            indexed = 0
+            for entity in doc["entities"]:
+                sprite = (entity.get("x-sprite") or {}).get("name") or ""
+                self.assertIsNone(entity["facing"], "a bearing was derived from an index")
+                index = entity["facingIndex"]
+                if index is None:
+                    # Absence is meaningful: legacy single sprites end `_0`, with no `_d` at all.
+                    self.assertNotRegex(sprite or "x", r"_d\d+(_|$)", f"{name} {sprite}")
+                    continue
+                indexed += 1
+                self.assertIsInstance(index, int)
+                self.assertRegex(sprite, r"_d\d+(_|$)", f"{name} {sprite}")
+                if "x-facings" in entity:
+                    self.assertLess(index, entity["x-facings"], f"{name} {sprite}")
+            self.assertGreater(indexed, 0, f"{name} resolved no facing at all")
+            for entity in doc["entities"]:
+                if "x-facings" in entity:
+                    self.assertGreater(entity["x-facings"], 0, name)
+                    self.assertTrue(entity.get("x-facingsSource"),
+                                    "a count with no declaration behind it")
+
     def test_the_output_is_valid_json(self):
         repo = Repo(REPO)
         for name, scene, height in hh_scene_export.REGIONS:
