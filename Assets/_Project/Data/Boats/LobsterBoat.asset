@@ -41,3 +41,6 @@ MonoBehaviour:
   Helm: {fileID: 11400000, guid: 9e4b7a02c1d54e8fa73b6d20c5091a33, type: 2}
   HelmAheadNotches: 0
   HelmAsternNotches: 0
+  FuelCapacityLitres: 85
+  FuelGrade: diesel
+  FullThrottleLitresPerHour: 105

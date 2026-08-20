@@ -42,3 +42,6 @@ MonoBehaviour:
   HelmAheadNotches: 0
   HelmAsternNotches: 0
   CanRowHome: 1
+  FuelCapacityLitres: 12
+  FuelGrade: gas
+  FullThrottleLitresPerHour: 28
