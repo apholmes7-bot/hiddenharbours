@@ -78,7 +78,8 @@
       "minElevation": -4.0,
       "maxElevation": 6.0,
       "texture": "Assets/_Project/Data/Terrain/StPetersSeabed_HeightTex.png",
-      "textureSha256": "b0f629f3d5fcc9775de9c5407dad80094fcf1edad2d2e7761fbfd59d9a94debf"
+      "textureSha256": "b0f629f3d5fcc9775de9c5407dad80094fcf1edad2d2e7761fbfd59d9a94debf",
+      "textureBytesRead": false
     }
   },
   "entities": [
@@ -38543,7 +38544,8 @@
       "minElevation": -4.0,
       "maxElevation": 6.0,
       "texture": "Assets/_Project/Data/Terrain/StPetersSeabed_HeightTex.png",
-      "textureSha256": "b0f629f3d5fcc9775de9c5407dad80094fcf1edad2d2e7761fbfd59d9a94debf"
+      "textureSha256": "b0f629f3d5fcc9775de9c5407dad80094fcf1edad2d2e7761fbfd59d9a94debf",
+      "textureBytesRead": false
     },
     "readFrom": {
       "regionFrame": "Assets/_Project/Data/Regions/*.asset (source of truth)",

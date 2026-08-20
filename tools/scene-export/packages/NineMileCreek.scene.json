@@ -1772,7 +1772,8 @@
       "minElevation": -6.0,
       "maxElevation": 6.0,
       "texture": "Assets/_Project/Data/Terrain/NineMileCreekSeabed_HeightTex.png",
-      "textureSha256": "c314d79769434652632f8a842bea5332a97c081dd34c1f199f2ef58c2866bf29"
+      "textureSha256": "c314d79769434652632f8a842bea5332a97c081dd34c1f199f2ef58c2866bf29",
+      "textureBytesRead": false
     }
   },
   "entities": [
@@ -12420,7 +12421,8 @@
       "minElevation": -6.0,
       "maxElevation": 6.0,
       "texture": "Assets/_Project/Data/Terrain/NineMileCreekSeabed_HeightTex.png",
-      "textureSha256": "c314d79769434652632f8a842bea5332a97c081dd34c1f199f2ef58c2866bf29"
+      "textureSha256": "c314d79769434652632f8a842bea5332a97c081dd34c1f199f2ef58c2866bf29",
+      "textureBytesRead": false
     },
     "readFrom": {
       "regionFrame": "Assets/_Project/Data/Regions/*.asset (source of truth)",

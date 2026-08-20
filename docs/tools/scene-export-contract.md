@@ -138,6 +138,22 @@ that wrote it. A second run on a Windows full-LFS checkout found three ways it d
   still produce this document", not "is your working tree LF" — and `.gitattributes` pins the
   packages to LF as well.
 
+A fourth is not a bug but a boundary, and it needs stating plainly: **determinism is per-commit
+*and* per-LFS-state.** The seabed textures are Git LFS objects, so the same commit exports a
+contoured ground where their bytes are present and an empty one where they are pointers (§7.3).
+Both are correct for what they could read. Two consequences:
+
+- Every package stamps `x-provenance.heightMap.textureBytesRead` (and the same flag under
+  `terrain.x-heightMap`), so which of the two you are holding is a fact in the file rather than
+  something to infer from whether the ground looks empty.
+- `--check` names that cause instead of printing a bare `STALE`, which would otherwise send a
+  reader hunting for a scene re-bank that never happened.
+
+This is not hypothetical for CI: `.github/workflows/ci.yml` runs an unscoped `git lfs pull`, so
+**a `--check` gate wired into that job would fail against packages generated without the bytes.**
+Closing it properly means regenerating the packages in an LFS-present checkout — which would also
+ship the real coast rather than an empty layer, and is the better fix of the two.
+
 
 ## 7. Making the package renderable
 

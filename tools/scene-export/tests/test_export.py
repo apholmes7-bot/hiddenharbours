@@ -531,6 +531,59 @@ class DeterminismTests(unittest.TestCase):
             text = package.dumps(hh_scene_export.export_region(repo, name, scene, height))
             self.assertNotIn(head, text, f"{name} pins the checked-out commit")
 
+    def test_every_package_stamps_whether_the_height_bytes_were_read(self):
+        """Determinism here is per-commit AND per-LFS-state; the file has to say which it is.
+
+        The seabed textures are Git LFS objects. The same commit exports a contoured ground
+        where their bytes are present and an empty one where they are pointers — both correct
+        for what they could read. Without this flag the two are indistinguishable in the file.
+        """
+        repo = Repo(REPO)
+        for name, scene, height in hh_scene_export.REGIONS:
+            doc = hh_scene_export.export_region(repo, name, scene, height)
+            stamped = doc["x-provenance"]["heightMap"]["textureBytesRead"]
+            self.assertIsInstance(stamped, bool, f"{name} does not stamp textureBytesRead")
+            # The same flag reaches the terrain block, so a reader of the layer sees it too.
+            self.assertEqual(doc["terrain"]["x-heightMap"]["textureBytesRead"], stamped, name)
+            ground = doc["terrain"]["layers"]["ground"]
+            painted = any(value for value, _ in ground["rle"])
+            self.assertEqual(painted, stamped,
+                             f"{name}: ground content disagrees with the stamp")
+            self.assertEqual("x-unavailable" not in ground, stamped, name)
+
+    def test_check_names_an_lfs_state_difference_instead_of_a_bare_stale(self):
+        """A checkout difference must not read as a scene re-bank — CI pulls LFS, this repo does."""
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Repo(REPO)
+            name, scene, height = hh_scene_export.REGIONS[0]
+            doc = hh_scene_export.export_region(repo, name, scene, height)
+            filename = f"{doc['region']['sceneName']}.scene.json"
+            # Bank a package claiming the opposite LFS state, and nothing else changed.
+            flipped = json.loads(package.dumps(doc))
+            was = flipped["x-provenance"]["heightMap"]["textureBytesRead"]
+            flipped["x-provenance"]["heightMap"]["textureBytesRead"] = not was
+            with open(os.path.join(tmp, filename), "w", encoding="utf-8", newline="\n") as fh:
+                json.dump(flipped, fh)
+            cause = hh_scene_export._lfs_state_differs(
+                [(filename, package.dumps(doc))], tmp)
+            self.assertIsNotNone(cause, "an LFS-state flip was not diagnosed")
+            self.assertIn("Git LFS", cause)
+            self.assertIn("not a stale scene", cause)
+
+    def test_check_stays_quiet_about_lfs_when_the_state_matches(self):
+        """The diagnosis must not fire on ordinary staleness, or it becomes noise."""
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Repo(REPO)
+            name, scene, height = hh_scene_export.REGIONS[0]
+            doc = hh_scene_export.export_region(repo, name, scene, height)
+            filename = f"{doc['region']['sceneName']}.scene.json"
+            stale = json.loads(package.dumps(doc))
+            stale["entities"] = stale["entities"][:5]  # stale in content, same LFS state
+            with open(os.path.join(tmp, filename), "w", encoding="utf-8", newline="\n") as fh:
+                json.dump(stale, fh)
+            self.assertIsNone(
+                hh_scene_export._lfs_state_differs([(filename, package.dumps(doc))], tmp))
+
     def test_the_output_is_valid_json(self):
         repo = Repo(REPO)
         for name, scene, height in hh_scene_export.REGIONS:

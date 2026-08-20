@@ -131,6 +131,14 @@ def _terrain(repo, region, cols, rows, origin_nw, provenance):
     if ground_grid is not None:
         painted["ground"] = ground_grid
     notes["ground"] = ground_note
+    # Stamped in place so both x-provenance.heightMap and terrain.x-heightMap carry it: the
+    # height texture is a Git LFS object, so the SAME commit exports a contoured ground where
+    # the bytes are present and an empty one where they are not. Determinism is per-commit AND
+    # per-LFS-state; without this flag the two are indistinguishable in the file, and --check
+    # would report a plain "STALE" that sends a reader hunting for a scene re-bank.
+    height = provenance.get("heightMap")
+    if height is not None:
+        height["textureBytesRead"] = ground_grid is not None
 
     layers, tiles = {}, {}
     for name, code, order, label in TERRAIN_LAYERS:

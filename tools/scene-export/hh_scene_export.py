@@ -13,6 +13,7 @@ run ids, no dictionary-order dependence. Re-running on the same commit rewrites 
 
 import argparse
 import hashlib
+import json
 import os
 import sys
 
@@ -102,9 +103,45 @@ def main(argv=None):
     if args.check:
         if failures:
             print("STALE: " + ", ".join(failures), file=sys.stderr)
+            cause = _lfs_state_differs(written, out_dir)
+            if cause:
+                print(cause, file=sys.stderr)
             return 1
         print(f"up to date ({len(written)} files)")
     return 0
+
+
+def _lfs_state_differs(written, out_dir):
+    """The one staleness cause that is about the checkout, not the commit — named, not guessed.
+
+    The seabed textures are Git LFS objects. Export them where the bytes are present and the
+    ground layer is a contour; export the same commit where they are pointers and it is empty.
+    Both are correct for what they could read, so a reader who sees a bare STALE would go looking
+    for a scene re-bank that never happened. Returns a message only when the flag actually flips.
+    """
+    for filename, text in written:
+        if not filename.endswith(".scene.json"):
+            continue
+        target = os.path.join(out_dir, filename)
+        if not os.path.exists(target):
+            continue
+        try:
+            with open(target, "r", encoding="utf-8") as fh:
+                was = json.load(fh)
+            now = json.loads(text)
+        except (ValueError, OSError):
+            continue
+        was_read = (was.get("x-provenance", {}).get("heightMap") or {}).get("textureBytesRead")
+        now_read = (now.get("x-provenance", {}).get("heightMap") or {}).get("textureBytesRead")
+        if was_read is not None and now_read is not None and was_read != now_read:
+            here, there = ("present", "absent") if now_read else ("absent", "present")
+            return (
+                f"  cause: height-map bytes are {here} in this checkout but were {there} when "
+                f"the committed packages were generated (Git LFS). The ground layer is contoured "
+                f"in one and empty in the other. This is a checkout difference, not a stale "
+                f"scene \u2014 regenerate deliberately, or compare from a matching checkout."
+            )
+    return None
 
 
 if __name__ == "__main__":
