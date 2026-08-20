@@ -98,13 +98,37 @@ namespace HiddenHarbours.World
         }
 
         /// <summary>
+        /// How far a host's rotation may sit from identity before <see cref="Configure"/> refuses
+        /// (degrees). Loose enough to survive the float noise of a transform assembled from a parent
+        /// chain, tight enough that no deliberate turn gets through — a single degree of yaw on a 15 m
+        /// run already moves its far end by a quarter of a metre.
+        /// </summary>
+        public const float RotationToleranceDegrees = 0.01f;
+
+        /// <summary>Companion of <see cref="RotationToleranceDegrees"/> for scale — a tenth of a
+        /// percent, which no intentional resize is.</summary>
+        public const float ScaleTolerance = 0.001f;
+
+        /// <summary>
         /// Adopt <paramref name="worldRuns"/> and rebuild the colliders. World points in, because every
         /// caller has world geometry (a yard polygon, a quay line, a cliff foot) and converting in one
         /// place is how the conversion cannot be got wrong in five.
+        ///
+        /// <para><b>⚠ THE TRANSFORM CONTRACT IS TRANSLATION-ONLY, AND IT IS ASSERTED HERE RATHER THAN
+        /// ASSUMED.</b> This method and <see cref="WorldRuns"/> convert with
+        /// <c>point − transform.position</c> — a SHIFT. The <see cref="PolygonCollider2D"/> paths those
+        /// points become are transformed by the host's FULL TRS at physics time. On a flat, unscaled
+        /// host the two agree exactly; on a rotated or scaled one they disagree SILENTLY, and the shape
+        /// of that bug is a wall drawn in one place and blocking in another — a player who "sometimes"
+        /// slips through, which reads as a physics glitch rather than as a modelling mistake. No caller
+        /// rotates one of these today, so the assertion costs nothing now; as the one wall system this
+        /// component will outlive every caller that exists, and the assumption is worth more written
+        /// down than remembered.</para>
         /// </summary>
         public void Configure(IEnumerable<IReadOnlyList<Vector2>> worldRuns, float thicknessMetres = DefaultThicknessMetres,
                               string reason = null)
         {
+            AssertTranslationOnly();
             _runs.Clear();
             _thicknessMetres = Mathf.Max(0.01f, thicknessMetres);
             if (reason != null) _reason = reason;
@@ -122,6 +146,37 @@ namespace HiddenHarbours.World
             }
 
             Rebuild();
+        }
+
+        /// <summary>
+        /// Refuse a host whose transform is anything but a translation. See <see cref="Configure"/> for
+        /// why: the run→collider conversion is a shift and the physics is a full TRS, so a rotated or
+        /// scaled host makes the drawn wall and the blocking wall two different shapes with no error.
+        ///
+        /// <para>Checked in WORLD terms (<c>transform.rotation</c>, <c>transform.lossyScale</c>) rather
+        /// than local, because a flat child of a rotated parent is exactly as broken as a rotated
+        /// object — and it is the case somebody actually reaches by parenting.</para>
+        /// </summary>
+        public void AssertTranslationOnly()
+        {
+            float yaw = Quaternion.Angle(transform.rotation, Quaternion.identity);
+            Vector3 scale = transform.lossyScale;
+            bool scaled = Mathf.Abs(scale.x - 1f) > ScaleTolerance ||
+                          Mathf.Abs(scale.y - 1f) > ScaleTolerance ||
+                          Mathf.Abs(scale.z - 1f) > ScaleTolerance;
+
+            if (yaw <= RotationToleranceDegrees && !scaled) return;
+
+            throw new InvalidOperationException(
+                $"[PropertyBoundary] '{name}' sits on a transform that is not a pure translation — " +
+                $"rotation {yaw:0.###}° from identity, world scale {scale}. This component stores its " +
+                "runs as an OFFSET from transform.position and hands the same points to " +
+                "PolygonCollider2D, which applies the full TRS at physics time. Under a turn or a " +
+                "resize the fence you can see and the wall you cannot walk through become two " +
+                "different shapes, silently. Put the boundary on a flat, unscaled object (parenting " +
+                "with worldPositionStays:false under a flat root is enough) — or, if a rotated host is " +
+                "genuinely wanted one day, make WorldRuns and Rebuild agree by transforming through " +
+                "the matrix in BOTH, and change this assertion in the same commit.");
         }
 
         /// <summary>

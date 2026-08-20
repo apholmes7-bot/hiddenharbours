@@ -181,6 +181,19 @@ namespace HiddenHarbours.Tests.RigBaking
                          "WharfDecor", AzimuthConvention.CounterClockwise),
             new Snapshot("wharfIso", "docs/art/rigs/iso-rig-pack/wharf-kit-iso/wharfIsoRig.js",
                          "WharfIso", AzimuthConvention.CounterClockwise),
+            // Added by the dooryard & landscaping kit (drop 2026-08-20, imported #604, baked here).
+            // Standalone: its bed pieces WOULD compose with globalThis.Flowers/Shrubs if those were
+            // loaded, but nothing this repo bakes from it is a bed and YardKit passes compose:false
+            // explicitly, so declaring a prerequisite would only make the sheets depend on load order.
+            // ⚠️⚠️ COUNTER-CLOCKWISE HERE CONTRADICTS THE KIT'S OWN SIDECAR, ON PURPOSE. The rig's
+            // gameplay sidecar publishes contract.facings = [N,NE,E,SE,S,SW,W,NW] against its own dir
+            // index; the MEASURED bearings of the face axis run the other way (N,NW,W,SW,S,SE,E,NE) and
+            // the two agree only at dir 0 and dir 4. Flipping this row to Clockwise compiles, bakes and
+            // ships eight good cells in reverse order — every fence in both regions facing inward with
+            // no error anywhere. YardRegistrationProbe re-measures at every bake and refuses on a
+            // disagreement with this line.
+            new Snapshot("yardIso", "docs/art/rigs/yard-landscaping-kit/yardIsoRig.js",
+                         "YardIso", AzimuthConvention.CounterClockwise),
         };
 
         // ---- the registration table ------------------------------------------------------------

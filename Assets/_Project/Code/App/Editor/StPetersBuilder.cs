@@ -1536,6 +1536,23 @@ namespace HiddenHarbours.App.Editor
             int ginnyPlotBuildings =
                 StPetersGinnyPlot.Place(terrain, waterSprite, core.PlayerGo.transform);
 
+            // --- THE DOORYARDS (the lawn ruling's third derivation) ---------------------------------------
+            // #604 authored one yard POLYGON per property and made the grass gates read it — the mow line
+            // and the wild-grass suppression. This is the third thing that polygon says: the FENCE LINE.
+            // One authored fact, three derivations, so a lawn painted to one edge and a fence standing on
+            // another is a shape this data cannot take.
+            //
+            // ⚠ IT RUNS AFTER THE BUILDINGS AND THAT ORDER IS NOT LOAD-BEARING — the yards derive from
+            // StPetersYards, a pure function of authored constants, and none of them asks what actually
+            // got built. It is here because a yard is read against the house it belongs to, and putting
+            // the two together in this file is what makes that legible.
+            //
+            // ⚠ THE PIECES ARE AIMED FROM THE BAKE'S MEASURED FACING TABLE, never from the kit's own
+            // sidecar, whose facing list is mirrored against its art (IMPORT.md §6). YardDressing refuses
+            // to place anything at all if that measured table is missing.
+            var dooryards = YardDressing.Place(StPetersYards.Yards, parent: null, regionLabel: "St Peters");
+            Debug.Log($"[StPetersBuilder] the dooryards: {dooryards}");
+
             // --- THE STORE'S COUNTER (§7.5's other half: the placement) -----------------------------------
             // #356 built the island general store's ECONOMY — the StPetersStore market channel that pays a
             // worse price level than the creek, the clam licence, the counted bait/ice stock — and said so
