@@ -257,9 +257,9 @@ document and not an optional enrichment.
   "edits": {
     // "at" is the BINDING PIN — the entity's position as exported (§3.3 rule 2).
     // Required on every entry. "pos" is a CHANGE, and only present when the edit moves it.
-    "Village_001":   { "at": [-148, 196], "facing": 6 },                       // CreekHouses/redSaltbox — turned
-    "Village_002":   { "at": [-208, 60],  "body": "blue", "size": 0.55 },      // CreekHouses/sageCottage — repainted + grown
-    "Shopfront_001": { "at": [81, 121],   "facing": 2, "pos": [80.5, 121.0] }  // CreekShops/fishMarket — turned + nudged
+    "e2c81a294ec7": { "at": [-148, 196], "facing": 6 },                       // CreekHouses/redSaltbox — turned
+    "0250fd9b1c0f": { "at": [-208, 60],  "body": "blue", "size": 0.55 },      // CreekHouses/sageCottage — repainted + grown
+    "554a7958e6d8": { "at": [81, 121],   "facing": 2, "pos": [80.5, 121.0] }  // CreekShops/fishMarket — turned + nudged
   },
   "adds":    [],
   "removes": [],
@@ -307,16 +307,36 @@ committed packages:
 | worst case | `NineMileCreekWharf/Fittings/Fitting_bollard` — **14 entities** | `ShorePlants/Eelgrass` — **94 entities** |
 | unique `(x-path, pos)` pairs | **all of them** | **all of them** |
 
-The `id` is unique but **positional**: the exporter assigns it walking the scene, so `RedMaple_007`
-is the seventh red maple the walk met and becomes a different tree the moment the noise field, the
-threshold or the terrain moves — with no error anywhere. The `x-path` is stable but **not unique**:
-`IslandWoods/RedMaple_3` is a *species-variant* name the builder reuses, and ninety-four eelgrass
-plants share one path outright. Neither handle alone can bind an edit; an edits file that trusts
-either is a note pinned to a crowd.
+The `x-path` is stable but **not unique**: `IslandWoods/RedMaple_3` is a *species-variant* name the
+builder reuses, and ninety-four eelgrass plants share one path outright. On its own it is a note
+pinned to a crowd.
+
+**The `id` closes that, because it is the pair.** It was once an export-local ordinal — `RedMaple_007`
+was the seventh red maple the scene walk met, and became a different tree the moment the noise
+field moved, with no error anywhere. Since the export's id rework it is
+`sha256("{x-path}|{x}|{y}")[:12]`, twelve hex characters over the entity's path and its exported
+position rounded to the millimetre. That is precisely the `(x-path, position)` pair this section
+concludes is the only unique handle, so the two rules below now rest on the id itself rather than
+on a convention the two programs have to keep agreeing about. It carries **no family name**: a
+vocabulary ruling that renames a family must never re-key a row.
 
 **`(x-path, position)` is unique in both packages, with zero collisions** — which is why the pin in
 rule 2 is not merely a staleness guard. For authored rows it catches drift; for generated ones it is
 the only thing that identifies the entity at all.
+
+**An entity that moves re-keys, and that is a property rather than a defect.** Because position is
+part of the digest, a builder that shifts a shed gives it a new `id` on the next export and the old
+one resolves to nothing at all — so the failure reads *"no such id in this package"* rather than
+*"the id is here but the thing moved"*. The contract needs no diagnostic for the second case,
+because no consumer is ever in a position to need one:
+
+- an edits document is valid **only** against its sha-pinned `basedOn` package (rule 1), so inside
+  a single round trip every id it names resolves by construction; and
+- a successful write-back is followed by re-export and re-import — the editor side requires package
+  bytes and refuses to work from a restored autosave — so nothing tracks one entity *across* a move.
+
+"Id not found against current state" is therefore a staleness signal that rule 1 already catches
+earlier and more precisely, not an error class of its own.
 
 Two rules follow, and they are the whole of the file's safety:
 
@@ -399,12 +419,12 @@ A refusal is a **document**, not a log line, and the tool is expected to show it
   "schema": "hiddenharbours.scene-edits-result/1",
   "applied": [],
   "refused": [
-    { "id": "Village_002", "field": "body", "value": "seafoam",
+    { "id": "0250fd9b1c0f", "field": "body", "value": "seafoam",
       "reason": "not in the rig's body table",
       "allowed": ["greyShingle","white","cream","red","sage","blue"],
       "source": "docs/art/rigs/houseIsoRig.js — const BODY" },
-    { "id": "RedMaple_007",
-      "reason": "unbound — the entity now at this id is 4.81 m from this entry's `at`; scattered entities have positional ids (§3.3)" }
+    { "id": "9f2c41ab77e0",
+      "reason": "unbound — no entity in this package carries this id; the package has moved on from the one this file was computed against (§3.3)" }
   ]
 }
 ```
@@ -510,9 +530,9 @@ and it is therefore the vocabulary a diff is computed in. Two consequences:
 
 **The two gates are independent, and both must pass.** "Does this entity resolve to a rig?" (this
 section) and "does this entity have a table row to edit?" (§1.2) are different questions with
-different answers, and an entity can fail either alone. `RedMaple_007` resolves cleanly to
-`treeIsoRig2` and still has no row; `Cottage_001` sits in an authored builder line and still resolves
-to no rig. An importer that checks one and assumes the other will accept edits it cannot honour.
+different answers, and an entity can fail either alone. A scattered `IslandWoods/RedMaple_3`
+resolves cleanly to `treeIsoRig2` and still has no row; a `CreekHouses/Cottage` sits in an authored
+builder line and still resolves to no rig. An importer that checks one and assumes the other will accept edits it cannot honour.
 
 ### 6.3 Road layers are rasterized from the route polyline tables; full coverage required
 
@@ -570,14 +590,22 @@ is the whole argument for doing the LFS-present re-export — not in what he may
 Nothing below is a hidden assumption; each is a thing that must exist before the round trip closes,
 with whose it is.
 
-1. **An explicit `facing` field in the export.** The index is already there, encoded in
-   `x-sprite.name`'s `_d<n>` suffix (§2), and the round trip works by reading it — but a parsed
-   suffix is a convention two programs have to keep agreeing about, and a field is not.
-   *Export lane; small, and it makes §5's check 1 a field compare instead of a string parse.*
-2. **A builder-table back-reference in the export.** Today the only handle from an entity to its
-   source row is `x-path`, and §3.3 shows it is exact for authored rows and an ordinal for generated
-   ones. An `x-origin` naming the file and the row key would make binding explicit instead of
-   inferred. *Export lane; would let §3.3 rule 2 relax from a guard to a cross-check.*
+1. ~~**An explicit `facing` field in the export.**~~ **Done.** The export now carries
+   `facingIndex` — the baked step, read from `x-sprite.name`'s `_d<n>` — in the reference
+   package's own slot between `pos` and `flipX`, with `x-facings` beside it giving the count
+   **only where a sidecar declares one** (§2's "read the count, never assume it"), and
+   `x-facingsSource` naming the file it was read from. `facing` is a compass *name* in the
+   reference package, not an integer, and ships **null**: deriving a bearing from a step is the
+   sign error `BuildingFacing` already records. §5's check 1 is now a field compare.
+2. **A builder-table back-reference in the export** — and **not** under `x-origin`, ruled
+   2026-08-20. `x-origin` ships as the builder's own **scene root**, whole and unmodified, which
+   is what the editor's zone question actually needs: *may the owner move this?* Inferring that by
+   parsing `x-path` misclassified any row whose key ends in a digit — 248 at Nine Mile Creek, 447
+   at St Peters — which told the owner he could not move a building he can.
+
+   File-and-row provenance is a **different fact** and must not share the key; one key carrying two
+   meanings is how a reader ends up confidently wrong. Its home is `x-provenance`. Still owed as
+   its own field. *Export lane; would let §3.3 rule 2 relax from a guard to a cross-check.*
 3. **Override lists in the builders** for foliage and wharf pieces. §4.3. *world-content /
    tools-editor, with a backlog item — this is the gate on two of the owner's six asks.*
 4. **The importer itself.** *tools-editor, in the build lane where Unity lives.*
