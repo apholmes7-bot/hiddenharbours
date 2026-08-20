@@ -48,19 +48,21 @@ namespace HiddenHarbours.Tests.EditMode
         /// and eats a ruled line — so these are failures for the WRITING lane rather than hard
         /// rendering limits.
         ///
-        /// <para>⚠ These mirror the notebook kit's published numbers, and they are defined HERE
-        /// rather than imported because the kit's C# constants (<c>NotebookKit</c>) land with the
-        /// art-import PR, which is parked awaiting a Unity bake. This lane must not depend on a
-        /// parked branch. When that PR lands, these three become <c>NotebookKit.StepCharsAtClosestTier</c>,
-        /// its title equivalent and <c>tabs.chip</c>'s label cap, and a test should assert the two
-        /// agree — a second definition of a shared number is exactly how content and layout drift
-        /// apart.</para>
+        /// <para>These were literals while <c>NotebookKit</c> sat on the parked art-import branch,
+        /// with a note that they must become the kit's own constants the day it landed — a second
+        /// definition of a shared number is exactly how content and layout drift apart. #563 landed
+        /// the kit, so that reconciliation is DONE: these are now the kit's published numbers read
+        /// from the kit, and there is nothing left to keep in step by hand.</para>
         /// </summary>
-        private const int StepCols = 31, TitleCols = 33, TabLabelCols = 5;
+        private const int StepCols = NotebookKit.StepCharsAtClosestTier,
+                          TabLabelCols = NotebookKit.ChipChars;
+
+        /// <inheritdoc cref="StepCols"/>
+        private static readonly int TitleCols = NotebookKit.TitleColsFor(NotebookKit.ClosestTierCols);
 
         /// <summary>The kit reserves at least this many ruled lines for an illustration frame and its
-        /// caption. Same provenance and same reconciliation note as the copy budget above.</summary>
-        private const int SlotMinLines = 5;
+        /// caption. Same provenance as the copy budget above, reconciled the same day.</summary>
+        private const int SlotMinLines = NotebookKit.PlateMinLines;
 
         private static List<T> LoadAll<T>() where T : Object
         {
@@ -204,7 +206,7 @@ namespace HiddenHarbours.Tests.EditMode
             var quests = LoadAll<QuestDef>();
 
             Assert.That(quests, Is.Not.Empty,
-                "no QuestDef assets found — the starter content should be under Data/Quests");
+                "no QuestDef assets found — the starter content should be under Data/Resources/Quests");
 
             var report = quests
                 .Select(q => (q, problems: Problems(q, known)))
@@ -221,7 +223,7 @@ namespace HiddenHarbours.Tests.EditMode
             var pages = LoadAll<KnowledgePageDef>();
 
             Assert.That(pages, Is.Not.Empty,
-                "no KnowledgePageDef assets found — the starter content should be under Data/Knowledge");
+                "no KnowledgePageDef assets found — the starter content should be under Data/Resources/Knowledge");
 
             var report = pages
                 .Select(k => (k, problems: Problems(k)))
@@ -250,6 +252,79 @@ namespace HiddenHarbours.Tests.EditMode
                 .Select(g => $"{g.Key} × {g.Count()}").ToList();
 
             Assert.That(dupes, Is.Empty, "duplicate knowledge ids: " + string.Join(", ", dupes));
+        }
+
+        // ---- ⭐ the book can only see what is inside its Resources root ---------------------------
+
+        /// <summary>
+        /// <b>An asset authored outside the Resources root is INVISIBLE to the notebook, and nothing
+        /// else says so.</b>
+        ///
+        /// <para>The book installs itself and has no builder to hand it anything, so it loads its Defs
+        /// with <c>Resources.LoadAll</c> — which reaches only inside a folder literally named
+        /// <c>Resources</c>, and which reports a miss as an empty list rather than an error. Every other
+        /// check in this file sweeps the whole of <c>Data/</c>, so a quest dropped at the old
+        /// <c>Data/Quests/</c> path validates perfectly and then simply never appears on the page. That
+        /// is the worst shape a content bug can take: the author did nothing wrong that anything told
+        /// them about, and the symptom is an absence.</para>
+        ///
+        /// <para>So this compares the two sets directly — what the AssetDatabase sweep finds under
+        /// <c>Data/</c> against what the runtime loader actually returns — and names the offending
+        /// paths. Both directions matter: an asset the sweep sees and the loader does not is misplaced,
+        /// and one the loader sees and the sweep does not would mean the roots have come apart.</para>
+        /// </summary>
+        [Test]
+        public void EveryQuestIsSomewhereTheBookCanActuallyLoadIt()
+        {
+            AssertTheLoaderSeesEverything<QuestDef>(
+                NotebookContentSource.QuestsFolderPath,
+                NotebookContentSource.Quests().Select(q => q.Id),
+                q => q.Id);
+        }
+
+        /// <inheritdoc cref="EveryQuestIsSomewhereTheBookCanActuallyLoadIt"/>
+        [Test]
+        public void EveryKnowledgePageIsSomewhereTheBookCanActuallyLoadIt()
+        {
+            AssertTheLoaderSeesEverything<KnowledgePageDef>(
+                NotebookContentSource.KnowledgeFolderPath,
+                NotebookContentSource.Knowledge().Select(k => k.Id),
+                k => k.Id);
+        }
+
+        /// <summary>
+        /// The shared arm of the two tests above. Reported as PATHS rather than ids, because "move this
+        /// file" is the fix and the id is not what is wrong with it.
+        /// </summary>
+        private static void AssertTheLoaderSeesEverything<T>(string expectedFolder,
+                                                             IEnumerable<string> loadedIds,
+                                                             System.Func<T, string> idOf)
+            where T : Object
+        {
+            var onDisk = LoadAll<T>();
+            Assert.That(onDisk, Is.Not.Empty,
+                $"no {typeof(T).Name} assets found at all — the starter content should be under " +
+                expectedFolder);
+
+            var misplaced = onDisk
+                .Select(a => AssetDatabase.GetAssetPath(a))
+                .Where(path => !path.StartsWith(expectedFolder + "/", System.StringComparison.Ordinal))
+                .OrderBy(path => path, System.StringComparer.Ordinal)
+                .ToList();
+
+            Assert.That(misplaced, Is.Empty,
+                $"⭐ These {typeof(T).Name} assets are NOT under {expectedFolder}, so the notebook " +
+                "loads them with Resources.LoadAll and finds nothing — they validate cleanly here and " +
+                "then never appear on the page. Move them:\n  " + string.Join("\n  ", misplaced));
+
+            // The reverse arm, and the one that would catch the roots coming apart rather than one
+            // asset being in the wrong place.
+            var sweptIds = onDisk.Select(idOf).OrderBy(i => i, System.StringComparer.Ordinal).ToArray();
+            var loaded = loadedIds.OrderBy(i => i, System.StringComparer.Ordinal).ToArray();
+
+            Assert.That(loaded, Is.EqualTo(sweptIds),
+                $"the {typeof(T).Name}s on disk and the ones the book's own loader returns disagree — " +
+                $"is {expectedFolder} still inside a folder named 'Resources'?");
         }
 
         [Test]

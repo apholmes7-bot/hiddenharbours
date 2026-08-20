@@ -28,7 +28,10 @@ namespace HiddenHarbours.World
 
     /// <summary>
     /// <b>A QUEST, AS DATA — AND AS A VIEW OVER FLAGS THAT ALREADY EXIST.</b> One asset per file under
-    /// <c>Data/Quests</c>, keyed by a stable, append-only <see cref="Id"/> (<c>quest.snake_case</c>).
+    /// <c>Data/Resources/Quests</c>, keyed by a stable, append-only <see cref="Id"/>
+    /// (<c>quest.snake_case</c>). Under <c>Data/</c> because that is where content lives and where
+    /// validation sweeps; under a <c>Resources</c> root because the notebook installs itself and reads
+    /// these at runtime (<see cref="NotebookContentSource"/>) with no builder to hand them over.
     ///
     /// <para><b>⭐ NO QUEST STATE IS SAVED, ANYWHERE — and that is the whole design.</b> A quest is not
     /// a record the game writes to; it is a READING of the flags the world already keeps (dialogue
