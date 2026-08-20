@@ -56,6 +56,17 @@ namespace HiddenHarbours.World
         public const string ArtFolder = NotebookKit.ArtFolder;
 
         /// <summary>
+        /// The book's own key — <c>N</c> for the Notebook, by the owner's ruling (2026-08-20). It
+        /// OPENS the shut book from anywhere no modal owns the screen, and it is one more way to shut
+        /// the open one. The tide table, which held N since VS-06, moved to Tab in the same ruling.
+        ///
+        /// <para>Published as a constant so the one other place that must not sit on it — the tide
+        /// table's default, and whatever binds a letter next — can be tested against it rather than
+        /// against a second spelling of <c>Key.N</c>.</para>
+        /// </summary>
+        public const Key OpenKey = Key.N;
+
+        /// <summary>
         /// The room the book is allowed, as a fraction of the screen.
         ///
         /// <para>The kit publishes the consequence rather than leaving it to be discovered: at the
@@ -482,8 +493,13 @@ namespace HiddenHarbours.World
         // ---- the frame --------------------------------------------------------------------------------
 
         /// <summary>
-        /// The book's own keys, read only while it is up. Every one of them is a key that already
-        /// exists: the book binds NOTHING new, because the dev-key ledger is spent A–Z.
+        /// The book's keys. While it is SHUT exactly one thing is read — <see cref="OpenKey"/>, the
+        /// owner's 2026-08-20 ruling (the ledger's N freed up by moving the tide table to Tab), gated
+        /// like every letter key must be: deaf while a text field owns the keyboard
+        /// (<see cref="HelmKeyCapture"/> — naming a waypoint must not open the book), and refused
+        /// while any modal holds <see cref="InteractionGate"/> (the pause menu, a dialogue, the
+        /// wardrobe — the pause row's <c>NotebookRequested</c> stays the door in from there). While
+        /// it is UP, every other key it reads is a key that already exists.
         ///
         /// <para><b>Esc / East shuts it</b>, the close key every overlay in this project already uses
         /// (the chartplotter, the sounder, the tide table, the wardrobe).</para>
@@ -503,20 +519,35 @@ namespace HiddenHarbours.World
         /// </summary>
         private void Update()
         {
-            if (!IsOpen) return;
+            Keyboard kb = Keyboard.current;
+
+            if (!IsOpen)
+            {
+                if (kb != null && kb[OpenKey].wasPressedThisFrame
+                    && !HelmKeyCapture.IsCapturing
+                    && !InteractionGate.IsBlocked)
+                {
+                    Open();
+                }
+                return;
+            }
 
             // ⭐ THE PRESS THAT OPENED THE BOOK IS STILL DOWN. Interact is read in other components'
             // Updates in an order nobody defines, so without this a book opened with E at a desk would be
-            // shut by the same E on the same frame and never appear at all.
+            // shut by the same E on the same frame and never appear at all. The same guard covers N:
+            // the press that just opened it must not also close it.
             if (Time.frameCount == _openedFrame) return;
 
-            Keyboard kb = Keyboard.current;
             Gamepad pad = Gamepad.current;
 
-            if (CancelPressed(kb, pad) || InteractPressed(kb, pad)) { Close(); return; }
+            if (CancelPressed(kb, pad) || InteractPressed(kb, pad) || OpenKeyPressed(kb)) { Close(); return; }
 
             DriveAxis(ReadAxis(kb, pad));
         }
+
+        /// <summary>The book's own key shuts it too — press N, put it away. See <see cref="OpenKey"/>.</summary>
+        private static bool OpenKeyPressed(Keyboard kb) =>
+            kb != null && kb[OpenKey].wasPressedThisFrame;
 
         /// <summary>Esc leaves it. East on a pad — the same pairing the wardrobe picker uses, so one
         /// gesture means "put it away" everywhere.</summary>
@@ -685,8 +716,12 @@ namespace HiddenHarbours.World
             {
                 int tabY = y + NotebookKit.TabTop + i * (NotebookKit.TabHeight + NotebookKit.TabGap);
 
+                // ⚠ TabChipWidth, not TabCol: the kit's chip is "the tab column plus the 9 px it
+                // stands proud of the fore-edge", and those 9 px are exactly what a five-character
+                // label needs — ChipChars × CellWidth = 25 px against TabCol's 22 px lane. Drawn at
+                // TabCol, TASKS overflowed its own chip (found on the 2026-08-20 eyeball proofs).
                 RectTransform chip = AddPiece(_bookRect, "Tab", _tab, x, tabY,
-                                              NotebookKit.TabCol, NotebookKit.TabHeight,
+                                              NotebookKit.TabChipWidth, NotebookKit.TabHeight,
                                               i == TabIndex ? GoldInk : TabInk);
 
                 // The chip clips at the kit's cap, applied here rather than at the model, so the full
@@ -695,7 +730,7 @@ namespace HiddenHarbours.World
                 if (label.Length > NotebookKit.ChipChars) label = label.Substring(0, NotebookKit.ChipChars);
 
                 AddText(chip, label, NotebookKit.TabPad, NotebookKit.TabPad - 1,
-                        NotebookKit.TabCol - 2 * NotebookKit.TabPad,
+                        NotebookKit.TabChipWidth - 2 * NotebookKit.TabPad,
                         i == TabIndex ? InkStrong : Ink);
             }
 
