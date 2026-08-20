@@ -47,7 +47,7 @@ namespace HiddenHarbours.Core
         /// owner tuning tide pacing would expect to re-price fuel, and nothing would report it. The boat
         /// moves at world metres per second in real time, so fuel is metered against REAL seconds of the
         /// engine actually turning, and litres-per-kilometre stays fixed no matter what the clock does.
-        /// <c>FuelBurnClockTests</c> is the guard.</para>
+        /// <c>FuelBurnTests</c> is the guard.</para>
         /// </summary>
         public const float SecondsPerHour = 3600f;
 
@@ -92,7 +92,7 @@ namespace HiddenHarbours.Core
         /// (<c>Time.fixedDeltaTime</c>), never a frame delta.</b> A frame-rate spike must not change how
         /// much fuel a crossing costs. That is the one implementation detail that can silently break
         /// determinism, it is cheap to get right, and it is invisible when wrong —
-        /// <c>FuelBurnIntegrationTests</c> is the guard.</para>
+        /// <c>FuelBurnTests</c> is the guard.</para>
         /// </summary>
         public static float LitresBurned(float litresPerHour, float deltaSeconds)
         {

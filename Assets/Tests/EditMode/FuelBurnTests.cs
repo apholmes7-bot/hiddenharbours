@@ -137,10 +137,12 @@ namespace HiddenHarbours.Tests.EditMode
         public void TheThrottleCurve_ReproducesTheOwnersTable()
         {
             // §9.6.1's "fraction of full-throttle burn" row, which is what the owner actually reads when
-            // deciding whether easing off should buy more or less range.
+            // deciding whether easing off should buy more or less range. The doc quotes it to two
+            // decimals, so the tolerance below is half a unit in its last place — tight enough that a
+            // re-tune of ThrottleExponent cannot slip through, loose enough to allow the rounding.
             var expected = new (float throttle, float fraction)[]
             {
-                (0f, 0.08f), (0.25f, 0.14f), (0.5f, 0.31f), (0.7f, 0.53f), (0.85f, 0.75f), (1f, 1.00f),
+                (0f, 0.08f), (0.25f, 0.14f), (0.5f, 0.31f), (0.7f, 0.53f), (0.85f, 0.74f), (1f, 1.00f),
             };
             float flatOut = FuelBurn.LitresPerHour(DoryR, 1f, 0f, 0f, 0f, Cfg);
             foreach (var (throttle, fraction) in expected)
