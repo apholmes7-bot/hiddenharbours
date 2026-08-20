@@ -191,6 +191,7 @@ namespace HiddenHarbours.Boats
         private bool _boatResolved;
 
         private Vector3 _baseLocalPosition;
+        private Quaternion _baseLocalRotation = Quaternion.identity;
         private bool _baseCached;
         private bool _posed;
 
@@ -473,10 +474,14 @@ namespace HiddenHarbours.Boats
             if (!_baseCached)
             {
                 _baseLocalPosition = t.localPosition;
+                _baseLocalRotation = t.localRotation;
                 _baseCached = true;
             }
 
-            t.localRotation = Quaternion.Euler(0f, 0f, pose.RollDegrees);
+            // COMPOSED on the base, not written over it — the same discipline BoatWaveMotion keeps
+            // for the hull's own visual. Identity on every wiring we have, so this costs nothing today
+            // and cannot silently un-rotate a room somebody parks at an angle later.
+            t.localRotation = _baseLocalRotation * Quaternion.Euler(0f, 0f, pose.RollDegrees);
             t.localPosition = _baseLocalPosition;
             if (pose.LiftMeters != 0f) t.position += new Vector3(0f, pose.LiftMeters, 0f);
             _posed = true;
@@ -492,7 +497,7 @@ namespace HiddenHarbours.Boats
 
             Transform t = PoseTarget();
             if (t == null) return;
-            t.localRotation = Quaternion.identity;
+            t.localRotation = _baseLocalRotation;
             t.localPosition = _baseLocalPosition;
         }
 
