@@ -24,9 +24,17 @@ namespace HiddenHarbours.Boats
     /// verb never offers itself. The playable build must run with zero hulls authored, and this is where
     /// that promise is kept.</para>
     ///
-    /// <para><b>⚠ Nothing here BURNS fuel.</b> The level only moves when someone fills or pours. Metering
-    /// the engine against the fixed tick, and the running-dry states that follow from it, are F5 —
-    /// deliberately separate, so the tank can be reviewed as a container before it becomes a clock.</para>
+    /// <para><b>She BURNS as the engine turns</b> (§9.5), metered on the FIXED tick against
+    /// <c>Time.fixedDeltaTime</c> — never a frame delta, because a frame-rate spike must not change what
+    /// a crossing costs — and against REAL engine-running seconds, never game hours, so tuning
+    /// <c>SecondsPerDay</c> for tide pacing cannot silently re-price every trip in the game.</para>
+    ///
+    /// <para><b>⚠ What this raises, and what it emphatically does not.</b> It publishes
+    /// <see cref="BoatFuelStateChanged"/> on a TRANSITION and nothing else. It does not strand anybody:
+    /// running dry is a fuel fact here, and the danger lane — which already owns breakdown, grounding,
+    /// holing and a fouled prop — decides what that means. Fuel must not open a second, parallel road to
+    /// the same set-piece. <b>If this class ever grows a drift timer or a tow, the seam was drawn in the
+    /// wrong place.</b></para>
     ///
     /// <para><b>The level PERSISTS, per hull</b> (§9.3, save v14). Every mutation pushes a snapshot into
     /// the save blob and the <c>GameLoaded</c> edge restores it — the <c>ShipHold</c> pattern exactly
@@ -53,9 +61,11 @@ namespace HiddenHarbours.Boats
         [SerializeField, Min(0f)] private float _reachMeters = 2f;
 
         private BoatController _controller;
+        private IHold _hold;
         private float _litres;
         private bool _primed;
         private string _bankedHullId;
+        private BoatFuelState _state = BoatFuelState.Running;
 
         // The memo behind HeldVessel() — the resolver reads Priority/IsAvailable on every offer
         // recompute, so an unguarded GetComponent here would run per boat per frame (rule 7).
@@ -162,6 +172,7 @@ namespace HiddenHarbours.Boats
             Prime();
             _litres = Mathf.Min(capacity, _litres + litres);
             SyncToSave();
+            PublishStateIfChanged();      // pouring a can in is exactly when Dry -> Running should fire
         }
 
         /// <inheritdoc/>
@@ -188,6 +199,7 @@ namespace HiddenHarbours.Boats
             float capacity = CapacityLitres;
             _litres = capacity <= 0f ? 0f : Mathf.Clamp(litres, 0f, capacity);
             SyncToSave();
+            ResetStateQuietly();
         }
 
         /// <summary>
@@ -206,6 +218,7 @@ namespace HiddenHarbours.Boats
             _primed = true;
             _bankedHullId = HullId;
             _litres = LevelFromSave(_bankedHullId, CapacityLitres);
+            ResetStateQuietly();
         }
 
         /// <summary>
@@ -380,6 +393,117 @@ namespace HiddenHarbours.Boats
             if (ReferenceEquals(GameServices.ActiveBoatFuel, this))
                 GameServices.ActiveBoatFuel = null;
             EventBus.Unsubscribe<GameLoaded>(OnGameLoaded);
+        }
+
+        // ---- the burn (§9.5) ----------------------------------------------------------------------
+
+        /// <summary>Where her tank is: running, low, or dry. One classification, shared with a gauge and
+        /// with the event, so the three can never disagree about where "low" begins.</summary>
+        public BoatFuelState State
+        {
+            get { Prime(); return _state; }
+        }
+
+        /// <summary>
+        /// Meter the engine for one fixed step.
+        ///
+        /// <para><b>⚠ <c>Time.fixedDeltaTime</c>, and this is the one detail that breaks silently.</b> A
+        /// frame delta here would make a crossing cost more on a slow machine and less on a fast one, and
+        /// nothing would report it. <c>FuelBurnTests</c> pins the arithmetic at two step sizes; this line
+        /// is the only place the engine's clock enters the model at all.</para>
+        ///
+        /// <para><b>Skipped entirely for a hull with no tank</b> — which is every hull until the authoring
+        /// pass. A rowed dory must never spend a tick in the burn path.</para>
+        /// </summary>
+        private void FixedUpdate()
+        {
+            float capacity = CapacityLitres;
+            if (capacity <= 0f) return;
+
+            Prime();
+            if (_litres > 0f && EngineIsTurning())
+            {
+                float used = FuelBurn.LitresBurnedOverTick(
+                    Hull.FullThrottleLitresPerHour,
+                    _controller != null ? _controller.Throttle : 0f,
+                    HoldFraction(),
+                    0f,                                   // slip: SlipLoadWeight ships at 0 (§9.5.2)
+                    SeaState01(),
+                    Time.fixedDeltaTime,
+                    GameServices.Fuel);
+
+                if (used > 0f)
+                {
+                    _litres = _litres > used ? _litres - used : 0f;
+                    SyncToSave();
+                }
+            }
+
+            PublishStateIfChanged();
+        }
+
+        /// <summary>
+        /// Is there an engine running to meter? Only an ENGINE hull burns — a rowed hull has nothing to
+        /// idle — and only while her controller is enabled, which is precisely when the player is
+        /// piloting her (the ControlSwitcher enables it on boarding and disables it ashore).
+        ///
+        /// <para><b>⏳ So a boat left running while you walk away does not burn, and neither does one a
+        /// hired skipper takes out.</b> Both are deliberate for now: §9.5.3 rules that an offline trip
+        /// must charge a DERIVED trip cost from this same formula at a stated reference duty rather than
+        /// a second, drifting model, and that is M3 automation's to build.</para>
+        /// </summary>
+        private bool EngineIsTurning()
+        {
+            if (_controller == null) _controller = GetComponent<BoatController>();
+            if (_controller == null) return false;
+            BoatHullDef h = Hull;
+            return h != null && h.Propulsion == PropulsionType.Engine && _controller.isActiveAndEnabled;
+        }
+
+        /// <summary>Catch aboard, used/capacity — a full hold is a heavy boat. 0 with no hold.</summary>
+        private float HoldFraction()
+        {
+            if (_hold == null) _hold = GetComponent<IHold>();
+            if (_hold == null || _hold.CapacityUnits <= 0) return 0f;
+            return Mathf.Clamp01((float)_hold.UsedUnits / _hold.CapacityUnits);
+        }
+
+        /// <summary>The CONTINUOUS sea axis, never the stepped enum — a fuel cost that lurched at a band
+        /// edge would be unreadable (§9.5.1). 0 with no environment service (an EditMode rig).</summary>
+        private float SeaState01()
+        {
+            var env = GameServices.Environment;
+            return env != null ? env.Sample().SeaState01 : 0f;
+        }
+
+        /// <summary>
+        /// Raise <see cref="BoatFuelStateChanged"/> if — and only if — the state actually moved.
+        ///
+        /// <para><b>⚠ TRANSITIONS ONLY.</b> The level changes every fixed tick; an event per tick is a
+        /// per-tick publish on the hot path, which is exactly what <c>MooringLineChanged</c>'s convention
+        /// forbids and what <c>FuelStateEventsPlayTests</c> asserts against. A consumer that wants the
+        /// continuous read takes the beat to arm itself and then reads <see cref="Fraction01"/>.</para>
+        /// </summary>
+        private void PublishStateIfChanged()
+        {
+            BoatFuelState now = BoatFuel.Classify(_litres, CapacityLitres, GameServices.Fuel.LowFuelFraction);
+            if (now == _state) return;
+
+            BoatFuelState was = _state;
+            _state = now;
+
+            BoatHullDef h = Hull;
+            EventBus.Publish(new BoatFuelStateChanged(
+                h != null ? h.Id : "", was, now, _litres, Fraction01,
+                h != null && h.CanRowHome));
+        }
+
+        /// <summary>Re-read the state without announcing it — for the paths that SET a level rather than
+        /// burn it down to one (a load, a fill, a pour). Those already have their own beats and must not
+        /// also fire a transition for the same act.</summary>
+        private void ResetStateQuietly()
+        {
+            _state = BoatFuel.Classify(_litres, CapacityLitres, GameServices.Fuel.LowFuelFraction);
         }
 
         /// <inheritdoc/>

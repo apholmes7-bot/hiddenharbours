@@ -174,5 +174,19 @@ namespace HiddenHarbours.Boats
                  "⚠ 0 with a non-zero capacity is an authoring error the content-validation test " +
                  "fails on — a tank that burns nothing is a boat with infinite range.")]
         [Min(0f)] public float FullThrottleLitresPerHour = 0f;
+
+        [Tooltip("Can she get herself home with the engine dead \u2014 oars, or a sail she carries? Canon: " +
+                 "the dory and the punt can; bigger boats cannot (boats-and-navigation.md \u00a73.6). This is " +
+                 "what decides whether running dry means ADRIFT (row home, free, a story about being " +
+                 "careless) or STRANDED (radio a tow, and a bill).\n\n" +
+                 "\u26a0 DELIBERATELY NOT INFERRED FROM OarPower. That field's DEFAULT is 300 and it was " +
+                 "never zeroed on the hulls that were never rowed \u2014 boat.side_dragger, a 90-tonne " +
+                 "dragger, is carrying a pair of oars in her data, and so are the cape islander, the " +
+                 "lobster boat, the console skiff and both sport skiffs. Reading OarPower > 0 as 'she has " +
+                 "oars' would let a dragger row home from a dead engine, and the bug would look like a " +
+                 "physics bug for a week.\n\n" +
+                 "Defaults FALSE, which is the honest answer for a hull nobody has thought about: a new " +
+                 "boat is never accidentally rescued.")]
+        public bool CanRowHome = false;
     }
 }
