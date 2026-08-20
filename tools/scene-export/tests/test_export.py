@@ -23,7 +23,7 @@ sys.path.insert(0, TOOL)
 
 REFERENCE = "docs/tools/reference/sample-scene.json"
 
-from hhexport import heightmap, package, roads, unityyaml as U  # noqa: E402
+from hhexport import families, heightmap, package, roads, unityyaml as U  # noqa: E402
 from hhexport.repo import Repo, sha256_lf  # noqa: E402
 from hhexport.scene import Scene  # noqa: E402
 
@@ -400,6 +400,41 @@ class EnrichmentTests(unittest.TestCase):
                 self.assertNotIn("x-unavailable", ground, name)
             else:
                 self.assertIn("x-unavailable", ground, name)
+
+    def test_families_come_from_the_editors_wire_list_or_say_they_do_not(self):
+        wire, layers = families.load(self.repo)
+        self.assertEqual(len(wire), 43, "the transcribed wire list has drifted")
+        self.assertEqual(sorted(layers), ["cliff", "ground", "road", "texture", "wharfdeck"])
+        for name, document in self.documents.items():
+            for entity in document["entities"]:
+                if entity["x-familyIsSpriteStem"]:
+                    self.assertNotIn(entity["family"], wire,
+                                     f"{name} {entity['id']} is on the list but flagged as not")
+                    self.assertIn("x-familyCandidate", entity, f"{name} {entity['id']}")
+                else:
+                    self.assertIn(entity["family"], wire, f"{name} {entity['id']}")
+
+    def test_a_near_miss_is_never_aliased_onto_a_neighbour(self):
+        """`wharfIsoRig` normalises to `wharf`; the list holds `wharfbuilding` AND `wharfmodule`.
+
+        Picking either would be the aliasing the ruling forbids, so it must stay unresolved —
+        and appear on the request list instead.
+        """
+        creek = self.documents["NineMileCreek"]
+        wharf = [e for e in creek["entities"]
+                 if (e["rigSource"] or "").endswith("wharfIsoRig.js")]
+        self.assertTrue(wharf, "the wharf kit no longer resolves — this guard has gone blind")
+        for entity in wharf:
+            self.assertTrue(entity["x-familyIsSpriteStem"], entity["id"])
+            self.assertNotIn(entity["family"], ("wharfbuilding", "wharfmodule"), entity["id"])
+        unlisted = creek["x-provenance"]["entityNotes"]["unlistedFamilies"]
+        self.assertIn("wharf", unlisted)
+        self.assertEqual(unlisted["wharf"]["placements"], len(wharf))
+
+    def test_the_known_interior_gap_is_declared_not_aliased(self):
+        unlisted = self.documents["StPeters"]["x-provenance"]["entityNotes"]["unlistedFamilies"]
+        self.assertIn("interior", unlisted)
+        self.assertIn("interiorprop", unlisted)
 
     def test_a_resolved_rig_gives_the_editor_something_to_call(self):
         for name, document in self.documents.items():

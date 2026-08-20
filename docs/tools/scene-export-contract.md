@@ -186,7 +186,23 @@ of the coastline — the review's §7(c) trap, whose failure mode is a shoreline
 approximately right and disagrees with the sim. The contour is true to the height map and
 coarser than the paint, and that is the whole of what it claims.
 
-### 7.4 Region dimensions stand as exported
+### 7.4 Families are the editor's own wire vocabulary
+
+The editor's `family` list is **closed** — 43 prop families and 5 tile layers, transcribed at
+[`reference/family-names.json`](reference/family-names.json). An entity's family is resolved by
+normalising its rig's filename (lowercase, drop a trailing pass digit, then the `rig`/`iso`
+suffixes) and matching a listed name **exactly**.
+
+**A near miss is never aliased.** `wharfIsoRig` normalises to `wharf`, and the list holds both
+`wharfbuilding` and `wharfmodule`; choosing between them is guessing, so those placements keep
+the sprite stem, flag `x-familyIsSpriteStem`, and appear under
+`x-provenance.entityNotes.unlistedFamilies` with the candidate name and a placement count. That
+block is the **request list for the editor side**, not a defect in the export.
+
+Currently unresolved: `wharf` (24 placements, Nine Mile Creek) and `interior` / `interiorprop`
+(4 + 26, St Peters — the gap the editor maintainer already named).
+
+### 7.5 Region dimensions stand as exported
 
 760 × 560 for Nine Mile Creek is the `RegionDef`'s truth. The editor's own region table is stale
 (review §6.2 measured it at the C# field default). Ruled: **the package declares, the tool

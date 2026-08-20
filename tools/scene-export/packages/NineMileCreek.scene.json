@@ -1805,6 +1805,8 @@
         "name": "SeaTile_0",
         "internalId": 6830443256219181058
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "SeaTile",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -5
     },
@@ -1837,6 +1839,8 @@
         "name": "Grass_0",
         "internalId": -1347532211411968617
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "Grass",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -7
     },
@@ -1869,6 +1873,8 @@
         "name": "WharfOverlays_bollard",
         "internalId": 425965243
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfOverlays",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -1901,6 +1907,8 @@
         "name": "WharfOverlays_bollard",
         "internalId": 425965243
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfOverlays",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -1933,6 +1941,8 @@
         "name": "WharfOverlays_bollard",
         "internalId": 425965243
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfOverlays",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -1965,6 +1975,8 @@
         "name": "WharfOverlays_bollard",
         "internalId": 425965243
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfOverlays",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -1997,6 +2009,8 @@
         "name": "WharfOverlays_bollard",
         "internalId": 425965243
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfOverlays",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -2029,6 +2043,8 @@
         "name": "WharfOverlays_bollard",
         "internalId": 425965243
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfOverlays",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -2061,6 +2077,8 @@
         "name": "WharfOverlays_bollard",
         "internalId": 425965243
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfOverlays",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -2093,6 +2111,8 @@
         "name": "WharfOverlays_bollard",
         "internalId": 425965243
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfOverlays",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -2125,6 +2145,8 @@
         "name": "WharfOverlays_bollard",
         "internalId": 425965243
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfOverlays",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -2157,6 +2179,8 @@
         "name": "WharfOverlays_bollard",
         "internalId": 425965243
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfOverlays",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -2189,6 +2213,8 @@
         "name": "WharfOverlays_bollard",
         "internalId": 425965243
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfOverlays",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -2221,6 +2247,8 @@
         "name": "WharfOverlays_bollard",
         "internalId": 425965243
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfOverlays",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -2253,6 +2281,8 @@
         "name": "WharfOverlays_bollard",
         "internalId": 425965243
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfOverlays",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -2285,6 +2315,8 @@
         "name": "WharfOverlays_bollard",
         "internalId": 425965243
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfOverlays",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -2317,6 +2349,8 @@
         "name": "WharfOverlays_tyre",
         "internalId": 194222916
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfOverlays",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -2349,6 +2383,8 @@
         "name": "WharfOverlays_tyre",
         "internalId": 194222916
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfOverlays",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -2381,6 +2417,8 @@
         "name": "WharfOverlays_tyre",
         "internalId": 194222916
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfOverlays",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -2413,6 +2451,8 @@
         "name": "WharfOverlays_tyre",
         "internalId": 194222916
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfOverlays",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -2445,6 +2485,8 @@
         "name": "WharfOverlays_tyre",
         "internalId": 194222916
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfOverlays",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -2477,6 +2519,8 @@
         "name": "WharfOverlays_tyre",
         "internalId": 194222916
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfOverlays",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -2509,6 +2553,8 @@
         "name": "WharfOverlays_tyre",
         "internalId": 194222916
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfOverlays",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -2541,6 +2587,8 @@
         "name": "WharfOverlays_ladder",
         "internalId": 159253323
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfOverlays",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -2573,6 +2621,8 @@
         "name": "WharfOverlays_pilehead",
         "internalId": 1119178938
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfOverlays",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -2605,6 +2655,8 @@
         "name": "WharfOverlays_pilehead",
         "internalId": 1119178938
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfOverlays",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -2637,6 +2689,8 @@
         "name": "WharfOverlays_cleat",
         "internalId": -1636268171
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfOverlays",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -2669,6 +2723,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -2701,6 +2757,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -2733,6 +2791,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -2765,6 +2825,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -2797,6 +2859,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -2829,6 +2893,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -2861,6 +2927,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -2893,6 +2961,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -2925,6 +2995,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -2957,6 +3029,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -2989,6 +3063,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -3021,6 +3097,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -3053,6 +3131,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -3085,6 +3165,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -3117,6 +3199,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -3149,6 +3233,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -3181,6 +3267,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -3213,6 +3301,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -3245,6 +3335,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -3277,6 +3369,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -3309,6 +3403,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -3341,6 +3437,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -3373,6 +3471,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -3405,6 +3505,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -3437,6 +3539,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -3469,6 +3573,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -3501,6 +3607,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -3533,6 +3641,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -3565,6 +3675,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -3597,6 +3709,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -3629,6 +3743,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -3661,6 +3777,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -3693,6 +3811,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -3725,6 +3845,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -3757,6 +3879,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -3789,6 +3913,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -3821,6 +3947,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -3853,6 +3981,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -3885,6 +4015,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -3917,6 +4049,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -3949,6 +4083,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -3981,6 +4117,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -4013,6 +4151,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -4045,6 +4185,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -4077,6 +4219,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -4109,6 +4253,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -4141,6 +4287,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -4173,6 +4321,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -4205,6 +4355,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -4237,6 +4389,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -4269,6 +4423,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -4301,6 +4457,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -4333,6 +4491,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -4365,6 +4525,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -4397,6 +4559,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -4429,6 +4593,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -4461,6 +4627,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -4493,6 +4661,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -4525,6 +4695,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -4557,6 +4729,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -4589,6 +4763,8 @@
         "name": "WharfBreakwaters_5",
         "internalId": -1660468999
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": -4
     },
@@ -4621,6 +4797,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -4653,6 +4831,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -4685,6 +4865,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -4717,6 +4899,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -4749,6 +4933,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -4781,6 +4967,8 @@
         "name": "WharfBreakwaters_5",
         "internalId": -1660468999
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -4813,6 +5001,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -4845,6 +5035,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -4877,6 +5069,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -4909,6 +5103,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -4941,6 +5137,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -4973,6 +5171,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -5005,6 +5205,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -5037,6 +5239,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -5069,6 +5273,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -5101,6 +5307,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -5133,6 +5341,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -5165,6 +5375,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -5197,6 +5409,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -5229,6 +5443,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -5261,6 +5477,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -5293,6 +5511,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -5325,6 +5545,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -5357,6 +5579,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -5389,6 +5613,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -5421,6 +5647,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -5453,6 +5681,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -5485,6 +5715,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -5517,6 +5749,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -5549,6 +5783,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -5581,6 +5817,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -5613,6 +5851,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -5645,6 +5885,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -5677,6 +5919,8 @@
         "name": "WharfBreakwaters_3",
         "internalId": 7252766730834116170
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -5709,6 +5953,8 @@
         "name": "WharfBreakwaters_5",
         "internalId": -1660468999
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "WharfBreakwaters",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -5741,6 +5987,8 @@
         "name": "ShipwrightShed_0",
         "internalId": 6373997018213916999
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "ShipwrightShed",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -5773,6 +6021,8 @@
         "name": "FishBuyerStall_0",
         "internalId": -852526917804796067
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "FishBuyerStall",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -5805,6 +6055,8 @@
         "name": "Village_redSaltbox_d3",
         "internalId": -1773084775
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "Village",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -5837,6 +6089,8 @@
         "name": "Village_sageCottage_d2",
         "internalId": 1604917277
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "Village",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -5875,6 +6129,8 @@
         "name": "logCrib_4",
         "internalId": 9137408819382669204
       },
+      "x-familyCandidate": "wharf",
+      "x-spriteStem": "logCrib",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -5913,6 +6169,8 @@
         "name": "logCrib_4",
         "internalId": 9137408819382669204
       },
+      "x-familyCandidate": "wharf",
+      "x-spriteStem": "logCrib",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -5951,6 +6209,8 @@
         "name": "logCrib_4",
         "internalId": 9137408819382669204
       },
+      "x-familyCandidate": "wharf",
+      "x-spriteStem": "logCrib",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -5989,6 +6249,8 @@
         "name": "logCrib_4",
         "internalId": 9137408819382669204
       },
+      "x-familyCandidate": "wharf",
+      "x-spriteStem": "logCrib",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -6027,6 +6289,8 @@
         "name": "logCrib_4",
         "internalId": 9137408819382669204
       },
+      "x-familyCandidate": "wharf",
+      "x-spriteStem": "logCrib",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -6065,6 +6329,8 @@
         "name": "logCrib_4",
         "internalId": 9137408819382669204
       },
+      "x-familyCandidate": "wharf",
+      "x-spriteStem": "logCrib",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -6103,6 +6369,8 @@
         "name": "logCrib_4",
         "internalId": 9137408819382669204
       },
+      "x-familyCandidate": "wharf",
+      "x-spriteStem": "logCrib",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -6141,6 +6409,8 @@
         "name": "logCrib_4",
         "internalId": 9137408819382669204
       },
+      "x-familyCandidate": "wharf",
+      "x-spriteStem": "logCrib",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -6179,6 +6449,8 @@
         "name": "logCrib_4",
         "internalId": 9137408819382669204
       },
+      "x-familyCandidate": "wharf",
+      "x-spriteStem": "logCrib",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -6217,6 +6489,8 @@
         "name": "logCrib_6",
         "internalId": -5425359178099498744
       },
+      "x-familyCandidate": "wharf",
+      "x-spriteStem": "logCrib",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -6255,6 +6529,8 @@
         "name": "logCrib_6",
         "internalId": -5425359178099498744
       },
+      "x-familyCandidate": "wharf",
+      "x-spriteStem": "logCrib",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -6293,6 +6569,8 @@
         "name": "logCrib_6",
         "internalId": -5425359178099498744
       },
+      "x-familyCandidate": "wharf",
+      "x-spriteStem": "logCrib",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -6331,6 +6609,8 @@
         "name": "logCrib_6",
         "internalId": -5425359178099498744
       },
+      "x-familyCandidate": "wharf",
+      "x-spriteStem": "logCrib",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -6369,6 +6649,8 @@
         "name": "logCrib_6",
         "internalId": -5425359178099498744
       },
+      "x-familyCandidate": "wharf",
+      "x-spriteStem": "logCrib",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -6407,6 +6689,8 @@
         "name": "logCrib_4",
         "internalId": 9137408819382669204
       },
+      "x-familyCandidate": "wharf",
+      "x-spriteStem": "logCrib",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -6445,6 +6729,8 @@
         "name": "logCrib_4",
         "internalId": 9137408819382669204
       },
+      "x-familyCandidate": "wharf",
+      "x-spriteStem": "logCrib",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -6483,6 +6769,8 @@
         "name": "logCrib_4",
         "internalId": 9137408819382669204
       },
+      "x-familyCandidate": "wharf",
+      "x-spriteStem": "logCrib",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -6521,6 +6809,8 @@
         "name": "logCrib_4",
         "internalId": 9137408819382669204
       },
+      "x-familyCandidate": "wharf",
+      "x-spriteStem": "logCrib",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -6559,6 +6849,8 @@
         "name": "logCrib_4",
         "internalId": 9137408819382669204
       },
+      "x-familyCandidate": "wharf",
+      "x-spriteStem": "logCrib",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -6597,6 +6889,8 @@
         "name": "logCrib_4",
         "internalId": 9137408819382669204
       },
+      "x-familyCandidate": "wharf",
+      "x-spriteStem": "logCrib",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -6635,6 +6929,8 @@
         "name": "logCrib_4",
         "internalId": 9137408819382669204
       },
+      "x-familyCandidate": "wharf",
+      "x-spriteStem": "logCrib",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -6673,6 +6969,8 @@
         "name": "logCrib_4",
         "internalId": 9137408819382669204
       },
+      "x-familyCandidate": "wharf",
+      "x-spriteStem": "logCrib",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -6711,6 +7009,8 @@
         "name": "logCrib_4",
         "internalId": 9137408819382669204
       },
+      "x-familyCandidate": "wharf",
+      "x-spriteStem": "logCrib",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -6749,12 +7049,14 @@
         "name": "logCrib_4",
         "internalId": 9137408819382669204
       },
+      "x-familyCandidate": "wharf",
+      "x-spriteStem": "logCrib",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "trapStack_001",
-      "family": "trapStack",
+      "id": "wharfdecor_001",
+      "family": "wharfdecor",
       "group": "QuayGear",
       "rig": "WharfDecor",
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
@@ -6781,7 +7083,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "dba6ced6644e879e42cf2a3d6340ae76f90acf2cee0a0962cf4bbb0719a1b05a",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Wharf/Decor/trapStack.png",
         "name": "trapStack_4",
@@ -6791,8 +7093,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "buoyRack_001",
-      "family": "buoyRack",
+      "id": "wharfdecor_002",
+      "family": "wharfdecor",
       "group": "QuayGear",
       "rig": "WharfDecor",
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
@@ -6819,7 +7121,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "dba6ced6644e879e42cf2a3d6340ae76f90acf2cee0a0962cf4bbb0719a1b05a",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Wharf/Decor/buoyRack.png",
         "name": "buoyRack_4",
@@ -6829,8 +7131,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "netPile_001",
-      "family": "netPile",
+      "id": "wharfdecor_003",
+      "family": "wharfdecor",
       "group": "QuayGear",
       "rig": "WharfDecor",
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
@@ -6857,7 +7159,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "dba6ced6644e879e42cf2a3d6340ae76f90acf2cee0a0962cf4bbb0719a1b05a",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Wharf/Decor/netPile.png",
         "name": "netPile_4",
@@ -6867,8 +7169,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "trapStack_002",
-      "family": "trapStack",
+      "id": "wharfdecor_004",
+      "family": "wharfdecor",
       "group": "QuayGear",
       "rig": "WharfDecor",
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
@@ -6895,7 +7197,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "dba6ced6644e879e42cf2a3d6340ae76f90acf2cee0a0962cf4bbb0719a1b05a",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Wharf/Decor/trapStack.png",
         "name": "trapStack_4",
@@ -6905,8 +7207,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "ropeCoil_001",
-      "family": "ropeCoil",
+      "id": "wharfdecor_005",
+      "family": "wharfdecor",
       "group": "QuayGear",
       "rig": "WharfDecor",
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
@@ -6933,7 +7235,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "dba6ced6644e879e42cf2a3d6340ae76f90acf2cee0a0962cf4bbb0719a1b05a",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Wharf/Decor/ropeCoil.png",
         "name": "ropeCoil_4",
@@ -6943,8 +7245,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "toteStack_001",
-      "family": "toteStack",
+      "id": "wharfdecor_006",
+      "family": "wharfdecor",
       "group": "QuayGear",
       "rig": "WharfDecor",
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
@@ -6971,7 +7273,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "dba6ced6644e879e42cf2a3d6340ae76f90acf2cee0a0962cf4bbb0719a1b05a",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Wharf/Decor/toteStack.png",
         "name": "toteStack_4",
@@ -6981,8 +7283,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "woodStack_001",
-      "family": "woodStack",
+      "id": "wharfdecor_007",
+      "family": "wharfdecor",
       "group": "QuayGear",
       "rig": "WharfDecor",
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
@@ -7009,7 +7311,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "dba6ced6644e879e42cf2a3d6340ae76f90acf2cee0a0962cf4bbb0719a1b05a",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Wharf/Decor/woodStack.png",
         "name": "woodStack_4",
@@ -7019,8 +7321,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "netFrame_001",
-      "family": "netFrame",
+      "id": "wharfdecor_008",
+      "family": "wharfdecor",
       "group": "QuayGear",
       "rig": "WharfDecor",
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
@@ -7047,7 +7349,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "dba6ced6644e879e42cf2a3d6340ae76f90acf2cee0a0962cf4bbb0719a1b05a",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Wharf/Decor/netFrame.png",
         "name": "netFrame_4",
@@ -7057,8 +7359,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "trapStack_003",
-      "family": "trapStack",
+      "id": "wharfdecor_009",
+      "family": "wharfdecor",
       "group": "QuayGear",
       "rig": "WharfDecor",
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
@@ -7085,7 +7387,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "dba6ced6644e879e42cf2a3d6340ae76f90acf2cee0a0962cf4bbb0719a1b05a",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Wharf/Decor/trapStack.png",
         "name": "trapStack_4",
@@ -7095,8 +7397,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "tideStaff_001",
-      "family": "tideStaff",
+      "id": "wharfdecor_010",
+      "family": "wharfdecor",
       "group": "QuayGear",
       "rig": "WharfDecor",
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
@@ -7123,7 +7425,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "dba6ced6644e879e42cf2a3d6340ae76f90acf2cee0a0962cf4bbb0719a1b05a",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Wharf/Decor/tideStaff.png",
         "name": "tideStaff_4",
@@ -7133,8 +7435,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "ringStation_001",
-      "family": "ringStation",
+      "id": "wharfdecor_011",
+      "family": "wharfdecor",
       "group": "QuayGear",
       "rig": "WharfDecor",
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
@@ -7161,7 +7463,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "dba6ced6644e879e42cf2a3d6340ae76f90acf2cee0a0962cf4bbb0719a1b05a",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Wharf/Decor/ringStation.png",
         "name": "ringStation_4",
@@ -7171,8 +7473,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "ringStation_002",
-      "family": "ringStation",
+      "id": "wharfdecor_012",
+      "family": "wharfdecor",
       "group": "QuayGear",
       "rig": "WharfDecor",
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
@@ -7199,7 +7501,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "dba6ced6644e879e42cf2a3d6340ae76f90acf2cee0a0962cf4bbb0719a1b05a",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Wharf/Decor/ringStation.png",
         "name": "ringStation_4",
@@ -7209,8 +7511,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "harbourSign_001",
-      "family": "harbourSign",
+      "id": "wharfdecor_013",
+      "family": "wharfdecor",
       "group": "QuayGear",
       "rig": "WharfDecor",
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
@@ -7237,7 +7539,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "dba6ced6644e879e42cf2a3d6340ae76f90acf2cee0a0962cf4bbb0719a1b05a",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Wharf/Decor/harbourSign.png",
         "name": "harbourSign_2",
@@ -7247,8 +7549,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "noticeBoard_001",
-      "family": "noticeBoard",
+      "id": "wharfdecor_014",
+      "family": "wharfdecor",
       "group": "QuayGear",
       "rig": "WharfDecor",
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
@@ -7275,7 +7577,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "dba6ced6644e879e42cf2a3d6340ae76f90acf2cee0a0962cf4bbb0719a1b05a",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Wharf/Decor/noticeBoard.png",
         "name": "noticeBoard_2",
@@ -7285,8 +7587,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "bunting_001",
-      "family": "bunting",
+      "id": "wharfdecor_015",
+      "family": "wharfdecor",
       "group": "QuayGear",
       "rig": "WharfDecor",
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
@@ -7313,7 +7615,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "dba6ced6644e879e42cf2a3d6340ae76f90acf2cee0a0962cf4bbb0719a1b05a",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Wharf/Decor/bunting.png",
         "name": "bunting_2",
@@ -7323,8 +7625,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "flagpole_001",
-      "family": "flagpole",
+      "id": "wharfdecor_016",
+      "family": "wharfdecor",
       "group": "QuayGear",
       "rig": "WharfDecor",
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
@@ -7351,7 +7653,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "dba6ced6644e879e42cf2a3d6340ae76f90acf2cee0a0962cf4bbb0719a1b05a",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Wharf/Decor/flagpole.png",
         "name": "flagpole_4",
@@ -7361,8 +7663,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "davitHoist_001",
-      "family": "davitHoist",
+      "id": "wharfdecor_017",
+      "family": "wharfdecor",
       "group": "ApronGear",
       "rig": "WharfDecor",
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
@@ -7389,7 +7691,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "dba6ced6644e879e42cf2a3d6340ae76f90acf2cee0a0962cf4bbb0719a1b05a",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Wharf/Decor/davitHoist.png",
         "name": "davitHoist_6",
@@ -7399,8 +7701,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "sortingTrough_001",
-      "family": "sortingTrough",
+      "id": "wharfdecor_018",
+      "family": "wharfdecor",
       "group": "ApronGear",
       "rig": "WharfDecor",
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
@@ -7427,7 +7729,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "dba6ced6644e879e42cf2a3d6340ae76f90acf2cee0a0962cf4bbb0719a1b05a",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Wharf/Decor/sortingTrough.png",
         "name": "sortingTrough_6",
@@ -7437,8 +7739,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "guttingTable_001",
-      "family": "guttingTable",
+      "id": "wharfdecor_019",
+      "family": "wharfdecor",
       "group": "ApronGear",
       "rig": "WharfDecor",
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
@@ -7465,7 +7767,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "dba6ced6644e879e42cf2a3d6340ae76f90acf2cee0a0962cf4bbb0719a1b05a",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Wharf/Decor/guttingTable.png",
         "name": "guttingTable_6",
@@ -7475,8 +7777,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "weighScale_001",
-      "family": "weighScale",
+      "id": "wharfdecor_020",
+      "family": "wharfdecor",
       "group": "ApronGear",
       "rig": "WharfDecor",
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
@@ -7503,7 +7805,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "dba6ced6644e879e42cf2a3d6340ae76f90acf2cee0a0962cf4bbb0719a1b05a",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Wharf/Decor/weighScale.png",
         "name": "weighScale_6",
@@ -7513,8 +7815,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "iceChest_001",
-      "family": "iceChest",
+      "id": "wharfdecor_021",
+      "family": "wharfdecor",
       "group": "ApronGear",
       "rig": "WharfDecor",
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
@@ -7541,7 +7843,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "dba6ced6644e879e42cf2a3d6340ae76f90acf2cee0a0962cf4bbb0719a1b05a",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Wharf/Decor/iceChest.png",
         "name": "iceChest_6",
@@ -7551,8 +7853,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "dockCart_001",
-      "family": "dockCart",
+      "id": "wharfdecor_022",
+      "family": "wharfdecor",
       "group": "ApronGear",
       "rig": "WharfDecor",
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
@@ -7579,7 +7881,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "dba6ced6644e879e42cf2a3d6340ae76f90acf2cee0a0962cf4bbb0719a1b05a",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Wharf/Decor/dockCart.png",
         "name": "dockCart_6",
@@ -7589,8 +7891,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "oilskinLine_001",
-      "family": "oilskinLine",
+      "id": "wharfdecor_023",
+      "family": "wharfdecor",
       "group": "YardGear",
       "rig": "WharfDecor",
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
@@ -7617,7 +7919,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "dba6ced6644e879e42cf2a3d6340ae76f90acf2cee0a0962cf4bbb0719a1b05a",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Wharf/Decor/oilskinLine.png",
         "name": "oilskinLine_4",
@@ -7627,8 +7929,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "codFlake_001",
-      "family": "codFlake",
+      "id": "wharfdecor_024",
+      "family": "wharfdecor",
       "group": "YardGear",
       "rig": "WharfDecor",
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
@@ -7655,7 +7957,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "dba6ced6644e879e42cf2a3d6340ae76f90acf2cee0a0962cf4bbb0719a1b05a",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Wharf/Decor/codFlake.png",
         "name": "codFlake_4",
@@ -7665,8 +7967,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "woodStack_002",
-      "family": "woodStack",
+      "id": "wharfdecor_025",
+      "family": "wharfdecor",
       "group": "YardGear",
       "rig": "WharfDecor",
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
@@ -7693,7 +7995,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "dba6ced6644e879e42cf2a3d6340ae76f90acf2cee0a0962cf4bbb0719a1b05a",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Wharf/Decor/woodStack.png",
         "name": "woodStack_4",
@@ -7703,8 +8005,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "herringSticks_001",
-      "family": "herringSticks",
+      "id": "wharfdecor_026",
+      "family": "wharfdecor",
       "group": "YardGear",
       "rig": "WharfDecor",
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
@@ -7731,7 +8033,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "dba6ced6644e879e42cf2a3d6340ae76f90acf2cee0a0962cf4bbb0719a1b05a",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Wharf/Decor/herringSticks.png",
         "name": "herringSticks_4",
@@ -7741,8 +8043,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "baitBarrel_001",
-      "family": "baitBarrel",
+      "id": "wharfdecor_027",
+      "family": "wharfdecor",
       "group": "YardGear",
       "rig": "WharfDecor",
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
@@ -7769,7 +8071,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "dba6ced6644e879e42cf2a3d6340ae76f90acf2cee0a0962cf4bbb0719a1b05a",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Wharf/Decor/baitBarrel.png",
         "name": "baitBarrel_4",
@@ -7779,8 +8081,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "trapStack_004",
-      "family": "trapStack",
+      "id": "wharfdecor_028",
+      "family": "wharfdecor",
       "group": "YardGear",
       "rig": "WharfDecor",
       "rigSource": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
@@ -7807,7 +8109,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "dba6ced6644e879e42cf2a3d6340ae76f90acf2cee0a0962cf4bbb0719a1b05a",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Wharf/Decor/trapStack.png",
         "name": "trapStack_4",
@@ -7817,8 +8119,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "powerPole_001",
-      "family": "powerPole",
+      "id": "utility_001",
+      "family": "utility",
       "group": "Services",
       "rig": "UtilityIso",
       "rigSource": "docs/art/rigs/iso-rig-pack/utility-iso/utilityIsoRig.js",
@@ -7845,7 +8147,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "dbfe677117c16725095b87d282486803da042714f80f53cc85986283a29d629c",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Utility/powerPole.png",
         "name": "powerPole_6",
@@ -7855,8 +8157,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "powerPole_002",
-      "family": "powerPole",
+      "id": "utility_002",
+      "family": "utility",
       "group": "Services",
       "rig": "UtilityIso",
       "rigSource": "docs/art/rigs/iso-rig-pack/utility-iso/utilityIsoRig.js",
@@ -7883,7 +8185,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "dbfe677117c16725095b87d282486803da042714f80f53cc85986283a29d629c",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Utility/powerPole.png",
         "name": "powerPole_6",
@@ -7893,8 +8195,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "powerPole_003",
-      "family": "powerPole",
+      "id": "utility_003",
+      "family": "utility",
       "group": "Services",
       "rig": "UtilityIso",
       "rigSource": "docs/art/rigs/iso-rig-pack/utility-iso/utilityIsoRig.js",
@@ -7921,7 +8223,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "dbfe677117c16725095b87d282486803da042714f80f53cc85986283a29d629c",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Utility/powerPole.png",
         "name": "powerPole_6",
@@ -7931,8 +8233,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "powerPole_004",
-      "family": "powerPole",
+      "id": "utility_004",
+      "family": "utility",
       "group": "Services",
       "rig": "UtilityIso",
       "rigSource": "docs/art/rigs/iso-rig-pack/utility-iso/utilityIsoRig.js",
@@ -7959,7 +8261,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "dbfe677117c16725095b87d282486803da042714f80f53cc85986283a29d629c",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Utility/powerPole.png",
         "name": "powerPole_6",
@@ -7969,8 +8271,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "powerPole_005",
-      "family": "powerPole",
+      "id": "utility_005",
+      "family": "utility",
       "group": "Services",
       "rig": "UtilityIso",
       "rigSource": "docs/art/rigs/iso-rig-pack/utility-iso/utilityIsoRig.js",
@@ -7997,7 +8299,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "dbfe677117c16725095b87d282486803da042714f80f53cc85986283a29d629c",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Utility/powerPole.png",
         "name": "powerPole_6",
@@ -8007,8 +8309,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "powerPole_006",
-      "family": "powerPole",
+      "id": "utility_006",
+      "family": "utility",
       "group": "Services",
       "rig": "UtilityIso",
       "rigSource": "docs/art/rigs/iso-rig-pack/utility-iso/utilityIsoRig.js",
@@ -8035,7 +8337,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "dbfe677117c16725095b87d282486803da042714f80f53cc85986283a29d629c",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Utility/powerPole.png",
         "name": "powerPole_6",
@@ -8045,8 +8347,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "powerPole_007",
-      "family": "powerPole",
+      "id": "utility_007",
+      "family": "utility",
       "group": "Services",
       "rig": "UtilityIso",
       "rigSource": "docs/art/rigs/iso-rig-pack/utility-iso/utilityIsoRig.js",
@@ -8073,7 +8375,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "dbfe677117c16725095b87d282486803da042714f80f53cc85986283a29d629c",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Utility/powerPole.png",
         "name": "powerPole_6",
@@ -8083,8 +8385,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "powerPole_008",
-      "family": "powerPole",
+      "id": "utility_008",
+      "family": "utility",
       "group": "Services",
       "rig": "UtilityIso",
       "rigSource": "docs/art/rigs/iso-rig-pack/utility-iso/utilityIsoRig.js",
@@ -8111,7 +8413,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "dbfe677117c16725095b87d282486803da042714f80f53cc85986283a29d629c",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Utility/powerPole.png",
         "name": "powerPole_6",
@@ -8121,8 +8423,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "powerPole_009",
-      "family": "powerPole",
+      "id": "utility_009",
+      "family": "utility",
       "group": "Services",
       "rig": "UtilityIso",
       "rigSource": "docs/art/rigs/iso-rig-pack/utility-iso/utilityIsoRig.js",
@@ -8149,7 +8451,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "dbfe677117c16725095b87d282486803da042714f80f53cc85986283a29d629c",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Utility/powerPole.png",
         "name": "powerPole_6",
@@ -8159,8 +8461,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "yardLight_001",
-      "family": "yardLight",
+      "id": "utility_010",
+      "family": "utility",
       "group": "Services",
       "rig": "UtilityIso",
       "rigSource": "docs/art/rigs/iso-rig-pack/utility-iso/utilityIsoRig.js",
@@ -8187,7 +8489,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "dbfe677117c16725095b87d282486803da042714f80f53cc85986283a29d629c",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Utility/yardLight.png",
         "name": "yardLight_4",
@@ -8197,8 +8499,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "fuelPump_001",
-      "family": "fuelPump",
+      "id": "utility_011",
+      "family": "utility",
       "group": "Services",
       "rig": "UtilityIso",
       "rigSource": "docs/art/rigs/iso-rig-pack/utility-iso/utilityIsoRig.js",
@@ -8225,7 +8527,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "dbfe677117c16725095b87d282486803da042714f80f53cc85986283a29d629c",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Utility/fuelPump.png",
         "name": "fuelPump_6",
@@ -8235,8 +8537,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "oilTank_001",
-      "family": "oilTank",
+      "id": "utility_012",
+      "family": "utility",
       "group": "Services",
       "rig": "UtilityIso",
       "rigSource": "docs/art/rigs/iso-rig-pack/utility-iso/utilityIsoRig.js",
@@ -8263,7 +8565,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "dbfe677117c16725095b87d282486803da042714f80f53cc85986283a29d629c",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Utility/oilTank.png",
         "name": "oilTank_6",
@@ -8273,8 +8575,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "standpipe_001",
-      "family": "standpipe",
+      "id": "utility_013",
+      "family": "utility",
       "group": "Services",
       "rig": "UtilityIso",
       "rigSource": "docs/art/rigs/iso-rig-pack/utility-iso/utilityIsoRig.js",
@@ -8301,7 +8603,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "dbfe677117c16725095b87d282486803da042714f80f53cc85986283a29d629c",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Utility/standpipe.png",
         "name": "standpipe_4",
@@ -8311,8 +8613,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "pedestal_001",
-      "family": "pedestal",
+      "id": "utility_014",
+      "family": "utility",
       "group": "Services",
       "rig": "UtilityIso",
       "rigSource": "docs/art/rigs/iso-rig-pack/utility-iso/utilityIsoRig.js",
@@ -8339,7 +8641,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "dbfe677117c16725095b87d282486803da042714f80f53cc85986283a29d629c",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Utility/pedestal.png",
         "name": "pedestal_4",
@@ -8349,8 +8651,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "pedestal_002",
-      "family": "pedestal",
+      "id": "utility_015",
+      "family": "utility",
       "group": "Services",
       "rig": "UtilityIso",
       "rigSource": "docs/art/rigs/iso-rig-pack/utility-iso/utilityIsoRig.js",
@@ -8377,7 +8679,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "dbfe677117c16725095b87d282486803da042714f80f53cc85986283a29d629c",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Utility/pedestal.png",
         "name": "pedestal_4",
@@ -8387,8 +8689,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "yardHydrant_001",
-      "family": "yardHydrant",
+      "id": "utility_016",
+      "family": "utility",
       "group": "Services",
       "rig": "UtilityIso",
       "rigSource": "docs/art/rigs/iso-rig-pack/utility-iso/utilityIsoRig.js",
@@ -8415,7 +8717,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "dbfe677117c16725095b87d282486803da042714f80f53cc85986283a29d629c",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Utility/yardHydrant.png",
         "name": "yardHydrant_4",
@@ -8425,8 +8727,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "GreenUrchin_001",
-      "family": "GreenUrchin",
+      "id": "shorefinds_001",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -8453,7 +8755,7 @@
       "x-inBounds": false,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/GreenUrchin_wet.png",
         "name": "GreenUrchin_wet_6",
@@ -8463,8 +8765,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WhelkEggMass_001",
-      "family": "WhelkEggMass",
+      "id": "shorefinds_002",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -8491,7 +8793,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/WhelkEggMass_dry.png",
         "name": "WhelkEggMass_dry_2",
@@ -8501,8 +8803,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "BlueMussel_001",
-      "family": "BlueMussel",
+      "id": "shorefinds_003",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -8529,7 +8831,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/BlueMussel_wet.png",
         "name": "BlueMussel_wet_17",
@@ -8539,8 +8841,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "Driftwood_001",
-      "family": "Driftwood",
+      "id": "shorefinds_004",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -8567,7 +8869,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/Driftwood_dry.png",
         "name": "Driftwood_dry_7",
@@ -8577,8 +8879,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "DriftPlank_001",
-      "family": "DriftPlank",
+      "id": "shorefinds_005",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -8605,7 +8907,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/DriftPlank_bleached.png",
         "name": "DriftPlank_bleached_2",
@@ -8615,8 +8917,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "DriftRoot_001",
-      "family": "DriftRoot",
+      "id": "shorefinds_006",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -8643,7 +8945,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/DriftRoot_bleached.png",
         "name": "DriftRoot_bleached_1",
@@ -8653,8 +8955,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "DriftRoot_002",
-      "family": "DriftRoot",
+      "id": "shorefinds_007",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -8681,7 +8983,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/DriftRoot_bleached.png",
         "name": "DriftRoot_bleached_7",
@@ -8691,8 +8993,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "GreenUrchin_002",
-      "family": "GreenUrchin",
+      "id": "shorefinds_008",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -8719,7 +9021,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/GreenUrchin_wet.png",
         "name": "GreenUrchin_wet_15",
@@ -8729,8 +9031,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "RustedCan_001",
-      "family": "RustedCan",
+      "id": "shorefinds_009",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -8757,7 +9059,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/RustedCan_bleached.png",
         "name": "RustedCan_bleached_19",
@@ -8767,8 +9069,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "RazorClam_001",
-      "family": "RazorClam",
+      "id": "shorefinds_010",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -8795,7 +9097,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/RazorClam_wet.png",
         "name": "RazorClam_wet_5",
@@ -8805,8 +9107,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "Driftwood_002",
-      "family": "Driftwood",
+      "id": "shorefinds_011",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -8833,7 +9135,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/Driftwood_dry.png",
         "name": "Driftwood_dry_23",
@@ -8843,8 +9145,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "DriftPlank_002",
-      "family": "DriftPlank",
+      "id": "shorefinds_012",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -8871,7 +9173,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/DriftPlank_bleached.png",
         "name": "DriftPlank_bleached_12",
@@ -8881,8 +9183,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "Starfish_001",
-      "family": "Starfish",
+      "id": "shorefinds_013",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -8909,7 +9211,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/Starfish_wet.png",
         "name": "Starfish_wet_18",
@@ -8919,8 +9221,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "GlassBottle_001",
-      "family": "GlassBottle",
+      "id": "shorefinds_014",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -8947,7 +9249,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/GlassBottle_bleached.png",
         "name": "GlassBottle_bleached_7",
@@ -8957,8 +9259,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "Periwinkle_001",
-      "family": "Periwinkle",
+      "id": "shorefinds_015",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -8985,7 +9287,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/Periwinkle_wet.png",
         "name": "Periwinkle_wet_3",
@@ -8995,8 +9297,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "GreenUrchin_003",
-      "family": "GreenUrchin",
+      "id": "shorefinds_016",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -9023,7 +9325,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/GreenUrchin_wet.png",
         "name": "GreenUrchin_wet_1",
@@ -9033,8 +9335,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "SandDollar_001",
-      "family": "SandDollar",
+      "id": "shorefinds_017",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -9061,7 +9363,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/SandDollar_dry.png",
         "name": "SandDollar_dry_22",
@@ -9071,8 +9373,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "GullFeather_001",
-      "family": "GullFeather",
+      "id": "shorefinds_018",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -9099,7 +9401,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/GullFeather_bleached.png",
         "name": "GullFeather_bleached_7",
@@ -9109,8 +9411,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "GreenUrchin_004",
-      "family": "GreenUrchin",
+      "id": "shorefinds_019",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -9137,7 +9439,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/GreenUrchin_wet.png",
         "name": "GreenUrchin_wet_18",
@@ -9147,8 +9449,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "DriftPlank_003",
-      "family": "DriftPlank",
+      "id": "shorefinds_020",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -9175,7 +9477,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/DriftPlank_bleached.png",
         "name": "DriftPlank_bleached_13",
@@ -9185,8 +9487,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "MoonSnail_001",
-      "family": "MoonSnail",
+      "id": "shorefinds_021",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -9213,7 +9515,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/MoonSnail_dry.png",
         "name": "MoonSnail_dry_7",
@@ -9223,8 +9525,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "DriftPlank_004",
-      "family": "DriftPlank",
+      "id": "shorefinds_022",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -9251,7 +9553,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/DriftPlank_bleached.png",
         "name": "DriftPlank_bleached_8",
@@ -9261,8 +9563,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "Starfish_002",
-      "family": "Starfish",
+      "id": "shorefinds_023",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -9289,7 +9591,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/Starfish_wet.png",
         "name": "Starfish_wet_8",
@@ -9299,8 +9601,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "SeaGlass_001",
-      "family": "SeaGlass",
+      "id": "shorefinds_024",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -9327,7 +9629,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/SeaGlass_dry.png",
         "name": "SeaGlass_dry_21",
@@ -9337,8 +9639,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "GlassBottle_002",
-      "family": "GlassBottle",
+      "id": "shorefinds_025",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -9365,7 +9667,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/GlassBottle_bleached.png",
         "name": "GlassBottle_bleached_23",
@@ -9375,8 +9677,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "GreenUrchin_005",
-      "family": "GreenUrchin",
+      "id": "shorefinds_026",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -9403,7 +9705,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/GreenUrchin_wet.png",
         "name": "GreenUrchin_wet_23",
@@ -9413,8 +9715,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "SandDollar_002",
-      "family": "SandDollar",
+      "id": "shorefinds_027",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -9441,7 +9743,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/SandDollar_dry.png",
         "name": "SandDollar_dry_21",
@@ -9451,8 +9753,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "DriftRoot_003",
-      "family": "DriftRoot",
+      "id": "shorefinds_028",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -9479,7 +9781,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/DriftRoot_bleached.png",
         "name": "DriftRoot_bleached_15",
@@ -9489,8 +9791,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "SoftshellClam_001",
-      "family": "SoftshellClam",
+      "id": "shorefinds_029",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -9517,7 +9819,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/SoftshellClam_wet.png",
         "name": "SoftshellClam_wet_21",
@@ -9527,8 +9829,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "DriftPlank_005",
-      "family": "DriftPlank",
+      "id": "shorefinds_030",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -9555,7 +9857,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/DriftPlank_bleached.png",
         "name": "DriftPlank_bleached_10",
@@ -9565,8 +9867,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "Quahog_001",
-      "family": "Quahog",
+      "id": "shorefinds_031",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -9593,7 +9895,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/Quahog_wet.png",
         "name": "Quahog_wet_3",
@@ -9603,8 +9905,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "TrapLath_001",
-      "family": "TrapLath",
+      "id": "shorefinds_032",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -9631,7 +9933,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/TrapLath_dry.png",
         "name": "TrapLath_dry_18",
@@ -9641,8 +9943,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "GlassBottle_003",
-      "family": "GlassBottle",
+      "id": "shorefinds_033",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -9669,7 +9971,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/GlassBottle_bleached.png",
         "name": "GlassBottle_bleached_4",
@@ -9679,8 +9981,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "RazorClam_002",
-      "family": "RazorClam",
+      "id": "shorefinds_034",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -9707,7 +10009,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/RazorClam_wet.png",
         "name": "RazorClam_wet_0",
@@ -9717,8 +10019,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "NetScrap_001",
-      "family": "NetScrap",
+      "id": "shorefinds_035",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -9745,7 +10047,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/NetScrap_dry.png",
         "name": "NetScrap_dry_16",
@@ -9755,8 +10057,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "DriftPlank_006",
-      "family": "DriftPlank",
+      "id": "shorefinds_036",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -9783,7 +10085,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/DriftPlank_bleached.png",
         "name": "DriftPlank_bleached_6",
@@ -9793,8 +10095,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "NetFloat_001",
-      "family": "NetFloat",
+      "id": "shorefinds_037",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -9821,7 +10123,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/NetFloat_dry.png",
         "name": "NetFloat_dry_0",
@@ -9831,8 +10133,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WeatheredBone_001",
-      "family": "WeatheredBone",
+      "id": "shorefinds_038",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -9859,7 +10161,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/WeatheredBone_bleached.png",
         "name": "WeatheredBone_bleached_0",
@@ -9869,8 +10171,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "Dogwhelk_001",
-      "family": "Dogwhelk",
+      "id": "shorefinds_039",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -9897,7 +10199,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/Dogwhelk_wet.png",
         "name": "Dogwhelk_wet_3",
@@ -9907,8 +10209,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "SandDollar_003",
-      "family": "SandDollar",
+      "id": "shorefinds_040",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -9935,7 +10237,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/SandDollar_dry.png",
         "name": "SandDollar_dry_11",
@@ -9945,8 +10247,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "Quahog_002",
-      "family": "Quahog",
+      "id": "shorefinds_041",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -9973,7 +10275,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/Quahog_wet.png",
         "name": "Quahog_wet_23",
@@ -9983,8 +10285,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "LobsterClaw_001",
-      "family": "LobsterClaw",
+      "id": "shorefinds_042",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -10011,7 +10313,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/LobsterClaw_dry.png",
         "name": "LobsterClaw_dry_9",
@@ -10021,8 +10323,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "GullFeather_002",
-      "family": "GullFeather",
+      "id": "shorefinds_043",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -10049,7 +10351,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/GullFeather_bleached.png",
         "name": "GullFeather_bleached_9",
@@ -10059,8 +10361,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "Periwinkle_002",
-      "family": "Periwinkle",
+      "id": "shorefinds_044",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -10087,7 +10389,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/Periwinkle_wet.png",
         "name": "Periwinkle_wet_17",
@@ -10097,8 +10399,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "Driftwood_003",
-      "family": "Driftwood",
+      "id": "shorefinds_045",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -10125,7 +10427,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/Driftwood_dry.png",
         "name": "Driftwood_dry_11",
@@ -10135,8 +10437,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "DriftPlank_007",
-      "family": "DriftPlank",
+      "id": "shorefinds_046",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -10163,7 +10465,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/DriftPlank_bleached.png",
         "name": "DriftPlank_bleached_22",
@@ -10173,8 +10475,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "Starfish_003",
-      "family": "Starfish",
+      "id": "shorefinds_047",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -10201,7 +10503,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/Starfish_wet.png",
         "name": "Starfish_wet_10",
@@ -10211,8 +10513,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "WeatheredBone_002",
-      "family": "WeatheredBone",
+      "id": "shorefinds_048",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -10239,7 +10541,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/WeatheredBone_bleached.png",
         "name": "WeatheredBone_bleached_22",
@@ -10249,8 +10551,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "RazorClam_003",
-      "family": "RazorClam",
+      "id": "shorefinds_049",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -10277,7 +10579,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/RazorClam_wet.png",
         "name": "RazorClam_wet_12",
@@ -10287,8 +10589,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "NetFloat_002",
-      "family": "NetFloat",
+      "id": "shorefinds_050",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -10315,7 +10617,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/NetFloat_dry.png",
         "name": "NetFloat_dry_8",
@@ -10325,8 +10627,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "GlassBottle_004",
-      "family": "GlassBottle",
+      "id": "shorefinds_051",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -10353,7 +10655,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/GlassBottle_bleached.png",
         "name": "GlassBottle_bleached_18",
@@ -10363,8 +10665,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "Starfish_004",
-      "family": "Starfish",
+      "id": "shorefinds_052",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -10391,7 +10693,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/Starfish_wet.png",
         "name": "Starfish_wet_5",
@@ -10401,8 +10703,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "BarnacleCluster_001",
-      "family": "BarnacleCluster",
+      "id": "shorefinds_053",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -10429,7 +10731,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/BarnacleCluster_wet.png",
         "name": "BarnacleCluster_wet_16",
@@ -10439,8 +10741,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "CrabMoult_001",
-      "family": "CrabMoult",
+      "id": "shorefinds_054",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -10467,7 +10769,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/CrabMoult_dry.png",
         "name": "CrabMoult_dry_16",
@@ -10477,8 +10779,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "Dogwhelk_002",
-      "family": "Dogwhelk",
+      "id": "shorefinds_055",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -10505,7 +10807,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/Dogwhelk_wet.png",
         "name": "Dogwhelk_wet_5",
@@ -10515,8 +10817,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "JingleShell_001",
-      "family": "JingleShell",
+      "id": "shorefinds_056",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -10543,7 +10845,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/JingleShell_dry.png",
         "name": "JingleShell_dry_14",
@@ -10553,8 +10855,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "RustedCan_002",
-      "family": "RustedCan",
+      "id": "shorefinds_057",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -10581,7 +10883,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/RustedCan_bleached.png",
         "name": "RustedCan_bleached_12",
@@ -10591,8 +10893,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "PebbleScatter_001",
-      "family": "PebbleScatter",
+      "id": "shorefinds_058",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -10619,7 +10921,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/PebbleScatter_wet.png",
         "name": "PebbleScatter_wet_9",
@@ -10629,8 +10931,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "NetScrap_002",
-      "family": "NetScrap",
+      "id": "shorefinds_059",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -10657,7 +10959,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/NetScrap_dry.png",
         "name": "NetScrap_dry_5",
@@ -10667,8 +10969,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "DriftPlank_008",
-      "family": "DriftPlank",
+      "id": "shorefinds_060",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -10695,7 +10997,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/DriftPlank_bleached.png",
         "name": "DriftPlank_bleached_14",
@@ -10705,8 +11007,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "RazorClam_004",
-      "family": "RazorClam",
+      "id": "shorefinds_061",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -10733,7 +11035,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/RazorClam_wet.png",
         "name": "RazorClam_wet_8",
@@ -10743,8 +11045,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "Starfish_005",
-      "family": "Starfish",
+      "id": "shorefinds_062",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -10771,7 +11073,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/Starfish_wet.png",
         "name": "Starfish_wet_5",
@@ -10781,8 +11083,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "RustedCan_003",
-      "family": "RustedCan",
+      "id": "shorefinds_063",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -10809,7 +11111,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/RustedCan_bleached.png",
         "name": "RustedCan_bleached_7",
@@ -10819,8 +11121,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "TrapLath_002",
-      "family": "TrapLath",
+      "id": "shorefinds_064",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -10847,7 +11149,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/TrapLath_dry.png",
         "name": "TrapLath_dry_16",
@@ -10857,8 +11159,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "DriftPlank_009",
-      "family": "DriftPlank",
+      "id": "shorefinds_065",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -10885,7 +11187,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/DriftPlank_bleached.png",
         "name": "DriftPlank_bleached_7",
@@ -10895,8 +11197,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "GreenUrchin_006",
-      "family": "GreenUrchin",
+      "id": "shorefinds_066",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -10923,7 +11225,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/GreenUrchin_wet.png",
         "name": "GreenUrchin_wet_0",
@@ -10933,8 +11235,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "RustedCan_004",
-      "family": "RustedCan",
+      "id": "shorefinds_067",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -10961,7 +11263,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/RustedCan_bleached.png",
         "name": "RustedCan_bleached_12",
@@ -10971,8 +11273,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "MermaidsPurse_001",
-      "family": "MermaidsPurse",
+      "id": "shorefinds_068",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -10999,7 +11301,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/MermaidsPurse_dry.png",
         "name": "MermaidsPurse_dry_23",
@@ -11009,8 +11311,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "DriftRoot_004",
-      "family": "DriftRoot",
+      "id": "shorefinds_069",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -11037,7 +11339,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/DriftRoot_bleached.png",
         "name": "DriftRoot_bleached_2",
@@ -11047,8 +11349,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "BarnacleCluster_002",
-      "family": "BarnacleCluster",
+      "id": "shorefinds_070",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -11075,7 +11377,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/BarnacleCluster_wet.png",
         "name": "BarnacleCluster_wet_11",
@@ -11085,8 +11387,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "Periwinkle_003",
-      "family": "Periwinkle",
+      "id": "shorefinds_071",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -11113,7 +11415,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/Periwinkle_wet.png",
         "name": "Periwinkle_wet_5",
@@ -11123,8 +11425,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "MoonSnail_002",
-      "family": "MoonSnail",
+      "id": "shorefinds_072",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -11151,7 +11453,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/MoonSnail_dry.png",
         "name": "MoonSnail_dry_16",
@@ -11161,8 +11463,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "GullFeather_003",
-      "family": "GullFeather",
+      "id": "shorefinds_073",
+      "family": "shorefinds",
       "group": "ShoreFinds",
       "rig": "ShoreFinds",
       "rigSource": "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
@@ -11189,7 +11491,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7560c8e6b551d48e061534690a51f5311fc9ca87f6b6e53ac18cff5a4cc17477",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shore/FindsIso/GullFeather_bleached.png",
         "name": "GullFeather_bleached_15",
@@ -11199,8 +11501,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "smallYard_001",
-      "family": "smallYard",
+      "id": "shipyard_001",
+      "family": "shipyard",
       "group": "NineMileCreekLots",
       "rig": "ShipyardIso",
       "rigSource": "docs/art/rigs/shipyard-iso-kit/shipyardIsoRig.js",
@@ -11227,7 +11529,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "7f857dc3fdfb44beb7ecb1dcc27a3ad98619a9f9a5caa3bd36989a3b3959a7d1",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Shipyard/Iso/smallYard.png",
         "name": "smallYard_3",
@@ -11265,6 +11567,8 @@
         "name": "GreywickHouseRed_0",
         "internalId": -6033085990182287532
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "GreywickHouseRed",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -11297,6 +11601,8 @@
         "name": "GreywickHouseTeal_0",
         "internalId": 5119982913190368524
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "GreywickHouseTeal",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -11329,6 +11635,8 @@
         "name": "ShipwrightShed_0",
         "internalId": 6373997018213916999
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "ShipwrightShed",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
@@ -11361,12 +11669,14 @@
         "name": "DoryIso_2",
         "internalId": -3413419456931147761
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "DoryIso",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "DeckBoss_001",
-      "family": "DeckBoss",
+      "id": "character_001",
+      "family": "character",
       "group": "CreekPeople",
       "rig": "CharacterIso6",
       "rigSource": "docs/art/rigs/characterIsoRig6.js",
@@ -11393,7 +11703,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "c35dbefe2c75cb800dba3821e63fe9c5518786931f149910b3c6430544b2bc9f",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Characters/Iso/deckboss/DeckBoss_idle.png",
         "name": "DeckBoss_idle_d4_f0",
@@ -11403,8 +11713,8 @@
       "x-sortBiasSource": "YSortSprite._baseOrder minus SortingBands.DecorBase (1202)"
     },
     {
-      "id": "Skipper_001",
-      "family": "Skipper",
+      "id": "character_002",
+      "family": "character",
       "group": "CreekPeople",
       "rig": "CharacterIso6",
       "rigSource": "docs/art/rigs/characterIsoRig6.js",
@@ -11431,7 +11741,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "c35dbefe2c75cb800dba3821e63fe9c5518786931f149910b3c6430544b2bc9f",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Characters/Iso/skipper/Skipper_idle.png",
         "name": "Skipper_idle_d4_f0",
@@ -11469,12 +11779,14 @@
         "name": "FisherSheet_0",
         "internalId": 5286321531796407868
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "FisherSheet",
       "x-pivotSource": "sprite-import.alignment",
       "x-sortingOrder": 10
     },
     {
-      "id": "Shopfront_001",
-      "family": "Shopfront",
+      "id": "shopfront_001",
+      "family": "shopfront",
       "group": "CreekShops",
       "rig": "Shopfront",
       "rigSource": "docs/art/rigs/shop-building-kit/shopfrontRig.js",
@@ -11501,7 +11813,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "e15b0425642a3ff0c036c00e144a1d95ea27c07509c1232535fcef24e0f07e81",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Buildings/Shops/Shopfront_fishMarket.png",
         "name": "Shopfront_fishMarket_d4",
@@ -11539,12 +11851,14 @@
         "name": "ShopLevel_fishMarket_ground_d4",
         "internalId": -1365525459
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "ShopLevel",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortingOrder": 1
     },
     {
-      "id": "Shopfront_002",
-      "family": "Shopfront",
+      "id": "shopfront_002",
+      "family": "shopfront",
       "group": "CreekShops",
       "rig": "Shopfront",
       "rigSource": "docs/art/rigs/shop-building-kit/shopfrontRig.js",
@@ -11571,7 +11885,7 @@
       "x-inBounds": true,
       "x-active": true,
       "x-rigSha256": "e15b0425642a3ff0c036c00e144a1d95ea27c07509c1232535fcef24e0f07e81",
-      "x-familyIsSpriteStem": true,
+      "x-familyIsSpriteStem": false,
       "x-sprite": {
         "sheet": "Assets/_Project/Art/Sprites/Buildings/Shops/Shopfront_restaurant.png",
         "name": "Shopfront_restaurant_d0",
@@ -11609,6 +11923,8 @@
         "name": "ShopLevel_restaurant_ground_d0",
         "internalId": 1807791426
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "ShopLevel",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortingOrder": 1
     },
@@ -11641,6 +11957,8 @@
         "name": "Tree02_0",
         "internalId": -9012881444294745044
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "Tree02",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortingOrder": -476
     },
@@ -11673,6 +11991,8 @@
         "name": "Tree08_0",
         "internalId": 3539009641458441321
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "Tree08",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortingOrder": -396
     },
@@ -11705,6 +12025,8 @@
         "name": "Tree25_0",
         "internalId": -6209776983067494865
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "Tree25",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortingOrder": -300
     },
@@ -11737,6 +12059,8 @@
         "name": "Tree06_0",
         "internalId": -931903583046220830
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "Tree06",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortingOrder": -216
     },
@@ -11769,6 +12093,8 @@
         "name": "Tree22_0",
         "internalId": -7550398449202688419
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "Tree22",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortingOrder": -128
     },
@@ -11801,6 +12127,8 @@
         "name": "Tree01_0",
         "internalId": -6080656463254068845
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "Tree01",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortingOrder": -32
     },
@@ -11833,6 +12161,8 @@
         "name": "Tree05_0",
         "internalId": -5329193677047126305
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "Tree05",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortingOrder": 80
     },
@@ -11865,6 +12195,8 @@
         "name": "Tree18_0",
         "internalId": -2593299045792093630
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "Tree18",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortingOrder": -332
     },
@@ -11897,6 +12229,8 @@
         "name": "Tree21_0",
         "internalId": -95219023147451627
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "Tree21",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortingOrder": -344
     },
@@ -11929,6 +12263,8 @@
         "name": "Tree34_0",
         "internalId": 1402254789782820393
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "Tree34",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortingOrder": -56
     },
@@ -11961,6 +12297,8 @@
         "name": "Tree35_0",
         "internalId": -2823480693801909999
       },
+      "x-familyCandidate": null,
+      "x-spriteStem": "Tree35",
       "x-pivotSource": "sprite-import.customPivot",
       "x-sortingOrder": -52
     }
@@ -12228,7 +12566,14 @@
         }
       },
       "x-unresolvedMeaning": "no sidecar beside these sheets names a rig this exporter will trust — an ambiguous one names several. The kits that ship a *.contract.json resolve exactly; the rest have no committed link from sheet to rig, so nothing is pinned rather than guessed.",
-      "x-familyVocabulary": "The format's `family` vocabulary is the editor's RigKit ids (dory, punt, lobsterboat, camper, character, pot, rock, …). These ids are the SPRITE NAME STEM instead, because a baked sheet does not record which palette family drew it. Every entity flags this with x-familyIsSpriteStem so nothing mistakes one for the other.",
+      "unlistedFamilies": {
+        "wharf": {
+          "placements": 24,
+          "rigSource": "docs/art/rigs/iso-rig-pack/wharf-kit-iso/wharfIsoRig.js",
+          "spriteStem": "logCrib"
+        }
+      },
+      "x-familyVocabulary": "`family` is the editor's own wire vocabulary, transcribed at docs/tools/reference/family-names.json and matched EXACTLY: a rig whose name does not land on a listed one keeps the sprite stem, flags x-familyIsSpriteStem, and appears under unlistedFamilies with the candidate name — never aliased onto a near neighbour. wharfIsoRig normalises to `wharf` and the list holds both `wharfbuilding` and `wharfmodule`; guessing between them is the aliasing the ruling forbids. Those entries are the request list for the editor side.",
       "x-absentEntityFields": "facing, facingIndex and gameplaySidecar are named by the format and absent here. The first two are the editor's own view state; the third is a rig gameplay measurement. A baked sprite records none of them, and no rig is executed by this exporter.",
       "x-noCallRecord": "call/opts are absent by ruling: the editor writes them out of its own live state and no renderer reads one back. The cost is that this document can never seed a round-trip INTO the editor, which needs family+dir+opts."
     }

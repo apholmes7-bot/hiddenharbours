@@ -19,7 +19,7 @@ import json
 import math
 import os
 
-from . import heightmap, roads, unityyaml as U
+from . import families, heightmap, roads, unityyaml as U
 from .repo import ASSETS_PPU
 
 SCHEMA = "hiddenharbours.scene/1"
@@ -268,9 +268,11 @@ def _entities(repo, scene, centre, origin_nw, cols, rows):
     rigs = {}
     family_counts = {}
     unresolved_sheets = {}
+    unlisted_families = {}
     inactive = 0
     off_grid = 0
     decor_base = repo.decor_base()
+    wire_families, _wire_layers = families.load(repo)
 
     for game_object_id in scene.walk():
         renderer = None
@@ -306,12 +308,23 @@ def _entities(repo, scene, centre, origin_nw, cols, rows):
             inactive += 1
 
         name = scene.name_of(game_object_id)
-        family = _family(entry["name"] if entry else name)
-        index = family_counts.get(family, 0) + 1
-        family_counts[family] = index
-
         rig_name, rig_source, evidence, candidates = repo.rig_for_sheet(sheet)
         rig_global = repo.rig_global(rig_source) if rig_source else None
+
+        # The editor's `family` vocabulary is closed, and a name outside it is not renderable
+        # there. Resolve onto it where the rig's name lands exactly; otherwise keep the sprite
+        # stem, say so per-entity, and list the near-miss so a new entry can be requested —
+        # never bend it onto a neighbour.
+        wire_family, candidate = families.resolve(rig_source, wire_families)
+        stem = _family(entry["name"] if entry else name)
+        family = wire_family or stem
+        index = family_counts.get(family, 0) + 1
+        family_counts[family] = index
+        if rig_source and not wire_family:
+            note = unlisted_families.setdefault(
+                candidate or "(unnamed)",
+                {"placements": 0, "rigSource": rig_source, "spriteStem": stem})
+            note["placements"] += 1
         if rig_source and rig_source not in rigs:
             rigs[rig_source] = {
                 "rig": rig_name,
@@ -345,13 +358,16 @@ def _entities(repo, scene, centre, origin_nw, cols, rows):
             "x-inBounds": in_bounds,
             "x-active": active,
             "x-rigSha256": rigs[rig_source]["sha256"] if rig_source else None,
-            "x-familyIsSpriteStem": True,
+            "x-familyIsSpriteStem": wire_family is None,
             "x-sprite": {
                 "sheet": sheet,
                 "name": entry["name"] if entry else None,
                 "internalId": internal_id,
             },
         }
+        if wire_family is None:
+            record["x-familyCandidate"] = candidate
+            record["x-spriteStem"] = stem
         if entry:
             record["x-pivotSource"] = entry["pivotSource"]
         else:
@@ -382,11 +398,16 @@ def _entities(repo, scene, centre, origin_nw, cols, rows):
                                "trust — an ambiguous one names several. The kits that ship a "
                                "*.contract.json resolve exactly; the rest have no committed link "
                                "from sheet to rig, so nothing is pinned rather than guessed.",
-        "x-familyVocabulary": "The format's `family` vocabulary is the editor's RigKit ids "
-                              "(dory, punt, lobsterboat, camper, character, pot, rock, …). These "
-                              "ids are the SPRITE NAME STEM instead, because a baked sheet does "
-                              "not record which palette family drew it. Every entity flags this "
-                              "with x-familyIsSpriteStem so nothing mistakes one for the other.",
+        "unlistedFamilies": dict(sorted(unlisted_families.items())),
+        "x-familyVocabulary": "`family` is the editor's own wire vocabulary, transcribed at "
+                              "docs/tools/reference/family-names.json and matched EXACTLY: a rig "
+                              "whose name does not land on a listed one keeps the sprite stem, "
+                              "flags x-familyIsSpriteStem, and appears under unlistedFamilies "
+                              "with the candidate name — never aliased onto a near neighbour. "
+                              "wharfIsoRig normalises to `wharf` and the list holds both "
+                              "`wharfbuilding` and `wharfmodule`; guessing between them is the "
+                              "aliasing the ruling forbids. Those entries are the request list "
+                              "for the editor side.",
         "x-absentEntityFields": "facing, facingIndex and gameplaySidecar are named by the format "
                                 "and absent here. The first two are the editor's own view "
                                 "state; the third is a rig gameplay measurement. A baked sprite "

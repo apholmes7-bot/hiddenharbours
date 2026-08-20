@@ -12,7 +12,7 @@ a separate, gated spike (`docs/tools/scene-editor-review.md` §9) and nothing he
 ```bash
 python3 tools/scene-export/hh_scene_export.py                 # writes tools/scene-export/packages/
 python3 tools/scene-export/hh_scene_export.py --check         # fails if the committed packages are stale
-python3 -m unittest discover -s tools/scene-export/tests -v   # 39 tests
+python3 -m unittest discover -s tools/scene-export/tests -v   # 42 tests
 ```
 
 No arguments needed and no Unity: python3 (3.8+), standard library only. It runs in a bare
@@ -56,12 +56,13 @@ hhexport/unityyaml.py       Unity Force-Text YAML reader (stdlib; keeps every sc
 hhexport/csharp.py          declared literals out of C# — routes, band floors, rig globals
 hhexport/roads.py           strokes the declared ways into the road layer
 hhexport/heightmap.py       R8 PNG decode + the ground iso-contour (LFS-gated)
+hhexport/families.py        rig -> the editor's closed family vocabulary, exact match only
 hhexport/repo.py            GUIDs, sprite import settings, region defs, rig resolution + sha256
 hhexport/scene.py           hierarchy, world transforms, the scene's own ordering
 hhexport/package.py         the hiddenharbours.scene/1 emitter
 hhexport/provenance.py      what vintage of the world a package is a picture of
 packages/                   the committed output (regenerate with the command above)
-tests/                      39 tests: parser, rig pinning, the contract compared block-for-block
+tests/                      42 tests: parser, rig pinning, the contract compared block-for-block
                             against docs/tools/reference/sample-scene.json, the rasterised
                             layers, portability, determinism
 ```
