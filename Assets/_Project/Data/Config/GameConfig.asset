@@ -334,3 +334,4 @@ MonoBehaviour:
     FarthestWorldHeightMeters: 11.25
     WheelUnitsPerNotch: 120
     StepSeconds: 0.18
+  InteriorRockScale: 0.45
