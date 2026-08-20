@@ -258,5 +258,86 @@ namespace HiddenHarbours.Tests.EditMode
             }
             finally { Object.DestroyImmediate(go); }
         }
+
+        // ---- a PASSENGER on the deck (owner playtest 2026-08-20, the St Peters opening) ---------
+        //
+        // "the whole passage runs at the WALKING zoom — far too close; it should use the zoomed-out
+        // view used when piloting a boat." OnDeck had to serve two situations at once: deck work on
+        // your own boat at a wharf (a step closer, the 2026-07-08 ruling) and being carried in on
+        // somebody else's hull (a passage, which wants the vessel). CarriedAboardChanged is the bit
+        // that tells them apart.
+
+        [Test]
+        public void CarriedOnDeck_WantsTheVesselFraming_NotTheDeckStep()
+        {
+            Assert.AreEqual(CameraFraming.Boat,
+                CameraZoomPolicy.DesiredFraming(ControlMode.OnDeck, haulLive: false,
+                                                haulTightensZoom: true, carriedAboard: true));
+        }
+
+        [Test]
+        public void BeingCarried_BeatsALiveHaul()
+        {
+            // The two cannot both be true — a haul is your own hands on your own boat — so a stray
+            // haul flag must never pull a passage back to the rope framing.
+            Assert.AreEqual(CameraFraming.Boat,
+                CameraZoomPolicy.DesiredFraming(ControlMode.OnDeck, haulLive: true,
+                                                haulTightensZoom: true, carriedAboard: true));
+        }
+
+        [Test]
+        public void ACarryFlag_NeverWidens_OffTheDeck()
+        {
+            // The twin of the haul's guard: a stale carry flag must not distort any other mode.
+            Assert.AreEqual(CameraFraming.OnFoot,
+                CameraZoomPolicy.DesiredFraming(ControlMode.OnFoot, haulLive: false,
+                                                haulTightensZoom: true, carriedAboard: true));
+            Assert.AreEqual(CameraFraming.Vehicle,
+                CameraZoomPolicy.DesiredFraming(ControlMode.Driving, haulLive: false,
+                                                haulTightensZoom: true, carriedAboard: true));
+        }
+
+        [Test]
+        public void TheThreeArgumentMapping_StillMeansNotCarried()
+        {
+            // Every existing caller and test uses the short form; it must keep meaning exactly what
+            // it meant before a passenger was expressible at all.
+            Assert.AreEqual(CameraZoomPolicy.DesiredFraming(ControlMode.OnDeck, haulLive: false,
+                                                            haulTightensZoom: true, carriedAboard: false),
+                            CameraZoomPolicy.DesiredFraming(ControlMode.OnDeck, haulLive: false,
+                                                            haulTightensZoom: true));
+        }
+
+        [Test]
+        public void TheCameraTakesTheVesselFraming_ForACarriedPassenger_AndHandsItBackAshore()
+        {
+            var go = new GameObject("cam", typeof(Camera), typeof(CameraFollow));
+            try
+            {
+                var cam = go.GetComponent<Camera>();
+                cam.orthographic = true;
+                var follow = go.GetComponent<CameraFollow>();
+
+                // The two signals the carrier sends, in the order it sends them.
+                follow.OnActiveBoatChanged(new ActiveBoatChanged("boat.cape_islander", 24f, 12.9f));
+                follow.OnCarriedAboardChanged(new CarriedAboardChanged(true));
+                follow.OnControlModeChanged(new ControlModeChanged(ControlMode.OnDeck));
+                follow.TickZoom(10.0);
+
+                Assert.AreEqual(CameraFraming.Boat, follow.Framing,
+                    "a passenger being carried in is framed for the vessel, not for deck work");
+                Assert.GreaterOrEqual(follow.WorldHeightFor(follow.Framing), 12.9f,
+                    "…and the framing has to hold the whole hull she is standing on");
+
+                // Put ashore: the carry ends and the walker's framing comes back.
+                follow.OnCarriedAboardChanged(new CarriedAboardChanged(false));
+                follow.OnControlModeChanged(new ControlModeChanged(ControlMode.OnFoot));
+                follow.TickZoom(20.0);
+
+                Assert.AreEqual(CameraFraming.OnFoot, follow.Framing,
+                    "the vessel framing must be handed back with the vessel");
+            }
+            finally { Object.DestroyImmediate(go); }
+        }
     }
 }

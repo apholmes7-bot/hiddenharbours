@@ -548,4 +548,58 @@ namespace HiddenHarbours.Core
 
         public OutfitPreviewRequested(string outfitId) { OutfitId = outfitId ?? ""; }
     }
+
+    // =====================================================================================
+    //  THE NOTEBOOK — the book she carries
+    // =====================================================================================
+
+    /// <summary>
+    /// <b>Take the notebook out, or put it away.</b> A toggle, not an open: the same request from the
+    /// same control both opens and shuts the book, because that is what reaching for a book you are
+    /// already holding means.
+    ///
+    /// <para><b>Why a signal and not a call.</b> The book is drawn by <c>NotebookPresenter</c> in
+    /// World; the control that asks for it is a row on the pause menu, in UI. Neither module may
+    /// reference the other (rule 4), so Core states WHAT was asked and World answers with HOW — the
+    /// shape <see cref="WardrobeRequested"/> already uses for the same reason.</para>
+    ///
+    /// <para><b>⚠️ It carries no key, because there is no key to carry.</b> The dev-key ledger is
+    /// spent A-Z, so the book deliberately binds NOTHING new: it rides controls that already exist.
+    /// Anything that can reach the player - a menu row, a desk, a later world fixture - publishes
+    /// this, and the book neither knows nor cares which did.</para>
+    /// </summary>
+    public readonly struct NotebookRequested
+    {
+        /// <summary>Where the request came from, for flavour and for tests — a menu row, a fixture id.
+        /// Never null; EMPTY means "no particular place", which is a real answer.</summary>
+        public readonly string SourceId;
+
+        public NotebookRequested(string sourceId) { SourceId = sourceId ?? ""; }
+    }
+
+    /// <summary>
+    /// <b>THE PLAYER IS BEING CARRIED ON SOMEBODY ELSE'S DECK</b> — a passenger on a passage, rather
+    /// than a hand working her own boat.
+    ///
+    /// <para><b>Why this is not already knowable.</b> <see cref="ControlModeChanged"/> with
+    /// <see cref="ControlMode.OnDeck"/> says "she is standing on planking", and that one sentence
+    /// currently has to serve two situations that want opposite things from the camera. Boarding your
+    /// own boat at a wharf is DECK WORK — pots, bait, the rail — and the owner ruled the view a step
+    /// closer for it. Riding a skipper's cape islander in through a buoyed fairway is a PASSAGE, and a
+    /// deck-work framing there shows half a hull and none of the water she is crossing: it was the
+    /// first thing the owner said about the St Peters opening.</para>
+    ///
+    /// <para>So this carries the one bit that separates them, and whoever is doing the carrying is the
+    /// only thing that knows it. A subscriber may treat it as a statement about the PLAYER, not about
+    /// any particular boat — the hull's own framing arrives, as it always has, on
+    /// <see cref="ActiveBoatChanged"/>.</para>
+    /// </summary>
+    public readonly struct CarriedAboardChanged
+    {
+        /// <summary>True while she is a passenger on a deck she does not command; false the moment she
+        /// is put down — including a passage cut short.</summary>
+        public readonly bool Carried;
+
+        public CarriedAboardChanged(bool carried) { Carried = carried; }
+    }
 }

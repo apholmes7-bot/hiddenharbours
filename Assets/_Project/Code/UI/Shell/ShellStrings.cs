@@ -97,6 +97,10 @@ namespace HiddenHarbours.UI
 
         public const string PauseTitle     = "Ashore for a moment";
         public const string Resume         = "Back to it";
+
+        /// <summary>The notebook row on the pause menu. Named for the object, not the feature:
+        /// she is reaching for a book, not opening a journal system.</summary>
+        public const string Notebook       = "Your notebook";
         public const string QuitToTitle    = "Quit to title";
         public const string QuitToDesktop  = "Quit to desktop";
         public const string PauseHint      = "Esc to carry on   ·   the tide is stopped while you're here";

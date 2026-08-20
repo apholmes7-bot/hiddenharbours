@@ -160,6 +160,8 @@ namespace HiddenHarbours.App
         private Transform _boatRoot;
         private Transform _player;
         private PlayerWalkController _walk;
+        private IsoCharacterSprite _skin;
+        private BoatHullPresenterHost _presenterHost;
         private ArrivalDeck _deck;
         private Rigidbody2D _playerBody;
         private bool _playerWasSimulated = true;
@@ -306,6 +308,11 @@ namespace HiddenHarbours.App
             }
             _walk = _player.GetComponentInParent<PlayerWalkController>();
 
+            // Her DRAWER — the one authority for which cell the fisher is shown in. Resolved the same
+            // way and in the same place as her walking, because for the length of this passage the two
+            // are the same problem: she is neither steering herself nor drawing herself.
+            _skin = _player.GetComponentInParent<IsoCharacterSprite>();
+
             // Her root, built the way every other hull in a region is: the builder PLACES, the runtime
             // DRAWS. MooredBoat is the drawer — it skins her, stands her skipper on the deck through the
             // measured occupant slots, and installs the wave motion that keeps her on the same sea as
@@ -402,6 +409,14 @@ namespace HiddenHarbours.App
 
         private void Update()
         {
+            // ⭐ THE POSE IS STATED HERE, in Update, and NOT beside the seating in LateUpdate. The split
+            // is not tidiness: IsoCharacterSprite consumes the holds in its own LateUpdate at execution
+            // order 0 — the order this component also runs at — so which of the two LateUpdates runs
+            // first is undefined, and a hold written there would be read a frame late about half the
+            // time. DeckRiderVisual learned this on a turning hull and wrote the rule down: inputs
+            // early, picture late.
+            PoseThePassenger();
+
             if (_phase != Phase.Docking && _phase != Phase.Moored) return;
 
             if (_phase == Phase.Docking)
@@ -547,8 +562,24 @@ namespace HiddenHarbours.App
             }
 
             _holding = true;
+
+            // ⭐ THE PASSAGE IS FRAMED FOR THE BOAT SHE IS ON. Two Core signals, in the order the camera
+            // has always wanted them: the hull's own authored framing first (the same
+            // <see cref="ActiveBoatChanged"/> a helm-take sends, carrying the same three facts), then
+            // the one bit that tells the camera to USE it for somebody who is only a passenger here.
+            // Nothing about the arrival crosses the seam — a ferry or a tow would say exactly this.
+            BoatHullDef hull = _skipper != null ? _skipper.Boat : null;
+            if (hull != null)
+                EventBus.Publish(new ActiveBoatChanged(hull.Id, hull.CameraWorldHeightMeters,
+                                                       hull.LengthMeters));
+            EventBus.Publish(new CarriedAboardChanged(true));
             EventBus.Publish(new ControlModeChanged(ControlMode.OnDeck));
+
+            // Both halves of "she is aboard" on the very first frame: where she stands, and how she is
+            // drawn standing there. The spawn happens inside TryBegin, which may run before this
+            // component's first Update, and one frame of a sprinting passenger is one frame too many.
             SeatThePlayer();
+            PoseThePassenger();
         }
 
         /// <summary>
@@ -574,6 +605,18 @@ namespace HiddenHarbours.App
             if (_walk != null) _walk.enabled = true;
             if (_playerBody != null) _playerBody.simulated = _playerWasSimulated;
             _playerBody = null;
+
+            // Her own motion is honest again the moment she is standing on ground that does not move,
+            // so the drawer takes both reads back. ReleaseHeading KEEPS the direction she was last
+            // facing rather than snapping her north — she steps off looking where the boat was looking.
+            if (_skin != null)
+            {
+                _skin.Stance = CharacterStance.Free;
+                _skin.ReleaseHeading();
+                _skin.ReleaseSpeed();
+            }
+
+            EventBus.Publish(new CarriedAboardChanged(false));
             EventBus.Publish(new ControlModeChanged(ControlMode.OnFoot));
         }
 
@@ -604,6 +647,54 @@ namespace HiddenHarbours.App
             foreach (Transform t in _boatRoot.GetComponentsInChildren<Transform>(true))
                 if (t.name == MooredBoat.SkipperChildName) return t;
             return _boatRoot;
+        }
+
+        /// <summary>
+        /// 🔴 <b>SHE IS BEING CARRIED, SO SHE IS NOT WALKING.</b> The defect the owner watched on his
+        /// first sail in: the passenger played a walk cycle, on the spot, for the whole passage.
+        ///
+        /// <para>Nothing was lying. <see cref="IsoCharacterSprite"/> picks the fisher's cell by
+        /// MEASURING her own step — which is the right reading in both frames she normally lives in,
+        /// ashore and parented to a deck — and <see cref="SeatThePlayer"/> moves her by writing world
+        /// position every LateUpdate. So a passenger standing perfectly still on a hull doing five
+        /// knots was measured at five knots and drawn at a dead run. The drawer was asked the wrong
+        /// question, and its own documentation says who is supposed to answer it: <i>"a character
+        /// standing on something that MOVES has no honest motion of its own to read, so whoever owns
+        /// that frame supplies both the facing and the speed."</i> For this passage that is this
+        /// component, so it says both.</para>
+        ///
+        /// <para><b>Zero, stated, not measured.</b> Her honest travelling speed is metres of DECK per
+        /// second, and a passenger who is placed rather than steered crosses no deck at all. The facing
+        /// is the hull's — she is looking where the boat is going, which is the harbour she is arriving
+        /// at — and it is the DRAWN heading where the hull publishes one, so the figure faces along the
+        /// boat that is actually on screen rather than along a physics angle the sprite compass has
+        /// quantised away (<c>DeckRiderVisual</c>'s rule, for <c>DeckRiderVisual</c>'s reason).</para>
+        ///
+        /// <para>And the <see cref="CharacterStance.Balance"/> brace, because that is what the game
+        /// already means by standing on a working deck. A def with no brace art falls back to the free
+        /// idle on its own, so this costs a boat whose skipper has no such sheets exactly nothing.</para>
+        /// </summary>
+        private void PoseThePassenger()
+        {
+            if (!_holding || _skin == null || _boatRoot == null) return;
+            _skin.Stance = CharacterStance.Balance;
+            _skin.HoldHeading(DrawnHeadingDegrees());
+            _skin.HoldSpeed(0f);
+        }
+
+        /// <summary>
+        /// The compass heading of the hull PICTURE she is standing on — the presenter's own drawn
+        /// heading where one is installed (quantised on a sprite compass, continuous on a mesh hull),
+        /// else the physics heading this class steers by. Resolved once and then only null-checked:
+        /// <c>MooredBoat</c> installs the host when it skins her, which can be after the spawn.
+        /// </summary>
+        private float DrawnHeadingDegrees()
+        {
+            if (_presenterHost == null && _boatRoot != null)
+                _presenterHost = _boatRoot.GetComponent<BoatHullPresenterHost>();
+
+            IBoatHullPresenter hull = _presenterHost != null ? _presenterHost.Presenter : null;
+            return hull != null ? hull.DrawnHeadingDegrees() : ArrivalPilot.HeadingOf(_boatRoot);
         }
 
         private void SeatThePlayer()

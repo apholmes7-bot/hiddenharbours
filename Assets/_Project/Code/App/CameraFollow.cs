@@ -222,6 +222,7 @@ namespace HiddenHarbours.App
         private ControlMode _mode;
         private bool _modeKnown;                 // no policy ticks until control declares itself — the builder-authored initial framing rules
         private bool _haulLive;                  // TrapHaulPhase.Hauling is live (via TrapHaulStateChanged)
+        private bool _carriedAboard;             // riding someone else's deck as a passenger (CarriedAboardChanged)
         private float _boatWorldHeightMeters = DefaultWorldHeightMeters; // last ActiveBoatChanged hull framing (Dory fallback, mirrors ControlSwitcher's)
         // Last ActiveVehicleChanged framing. The fallback is the on-foot step rather than a made-up number:
         // with no vehicle ever announced this framing is unreachable (nothing can be Driving), and if it
@@ -248,6 +249,7 @@ namespace HiddenHarbours.App
             EventBus.Subscribe<ActiveVehicleChanged>(OnActiveVehicleChanged);
             EventBus.Subscribe<ControlModeChanged>(OnControlModeChanged);
             EventBus.Subscribe<TrapHaulStateChanged>(OnTrapHaulStateChanged);
+            EventBus.Subscribe<CarriedAboardChanged>(OnCarriedAboardChanged);
         }
 
         private void OnDisable()
@@ -255,6 +257,7 @@ namespace HiddenHarbours.App
             EventBus.Unsubscribe<ActiveBoatChanged>(OnActiveBoatChanged);
             EventBus.Unsubscribe<ActiveVehicleChanged>(OnActiveVehicleChanged);
             EventBus.Unsubscribe<ControlModeChanged>(OnControlModeChanged);
+            EventBus.Unsubscribe<CarriedAboardChanged>(OnCarriedAboardChanged);
             EventBus.Unsubscribe<TrapHaulStateChanged>(OnTrapHaulStateChanged);
         }
 
@@ -305,8 +308,16 @@ namespace HiddenHarbours.App
             if (next != null) Target = next;
             _mode = e.Mode;
             _modeKnown = true;
-            if (e.Mode != ControlMode.OnDeck) _haulLive = false; // the haul is deck work — leaving the deck releases the tighten
+            // Both deck-context flags are released by leaving the deck. The haul because it is deck
+            // work; the carry because a passenger who is no longer on the deck is no longer a passenger
+            // — and a carry flag left standing would frame every later boarding as a passage. Its
+            // publisher clears it too; this is the belt that cannot be forgotten.
+            if (e.Mode != ControlMode.OnDeck) { _haulLive = false; _carriedAboard = false; }
         }
+
+        // She is a PASSENGER on the deck under her, not a hand working it — so the view is the vessel's
+        // rather than the workbench's. Value-struct payload, no GC. Public for EditMode tests.
+        public void OnCarriedAboardChanged(CarriedAboardChanged e) => _carriedAboard = e.Carried;
 
         // The trap haul's live phase drives the optional extra tighten: Hauling = live; Surfaced / Empty /
         // Idle release it. Value-struct payload, no GC. Public for EditMode tests (see OnActiveBoatChanged).
@@ -475,10 +486,19 @@ namespace HiddenHarbours.App
         public void TickZoom(double nowSeconds)
         {
             if (!_modeKnown) return; // hold the builder-authored initial framing until control declares itself
-            CameraFraming desired = CameraZoomPolicy.DesiredFraming(_mode, _haulLive, _haulTightensZoom);
+            CameraFraming desired = CameraZoomPolicy.DesiredFraming(_mode, _haulLive, _haulTightensZoom,
+                                                                    _carriedAboard);
             if (_zoomPolicy.TryCommit(desired, nowSeconds, _zoomHoldSeconds))
                 SetFraming(WorldHeightFor(desired), TweenSecondsFor(desired));
         }
+
+        /// <summary>The framing the camera has actually committed to right now, and whether it has
+        /// committed at all. Read-only; public so a test can ask what the player is being shown rather
+        /// than inferring it from an orthographic size that has been snapped to a ladder step.</summary>
+        public CameraFraming Framing => _zoomPolicy.Committed;
+
+        /// <summary>False until control has declared itself and the first framing has committed.</summary>
+        public bool FramingKnown => _zoomPolicy.HasCommitted;
 
         /// <summary>The world height (m) a framing context maps to — the owner-tunable step table
         /// (Boat = the last <see cref="ActiveBoatChanged"/> hull height). Public for tests/tools.</summary>
