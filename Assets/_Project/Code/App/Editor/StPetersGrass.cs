@@ -450,6 +450,14 @@ namespace HiddenHarbours.App.Editor
         /// <para>What genuinely stays clear: the ground the buildings occupy, the dock and its berth
         /// (a wharf is not a lawn — borrowed from <see cref="StPetersWoods.DockClearance"/> so there is
         /// one number for it), and the tread of the walked paths.</para>
+        ///
+        /// <para><b>⭐ AND SINCE 2026-08-20, THE YARDS</b> (<see cref="StPetersYards"/>). Wild grass and a
+        /// mown lawn are the same plant in a different PLACE, so the tufts stop at the mow line and the
+        /// ground's own lawn takes over inside it. <b>This ADDS to the clearance discs; it replaces
+        /// nothing.</b> A building with no yard row keeps exactly the disc it always had, and the meadow
+        /// outside every authored polygon is unchanged site for site — <c>StPetersYardTests</c> pins that
+        /// against a legacy predicate rebuilt from these same constants rather than asking you to believe
+        /// it.</para>
         /// </summary>
         public static bool IsPlantableMeadow(ITidalTerrain terrain, Vector2 p)
         {
@@ -458,6 +466,10 @@ namespace HiddenHarbours.App.Editor
 
             for (int i = 0; i < BuildingSites.Length; i++)
                 if (Vector2.Distance(p, BuildingSites[i]) < BuildingClearanceMetres) return false;
+
+            // The mow line. Cheap where it has to be: every yard opens with its own bounding box, so a
+            // candidate site out on the meadow costs four compares per row.
+            if (StPetersYards.IsInsideAYard(p)) return false;
 
             if (Vector2.Distance(p, StPetersBuilder.DockZonePos) < StPetersWoods.DockClearance)
                 return false;

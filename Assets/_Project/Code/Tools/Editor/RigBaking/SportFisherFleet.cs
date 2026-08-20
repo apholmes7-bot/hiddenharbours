@@ -41,6 +41,17 @@ namespace HiddenHarbours.Tools.RigBaking
         public string DeckId => $"deck.{Snake}";
 
         /// <summary>
+        /// The <c>HullPaintSchemeDef</c> id prefix for this hull's four schemes, e.g.
+        /// <c>paint.sport_fisher_skybridge_</c>. Trimmed from <see cref="Snake"/> for the reason
+        /// <c>LobsterVariant.PaintIdPrefix</c> gives, and qualified PER HULL rather than per rig
+        /// because the two tables are different sizes of boat wearing the same four colourways.
+        /// </summary>
+        public string PaintIdPrefix => $"paint.{Snake.Substring(0, Snake.Length - IsoSuffix.Length)}_";
+
+        /// <summary>The suffix <see cref="Snake"/> carries and <see cref="PaintIdPrefix"/> drops.</summary>
+        const string IsoSuffix = "_iso";
+
+        /// <summary>
         /// How the extractor reaches THIS hull — and it needs all three fields, which no previous
         /// family did.
         ///

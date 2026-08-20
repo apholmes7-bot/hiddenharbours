@@ -1,8 +1,8 @@
 {
  "build": "fisher",
  "derivedFromRigSha256": {
-  "characterIsoRig.js": "d9aa8774fc5ddf87426c5d8985431c0fdfe62e1dfea19b263bede196d6fc928b",
-  "rodIsoRig.js": "06be3909e85f880d490ea5fa754d5ed01e6e360243fee6bc1987f60408a838d5"
+  "characterIsoRig.js": "7799e1e73d2a97fc28decf8e986b6cedac07101ce63006c8cb99fd49057c3c3a",
+  "rodIsoRig.js": "9471d28b36a8204c09875611f3c9a284d28bd78d1494cf8414844af9f5436110"
  },
  "order": [
   "N",

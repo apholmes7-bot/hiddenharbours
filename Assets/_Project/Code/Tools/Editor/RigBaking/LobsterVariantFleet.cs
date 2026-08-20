@@ -70,6 +70,23 @@ namespace HiddenHarbours.Tools.RigBaking
         public string VisualId => $"visual.{Snake}";
         public string DeckId => $"deck.{Snake}";
 
+        /// <summary>
+        /// The <c>HullPaintSchemeDef</c> id prefix for this hull's twelve schemes, e.g.
+        /// <c>paint.lobster_standard_hardtop_fundy_</c>.
+        ///
+        /// <para><b>Trimmed from <see cref="Snake"/> rather than respelled</b>, so the axis words and
+        /// their order are stated once in this struct — a variant cannot end up with a paint id
+        /// naming a different boat than her mesh id does.</para>
+        ///
+        /// <para>The <c>_iso</c> goes because it belongs to the MESH id's namespace, not the paint
+        /// one: the hero hull's committed prefix is <c>paint.lobster_</c> against a mesh id of
+        /// <c>hullmesh.lobster_boat_iso</c>, and these eighteen follow her.</para>
+        /// </summary>
+        public string PaintIdPrefix => $"paint.{Snake.Substring(0, Snake.Length - IsoSuffix.Length)}_";
+
+        /// <summary>The suffix <see cref="Snake"/> carries and <see cref="PaintIdPrefix"/> drops.</summary>
+        const string IsoSuffix = "_iso";
+
         /// <summary>The variant descriptor as the rig's own <c>resolve()</c> takes it.</summary>
         public string JsDescriptor => $"{{size:'{Size}',style:'{Style}',region:'{Region}'}}";
 
