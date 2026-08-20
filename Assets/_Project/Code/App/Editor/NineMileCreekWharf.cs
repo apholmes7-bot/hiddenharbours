@@ -608,6 +608,11 @@ namespace HiddenHarbours.App.Editor
             int floatCleats = PlaceFloat(root, floatBed, apronElevation);
             int armour = PlaceBreakwater(root);
             int shoreArmour = PlaceShoreArmour(root);
+            // …and THE WALLS, so the fisher stops walking off the quay (the owner's 2026-08-19 walk).
+            // LAST, because the plan asks the terrain which edges are a fall and one of the answers is
+            // "the seam where these two decks meet is not one" — a question only askable once both decks
+            // exist. What is gated and what deliberately is not: see NineMileCreekWalls.
+            float wallMetres = NineMileCreekWalls.Place(root, terrain);
 
             float lowDeck = HiddenHarbours.World.FloatingPlatform.DeckElevation(
                 NineMileCreekMainland.SpringLowWater, floatBed,
@@ -637,7 +642,9 @@ namespace HiddenHarbours.App.Editor
                 $"{armour} block(s) of '{BreakwaterArmour}' " +
                 $"breakwater along y={BreakwaterY:0.#}, and {shoreArmour} block(s) of shore armour on the " +
                 "two faces of made ground the photograph shows exposed (the wharf head and the spit's " +
-                "east edge). THE DRAWN QUAY IS PHASE B's, from the ISO wharf " +
+                $"east edge). AND IT IS WALLED: {wallMetres:0.#} m of blocking edge on the faces that are " +
+                "a fall, through the one wall system (World.PropertyBoundary), gated at the brow alone. " +
+                "THE DRAWN QUAY IS PHASE B's, from the ISO wharf " +
                 "pack — the old tile kit does not scale to an 84 m wall and is ruled for migration.");
             return cleats;
         }
