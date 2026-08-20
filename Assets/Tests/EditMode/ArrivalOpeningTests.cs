@@ -107,25 +107,26 @@ namespace HiddenHarbours.Tests.EditMode
         public void TheHelmIsAPureFunctionOfThePose()
         {
             var settings = ArrivalPilot.Settings.Default;
-            var poses = new (Vector2 at, float heading, float way, Vector2 mark, float toGo)[]
+            var poses = new (Vector2 at, float heading, Vector2 vel, Vector2 mark, float toGo)[]
             {
-                (new Vector2(340f, 40f),  225f, 3.0f,  new Vector2(262f, 26f), 190f),
-                (new Vector2(262f, 26f),  245f, 3.1f,  new Vector2(255f,  0f),  75f),
-                (new Vector2(255f,  0f),  270f, 2.9f,  new Vector2(215f,  0f),  40f),
-                (new Vector2(230f,  0f),  268f, 2.2f,  new Vector2(215f,  0f),  15f),
-                (new Vector2(218f,  1.5f), 280f, 0.4f, new Vector2(215f,  0f),   3f),
-                (new Vector2(216f, -0.2f), 271f, -0.1f, new Vector2(215f, 0f),   1f),   // sternway
+                (new Vector2(340f, 40f),  225f, new Vector2(-2.9f, -0.5f), new Vector2(262f, 26f), 190f),
+                (new Vector2(262f, 26f),  245f, new Vector2(-2.0f, -2.4f), new Vector2(255f,  0f),  75f),
+                (new Vector2(255f,  0f),  270f, new Vector2(-2.9f,  0.1f), new Vector2(215f,  0f),  40f),
+                // ⭐ CRABBING: bow 268°, track due west. A bow-relative reading would call this stopped.
+                (new Vector2(230f,  0f),  268f, new Vector2(-2.2f,  1.4f), new Vector2(215f,  0f),  15f),
+                (new Vector2(218f,  1.5f), 280f, new Vector2(-0.4f, -0.1f), new Vector2(215f,  0f),   3f),
+                (new Vector2(216f, -0.2f), 271f, new Vector2( 0.1f,  0.0f), new Vector2(215f, 0f),   1f),
             };
 
             var first = new ArrivalPilot.Helm[poses.Length];
             for (int i = 0; i < poses.Length; i++)
-                first[i] = ArrivalPilot.Command(poses[i].at, poses[i].heading, poses[i].way,
+                first[i] = ArrivalPilot.Command(poses[i].at, poses[i].heading, poses[i].vel,
                                                 poses[i].mark, poses[i].toGo, settings);
 
             for (int pass = 0; pass < 200; pass++)
             for (int i = poses.Length - 1; i >= 0; i--)      // interleaved, and backwards
             {
-                var again = ArrivalPilot.Command(poses[i].at, poses[i].heading, poses[i].way,
+                var again = ArrivalPilot.Command(poses[i].at, poses[i].heading, poses[i].vel,
                                                  poses[i].mark, poses[i].toGo, settings);
                 Assert.AreEqual(first[i].Throttle, again.Throttle,
                     $"pose {i} gave a different THROTTLE on pass {pass} — the pilot is carrying state, " +
@@ -146,13 +147,13 @@ namespace HiddenHarbours.Tests.EditMode
             var at = new Vector2(250f, 0f);
 
             // Heading due north, mark to the EAST → she must put the helm to STARBOARD (positive).
-            Assert.Greater(ArrivalPilot.Command(at, 0f, 3f, at + new Vector2(20f, 0f), 100f, s).Steer, 0f,
+            Assert.Greater(ArrivalPilot.Command(at, 0f, new Vector2(3f, 0f), at + new Vector2(20f, 0f), 100f, s).Steer, 0f,
                 "a mark on the starboard bow must give starboard helm");
             // …and to the WEST → to port.
-            Assert.Less(ArrivalPilot.Command(at, 0f, 3f, at + new Vector2(-20f, 0f), 100f, s).Steer, 0f,
+            Assert.Less(ArrivalPilot.Command(at, 0f, new Vector2(-3f, 0f), at + new Vector2(-20f, 0f), 100f, s).Steer, 0f,
                 "a mark on the port bow must give port helm");
             // Dead ahead → amidships.
-            Assert.AreEqual(0f, ArrivalPilot.Command(at, 0f, 3f, at + new Vector2(0f, 20f), 100f, s).Steer,
+            Assert.AreEqual(0f, ArrivalPilot.Command(at, 0f, new Vector2(0f, 3f), at + new Vector2(0f, 20f), 100f, s).Steer,
                 1e-4f, "a mark dead ahead needs no helm at all");
 
             // And the long way round is never taken: a mark 179° off is a hard turn, not a 181° one.
@@ -211,22 +212,24 @@ namespace HiddenHarbours.Tests.EditMode
             var mark = new Vector2(215f, 0f);
 
             // Five metres to run and still doing cruise: that is too fast, and the answer is astern.
-            float throttle = ArrivalPilot.Command(at, 270f, s.CruiseSpeedMetresPerSecond, mark, 5f, s)
-                                         .Throttle;
+            float throttle = ArrivalPilot.Command(
+                at, 270f, new Vector2(-s.CruiseSpeedMetresPerSecond, 0f), mark, 5f, s).Throttle;
             Assert.Less(throttle, 0f,
                 $"with 5 m to run at {s.CruiseSpeedMetresPerSecond:F1} m/s she is commanded " +
                 $"{throttle:F2} — ahead. She cannot stop; the arrival will run through the wharf.");
 
             // …and at the same distance already slow enough, she is not dragged backwards.
             Assert.GreaterOrEqual(
-                ArrivalPilot.Command(at, 270f, ArrivalPilot.TargetSpeed(5f, s), mark, 5f, s).Throttle,
+                ArrivalPilot.Command(at, 270f,
+                                     new Vector2(-ArrivalPilot.TargetSpeed(5f, s), 0f), mark, 5f, s)
+                            .Throttle,
                 -1e-4f,
                 "a boat already at her target speed must not be commanded astern — she would stop short " +
                 "of the berth and the opening would end in open water");
 
             // Sternway is answered with AHEAD, or a boat that overshoots and backs up never recovers.
-            Assert.Greater(ArrivalPilot.Command(at, 270f, -0.5f, mark, 20f, s).Throttle, 0f,
-                "making sternway with 20 m still to run, she must be given ahead");
+            Assert.Greater(ArrivalPilot.Command(at, 270f, new Vector2(0.5f, 0f), mark, 20f, s).Throttle,
+                0f, "opening the range with 20 m still to run, she must be given ahead");
         }
 
         /// <summary>The distance the ease is measured against is along the ROUTE, not the straight line
@@ -255,6 +258,57 @@ namespace HiddenHarbours.Tests.EditMode
                 previous = d;
             }
             Assert.AreEqual(0f, previous, 1e-3f, "the last mark IS the berth");
+        }
+
+        /// <summary>
+        /// 🔴 <b>THE DEFECT THE OWNER WATCHED, as one assertion.</b> Coming onto the channel she meets a
+        /// 26° turn with way on, puts the helm hard over and CRABS — bow one way, track another. The
+        /// first version of this pilot closed its throttle loop on her speed along the BOW, which in that
+        /// attitude reads near zero while she is still making 2 m/s at the wharf. It therefore opened the
+        /// throttle six metres from the berth (measured: 0.78 ahead), drove past, and orbited.
+        ///
+        /// <para>Speed made good is the question an approach is really asking, and it is what she is
+        /// judged on now. A boat crabbing ACROSS her target closes it slowly, so she is told to slow
+        /// down; a boat crabbing across it with a component AWAY from it is told to stop.</para>
+        /// </summary>
+        [Test]
+        public void ACrabbingBoatIsJudgedOnWhatSheCloses_NotOnWhatHerBowReads()
+        {
+            var s = ArrivalPilot.Settings.Default;
+            var at = new Vector2(221f, 0f);
+            var mark = new Vector2(215f, 0f);          // six metres dead ahead to the west
+
+            // ⚠ A REAL crab: her bow points NNW (330°) while her track is due WEST, straight at the
+            // berth. That is what a hull looks like mid-turn with way on — and it is the pose the first
+            // version of the pilot read as "nearly stopped".
+            const float bowDegrees = 330f;
+            var crabbing = new Vector2(-2.4f, 0f);
+
+            Assert.Less(ArrivalPilot.Command(at, bowDegrees, crabbing, mark, 6f, s).Throttle, 0f,
+                "crabbing at 2.4 m/s six metres from the berth she must be given ASTERN. Ahead here is " +
+                "the overshoot that became a 50 m orbit on the owner's walk.");
+
+            // The reading that used to drive it, and the gap it fell into: along the bow she reads half
+            // what she is actually doing over the ground.
+            var bow = new Vector2(Mathf.Sin(bowDegrees * Mathf.Deg2Rad),
+                                  Mathf.Cos(bowDegrees * Mathf.Deg2Rad));
+            float alongBow = Vector2.Dot(crabbing, bow);
+            float madeGood = ArrivalPilot.SpeedMadeGood(at, crabbing, mark);
+            Assert.Greater(madeGood, alongBow + 1f,
+                $"this pose is supposed to CRAB: {madeGood:F2} m/s made good against {alongBow:F2} m/s " +
+                "along the bow. If they agree the test is no longer testing anything.");
+
+            // …and a boat sliding AWAY from the berth is stopped, not driven on. 🔴 This is the arm that
+            // catches the MIRROR of the crab bug: judged on closing speed alone, a boat past her mark
+            // reads as "not arriving" and is given more throttle — measured as a 150 m departure at full
+            // ahead. WayToAccountFor takes the greater of the two, so her ground speed rules here.
+            Assert.Less(ArrivalPilot.Command(at, 268f, new Vector2(2f, 0f), mark, 0f, s).Throttle, 0f,
+                "opening the range at the berth must be answered ASTERN, never ahead");
+
+            Assert.AreEqual(2f, ArrivalPilot.WayToAccountFor(at, new Vector2(2f, 0f), mark), 1e-4f,
+                "sliding away at 2 m/s she must be accounted 2 m/s of way, not −2");
+            Assert.AreEqual(crabbing.magnitude, ArrivalPilot.WayToAccountFor(at, crabbing, mark), 0.01f,
+                "crabbing she must be accounted her GROUND speed, which is the larger");
         }
 
         // =============================================================================================

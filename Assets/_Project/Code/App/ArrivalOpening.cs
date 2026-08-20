@@ -103,6 +103,12 @@ namespace HiddenHarbours.App
                  "region's own disembark point, pushed, never a second opinion about where the dock is.")]
         [SerializeField] private Vector2 _stepAshore;
 
+        [Tooltip("The bed of the dredged channel she runs, m above chart datum — the region's own cut, " +
+                 "pushed. ⚠ It is what stops her reading AGROUND for the whole passage: BoatController's " +
+                 "grounding is a flat per-hull depth, and its 3 m default against a −2.2 m spring low " +
+                 "leaves 0.8 m under a hull that draws 1.4.")]
+        [SerializeField] private float _channelBedElevation = -4f;
+
         [Header("The skipper's hand on the helm")]
         [SerializeField] private ArrivalPilot.Settings _pilot = ArrivalPilot.Settings.Default;
 
@@ -130,13 +136,36 @@ namespace HiddenHarbours.App
         /// inside the drift the mooring lines would take up anyway.</summary>
         private const float StoppedSpeedSquared = 0.01f;
 
+        /// <summary>Inside this range of the berth (m) she is COMMITTED, and the closest-approach arm of
+        /// <see cref="Alongside"/> starts watching. Three boat-lengths of the arrival hull — far enough
+        /// out that a wide pass still latches, close enough in that the turn onto the channel does
+        /// not.</summary>
+        private const float CommittedRangeMetres = 40f;
+
+        /// <summary>How far the range must OPEN again before the closest approach is called (m). A metre
+        /// of hysteresis, so a boat holding station in a chop does not latch on measurement noise.</summary>
+        private const float RangeOpeningMetres = 1f;
+
+        /// <summary>The id the arrival's deck registers under in <c>StandableSurfaces</c>.</summary>
+        private const string DeckSurfaceId = "boat.arrival_deck";
+
+        /// <summary>How high the arrival hull's deck rides over her own waterline, metres. A working
+        /// boat's washboard — enough that a figure on it is clearly out of the water, which is the only
+        /// thing this number decides here (nothing walks up to it; the passenger is placed).</summary>
+        private const float DeckFreeboardMetres = 0.9f;
+
         // --- live state -------------------------------------------------------------------------------
         private Phase _phase = Phase.Dormant;
         private BoatController _boat;
         private Transform _boatRoot;
         private Transform _player;
         private PlayerWalkController _walk;
+        private ArrivalDeck _deck;
+        private Rigidbody2D _playerBody;
+        private bool _playerWasSimulated = true;
+        private bool _holding;
         private int _leg;
+        private float _closestSoFar = float.MaxValue;
         private float _mooredTimer;
         private bool _subscribed;
 
@@ -155,13 +184,15 @@ namespace HiddenHarbours.App
 
         /// <summary>Wire the whole thing in one call — the region builder's seam, and the test's.</summary>
         public void Configure(BoatOwnerDef skipper, Vector2[] route, Vector2 berth,
-                              float berthHeadingDegrees, Vector2 stepAshore)
+                              float berthHeadingDegrees, Vector2 stepAshore,
+                              float channelBedElevation)
         {
             _skipper = skipper;
             _route = route ?? new Vector2[0];
             _berth = berth;
             _berthHeadingDegrees = berthHeadingDegrees;
             _stepAshore = stepAshore;
+            _channelBedElevation = channelBedElevation;
         }
 
         /// <summary>Tune the approach (the owner's pacing verdict lands here).</summary>
@@ -196,7 +227,9 @@ namespace HiddenHarbours.App
         {
             if (_subscribed) EventBus.Unsubscribe<ShellPhaseChanged>(OnShellPhase);
             _subscribed = false;
-            // Never leave the player frozen because a region unloaded mid-arrival.
+            // Never leave the player frozen, or a dead deck registered, because a region unloaded
+            // mid-arrival. Both are global state that would outlive the scene that made them.
+            if (_deck != null) { StandableSurfaces.Unregister(_deck); _deck = null; }
             ReleaseThePlayer();
         }
 
@@ -238,6 +271,7 @@ namespace HiddenHarbours.App
             if (!Spawn()) return false;
 
             _leg = 0;
+            _closestSoFar = float.MaxValue;
             _phase = Phase.Approaching;
             Debug.Log($"[ArrivalOpening] making the approach — {_route.Length} marks, " +
                       $"{ArrivalPilot.MetresToBerth(_route[0], _route, 0):F0} m to run.");
@@ -294,6 +328,18 @@ namespace HiddenHarbours.App
             _boat = go.AddComponent<BoatController>();
             _boat.SetHull(_skipper.Boat);
 
+            // ⚠ The hull's own idea of the water under her. Left at the component default (a flat 3 m)
+            // she reads AGROUND for the whole passage at spring low — 3 − 2.2 = 0.8 m against a 1.4 m
+            // draught — and drags herself in through the grounded-slowdown force for no reason. The
+            // dredged channel she is actually running is cut to ApproachBedElevation, so its depth at
+            // chart datum is exactly that, negated. Measured: aground=True for the entire spring-low
+            // passage before this line existed.
+            _boat.SetLocalSeabedDepth(-_channelBedElevation);
+
+            // ⭐ THE DECK SHE STANDS ON, registered where the whole game asks about it (see ArrivalDeck).
+            _deck = new ArrivalDeck(_skipper.Boat.LengthMeters, DeckFreeboardMetres);
+            StandableSurfaces.Register(_deck);
+
             float inbound = _route.Length > 1
                 ? ArrivalPilot.CompassOf(_route[1] - _route[0])
                 : _berthHeadingDegrees;
@@ -336,9 +382,6 @@ namespace HiddenHarbours.App
                    Vector2.Distance(here, _route[_leg]) <= _pilot.ArriveRadiusMetres)
                 _leg++;
 
-            // Her WAY — speed along the bow, signed — is what the throttle closes its loop on.
-            float way = Vector2.Dot(_boat.Velocity, new Vector2(_boatRoot.up.x, _boatRoot.up.y));
-
             // ⭐ ONE control law all the way in, and DOCKING is not an exception to it — it is the same
             // law asked for zero. The tempting shape is "alongside → helm amidships, let her run out of
             // way", and it does not work on this hull: her time constant is twenty seconds, so a boat
@@ -347,14 +390,14 @@ namespace HiddenHarbours.App
             // Asking the pilot for a target speed of zero is exactly that, in the units it already
             // speaks.
             ArrivalPilot.Helm helm = _phase == Phase.Approaching
-                ? ArrivalPilot.Command(here, ArrivalPilot.HeadingOf(_boatRoot), way, _route[_leg],
+                ? ArrivalPilot.Command(here, ArrivalPilot.HeadingOf(_boatRoot), _boat.Velocity,
+                                       _route[_leg],
                                        ArrivalPilot.MetresToBerth(here, _route, _leg), _pilot)
-                : ArrivalPilot.Command(here, ArrivalPilot.HeadingOf(_boatRoot), way, _berth,
-                                       0f, _pilot);
+                : ArrivalPilot.Command(here, ArrivalPilot.HeadingOf(_boatRoot), _boat.Velocity,
+                                       _berth, 0f, _pilot);
             _boat.SetControl(helm.Throttle, helm.Steer);
 
-            if (_phase == Phase.Approaching &&
-                Vector2.Distance(here, _berth) <= _pilot.ArriveRadiusMetres) BeginDocking();
+            if (_phase == Phase.Approaching && Alongside(here)) BeginDocking();
         }
 
         private void Update()
@@ -376,12 +419,42 @@ namespace HiddenHarbours.App
             if (_mooredTimer >= _mooredBeatSeconds) HandOver();
         }
 
+        /// <summary>
+        /// 🔴 <b>Is she alongside?</b> Inside the arrive radius — <i>or past her closest approach to it</i>,
+        /// which is the arm that keeps a docking from becoming an ORBIT.
+        ///
+        /// <para>A radius alone assumes she can always be steered inside it. She cannot: her turning
+        /// circle at approach speed is wider than four metres, so a track that misses by five and a half
+        /// sails on, comes round, and misses again — forever. Measured on the real fairway: closest
+        /// approach 5.5 m, then a 50 m loop south, helm hard over the whole way. The boat was doing
+        /// everything it was told; what it was told had no way to end.</para>
+        ///
+        /// <para>So the second arm is the one a skipper actually uses: <b>the range stopped
+        /// shortening</b>. Once she is inside a few boat-lengths and the distance to the berth starts
+        /// opening again, this is as close as this pass gets — take the way off here and let her settle
+        /// rather than going round for another try. <see cref="_closestSoFar"/> is reset on every entry
+        /// so a re-run cannot inherit a stale minimum.</para>
+        /// </summary>
+        private bool Alongside(Vector2 here)
+        {
+            float range = Vector2.Distance(here, _berth);
+            if (range <= _pilot.ArriveRadiusMetres) return true;
+
+            // Only once she is committed — otherwise the first metre of the passage, where the range to a
+            // berth 150 m away momentarily grows on the turn, would read as "as close as she gets".
+            if (range > CommittedRangeMetres) { _closestSoFar = float.MaxValue; return false; }
+
+            if (range < _closestSoFar) { _closestSoFar = range; return false; }
+            return range > _closestSoFar + RangeOpeningMetres;
+        }
+
         /// <summary>Alongside: from here the pilot is asked for a standstill, which means astern.</summary>
         private void BeginDocking()
         {
             _phase = Phase.Docking;
-            Debug.Log($"[ArrivalOpening] alongside at {_boat.Velocity.magnitude:F2} m/s — " +
-                      "taking the last of it off astern.");
+            Debug.Log($"[ArrivalOpening] alongside at {_boat.Velocity.magnitude:F2} m/s, " +
+                      $"{Vector2.Distance(_boatRoot.position, _berth):F1} m off the berth — taking the " +
+                      "last of it off astern.");
         }
 
         /// <summary>
@@ -428,6 +501,8 @@ namespace HiddenHarbours.App
                 save.Save();                       // the arrival is not something to have to sit through twice
             }
 
+            if (_deck != null) { StandableSurfaces.Unregister(_deck); _deck = null; }
+
             _phase = Phase.HandedOver;
             EventBus.Publish(new ArrivalCompleted(_skipperLine, SkipperTransform(),
                                                  _skipper != null ? _skipper.DisplayName : null));
@@ -438,22 +513,83 @@ namespace HiddenHarbours.App
         //  the passenger
         // =================================================================================================
 
+        /// <summary>
+        /// 🔴 <b>Take the passenger out of the physics world for the passage.</b> Disabling her input was
+        /// not enough, and the shortfall is the defect the owner watched: she keeps a
+        /// <see cref="Rigidbody2D"/> and a foot collider, and this component plants her INSIDE the hull's
+        /// own capsule every frame. Two overlapping dynamic bodies are a contact the solver must resolve,
+        /// so it shoves them apart, every fixed step, for the whole passage — a sustained impulse on a
+        /// 60 kg boat from a passenger who is put straight back. The boat is thrown off her track and the
+        /// passenger reads as pinned, which is exactly the pair of symptoms reported.
+        ///
+        /// <para><c>simulated = false</c> is the whole fix and it is the honest statement: while she is
+        /// being carried she is cargo, not a body. It removes her from contacts, from queries and from
+        /// the solver in one line, without touching her collider's authored size or her rigidbody's
+        /// authored type — so putting her back is restoring one flag rather than reconstructing a
+        /// state.</para>
+        ///
+        /// <para>And <see cref="ControlModeChanged"/> to <see cref="ControlMode.OnDeck"/>, because that
+        /// is what the game already means by "she is standing on planking": <c>PlayerSubmergeVisual</c>
+        /// gates the waterline on it and forces a dry body on a deck however deep the sea under the hull.
+        /// The <c>ControlSwitcher</c>'s own mode is deliberately NOT touched — she is not aboard HER
+        /// boat, and she must come off this one on foot.</para>
+        /// </summary>
         private void HoldThePlayer()
         {
             if (_walk != null) _walk.enabled = false;
+
+            _playerBody = _player != null ? _player.GetComponentInParent<Rigidbody2D>() : null;
+            if (_playerBody != null)
+            {
+                _playerWasSimulated = _playerBody.simulated;
+                _playerBody.linearVelocity = Vector2.zero;
+                _playerBody.simulated = false;
+            }
+
+            _holding = true;
+            EventBus.Publish(new ControlModeChanged(ControlMode.OnDeck));
             SeatThePlayer();
         }
 
+        /// <summary>
+        /// 🔴 <b>GIVE HER BACK — but only if this component is the one holding her.</b> The
+        /// <see cref="_holding"/> guard is not defensive tidiness, it is the difference between a
+        /// correct release and a stomped control mode on the standard play path. This component lives
+        /// in the StPeters scene until the region UNLOADS, and the region unloads at the exact moment
+        /// the player sails away — i.e. while she is <see cref="ControlMode.Aboard"/>. Without the
+        /// guard, <see cref="OnDisable"/> would publish <see cref="ControlMode.OnFoot"/> over the top
+        /// of that, and <c>PlayerSubmergeVisual</c> gates the waterline on the mode: she would read as
+        /// a wading body while standing on her own deck at sea.
+        ///
+        /// <para>The mid-arrival unload — the case <see cref="OnDisable"/> is actually here for — still
+        /// releases, because the flag is still set then. Everything this method touches is state only
+        /// <see cref="HoldThePlayer"/> creates, so "did I hold?" is exactly the right question: an
+        /// un-held release has nothing of its own to undo and no standing to speak about the mode.</para>
+        /// </summary>
         private void ReleaseThePlayer()
         {
+            if (!_holding) return;
+            _holding = false;
+
             if (_walk != null) _walk.enabled = true;
+            if (_playerBody != null) _playerBody.simulated = _playerWasSimulated;
+            _playerBody = null;
+            EventBus.Publish(new ControlModeChanged(ControlMode.OnFoot));
         }
 
         /// <summary>Ride her deck — by POSITION, never by parenting. See the class note.</summary>
         private void LateUpdate()
         {
-            if (_phase == Phase.Approaching || _phase == Phase.Docking || _phase == Phase.Moored)
-                SeatThePlayer();
+            if (_phase != Phase.Approaching && _phase != Phase.Docking && _phase != Phase.Moored) return;
+            FollowTheDeck();
+            SeatThePlayer();
+        }
+
+        /// <summary>Keep the registered deck under her as she moves.</summary>
+        private void FollowTheDeck()
+        {
+            if (_deck == null || _boatRoot == null) return;
+            _deck.MoveTo(_boatRoot.position);
         }
 
         /// <summary>
@@ -481,4 +617,66 @@ namespace HiddenHarbours.App
         }
     }
 
+    /// <summary>
+    /// <b>THE ARRIVAL BOAT'S DECK, as the on-foot sim sees it</b> — a moving
+    /// <see cref="IStandableSurface"/>, so the passenger being carried reads as standing on planking
+    /// rather than as standing on the seabed four metres under her.
+    ///
+    /// <para><b>Why this and not <c>World.FloatingPlatform</c>, which is exactly this for a dock.</b>
+    /// <c>HiddenHarbours.App</c> may not reference <c>HiddenHarbours.World</c> (rule 4), and the
+    /// interface it would be reached through is Core anyway — so the two-member contract is implemented
+    /// here rather than the module boundary being widened for one ride. What is NOT duplicated is the
+    /// float's real content: going aground on the ebb, the gangway seam, the cleats. A boat under way
+    /// has none of those, and a copy of them would be three behaviours nobody drives.</para>
+    ///
+    /// <para><b>Her deck height is the WATER's, not the seabed's</b> — the same law #594 established for
+    /// the harbour floats, and the reason a fixed platform would be wrong here: the tide swings 4.4 m at
+    /// St Peters, so a deck pinned to a number puts the passenger in the air at low water and under it
+    /// at high.</para>
+    ///
+    /// <para>A SQUARE envelope about her centre rather than her rotated oblong: the contract's footprint
+    /// is an axis-aligned <see cref="Rect"/>, and the envelope errs the forgiving way — a passenger a
+    /// foot over the side still reads as aboard rather than as suddenly swimming. Nothing walks to this
+    /// edge (the passenger is placed, not steered), so the slack costs nothing.</para>
+    /// </summary>
+    internal sealed class ArrivalDeck : IStandableSurface
+    {
+        private readonly float _halfLength;
+        private readonly float _freeboardMetres;
+        private Rect _footprint;
+
+        public ArrivalDeck(float hullLengthMetres, float freeboardMetres)
+        {
+            _halfLength = Mathf.Max(0.5f, hullLengthMetres * 0.5f);
+            _freeboardMetres = freeboardMetres;
+        }
+
+        /// <summary>Her id in the registry — one deck, one arrival.</summary>
+        public string Id => "boat.arrival_deck";
+
+        /// <summary>Where she is now (for tests and tooling).</summary>
+        public Rect Footprint => _footprint;
+
+        /// <summary>Put the deck under the hull's current position.</summary>
+        public void MoveTo(Vector2 centre) =>
+            _footprint = new Rect(centre.x - _halfLength, centre.y - _halfLength,
+                                  _halfLength * 2f, _halfLength * 2f);
+
+        /// <inheritdoc/>
+        public bool TryGetDeckElevation(Vector2 worldPos, out float deckElevation)
+        {
+            deckElevation = WaterLevelNow() + _freeboardMetres;
+            return _footprint.Contains(worldPos);
+        }
+
+        /// <summary>The deterministic water level right now, off the same Core services the water render
+        /// and the wade model read — never a second tide.</summary>
+        private static float WaterLevelNow()
+        {
+            var env = GameServices.Environment;
+            if (env == null) return 0f;
+            var clock = GameServices.Clock;
+            return env.WaterLevelAt(clock != null ? clock.TotalSeconds : 0d);
+        }
+    }
 }
