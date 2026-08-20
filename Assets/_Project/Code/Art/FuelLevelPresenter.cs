@@ -1,14 +1,23 @@
 using UnityEngine;
+using HiddenHarbours.Core;
 
 namespace HiddenHarbours.Art
 {
     /// <summary>
-    /// Shows how much is in a fuel container by picking the right baked frame.
+    /// Shows how much is in a fuel container by picking the right baked frame — and, since the pump
+    /// landed, IS that amount: this is the container's <see cref="IFuelVessel"/>.
     ///
-    /// <para><b>Visual only, and deliberately so.</b> This holds a fraction and draws it. It does not
-    /// consume fuel, does not know what a boat burns, does not talk to the economy, and nothing in
-    /// the game writes to it yet — the fuel gameplay is phase-gated. <see cref="Fill"/> is settable
-    /// from the inspector and from any future system; that is the whole seam.</para>
+    /// <para><b>Still visual, and the level is still one number.</b> The class holds a fraction and draws
+    /// it, exactly as before; implementing <see cref="IFuelVessel"/> adds no state, it only lets something
+    /// outside the art lane read the fraction in litres and pour into it. That is deliberately the same
+    /// <see cref="Fill"/> the frame is picked from — a litre count stored beside a fill fraction would be
+    /// two numbers for one fact, and the second one drifts. It still does not consume fuel and still does
+    /// not know what a boat burns: the pump pushes, nothing pulls.</para>
+    ///
+    /// <para><b>Why here and not on the carriable.</b> A pump fills what is in front of it, and what will
+    /// eventually be in front of it is not always something you can pick up — a bulk tank, a hull's tank.
+    /// So "holds fuel" sits on the thing that models the FUEL, not on the thing that models being carried,
+    /// and a pump asks for it by <c>GetComponent</c>. See <see cref="IFuelVessel"/>.</para>
     ///
     /// <para>This is the diegetic-UI direction working as intended: the level is <i>on the object</i>
     /// where you have to look at it, not read off a HUD.</para>
@@ -16,7 +25,7 @@ namespace HiddenHarbours.Art
     [ExecuteAlways]
     [RequireComponent(typeof(SpriteRenderer))]
     [AddComponentMenu("Hidden Harbours/Fuel Level Presenter")]
-    public class FuelLevelPresenter : MonoBehaviour
+    public class FuelLevelPresenter : MonoBehaviour, IFuelVessel
     {
         [SerializeField] FuelContainerDef _container;
 
@@ -54,6 +63,35 @@ namespace HiddenHarbours.Art
 
         /// <summary>The frame index <see cref="Fill"/> currently resolves to.</summary>
         public int FillIndex => NearestFillIndex(_container != null ? _container.FillFractions : null, _fill);
+
+        // ---- IFuelVessel (the pump's seam — see the class remarks) --------------------------------
+
+        /// <summary>Which fuel this vessel is FOR, from its Def. Empty with no Def, which reads as "no
+        /// grade" and is refused by every pump rather than matching one by accident.</summary>
+        public string Grade => _container != null ? _container.Grade : "";
+
+        /// <summary>Brim-full capacity in litres, from the Def. 0 with no Def, and 0 for a vessel that
+        /// genuinely holds nothing (a nozzle) — a pump reads both as "not something to fill".</summary>
+        public float CapacityLitres => _container != null ? _container.CapacityLitres : 0f;
+
+        /// <summary>How much is in it, in litres — <see cref="Fill"/> against the Def's capacity. Derived,
+        /// never stored: the fraction is the one place the level lives.</summary>
+        public float Litres => _fill * CapacityLitres;
+
+        /// <summary>
+        /// Pour fuel in, clamping at the brim. Writes through <see cref="Fill"/>, so the drawn frame
+        /// follows the same way it does when a designer drags the slider.
+        ///
+        /// <para>Ignores a non-positive amount and a capacity-less vessel — there is nothing sensible to do
+        /// with either, and dividing by the second would put a NaN into the serialized fill where it would
+        /// outlive the mistake.</para>
+        /// </summary>
+        public void Deliver(float litres)
+        {
+            float capacity = CapacityLitres;
+            if (litres <= 0f || capacity <= 0f) return;
+            Fill = _fill + litres / capacity;
+        }
 
         void OnEnable() => Apply();
 

@@ -87,4 +87,36 @@ namespace HiddenHarbours.Core
             GrantKey = grantKey; Amount = amount;
         }
     }
+
+    /// <summary>
+    /// Raised when the player buys FUEL at a pump (<c>fuel-and-refuelling.md</c>). The economy side has
+    /// already deducted the price and poured the fuel into the vessel through <see cref="IFuelVessel"/>;
+    /// ui-ux can subscribe for a toast and audio for the pump's clatter, neither of them referencing the
+    /// Economy module (cross-module talk via Core/EventBus).
+    ///
+    /// <para><b>Priced by the LITRE, so the quantity is a float</b> — unlike every other signal in this
+    /// file, which counts whole things. A fill is a continuous amount, and rounding it here would make the
+    /// announced litres disagree with the litres actually in the can. Only the PRICE is whole, because
+    /// money is.</para>
+    ///
+    /// <para>Keyed by the stable <b>FuelStationDef</b> id (e.g. "station.route_91") AND the grade — which
+    /// site and which fuel are both load-bearing, since the island's whole fuel design is that the same
+    /// litre costs differently in different places.</para>
+    /// </summary>
+    public readonly struct FuelPurchased
+    {
+        /// <summary>Stable FuelStationDef id of the site sold at (e.g. "station.route_91").</summary>
+        public readonly string StationId;
+        /// <summary>Grade bought — one of <see cref="FuelGrades"/>.</summary>
+        public readonly string Grade;
+        /// <summary>Litres actually delivered into the vessel.</summary>
+        public readonly float Litres;
+        /// <summary>₲ paid.</summary>
+        public readonly int PricePaid;
+
+        public FuelPurchased(string stationId, string grade, float litres, int pricePaid)
+        {
+            StationId = stationId; Grade = grade; Litres = litres; PricePaid = pricePaid;
+        }
+    }
 }
