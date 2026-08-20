@@ -41,6 +41,21 @@ namespace HiddenHarbours.World
         /// <inheritdoc cref="QuestsFolder"/>
         public const string KnowledgeFolder = "Knowledge";
 
+        /// <summary>
+        /// Where that Resources root sits on disk. <b>An asset authored outside it is INVISIBLE to the
+        /// book</b> — <c>Resources.LoadAll</c> reaches only inside a folder literally named
+        /// <c>Resources</c>, and there is no error when it finds nothing, only an empty tab. That is the
+        /// silent failure <c>QuestContentValidationTests</c> exists to make loud, and this is the one
+        /// spelling of the path both the loader and that check read.
+        /// </summary>
+        public const string ResourcesRoot = "Assets/_Project/Data/Resources";
+
+        /// <summary>The quests folder on disk — <see cref="ResourcesRoot"/> plus the load key.</summary>
+        public const string QuestsFolderPath = ResourcesRoot + "/" + QuestsFolder;
+
+        /// <inheritdoc cref="QuestsFolderPath"/>
+        public const string KnowledgeFolderPath = ResourcesRoot + "/" + KnowledgeFolder;
+
         /// <summary>Every shipped quest, in a fixed order. Empty is a real answer — a project with no
         /// quests authored yet opens the book on two empty tabs, not on an exception.</summary>
         public static IReadOnlyList<QuestDef> Quests() => Sorted(Resources.LoadAll<QuestDef>(QuestsFolder),
