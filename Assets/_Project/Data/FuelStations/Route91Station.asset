@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4ed52794705432db35caa1a54c9cd3c, type: 3}
+  m_Name: Route91Station
+  m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.FuelStationDef
+  Id: station.route_91
+  DisplayName: Route 91 Service Station
+  Flavor: 'The proper station, up where the wharf road meets Route 91. Everything
+    the island burns is sold here and sold cheaper - which is the whole bargain: the
+    pumps on the wharf save you the walk, and this saves you the money.'
+  Grades:
+  - Grade: gas
+    Available: 1
+    PricePerLitre: 1.55
+  - Grade: diesel
+    Available: 1
+    PricePerLitre: 1.4
+  - Grade: mixed
+    Available: 1
+    PricePerLitre: 2.35
+  - Grade: oil
+    Available: 1
+    PricePerLitre: 8.5
+  - Grade: stove_oil
+    Available: 1
+    PricePerLitre: 1.2

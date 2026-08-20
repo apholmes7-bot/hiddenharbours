@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.BoatOwnerDef
   Id: owner.campbell_hughie
   DisplayName: Hughie Campbell
-  Boat: {fileID: 11400000, guid: f9a11a1cb8419244bb13983a2862c52f, type: 2}
+  Boat: {fileID: 11400000, guid: d0e52dad4a5ae8ef4cd7bfcb08b427d0, type: 2}
   BuoyScheme: SideDragger
-  HullPaint: {fileID: 11400000, guid: 654245cc04203fd4a8c4652c03952c7b, type: 2}
+  HullPaint: {fileID: 11400000, guid: 9096d047a0747a049a1bcd4600245e9b, type: 2}
   Prosperity: 1
   ShedFootprintMetres: 6.0
   LotIndex: 4

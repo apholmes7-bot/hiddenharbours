@@ -427,3 +427,8 @@ leaves room for all three; none of them is asked for yet.
   clipped runs, corners, balls and a cedar screen. What is missing is a ruling on whether a hedge
   blocks the player exactly as a fence does (it can, through the same `PropertyBoundary`) or reads
   as soft cover you can push through.
+  ⚠ **Updated by S2 (2026-08-20): the style now BUILDS, and the default it builds is "blocks".**
+  `hedgeRun`/`hedgeCorner` are baked and `YardDressing` places them behind a `PropertyBoundary`
+  exactly like a fence. Nothing is decided yet because **no yard in either table is `Hedge`** — the
+  tables use `None`, `PostRail`, `Picket`, `SplitRail` and `Wire`. The ruling is owed the moment the
+  owner sets one, and the art is already there for him to try it with one word.

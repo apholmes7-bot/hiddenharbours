@@ -1,0 +1,338 @@
+fileFormatVersion: 2
+guid: d9ccca13c53bfd6468e3f33f16e71beb
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 1577077594854370613
+    second: Yard_splitRail_0
+  - first:
+      213: 4043981839783401974
+    second: Yard_splitRail_1
+  - first:
+      213: 3592117573335086065
+    second: Yard_splitRail_2
+  - first:
+      213: 654622206564407236
+    second: Yard_splitRail_3
+  - first:
+      213: -6831296707645972145
+    second: Yard_splitRail_4
+  - first:
+      213: -3751337150662904695
+    second: Yard_splitRail_5
+  - first:
+      213: 875778521646885287
+    second: Yard_splitRail_6
+  - first:
+      213: -8217418718873092309
+    second: Yard_splitRail_7
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Yard_splitRail_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 106
+        height: 91
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35164836}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a2b64fa9e820dd145a28838c2c63ccad
+      internalID: 803435015
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yard_splitRail_d1
+      rect:
+        serializedVersion: 2
+        x: 106
+        y: 0
+        width: 106
+        height: 91
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35164836}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b09551d2669594542b795389c8b778a6
+      internalID: 2028196407
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yard_splitRail_d2
+      rect:
+        serializedVersion: 2
+        x: 212
+        y: 0
+        width: 106
+        height: 91
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35164836}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a5ab63f929bc81c45b5764a8df8a3eff
+      internalID: -95072436
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yard_splitRail_d3
+      rect:
+        serializedVersion: 2
+        x: 318
+        y: 0
+        width: 106
+        height: 91
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35164836}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1049d0c287cb18345a5821b072f92104
+      internalID: 1027718243
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yard_splitRail_d4
+      rect:
+        serializedVersion: 2
+        x: 424
+        y: 0
+        width: 106
+        height: 91
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35164836}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e88a2750841826347b2014b2bb966a7f
+      internalID: 1783143334
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yard_splitRail_d5
+      rect:
+        serializedVersion: 2
+        x: 530
+        y: 0
+        width: 106
+        height: 91
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35164836}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a8f4e207445d4e94e93c1d8b98ccde3c
+      internalID: -486626471
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yard_splitRail_d6
+      rect:
+        serializedVersion: 2
+        x: 636
+        y: 0
+        width: 106
+        height: 91
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35164836}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 807381d73cf72ce49998a6e219b111f2
+      internalID: 1449511343
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yard_splitRail_d7
+      rect:
+        serializedVersion: 2
+        x: 742
+        y: 0
+        width: 106
+        height: 91
+      alignment: 9
+      pivot: {x: 0.5, y: 0.35164836}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d799bfb3827b9564fb2507fd6d5003c4
+      internalID: 174270156
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 53c239125b5b1f344b8814abb4af2533
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Yard_splitRail_d0: 803435015
+      Yard_splitRail_d1: 2028196407
+      Yard_splitRail_d2: -95072436
+      Yard_splitRail_d3: 1027718243
+      Yard_splitRail_d4: 1783143334
+      Yard_splitRail_d5: -486626471
+      Yard_splitRail_d6: 1449511343
+      Yard_splitRail_d7: 174270156
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -120,6 +120,90 @@ namespace HiddenHarbours.Tests.World.EditMode
                 "stored LOCAL, so moving the object moves its walls with it.");
         }
 
+        // =============================================================================================
+        //  ⭐ THE TRANSFORM CONTRACT — translation only, and it REFUSES rather than disagreeing quietly
+        // =============================================================================================
+        //
+        // Configure and WorldRuns convert with `point − transform.position`, a SHIFT. The colliders
+        // those points become are transformed by the host's FULL TRS at physics time. On a flat,
+        // unscaled host the two agree exactly; on a rotated or scaled one the drawn wall and the
+        // blocking wall become two different shapes with NO error at all — a player who "sometimes"
+        // slips through, which reads as a physics glitch rather than as a modelling mistake. No caller
+        // rotates one of these today, which is exactly why the assumption is worth pinning: as the one
+        // wall system this component will outlive every caller that exists.
+
+        [Test]
+        public void AFlatUnscaledHost_IsWhatThisComponentIsFor()
+        {
+            _go.transform.position = new Vector3(12f, -7f, 0f);
+            _go.transform.rotation = Quaternion.identity;
+            _go.transform.localScale = Vector3.one;
+
+            Assert.DoesNotThrow(() => _boundary.Configure(new[] { Line(12, -7, 22, -7) }));
+            Assert.AreEqual(1, Walls().Length);
+        }
+
+        [Test]
+        public void ARotatedHost_IsRefused_RatherThanSilentlyDisagreeingWithPhysics()
+        {
+            _go.transform.rotation = Quaternion.Euler(0f, 0f, 30f);
+
+            var ex = Assert.Throws<System.InvalidOperationException>(
+                () => _boundary.Configure(new[] { Line(0, 0, 10, 0) }),
+                "a rotated host makes WorldRuns() and the collider paths two different shapes.");
+            StringAssert.Contains("pure translation", ex.Message);
+        }
+
+        [Test]
+        public void AScaledHost_IsRefused_ForTheSameReason()
+        {
+            _go.transform.localScale = new Vector3(2f, 2f, 1f);
+
+            Assert.Throws<System.InvalidOperationException>(
+                () => _boundary.Configure(new[] { Line(0, 0, 10, 0) }),
+                "a scaled host doubles the collider and leaves WorldRuns() reporting the original.");
+        }
+
+        [Test]
+        public void AFlatChildOfATurnedParent_IsJustAsRefused()
+        {
+            // The case somebody actually reaches, and the reason the check is on the WORLD transform
+            // rather than the local one: this object's own rotation is identity and it is still wrong.
+            var parent = new GameObject("TurnedParent");
+            try
+            {
+                parent.transform.rotation = Quaternion.Euler(0f, 0f, 45f);
+                _go.transform.SetParent(parent.transform, worldPositionStays: false);
+
+                Assert.AreEqual(Quaternion.identity, _go.transform.localRotation,
+                    "precondition: the boundary's OWN rotation is identity — only the parent turns.");
+                Assert.Throws<System.InvalidOperationException>(
+                    () => _boundary.Configure(new[] { Line(0, 0, 10, 0) }));
+            }
+            finally
+            {
+                _go.transform.SetParent(null);
+                Object.DestroyImmediate(parent);
+            }
+        }
+
+        [Test]
+        public void TheTolerances_AdmitFloatNoise_AndNothingDeliberate()
+        {
+            // A transform assembled from a parent chain does not come back bit-exact, so the gate has to
+            // admit noise. What it must NOT admit is a deliberate turn: one degree of yaw already moves
+            // the far end of a 15 m run by 0.26 m, which is most of a wall thickness.
+            Assert.Less(PropertyBoundary.RotationToleranceDegrees, 1f);
+            Assert.Greater(PropertyBoundary.RotationToleranceDegrees, 0f);
+            Assert.Less(PropertyBoundary.ScaleTolerance, 0.01f);
+            Assert.Greater(PropertyBoundary.ScaleTolerance, 0f);
+
+            _go.transform.rotation =
+                Quaternion.Euler(0f, 0f, PropertyBoundary.RotationToleranceDegrees * 0.5f);
+            Assert.DoesNotThrow(() => _boundary.Configure(new[] { Line(0, 0, 10, 0) }),
+                "noise under the tolerance must pass, or every parented boundary is a coin toss.");
+        }
+
         [Test]
         public void WallQuad_IsTheThicknessItWasAskedFor_AndOverrunsTheEnds()
         {

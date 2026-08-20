@@ -127,15 +127,74 @@ their back plane toward −Y)"*.
    rename the field to say it lists camera stations. The geometry itself is consistent, deterministic
    and correctly pivoted; only the label is at issue.
 
-## What was NOT done here
+## S2 — the bake, and §6 confirmed in the baked cells (2026-08-20)
 
-**No bake, no import, no sheets.** S2 (bake at 32 px/m into `Art/Sprites/Yard/`, spriteMode Multiple
-*and* sliced, metas committed, bake cap = import cap) and S3 (placement) are a separate slice — this
-lane landed the rig, the sidecar and the measurements a baker will need.
+**The BOUNDARY family is baked.** Ten of the 62 pieces — one panel per fence style, the corner posts
+the kit actually draws, and the picket gate — at 32 px/m into `Art/Sprites/Yard/`, `spriteMode`
+Multiple **and** sliced, metas committed, bake cap = import cap (2048; the widest sheet is
+`splitRail` at 848 px, so there is a factor of two in hand). **129.4 KiB of PNG, 1.68 MB RGBA32 at
+runtime, 2.4 s through V8.**
 
-**And the kit ships no lawn.** The lawn ruling asks for a mown-grass **splat channel** (ADR 0028);
-the `ground` family here is four *props* — stepping stones, gravel apron, mown edge, creeping cover.
+| | |
+|---|---|
+| baked | `picketPanel` `picketGate` `fenceCorner` `postRail` `splitRail` `wireFence` `stoneWall` `stonePillar` `hedgeRun` `hedgeCorner` |
+| not baked | the other 52 — beds, planters, dooryard fixtures, sitting, play, ornaments, paths, signs |
+
+The 52 are dooryard DRESSING, and which property gets which is an owner decision still batched on
+#604. Adding one is a row in `YardKit.Builds`; the baker, the slicer and the contract are already
+written against the table.
+
+⚠️ **It does NOT bake through `IsoPropSheetBaker`, and the reason is a gate rather than a shape.**
+Every precondition that baker checks holds here — the fixed 470 × 540 buffer, the
+`render(key, dir, opts)` call, the bare RGBA return — and its `MeasureCell` IS the cell rule
+`YardSheetBaker` uses, reused rather than restated. What this kit cannot pass is
+`IsoPackContract.AssertKeylineGated`, which refuses any rig exposing no `KEYLINE_DEFAULT`. That gate
+is the owner's 2026-08-06 ruling about the four ISO-PACK rigs specifically; ADR 0031's standing
+consequence for every other family is that it keeps its ring until its own natural redo, and a mixed
+period is expected. So this bakes ringed, like the fuel, nav-buoy and shop-fixture kits before it,
+and its retirement rides the outline-language arc rather than blocking a dooryard.
+
+### §6 confirmed by the bake, to four decimals
+
+`YardRegistrationProbe` re-derives the whole table at every bake from the rig's own `project()`,
+un-squashed to the ground plane against scale factors read from the rig rather than restated, and
+**refuses the bake** on a disagreement. The first run:
+
+```
+rig dir frame  : steps -45.000°/dir  ⇒ CounterClockwise   (RigCatalog declares CounterClockwise)
+baked cells    : step +45.000°/cell, worst 0.0000° from nominal, run−face worst 0.0000° from 90°
+pivot moves    : 0.0000 px over all facings        (the ground centre is camera-invariant, measured)
+scale          : 32.000 px/m across, 20.569 px/m of ground depth
+cell   0    1    2    3    4    5    6    7
+dir    0    7    6    5    4    3    2    1
+face   N    NE   E    SE   S    SW   W    NW
+```
+
+So the SHEETS are a plain clockwise compass and the mirrored `contract.facings` never reaches a
+placer. The consumer side reads those measured bearings out of `yardIso.contract.json`
+(`cellFaceBearings`) and SEARCHES them — `YardCatalog.FacingFor` — rather than computing
+`round(bearing / 45)`, with a negative-control test that hands it a deliberately mirrored table and
+fails if the answer does not follow. The kit author's re-emit/rename ask still stands; nothing is
+blocked on it.
+
+## The lawn is still not here — but the channel is now CLEARED
+
+**The kit ships no lawn.** The lawn ruling asks for a mown-grass **splat channel** (ADR 0028); the
+`ground` family here is four *props* — stepping stones, gravel apron, mown edge, creeping cover.
 There is no terrain tile in this drop, so painting a lawn still needs either a terrain-material kit
-drop or a ruling to reuse an existing channel. Capacity today: 18 materials over five splat maps,
-with `E.b`/`E.a` free — and ⚠️ adopting a previously-free channel has its own trap (check the
-committed PNG's bytes are zero in that channel first; `_SplatD`'s default is opaque black).
+drop or a ruling to reuse an existing channel.
+
+✅ **The byte-zero gate the lead-architect set on #604 is DONE and it PASSES.** The committed
+`SplatE` PNGs were decoded and counted, both regions, all four channels:
+
+```
+StPetersSplatE.png        1520×1040   R 9,326 nonzero   G 4,692   B 0/1,580,800   A 0/1,580,800
+NineMileCreekSplatE.png   1520×1120   R 32,262          G 4,429   B 0/1,702,400   A 0/1,702,400
+```
+
+`E.b` and `E.a` are byte-zero in both regions, so a lawn material may adopt either without the
+opaque-default trap firing (`_SplatD`'s Properties default is `"black"` = alpha 1, which is what
+makes a previously-unread channel dangerous). Capacity is unchanged: 18 materials over five splat
+maps, those two free. **What is still owed is the ART, not the check** — a terrain-material drop, or
+the owner's call to reuse an existing family, plus his mow-stripe ruling, which is unanswerable until
+there is a lawn texture to stripe.

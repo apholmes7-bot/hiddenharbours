@@ -259,6 +259,40 @@ namespace HiddenHarbours.Tests.EditMode
                     "here — and she would be drawn floating in a berth she cannot reach.");
         }
 
+        /// <summary>
+        /// <b>⚠ THE OTHER HALF OF THE GATE, AND THE ONE THAT BOUNDS THE LOBSTER SPREAD.</b> The basin
+        /// bed above says whether a hull can LIE here; this says whether she can LEAVE. Nine Mile
+        /// Creek's channel is cut for <see cref="NineMileCreekMainland.DeepestResidentDraughtMetres"/>
+        /// — today the 1.40 m of Marie Gallant's Cape Islander, the deepest thing this creek was ever
+        /// dredged for — and every station on the way out carries exactly that plus her keel clearance
+        /// at spring low.
+        ///
+        /// <para><b>So a deeper boat is not a repaint, it is a dredging.</b> Berthing one moves the
+        /// constant, which moves the thalweg, which re-bakes the committed seabed the region ships and
+        /// re-opens the berth-deepening ruling that is still owed. That is a drop of its own and a
+        /// call the owner makes — never a side effect of handing somebody a different boat.</para>
+        ///
+        /// <para>This is the bound that decided the 2026-08-20 lobster spread: eighteen lobster
+        /// variants are committed, but the six OFFSHORE hulls draw 1.45 m and were refused on exactly
+        /// this line. <see cref="NineMileCreekChannelTests"/> re-measures the constant off the register
+        /// from the CHANNEL's end and would fail if it moved; this asserts the same fact from the
+        /// FLEET's end, so the reason a variant is refused sits where the next person choosing one
+        /// will look rather than only in a merged PR body.</para>
+        /// </summary>
+        [Test]
+        public void NobodysBoatOutdrawsTheChannelTheCreekIsDredgedFor()
+        {
+            float dredgedFor = NineMileCreekMainland.DeepestResidentDraughtMetres;
+
+            foreach (var o in Owners().Where(o => o.Boat != null))
+                Assert.That(o.Boat.DraughtMeters, Is.LessThanOrEqualTo(dredgedFor),
+                    $"'{o.Id}' keeps '{o.Boat.Id}', which draws {o.Boat.DraughtMeters:0.00} m, against " +
+                    $"the {dredgedFor:0.00} m Nine Mile Creek's channel is cut for. She would lie at " +
+                    "her berth and be shut in by the lane out of it. Deepening the cut for one boat " +
+                    "re-bakes the region's seabed and moves the thalweg — a ruling and a drop of its " +
+                    "own, not a side effect of a register edit.");
+        }
+
         // =============================================================================================
         //  PROSPERITY — the owner's "a more successful owner has a LARGER building", as an ordering
         // =============================================================================================

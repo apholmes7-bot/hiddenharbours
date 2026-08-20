@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4ed52794705432db35caa1a54c9cd3c, type: 3}
+  m_Name: NmcWharfPumps
+  m_EditorClassIdentifier: HiddenHarbours.Economy::HiddenHarbours.Economy.FuelStationDef
+  Id: station.nmc_wharf_pumps
+  DisplayName: Wharf Pumps
+  Flavor: 'Two hoses on a stand at the head of the Nine Mile Creek wharf, salt-bitten
+    and slow. You lie alongside and fill without leaving the water - and you pay for
+    the convenience, every litre of it. Anything past gas and diesel is a walk up
+    the road.'
+  Grades:
+  - Grade: gas
+    Available: 1
+    PricePerLitre: 2.05
+  - Grade: diesel
+    Available: 1
+    PricePerLitre: 1.85
+  - Grade: mixed
+    Available: 0
+    PricePerLitre: 2.95
+  - Grade: oil
+    Available: 0
+    PricePerLitre: 10.5
