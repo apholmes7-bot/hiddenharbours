@@ -298,6 +298,56 @@ Walk up to a pump **holding a fuel container**, press interact, and it fills and
    grade is already baked in every carriable size). Recommends **no, for now**, because the change
    is one string on one Def whenever the owner wants it.
 
+### 8.6 ⭐ Where the two sites stand — placed 2026-08-20
+
+Both sites are on the ground at Nine Mile Creek, builder-authored (`NineMileCreekStation`), and they
+appear on the next **Hidden Harbours ▸ Build Nine Mile Creek Scene** click.
+
+**The wharf — two dock pedestals on the apron's seaward face**, gas to the north and diesel four
+metres south of it. The wharf plan had already sited them in words since Phase A ("the west wall is
+the service end — the fuel pump and the oil tank are both on it") and nothing had built it; this is
+that sentence taken literally. It is also the only answer the yard allows, because the spit is full.
+
+Nothing about the pair is typed. The standback from the lip is the pedestal's own published nozzle
+reach (1.06 m) plus a body, plus half the #609 quay wall, plus 0.30 m of daylight — **1.755 m** —
+so the body stands on the deck by construction rather than by luck. The latitudes come off the brow
+and the pump's own 2 m reach. And a hull lying half a beam off that face at either pedestal is inside
+the dredged channel at spring low, which matters here: the basin bares, so "alongside the wharf" is
+not everywhere a wet berth.
+
+**Route 91 — the full forecourt on the south-west corner of the junction**, 16.6 m out. Wharf Road
+dead-ends on the through-road, so the junction is a T and this corner is straight ahead as you drive
+up off the wharf. Island, two multi-product machines, a two-bay canopy, the pylon sign at the road,
+the C-store with its seamless sales floor, and the tanker fill cluster behind. The layout is
+`StationIso.plan()`'s own output, not a hand-composed arrangement; the site was chosen by the
+max-min-slack search the restaurant used, and clears everything the village claims by **3.48 m** at
+its tightest while its apron meets Route 91's corridor with 1.33 m to spare.
+
+**⭐⭐ One hose per dispenser SIDE, and it is a finding rather than a taste call.** A multi-product
+machine's three nozzles publish the *same* ground reach point and differ only in height, so several
+`FuelPump`s there would be several candidates at one world position — and `InteractResolver`'s order
+(priority, then distance, then lowest id) would hand every press to the same one forever, leaving two
+of the three grades drawn on the machine and unreachable. So a side sells one grade, named in the
+offer label before the press, and Route 91's four faces carry **gas · diesel · mixed · gas**.
+Giving one pump a grade *choice* is a change to the interact seam and belongs to that lane.
+
+⚠️ **Consequences worth knowing before the walk.** `oil` and `stove_oil` are posted at Route 91 and
+have **no hose to draw them** — the committed art is baked for three grades and a fourth is a re-bake
+(§8.5 Q3's sibling, and the kit's own open grade-count call). The six things for sale inside the
+C-store are placed and measured but have **no verb** — they stand on the standing spots a whole-scene
+reach pass verified, waiting for the interactions §8.4 lists as missing.
+
+⚠️ **And the boat half is not reachable from a hose yet — but it is moving, so here is the state by
+PR rather than a flat claim.** **Merged:** #618 put the tank on the hull as DATA
+(`BoatHullDef.FuelCapacityLitres`, `FuelGrade`, `FullThrottleLitresPerHour`, plus a pure
+`FuelBurn`) and #619 gave `IFuelVessel` its `Draw` half — so §8.4's "there is no tank field" is out
+of date. **Still open as drafts:** #620, which is the `BoatFuelTank` component and the FILL/POUR
+verbs, and #623, the save. Until #620 lands **nothing on a hull publishes `IFuelVessel`** (the only
+implementor is the can's `FuelLevelPresenter`), so a pump has nothing on a boat to pour into and
+every hose at both sites fills a can you are carrying. The day #620 merges, these pumps fill a tank
+**with no change to either site** — which is exactly why the dock pedestal is sited for the boat it
+cannot yet serve.
+
 ---
 
 ## 9. 🔧 The build spec — the tank, the burn, and running dry
