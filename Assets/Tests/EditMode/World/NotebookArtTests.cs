@@ -10,20 +10,18 @@ namespace HiddenHarbours.Tests.World.EditMode
     /// <summary>
     /// <b>THE TRIPWIRE for the notebook kit's baked art.</b>
     ///
-    /// <para><b>⚠️ THIS IS RED UNTIL THE BAKE RUNS, AND THAT IS DELIBERATE.</b> The cloud lane cannot
-    /// run Unity, so this PR lands the baker and the importer but no PNGs. Gating these assertions on
-    /// the sprites existing — <c>if (!File.Exists) Assert.Pass()</c> — would be exactly the vacuous
-    /// green the cloud-lane protocol forbids: a test that passes while the art is absent would have
-    /// passed for the entire time it was absent, and would go on passing if the bake silently stopped
-    /// producing a piece. So EXISTENCE IS THE FIRST ASSERTION, and the failure message names the menu
-    /// item that fixes it.</para>
-    ///
-    /// <para>Expect red on the first CI run and green after the coordinator's bake:
+    /// <para><b>EXISTENCE IS THE FIRST ASSERTION.</b> Gating these on the sprites being present —
+    /// <c>if (!File.Exists) Assert.Pass()</c> — would be exactly the vacuous green the cloud-lane
+    /// protocol forbids: a test that passes while the art is absent would have passed for the entire
+    /// time it was absent, and would go on passing if the bake silently stopped producing a piece. So
+    /// the failure message names the menu item that fixes it instead:
     /// <c>Hidden Harbours ▸ Art ▸ Bake Notebook Kit</c>, or headless
-    /// <c>-executeMethod HiddenHarbours.Tools.RigBaking.NotebookKitBakeMenu.BakeAndImportHeadless</c>.</para>
+    /// <c>-executeMethod HiddenHarbours.Tools.RigBaking.NotebookKitBakeMenu.BakeAndImportHeadless</c>.
+    /// (The bake has landed on this branch; these were red until it did, by design.)</para>
     ///
-    /// <para>The reverse arm is kept too: once the art is in, this fails the day it LEAVES, or the day
-    /// a stray piece appears in the folder that nothing bakes.</para>
+    /// <para>The reverse arm is kept too: this fails the day the art LEAVES, or the day a stray piece
+    /// appears in the folder that nothing bakes — and, since the book resolves its pieces at RUNTIME,
+    /// the day the folder stops being inside a <c>Resources</c> root.</para>
     /// </summary>
     public class NotebookArtTests
     {
@@ -80,6 +78,44 @@ namespace HiddenHarbours.Tests.World.EditMode
             Assert.That(onDisk, Is.EqualTo(expected),
                 "The baked folder and NotebookKit.Pieces disagree. Extra files are strays; missing " +
                 $"files need the bake.\n{HowToFix}");
+        }
+
+        /// <summary>
+        /// <b>⭐ THE ARM THAT PROVES THE MOVE, not merely the bake.</b> The book installs itself and
+        /// outlives every scene, so nothing can hand it a sprite reference at build time — it resolves
+        /// each piece through <c>Resources.Load</c> the first time it opens. That path is not the same
+        /// path as <c>AssetDatabase.LoadAssetAtPath</c> above: it works only while the pieces sit inside
+        /// a folder literally named <c>Resources</c>, and it fails SILENTLY if they ever leave one,
+        /// leaving a book drawn entirely in grey rectangles that no other test in this file would
+        /// notice.
+        /// </summary>
+        [Test]
+        public void EveryPieceAlsoResolvesThroughTheRUNTIMEKeyTheBookUses()
+        {
+            // Through the presenter's OWN loader, not a second spelling of the key: a test that
+            // re-typed Resources.Load(...) here could go green while the book looked somewhere else.
+            var missing = NotebookKit.Pieces
+                .Where(p => NotebookPresenter.LoadPiece(p) == null)
+                .ToList();
+
+            Assert.That(missing, Is.Empty,
+                $"{missing.Count} pieces are on disk but do not resolve through Resources.Load. Is " +
+                $"{NotebookKit.ArtFolder} still inside a folder named 'Resources'? The runtime book " +
+                "loads by key, not by path, and would draw these as grey rectangles.\nMissing:\n  " +
+                string.Join("\n  ", missing));
+        }
+
+        /// <summary>The same question for the face. A null here is a book set in the built-in legacy
+        /// font — legible, and obviously not the book's hand.</summary>
+        [Test]
+        public void TheFaceResolvesThroughTheRuntimeKeyToo()
+        {
+            Assert.That(File.Exists(HarbourType.FontPath), Is.True,
+                $"the face is not baked at {HarbourType.FontPath}. Run: Hidden Harbours ▸ Art ▸ Bake The Face.");
+
+            Assert.That(NotebookPresenter.LoadFace(), Is.Not.Null,
+                $"the face is on disk but does not resolve through Resources.Load(\"{HarbourType.ResourceKey}\") " +
+                $"— is {HarbourType.ArtFolder} still inside a folder named 'Resources'?");
         }
 
         [Test]
