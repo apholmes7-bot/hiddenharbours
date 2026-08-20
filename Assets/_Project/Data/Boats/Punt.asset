@@ -40,3 +40,6 @@ MonoBehaviour:
   DeckContainerOffset: {x: 0.35, y: -0.9}
   Helm: {fileID: 0}
   CanRowHome: 1
+  FuelCapacityLitres: 25
+  FuelGrade: gas
+  FullThrottleLitresPerHour: 49
