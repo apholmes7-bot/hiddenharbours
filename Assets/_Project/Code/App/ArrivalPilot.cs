@@ -28,10 +28,10 @@ namespace HiddenHarbours.App
     /// coasting to rest from her cruise takes the better part of two hundred metres — longer than the
     /// whole approach. A throttle ramp arrives at the wharf still making way. A skipper goes astern.</para>
     ///
-    /// <para><b>⚠ And it closes that loop on SPEED MADE GOOD toward the mark, never on her speed along
-    /// the bow.</b> A boat with the helm hard over crabs — bow one way, track another — and a
-    /// bow-relative reading then says she is not moving while she is still doing two metres a second
-    /// at the wharf. See <see cref="Command"/>.</para>
+    /// <para><b>⚠ And it closes that loop on her speed over the GROUND, never on her speed along the
+    /// bow.</b> A boat with the helm hard over crabs — bow one way, track another — and a bow-relative
+    /// reading then says she is not moving while she is still doing two metres a second at the wharf.
+    /// See <see cref="Command"/>.</para>
     /// </summary>
     public static class ArrivalPilot
     {
@@ -142,17 +142,18 @@ namespace HiddenHarbours.App
         /// the way off while she is still outside the entrance.</param>
         ///
         /// <remarks>
-        /// 🔴 <b>THE LOOP CLOSES ON SPEED MADE GOOD, and the first version closed it on bow-relative
-        /// WAY.</b> Those agree exactly while she is going where she is pointing, and the fixture she
-        /// was written against never made her do anything else. On the real fairway she meets a 26°
-        /// turn onto the channel with way on, puts the helm hard over, and CRABS — bow one way, track
-        /// another. Way then reads near zero while she is still making two metres a second at the
-        /// wharf, so the controller concludes she is not moving and opens the throttle. Measured: 0.78
-        /// AHEAD at six metres from the berth, which is how a docking becomes an orbit.
+        /// 🔴 <b>THE LOOP CLOSES ON HER SPEED OVER THE GROUND, and the first version closed it on
+        /// bow-relative WAY.</b> Those agree exactly while she is going where she is pointing, and the
+        /// fixture she was written against never made her do anything else. On the real fairway she
+        /// meets a 26° turn onto the channel with way on, puts the helm hard over, and CRABS — bow one
+        /// way, track another. Way then reads near zero while she is still making two metres a second
+        /// at the wharf, so the controller concludes she is not moving and opens the throttle.
+        /// Measured: 0.78 AHEAD at six metres from the berth, which is how a docking becomes an orbit.
         ///
-        /// <para>What she is judged on is <see cref="WayToAccountFor"/> — the greater of her closing
-        /// speed and her speed over the ground — which is right coming in, right crabbing, and right
-        /// after she has slid past the berth. All three were measured; see that method.</para>
+        /// <para>What she is judged on is <see cref="WayToAccountFor"/> — her speed over the GROUND,
+        /// unsigned — which is right coming in, right crabbing, and right after she has slid past the
+        /// berth, because in all three she is carrying way that has to come off. All three were
+        /// measured; see that method.</para>
         /// </remarks>
         public static Helm Command(Vector2 position, float headingDegrees, Vector2 velocity,
                                    Vector2 target, float metresToBerth, Settings settings)
@@ -161,6 +162,15 @@ namespace HiddenHarbours.App
                 SignedBearingError(position, headingDegrees, target) * settings.SteerPerDegree, -1f, 1f);
 
             float wanted = TargetSpeed(metresToBerth, settings);
+
+            // ⚠ THE KNOWN SHAPE INSIDE THE STOP BAND, so nobody "fixes" it by surprise. Within
+            // StopMetres wanted is 0 and the way is unsigned, so this error can only be ≤ 0 — a boat
+            // ALREADY making sternway is answered with MORE astern, because the rule cannot see that the
+            // way she is carrying is off the wharf rather than onto it. She is not stuck: backing out
+            // grows metresToBerth, TargetSpeed comes off zero, and the throttle turns ahead again.
+            // Measured to settle rather than pump. Signing the term to fix it re-opens the 150 m
+            // departure (see WayToAccountFor); if it ever needs a real answer it is a stop band that
+            // damps on speed, not a signed way.
             float throttle = (wanted - WayToAccountFor(position, velocity, target))
                              * settings.ThrottlePerSpeedError;
 
@@ -179,28 +189,39 @@ namespace HiddenHarbours.App
         }
 
         /// <summary>
-        /// 🔴 <b>THE WAY SHE MUST ACCOUNT FOR — the greater of what she is closing and what she is
-        /// carrying.</b> One rule, and it is the third attempt at this number, so it is worth writing
-        /// down what the first two got wrong.
+        /// 🔴 <b>THE WAY SHE MUST ACCOUNT FOR — her speed over the ground, unsigned.</b> One sentence of
+        /// seamanship: <i>an approach may not carry more way than it can stop from, in any direction.</i>
+        /// Way carried in ANY direction is way that has to come off before she is alongside, so the
+        /// number is a MAGNITUDE and the direction of travel is none of its business.
+        ///
+        /// <para>It is the third attempt at this number, and the two it replaces failed the same way —
+        /// both read a direction where the rule needs a magnitude.</para>
         ///
         /// <para><b>Speed along the BOW</b> was wrong because a boat with the helm over crabs: her bow
         /// reads nearly stopped while she is still doing two metres a second at the wharf, so the
         /// throttle opens on the approach. That was the orbit.</para>
         ///
-        /// <para><b>Speed MADE GOOD alone</b> was wrong in the mirror image: once she is past the mark
-        /// the closing speed goes NEGATIVE, and a controller told "you are not arriving" answers with
+        /// <para><b>Speed MADE GOOD</b> was wrong in the mirror image. It is <i>signed</i>: once she is
+        /// past the mark it goes NEGATIVE, and a controller told "you are not arriving" answers with
         /// more throttle — driving her further away, faster, forever. That was a 150 m departure at full
         /// ahead.</para>
         ///
-        /// <para>The greater of the two is right in both, and it is one sentence of seamanship: <i>an
-        /// approach may not carry more way than it can stop from, in any direction — and a boat that is
-        /// not closing the mark is not arriving.</i> Coming in, the two agree and she runs at cruise.
-        /// Crabbing, the ground speed is the larger and she is told to slow. Past the berth, the ground
-        /// speed is larger still and positive, so against a target of zero she is told hard astern —
-        /// which is exactly what stops her.</para>
+        /// <para>⚠ <b>This was written as <c>Max(SpeedMadeGood, magnitude)</c> and the max was dead.</b>
+        /// A projection onto a unit vector can never exceed the magnitude it is projected from, so the
+        /// max always resolved to the magnitude and the code was claiming a choice it never made. Only
+        /// the arithmetic that pretended to produce the answer is gone. (In <i>exact</i> arithmetic the
+        /// two are identical; in float they part by up to ~3e-6 m/s when the velocity is dead parallel
+        /// to the bearing and rounding in <c>normalized</c> tips the projection a ulp over — worth
+        /// ~2e-6 of throttle, no sign change anywhere, and below every tolerance in the suite.)</para>
+        ///
+        /// <para><paramref name="position"/> and <paramref name="target"/> are unused and stay in the
+        /// signature deliberately: the way to account for is a property of the APPROACH, not of the
+        /// velocity vector alone, and a caller that had to fetch it from somewhere other than the pilot
+        /// would be free to invent a second answer. <see cref="SpeedMadeGood"/> remains exposed — it is
+        /// what the crab test measures the bow reading against, and it names the failure above.</para>
         /// </summary>
         public static float WayToAccountFor(Vector2 position, Vector2 velocity, Vector2 target) =>
-            Mathf.Max(SpeedMadeGood(position, velocity, target), velocity.magnitude);
+            velocity.magnitude;
 
         /// <summary>
         /// How fast she should be going with <paramref name="metresToBerth"/> still to run: cruise out
