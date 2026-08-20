@@ -64,6 +64,17 @@ namespace HiddenHarbours.Tests.Economy
                 if (litres <= 0f) return;
                 Litres = Mathf.Min(CapacityLitres, Litres + litres);
             }
+
+            /// <summary>The POUR half of the seam. Nothing in THIS suite draws — a pump only ever fills —
+            /// but the interface now carries both halves, so a can that could not be emptied would be a
+            /// fiction. Same measured-answer contract the real can implements.</summary>
+            public float Draw(float litres)
+            {
+                if (litres <= 0f) return 0f;
+                float given = Mathf.Min(Litres, litres);
+                Litres -= given;
+                return given;
+            }
         }
 
         /// <summary>A can as a real scene object: the pump finds a vessel by <c>GetComponent</c> off what
@@ -74,6 +85,14 @@ namespace HiddenHarbours.Tests.Economy
             public float CapacityLitres { get; set; } = 20f;
             public float Litres { get; private set; }
             public void Deliver(float litres) { if (litres > 0f) Litres = Mathf.Min(CapacityLitres, Litres + litres); }
+
+            public float Draw(float litres)
+            {
+                if (litres <= 0f) return 0f;
+                float given = Mathf.Min(Litres, litres);
+                Litres -= given;
+                return given;
+            }
         }
 
         /// <summary>Hands holding something. <see cref="ICarriable"/> is mostly art-facing; the pump reads
