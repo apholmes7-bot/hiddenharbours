@@ -18,11 +18,12 @@ namespace HiddenHarbours.Core
     /// quantity. Nothing here caches a second copy — a litre count beside a fill fraction is two numbers
     /// for one fact, and they drift.</para>
     ///
-    /// <para><b>⚠️ Litres, not fuel-units.</b> <c>boats-and-navigation.md</c> measures a boat's tank in
-    /// FUEL-UNITS (FU) and the shipped container Defs measure capacity in LITRES. Nothing reconciles the
-    /// two yet because no tank exists to reconcile with; when the burn model lands, one of the two has to
-    /// give, and the cheap answer is FU = litre. Until then this seam speaks litres, which is what the
-    /// shipped data actually holds.</para>
+    /// <para><b>Litres, and fuel-units are the same thing.</b> <c>boats-and-navigation.md</c> measures a
+    /// boat's tank in FUEL-UNITS (FU) and the shipped container Defs measure capacity in LITRES. That is
+    /// settled, not pending: the two are ONE number, stated in full on
+    /// <c>BoatHullDef.FuelCapacityLitres</c> (<c>fuel-and-refuelling.md</c> §9.1). So this seam speaks
+    /// litres and there is no conversion anywhere — if you are ever tempted to add one, read that field
+    /// first.</para>
     /// </summary>
     public interface IFuelVessel
     {
