@@ -135,6 +135,10 @@ namespace HiddenHarbours.Tests.PlayMode
                 //     so it cannot reach her at all. See the PR body; it is a world-content call.
                 //     The Cape Islander's paint axis (2026-08-12) closed the other gap, so this count
                 //     moved from -2 to -1 and Marie Gallant is in `painted` for the first time.
+                //
+                //     The 2026-08-20 lobster spread took the painted set from THREE meshes to SIX:
+                //     the four owners who all kept boat.lobster_boat now keep four different variants,
+                //     so every painted boat at this wharf is off a hull of her own.
                 Assert.AreEqual(moored.Length - 1, painted.Length,
                     $"{painted.Length} of {moored.Length} boats at the wharf wear paint. Exactly ONE " +
                     "is expected to be plain — Celeste Bernard, whose boat has no hull mesh at all, " +
@@ -147,16 +151,27 @@ namespace HiddenHarbours.Tests.PlayMode
                                 && m.Owner.Boat.Visual.HullMesh != null)
                     .Select(m => m.Owner.Boat.Visual.HullMesh.Id)
                     .Distinct()
-                    .OrderBy(s => s)
+                    .OrderBy(s => s, System.StringComparer.Ordinal)
                     .ToArray();
                 CollectionAssert.AreEqual(
-                    new[] { "hullmesh.cape_islander_iso", "hullmesh.lobster_boat_iso", "hullmesh.punt_iso" },
+                    new[]
+                    {
+                        "hullmesh.cape_islander_iso",
+                        "hullmesh.lobster_inshore_hardtop_newfoundland_iso",
+                        "hullmesh.lobster_inshore_open_northumberland_iso",
+                        "hullmesh.lobster_standard_hardtop_northumberland_iso",
+                        "hullmesh.lobster_standard_open_fundy_iso",
+                        "hullmesh.punt_iso",
+                    },
                     meshes,
                     "The hull meshes wearing paint at this wharf have moved — found " +
-                    $"[{string.Join(", ", meshes)}]. The lobster boat, the punt and the Cape Islander " +
-                    "all have owners and paint axes; if one is missing, a bake or an assignment was " +
-                    "lost. Pinned as a SET rather than a floor because a >= 2 would have gone on " +
-                    "passing through the very drop that added the third.");
+                    $"[{string.Join(", ", meshes)}]. Four lobster variants, the punt and the Cape " +
+                    "Islander all have owners and paint axes; if one is missing, a bake or an " +
+                    "assignment was lost. Pinned as a SET rather than a floor because a >= 2 would " +
+                    "have gone on passing through the very drop that added the third — and, since the " +
+                    "lobster spread, through three of the four lobster owners collapsing back onto " +
+                    "one hull. This is the SAME claim as the EditMode fixture's, made in the real " +
+                    "scene against boats that actually skinned.");
                 Debug.Log($"[wharf-proof] paint spans {meshes.Length} hull meshes: " +
                           string.Join(", ", meshes));
 

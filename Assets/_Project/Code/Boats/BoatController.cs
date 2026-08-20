@@ -354,6 +354,18 @@ namespace HiddenHarbours.Boats
             if (rb != null) rb.mass = Mathf.Max(1f, _hull.MassKg / 100f);
         }
 
+        /// <summary>
+        /// Set the depth of water this hull believes is under her at chart datum, in metres — the
+        /// grounding read's only input besides the tide (<c>waterDepth = this + TideHeight</c>).
+        ///
+        /// <para>⚠ <b>It is a flat per-hull number, not a per-position sounding</b>, and the field's own
+        /// note says so: the real per-position gate is <c>BoatCrossing</c>. So a hull placed somewhere
+        /// with a known bed should be TOLD it, or she carries the component default (3 m) and reads
+        /// aground wherever the tide is lower than that leaves her draught. Exposed for the same reason
+        /// <see cref="SetHull"/> is: a boat spawned at runtime has no inspector to be authored in.</para>
+        /// </summary>
+        public void SetLocalSeabedDepth(float metres) => _localSeabedDepth = metres;
+
         private void FixedUpdate() => StepPhysics();
 
         /// <summary>

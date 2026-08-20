@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.BoatOwnerDef
   Id: owner.doiron_yvette
   DisplayName: Yvette Doiron
-  Boat: {fileID: 11400000, guid: f9a11a1cb8419244bb13983a2862c52f, type: 2}
+  Boat: {fileID: 11400000, guid: 3ac67326db791a72f5e10cbbf599351b, type: 2}
   BuoyScheme: CoastalPacket
-  HullPaint: {fileID: 11400000, guid: 6c45d6175789ee84bb8acc2a7ed52311, type: 2}
+  HullPaint: {fileID: 11400000, guid: 7f83a19f018e2fb4e9f341f565230cde, type: 2}
   Prosperity: 2
   ShedFootprintMetres: 8.0
   LotIndex: 3

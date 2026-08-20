@@ -27,6 +27,11 @@ namespace HiddenHarbours.App
     /// refinement, it is the only thing that works: this hull's time constant is twenty seconds, so
     /// coasting to rest from her cruise takes the better part of two hundred metres — longer than the
     /// whole approach. A throttle ramp arrives at the wharf still making way. A skipper goes astern.</para>
+    ///
+    /// <para><b>⚠ And it closes that loop on SPEED MADE GOOD toward the mark, never on her speed along
+    /// the bow.</b> A boat with the helm hard over crabs — bow one way, track another — and a
+    /// bow-relative reading then says she is not moving while she is still doing two metres a second
+    /// at the wharf. See <see cref="Command"/>.</para>
     /// </summary>
     public static class ArrivalPilot
     {
@@ -98,16 +103,23 @@ namespace HiddenHarbours.App
             /// CANNOT bring her alongside; it arrives at the wharf still making way. What stops a boat
             /// is her propeller turning the other way.</para>
             ///
-            /// <para><b>And the numbers that fall out of 3 m/s at 0.3 m/s²:</b> she holds cruise until
-            /// <c>v²/2a + StopMetres = 18 m</c> off the berth, then takes ten seconds and fifteen
-            /// metres to walk it off — which fits inside the 49 m dredged channel with the turn onto
-            /// it to spare. Her engine can give 0.42 m/s² astern, so 0.3 is a curve she can actually
-            /// hold rather than one she saturates against.</para>
+            /// <para><b>And the numbers that fall out of 5 m/s at 0.4 m/s², measured over the real
+            /// 146 m fairway:</b> she holds cruise until <c>v²/2a + StopMetres = 33 m</c> off the berth,
+            /// then takes twelve seconds walking it off, and the whole passage runs 45.3 s —
+            /// measured, and identical at spring low and spring high. 0.4 is the most she can actually hold — her engine gives 0.42 m/s² astern — so
+            /// this is the curve at its limit rather than a taste.</para>
+            ///
+            /// <para>⚠ <b>The owner asked for "~30 s" and this is ~45.</b> The gap is not tuneable away
+            /// from here: 146 m in 30 s is a mean of 4.9 m/s, which leaves no room at all to stop, and
+            /// the deceleration is already against the stops. The two levers that WOULD close it are
+            /// his: start the route inside the landfall buoy (the first leg is 79 m of open bay), or
+            /// accept ~45 s. Raising the cruise alone makes it worse, not better — she arrives faster
+            /// than she can shed.</para>
             /// </summary>
             public static Settings Default => new Settings
             {
-                CruiseSpeedMetresPerSecond = 3f,
-                ApproachDecelMetresPerSecondSquared = 0.3f,
+                CruiseSpeedMetresPerSecond = 5f,
+                ApproachDecelMetresPerSecondSquared = 0.4f,
                 ThrottlePerSpeedError = 0.8f,
                 StopMetres = 2f,
                 SteerPerDegree = 0.05f,
@@ -121,23 +133,74 @@ namespace HiddenHarbours.App
         /// <param name="position">Where she is (world XY).</param>
         /// <param name="headingDegrees">Where her bow points, COMPASS (0 = north, clockwise) — the same
         /// frame <c>MooredBoat</c> and <c>CoastPlan.BearingAt</c> use, so nothing has to convert.</param>
-        /// <param name="wayMetresPerSecond">Her speed THROUGH the water along the bow — the number the
-        /// throttle is closing the loop on. Signed, so a boat gathering sternway is told to go ahead.</param>
+        /// <param name="velocity">Her velocity over the ground (world m/s). ⚠ NOT her speed along the
+        /// bow — see the note below on why that distinction is the difference between docking and
+        /// orbiting.</param>
         /// <param name="target">The mark she is steering for (world XY).</param>
         /// <param name="metresToBerth">How far she still has to run ALONG THE ROUTE to the berth — not
         /// the straight-line distance to it, which on a channel with a turn in it would have her taking
         /// the way off while she is still outside the entrance.</param>
-        public static Helm Command(Vector2 position, float headingDegrees, float wayMetresPerSecond,
+        ///
+        /// <remarks>
+        /// 🔴 <b>THE LOOP CLOSES ON SPEED MADE GOOD, and the first version closed it on bow-relative
+        /// WAY.</b> Those agree exactly while she is going where she is pointing, and the fixture she
+        /// was written against never made her do anything else. On the real fairway she meets a 26°
+        /// turn onto the channel with way on, puts the helm hard over, and CRABS — bow one way, track
+        /// another. Way then reads near zero while she is still making two metres a second at the
+        /// wharf, so the controller concludes she is not moving and opens the throttle. Measured: 0.78
+        /// AHEAD at six metres from the berth, which is how a docking becomes an orbit.
+        ///
+        /// <para>What she is judged on is <see cref="WayToAccountFor"/> — the greater of her closing
+        /// speed and her speed over the ground — which is right coming in, right crabbing, and right
+        /// after she has slid past the berth. All three were measured; see that method.</para>
+        /// </remarks>
+        public static Helm Command(Vector2 position, float headingDegrees, Vector2 velocity,
                                    Vector2 target, float metresToBerth, Settings settings)
         {
             float steer = Mathf.Clamp(
                 SignedBearingError(position, headingDegrees, target) * settings.SteerPerDegree, -1f, 1f);
 
             float wanted = TargetSpeed(metresToBerth, settings);
-            float throttle = (wanted - wayMetresPerSecond) * settings.ThrottlePerSpeedError;
+            float throttle = (wanted - WayToAccountFor(position, velocity, target))
+                             * settings.ThrottlePerSpeedError;
 
             return new Helm(throttle, steer);
         }
+
+        /// <summary>
+        /// How fast she is closing <paramref name="target"/>, in m/s — her velocity projected onto the
+        /// bearing to it. Negative when she is opening the range. Exposed because it is half the control
+        /// variable, and a control variable you cannot see is one you cannot test.
+        /// </summary>
+        public static float SpeedMadeGood(Vector2 position, Vector2 velocity, Vector2 target)
+        {
+            Vector2 to = target - position;
+            return to.sqrMagnitude < 1e-8f ? 0f : Vector2.Dot(velocity, to.normalized);
+        }
+
+        /// <summary>
+        /// 🔴 <b>THE WAY SHE MUST ACCOUNT FOR — the greater of what she is closing and what she is
+        /// carrying.</b> One rule, and it is the third attempt at this number, so it is worth writing
+        /// down what the first two got wrong.
+        ///
+        /// <para><b>Speed along the BOW</b> was wrong because a boat with the helm over crabs: her bow
+        /// reads nearly stopped while she is still doing two metres a second at the wharf, so the
+        /// throttle opens on the approach. That was the orbit.</para>
+        ///
+        /// <para><b>Speed MADE GOOD alone</b> was wrong in the mirror image: once she is past the mark
+        /// the closing speed goes NEGATIVE, and a controller told "you are not arriving" answers with
+        /// more throttle — driving her further away, faster, forever. That was a 150 m departure at full
+        /// ahead.</para>
+        ///
+        /// <para>The greater of the two is right in both, and it is one sentence of seamanship: <i>an
+        /// approach may not carry more way than it can stop from, in any direction — and a boat that is
+        /// not closing the mark is not arriving.</i> Coming in, the two agree and she runs at cruise.
+        /// Crabbing, the ground speed is the larger and she is told to slow. Past the berth, the ground
+        /// speed is larger still and positive, so against a target of zero she is told hard astern —
+        /// which is exactly what stops her.</para>
+        /// </summary>
+        public static float WayToAccountFor(Vector2 position, Vector2 velocity, Vector2 target) =>
+            Mathf.Max(SpeedMadeGood(position, velocity, target), velocity.magnitude);
 
         /// <summary>
         /// How fast she should be going with <paramref name="metresToBerth"/> still to run: cruise out
