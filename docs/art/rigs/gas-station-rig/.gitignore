@@ -1,0 +1,20 @@
+# The drop ships its own copies of TWO globals this repo already registers, and the kit's own
+# harness expects both beside gasStationRig.js. Neither is committed.
+#
+#   rig/isoSolid.js  is BYTE-IDENTICAL to docs/art/rigs/deck-loop-kit/Art/isoSolid.js
+#                    (sha256 f7fc9db510b0346dea568c43dc7378f1a12fd71ee8f5a7653e78377812b792bd)
+#   rig/fuelRig.js   is BYTE-IDENTICAL to docs/art/rigs/fuel-storage-kit/fuelRig.js
+#                    (sha256 811361ffe7deea0fbf6da41d9e50ca9efa8299ebca3d9fbff9308d9e0c6df1ed)
+#
+# ⚠️ Compare against the GIT BLOB, not the working tree. No .gitattributes rule covers *.js and
+# core.autocrlf is true here, so both files are stored LF and checked out CRLF: the working-tree
+# fuelRig.js is 50,151 bytes against the drop's 49,454, a 697-byte difference that is one \r per
+# line and nothing else. Sizing or hashing the checked-out file reports a drift that does not exist,
+# which is the one way this check goes wrong.
+#
+# A second copy of a REGISTERED global's source is exactly the drift the repo's no-edit rule exists
+# to prevent — edit one and the other silently keeps rendering the old art. So RigCatalog points at
+# the registered copies and declares them as this kit's prerequisites, and materialising these
+# locally to run the rig (see IMPORT.md) must never be committed.
+isoSolid.js
+fuelRig.js
