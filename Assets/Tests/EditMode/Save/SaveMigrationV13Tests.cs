@@ -93,13 +93,19 @@ namespace HiddenHarbours.Tests.EditMode
         /// <para>That convention is not free advice — it was paid for here. This file's own bump turned
         /// FIVE <c>SaveMigrationV12Tests</c> cases red at once, purely because they pinned <c>== 12</c>
         /// where they meant "current", while <c>SaveMigrationV11Tests</c> (which used
-        /// <c>CurrentVersion</c>) passed untouched. Whoever writes v14: change THIS test, and convert
-        /// this file's exact assertion to a <c>GreaterOrEqual</c> the way v12's now reads.</para>
+        /// <c>CurrentVersion</c>) passed untouched. ✅ <b>Done for v14</b> (the fuel tank, 2026-08-20):
+        /// the assertion below is now a <c>GreaterOrEqual</c>, and it was the ONLY case in this file
+        /// that had to move — which is the convention paying for itself. Whoever writes v15 should
+        /// find nothing here to change.</para>
         /// </summary>
         [Test]
-        public void CurrentVersion_IsThirteen()
+        public void CurrentVersion_IsAtLeastThirteen()
         {
-            Assert.AreEqual(13, SaveMigration.CurrentVersion,
+            // Converted from `AreEqual(13, ...)` when v14 (the fuel tank) landed — exactly as this file's
+            // own remarks above instruct, and for the reason they give: this assertion means "the rest
+            // anchor moved the schema", not "the schema stops here", and pinning equality makes every
+            // future bump red a test that has nothing to do with it.
+            Assert.GreaterOrEqual(SaveMigration.CurrentVersion, 13,
                 "The rest anchor appended four fields to SaveData, so the schema moved.");
         }
 

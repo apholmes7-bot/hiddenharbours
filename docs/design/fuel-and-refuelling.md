@@ -254,17 +254,19 @@ Walk up to a pump **holding a fuel container**, press interact, and it fills and
 
 ### 8.4 ⚠️ What is NOT wired — read this before believing fuel works
 
-1. **NO BOAT TANK, and therefore no refuelling a boat.** Nothing on any hull carries fuel today:
-   there is no tank field on `BoatHullDef`, nothing in `SaveData`, and no burn model. §1's canon
-   (fuel-units, burn = `f(throttle, load, seaState)`, running dry → stranded → tow) is **entirely
-   unbuilt**. The pump fills carried containers and nothing else. When a tank arrives it implements
-   `IFuelVessel` and the pricing above does not change. **→ §9 now specifies all of it** (field
-   shape §9.2, save §9.3, the two verbs §9.4, the burn §9.5, running dry §9.9) — still unbuilt.
-2. **Fuel does not persist.** A container's level is session-local, exactly as its position already
-   was. The **money does** persist — so a pump standing in a live scene is a small leak until fuel
-   state is saved, which is why nothing is placed in a scene yet. **→ §9.3 closes this for the
-   TANK** (save v14); a can's level stays session-local, and §9.13 F4 is the item the world lane is
-   waiting on before a pump can stand in a scene.
+1. ~~**NO BOAT TANK, and therefore no refuelling a boat.**~~ ✅ **BUILT** (F1–F4, 2026-08-20).
+   `BoatHullDef` carries the tank (§9.2), `BoatFuelTank` implements `IFuelVessel` on the hull, both
+   verbs work (§9.4), and the pump's pricing did not change — the promise it made in its own remarks
+   was kept. **Still unbuilt:** the burn is written and tested but **nothing consumes it yet**, and
+   the running-dry states are F5. So a tank fills, pours and persists, and does not yet EMPTY under
+   way. ⚠ Every shipped hull is still `FuelCapacityLitres = 0` until the §9.6.2 authoring pass (F6),
+   so the fleet is inert by default and behaves exactly as it did before.
+2. ~~**Fuel does not persist.**~~ ✅ **THE TANK PERSISTS** (save v14, F4, 2026-08-20). A hull's level
+   is saved per hull id, sparse, with a missing row meaning brim-full. **⭐ This closes the leak: a
+   pump beside a boat is now safe to place**, which is the gate the world lane was waiting on.
+   ⚠ **A CAN's level is still session-local**, exactly as its position is — so fuel bought into a
+   jerry can and left on the wharf does not survive a reload, while fuel poured into a boat does.
+   Buy-and-pour in one session; that gap is carriable-state work, not the tank's.
 3. **Litres, not fuel-units.** Canon measures a tank in FU; the shipped container Defs measure
    litres, so retail speaks litres. ⏳ One of the two has to give when the tank lands — see §8.5 Q2.
    **→ §9.1 proposes the answer: `1 FU ≡ 1 L`, the identity**, chosen because the money lands
@@ -337,16 +339,23 @@ have **no hose to draw them** — the committed art is baked for three grades an
 C-store are placed and measured but have **no verb** — they stand on the standing spots a whole-scene
 reach pass verified, waiting for the interactions §8.4 lists as missing.
 
-⚠️ **And the boat half is not reachable from a hose yet — but it is moving, so here is the state by
-PR rather than a flat claim.** **Merged:** #618 put the tank on the hull as DATA
-(`BoatHullDef.FuelCapacityLitres`, `FuelGrade`, `FullThrottleLitresPerHour`, plus a pure
-`FuelBurn`) and #619 gave `IFuelVessel` its `Draw` half — so §8.4's "there is no tank field" is out
-of date. **Still open as drafts:** #620, which is the `BoatFuelTank` component and the FILL/POUR
-verbs, and #623, the save. Until #620 lands **nothing on a hull publishes `IFuelVessel`** (the only
-implementor is the can's `FuelLevelPresenter`), so a pump has nothing on a boat to pour into and
-every hose at both sites fills a can you are carrying. The day #620 merges, these pumps fill a tank
-**with no change to either site** — which is exactly why the dock pedestal is sited for the boat it
-cannot yet serve.
+⭐ **And these hoses fill a BOAT — which became true six minutes before the placement PR landed.**
+#618 put the tank on the hull as data, #619 gave `IFuelVessel` its `Draw` half, and **#620 landed
+the runtime**: `BoatFuelTank`, `GameServices.ActiveBoatFuel`, and a `FuelPump.TargetVessel()` that
+falls back from your hands to the boat you are aboard, with `OnDeck` in its `Contexts`. So the wharf
+Def's own flavour — *"you lie alongside and fill without leaving the water"* — is a promise the verb
+keeps too, and the dock pedestal is doing the job it was sited for rather than waiting for one.
+
+⚠️ **The placement PR shipped a paragraph here saying the opposite**, written against a `main` that
+was one merge behind. It is corrected above; the lesson is that a "not wired" note wants a PR number
+and a date, because on a day like this one it goes stale between the test run and the merge.
+
+**The siting carries it, measured.** The pump component stands **0.695 m** in from the apron's lip,
+so a body at a hull's inboard rail — hard against the wharf, which is where you stand to take a hose
+— is **0.69 m** from it, inside the pump's 2 m reach; on a dory even her centreline (1.59 m) reaches.
+From amidships on a lobster boat (3.19 m) you are out of range and walk to the rail, which is honest
+behaviour rather than a defect. ⚠️ A **can's** level is still session-local (#623 persists the tank,
+not the can), so the old leak closes for boats and not for cans.
 
 ---
 
