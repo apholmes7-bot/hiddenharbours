@@ -337,16 +337,23 @@ have **no hose to draw them** — the committed art is baked for three grades an
 C-store are placed and measured but have **no verb** — they stand on the standing spots a whole-scene
 reach pass verified, waiting for the interactions §8.4 lists as missing.
 
-⚠️ **And the boat half is not reachable from a hose yet — but it is moving, so here is the state by
-PR rather than a flat claim.** **Merged:** #618 put the tank on the hull as DATA
-(`BoatHullDef.FuelCapacityLitres`, `FuelGrade`, `FullThrottleLitresPerHour`, plus a pure
-`FuelBurn`) and #619 gave `IFuelVessel` its `Draw` half — so §8.4's "there is no tank field" is out
-of date. **Still open as drafts:** #620, which is the `BoatFuelTank` component and the FILL/POUR
-verbs, and #623, the save. Until #620 lands **nothing on a hull publishes `IFuelVessel`** (the only
-implementor is the can's `FuelLevelPresenter`), so a pump has nothing on a boat to pour into and
-every hose at both sites fills a can you are carrying. The day #620 merges, these pumps fill a tank
-**with no change to either site** — which is exactly why the dock pedestal is sited for the boat it
-cannot yet serve.
+⭐ **And these hoses fill a BOAT — which became true six minutes before the placement PR landed.**
+#618 put the tank on the hull as data, #619 gave `IFuelVessel` its `Draw` half, and **#620 landed
+the runtime**: `BoatFuelTank`, `GameServices.ActiveBoatFuel`, and a `FuelPump.TargetVessel()` that
+falls back from your hands to the boat you are aboard, with `OnDeck` in its `Contexts`. So the wharf
+Def's own flavour — *"you lie alongside and fill without leaving the water"* — is a promise the verb
+keeps too, and the dock pedestal is doing the job it was sited for rather than waiting for one.
+
+⚠️ **The placement PR shipped a paragraph here saying the opposite**, written against a `main` that
+was one merge behind. It is corrected above; the lesson is that a "not wired" note wants a PR number
+and a date, because on a day like this one it goes stale between the test run and the merge.
+
+**The siting carries it, measured.** The pump component stands **0.695 m** in from the apron's lip,
+so a body at a hull's inboard rail — hard against the wharf, which is where you stand to take a hose
+— is **0.69 m** from it, inside the pump's 2 m reach; on a dory even her centreline (1.59 m) reaches.
+From amidships on a lobster boat (3.19 m) you are out of range and walk to the rail, which is honest
+behaviour rather than a defect. ⚠️ A **can's** level is still session-local (#623 persists the tank,
+not the can), so the old leak closes for boats and not for cans.
 
 ---
 

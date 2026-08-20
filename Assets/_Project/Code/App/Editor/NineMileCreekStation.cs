@@ -23,26 +23,26 @@ namespace HiddenHarbours.App.Editor
     /// <see cref="NineMileCreekShops"/> and <see cref="ShopPlacement"/> draw, and for the same reason.
     /// </para>
     ///
-    /// <para><b>⚠️⚠️ WHAT THESE PUMPS CAN AND CANNOT DO, AND IT IS MOVING UNDER THIS FILE.</b> The
-    /// economy lane is building the boat tank in a five-PR stack while this was written, so the honest
-    /// statement is a PR number rather than a flat "not wired":</para>
+    /// <para><b>⭐ THESE PUMPS FILL A BOAT, AND THAT BECAME TRUE SIX MINUTES BEFORE THIS FILE LANDED.</b>
+    /// The economy lane was building the tank in a five-PR stack while this slice was written, so the
+    /// paragraph that shipped here described a world that had already moved on. Corrected, with the
+    /// numbers, because a stale "not wired" note is worse than none:</para>
     /// <list type="bullet">
-    /// <item><description><b>MERGED:</b> #618 put the tank on the hull AS DATA
-    /// (<c>BoatHullDef.FuelCapacityLitres</c> / <c>FuelGrade</c> / <c>FullThrottleLitresPerHour</c>, plus
-    /// a pure <c>FuelBurn</c>), and #619 gave <see cref="IFuelVessel"/> its <c>Draw</c> half. So
-    /// <c>FuelPump</c>'s own "there is no tank field on <c>BoatHullDef</c>" remark is OUT OF
-    /// DATE.</description></item>
-    /// <item><description><b>STILL OPEN as drafts:</b> #620 — which is the <c>BoatFuelTank</c> component
-    /// and the FILL/POUR verbs — and #623, the save. Until #620 lands, <b>nothing on a hull publishes
-    /// <see cref="IFuelVessel"/></b> (the only implementor is the can's <c>FuelLevelPresenter</c>), so a
-    /// pump has nothing on a boat to pour into and both sites fill a CAN you are
-    /// carrying.</description></item>
+    /// <item><description>#618 put the tank on the hull AS DATA; #619 gave <see cref="IFuelVessel"/> its
+    /// <c>Draw</c> half; <b>#620 landed the runtime</b> — <c>BoatFuelTank</c>,
+    /// <c>GameServices.ActiveBoatFuel</c>, and a <c>FuelPump.TargetVessel()</c> that falls back from your
+    /// hands to the boat you are aboard. Its <c>Contexts</c> now carry <c>OnDeck</c>.</description></item>
+    /// <item><description>So the wharf Def's own flavour — <i>"you lie alongside and fill without leaving
+    /// the water"</i> — is now a promise the VERB keeps too, and the dock pedestal is doing the job it was
+    /// sited for rather than waiting for one.</description></item>
     /// </list>
-    /// <para>That is why "lie alongside and fill without leaving the water", the wharf Def's own flavour,
-    /// is a promise the ART keeps and the VERB cannot yet — and the dock pedestal is sited for it anyway,
-    /// because the day #620 merges these pumps fill a tank with <b>no change to either site</b>. ⚠️ A
-    /// CAN's level stays session-local even after #623 (only the tank persists), so the small leak that
-    /// kept anyone from placing a pump before now closes for boats and not for cans.</para>
+    /// <para><b>The siting carries it, measured.</b> The pump component stands <b>0.695 m</b> in from the
+    /// apron's lip, so a body at a hull's INBOARD RAIL — hard against the wharf, which is where you stand
+    /// to take a hose — is 0.69 m from it, well inside the pump's 2 m. On a dory even her centreline
+    /// (1.59 m) reaches. ⚠️ From amidships on a lobster boat (3.19 m) you are out of range and must walk to
+    /// the rail, which is the honest behaviour rather than a defect.</para>
+    /// <para>⚠️ A CAN's level is still session-local (#623 persists the TANK, not the can), so the old
+    /// leak closes for boats and not for cans.</para>
     ///
     /// <para><b>⚠️⚠️ ONE PUMP PER DISPENSER SIDE, AND THAT IS A FINDING RATHER THAN A CHOICE.</b> A
     /// multi-product machine's three nozzles share ONE standing spot — measured off the shipped Defs, the
@@ -668,13 +668,13 @@ namespace HiddenHarbours.App.Editor
                     if (road.Sells(g) && System.Array.IndexOf(Route91FaceGrades, g) < 0) unhosed.Add(g);
 
             Debug.Log(
-                $"{Tag} ⚠ WHAT IS NOT WIRED, deliberately. (1) BOAT TANKS: #618 (tank as data) and #619 " +
-                "(IFuelVessel.Draw) are MERGED, but #620 — the BoatFuelTank component itself — is still " +
-                "an open draft, so NOTHING ON A HULL PUBLISHES IFuelVessel and a pump has nothing on a " +
-                "boat to pour into. Both sites fill a CAN you are holding; the dock pedestal is sited " +
-                "for the boat it cannot yet serve. (2) A can's level is session-local while the money " +
-                "is SAVED, " +
-                "so buying fuel leaks until fuel state persists. (3) The six things for sale inside the " +
+                $"{Tag} ⚠ WHAT IS AND IS NOT WIRED. (1) BOAT TANKS: WIRED — #618/#619/#620 landed the " +
+                "tank, the Draw seam and BoatFuelTank, so FuelPump.TargetVessel() falls back from your " +
+                "hands to the boat you are aboard and these hoses fill her. The dock pedestal stands " +
+                "0.695 m in from the apron's lip, so a body at a hull's inboard rail is 0.69 m from the " +
+                "hose — inside the pump's 2 m. From amidships on a big hull you must walk to the rail. " +
+                "(2) A CAN's level is still session-local while the money is SAVED, " +
+                "so buying fuel into a can leaks until that state persists. (3) The six things for sale inside the " +
                 "C-store are placed and measured but have NO VERB — the interact actions the sidecar " +
                 "names (buy · drinks · coffee · food · cash · browse) do not exist, which #613 recorded " +
                 "and the economy lane owns. (4) A multi-product machine's three nozzles share one " +
