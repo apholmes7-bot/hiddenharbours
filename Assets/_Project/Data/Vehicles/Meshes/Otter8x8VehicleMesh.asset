@@ -459,6 +459,7 @@ MonoBehaviour:
   SuspensionTravelFrontMeters: 0
   SuspensionTravelRearMeters: 0
   DriveDoorLocal: {x: -1.4, y: 0.2}
+  DriverSeatLocal: {x: 0, y: 0.36, z: 0.76}
   FloatSinkMeters: 0.52
   FloatDraftMeters: 0.28
   WatertightDeckHeightMeters: 0.82

@@ -938,6 +938,69 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.That(mesh.DriveDoorLocal.y, Is.EqualTo(0.2f).Within(1e-4f));
         }
 
+        /// <summary>
+        /// ⭐ <b>Her DRIVER'S SEAT on the baked asset is the one her sidecar publishes</b> — the point the
+        /// rig-6.5 drive pose is sat on, pinned to its source the same way her door and her flotation are.
+        ///
+        /// <para><b>And the reason she has one at all is that her cockpit is OPEN.</b> Her sidecar calls it
+        /// "an open tub with two benches, not a room"; the Dually's calls hers a CAB with a liner and a
+        /// roof panel, and hers is deliberately left unpublished (<c>VehicleDriveModeTests</c> pins that
+        /// side). So this is not "every machine gets a seat filled in" — a seat here is a statement that a
+        /// driver in her is genuinely on screen.</para>
+        /// </summary>
+        [Test]
+        public void HerBakedMeshCarriesTheDriverSeatHerSidecarPublishes()
+        {
+            var def = UnityEditor.AssetDatabase.LoadAssetAtPath<VehicleDef>(OtterDefPath);
+            Assert.That(def, Is.Not.Null, $"her committed def is missing at {OtterDefPath}");
+            VehicleMeshDef mesh = def.Mesh;
+            Assert.That(mesh, Is.Not.Null, "her def wears no mesh.");
+
+            // SEATS[0] is the FRONT bench — her sidecar's own role for it is "driver + one", and the
+            // centred handlebar is aimed at it. The aft bench is passengers and must never be picked.
+            float[] seat = Numbers(ReadSidecar(), "\"seat_ref\"", 3, after: "\"front_bench\"");
+
+            Assert.That(mesh.ShowsDriver, Is.True,
+                        "she draws no driver. (0,0,0) is the 'not published' sentinel, and for an OPEN " +
+                        "machine that is a fisher invisible inside a tub anyone can see into.");
+            Assert.That(mesh.DriverSeatLocal.x, Is.EqualTo(seat[0]).Within(1e-4f),
+                        "her helm is centre-steer, so her driver sits on the centreline.");
+            Assert.That(mesh.DriverSeatLocal.y, Is.EqualTo(seat[1]).Within(1e-4f),
+                        "the seat has drifted fore/aft from SEATS[front_bench].seat_ref.");
+            Assert.That(mesh.DriverSeatLocal.z, Is.EqualTo(seat[2]).Within(1e-4f),
+                        "the cushion HEIGHT has drifted — this is what lifts the drive pose off her " +
+                        "cockpit floor, so a wrong one plants the fisher in the floor pan.");
+        }
+
+        /// <summary>The next <paramref name="count"/> numbers after <paramref name="key"/> — for the array
+        /// values the single-number <see cref="Number"/> scan cannot read. Same hand-rolled approach, and
+        /// the same reason: these files are read by tests, not by a JSON dependency.</summary>
+        static float[] Numbers(string json, string key, int count, string after = null)
+        {
+            int from = 0;
+            if (after != null)
+            {
+                from = json.IndexOf(after, System.StringComparison.Ordinal);
+                Assert.That(from, Is.GreaterThanOrEqualTo(0), $"the sidecar has no {after} block");
+            }
+
+            int at = json.IndexOf(key, from, System.StringComparison.Ordinal);
+            Assert.That(at, Is.GreaterThanOrEqualTo(0), $"the sidecar publishes no {key}");
+
+            var found = new float[count];
+            int i = at + key.Length;
+            for (int n = 0; n < count; n++)
+            {
+                while (i < json.Length && !char.IsDigit(json[i]) && json[i] != '-') i++;
+                int start = i;
+                while (i < json.Length && (char.IsDigit(json[i]) || json[i] == '-' || json[i] == '+' ||
+                                           json[i] == '.' || json[i] == 'e' || json[i] == 'E')) i++;
+                Assert.That(i, Is.GreaterThan(start), $"{key} has fewer than {count} numbers");
+                found[n] = float.Parse(json.Substring(start, i - start), CultureInfo.InvariantCulture);
+            }
+            return found;
+        }
+
         static string ReadSidecar()
         {
             DirectoryInfo root = Directory.GetParent(Application.dataPath);
