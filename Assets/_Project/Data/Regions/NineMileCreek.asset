@@ -18,7 +18,7 @@ MonoBehaviour:
     at the creek''s mouth, a barachois behind it, and the tidal bar out to St Peters
     coming ashore to the south. The fleet dries out under itself at spring low.'
   SceneName: NineMileCreek
-  UnlockFlag:
+  UnlockFlag: 
   WorldCenter: {x: 0, y: 0}
   WorldSizeMeters: {x: 760, y: 560}
   SeabedPixelsPerMetre: 2
