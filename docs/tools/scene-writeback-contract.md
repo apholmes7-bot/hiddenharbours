@@ -90,7 +90,7 @@ editable is READ-ONLY**, and §1.3 says so field by field so that no absence has
 | Field | Legal values decided by | Lands in | Cost to honour |
 |---|---|---|---|
 | **orientation / facing** | the sheet's own facing count — see §2 | the placement row's facing/heading argument | none for a baked-facing entity (a sub-sprite swap); none for a mesh hull (a yaw) |
-| **colourway** | the piece's paint / body / ramp table in its rig (§0.4) | the placement row's paint or dial argument | **re-bake** if the colour is baked into the sheet; **free** if it is a runtime ramp (ADR 0029) |
+| **colourway** | the piece's paint / body / ramp table in its rig (§0.4) | the placement row's paint or dial argument | **free** if it is a runtime ramp (ADR 0029), **free** if the sheet already carries the other value as a cell (§1.2 c), **re-bake** only if it is baked in with no other cell |
 | **structure size** | the rig's own size axis, and only it | the dial table row (e.g. `VillageBuildingKit.M1Set`) | **re-bake** — size moves geometry |
 | **structure style / variant** | the rig's own style/shape/era/region axes | the dial table row | **re-bake** |
 | **position** | the declared region frame (§0.2), plus the builder's own clearance rules | the placement row's position constant | none — but see §1.4, clearance is law |
@@ -138,6 +138,22 @@ every colour baked into a sheet rather than swapped at runtime — is pixels, an
 V8 bake that ADR 0021 fences to the editor for licence reasons. **No JavaScript runs in a shipped
 build.** So these edits are honourable, but the honouring is a bake, not an import: the importer's
 job is to write the dial and *declare that a re-bake is owed*, never to pretend the change is live.
+
+> **"Is this a baked axis?" and "does this edit owe a bake?" are different questions, and the
+> recipe answers both per sheet.** Ruled 2026-08-21, after the recipe ledger (#629) made the
+> distinction measurable. A `<stem>.recipe.json` records the axes a sheet was baked across, and
+> they split two ways:
+>
+> - an **`opt:`-bound axis** has its other values *already baked as cells* — across all 298
+>   committed recipes these are `fill` and `swing`. Honouring one is a **sub-sprite swap, exactly
+>   like a facing**: live, no bake owed, and the odometer position (§2.3) gives the cell.
+> - a **base `call.opts` key** was baked in as a constant, and no other cell exists — 36 distinct
+>   keys, including `awning`, `bollards`, `hoses`, `keyline` and `len`. These genuinely owe one.
+>
+> Collapsing the two is wrong in one direction or the other: treat every baked opt as owing a bake
+> and two of them become needlessly deferred; treat none as owing one and the other thirty-six are
+> silently dropped. **The importer consults the recipe before marking an edit owed**, and a
+> colourway swap that has a cell already reads as live rather than deferred.
 
 ### 1.3 Read-only, and why — field by field
 
@@ -613,7 +629,9 @@ with whose it is.
    package, and §3.1's "he exports, we diff" has no first step.
 6. **A re-bake lane.** Zone (c) edits (§1.2) are honourable only through a bake. Until that is
    wired, size/style/colour-baked edits land in the dial and are reported as **owed**, which is
-   honest but is not yet *done*.
+   honest but is not yet *done*. ⚠ **When it is built it must consult the recipe first** (§1.2 c):
+   an `opt:`-bound axis already has its other cells baked and owes nothing, so a lane that marks
+   every baked opt as owed would defer edits that are in fact live.
 
 ---
 
