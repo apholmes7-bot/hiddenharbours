@@ -4,6 +4,12 @@
 coordinator asked for before the placement pass wires a single hull, because the answer is an
 **art/mesh contract change** and that is not the placement pass's to decide.
 
+**This is a SOURCE-LEVEL spike**, run in a cloud container with no Unity and no LFS objects. It
+says so wherever that limits it — see *"What could not be measured here"* at the end, which names
+the gaps rather than guessing across them. Two things were measurable anyway, and directly: the
+committed hull meshes (`*.asset` is `unity-yaml`, not `lfs`) and the rigs (pure JS on these
+paths, so they run in node's V8).
+
 **Related:** ADR 0038 (boat interiors — the four ruled behaviours) · ADR 0036 (interior levels as
 layers) · ADR 0022 (3D boat hulls) · ADR 0023 (the per-face interior mask) ·
 `docs/art/boat-interior-sheets.md` (the 24 baked sheets) ·
@@ -42,13 +48,32 @@ One hull end to end (the lobster boat — ADR 0022 phase 4's hull, and the owner
 the finding cross-checked on the side dragger and the stern trawler. Every number is the rig's own
 rasteriser, run verbatim in the same V8 the bakers use. Full run in the proof log.
 
-### 1 · The baked meshes carry no facet groups. Measured, not assumed.
+### 1 · The baked meshes carry no facet groups. Read off the committed bake, not inferred.
+
+`*.asset` is `unity-yaml` in `.gitattributes`, so the real baked meshes are readable text even
+with no LFS and no Unity. **All 34 committed hull meshes**, measured directly:
+
+| | |
+|---|---|
+| submeshes | **1** — on every one of the 34. There is no group to toggle. |
+| vertex layout | **one layout fleet-wide**: `Position×3 Normal×3 TexCoord0×4`, stride **40 B** |
+| `TexCoord0` | full — `(materialId, faceBias b, depthBias db, per-side interior code)`; ADR 0023's classifier already owns `.w` |
+| **free channels** | `Tangent, Color, TexCoord1…TexCoord7` — **nine of them, on every hull** |
+| fleet size | 133,852 baked vertices → **+1 float32 per vertex costs 522.9 KiB fleet-wide** |
+
+And upstream of the bake:
 
 | where | what it carries |
 |---|---|
 | `RigFace` (extraction) | `V`, `Mat`, `B`, `Db`, `FixedInPose` — **no group, name, or tag** |
-| `HullMeshDef.Mesh` | one mesh; **UV0 is full**: `(materialId, faceBias b, depthBias db, per-side interior code)` — ADR 0023's classifier already owns `.w` |
 | material names | do **not** separate — the lobster's `cream` is 111 faces spanning x ±2.14 m, y −6.0…3.6 m: the topsides *and* the house. Dragger 80, trawler 85, same story. |
+| `IHullMeshRenderer` (the presenter seam) | `HeadingDirUnits`, `RollDegrees`, `PitchDegrees`, `HeavePixels`, `RidePixels`, `IsConfigured`, `SetSorting`, `SetDeckOccupant`, `DeckOccluderId`, `DeckOccupants` — **no visibility or per-group toggle of any kind** |
+
+The sibling seam is worth noting, because it means R1's new member is a shape the architecture
+already has rather than a novel one: **`IHullPropRenderer` carries `bool Visible { get; set; }`**,
+for exactly the reason R1 needs it — *"drawn or not, without tearing the fitting down … rebuilding
+a renderer per state would allocate every time the owner trims his engine (rule 7)."* A hull's
+level toggle is the same idea one level up.
 
 That last row is not a new finding; it is `RigMeshInteriorClassifier`'s own recorded result
 ("the dory's entire palette is `{wood, iron}`"), reproduced on the hull this pass would wire.
@@ -140,11 +165,13 @@ exactly the house. **ADR 0038's design is sound. What is missing is a name for t
 **R1 — the rig names it, the baker carries it, nothing guesses.**
 The grouping already exists in the rig source. Ask art-director for a per-face level tag on the
 exported faces — `f.lvl = 'house'`, the same shape as the `f.b` / `f.db` the rigs already carry.
-Then `RigFace` gains one field, `RigMeshBuilder` packs it into a new attribute stream (UV0 is
+Then `RigFace` gains one field, `RigMeshBuilder` packs it into **one of the nine channels every
+baked mesh already leaves free** (`TexCoord1.x`, or `Color` if a byte will do — `TexCoord0` is
 full), and `IHullMeshRenderer` gains one member (`SetHiddenLevel`). No geometry moves, so the
 pixel acceptance is a re-bake whose "hide nothing" state is byte-identical to today.
-*Cost: an export-contract change, a fleet re-bake, a facet-shader change — in the art lane.*
-*It is the only option measured here that is both correct and per-level.*
+*Cost, measured rather than estimated: **522.9 KiB** of vertex data across all 34 hulls, plus an
+export-contract change, a fleet re-bake and a facet-shader change — the last three in the art
+lane.* It is the only option measured here that is both correct and per-level.
 
 **R2 — land the placement pass without the exterior half, honestly.**
 Wire everything the def states — sliced cells in `BoatInteriorKit.CellIndex` order, levels, doors
@@ -163,6 +190,28 @@ behind the room.
 
 **Recommendation: R2 now, R1 as the follow-on**, because R1 is upstream work in another lane and
 R2 leaves nothing to redo when it arrives.
+
+---
+
+## What could not be measured here
+
+Named, not guessed across. This container has no Unity and no LFS objects.
+
+- **Anything needing the compiled game.** No EditMode or PlayMode run, and no compile against
+  Unity assemblies. The runtime behaviour of a cull is *argued* from the source and *measured*
+  only in the rig's own rasteriser.
+- **The shipped interior sheets.** `Assets/_Project/Art/Boats/Interiors/*.png` are LFS pointers
+  here, so no shipped sheet pixel was read. Every interior pixel above is re-rendered from
+  `boatInteriorRig.js` — the same renderer `BoatInteriorSheetBaker` drives, pinned by
+  `BoatInteriors.json`'s own `interiorRigSha256` — but it is a re-render, not the shipped bytes.
+- **How the facet shader behaves with a cull applied.** Not run: no GPU, no Unity.
+- **21 of the 24 cleared hulls.** The lobster was rendered end to end and the per-level finding
+  cross-checked on the dragger and trawler; the rest were not rendered. The *mesh* measurements
+  in §1 do cover all 34 committed hulls, because those are read off disk.
+
+One thing that *is* proven rather than assumed: the harness's source transform is **inert to the
+render** — pristine rig against harness-loaded rig, byte-identical at all 8 facings, re-checked
+on every run (log §0a). If it ever stops being true the harness says so in place of the numbers.
 
 ---
 

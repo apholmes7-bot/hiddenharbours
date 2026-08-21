@@ -64,6 +64,22 @@ const EXT = load(rigs('lobsterBoatIsoRig.js'), {},
   { marker: 'root.LobsterBoatIso = {', syms: ['F', 'projVert', 'camBasis', '_paint'], transform: tagFaces }
 ).LobsterBoatIso;
 
+// ⚠️ THE TRANSFORM MUST BE INERT TO THE RENDER, or every pixel below is worthless. Proven,
+// not asserted: the same rig loaded with NO edit at all, rendered at all 8 facings, compared
+// byte for byte. The recorder only hangs a `__line` property on each face object, which the
+// rig's own `_paint` never reads.
+const PRISTINE = load(rigs('lobsterBoatIsoRig.js')).LobsterBoatIso;
+function fidelity() {
+  const bad = [];
+  for (let d = 0; d < 8; d++) {
+    const a = PRISTINE.render(d, {}), b = EXT.render(d, {});
+    let same = a.length === b.length;
+    if (same) for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) { same = false; break; }
+    if (!same) bad.push(DIRL[d]);
+  }
+  return bad;
+}
+
 const siteOf = f => { const c = String(f.__line).split('>'); return Number(c.find(s => !SINKS.has(s)) ?? c.at(-1)); };
 const isHouse = f => { const s = siteOf(f); return s >= HOUSE_SRC_LO && s <= HOUSE_SRC_HI; };
 
@@ -95,6 +111,16 @@ const DIRL = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
 const row = (...c) => console.log('  ' + c.map(([v, w]) => String(v).padEnd(w)).join(' '));
 
 // ============================================================================================
+console.log(`\n=== 0a · IS THE HARNESS'S SOURCE TRANSFORM INERT TO THE RENDER? ===`);
+{
+  const bad = fidelity();
+  console.log(bad.length
+    ? `  *** THE TRANSFORM CHANGES THE RENDER at ${bad.join(', ')} — every number below is suspect.`
+    : '  pristine rig vs harness-loaded rig: all 8 facings BYTE-IDENTICAL. The transform adds a' +
+      '\n  `__line` label the rig never reads, and nothing else.');
+}
+
+// ============================================================================================
 console.log(`\n=== 0 · WHAT THE FACE LIST CARRIES ===`);
 const truth = FULL.filter(isHouse), rest = FULL.filter(f => !isHouse(f));
 const hist = a => { const o = {}; for (const f of a) o[f.mat] = (o[f.mat] ?? 0) + 1; return o; };
@@ -108,6 +134,45 @@ console.log(`  ground-truth house set (rig source lines ${HOUSE_SRC_LO}-${HOUSE_
   console.log(`  published HOUSE      x [-${HOUSE.hxAft}, ${HOUSE.hxAft}]  y [${HOUSE.yAft}, ${HOUSE.yFwd}]  z [${HOUSE.soleZ}, ${HOUSE.roofZ}]`);
   const cream = FULL.filter(f => f.mat === 'cream');
   console.log(`  'cream' (the house paint) spans x ${f2(ex(cream,0))} y ${f2(ex(cream,1))} over ${cream.length} faces — it is the TOPSIDES too`);
+}
+
+// ============================================================================================
+// The COMMITTED BAKE, read straight off disk. `*.asset` is `unity-yaml` in .gitattributes, NOT
+// lfs, so the real baked meshes are readable text even in a container with no LFS objects and no
+// Unity — which makes this a direct measurement rather than an inference from the rig.
+console.log(`\n=== 0b · WHAT THE COMMITTED HULL MESHES CARRY (read off the .asset YAML) ===`);
+{
+  // Unity's m_Channels are positional; this is that order.
+  const SEM = ['Position','Normal','Tangent','Color','TexCoord0','TexCoord1','TexCoord2','TexCoord3',
+               'TexCoord4','TexCoord5','TexCoord6','TexCoord7','BlendWeight','BlendIndices'];
+  const dir = path.join(ROOT, 'Assets/_Project/Data/Boats/HullMeshes');
+  const files = fs.readdirSync(dir).filter(f => f.endsWith('.asset')).sort();
+  const subs = new Set(), layouts = new Set(), strides = new Set();
+  let totalVerts = 0, free = null;
+  for (const f of files) {
+    const txt = fs.readFileSync(path.join(dir, f), 'utf8');
+    const at = txt.indexOf('--- !u!43');                       // the Mesh sub-asset
+    if (at < 0) continue;
+    const mesh = txt.slice(at);
+    const head = mesh.slice(0, mesh.indexOf('m_Shapes'));
+    subs.add((head.match(/^  - serializedVersion: 2$/gm) ?? []).length);
+    totalVerts += Number(mesh.match(/m_VertexCount: (\d+)/)?.[1] ?? 0);
+    const ch = [...mesh.matchAll(/- stream: (\d+)\s+offset: (\d+)\s+format: (\d+)\s+dimension: (\d+)/g)].slice(0, 14);
+    const live = [], spare = [];
+    let stride = 0;
+    ch.forEach(([, , o, , d], n) => {
+      if (+d > 0) { live.push(`${SEM[n]}x${d}`); stride = Math.max(stride, +o + (+d) * 4); }
+      else if (n < 12) spare.push(SEM[n]);
+    });
+    layouts.add(live.join(' ')); strides.add(stride); free ??= spare;
+  }
+  console.log(`  ${files.length} committed hull meshes`);
+  console.log(`  submesh counts across the fleet : ${[...subs].join(', ')}`);
+  console.log(`  distinct vertex layouts         : ${layouts.size} -> ${[...layouts].join(' | ')}`);
+  console.log(`  distinct vertex strides (bytes) : ${[...strides].join(', ')}`);
+  console.log(`  channels FREE on every one      : ${free.join(', ')}`);
+  console.log(`  total baked vertices, fleet     : ${totalVerts.toLocaleString('en-US')}`);
+  console.log(`  cost of +1 float32 per vertex   : ${(totalVerts * 4 / 1024).toFixed(1)} KiB across the whole fleet`);
 }
 
 // ============================================================================================

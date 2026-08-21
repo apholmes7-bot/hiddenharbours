@@ -8,6 +8,13 @@ the exterior half, because the house is geometry rather than a sheet. The spike 
 candidates instead of arguing about them, and STOPS: an exterior cull is an art/mesh contract
 change and the coordinator rules on it.
 
+RUN IN A CLOUD CONTAINER: no Unity, no LFS objects. So this is a SOURCE-LEVEL spike, and it
+says so wherever that limits it (see WHAT COULD NOT BE MEASURED below). Two things turned out
+to be measurable here anyway, and both are direct rather than inferred:
+  * the committed hull meshes — `*.asset` is `unity-yaml` in .gitattributes, NOT lfs, so the
+    real bake is readable text (section 0b);
+  * the rigs — pure JS with no DOM dependency on these paths, so they render in node's V8.
+
 HOW TO REGENERATE:  node docs/art/proofs/_boatInteriorExteriorHalfProof.mjs . <outdir>
 Node 22 (V8). No dependencies. Run without <outdir> for the measurements alone.
 
@@ -20,8 +27,25 @@ record which SOURCE LINE built each face. That recorder is the ground truth for 
 face list carry an identifiable house group?" — the grouping exists in the JS and is gone by
 the time the extractor has read `Global.F`.
 
+⚠️ THE TRANSFORM IS PROVEN INERT TO THE RENDER, not assumed (section 0a): the pristine rig
+and the harness-loaded rig are compared byte for byte at all 8 facings on every run. The
+recorder only hangs a `__line` property on each face object, which the rig's own `_paint`
+never reads. If that check ever fails it says so in place of the numbers.
+
 DETERMINISM: two independent runs produced identical logs and byte-identical PNGs
 (verified 2026-08-21; sha256 A fe5a20bd…, B ac8856cb…).
+
+WHAT COULD NOT BE MEASURED HERE, named rather than guessed at:
+  * Anything needing the compiled game — no Unity in this container, so no EditMode or
+    PlayMode run, and no compile against Unity assemblies. The runtime behaviour of a cull is
+    therefore ARGUED from the source and MEASURED only in the rig's own rasteriser.
+  * The baked interior SHEETS (Assets/_Project/Art/Boats/Interiors/*.png) are LFS pointers
+    here, so no shipped sheet pixel was read. Every interior pixel below is re-rendered from
+    boatInteriorRig.js, which is the same renderer BoatInteriorSheetBaker drives — pinned by
+    BoatInteriors.json's own interiorRigSha256 — but it is a re-render, not the shipped bytes.
+  * How the facet shader behaves with a cull applied: not run. No GPU, no Unity.
+  * Only the lobster boat was rendered end to end; the per-level finding was cross-checked on
+    the side dragger and stern trawler. The other 21 cleared hulls were not rendered.
 
 WHY THE PNGs ARE NOT COMMITTED BESIDE THIS LOG. They were rendered and reviewed, and they
 belong in LFS like every other .png in this folder -- but the session that produced them had
@@ -46,6 +70,10 @@ than lost. (Same situation, same answer, as character-clip-proof-log.txt records
 THE RUN
 -----------------------------------------------------------------------------------------
 
+=== 0a · IS THE HARNESS'S SOURCE TRANSFORM INERT TO THE RENDER? ===
+  pristine rig vs harness-loaded rig: all 8 facings BYTE-IDENTICAL. The transform adds a
+  `__line` label the rig never reads, and nothing else.
+
 === 0 · WHAT THE FACE LIST CARRIES ===
   faces 676   fields per face: v, mat, b, db
   materials over the WHOLE hull: {"boot":97,"blue":98,"hull":98,"dark":50,"cream":111,"deck":49,"grip":14,"iron":45,"steel":80,"glas":34}
@@ -53,6 +81,15 @@ THE RUN
   drawn house extent   x [-1.78, 1.78]  y [-5.81, 3.27]  z [0.50, 3.05]
   published HOUSE      x [-1.5, 1.5]  y [0.55, 3.6]  z [0.5, 2.96]
   'cream' (the house paint) spans x [-2.14, 2.14] y [-6.00, 3.60] over 111 faces — it is the TOPSIDES too
+
+=== 0b · WHAT THE COMMITTED HULL MESHES CARRY (read off the .asset YAML) ===
+  34 committed hull meshes
+  submesh counts across the fleet : 1
+  distinct vertex layouts         : 1 -> Positionx3 Normalx3 TexCoord0x4
+  distinct vertex strides (bytes) : 40
+  channels FREE on every one      : Tangent, Color, TexCoord1, TexCoord2, TexCoord3, TexCoord4, TexCoord5, TexCoord6, TexCoord7
+  total baked vertices, fleet     : 133,852
+  cost of +1 float32 per vertex   : 522.9 KiB across the whole fleet
 
 === 1 · CAN THE PUBLISHED HOUSE ENVELOPE NAME THE SUBSET? ===
   tol     picked  TP    FP    FN    precision  recall
