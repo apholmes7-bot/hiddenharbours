@@ -303,7 +303,15 @@ namespace HiddenHarbours.Tests.PlayMode
             List<Probe> probes = Probes(runs, decks);
             Assume.That(probes.Count, Is.GreaterThanOrEqualTo(6));
 
-            Object.Destroy(boundary.gameObject);       // the wall goes away; everything else stays
+            // EVERY wall in the scene goes, not only the one this fixture built. Since the 2026-08-21
+            // scenes bank the builder's own quay wall is IN the committed scene (the #609 Build click),
+            // and a sabotage that deleted only its own copy found the scene's copy still holding her —
+            // 24 of 24 edges, every reading -0.53 — and read it as "some other collider". The question
+            // this arm asks is "is it a PropertyBoundary holding her, or something else?", so all of
+            // them go; everything that is not a wall stays.
+            foreach (PropertyBoundary wall in
+                     Object.FindObjectsByType<PropertyBoundary>(FindObjectsInactive.Include))
+                Object.Destroy(wall.gameObject);
             _spawned.Remove(boundary.gameObject);
             yield return null;
 
