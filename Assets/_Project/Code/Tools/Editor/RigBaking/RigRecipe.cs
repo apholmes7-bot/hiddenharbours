@@ -896,19 +896,24 @@ namespace HiddenHarbours.Tools.RigBaking
                     "call, not a value to record.");
             if (v == 0) return "0";                       // and never "-0"
 
-            string s = null;
+            // ⚠️ SKIP an exponent candidate, never accept one — this is the whole subtlety.
+            // "G1" is ONE SIGNIFICANT DIGIT, not one integer digit, so 40 formats as "4E+01" and
+            // that round-trips perfectly. Taking the first round-tripping form would therefore
+            // spell 40, 100, 200 … in exponent notation, where JavaScript writes "40". Measured:
+            // 15 of the 429 distinct numbers in the committed ledger are of that shape.
             for (int p = 1; p <= 17; p++)
             {
-                s = v.ToString("G" + p.ToString(CultureInfo.InvariantCulture),
-                               CultureInfo.InvariantCulture);
-                if (double.Parse(s, NumberStyles.Float, CultureInfo.InvariantCulture) == v) break;
+                string s = v.ToString("G" + p.ToString(CultureInfo.InvariantCulture),
+                                      CultureInfo.InvariantCulture);
+                if (s.IndexOf('E') >= 0 || s.IndexOf('e') >= 0) continue;
+                if (double.Parse(s, NumberStyles.Float, CultureInfo.InvariantCulture) == v) return s;
             }
 
-            if (s!.IndexOf('E') >= 0 || s.IndexOf('e') >= 0)
-                throw new InvalidOperationException(
-                    $"{s} needs exponent notation, which this schema does not carry — the C# and " +
-                    "JavaScript writers spell it differently and the files would silently diverge.");
-            return s;
+            throw new InvalidOperationException(
+                $"no plain-decimal spelling of {v:R} round-trips within 17 significant digits, so " +
+                "this value can only be written in exponent notation — which this schema does not " +
+                "carry, because .NET spells it 1E+21 and JavaScript spells it 1e+21 and the two " +
+                "writers would silently diverge. Nothing in this repo's rig options needs one.");
         }
 
         /// <summary>The float overload, so a <c>const float</c> tunable records the number the baker

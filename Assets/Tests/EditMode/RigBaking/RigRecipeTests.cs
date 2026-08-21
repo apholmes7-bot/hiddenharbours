@@ -514,7 +514,22 @@ namespace HiddenHarbours.Tests.RigBaking
             Assert.AreEqual("0", RigRecipe.Number(-0.0), "JSON has no negative zero and JS writes 0");
             Assert.AreEqual("1", RigRecipe.Number(1.0));
             Assert.AreEqual("-1", RigRecipe.Number(-1.0));
-            Assert.AreEqual("40", RigRecipe.Number(40.0));
+
+            // ⭐ THE REGRESSION. "G1" is ONE SIGNIFICANT DIGIT, not one integer digit, so 40 formats
+            // as "4E+01" — and that ROUND-TRIPS. A shortest-round-trip search that accepts the first
+            // form that parses back therefore spells every one of these in exponent notation, where
+            // JavaScript writes them plainly. CI caught it on `elev: 40`; these are the 15 values of
+            // that shape in the committed ledger, and they are pinned so it cannot come back.
+            foreach (var (value, spelling) in new[]
+                     {
+                         (10.0, "10"), (20.0, "20"), (30.0, "30"), (40.0, "40"), (50.0, "50"),
+                         (60.0, "60"), (70.0, "70"), (80.0, "80"), (90.0, "90"), (100.0, "100"),
+                         (200.0, "200"), (400.0, "400"), (500.0, "500"), (800.0, "800"),
+                         (2000.0, "2000"),
+                     })
+                Assert.AreEqual(spelling, RigRecipe.Number(value),
+                                $"{value} is a single significant digit times a power of ten — the " +
+                                "shape whose 1-digit G-form is an exponent that round-trips");
             Assert.AreEqual("0.25", RigRecipe.Number(0.25));
             Assert.AreEqual("0.5", RigRecipe.Number(0.5));
             Assert.AreEqual("0.75", RigRecipe.Number(0.75));
