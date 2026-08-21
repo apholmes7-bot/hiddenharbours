@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e70b01790414c67990a70b04eb3a2bb, type: 3}
+  m_Name: interior_lobster_standard_hardtop_newfoundland_iso
+  m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.BoatInteriorCellsDef
+  InteriorDefId: interior.lobster_standard_hardtop_newfoundland_iso
+  Cells:
+  - {fileID: 1157367655, guid: 5d20e8647d7b721469a24fff24e90aca, type: 3}
+  - {fileID: -1790882409, guid: 5d20e8647d7b721469a24fff24e90aca, type: 3}
+  - {fileID: 1451837059, guid: 5d20e8647d7b721469a24fff24e90aca, type: 3}
+  - {fileID: 1149844528, guid: 5d20e8647d7b721469a24fff24e90aca, type: 3}
+  - {fileID: 1087281939, guid: 5d20e8647d7b721469a24fff24e90aca, type: 3}
+  - {fileID: -1673143846, guid: 5d20e8647d7b721469a24fff24e90aca, type: 3}
+  - {fileID: 890922864, guid: 5d20e8647d7b721469a24fff24e90aca, type: 3}
+  - {fileID: 1169785779, guid: 5d20e8647d7b721469a24fff24e90aca, type: 3}
+  - {fileID: -660842247, guid: 5d20e8647d7b721469a24fff24e90aca, type: 3}
+  - {fileID: 244841590, guid: 5d20e8647d7b721469a24fff24e90aca, type: 3}
+  - {fileID: 490833212, guid: 5d20e8647d7b721469a24fff24e90aca, type: 3}
+  - {fileID: -851590652, guid: 5d20e8647d7b721469a24fff24e90aca, type: 3}
+  - {fileID: -753554037, guid: 5d20e8647d7b721469a24fff24e90aca, type: 3}
+  - {fileID: -863059165, guid: 5d20e8647d7b721469a24fff24e90aca, type: 3}
+  - {fileID: 1436959242, guid: 5d20e8647d7b721469a24fff24e90aca, type: 3}
+  - {fileID: -657691977, guid: 5d20e8647d7b721469a24fff24e90aca, type: 3}
+  Facings: 8
+  CellLevels:
+  - house
+  - cuddy
+  CellRowForLevel: 0000000001000000
+  CellsAreCounterClockwise: 1
+  ResidentMegabytes: 12.3046875

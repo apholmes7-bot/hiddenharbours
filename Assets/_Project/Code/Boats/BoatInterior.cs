@@ -119,6 +119,13 @@ namespace HiddenHarbours.Boats
         [Tooltip("The compass heading (degrees, 0 = North, CW) that cell 0 of each level is drawn for.")]
         [SerializeField] private float _zeroHeadingDegrees;
 
+        [Tooltip("⚠ For each of the DEF's levels, which ROW of the cell array draws it — or -1 when " +
+                 "nothing does. The def's levels and the sheet's rows are NOT the same list: a def " +
+                 "declares exterior working decks the sheets never bake, and the two run in different " +
+                 "orders on every ship. Empty means the def's indices ARE the rows, which is true only " +
+                 "where every level has a sheet.")]
+        [SerializeField] private int[] _cellRowForLevel = System.Array.Empty<int>();
+
         [Header("The ride — ART FACTS of this hull's baked rock (rule 6)")]
         [Tooltip("The boat this cabin is inside. Her wave motion and hull presenter are read from here; " +
                  "empty falls back to this component's own root.")]
@@ -181,6 +188,33 @@ namespace HiddenHarbours.Boats
         public bool ExactlyOneLayerOn =>
             _exterior != null && _interior != null && ExteriorDrawn != InteriorDrawn;
 
+        /// <summary>
+        /// <b>Could this cabin complete the swap at all?</b> — both halves wired, which is the
+        /// precondition under which <see cref="ExactlyOneLayerOn"/> can ever hold. A CAPABILITY, where
+        /// that one is a STATE: this asks "is the mechanism whole", not "which layer is on right now".
+        ///
+        /// <para><b>Why it is a separate predicate and not a re-read of the other one.</b>
+        /// <see cref="ExactlyOneLayerOn"/> is false both when a half is missing AND, transiently, if
+        /// anything ever left the two layers agreeing — so a caller that gated on it would be gating on
+        /// two different facts at once and could not tell a half-built cabin from a mis-drawn frame.
+        /// The door needs the first meaning only.</para>
+        ///
+        /// <para><b>What it is FOR (the S0 ruling, rider 1).</b> On a mesh hull there is nothing to hand
+        /// <see cref="_exterior"/> until the per-level face tags land and give the renderer something to
+        /// cull — measured: no submesh, no material subset, and the occluder is per LEVEL, not per hull.
+        /// Until then the swap cannot complete, and a door that opened onto it would put the interior and
+        /// the exterior on screen TOGETHER, posed differently (the interior takes only
+        /// <c>InteriorRockScale</c> of the hull's rock). That co-visibility is the precise thing ADR 0038
+        /// ruled out, and the reason proposals 1 and 3 were ruled as a set. So the offer is withheld
+        /// rather than the swap being fudged.</para>
+        ///
+        /// <para><b>It is a gate, not a flag.</b> Nothing sets it; it is read off the wiring. A hull whose
+        /// exterior half arrives later becomes enterable the moment it is handed in, with no second
+        /// switch to remember and nothing to migrate — which is what lets R1 light the fleet
+        /// hull-by-hull.</para>
+        /// </summary>
+        public bool SwapIsCompletable => _exterior != null && _interior != null;
+
         /// <summary>How many metres one baked pixel of THIS hull's interior is — 1/32 across the fleet and
         /// 1/16 on the tanker. Read from the def every time rather than copied into a field, because two
         /// pixel grids live in this kit and a stale copy is how they get conflated.</summary>
@@ -193,6 +227,14 @@ namespace HiddenHarbours.Boats
         private Vector3 _baseLocalPosition;
         private Quaternion _baseLocalRotation = Quaternion.identity;
         private bool _baseCached;
+
+        /// <summary>Whether <see cref="EnsureCells"/> has run. Separate from "did it succeed", so a
+        /// hull with no sheets is not asked for them once per frame forever.</summary>
+        private bool _cellsLoaded;
+
+        /// <summary>The cells id this cabin is HOLDING a reference to, or null. The "did I actually
+        /// hold?" half of the release below — a cabin that never loaded must release nothing.</summary>
+        private string _heldCellsId;
         private bool _posed;
 
         // ---- wiring ---------------------------------------------------------------------------
@@ -208,7 +250,8 @@ namespace HiddenHarbours.Boats
                               Transform fittings, Transform interiorPivot, Transform boatRoot,
                               Sprite[] cells, int facings, bool cellsAreCounterClockwise,
                               float zeroHeadingDegrees,
-                              float deckRollDegrees, float deckHeavePixels, float deckPitchLiftMeters)
+                              float deckRollDegrees, float deckHeavePixels, float deckPitchLiftMeters,
+                              int[] cellRowForLevel = null)
         {
             _def = def;
             _exterior = exterior;
@@ -220,6 +263,7 @@ namespace HiddenHarbours.Boats
             _facings = Mathf.Max(1, facings);
             _cellsAreCounterClockwise = cellsAreCounterClockwise;
             _zeroHeadingDegrees = zeroHeadingDegrees;
+            _cellRowForLevel = cellRowForLevel ?? System.Array.Empty<int>();
             _deckRollDegrees = deckRollDegrees;
             _deckHeavePixels = deckHeavePixels;
             _deckPitchLiftMeters = deckPitchLiftMeters;
@@ -286,6 +330,19 @@ namespace HiddenHarbours.Boats
             return true;
         }
 
+        /// <summary>
+        /// Which ROW of the cell array draws def level <paramref name="level"/>, or −1 when none does.
+        /// With no map wired the def's indices ARE the rows — true only where every level has a sheet
+        /// (the lobster family), and what a hand-built test rig with one level means.
+        /// </summary>
+        public int CellRowFor(int level)
+        {
+            if (level < 0) return -1;
+            if (_cellRowForLevel == null || _cellRowForLevel.Length == 0) return level;
+            if (level >= _cellRowForLevel.Length) return -1;
+            return _cellRowForLevel[level];
+        }
+
         /// <summary>True when <paramref name="level"/> indexes a level of this def with enough vertices
         /// to bound anything. An unusable level is refused rather than entered blind — a sole with two
         /// points is a measurement that did not finish.</summary>
@@ -317,6 +374,12 @@ namespace HiddenHarbours.Boats
             {
                 BoatInteriorLevel l = _def.Levels[i];
                 if (l == null || !l.IsUsable()) continue;
+
+                // ⚠ Only a level the sheets actually DRAW can be walked into. The ships declare
+                // main_deck at the very height their house sole sits at (the trawler: both at 3.5 m),
+                // so a nearest-by-height answer that ignored this would walk the player onto an
+                // OUTDOOR deck through the cabin door and show them nothing.
+                if (_cellRowForLevel.Length > 0 && CellRowFor(i) < 0) continue;
 
                 float gap = Mathf.Abs(l.SoleZMeters - zMeters);
                 // Strictly-less keeps the FIRST of two equidistant soles, so the answer is a function of
@@ -352,6 +415,22 @@ namespace HiddenHarbours.Boats
         /// cabin in the game the first time a player crosses a region line.
         /// </summary>
         private void OnDisable() { }
+
+        /// <summary>
+        /// Give this hull's cells back, if this cabin ever took them.
+        ///
+        /// <para>⚠️ <b><c>OnDestroy</c>, and guarded on still holding — never <c>OnDisable</c>.</b> Both
+        /// halves matter. Root-toggling is how a region hop works, so a release in <c>OnDisable</c> would
+        /// unload the cabin of a boat the player is standing inside, halfway across a boundary. And the
+        /// guard is #601's lesson: an unconditional release outlives the phase that made it correct, and
+        /// here it would evict sheets a sister ship is still drawing.</para>
+        /// </summary>
+        private void OnDestroy()
+        {
+            if (string.IsNullOrEmpty(_heldCellsId)) return;
+            BoatInteriorCells.Release(_heldCellsId);
+            _heldCellsId = null;
+        }
 
         private void LateUpdate()
         {
@@ -404,6 +483,41 @@ namespace HiddenHarbours.Boats
         /// <para>A missing cell leaves the sprite exactly as it was rather than blanking the renderer: an
         /// unwired hull shows nothing, and a partly-wired one must not flicker.</para>
         /// </summary>
+        /// <summary>
+        /// <b>Bring this hull's cells in, once, on the way through the door.</b> Called at CUE START,
+        /// so the leaf's own ~560 ms of baked animation covers the load and an unenterable cabin never
+        /// touches the disk at all.
+        ///
+        /// <para>Does nothing when cells were handed in directly (a builder, or a test rig that wants
+        /// them eagerly), and nothing on a second call. A hull whose sheets are missing or malformed is
+        /// named on the console and left without a picture rather than drawn wrong.</para>
+        /// </summary>
+        public void EnsureCells()
+        {
+            if (_cellsLoaded || _cells is { Length: > 0 }) return;
+            if (_def == null || string.IsNullOrEmpty(_def.Id)) return;
+
+            _cellsLoaded = true;
+            BoatInteriorCellsDef cells = BoatInteriorCells.Acquire(_def.Id);
+            if (cells == null) return;
+
+            _heldCellsId = _def.Id;   // ⚠ only now do we hold anything — see OnDestroy
+
+            if (!cells.IsUsableFor(_def))
+            {
+                Debug.LogError($"[BoatInterior] '{name}' loaded cells '{cells.InteriorDefId}' that do " +
+                               $"not fit '{_def.Id}' — wrong hull, a hole in the array, or a level map " +
+                               "that does not cover the def. A partly wired sheet draws a plausible " +
+                               "picture of the wrong room, so it is refused whole.", this);
+                return;
+            }
+
+            _cells = cells.Cells;
+            _facings = Mathf.Max(1, cells.Facings);
+            _cellsAreCounterClockwise = cells.CellsAreCounterClockwise;
+            _cellRowForLevel = cells.CellRowForLevel ?? System.Array.Empty<int>();
+        }
+
         private void ShowCell()
         {
             if (_interior == null || _cells == null || _cells.Length == 0) return;
@@ -413,7 +527,10 @@ namespace HiddenHarbours.Boats
             int facing = IsoFacing.HeadingToFacingIndex(heading, _facings, _zeroHeadingDegrees,
                                                        _cellsAreCounterClockwise);
 
-            int index = Level * _facings + facing;
+            int row = CellRowFor(Level);
+            if (row < 0) return;   // an outdoor deck has no interior to draw, and that is an answer
+
+            int index = row * _facings + facing;
             if (index < 0 || index >= _cells.Length) return;
 
             Sprite cell = _cells[index];

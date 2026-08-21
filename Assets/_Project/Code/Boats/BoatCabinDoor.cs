@@ -182,15 +182,27 @@ namespace HiddenHarbours.Boats
         public string VerbLabel => WouldEnter ? _enterLabel : _exitLabel;
 
         /// <summary>
-        /// Available when there is an inside to reach and no leaf already moving.
+        /// Available when there is an inside to reach, the swap that reveals it can actually complete,
+        /// and no leaf is already moving.
         ///
-        /// <para>Both are genuine "not a thing to act on right now" rather than refusals with a message:
-        /// a hull with no measured interior has no door to press, and a door mid-cue has already been
-        /// pressed. Neither is loud, and a hull that gains a def later gains her door with no other
+        /// <para>All three are genuine "not a thing to act on right now" rather than refusals with a
+        /// message: a hull with no measured interior has no door to press, a hull whose swap cannot
+        /// complete has no cabin to show yet, and a door mid-cue has already been pressed. None of them
+        /// is loud, and a hull that gains a def or an exterior half later gains her door with no other
         /// change.</para>
+        ///
+        /// <para><b>⭐ The first two are ONE named policy — <see cref="BoatInteriorEntryPolicy.MayOffer"/>
+        /// — and deliberately not spelled out here.</b> Whether a cabin may be entered before the
+        /// exterior half of its swap exists is a question the owner is settling on rendered evidence,
+        /// with three named outcomes; a policy that is going to be re-decided belongs somewhere a person
+        /// can find and change without reading a door. What that predicate protects is the ADR's own
+        /// invariant: the interior takes only <c>InteriorRockScale</c> of the hull's rock, which is safe
+        /// ONLY because the two are never drawn together. <b>Today it means the fleet wires up and stays
+        /// silent, and each cabin lights the moment its own exterior half arrives</b> — no second
+        /// switch, no migration, and no window in which a half-built cabin is enterable.</para>
         /// </summary>
         public bool IsAvailable =>
-            _interior != null && _interior.HasInterior && Door != null && !IsCueing;
+            BoatInteriorEntryPolicy.MayOffer(_interior) && Door != null && !IsCueing;
 
         /// <inheritdoc/>
         public void Interact(in InteractActor actor) => TryUse();
@@ -252,6 +264,12 @@ namespace HiddenHarbours.Boats
             // you walk in level). Resolved once, at the press, so the answer cannot drift mid-cue.
             _cueLevel = _cueEnters ? Mathf.Max(0, _interior.LevelIndexAtHeight(door.ThresholdPoint.z)) : 0;
             _cueElapsed = 0f;
+
+            // ⭐ THE LOAD, HERE AND NOWHERE EARLIER. The cabin's sheets are megabytes and they are not
+            // referenced from anything a hull pulls in on spawn, so this press is the first moment they
+            // are wanted — and the leaf's own baked cue is the window that hides the cost. An
+            // unenterable cabin never reaches this line, because IsAvailable declined the press.
+            if (_cueEnters) _interior.EnsureCells();
 
             if (CueSeconds <= 0f) Resolve();
             return true;

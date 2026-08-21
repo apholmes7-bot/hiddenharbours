@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: visual.stern_trawler_mk2_iso
   Variant: 1
   HullMesh: {fileID: 11400000, guid: d0106bf18fb52274cb6bac928d046a4f, type: 2}
+  DesignWaterlineMeters: 0
   Deck: {fileID: 11400000, guid: fe9cd15ab42d0e5ad769bd543981683a, type: 2}
   Facings: []
   ZeroHeadingDegrees: 0
@@ -35,7 +36,10 @@ MonoBehaviour:
   MotorVariant: 0
   MotorFit: 0
   MotorMesh: {fileID: 0}
+  MotorMeshFitmentOffsetMeters: {x: 0, y: 0, z: 0}
   MotorRockRollDegrees: 3.4
   MotorRockPitchDegrees: 1.9
   MotorRockHeavePixels: 1.3
   MotorMountLocalMeters: {x: 0, y: -3.53, z: 0.72}
+  PilotStance: 0
+  Interior: {fileID: 11400000, guid: 453f8394a93ac684a8d3c2aab846a115, type: 2}

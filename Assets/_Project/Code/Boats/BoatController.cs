@@ -167,6 +167,18 @@ namespace HiddenHarbours.Boats
             if (Application.isPlaying && GetComponent<BoatFuelTank>() == null)
                 gameObject.AddComponent<BoatFuelTank>();
 
+            // THE CABIN (ADR 0038): her interior, and the door into it. Same runtime-spawn reasoning as
+            // the tank above — every already-built scene grows a cabin on load, no builder re-run and no
+            // prefab churn — and play mode only for the same reason (EditMode tests build
+            // BoatControllers freely and must stay presentation-free; an EditMode rig that wants a cabin
+            // adds BoatInteriorInstaller itself).
+            //
+            // ⭐ Mounted UNCONDITIONALLY, like the tank, and INERT on the overwhelming majority of hulls:
+            // a hull whose visual def names no BoatInteriorDef has never been measured, builds nothing,
+            // and costs one null check. Enrolling a hull later is a Def edit with nothing to re-wire.
+            if (Application.isPlaying && GetComponent<BoatInteriorInstaller>() == null)
+                gameObject.AddComponent<BoatInteriorInstaller>();
+
             _rb = GetComponent<Rigidbody2D>();
             _rb.gravityScale = 0f;
             _rb.linearDamping = 0.2f;
