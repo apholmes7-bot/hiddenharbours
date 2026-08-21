@@ -363,7 +363,7 @@ namespace HiddenHarbours.Tests.PlayMode
 
             _interior = _boat.AddComponent<BoatInterior>();
             _interior.Configure(def, _exterior, _room, null, _room.transform, _boat.transform,
-                                System.Array.Empty<Sprite>(), 8, true, 0f,
+                                DummyCells(8), 8, true, 0f,
                                 DeckRoll, HeavePixels, PitchLift);
 
             var doorGo = new GameObject("CabinDoor");
@@ -371,6 +371,22 @@ namespace HiddenHarbours.Tests.PlayMode
             _door = doorGo.AddComponent<BoatCabinDoor>();
             _door.Configure(_interior, "fixture.boat.play_test.cabin_door", -1, 1.2f,
                             "Go below", "Come out");
+        }
+
+        /// <summary>Throwaway cells so the cabin has a picture without reaching Resources — the
+        /// documented EAGER path; an empty array now means "load your own".</summary>
+        private Sprite[] DummyCells(int n)
+        {
+            var tex = new Texture2D(4, 4);
+            _spawned.Add(tex);
+            var cells = new Sprite[n];
+            for (int i = 0; i < n; i++)
+            {
+                cells[i] = Sprite.Create(tex, new Rect(0, 0, 4, 4), new Vector2(0.5f, 0.5f), 32f);
+                cells[i].name = $"cell_{i}";
+                _spawned.Add(cells[i]);
+            }
+            return cells;
         }
 
         private SpriteRenderer NewRenderer(string name)

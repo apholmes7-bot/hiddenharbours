@@ -516,6 +516,24 @@ namespace HiddenHarbours.Tests.EditMode
             public GameObject Fittings;
         }
 
+
+        /// <summary>Throwaway cells so the cabin has a picture without reaching Resources. Handing
+        /// them to <c>Configure</c> is the documented EAGER path: a rig has no cells asset on disk,
+        /// and an empty array now means "load your own", which would fail looking for one.</summary>
+        private Sprite[] DummyCells(int n)
+        {
+            var tex = new Texture2D(4, 4);
+            _spawned.Add(tex);
+            var cells = new Sprite[n];
+            for (int i = 0; i < n; i++)
+            {
+                cells[i] = Sprite.Create(tex, new Rect(0, 0, 4, 4), new Vector2(0.5f, 0.5f), 32f);
+                cells[i].name = $"cell_{i}";
+                _spawned.Add(cells[i]);
+            }
+            return cells;
+        }
+
         private static Vector2[] Square() => new[]
         {
             new Vector2(-1f, -2f), new Vector2(1f, -2f), new Vector2(1f, 2f), new Vector2(-1f, 2f),
@@ -576,7 +594,8 @@ namespace HiddenHarbours.Tests.EditMode
 
             var interior = root.AddComponent<BoatInterior>();
             interior.Configure(made, exterior, room, fittings.transform, room.transform, root.transform,
-                               System.Array.Empty<Sprite>(), 8, true, 0f, DeckRoll, HeavePixels, PitchLift);
+                               DummyCells(8 * Mathf.Max(1, levels?.Length ?? 1)), 8, true, 0f,
+                               DeckRoll, HeavePixels, PitchLift);
 
             var door = new GameObject("CabinDoor").AddComponent<BoatCabinDoor>();
             door.transform.SetParent(root.transform, false);

@@ -43,35 +43,3 @@ MonoBehaviour:
   MotorMountLocalMeters: {x: 0, y: -3.53, z: 0.72}
   PilotStance: 0
   Interior: {fileID: 11400000, guid: b9c08400fcd7a3c45a1d9910846c2240, type: 2}
-  InteriorCells:
-  - {fileID: -1169888434, guid: a1163358309c0b54d88fd4818c66c91c, type: 3}
-  - {fileID: 1710002842, guid: a1163358309c0b54d88fd4818c66c91c, type: 3}
-  - {fileID: -1879690610, guid: a1163358309c0b54d88fd4818c66c91c, type: 3}
-  - {fileID: -215126199, guid: a1163358309c0b54d88fd4818c66c91c, type: 3}
-  - {fileID: -1381411440, guid: a1163358309c0b54d88fd4818c66c91c, type: 3}
-  - {fileID: 148819947, guid: a1163358309c0b54d88fd4818c66c91c, type: 3}
-  - {fileID: -263065909, guid: a1163358309c0b54d88fd4818c66c91c, type: 3}
-  - {fileID: 946793516, guid: a1163358309c0b54d88fd4818c66c91c, type: 3}
-  - {fileID: -1046732718, guid: a1163358309c0b54d88fd4818c66c91c, type: 3}
-  - {fileID: -2110341276, guid: a1163358309c0b54d88fd4818c66c91c, type: 3}
-  - {fileID: 1700433500, guid: a1163358309c0b54d88fd4818c66c91c, type: 3}
-  - {fileID: -419474849, guid: a1163358309c0b54d88fd4818c66c91c, type: 3}
-  - {fileID: 1104585089, guid: a1163358309c0b54d88fd4818c66c91c, type: 3}
-  - {fileID: 1878159065, guid: a1163358309c0b54d88fd4818c66c91c, type: 3}
-  - {fileID: 1668619523, guid: a1163358309c0b54d88fd4818c66c91c, type: 3}
-  - {fileID: -2080585482, guid: a1163358309c0b54d88fd4818c66c91c, type: 3}
-  - {fileID: 752170642, guid: b0ef6c8cc3a4da643a1fad2b2336b9fd, type: 3}
-  - {fileID: 1799126751, guid: b0ef6c8cc3a4da643a1fad2b2336b9fd, type: 3}
-  - {fileID: 1217204507, guid: b0ef6c8cc3a4da643a1fad2b2336b9fd, type: 3}
-  - {fileID: -500264332, guid: b0ef6c8cc3a4da643a1fad2b2336b9fd, type: 3}
-  - {fileID: 1865203740, guid: b0ef6c8cc3a4da643a1fad2b2336b9fd, type: 3}
-  - {fileID: 1104773858, guid: b0ef6c8cc3a4da643a1fad2b2336b9fd, type: 3}
-  - {fileID: -1163003147, guid: b0ef6c8cc3a4da643a1fad2b2336b9fd, type: 3}
-  - {fileID: 1129713742, guid: b0ef6c8cc3a4da643a1fad2b2336b9fd, type: 3}
-  InteriorFacings: 8
-  InteriorCellLevels:
-  - bridge
-  - house
-  - below
-  InteriorCellRowForLevel: ffffffff010000000000000002000000
-  InteriorCellsAreCounterClockwise: 1

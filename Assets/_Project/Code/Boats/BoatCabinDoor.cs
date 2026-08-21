@@ -265,6 +265,12 @@ namespace HiddenHarbours.Boats
             _cueLevel = _cueEnters ? Mathf.Max(0, _interior.LevelIndexAtHeight(door.ThresholdPoint.z)) : 0;
             _cueElapsed = 0f;
 
+            // ⭐ THE LOAD, HERE AND NOWHERE EARLIER. The cabin's sheets are megabytes and they are not
+            // referenced from anything a hull pulls in on spawn, so this press is the first moment they
+            // are wanted — and the leaf's own baked cue is the window that hides the cost. An
+            // unenterable cabin never reaches this line, because IsAvailable declined the press.
+            if (_cueEnters) _interior.EnsureCells();
+
             if (CueSeconds <= 0f) Resolve();
             return true;
         }

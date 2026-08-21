@@ -23,6 +23,8 @@ namespace HiddenHarbours.Tests.EditMode
     {
         private const string InteriorFolder = "Assets/_Project/Data/Boats/Interiors";
         private const string VisualFolder = "Assets/_Project/Data/Boats/Visuals";
+        private const string CellsFolder =
+            "Assets/_Project/Resources/" + BoatInteriorCellsDef.ResourcesFolder;
 
         /// <summary>The three hulls the S0 intake ledger REFUSES. Named here as the test's own
         /// statement of the law — a def must never exist for one, and wiring must never reach one.</summary>
@@ -55,6 +57,10 @@ namespace HiddenHarbours.Tests.EditMode
 
         private static BoatVisualDef Visual(string stem)
             => AssetDatabase.LoadAssetAtPath<BoatVisualDef>($"{VisualFolder}/{stem}.asset");
+
+        private static BoatInteriorCellsDef Cells(BoatInteriorDef def)
+            => def == null ? null : AssetDatabase.LoadAssetAtPath<BoatInteriorCellsDef>(
+                $"{CellsFolder}/{BoatInteriorCellsDef.FileNameFor(def.Id)}.asset");
 
         // =====================================================================================
         //  COVERAGE — every cleared hull, and only cleared hulls
@@ -146,16 +152,24 @@ namespace HiddenHarbours.Tests.EditMode
                 BoatVisualDef visual = Visual(stem);
                 if (visual == null || visual.Interior == null) continue;
 
+                BoatInteriorCellsDef cells = Cells(def);
+                if (cells == null)
+                {
+                    wrong.Add($"{stem}: no cells asset at {CellsFolder}/" +
+                              $"{BoatInteriorCellsDef.FileNameFor(def.Id)}.asset");
+                    continue;
+                }
+
                 // ⚠ The SHEET's rows, not the DEF's levels. They are different lists — see
-                // BoatVisualDef.InteriorCellRowForLevel, and the failure that taught us so.
-                int rows = visual.InteriorCellLevels != null ? visual.InteriorCellLevels.Length : 0;
-                int want = rows * visual.InteriorFacings;
-                int have = visual.InteriorCells != null ? visual.InteriorCells.Length : 0;
+                // BoatInteriorCellsDef.CellRowForLevel, and the failure that taught us so.
+                int rows = cells.CellLevels != null ? cells.CellLevels.Length : 0;
+                int want = rows * cells.Facings;
+                int have = cells.Cells != null ? cells.Cells.Length : 0;
 
                 if (have != want)
-                    wrong.Add($"{stem}: {have} cells where {rows} sheet rows x " +
-                              $"{visual.InteriorFacings} facings needs {want}");
-                else if (!visual.HasInteriorCells())
+                    wrong.Add($"{stem}: {have} cells where {rows} sheet rows x {cells.Facings} " +
+                              $"facings needs {want}");
+                else if (!cells.IsUsableFor(def))
                     wrong.Add($"{stem}: a hole in the cell array, or a level map that does not cover " +
                               "the def — a partly wired sheet draws a plausible picture of the wrong room");
             }
@@ -199,16 +213,17 @@ namespace HiddenHarbours.Tests.EditMode
             {
                 BoatVisualDef visual = Visual(stem);
                 if (visual == null || visual.Interior == null) continue;
-                if (visual.InteriorCellRowForLevel == null || def.Levels == null) continue;
+                BoatInteriorCellsDef cells = Cells(def);
+                if (cells == null || cells.CellRowForLevel == null || def.Levels == null) continue;
 
                 for (int i = 0; i < def.Levels.Length; i++)
                 {
                     BoatInteriorLevel level = def.Levels[i];
                     if (level == null) continue;
-                    int row = visual.InteriorCellRowForLevel[i];
+                    int row = cells.CellRowForLevel[i];
                     if (row < 0) continue;   // an outdoor deck draws nothing, which is an answer
 
-                    string key = visual.InteriorCellLevels[row];
+                    string key = cells.CellLevels[row];
                     bool same = string.Equals(level.Id, key, StringComparison.Ordinal) ||
                                 string.Equals(level.Id, key + "_sole", StringComparison.Ordinal);
                     if (!same)
@@ -221,7 +236,7 @@ namespace HiddenHarbours.Tests.EditMode
                     string id = def.Levels[i] != null ? def.Levels[i].Id : null;
                     if (id == null || !id.EndsWith("_deck", StringComparison.Ordinal)) continue;
                     shipsSeen++;
-                    if (visual.InteriorCellRowForLevel[i] >= 0)
+                    if (cells.CellRowForLevel[i] >= 0)
                         wrong.Add($"{stem}: the exterior deck '{id}' is mapped to a sheet row, but the " +
                                   "interior sheets do not bake a working deck");
                 }
@@ -232,6 +247,96 @@ namespace HiddenHarbours.Tests.EditMode
                 "no hull declared an exterior working deck. The five ships do (main_deck, and the " +
                 "tanker's poop_deck), so a suite that sees none is not looking at the fleet that " +
                 "produced this bug.");
+        }
+
+        // =====================================================================================
+        //  THE BUDGET — what a hull costs before anybody opens her door (rule 7)
+        // =====================================================================================
+
+        [Test]
+        public void NoVisualDefReferencesAnInteriorSprite_SoAHullDragsNoCabinInOnLoad()
+        {
+            // ⭐ THE RESIDENCY PROPERTY, and it is STRUCTURAL rather than measured: Unity cannot pull
+            // an asset nothing references, so if no BoatVisualDef holds a sprite from the interiors
+            // folder then loading a hull loads none of her cabin. That is what makes
+            // resident-while-shut exactly zero instead of merely small — 12.3 MB per lobster-class
+            // hull, 281 for the tanker, 340 for the packet, for a feature the gate keeps unusable.
+            //
+            // A profiler measurement would prove one scene on one machine. This proves the shape.
+            var offenders = new List<string>();
+
+            foreach ((string stem, BoatInteriorDef def) in Interiors())
+            {
+                BoatVisualDef visual = Visual(stem);
+                if (visual == null) continue;
+
+                foreach (string dep in AssetDatabase.GetDependencies(
+                             AssetDatabase.GetAssetPath(visual), recursive: true))
+                {
+                    if (dep.StartsWith("Assets/_Project/Art/Boats/Interiors/", StringComparison.Ordinal))
+                        offenders.Add($"{stem} -> {dep}");
+                }
+            }
+
+            Assert.IsEmpty(offenders,
+                "these visual defs reach an interior sheet, so every hull of that class drags her " +
+                "cabin's pixels into memory the moment she loads — whether or not anyone can go " +
+                "below. The cells belong in a BoatInteriorCellsDef under Resources, loaded at the " +
+                "door's cue start:\n  " + string.Join("\n  ", offenders));
+        }
+
+        [Test]
+        public void EveryWiredHullHasCellsUnderResources_KeyedByHerDefId()
+        {
+            var missing = new List<string>();
+            foreach ((string stem, BoatInteriorDef def) in Interiors())
+            {
+                BoatInteriorCellsDef cells = Cells(def);
+                if (cells == null) { missing.Add($"{stem}: no cells asset"); continue; }
+                if (!string.Equals(cells.InteriorDefId, def.Id, StringComparison.Ordinal))
+                    missing.Add($"{stem}: cells claim '{cells.InteriorDefId}', def is '{def.Id}'");
+                if (cells.ResidentMegabytes <= 0f)
+                    missing.Add($"{stem}: cells state no budget, so nothing can assert one");
+            }
+            Assert.IsEmpty(missing, string.Join("\n  ", missing));
+        }
+
+        [Test]
+        public void TheResourcesKeyRoundTripsFromTheDefId()
+        {
+            // Dots become underscores because Resources.Load takes an extensionless path and a dotted
+            // name invites it to strip the wrong tail. One documented transform, pinned here so it
+            // cannot drift between the builder that writes the file and the runtime that asks for it.
+            Assert.AreEqual("interior_tanker_iso", BoatInteriorCellsDef.FileNameFor("interior.tanker_iso"));
+            Assert.AreEqual(BoatInteriorCellsDef.ResourcesFolder + "/interior_tanker_iso",
+                            BoatInteriorCellsDef.PathFor("interior.tanker_iso"));
+            Assert.IsNull(BoatInteriorCellsDef.PathFor(null));
+            Assert.IsNull(BoatInteriorCellsDef.PathFor(""));
+        }
+
+        [Test]
+        public void TheBudgetIsStatedPerHull_AndTheWorstCaseIsNamed()
+        {
+            // What entering ONE hull costs, so the number is in the suite rather than in a memory.
+            float worst = 0f;
+            string worstStem = null;
+            float lobsterClass = 0f;
+
+            foreach ((string stem, BoatInteriorDef def) in Interiors())
+            {
+                BoatInteriorCellsDef cells = Cells(def);
+                if (cells == null) continue;
+                if (cells.ResidentMegabytes > worst) { worst = cells.ResidentMegabytes; worstStem = stem; }
+                if (stem.StartsWith("Lobster", StringComparison.Ordinal))
+                    lobsterClass = Mathf.Max(lobsterClass, cells.ResidentMegabytes);
+            }
+
+            Assert.Greater(worst, 0f, "no hull states a budget");
+            Assert.Less(lobsterClass, 20f,
+                $"a lobster-class hull's cabin should be ~12 MB; it is {lobsterClass:F1}");
+            Assert.Less(worst, 400f,
+                $"the worst single hull ({worstStem}) is {worst:F1} MB. Above ~400 the per-LEVEL " +
+                "loading follow-up stops being optional.");
         }
 
         // =====================================================================================

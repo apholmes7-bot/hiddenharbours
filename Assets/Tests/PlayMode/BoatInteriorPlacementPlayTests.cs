@@ -188,6 +188,7 @@ namespace HiddenHarbours.Tests.PlayMode
             public GameObject Boat;
             public BoatInteriorInstaller Installer;
             public BoatInteriorDef Def;
+            public Sprite[] Cells;
         }
 
         private IEnumerator WaitForCue(BoatCabinDoor door)
@@ -204,8 +205,8 @@ namespace HiddenHarbours.Tests.PlayMode
             BoatInterior cabin = rig.Installer.Interior;
             Transform room = rig.Boat.transform.Find(BoatInteriorInstaller.RoomChildName);
             cabin.Configure(rig.Def, exterior, room.GetComponent<SpriteRenderer>(), null,
-                            room, rig.Boat.transform, System.Array.Empty<Sprite>(), 8, true, 0f,
-                            5f, 1.6f, 0.02f);
+                            room, rig.Boat.transform, rig.Cells, 8, true, 0f,
+                            5f, 1.6f, 0.02f, cellRowForLevel: new[] { 0 });
         }
 
         private Rig NewBoat(bool withInterior)
@@ -239,18 +240,11 @@ namespace HiddenHarbours.Tests.PlayMode
 
             var visual = ScriptableObject.CreateInstance<BoatVisualDef>();
             visual.Id = "visual.play_placement";
-            visual.InteriorFacings = 8;
-            visual.InteriorCellsAreCounterClockwise = true;
-            if (withInterior)
-            {
-                visual.Interior = def;
-                visual.InteriorCells = Cells(8);
-                // The SHEET's rows and the map onto the def's levels. Supplied because the shipped
-                // data supplies them: the two lists are not the same list, and a fixture that wired
-                // only the cells was refused by HasInteriorCells — correctly, on its first run.
-                visual.InteriorCellLevels = new[] { "house" };
-                visual.InteriorCellRowForLevel = new[] { 0 };
-            }
+            // ⚠ The visual def carries the LINK and nothing else — the pixels moved to a Resources
+            // asset so a hull stops dragging megabytes of cabin in on spawn. A rig has no such asset,
+            // so the tests that need a picture hand cells in through Configure instead (see
+            // HandInExterior); the rest never need one, which is itself the point.
+            if (withInterior) visual.Interior = def;
             _spawned.Add(visual);
 
             var hull = ScriptableObject.CreateInstance<BoatHullDef>();
@@ -271,7 +265,7 @@ namespace HiddenHarbours.Tests.PlayMode
             Assert.IsNotNull(installer, "BoatController.Awake should have mounted the installer itself");
             installer.Build();
 
-            return new Rig { Boat = boat, Installer = installer, Def = def };
+            return new Rig { Boat = boat, Installer = installer, Def = def, Cells = Cells(8) };
         }
 
         /// <summary>One level's worth of throwaway cells. Real pixels are not the point here — the

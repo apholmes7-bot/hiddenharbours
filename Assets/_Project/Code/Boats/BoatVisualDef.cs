@@ -294,77 +294,24 @@ namespace HiddenHarbours.Boats
                  "builder rather than here.")]
         public HiddenHarbours.Core.BoatInteriorDef Interior = null;
 
-        [Tooltip("The sliced interior cells, element [levelIndex * InteriorFacings + facing] — " +
-                 "BoatInteriorKit.CellIndex's own LEVEL-MAJOR order, carried across unchanged so the " +
-                 "runtime never re-derives a layout the baker already fixed.\n\n" +
-                 "⚠ The cell for a given facing is resolved from the DRAWN HEADING, never by reusing " +
-                 "the hull's own facing index: this compass and these sheets need not share a facing " +
-                 "count OR a handedness, and on the lobster boat they share NEITHER (32 cells " +
-                 "clockwise against 8 counter-clockwise). Heading is the only thing both mean the " +
-                 "same way.")]
-        public Sprite[] InteriorCells = System.Array.Empty<Sprite>();
-
-        [Tooltip("Facings per interior level. 8 across the whole kit.")]
-        [Min(1)] public int InteriorFacings = 8;
-
-        [Tooltip("The SHEET's own level keys, in the order the cells are laid out — 'bridge', " +
-                 "'house', 'below'. Carried for provenance and diagnostics; the runtime maps through " +
-                 "InteriorCellRowForLevel below rather than by matching these strings.")]
-        public string[] InteriorCellLevels = System.Array.Empty<string>();
-
-        [Tooltip("⚠ THE MAP THE WHOLE THING TURNS ON: for each of the DEF's levels, which ROW of the " +
-                 "cell array draws it — or -1 when nothing does.\n\n" +
-                 "The two lists are NOT the same list. A BoatInteriorDef declares every level a route " +
-                 "can reach, INCLUDING exterior working decks (main_deck, and the tanker's poop_deck) " +
-                 "that the interior sheets rightly never bake; and the sheets run bridge/house/below " +
-                 "where the defs run main_deck/house_sole/bridge_sole/below_sole. Different length AND " +
-                 "different order. Indexing cells by the def's level index draws the BRIDGE while the " +
-                 "player stands on the HOUSE sole — a perfectly plausible picture of the wrong room.\n\n" +
-                 "Builder-computed and carried as data, never re-derived from a name convention at " +
-                 "runtime. -1 is a real answer: an outdoor deck has no interior to draw.")]
-        public int[] InteriorCellRowForLevel = System.Array.Empty<int>();
-
-        [Tooltip("Whether the INTERIOR cells run counter-clockwise — measured from the exterior's own " +
-                 "ground-plane bearing, and true across the kit. Carried separately from " +
-                 "FacingsAreCounterClockwise above because the two are genuinely different artwork and " +
-                 "genuinely disagree; folding them into one flag would silently mirror one of them.")]
-        public bool InteriorCellsAreCounterClockwise = true;
+        // ⚠ THE PIXELS ARE DELIBERATELY NOT ON THIS ASSET. A hard Sprite[] here would drag every page
+        // of a hull's cabin into memory the moment SHE loads — 12.3 MB per lobster-class hull, 281 for
+        // the tanker, 340 for the packet — whether or not anyone ever goes below, and today nobody can.
+        // They live in a BoatInteriorCellsDef under Resources, keyed off the def id above, loaded at the
+        // door's cue start. Unity cannot pull an asset nothing references, so resident-while-shut is
+        // structurally zero rather than merely small.
 
         // ---- the all-or-nothing gates (pure; EditMode-testable without a scene) --------------------
 
         /// <summary>
-        /// <b>True when this hull's interior is wired well enough to draw</b> — a def with at least one
-        /// usable level, and a complete cell array for it.
+        /// <b>True when this hull has an inside at all</b> — a def with at least one usable level.
         ///
-        /// <para>All-or-nothing on purpose, like <see cref="HasOarSheets"/>: a PARTLY wired sheet is the
-        /// failure that draws a plausible picture of the wrong thing, so a short array is refused whole
-        /// rather than indexed into. A hull with no def at all answers false and is inert, which is what
-        /// "absence is data" means in code.</para>
+        /// <para>Says nothing about the PIXELS, deliberately: they are not referenced from here (see the
+        /// Interior header), so asking this must not be what pulls them in. Whether a hull's cells are
+        /// whole is <see cref="BoatInteriorCellsDef.IsUsableFor"/>'s question, asked once, at the moment
+        /// somebody opens the door.</para>
         /// </summary>
-        public bool HasInteriorCells()
-        {
-            if (Interior == null || !Interior.HasInterior()) return false;
-            if (InteriorFacings < 1) return false;
-
-            // The SHEET's rows, not the DEF's levels — see InteriorCellRowForLevel.
-            int rows = InteriorCellLevels != null ? InteriorCellLevels.Length : 0;
-            int want = rows * InteriorFacings;
-            if (want <= 0 || InteriorCells == null || InteriorCells.Length != want) return false;
-            if (!IsComplete(InteriorCells)) return false;
-
-            // And the map must cover the def, with at least one level that actually draws something.
-            int levels = Interior.Levels != null ? Interior.Levels.Length : 0;
-            if (InteriorCellRowForLevel == null || InteriorCellRowForLevel.Length != levels) return false;
-
-            bool anyDrawn = false;
-            for (int i = 0; i < InteriorCellRowForLevel.Length; i++)
-            {
-                int row = InteriorCellRowForLevel[i];
-                if (row < -1 || row >= rows) return false;   // a row that does not exist
-                if (row >= 0) anyDrawn = true;
-            }
-            return anyDrawn;
-        }
+        public bool HasInterior() => Interior != null && Interior.HasInterior();
 
         /// <summary>
         /// <b>The stance a character piloting this hull shows</b> — the def's own answer to "wheel or

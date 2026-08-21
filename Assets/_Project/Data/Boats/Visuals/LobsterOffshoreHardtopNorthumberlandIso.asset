@@ -43,26 +43,3 @@ MonoBehaviour:
   MotorMountLocalMeters: {x: 0, y: -3.53, z: 0.72}
   PilotStance: 0
   Interior: {fileID: 11400000, guid: e969ac7bd22aef940a4a3c64531e9a69, type: 2}
-  InteriorCells:
-  - {fileID: 1637727686, guid: 135ebf947a050a34c939b756ba6db9b1, type: 3}
-  - {fileID: 1624261251, guid: 135ebf947a050a34c939b756ba6db9b1, type: 3}
-  - {fileID: -538898352, guid: 135ebf947a050a34c939b756ba6db9b1, type: 3}
-  - {fileID: 39108586, guid: 135ebf947a050a34c939b756ba6db9b1, type: 3}
-  - {fileID: -1184962945, guid: 135ebf947a050a34c939b756ba6db9b1, type: 3}
-  - {fileID: -1026333042, guid: 135ebf947a050a34c939b756ba6db9b1, type: 3}
-  - {fileID: -1034315364, guid: 135ebf947a050a34c939b756ba6db9b1, type: 3}
-  - {fileID: 806290691, guid: 135ebf947a050a34c939b756ba6db9b1, type: 3}
-  - {fileID: -571593944, guid: 135ebf947a050a34c939b756ba6db9b1, type: 3}
-  - {fileID: -1837815126, guid: 135ebf947a050a34c939b756ba6db9b1, type: 3}
-  - {fileID: 524518401, guid: 135ebf947a050a34c939b756ba6db9b1, type: 3}
-  - {fileID: 1517697596, guid: 135ebf947a050a34c939b756ba6db9b1, type: 3}
-  - {fileID: 783926312, guid: 135ebf947a050a34c939b756ba6db9b1, type: 3}
-  - {fileID: 1523578064, guid: 135ebf947a050a34c939b756ba6db9b1, type: 3}
-  - {fileID: -1252148893, guid: 135ebf947a050a34c939b756ba6db9b1, type: 3}
-  - {fileID: 507602519, guid: 135ebf947a050a34c939b756ba6db9b1, type: 3}
-  InteriorFacings: 8
-  InteriorCellLevels:
-  - house
-  - cuddy
-  InteriorCellRowForLevel: 0000000001000000
-  InteriorCellsAreCounterClockwise: 1

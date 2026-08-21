@@ -101,18 +101,6 @@ namespace HiddenHarbours.Boats
                 return;
             }
 
-            if (!visual.HasInteriorCells())
-            {
-                int levels = def.Levels != null ? def.Levels.Length : 0;
-                int have = visual.InteriorCells != null ? visual.InteriorCells.Length : 0;
-                Debug.LogError($"[BoatInteriorInstaller] '{name}' carries interior '{def.Id}' with " +
-                               $"{have} cell(s) where {levels} level(s) x {visual.InteriorFacings} " +
-                               "facing(s) are needed, or with a hole in the array. A PARTLY wired sheet " +
-                               "draws a plausible picture of the wrong thing, so it is refused whole.",
-                               this);
-                return;
-            }
-
             float elevation = BakeElevationDegrees(visual);
             bool exteriorCcw = ExteriorAzimuthCounterClockwise(visual);
 
@@ -137,15 +125,19 @@ namespace HiddenHarbours.Boats
                 fittings: null,
                 interiorPivot: roomGo.transform,
                 boatRoot: transform,
-                cells: visual.InteriorCells,
-                facings: visual.InteriorFacings,
-                cellsAreCounterClockwise: visual.InteriorCellsAreCounterClockwise,
+                // ⚠ NO CELLS HERE, deliberately. The pixels are megabytes and this runs on every
+                // hull that spawns; handing them in would put a cabin's whole sheet set in memory for
+                // a boat nobody boards. The cabin loads them itself at the door's cue start, from
+                // Resources, keyed off the def — so a hull that is never entered costs nothing.
+                cells: null,
+                facings: 8,
+                cellsAreCounterClockwise: true,
                 zeroHeadingDegrees: visual.ZeroHeadingDegrees,
                 deckRollDegrees: RockRollDegrees(visual),
                 deckHeavePixels: RockHeavePixels(visual),
                 deckPitchLiftMeters: PitchLiftMetres(visual),
-                // ⚠ The def's levels are NOT the sheet's rows — see BoatVisualDef.InteriorCellRowForLevel.
-                cellRowForLevel: visual.InteriorCellRowForLevel);
+                // ⚠ The def's levels are NOT the sheet's rows; the map arrives with the cells.
+                cellRowForLevel: null);
 
             // --- the door -----------------------------------------------------------------------
             BoatInteriorDoor door = def.Door;

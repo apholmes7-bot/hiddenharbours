@@ -40,6 +40,12 @@ namespace HiddenHarbours.Tools.RigBaking
         private const string InteriorDefFolder = "Assets/_Project/Data/Boats/Interiors";
         private const string VisualDefFolder = "Assets/_Project/Data/Boats/Visuals";
 
+        /// <summary>Where the per-hull cells assets live. Under <c>Resources</c> on purpose: it is the
+        /// one place Unity will load from WITHOUT anything holding a reference, which is exactly the
+        /// property that keeps a hull from dragging her cabin's pixels in on spawn.</summary>
+        private const string CellsFolder =
+            "Assets/_Project/Resources/" + BoatInteriorCellsDef.ResourcesFolder;
+
         /// <summary>What one hull's wiring did, for the report and for the tests.</summary>
         public struct Result
         {
@@ -166,14 +172,18 @@ namespace HiddenHarbours.Tools.RigBaking
                     continue;
                 }
 
+                // THE PIXELS go to their own asset under Resources; the visual def keeps only the
+                // LINK. See BoatInteriorCellsDef on why the reference is broken on purpose.
+                if (!WriteCells(def, sheet, cells, rowForLevel, out string cellsProblem))
+                {
+                    r.Problem = cellsProblem;
+                    results.Add(r);
+                    log.AppendLine($"  REFUSED {stem}: {r.Problem}");
+                    continue;
+                }
+
                 Undo.RecordObject(visual, "Wire boat interior");
                 visual.Interior = def;
-                visual.InteriorCells = cells;
-                visual.InteriorFacings = sheet.facings;
-                visual.InteriorCellLevels = (string[])sheet.levels.Clone();
-                visual.InteriorCellRowForLevel = rowForLevel;
-                visual.InteriorCellsAreCounterClockwise =
-                    string.Equals(sheet.convention, "CounterClockwise", StringComparison.Ordinal);
                 EditorUtility.SetDirty(visual);
 
                 r.Wired = true;
@@ -186,6 +196,64 @@ namespace HiddenHarbours.Tools.RigBaking
 
             AssetDatabase.SaveAssets();
             return results;
+        }
+
+        /// <summary>
+        /// Write (or refresh) one hull's cells asset under <c>Resources</c>.
+        ///
+        /// <para>The asset is reused in place when it already exists, so its GUID survives and nothing
+        /// that points at it breaks on a re-bake — the same courtesy the sheet slicer pays sprite ids.</para>
+        /// </summary>
+        private static bool WriteCells(BoatInteriorDef def, BoatInteriorKit.SheetEntry sheet,
+                                       Sprite[] cells, int[] rowForLevel, out string problem)
+        {
+            problem = null;
+            string file = BoatInteriorCellsDef.FileNameFor(def.Id);
+            if (string.IsNullOrEmpty(file)) { problem = $"def '{def.name}' has no id"; return false; }
+
+            if (!AssetDatabase.IsValidFolder(CellsFolder))
+            {
+                string parent = System.IO.Path.GetDirectoryName(CellsFolder).Replace('\\', '/');
+                AssetDatabase.CreateFolder(parent, System.IO.Path.GetFileName(CellsFolder));
+            }
+
+            string path = $"{CellsFolder}/{file}.asset";
+            var asset = AssetDatabase.LoadAssetAtPath<BoatInteriorCellsDef>(path);
+            bool fresh = asset == null;
+            if (fresh) asset = ScriptableObject.CreateInstance<BoatInteriorCellsDef>();
+
+            asset.InteriorDefId = def.Id;
+            asset.Cells = cells;
+            asset.Facings = sheet.facings;
+            asset.CellLevels = (string[])sheet.levels.Clone();
+            asset.CellRowForLevel = rowForLevel;
+            asset.CellsAreCounterClockwise =
+                string.Equals(sheet.convention, "CounterClockwise", StringComparison.Ordinal);
+            asset.ResidentMegabytes = ResidentMegabytes(sheet);
+
+            if (fresh) AssetDatabase.CreateAsset(asset, path);
+            else EditorUtility.SetDirty(asset);
+
+            if (!asset.IsUsableFor(def))
+            {
+                problem = "the cells asset just written does not fit its own def — rows, map or array " +
+                          "disagree. This is a builder bug, not a data one.";
+                return false;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// What this hull's pages cost once resident, MB of RGBA32 — written into the asset so the
+        /// budget is legible in an inspector and assertable in a test, rather than something a profiler
+        /// has to be opened to discover.
+        /// </summary>
+        private static float ResidentMegabytes(BoatInteriorKit.SheetEntry sheet)
+        {
+            long px = 0;
+            foreach (BoatInteriorKit.SheetPage p in sheet.pages ?? Array.Empty<BoatInteriorKit.SheetPage>())
+                px += (long)p.sheetW * p.sheetH;
+            return (float)(px * 4.0 / (1024 * 1024));
         }
 
         /// <summary>

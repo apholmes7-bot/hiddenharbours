@@ -227,6 +227,14 @@ namespace HiddenHarbours.Boats
         private Vector3 _baseLocalPosition;
         private Quaternion _baseLocalRotation = Quaternion.identity;
         private bool _baseCached;
+
+        /// <summary>Whether <see cref="EnsureCells"/> has run. Separate from "did it succeed", so a
+        /// hull with no sheets is not asked for them once per frame forever.</summary>
+        private bool _cellsLoaded;
+
+        /// <summary>The cells id this cabin is HOLDING a reference to, or null. The "did I actually
+        /// hold?" half of the release below — a cabin that never loaded must release nothing.</summary>
+        private string _heldCellsId;
         private bool _posed;
 
         // ---- wiring ---------------------------------------------------------------------------
@@ -408,6 +416,22 @@ namespace HiddenHarbours.Boats
         /// </summary>
         private void OnDisable() { }
 
+        /// <summary>
+        /// Give this hull's cells back, if this cabin ever took them.
+        ///
+        /// <para>⚠️ <b><c>OnDestroy</c>, and guarded on still holding — never <c>OnDisable</c>.</b> Both
+        /// halves matter. Root-toggling is how a region hop works, so a release in <c>OnDisable</c> would
+        /// unload the cabin of a boat the player is standing inside, halfway across a boundary. And the
+        /// guard is #601's lesson: an unconditional release outlives the phase that made it correct, and
+        /// here it would evict sheets a sister ship is still drawing.</para>
+        /// </summary>
+        private void OnDestroy()
+        {
+            if (string.IsNullOrEmpty(_heldCellsId)) return;
+            BoatInteriorCells.Release(_heldCellsId);
+            _heldCellsId = null;
+        }
+
         private void LateUpdate()
         {
             // The swap is MAINTAINED, not merely established: re-asserting it every tick is what makes
@@ -459,6 +483,41 @@ namespace HiddenHarbours.Boats
         /// <para>A missing cell leaves the sprite exactly as it was rather than blanking the renderer: an
         /// unwired hull shows nothing, and a partly-wired one must not flicker.</para>
         /// </summary>
+        /// <summary>
+        /// <b>Bring this hull's cells in, once, on the way through the door.</b> Called at CUE START,
+        /// so the leaf's own ~560 ms of baked animation covers the load and an unenterable cabin never
+        /// touches the disk at all.
+        ///
+        /// <para>Does nothing when cells were handed in directly (a builder, or a test rig that wants
+        /// them eagerly), and nothing on a second call. A hull whose sheets are missing or malformed is
+        /// named on the console and left without a picture rather than drawn wrong.</para>
+        /// </summary>
+        public void EnsureCells()
+        {
+            if (_cellsLoaded || _cells is { Length: > 0 }) return;
+            if (_def == null || string.IsNullOrEmpty(_def.Id)) return;
+
+            _cellsLoaded = true;
+            BoatInteriorCellsDef cells = BoatInteriorCells.Acquire(_def.Id);
+            if (cells == null) return;
+
+            _heldCellsId = _def.Id;   // ⚠ only now do we hold anything — see OnDestroy
+
+            if (!cells.IsUsableFor(_def))
+            {
+                Debug.LogError($"[BoatInterior] '{name}' loaded cells '{cells.InteriorDefId}' that do " +
+                               $"not fit '{_def.Id}' — wrong hull, a hole in the array, or a level map " +
+                               "that does not cover the def. A partly wired sheet draws a plausible " +
+                               "picture of the wrong room, so it is refused whole.", this);
+                return;
+            }
+
+            _cells = cells.Cells;
+            _facings = Mathf.Max(1, cells.Facings);
+            _cellsAreCounterClockwise = cells.CellsAreCounterClockwise;
+            _cellRowForLevel = cells.CellRowForLevel ?? System.Array.Empty<int>();
+        }
+
         private void ShowCell()
         {
             if (_interior == null || _cells == null || _cells.Length == 0) return;

@@ -43,35 +43,3 @@ MonoBehaviour:
   MotorMountLocalMeters: {x: 0, y: -3.53, z: 0.72}
   PilotStance: 0
   Interior: {fileID: 11400000, guid: 453f8394a93ac684a8d3c2aab846a115, type: 2}
-  InteriorCells:
-  - {fileID: 844722706, guid: 65298b068492d0843af98932ac1fb260, type: 3}
-  - {fileID: 2144328563, guid: 65298b068492d0843af98932ac1fb260, type: 3}
-  - {fileID: 1123145451, guid: 65298b068492d0843af98932ac1fb260, type: 3}
-  - {fileID: 1174705697, guid: 65298b068492d0843af98932ac1fb260, type: 3}
-  - {fileID: 782152372, guid: 65298b068492d0843af98932ac1fb260, type: 3}
-  - {fileID: 2119253489, guid: 65298b068492d0843af98932ac1fb260, type: 3}
-  - {fileID: 252678459, guid: 65298b068492d0843af98932ac1fb260, type: 3}
-  - {fileID: 923007247, guid: 65298b068492d0843af98932ac1fb260, type: 3}
-  - {fileID: 318135490, guid: 9b12a3e10ed99104091525405d8b7ba3, type: 3}
-  - {fileID: 854572065, guid: 9b12a3e10ed99104091525405d8b7ba3, type: 3}
-  - {fileID: 121112196, guid: 9b12a3e10ed99104091525405d8b7ba3, type: 3}
-  - {fileID: 1391127198, guid: 9b12a3e10ed99104091525405d8b7ba3, type: 3}
-  - {fileID: 1728242148, guid: 9b12a3e10ed99104091525405d8b7ba3, type: 3}
-  - {fileID: 862314489, guid: 9b12a3e10ed99104091525405d8b7ba3, type: 3}
-  - {fileID: -1530277454, guid: 9b12a3e10ed99104091525405d8b7ba3, type: 3}
-  - {fileID: 1126254311, guid: 9b12a3e10ed99104091525405d8b7ba3, type: 3}
-  - {fileID: 1627914932, guid: c306ae63558bbbf4e8e1db9be52cef08, type: 3}
-  - {fileID: 869695212, guid: c306ae63558bbbf4e8e1db9be52cef08, type: 3}
-  - {fileID: -1953798492, guid: c306ae63558bbbf4e8e1db9be52cef08, type: 3}
-  - {fileID: 861862642, guid: c306ae63558bbbf4e8e1db9be52cef08, type: 3}
-  - {fileID: -562050069, guid: c306ae63558bbbf4e8e1db9be52cef08, type: 3}
-  - {fileID: -2077490655, guid: c306ae63558bbbf4e8e1db9be52cef08, type: 3}
-  - {fileID: -389804527, guid: c306ae63558bbbf4e8e1db9be52cef08, type: 3}
-  - {fileID: 1480193981, guid: c306ae63558bbbf4e8e1db9be52cef08, type: 3}
-  InteriorFacings: 8
-  InteriorCellLevels:
-  - bridge
-  - house
-  - below
-  InteriorCellRowForLevel: ffffffff010000000000000002000000
-  InteriorCellsAreCounterClockwise: 1
