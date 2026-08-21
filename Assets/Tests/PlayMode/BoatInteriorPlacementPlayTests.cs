@@ -245,6 +245,11 @@ namespace HiddenHarbours.Tests.PlayMode
             {
                 visual.Interior = def;
                 visual.InteriorCells = Cells(8);
+                // The SHEET's rows and the map onto the def's levels. Supplied because the shipped
+                // data supplies them: the two lists are not the same list, and a fixture that wired
+                // only the cells was refused by HasInteriorCells — correctly, on its first run.
+                visual.InteriorCellLevels = new[] { "house" };
+                visual.InteriorCellRowForLevel = new[] { 0 };
             }
             _spawned.Add(visual);
 
