@@ -183,13 +183,13 @@ namespace HiddenHarbours.UI
         /// region scene with no persistent rig has nobody at a helm, so guessing "suppressed" there would
         /// hide the popup for the whole scene.</para>
         /// </summary>
-        private bool Suppressed()
-        {
-            if (InteractionGate.IsBlocked || ShellFlow.WorldInputBlocked) return true;
-            if (!InteractActorProbe.Has) return false;
-            InteractContext where = InteractActorProbe.Current.Context;
-            return where == InteractContext.AtHelm || where == InteractContext.Driving;
-        }
+        /// <remarks>
+        /// <b>The rule itself now lives in Core</b> (<see cref="InteractOfferVisibility"/>), unchanged and
+        /// for one reason: the affordance lane lights the fixture this popup names, and the two are one
+        /// statement to the player. Two copies of "may this be shown?" would drift, and the drift is
+        /// visible — a lit bed under an empty corner. One rule, both surfaces.
+        /// </remarks>
+        private bool Suppressed() => InteractOfferVisibility.Suppressed;
 
         // ---- the one panel, built once ---------------------------------------------------------
 
