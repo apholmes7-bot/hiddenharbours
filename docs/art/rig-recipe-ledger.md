@@ -212,6 +212,10 @@ baker's own code rather than transcribed beside it, and a claim like that is wor
 its citation. The citations are **computed**, never written down: a line number in prose is stale the
 first time somebody adds a paragraph of comment above the table.
 
+Both scripts need **Node ≥ 16** and nothing else — no dependencies, no `package.json`. `curl` is
+used only to resolve LFS pointers on a checkout that lacks the objects; a full checkout never shells
+out, and that path is exercised by the same code either way.
+
 **Writing the ledger** goes through the same compare, per kit:
 
 ```

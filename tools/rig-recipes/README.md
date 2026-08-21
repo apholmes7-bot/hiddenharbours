@@ -1,10 +1,14 @@
 # `tools/rig-recipes` — the ledger's Node half
 
 The file shape, why it exists and what is in it: **[`docs/art/rig-recipe-ledger.md`](../../docs/art/rig-recipe-ledger.md)**.
-Read that first; this file is just how to run these two scripts.
+Read that first; this file is just how to run these scripts.
 
-Node 22+, no dependencies, no Unity. The rigs run in node's own V8 — the same engine ClearScript
-gives the in-editor baker (ADR 0021) — and their sources are read and evaluated **verbatim**.
+**Requires Node ≥ 16** — `node:`-prefixed imports and top-level await are the newest things used;
+there are no dependencies, no package.json, and nothing to install. Verified on 22. `curl` is needed
+only on a checkout *without* the LFS objects (see below); a full checkout never shells out.
+
+No Unity. The rigs run in node's own V8 — the same engine ClearScript gives the in-editor baker
+(ADR 0021) — and their sources are read and evaluated **verbatim**.
 
 ```bash
 # ⭐ THE PROOF. Reads the committed *.recipe.json files and nothing else, runs the rigs they name,
