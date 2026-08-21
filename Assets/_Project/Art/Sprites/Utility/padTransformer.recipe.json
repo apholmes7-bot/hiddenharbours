@@ -1,0 +1,60 @@
+{
+  "schema": "hiddenharbours.rig-recipe/1",
+  "sheet": "padTransformer.png",
+  "kit": "iso-prop",
+  "baker": "IsoPropSheetBaker",
+  "rig": {
+    "key": "utilityIso",
+    "global": "UtilityIso",
+    "source": "docs/art/rigs/iso-rig-pack/utility-iso/utilityIsoRig.js",
+    "sha256": "dbfe677117c16725095b87d282486803da042714f80f53cc85986283a29d629c",
+    "convention": "CounterClockwise",
+    "prerequisites": []
+  },
+  "call": {
+    "fn": "render",
+    "args": [
+      "padTransformer",
+      "$dir",
+      "$opts"
+    ],
+    "opts": {}
+  },
+  "grid": {
+    "columns": 8,
+    "rows": 1,
+    "order": "rowMajor",
+    "axes": [
+      {
+        "name": "facing",
+        "bind": "dir",
+        "values": [
+          0,
+          7,
+          6,
+          5,
+          4,
+          3,
+          2,
+          1
+        ]
+      }
+    ]
+  },
+  "pack": {
+    "rule": "pivotUnionCrop",
+    "nativeW": 440,
+    "nativeH": 620,
+    "nativePivotX": 220,
+    "nativePivotY": 520,
+    "cropX": 170,
+    "cropY": 474,
+    "cellW": 100,
+    "cellH": 78,
+    "pivotX": 50,
+    "pivotY": 46,
+    "sheetW": 800,
+    "sheetH": 78
+  },
+  "sheetSha256": "b9db0541cd73fbc895b8657a829fbed3e53bc68bf56e10551973cdd871bdf02e"
+}

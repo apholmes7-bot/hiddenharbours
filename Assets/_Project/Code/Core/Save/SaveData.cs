@@ -132,6 +132,33 @@ namespace HiddenHarbours.Core
         /// reading itself is recomputed from the one height map every tick (rule 5). Added in v8.</para></summary>
         public List<SounderPrefsDto> HullSounderPrefs = new();
 
+        /// <summary>How much fuel each owned hull has aboard, in LITRES (<c>fuel-and-refuelling.md</c>
+        /// §9.3). Added in v14.
+        ///
+        /// <para><b>⭐ SPARSE BY CONSTRUCTION, and a missing row means FULL — not empty.</b> The writer
+        /// records a row for every owned hull whose level is NOT full and none for the ones that are, so a
+        /// dry boat always has an explicit <c>0</c> and a brim-full one costs nothing. Three reasons the
+        /// default is full, and the third is the binding one:</para>
+        /// <list type="number">
+        /// <item><description>A boat you just bought arrives fuelled — that is what a sale does, and a
+        /// shipwright who hands you a dry boat you cannot move off his wharf is a bug shaped like
+        /// realism. The absent row IS the "new boat arrives full" rule; there is no second
+        /// mechanism.</description></item>
+        /// <item><description>Failing full is the forgiving direction (P5). A wrong default that strands
+        /// you is the exact spiral canon forbids.</description></item>
+        /// <item><description><b>The migration contract forbids the alternative.</b>
+        /// <see cref="SaveMigration"/>'s own rule is that a step only ADDS — it never reinterprets
+        /// existing values. A v13 save belongs to a player for whom fuel did not exist; deciding on load
+        /// that their boat is empty INVENTS A CONSEQUENCE for them. Full is the only reading that gives
+        /// them what they had.</description></item>
+        /// </list>
+        ///
+        /// <para>Keyed by hull id like <see cref="HullInstruments"/> and <see cref="HullSounderPrefs"/>,
+        /// because the level belongs to the BOAT and not to the skipper: sell her and buy her back and
+        /// the fuel is where you left it. Levels are clamped to the hull's capacity on load, so a stale
+        /// row from a re-tuned Def cannot state more than she can hold.</para></summary>
+        public List<HullFuelDto> HullFuel = new();
+
         // ---- navigation (the chartplotter's data — ADR 0025 S6, added in v10) ----------------------
         // PER SAVE, not per hull, and that is a deliberate departure from the instrument records above.
         // A waypoint is the SKIPPER's knowledge of the water, not a fitting in one boat's dash: buying a
@@ -516,6 +543,30 @@ namespace HiddenHarbours.Core
 
         /// <summary>This record as the runtime value.</summary>
         public SounderPrefs Prefs => new SounderPrefs(AlarmMetres, Armed, Feet, Night, RangeMetres);
+    }
+
+    /// <summary>
+    /// What one hull has in her tank, in litres. Flat scalars, the <see cref="SounderPrefsDto"/>
+    /// precedent: clean JSON, no nested containers.
+    ///
+    /// <para><b>⚠ Litres, and fuel-units are the same number</b> — §9.1's identity, stated in full on
+    /// <c>BoatHullDef.FuelCapacityLitres</c>. There is no conversion anywhere and none should be added.</para>
+    /// </summary>
+    [Serializable]
+    public struct HullFuelDto
+    {
+        /// <summary>Stable hull id this level belongs to, e.g. <c>boat.dory_outboard</c>.</summary>
+        public string HullId;
+
+        /// <summary>Litres aboard. Clamped to the hull's <c>FuelCapacityLitres</c> on load — a Def the
+        /// owner has re-tuned smaller must not leave a boat carrying more than she can hold.</summary>
+        public float Litres;
+
+        public HullFuelDto(string hullId, float litres)
+        {
+            HullId = hullId;
+            Litres = litres;
+        }
     }
 
     /// <summary>

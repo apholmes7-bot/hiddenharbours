@@ -153,6 +153,20 @@ namespace HiddenHarbours.Boats
                 gameObject.AddComponent<DevAnchorInput>();
             }
 
+            // THE TANK (fuel-and-refuelling.md §9.2): what she carries, and the filler cap a can is
+            // poured into. Same runtime-spawn reasoning as the tackle above — every already-built scene
+            // grows the tank on load, no builder re-run, no prefab churn — and play mode only for the
+            // same reason (EditMode tests build BoatControllers freely and must stay presentation-free;
+            // an EditMode rig that wants the tank adds BoatFuelTank itself).
+            //
+            // ⭐ Mounted UNCONDITIONALLY, on every hull, including the ones with no tank. A hull whose
+            // FuelCapacityLitres is 0 reports no grade, no capacity and no level, and the pour verb never
+            // offers itself — so the component is inert rather than absent, and the owner enrolling a
+            // hull later is a Def edit with nothing to re-wire. That is the whole point of the field
+            // defaulting to "no tank".
+            if (Application.isPlaying && GetComponent<BoatFuelTank>() == null)
+                gameObject.AddComponent<BoatFuelTank>();
+
             _rb = GetComponent<Rigidbody2D>();
             _rb.gravityScale = 0f;
             _rb.linearDamping = 0.2f;
@@ -353,6 +367,18 @@ namespace HiddenHarbours.Boats
             var rb = _rb != null ? _rb : GetComponent<Rigidbody2D>();
             if (rb != null) rb.mass = Mathf.Max(1f, _hull.MassKg / 100f);
         }
+
+        /// <summary>
+        /// Set the depth of water this hull believes is under her at chart datum, in metres — the
+        /// grounding read's only input besides the tide (<c>waterDepth = this + TideHeight</c>).
+        ///
+        /// <para>⚠ <b>It is a flat per-hull number, not a per-position sounding</b>, and the field's own
+        /// note says so: the real per-position gate is <c>BoatCrossing</c>. So a hull placed somewhere
+        /// with a known bed should be TOLD it, or she carries the component default (3 m) and reads
+        /// aground wherever the tide is lower than that leaves her draught. Exposed for the same reason
+        /// <see cref="SetHull"/> is: a boat spawned at runtime has no inspector to be authored in.</para>
+        /// </summary>
+        public void SetLocalSeabedDepth(float metres) => _localSeabedDepth = metres;
 
         private void FixedUpdate() => StepPhysics();
 

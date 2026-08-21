@@ -123,6 +123,14 @@ namespace HiddenHarbours.Tests.RigBaking
                          "FishTray2", AzimuthConvention.Clockwise, "deckIsoSolid"),
             new Snapshot("fuel", "docs/art/rigs/fuel-storage-kit/fuelRig.js",
                          "FuelIso", AzimuthConvention.Clockwise, "deckIsoSolid"),
+            // Added by the gas station kit (2026-08-20). ⚠️ TWO prerequisites, and the second is the
+            // unusual one: the forecourt imports its grade table from FuelIso BY REFERENCE rather
+            // than restating it, so a station's pump band and the jerry can standing under it cannot
+            // disagree about what red means. The drop shipped its own copy of BOTH prerequisites and
+            // both are byte-identical to the registered ones, so both are gitignored — a second copy
+            // of a registered global's source is the drift the no-edit rule exists to prevent.
+            new Snapshot("gasStation", "docs/art/rigs/gas-station-rig/rig/gasStationRig.js",
+                         "StationIso", AzimuthConvention.Clockwise, "deckIsoSolid", "fuel"),
             new Snapshot("house", "docs/art/rigs/houseIsoRig.js",
                          "HouseIso", AzimuthConvention.CounterClockwise),
             new Snapshot("interior", "docs/art/rigs/interiorIsoRig.js",
@@ -161,6 +169,14 @@ namespace HiddenHarbours.Tests.RigBaking
                          "Shopfront", AzimuthConvention.CounterClockwise, "shopInterior"),
             new Snapshot("shoreFinds", "docs/art/rigs/iso-rig-pack/shoreline-finds-iso/shoreFindsRig.js",
                          "ShoreFinds", AzimuthConvention.CounterClockwise),
+            // Added by the gas station kit (2026-08-20). The sales floor inside the storefront. Its
+            // ONE prerequisite is the shell, whose own prerequisites bring the grade table and the
+            // turntable up in front of it — so installing this key alone stands the whole kit up in
+            // the only order that works. Not a peer of the shell and not a cycle: the room asks the
+            // shell for shell(size) and paints into cell('store', size), and it throws BY NAME when
+            // the shell is absent, which makes it the one dependency in this kit that fails loudly.
+            new Snapshot("stationInterior", "docs/art/rigs/gas-station-rig/rig/stationInteriorRig.js",
+                         "StationInterior", AzimuthConvention.Clockwise, "gasStation"),
             // Added by the dialogue bubble kit (#561). ⚠️ The prerequisite is the SHIPPING character
             // rig, not the kit's harness copy — the kit's characterIsoRig6/headIsoRig3/eyeIsoRig
             // duplicates are byte-identical today and a test keeps them that way; depending on
@@ -181,6 +197,19 @@ namespace HiddenHarbours.Tests.RigBaking
                          "WharfDecor", AzimuthConvention.CounterClockwise),
             new Snapshot("wharfIso", "docs/art/rigs/iso-rig-pack/wharf-kit-iso/wharfIsoRig.js",
                          "WharfIso", AzimuthConvention.CounterClockwise),
+            // Added by the dooryard & landscaping kit (drop 2026-08-20, imported #604, baked here).
+            // Standalone: its bed pieces WOULD compose with globalThis.Flowers/Shrubs if those were
+            // loaded, but nothing this repo bakes from it is a bed and YardKit passes compose:false
+            // explicitly, so declaring a prerequisite would only make the sheets depend on load order.
+            // ⚠️⚠️ COUNTER-CLOCKWISE HERE CONTRADICTS THE KIT'S OWN SIDECAR, ON PURPOSE. The rig's
+            // gameplay sidecar publishes contract.facings = [N,NE,E,SE,S,SW,W,NW] against its own dir
+            // index; the MEASURED bearings of the face axis run the other way (N,NW,W,SW,S,SE,E,NE) and
+            // the two agree only at dir 0 and dir 4. Flipping this row to Clockwise compiles, bakes and
+            // ships eight good cells in reverse order — every fence in both regions facing inward with
+            // no error anywhere. YardRegistrationProbe re-measures at every bake and refuses on a
+            // disagreement with this line.
+            new Snapshot("yardIso", "docs/art/rigs/yard-landscaping-kit/yardIsoRig.js",
+                         "YardIso", AzimuthConvention.CounterClockwise),
         };
 
         // ---- the registration table ------------------------------------------------------------

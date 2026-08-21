@@ -110,6 +110,10 @@ namespace HiddenHarbours.UI
             // "is open", because the picker closes itself on that same press and the two Updates run in
             // an order nobody defines — see WardrobePicker.OwnsCancelKey.
             if (WardrobePicker.OwnsCancelKey) return false;
+            // The notebook's Esc shuts the book. Asked through Core rather than of the book itself:
+            // NotebookPresenter is in World and UI may not reference it (rule 4), so the claim is the
+            // seam — and it is the same "owns the key THIS frame" question, for the same race.
+            if (CancelKeyClaim.OwnedThisFrame) return false;
             if (InteractionGate.IsBlocked) return false; // a modal (dialogue) owns the key
             return true;
         }

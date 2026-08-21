@@ -13,7 +13,7 @@ namespace HiddenHarbours.Core
     public static class SaveMigration
     {
         /// <summary>The schema version this build writes. Bump when you add a field + a migration step.</summary>
-        public const int CurrentVersion = 13;
+        public const int CurrentVersion = 14;
 
         /// <summary>
         /// The region id Port Greywick was saved under before it was renamed Nine Mile Creek, and the id
@@ -278,6 +278,28 @@ namespace HiddenHarbours.Core
                 data.SchemaVersion = 13;
             }
 
+            // v13 -> v14: WHAT IS IN EACH HULL'S TANK (fuel-and-refuelling.md §9.3). One new list;
+            // nothing existing is reinterpreted.
+            //
+            // ⭐ THE EMPTY LIST IS THE WHOLE MIGRATION, AND IT IS NOT LAZINESS. The list is SPARSE and a
+            // hull with no row reads as BRIM-FULL, so an empty list means "every boat you own is full" —
+            // which is exactly right for a v13 save. That player's boat had no tank, burned nothing and
+            // could not run dry; deciding on load that she is empty would INVENT A CONSEQUENCE for them,
+            // and stranding somebody on the strength of a schema bump is the spiral canon forbids (P5).
+            // Full is the only reading that hands them back what they had.
+            //
+            // ⚠ NOTHING IS BACK-FILLED, and that is the contract rather than an omission. This step must
+            // not walk OwnedBoats writing a "full" row for each: those rows would say exactly what the
+            // absence already says, and a step that writes DERIVED state is one re-tune away from being
+            // wrong — a hull whose capacity the owner later changes would carry a stale litre count that
+            // outranks her own Def. The absence is the truth; a row is only ever a deviation from it.
+            // Same reasoning the v12->v13 note gives for not healing the rest anchor against the world.
+            if (data.SchemaVersion < 14)
+            {
+                data.HullFuel ??= new System.Collections.Generic.List<HullFuelDto>();
+                data.SchemaVersion = 14;
+            }
+
             // ---- future steps go here, each guarded by `if (data.SchemaVersion < N)` and bumping to N.
 
             // Defensive null-repair (a hand-edited or partial JSON can omit reference-typed fields).
@@ -295,6 +317,7 @@ namespace HiddenHarbours.Core
             data.SupplyStock ??= new System.Collections.Generic.List<SupplyStock>();
             data.HullInstruments ??= new System.Collections.Generic.List<HullInstrument>();
             data.HullSounderPrefs ??= new System.Collections.Generic.List<SounderPrefsDto>();
+            data.HullFuel ??= new System.Collections.Generic.List<HullFuelDto>();
             data.NavWaypoints ??= new System.Collections.Generic.List<NavWaypointDto>();
             data.NavRoute ??= new System.Collections.Generic.List<NavRoutePointDto>();
             data.NavTrack ??= new System.Collections.Generic.List<NavTrackPointDto>();

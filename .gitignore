@@ -126,3 +126,8 @@ InitTestScene*.unity*
 # here locally. A fresh clone renders cliff geometry untextured until the bake is run once.
 /[Aa]ssets/_Project/Art/Terrain/Cliffs/
 /[Aa]ssets/_Project/Art/Terrain/Cliffs.meta
+
+# Python bytecode from the standalone tools under tools/ (they run outside Unity, so nothing
+# else in the repo would otherwise mention Python).
+__pycache__/
+*.py[cod]

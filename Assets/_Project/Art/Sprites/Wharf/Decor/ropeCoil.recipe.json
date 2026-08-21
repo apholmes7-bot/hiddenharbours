@@ -1,0 +1,60 @@
+{
+  "schema": "hiddenharbours.rig-recipe/1",
+  "sheet": "ropeCoil.png",
+  "kit": "iso-prop",
+  "baker": "IsoPropSheetBaker",
+  "rig": {
+    "key": "wharfDecor",
+    "global": "WharfDecor",
+    "source": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
+    "sha256": "dba6ced6644e879e42cf2a3d6340ae76f90acf2cee0a0962cf4bbb0719a1b05a",
+    "convention": "CounterClockwise",
+    "prerequisites": []
+  },
+  "call": {
+    "fn": "render",
+    "args": [
+      "ropeCoil",
+      "$dir",
+      "$opts"
+    ],
+    "opts": {}
+  },
+  "grid": {
+    "columns": 8,
+    "rows": 1,
+    "order": "rowMajor",
+    "axes": [
+      {
+        "name": "facing",
+        "bind": "dir",
+        "values": [
+          0,
+          7,
+          6,
+          5,
+          4,
+          3,
+          2,
+          1
+        ]
+      }
+    ]
+  },
+  "pack": {
+    "rule": "pivotUnionCrop",
+    "nativeW": 420,
+    "nativeH": 520,
+    "nativePivotX": 210,
+    "nativePivotY": 420,
+    "cropX": 187,
+    "cropY": 404,
+    "cellW": 46,
+    "cellH": 31,
+    "pivotX": 23,
+    "pivotY": 16,
+    "sheetW": 368,
+    "sheetH": 31
+  },
+  "sheetSha256": "457f305ac27abe8b61563b59831b3763c362965522497c346a50cbaba85e7b1f"
+}

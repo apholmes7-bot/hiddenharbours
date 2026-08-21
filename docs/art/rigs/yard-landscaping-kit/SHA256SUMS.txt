@@ -1,0 +1,6 @@
+d2ab2a906f4f099e3054643034a936327ae547fc5ea375b3198cc8f503d23706  yardIsoRig.js
+89136c3a18b71cb2c2ccfcc182c52fd9c88df0fefa29c7de8b5c0701dc681fb5  gameplay/yardIsoRig.gameplay.json
+
+# yardIsoRig.js is byte-identical to Art/yardIsoRig.js at generation time.
+# The sidecar's derivedFromRigSha256 must equal the rig hash above; if it does not,
+# the rig moved and the sidecar must be regenerated (harness.html -> DOWNLOAD SIDECAR).

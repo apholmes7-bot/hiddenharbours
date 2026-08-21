@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: HiddenHarbours.Boats::HiddenHarbours.Boats.BoatOwnerDef
   Id: owner.arsenault_leo
   DisplayName: Leo Arsenault
-  Boat: {fileID: 11400000, guid: f9a11a1cb8419244bb13983a2862c52f, type: 2}
+  Boat: {fileID: 11400000, guid: aa3d12cf9bdcf40e2ab7cf5c52759a3b, type: 2}
   BuoyScheme: LobsterBoat
-  HullPaint: {fileID: 11400000, guid: be961eee8bbedf240bf5dfcbf6049cc8, type: 2}
+  HullPaint: {fileID: 11400000, guid: 992ae123a55cb7749bd8bf9c351da2b2, type: 2}
   Prosperity: 3
   ShedFootprintMetres: 10.0
   LotIndex: 0

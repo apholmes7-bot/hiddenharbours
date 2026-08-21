@@ -1,0 +1,32 @@
+ADR 0038 S0 FOLLOW-UP - the overdraw composite, as rendered
+Produced by: Hidden Harbours > Dev > Spikes > Boat Interior - Overdraw Composite
+  headless: -executeMethod HiddenHarbours.Tools.RigBaking.BoatInteriorOverdrawSpike.Cli
+           -overdrawOut <dir> [-overdrawFrame N]
+Unity 6000.5.0f1, RTX 4060. Read-only: renders to PNGs outside the project.
+
+Two runs, because they answer different questions:
+  frame 1 of 8 - roll, pitch and heave all off zero at once: does the composite READ?
+  frame 2 of 8 - the crest, roll and heave at their peak: does the comfort clamp SHOW?
+
+WHAT THE CLAMP COSTS, measured off the shipped sheets (95th-percentile ink radius from the
+pivot x sin of the un-taken roll, plus the un-taken heave), at scale 0.45 and the crest:
+
+  hull                    rollA  heaveA  ink r95 px  roll err px  heave err px  total px
+  lobsterBoatIsoRig        2.80    1.20         125         3.37          0.66      4.03
+  sternTrawlerIsoRig       1.60    1.00         339         5.21          0.55      5.76
+  coastalPacketIsoRig      1.30    1.20         875        10.92          0.66     11.58
+  tankerIsoRig             0.85    1.00         767         6.26          0.55      6.81
+
+That is how far the room slips inside its own house at the worst moment of the cycle, IF
+the two are co-visible. It is the whole of what the owner is being asked to judge.
+
+=== frame 1 of 8 ===
+[BoatInteriorOverdrawSpike]
+  lobsterBoatIsoRig: cell 456x420, level 'house', rock frame 1 = roll 1.980° pitch 1.131° heave 0.849px
+  sternTrawlerIsoRig: cell 1344x1152, level 'house', rock frame 1 = roll 1.131° pitch 0.636° heave 0.707px
+
+=== frame 2 of 8 (crest) ===
+[BoatInteriorOverdrawSpike]
+  lobsterBoatIsoRig: cell 456x420, level 'house', rock frame 2 = roll 2.800° pitch 0.000° heave 1.200px
+  sternTrawlerIsoRig: cell 1344x1152, level 'house', rock frame 2 = roll 1.600° pitch 0.000° heave 1.000px
+

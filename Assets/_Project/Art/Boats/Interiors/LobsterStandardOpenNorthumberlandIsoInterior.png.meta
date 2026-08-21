@@ -1,0 +1,546 @@
+fileFormatVersion: 2
+guid: 8f32f9bee21b6b845a6172ababd48141
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 286042762902507404
+    second: LobsterStandardOpenNorthumberlandIsoInterior_0
+  - first:
+      213: -6315924326489723148
+    second: LobsterStandardOpenNorthumberlandIsoInterior_1
+  - first:
+      213: -3641212860216437488
+    second: LobsterStandardOpenNorthumberlandIsoInterior_2
+  - first:
+      213: -7491978408669061703
+    second: LobsterStandardOpenNorthumberlandIsoInterior_3
+  - first:
+      213: -7290671966596217875
+    second: LobsterStandardOpenNorthumberlandIsoInterior_4
+  - first:
+      213: 6519483357433266696
+    second: LobsterStandardOpenNorthumberlandIsoInterior_5
+  - first:
+      213: 9049353947093187658
+    second: LobsterStandardOpenNorthumberlandIsoInterior_6
+  - first:
+      213: 8898503532528290088
+    second: LobsterStandardOpenNorthumberlandIsoInterior_7
+  - first:
+      213: -5647656972111958869
+    second: LobsterStandardOpenNorthumberlandIsoInterior_8
+  - first:
+      213: 3421938152354401672
+    second: LobsterStandardOpenNorthumberlandIsoInterior_9
+  - first:
+      213: -7236500486310870479
+    second: LobsterStandardOpenNorthumberlandIsoInterior_10
+  - first:
+      213: -531861161122589234
+    second: LobsterStandardOpenNorthumberlandIsoInterior_11
+  - first:
+      213: -1797162081584880140
+    second: LobsterStandardOpenNorthumberlandIsoInterior_12
+  - first:
+      213: -2156158343913134494
+    second: LobsterStandardOpenNorthumberlandIsoInterior_13
+  - first:
+      213: -3731836620788865878
+    second: LobsterStandardOpenNorthumberlandIsoInterior_14
+  - first:
+      213: 4967530468168967928
+    second: LobsterStandardOpenNorthumberlandIsoInterior_15
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: lobsterStandardOpenNorthumberlandIso_house_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 420
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4dd53c7f5bcd7724da3a6f0edb85d08c
+      internalID: 291206893
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterStandardOpenNorthumberlandIso_house_d1
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 420
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ba9664fa4f809f848ad1ab7984c8a5cd
+      internalID: -2061689597
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterStandardOpenNorthumberlandIso_house_d2
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 420
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2a4f33438ff859a4fa242edf6f5ac7cd
+      internalID: -685097337
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterStandardOpenNorthumberlandIso_house_d3
+      rect:
+        serializedVersion: 2
+        x: 1440
+        y: 420
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 89683b168f6026e428652fac694dce7a
+      internalID: 233125964
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterStandardOpenNorthumberlandIso_house_d4
+      rect:
+        serializedVersion: 2
+        x: 1920
+        y: 420
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8db28e9883506d04c82a5ff94c8be934
+      internalID: 1946305560
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterStandardOpenNorthumberlandIso_house_d5
+      rect:
+        serializedVersion: 2
+        x: 2400
+        y: 420
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7fd6729b9e70226489e64941272a4c67
+      internalID: 538264328
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterStandardOpenNorthumberlandIso_house_d6
+      rect:
+        serializedVersion: 2
+        x: 2880
+        y: 420
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5fe81e5e15263ce40993f1fb4099e60b
+      internalID: 1152628724
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterStandardOpenNorthumberlandIso_house_d7
+      rect:
+        serializedVersion: 2
+        x: 3360
+        y: 420
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dc4a63105a7a3714684adc76df7d2b65
+      internalID: -1250467473
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterStandardOpenNorthumberlandIso_cuddy_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c93d8d3aa2b1f2e499c5d57de8491167
+      internalID: 57187493
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterStandardOpenNorthumberlandIso_cuddy_d1
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 0
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ef52dba88a9b0834c82a225a2d16d8d3
+      internalID: -400554016
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterStandardOpenNorthumberlandIso_cuddy_d2
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 0
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8accc32e4ba6e714087758d2dfbaf512
+      internalID: 76008161
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterStandardOpenNorthumberlandIso_cuddy_d3
+      rect:
+        serializedVersion: 2
+        x: 1440
+        y: 0
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0a96321e852f08046aa01567281f62a3
+      internalID: 446107684
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterStandardOpenNorthumberlandIso_cuddy_d4
+      rect:
+        serializedVersion: 2
+        x: 1920
+        y: 0
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 719be36b6b8362f40b864a671b00d582
+      internalID: 565630340
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterStandardOpenNorthumberlandIso_cuddy_d5
+      rect:
+        serializedVersion: 2
+        x: 2400
+        y: 0
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e1a850e4c618b1d40b38b27ee47af397
+      internalID: -571460508
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterStandardOpenNorthumberlandIso_cuddy_d6
+      rect:
+        serializedVersion: 2
+        x: 2880
+        y: 0
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 15e8e6f04300c7d4099bea5c2a11cb6c
+      internalID: 378450915
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterStandardOpenNorthumberlandIso_cuddy_d7
+      rect:
+        serializedVersion: 2
+        x: 3360
+        y: 0
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6af23d1891eba3948b0f921b5b147450
+      internalID: -741572446
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 75ad1f67193d8c945a4b1e7e979fc26e
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      lobsterStandardOpenNorthumberlandIso_cuddy_d0: 57187493
+      lobsterStandardOpenNorthumberlandIso_cuddy_d1: -400554016
+      lobsterStandardOpenNorthumberlandIso_cuddy_d2: 76008161
+      lobsterStandardOpenNorthumberlandIso_cuddy_d3: 446107684
+      lobsterStandardOpenNorthumberlandIso_cuddy_d4: 565630340
+      lobsterStandardOpenNorthumberlandIso_cuddy_d5: -571460508
+      lobsterStandardOpenNorthumberlandIso_cuddy_d6: 378450915
+      lobsterStandardOpenNorthumberlandIso_cuddy_d7: -741572446
+      lobsterStandardOpenNorthumberlandIso_house_d0: 291206893
+      lobsterStandardOpenNorthumberlandIso_house_d1: -2061689597
+      lobsterStandardOpenNorthumberlandIso_house_d2: -685097337
+      lobsterStandardOpenNorthumberlandIso_house_d3: 233125964
+      lobsterStandardOpenNorthumberlandIso_house_d4: 1946305560
+      lobsterStandardOpenNorthumberlandIso_house_d5: 538264328
+      lobsterStandardOpenNorthumberlandIso_house_d6: 1152628724
+      lobsterStandardOpenNorthumberlandIso_house_d7: -1250467473
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

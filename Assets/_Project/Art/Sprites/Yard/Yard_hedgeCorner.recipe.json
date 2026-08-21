@@ -1,0 +1,72 @@
+{
+  "schema": "hiddenharbours.rig-recipe/1",
+  "sheet": "Yard_hedgeCorner.png",
+  "kit": "yard",
+  "baker": "YardSheetBaker",
+  "rig": {
+    "key": "yardIso",
+    "global": "YardIso",
+    "source": "docs/art/rigs/yard-landscaping-kit/yardIsoRig.js",
+    "sha256": "d2ab2a906f4f099e3054643034a936327ae547fc5ea375b3198cc8f503d23706",
+    "convention": "CounterClockwise",
+    "prerequisites": []
+  },
+  "call": {
+    "fn": "render",
+    "args": [
+      "hedgeCorner",
+      "$dir",
+      "$opts"
+    ],
+    "opts": {
+      "paint": null,
+      "variant": 0,
+      "len": 0,
+      "kept": 0.85,
+      "phase": "green",
+      "snow": 0,
+      "weather": 0.4,
+      "night": false,
+      "seed": 67,
+      "compose": false,
+      "elev": 40
+    }
+  },
+  "grid": {
+    "columns": 8,
+    "rows": 1,
+    "order": "rowMajor",
+    "axes": [
+      {
+        "name": "facing",
+        "bind": "dir",
+        "values": [
+          0,
+          7,
+          6,
+          5,
+          4,
+          3,
+          2,
+          1
+        ]
+      }
+    ]
+  },
+  "pack": {
+    "rule": "pivotUnionCrop",
+    "nativeW": 470,
+    "nativeH": 540,
+    "nativePivotX": 235,
+    "nativePivotY": 442,
+    "cropX": 210,
+    "cropY": 408,
+    "cellW": 50,
+    "cellH": 48,
+    "pivotX": 25,
+    "pivotY": 34,
+    "sheetW": 400,
+    "sheetH": 48
+  },
+  "sheetSha256": "7b060a34a5d5aef3e4659f99a691542a284be8307861fe868628d2545151cb6b"
+}

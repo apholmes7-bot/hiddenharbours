@@ -1,0 +1,108 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c066b3141c12834eb15805632bcf579, type: 3}
+  m_Name: dispenser_sKerb
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.StationPieceDef
+  Id: station.dispenser_skerb
+  DisplayName: Kerb Post
+  PieceType: dispenser
+  SizeKey: sKerb
+  Label: KERB POST
+  IsInterior: 0
+  Facings: 8
+  Fold180: 0
+  Frames:
+  - {fileID: -2017258898, guid: 6764a99f79c275c4ebe281fe6480af25, type: 3}
+  - {fileID: -2046625345, guid: 6764a99f79c275c4ebe281fe6480af25, type: 3}
+  - {fileID: -1844727977, guid: 6764a99f79c275c4ebe281fe6480af25, type: 3}
+  - {fileID: -1439514419, guid: 6764a99f79c275c4ebe281fe6480af25, type: 3}
+  - {fileID: 1869299105, guid: 6764a99f79c275c4ebe281fe6480af25, type: 3}
+  - {fileID: -1092326296, guid: 6764a99f79c275c4ebe281fe6480af25, type: 3}
+  - {fileID: 1917039769, guid: 6764a99f79c275c4ebe281fe6480af25, type: 3}
+  - {fileID: -902953705, guid: 6764a99f79c275c4ebe281fe6480af25, type: 3}
+  BakedGrades:
+  - gas
+  - diesel
+  - mixed
+  WidthMeters: 0.6
+  DepthMeters: 0.6
+  HeightMeters: 1.46
+  MaxHoses: 1
+  MaxSides: 1
+  HoseReachMeters: 3.2
+  LitresPerMinute: 38
+  Slots: 0
+  LengthMeters: 0.6
+  SlotPitchMeters: 3.3
+  Bays: 0
+  ClearHeightMeters: 0
+  Blockers:
+  - Kind: cabinet
+    Level: 
+    Footprint:
+    - {x: -0.16, y: -0.16}
+    - {x: 0.16, y: -0.16}
+    - {x: 0.16, y: 0.16}
+    - {x: -0.16, y: 0.16}
+    Center: {x: 0, y: 0}
+    Radius: 0
+    HeightAboveGradeMeters: 1.46
+    Treatment: wall
+  - Kind: plinth
+    Level: 
+    Footprint:
+    - {x: -0.3, y: -0.3}
+    - {x: 0.3, y: -0.3}
+    - {x: 0.3, y: 0.3}
+    - {x: -0.3, y: 0.3}
+    Center: {x: 0, y: 0}
+    Radius: 0
+    HeightAboveGradeMeters: 0.1
+    Treatment: flat
+  Walkables: []
+  Interactables:
+  - Id: nozzle_a0
+    Label: "HOSE A1 \xB7 GASOLINE"
+    Action: fuel
+    Position: {x: 0.33, y: 0, z: 1.31}
+    ReachPoint: {x: 0.95, y: -0.34, z: 0}
+    HasReachPoint: 1
+    ReachVerdict: ok
+    Level: apron
+    VisibleFacings:
+    - NE
+    - E
+    - SE
+  Entry:
+    Kind: 
+    ClearWidthMeters: 0
+    ClearHeightMeters: 0
+    Threshold: {x: 0, y: 0, z: 0}
+    LeafWidthMeters: 0
+    TravelMeters: 0
+    ClearAtOpenFraction: 0
+    SillStepMeters: 0
+    Treatment: 
+    HasKeepClear: 0
+    KeepClear: []
+  ServiceDoor:
+    Kind: 
+    ClearWidthMeters: 0
+    ClearHeightMeters: 0
+    Threshold: {x: 0, y: 0, z: 0}
+    LeafWidthMeters: 0
+    TravelMeters: 0
+    ClearAtOpenFraction: 0
+    SillStepMeters: 0
+    Treatment: 
+    HasKeepClear: 0
+    KeepClear: []

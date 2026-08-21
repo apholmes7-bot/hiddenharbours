@@ -1,0 +1,108 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c066b3141c12834eb15805632bcf579, type: 3}
+  m_Name: dispenser_sDock
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.StationPieceDef
+  Id: station.dispenser_sdock
+  DisplayName: Dock Pedestal
+  PieceType: dispenser
+  SizeKey: sDock
+  Label: DOCK PEDESTAL
+  IsInterior: 0
+  Facings: 8
+  Fold180: 0
+  Frames:
+  - {fileID: 695908193, guid: ffb64c32bc6d0d94a9fda08edd032974, type: 3}
+  - {fileID: -1337828994, guid: ffb64c32bc6d0d94a9fda08edd032974, type: 3}
+  - {fileID: 1083518866, guid: ffb64c32bc6d0d94a9fda08edd032974, type: 3}
+  - {fileID: -628700984, guid: ffb64c32bc6d0d94a9fda08edd032974, type: 3}
+  - {fileID: -397497139, guid: ffb64c32bc6d0d94a9fda08edd032974, type: 3}
+  - {fileID: -470149009, guid: ffb64c32bc6d0d94a9fda08edd032974, type: 3}
+  - {fileID: 109999800, guid: ffb64c32bc6d0d94a9fda08edd032974, type: 3}
+  - {fileID: -527077369, guid: ffb64c32bc6d0d94a9fda08edd032974, type: 3}
+  BakedGrades:
+  - gas
+  - diesel
+  - mixed
+  WidthMeters: 0.76
+  DepthMeters: 0.64
+  HeightMeters: 1.12
+  MaxHoses: 1
+  MaxSides: 1
+  HoseReachMeters: 4.5
+  LitresPerMinute: 45
+  Slots: 0
+  LengthMeters: 0.76
+  SlotPitchMeters: 3.3
+  Bays: 0
+  ClearHeightMeters: 0
+  Blockers:
+  - Kind: cabinet
+    Level: 
+    Footprint:
+    - {x: -0.24, y: -0.18}
+    - {x: 0.24, y: -0.18}
+    - {x: 0.24, y: 0.18}
+    - {x: -0.24, y: 0.18}
+    Center: {x: 0, y: 0}
+    Radius: 0
+    HeightAboveGradeMeters: 1.12
+    Treatment: wall
+  - Kind: plinth
+    Level: 
+    Footprint:
+    - {x: -0.38, y: -0.32}
+    - {x: 0.38, y: -0.32}
+    - {x: 0.38, y: 0.32}
+    - {x: -0.38, y: 0.32}
+    Center: {x: 0, y: 0}
+    Radius: 0
+    HeightAboveGradeMeters: 0.1
+    Treatment: flat
+  Walkables: []
+  Interactables:
+  - Id: nozzle_a0
+    Label: "HOSE A1 \xB7 GASOLINE"
+    Action: fuel
+    Position: {x: 0.44, y: 0, z: 1.43}
+    ReachPoint: {x: 1.06, y: -0.34, z: 0}
+    HasReachPoint: 1
+    ReachVerdict: ok
+    Level: apron
+    VisibleFacings:
+    - NE
+    - E
+    - SE
+  Entry:
+    Kind: 
+    ClearWidthMeters: 0
+    ClearHeightMeters: 0
+    Threshold: {x: 0, y: 0, z: 0}
+    LeafWidthMeters: 0
+    TravelMeters: 0
+    ClearAtOpenFraction: 0
+    SillStepMeters: 0
+    Treatment: 
+    HasKeepClear: 0
+    KeepClear: []
+  ServiceDoor:
+    Kind: 
+    ClearWidthMeters: 0
+    ClearHeightMeters: 0
+    Threshold: {x: 0, y: 0, z: 0}
+    LeafWidthMeters: 0
+    TravelMeters: 0
+    ClearAtOpenFraction: 0
+    SillStepMeters: 0
+    Treatment: 
+    HasKeepClear: 0
+    KeepClear: []

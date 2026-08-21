@@ -143,5 +143,50 @@ namespace HiddenHarbours.Boats
         [Min(0)] public int HelmAheadNotches = 0;
         [Tooltip("Per-hull override for the ASTERN detent count. 0 = the shared GameConfig default.")]
         [Min(0)] public int HelmAsternNotches = 0;
+
+        [Header("Fuel (docs/design/fuel-and-refuelling.md §9)")]
+        [Tooltip("How much fuel she carries when brim-full, in LITRES.\n\n" +
+                 "⭐ A FUEL-UNIT IS A LITRE. boats-and-navigation.md §1.1 measures a tank in " +
+                 "fuel-units (FU) and every shipped fuel asset measures it in litres; §9.1 settles " +
+                 "them as the SAME NUMBER — 1 FU = 1 L, exactly, with canon's column re-read and " +
+                 "not re-tuned. That identity is why no conversion constant exists anywhere in this " +
+                 "codebase, and why one must never be added: there is nothing to convert.\n\n" +
+                 "0 = THIS HULL HAS NO TANK. Not \"an empty tank\" — no tank at all: nothing " +
+                 "burns, the gauge does not exist, and running dry cannot happen to her. That is the " +
+                 "correct reading for the rowed dory, and it is also what every hull asset written " +
+                 "before this field existed deserializes to — so the fleet loads unchanged and " +
+                 "stays playable while the owner authors the table in §9.6.2 one hull at a time. " +
+                 "(The RodeMeters / HelmAheadNotches convention: an untouched hull is inert, never " +
+                 "accidentally enrolled.)")]
+        [Min(0f)] public float FuelCapacityLitres = 0f;
+
+        [Tooltip("Which fuel her engine drinks — one of FuelGrades (gas · diesel · " +
+                 "mixed). Empty = she has no engine to feed. This is the field that makes the " +
+                 "geography of fuel-and-refuelling.md §3 bite: a hull set to \"diesel\" cannot " +
+                 "be fuelled at St Peters at all, because St Peters sells gas in cans over a " +
+                 "counter and nothing else.")]
+        public string FuelGrade = "";
+
+        [Tooltip("Litres per hour at FULL THROTTLE, light, in a glass sea — the reference burn " +
+                 "every other duty in §9.5 is a fraction or a multiple of. One number per hull " +
+                 "sets her whole thirst; the SHAPE of the curve is shared by the fleet in " +
+                 "GameConfig.Fuel.\n\n" +
+                 "⚠ 0 with a non-zero capacity is an authoring error the content-validation test " +
+                 "fails on — a tank that burns nothing is a boat with infinite range.")]
+        [Min(0f)] public float FullThrottleLitresPerHour = 0f;
+
+        [Tooltip("Can she get herself home with the engine dead \u2014 oars, or a sail she carries? Canon: " +
+                 "the dory and the punt can; bigger boats cannot (boats-and-navigation.md \u00a73.6). This is " +
+                 "what decides whether running dry means ADRIFT (row home, free, a story about being " +
+                 "careless) or STRANDED (radio a tow, and a bill).\n\n" +
+                 "\u26a0 DELIBERATELY NOT INFERRED FROM OarPower. That field's DEFAULT is 300 and it was " +
+                 "never zeroed on the hulls that were never rowed \u2014 boat.side_dragger, a 90-tonne " +
+                 "dragger, is carrying a pair of oars in her data, and so are the cape islander, the " +
+                 "lobster boat, the console skiff and both sport skiffs. Reading OarPower > 0 as 'she has " +
+                 "oars' would let a dragger row home from a dead engine, and the bug would look like a " +
+                 "physics bug for a week.\n\n" +
+                 "Defaults FALSE, which is the honest answer for a hull nobody has thought about: a new " +
+                 "boat is never accidentally rescued.")]
+        public bool CanRowHome = false;
     }
 }

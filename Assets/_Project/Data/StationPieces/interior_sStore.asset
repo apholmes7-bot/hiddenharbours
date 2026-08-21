@@ -1,0 +1,250 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c066b3141c12834eb15805632bcf579, type: 3}
+  m_Name: interior_sStore
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.StationPieceDef
+  Id: station.interior_sstore
+  DisplayName: C Store Sales Floor Sales Floor
+  PieceType: interior
+  SizeKey: sStore
+  Label: "C-STORE \u2014 SALES FLOOR"
+  IsInterior: 1
+  Facings: 8
+  Fold180: 0
+  Frames:
+  - {fileID: 733562633, guid: 0aefd326d762a0a48b0185fdeff95521, type: 3}
+  - {fileID: 67501845, guid: 0aefd326d762a0a48b0185fdeff95521, type: 3}
+  - {fileID: -921411643, guid: 0aefd326d762a0a48b0185fdeff95521, type: 3}
+  - {fileID: -1795512141, guid: 0aefd326d762a0a48b0185fdeff95521, type: 3}
+  - {fileID: 513889320, guid: 0aefd326d762a0a48b0185fdeff95521, type: 3}
+  - {fileID: -1924481603, guid: 0aefd326d762a0a48b0185fdeff95521, type: 3}
+  - {fileID: -1522768844, guid: 0aefd326d762a0a48b0185fdeff95521, type: 3}
+  - {fileID: -1430324705, guid: 0aefd326d762a0a48b0185fdeff95521, type: 3}
+  BakedGrades:
+  - gas
+  - diesel
+  - mixed
+  WidthMeters: 12.46
+  DepthMeters: 8.82
+  HeightMeters: 4.35
+  MaxHoses: 0
+  MaxSides: 0
+  HoseReachMeters: 0
+  LitresPerMinute: 0
+  Slots: 0
+  LengthMeters: 12.46
+  SlotPitchMeters: 3.3
+  Bays: 0
+  ClearHeightMeters: 0
+  Blockers:
+  - Kind: cooler_wall
+    Level: sales_floor
+    Footprint:
+    - {x: -5.4, y: -3.89}
+    - {x: 1.3, y: -3.89}
+    - {x: 1.3, y: -3.11}
+    - {x: -5.4, y: -3.11}
+    Center: {x: 0, y: 0}
+    Radius: 0
+    HeightAboveGradeMeters: 2.06
+    Treatment: wall
+  - Kind: coffee_run
+    Level: sales_floor
+    Footprint:
+    - {x: 2.1, y: -3.89}
+    - {x: 5.35, y: -3.89}
+    - {x: 5.35, y: -3.19}
+    - {x: 2.1, y: -3.19}
+    Center: {x: 0, y: 0}
+    Radius: 0
+    HeightAboveGradeMeters: 1.38
+    Treatment: wall
+  - Kind: service_counter
+    Level: sales_floor
+    Footprint:
+    - {x: -5.34, y: -1.3}
+    - {x: -4.62, y: -1.3}
+    - {x: -4.62, y: 2.45}
+    - {x: -5.34, y: 2.45}
+    Center: {x: 0, y: 0}
+    Radius: 0
+    HeightAboveGradeMeters: 0.98
+    Treatment: waist_block
+  - Kind: gantry
+    Level: sales_floor
+    Footprint:
+    - {x: -5.59, y: -0.2}
+    - {x: -5.29, y: -0.2}
+    - {x: -5.29, y: 2.45}
+    - {x: -5.59, y: 2.45}
+    Center: {x: 0, y: 0}
+    Radius: 0
+    HeightAboveGradeMeters: 2.1
+    Treatment: wall
+  - Kind: gondola_1
+    Level: sales_floor
+    Footprint:
+    - {x: -2.4, y: -1.81}
+    - {x: 3.3, y: -1.81}
+    - {x: 3.3, y: -0.89}
+    - {x: -2.4, y: -0.89}
+    Center: {x: 0, y: 0}
+    Radius: 0
+    HeightAboveGradeMeters: 1.04
+    Treatment: waist_block
+  - Kind: gondola_2
+    Level: sales_floor
+    Footprint:
+    - {x: -2.4, y: -0.01}
+    - {x: 3.3, y: -0.01}
+    - {x: 3.3, y: 0.91}
+    - {x: -2.4, y: 0.91}
+    Center: {x: 0, y: 0}
+    Radius: 0
+    HeightAboveGradeMeters: 1.04
+    Treatment: waist_block
+  - Kind: atm
+    Level: sales_floor
+    Footprint:
+    - {x: 4.98, y: 1.96}
+    - {x: 5.58, y: 1.96}
+    - {x: 5.58, y: 2.64}
+    - {x: 4.98, y: 2.64}
+    Center: {x: 0, y: 0}
+    Radius: 0
+    HeightAboveGradeMeters: 1.56
+    Treatment: wall
+  Walkables:
+  - Id: sales_floor
+    HeightMeters: 0.18
+    Outline:
+    - {x: -5.6, y: -3.9}
+    - {x: 5.6, y: -3.9}
+    - {x: 5.6, y: 3.9}
+    - {x: -5.6, y: 3.9}
+    Treatment: flat
+  Interactables:
+  - Id: till
+    Label: SERVICE COUNTER
+    Action: buy
+    Position: {x: -4.43, y: 0.58, z: 1.16}
+    ReachPoint: {x: -3.63, y: 0.58, z: 0.18}
+    HasReachPoint: 1
+    ReachVerdict: ok
+    Level: sales_floor
+    VisibleFacings:
+    - N
+    - NE
+    - E
+    - SE
+    - S
+  - Id: cooler
+    Label: COOLER WALL
+    Action: drinks
+    Position: {x: -2.05, y: -2.76, z: 1.28}
+    ReachPoint: {x: -2.05, y: -2.54, z: 0.18}
+    HasReachPoint: 1
+    ReachVerdict: relocated
+    Level: sales_floor
+    VisibleFacings:
+    - E
+    - SE
+    - S
+    - SW
+    - W
+  - Id: coffee
+    Label: COFFEE / FOUNTAIN
+    Action: coffee
+    Position: {x: 3.72, y: -2.74, z: 1.12}
+    ReachPoint: {x: 3.72, y: -1.94, z: 0.18}
+    HasReachPoint: 1
+    ReachVerdict: ok
+    Level: sales_floor
+    VisibleFacings:
+    - E
+    - SE
+    - S
+    - SW
+    - W
+  - Id: snacks
+    Label: GONDOLA RUN
+    Action: browse
+    Position: {x: 0.45, y: -0.65, z: 1.13}
+    ReachPoint: {x: 0.45, y: -0.43, z: 0.18}
+    HasReachPoint: 1
+    ReachVerdict: relocated
+    Level: sales_floor
+    VisibleFacings:
+    - N
+    - NE
+    - E
+    - SE
+    - S
+    - SW
+    - W
+    - NW
+  - Id: hotcase
+    Label: HOT CASE
+    Action: food
+    Position: {x: -4.43, y: 2, z: 1.52}
+    ReachPoint: {x: -3.63, y: 2, z: 0.18}
+    HasReachPoint: 1
+    ReachVerdict: ok
+    Level: sales_floor
+    VisibleFacings:
+    - N
+    - NE
+    - E
+    - SE
+    - S
+  - Id: atm
+    Label: ATM
+    Action: cash
+    Position: {x: 5.05, y: 2.3, z: 1.23}
+    ReachPoint: {x: 4.25, y: 2.3, z: 0.18}
+    HasReachPoint: 1
+    ReachVerdict: ok
+    Level: sales_floor
+    VisibleFacings:
+    - N
+    - S
+    - SW
+    - W
+    - NW
+  Entry:
+    Kind: slide_bipart
+    ClearWidthMeters: 2.4
+    ClearHeightMeters: 2.37
+    Threshold: {x: 0.3, y: 4.1, z: 0.18}
+    LeafWidthMeters: 1.2
+    TravelMeters: 1.26
+    ClearAtOpenFraction: 0.33
+    SillStepMeters: 0.18
+    Treatment: step_over
+    HasKeepClear: 0
+    KeepClear: []
+  ServiceDoor:
+    Kind: swing_single_out
+    ClearWidthMeters: 1.02
+    ClearHeightMeters: 2.1
+    Threshold: {x: -4.5, y: -4.1, z: 0.18}
+    LeafWidthMeters: 0
+    TravelMeters: 0
+    ClearAtOpenFraction: 0
+    SillStepMeters: 0.18
+    Treatment: step_over
+    HasKeepClear: 1
+    KeepClear:
+    - {x: -5.01, y: -5.22}
+    - {x: -3.89, y: -5.22}
+    - {x: -3.89, y: -4.1}
+    - {x: -5.01, y: -4.1}

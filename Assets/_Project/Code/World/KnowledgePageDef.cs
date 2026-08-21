@@ -5,8 +5,9 @@ namespace HiddenHarbours.World
 {
     /// <summary>
     /// <b>ONE HOW-IT-IS-DONE PAGE</b> — the printed voice of the almanac, as DATA. One asset per file
-    /// under <c>Data/Knowledge</c>, keyed by a stable, append-only <see cref="Id"/>
-    /// (<c>knowledge.snake_case</c>).
+    /// under <c>Data/Resources/Knowledge</c>, keyed by a stable, append-only <see cref="Id"/>
+    /// (<c>knowledge.snake_case</c>) — see <see cref="QuestDef"/> for why that folder is inside a
+    /// <c>Resources</c> root.
     ///
     /// <para>Knowledge lives in things and people, so the notebook is a thing she writes in and these
     /// are the pages that were already printed in it. The kit's word for the voice: sentence case,

@@ -1,0 +1,60 @@
+{
+  "schema": "hiddenharbours.rig-recipe/1",
+  "sheet": "standpipe.png",
+  "kit": "iso-prop",
+  "baker": "IsoPropSheetBaker",
+  "rig": {
+    "key": "utilityIso",
+    "global": "UtilityIso",
+    "source": "docs/art/rigs/iso-rig-pack/utility-iso/utilityIsoRig.js",
+    "sha256": "dbfe677117c16725095b87d282486803da042714f80f53cc85986283a29d629c",
+    "convention": "CounterClockwise",
+    "prerequisites": []
+  },
+  "call": {
+    "fn": "render",
+    "args": [
+      "standpipe",
+      "$dir",
+      "$opts"
+    ],
+    "opts": {}
+  },
+  "grid": {
+    "columns": 8,
+    "rows": 1,
+    "order": "rowMajor",
+    "axes": [
+      {
+        "name": "facing",
+        "bind": "dir",
+        "values": [
+          0,
+          7,
+          6,
+          5,
+          4,
+          3,
+          2,
+          1
+        ]
+      }
+    ]
+  },
+  "pack": {
+    "rule": "pivotUnionCrop",
+    "nativeW": 440,
+    "nativeH": 620,
+    "nativePivotX": 220,
+    "nativePivotY": 520,
+    "cropX": 187,
+    "cropY": 485,
+    "cellW": 66,
+    "cellH": 56,
+    "pivotX": 33,
+    "pivotY": 35,
+    "sheetW": 528,
+    "sheetH": 56
+  },
+  "sheetSha256": "5dd6baeb89799b118392de258cfb139039cb72fe76bf86e27b9a1e58730762d3"
+}

@@ -1,0 +1,60 @@
+{
+  "schema": "hiddenharbours.rig-recipe/1",
+  "sheet": "serviceMast.png",
+  "kit": "iso-prop",
+  "baker": "IsoPropSheetBaker",
+  "rig": {
+    "key": "utilityIso",
+    "global": "UtilityIso",
+    "source": "docs/art/rigs/iso-rig-pack/utility-iso/utilityIsoRig.js",
+    "sha256": "dbfe677117c16725095b87d282486803da042714f80f53cc85986283a29d629c",
+    "convention": "CounterClockwise",
+    "prerequisites": []
+  },
+  "call": {
+    "fn": "render",
+    "args": [
+      "serviceMast",
+      "$dir",
+      "$opts"
+    ],
+    "opts": {}
+  },
+  "grid": {
+    "columns": 8,
+    "rows": 1,
+    "order": "rowMajor",
+    "axes": [
+      {
+        "name": "facing",
+        "bind": "dir",
+        "values": [
+          0,
+          7,
+          6,
+          5,
+          4,
+          3,
+          2,
+          1
+        ]
+      }
+    ]
+  },
+  "pack": {
+    "rule": "pivotUnionCrop",
+    "nativeW": 440,
+    "nativeH": 620,
+    "nativePivotX": 220,
+    "nativePivotY": 520,
+    "cropX": 201,
+    "cropY": 402,
+    "cellW": 38,
+    "cellH": 130,
+    "pivotX": 19,
+    "pivotY": 118,
+    "sheetW": 304,
+    "sheetH": 130
+  },
+  "sheetSha256": "79228313390ae680270b6effe48e7823c2c6e00755a1eebc288a535b04936873"
+}

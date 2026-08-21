@@ -1,0 +1,546 @@
+fileFormatVersion: 2
+guid: 77daa4a1c0a125f46b03726f5f3e87e6
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 6296899899264805244
+    second: LobsterInshoreHardtopNorthumberlandIsoInterior_0
+  - first:
+      213: 2872797452432337662
+    second: LobsterInshoreHardtopNorthumberlandIsoInterior_1
+  - first:
+      213: -7497629620438262567
+    second: LobsterInshoreHardtopNorthumberlandIsoInterior_2
+  - first:
+      213: -456052039540427008
+    second: LobsterInshoreHardtopNorthumberlandIsoInterior_3
+  - first:
+      213: 22872427986405359
+    second: LobsterInshoreHardtopNorthumberlandIsoInterior_4
+  - first:
+      213: -7856841628379133425
+    second: LobsterInshoreHardtopNorthumberlandIsoInterior_5
+  - first:
+      213: 393371529387369533
+    second: LobsterInshoreHardtopNorthumberlandIsoInterior_6
+  - first:
+      213: -8039929200168069213
+    second: LobsterInshoreHardtopNorthumberlandIsoInterior_7
+  - first:
+      213: -4267297044954696977
+    second: LobsterInshoreHardtopNorthumberlandIsoInterior_8
+  - first:
+      213: 703783282040492325
+    second: LobsterInshoreHardtopNorthumberlandIsoInterior_9
+  - first:
+      213: -1670539054406625724
+    second: LobsterInshoreHardtopNorthumberlandIsoInterior_10
+  - first:
+      213: 3072689036266986131
+    second: LobsterInshoreHardtopNorthumberlandIsoInterior_11
+  - first:
+      213: 4281379225413824904
+    second: LobsterInshoreHardtopNorthumberlandIsoInterior_12
+  - first:
+      213: 3638810984496394172
+    second: LobsterInshoreHardtopNorthumberlandIsoInterior_13
+  - first:
+      213: -3299233332146937881
+    second: LobsterInshoreHardtopNorthumberlandIsoInterior_14
+  - first:
+      213: -3171521900060958181
+    second: LobsterInshoreHardtopNorthumberlandIsoInterior_15
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: lobsterInshoreHardtopNorthumberlandIso_house_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 420
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 28a6dd47d30b4214e8c6bfca4bec0e90
+      internalID: -219410235
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterInshoreHardtopNorthumberlandIso_house_d1
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 420
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1cac2d37cf5f3ad4787cc1ee8e4d49ee
+      internalID: 1751152730
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterInshoreHardtopNorthumberlandIso_house_d2
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 420
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 40c14e91808394444be8b5d408e121df
+      internalID: 127001816
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterInshoreHardtopNorthumberlandIso_house_d3
+      rect:
+        serializedVersion: 2
+        x: 1440
+        y: 420
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5cd23dc7de6572c42b3bc5cf6bfe75bd
+      internalID: 684138688
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterInshoreHardtopNorthumberlandIso_house_d4
+      rect:
+        serializedVersion: 2
+        x: 1920
+        y: 420
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0586cdb5ca1667b4f9f07cfc1b8d1e03
+      internalID: -917637946
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterInshoreHardtopNorthumberlandIso_house_d5
+      rect:
+        serializedVersion: 2
+        x: 2400
+        y: 420
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 815d7cc2719763f4b8ce85078f242cc5
+      internalID: 1199316656
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterInshoreHardtopNorthumberlandIso_house_d6
+      rect:
+        serializedVersion: 2
+        x: 2880
+        y: 420
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fef746773b4ddce4aa818899d10204d5
+      internalID: 424429103
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterInshoreHardtopNorthumberlandIso_house_d7
+      rect:
+        serializedVersion: 2
+        x: 3360
+        y: 420
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 835180ac0839f354c9488a5e97578b7e
+      internalID: 594304237
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterInshoreHardtopNorthumberlandIso_cuddy_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e95fd0b0f249dd1468c1befdf6e6a0f9
+      internalID: 2010169368
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterInshoreHardtopNorthumberlandIso_cuddy_d1
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 0
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4a23c91b7527fa44da4eb8c842ce32e9
+      internalID: -1850616410
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterInshoreHardtopNorthumberlandIso_cuddy_d2
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 0
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0af8a15d210e1644783b1016d8df860d
+      internalID: 358619812
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterInshoreHardtopNorthumberlandIso_cuddy_d3
+      rect:
+        serializedVersion: 2
+        x: 1440
+        y: 0
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 454a10bc90289604cb3412ca4fcc5497
+      internalID: -92328283
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterInshoreHardtopNorthumberlandIso_cuddy_d4
+      rect:
+        serializedVersion: 2
+        x: 1920
+        y: 0
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d17f43f71d06af64296a606cd75ae7d0
+      internalID: 991827119
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterInshoreHardtopNorthumberlandIso_cuddy_d5
+      rect:
+        serializedVersion: 2
+        x: 2400
+        y: 0
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6225f1658712a444aa87b8bc0588ad35
+      internalID: -1452038668
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterInshoreHardtopNorthumberlandIso_cuddy_d6
+      rect:
+        serializedVersion: 2
+        x: 2880
+        y: 0
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f4ef43edabac9e947821a157d7959e76
+      internalID: -30900473
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterInshoreHardtopNorthumberlandIso_cuddy_d7
+      rect:
+        serializedVersion: 2
+        x: 3360
+        y: 0
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 701c64dbf0dd32b4f9dcba6400eb172f
+      internalID: -73771489
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 2fc4ed22ffee5684983ab6048623a403
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      lobsterInshoreHardtopNorthumberlandIso_cuddy_d0: 2010169368
+      lobsterInshoreHardtopNorthumberlandIso_cuddy_d1: -1850616410
+      lobsterInshoreHardtopNorthumberlandIso_cuddy_d2: 358619812
+      lobsterInshoreHardtopNorthumberlandIso_cuddy_d3: -92328283
+      lobsterInshoreHardtopNorthumberlandIso_cuddy_d4: 991827119
+      lobsterInshoreHardtopNorthumberlandIso_cuddy_d5: -1452038668
+      lobsterInshoreHardtopNorthumberlandIso_cuddy_d6: -30900473
+      lobsterInshoreHardtopNorthumberlandIso_cuddy_d7: -73771489
+      lobsterInshoreHardtopNorthumberlandIso_house_d0: -219410235
+      lobsterInshoreHardtopNorthumberlandIso_house_d1: 1751152730
+      lobsterInshoreHardtopNorthumberlandIso_house_d2: 127001816
+      lobsterInshoreHardtopNorthumberlandIso_house_d3: 684138688
+      lobsterInshoreHardtopNorthumberlandIso_house_d4: -917637946
+      lobsterInshoreHardtopNorthumberlandIso_house_d5: 1199316656
+      lobsterInshoreHardtopNorthumberlandIso_house_d6: 424429103
+      lobsterInshoreHardtopNorthumberlandIso_house_d7: 594304237
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

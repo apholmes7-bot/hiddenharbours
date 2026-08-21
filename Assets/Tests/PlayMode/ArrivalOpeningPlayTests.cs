@@ -99,7 +99,8 @@ namespace HiddenHarbours.Tests.PlayMode
             go.transform.SetParent(_root.transform);
             go.SetActive(false);
             var opening = go.AddComponent<ArrivalOpening>();
-            opening.Configure(_skipper, new[] { Start, Berth }, Berth, 180f, Ashore);
+            opening.Configure(_skipper, new[] { Start, Berth }, Berth, 180f, Ashore,
+                              channelBedElevation: -4f);
 
             // The region's own pacing, unmodified — the fixture's route is short enough that she enters
             // at cruise and has all of it off by the berth, which is the interesting part of the

@@ -1,0 +1,510 @@
+ADR 0038 S0 SPIKE - raw measurement log
+Produced by: Hidden Harbours > Dev > Spikes > Boat Interior - Exterior Half
+  (headless: -executeMethod HiddenHarbours.Tools.Editor.BoatInteriorMeshSpike.Cli)
+Unity 6000.5.0f1, RTX 4060, branch feat/boat-interior-placement off 7d89e7d3.
+Read-only: the probe loads committed assets and writes nothing back.
+Committed verbatim so the ruling rests on numbers anyone can re-take.
+
+BOAT INTERIOR — THE EXTERIOR HALF OF THE SWAP, MEASURED (ADR 0038 S0 spike)
+Loads committed assets only. Writes nothing. Numbers, not opinions.
+
+interior defs found: 24
+
+==============================================================================
+LobsterOffshoreOpenNewfoundlandIso   (interior.lobster_offshore_open_newfoundland_iso)
+   px/m 32   cell 480x420   pivot 240,232
+   levels: house_sole@0.55, cuddy_sole@0.088
+   door sill z 0.55   cue 8f @ 70ms
+   BoatVisualDef.Variant = MESH   HullMesh = LobsterOffshoreOpenNewfoundlandIsoHullMesh   sprite compass cells = 0
+   mesh: subMeshCount=1  verts=2928  tris=1528   watertightDeckZ=0.55
+   faces=1528   sea-interior-flagged (UV0.w)=1380   materialIds=10
+      mat  0:    196 faces   z [  0.448 ..   2.818]
+      mat  1:    194 faces   z [      0 ..   1.079]
+      mat  2:    178 faces   z [  0.542 ..   3.893]
+      mat  3:     98 faces   z [  1.373 ..   2.926]   <-- entirely above the house sole
+      mat  4:     28 faces   z [  0.556 ..   0.556]   <-- entirely above the house sole
+      mat  5:     84 faces   z [  2.358 ..   3.272]   <-- entirely above the house sole
+      mat  6:    220 faces   z [  0.385 ..   3.844]
+      mat  7:    248 faces   z [  0.558 ..   4.664]   <-- entirely above the house sole
+      mat  8:    182 faces   z [  0.558 ..   4.977]   <-- entirely above the house sole
+      mat 10:    100 faces   z [   0.57 ..   2.926]   <-- entirely above the house sole
+   z-split at the house sole (0.55 m):  above=1150  below=216  STRADDLING=162
+
+==============================================================================
+LobsterStandardOpenFundyIso   (interior.lobster_standard_open_fundy_iso)
+   px/m 32   cell 480x420   pivot 240,232
+   levels: house_sole@0.5, cuddy_sole@0.08
+   door sill z 0.5   cue 8f @ 70ms
+   BoatVisualDef.Variant = MESH   HullMesh = LobsterStandardOpenFundyIsoHullMesh   sprite compass cells = 0
+   mesh: subMeshCount=1  verts=2544  tris=1300   watertightDeckZ=0.5
+   faces=1300   sea-interior-flagged (UV0.w)=1164   materialIds=10
+      mat  0:    196 faces   z [  0.428 ..   2.852]
+      mat  1:    194 faces   z [      0 ..   1.091]
+      mat  2:    206 faces   z [  0.493 ..   3.444]
+      mat  3:     98 faces   z [  1.316 ..    2.96]   <-- entirely above the house sole
+      mat  4:     32 faces   z [  0.506 ..   0.506]   <-- entirely above the house sole
+      mat  5:     42 faces   z [  2.405 ..   2.971]   <-- entirely above the house sole
+      mat  6:    196 faces   z [  0.367 ..   2.819]
+      mat  7:    104 faces   z [  0.508 ..   5.665]   <-- entirely above the house sole
+      mat  8:    132 faces   z [  0.508 ..   5.749]   <-- entirely above the house sole
+      mat 10:    100 faces   z [   0.52 ..    2.96]   <-- entirely above the house sole
+   z-split at the house sole (0.5 m):  above=930  below=200  STRADDLING=170
+
+==============================================================================
+LobsterInshoreOpenFundyIso   (interior.lobster_inshore_open_fundy_iso)
+   px/m 32   cell 480x420   pivot 240,232
+   levels: house_sole@0.44, cuddy_sole@0.07
+   door sill z 0.44   cue 8f @ 70ms
+   BoatVisualDef.Variant = MESH   HullMesh = LobsterInshoreOpenFundyIsoHullMesh   sprite compass cells = 0
+   mesh: subMeshCount=1  verts=2436  tris=1238   watertightDeckZ=0.44
+   faces=1238   sea-interior-flagged (UV0.w)=1098   materialIds=10
+      mat  0:    196 faces   z [  0.377 ..    2.51]
+      mat  1:    194 faces   z [      0 ..    0.96]
+      mat  2:    206 faces   z [  0.433 ..   3.049]
+      mat  3:     98 faces   z [  1.155 ..   2.605]   <-- entirely above the house sole
+      mat  4:     32 faces   z [  0.446 ..   0.446]   <-- entirely above the house sole
+      mat  5:     30 faces   z [  2.117 ..   2.614]   <-- entirely above the house sole
+      mat  6:    196 faces   z [  0.323 ..   2.481]
+      mat  7:     72 faces   z [  0.448 ..   4.994]   <-- entirely above the house sole
+      mat  8:    114 faces   z [  0.448 ..   5.078]   <-- entirely above the house sole
+      mat 10:    100 faces   z [   0.46 ..   2.605]   <-- entirely above the house sole
+   z-split at the house sole (0.44 m):  above=868  below=200  STRADDLING=170
+
+==============================================================================
+LobsterOffshoreHardtopFundyIso   (interior.lobster_offshore_hardtop_fundy_iso)
+   px/m 32   cell 480x420   pivot 240,232
+   levels: house_sole@0.55, cuddy_sole@0.088
+   door sill z 0.55   cue 8f @ 70ms
+   BoatVisualDef.Variant = MESH   HullMesh = LobsterOffshoreHardtopFundyIsoHullMesh   sprite compass cells = 0
+   mesh: subMeshCount=1  verts=3392  tris=1724   watertightDeckZ=0.55
+   faces=1724   sea-interior-flagged (UV0.w)=1570   materialIds=10
+      mat  0:    196 faces   z [  0.471 ..   3.138]
+      mat  1:    194 faces   z [      0 ..     1.2]
+      mat  2:    250 faces   z [  0.543 ..   5.004]
+      mat  3:     98 faces   z [   1.45 ..   3.256]   <-- entirely above the house sole
+      mat  4:     32 faces   z [  0.556 ..   0.556]   <-- entirely above the house sole
+      mat  5:     90 faces   z [  2.646 ..   4.384]   <-- entirely above the house sole
+      mat  6:    196 faces   z [  0.404 ..   3.101]
+      mat  7:    400 faces   z [  0.558 ..   6.975]   <-- entirely above the house sole
+      mat  8:    168 faces   z [  0.558 ..   6.308]   <-- entirely above the house sole
+      mat 10:    100 faces   z [   0.57 ..   3.256]   <-- entirely above the house sole
+   z-split at the house sole (0.55 m):  above=1354  below=200  STRADDLING=170
+
+==============================================================================
+LobsterStandardHardtopNorthumberlandIso   (interior.lobster_standard_hardtop_northumberland_iso)
+   px/m 32   cell 480x420   pivot 240,232
+   levels: house_sole@0.5, cuddy_sole@0.08
+   door sill z 0.5   cue 8f @ 70ms
+   BoatVisualDef.Variant = MESH   HullMesh = LobsterStandardHardtopNorthumberlandIsoHullMesh   sprite compass cells = 0
+   mesh: subMeshCount=1  verts=2768  tris=1432   watertightDeckZ=0.5
+   faces=1432   sea-interior-flagged (UV0.w)=1302   materialIds=10
+      mat  0:    196 faces   z [  0.366 ..    2.74]
+      mat  1:    194 faces   z [      0 ..   1.059]
+      mat  2:    202 faces   z [  0.491 ..     4.5]
+      mat  3:     98 faces   z [  1.116 ..    2.84]   <-- entirely above the house sole
+      mat  4:     24 faces   z [  0.506 ..   0.506]   <-- entirely above the house sole
+      mat  5:     72 faces   z [  2.287 ..    2.93]   <-- entirely above the house sole
+      mat  6:    196 faces   z [  0.315 ..   2.706]
+      mat  7:    208 faces   z [  0.508 ..   6.269]   <-- entirely above the house sole
+      mat  8:    142 faces   z [  0.508 ..     4.3]   <-- entirely above the house sole
+      mat 10:    100 faces   z [   0.52 ..    2.84]   <-- entirely above the house sole
+   z-split at the house sole (0.5 m):  above=1062  below=212  STRADDLING=158
+
+==============================================================================
+LobsterInshoreHardtopFundyIso   (interior.lobster_inshore_hardtop_fundy_iso)
+   px/m 32   cell 480x420   pivot 240,232
+   levels: house_sole@0.44, cuddy_sole@0.07
+   door sill z 0.44   cue 8f @ 70ms
+   BoatVisualDef.Variant = MESH   HullMesh = LobsterInshoreHardtopFundyIsoHullMesh   sprite compass cells = 0
+   mesh: subMeshCount=1  verts=2588  tris=1314   watertightDeckZ=0.44
+   faces=1314   sea-interior-flagged (UV0.w)=1178   materialIds=10
+      mat  0:    196 faces   z [  0.377 ..    2.51]
+      mat  1:    194 faces   z [      0 ..    0.96]
+      mat  2:    206 faces   z [  0.433 ..   3.049]
+      mat  3:     98 faces   z [  1.155 ..   2.605]   <-- entirely above the house sole
+      mat  4:     32 faces   z [  0.446 ..   0.446]   <-- entirely above the house sole
+      mat  5:     30 faces   z [  2.117 ..   2.614]   <-- entirely above the house sole
+      mat  6:    196 faces   z [  0.323 ..   2.481]
+      mat  7:    136 faces   z [  0.448 ..   5.593]   <-- entirely above the house sole
+      mat  8:    126 faces   z [  0.448 ..   5.078]   <-- entirely above the house sole
+      mat 10:    100 faces   z [   0.46 ..   2.605]   <-- entirely above the house sole
+   z-split at the house sole (0.44 m):  above=944  below=200  STRADDLING=170
+
+==============================================================================
+LobsterOffshoreOpenFundyIso   (interior.lobster_offshore_open_fundy_iso)
+   px/m 32   cell 480x420   pivot 240,232
+   levels: house_sole@0.55, cuddy_sole@0.088
+   door sill z 0.55   cue 8f @ 70ms
+   BoatVisualDef.Variant = MESH   HullMesh = LobsterOffshoreOpenFundyIsoHullMesh   sprite compass cells = 0
+   mesh: subMeshCount=1  verts=2960  tris=1508   watertightDeckZ=0.55
+   faces=1508   sea-interior-flagged (UV0.w)=1352   materialIds=10
+      mat  0:    196 faces   z [  0.471 ..   3.138]
+      mat  1:    194 faces   z [      0 ..     1.2]
+      mat  2:    206 faces   z [  0.543 ..   3.773]
+      mat  3:     98 faces   z [   1.45 ..   3.256]   <-- entirely above the house sole
+      mat  4:     32 faces   z [  0.556 ..   0.556]   <-- entirely above the house sole
+      mat  5:     42 faces   z [  2.646 ..   3.268]   <-- entirely above the house sole
+      mat  6:    196 faces   z [  0.404 ..   3.101]
+      mat  7:    312 faces   z [  0.558 ..   6.224]   <-- entirely above the house sole
+      mat  8:    132 faces   z [  0.558 ..   6.308]   <-- entirely above the house sole
+      mat 10:    100 faces   z [   0.57 ..   3.256]   <-- entirely above the house sole
+   z-split at the house sole (0.55 m):  above=1138  below=200  STRADDLING=170
+
+==============================================================================
+LobsterInshoreOpenNewfoundlandIso   (interior.lobster_inshore_open_newfoundland_iso)
+   px/m 32   cell 480x420   pivot 240,232
+   levels: house_sole@0.44, cuddy_sole@0.07
+   door sill z 0.44   cue 8f @ 70ms
+   BoatVisualDef.Variant = MESH   HullMesh = LobsterInshoreOpenNewfoundlandIsoHullMesh   sprite compass cells = 0
+   mesh: subMeshCount=1  verts=2420  tris=1238   watertightDeckZ=0.44
+   faces=1238   sea-interior-flagged (UV0.w)=1094   materialIds=10
+      mat  0:    196 faces   z [  0.358 ..   2.255]
+      mat  1:    194 faces   z [      0 ..   0.863]
+      mat  2:    186 faces   z [  0.432 ..   2.912]
+      mat  3:     98 faces   z [  1.094 ..   2.341]   <-- entirely above the house sole
+      mat  4:     28 faces   z [  0.446 ..   0.446]   <-- entirely above the house sole
+      mat  5:     38 faces   z [  1.886 ..   2.501]   <-- entirely above the house sole
+      mat  6:    220 faces   z [  0.308 ..   2.863]
+      mat  7:     48 faces   z [  0.448 ..   3.506]   <-- entirely above the house sole
+      mat  8:    130 faces   z [  0.448 ..   3.597]   <-- entirely above the house sole
+      mat 10:    100 faces   z [   0.46 ..   2.341]   <-- entirely above the house sole
+   z-split at the house sole (0.44 m):  above=856  below=216  STRADDLING=166
+
+==============================================================================
+SternTrawlerMk2Iso   (interior.stern_trawler_mk2_iso)
+   px/m 32   cell 1344x1152   pivot 672,672
+   levels: main_deck@3.5, house_sole@3.5, bridge_sole@6.56, below_sole@1.15
+   door sill z 3.5   cue 8f @ 70ms
+   BoatVisualDef.Variant = MESH   HullMesh = SternTrawlerMk2IsoHullMesh   sprite compass cells = 0
+   mesh: subMeshCount=1  verts=4878  tris=2458   watertightDeckZ=1.75
+   faces=2458   sea-interior-flagged (UV0.w)=2188   materialIds=12
+      mat  0:    260 faces   z [  1.513 ..    9.08]
+      mat  1:    198 faces   z [      0 ..   2.878]
+      mat  2:    372 faces   z [  2.559 ..   11.44]
+      mat  3:    214 faces   z [   1.75 ..   7.062]
+      mat  4:     24 faces   z [    3.5 ..    3.78]   <-- entirely above the house sole
+      mat  5:     66 faces   z [    4.7 ..   8.432]   <-- entirely above the house sole
+      mat  6:     60 faces   z [   3.94 ..   8.638]   <-- entirely above the house sole
+      mat  7:     22 faces   z [    3.5 ..    5.37]   <-- entirely above the house sole
+      mat  8:    924 faces   z [   1.75 ..  12.608]
+      mat  9:    300 faces   z [   1.75 ..   12.06]
+      mat 10:      8 faces   z [  8.672 ..   9.208]   <-- entirely above the house sole
+      mat 11:     10 faces   z [   3.55 ..    5.35]   <-- entirely above the house sole
+   z-split at the house sole (3.5 m):  above=1882  below=376  STRADDLING=200
+
+==============================================================================
+TankerIso   (interior.tanker_iso)
+   px/m 16   cell 1920x1600   pivot 960,880
+   levels: main_deck@8.6, poop_deck@11.6, house_sole@11.6, bridge_sole@19.7, below_sole@9
+   door sill z 11.6   cue 8f @ 70ms
+   BoatVisualDef.Variant = MESH   HullMesh = TankerIsoHullMesh   sprite compass cells = 0
+   mesh: subMeshCount=1  verts=7012  tris=3492   watertightDeckZ=8.6
+   faces=3492   sea-interior-flagged (UV0.w)=3154   materialIds=13
+      mat  0:    408 faces   z [   3.95 ..   15.95]
+      mat  1:    218 faces   z [      0 ..    3.25]
+      mat  2:   1084 faces   z [   3.25 ..    30.6]
+      mat  3:    196 faces   z [    8.8 ..    20.2]
+      mat  4:    236 faces   z [  8.582 ..   14.54]
+      mat  5:    108 faces   z [  12.62 ..   22.02]   <-- entirely above the house sole
+      mat  6:    612 faces   z [    8.6 ..   28.65]
+      mat  7:    358 faces   z [   8.82 ..   30.77]
+      mat  8:     14 faces   z [   16.2 ..    25.7]   <-- entirely above the house sole
+      mat  9:     56 faces   z [  15.35 ..   20.55]   <-- entirely above the house sole
+      mat 10:    152 faces   z [   9.48 ..  16.803]
+      mat 11:     36 faces   z [   9.32 ..   26.21]
+      mat 12:     14 faces   z [   8.65 ..   13.85]
+   z-split at the house sole (11.6 m):  above=2234  below=972  STRADDLING=286
+
+==============================================================================
+LobsterOffshoreHardtopNewfoundlandIso   (interior.lobster_offshore_hardtop_newfoundland_iso)
+   px/m 32   cell 480x420   pivot 240,232
+   levels: house_sole@0.55, cuddy_sole@0.088
+   door sill z 0.55   cue 8f @ 70ms
+   BoatVisualDef.Variant = MESH   HullMesh = LobsterOffshoreHardtopNewfoundlandIsoHullMesh   sprite compass cells = 0
+   mesh: subMeshCount=1  verts=3320  tris=1724   watertightDeckZ=0.55
+   faces=1724   sea-interior-flagged (UV0.w)=1576   materialIds=10
+      mat  0:    196 faces   z [  0.448 ..   2.818]
+      mat  1:    194 faces   z [      0 ..   1.079]
+      mat  2:    222 faces   z [  0.542 ..   5.106]
+      mat  3:     98 faces   z [  1.373 ..   2.926]   <-- entirely above the house sole
+      mat  4:     28 faces   z [  0.556 ..   0.556]   <-- entirely above the house sole
+      mat  5:    132 faces   z [  2.358 ..   4.486]   <-- entirely above the house sole
+      mat  6:    220 faces   z [  0.385 ..   3.844]
+      mat  7:    328 faces   z [  0.558 ..   7.077]   <-- entirely above the house sole
+      mat  8:    206 faces   z [  0.558 ..   4.977]   <-- entirely above the house sole
+      mat 10:    100 faces   z [   0.57 ..   2.926]   <-- entirely above the house sole
+   z-split at the house sole (0.55 m):  above=1346  below=216  STRADDLING=162
+
+==============================================================================
+LobsterBoatIso   (interior.lobster_boat_iso)
+   px/m 32   cell 456x420   pivot 228,258
+   levels: house_sole@0.5, cuddy_sole@0.24
+   door sill z 0.5   cue 8f @ 70ms
+   BoatVisualDef.Variant = MESH   HullMesh = LobsterBoatIsoHullMesh   sprite compass cells = 32
+   mesh: subMeshCount=1  verts=2736  tris=1384   watertightDeckZ=0.5
+   faces=1384   sea-interior-flagged (UV0.w)=1242   materialIds=10
+      mat  0:    196 faces   z [  0.366 ..    2.74]
+      mat  1:    194 faces   z [      0 ..   1.059]
+      mat  2:    222 faces   z [  0.491 ..    4.19]
+      mat  3:     98 faces   z [  1.116 ..    2.84]   <-- entirely above the house sole
+      mat  4:     28 faces   z [  0.506 ..   0.506]   <-- entirely above the house sole
+      mat  5:     84 faces   z [   1.95 ..    3.57]   <-- entirely above the house sole
+      mat  6:    196 faces   z [  0.315 ..   2.706]
+      mat  7:    160 faces   z [  0.508 ..   5.958]   <-- entirely above the house sole
+      mat  8:    106 faces   z [  0.508 ..    3.99]   <-- entirely above the house sole
+      mat 10:    100 faces   z [   0.52 ..    2.84]   <-- entirely above the house sole
+   z-split at the house sole (0.5 m):  above=1010  below=212  STRADDLING=162
+
+==============================================================================
+LobsterOffshoreOpenNorthumberlandIso   (interior.lobster_offshore_open_northumberland_iso)
+   px/m 32   cell 480x420   pivot 240,232
+   levels: house_sole@0.55, cuddy_sole@0.088
+   door sill z 0.55   cue 8f @ 70ms
+   BoatVisualDef.Variant = MESH   HullMesh = LobsterOffshoreOpenNorthumberlandIsoHullMesh   sprite compass cells = 0
+   mesh: subMeshCount=1  verts=3000  tris=1556   watertightDeckZ=0.55
+   faces=1556   sea-interior-flagged (UV0.w)=1424   materialIds=10
+      mat  0:    196 faces   z [  0.403 ..   3.014]
+      mat  1:    194 faces   z [      0 ..   1.165]
+      mat  2:    182 faces   z [  0.541 ..   3.686]
+      mat  3:     98 faces   z [   1.23 ..   3.124]   <-- entirely above the house sole
+      mat  4:     24 faces   z [  0.556 ..   0.556]   <-- entirely above the house sole
+      mat  5:     84 faces   z [  2.515 ..   3.224]   <-- entirely above the house sole
+      mat  6:    196 faces   z [  0.347 ..   2.976]
+      mat  7:    328 faces   z [  0.558 ..   5.522]   <-- entirely above the house sole
+      mat  8:    154 faces   z [  0.558 ..   4.631]   <-- entirely above the house sole
+      mat 10:    100 faces   z [   0.57 ..   3.124]   <-- entirely above the house sole
+   z-split at the house sole (0.55 m):  above=1186  below=212  STRADDLING=158
+
+==============================================================================
+SternTrawlerIso   (interior.stern_trawler_iso)
+   px/m 32   cell 1344x1152   pivot 672,672
+   levels: main_deck@3.5, house_sole@3.5, bridge_sole@6.56, below_sole@1.15
+   door sill z 3.5   cue 8f @ 70ms
+   BoatVisualDef.Variant = MESH   HullMesh = SternTrawlerIsoHullMesh   sprite compass cells = 0
+   mesh: subMeshCount=1  verts=3210  tris=1624   watertightDeckZ=1.75
+   faces=1624   sea-interior-flagged (UV0.w)=1452   materialIds=12
+      mat  0:    208 faces   z [  1.513 ..   8.896]
+      mat  1:    198 faces   z [      0 ..   2.794]
+      mat  2:    170 faces   z [    3.5 ..   11.44]   <-- entirely above the house sole
+      mat  3:    314 faces   z [   1.75 ..    7.15]
+      mat  4:     24 faces   z [    3.5 ..    3.78]   <-- entirely above the house sole
+      mat  5:     66 faces   z [    4.7 ..   8.462]   <-- entirely above the house sole
+      mat  6:    100 faces   z [  3.466 ..   8.638]
+      mat  7:     22 faces   z [    3.5 ..    5.37]   <-- entirely above the house sole
+      mat  8:    204 faces   z [   1.75 ..  12.608]
+      mat  9:    300 faces   z [   1.75 ..   12.06]
+      mat 10:      8 faces   z [  8.672 ..   9.208]   <-- entirely above the house sole
+      mat 11:     10 faces   z [   3.55 ..    5.35]   <-- entirely above the house sole
+   z-split at the house sole (3.5 m):  above=1200  below=212  STRADDLING=212
+
+==============================================================================
+CoastalPacketIso   (interior.coastal_packet_iso)
+   px/m 32   cell 2112x1760   pivot 1056,976
+   levels: main_deck@5, house_sole@5, bridge_sole@10, below_sole@2.2
+   door sill z 5   cue 8f @ 70ms
+   BoatVisualDef.Variant = MESH   HullMesh = CoastalPacketIsoHullMesh   sprite compass cells = 0
+   mesh: subMeshCount=1  verts=5016  tris=2508   watertightDeckZ=5
+   faces=2508   sea-interior-flagged (UV0.w)=2304   materialIds=12
+      mat  0:    118 faces   z [  1.725 ..   8.741]
+      mat  1:    194 faces   z [      0 ..   2.501]
+      mat  2:    106 faces   z [   0.05 ..   2.881]
+      mat  3:   1368 faces   z [  4.976 ..      19]
+      mat  4:    214 faces   z [  4.731 ..   7.112]
+      mat  5:     84 faces   z [    6.1 ..    6.36]   <-- entirely above the house sole
+      mat  6:     62 faces   z [   6.02 ..   12.05]   <-- entirely above the house sole
+      mat  7:     92 faces   z [  6.136 ..  18.566]   <-- entirely above the house sole
+      mat  8:    206 faces   z [      5 ..   19.13]   <-- entirely above the house sole
+      mat  9:      8 faces   z [   8.35 ..   10.85]   <-- entirely above the house sole
+      mat 10:     48 faces   z [   4.87 ..   11.75]
+      mat 11:      8 faces   z [   5.05 ..    6.95]   <-- entirely above the house sole
+   z-split at the house sole (5 m):  above=1900  below=470  STRADDLING=138
+
+==============================================================================
+LobsterStandardOpenNorthumberlandIso   (interior.lobster_standard_open_northumberland_iso)
+   px/m 32   cell 480x420   pivot 240,232
+   levels: house_sole@0.5, cuddy_sole@0.08
+   door sill z 0.5   cue 8f @ 70ms
+   BoatVisualDef.Variant = MESH   HullMesh = LobsterStandardOpenNorthumberlandIsoHullMesh   sprite compass cells = 0
+   mesh: subMeshCount=1  verts=2616  tris=1356   watertightDeckZ=0.5
+   faces=1356   sea-interior-flagged (UV0.w)=1222   materialIds=10
+      mat  0:    196 faces   z [  0.366 ..    2.74]
+      mat  1:    194 faces   z [      0 ..   1.059]
+      mat  2:    182 faces   z [  0.491 ..   3.365]
+      mat  3:     98 faces   z [  1.116 ..    2.84]   <-- entirely above the house sole
+      mat  4:     24 faces   z [  0.506 ..   0.506]   <-- entirely above the house sole
+      mat  5:     72 faces   z [  2.287 ..    2.93]   <-- entirely above the house sole
+      mat  6:    196 faces   z [  0.315 ..   2.706]
+      mat  7:    152 faces   z [  0.508 ..   5.025]   <-- entirely above the house sole
+      mat  8:    142 faces   z [  0.508 ..    4.22]   <-- entirely above the house sole
+      mat 10:    100 faces   z [   0.52 ..    2.84]   <-- entirely above the house sole
+   z-split at the house sole (0.5 m):  above=986  below=212  STRADDLING=158
+
+==============================================================================
+SideDraggerIso   (interior.side_dragger_iso)
+   px/m 32   cell 896x792   pivot 448,450
+   levels: main_deck@2.05, house_sole@2.05, bridge_sole@4.56, below_sole@0.35
+   door sill z 2.05   cue 8f @ 70ms
+   BoatVisualDef.Variant = MESH   HullMesh = SideDraggerIsoHullMesh   sprite compass cells = 0
+   mesh: subMeshCount=1  verts=3200  tris=1616   watertightDeckZ=2.05
+   faces=1616   sea-interior-flagged (UV0.w)=1484   materialIds=12
+      mat  0:    204 faces   z [   0.78 ..   6.706]
+      mat  1:    194 faces   z [      0 ..    1.69]
+      mat  2:    160 faces   z [   2.05 ..    7.57]   <-- entirely above the house sole
+      mat  3:    312 faces   z [  2.034 ..     4.7]
+      mat  4:     60 faces   z [   2.05 ..    3.55]   <-- entirely above the house sole
+      mat  5:     48 faces   z [    3.2 ..   6.214]   <-- entirely above the house sole
+      mat  6:    132 faces   z [  2.042 ..  11.203]
+      mat  7:     36 faces   z [   2.05 ..    2.65]   <-- entirely above the house sole
+      mat  8:    232 faces   z [   2.05 ..  10.723]   <-- entirely above the house sole
+      mat  9:    216 faces   z [   2.05 ..   10.45]   <-- entirely above the house sole
+      mat 10:      8 faces   z [  6.526 ..   7.074]   <-- entirely above the house sole
+      mat 11:     14 faces   z [    2.1 ..    4.05]   <-- entirely above the house sole
+   z-split at the house sole (2.05 m):  above=1224  below=194  STRADDLING=198
+
+==============================================================================
+LobsterInshoreOpenNorthumberlandIso   (interior.lobster_inshore_open_northumberland_iso)
+   px/m 32   cell 480x420   pivot 240,232
+   levels: house_sole@0.44, cuddy_sole@0.07
+   door sill z 0.44   cue 8f @ 70ms
+   BoatVisualDef.Variant = MESH   HullMesh = LobsterInshoreOpenNorthumberlandIsoHullMesh   sprite compass cells = 0
+   mesh: subMeshCount=1  verts=2508  tris=1290   watertightDeckZ=0.44
+   faces=1290   sea-interior-flagged (UV0.w)=1160   materialIds=10
+      mat  0:    196 faces   z [  0.322 ..   2.411]
+      mat  1:    194 faces   z [      0 ..   0.932]
+      mat  2:    190 faces   z [  0.431 ..    2.98]
+      mat  3:     98 faces   z [  0.979 ..   2.499]   <-- entirely above the house sole
+      mat  4:     24 faces   z [  0.446 ..   0.446]   <-- entirely above the house sole
+      mat  5:     54 faces   z [  2.012 ..   2.578]   <-- entirely above the house sole
+      mat  6:    196 faces   z [  0.277 ..   2.381]
+      mat  7:    120 faces   z [  0.448 ..    4.43]   <-- entirely above the house sole
+      mat  8:    118 faces   z [  0.448 ..   3.727]   <-- entirely above the house sole
+      mat 10:    100 faces   z [   0.46 ..   2.499]   <-- entirely above the house sole
+   z-split at the house sole (0.44 m):  above=916  below=212  STRADDLING=162
+
+==============================================================================
+LobsterInshoreHardtopNewfoundlandIso   (interior.lobster_inshore_hardtop_newfoundland_iso)
+   px/m 32   cell 480x420   pivot 240,232
+   levels: house_sole@0.44, cuddy_sole@0.07
+   door sill z 0.44   cue 8f @ 70ms
+   BoatVisualDef.Variant = MESH   HullMesh = LobsterInshoreHardtopNewfoundlandIsoHullMesh   sprite compass cells = 0
+   mesh: subMeshCount=1  verts=2532  tris=1294   watertightDeckZ=0.44
+   faces=1294   sea-interior-flagged (UV0.w)=1156   materialIds=10
+      mat  0:    196 faces   z [  0.358 ..   2.255]
+      mat  1:    194 faces   z [      0 ..   0.863]
+      mat  2:    186 faces   z [  0.432 ..   2.912]
+      mat  3:     98 faces   z [  1.094 ..   2.341]   <-- entirely above the house sole
+      mat  4:     28 faces   z [  0.446 ..   0.446]   <-- entirely above the house sole
+      mat  5:     38 faces   z [  1.886 ..   2.501]   <-- entirely above the house sole
+      mat  6:    220 faces   z [  0.308 ..   2.863]
+      mat  7:    104 faces   z [  0.448 ..   5.438]   <-- entirely above the house sole
+      mat  8:    130 faces   z [  0.448 ..   3.714]   <-- entirely above the house sole
+      mat 10:    100 faces   z [   0.46 ..   2.341]   <-- entirely above the house sole
+   z-split at the house sole (0.44 m):  above=912  below=216  STRADDLING=166
+
+==============================================================================
+LobsterInshoreHardtopNorthumberlandIso   (interior.lobster_inshore_hardtop_northumberland_iso)
+   px/m 32   cell 480x420   pivot 240,232
+   levels: house_sole@0.44, cuddy_sole@0.07
+   door sill z 0.44   cue 8f @ 70ms
+   BoatVisualDef.Variant = MESH   HullMesh = LobsterInshoreHardtopNorthumberlandIsoHullMesh   sprite compass cells = 0
+   mesh: subMeshCount=1  verts=2620  tris=1346   watertightDeckZ=0.44
+   faces=1346   sea-interior-flagged (UV0.w)=1220   materialIds=10
+      mat  0:    196 faces   z [  0.322 ..   2.411]
+      mat  1:    194 faces   z [      0 ..   0.932]
+      mat  2:    190 faces   z [  0.431 ..    2.98]
+      mat  3:     98 faces   z [  0.979 ..   2.499]   <-- entirely above the house sole
+      mat  4:     24 faces   z [  0.446 ..   0.446]   <-- entirely above the house sole
+      mat  5:     54 faces   z [  2.012 ..   2.578]   <-- entirely above the house sole
+      mat  6:    196 faces   z [  0.277 ..   2.381]
+      mat  7:    176 faces   z [  0.448 ..   5.524]   <-- entirely above the house sole
+      mat  8:    118 faces   z [  0.448 ..     3.8]   <-- entirely above the house sole
+      mat 10:    100 faces   z [   0.46 ..   2.499]   <-- entirely above the house sole
+   z-split at the house sole (0.44 m):  above=972  below=212  STRADDLING=162
+
+==============================================================================
+LobsterOffshoreHardtopNorthumberlandIso   (interior.lobster_offshore_hardtop_northumberland_iso)
+   px/m 32   cell 480x420   pivot 240,232
+   levels: house_sole@0.55, cuddy_sole@0.088
+   door sill z 0.55   cue 8f @ 70ms
+   BoatVisualDef.Variant = MESH   HullMesh = LobsterOffshoreHardtopNorthumberlandIsoHullMesh   sprite compass cells = 0
+   mesh: subMeshCount=1  verts=3392  tris=1752   watertightDeckZ=0.55
+   faces=1752   sea-interior-flagged (UV0.w)=1616   materialIds=10
+      mat  0:    196 faces   z [  0.403 ..   3.014]
+      mat  1:    194 faces   z [      0 ..   1.165]
+      mat  2:    226 faces   z [  0.541 ..   4.917]
+      mat  3:     98 faces   z [   1.23 ..   3.124]   <-- entirely above the house sole
+      mat  4:     24 faces   z [  0.556 ..   0.556]   <-- entirely above the house sole
+      mat  5:    132 faces   z [  2.515 ..   4.297]   <-- entirely above the house sole
+      mat  6:    196 faces   z [  0.347 ..   2.976]
+      mat  7:    408 faces   z [  0.558 ..   6.889]   <-- entirely above the house sole
+      mat  8:    178 faces   z [  0.558 ..   4.717]   <-- entirely above the house sole
+      mat 10:    100 faces   z [   0.57 ..   3.124]   <-- entirely above the house sole
+   z-split at the house sole (0.55 m):  above=1382  below=212  STRADDLING=158
+
+==============================================================================
+LobsterStandardHardtopNewfoundlandIso   (interior.lobster_standard_hardtop_newfoundland_iso)
+   px/m 32   cell 480x420   pivot 240,232
+   levels: house_sole@0.5, cuddy_sole@0.08
+   door sill z 0.5   cue 8f @ 70ms
+   BoatVisualDef.Variant = MESH   HullMesh = LobsterStandardHardtopNewfoundlandIsoHullMesh   sprite compass cells = 0
+   mesh: subMeshCount=1  verts=2680  tris=1388   watertightDeckZ=0.5
+   faces=1388   sea-interior-flagged (UV0.w)=1252   materialIds=10
+      mat  0:    196 faces   z [  0.407 ..   2.562]
+      mat  1:    194 faces   z [      0 ..   0.981]
+      mat  2:    198 faces   z [  0.492 ..   4.447]
+      mat  3:     98 faces   z [  1.246 ..    2.66]   <-- entirely above the house sole
+      mat  4:     28 faces   z [  0.506 ..   0.506]   <-- entirely above the house sole
+      mat  5:     64 faces   z [  2.143 ..   2.886]   <-- entirely above the house sole
+      mat  6:    220 faces   z [   0.35 ..   3.281]
+      mat  7:    128 faces   z [  0.508 ..   6.216]   <-- entirely above the house sole
+      mat  8:    162 faces   z [  0.508 ..   4.319]   <-- entirely above the house sole
+      mat 10:    100 faces   z [   0.52 ..    2.66]   <-- entirely above the house sole
+   z-split at the house sole (0.5 m):  above=1010  below=216  STRADDLING=162
+
+==============================================================================
+LobsterStandardOpenNewfoundlandIso   (interior.lobster_standard_open_newfoundland_iso)
+   px/m 32   cell 480x420   pivot 240,232
+   levels: house_sole@0.5, cuddy_sole@0.08
+   door sill z 0.5   cue 8f @ 70ms
+   BoatVisualDef.Variant = MESH   HullMesh = LobsterStandardOpenNewfoundlandIsoHullMesh   sprite compass cells = 0
+   mesh: subMeshCount=1  verts=2528  tris=1312   watertightDeckZ=0.5
+   faces=1312   sea-interior-flagged (UV0.w)=1174   materialIds=10
+      mat  0:    196 faces   z [  0.407 ..   2.562]
+      mat  1:    194 faces   z [      0 ..   0.981]
+      mat  2:    178 faces   z [  0.492 ..    3.33]
+      mat  3:     98 faces   z [  1.246 ..    2.66]   <-- entirely above the house sole
+      mat  4:     28 faces   z [  0.506 ..   0.506]   <-- entirely above the house sole
+      mat  5:     64 faces   z [  2.143 ..   2.886]   <-- entirely above the house sole
+      mat  6:    220 faces   z [   0.35 ..   3.281]
+      mat  7:     72 faces   z [  0.508 ..   4.021]   <-- entirely above the house sole
+      mat  8:    162 faces   z [  0.508 ..   4.319]   <-- entirely above the house sole
+      mat 10:    100 faces   z [   0.52 ..    2.66]   <-- entirely above the house sole
+   z-split at the house sole (0.5 m):  above=934  below=216  STRADDLING=162
+
+==============================================================================
+LobsterStandardHardtopFundyIso   (interior.lobster_standard_hardtop_fundy_iso)
+   px/m 32   cell 480x420   pivot 240,232
+   levels: house_sole@0.5, cuddy_sole@0.08
+   door sill z 0.5   cue 8f @ 70ms
+   BoatVisualDef.Variant = MESH   HullMesh = LobsterStandardHardtopFundyIsoHullMesh   sprite compass cells = 0
+   mesh: subMeshCount=1  verts=2736  tris=1396   watertightDeckZ=0.5
+   faces=1396   sea-interior-flagged (UV0.w)=1260   materialIds=10
+      mat  0:    196 faces   z [  0.428 ..   2.852]
+      mat  1:    194 faces   z [      0 ..   1.091]
+      mat  2:    226 faces   z [  0.493 ..   4.579]
+      mat  3:     98 faces   z [  1.316 ..    2.96]   <-- entirely above the house sole
+      mat  4:     32 faces   z [  0.506 ..   0.506]   <-- entirely above the house sole
+      mat  5:     42 faces   z [  2.405 ..   2.971]   <-- entirely above the house sole
+      mat  6:    196 faces   z [  0.367 ..   2.819]
+      mat  7:    168 faces   z [  0.508 ..   6.347]   <-- entirely above the house sole
+      mat  8:    144 faces   z [  0.508 ..   5.749]   <-- entirely above the house sole
+      mat 10:    100 faces   z [   0.52 ..    2.96]   <-- entirely above the house sole
+   z-split at the house sole (0.5 m):  above=1026  below=200  STRADDLING=170
+
+==============================================================================
+SUMMARY
+   interior-bearing hulls drawn as MESH   : 24
+   interior-bearing hulls drawn as SPRITE : 0
+   no visual def / no baked mesh          : 0 / 0
+   hulls whose mesh has >1 SUBMESH        : 0
+   hulls with a material id confined above the house sole : 24

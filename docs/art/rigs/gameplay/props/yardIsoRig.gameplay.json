@@ -1,0 +1,3580 @@
+{
+ "schema": "hidden-harbours/prop-placement-geometry@1",
+ "rig": "Art/yardIsoRig.js",
+ "exportSymbol": "globalThis.YardIso",
+ "derivedFromRigSha256": "d2ab2a906f4f099e3054643034a936327ae547fc5ea375b3198cc8f503d23706",
+ "generated": {
+  "by": "export/yard-rig-kit/harness.html",
+  "method": "the rig source is evaluated unmodified and interrogated through its public API — footprint(), height(), mounts(), PROPS, CATS, PHASES. No geometry is transcribed by hand."
+ },
+ "contract": {
+  "unit": "32 px = 1 m",
+  "camera": "3/4 from the south, 45deg steps, elev 40deg default (30-50 accepted), orthographic — shared with houseIsoRig / utilityIsoRig / wharfDecorRig / the fleet",
+  "origin": "ground-centre of the footprint, z = 0 = lawn plane. A piece drops on a lawn tile with no offset maths.",
+  "axes": "+X along the run, +Y away from the house (wall-backed pieces put their back plane toward -Y), +Z up",
+  "cell": "470 x 540 px, pivot at 235,442 — one cell for every piece, so a swap at runtime is pivot-stable",
+  "alpha": "binary, no AA, 1 px keyline, ordered dither, upper-LEFT key",
+  "facings": [
+   "N",
+   "NE",
+   "E",
+   "SE",
+   "S",
+   "SW",
+   "W",
+   "NW"
+  ],
+  "sheet": "Art/Sprites/Yard/<piece>.png — 8 cells of 470 x 540 (3760 x 540)"
+ },
+ "axes": {
+  "kept": {
+   "range": [
+    0,
+    1
+   ],
+   "default": 0.62,
+   "note": "upkeep. Moves seven things at once: paint chalk and lost pickets, post lean, line sag, tools left out, weed skirt density (1-kept), mulch going to grass, and hedge clip roughness. Not a colour grade."
+  },
+  "phase": {
+   "keys": [
+    "dormant",
+    "catkin",
+    "bloom",
+    "leaf",
+    "green",
+    "fruit",
+    "turn",
+    "bare"
+   ],
+   "leafing": {
+    "dormant": 0,
+    "catkin": 0.02,
+    "bloom": 0.55,
+    "leaf": 0.88,
+    "green": 1,
+    "fruit": 1,
+    "turn": 0.94,
+    "bare": 0.06
+   },
+   "snowByPhase": {
+    "dormant": 0.85,
+    "catkin": 0.12,
+    "bloom": 0,
+    "leaf": 0,
+    "green": 0,
+    "fruit": 0,
+    "turn": 0,
+    "bare": 0.18
+   },
+   "note": "the shrubIsoRig calendar, verbatim. One clock for every plant in the world; snow defaults off the phase."
+  },
+  "len": {
+   "range": [
+    0,
+    1
+   ],
+   "note": "run / panel length. Footprint grows by runGain per piece — see size[] samples."
+  },
+  "variant": {
+   "note": "index into the piece variants[] list"
+  },
+  "paint": {
+   "keys": [
+    "white",
+    "cream",
+    "red",
+    "sage",
+    "blue",
+    "greyShingle",
+    "gold",
+    "teal",
+    "rustOrange",
+    "plum"
+   ],
+   "note": "body-paint ramp; chalks toward bone as kept falls"
+  },
+  "planted": {
+   "note": "beds and planters carry plants. Pieces with readsPlanted:true respond."
+  },
+  "snow": {
+   "range": [
+    0,
+    1
+   ],
+   "note": "override; defaults off phase. Caps rails, hedge tops, bench seats, woodpiles."
+  },
+  "weather": {
+   "range": [
+    0,
+    1
+   ],
+   "default": 0.4,
+   "note": "grime plus sun-silvered timber"
+  },
+  "night": {
+   "note": "cool shift plus lit glass / glow ramps"
+  }
+ },
+ "foliage": {
+  "unit": "clump",
+  "note": "hedges, shrub mounds, bed mounds and planter spill are built from lobed ellipsoid clumps (two low radius harmonics plus an under-weighted tooth term), laid as a shell: one jittered clump per cell of the top surface, then brick-bonded courses walked round the plan silhouette by arc length. Clump radius does not scale with the mass — a bigger hedge carries MORE clumps, never fatter ones (treeIsoRig MIN_R rule).",
+  "keptResponse": "clump size variance, position jitter and rim height variance all scale with (1-kept): a shears-kept hedge lands even courses of one clump size, a let-go one lands none of that.",
+  "leafOff": "dormant carries NO foliage mass (twig cage plus snow drift are the silhouette); bare/catkin keep a few clumps at reduced radius.",
+  "ramps": {
+   "leaf": [
+    "green",
+    "fresh",
+    "turn",
+    "winter",
+    "ever"
+   ],
+   "note": "one ramp per calendar colouring; the lawn dries toward straw on the same clock"
+  }
+ },
+ "composition": {
+  "plants": "a planted bed asks globalThis.Flowers / globalThis.Shrubs for real sprites and blits them back-to-front over its own soil (same PPU, same 40deg elevation). Absent those rigs it falls back to native foliage mounds and still reads. opts.compose:false forces the native path.",
+  "hedges": "native. A clipped hedge is a MASS with a machined top, not a row of shrubs — the two are drawn by different rules."
+ },
+ "families": {
+  "fence": {
+   "label": "Fences & gates",
+   "pieces": [
+    "picketPanel",
+    "picketGate",
+    "postRail",
+    "splitRail",
+    "wireFence",
+    "snowFence",
+    "lattice",
+    "stoneWall",
+    "stonePillar",
+    "fenceCorner"
+   ]
+  },
+  "hedge": {
+   "label": "Hedges & shrubs",
+   "pieces": [
+    "hedgeRun",
+    "hedgeBall",
+    "cedarHedge",
+    "lilac",
+    "roseBush",
+    "hedgeCorner",
+    "hydrangea",
+    "trellisVine"
+   ]
+  },
+  "bed": {
+   "label": "Beds & gardens",
+   "pieces": [
+    "foundationBed",
+    "islandBed",
+    "borderBed",
+    "vegRows",
+    "potatoDrills",
+    "rhubarb",
+    "fernBed",
+    "hostaEdge",
+    "raspberryRow"
+   ]
+  },
+  "planter": {
+   "label": "Planters",
+   "pieces": [
+    "barrelPlanter",
+    "windowBox",
+    "potCluster",
+    "tirePlanter",
+    "hangingBasket"
+   ]
+  },
+  "fixture": {
+   "label": "Dooryard fixtures",
+   "pieces": [
+    "mailbox",
+    "clothesline",
+    "woodpile",
+    "rainBarrel",
+    "hoseReel",
+    "compostBin",
+    "oilTank"
+   ]
+  },
+  "sitting": {
+   "label": "Sitting & gathering",
+   "pieces": [
+    "bench",
+    "picnicTable",
+    "adirondack",
+    "firePit"
+   ]
+  },
+  "play": {
+   "label": "Play & work",
+   "pieces": [
+    "swingSet",
+    "sandbox",
+    "doghouse",
+    "sawhorses",
+    "toolLean"
+   ]
+  },
+  "ornament": {
+   "label": "Lawn ornaments",
+   "pieces": [
+    "buoyPost",
+    "doryPlanter",
+    "anchorSet",
+    "trapBench",
+    "birdbath",
+    "birdhouse"
+   ]
+  },
+  "ground": {
+   "label": "Paths & ground",
+   "pieces": [
+    "steppingStones",
+    "gravelApron",
+    "lawnEdge",
+    "groundCover"
+   ]
+  },
+  "sign": {
+   "label": "Signs & poles",
+   "pieces": [
+    "flagpole",
+    "nameSign",
+    "numberPost",
+    "farmStand"
+   ]
+  }
+ },
+ "reading": {
+  "_confirm": "EXACT, from the rig: label, family, variants, runs/runGain, defaults, size[] (footprint and height at len 0 / 0.4 / 1), mounts. OURS, by rule per family and open to correction: block.shape, block.axis, block.passable. No collision volume is authored in the rig; these are read off the footprint and height.",
+  "wall": "fence and hedge families are wall blockers along +X with thickness = size.d; chain them on mounts.ends.",
+  "plot": "bed pieces are walkable-but-planted plots: passable, and trampling is the consumer's call.",
+  "surface": "ground pieces are surface overlays (max height 0.2 m); they never block.",
+  "cylinder": "round-plan pieces use a cylinder of radius = size.w / 2."
+ },
+ "pieces": {
+  "picketPanel": {
+   "label": "Picket fence",
+   "family": "fence",
+   "variants": [
+    "low",
+    "tall"
+   ],
+   "runs": true,
+   "runGain": 0.94,
+   "defaults": {
+    "paint": "white"
+   },
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 1.7,
+     "d": 0.1,
+     "h": 1.06
+    },
+    {
+     "len": 0.4,
+     "w": 2.339,
+     "d": 0.1,
+     "h": 1.06
+    },
+    {
+     "len": 1,
+     "w": 3.298,
+     "d": 0.1,
+     "h": 1.06
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [
+     [
+      -1.17,
+      0,
+      0
+     ],
+     [
+      1.17,
+      0,
+      0
+     ]
+    ],
+    "wall": []
+   },
+   "block": {
+    "shape": "wall",
+    "axis": "x",
+    "passable": false
+   }
+  },
+  "picketGate": {
+   "label": "Picket gate",
+   "family": "fence",
+   "variants": [
+    "shut",
+    "open"
+   ],
+   "runs": false,
+   "runGain": 0,
+   "defaults": {
+    "paint": "white"
+   },
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 1.3,
+     "d": 0.3,
+     "h": 1.3
+    },
+    {
+     "len": 0.4,
+     "w": 1.3,
+     "d": 0.3,
+     "h": 1.3
+    },
+    {
+     "len": 1,
+     "w": 1.3,
+     "d": 0.3,
+     "h": 1.3
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [],
+    "wall": []
+   },
+   "block": {
+    "shape": "wall",
+    "axis": "x",
+    "passable": false
+   }
+  },
+  "postRail": {
+   "label": "Post & rail",
+   "family": "fence",
+   "variants": [
+    "three rail"
+   ],
+   "runs": true,
+   "runGain": 0.9,
+   "defaults": {
+    "paint": "white"
+   },
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 2,
+     "d": 0.14,
+     "h": 1.14
+    },
+    {
+     "len": 0.4,
+     "w": 2.72,
+     "d": 0.14,
+     "h": 1.14
+    },
+    {
+     "len": 1,
+     "w": 3.8,
+     "d": 0.14,
+     "h": 1.14
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [
+     [
+      -1.36,
+      0,
+      0
+     ],
+     [
+      1.36,
+      0,
+      0
+     ]
+    ],
+    "wall": []
+   },
+   "block": {
+    "shape": "wall",
+    "axis": "x",
+    "passable": false
+   }
+  },
+  "splitRail": {
+   "label": "Split rail",
+   "family": "fence",
+   "variants": [
+    "zigzag"
+   ],
+   "runs": true,
+   "runGain": 0.82,
+   "defaults": {},
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 2.2,
+     "d": 0.6,
+     "h": 1.05
+    },
+    {
+     "len": 0.4,
+     "w": 2.922,
+     "d": 0.6,
+     "h": 1.05
+    },
+    {
+     "len": 1,
+     "w": 4.004,
+     "d": 0.6,
+     "h": 1.05
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [
+     [
+      -1.461,
+      0,
+      0
+     ],
+     [
+      1.461,
+      0,
+      0
+     ]
+    ],
+    "wall": []
+   },
+   "block": {
+    "shape": "wall",
+    "axis": "x",
+    "passable": false
+   }
+  },
+  "wireFence": {
+   "label": "Page wire",
+   "family": "fence",
+   "variants": [
+    "farm wire"
+   ],
+   "runs": true,
+   "runGain": 0.91,
+   "defaults": {},
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 2.2,
+     "d": 0.1,
+     "h": 1.16
+    },
+    {
+     "len": 0.4,
+     "w": 3.001,
+     "d": 0.1,
+     "h": 1.16
+    },
+    {
+     "len": 1,
+     "w": 4.202,
+     "d": 0.1,
+     "h": 1.16
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [
+     [
+      -1.5,
+      0,
+      0
+     ],
+     [
+      1.5,
+      0,
+      0
+     ]
+    ],
+    "wall": []
+   },
+   "block": {
+    "shape": "wall",
+    "axis": "x",
+    "passable": false
+   }
+  },
+  "snowFence": {
+   "label": "Snow fence",
+   "family": "fence",
+   "variants": [
+    "slat"
+   ],
+   "runs": true,
+   "runGain": 0.8,
+   "defaults": {
+    "paint": "rustOrange"
+   },
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 2,
+     "d": 0.2,
+     "h": 1.04
+    },
+    {
+     "len": 0.4,
+     "w": 2.64,
+     "d": 0.2,
+     "h": 1.04
+    },
+    {
+     "len": 1,
+     "w": 3.6,
+     "d": 0.2,
+     "h": 1.04
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [
+     [
+      -1.32,
+      0,
+      0
+     ],
+     [
+      1.32,
+      0,
+      0
+     ]
+    ],
+    "wall": []
+   },
+   "block": {
+    "shape": "wall",
+    "axis": "x",
+    "passable": false
+   }
+  },
+  "lattice": {
+   "label": "Lattice skirt",
+   "family": "fence",
+   "variants": [
+    "diamond"
+   ],
+   "runs": true,
+   "runGain": 0.73,
+   "defaults": {
+    "paint": "white"
+   },
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 1.5,
+     "d": 0.12,
+     "h": 0.82
+    },
+    {
+     "len": 0.4,
+     "w": 1.938,
+     "d": 0.12,
+     "h": 0.82
+    },
+    {
+     "len": 1,
+     "w": 2.595,
+     "d": 0.12,
+     "h": 0.82
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [
+     [
+      -0.969,
+      0,
+      0
+     ],
+     [
+      0.969,
+      0,
+      0
+     ]
+    ],
+    "wall": []
+   },
+   "block": {
+    "shape": "wall",
+    "axis": "x",
+    "passable": false
+   }
+  },
+  "stoneWall": {
+   "label": "Fieldstone wall",
+   "family": "fence",
+   "variants": [
+    "low",
+    "high"
+   ],
+   "runs": true,
+   "runGain": 0.89,
+   "defaults": {},
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 1.8,
+     "d": 0.46,
+     "h": 0.72
+    },
+    {
+     "len": 0.4,
+     "w": 2.441,
+     "d": 0.46,
+     "h": 0.72
+    },
+    {
+     "len": 1,
+     "w": 3.402,
+     "d": 0.46,
+     "h": 0.72
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [
+     [
+      -1.22,
+      0,
+      0
+     ],
+     [
+      1.22,
+      0,
+      0
+     ]
+    ],
+    "wall": []
+   },
+   "block": {
+    "shape": "wall",
+    "axis": "x",
+    "passable": false
+   }
+  },
+  "stonePillar": {
+   "label": "Gate pillar",
+   "family": "fence",
+   "variants": [
+    "capped",
+    "finial"
+   ],
+   "runs": false,
+   "runGain": 0,
+   "defaults": {},
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 0.64,
+     "d": 0.64,
+     "h": 1.31
+    },
+    {
+     "len": 0.4,
+     "w": 0.64,
+     "d": 0.64,
+     "h": 1.31
+    },
+    {
+     "len": 1,
+     "w": 0.64,
+     "d": 0.64,
+     "h": 1.31
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [],
+    "wall": []
+   },
+   "block": {
+    "shape": "cylinder",
+    "axis": "x",
+    "passable": false
+   }
+  },
+  "fenceCorner": {
+   "label": "Fence corner",
+   "family": "fence",
+   "variants": [
+    "picket"
+   ],
+   "runs": false,
+   "runGain": 0,
+   "defaults": {
+    "paint": "white"
+   },
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 0.7,
+     "d": 0.7,
+     "h": 1.12
+    },
+    {
+     "len": 0.4,
+     "w": 0.7,
+     "d": 0.7,
+     "h": 1.12
+    },
+    {
+     "len": 1,
+     "w": 0.7,
+     "d": 0.7,
+     "h": 1.12
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [],
+    "wall": []
+   },
+   "block": {
+    "shape": "wall",
+    "axis": "x",
+    "passable": false
+   }
+  },
+  "hedgeRun": {
+   "label": "Clipped hedge",
+   "family": "hedge",
+   "variants": [
+    "low",
+    "tall"
+   ],
+   "runs": true,
+   "runGain": 1.19,
+   "defaults": {},
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 1.6,
+     "d": 0.62,
+     "h": 0.85
+    },
+    {
+     "len": 0.4,
+     "w": 2.362,
+     "d": 0.62,
+     "h": 0.85
+    },
+    {
+     "len": 1,
+     "w": 3.504,
+     "d": 0.62,
+     "h": 0.85
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [
+     [
+      -1.181,
+      0,
+      0
+     ],
+     [
+      1.181,
+      0,
+      0
+     ]
+    ],
+    "wall": []
+   },
+   "block": {
+    "shape": "wall",
+    "axis": "x",
+    "passable": false
+   }
+  },
+  "hedgeBall": {
+   "label": "Clipped ball",
+   "family": "hedge",
+   "variants": [
+    "deciduous",
+    "cedar"
+   ],
+   "runs": false,
+   "runGain": 0,
+   "defaults": {},
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 0.9,
+     "d": 0.86,
+     "h": 0.798
+    },
+    {
+     "len": 0.4,
+     "w": 0.9,
+     "d": 0.86,
+     "h": 0.965
+    },
+    {
+     "len": 1,
+     "w": 0.9,
+     "d": 0.86,
+     "h": 1.216
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [],
+    "wall": []
+   },
+   "block": {
+    "shape": "cylinder",
+    "axis": "x",
+    "passable": false
+   }
+  },
+  "cedarHedge": {
+   "label": "Cedar hedge",
+   "family": "hedge",
+   "variants": [
+    "screen"
+   ],
+   "runs": true,
+   "runGain": 1.13,
+   "defaults": {},
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 1.5,
+     "d": 0.66,
+     "h": 1.8
+    },
+    {
+     "len": 0.4,
+     "w": 2.178,
+     "d": 0.66,
+     "h": 2
+    },
+    {
+     "len": 1,
+     "w": 3.195,
+     "d": 0.66,
+     "h": 2.3
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [
+     [
+      -1.089,
+      0,
+      0
+     ],
+     [
+      1.089,
+      0,
+      0
+     ]
+    ],
+    "wall": []
+   },
+   "block": {
+    "shape": "wall",
+    "axis": "x",
+    "passable": false
+   }
+  },
+  "lilac": {
+   "label": "Dooryard lilac",
+   "family": "hedge",
+   "variants": [
+    "bush"
+   ],
+   "runs": false,
+   "runGain": 0,
+   "defaults": {},
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 1.3,
+     "d": 1.1,
+     "h": 1.9
+    },
+    {
+     "len": 0.4,
+     "w": 1.3,
+     "d": 1.1,
+     "h": 2.14
+    },
+    {
+     "len": 1,
+     "w": 1.3,
+     "d": 1.1,
+     "h": 2.5
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [],
+    "wall": []
+   },
+   "block": {
+    "shape": "cylinder",
+    "axis": "x",
+    "passable": false
+   }
+  },
+  "roseBush": {
+   "label": "Rugosa rose",
+   "family": "hedge",
+   "variants": [
+    "mound"
+   ],
+   "runs": false,
+   "runGain": 0,
+   "defaults": {},
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 1.1,
+     "d": 1,
+     "h": 0.78
+    },
+    {
+     "len": 0.4,
+     "w": 1.1,
+     "d": 1,
+     "h": 0.88
+    },
+    {
+     "len": 1,
+     "w": 1.1,
+     "d": 1,
+     "h": 1.03
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [],
+    "wall": []
+   },
+   "block": {
+    "shape": "cylinder",
+    "axis": "x",
+    "passable": false
+   }
+  },
+  "hedgeCorner": {
+   "label": "Hedge corner",
+   "family": "hedge",
+   "variants": [
+    "low",
+    "tall"
+   ],
+   "runs": true,
+   "runGain": 0.47,
+   "defaults": {},
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 0.95,
+     "d": 0.95,
+     "h": 0.88
+    },
+    {
+     "len": 0.4,
+     "w": 1.129,
+     "d": 0.95,
+     "h": 0.88
+    },
+    {
+     "len": 1,
+     "w": 1.396,
+     "d": 0.95,
+     "h": 0.88
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [
+     [
+      -0.564,
+      0,
+      0
+     ],
+     [
+      0.564,
+      0,
+      0
+     ]
+    ],
+    "wall": []
+   },
+   "block": {
+    "shape": "wall",
+    "axis": "x",
+    "passable": false
+   }
+  },
+  "hydrangea": {
+   "label": "Hydrangea",
+   "family": "hedge",
+   "variants": [
+    "blue",
+    "white"
+   ],
+   "runs": false,
+   "runGain": 0,
+   "defaults": {},
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 1.15,
+     "d": 1,
+     "h": 0.85
+    },
+    {
+     "len": 0.4,
+     "w": 1.15,
+     "d": 1,
+     "h": 0.97
+    },
+    {
+     "len": 1,
+     "w": 1.15,
+     "d": 1,
+     "h": 1.15
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [],
+    "wall": []
+   },
+   "block": {
+    "shape": "cylinder",
+    "axis": "x",
+    "passable": false
+   }
+  },
+  "trellisVine": {
+   "label": "Trellis & vine",
+   "family": "hedge",
+   "variants": [
+    "sweet pea",
+    "clematis"
+   ],
+   "runs": true,
+   "runGain": 0.6,
+   "defaults": {
+    "paint": "white"
+   },
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 1,
+     "d": 0.16,
+     "h": 1.7
+    },
+    {
+     "len": 0.4,
+     "w": 1.24,
+     "d": 0.16,
+     "h": 1.82
+    },
+    {
+     "len": 1,
+     "w": 1.6,
+     "d": 0.16,
+     "h": 2
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [
+     [
+      -0.62,
+      0,
+      0
+     ],
+     [
+      0.62,
+      0,
+      0
+     ]
+    ],
+    "wall": []
+   },
+   "block": {
+    "shape": "wall",
+    "axis": "x",
+    "passable": false
+   }
+  },
+  "foundationBed": {
+   "label": "Foundation bed",
+   "family": "bed",
+   "variants": [
+    "shell edge",
+    "stone edge"
+   ],
+   "runs": true,
+   "runGain": 0.87,
+   "defaults": {
+    "planted": true
+   },
+   "readsPlanted": true,
+   "size": [
+    {
+     "len": 0,
+     "w": 1.6,
+     "d": 0.62,
+     "h": 0.5
+    },
+    {
+     "len": 0.4,
+     "w": 2.157,
+     "d": 0.62,
+     "h": 0.5
+    },
+    {
+     "len": 1,
+     "w": 2.992,
+     "d": 0.62,
+     "h": 0.5
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [
+     [
+      -1.078,
+      0,
+      0
+     ],
+     [
+      1.078,
+      0,
+      0
+     ]
+    ],
+    "wall": []
+   },
+   "block": {
+    "shape": "plot",
+    "axis": null,
+    "passable": true
+   }
+  },
+  "islandBed": {
+   "label": "Island bed",
+   "family": "bed",
+   "variants": [
+    "oval"
+   ],
+   "runs": true,
+   "runGain": 0.82,
+   "defaults": {
+    "planted": true
+   },
+   "readsPlanted": true,
+   "size": [
+    {
+     "len": 0,
+     "w": 1.1,
+     "d": 0.8,
+     "h": 0.6
+    },
+    {
+     "len": 0.4,
+     "w": 1.461,
+     "d": 0.8,
+     "h": 0.6
+    },
+    {
+     "len": 1,
+     "w": 2.002,
+     "d": 0.8,
+     "h": 0.6
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [
+     [
+      -0.73,
+      0,
+      0
+     ],
+     [
+      0.73,
+      0,
+      0
+     ]
+    ],
+    "wall": []
+   },
+   "block": {
+    "shape": "plot",
+    "axis": null,
+    "passable": true
+   }
+  },
+  "borderBed": {
+   "label": "Border bed",
+   "family": "bed",
+   "variants": [
+    "timber edge"
+   ],
+   "runs": true,
+   "runGain": 0.89,
+   "defaults": {
+    "planted": true
+   },
+   "readsPlanted": true,
+   "size": [
+    {
+     "len": 0,
+     "w": 1.8,
+     "d": 0.45,
+     "h": 0.45
+    },
+    {
+     "len": 0.4,
+     "w": 2.441,
+     "d": 0.45,
+     "h": 0.45
+    },
+    {
+     "len": 1,
+     "w": 3.402,
+     "d": 0.45,
+     "h": 0.45
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [
+     [
+      -1.22,
+      0,
+      0
+     ],
+     [
+      1.22,
+      0,
+      0
+     ]
+    ],
+    "wall": []
+   },
+   "block": {
+    "shape": "plot",
+    "axis": null,
+    "passable": true
+   }
+  },
+  "vegRows": {
+   "label": "Vegetable rows",
+   "family": "bed",
+   "variants": [
+    "open",
+    "bean poles"
+   ],
+   "runs": true,
+   "runGain": 0.87,
+   "defaults": {},
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 1.5,
+     "d": 1.1,
+     "h": 0.34
+    },
+    {
+     "len": 0.4,
+     "w": 2.022,
+     "d": 1.1,
+     "h": 0.34
+    },
+    {
+     "len": 1,
+     "w": 2.805,
+     "d": 1.1,
+     "h": 0.34
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [
+     [
+      -1.011,
+      0,
+      0
+     ],
+     [
+      1.011,
+      0,
+      0
+     ]
+    ],
+    "wall": []
+   },
+   "block": {
+    "shape": "plot",
+    "axis": null,
+    "passable": true
+   }
+  },
+  "potatoDrills": {
+   "label": "Potato drills",
+   "family": "bed",
+   "variants": [
+    "hilled"
+   ],
+   "runs": true,
+   "runGain": 0.88,
+   "defaults": {},
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 1.7,
+     "d": 1.2,
+     "h": 0.42
+    },
+    {
+     "len": 0.4,
+     "w": 2.298,
+     "d": 1.2,
+     "h": 0.42
+    },
+    {
+     "len": 1,
+     "w": 3.196,
+     "d": 1.2,
+     "h": 0.42
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [
+     [
+      -1.149,
+      0,
+      0
+     ],
+     [
+      1.149,
+      0,
+      0
+     ]
+    ],
+    "wall": []
+   },
+   "block": {
+    "shape": "plot",
+    "axis": null,
+    "passable": true
+   }
+  },
+  "rhubarb": {
+   "label": "Rhubarb patch",
+   "family": "bed",
+   "variants": [
+    "clump"
+   ],
+   "runs": false,
+   "runGain": 0,
+   "defaults": {},
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 0.9,
+     "d": 0.8,
+     "h": 0.42
+    },
+    {
+     "len": 0.4,
+     "w": 0.9,
+     "d": 0.8,
+     "h": 0.42
+    },
+    {
+     "len": 1,
+     "w": 0.9,
+     "d": 0.8,
+     "h": 0.42
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [],
+    "wall": []
+   },
+   "block": {
+    "shape": "plot",
+    "axis": null,
+    "passable": true
+   }
+  },
+  "fernBed": {
+   "label": "Fern clump",
+   "family": "bed",
+   "variants": [
+    "shade"
+   ],
+   "runs": true,
+   "runGain": 0.42,
+   "defaults": {},
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 0.9,
+     "d": 0.8,
+     "h": 0.6
+    },
+    {
+     "len": 0.4,
+     "w": 1.051,
+     "d": 0.8,
+     "h": 0.6
+    },
+    {
+     "len": 1,
+     "w": 1.278,
+     "d": 0.8,
+     "h": 0.6
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [
+     [
+      -0.526,
+      0,
+      0
+     ],
+     [
+      0.526,
+      0,
+      0
+     ]
+    ],
+    "wall": []
+   },
+   "block": {
+    "shape": "cylinder",
+    "axis": null,
+    "passable": true
+   }
+  },
+  "hostaEdge": {
+   "label": "Hosta edging",
+   "family": "bed",
+   "variants": [
+    "white spike",
+    "pink spike"
+   ],
+   "runs": true,
+   "runGain": 0.83,
+   "defaults": {},
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 1.2,
+     "d": 0.5,
+     "h": 0.7
+    },
+    {
+     "len": 0.4,
+     "w": 1.598,
+     "d": 0.5,
+     "h": 0.7
+    },
+    {
+     "len": 1,
+     "w": 2.196,
+     "d": 0.5,
+     "h": 0.7
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [
+     [
+      -0.799,
+      0,
+      0
+     ],
+     [
+      0.799,
+      0,
+      0
+     ]
+    ],
+    "wall": []
+   },
+   "block": {
+    "shape": "plot",
+    "axis": null,
+    "passable": true
+   }
+  },
+  "raspberryRow": {
+   "label": "Raspberry canes",
+   "family": "bed",
+   "variants": [
+    "wired"
+   ],
+   "runs": true,
+   "runGain": 0.86,
+   "defaults": {},
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 1.4,
+     "d": 0.6,
+     "h": 1.15
+    },
+    {
+     "len": 0.4,
+     "w": 1.882,
+     "d": 0.6,
+     "h": 1.25
+    },
+    {
+     "len": 1,
+     "w": 2.604,
+     "d": 0.6,
+     "h": 1.4
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [
+     [
+      -0.941,
+      0,
+      0
+     ],
+     [
+      0.941,
+      0,
+      0
+     ]
+    ],
+    "wall": []
+   },
+   "block": {
+    "shape": "plot",
+    "axis": null,
+    "passable": true
+   }
+  },
+  "barrelPlanter": {
+   "label": "Half barrel",
+   "family": "planter",
+   "variants": [
+    "oak"
+   ],
+   "runs": false,
+   "runGain": 0,
+   "defaults": {
+    "planted": true
+   },
+   "readsPlanted": true,
+   "size": [
+    {
+     "len": 0,
+     "w": 0.62,
+     "d": 0.62,
+     "h": 0.72
+    },
+    {
+     "len": 0.4,
+     "w": 0.62,
+     "d": 0.62,
+     "h": 0.72
+    },
+    {
+     "len": 1,
+     "w": 0.62,
+     "d": 0.62,
+     "h": 0.72
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [],
+    "wall": []
+   },
+   "block": {
+    "shape": "cylinder",
+    "axis": null,
+    "passable": false
+   }
+  },
+  "windowBox": {
+   "label": "Window box",
+   "family": "planter",
+   "variants": [
+    "painted"
+   ],
+   "runs": true,
+   "runGain": 0.78,
+   "defaults": {
+    "paint": "white",
+    "planted": true
+   },
+   "readsPlanted": true,
+   "size": [
+    {
+     "len": 0,
+     "w": 0.9,
+     "d": 0.3,
+     "h": 0.5
+    },
+    {
+     "len": 0.4,
+     "w": 1.181,
+     "d": 0.3,
+     "h": 0.5
+    },
+    {
+     "len": 1,
+     "w": 1.602,
+     "d": 0.3,
+     "h": 0.5
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [
+     [
+      -0.59,
+      0,
+      0
+     ],
+     [
+      0.59,
+      0,
+      0
+     ]
+    ],
+    "wall": []
+   },
+   "block": {
+    "shape": "volume",
+    "axis": null,
+    "passable": false
+   }
+  },
+  "potCluster": {
+   "label": "Clay pots",
+   "family": "planter",
+   "variants": [
+    "three"
+   ],
+   "runs": false,
+   "runGain": 0,
+   "defaults": {
+    "planted": true
+   },
+   "readsPlanted": true,
+   "size": [
+    {
+     "len": 0,
+     "w": 0.7,
+     "d": 0.5,
+     "h": 0.45
+    },
+    {
+     "len": 0.4,
+     "w": 0.7,
+     "d": 0.5,
+     "h": 0.45
+    },
+    {
+     "len": 1,
+     "w": 0.7,
+     "d": 0.5,
+     "h": 0.45
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [],
+    "wall": []
+   },
+   "block": {
+    "shape": "volume",
+    "axis": null,
+    "passable": false
+   }
+  },
+  "tirePlanter": {
+   "label": "Tyre planter",
+   "family": "planter",
+   "variants": [
+    "black",
+    "whitewashed"
+   ],
+   "runs": false,
+   "runGain": 0,
+   "defaults": {
+    "planted": true,
+    "paint": "white"
+   },
+   "readsPlanted": true,
+   "size": [
+    {
+     "len": 0,
+     "w": 0.74,
+     "d": 0.7,
+     "h": 0.4
+    },
+    {
+     "len": 0.4,
+     "w": 0.74,
+     "d": 0.7,
+     "h": 0.4
+    },
+    {
+     "len": 1,
+     "w": 0.74,
+     "d": 0.7,
+     "h": 0.4
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [],
+    "wall": []
+   },
+   "block": {
+    "shape": "cylinder",
+    "axis": null,
+    "passable": false
+   }
+  },
+  "hangingBasket": {
+   "label": "Hanging basket",
+   "family": "planter",
+   "variants": [
+    "crook"
+   ],
+   "runs": false,
+   "runGain": 0,
+   "defaults": {
+    "planted": true
+   },
+   "readsPlanted": true,
+   "size": [
+    {
+     "len": 0,
+     "w": 0.52,
+     "d": 0.4,
+     "h": 1.62
+    },
+    {
+     "len": 0.4,
+     "w": 0.52,
+     "d": 0.4,
+     "h": 1.72
+    },
+    {
+     "len": 1,
+     "w": 0.52,
+     "d": 0.4,
+     "h": 1.87
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [],
+    "wall": []
+   },
+   "block": {
+    "shape": "cylinder",
+    "axis": null,
+    "passable": false
+   }
+  },
+  "mailbox": {
+   "label": "Mailbox",
+   "family": "fixture",
+   "variants": [
+    "flag down",
+    "flag up"
+   ],
+   "runs": false,
+   "runGain": 0,
+   "defaults": {},
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 0.3,
+     "d": 0.44,
+     "h": 1.35
+    },
+    {
+     "len": 0.4,
+     "w": 0.3,
+     "d": 0.44,
+     "h": 1.35
+    },
+    {
+     "len": 1,
+     "w": 0.3,
+     "d": 0.44,
+     "h": 1.35
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [],
+    "wall": []
+   },
+   "block": {
+    "shape": "volume",
+    "axis": null,
+    "passable": false
+   }
+  },
+  "clothesline": {
+   "label": "Clothesline",
+   "family": "fixture",
+   "variants": [
+    "hung",
+    "empty"
+   ],
+   "runs": true,
+   "runGain": 0.67,
+   "defaults": {
+    "paint": "white"
+   },
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 2.4,
+     "d": 0.55,
+     "h": 1.95
+    },
+    {
+     "len": 0.4,
+     "w": 3.043,
+     "d": 0.55,
+     "h": 1.95
+    },
+    {
+     "len": 1,
+     "w": 4.008,
+     "d": 0.55,
+     "h": 1.95
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [
+     [
+      -1.522,
+      0,
+      0
+     ],
+     [
+      1.522,
+      0,
+      0
+     ]
+    ],
+    "wall": []
+   },
+   "block": {
+    "shape": "volume",
+    "axis": null,
+    "passable": false
+   }
+  },
+  "woodpile": {
+   "label": "Woodpile",
+   "family": "fixture",
+   "variants": [
+    "open",
+    "tarped"
+   ],
+   "runs": true,
+   "runGain": 1,
+   "defaults": {},
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 1.1,
+     "d": 0.5,
+     "h": 0.8
+    },
+    {
+     "len": 0.4,
+     "w": 1.54,
+     "d": 0.5,
+     "h": 1
+    },
+    {
+     "len": 1,
+     "w": 2.2,
+     "d": 0.5,
+     "h": 1.4
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [
+     [
+      -0.77,
+      0,
+      0
+     ],
+     [
+      0.77,
+      0,
+      0
+     ]
+    ],
+    "wall": []
+   },
+   "block": {
+    "shape": "volume",
+    "axis": null,
+    "passable": false
+   }
+  },
+  "rainBarrel": {
+   "label": "Rain barrel",
+   "family": "fixture",
+   "variants": [
+    "oak",
+    "painted"
+   ],
+   "runs": false,
+   "runGain": 0,
+   "defaults": {
+    "paint": "sage"
+   },
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 0.66,
+     "d": 0.7,
+     "h": 0.98
+    },
+    {
+     "len": 0.4,
+     "w": 0.66,
+     "d": 0.7,
+     "h": 0.98
+    },
+    {
+     "len": 1,
+     "w": 0.66,
+     "d": 0.7,
+     "h": 0.98
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [],
+    "wall": []
+   },
+   "block": {
+    "shape": "cylinder",
+    "axis": null,
+    "passable": false
+   }
+  },
+  "hoseReel": {
+   "label": "Hose & tap",
+   "family": "fixture",
+   "variants": [
+    "grass",
+    "gravel pad"
+   ],
+   "runs": false,
+   "runGain": 0,
+   "defaults": {},
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 0.6,
+     "d": 0.6,
+     "h": 0.7
+    },
+    {
+     "len": 0.4,
+     "w": 0.6,
+     "d": 0.6,
+     "h": 0.7
+    },
+    {
+     "len": 1,
+     "w": 0.6,
+     "d": 0.6,
+     "h": 0.7
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [],
+    "wall": []
+   },
+   "block": {
+    "shape": "volume",
+    "axis": null,
+    "passable": false
+   }
+  },
+  "compostBin": {
+   "label": "Compost bin",
+   "family": "fixture",
+   "variants": [
+    "slat"
+   ],
+   "runs": false,
+   "runGain": 0,
+   "defaults": {},
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 0.9,
+     "d": 0.8,
+     "h": 0.86
+    },
+    {
+     "len": 0.4,
+     "w": 0.9,
+     "d": 0.8,
+     "h": 0.86
+    },
+    {
+     "len": 1,
+     "w": 0.9,
+     "d": 0.8,
+     "h": 0.86
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [],
+    "wall": []
+   },
+   "block": {
+    "shape": "volume",
+    "axis": null,
+    "passable": false
+   }
+  },
+  "oilTank": {
+   "label": "Oil tank",
+   "family": "fixture",
+   "variants": [
+    "on legs"
+   ],
+   "runs": false,
+   "runGain": 0,
+   "defaults": {
+    "paint": "cream"
+   },
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 1.1,
+     "d": 0.7,
+     "h": 1.1
+    },
+    {
+     "len": 0.4,
+     "w": 1.1,
+     "d": 0.7,
+     "h": 1.1
+    },
+    {
+     "len": 1,
+     "w": 1.1,
+     "d": 0.7,
+     "h": 1.1
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [],
+    "wall": []
+   },
+   "block": {
+    "shape": "volume",
+    "axis": null,
+    "passable": false
+   }
+  },
+  "bench": {
+   "label": "Garden bench",
+   "family": "sitting",
+   "variants": [
+    "slat back"
+   ],
+   "runs": true,
+   "runGain": 0.33,
+   "defaults": {
+    "paint": "white"
+   },
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 1.5,
+     "d": 0.45,
+     "h": 0.86
+    },
+    {
+     "len": 0.4,
+     "w": 1.698,
+     "d": 0.45,
+     "h": 0.86
+    },
+    {
+     "len": 1,
+     "w": 1.995,
+     "d": 0.45,
+     "h": 0.86
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [
+     [
+      -0.849,
+      0,
+      0
+     ],
+     [
+      0.849,
+      0,
+      0
+     ]
+    ],
+    "wall": []
+   },
+   "block": {
+    "shape": "volume",
+    "axis": null,
+    "passable": false
+   }
+  },
+  "picnicTable": {
+   "label": "Picnic table",
+   "family": "sitting",
+   "variants": [
+    "A-frame"
+   ],
+   "runs": false,
+   "runGain": 0,
+   "defaults": {},
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 1.85,
+     "d": 1.6,
+     "h": 0.78
+    },
+    {
+     "len": 0.4,
+     "w": 1.85,
+     "d": 1.6,
+     "h": 0.78
+    },
+    {
+     "len": 1,
+     "w": 1.85,
+     "d": 1.6,
+     "h": 0.78
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [],
+    "wall": []
+   },
+   "block": {
+    "shape": "volume",
+    "axis": null,
+    "passable": false
+   }
+  },
+  "adirondack": {
+   "label": "Muskoka chairs",
+   "family": "sitting",
+   "variants": [
+    "pair",
+    "single"
+   ],
+   "runs": false,
+   "runGain": 0,
+   "defaults": {
+    "paint": "teal"
+   },
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 1.6,
+     "d": 0.9,
+     "h": 0.9
+    },
+    {
+     "len": 0.4,
+     "w": 1.6,
+     "d": 0.9,
+     "h": 0.9
+    },
+    {
+     "len": 1,
+     "w": 1.6,
+     "d": 0.9,
+     "h": 0.9
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [],
+    "wall": []
+   },
+   "block": {
+    "shape": "volume",
+    "axis": null,
+    "passable": false
+   }
+  },
+  "firePit": {
+   "label": "Fire pit",
+   "family": "sitting",
+   "variants": [
+    "laid",
+    "cold"
+   ],
+   "runs": false,
+   "runGain": 0,
+   "defaults": {},
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 1.9,
+     "d": 1.7,
+     "h": 0.4
+    },
+    {
+     "len": 0.4,
+     "w": 1.9,
+     "d": 1.7,
+     "h": 0.4
+    },
+    {
+     "len": 1,
+     "w": 1.9,
+     "d": 1.7,
+     "h": 0.4
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [],
+    "wall": []
+   },
+   "block": {
+    "shape": "cylinder",
+    "axis": null,
+    "passable": false
+   }
+  },
+  "swingSet": {
+   "label": "Swing set",
+   "family": "play",
+   "variants": [
+    "two seats",
+    "tyre"
+   ],
+   "runs": false,
+   "runGain": 0,
+   "defaults": {},
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 2.1,
+     "d": 0.7,
+     "h": 1.95
+    },
+    {
+     "len": 0.4,
+     "w": 2.1,
+     "d": 0.7,
+     "h": 1.95
+    },
+    {
+     "len": 1,
+     "w": 2.1,
+     "d": 0.7,
+     "h": 1.95
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [],
+    "wall": []
+   },
+   "block": {
+    "shape": "volume",
+    "axis": null,
+    "passable": false
+   }
+  },
+  "sandbox": {
+   "label": "Sandbox",
+   "family": "play",
+   "variants": [
+    "open"
+   ],
+   "runs": false,
+   "runGain": 0,
+   "defaults": {},
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 1.15,
+     "d": 1,
+     "h": 0.3
+    },
+    {
+     "len": 0.4,
+     "w": 1.15,
+     "d": 1,
+     "h": 0.3
+    },
+    {
+     "len": 1,
+     "w": 1.15,
+     "d": 1,
+     "h": 0.3
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [],
+    "wall": []
+   },
+   "block": {
+    "shape": "volume",
+    "axis": null,
+    "passable": false
+   }
+  },
+  "doghouse": {
+   "label": "Doghouse",
+   "family": "play",
+   "variants": [
+    "board roof",
+    "shingle"
+   ],
+   "runs": false,
+   "runGain": 0,
+   "defaults": {
+    "paint": "red"
+   },
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 0.84,
+     "d": 1,
+     "h": 0.94
+    },
+    {
+     "len": 0.4,
+     "w": 0.84,
+     "d": 1,
+     "h": 0.94
+    },
+    {
+     "len": 1,
+     "w": 0.84,
+     "d": 1,
+     "h": 0.94
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [],
+    "wall": []
+   },
+   "block": {
+    "shape": "volume",
+    "axis": null,
+    "passable": false
+   }
+  },
+  "sawhorses": {
+   "label": "Sawhorses",
+   "family": "play",
+   "variants": [
+    "with plank",
+    "bare"
+   ],
+   "runs": false,
+   "runGain": 0,
+   "defaults": {},
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 1.5,
+     "d": 0.66,
+     "h": 0.73
+    },
+    {
+     "len": 0.4,
+     "w": 1.5,
+     "d": 0.66,
+     "h": 0.73
+    },
+    {
+     "len": 1,
+     "w": 1.5,
+     "d": 0.66,
+     "h": 0.73
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [],
+    "wall": []
+   },
+   "block": {
+    "shape": "volume",
+    "axis": null,
+    "passable": false
+   }
+  },
+  "toolLean": {
+   "label": "Tools & post",
+   "family": "play",
+   "variants": [
+    "leaning"
+   ],
+   "runs": false,
+   "runGain": 0,
+   "defaults": {},
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 0.9,
+     "d": 0.8,
+     "h": 1.35
+    },
+    {
+     "len": 0.4,
+     "w": 0.9,
+     "d": 0.8,
+     "h": 1.35
+    },
+    {
+     "len": 1,
+     "w": 0.9,
+     "d": 0.8,
+     "h": 1.35
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [],
+    "wall": []
+   },
+   "block": {
+    "shape": "volume",
+    "axis": null,
+    "passable": false
+   }
+  },
+  "buoyPost": {
+   "label": "Buoy post",
+   "family": "ornament",
+   "variants": [
+    "plain",
+    "cross arm"
+   ],
+   "runs": false,
+   "runGain": 0,
+   "defaults": {},
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 0.5,
+     "d": 0.4,
+     "h": 1.6
+    },
+    {
+     "len": 0.4,
+     "w": 0.5,
+     "d": 0.4,
+     "h": 1.8
+    },
+    {
+     "len": 1,
+     "w": 0.5,
+     "d": 0.4,
+     "h": 2.1
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [],
+    "wall": []
+   },
+   "block": {
+    "shape": "cylinder",
+    "axis": null,
+    "passable": false
+   }
+  },
+  "doryPlanter": {
+   "label": "Dory planter",
+   "family": "ornament",
+   "variants": [
+    "painted"
+   ],
+   "runs": true,
+   "runGain": 0.3,
+   "defaults": {
+    "paint": "white",
+    "planted": true
+   },
+   "readsPlanted": true,
+   "size": [
+    {
+     "len": 0,
+     "w": 1.7,
+     "d": 0.7,
+     "h": 0.7
+    },
+    {
+     "len": 0.4,
+     "w": 1.904,
+     "d": 0.7,
+     "h": 0.7
+    },
+    {
+     "len": 1,
+     "w": 2.21,
+     "d": 0.7,
+     "h": 0.7
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [
+     [
+      -0.952,
+      0,
+      0
+     ],
+     [
+      0.952,
+      0,
+      0
+     ]
+    ],
+    "wall": []
+   },
+   "block": {
+    "shape": "volume",
+    "axis": null,
+    "passable": false
+   }
+  },
+  "anchorSet": {
+   "label": "Anchor & coil",
+   "family": "ornament",
+   "variants": [
+    "fisherman"
+   ],
+   "runs": false,
+   "runGain": 0,
+   "defaults": {},
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 0.9,
+     "d": 0.7,
+     "h": 0.945
+    },
+    {
+     "len": 0.4,
+     "w": 0.9,
+     "d": 0.7,
+     "h": 1.113
+    },
+    {
+     "len": 1,
+     "w": 0.9,
+     "d": 0.7,
+     "h": 1.365
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [],
+    "wall": []
+   },
+   "block": {
+    "shape": "volume",
+    "axis": null,
+    "passable": false
+   }
+  },
+  "trapBench": {
+   "label": "Trap bench",
+   "family": "ornament",
+   "variants": [
+    "plain",
+    "with buoys"
+   ],
+   "runs": false,
+   "runGain": 0,
+   "defaults": {},
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 1.4,
+     "d": 0.5,
+     "h": 0.5
+    },
+    {
+     "len": 0.4,
+     "w": 1.4,
+     "d": 0.5,
+     "h": 0.5
+    },
+    {
+     "len": 1,
+     "w": 1.4,
+     "d": 0.5,
+     "h": 0.5
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [],
+    "wall": []
+   },
+   "block": {
+    "shape": "volume",
+    "axis": null,
+    "passable": false
+   }
+  },
+  "birdbath": {
+   "label": "Birdbath",
+   "family": "ornament",
+   "variants": [
+    "water",
+    "iced"
+   ],
+   "runs": false,
+   "runGain": 0,
+   "defaults": {},
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 0.68,
+     "d": 0.68,
+     "h": 0.82
+    },
+    {
+     "len": 0.4,
+     "w": 0.68,
+     "d": 0.68,
+     "h": 0.82
+    },
+    {
+     "len": 1,
+     "w": 0.68,
+     "d": 0.68,
+     "h": 0.82
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [],
+    "wall": []
+   },
+   "block": {
+    "shape": "cylinder",
+    "axis": null,
+    "passable": false
+   }
+  },
+  "birdhouse": {
+   "label": "Birdhouse pole",
+   "family": "ornament",
+   "variants": [
+    "single"
+   ],
+   "runs": false,
+   "runGain": 0,
+   "defaults": {
+    "paint": "white"
+   },
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 0.3,
+     "d": 0.3,
+     "h": 2.56
+    },
+    {
+     "len": 0.4,
+     "w": 0.3,
+     "d": 0.3,
+     "h": 2.76
+    },
+    {
+     "len": 1,
+     "w": 0.3,
+     "d": 0.3,
+     "h": 3.06
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [],
+    "wall": []
+   },
+   "block": {
+    "shape": "cylinder",
+    "axis": null,
+    "passable": false
+   }
+  },
+  "steppingStones": {
+   "label": "Stepping stones",
+   "family": "ground",
+   "variants": [
+    "flagstone",
+    "cast"
+   ],
+   "runs": true,
+   "runGain": 1.17,
+   "defaults": {},
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 1.2,
+     "d": 0.5,
+     "h": 0.06
+    },
+    {
+     "len": 0.4,
+     "w": 1.762,
+     "d": 0.5,
+     "h": 0.06
+    },
+    {
+     "len": 1,
+     "w": 2.604,
+     "d": 0.5,
+     "h": 0.06
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [
+     [
+      -0.881,
+      0,
+      0
+     ],
+     [
+      0.881,
+      0,
+      0
+     ]
+    ],
+    "wall": []
+   },
+   "block": {
+    "shape": "surface",
+    "axis": null,
+    "passable": true
+   }
+  },
+  "gravelApron": {
+   "label": "Gravel apron",
+   "family": "ground",
+   "variants": [
+    "gravel",
+    "crushed shell"
+   ],
+   "runs": true,
+   "runGain": 1.12,
+   "defaults": {},
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 1.6,
+     "d": 1.3,
+     "h": 0.08
+    },
+    {
+     "len": 0.4,
+     "w": 2.317,
+     "d": 1.3,
+     "h": 0.08
+    },
+    {
+     "len": 1,
+     "w": 3.392,
+     "d": 1.3,
+     "h": 0.08
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [
+     [
+      -1.158,
+      0,
+      0
+     ],
+     [
+      1.158,
+      0,
+      0
+     ]
+    ],
+    "wall": []
+   },
+   "block": {
+    "shape": "surface",
+    "axis": null,
+    "passable": true
+   }
+  },
+  "lawnEdge": {
+   "label": "Mown edge",
+   "family": "ground",
+   "variants": [
+    "cut edge"
+   ],
+   "runs": true,
+   "runGain": 1,
+   "defaults": {},
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 1.4,
+     "d": 1.1,
+     "h": 0.2
+    },
+    {
+     "len": 0.4,
+     "w": 1.96,
+     "d": 1.1,
+     "h": 0.2
+    },
+    {
+     "len": 1,
+     "w": 2.8,
+     "d": 1.1,
+     "h": 0.2
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [
+     [
+      -0.98,
+      0,
+      0
+     ],
+     [
+      0.98,
+      0,
+      0
+     ]
+    ],
+    "wall": []
+   },
+   "block": {
+    "shape": "surface",
+    "axis": null,
+    "passable": true
+   }
+  },
+  "groundCover": {
+   "label": "Creeping cover",
+   "family": "ground",
+   "variants": [
+    "thyme",
+    "moss"
+   ],
+   "runs": true,
+   "runGain": 1,
+   "defaults": {},
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 1,
+     "d": 0.85,
+     "h": 0.14
+    },
+    {
+     "len": 0.4,
+     "w": 1.4,
+     "d": 0.85,
+     "h": 0.14
+    },
+    {
+     "len": 1,
+     "w": 2,
+     "d": 0.85,
+     "h": 0.14
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [
+     [
+      -0.7,
+      0,
+      0
+     ],
+     [
+      0.7,
+      0,
+      0
+     ]
+    ],
+    "wall": []
+   },
+   "block": {
+    "shape": "surface",
+    "axis": null,
+    "passable": true
+   }
+  },
+  "flagpole": {
+   "label": "Flagpole",
+   "family": "sign",
+   "variants": [
+    "flying"
+   ],
+   "runs": true,
+   "runGain": 0.1,
+   "defaults": {},
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 0.4,
+     "d": 0.4,
+     "h": 5.2
+    },
+    {
+     "len": 0.4,
+     "w": 0.416,
+     "d": 0.4,
+     "h": 5.92
+    },
+    {
+     "len": 1,
+     "w": 0.44,
+     "d": 0.4,
+     "h": 7
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [
+     [
+      -0.208,
+      0,
+      0
+     ],
+     [
+      0.208,
+      0,
+      0
+     ]
+    ],
+    "wall": []
+   },
+   "block": {
+    "shape": "cylinder",
+    "axis": null,
+    "passable": false
+   }
+  },
+  "nameSign": {
+   "label": "Name board",
+   "family": "sign",
+   "variants": [
+    "plain",
+    "buoy"
+   ],
+   "runs": false,
+   "runGain": 0,
+   "defaults": {
+    "paint": "white"
+   },
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 0.9,
+     "d": 0.2,
+     "h": 1.52
+    },
+    {
+     "len": 0.4,
+     "w": 0.9,
+     "d": 0.2,
+     "h": 1.52
+    },
+    {
+     "len": 1,
+     "w": 0.9,
+     "d": 0.2,
+     "h": 1.52
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [],
+    "wall": []
+   },
+   "block": {
+    "shape": "post",
+    "axis": null,
+    "passable": false
+   }
+  },
+  "numberPost": {
+   "label": "Number post",
+   "family": "sign",
+   "variants": [
+    "post"
+   ],
+   "runs": false,
+   "runGain": 0,
+   "defaults": {
+    "paint": "white"
+   },
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 0.3,
+     "d": 0.2,
+     "h": 1.06
+    },
+    {
+     "len": 0.4,
+     "w": 0.3,
+     "d": 0.2,
+     "h": 1.06
+    },
+    {
+     "len": 1,
+     "w": 0.3,
+     "d": 0.2,
+     "h": 1.06
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [],
+    "wall": []
+   },
+   "block": {
+    "shape": "post",
+    "axis": null,
+    "passable": false
+   }
+  },
+  "farmStand": {
+   "label": "Roadside stand",
+   "family": "sign",
+   "variants": [
+    "stocked",
+    "empty"
+   ],
+   "runs": false,
+   "runGain": 0,
+   "defaults": {
+    "paint": "white"
+   },
+   "readsPlanted": false,
+   "size": [
+    {
+     "len": 0,
+     "w": 1.25,
+     "d": 0.8,
+     "h": 1.46
+    },
+    {
+     "len": 0.4,
+     "w": 1.25,
+     "d": 0.8,
+     "h": 1.46
+    },
+    {
+     "len": 1,
+     "w": 1.25,
+     "d": 0.8,
+     "h": 1.46
+    }
+   ],
+   "mounts": {
+    "ground": [
+     [
+      0,
+      0,
+      0
+     ]
+    ],
+    "ends": [],
+    "wall": []
+   },
+   "block": {
+    "shape": "post",
+    "axis": null,
+    "passable": false
+   }
+  }
+ }
+}

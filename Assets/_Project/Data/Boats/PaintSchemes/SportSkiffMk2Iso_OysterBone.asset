@@ -1,0 +1,195 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee76649f87a8cfd4890261ca9a64ffa3, type: 3}
+  m_Name: SportSkiffMk2Iso_OysterBone
+  m_EditorClassIdentifier: HiddenHarbours.Core::HiddenHarbours.Core.HullPaintSchemeDef
+  Id: paint.sport_skiff_mk2_oyster_bone
+  Label: Oyster Bone
+  Note: bone gelcoat, navy boot, grey hides
+  HullMeshId: hullmesh.sport_skiff_mk2_iso
+  SourceRigPath: docs/art/rigs/sportSkiffMk2IsoRig.js
+  RigPaintId: oyster-bone
+  Ramps:
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4284117358
+    - serializedVersion: 2
+      rgba: 4285828234
+    - serializedVersion: 2
+      rgba: 4287341476
+    - serializedVersion: 2
+      rgba: 4288788925
+    - serializedVersion: 2
+      rgba: 4290236118
+    - serializedVersion: 2
+      rgba: 4291485929
+    - serializedVersion: 2
+      rgba: 4292209394
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4281671693
+    - serializedVersion: 2
+      rgba: 4282198037
+    - serializedVersion: 2
+      rgba: 4282658588
+    - serializedVersion: 2
+      rgba: 4283053346
+    - serializedVersion: 2
+      rgba: 4287659367
+    Offset: -1
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4281737229
+    - serializedVersion: 2
+      rgba: 4282527002
+    - serializedVersion: 2
+      rgba: 4287790439
+    Offset: -1
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4281671693
+    - serializedVersion: 2
+      rgba: 4282198037
+    - serializedVersion: 2
+      rgba: 4282658588
+    - serializedVersion: 2
+      rgba: 4283053346
+    - serializedVersion: 2
+      rgba: 4287659367
+    Offset: -1
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4284117358
+    - serializedVersion: 2
+      rgba: 4285828234
+    - serializedVersion: 2
+      rgba: 4287341476
+    - serializedVersion: 2
+      rgba: 4288788925
+    - serializedVersion: 2
+      rgba: 4290236118
+    - serializedVersion: 2
+      rgba: 4291485929
+    - serializedVersion: 2
+      rgba: 4292209394
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4283587416
+    - serializedVersion: 2
+      rgba: 4285890429
+    - serializedVersion: 2
+      rgba: 4287930270
+    - serializedVersion: 2
+      rgba: 4289838012
+    - serializedVersion: 2
+      rgba: 4291416787
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4284117358
+    - serializedVersion: 2
+      rgba: 4285828234
+    - serializedVersion: 2
+      rgba: 4287341476
+    - serializedVersion: 2
+      rgba: 4288788925
+    - serializedVersion: 2
+      rgba: 4290236118
+    - serializedVersion: 2
+      rgba: 4291485929
+    - serializedVersion: 2
+      rgba: 4292209394
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4285823349
+    - serializedVersion: 2
+      rgba: 4288784035
+    - serializedVersion: 2
+      rgba: 4291350219
+    - serializedVersion: 2
+      rgba: 4293652975
+    - serializedVersion: 2
+      rgba: 4294047476
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4283585094
+    - serializedVersion: 2
+      rgba: 4285624934
+    - serializedVersion: 2
+      rgba: 4287467138
+    - serializedVersion: 2
+      rgba: 4289178270
+    - serializedVersion: 2
+      rgba: 4291152062
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4282925370
+    - serializedVersion: 2
+      rgba: 4284899158
+    - serializedVersion: 2
+      rgba: 4287399290
+    - serializedVersion: 2
+      rgba: 4289833887
+    - serializedVersion: 2
+      rgba: 4292005571
+    - serializedVersion: 2
+      rgba: 4293848550
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4282135318
+    - serializedVersion: 2
+      rgba: 4284108836
+    - serializedVersion: 2
+      rgba: 4286608954
+    - serializedVersion: 2
+      rgba: 4289110879
+    - serializedVersion: 2
+      rgba: 4291086735
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279702288
+    - serializedVersion: 2
+      rgba: 4280754461
+    - serializedVersion: 2
+      rgba: 4282004011
+    - serializedVersion: 2
+      rgba: 4283319613
+    - serializedVersion: 2
+      rgba: 4284701778
+    - serializedVersion: 2
+      rgba: 4286281323
+    - serializedVersion: 2
+      rgba: 4288255114
+    Offset: 0
+  - Colors:
+    - serializedVersion: 2
+      rgba: 4279702288
+    - serializedVersion: 2
+      rgba: 4280754461
+    - serializedVersion: 2
+      rgba: 4282004011
+    - serializedVersion: 2
+      rgba: 4283319613
+    - serializedVersion: 2
+      rgba: 4284701778
+    - serializedVersion: 2
+      rgba: 4286281323
+    - serializedVersion: 2
+      rgba: 4288255114
+    Offset: -2

@@ -673,13 +673,33 @@ namespace HiddenHarbours.App.Editor
             var doryOutboard = LoadOrCreate<BoatHullDef>(DataBoats + "/DoryOutboard.asset");
             if (doryOutboard != null && dory != null)
             {
+                // ⚠⚠ CopySerialized copies EVERY serialized field off the ROWED dory, so anything
+                // authored on the OUTBOARD alone is about to be silently overwritten with the rowed
+                // dory's value. That used to be harmless — Propulsion really was "THE one difference"
+                // — and it stopped being true the moment fuel landed: the outboard is the first motor
+                // in the game and carries a 10 L tank of gas, while the dory carries no tank at all.
+                // Left unguarded, every builder run quietly de-fuelled the one boat the opening is
+                // built on, and only a re-derived-from-the-Defs test would ever say so.
+                //
+                // So: snapshot what is HERS, copy, and put it back. Deliberately NOT restated as
+                // literals here — rule 6, and fuel-and-refuelling.md §9.12 is explicit that not one
+                // fuel number may appear in a .cs file. The ASSET is the authority; this only keeps
+                // the copy from eating it.
+                float fuelCapacity = doryOutboard.FuelCapacityLitres;
+                string fuelGrade = doryOutboard.FuelGrade;
+                float fuelBurn = doryOutboard.FullThrottleLitresPerHour;
+
                 EditorUtility.CopySerialized(dory, doryOutboard);
                 // CopySerialized copies m_Name too, and an asset whose object name disagrees with its
                 // file name is a trap for every AssetDatabase lookup that follows.
                 doryOutboard.name = "DoryOutboard";
                 doryOutboard.Id = "boat.dory_outboard";
                 doryOutboard.DisplayName = "The Dory (outboard)";
-                doryOutboard.Propulsion = PropulsionType.Engine;   // THE one difference
+                doryOutboard.Propulsion = PropulsionType.Engine;   // the one difference in HANDLING
+
+                doryOutboard.FuelCapacityLitres = fuelCapacity;    // …and the one in what she DRINKS
+                doryOutboard.FuelGrade = fuelGrade;
+                doryOutboard.FullThrottleLitresPerHour = fuelBurn;
                 EditorUtility.SetDirty(doryOutboard);
             }
             // The Punt keeps her old flat top-down Sprite as the FALLBACK picture — the one the skinner

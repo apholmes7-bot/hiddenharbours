@@ -157,6 +157,7 @@ namespace HiddenHarbours.App.Editor
             if (OnAnyCarriageway(p, RoadVergeMetres)) return false;
             if (OnAnyPad(p, RoadVergeMetres)) return false;
             if (OnATownLot(p, TownLotBreathingMetres)) return false;
+            if (OnAYard(p)) return false;
             if (OnAWorkingSite(p)) return false;
 
             if (Vector2.Distance(p, NineMileCreekMainland.BarRoad[0]) < LandingClearanceMetres)
@@ -172,15 +173,33 @@ namespace HiddenHarbours.App.Editor
         /// Ground the MEADOW may grow on. The grass floor rather than the field floor, and only the
         /// carriageway itself kept clear — <b>grass grows to the edge of a gravel road and up to a
         /// doorstep; that is what makes a road read as a road cut through a field.</b>
+        ///
+        /// <para><b>⭐ AND IT STOPS AT A MOW LINE</b> (<see cref="OnAYard"/>, 2026-08-20). Up to a
+        /// doorstep is right for a road; it is wrong for a lawn, which is the one place on this coast
+        /// where the wild grass is deliberately absent because somebody cuts it.</para>
         /// </summary>
         public static bool IsGrassGround(ITidalTerrain terrain, Vector2 p)
         {
             if (!IsFieldGround(terrain, p, GrassFloorElevation)) return false;
             if (OnATownLot(p, 0f)) return false;
+            if (OnAYard(p)) return false;
             if (OnAnyCarriageway(p, 0f)) return false;
             if (OnAnyPad(p, 0f)) return false;
             return true;
         }
+
+        /// <summary>
+        /// ⭐ <b>Is <paramref name="p"/> inside a town lot's YARD?</b> The mow line — the polygon
+        /// <see cref="NineMileCreekYards"/> authors once and the lawn, the wild grass and the fence all
+        /// read (lead-architect's lawn ruling, 2026-08-20).
+        ///
+        /// <para><b>⚠ IT ADDS TO <see cref="OnATownLot"/>; IT REPLACES NOTHING.</b> Every lot keeps the
+        /// 6 m disc it always reserved, so a lot with no yard row behaves exactly as it did before this
+        /// file knew what a yard was — <c>NineMileCreekYardTests</c> pins that. A yard is only ever MORE
+        /// cleared ground, never less, which is what makes it safe to author one property at a time.
+        /// </para>
+        /// </summary>
+        public static bool OnAYard(Vector2 p) => NineMileCreekYards.IsInsideAYard(p);
 
         /// <summary>
         /// ⭐ <b>Is <paramref name="p"/> on (or within <paramref name="margin"/> of) a paved PAD?</b>

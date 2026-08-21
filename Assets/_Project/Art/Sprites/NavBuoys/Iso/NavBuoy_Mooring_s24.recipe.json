@@ -1,0 +1,71 @@
+{
+  "schema": "hiddenharbours.rig-recipe/1",
+  "sheet": "NavBuoy_Mooring_s24.png",
+  "kit": "nav-buoy",
+  "baker": "NavBuoySheetBaker",
+  "rig": {
+    "key": "navBuoy",
+    "global": "NavBuoy",
+    "source": "docs/art/rigs/nav-buoy-kit/navBuoyRig.js",
+    "sha256": "4163a8d2c975ecc95c4d998e01303a68becd0c6e6e13e46233526d023b16d561",
+    "convention": "Clockwise",
+    "prerequisites": [
+      {
+        "key": "deckIsoSolid",
+        "global": "IsoSolid",
+        "source": "docs/art/rigs/deck-loop-kit/Art/isoSolid.js",
+        "sha256": "f7fc9db510b0346dea568c43dc7378f1a12fd71ee8f5a7653e78377812b792bd"
+      }
+    ]
+  },
+  "call": {
+    "fn": "render",
+    "args": [
+      "Mooring",
+      "$dir",
+      "$opts"
+    ],
+    "opts": {
+      "size": "s24",
+      "wear": "working",
+      "lit": false
+    }
+  },
+  "grid": {
+    "columns": 8,
+    "rows": 1,
+    "order": "rowMajor",
+    "axes": [
+      {
+        "name": "facing",
+        "bind": "dir",
+        "values": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ]
+      }
+    ]
+  },
+  "pack": {
+    "rule": "pivotUnionCropOverWear",
+    "nativeW": 120,
+    "nativeH": 178,
+    "nativePivotX": 60,
+    "nativePivotY": 95,
+    "cropX": 19,
+    "cropY": 45,
+    "cellW": 82,
+    "cellH": 98,
+    "pivotX": 41,
+    "pivotY": 50,
+    "sheetW": 656,
+    "sheetH": 98
+  },
+  "sheetSha256": "90f558c2642e13956496580b3fc0d1c9013712e9b912d27d87cb18c846b49c83"
+}

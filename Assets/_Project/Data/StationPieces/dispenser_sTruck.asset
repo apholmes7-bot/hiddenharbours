@@ -1,0 +1,168 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c066b3141c12834eb15805632bcf579, type: 3}
+  m_Name: dispenser_sTruck
+  m_EditorClassIdentifier: HiddenHarbours.Art::HiddenHarbours.Art.StationPieceDef
+  Id: station.dispenser_struck
+  DisplayName: High Flow
+  PieceType: dispenser
+  SizeKey: sTruck
+  Label: HIGH-FLOW
+  IsInterior: 0
+  Facings: 8
+  Fold180: 0
+  Frames:
+  - {fileID: -1176150697, guid: e7116e5019c6a224bab4c07a63b8dcea, type: 3}
+  - {fileID: -1559177700, guid: e7116e5019c6a224bab4c07a63b8dcea, type: 3}
+  - {fileID: -1538851598, guid: e7116e5019c6a224bab4c07a63b8dcea, type: 3}
+  - {fileID: -51719260, guid: e7116e5019c6a224bab4c07a63b8dcea, type: 3}
+  - {fileID: -737100524, guid: e7116e5019c6a224bab4c07a63b8dcea, type: 3}
+  - {fileID: -1492951065, guid: e7116e5019c6a224bab4c07a63b8dcea, type: 3}
+  - {fileID: -837231787, guid: e7116e5019c6a224bab4c07a63b8dcea, type: 3}
+  - {fileID: 913845165, guid: e7116e5019c6a224bab4c07a63b8dcea, type: 3}
+  BakedGrades:
+  - gas
+  - diesel
+  - mixed
+  WidthMeters: 1.36
+  DepthMeters: 0.84
+  HeightMeters: 1.6
+  MaxHoses: 4
+  MaxSides: 2
+  HoseReachMeters: 6.2
+  LitresPerMinute: 130
+  Slots: 0
+  LengthMeters: 1.36
+  SlotPitchMeters: 3.3
+  Bays: 0
+  ClearHeightMeters: 0
+  Blockers:
+  - Kind: cabinet
+    Level: 
+    Footprint:
+    - {x: -0.54, y: -0.28}
+    - {x: 0.54, y: -0.28}
+    - {x: 0.54, y: 0.28}
+    - {x: -0.54, y: 0.28}
+    Center: {x: 0, y: 0}
+    Radius: 0
+    HeightAboveGradeMeters: 1.6
+    Treatment: wall
+  - Kind: plinth
+    Level: 
+    Footprint:
+    - {x: -0.68, y: -0.42}
+    - {x: 0.68, y: -0.42}
+    - {x: 0.68, y: 0.42}
+    - {x: -0.68, y: 0.42}
+    Center: {x: 0, y: 0}
+    Radius: 0
+    HeightAboveGradeMeters: 0.1
+    Treatment: flat
+  Walkables: []
+  Interactables:
+  - Id: nozzle_a0
+    Label: "HOSE A1 \xB7 GASOLINE"
+    Action: fuel
+    Position: {x: 0.7, y: -0.14, z: 0.76}
+    ReachPoint: {x: 1.32, y: -0.48, z: 0}
+    HasReachPoint: 1
+    ReachVerdict: ok
+    Level: apron
+    VisibleFacings:
+    - NE
+    - E
+    - SE
+  - Id: nozzle_a1
+    Label: "HOSE A2 \xB7 DIESEL"
+    Action: fuel
+    Position: {x: 0.7, y: -0.14, z: 1.1}
+    ReachPoint: {x: 1.32, y: -0.48, z: 0}
+    HasReachPoint: 1
+    ReachVerdict: ok
+    Level: apron
+    VisibleFacings:
+    - NE
+    - E
+    - SE
+  - Id: nozzle_b0
+    Label: "HOSE B1 \xB7 GASOLINE"
+    Action: fuel
+    Position: {x: -0.7, y: -0.14, z: 0.76}
+    ReachPoint: {x: -1.32, y: -0.48, z: 0}
+    HasReachPoint: 1
+    ReachVerdict: ok
+    Level: apron
+    VisibleFacings:
+    - SW
+    - W
+    - NW
+  - Id: nozzle_b1
+    Label: "HOSE B2 \xB7 DIESEL"
+    Action: fuel
+    Position: {x: -0.7, y: -0.14, z: 1.1}
+    ReachPoint: {x: -1.32, y: -0.48, z: 0}
+    HasReachPoint: 1
+    ReachVerdict: ok
+    Level: apron
+    VisibleFacings:
+    - SW
+    - W
+    - NW
+  - Id: pay_a
+    Label: PAY AT PUMP
+    Action: pay
+    Position: {x: 0.28, y: 0.31, z: 0.7}
+    ReachPoint: {x: 0.28, y: 1.03, z: 0}
+    HasReachPoint: 1
+    ReachVerdict: ok
+    Level: apron
+    VisibleFacings:
+    - SE
+    - S
+    - SW
+  - Id: pay_b
+    Label: PAY AT PUMP
+    Action: pay
+    Position: {x: 0.28, y: -0.31, z: 0.7}
+    ReachPoint: {x: 0.28, y: -1.03, z: 0}
+    HasReachPoint: 1
+    ReachVerdict: ok
+    Level: apron
+    VisibleFacings:
+    - N
+    - NE
+    - NW
+  Entry:
+    Kind: 
+    ClearWidthMeters: 0
+    ClearHeightMeters: 0
+    Threshold: {x: 0, y: 0, z: 0}
+    LeafWidthMeters: 0
+    TravelMeters: 0
+    ClearAtOpenFraction: 0
+    SillStepMeters: 0
+    Treatment: 
+    HasKeepClear: 0
+    KeepClear: []
+  ServiceDoor:
+    Kind: 
+    ClearWidthMeters: 0
+    ClearHeightMeters: 0
+    Threshold: {x: 0, y: 0, z: 0}
+    LeafWidthMeters: 0
+    TravelMeters: 0
+    ClearAtOpenFraction: 0
+    SillStepMeters: 0
+    Treatment: 
+    HasKeepClear: 0
+    KeepClear: []

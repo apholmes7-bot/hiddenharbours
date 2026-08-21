@@ -303,10 +303,16 @@ namespace HiddenHarbours.App.Editor
             "Harbourmaster", "Chandlery", "GeneralStore", "Tavern", "ParishHall",
         };
 
+        /// <summary>The Route 91 forecourt's paving. Named here because a pad is a road-surface thing and
+        /// this is the file that owns those; the AREA is the station's, derived from the layout the rig
+        /// produced.</summary>
+        public const string StationForecourtName = "Route91Forecourt";
+
         /// <summary>
-        /// The paved rectangles: the concrete apron at the winch, and the gravel the buyers' trucks stand
-        /// on. Both come out of the wharf doc's own kit table ("Roads, parking, apron"), and both are
-        /// derived from wharf geometry rather than drawn on the yard by hand.
+        /// The paved rectangles: the concrete apron at the winch, the gravel the buyers' trucks stand on,
+        /// the truck park, and the Route 91 forecourt. All come out of the wharf doc's own kit table
+        /// ("Roads, parking, apron") or a placed kit, and all are derived from geometry somebody else
+        /// authored rather than drawn on the ground by hand.
         /// </summary>
         public static IReadOnlyList<Pad> Pads() => new[]
         {
@@ -322,6 +328,13 @@ namespace HiddenHarbours.App.Editor
                 "⭐ the truck park at the east edge of the village — the ground a road vehicle is LEFT " +
                 "on. Same rank as the buyers' gravel because it is the same kind of thing; the two are " +
                 "210 m apart and never contend for a cell"),
+
+            new Pad(StationForecourtName, ApronSurface, NineMileCreekStation.Route91ApronArea(), RankApron,
+                "⭐ the Route 91 forecourt — concrete, because that is what the station kit's own sidecar " +
+                "says its island stands on. Only the DRIVING half is paved (the storefront's front face " +
+                "out to the road edge): paving under a building is pointless. ⚠ It does a second job " +
+                "besides looking right — NineMileCreekFields.IsGrassGround steps off any pad, so the " +
+                "meadow stops at the concrete instead of growing up between the pumps"),
         };
 
         /// <summary>

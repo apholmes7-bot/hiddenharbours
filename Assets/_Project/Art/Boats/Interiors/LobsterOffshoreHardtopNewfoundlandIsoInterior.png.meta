@@ -1,0 +1,546 @@
+fileFormatVersion: 2
+guid: 9ba1594c1bc759149999aa8315fe072a
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 2612002945365804085
+    second: LobsterOffshoreHardtopNewfoundlandIsoInterior_0
+  - first:
+      213: -2525192323846082434
+    second: LobsterOffshoreHardtopNewfoundlandIsoInterior_1
+  - first:
+      213: -5686650549432849467
+    second: LobsterOffshoreHardtopNewfoundlandIsoInterior_2
+  - first:
+      213: -4563902566901008598
+    second: LobsterOffshoreHardtopNewfoundlandIsoInterior_3
+  - first:
+      213: 4034505796286386685
+    second: LobsterOffshoreHardtopNewfoundlandIsoInterior_4
+  - first:
+      213: -162204306343022241
+    second: LobsterOffshoreHardtopNewfoundlandIsoInterior_5
+  - first:
+      213: 6963872376784288141
+    second: LobsterOffshoreHardtopNewfoundlandIsoInterior_6
+  - first:
+      213: -8769793951074931415
+    second: LobsterOffshoreHardtopNewfoundlandIsoInterior_7
+  - first:
+      213: 529039880714673874
+    second: LobsterOffshoreHardtopNewfoundlandIsoInterior_8
+  - first:
+      213: -6217470683495599560
+    second: LobsterOffshoreHardtopNewfoundlandIsoInterior_9
+  - first:
+      213: -8046076417722545779
+    second: LobsterOffshoreHardtopNewfoundlandIsoInterior_10
+  - first:
+      213: 8436795260020840710
+    second: LobsterOffshoreHardtopNewfoundlandIsoInterior_11
+  - first:
+      213: 9077903842437552905
+    second: LobsterOffshoreHardtopNewfoundlandIsoInterior_12
+  - first:
+      213: -7510160719161986293
+    second: LobsterOffshoreHardtopNewfoundlandIsoInterior_13
+  - first:
+      213: 3401070824769833128
+    second: LobsterOffshoreHardtopNewfoundlandIsoInterior_14
+  - first:
+      213: 4375364464350115902
+    second: LobsterOffshoreHardtopNewfoundlandIsoInterior_15
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: lobsterOffshoreHardtopNewfoundlandIso_house_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 420
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fed4f8b85473bd64a82a6481d5907abf
+      internalID: -1224402807
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterOffshoreHardtopNewfoundlandIso_house_d1
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 420
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 69f566520b57f2341b75ae413141c5c5
+      internalID: 1815206952
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterOffshoreHardtopNewfoundlandIso_house_d2
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 420
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b247f5a58c8adc14fab930951f245429
+      internalID: 2067224565
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterOffshoreHardtopNewfoundlandIso_house_d3
+      rect:
+        serializedVersion: 2
+        x: 1440
+        y: 420
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eeef5d9cc37a6c84d9538d72a952686c
+      internalID: 1786165673
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterOffshoreHardtopNewfoundlandIso_house_d4
+      rect:
+        serializedVersion: 2
+        x: 1920
+        y: 420
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9db47cd228178ac45aa17ca7bf4faad3
+      internalID: 2109358493
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterOffshoreHardtopNewfoundlandIso_house_d5
+      rect:
+        serializedVersion: 2
+        x: 2400
+        y: 420
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 30d0fa83fac10d74aa0003dc9512931d
+      internalID: 530776195
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterOffshoreHardtopNewfoundlandIso_house_d6
+      rect:
+        serializedVersion: 2
+        x: 2880
+        y: 420
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 43da5d0779971aa45b8d3316c74aaeed
+      internalID: -313056698
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterOffshoreHardtopNewfoundlandIso_house_d7
+      rect:
+        serializedVersion: 2
+        x: 3360
+        y: 420
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4518c3f3b5ea06b42a2aef0bebeb0572
+      internalID: -219071549
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterOffshoreHardtopNewfoundlandIso_cuddy_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a8b40cea5ede46d4b967fb77a62afd3e
+      internalID: 347025994
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterOffshoreHardtopNewfoundlandIso_cuddy_d1
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 0
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4651770957d629a4693dedc6c5aec924
+      internalID: 545234787
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterOffshoreHardtopNewfoundlandIso_cuddy_d2
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 0
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b06c03546df5e0f4d8d412fbd6164ee3
+      internalID: 1217831941
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterOffshoreHardtopNewfoundlandIso_cuddy_d3
+      rect:
+        serializedVersion: 2
+        x: 1440
+        y: 0
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7c45cef5c80648f4a9e32249e5a1b267
+      internalID: 637662883
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterOffshoreHardtopNewfoundlandIso_cuddy_d4
+      rect:
+        serializedVersion: 2
+        x: 1920
+        y: 0
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f8cb77e684fe9b047ae204ed0a02506b
+      internalID: -1146557016
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterOffshoreHardtopNewfoundlandIso_cuddy_d5
+      rect:
+        serializedVersion: 2
+        x: 2400
+        y: 0
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0506238ecc4bb574b9fd141c565c465d
+      internalID: -729993042
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterOffshoreHardtopNewfoundlandIso_cuddy_d6
+      rect:
+        serializedVersion: 2
+        x: 2880
+        y: 0
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 156caff6b35bb6942a925fa41c71eefc
+      internalID: 1073669533
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: lobsterOffshoreHardtopNewfoundlandIso_cuddy_d7
+      rect:
+        serializedVersion: 2
+        x: 3360
+        y: 0
+        width: 480
+        height: 420
+      alignment: 9
+      pivot: {x: 0.5, y: 0.44761905}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9008414f210b09444a3c6aa87ea9eba4
+      internalID: 167221364
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 2b52f6372bf4a5c41bfd1b5a47ae3240
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      lobsterOffshoreHardtopNewfoundlandIso_cuddy_d0: 347025994
+      lobsterOffshoreHardtopNewfoundlandIso_cuddy_d1: 545234787
+      lobsterOffshoreHardtopNewfoundlandIso_cuddy_d2: 1217831941
+      lobsterOffshoreHardtopNewfoundlandIso_cuddy_d3: 637662883
+      lobsterOffshoreHardtopNewfoundlandIso_cuddy_d4: -1146557016
+      lobsterOffshoreHardtopNewfoundlandIso_cuddy_d5: -729993042
+      lobsterOffshoreHardtopNewfoundlandIso_cuddy_d6: 1073669533
+      lobsterOffshoreHardtopNewfoundlandIso_cuddy_d7: 167221364
+      lobsterOffshoreHardtopNewfoundlandIso_house_d0: -1224402807
+      lobsterOffshoreHardtopNewfoundlandIso_house_d1: 1815206952
+      lobsterOffshoreHardtopNewfoundlandIso_house_d2: 2067224565
+      lobsterOffshoreHardtopNewfoundlandIso_house_d3: 1786165673
+      lobsterOffshoreHardtopNewfoundlandIso_house_d4: 2109358493
+      lobsterOffshoreHardtopNewfoundlandIso_house_d5: 530776195
+      lobsterOffshoreHardtopNewfoundlandIso_house_d6: -313056698
+      lobsterOffshoreHardtopNewfoundlandIso_house_d7: -219071549
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
