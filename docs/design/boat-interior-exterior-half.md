@@ -1,6 +1,7 @@
 # The exterior half of a boat interior — the S0 spike, and the question it leaves open
 
-**Status: MEASURED, awaiting a ruling.** Nothing here changes code. It is the evidence the
+**Status: RULED (coordinator / lead-architect, 2026-08-21) — R2 now, R1 as the follow-on.**
+Nothing here changes code. It is the evidence the
 coordinator asked for before the placement pass wires a single hull, because the answer is an
 **art/mesh contract change** and that is not the placement pass's to decide.
 
@@ -15,6 +16,41 @@ layers) · ADR 0022 (3D boat hulls) · ADR 0023 (the per-face interior mask) ·
 `docs/art/boat-interior-sheets.md` (the 24 baked sheets) ·
 `docs/art/proofs/boat-interior-exterior-half-log.txt` (the run) ·
 `docs/art/proofs/_boatInteriorExteriorHalfProof.mjs` (regenerate it).
+
+---
+
+## Ruling (coordinator / lead-architect, 2026-08-21)
+
+**R2 now, R1 as the follow-on — accepted**, on the measurements below: R3 dies on P 0.46 / R 0.41
+("a mis-cull costing 9–22% of the composited image is worse than no picture"), the sprite-fallback
+framing dies on 23/24 `hasBakedSheet: false`, and whole-exterior-off dies on 70–80% of her image
+vanishing. R1 is the only correct exterior half and is upstream art-contract work; R2 lands
+everything else, so that when R1 arrives one `Configure` argument lights 24 hulls.
+
+**Two riders, both drawn from the measurements in this document:**
+
+1. **R2 ships ENTRY-GATED — the ADR's own invariant, not caution.** `InteriorRockScale`'s safety
+   argument (ADR 0038, proposals 1 + 3 ruled as a set) is that the two poses are *never co-visible
+   to disagree*. A door opening onto a half-wired swap puts both on screen at once — the interior
+   riding at 0.45 inside an exterior riding at 1.0. So `BoatCabinDoor.IsAvailable` additionally
+   requires the swap to be **completable** (both halves wired — the condition under which
+   `ExactlyOneLayerOn` can hold). Cabins then go live hull-by-hull exactly as R1's tags land, with
+   no second switch to remember. **Pinned by a test in both directions.**
+
+2. **⚠️ R1's tag is PER LEVEL, not `'house'`.** This **supersedes** the `f.lvl = 'house'` example
+   kept verbatim under *The options* below. The upstream ask is a per-face tag whose **values key
+   to the interior def's level identity**, so `SetHiddenLevel(level)` hides the subset for the sole
+   the player is standing on. Hide-nothing stays byte-identical to today's bake. The owner relays
+   the ask.
+
+**Assignment:** this PR merges as the **S0 record**. **S1 is assigned to the local boat-interiors
+session** — it has Unity, the real meshes, and the 4060 for the PlayMode half a cloud container
+cannot run, and it builds on this spike rather than re-measuring it.
+
+*The proposal text below is kept **verbatim**, in the voice it was written in — ADR 0038's own
+convention, and the sidecar contract's `_confirm` → `_ruled` before it. The judgment record is
+never rewritten after the fact; provenance is the point. Where rider 2 supersedes a line, the
+rider is the truth and the line stays as written.*
 
 ---
 
