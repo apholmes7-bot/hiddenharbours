@@ -1,0 +1,72 @@
+{
+  "schema": "hiddenharbours.rig-recipe/1",
+  "sheet": "Yard_postRail.png",
+  "kit": "yard",
+  "baker": "YardSheetBaker",
+  "rig": {
+    "key": "yardIso",
+    "global": "YardIso",
+    "source": "docs/art/rigs/yard-landscaping-kit/yardIsoRig.js",
+    "sha256": "d2ab2a906f4f099e3054643034a936327ae547fc5ea375b3198cc8f503d23706",
+    "convention": "CounterClockwise",
+    "prerequisites": []
+  },
+  "call": {
+    "fn": "render",
+    "args": [
+      "postRail",
+      "$dir",
+      "$opts"
+    ],
+    "opts": {
+      "paint": "white",
+      "variant": 0,
+      "len": 0.4,
+      "kept": 0.72,
+      "phase": "green",
+      "snow": 0,
+      "weather": 0.4,
+      "night": false,
+      "seed": 23,
+      "compose": false,
+      "elev": 40
+    }
+  },
+  "grid": {
+    "columns": 8,
+    "rows": 1,
+    "order": "rowMajor",
+    "axes": [
+      {
+        "name": "facing",
+        "bind": "dir",
+        "values": [
+          0,
+          7,
+          6,
+          5,
+          4,
+          3,
+          2,
+          1
+        ]
+      }
+    ]
+  },
+  "pack": {
+    "rule": "pivotUnionCrop",
+    "nativeW": 470,
+    "nativeH": 540,
+    "nativePivotX": 235,
+    "nativePivotY": 442,
+    "cropX": 188,
+    "cropY": 384,
+    "cellW": 94,
+    "cellH": 88,
+    "pivotX": 47,
+    "pivotY": 58,
+    "sheetW": 752,
+    "sheetH": 88
+  },
+  "sheetSha256": "635c4f3eaea274e1e5dd3b3bc9c9abf5f73de4a90ff092edb5ea64fbb8cf4972"
+}

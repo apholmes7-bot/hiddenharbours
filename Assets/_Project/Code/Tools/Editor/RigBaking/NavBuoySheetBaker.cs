@@ -8,6 +8,11 @@ namespace HiddenHarbours.Tools.RigBaking
     public sealed class NavBuoyBakeResult
     {
         public string Type, Size, Key, AssetPath, EngineName;
+
+        /// <summary>Where the sheet's <c>&lt;stem&gt;.recipe.json</c> went — the rig call that
+        /// produced it (see <see cref="RigRecipe"/>).</summary>
+        public string RecipePath;
+
         public int NativeWidth, NativeHeight, NativePivotX, NativePivotY;
         public int CropX, CropY, CellWidth, CellHeight, PivotX, PivotY;
         public int Columns, Rows, SheetWidth, SheetHeight, Facings, PngBytes, DistinctFacings;
@@ -36,6 +41,9 @@ namespace HiddenHarbours.Tools.RigBaking
     /// </summary>
     public static class NavBuoySheetBaker
     {
+        /// <summary>The kit id a recipe files itself under.</summary>
+        public const string RecipeKit = "nav-buoy";
+
         public static NavBuoyBakeResult Bake(string type, string size, string outputFolder,
                                              IRigScriptHost host, NavBuoyContract contract)
         {
@@ -110,6 +118,36 @@ namespace HiddenHarbours.Tools.RigBaking
             };
 
             WritePng(pixels, c.sheetW, c.sheetH, result);
+
+            // ---- the recipe: what drew this sheet, beside it --------------------------------------
+            // ⚠️ The pack rule is named `pivotUnionCropOverWear` and not the repo's usual
+            // `pivotUnionCrop`, because this kit's cell is measured WEAR-INVARIANT: the union runs
+            // over all three wear states and only 'working' ships. A verifier that re-derived the
+            // crop from this sheet's own ink would get a tighter rect than the one on disk.
+            result.RecipePath = RigRecipe.Write(result.AssetPath, new RigRecipe
+            {
+                Kit = RecipeKit,
+                Baker = nameof(NavBuoySheetBaker),
+                Rig = RigRecipe.RigBlockFor(NavBuoyKit.RigKey),
+                Call = new RigRecipe.CallBlock
+                {
+                    Args = { type, "$dir", "$opts" },
+                    Opts = NavBuoyKit.OptsOf(size, NavBuoyKit.BakeWear, NavBuoyKit.BakeLit),
+                },
+                Grid = new RigRecipe.GridBlock
+                {
+                    Columns = c.cols, Rows = c.rows,
+                    Axes = { RigRecipe.Axis.Facings(NavBuoyKit.Facings, entry.DeclaredConvention) },
+                },
+                Pack = new RigRecipe.PackBlock
+                {
+                    Rule = "pivotUnionCropOverWear",
+                    NativeW = nw, NativeH = nh, NativePivotX = npx, NativePivotY = npy,
+                    CropX = cropX, CropY = cropY,
+                    CellW = cw, CellH = ch, PivotX = pivotX, PivotY = pivotY,
+                    SheetW = c.sheetW, SheetH = c.sheetH,
+                },
+            });
 
             total.Stop();
             result.TotalMilliseconds = total.Elapsed.TotalMilliseconds;

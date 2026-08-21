@@ -1,0 +1,75 @@
+{
+  "schema": "hiddenharbours.rig-recipe/1",
+  "sheet": "pump_sTwin_gas.png",
+  "kit": "fuel-storage",
+  "baker": "FuelSheetBaker",
+  "rig": {
+    "key": "fuel",
+    "global": "FuelIso",
+    "source": "docs/art/rigs/fuel-storage-kit/fuelRig.js",
+    "sha256": "811361ffe7deea0fbf6da41d9e50ca9efa8299ebca3d9fbff9308d9e0c6df1ed",
+    "convention": "Clockwise",
+    "prerequisites": [
+      {
+        "key": "deckIsoSolid",
+        "global": "IsoSolid",
+        "source": "docs/art/rigs/deck-loop-kit/Art/isoSolid.js",
+        "sha256": "f7fc9db510b0346dea568c43dc7378f1a12fd71ee8f5a7653e78377812b792bd"
+      }
+    ]
+  },
+  "call": {
+    "fn": "render",
+    "args": [
+      "pump",
+      "$dir",
+      "$opts"
+    ],
+    "opts": {
+      "size": "sTwin",
+      "fuel": "gas",
+      "fill": 0,
+      "wear": "working"
+    }
+  },
+  "grid": {
+    "columns": 4,
+    "rows": 1,
+    "order": "rowMajor",
+    "axes": [
+      {
+        "name": "facing",
+        "bind": "dir",
+        "values": [
+          0,
+          2,
+          4,
+          6
+        ]
+      },
+      {
+        "name": "fill",
+        "bind": "opt:fill",
+        "values": [
+          0
+        ]
+      }
+    ]
+  },
+  "pack": {
+    "rule": "pivotUnionCrop",
+    "nativeW": 39,
+    "nativeH": 62,
+    "nativePivotX": 19,
+    "nativePivotY": 48,
+    "cropX": 3,
+    "cropY": 2,
+    "cellW": 32,
+    "cellH": 55,
+    "pivotX": 16,
+    "pivotY": 46,
+    "sheetW": 128,
+    "sheetH": 55
+  },
+  "sheetSha256": "8f8b243f7e949c638ba0bc16278d354fecee2981906779b3051612310a39db5e"
+}

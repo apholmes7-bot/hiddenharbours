@@ -1,0 +1,72 @@
+{
+  "schema": "hiddenharbours.rig-recipe/1",
+  "sheet": "Yard_wireFence.png",
+  "kit": "yard",
+  "baker": "YardSheetBaker",
+  "rig": {
+    "key": "yardIso",
+    "global": "YardIso",
+    "source": "docs/art/rigs/yard-landscaping-kit/yardIsoRig.js",
+    "sha256": "d2ab2a906f4f099e3054643034a936327ae547fc5ea375b3198cc8f503d23706",
+    "convention": "CounterClockwise",
+    "prerequisites": []
+  },
+  "call": {
+    "fn": "render",
+    "args": [
+      "wireFence",
+      "$dir",
+      "$opts"
+    ],
+    "opts": {
+      "paint": null,
+      "variant": 0,
+      "len": 0.4,
+      "kept": 0.62,
+      "phase": "green",
+      "snow": 0,
+      "weather": 0.4,
+      "night": false,
+      "seed": 41,
+      "compose": false,
+      "elev": 40
+    }
+  },
+  "grid": {
+    "columns": 8,
+    "rows": 1,
+    "order": "rowMajor",
+    "axes": [
+      {
+        "name": "facing",
+        "bind": "dir",
+        "values": [
+          0,
+          7,
+          6,
+          5,
+          4,
+          3,
+          2,
+          1
+        ]
+      }
+    ]
+  },
+  "pack": {
+    "rule": "pivotUnionCrop",
+    "nativeW": 470,
+    "nativeH": 540,
+    "nativePivotX": 235,
+    "nativePivotY": 442,
+    "cropX": 183,
+    "cropY": 380,
+    "cellW": 104,
+    "cellH": 95,
+    "pivotX": 52,
+    "pivotY": 62,
+    "sheetW": 832,
+    "sheetH": 95
+  },
+  "sheetSha256": "b3fb9cf324706ee4c61651dc9fbcc0ee4d8f5b75e9583b11fa9551a7771b6c59"
+}

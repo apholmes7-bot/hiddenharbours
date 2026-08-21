@@ -1,0 +1,89 @@
+{
+  "schema": "hiddenharbours.rig-recipe/1",
+  "sheet": "canopy_sB3.png",
+  "kit": "gas-station",
+  "baker": "GasStationSheetBaker",
+  "rig": {
+    "key": "gasStation",
+    "global": "StationIso",
+    "source": "docs/art/rigs/gas-station-rig/rig/gasStationRig.js",
+    "sha256": "3700747cd2ab7a0ebc40eb31ff88b9e23978266ed447317a5ef55a7ad23c7b5d",
+    "convention": "Clockwise",
+    "prerequisites": [
+      {
+        "key": "deckIsoSolid",
+        "global": "IsoSolid",
+        "source": "docs/art/rigs/deck-loop-kit/Art/isoSolid.js",
+        "sha256": "f7fc9db510b0346dea568c43dc7378f1a12fd71ee8f5a7653e78377812b792bd"
+      },
+      {
+        "key": "fuel",
+        "global": "FuelIso",
+        "source": "docs/art/rigs/fuel-storage-kit/fuelRig.js",
+        "sha256": "811361ffe7deea0fbf6da41d9e50ca9efa8299ebca3d9fbff9308d9e0c6df1ed"
+      }
+    ]
+  },
+  "call": {
+    "fn": "render",
+    "args": [
+      "canopy",
+      "$dir",
+      "$opts"
+    ],
+    "opts": {
+      "size": "sB3",
+      "grades": [
+        "gas",
+        "diesel",
+        "mixed"
+      ],
+      "lit": false,
+      "hoses": 0,
+      "sides": 0,
+      "out": -1,
+      "style": "fascia",
+      "open": 0,
+      "span": 1,
+      "bollards": true,
+      "bin": false,
+      "wear": "working",
+      "seed": 11,
+      "keyline": false,
+      "elev": 40
+    }
+  },
+  "grid": {
+    "columns": 4,
+    "rows": 1,
+    "order": "rowMajor",
+    "axes": [
+      {
+        "name": "facing",
+        "bind": "dir",
+        "values": [
+          0,
+          1,
+          2,
+          3
+        ]
+      }
+    ]
+  },
+  "pack": {
+    "rule": "pivotUnionCrop",
+    "nativeW": 414,
+    "nativeH": 376,
+    "nativePivotX": 207,
+    "nativePivotY": 265,
+    "cropX": 2,
+    "cropY": 2,
+    "cellW": 410,
+    "cellH": 372,
+    "pivotX": 205,
+    "pivotY": 263,
+    "sheetW": 1640,
+    "sheetH": 372
+  },
+  "sheetSha256": "eeceb3d9f51108bd7cd1f78a785a8833e2fe08fab7e5263ed68f0e6b2deea433"
+}
