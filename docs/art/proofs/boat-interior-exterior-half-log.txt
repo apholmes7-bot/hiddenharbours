@@ -1,0 +1,157 @@
+S0 spike — the EXTERIOR HALF of ADR 0038's interior swap on a mesh hull
+=======================================================================
+
+WHAT THIS IS. The measurement run behind `docs/design/boat-interior-exterior-half.md`.
+BoatInterior (#622) swaps two layers — the exterior's interior-facing draw off, the baked
+interior sheet on — and on the mesh path (ADR 0022) there is nothing obvious to hand it as
+the exterior half, because the house is geometry rather than a sheet. The spike measures the
+candidates instead of arguing about them, and STOPS: an exterior cull is an art/mesh contract
+change and the coordinator rules on it.
+
+RUN IN A CLOUD CONTAINER: no Unity, no LFS objects. So this is a SOURCE-LEVEL spike, and it
+says so wherever that limits it (see WHAT COULD NOT BE MEASURED below). Two things turned out
+to be measurable here anyway, and both are direct rather than inferred:
+  * the committed hull meshes — `*.asset` is `unity-yaml` in .gitattributes, NOT lfs, so the
+    real bake is readable text (section 0b);
+  * the rigs — pure JS with no DOM dependency on these paths, so they render in node's V8.
+
+HOW TO REGENERATE:  node docs/art/proofs/_boatInteriorExteriorHalfProof.mjs . <outdir>
+Node 22 (V8). No dependencies. Run without <outdir> for the measurements alone.
+
+WHAT IT RUNS. The rig files VERBATIM in node's V8 — the same engine ClearScript gives
+RigMeshExtractor and BoatInteriorSheetBaker — so every pixel below is the rig's own
+rasteriser, not a re-implementation of it. Two edits are made to the loaded text, both the
+same edit RigMeshExtractor already makes for the same reason: the export literal is WIDENED
+so closed-over symbols (F, _paint, projVert, camBasis) come out, and F.push is wrapped to
+record which SOURCE LINE built each face. That recorder is the ground truth for "does the
+face list carry an identifiable house group?" — the grouping exists in the JS and is gone by
+the time the extractor has read `Global.F`.
+
+⚠️ THE TRANSFORM IS PROVEN INERT TO THE RENDER, not assumed (section 0a): the pristine rig
+and the harness-loaded rig are compared byte for byte at all 8 facings on every run. The
+recorder only hangs a `__line` property on each face object, which the rig's own `_paint`
+never reads. If that check ever fails it says so in place of the numbers.
+
+DETERMINISM: two independent runs produced identical logs and byte-identical PNGs
+(verified 2026-08-21; sha256 A fe5a20bd…, B ac8856cb…).
+
+WHAT COULD NOT BE MEASURED HERE, named rather than guessed at:
+  * Anything needing the compiled game — no Unity in this container, so no EditMode or
+    PlayMode run, and no compile against Unity assemblies. The runtime behaviour of a cull is
+    therefore ARGUED from the source and MEASURED only in the rig's own rasteriser.
+  * The baked interior SHEETS (Assets/_Project/Art/Boats/Interiors/*.png) are LFS pointers
+    here, so no shipped sheet pixel was read. Every interior pixel below is re-rendered from
+    boatInteriorRig.js, which is the same renderer BoatInteriorSheetBaker drives — pinned by
+    BoatInteriors.json's own interiorRigSha256 — but it is a re-render, not the shipped bytes.
+  * How the facet shader behaves with a cull applied: not run. No GPU, no Unity.
+  * Only the lobster boat was rendered end to end; the per-level finding was cross-checked on
+    the side dragger and stern trawler. The other 21 cleared hulls were not rendered.
+
+WHY THE PNGs ARE NOT COMMITTED BESIDE THIS LOG. They were rendered and reviewed, and they
+belong in LFS like every other .png in this folder -- but the session that produced them had
+no git-lfs binary available, so the objects could not be uploaded and committing the pointers
+alone would have left a branch nobody could check out. The regenerate command above is one
+line, needs no dependencies and is deterministic, so the images are a command away rather
+than lost. (Same situation, same answer, as character-clip-proof-log.txt records.)
+
+  A  boat-interior-exterior-half-A.png  2280x1260  rows N/E/S, columns:
+       exterior as shipped | house facets culled | interior sheet | culled+sheet |
+       sheet over the intact exterior
+  B  boat-interior-exterior-half-B.png  1824x1260  rows N/E/S, columns:
+       truth-cull+house sheet | RULE-cull+house sheet | truth-cull+CUDDY sheet |
+       intact exterior+CUDDY sheet
+
+  Read A column 4 against column 5: culled+sheet is the picture ADR 0038 describes; sheet
+  over the intact exterior leaves the wheelhouse standing behind the room. Read B column 1
+  against column 2 for what the best available data-driven rule costs, and B column 3 for
+  why the occluder is per LEVEL and not per hull.
+
+-----------------------------------------------------------------------------------------
+THE RUN
+-----------------------------------------------------------------------------------------
+
+=== 0a · IS THE HARNESS'S SOURCE TRANSFORM INERT TO THE RENDER? ===
+  pristine rig vs harness-loaded rig: all 8 facings BYTE-IDENTICAL. The transform adds a
+  `__line` label the rig never reads, and nothing else.
+
+=== 0 · WHAT THE FACE LIST CARRIES ===
+  faces 676   fields per face: v, mat, b, db
+  materials over the WHOLE hull: {"boot":97,"blue":98,"hull":98,"dark":50,"cream":111,"deck":49,"grip":14,"iron":45,"steel":80,"glas":34}
+  ground-truth house set (rig source lines 335-380): 41 faces {"iron":18,"cream":16,"glas":6,"dark":1}
+  drawn house extent   x [-1.78, 1.78]  y [-5.81, 3.27]  z [0.50, 3.05]
+  published HOUSE      x [-1.5, 1.5]  y [0.55, 3.6]  z [0.5, 2.96]
+  'cream' (the house paint) spans x [-2.14, 2.14] y [-6.00, 3.60] over 111 faces — it is the TOPSIDES too
+
+=== 0b · WHAT THE COMMITTED HULL MESHES CARRY (read off the .asset YAML) ===
+  34 committed hull meshes
+  submesh counts across the fleet : 1
+  distinct vertex layouts         : 1 -> Positionx3 Normalx3 TexCoord0x4
+  distinct vertex strides (bytes) : 40
+  channels FREE on every one      : Tangent, Color, TexCoord1, TexCoord2, TexCoord3, TexCoord4, TexCoord5, TexCoord6, TexCoord7
+  total baked vertices, fleet     : 133,852
+  cost of +1 float32 per vertex   : 522.9 KiB across the whole fleet
+
+=== 1 · CAN THE PUBLISHED HOUSE ENVELOPE NAME THE SUBSET? ===
+  tol     picked  TP    FP    FN    precision  recall
+  0.00    13      4     9     37    0.31       0.10  
+  0.05    27      11    16    30    0.41       0.27  
+  0.12    37      17    20    24    0.46       0.41  
+  0.25    48      17    31    24    0.35       0.41  
+  0.40    53      17    36    24    0.32       0.41  
+  best F1 at tol 0.12 m
+
+=== 2 · IS THE INTERIOR SHEET EVER CO-VISIBLE, OR IS IT WHOLLY BEHIND HER? ===
+  E = exterior px · Hp = px the house owns · I = interior sheet px
+  lvl     dir  E       Hp      I       I&Hp    I&(E-Hp)  I-E   Hp-I   
+  house   N    37980   12148   9504    8540    964       0     3608   
+  house   NE   42370   12446   11255   8522    2729      4     3924   
+  house   E    46006   13064   10375   6338    3981      56    6726   
+  house   SE   39362   12143   11953   5457    6494      2     6686   
+  house   S    28597   10852   10201   4555    5626      20    6297   
+  house   SW   39361   12121   11915   5416    6497      2     6705   
+  house   W    46006   13107   10362   6392    3914      56    6715   
+  house   NW   42372   12339   11238   8416    2818      4     3923   
+  cuddy   N    37980   12148   4766    3211    1555      0     8937   
+  cuddy   NE   42370   12446   4325    1954    2371      0     10492  
+  cuddy   E    46006   13064   4248    0       4248      0     13064  
+  cuddy   SE   39362   12143   4339    0       4338      1     12143  
+  cuddy   S    28597   10852   3722    0       3674      48    10852  
+  cuddy   SW   39361   12121   4350    0       4349      1     12121  
+  cuddy   W    46006   13107   4255    0       4255      0     13107  
+  cuddy   NW   42372   12339   4331    1902    2429      0     10437  
+
+=== 3 · WHAT A MIS-CULL COSTS, IN PIXELS ===
+  dir  truth-cull+sheet  rule-cull+sheet  differing  % of truth
+  N    37588             37980            3419       9.1%      
+  E    42912             46062            6652       15.5%     
+  S    28617             28617            6297       22.0%     
+  W    42912             46062            6646       15.5%     
+
+=== 4 · DOES THE EXISTING PER-PIXEL DECK SPLIT ISOLATE THE HOUSE? ===
+  The facet shader already cuts on `i.wpos.z < _DeckOccupant[k].x` — one depth PLANE.
+  --- plane at the house sole centroid (0.00, 2.10, 0.50) ---
+  dir  cut px   Hp      TP      collateral  FN     precision  recall
+  N    34012    12184   12184   21828       0      0.36       1.00  
+  E    35133    12804   12780   22353       24     0.36       1.00  
+  S    16401    10646   7214    9187        3432   0.44       0.68  
+  W    35133    12804   12780   22353       24     0.36       1.00  
+  --- plane at the door sill (-0.03, 0.52, 0.50) ---
+  dir  cut px   Hp      TP      collateral  FN     precision  recall
+  N    32670    12184   11428   21242       756    0.35       0.94  
+  E    34904    12804   12780   22124       24     0.37       1.00  
+  S    20393    10646   10610   9783        36     0.52       1.00  
+  W    35167    12804   12780   22387       24     0.36       1.00  
+
+=== 5 · THE SAME QUESTION ON TWO SHIPS (3 levels each) ===
+  dragger: 792 faces, materials {"boot":97,"hull":102,"cream":80,"deck":156,"wood":30,"dark":7,"iron":100,"steel":116,"glas":16,"buff":66,"blk":4,"net":18}
+    bridge   N: I= 13294 I&E= 13294 I-E=   0  E: I= 13405 I&E= 13405 I-E=   0  S: I= 13944 I&E= 13944 I-E=   0
+    house    N: I= 26280 I&E= 26280 I-E=   0  E: I= 28994 I&E= 28994 I-E=   0  S: I= 26426 I&E= 26426 I-E=   0
+    below    N: I= 18614 I&E= 18614 I-E=   0  E: I= 17423 I&E= 17423 I-E=   0  S: I= 20304 I&E= 20304 I-E=   0
+  trawler: 793 faces, materials {"boot":99,"hull":104,"cream":85,"deck":158,"iron":140,"steel":102,"wood":12,"dark":5,"buff":50,"net":11,"glas":23,"blk":4}
+    bridge   N: I= 29162 I&E= 29162 I-E=   0  E: I= 31126 I&E= 31126 I-E=   0  S: I= 30418 I&E= 30418 I-E=   0
+    house    N: I= 50976 I&E= 50976 I-E=   0  E: I= 54033 I&E= 54033 I-E=   0  S: I= 50944 I&E= 50944 I-E=   0
+    below    N: I= 47668 I&E= 47668 I-E=   0  E: I= 44785 I&E= 44785 I-E=   0  S: I= 45544 I&E= 45544 I-E=   0
+
+=== proof sheets (rows N, E, S) ===
+   A columns: exterior | house culled | interior sheet | culled+sheet | sheet over intact
+   B columns: truth-cull+house | RULE-cull+house | truth-cull+CUDDY | exterior+CUDDY
