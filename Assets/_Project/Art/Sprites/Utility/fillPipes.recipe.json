@@ -1,0 +1,60 @@
+{
+  "schema": "hiddenharbours.rig-recipe/1",
+  "sheet": "fillPipes.png",
+  "kit": "iso-prop",
+  "baker": "IsoPropSheetBaker",
+  "rig": {
+    "key": "utilityIso",
+    "global": "UtilityIso",
+    "source": "docs/art/rigs/iso-rig-pack/utility-iso/utilityIsoRig.js",
+    "sha256": "dbfe677117c16725095b87d282486803da042714f80f53cc85986283a29d629c",
+    "convention": "CounterClockwise",
+    "prerequisites": []
+  },
+  "call": {
+    "fn": "render",
+    "args": [
+      "fillPipes",
+      "$dir",
+      "$opts"
+    ],
+    "opts": {}
+  },
+  "grid": {
+    "columns": 8,
+    "rows": 1,
+    "order": "rowMajor",
+    "axes": [
+      {
+        "name": "facing",
+        "bind": "dir",
+        "values": [
+          0,
+          7,
+          6,
+          5,
+          4,
+          3,
+          2,
+          1
+        ]
+      }
+    ]
+  },
+  "pack": {
+    "rule": "pivotUnionCrop",
+    "nativeW": 440,
+    "nativeH": 620,
+    "nativePivotX": 220,
+    "nativePivotY": 520,
+    "cropX": 204,
+    "cropY": 489,
+    "cellW": 32,
+    "cellH": 41,
+    "pivotX": 16,
+    "pivotY": 31,
+    "sheetW": 256,
+    "sheetH": 41
+  },
+  "sheetSha256": "b50fbb67eaf8e3a4ccfbb6398a715b6ff8d667a6448d42d7650eb1481b060857"
+}

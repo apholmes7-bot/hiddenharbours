@@ -1,0 +1,60 @@
+{
+  "schema": "hiddenharbours.rig-recipe/1",
+  "sheet": "weighScale.png",
+  "kit": "iso-prop",
+  "baker": "IsoPropSheetBaker",
+  "rig": {
+    "key": "wharfDecor",
+    "global": "WharfDecor",
+    "source": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
+    "sha256": "dba6ced6644e879e42cf2a3d6340ae76f90acf2cee0a0962cf4bbb0719a1b05a",
+    "convention": "CounterClockwise",
+    "prerequisites": []
+  },
+  "call": {
+    "fn": "render",
+    "args": [
+      "weighScale",
+      "$dir",
+      "$opts"
+    ],
+    "opts": {}
+  },
+  "grid": {
+    "columns": 8,
+    "rows": 1,
+    "order": "rowMajor",
+    "axes": [
+      {
+        "name": "facing",
+        "bind": "dir",
+        "values": [
+          0,
+          7,
+          6,
+          5,
+          4,
+          3,
+          2,
+          1
+        ]
+      }
+    ]
+  },
+  "pack": {
+    "rule": "pivotUnionCrop",
+    "nativeW": 420,
+    "nativeH": 520,
+    "nativePivotX": 210,
+    "nativePivotY": 420,
+    "cropX": 188,
+    "cropY": 365,
+    "cellW": 44,
+    "cellH": 69,
+    "pivotX": 22,
+    "pivotY": 55,
+    "sheetW": 352,
+    "sheetH": 69
+  },
+  "sheetSha256": "4018953c8ffa1c05a3d703309d21456fefbb332c35195aa3823afbc99c8dbfe2"
+}

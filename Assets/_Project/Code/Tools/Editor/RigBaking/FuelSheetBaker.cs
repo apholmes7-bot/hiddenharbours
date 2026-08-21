@@ -27,6 +27,10 @@ namespace HiddenHarbours.Tools.RigBaking
         public sealed class SheetResult
         {
             public string Key, Type, Size, Grade, AssetPath;
+
+            /// <summary>Where the sheet's <c>&lt;stem&gt;.recipe.json</c> went — the rig call that
+            /// produced it (see <see cref="RigRecipe"/>).</summary>
+            public string RecipePath;
             public int NativeW, NativeH, CellW, CellH, PivotX, PivotY;
             public int Columns, Rows, SheetW, SheetH, Facings, FillCount, PngBytes;
             public bool PivotInsideInk;
@@ -175,8 +179,42 @@ namespace HiddenHarbours.Tools.RigBaking
             };
 
             WritePng(pixels, pw, ph, result);
+
+            // ---- the recipe: what drew this sheet, beside it ------------------------------------
+            result.RecipePath = RigRecipe.Write(result.AssetPath, new RigRecipe
+            {
+                Kit = RecipeKit,
+                Baker = nameof(FuelSheetBaker),
+                Rig = RigRecipe.RigBlockFor(FuelStorageKit.RigKey),
+                Call = new RigRecipe.CallBlock
+                {
+                    Args = { b.Type, "$dir", "$opts" },
+                    Opts = OptsOf(b, rest, fills[0]),
+                },
+                Grid = new RigRecipe.GridBlock
+                {
+                    Columns = cols, Rows = rows,
+                    Axes =
+                    {
+                        // Columns are facings and rows are fills, so the facing axis is the FASTEST.
+                        RigRecipe.Axis.Facings(facings, convention),
+                        RigRecipe.Axis.Option("fill", "fill", fills.Select(x => (object)x)),
+                    },
+                },
+                Pack = new RigRecipe.PackBlock
+                {
+                    NativeW = nw, NativeH = nh, NativePivotX = npx, NativePivotY = npy,
+                    CropX = npx + left, CropY = npy + top,
+                    CellW = cw, CellH = ch, PivotX = pivotX, PivotY = pivotY,
+                    SheetW = pw, SheetH = ph,
+                },
+            });
+
             return result;
         }
+
+        /// <summary>The kit id a recipe files itself under.</summary>
+        public const string RecipeKit = "fuel-storage";
 
         /// <summary>
         /// The render options, spelled out in full on every single call.
@@ -186,13 +224,23 @@ namespace HiddenHarbours.Tools.RigBaking
         /// vessel; <c>fill</c> defaults to 0.6; and <c>wear</c> — the worst of the three — selects a
         /// phantom state that shares a geometry-cache key with <c>'working'</c>, so omitting it makes
         /// the output depend on what was rendered earlier in the session.</para>
+        ///
+        /// <para>The DICT is the source and <see cref="Opts"/> is derived from it, so the call and
+        /// the recipe cannot say different things about the same render.</para>
         /// </summary>
-        static string Opts(in FuelStorageKit.Build b, bool rest, float fill)
+        public static RigRecipe.OptionDict OptsOf(in FuelStorageKit.Build b, bool rest, float fill)
         {
-            string f = fill.ToString("R", CultureInfo.InvariantCulture);
-            return $"{{size:'{b.Size}',fuel:'{b.Grade}',fill:{f}," +
-                   $"wear:'{FuelStorageKit.BakedWear}'{(rest ? ",rest:true" : "")}}}";
+            var o = new RigRecipe.OptionDict()
+                .Set("size", b.Size)
+                .Set("fuel", b.Grade)
+                .Set("fill", fill)
+                .Set("wear", FuelStorageKit.BakedWear);
+            if (rest) o.Set("rest", true);
+            return o;
         }
+
+        static string Opts(in FuelStorageKit.Build b, bool rest, float fill) =>
+            RigRecipe.Js(OptsOf(b, rest, fill));
 
         /// <summary>
         /// Refuse a vessel or size the rig does not know, BEFORE rendering.

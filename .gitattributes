@@ -30,6 +30,13 @@
 *.shadergraph           unity-json
 *.shadersubgraph        unity-json
 
+# The bake recipe ledger (docs/art/rig-recipe-ledger.md). Pinned to LF because a recipe is compared
+# BYTE for byte: two writers produce these files — the in-editor C# one and the Node one — and
+# RigRecipeTests asserts they agree exactly. Left unpinned, a Windows checkout with core.autocrlf on
+# would hand the test CRLF and fail it for line endings alone. (Not `unity-json`, which is a merge
+# macro for files Unity itself serialises.)
+*.recipe.json           text eol=lf linguist-language=json linguist-generated
+
 # Unity UI Toolkit files
 *.tss                   text diff=css linguist-language=css
 *.uss                   text diff=css linguist-language=css

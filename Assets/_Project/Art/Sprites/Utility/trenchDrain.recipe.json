@@ -1,0 +1,60 @@
+{
+  "schema": "hiddenharbours.rig-recipe/1",
+  "sheet": "trenchDrain.png",
+  "kit": "iso-prop",
+  "baker": "IsoPropSheetBaker",
+  "rig": {
+    "key": "utilityIso",
+    "global": "UtilityIso",
+    "source": "docs/art/rigs/iso-rig-pack/utility-iso/utilityIsoRig.js",
+    "sha256": "dbfe677117c16725095b87d282486803da042714f80f53cc85986283a29d629c",
+    "convention": "CounterClockwise",
+    "prerequisites": []
+  },
+  "call": {
+    "fn": "render",
+    "args": [
+      "trenchDrain",
+      "$dir",
+      "$opts"
+    ],
+    "opts": {}
+  },
+  "grid": {
+    "columns": 8,
+    "rows": 1,
+    "order": "rowMajor",
+    "axes": [
+      {
+        "name": "facing",
+        "bind": "dir",
+        "values": [
+          0,
+          7,
+          6,
+          5,
+          4,
+          3,
+          2,
+          1
+        ]
+      }
+    ]
+  },
+  "pack": {
+    "rule": "pivotUnionCrop",
+    "nativeW": 440,
+    "nativeH": 620,
+    "nativePivotX": 220,
+    "nativePivotY": 520,
+    "cropX": 180,
+    "cropY": 491,
+    "cellW": 80,
+    "cellH": 55,
+    "pivotX": 40,
+    "pivotY": 29,
+    "sheetW": 640,
+    "sheetH": 55
+  },
+  "sheetSha256": "db9c74397e6786e7f7cd5e5ebf9be7ce612f49e21cf29a5b17f4bc4f025385b7"
+}

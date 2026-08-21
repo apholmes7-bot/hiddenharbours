@@ -1,0 +1,60 @@
+{
+  "schema": "hiddenharbours.rig-recipe/1",
+  "sheet": "ropeHanks.png",
+  "kit": "iso-prop",
+  "baker": "IsoPropSheetBaker",
+  "rig": {
+    "key": "wharfDecor",
+    "global": "WharfDecor",
+    "source": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
+    "sha256": "dba6ced6644e879e42cf2a3d6340ae76f90acf2cee0a0962cf4bbb0719a1b05a",
+    "convention": "CounterClockwise",
+    "prerequisites": []
+  },
+  "call": {
+    "fn": "render",
+    "args": [
+      "ropeHanks",
+      "$dir",
+      "$opts"
+    ],
+    "opts": {}
+  },
+  "grid": {
+    "columns": 8,
+    "rows": 1,
+    "order": "rowMajor",
+    "axes": [
+      {
+        "name": "facing",
+        "bind": "dir",
+        "values": [
+          0,
+          7,
+          6,
+          5,
+          4,
+          3,
+          2,
+          1
+        ]
+      }
+    ]
+  },
+  "pack": {
+    "rule": "pivotUnionCrop",
+    "nativeW": 420,
+    "nativeH": 520,
+    "nativePivotX": 210,
+    "nativePivotY": 420,
+    "cropX": 185,
+    "cropY": 359,
+    "cellW": 50,
+    "cellH": 68,
+    "pivotX": 25,
+    "pivotY": 61,
+    "sheetW": 400,
+    "sheetH": 68
+  },
+  "sheetSha256": "b0d5e0cd2acd6650d245f4a968b807cb6dec4282fc41f9952f2adacc6430e69d"
+}

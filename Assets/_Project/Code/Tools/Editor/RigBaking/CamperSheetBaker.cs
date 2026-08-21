@@ -69,6 +69,10 @@ namespace HiddenHarbours.Tools.RigBaking
 
         public sealed class SheetResult
         {
+            /// <summary>Where the sheet's <c>&lt;stem&gt;.recipe.json</c> went — the rig call that
+            /// produced it (see <see cref="RigRecipe"/>).</summary>
+            public string RecipePath;
+
             public string Key, Variant, Role, AssetPath;
             public bool Awning;
             public int NativeW, NativeH, CropX, CropY, CellW, CellH, PivotX, PivotY;
@@ -157,7 +161,8 @@ namespace HiddenHarbours.Tools.RigBaking
 
                 foreach (var b in byVariant)
                     report.Sheets.Add(Pack(host, g, geo, b, rendered[b.Key],
-                                           cropX, cropY, cw, ch, pivotX, pivotY, pivotInsideInk));
+                                           cropX, cropY, cw, ch, pivotX, pivotY, pivotInsideInk,
+                                           report.Probe.Convention));
             }
 
             WriteContract(report);
@@ -286,22 +291,41 @@ namespace HiddenHarbours.Tools.RigBaking
         /// still written out because a sheet on disk should say what it is, and because the next drop
         /// is the one that grows a cache key.</para>
         /// </summary>
-        public static string OptsJs(string variant, bool awning, double swing)
-        {
-            string s = swing.ToString("R", CultureInfo.InvariantCulture);
-            string w = CamperKit.BakedWeather.ToString("R", CultureInfo.InvariantCulture);
-            return $"{{variant:'{variant}',paint:{CamperKit.BakedPaint},weather:{w},swing:{s}," +
-                   $"awning:{(awning ? "true" : "false")},winAwn:false,vents:true,rack:false," +
-                   "propane:true,jacks:true,chocks:true,hookups:true,step:true,night:false," +
-                   "outline:false}";
-        }
+        public static string OptsJs(string variant, bool awning, double swing) =>
+            RigRecipe.Js(OptsOf(variant, awning, swing));
+
+        /// <summary>
+        /// The same options as a DICT, which is the source <see cref="OptsJs"/> is derived from — so
+        /// the call and the sheet's recipe cannot say different things about the same render.
+        ///
+        /// <para>⚠️ <c>paint</c> is <see cref="CamperKit.BakedPaint"/>, the string <c>"null"</c>,
+        /// because that is the JS LITERAL the kit states — the bare polished-aluminium skin. It
+        /// becomes a real JSON null here rather than the four-letter word.</para>
+        /// </summary>
+        public static RigRecipe.OptionDict OptsOf(string variant, bool awning, double swing) =>
+            new RigRecipe.OptionDict()
+                .Set("variant", variant)
+                .Set("paint", CamperKit.BakedPaint == "null" ? null : CamperKit.BakedPaint)
+                .Set("weather", CamperKit.BakedWeather)
+                .Set("swing", swing)
+                .Set("awning", awning)
+                .Set("winAwn", false)
+                .Set("vents", true)
+                .Set("rack", false)
+                .Set("propane", true)
+                .Set("jacks", true)
+                .Set("chocks", true)
+                .Set("hookups", true)
+                .Set("step", true)
+                .Set("night", false)
+                .Set("outline", false);
 
         // ---- packing -----------------------------------------------------------------------------
 
         static SheetResult Pack(IRigScriptHost host, string g, in RigGeometry geo,
                                 in CamperKit.Build b, RenderedBuild built,
                                 int cropX, int cropY, int cw, int ch, int pivotX, int pivotY,
-                                bool pivotInsideInk)
+                                bool pivotInsideInk, AzimuthConvention convention)
         {
             int facings = CamperKit.Facings, frames = b.Frames;
 
@@ -341,8 +365,50 @@ namespace HiddenHarbours.Tools.RigBaking
             };
 
             WritePng(pixels, pw, ph, result);
+
+            // ---- the recipe: what drew this sheet, beside it --------------------------------------
+            var swings = new List<object>();
+            for (int frame = 0; frame < frames; frame++)
+                swings.Add(frames == 1 ? 0.0 : (double)frame / (frames - 1));
+
+            result.RecipePath = RigRecipe.Write(result.AssetPath, new RigRecipe
+            {
+                Kit = RecipeKit,
+                Baker = nameof(CamperSheetBaker),
+                Rig = RigRecipe.RigBlockFor(CamperKit.RigKey),
+                Call = new RigRecipe.CallBlock
+                {
+                    Args = { "$dir", "$opts" },
+                    // The awning is the RESOLVED value, not the requested one: a rest sheet takes
+                    // the variant's own default, read from the rig.
+                    Opts = OptsOf(b.Variant, built.Awning, (double)swings[0]),
+                },
+                Grid = new RigRecipe.GridBlock
+                {
+                    Columns = cols, Rows = rows,
+                    Axes =
+                    {
+                        // Columns are the swing axis and rows are the facings, so swing is FASTEST.
+                        RigRecipe.Axis.Option("swing", "swing", swings),
+                        RigRecipe.Axis.Facings(facings, convention),
+                    },
+                },
+                Pack = new RigRecipe.PackBlock
+                {
+                    NativeW = geo.Width, NativeH = geo.Height,
+                    NativePivotX = Mathf.RoundToInt((float)geo.PivotX),
+                    NativePivotY = Mathf.RoundToInt((float)geo.PivotY),
+                    CropX = cropX, CropY = cropY,
+                    CellW = cw, CellH = ch, PivotX = pivotX, PivotY = pivotY,
+                    SheetW = pw, SheetH = ph,
+                },
+            });
+
             return result;
         }
+
+        /// <summary>The kit id a recipe files itself under.</summary>
+        public const string RecipeKit = "camper";
 
         /// <summary>
         /// The rig's own anchors, moved into cropped-cell space.

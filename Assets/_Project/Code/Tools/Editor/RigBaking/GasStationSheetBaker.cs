@@ -30,6 +30,10 @@ namespace HiddenHarbours.Tools.RigBaking
         public sealed class SheetResult
         {
             public string Key, Type, Size, Label, AssetPath;
+
+            /// <summary>Where the sheet's <c>&lt;stem&gt;.recipe.json</c> went — the rig call that
+            /// produced it (see <see cref="RigRecipe"/>).</summary>
+            public string RecipePath;
             public bool Interior, Fold180;
             public int NativeW, NativeH, CellW, CellH, PivotX, PivotY;
             public int Columns, Rows, SheetW, SheetH, Facings, PngBytes;
@@ -198,7 +202,57 @@ namespace HiddenHarbours.Tools.RigBaking
             };
 
             WritePng(pixels, pw, ph, result);
+
+            // ---- the recipe: what drew this sheet, beside it --------------------------------------
+            // ⚠️ The facing axis carries the EIGHT-facing dirs even on a folded piece, because the
+            // fold bakes one representative per equivalence class (0·1·2·3) rather than the
+            // decimation DirForCell(k, 4, …) would give (0·2·4·6). A recipe that recorded the
+            // decimation would render two pictures where the sheet has four.
+            result.RecipePath = RigRecipe.Write(result.AssetPath, new RigRecipe
+            {
+                Kit = RecipeKit,
+                Baker = nameof(GasStationSheetBaker),
+                Rig = RigRecipe.RigBlockFor(b.Interior ? GasStationKit.InteriorRigKey
+                                                       : GasStationKit.RigKey),
+                Call = new RigRecipe.CallBlock
+                {
+                    // TWO GLOBALS, TWO ARGUMENT ORDERS — StationIso is render(type, dir, opts),
+                    // StationInterior is render(size, dir, opts). The template carries the
+                    // difference; nothing downstream has to remember it.
+                    Args = { b.Interior ? b.Size : b.Type, "$dir", "$opts" },
+                    Opts = OptsOf(b.Size),
+                },
+                Grid = new RigRecipe.GridBlock
+                {
+                    Columns = cols, Rows = rows,
+                    Axes = { FacingAxis(facings, convention) },
+                },
+                Pack = new RigRecipe.PackBlock
+                {
+                    NativeW = nw, NativeH = nh, NativePivotX = npx, NativePivotY = npy,
+                    CropX = npx + left, CropY = npy + top,
+                    CellW = cw, CellH = ch, PivotX = pivotX, PivotY = pivotY,
+                    SheetW = pw, SheetH = ph,
+                },
+            });
+
             return result;
+        }
+
+        /// <summary>The kit id a recipe files itself under.</summary>
+        public const string RecipeKit = "gas-station";
+
+        /// <summary>
+        /// The facing axis, folded or not — see the warning in <see cref="BakeOne"/>. The count of
+        /// cells is <paramref name="facings"/>; the dirs are always the eight-facing mapping's first
+        /// <paramref name="facings"/> entries.
+        /// </summary>
+        static RigRecipe.Axis FacingAxis(int facings, AzimuthConvention convention)
+        {
+            var axis = new RigRecipe.Axis { Name = "facing", Bind = "dir" };
+            for (int cell = 0; cell < facings; cell++)
+                axis.Values.Add(RigBaker.DirForCell(cell, GasStationKit.Facings, convention));
+            return axis;
         }
 
         /// <summary>
@@ -213,19 +267,25 @@ namespace HiddenHarbours.Tools.RigBaking
         /// <para><c>grades</c> is not decoration: the rig generates hose count, sign rows and apron
         /// caps from that list, so it is a geometry input.</para>
         /// </summary>
-        static string Opts(string size)
-        {
-            string grades = string.Join(",", GasStationKit.BakedGrades.Select(x => $"'{x}'"));
-            string open = GasStationKit.BakedOpen.ToString("R", CultureInfo.InvariantCulture);
+        public static RigRecipe.OptionDict OptsOf(string size) =>
+            new RigRecipe.OptionDict()
+                .Set("size", size)
+                .Set("grades", GasStationKit.BakedGrades.Select(x => (object)x).ToList())
+                .Set("lit", GasStationKit.BakedLit)
+                .Set("hoses", 0)
+                .Set("sides", 0)
+                .Set("out", GasStationKit.BakedOut)
+                .Set("style", GasStationKit.BakedStyle)
+                .Set("open", GasStationKit.BakedOpen)
+                .Set("span", GasStationKit.BakedSpan)
+                .Set("bollards", GasStationKit.BakedBollards)
+                .Set("bin", GasStationKit.BakedBin)
+                .Set("wear", GasStationKit.BakedWear)
+                .Set("seed", 11)
+                .Set("keyline", false)
+                .Set("elev", 40);
 
-            return $"{{size:'{size}',grades:[{grades}]," +
-                   $"lit:{(GasStationKit.BakedLit ? "true" : "false")}," +
-                   $"hoses:0,sides:0,out:{GasStationKit.BakedOut}," +
-                   $"style:'{GasStationKit.BakedStyle}',open:{open},span:{GasStationKit.BakedSpan}," +
-                   $"bollards:{(GasStationKit.BakedBollards ? "true" : "false")}," +
-                   $"bin:{(GasStationKit.BakedBin ? "true" : "false")}," +
-                   $"wear:'{GasStationKit.BakedWear}',seed:11,keyline:false,elev:40}}";
-        }
+        static string Opts(string size) => RigRecipe.Js(OptsOf(size));
 
         static string Label(IRigScriptHost host, in GasStationKit.Build b)
         {

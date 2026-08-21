@@ -1,0 +1,79 @@
+{
+  "schema": "hiddenharbours.rig-recipe/1",
+  "sheet": "skid_s1200_mixed.png",
+  "kit": "fuel-storage",
+  "baker": "FuelSheetBaker",
+  "rig": {
+    "key": "fuel",
+    "global": "FuelIso",
+    "source": "docs/art/rigs/fuel-storage-kit/fuelRig.js",
+    "sha256": "811361ffe7deea0fbf6da41d9e50ca9efa8299ebca3d9fbff9308d9e0c6df1ed",
+    "convention": "Clockwise",
+    "prerequisites": [
+      {
+        "key": "deckIsoSolid",
+        "global": "IsoSolid",
+        "source": "docs/art/rigs/deck-loop-kit/Art/isoSolid.js",
+        "sha256": "f7fc9db510b0346dea568c43dc7378f1a12fd71ee8f5a7653e78377812b792bd"
+      }
+    ]
+  },
+  "call": {
+    "fn": "render",
+    "args": [
+      "skid",
+      "$dir",
+      "$opts"
+    ],
+    "opts": {
+      "size": "s1200",
+      "fuel": "mixed",
+      "fill": 0,
+      "wear": "working"
+    }
+  },
+  "grid": {
+    "columns": 4,
+    "rows": 5,
+    "order": "rowMajor",
+    "axes": [
+      {
+        "name": "facing",
+        "bind": "dir",
+        "values": [
+          0,
+          2,
+          4,
+          6
+        ]
+      },
+      {
+        "name": "fill",
+        "bind": "opt:fill",
+        "values": [
+          0,
+          0.25,
+          0.5,
+          0.75,
+          1
+        ]
+      }
+    ]
+  },
+  "pack": {
+    "rule": "pivotUnionCrop",
+    "nativeW": 67,
+    "nativeH": 74,
+    "nativePivotX": 33,
+    "nativePivotY": 54,
+    "cropX": 2,
+    "cropY": 2,
+    "cellW": 62,
+    "cellH": 66,
+    "pivotX": 31,
+    "pivotY": 52,
+    "sheetW": 248,
+    "sheetH": 330
+  },
+  "sheetSha256": "1ac6c7d4db9ecf14f7bb05977482d80405037b1c3ccc07dfcec0a9af230202e0"
+}

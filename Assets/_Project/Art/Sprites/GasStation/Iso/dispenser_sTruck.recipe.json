@@ -1,0 +1,93 @@
+{
+  "schema": "hiddenharbours.rig-recipe/1",
+  "sheet": "dispenser_sTruck.png",
+  "kit": "gas-station",
+  "baker": "GasStationSheetBaker",
+  "rig": {
+    "key": "gasStation",
+    "global": "StationIso",
+    "source": "docs/art/rigs/gas-station-rig/rig/gasStationRig.js",
+    "sha256": "3700747cd2ab7a0ebc40eb31ff88b9e23978266ed447317a5ef55a7ad23c7b5d",
+    "convention": "Clockwise",
+    "prerequisites": [
+      {
+        "key": "deckIsoSolid",
+        "global": "IsoSolid",
+        "source": "docs/art/rigs/deck-loop-kit/Art/isoSolid.js",
+        "sha256": "f7fc9db510b0346dea568c43dc7378f1a12fd71ee8f5a7653e78377812b792bd"
+      },
+      {
+        "key": "fuel",
+        "global": "FuelIso",
+        "source": "docs/art/rigs/fuel-storage-kit/fuelRig.js",
+        "sha256": "811361ffe7deea0fbf6da41d9e50ca9efa8299ebca3d9fbff9308d9e0c6df1ed"
+      }
+    ]
+  },
+  "call": {
+    "fn": "render",
+    "args": [
+      "dispenser",
+      "$dir",
+      "$opts"
+    ],
+    "opts": {
+      "size": "sTruck",
+      "grades": [
+        "gas",
+        "diesel",
+        "mixed"
+      ],
+      "lit": false,
+      "hoses": 0,
+      "sides": 0,
+      "out": -1,
+      "style": "fascia",
+      "open": 0,
+      "span": 1,
+      "bollards": true,
+      "bin": false,
+      "wear": "working",
+      "seed": 11,
+      "keyline": false,
+      "elev": 40
+    }
+  },
+  "grid": {
+    "columns": 8,
+    "rows": 1,
+    "order": "rowMajor",
+    "axes": [
+      {
+        "name": "facing",
+        "bind": "dir",
+        "values": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ]
+      }
+    ]
+  },
+  "pack": {
+    "rule": "pivotUnionCrop",
+    "nativeW": 56,
+    "nativeH": 73,
+    "nativePivotX": 28,
+    "nativePivotY": 54,
+    "cropX": 2,
+    "cropY": 2,
+    "cellW": 52,
+    "cellH": 68,
+    "pivotX": 26,
+    "pivotY": 52,
+    "sheetW": 416,
+    "sheetH": 68
+  },
+  "sheetSha256": "61a4a9c3794bd50aa4ac95d1871c18256268f3ddcaff46280dfc5722bd313a3d"
+}

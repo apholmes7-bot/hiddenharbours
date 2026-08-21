@@ -1,0 +1,60 @@
+{
+  "schema": "hiddenharbours.rig-recipe/1",
+  "sheet": "guttingTable.png",
+  "kit": "iso-prop",
+  "baker": "IsoPropSheetBaker",
+  "rig": {
+    "key": "wharfDecor",
+    "global": "WharfDecor",
+    "source": "docs/art/rigs/iso-rig-pack/wharf-decor-iso/wharfDecorRig.js",
+    "sha256": "dba6ced6644e879e42cf2a3d6340ae76f90acf2cee0a0962cf4bbb0719a1b05a",
+    "convention": "CounterClockwise",
+    "prerequisites": []
+  },
+  "call": {
+    "fn": "render",
+    "args": [
+      "guttingTable",
+      "$dir",
+      "$opts"
+    ],
+    "opts": {}
+  },
+  "grid": {
+    "columns": 8,
+    "rows": 1,
+    "order": "rowMajor",
+    "axes": [
+      {
+        "name": "facing",
+        "bind": "dir",
+        "values": [
+          0,
+          7,
+          6,
+          5,
+          4,
+          3,
+          2,
+          1
+        ]
+      }
+    ]
+  },
+  "pack": {
+    "rule": "pivotUnionCrop",
+    "nativeW": 420,
+    "nativeH": 520,
+    "nativePivotX": 210,
+    "nativePivotY": 420,
+    "cropX": 163,
+    "cropY": 372,
+    "cellW": 94,
+    "cellH": 77,
+    "pivotX": 47,
+    "pivotY": 48,
+    "sheetW": 752,
+    "sheetH": 77
+  },
+  "sheetSha256": "c44545b892d8c5d34cb3bce8b65046283d47c10bc2559eb2d544e2e2eb05eda5"
+}
