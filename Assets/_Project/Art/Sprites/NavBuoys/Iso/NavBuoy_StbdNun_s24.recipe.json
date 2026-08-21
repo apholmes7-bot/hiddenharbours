@@ -1,0 +1,71 @@
+{
+  "schema": "hiddenharbours.rig-recipe/1",
+  "sheet": "NavBuoy_StbdNun_s24.png",
+  "kit": "nav-buoy",
+  "baker": "NavBuoySheetBaker",
+  "rig": {
+    "key": "navBuoy",
+    "global": "NavBuoy",
+    "source": "docs/art/rigs/nav-buoy-kit/navBuoyRig.js",
+    "sha256": "4163a8d2c975ecc95c4d998e01303a68becd0c6e6e13e46233526d023b16d561",
+    "convention": "Clockwise",
+    "prerequisites": [
+      {
+        "key": "deckIsoSolid",
+        "global": "IsoSolid",
+        "source": "docs/art/rigs/deck-loop-kit/Art/isoSolid.js",
+        "sha256": "f7fc9db510b0346dea568c43dc7378f1a12fd71ee8f5a7653e78377812b792bd"
+      }
+    ]
+  },
+  "call": {
+    "fn": "render",
+    "args": [
+      "StbdNun",
+      "$dir",
+      "$opts"
+    ],
+    "opts": {
+      "size": "s24",
+      "wear": "working",
+      "lit": false
+    }
+  },
+  "grid": {
+    "columns": 8,
+    "rows": 1,
+    "order": "rowMajor",
+    "axes": [
+      {
+        "name": "facing",
+        "bind": "dir",
+        "values": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ]
+      }
+    ]
+  },
+  "pack": {
+    "rule": "pivotUnionCropOverWear",
+    "nativeW": 138,
+    "nativeH": 220,
+    "nativePivotX": 69,
+    "nativePivotY": 130,
+    "cropX": 30,
+    "cropY": 50,
+    "cellW": 78,
+    "cellH": 132,
+    "pivotX": 39,
+    "pivotY": 80,
+    "sheetW": 624,
+    "sheetH": 132
+  },
+  "sheetSha256": "14765c24d3d435808679b46ad4ed7652accb7c3ca5f8ef07c40a0045ba42a8ca"
+}

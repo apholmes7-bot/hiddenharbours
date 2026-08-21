@@ -195,10 +195,18 @@ namespace HiddenHarbours.Tools.RigBaking
         public static byte[] RenderRaw(IRigScriptHost host, string globalName, string type, int dir,
                                        string size, string wear, bool lit)
         {
-            string opts = $"{{size:'{size}',wear:'{wear}',lit:{(lit ? "true" : "false")}}}";
+            string opts = RigRecipe.Js(OptsOf(size, wear, lit));
             host.Execute($"globalThis.__nbScratch = {globalName}.render('{type}',{dir},{opts});");
             return host.EvaluateBytes("globalThis.__nbScratch");
         }
+
+        /// <summary>The render options as a dict — the source <see cref="RenderRaw"/>'s JS literal is
+        /// derived from, so the call and the sheet's recipe cannot say different things.</summary>
+        public static RigRecipe.OptionDict OptsOf(string size, string wear, bool lit) =>
+            new RigRecipe.OptionDict()
+                .Set("size", size)
+                .Set("wear", wear)
+                .Set("lit", lit);
 
         /// <summary>
         /// FNV-1a over a rendered buffer. Used ONLY to count how many facings are byte-distinct, so

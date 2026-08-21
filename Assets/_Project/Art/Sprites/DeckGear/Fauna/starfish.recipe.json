@@ -1,0 +1,63 @@
+{
+  "schema": "hiddenharbours.rig-recipe/1",
+  "sheet": "starfish.png",
+  "kit": "iso-prop",
+  "baker": "IsoPropSheetBaker",
+  "rig": {
+    "key": "trapFauna",
+    "global": "TrapFauna",
+    "source": "docs/art/rigs/deck-loop-kit/Art/trapFaunaRig.js",
+    "sha256": "bdca292bcd4fdb4c4717af2a3c7a73e27a70d7624424302772add53dbbf79de6",
+    "convention": "Clockwise",
+    "prerequisites": [
+      {
+        "key": "deckIsoSolid",
+        "global": "IsoSolid",
+        "source": "docs/art/rigs/deck-loop-kit/Art/isoSolid.js",
+        "sha256": "f7fc9db510b0346dea568c43dc7378f1a12fd71ee8f5a7653e78377812b792bd"
+      },
+      {
+        "key": "catchKit",
+        "global": "CatchKit",
+        "source": "docs/art/rigs/catchKit.js",
+        "sha256": "811792a89126cc304601cedaf114f117f51c5d901d4430ca525ac499e9cf3a15"
+      },
+      {
+        "key": "crustacean",
+        "global": "Crustacean",
+        "source": "docs/art/rigs/crustaceanRig.js",
+        "sha256": "2f6527ba6cb8a03a0c9f9d72bad9c714540f6f153fb5bd019699dc233702b688"
+      }
+    ]
+  },
+  "call": {
+    "fn": "render",
+    "args": [
+      "starfish",
+      "$opts"
+    ],
+    "opts": {}
+  },
+  "grid": {
+    "columns": 1,
+    "rows": 1,
+    "order": "rowMajor",
+    "axes": []
+  },
+  "pack": {
+    "rule": "pivotUnionCrop",
+    "nativeW": 28,
+    "nativeH": 24,
+    "nativePivotX": 14,
+    "nativePivotY": 21,
+    "cropX": 7,
+    "cropY": 12,
+    "cellW": 15,
+    "cellH": 12,
+    "pivotX": 7,
+    "pivotY": 9,
+    "sheetW": 15,
+    "sheetH": 12
+  },
+  "sheetSha256": "60b98cfe40770c1cf1a14e974d70c636b975fe2697b1d6475da83bfaa3f26872"
+}

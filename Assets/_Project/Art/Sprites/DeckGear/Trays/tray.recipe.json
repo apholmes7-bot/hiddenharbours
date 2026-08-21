@@ -1,0 +1,66 @@
+{
+  "schema": "hiddenharbours.rig-recipe/1",
+  "sheet": "tray.png",
+  "kit": "iso-prop",
+  "baker": "IsoPropSheetBaker",
+  "rig": {
+    "key": "fishTray2",
+    "global": "FishTray2",
+    "source": "docs/art/rigs/deck-loop-kit/Art/trayIsoRig.js",
+    "sha256": "259786ec00d5c7b53e4f37f307ac3e1af68af16617a7c090d2b9b7f1c9517c25",
+    "convention": "Clockwise",
+    "prerequisites": [
+      {
+        "key": "deckIsoSolid",
+        "global": "IsoSolid",
+        "source": "docs/art/rigs/deck-loop-kit/Art/isoSolid.js",
+        "sha256": "f7fc9db510b0346dea568c43dc7378f1a12fd71ee8f5a7653e78377812b792bd"
+      }
+    ]
+  },
+  "call": {
+    "fn": "render",
+    "args": [
+      "$dir",
+      "$opts"
+    ],
+    "opts": {}
+  },
+  "grid": {
+    "columns": 8,
+    "rows": 1,
+    "order": "rowMajor",
+    "axes": [
+      {
+        "name": "facing",
+        "bind": "dir",
+        "values": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ]
+      }
+    ]
+  },
+  "pack": {
+    "rule": "pivotUnionCrop",
+    "nativeW": 48,
+    "nativeH": 44,
+    "nativePivotX": 24,
+    "nativePivotY": 34,
+    "cropX": 10,
+    "cropY": 19,
+    "cellW": 28,
+    "cellH": 21,
+    "pivotX": 14,
+    "pivotY": 15,
+    "sheetW": 224,
+    "sheetH": 21
+  },
+  "sheetSha256": "bf62c810f1b5905a2be0f49947c243fce1e82e2c1735bf84f58a1b57ab446cb8"
+}

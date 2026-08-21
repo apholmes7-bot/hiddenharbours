@@ -43,6 +43,10 @@ namespace HiddenHarbours.Tools.RigBaking
             public YardKit.Build Build;
 
             public string Key, Piece, Label, Cat, AssetPath, OptionsJs;
+
+            /// <summary>Where the sheet's <c>&lt;stem&gt;.recipe.json</c> went — the rig call that
+            /// produced it (see <see cref="RigRecipe"/>).</summary>
+            public string RecipePath;
             public int NativeW, NativeH, NativePivotX, NativePivotY;
             public int CellW, CellH, PivotX, PivotY, CropX, CropY;
             public int Columns, Rows, SheetW, SheetH, Facings, PngBytes;
@@ -166,6 +170,8 @@ namespace HiddenHarbours.Tools.RigBaking
         {
             AssertKnown(host, g, b.Piece);
 
+            AssertOptionsAgree(b);
+
             int facings = YardKit.Facings;
             string opts = YardKit.OptionsJs(b);
             string key = Quote(b.Piece);
@@ -259,7 +265,79 @@ namespace HiddenHarbours.Tools.RigBaking
             };
 
             WritePng(pixels, pw, ph, result);
+
+            // ---- the recipe: what drew this sheet, beside it ----------------------------------------
+            result.RecipePath = RigRecipe.Write(result.AssetPath, new RigRecipe
+            {
+                Kit = RecipeKit,
+                Baker = nameof(YardSheetBaker),
+                Rig = RigRecipe.RigBlockFor(YardKit.RigKey),
+                Call = new RigRecipe.CallBlock
+                {
+                    Args = { b.Piece, "$dir", "$opts" },
+                    Opts = OptsOf(b),
+                },
+                Grid = new RigRecipe.GridBlock
+                {
+                    Columns = cols, Rows = rows,
+                    Axes = { RigRecipe.Axis.Facings(facings, convention) },
+                },
+                Pack = new RigRecipe.PackBlock
+                {
+                    NativeW = nw, NativeH = nh, NativePivotX = npx, NativePivotY = npy,
+                    CropX = cropX, CropY = cropY,
+                    CellW = cw, CellH = ch, PivotX = pivotX, PivotY = pivotY,
+                    SheetW = pw, SheetH = ph,
+                },
+            });
+
             return result;
+        }
+
+        /// <summary>The kit id a recipe files itself under.</summary>
+        public const string RecipeKit = "yard";
+
+        /// <summary>
+        /// The dressing this sheet was drawn at, as a dict — the recipe's half of
+        /// <see cref="YardKit.OptionsJs"/>.
+        ///
+        /// <para><b>⚠️ Two spellings of one thing, and the bake REFUSES if they part company.</b>
+        /// <see cref="YardKit"/> lives in <c>HiddenHarbours.Art.Editor</c>, which cannot see
+        /// <see cref="RigRecipe"/> — the assembly reference runs the other way — so the options
+        /// genuinely exist twice. That is the shape of drift this ledger exists to stop, so rather
+        /// than hope, <see cref="AssertOptionsAgree"/> compares them on every sheet: the rigs resolve
+        /// an unknown or missing key as a SILENT fallback, so a divergence would ship a sheet whose
+        /// recipe draws a different fence.</para>
+        /// </summary>
+        public static RigRecipe.OptionDict OptsOf(in YardKit.Build b) =>
+            new RigRecipe.OptionDict()
+                .Set("paint", b.Paint)
+                .Set("variant", b.Variant)
+                .Set("len", b.Len)
+                .Set("kept", b.Kept)
+                .Set("phase", YardKit.BakedPhase)
+                .Set("snow", YardKit.BakedSnow)
+                .Set("weather", YardKit.BakedWeather)
+                .Set("night", YardKit.BakedNight)
+                .Set("seed", b.Seed)
+                .Set("compose", YardKit.BakedCompose)
+                .Set("elev", (float)YardKit.Elevation);
+
+        /// <summary>Refuses the bake if the recipe's dict and <see cref="YardKit.OptionsJs"/> would
+        /// hand the rig different options. See <see cref="OptsOf"/> for why they are separate.</summary>
+        public static void AssertOptionsAgree(in YardKit.Build b)
+        {
+            string fromKit = YardKit.OptionsJs(b);
+            string fromDict = RigRecipe.Js(OptsOf(b));
+            if (fromKit == fromDict) return;
+
+            throw new InvalidOperationException(
+                $"'{b.Key}': YardKit.OptionsJs and YardSheetBaker.OptsOf have drifted apart.\n" +
+                $"  the kit says    : {fromKit}\n" +
+                $"  the recipe says : {fromDict}\n\n" +
+                "The rig resolves an unknown or missing key as a SILENT fallback, so shipping past " +
+                "this would write a sheet whose own recipe draws a different piece. Fix whichever " +
+                "of the two is wrong — do not relax the check.");
         }
 
         // ---- the contract ---------------------------------------------------------------------------
