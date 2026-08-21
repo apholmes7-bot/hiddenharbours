@@ -122,6 +122,13 @@ namespace HiddenHarbours.App
                  "control comes back (real seconds). Short: this is a beat, not a cutscene.")]
         [Min(0f)] [SerializeField] private float _mooredBeatSeconds = 2.5f;
 
+        [Tooltip("The fallback. Alongside, the pilot goes astern and she is tied up the moment she reads " +
+                 "STOPPED — but a boat held off her stop (her bow on the wharf's collider, a chop, a " +
+                 "current) can sit a hair above the threshold forever, and the passenger sits with her. " +
+                 "After this many seconds alongside she is tied up regardless; the snap to the berth is " +
+                 "the same either way. 0 disables the fallback (then only the stop ties her up).")]
+        [Min(0f)] [SerializeField] private float _dockingSettleSeconds = 12f;
+
         [Header("What he says")]
         [Tooltip("The one line. The path and the line ARE the guidance — no quest, no marker (the " +
                  "diegetic-UI law). ⚠ Copy is the owner's to veto.")]
@@ -169,6 +176,7 @@ namespace HiddenHarbours.App
         private int _leg;
         private float _closestSoFar = float.MaxValue;
         private float _mooredTimer;
+        private float _dockingTimer;
         private bool _subscribed;
 
         /// <summary>Which state the arrival is in — the thing a test asserts on.</summary>
@@ -335,6 +343,16 @@ namespace HiddenHarbours.App
             _boat = go.AddComponent<BoatController>();
             _boat.SetHull(_skipper.Boat);
 
+            // 🔴 THE PASSENGER IS NOT AT THE HELM — so this hull must never offer one. BoatController.Awake
+            // self-installs a HelmControlRelay on every boat, and its OnEnable takes the Core helm slot
+            // (last writer wins) with HasHelm true for any ENGINE hull whose controller is driving —
+            // which the skipper's is, all the way in. The owner's 2026-08-21 playtest saw exactly that:
+            // the helm card, wheel and gauges drawn for a boat somebody else was steering. Add the relay
+            // HERE, while the object is still inactive, and add it DISABLED: Awake then finds one and
+            // adds no second, and a disabled component never runs OnEnable, so the slot is never taken
+            // and never clobbered — whoever held it before this boat spawned still holds it after.
+            go.AddComponent<HelmControlRelay>().enabled = false;
+
             // ⚠ The hull's own idea of the water under her. Left at the component default (a flat 3 m)
             // she reads AGROUND for the whole passage at spring low — 3 − 2.2 = 0.8 m against a 1.4 m
             // draught — and drags herself in through the grounded-slowdown force for no reason. The
@@ -426,7 +444,25 @@ namespace HiddenHarbours.App
                 // a stopwatch would tie her up mid-glide on a fast machine and leave her drifting past
                 // the wharf on a slow one. Read through the controller's own Velocity, which is the
                 // number the grounding and the wake already read.
-                if (_boat.Velocity.sqrMagnitude < StoppedSpeedSquared) TieUp();
+                if (_boat.Velocity.sqrMagnitude < StoppedSpeedSquared) { TieUp(); return; }
+
+                // 🔴 THE FALLBACK — measured on the owner's machine 2026-08-21, St Peters, bow-on berth:
+                // "alongside … taking the last of it off astern" logged, and "tied up" never did. The
+                // stop above is a RIGIDBODY reading, and a hull with her bow on the pier's collider is
+                // pushed back a hair every physics step — never under 0.1 m/s, never moored, a
+                // passenger pinned aboard with no exit by design. Headless, over the real fairway with
+                // no wharf objects, she settles in under a second and the suite stayed green through
+                // it. The time is a BOUND on waiting, not a replacement for the stop: a boat that
+                // settles still ties up the moment she settles.
+                _dockingTimer += Time.deltaTime;
+                if (_dockingSettleSeconds > 0f && _dockingTimer >= _dockingSettleSeconds)
+                {
+                    Debug.LogWarning($"[ArrivalOpening] still making {_boat.Velocity.magnitude:F2} m/s " +
+                                     $"{_dockingTimer:F1} s after coming alongside, " +
+                                     $"{Vector2.Distance(_boatRoot.position, _berth):F1} m off the berth " +
+                                     "— something is holding her off her stop. Tying up regardless.");
+                    TieUp();
+                }
                 return;
             }
 
@@ -467,6 +503,7 @@ namespace HiddenHarbours.App
         private void BeginDocking()
         {
             _phase = Phase.Docking;
+            _dockingTimer = 0f;
             Debug.Log($"[ArrivalOpening] alongside at {_boat.Velocity.magnitude:F2} m/s, " +
                       $"{Vector2.Distance(_boatRoot.position, _berth):F1} m off the berth — taking the " +
                       "last of it off astern.");

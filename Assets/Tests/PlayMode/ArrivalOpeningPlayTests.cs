@@ -192,6 +192,84 @@ namespace HiddenHarbours.Tests.PlayMode
         /// <summary>⭐ The seam with #580: a player who went to bed somewhere is WOKEN there by
         /// <see cref="RestWakeRestorer"/>, and the arrival must not also move her. Only one thing may
         /// place a loading player.</summary>
+        /// <summary>
+        /// 🔴 <b>Held off her stop, she is tied up anyway — and the player still gets ashore.</b>
+        /// The owner's 2026-08-21 playtest: "alongside … taking the last of it off astern" logged and
+        /// "tied up" never did. The stop is a rigidbody reading, and a hull with her bow on the pier's
+        /// collider is nudged back every physics step, never under 0.1 m/s. This fixture has no wharf,
+        /// so the hold is stood in for by a current that keeps her at 0.3 m/s no matter what the pilot
+        /// does — the honest shape of "she cannot settle", not a wall she would simply stop against.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator HeldOffHerStop_SheIsTiedUpAnyway_AndThePlayerStillGetsAshore()
+        {
+            var opening = Build(hasRestAnchor: false, alreadyArrived: false);
+            Assert.IsTrue(opening.TryBegin(), "the arrival must start on a fresh save");
+
+            yield return Until(() => opening.Current == ArrivalOpening.Phase.Docking, "came alongside");
+
+            var body = opening.Boat.GetComponent<Rigidbody2D>();
+            Assert.IsNotNull(body, "precondition: the arrival hull is a rigidbody");
+            var hold = opening.Boat.gameObject.AddComponent<HoldOffHerStop>();
+            hold.Body = body;
+
+            // She must not be allowed to "settle" by the stop arm — the hold is doing its job.
+            float probeUntil = Time.time + 1.5f;
+            while (Time.time < probeUntil)
+            {
+                Assert.AreNotEqual(ArrivalOpening.Phase.Moored, opening.Current,
+                    "the hold failed: she read STOPPED while being pushed at 0.3 m/s, so this test " +
+                    "would pass without the fallback and prove nothing");
+                yield return null;
+            }
+
+            yield return Until(() => opening.Current == ArrivalOpening.Phase.HandedOver,
+                               "tied up by the fallback and handed over");
+
+            Assert.AreEqual(RigidbodyType2D.Kinematic, body.bodyType,
+                "tied up means kinematic — the sea moves her, her engine does not");
+            Assert.Less(Vector2.Distance(body.position, Berth), 0.5f,
+                $"the fallback tie-up must still snap her onto the berth {Berth}; she lies at {body.position}");
+            Assert.Less(Vector2.Distance(_player.transform.position, Ashore), 0.01f,
+                "the player is put ashore by the fallback exactly as by the stop");
+        }
+
+        /// <summary>
+        /// 🔴 <b>The passenger is shown no helm.</b> The owner's 2026-08-21 playtest: the helm card,
+        /// wheel and gauges drawn for a boat the skipper was steering. The relay on the arrival hull
+        /// must never take the Core helm slot: the slot is empty before she spawns and must be empty
+        /// after, and the relay BoatController installs on her must be disabled, not merely hidden.
+        /// </summary>
+        [UnityTest]
+        public IEnumerator ThePassengerIsShownNoHelm_AndTheHelmSlotIsNotTaken()
+        {
+            GameServices.HelmControl = null;
+            var opening = Build(hasRestAnchor: false, alreadyArrived: false);
+            Assert.IsTrue(opening.TryBegin(), "the arrival must start on a fresh save");
+            yield return null;   // Awake/OnEnable on the spawned hull have run
+            yield return null;
+
+            Assert.IsNull(GameServices.HelmControl,
+                "the arrival hull's relay took the Core helm slot — the passenger would be shown the " +
+                "skipper's helm, and whatever boat held the slot before loses it");
+
+            var relay = opening.Boat.GetComponent<HelmControlRelay>();
+            Assert.IsNotNull(relay, "BoatController still self-installs a relay; the arrival must pre-empt it");
+            Assert.IsFalse(relay.enabled, "the arrival hull's relay must be DISABLED, never merely hidden");
+        }
+
+        /// <summary>A current no pilot can take off: whatever she does, she makes 0.3 m/s along +x.
+        /// Runs in FixedUpdate after the controller so it has the last word on the body each step.</summary>
+        private sealed class HoldOffHerStop : MonoBehaviour
+        {
+            public Rigidbody2D Body;
+            private void FixedUpdate()
+            {
+                if (Body == null || Body.bodyType != RigidbodyType2D.Dynamic) return;
+                if (Body.linearVelocity.sqrMagnitude < 0.09f) Body.linearVelocity = new Vector2(0.3f, 0f);
+            }
+        }
+
         [UnityTest]
         public IEnumerator APlayerWithARestAnchor_IsLeftToTheWakeRestorer()
         {
