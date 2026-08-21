@@ -236,14 +236,13 @@ namespace HiddenHarbours.Tests.RigBaking
                     wrong.Add($"{rel}: the slicer holds {rects.Count} rect(s), the recipe's axes " +
                               $"make {cells} cell(s)");
 
-                var odd = rects.Where(s => (int)s.rect.width != p.CellW ||
-                                           (int)s.rect.height != p.CellH).ToList();
+                var odd = rects.Where(s => s.W != p.CellW || s.H != p.CellH).ToList();
                 if (odd.Count > 0)
                     wrong.Add($"{rel}: {odd.Count} rect(s) are not {p.CellW}×{p.CellH} (e.g. " +
-                              $"{odd[0].name} is {(int)odd[0].rect.width}×{(int)odd[0].rect.height})");
+                              $"{odd[0].Name} is {odd[0].W}×{odd[0].H})");
 
-                int spanW = rects.Max(s => (int)(s.rect.x + s.rect.width));
-                int spanH = rects.Max(s => (int)(s.rect.y + s.rect.height));
+                int spanW = rects.Max(s => s.X + s.W);
+                int spanH = rects.Max(s => s.Y + s.H);
                 if (spanW != p.SheetW || spanH != p.SheetH)
                     wrong.Add($"{rel}: the rects span {spanW}×{spanH}, the recipe packs " +
                               $"{p.SheetW}×{p.SheetH}");
@@ -254,46 +253,82 @@ namespace HiddenHarbours.Tests.RigBaking
                 float wantY = (p.CellH - p.PivotY) / (float)p.CellH;
                 // Half a pixel of tolerance, never a whole one: a tolerance loose enough to hide a
                 // pixel would hide the bug this catches.
-                float tol = 0.5f / UnityEngine.Mathf.Max(p.CellW, p.CellH);
-                var badPivot = rects.Where(s => UnityEngine.Mathf.Abs(s.pivot.x - wantX) > tol ||
-                                                UnityEngine.Mathf.Abs(s.pivot.y - wantY) > tol).ToList();
+                float tol = 0.5f / Math.Max(p.CellW, p.CellH);
+                var badPivot = rects.Where(s => Math.Abs(s.PivotX - wantX) > tol ||
+                                                Math.Abs(s.PivotY - wantY) > tol).ToList();
                 if (badPivot.Count > 0)
-                    wrong.Add($"{rel}: {badPivot.Count} sprite pivot(s) disagree — {badPivot[0].name} " +
-                              $"is ({badPivot[0].pivot.x}, {badPivot[0].pivot.y}), the recipe's " +
+                    wrong.Add($"{rel}: {badPivot.Count} sprite pivot(s) disagree — {badPivot[0].Name} " +
+                              $"is ({badPivot[0].PivotX}, {badPivot[0].PivotY}), the recipe's " +
                               $"({p.PivotX},{p.PivotY}) normalises to ({wantX}, {wantY})");
             }
 
-            // Every sheet unsliced means the textures did not import — overwhelmingly because this
-            // checkout has LFS POINTERS where the PNGs should be. That is inconclusive, not a pass,
-            // and saying so is the difference between a gate and a decoration.
+            // Every sheet unsliced would mean the committed metas carry no sprite rects at all —
+            // inconclusive rather than a pass, and saying so is the difference between a gate and a
+            // decoration.
             if (checkedSheets == 0 && unsliced > 0)
-                Assert.Ignore($"none of the {unsliced} sheets carries sprite rects. The likeliest " +
-                              "cause is a checkout without the Git-LFS objects: run `git lfs pull` " +
-                              "and re-run. (tools/rig-recipes/check-slices.mjs makes the same check " +
-                              "off the committed .meta text, which needs no LFS object at all.)");
+                Assert.Ignore($"none of the {unsliced} sheets' .meta files carries a `sprites:` " +
+                              "block, so there is nothing to hold the recipes to.");
 
             Assert.IsEmpty(wrong,
                 $"checked {checkedSheets} sheet(s); the recipe and the slicer disagree on:\n  " +
                 string.Join("\n  ", wrong));
         }
 
-        /// <summary>
-        /// The importer's persisted sprite rects. Read through <c>ISpriteEditorDataProvider</c>, never
-        /// <c>TextureImporter.spritesheet</c> — obsolete-as-error on Unity 6000.5.
-        /// </summary>
-        static List<UnityEditor.U2D.Sprites.SpriteRect> SpriteRectsOf(string assetPath)
+        /// <summary>One slice, as the sheet's own <c>.meta</c> records it.</summary>
+        readonly struct Slice
         {
-            if (!(UnityEditor.AssetImporter.GetAtPath(assetPath) is UnityEditor.TextureImporter importer))
-                return null;
-            if (importer.spriteImportMode != UnityEditor.SpriteImportMode.Multiple) return null;
+            public readonly string Name;
+            public readonly int X, Y, W, H;
+            public readonly float PivotX, PivotY;
 
-            var factory = new UnityEditor.U2D.Sprites.SpriteDataProviderFactories();
-            factory.Init();
-            var provider = factory.GetSpriteEditorDataProviderFromObject(importer);
-            if (provider == null) return null;
-            provider.InitSpriteEditorDataProvider();
-            return provider.GetSpriteRects().ToList();
+            public Slice(string name, int x, int y, int w, int h, float pivotX, float pivotY)
+            {
+                Name = name; X = x; Y = y; W = w; H = h; PivotX = pivotX; PivotY = pivotY;
+            }
         }
+
+        /// <summary>
+        /// The slicer's rects, read straight out of the committed <c>&lt;stem&gt;.png.meta</c> TEXT.
+        ///
+        /// <para><b>⚠️ Deliberately NOT through <c>ISpriteEditorDataProvider</c>, and not through
+        /// <c>TextureImporter.spritesheet</c> either</b> (the latter is obsolete-as-error on Unity
+        /// 6000.5). Reading the file has three properties the API does not: it needs no package type
+        /// to resolve, it needs no successful IMPORT — so it works on a checkout holding LFS pointers
+        /// where the texture cannot import at all — and it reads the exact same bytes as
+        /// <c>tools/rig-recipes/check-slices.mjs</c>, which is what makes the two genuinely twins
+        /// rather than two things that usually agree.</para>
+        /// </summary>
+        static List<Slice> SpriteRectsOf(string assetPath)
+        {
+            string meta = Path.Combine(RepoRoot, assetPath + ".meta");
+            if (!File.Exists(meta)) return null;
+
+            string text = File.ReadAllText(meta);
+            // Scope to the `sprites:` block: the importer's own `spritePivot` sits above it and would
+            // otherwise be read as a slice's.
+            int at = text.IndexOf("\n    sprites:", StringComparison.Ordinal);
+            if (at < 0) return null;
+
+            var found = new List<Slice>();
+            foreach (System.Text.RegularExpressions.Match m in
+                     SpriteRectPattern.Matches(text.Substring(at)))
+                found.Add(new Slice(
+                    m.Groups[1].Value,
+                    int.Parse(m.Groups[2].Value, CultureInfo.InvariantCulture),
+                    int.Parse(m.Groups[3].Value, CultureInfo.InvariantCulture),
+                    int.Parse(m.Groups[4].Value, CultureInfo.InvariantCulture),
+                    int.Parse(m.Groups[5].Value, CultureInfo.InvariantCulture),
+                    float.Parse(m.Groups[6].Value, NumberStyles.Float, CultureInfo.InvariantCulture),
+                    float.Parse(m.Groups[7].Value, NumberStyles.Float, CultureInfo.InvariantCulture)));
+            return found;
+        }
+
+        static readonly System.Text.RegularExpressions.Regex SpriteRectPattern =
+            new System.Text.RegularExpressions.Regex(
+                @"name:\s*(\S+)\s*\r?\n\s*rect:\s*\r?\n(?:\s*serializedVersion:.*\r?\n)?" +
+                @"\s*x:\s*(-?\d+)\s*\r?\n\s*y:\s*(-?\d+)\s*\r?\n" +
+                @"\s*width:\s*(\d+)\s*\r?\n\s*height:\s*(\d+)" +
+                @"[\s\S]*?pivot:\s*\{x:\s*([-\d.eE+]+),\s*y:\s*([-\d.eE+]+)\}");
 
         // =============================================================================================
         //  the pack arithmetic — self-consistency a JSON file can be held to on its own
