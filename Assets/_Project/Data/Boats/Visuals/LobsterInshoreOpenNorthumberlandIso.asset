@@ -61,4 +61,8 @@ MonoBehaviour:
   - {fileID: 1497186288, guid: ddfa69a567053e04f806ff4558057ee8, type: 3}
   - {fileID: -1566908316, guid: ddfa69a567053e04f806ff4558057ee8, type: 3}
   InteriorFacings: 8
+  InteriorCellLevels:
+  - house
+  - cuddy
+  InteriorCellRowForLevel: 0000000001000000
   InteriorCellsAreCounterClockwise: 1

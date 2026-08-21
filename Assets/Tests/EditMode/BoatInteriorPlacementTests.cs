@@ -146,16 +146,18 @@ namespace HiddenHarbours.Tests.EditMode
                 BoatVisualDef visual = Visual(stem);
                 if (visual == null || visual.Interior == null) continue;
 
-                int levels = def.Levels != null ? def.Levels.Length : 0;
-                int want = levels * visual.InteriorFacings;
+                // ⚠ The SHEET's rows, not the DEF's levels. They are different lists — see
+                // BoatVisualDef.InteriorCellRowForLevel, and the failure that taught us so.
+                int rows = visual.InteriorCellLevels != null ? visual.InteriorCellLevels.Length : 0;
+                int want = rows * visual.InteriorFacings;
                 int have = visual.InteriorCells != null ? visual.InteriorCells.Length : 0;
 
                 if (have != want)
-                    wrong.Add($"{stem}: {have} cells where {levels} levels x {visual.InteriorFacings} " +
-                              "facings needs " + want);
+                    wrong.Add($"{stem}: {have} cells where {rows} sheet rows x " +
+                              $"{visual.InteriorFacings} facings needs {want}");
                 else if (!visual.HasInteriorCells())
-                    wrong.Add($"{stem}: a hole in the cell array — a partly wired sheet draws a " +
-                              "plausible picture of the wrong room");
+                    wrong.Add($"{stem}: a hole in the cell array, or a level map that does not cover " +
+                              "the def — a partly wired sheet draws a plausible picture of the wrong room");
             }
 
             Assert.IsEmpty(wrong, string.Join("\n  ", wrong));
@@ -180,6 +182,56 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsTrue(sawSixteen,
                 "no hull reports 16 px/m. The tanker does, and a suite that never sees the second grid " +
                 "is not guarding the trap it was written for.");
+        }
+
+        [Test]
+        public void TheLevelMapNamesTheRightRoom_NotMerelyARoom()
+        {
+            // ⭐ THE REGRESSION THIS SUITE WAS WORTH WRITING FOR. A BoatInteriorDef declares every level
+            // a route reaches, INCLUDING exterior working decks the sheets never bake; and the sheets run
+            // bridge/house/below where the defs run main_deck/house_sole/bridge_sole/below_sole. Indexing
+            // cells by the def's level index draws the BRIDGE while the player stands on the HOUSE sole —
+            // on all five ships, and it looks like a perfectly good cabin.
+            var wrong = new List<string>();
+            int shipsSeen = 0;
+
+            foreach ((string stem, BoatInteriorDef def) in Interiors())
+            {
+                BoatVisualDef visual = Visual(stem);
+                if (visual == null || visual.Interior == null) continue;
+                if (visual.InteriorCellRowForLevel == null || def.Levels == null) continue;
+
+                for (int i = 0; i < def.Levels.Length; i++)
+                {
+                    BoatInteriorLevel level = def.Levels[i];
+                    if (level == null) continue;
+                    int row = visual.InteriorCellRowForLevel[i];
+                    if (row < 0) continue;   // an outdoor deck draws nothing, which is an answer
+
+                    string key = visual.InteriorCellLevels[row];
+                    bool same = string.Equals(level.Id, key, StringComparison.Ordinal) ||
+                                string.Equals(level.Id, key + "_sole", StringComparison.Ordinal);
+                    if (!same)
+                        wrong.Add($"{stem}: level '{level.Id}' is drawn by the row baked for '{key}'");
+                }
+
+                // An outdoor deck must map to nothing at all.
+                for (int i = 0; i < def.Levels.Length; i++)
+                {
+                    string id = def.Levels[i] != null ? def.Levels[i].Id : null;
+                    if (id == null || !id.EndsWith("_deck", StringComparison.Ordinal)) continue;
+                    shipsSeen++;
+                    if (visual.InteriorCellRowForLevel[i] >= 0)
+                        wrong.Add($"{stem}: the exterior deck '{id}' is mapped to a sheet row, but the " +
+                                  "interior sheets do not bake a working deck");
+                }
+            }
+
+            Assert.IsEmpty(wrong, string.Join("\n  ", wrong));
+            Assert.Greater(shipsSeen, 0,
+                "no hull declared an exterior working deck. The five ships do (main_deck, and the " +
+                "tanker's poop_deck), so a suite that sees none is not looking at the fleet that " +
+                "produced this bug.");
         }
 
         // =====================================================================================

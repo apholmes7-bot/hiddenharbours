@@ -143,7 +143,9 @@ namespace HiddenHarbours.Boats
                 zeroHeadingDegrees: visual.ZeroHeadingDegrees,
                 deckRollDegrees: RockRollDegrees(visual),
                 deckHeavePixels: RockHeavePixels(visual),
-                deckPitchLiftMeters: PitchLiftMetres(visual));
+                deckPitchLiftMeters: PitchLiftMetres(visual),
+                // ⚠ The def's levels are NOT the sheet's rows — see BoatVisualDef.InteriorCellRowForLevel.
+                cellRowForLevel: visual.InteriorCellRowForLevel);
 
             // --- the door -----------------------------------------------------------------------
             BoatInteriorDoor door = def.Door;

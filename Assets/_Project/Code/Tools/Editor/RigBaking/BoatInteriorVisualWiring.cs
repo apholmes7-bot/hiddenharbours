@@ -157,10 +157,21 @@ namespace HiddenHarbours.Tools.RigBaking
                     continue;
                 }
 
+                int[] rowForLevel = MapLevels(def, sheet, out string mapProblem);
+                if (rowForLevel == null)
+                {
+                    r.Problem = mapProblem;
+                    results.Add(r);
+                    log.AppendLine($"  REFUSED {stem}: {r.Problem}");
+                    continue;
+                }
+
                 Undo.RecordObject(visual, "Wire boat interior");
                 visual.Interior = def;
                 visual.InteriorCells = cells;
                 visual.InteriorFacings = sheet.facings;
+                visual.InteriorCellLevels = (string[])sheet.levels.Clone();
+                visual.InteriorCellRowForLevel = rowForLevel;
                 visual.InteriorCellsAreCounterClockwise =
                     string.Equals(sheet.convention, "CounterClockwise", StringComparison.Ordinal);
                 EditorUtility.SetDirty(visual);
@@ -175,6 +186,72 @@ namespace HiddenHarbours.Tools.RigBaking
 
             AssetDatabase.SaveAssets();
             return results;
+        }
+
+        /// <summary>
+        /// <b>Which sheet ROW draws each of the def's LEVELS</b> — the map the whole wiring turns on,
+        /// computed here once so nothing re-derives it from a name at runtime.
+        ///
+        /// <para><b>⚠ The two lists are not the same list, in length OR in order.</b> A
+        /// <see cref="BoatInteriorDef"/> declares every level a route can reach, and on the five ships
+        /// that includes <c>main_deck</c> (plus the tanker's <c>poop_deck</c>) — EXTERIOR working decks
+        /// the interior sheets rightly never bake. Meanwhile the sheets run
+        /// <c>bridge/house/below</c> where the defs run
+        /// <c>main_deck/house_sole/bridge_sole/below_sole</c>. Indexing the cells by the def's level
+        /// index therefore draws the BRIDGE while the player stands on the HOUSE sole: a perfectly
+        /// plausible picture of the wrong room, on every ship in the fleet.</para>
+        ///
+        /// <para><b>−1 is a real answer</b>, not a failure: an outdoor deck has no interior to draw, and
+        /// the runtime uses that to keep a cabin door from walking somebody onto a working deck (the
+        /// trawler declares main_deck at 3.5 m, the exact height of her house sole).</para>
+        ///
+        /// <para><b>Matched by id, and a sheet row that matches NOTHING is refused.</b> The kit's level
+        /// keys are the def's ids less a <c>_sole</c> suffix, which is a convention — so it is used
+        /// HERE, once, where a mismatch can be reported by name, and never at runtime where it would
+        /// fail silently. If the two ever stop corresponding, this refuses the hull rather than wiring a
+        /// guess.</para>
+        /// </summary>
+        private static int[] MapLevels(BoatInteriorDef def, BoatInteriorKit.SheetEntry sheet,
+                                       out string problem)
+        {
+            problem = null;
+            int levels = def.Levels != null ? def.Levels.Length : 0;
+            var map = new int[levels];
+            for (int i = 0; i < levels; i++) map[i] = -1;
+
+            for (int row = 0; row < sheet.levels.Length; row++)
+            {
+                string key = sheet.levels[row];
+                int at = -1;
+                for (int i = 0; i < levels; i++)
+                {
+                    string id = def.Levels[i] != null ? def.Levels[i].Id : null;
+                    if (string.IsNullOrEmpty(id)) continue;
+                    if (string.Equals(id, key, StringComparison.Ordinal) ||
+                        string.Equals(id, key + "_sole", StringComparison.Ordinal))
+                    { at = i; break; }
+                }
+
+                if (at < 0)
+                {
+                    problem = $"the sheet bakes a level '{key}' that the def declares nowhere " +
+                              "(def levels: " +
+                              string.Join(", ", (def.Levels ?? Array.Empty<BoatInteriorLevel>())
+                                                .Where(l => l != null).Select(l => l.Id)) +
+                              "). The sheets and the def disagree — re-run the def builder and the " +
+                              "sheet bake from the same kit.";
+                    return null;
+                }
+                map[at] = row;
+            }
+
+            bool any = map.Any(r => r >= 0);
+            if (!any)
+            {
+                problem = "no level of this def is drawn by any sheet row";
+                return null;
+            }
+            return map;
         }
 
         /// <summary>

@@ -191,18 +191,18 @@ namespace HiddenHarbours.Boats
         /// is loud, and a hull that gains a def or an exterior half later gains her door with no other
         /// change.</para>
         ///
-        /// <para><b>⭐ The middle one is the S0 ruling's rider, and it is the ADR's own invariant
-        /// enforced at the only door into it.</b> <see cref="BoatInterior.SwapIsCompletable"/> is false
-        /// while the exterior half is unwired — which, after the mesh-hull spike, is every hull in the
-        /// fleet until the per-level face tags land. Opening onto that would draw the interior and the
-        /// exterior at once, posed differently, which is exactly the co-visibility ADR 0038 forbids and
-        /// the reason its motion clamp is safe at all. <b>So the fleet wires up now and stays silent,
-        /// and each cabin lights the moment its own exterior half arrives</b> — no second switch, no
-        /// migration, and no window in which a half-built cabin is enterable.</para>
+        /// <para><b>⭐ The first two are ONE named policy — <see cref="BoatInteriorEntryPolicy.MayOffer"/>
+        /// — and deliberately not spelled out here.</b> Whether a cabin may be entered before the
+        /// exterior half of its swap exists is a question the owner is settling on rendered evidence,
+        /// with three named outcomes; a policy that is going to be re-decided belongs somewhere a person
+        /// can find and change without reading a door. What that predicate protects is the ADR's own
+        /// invariant: the interior takes only <c>InteriorRockScale</c> of the hull's rock, which is safe
+        /// ONLY because the two are never drawn together. <b>Today it means the fleet wires up and stays
+        /// silent, and each cabin lights the moment its own exterior half arrives</b> — no second
+        /// switch, no migration, and no window in which a half-built cabin is enterable.</para>
         /// </summary>
         public bool IsAvailable =>
-            _interior != null && _interior.HasInterior && _interior.SwapIsCompletable &&
-            Door != null && !IsCueing;
+            BoatInteriorEntryPolicy.MayOffer(_interior) && Door != null && !IsCueing;
 
         /// <inheritdoc/>
         public void Interact(in InteractActor actor) => TryUse();

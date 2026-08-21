@@ -257,7 +257,13 @@ namespace HiddenHarbours.Tests.PlayMode
             var controller = boat.AddComponent<BoatController>();   // brings its required components
             controller.SetHull(hull);
 
-            var installer = boat.AddComponent<BoatInteriorInstaller>();
+            // ⚠ BoatController.Awake ALREADY mounted the installer — that is the shipped wiring, and
+            // AddComponent-ing a second would trip [DisallowMultipleComponent]. Take the one she grew,
+            // which is also the one the game will use. Build() explicitly because Awake ran BEFORE
+            // SetHull, so the installer's own Start found no hull to read; it is idempotent, so the
+            // Start that follows is free.
+            var installer = boat.GetComponent<BoatInteriorInstaller>();
+            Assert.IsNotNull(installer, "BoatController.Awake should have mounted the installer itself");
             installer.Build();
 
             return new Rig { Boat = boat, Installer = installer, Def = def };

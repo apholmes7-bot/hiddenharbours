@@ -119,6 +119,13 @@ namespace HiddenHarbours.Boats
         [Tooltip("The compass heading (degrees, 0 = North, CW) that cell 0 of each level is drawn for.")]
         [SerializeField] private float _zeroHeadingDegrees;
 
+        [Tooltip("⚠ For each of the DEF's levels, which ROW of the cell array draws it — or -1 when " +
+                 "nothing does. The def's levels and the sheet's rows are NOT the same list: a def " +
+                 "declares exterior working decks the sheets never bake, and the two run in different " +
+                 "orders on every ship. Empty means the def's indices ARE the rows, which is true only " +
+                 "where every level has a sheet.")]
+        [SerializeField] private int[] _cellRowForLevel = System.Array.Empty<int>();
+
         [Header("The ride — ART FACTS of this hull's baked rock (rule 6)")]
         [Tooltip("The boat this cabin is inside. Her wave motion and hull presenter are read from here; " +
                  "empty falls back to this component's own root.")]
@@ -235,7 +242,8 @@ namespace HiddenHarbours.Boats
                               Transform fittings, Transform interiorPivot, Transform boatRoot,
                               Sprite[] cells, int facings, bool cellsAreCounterClockwise,
                               float zeroHeadingDegrees,
-                              float deckRollDegrees, float deckHeavePixels, float deckPitchLiftMeters)
+                              float deckRollDegrees, float deckHeavePixels, float deckPitchLiftMeters,
+                              int[] cellRowForLevel = null)
         {
             _def = def;
             _exterior = exterior;
@@ -247,6 +255,7 @@ namespace HiddenHarbours.Boats
             _facings = Mathf.Max(1, facings);
             _cellsAreCounterClockwise = cellsAreCounterClockwise;
             _zeroHeadingDegrees = zeroHeadingDegrees;
+            _cellRowForLevel = cellRowForLevel ?? System.Array.Empty<int>();
             _deckRollDegrees = deckRollDegrees;
             _deckHeavePixels = deckHeavePixels;
             _deckPitchLiftMeters = deckPitchLiftMeters;
@@ -313,6 +322,19 @@ namespace HiddenHarbours.Boats
             return true;
         }
 
+        /// <summary>
+        /// Which ROW of the cell array draws def level <paramref name="level"/>, or −1 when none does.
+        /// With no map wired the def's indices ARE the rows — true only where every level has a sheet
+        /// (the lobster family), and what a hand-built test rig with one level means.
+        /// </summary>
+        public int CellRowFor(int level)
+        {
+            if (level < 0) return -1;
+            if (_cellRowForLevel == null || _cellRowForLevel.Length == 0) return level;
+            if (level >= _cellRowForLevel.Length) return -1;
+            return _cellRowForLevel[level];
+        }
+
         /// <summary>True when <paramref name="level"/> indexes a level of this def with enough vertices
         /// to bound anything. An unusable level is refused rather than entered blind — a sole with two
         /// points is a measurement that did not finish.</summary>
@@ -344,6 +366,12 @@ namespace HiddenHarbours.Boats
             {
                 BoatInteriorLevel l = _def.Levels[i];
                 if (l == null || !l.IsUsable()) continue;
+
+                // ⚠ Only a level the sheets actually DRAW can be walked into. The ships declare
+                // main_deck at the very height their house sole sits at (the trawler: both at 3.5 m),
+                // so a nearest-by-height answer that ignored this would walk the player onto an
+                // OUTDOOR deck through the cabin door and show them nothing.
+                if (_cellRowForLevel.Length > 0 && CellRowFor(i) < 0) continue;
 
                 float gap = Mathf.Abs(l.SoleZMeters - zMeters);
                 // Strictly-less keeps the FIRST of two equidistant soles, so the answer is a function of
@@ -440,7 +468,10 @@ namespace HiddenHarbours.Boats
             int facing = IsoFacing.HeadingToFacingIndex(heading, _facings, _zeroHeadingDegrees,
                                                        _cellsAreCounterClockwise);
 
-            int index = Level * _facings + facing;
+            int row = CellRowFor(Level);
+            if (row < 0) return;   // an outdoor deck has no interior to draw, and that is an answer
+
+            int index = row * _facings + facing;
             if (index < 0 || index >= _cells.Length) return;
 
             Sprite cell = _cells[index];
