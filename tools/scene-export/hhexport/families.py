@@ -44,9 +44,21 @@ def normalise(rig_rel):
     return _TRAILING_DIGITS.sub("", stem) or None
 
 
+# Ruled 2026-08-20/21, not inferred. `wharfIsoRig.js` normalises to `wharf`, which the wire list
+# does not carry; it carries `wharfbuilding` AND `wharfmodule`, so picking one was a coin toss and
+# the export declared the remainder instead. The editor has since published its 44th entry —
+# `wharfmodule` = WharfIso / Art/wharfIsoRig.js, 8 facings, drawing quay/pier/crib/float/gangway/
+# slipway/riprap — so this is now a DECLARED mapping rather than a near-neighbour guess. It stays
+# a one-line table so the next one is a ruling too, never a loosened match rule.
+RULED_ALIASES = {"wharf": "wharfmodule"}
+
+
 def resolve(rig_rel, wire_families):
     """``(family, candidate)`` — ``family`` only when the candidate is a listed wire name."""
     candidate = normalise(rig_rel)
     if candidate and candidate in wire_families:
         return candidate, candidate
+    ruled = RULED_ALIASES.get(candidate)
+    if ruled and ruled in wire_families:
+        return ruled, candidate
     return None, candidate

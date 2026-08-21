@@ -425,21 +425,25 @@ class EnrichmentTests(unittest.TestCase):
                     self.assertIn(entity["family"], wire, f"{name} {entity['id']}")
 
     def test_a_near_miss_is_never_aliased_onto_a_neighbour(self):
-        """`wharfIsoRig` normalises to `wharf`; the list holds `wharfbuilding` AND `wharfmodule`.
+        """`wharfIsoRig` normalises to `wharf`, which the wire list does not carry.
 
-        Picking either would be the aliasing the ruling forbids, so it must stay unresolved —
-        and appear on the request list instead.
+        It held `wharfbuilding` AND `wharfmodule`, so for two rounds this export declared the
+        remainder rather than pick one. The editor published `wharfmodule` on 2026-08-21 and the
+        coordinator ruled the mapping, so it resolves now — **by a one-line declared table, never
+        by a loosened match rule.** The guard therefore changed shape rather than being deleted:
+        a candidate with no ruling behind it must still refuse.
         """
         creek = self.documents["NineMileCreek"]
         wharf = [e for e in creek["entities"]
                  if (e["rigSource"] or "").endswith("wharfIsoRig.js")]
         self.assertTrue(wharf, "the wharf kit no longer resolves — this guard has gone blind")
         for entity in wharf:
-            self.assertTrue(entity["x-familyIsSpriteStem"], entity["id"])
-            self.assertNotIn(entity["family"], ("wharfbuilding", "wharfmodule"), entity["id"])
-        unlisted = creek["x-provenance"]["entityNotes"]["unlistedFamilies"]
-        self.assertIn("wharf", unlisted)
-        self.assertEqual(unlisted["wharf"]["placements"], len(wharf))
+            self.assertEqual(entity["family"], "wharfmodule", entity["id"])
+            self.assertFalse(entity["x-familyIsSpriteStem"], entity["id"])
+            self.assertNotEqual(entity["family"], "wharfbuilding",
+                                "resolved onto the OTHER neighbour — the ruling picked module")
+        # The request list is empty of it now: a ruling closes an entry, it does not linger.
+        self.assertNotIn("wharf", creek["x-provenance"]["entityNotes"]["unlistedFamilies"])
 
     def test_the_interior_gap_closed_when_the_editor_published_the_entries(self):
         """This used to assert the opposite: `interior`/`interiorprop` had no family and stayed
@@ -980,6 +984,58 @@ class DeterminismTests(unittest.TestCase):
         self.assertEqual(recipes.call_for(recipe, 1)[0]["opts"]["fill"], "b")
         self.assertEqual(recipes.call_for(recipe, 2)[1], 1)   # second row -> next dir
         self.assertEqual(recipes.call_for(recipe, 3)[0]["opts"]["fill"], "b")
+
+    def test_the_zone_travels_in_band_and_never_guesses(self):
+        """Ruled 2026-08-21: the landing zone ships in the package, not as a side-channel list."""
+        repo = Repo(REPO)
+        for name, scene, height in hh_scene_export.REGIONS:
+            doc = hh_scene_export.export_region(repo, name, scene, height)
+            zoned = 0
+            for entity in doc["entities"]:
+                zone = entity["x-zone"]
+                self.assertIn(zone, (None, "a", "b"),
+                              "(c) classifies an EDIT, not an entity — it cannot be a zone here")
+                if zone is None:
+                    self.assertIsNone(entity["x-zoneEvidence"])
+                    continue
+                zoned += 1
+                self.assertTrue(entity["x-zoneEvidence"], f"{name} zone with no evidence behind it")
+                # A sibling of x-origin, never folded into it (§8.2, one key one meaning).
+                self.assertNotIn(zone, str(entity["x-origin"]).split("/")[-1:] or [""])
+            self.assertGreater(zoned, 0, f"{name} classified nothing")
+
+    def test_the_longest_prefix_wins(self):
+        """Roots mix: StPetersWharf holds a deck and its fittings under one name."""
+        repo = Repo(REPO)
+        lengths = [len(prefix) for prefix, *_ in repo.root_zones()]
+        self.assertEqual(lengths, sorted(lengths, reverse=True), "the table is not longest-first")
+        self.assertIsNotNone(repo.resolution_excluded("StPetersWharf/Fittings/x"))
+        self.assertIsNone(repo.resolution_excluded("StPetersWharf/Deck/x"),
+                          "the deck was swept up by its own root's fittings rule")
+
+    def test_a_ruled_out_path_is_not_reported_as_a_missing_sidecar(self):
+        """A decision and a gap must not read the same. The fittings are the decision."""
+        repo = Repo(REPO)
+        doc = hh_scene_export.export_region(repo, *hh_scene_export.REGIONS[0][:1],
+                                            *hh_scene_export.REGIONS[0][1:])
+        notes = doc["x-provenance"]["entityNotes"]
+        self.assertGreater(notes["resolutionExcluded"], 0)
+        for entity in doc["entities"]:
+            if entity.get("x-resolutionExcluded"):
+                self.assertIsNone(entity["rig"], "a ruled-out entity resolved a rig anyway")
+                sheet = (entity.get("x-sprite") or {}).get("sheet")
+                self.assertNotIn(sheet, notes["unresolvedSheets"],
+                                 "a ruling is being reported as a missing sidecar")
+
+    def test_wharf_resolves_only_because_a_ruling_says_so(self):
+        """`wharf` is not on the wire list; `wharfmodule` is, and the mapping is declared."""
+        wire, _layers = families.load(Repo(REPO))
+        self.assertNotIn("wharf", wire, "the wire list grew a `wharf` entry — drop the alias")
+        self.assertIn("wharfmodule", wire)
+        family, candidate = families.resolve("docs/art/rigs/wharfIsoRig.js", wire)
+        self.assertEqual((family, candidate), ("wharfmodule", "wharf"))
+        # A candidate with no ruling still refuses rather than reaching for a near neighbour.
+        self.assertEqual(families.resolve("docs/art/rigs/madeUpRig.js", wire)[0], None)
 
     def test_the_output_is_valid_json(self):
         repo = Repo(REPO)

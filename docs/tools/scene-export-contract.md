@@ -262,6 +262,50 @@ entity — no recipe beside that sheet — rather than the older blanket claim t
 recorded nowhere, which the ledger has made false for six kits.
 
 
+### 6.5 The landing zone travels in the package
+
+Ruled 2026-08-21: the write-back contract's landing zone (its §1.2 — whether an edit is a
+one-value change to a row, or a thing the builder has no row for) ships **in band** rather than as
+a root list the editor keeps in step by hand. Three choices inside that ruling were mine:
+
+- **A sibling `x-zone`, not a second meaning inside `x-origin`.** §8.2 ruled that one key must not
+  carry two facts; the zone is a *classification of* the origin rather than part of its identity,
+  so folding it in would repeat the mistake that ruling had just corrected.
+- **Keyed on a path prefix, longest match first — not on the root.** Roots mix: `StPetersWharf`
+  holds a computed `Deck` and its rule-derived `Fittings` under one name. A root-level table would
+  have given both the same answer.
+- **Only (a) and (b) are per-entity.** Zone **(c)** classifies an *edit* — anything that changes
+  baked pixels — not an entity, and the same building is (a) for its position and (c) for its
+  siding. Emitting it per entity would say something false about every one of them.
+
+The table lives at `reference/root-zones.json`, one row per prefix with the evidence for its class,
+and the exporter reads it: `IslandVillage` is (a) because `StPetersVillage.Sites` is a literal list
+of `new Site(...)`; `ClamHoles` is (b) because the builder's own note says the scatter jitter is a
+stable hash of the grid cell. **A prefix the table does not carry exports no zone at all** — an
+unknown zone is not zone (a), and telling the owner he may move something he cannot is the failure
+this field exists to prevent.
+
+### 6.6 A ruling is not a loosened match rule
+
+Two entries here are decisions rather than derivations, and both are one-line tables so the next
+one has to be a decision too:
+
+- **`wharf` → `wharfmodule`.** `wharfIsoRig.js` normalises to `wharf`, which the wire list never
+  carried — it carried `wharfbuilding` *and* `wharfmodule`, so for two rounds this export declared
+  the remainder rather than toss a coin. The editor published `wharfmodule` (its 44th: WharfIso,
+  8 facings, drawing quay/pier/crib/float/gangway/slipway/riprap) and the mapping was ruled, so 24
+  Nine Mile Creek placements resolve. A candidate with **no** ruling behind it still refuses; the
+  guard test changed shape rather than being deleted.
+- **The wharf fittings resolve to nothing, on purpose.** `NineMileCreekWharf.Fittings()` derives
+  them by rule — a bollard per `BerthPos(i)`, tyres midway between every `TyreEveryNthBerth` pair,
+  the ladder in a computed gap — so a family would hand the owner a gesture the next regenerate
+  throws away, and the editor's own module auto-places its fittings, which would double-draw.
+  They are marked `x-resolutionExcluded` and, importantly, **left out of the unresolved-sheet
+  tally**: a decision and a missing sidecar must not read the same, because one is somebody's
+  work item and the other is closed. 25 at Nine Mile Creek, 10 at St Peters — the same derived
+  class on both wharves.
+
+
 ## 7. Making the package renderable
 
 The editor draws **only** by calling rigs — it loads no images — so an entity with no rig gives

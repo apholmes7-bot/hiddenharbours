@@ -68,6 +68,7 @@ class Repo:
         self._sidecar_cache = {}
         self._rig_link_cache = {}
         self._facings_cache = {}
+        self._zone_table = None
         self._rig_sha_cache = {}
         self._decor_base = None
         self._rig_globals = None
@@ -289,6 +290,55 @@ class Repo:
             break
         self._rig_link_cache[sheet_rel] = result
         return result
+
+    def root_zones(self):
+        """``[(prefix, zone, evidence)]`` longest-prefix-first, or ``[]`` when the table is absent.
+
+        The write-back contract's landing zones (its §1.2) decide whether an edit is a one-value
+        change to a row or a thing the builder has no row for at all — the difference between
+        "the owner may move this" and a gesture the next regenerate throws away. Ruled 2026-08-21
+        to travel IN the package rather than as a side-channel list the editor keeps in step.
+
+        Keyed on a path PREFIX, not a root, because roots mix: ``StPetersWharf`` holds both a deck
+        and its fittings. A prefix this table does not carry exports no zone rather than a guess.
+        """
+        if self._zone_table is None:
+            rel = "docs/tools/reference/root-zones.json"
+            rows = []
+            if self.exists(rel):
+                try:
+                    with open(self.abs(rel), "r", encoding="utf-8") as handle:
+                        data = json.load(handle)
+                    rows = [(row["prefix"], row["zone"], row.get("evidence"),
+                             row.get("resolve", True), row.get("resolveNote"))
+                            for row in data.get("prefixes") or []]
+                except (OSError, ValueError, KeyError):
+                    rows = []
+            rows.sort(key=lambda row: len(row[0]), reverse=True)
+            self._zone_table = rows
+        return self._zone_table
+
+    def zone_for_path(self, hierarchy):
+        """``(zone, evidence)`` for a scene path — longest matching prefix, or ``(None, None)``."""
+        if not hierarchy:
+            return None, None
+        for prefix, zone, evidence, _resolve, _note in self.root_zones():
+            if hierarchy == prefix or hierarchy.startswith(prefix + "/"):
+                return zone, evidence
+        return None, None
+
+    def resolution_excluded(self, hierarchy):
+        """Why this path is deliberately left out of the rig-resolution map, or ``None``.
+
+        Distinct from "no sidecar names a rig for this sheet": that is a gap somebody could close,
+        and this is a ruling that closing it would be wrong.
+        """
+        if not hierarchy:
+            return None
+        for prefix, _zone, _evidence, resolve, note in self.root_zones():
+            if hierarchy == prefix or hierarchy.startswith(prefix + "/"):
+                return None if resolve else (note or "excluded by ruling")
+        return None
 
     def facings_for_sheet(self, sheet_rel):
         """``(count, evidencePath)`` — the sheet's DECLARED facing count, or ``(None, None)``.

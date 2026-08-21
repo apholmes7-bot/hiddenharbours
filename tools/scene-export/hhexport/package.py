@@ -380,13 +380,18 @@ def _entities(repo, scene, centre, origin_nw, cols, rows):
                 "shaRule": "sha256 of the rig's bytes with CR stripped (tr -d '\\r' | sha256sum)",
                 "x-declaredBy": evidence,
             }
-        if rig_source is None:
+        hierarchy = scene.hierarchy_path(game_object_id)
+        parts = hierarchy.split("/")
+        zone, zone_evidence = repo.zone_for_path(hierarchy)
+        excluded = repo.resolution_excluded(hierarchy)
+
+        # An unresolved sheet is a gap somebody could close by committing a sidecar. A path ruled
+        # out of the resolution map is not that, and counting it as one would report a defect
+        # where there is a decision — so it is left out of the tally and named on the entity.
+        if rig_source is None and not excluded:
             note = unresolved_sheets.setdefault(
                 sheet, {"placements": 0, "sidecar": evidence, "candidates": candidates})
             note["placements"] += 1
-
-        hierarchy = scene.hierarchy_path(game_object_id)
-        parts = hierarchy.split("/")
         record = {
             # Key order follows the reference package's own entity records.
             "id": _stable_id(hierarchy, x - centre[0], y - centre[1]),
@@ -421,6 +426,13 @@ def _entities(repo, scene, centre, origin_nw, cols, rows):
             # digit, which told the owner he could not move a building he can. Nothing here is
             # normalised, stripped or title-cased: it is the root's name as the builder wrote it.
             "x-origin": hierarchy.split("/")[0] if hierarchy else None,
+            # A SIBLING of x-origin, not a second meaning inside it. §8.2's ruling was that one key
+            # must not carry two facts, and the zone is a classification OF the origin rather than
+            # part of its identity; folding it in would repeat the mistake that ruling corrected.
+            # Absent where the table has no prefix for the path — an unknown zone is not zone (a).
+            "x-zone": zone,
+            "x-zoneEvidence": zone_evidence,
+            "x-resolutionExcluded": excluded,
             "x-cellAt": [column, row],
             "x-inBounds": in_bounds,
             "x-active": active,
@@ -494,6 +506,11 @@ def _entities(repo, scene, centre, origin_nw, cols, rows):
         "offGrid": off_grid,
         "unresolvedRigPlacements": sum(v["placements"] for v in unresolved_sheets.values()),
         "unresolvedSheets": dict(sorted(unresolved_sheets.items())),
+        "resolutionExcluded": sum(1 for e in entities if e.get("x-resolutionExcluded")),
+        "x-resolutionExcludedMeaning": "entities a ruling keeps out of the rig-resolution map — "
+                                       "not a missing sidecar. The wharf fittings are derived by "
+                                       "rule and the editor's own module auto-places them, so a "
+                                       "resolved fitting would double-draw.",
         "x-unresolvedMeaning": "no sidecar beside these sheets names a rig this exporter will "
                                "trust — an ambiguous one names several. The kits that ship a "
                                "*.contract.json resolve exactly; the rest have no committed link "
