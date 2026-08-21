@@ -442,7 +442,7 @@ namespace HiddenHarbours.Tests.EditMode
             Assert.IsFalse(rig.Door.IsAvailable);
 
             rig.Interior.Configure(rig.Def, rig.Exterior, rig.Room, null, rig.Room.transform,
-                                   rig.Root.transform, Array.Empty<Sprite>(), 8, true, 0f, 5f, 1.6f, 0.02f);
+                                   rig.Root.transform, DummyCells(8), 8, true, 0f, 5f, 1.6f, 0.02f);
 
             Assert.IsTrue(rig.Interior.SwapIsCompletable);
             Assert.IsTrue(rig.Door.IsAvailable, "the same door, now offering, with nothing else touched");
@@ -500,7 +500,7 @@ namespace HiddenHarbours.Tests.EditMode
 
             var interior = root.AddComponent<BoatInterior>();
             interior.Configure(def, wireExterior ? exterior : null, room, null, room.transform,
-                               root.transform, Array.Empty<Sprite>(), 8, true, 0f, 5f, 1.6f, 0.02f);
+                               root.transform, DummyCells(8), 8, true, 0f, 5f, 1.6f, 0.02f);
 
             var doorGo = new GameObject("Door");
             doorGo.transform.SetParent(root.transform, false);
@@ -512,6 +512,28 @@ namespace HiddenHarbours.Tests.EditMode
                 Root = root, Def = def, Interior = interior, Door = door,
                 Exterior = exterior, Room = room,
             };
+        }
+
+        /// <summary>
+        /// Throwaway cells so the cabin has a picture without reaching Resources.
+        ///
+        /// <para>⚠ Handing them to <c>Configure</c> is the documented EAGER path, and it is now
+        /// REQUIRED of any rig whose door gets pressed: since the pixels went lazy, an empty array
+        /// means "load your own", and a rig has no cells asset on disk to load. The first run after
+        /// the residency fix caught exactly this.</para>
+        /// </summary>
+        private Sprite[] DummyCells(int n)
+        {
+            var tex = new Texture2D(4, 4);
+            _spawned.Add(tex);
+            var cells = new Sprite[n];
+            for (int i = 0; i < n; i++)
+            {
+                cells[i] = Sprite.Create(tex, new Rect(0, 0, 4, 4), new Vector2(0.5f, 0.5f), 32f);
+                cells[i].name = $"cell_{i}";
+                _spawned.Add(cells[i]);
+            }
+            return cells;
         }
 
         /// <summary>Point in polygon (ray casting), with a slack radius for a sill authored ON the wall
