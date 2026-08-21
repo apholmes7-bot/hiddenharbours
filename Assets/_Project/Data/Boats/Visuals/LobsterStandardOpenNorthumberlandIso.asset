@@ -42,3 +42,23 @@ MonoBehaviour:
   MotorRockHeavePixels: 1.3
   MotorMountLocalMeters: {x: 0, y: -3.53, z: 0.72}
   PilotStance: 0
+  Interior: {fileID: 11400000, guid: 911f5db6a0748474c8d6f850f56bd284, type: 2}
+  InteriorCells:
+  - {fileID: 291206893, guid: 8f32f9bee21b6b845a6172ababd48141, type: 3}
+  - {fileID: -2061689597, guid: 8f32f9bee21b6b845a6172ababd48141, type: 3}
+  - {fileID: -685097337, guid: 8f32f9bee21b6b845a6172ababd48141, type: 3}
+  - {fileID: 233125964, guid: 8f32f9bee21b6b845a6172ababd48141, type: 3}
+  - {fileID: 1946305560, guid: 8f32f9bee21b6b845a6172ababd48141, type: 3}
+  - {fileID: 538264328, guid: 8f32f9bee21b6b845a6172ababd48141, type: 3}
+  - {fileID: 1152628724, guid: 8f32f9bee21b6b845a6172ababd48141, type: 3}
+  - {fileID: -1250467473, guid: 8f32f9bee21b6b845a6172ababd48141, type: 3}
+  - {fileID: 57187493, guid: 8f32f9bee21b6b845a6172ababd48141, type: 3}
+  - {fileID: -400554016, guid: 8f32f9bee21b6b845a6172ababd48141, type: 3}
+  - {fileID: 76008161, guid: 8f32f9bee21b6b845a6172ababd48141, type: 3}
+  - {fileID: 446107684, guid: 8f32f9bee21b6b845a6172ababd48141, type: 3}
+  - {fileID: 565630340, guid: 8f32f9bee21b6b845a6172ababd48141, type: 3}
+  - {fileID: -571460508, guid: 8f32f9bee21b6b845a6172ababd48141, type: 3}
+  - {fileID: 378450915, guid: 8f32f9bee21b6b845a6172ababd48141, type: 3}
+  - {fileID: -741572446, guid: 8f32f9bee21b6b845a6172ababd48141, type: 3}
+  InteriorFacings: 8
+  InteriorCellsAreCounterClockwise: 1

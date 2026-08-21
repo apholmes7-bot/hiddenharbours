@@ -15,6 +15,7 @@ MonoBehaviour:
   Id: visual.stern_trawler_mk2_iso
   Variant: 1
   HullMesh: {fileID: 11400000, guid: d0106bf18fb52274cb6bac928d046a4f, type: 2}
+  DesignWaterlineMeters: 0
   Deck: {fileID: 11400000, guid: fe9cd15ab42d0e5ad769bd543981683a, type: 2}
   Facings: []
   ZeroHeadingDegrees: 0
@@ -35,7 +36,37 @@ MonoBehaviour:
   MotorVariant: 0
   MotorFit: 0
   MotorMesh: {fileID: 0}
+  MotorMeshFitmentOffsetMeters: {x: 0, y: 0, z: 0}
   MotorRockRollDegrees: 3.4
   MotorRockPitchDegrees: 1.9
   MotorRockHeavePixels: 1.3
   MotorMountLocalMeters: {x: 0, y: -3.53, z: 0.72}
+  PilotStance: 0
+  Interior: {fileID: 11400000, guid: 453f8394a93ac684a8d3c2aab846a115, type: 2}
+  InteriorCells:
+  - {fileID: 844722706, guid: 65298b068492d0843af98932ac1fb260, type: 3}
+  - {fileID: 2144328563, guid: 65298b068492d0843af98932ac1fb260, type: 3}
+  - {fileID: 1123145451, guid: 65298b068492d0843af98932ac1fb260, type: 3}
+  - {fileID: 1174705697, guid: 65298b068492d0843af98932ac1fb260, type: 3}
+  - {fileID: 782152372, guid: 65298b068492d0843af98932ac1fb260, type: 3}
+  - {fileID: 2119253489, guid: 65298b068492d0843af98932ac1fb260, type: 3}
+  - {fileID: 252678459, guid: 65298b068492d0843af98932ac1fb260, type: 3}
+  - {fileID: 923007247, guid: 65298b068492d0843af98932ac1fb260, type: 3}
+  - {fileID: 318135490, guid: 9b12a3e10ed99104091525405d8b7ba3, type: 3}
+  - {fileID: 854572065, guid: 9b12a3e10ed99104091525405d8b7ba3, type: 3}
+  - {fileID: 121112196, guid: 9b12a3e10ed99104091525405d8b7ba3, type: 3}
+  - {fileID: 1391127198, guid: 9b12a3e10ed99104091525405d8b7ba3, type: 3}
+  - {fileID: 1728242148, guid: 9b12a3e10ed99104091525405d8b7ba3, type: 3}
+  - {fileID: 862314489, guid: 9b12a3e10ed99104091525405d8b7ba3, type: 3}
+  - {fileID: -1530277454, guid: 9b12a3e10ed99104091525405d8b7ba3, type: 3}
+  - {fileID: 1126254311, guid: 9b12a3e10ed99104091525405d8b7ba3, type: 3}
+  - {fileID: 1627914932, guid: c306ae63558bbbf4e8e1db9be52cef08, type: 3}
+  - {fileID: 869695212, guid: c306ae63558bbbf4e8e1db9be52cef08, type: 3}
+  - {fileID: -1953798492, guid: c306ae63558bbbf4e8e1db9be52cef08, type: 3}
+  - {fileID: 861862642, guid: c306ae63558bbbf4e8e1db9be52cef08, type: 3}
+  - {fileID: -562050069, guid: c306ae63558bbbf4e8e1db9be52cef08, type: 3}
+  - {fileID: -2077490655, guid: c306ae63558bbbf4e8e1db9be52cef08, type: 3}
+  - {fileID: -389804527, guid: c306ae63558bbbf4e8e1db9be52cef08, type: 3}
+  - {fileID: 1480193981, guid: c306ae63558bbbf4e8e1db9be52cef08, type: 3}
+  InteriorFacings: 8
+  InteriorCellsAreCounterClockwise: 1
