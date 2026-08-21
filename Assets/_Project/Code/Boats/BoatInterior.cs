@@ -181,6 +181,33 @@ namespace HiddenHarbours.Boats
         public bool ExactlyOneLayerOn =>
             _exterior != null && _interior != null && ExteriorDrawn != InteriorDrawn;
 
+        /// <summary>
+        /// <b>Could this cabin complete the swap at all?</b> — both halves wired, which is the
+        /// precondition under which <see cref="ExactlyOneLayerOn"/> can ever hold. A CAPABILITY, where
+        /// that one is a STATE: this asks "is the mechanism whole", not "which layer is on right now".
+        ///
+        /// <para><b>Why it is a separate predicate and not a re-read of the other one.</b>
+        /// <see cref="ExactlyOneLayerOn"/> is false both when a half is missing AND, transiently, if
+        /// anything ever left the two layers agreeing — so a caller that gated on it would be gating on
+        /// two different facts at once and could not tell a half-built cabin from a mis-drawn frame.
+        /// The door needs the first meaning only.</para>
+        ///
+        /// <para><b>What it is FOR (the S0 ruling, rider 1).</b> On a mesh hull there is nothing to hand
+        /// <see cref="_exterior"/> until the per-level face tags land and give the renderer something to
+        /// cull — measured: no submesh, no material subset, and the occluder is per LEVEL, not per hull.
+        /// Until then the swap cannot complete, and a door that opened onto it would put the interior and
+        /// the exterior on screen TOGETHER, posed differently (the interior takes only
+        /// <c>InteriorRockScale</c> of the hull's rock). That co-visibility is the precise thing ADR 0038
+        /// ruled out, and the reason proposals 1 and 3 were ruled as a set. So the offer is withheld
+        /// rather than the swap being fudged.</para>
+        ///
+        /// <para><b>It is a gate, not a flag.</b> Nothing sets it; it is read off the wiring. A hull whose
+        /// exterior half arrives later becomes enterable the moment it is handed in, with no second
+        /// switch to remember and nothing to migrate — which is what lets R1 light the fleet
+        /// hull-by-hull.</para>
+        /// </summary>
+        public bool SwapIsCompletable => _exterior != null && _interior != null;
+
         /// <summary>How many metres one baked pixel of THIS hull's interior is — 1/32 across the fleet and
         /// 1/16 on the tanker. Read from the def every time rather than copied into a field, because two
         /// pixel grids live in this kit and a stale copy is how they get conflated.</summary>

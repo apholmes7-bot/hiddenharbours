@@ -182,15 +182,27 @@ namespace HiddenHarbours.Boats
         public string VerbLabel => WouldEnter ? _enterLabel : _exitLabel;
 
         /// <summary>
-        /// Available when there is an inside to reach and no leaf already moving.
+        /// Available when there is an inside to reach, the swap that reveals it can actually complete,
+        /// and no leaf is already moving.
         ///
-        /// <para>Both are genuine "not a thing to act on right now" rather than refusals with a message:
-        /// a hull with no measured interior has no door to press, and a door mid-cue has already been
-        /// pressed. Neither is loud, and a hull that gains a def later gains her door with no other
+        /// <para>All three are genuine "not a thing to act on right now" rather than refusals with a
+        /// message: a hull with no measured interior has no door to press, a hull whose swap cannot
+        /// complete has no cabin to show yet, and a door mid-cue has already been pressed. None of them
+        /// is loud, and a hull that gains a def or an exterior half later gains her door with no other
         /// change.</para>
+        ///
+        /// <para><b>⭐ The middle one is the S0 ruling's rider, and it is the ADR's own invariant
+        /// enforced at the only door into it.</b> <see cref="BoatInterior.SwapIsCompletable"/> is false
+        /// while the exterior half is unwired — which, after the mesh-hull spike, is every hull in the
+        /// fleet until the per-level face tags land. Opening onto that would draw the interior and the
+        /// exterior at once, posed differently, which is exactly the co-visibility ADR 0038 forbids and
+        /// the reason its motion clamp is safe at all. <b>So the fleet wires up now and stays silent,
+        /// and each cabin lights the moment its own exterior half arrives</b> — no second switch, no
+        /// migration, and no window in which a half-built cabin is enterable.</para>
         /// </summary>
         public bool IsAvailable =>
-            _interior != null && _interior.HasInterior && Door != null && !IsCueing;
+            _interior != null && _interior.HasInterior && _interior.SwapIsCompletable &&
+            Door != null && !IsCueing;
 
         /// <inheritdoc/>
         public void Interact(in InteractActor actor) => TryUse();

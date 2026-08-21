@@ -284,7 +284,56 @@ namespace HiddenHarbours.Boats
                  "oars are decor). Never decided in code — that is rule 2.")]
         public PilotStanceChoice PilotStance = PilotStanceChoice.Auto;
 
+        [Header("Interior (ADR 0038 — the cabin, if she has been measured)")]
+        [Tooltip("This hull's imported BoatInteriorDef, or none. Wired here for the same reason " +
+                 "HullMesh is: the hull poses her and Art draws her, so the LINK belongs on the asset " +
+                 "both already share rather than in a lookup somebody has to keep in step.\n\n" +
+                 "Absence is DATA. Most of the fleet has never been measured, and a hull with no " +
+                 "interior simply has no inside to enter — never an error. A hull the intake ledger " +
+                 "REFUSED must also carry none: that IS an error, and it is caught upstream at the " +
+                 "builder rather than here.")]
+        public HiddenHarbours.Core.BoatInteriorDef Interior = null;
+
+        [Tooltip("The sliced interior cells, element [levelIndex * InteriorFacings + facing] — " +
+                 "BoatInteriorKit.CellIndex's own LEVEL-MAJOR order, carried across unchanged so the " +
+                 "runtime never re-derives a layout the baker already fixed.\n\n" +
+                 "⚠ The cell for a given facing is resolved from the DRAWN HEADING, never by reusing " +
+                 "the hull's own facing index: this compass and these sheets need not share a facing " +
+                 "count OR a handedness, and on the lobster boat they share NEITHER (32 cells " +
+                 "clockwise against 8 counter-clockwise). Heading is the only thing both mean the " +
+                 "same way.")]
+        public Sprite[] InteriorCells = System.Array.Empty<Sprite>();
+
+        [Tooltip("Facings per interior level. 8 across the whole kit.")]
+        [Min(1)] public int InteriorFacings = 8;
+
+        [Tooltip("Whether the INTERIOR cells run counter-clockwise — measured from the exterior's own " +
+                 "ground-plane bearing, and true across the kit. Carried separately from " +
+                 "FacingsAreCounterClockwise above because the two are genuinely different artwork and " +
+                 "genuinely disagree; folding them into one flag would silently mirror one of them.")]
+        public bool InteriorCellsAreCounterClockwise = true;
+
         // ---- the all-or-nothing gates (pure; EditMode-testable without a scene) --------------------
+
+        /// <summary>
+        /// <b>True when this hull's interior is wired well enough to draw</b> — a def with at least one
+        /// usable level, and a complete cell array for it.
+        ///
+        /// <para>All-or-nothing on purpose, like <see cref="HasOarSheets"/>: a PARTLY wired sheet is the
+        /// failure that draws a plausible picture of the wrong thing, so a short array is refused whole
+        /// rather than indexed into. A hull with no def at all answers false and is inert, which is what
+        /// "absence is data" means in code.</para>
+        /// </summary>
+        public bool HasInteriorCells()
+        {
+            if (Interior == null || !Interior.HasInterior()) return false;
+            if (InteriorFacings < 1) return false;
+
+            int levels = Interior.Levels != null ? Interior.Levels.Length : 0;
+            int want = levels * InteriorFacings;
+            return want > 0 && InteriorCells != null && InteriorCells.Length == want &&
+                   IsComplete(InteriorCells);
+        }
 
         /// <summary>
         /// <b>The stance a character piloting this hull shows</b> — the def's own answer to "wheel or
