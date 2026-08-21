@@ -164,10 +164,13 @@ namespace HiddenHarbours.Tests.EditMode
                     StPetersShoreMap.GrassFloorElevation - 1e-3f,
                     $"a tuft at {s.Position} sits below the grass band");
 
-                foreach (var site in StPetersGrass.BuildingSites)
-                    Assert.GreaterOrEqual(Vector2.Distance(s.Position, site),
-                        StPetersGrass.BuildingClearanceMetres,
-                        $"a tuft at {s.Position} is inside the building at {site}");
+                // Each site's OWN radius since 2026-08-19 — the cannery needs 9.06 m where a cottage
+                // needs the 7 m floor. Asserting the floor for all of them would pass a tuft standing
+                // two metres inside the cannery.
+                foreach (var k in StPetersGrass.BuildingKeepouts)
+                    Assert.GreaterOrEqual(Vector2.Distance(s.Position, k.Position), k.RadiusMetres,
+                        $"a tuft at {s.Position} is inside {k.What} at {k.Position} " +
+                        $"({k.RadiusMetres:F2} m of clearing)");
 
                 Assert.GreaterOrEqual(Vector2.Distance(s.Position, StPetersBuilder.DockZonePos),
                     StPetersWoods.DockClearance, "a tuft is on the dock");
@@ -224,6 +227,10 @@ namespace HiddenHarbours.Tests.EditMode
             foreach (var shed in StPetersGinnyPlot.Sheds)
                 AssertCleared(shed.Key, shed.Position);
 
+            // The derelict cannery out by the pier (2026-08-19) — placed by its own file, like Ginny's
+            // cottage, so both loops above miss it for the same reason.
+            AssertCleared(StPetersCannery.BuildKey, StPetersCannery.Site);
+
             void AssertCleared(string key, Vector2 at)
             {
                 bool cleared = false;
@@ -237,41 +244,85 @@ namespace HiddenHarbours.Tests.EditMode
             }
         }
 
+        /// <summary>
+        /// <b>Every building's clearing covers ITS OWN footprint</b>, so a quarter-turned building never
+        /// has grass growing through its corner.
+        ///
+        /// <para>⚠️ This used to assert one global number against the BIGGEST footprint the island
+        /// places, which was right while every building was a house-sized box. The derelict cannery
+        /// (9.06 m of half-diagonal against a 7 m constant) broke that: satisfying it globally would have
+        /// given every cottage on the green two more metres of bald dirt for the sake of one building
+        /// 170 m away. <c>StPetersGrass.MeadowKeepout</c> is per site now, and this is the per-site
+        /// form of the same guarantee — strictly stronger, because the old one could not have caught a
+        /// big building paired with a small clearing.</para>
+        ///
+        /// <para>The footprints are read from the two CONTRACTS, not from the grass file, so this still
+        /// checks the list against something other than itself.</para>
+        /// </summary>
         [Test]
-        public void TheMeadowsBuildingClearance_CoversTheBiggestFootprintTheKitDeclares()
+        public void EveryBuildingsClearing_CoversItsOwnFootprint()
         {
             var placements = HiddenHarbours.Art.Editor.VillageBuildingCatalog.Scan();
             if (placements == null || placements.Count == 0)
                 Assert.Ignore("The village building kit is not on disk in this checkout.");
 
-            float worst = 0f;
-            string worstKey = null;
-            foreach (var p in placements)
-            {
-                Vector2 f = p.FootprintMetres;
-                float halfDiagonal = 0.5f * Mathf.Sqrt(f.x * f.x + f.y * f.y);
-                if (halfDiagonal > worst) { worst = halfDiagonal; worstKey = p.Entry.label; }
-            }
+            int checked_ = 0;
 
-            // ⚠️ AND THE SHOPS, which are a DIFFERENT KIT and are now the bigger buildings. Scanning
-            // only the village kit was right until 2026-08-11 and stopped being right the moment the
-            // general store became an 8.00 × 10.00 m shell instead of a 7.08 × 8.89 m house — silently,
-            // because this test would have gone on measuring the farmhouse and passing. Only the shops
-            // this island actually places: the restaurant is Nine Mile Creek's.
-            foreach (var site in StPetersShops.Sites)
+            // The village kit's own sites, plus the three placed by their own files.
+            foreach (var house in StPetersVillage.Sites)
+                checked_ += CheckKit(house.Key, house.Position);
+
+            checked_ += CheckKit(StPetersGinnyPlot.CottageKey, StPetersGinnyPlot.CottagePos);
+            foreach (var shed in StPetersGinnyPlot.Sheds)
+                checked_ += CheckKit(shed.BuildKey, shed.Position);
+            checked_ += CheckKit(StPetersCannery.BuildKey, StPetersCannery.Site);
+
+            // …and the shops, which are a DIFFERENT KIT and were the bigger buildings until the cannery.
+            foreach (var shop in StPetersShops.Sites)
             {
-                var shell = HiddenHarbours.Art.Editor.ShopCatalog.FindShell(site.Key);
+                var shell = HiddenHarbours.Art.Editor.ShopCatalog.FindShell(shop.Key);
                 if (!shell.IsValid) continue;
-
-                float halfDiagonal = HiddenHarbours.Art.Editor.ShopCatalog.FootprintRadiusMetres(shell);
-                if (halfDiagonal > worst) { worst = halfDiagonal; worstKey = shell.Entry.label; }
+                checked_ += Check(shop.Key, shop.Position,
+                                  HiddenHarbours.Art.Editor.ShopCatalog.FootprintRadiusMetres(shell));
             }
 
-            Assert.GreaterOrEqual(StPetersGrass.BuildingClearanceMetres, worst,
-                $"StPetersGrass.BuildingClearanceMetres is {StPetersGrass.BuildingClearanceMetres} m " +
-                $"but '{worstKey}' needs {worst:F2} m of half-diagonal — a quarter-turned building " +
-                "would have grass growing through its corner. Raise the clearance to the number in " +
-                "this message; do not shrink the building.");
+            Assert.Greater(checked_, 4,
+                "fewer than five buildings were actually measured — this test would be passing " +
+                "vacuously on a tree with no baked art");
+
+            // Nothing may drop BELOW the floor either: shrinking a small building's clearing to its own
+            // footprint would be a visible change to the village that nobody asked for.
+            foreach (var k in StPetersGrass.BuildingKeepouts)
+                Assert.GreaterOrEqual(k.RadiusMetres, StPetersGrass.BuildingClearanceMetres,
+                    $"{k.What} clears only {k.RadiusMetres:F2} m, under the " +
+                    $"{StPetersGrass.BuildingClearanceMetres} m floor");
+
+            int CheckKit(string buildKey, Vector2 at)
+            {
+                var placement = HiddenHarbours.Art.Editor.VillageBuildingCatalog.Find(buildKey);
+                if (!placement.IsValid) return 0;
+                return Check(buildKey, at,
+                             StPetersVillage.FootprintRadiusMetres(placement));
+            }
+
+            int Check(string what, Vector2 at, float halfDiagonal)
+            {
+                foreach (var k in StPetersGrass.BuildingKeepouts)
+                {
+                    if (Vector2.Distance(k.Position, at) >= 0.01f) continue;
+
+                    Assert.GreaterOrEqual(k.RadiusMetres, halfDiagonal,
+                        $"'{what}' at {at} needs {halfDiagonal:F2} m of half-diagonal but its meadow " +
+                        $"clearing is only {k.RadiusMetres:F2} m — a quarter-turned building would have " +
+                        "grass growing through its corner. Widen the clearing; do not shrink the " +
+                        "building.");
+                    return 1;
+                }
+
+                Assert.Fail($"'{what}' stands at {at} with no meadow keepout at all — see " +
+                            "EveryPlacedBuilding_HasAGrassClearing.");
+                return 0;
+            }
         }
 
         /// <summary>

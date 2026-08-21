@@ -59,9 +59,14 @@ namespace HiddenHarbours.Tests.EditMode
         {
             if (_terrain.ElevationAt(p) < StPetersShoreMap.GrassFloorElevation) return false;
 
-            for (int i = 0; i < StPetersGrass.BuildingSites.Length; i++)
-                if (Vector2.Distance(p, StPetersGrass.BuildingSites[i]) <
-                    StPetersGrass.BuildingClearanceMetres) return false;
+            // Per-site radius, not the global floor: the keepout went per site with the cannery (#599,
+            // 9.06 m against a 7 m constant), and that radius is a published fact of the keepout list
+            // that StPetersCanneryTests pins on its own. This predicate exists to catch a YARD leaking;
+            // reading the same radius the live gate reads is what keeps the two disagreeing only about
+            // the yards — the global constant here would re-assert a rule the island no longer has.
+            for (int i = 0; i < StPetersGrass.BuildingKeepouts.Length; i++)
+                if (Vector2.Distance(p, StPetersGrass.BuildingKeepouts[i].Position) <
+                    StPetersGrass.BuildingKeepouts[i].RadiusMetres) return false;
 
             if (Vector2.Distance(p, StPetersBuilder.DockZonePos) < StPetersWoods.DockClearance)
                 return false;

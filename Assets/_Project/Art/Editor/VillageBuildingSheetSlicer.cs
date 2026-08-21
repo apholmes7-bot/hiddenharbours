@@ -157,16 +157,44 @@ namespace HiddenHarbours.Art.Editor
                 return false;
             }
 
-            // Stamp the import settings BEFORE reading the texture: the cap and mode changes force a
-            // reimport, and a texture read taken before that is stale. (Same rule SpriteSheetSlicer
-            // follows for its maxTextureSize lift — "load AFTER the reimport".)
-            ApplyImportSettings(importer);
+            // Stamp the import settings BEFORE reading the texture.
+            int cap = VillageBuildingKit.ImportCapFor(entry);
+            ApplyImportSettings(importer, cap);
 
             var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
             if (tex == null)
             {
                 Debug.LogError($"[VillageBuildingSheetSlicer] '{path}' failed to load as Texture2D.");
                 return false;
+            }
+
+            // 🔴 SETTING maxTextureSize DOES NOT RESIZE THE TEXTURE — ONLY A REIMPORT DOES.
+            //
+            // The comment that used to sit above ApplyImportSettings said the cap change "forces a
+            // reimport". It does not: the call writes fields on the importer object and nothing else,
+            // and until 2026-08-19 that was harmless because every sheet in this kit already imported
+            // at its natural size under the default 2048. The cannery is the first that does not — it
+            // packs 3360×1346, Unity imported it DOWNSCALED to 2048×820 on first sight, and the slice
+            // then failed the cell-size assert below. (Which is the assert doing its job: a sprite
+            // count still comes out right on a downscaled sheet, so this is the only thing that
+            // notices — see VillageBuildingKit.ImportSizeCap.)
+            //
+            // Reimported here rather than on every sheet, so the eight that already fit are untouched
+            // and their .meta files do not churn.
+            if ((tex.width < entry.sheetW || tex.height < entry.sheetH) &&
+                entry.sheetW <= cap && entry.sheetH <= cap)
+            {
+                Debug.Log($"[VillageBuildingSheetSlicer] '{stem}' came in at {tex.width}×{tex.height} " +
+                          $"against a contract of {entry.sheetW}×{entry.sheetH} — reimporting at the " +
+                          $"{cap} px cap this sheet was packed for.");
+                importer.SaveAndReimport();
+                tex = AssetDatabase.LoadAssetAtPath<Texture2D>(path);
+                if (tex == null)
+                {
+                    Debug.LogError($"[VillageBuildingSheetSlicer] '{path}' failed to reload after the " +
+                                   "cap reimport.");
+                    return false;
+                }
             }
 
             if (tex.width != entry.sheetW || tex.height != entry.sheetH)
@@ -178,12 +206,11 @@ namespace HiddenHarbours.Art.Editor
                     $"{VillageBuildingKit.ContractFileName}.");
                 return false;
             }
-            if (tex.width > VillageBuildingKit.ImportSizeCap ||
-                tex.height > VillageBuildingKit.ImportSizeCap)
+            if (tex.width > cap || tex.height > cap)
             {
                 Debug.LogError(
                     $"[VillageBuildingSheetSlicer] '{stem}' is {tex.width}×{tex.height}, over the " +
-                    $"{VillageBuildingKit.ImportSizeCap} px import cap — Unity has already DOWNSCALED it " +
+                    $"{cap} px import cap — Unity has already DOWNSCALED it " +
                     "and the sprite count would still come out right. Not slicing.");
                 return false;
             }
@@ -241,12 +268,17 @@ namespace HiddenHarbours.Art.Editor
         /// wrong for a sliced building sheet: the cap is pinned, and the sheet-level alignment stops
         /// claiming bottom-centre.
         /// </summary>
-        public static void ApplyImportSettings(TextureImporter importer)
+        /// <param name="cap">The cap this sheet was PACKED against — <see cref="VillageBuildingKit.ImportCapFor(VillageBuildingKit.Entry)"/>.
+        /// Not the kit constant: one build (the cannery) does not pack under it, and importing a sheet
+        /// at a cap smaller than it was packed for downscales it SILENTLY with the sprite count still
+        /// correct.</param>
+        public static void ApplyImportSettings(TextureImporter importer, int cap = 0)
         {
             ArtImportPipeline.ApplyLockedSettings(importer, importer.assetPath);
 
-            // Never lift the cap for this kit — see VillageBuildingKit.ImportSizeCap.
-            importer.maxTextureSize = VillageBuildingKit.ImportSizeCap;
+            // Never lift the cap on a whim — see VillageBuildingKit.ImportSizeCap. A build may declare
+            // its own (VillageBuildingKit.Build.ImportCap); 0 means "the kit's".
+            importer.maxTextureSize = cap > 0 ? cap : VillageBuildingKit.ImportSizeCap;
             importer.textureCompression = TextureImporterCompression.Uncompressed;
             importer.crunchedCompression = false;
 
@@ -363,11 +395,11 @@ namespace HiddenHarbours.Art.Editor
                 ok &= Check(stem, "mips off", !importer.mipmapEnabled);
                 ok &= Check(stem, "sRGB ON (this sheet is colour, not data)",
                             VillageBuildingKit.SRgbOf(importer));
-                ok &= Check(stem, $"inside the {VillageBuildingKit.ImportSizeCap} px cap",
+                int entryCap = VillageBuildingKit.ImportCapFor(entry);
+                ok &= Check(stem, $"inside the {entryCap} px cap",
                             importer.maxTextureSize >= entry.sheetW &&
                             importer.maxTextureSize >= entry.sheetH &&
-                            entry.sheetW <= VillageBuildingKit.ImportSizeCap &&
-                            entry.sheetH <= VillageBuildingKit.ImportSizeCap);
+                            entry.sheetW <= entryCap && entry.sheetH <= entryCap);
 
                 var sprites = AssetDatabase.LoadAllAssetsAtPath(path).OfType<Sprite>().ToArray();
                 ok &= Check(stem, $"{entry.facings} facing sprite(s), got {sprites.Length}",

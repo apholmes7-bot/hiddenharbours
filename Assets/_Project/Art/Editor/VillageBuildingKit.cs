@@ -94,6 +94,19 @@ namespace HiddenHarbours.Art.Editor
         /// drawn for; the union crop is what makes eight of them affordable.</summary>
         public const int Facings = 8;
 
+        /// <summary>
+        /// The cap a build packs and imports at — its own <see cref="Build.ImportCap"/> when it declares
+        /// one, else the kit's <see cref="ImportSizeCap"/>. One function so the pack and the import can
+        /// never be solved against different numbers.
+        /// </summary>
+        public static int ImportCapFor(Build build) =>
+            build.ImportCap > 0 ? build.ImportCap : ImportSizeCap;
+
+        /// <summary>The cap a CONTRACT ENTRY was baked at — the same resolution, read back off the bake
+        /// rather than re-derived from the table, so the slicer honours what was actually packed.</summary>
+        public static int ImportCapFor(Entry entry) =>
+            entry != null && entry.importCap > 0 ? entry.importCap : ImportSizeCap;
+
         public static string SheetPath(string buildKey) => BuildingsRoot + StemFor(buildKey) + ".png";
 
         /// <summary>Sheet stem for a build key, e.g. <c>Village_school</c>.</summary>
@@ -134,16 +147,50 @@ namespace HiddenHarbours.Art.Editor
             /// <c>BuildingAxesTests</c>, which is what keeps a silently-ignored key out of here.</summary>
             public readonly IReadOnlyDictionary<string, object> Dialled;
 
-            /// <summary>Why this build is in the M1 set, in one line — read by nobody and worth
+            /// <summary>Why this build is in the set, in one line — read by nobody and worth
             /// keeping anyway, since "which of these is the school" is the question a future reader
             /// arrives with.</summary>
             public readonly string Why;
 
+            /// <summary>
+            /// Construction phase and dereliction, LAYERED ON TOP of the preset or the dialled axes —
+            /// see <see cref="LifecycleSet"/>. Empty/false for every ordinary building.
+            ///
+            /// <para><b>⭐ Why this is its own field rather than three more dialled keys.</b> A
+            /// derelict shed is <i>the same building</i> as the sound one, in a different state — so
+            /// the state has to be able to ride ON a preset without dissolving it into a hand-copied
+            /// set of axes. Transcribing <c>PRESETS['redShed']</c> into C# to bolt a <c>decay</c> key
+            /// onto it would fork the rig's own table, and the fork would go stale in silence the
+            /// first time the art director touched a preset. Keeping it separate lets the options
+            /// expression stay <c>Object.assign({}, Rig.PRESETS['redShed'], {decay:'neglected'})</c>
+            /// — the rig's table, plus the layer.</para>
+            /// </summary>
+            public readonly string Phase, Decay;
+
+            public readonly bool Burnt;
+
+            /// <summary>
+            /// This build's own import cap, or 0 for the kit's <see cref="ImportSizeCap"/>.
+            ///
+            /// <para><b>⚠️ A per-build exception, and it exists for exactly one building.</b> The kit's
+            /// 2048 is a discipline, not a limitation, and lifting it kit-wide would silently allow
+            /// every future build to double — see <see cref="ImportSizeCap"/> for why that number is
+            /// what it is. But the cannery is 9.5 × 15.4 m, and eight facings of it do not pack under
+            /// 2048 <b>in any state, including sound</b>: its cropped cell measures 840 × 673, the best
+            /// grid is 2 × 4, and that is 2692 px tall. Measured, not estimated.</para>
+            ///
+            /// <para>The cap a build IMPORTS at and the cap its pack is SOLVED for must be the same
+            /// number or the two agree only by luck, so this one value drives both.</para>
+            /// </summary>
+            public readonly int ImportCap;
+
             Build(string key, string label, string rigKey, string preset,
-                  IReadOnlyDictionary<string, object> dialled, string why)
+                  IReadOnlyDictionary<string, object> dialled, string why,
+                  string phase = null, string decay = null, bool burnt = false, int importCap = 0)
             {
                 Key = key; Label = label; RigKey = rigKey; Preset = preset;
                 Dialled = dialled; Why = why;
+                Phase = phase; Decay = decay; Burnt = burnt; ImportCap = importCap;
             }
 
             public static Build FromPreset(string key, string label, string rigKey, string preset,
@@ -154,7 +201,35 @@ namespace HiddenHarbours.Art.Editor
                                             Dictionary<string, object> dialled, string why)
                 => new Build(key, label, rigKey, null, dialled, why);
 
+            /// <summary>
+            /// One of the rig's own presets, at a point in its life. The state ids are checked here,
+            /// at construction, so a typo is a static-init failure with a list of the legal values in
+            /// it rather than a sheet of the wrong building (BuildingLifecycleStates.AssertKnown has
+            /// the measurement behind that).
+            /// </summary>
+            public static Build FromPresetInState(string key, string label, string rigKey,
+                                                  string preset, string phase, string decay,
+                                                  bool burnt, string why, int importCap = 0)
+            {
+                BuildingLifecycleStates.AssertKnown(phase, decay);
+                if (!BuildingLifecycleStates.IsActive(phase, decay, burnt))
+                    throw new ArgumentException(
+                        $"'{key}' declares no lifecycle state, so it is an ordinary preset build — " +
+                        "use Build.FromPreset. A build in the lifecycle set that resolves to " +
+                        "finished/sound would bake a pristine building under a derelict's name.",
+                        nameof(key));
+
+                return new Build(key, label, rigKey, preset, null, why, phase, decay, burnt, importCap);
+            }
+
             public bool IsPreset => Preset != null;
+
+            /// <summary>Does this build ask the lifecycle pass to do anything?</summary>
+            public bool HasLifecycle => BuildingLifecycleStates.IsActive(Phase, Decay, Burnt);
+
+            /// <summary>The state as a short tag — <c>"neglected"</c>, <c>"frame+abandoned"</c> — or
+            /// <c>"finished"</c>. What a log line and a contract entry carry.</summary>
+            public string StateTag => BuildingLifecycleStates.Tag(Phase, Decay, Burnt);
         }
 
         /// <summary>
@@ -311,6 +386,128 @@ namespace HiddenHarbours.Art.Editor
         };
 
         // =================================================================================
+        //  THE LIFECYCLE SET — the same rigs, at a different point in their lives
+        // =================================================================================
+
+        /// <summary>
+        /// Buildings that are NOT in repair: the three derelict outbuildings on Aunt Ginny's woods plot,
+        /// and the St Peters cannery that has been shut since the business went to the mainland.
+        ///
+        /// <para><b>⭐ WHY THIS IS A SECOND TABLE AND NOT FOUR MORE ROWS OF <see cref="M1Set"/>.</b>
+        /// The M1 set has an identity that a dozen tests read it for — five clapboard-and-white village
+        /// buildings, every one of them a house-rig build a room can be baked inside and a door drawn on
+        /// the gable of. None of that is true here: these are wharf-rig sheds and a processing plant,
+        /// none of them enterable, and their whole point is that they are broken. Folding them in would
+        /// have meant loosening every one of those assertions for the four rows that are meant to be
+        /// exceptions. Kept apart, the M1 invariants stay exactly as strict as they were and these get
+        /// their own, in <c>BuildingLifecycleSetTests</c>.</para>
+        ///
+        /// <para><b>They ride the rig's OWN presets.</b> Each is <c>PRESETS['x']</c> plus a decay key —
+        /// see <see cref="Build.Phase"/> for why the state is a field rather than three more dialled
+        /// axes. Nothing about the shed is retyped into C#, so an art-director change to <c>redShed</c>
+        /// reaches the derelict one too.</para>
+        ///
+        /// <para><b>⚠️ THE STATE IS ART, NOT GAMEPLAY, AND THAT IS DELIBERATE (CLAUDE.md rule 8).</b>
+        /// A phase ladder that the player walks a building UP (buy a lot, build on it) and a repair loop
+        /// that walks one back from <c>ruin</c> are the owner's stated goals, and they are M3 — logged
+        /// in <c>backlog/</c>, not built here. This table gives the world its history; it grants no
+        /// mechanic for changing it.</para>
+        ///
+        /// <para><b>The decay each one is in was NOT chosen by eye</b> — it is the state
+        /// <c>StPetersGinnyPlot</c>'s own shed table already says in prose. The woodshed is "the
+        /// one still standing squarest, because a woodshed is the one you keep the roof on"; the net
+        /// store is "the furthest gone"; the lean-to has "its back broken". Those three sentences are
+        /// <c>neglected</c>, <c>ruin</c> and <c>collapsing</c>. The art now says what the world already
+        /// said.</para>
+        /// </summary>
+        public static readonly Build[] LifecycleSet =
+        {
+            // ---- Aunt Ginny's three outbuildings (St Peters, the woods plot) --------------------
+            //
+            // ⚠️ These REPLACE greybox markers, and the footprint therefore GROWS. The old rows were
+            // hand-sized at 2.6-3.4 m across; the wharf rig cannot draw a building smaller than
+            // 3.60 x 4.50 m (measured across its whole size axis, from 0.0 to 1.0), so the shed table's
+            // sizes now come from the contract instead of from those numbers. StPetersVillageTests
+            // re-derives the clearing from the contract and fails with the figure to use, which is what
+            // makes that safe rather than hopeful.
+
+            Build.FromPresetInState(
+                "ginnyWoodshed", "Ginny's woodshed (neglected)", "wharfBuilding", "redShed",
+                phase: null, decay: "neglected", burnt: false,
+                why: "behind her cottage on the north side - the one still standing squarest, because " +
+                     "a woodshed is the one you keep the roof on. Red board-and-batten so the three " +
+                     "read as three different buildings and not one shed copied about."),
+
+            Build.FromPresetInState(
+                "ginnyNetStore", "Ginny's net store (ruin)", "wharfBuilding", "netShed",
+                phase: null, decay: "ruin", burnt: false,
+                why: "east, the furthest out - a net store from when this land was worked, and the " +
+                     "furthest gone. The netShed preset by name as well as by shape."),
+
+            Build.FromPresetInState(
+                "ginnyLeanTo", "Ginny's lean-to (collapsing)", "wharfBuilding", "tealShack",
+                phase: null, decay: "collapsing", burnt: false,
+                why: "north-west, first thing you pass walking up - a lean-to with its back broken, " +
+                     "which is what `collapsing` draws: a roof slope stove in, rafters showing."),
+
+            // ---- the cannery (St Peters, the west shore) ----------------------------------------
+            //
+            // The biggest build the wharf rig has (9.5 x 15.4 m) and the biggest employer St Peters
+            // ever had. `collapsing` rather than `ruin` on purpose: a ruin is a heap you read as
+            // scenery, and this building is meant to read as a thing that could be brought back. At
+            // collapsing it still has walls, a name and a roofline - and one slope stove in.
+            Build.FromPresetInState(
+                "stPetersCannery", "St Peters cannery (collapsing)", "wharfBuilding", "cannery",
+                phase: null, decay: "collapsing", burnt: false,
+                why: "the fish cannery that shut when the business went to the mainland - the long-arc " +
+                     "goal the owner named on 2026-08-19: get it running again and employ the village. " +
+                     "Scenery in this PR; the restart is an economy-sim arc in backlog/ (M3).",
+
+                // ⚠️ THE ONE 4096 SHEET IN THIS KIT, AND THE COST IS STATED RATHER THAN HIDDEN.
+                // Measured in the standalone V8 harness across all five decay states plus fishPlant:
+                //
+                //   state        cropped cell   @2048           @4096
+                //   sound        688 x 664      2x4 REFUSED     5x2 = 3440x1328   17 MB
+                //   neglected    790 x 694      2x4 REFUSED     5x2 = 3950x1388   20 MB
+                //   abandoned    832 x 707      2x4 REFUSED     4x2 = 3328x1414   17 MB
+                //   collapsing   840 x 673      2x4 REFUSED     4x2 = 3360x1346   17 MB   <- this build
+                //   ruin         864 x 612      2x4 REFUSED     4x2 = 3456x1224   16 MB
+                //
+                // ⭐ NOTE THE FIRST ROW. This is NOT the dereliction blowing the cap - the cannery has
+                // never fitted a 2048-capped 8-facing sheet, in any state. That is why M1Set never
+                // carried it and why BuildingBakeMenu's worst-case batch bakes it uncommitted at 4096.
+                // The lifecycle pass only made someone finally need it committed.
+                //
+                // The owner's lever, if 17 MB is too much for one building: this kit's facing count is
+                // documented as halvable (a re-bake, not a code change - see StPetersVillage.FacingToward,
+                // "with four facings the doors land on the nearest quarter-turn"). Four facings of this
+                // cell packs 2x2 = 1680x1346 and fits under 2048 at 9 MB. It is not taken here because
+                // the cannery's door is aimed at the pier and a quarter-turn is up to 45 deg of error on
+                // the island's biggest silhouette. If a mobile port ever becomes real, this is the FIRST
+                // sheet to re-solve.
+                importCap: 4096),
+        };
+
+        /// <summary>
+        /// Every build this kit bakes — <see cref="M1Set"/> then <see cref="LifecycleSet"/>, in that
+        /// order, which is the order the contract is written in.
+        ///
+        /// <para>The bake, the contract and the import test walk THIS; the per-build village invariants
+        /// walk <see cref="M1Set"/> alone. Two different questions: "did everything the kit declares get
+        /// baked?" and "is the M1 village still five clapboard buildings you can walk into?"</para>
+        /// </summary>
+        public static Build[] AllBuilds
+        {
+            get
+            {
+                var all = new Build[M1Set.Length + LifecycleSet.Length];
+                M1Set.CopyTo(all, 0);
+                LifecycleSet.CopyTo(all, M1Set.Length);
+                return all;
+            }
+        }
+
+        // =================================================================================
         //  ⚠️ CAN THIS BUILDING BE ENTERED AT ALL? — the axes that decide where the door DRAWS
         // =================================================================================
 
@@ -402,10 +599,10 @@ namespace HiddenHarbours.Art.Editor
         static object Value(Build build, string key) =>
             build.Dialled != null && build.Dialled.TryGetValue(key, out object v) ? v : null;
 
-        /// <summary>The build with this key, or null.</summary>
+        /// <summary>The build with this key, or null. Searches the WHOLE kit — M1 and lifecycle.</summary>
         public static Build? FindBuild(string key)
         {
-            foreach (var b in M1Set)
+            foreach (var b in AllBuilds)
                 if (string.Equals(b.Key, key, StringComparison.Ordinal)) return b;
             return null;
         }
@@ -456,6 +653,27 @@ namespace HiddenHarbours.Art.Editor
             /// <summary>The EXACT options expression <c>render()</c> was handed. The audit trail: if a
             /// build ever looks wrong, this says what it was actually asked to draw.</summary>
             public string optionsJs;
+
+            /// <summary>
+            /// The lifecycle state this sheet was baked in — empty/false for a building in repair.
+            /// <c>state</c> is the short tag (<c>"neglected"</c>, <c>"frame+abandoned"</c>,
+            /// <c>"finished"</c>).
+            ///
+            /// <para>Recorded because it is the ONE fact about a lifecycle sheet that the pixels
+            /// cannot be asked for after the fact, and the one a placement wants: "is this thing
+            /// derelict, and how far gone?" is a question the world asks (a ruin has no lit windows
+            /// and no smoke), and reading it back off the contract beats re-deriving it from the
+            /// build key by string surgery.</para>
+            /// </summary>
+            public string phase;
+            public string decay;
+            public bool burnt;
+            public string state;
+
+            /// <summary>The texture cap this sheet was PACKED against, and must be IMPORTED at. 0 (or a
+            /// contract written before this field existed) means the kit default — see
+            /// <see cref="ImportCapFor(Entry)"/>.</summary>
+            public int importCap;
 
             public int facings;
             public int cols;

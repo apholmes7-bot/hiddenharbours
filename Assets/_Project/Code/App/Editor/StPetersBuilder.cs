@@ -1536,6 +1536,17 @@ namespace HiddenHarbours.App.Editor
             int ginnyPlotBuildings =
                 StPetersGinnyPlot.Place(terrain, waterSprite, core.PlayerGo.transform);
 
+            // --- THE CANNERY (2026-08-19) -----------------------------------------------------------------
+            // The fish plant that shut when the business went to the mainland — the island's biggest
+            // building, standing derelict beside the pier it used to load from. SCENERY: it carries no
+            // interaction and no def, and the restart arc the owner named is logged in backlog/ as M3
+            // work for the economy-sim lane (CLAUDE.md rule 8).
+            //
+            // ⚠ Same order note as Ginny's plot above: the trees were scattered before this line runs and
+            // miss the cannery because StPetersWoodlandZones declares its clearing from static constants,
+            // answerable before anything is placed.
+            StPetersCannery.Place(null, terrain, waterSprite);
+
             // --- THE DOORYARDS (the lawn ruling's third derivation) ---------------------------------------
             // #604 authored one yard POLYGON per property and made the grass gates read it — the mow line
             // and the wild-grass suppression. This is the third thing that polygon says: the FENCE LINE.

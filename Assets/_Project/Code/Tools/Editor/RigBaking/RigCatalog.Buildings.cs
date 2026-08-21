@@ -27,8 +27,14 @@ namespace HiddenHarbours.Tools.RigBaking
                 // ⚠️ Baked by BuildingRigBaker, never the boat turntable: the cell is 992×1060, so
                 // eight facings in a row would be 7936 px — past the 4096 cap. The building baker
                 // tight-crops to the drawn pixels first, which is what makes the bake possible at all.
+                //
+                // ⭐ The lifecycle PASS is a prerequisite (2026-08-19). The rig carries a two-line
+                // hook after build(b) that reads root.BuildingLifecycle and NO-OPS when it is absent
+                // — so without the declaration a phase/decay bake silently renders the finished
+                // house. Loading it changes nothing for a finished build: measured byte-identical.
                 ["house"] = new RigEntry($"{RigFolder}/houseIsoRig.js", "HouseIso",
-                                         AzimuthConvention.CounterClockwise),
+                                         AzimuthConvention.CounterClockwise,
+                                         new[] { "buildingLifecycle" }),
 
                 // The net-shed / storage-barn / fish-plant family — the wharf's working buildings.
                 // Same story as the house, one size worse: the 1200×1160 cell is sized to hold the
@@ -36,7 +42,8 @@ namespace HiddenHarbours.Tools.RigBaking
                 // be 9600 px wide (the kit's own reference sheet, which is why that PNG stayed in
                 // docs/ and was never imported).
                 ["wharfBuilding"] = new RigEntry($"{RigFolder}/wharfBuildingRig.js", "WharfBuilding",
-                                                 AzimuthConvention.CounterClockwise),
+                                                 AzimuthConvention.CounterClockwise,
+                                                 new[] { "buildingLifecycle" }),
             };
     }
 }

@@ -143,6 +143,37 @@ has no heading, so its sheet axes are **variant × sway frame**, not direction.
 > `sheetSpec` · `cellOf` + its constants, all on `root.TreeRig`). It needs **no symbol shim** — the
 > thing ADR 0022 open question 4 has been asking of every other rig.
 
+**NOT A RIG AT ALL — the building lifecycle PASS (2026-08-19)** —
+`building-lifecycle-kit/buildingLifecycleRig.js` (`BuildingLifecycle`). The only entry in the catalog that
+draws nothing of its own: it runs **between** a host rig's `build(b)` and its `paint()` and hands back the
+same building at an earlier or a later point in its life — 7 construction phases
+(`site foundation frame rafters sheathed cladding finished`), 4 states of dereliction
+(`sound neglected abandoned collapsing ruin`), and a `burnt` modifier that composes with any of them.
+Because it reads the host's REAL faces, every preset and every dialled config is covered with no
+per-config authoring. It has no azimuth — it inherits whatever facing the host is rendering — so its entry
+carries the `Clockwise` placeholder every non-directional entry uses and nothing probes it.
+
+Bound into **`wharfBuildingRig` · `houseIsoRig` · `shopfrontRig`** by a two-line hook after `build(b)`, and
+declared a **prerequisite** of all three in `RigCatalog`. Adopting the hook was measured to change
+nothing: all three hosts render **byte-identical** to their pre-hook selves on every finished build, and a
+full re-bake returned the five committed M1 village sheets byte-for-byte (`BuildingLifecyclePassTests`).
+
+> ⚠️ **An unrecognised state id is SILENTLY IGNORED.** `active()` returns true for any non-default value,
+> then `normPhase`/`normDecay` fall back to the default and hand the faces back untouched — so
+> `decay:'collapsed'` (the natural misspelling of `collapsing`) renders byte-for-byte as `finished`, with
+> no throw, the right cell size and the right sprite count. `BuildingLifecycleStates.AssertKnown` refuses
+> one, and a lifecycle bake must also render *differently from the same build with the state taken off*.
+>
+> ⚠️ **The azimuth probe must be pointed at the SOUND building, not the derelict.** Its cross-check
+> compares the drawn silhouette against the rig's own `Wd`/`Ln`, and a ruin's planks lie on the ground
+> **outside** its footprint — measured at 2.2–2.4× (netShed@ruin 281 px against 124 expected;
+> cannery@collapsing 681 against 305). `BuildingBakeRequest.UnderlyingOptsJs` is where a build names the
+> one underneath it. The pass does not touch `anchors()`, so the convention and the footprint belong to
+> the sound building either way.
+>
+> **Not covered:** `shop-building-kit/shopBuildingRig` (cutaway interior) and `shipyard-iso-kit` take a
+> different face signature — the kit README's own stated limit, not an omission.
+
 > **⚠️ "No azimuth term" ≠ "no compass risk" for the terrain kits.** `shoreIsoKitRig` bakes no
 > turntable, so there is no heading to mirror and the probe machinery does not apply — but its cliff and
 > fringe *pieces* are named by bearing (`faceS`, `cornSW`, `sideW`, `edN`…), and nothing has checked

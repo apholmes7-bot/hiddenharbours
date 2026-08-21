@@ -1,0 +1,32 @@
+{
+  "sheet": "Village_stPetersCannery.png",
+  "rig": "wharfBuilding",
+  "build": "stPetersCannery",
+  "facings": 8,
+  "cols": 4,
+  "rows": 2,
+  "cellW": 840,
+  "cellH": 673,
+  "pivotNote": "cell px from the cell's TOP-LEFT; Unity wants (x/cellW, (cellH-y)/cellH)",
+  "pivotX": 420,
+  "pivotY": 404,
+  "nativeCellW": 1200,
+  "nativeCellH": 1160,
+  "cropX": 180,
+  "cropY": 376,
+  "convention": "CounterClockwise",
+  "conventionNote": "MEASURED at bake time from the door anchor; the correction is already applied, so cell i genuinely depicts +45*i",
+  "footprintWd": 9.54,
+  "footprintLn": 15.4,
+  "stackKey": "stacks",
+  "anchors": [
+    { "cell": 0, "door": {"x": 420, "y": 206.3957}, "ridge": {"x": 420, "y": 171.75}, "stacks": [{"x": 465.792, "y": 171.8405}, {"x": 465.792, "y": 66.2519}] },
+    { "cell": 1, "door": {"x": 594.2311, "y": 252.7849}, "ridge": {"x": 420, "y": 171.75}, "stacks": [{"x": 394.3028, "y": 177.1907}, {"x": 510.4569, "y": 102.5283}] },
+    { "cell": 2, "door": {"x": 666.4, "y": 364.7785}, "ridge": {"x": 420, "y": 171.75}, "stacks": [{"x": 337.8667, "y": 148.4807}, {"x": 502.1333, "y": 148.4807}] },
+    { "cell": 3, "door": {"x": 594.2311, "y": 476.7721}, "ridge": {"x": 420, "y": 171.75}, "stacks": [{"x": 329.5431, "y": 102.5283}, {"x": 445.6972, "y": 177.1907}] },
+    { "cell": 4, "door": {"x": 420, "y": 523.1614}, "ridge": {"x": 420, "y": 171.75}, "stacks": [{"x": 374.208, "y": 66.2519}, {"x": 374.208, "y": 171.8405}] },
+    { "cell": 5, "door": {"x": 245.7689, "y": 476.7721}, "ridge": {"x": 420, "y": 171.75}, "stacks": [{"x": 445.6972, "y": 60.9016}, {"x": 329.5431, "y": 135.564}] },
+    { "cell": 6, "door": {"x": 173.6, "y": 364.7785}, "ridge": {"x": 420, "y": 171.75}, "stacks": [{"x": 502.1333, "y": 89.6116}, {"x": 337.8667, "y": 89.6116}] },
+    { "cell": 7, "door": {"x": 245.7689, "y": 252.7849}, "ridge": {"x": 420, "y": 171.75}, "stacks": [{"x": 510.4569, "y": 135.564}, {"x": 394.3028, "y": 60.9016}] }
+  ]
+}

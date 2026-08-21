@@ -45,9 +45,14 @@ namespace HiddenHarbours.Tools.RigBaking
                 ["shopInterior"] = new RigEntry($"{RigFolder}/shop-building-kit/shopInteriorRig.js",
                                                 "ShopInterior", AzimuthConvention.CounterClockwise),
 
+                // ⭐ buildingLifecycle FIRST, then the room. Both are load-order-sensitive for
+                // opposite reasons and neither complains: the pass is read by the two-line hook after
+                // build(b) (absent → a derelict bake silently renders the finished shop), and the
+                // room owns the 0.5 m cell snap the shell reads back. Order within the array is the
+                // depth-first install order, so it is the order they must arrive in.
                 ["shopfront"] = new RigEntry($"{RigFolder}/shop-building-kit/shopfrontRig.js",
                                              "Shopfront", AzimuthConvention.CounterClockwise,
-                                             new[] { "shopInterior" }),
+                                             new[] { "buildingLifecycle", "shopInterior" }),
 
                 // Depth-first in this order installs shopInterior, then shopfront, then this — the whole
                 // kit in one host, the only configuration in which every number above is right. NOT a

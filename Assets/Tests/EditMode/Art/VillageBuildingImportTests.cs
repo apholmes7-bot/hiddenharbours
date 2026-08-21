@@ -49,14 +49,18 @@ namespace HiddenHarbours.Tests.Art.EditMode
         [Test]
         public void TheContractCoversEveryBuildTheKitDeclares()
         {
-            foreach (var build in VillageBuildingKit.M1Set)
+            // ⚠️ AllBuilds, not M1Set: the kit bakes the M1 village AND the lifecycle set (the three
+            // derelicts on Ginny's plot and the shut cannery), into the same folder and the same
+            // contract. M1Set alone would have let a derelict go missing from the contract in silence
+            // and, worse, would have failed the count check the moment the first one was baked.
+            foreach (var build in VillageBuildingKit.AllBuilds)
                 Assert.IsNotNull(VillageBuildingKit.Find(_contract, build.Key),
-                    $"'{build.Key}' is in the M1 set but the contract does not carry it. Re-bake — do " +
-                    "not hand-edit the contract.");
+                    $"'{build.Key}' is a build this kit declares but the contract does not carry it. " +
+                    "Re-bake — do not hand-edit the contract.");
 
-            Assert.AreEqual(VillageBuildingKit.M1Set.Length, _contract.buildings.Length,
-                "the contract should carry exactly the M1 set: a stranger in it means a stale bake, and " +
-                "the slicer would happily slice a sheet nothing places");
+            Assert.AreEqual(VillageBuildingKit.AllBuilds.Length, _contract.buildings.Length,
+                "the contract should carry exactly what the kit declares: a stranger in it means a " +
+                "stale bake, and the slicer would happily slice a sheet nothing places");
         }
 
         [Test]
@@ -100,12 +104,22 @@ namespace HiddenHarbours.Tests.Art.EditMode
             // 4096 limit, all five sheets came out 2800–3876 px wide — legal to bake, and every one would
             // have imported DOWNSCALED with the sprite count still correct. The kit now solves the pack
             // for the cap it imports at.
+            // ⚠️ Against the cap the ENTRY was packed at, not the kit constant: one build (the cannery)
+            // declares its own 4096 because eight facings of a 9.5 × 15.4 m building do not pack under
+            // 2048 in any state. Reading the entry's own number is what stops that exception being
+            // either a false red here or a licence for the next build to quietly take one.
             foreach (var e in _contract.buildings)
             {
-                Assert.LessOrEqual(e.sheetW, VillageBuildingKit.ImportSizeCap,
-                    $"{e.key} is {e.sheetW} px wide — over the cap the import DOWNSCALES it silently " +
-                    "and the sprite count still comes out right");
-                Assert.LessOrEqual(e.sheetH, VillageBuildingKit.ImportSizeCap, $"{e.key} height");
+                int cap = VillageBuildingKit.ImportCapFor(e);
+                Assert.LessOrEqual(e.sheetW, cap,
+                    $"{e.key} is {e.sheetW} px wide against its own {cap} px cap — over it the import " +
+                    "DOWNSCALES silently and the sprite count still comes out right");
+                Assert.LessOrEqual(e.sheetH, cap, $"{e.key} height against its own {cap} px cap");
+
+                if (cap != VillageBuildingKit.ImportSizeCap)
+                    Debug.Log($"[village-buildings] {e.key} imports at {cap} px " +
+                              $"({e.sheetW}×{e.sheetH}, {e.runtimeBytesRgba32 / 1024.0 / 1024.0:F1} MB " +
+                              "RGBA32) — the kit's one documented cap exception.");
             }
         }
 

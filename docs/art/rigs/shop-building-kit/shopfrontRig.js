@@ -1077,7 +1077,9 @@
 
   function render(dir, opts){
     opts=(typeof opts==='number')?{elev:opts}:(opts||{});
-    const b=resolve(opts), MATS=makeMats(b), faces=build(b);
+    let b=resolve(opts); const MATS=makeMats(b); let faces=build(b);
+    const LC=root.BuildingLifecycle;                       // construction phase / dereliction pass
+    if(LC && LC.active(opts)){ const r=LC.apply(faces, MATS, b, opts); faces=r.faces; b=r.b; }
     return toRGBA(post(paint(faces, {dir, elev:opts.elev}, MATS), b));
   }
   function anchors(dir, opts){

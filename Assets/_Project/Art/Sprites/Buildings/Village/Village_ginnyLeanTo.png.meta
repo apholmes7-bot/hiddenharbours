@@ -1,0 +1,377 @@
+fileFormatVersion: 2
+guid: 3bb829fb855ea07488fd1f90cb880dea
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 6913750395157108185
+    second: Village_ginnyLeanTo_0
+  - first:
+      213: 5280559380052711038
+    second: Village_ginnyLeanTo_1
+  - first:
+      213: -6596713203023187482
+    second: Village_ginnyLeanTo_2
+  - first:
+      213: 3596208899288686928
+    second: Village_ginnyLeanTo_3
+  - first:
+      213: 6208787160213645591
+    second: Village_ginnyLeanTo_4
+  - first:
+      213: -5226914506155384516
+    second: Village_ginnyLeanTo_5
+  - first:
+      213: -7985694805757320396
+    second: Village_ginnyLeanTo_6
+  - first:
+      213: 755626555105008379
+    second: Village_ginnyLeanTo_7
+  - first:
+      213: -4144261191680994953
+    second: Village_ginnyLeanTo_8
+  - first:
+      213: -5991284266523420161
+    second: Village_ginnyLeanTo_9
+  - first:
+      213: 2754399867826617040
+    second: Village_ginnyLeanTo_10
+  - first:
+      213: -1077271989638895759
+    second: Village_ginnyLeanTo_11
+  - first:
+      213: 6670415896801628627
+    second: Village_ginnyLeanTo_12
+  - first:
+      213: 3522420795424503064
+    second: Village_ginnyLeanTo_13
+  - first:
+      213: 2243696251697327906
+    second: Village_ginnyLeanTo_14
+  - first:
+      213: -6575145054079972349
+    second: Village_ginnyLeanTo_15
+  - first:
+      213: -6277625464847632169
+    second: Village_ginnyLeanTo_16
+  - first:
+      213: -5565233251918247864
+    second: Village_ginnyLeanTo_17
+  - first:
+      213: 3910303467701050109
+    second: Village_ginnyLeanTo_18
+  - first:
+      213: -564258219651638548
+    second: Village_ginnyLeanTo_19
+  - first:
+      213: -401801551409622700
+    second: Village_ginnyLeanTo_20
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 9
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 32
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Village_ginnyLeanTo_d0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 346
+        width: 388
+        height: 346
+      alignment: 9
+      pivot: {x: 0.5, y: 0.36127168}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d0f82da0240b52a4cbeedede480eb629
+      internalID: -62106061
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_ginnyLeanTo_d1
+      rect:
+        serializedVersion: 2
+        x: 388
+        y: 346
+        width: 388
+        height: 346
+      alignment: 9
+      pivot: {x: 0.5, y: 0.36127168}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3f5643ca0c95b5e4184400902cedb263
+      internalID: 795828960
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_ginnyLeanTo_d2
+      rect:
+        serializedVersion: 2
+        x: 776
+        y: 346
+        width: 388
+        height: 346
+      alignment: 9
+      pivot: {x: 0.5, y: 0.36127168}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d1eac267c55a9614ab833ca2f1516188
+      internalID: 481587712
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_ginnyLeanTo_d3
+      rect:
+        serializedVersion: 2
+        x: 1164
+        y: 346
+        width: 388
+        height: 346
+      alignment: 9
+      pivot: {x: 0.5, y: 0.36127168}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2ffc7c5fce23dd8429b27a49f6eae818
+      internalID: -373780829
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_ginnyLeanTo_d4
+      rect:
+        serializedVersion: 2
+        x: 1552
+        y: 346
+        width: 388
+        height: 346
+      alignment: 9
+      pivot: {x: 0.5, y: 0.36127168}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f478c80c956bebe488ea21de05bb74c6
+      internalID: -1712864638
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_ginnyLeanTo_d5
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 388
+        height: 346
+      alignment: 9
+      pivot: {x: 0.5, y: 0.36127168}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 49223d90cb28e4140ad7f6ffb42ac152
+      internalID: 942335571
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_ginnyLeanTo_d6
+      rect:
+        serializedVersion: 2
+        x: 388
+        y: 0
+        width: 388
+        height: 346
+      alignment: 9
+      pivot: {x: 0.5, y: 0.36127168}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 530fb4cba0816cf4e8b145b2d8075da9
+      internalID: 675038000
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Village_ginnyLeanTo_d7
+      rect:
+        serializedVersion: 2
+        x: 776
+        y: 0
+        width: 388
+        height: 346
+      alignment: 9
+      pivot: {x: 0.5, y: 0.36127168}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b4946508e04c362459694f1b9325af93
+      internalID: 882414913
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 798046e80d4959448acb39c693feae63
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Village_ginnyLeanTo_d0: -62106061
+      Village_ginnyLeanTo_d1: 795828960
+      Village_ginnyLeanTo_d2: 481587712
+      Village_ginnyLeanTo_d3: -373780829
+      Village_ginnyLeanTo_d4: -1712864638
+      Village_ginnyLeanTo_d5: 942335571
+      Village_ginnyLeanTo_d6: 675038000
+      Village_ginnyLeanTo_d7: 882414913
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

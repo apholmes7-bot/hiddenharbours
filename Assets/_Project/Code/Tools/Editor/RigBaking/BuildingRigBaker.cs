@@ -68,14 +68,54 @@ namespace HiddenHarbours.Tools.RigBaking
         /// </summary>
         public readonly int MaxSheetDimension;
 
+        /// <summary>
+        /// <b>THE BUILD THIS ONE IS A LAYER ON TOP OF</b> — the same options with the layer taken off —
+        /// or null when this build stands alone. It does two jobs, and both of them fail silently
+        /// without it.
+        ///
+        /// <para><b>1. It is what the AZIMUTH PROBE measures.</b> The probe cross-checks that
+        /// <c>anchors()</c> and <c>render()</c> describe the same building, by comparing the drawn
+        /// silhouette against the rig's own <c>Wd</c>/<c>Ln</c> at 32 px = 1 m. <b>That premise is
+        /// false for a derelict, by design:</b> a collapsing building has a wall down and its planks
+        /// spilled across the ground OUTSIDE its footprint, so the silhouette is genuinely 2.2–2.4×
+        /// wider than <c>Wd</c> (measured: netShed@ruin 281 px against 124 px expected;
+        /// cannery@collapsing 681 against 305). Relaxing the tolerance would weaken the check for every
+        /// ordinary building to accommodate four; measuring the building UNDERNEATH keeps it at full
+        /// strength, and is exact — the pass does not touch anchors, so the convention and the footprint
+        /// are properties of the sound building either way.</para>
+        ///
+        /// <para><b>2. It is what the build must not render identically to.</b>
+        /// <see cref="RequireDistinctFromDefault"/> asks "did any of my keys reach the rig?" by
+        /// comparing against the rig's bare default — the wrong question here, because a
+        /// <c>collapsing</c> cannery differs from the default by being a CANNERY whether or not the
+        /// collapse applied. 🔴 The failure that catches is silent and produces a plausible sheet: the
+        /// lifecycle hook no-ops when <c>root.BuildingLifecycle</c> is absent, and the pass's
+        /// <c>normPhase</c>/<c>normDecay</c> fall back to finished/sound for an id they do not know.
+        /// Either way the bake succeeds, the crop is right, the sprite count is right — and the sheet
+        /// named <c>..._collapsing</c> holds a building in perfect repair.</para>
+        ///
+        /// <para>⚠️ Consequence worth knowing: the FOOTPRINT this bake records is the SOUND building's,
+        /// not the ruin's spread of debris. That is the number a placement wants (you reserve ground for
+        /// the building, not for its rubble), but it means a derelict's sheet is wider than its declared
+        /// footprint and a consumer that infers one from the other will be wrong.</para>
+        /// </summary>
+        public readonly string UnderlyingOptsJs;
+
+        /// <summary>What the layer is, in one line - quoted in the refusal, because "they matched" is
+        /// not actionable on its own.</summary>
+        public readonly string LayerReason;
+
         public BuildingBakeRequest(string rigKey, string optsJs, string label, string outputFolder,
                                    string baseName, int facings = 8, bool isPreset = false,
-                                   bool requireDistinctFromDefault = false, int maxSheetDimension = 0)
+                                   bool requireDistinctFromDefault = false, int maxSheetDimension = 0,
+                                   string underlyingOptsJs = null, string layerReason = null)
         {
             RigKey = rigKey; OptsJs = optsJs; Label = label; OutputFolder = outputFolder;
             BaseName = baseName; Facings = facings; IsPreset = isPreset;
             RequireDistinctFromDefault = requireDistinctFromDefault;
             MaxSheetDimension = maxSheetDimension;
+            UnderlyingOptsJs = underlyingOptsJs;
+            LayerReason = layerReason;
         }
 
         /// <summary>
@@ -103,11 +143,15 @@ namespace HiddenHarbours.Tools.RigBaking
                                                       string outputFolder, string baseName,
                                                       int facings = 8,
                                                       bool requireDistinctFromDefault = false,
-                                                      int maxSheetDimension = 0)
+                                                      int maxSheetDimension = 0,
+                                                      string underlyingOptsJs = null,
+                                                      string layerReason = null)
             => new BuildingBakeRequest(rigKey, optsJs, label, outputFolder, baseName, facings,
                                        isPreset: false,
                                        requireDistinctFromDefault: requireDistinctFromDefault,
-                                       maxSheetDimension: maxSheetDimension);
+                                       maxSheetDimension: maxSheetDimension,
+                                       underlyingOptsJs: underlyingOptsJs,
+                                       layerReason: layerReason);
     }
 
     public sealed class BuildingBakeResult
@@ -368,8 +412,22 @@ namespace HiddenHarbours.Tools.RigBaking
             if (req.RequireDistinctFromDefault)
                 AssertDiffersFromDefault(host, g, optsJs, req.Label, req.IsPreset);
 
+            // ...and, for a build that layers a state on top of another build, that the LAYER applied.
+            // See BuildingBakeRequest.UnderlyingOptsJs for why the default comparison above cannot
+            // answer that question.
+            if (!string.IsNullOrEmpty(req.UnderlyingOptsJs))
+                AssertDiffersFrom(host, g, optsJs, req.UnderlyingOptsJs, req.Label, req.LayerReason);
+
             // ---- MEASURE the convention, then cross-check the catalog's declaration ---------------
-            var probe = BuildingRigAzimuthProbe.Measure(host, g, optsJs, geo.Width, geo.Height, geo.PivotX);
+            // ⚠️ MEASURED ON THE BUILDING UNDERNEATH, not on this build, when there is one. The probe's
+            // silhouette-versus-footprint cross-check assumes the drawn building fits its own Wd/Ln, and
+            // a derelict deliberately does not (a wall is down and its planks are on the ground outside
+            // the footprint — measured at 2.2-2.4x). The pass does not touch anchors, so the convention
+            // and the footprint belong to the sound building either way; measuring it there keeps the
+            // cross-check at full strength for everything else. See BuildingBakeRequest.UnderlyingOptsJs.
+            string probeOptsJs = string.IsNullOrEmpty(req.UnderlyingOptsJs) ? optsJs : req.UnderlyingOptsJs;
+            var probe = BuildingRigAzimuthProbe.Measure(host, g, probeOptsJs,
+                                                        geo.Width, geo.Height, geo.PivotX);
 
             if (probe.Convention != entry.DeclaredConvention)
                 throw new InvalidOperationException(
@@ -665,6 +723,28 @@ namespace HiddenHarbours.Tools.RigBaking
                       "the recorded worked example is winD (the rig's internal field) versus winDensity " +
                       "(the option it actually reads). Check the keys against BuildingAxes, which is " +
                       "grep-verified against the rig source."));
+        }
+
+        /// <summary>
+        /// Refuse a build that renders byte-identical to a NAMED other build - see
+        /// <see cref="BuildingBakeRequest.UnderlyingOptsJs"/>.
+        /// </summary>
+        static void AssertDiffersFrom(IRigScriptHost host, string g, string optsJs, string otherJs,
+                                      string label, string reason)
+        {
+            byte[] mine = host.EvaluateBytes($"{g}.render(0,{optsJs})");
+            byte[] other = host.EvaluateBytes($"{g}.render(0,{otherJs})");
+
+            if (mine.Length != other.Length || !BytesEqual(mine, other)) return;
+
+            throw new InvalidOperationException(
+                $"Build '{label}' rendered byte-identical to the build it must differ from.\n\n" +
+                $"  this build : {optsJs}\n" +
+                $"  the other  : {otherJs}\n\n" +
+                (reason ?? "The extra options changed nothing.") + "\n\n" +
+                "Refusing rather than baking: the sheet would be a perfectly valid one of the WRONG " +
+                "building, filed under this build's name, with the right cell size and the right " +
+                "sprite count. Nothing downstream can tell the difference.");
         }
 
         /// <summary>

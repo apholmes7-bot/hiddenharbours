@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 using System.Collections.Generic;
 using UnityEngine;
+using HiddenHarbours.Art.Editor;   // VillageBuildingCatalog — a building clears its own footprint
 using HiddenHarbours.Core;
 
 namespace HiddenHarbours.App.Editor
@@ -401,32 +402,125 @@ namespace HiddenHarbours.App.Editor
         /// of what "leave it tidy" means here. Her cottage and her three sheds took its place on the
         /// list, 85 m east.</para>
         /// </summary>
-        public static readonly Vector2[] BuildingSites = BuildSiteList();
-
-        static Vector2[] BuildSiteList()
+        public static Vector2[] BuildingSites
         {
-            var sites = new List<Vector2>
+            get
             {
-                StPetersBuilder.SchoolPos,
-                StPetersBuilder.GeneralStorePos,      // a SHOP since 2026-08-11, at the same site
-                StPetersBuilder.WhiteFarmhousePos,
-                StPetersBuilder.RedSaltboxPos,
-                StPetersBuilder.SageCottagePos,
-                StPetersShops.PostOfficePos,
+                var keepouts = BuildingKeepouts;
+                var sites = new Vector2[keepouts.Length];
+                for (int i = 0; i < keepouts.Length; i++) sites[i] = keepouts[i].Position;
+                return sites;
+            }
+        }
+
+        /// <summary>
+        /// One building's patch of bare ground: where it stands and how much meadow it holds off.
+        ///
+        /// <para><b>⭐ THE RADIUS IS PER SITE AS OF 2026-08-19, and the cannery is why.</b> It used to be
+        /// one global <see cref="BuildingClearanceMetres"/> for everything, which worked while every
+        /// building on the island was a house-sized box: 7 m cleared the biggest (the general store's
+        /// 6.40 m) with 0.60 m to spare. The derelict cannery is <b>9.06 m</b> of half-diagonal — so the
+        /// global would have had to go to 9.1, and every cottage on the green would have gained two
+        /// metres of bald dirt to accommodate one building 170 m away. Taking the larger of the constant
+        /// and the building's OWN footprint gives the cannery what it needs and leaves the village
+        /// exactly as it was (every house's own reach is under 7 m, so the floor still governs).</para>
+        /// </summary>
+        public readonly struct MeadowKeepout
+        {
+            public readonly Vector2 Position;
+
+            /// <summary>Metres of meadow held off, measured from <see cref="Position"/>.</summary>
+            public readonly float RadiusMetres;
+
+            /// <summary>What stands here — for a test's failure message, and for the reader.</summary>
+            public readonly string What;
+
+            public MeadowKeepout(Vector2 position, float radiusMetres, string what)
+            {
+                Position = position; RadiusMetres = radiusMetres; What = what;
+            }
+        }
+
+        /// <summary>Every site, with the ground it actually needs. <see cref="BuildingSites"/> is the
+        /// positions of these.</summary>
+        public static readonly MeadowKeepout[] BuildingKeepouts = BuildKeepoutList();
+
+        /// <summary>
+        /// The meadow keepout a building of this reach needs: its own footprint, or
+        /// <see cref="BuildingClearanceMetres"/>, whichever is larger.
+        ///
+        /// <para>The floor is not slack — a building wants a little bare ground round its walls whatever
+        /// its size, and shrinking the small buildings' clearing to their own footprint would be a
+        /// visible change nobody asked for.</para>
+        /// </summary>
+        public static float KeepoutRadiusFor(float footprintHalfDiagonalMetres) =>
+            Mathf.Max(BuildingClearanceMetres, footprintHalfDiagonalMetres);
+
+        /// <summary>
+        /// The keepout for a build in the village building kit, by key. Falls back to the floor when the
+        /// kit is not baked in this working tree.
+        ///
+        /// <para>⚠ Takes the ALREADY-SCANNED catalog rather than calling <c>Find</c> per build:
+        /// <c>Find</c> re-reads and re-parses <c>Buildings.json</c> every call, and on a tree with no
+        /// contract each one also logs an error — five red lines in the console for one list.</para>
+        /// </summary>
+        static MeadowKeepout ForKitBuild(List<VillageBuildingCatalog.Placement> kit,
+                                         string buildKey, Vector2 at, string what)
+        {
+            float reach = 0f;
+            if (kit != null)
+                foreach (var p in kit)
+                    if (p.IsValid && p.Key == buildKey)
+                    {
+                        reach = StPetersVillage.FootprintRadiusMetres(p);
+                        break;
+                    }
+            return new MeadowKeepout(at, KeepoutRadiusFor(reach), what);
+        }
+
+        static MeadowKeepout AtTheFloor(Vector2 at, string what) =>
+            new MeadowKeepout(at, BuildingClearanceMetres, what);
+
+        static MeadowKeepout[] BuildKeepoutList()
+        {
+            // ONE scan for the whole list — see ForKitBuild.
+            List<VillageBuildingCatalog.Placement> kit = VillageBuildingCatalog.Scan();
+
+            var sites = new List<MeadowKeepout>
+            {
+                AtTheFloor(StPetersBuilder.SchoolPos, "school"),
+                AtTheFloor(StPetersBuilder.GeneralStorePos, "general store"),  // a SHOP since 2026-08-11
+                AtTheFloor(StPetersBuilder.WhiteFarmhousePos, "white farmhouse"),
+                AtTheFloor(StPetersBuilder.RedSaltboxPos, "red saltbox"),
+                AtTheFloor(StPetersBuilder.SageCottagePos, "sage cottage"),
+                AtTheFloor(StPetersShops.PostOfficePos, "post office"),
 
                 // Aunt Ginny's, out on her own plot in the eastern woods.
-                StPetersGinnyPlot.CottagePos,
+                AtTheFloor(StPetersGinnyPlot.CottagePos, "Ginny's cottage"),
             };
 
             // Her sheds come from the plot's OWN data rows rather than being copied across, so a shed
             // that moves — or a fourth one — cannot end up growing a meadow through its floor. That is
             // exactly the failure the 🔴 note above is about.
-            foreach (var shed in StPetersGinnyPlot.Sheds) sites.Add(shed.Position);
+            foreach (var shed in StPetersGinnyPlot.Sheds)
+                sites.Add(ForKitBuild(kit, shed.BuildKey, shed.Position, $"Ginny's {shed.Key}"));
 
             // The camper on its lot at the back of her land (2026-08-17), by the same rule and derived
             // for the same reason: it is the newest building on the island and therefore exactly the
             // shape of the post-office bug the 🔴 note above is about.
-            sites.Add(StPetersCamperLot.LotPos);
+            sites.Add(AtTheFloor(StPetersCamperLot.LotPos, "the camper"));
+
+            // The derelict cannery out by the pier (2026-08-19). It is DERELICT, which is the one thing
+            // that could talk someone out of adding it here — weeds through the floor of an abandoned
+            // building sound right. They are not: this list is what keeps the MEADOW from growing
+            // through a building's SPRITE, and a building's floor sorts below the tuft band whether or
+            // not anybody has swept it. The weeds a ruin deserves are drawn INTO its cell by the
+            // lifecycle pass, which is where they belong.
+            //
+            // ⚠ AND IT IS THE ONE SITE THAT NEEDS MORE THAN THE FLOOR: 9.06 m of half-diagonal against a
+            // 7 m constant. See MeadowKeepout for why that made the radius per site rather than moving
+            // the constant.
+            sites.Add(ForKitBuild(kit, StPetersCannery.BuildKey, StPetersCannery.Site, "the cannery"));
 
             return sites.ToArray();
         }
@@ -464,8 +558,12 @@ namespace HiddenHarbours.App.Editor
             if (terrain == null) return false;
             if (terrain.ElevationAt(p) < StPetersShoreMap.GrassFloorElevation) return false;
 
-            for (int i = 0; i < BuildingSites.Length; i++)
-                if (Vector2.Distance(p, BuildingSites[i]) < BuildingClearanceMetres) return false;
+            // ⚠ Each site's OWN radius, not one constant — see MeadowKeepout. BuildingKeepouts is a
+            // static readonly array, so this hot loop reads it once and allocates nothing;
+            // BuildingSites (which projects it) deliberately is NOT used here.
+            for (int i = 0; i < BuildingKeepouts.Length; i++)
+                if (Vector2.Distance(p, BuildingKeepouts[i].Position) < BuildingKeepouts[i].RadiusMetres)
+                    return false;
 
             // The mow line. Cheap where it has to be: every yard opens with its own bounding box, so a
             // candidate site out on the meadow costs four compares per row.

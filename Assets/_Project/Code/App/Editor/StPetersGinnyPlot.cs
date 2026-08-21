@@ -43,18 +43,35 @@ namespace HiddenHarbours.App.Editor
     /// cref="StPetersRoutines"/> gives her three blocks and not four: a fourth would have put her at
     /// 2.3 h/day on the road. It is also why she leaves at 4.5 — see the routine's own note.</para>
     ///
-    /// <para><b>The sheds are greybox, and that is a stated art gap, not a shortcut.</b> The village
-    /// building kit bakes exactly five keys (school, generalStore, whiteFarmhouse, redSaltbox,
-    /// sageCottage) and the shop kit four more; <b>none of them is an outbuilding</b>, and nothing in the
-    /// repo draws a shed at all, derelict or sound. They ship here as tinted markers on the same greybox
-    /// convention the freezer and the wet-bucket barrel already use, placed from data rows so the day a
-    /// shed rig lands the only change is a sprite lookup. <b>The upstream ask is a shed/outbuilding rig
-    /// with a WEAR axis</b> (the fuel kit's <c>wear</c> is the precedent) — restated on the PR, not
-    /// silently absorbed.</para>
+    /// <para><b>⭐ THE SHEDS ARE REAL BUILDINGS AS OF 2026-08-19 — the stated art gap is discharged.</b>
+    /// This file used to say: "nothing in the repo draws a shed at all, derelict or sound … the upstream
+    /// ask is a shed/outbuilding rig with a WEAR axis." That ask arrived as the BUILDING LIFECYCLE PASS,
+    /// which gives every iso building seven construction phases and four states of dereliction — so each
+    /// shed is now a baked 8-facing <c>wharfBuilding</c> build in the decay state this file's own prose
+    /// already described (see <see cref="Sheds"/>), placed through the same
+    /// <c>VillageBuildingCatalog</c> path as the cottage. The data rows did not move; only the sprite
+    /// lookup changed, which is exactly what they were shaped for.</para>
     ///
-    /// <para><b>Repair is NOT here.</b> The owner's "sheds the player can eventually repair" is the
-    /// shipyard/refit vision's gameplay, which is phase-gated (CLAUDE.md rule 8). This file places
-    /// derelict buildings; it grants no mechanic for mending them.</para>
+    /// <para><b>⚠ THE FOOTPRINTS GREW, AND THAT IS MEASURED, NOT INCIDENTAL.</b> The rows were
+    /// hand-sized as 2.6–3.4 m markers; the wharf rig cannot draw a building smaller than
+    /// <b>3.60 × 4.50 m</b> at any point on its size axis (swept 0.0 → 1.0 in the standalone V8 harness),
+    /// and its smallest preset, <c>netShed</c>, is 3.88 × 5.10 m. So
+    /// <see cref="Shed.FootprintRadiusMetres"/> now comes from the BAKE CONTRACT when the build is
+    /// baked, and falls back to the authored size only when it is not — the same
+    /// derive-don't-declare rule the cottage has always followed. <c>StPetersVillageTests</c> re-derives
+    /// the clearing from those numbers and fails with the figure to use, which is what makes growing
+    /// them safe rather than hopeful.</para>
+    ///
+    /// <para>The greybox path is KEPT, not deleted: a working tree with no baked sheets still stands the
+    /// plot up in tinted markers rather than dropping three buildings on the floor, which is what the
+    /// pure EditMode fixtures and a fresh clone both need.</para>
+    ///
+    /// <para><b>Repair is NOT here.</b> The owner's "sheds the player can eventually repair" is
+    /// phase-gated gameplay (CLAUDE.md rule 8) and is logged as its own backlog item —
+    /// <c>backlog/building-lifecycle-gameplay.md</c>, M3. This file places derelict buildings; it grants
+    /// no mechanic for mending them, and adds no def, interaction or save field toward one. What it does
+    /// give that arc is the art it will need: the ladder from <c>ruin</c> back to <c>finished</c> is
+    /// already baked-able for every one of these buildings.</para>
     ///
     /// <para><b>There is no land-ownership system and this file does not invent one.</b> A sweep for
     /// parcel/plot/ownership data found only <c>BoatOwnerDef</c>. "Hers" is therefore a declared
@@ -145,30 +162,68 @@ namespace HiddenHarbours.App.Editor
         //  THE SHEDS
         // =====================================================================================
 
-        /// <summary>One derelict outbuilding: what it was, where it stands, how big it is, and why it is
-        /// there. Data rows, so the day a shed rig is baked this table stops being greybox without moving
-        /// a single building.</summary>
+        /// <summary>One derelict outbuilding: what it was, where it stands, which baked build draws it,
+        /// and why it is there. That day the rows were shaped for arrived on 2026-08-19 — see the class
+        /// remarks.</summary>
         public readonly struct Shed
         {
+            /// <summary>Scene-object name. Unchanged since the greybox rows, and deliberately: it is what
+            /// <c>root.transform.Find(...)</c> looks for in the tests and what the owner sees in the
+            /// hierarchy.</summary>
             public readonly string Key;
+
+            /// <summary>
+            /// The <c>VillageBuildingKit.LifecycleSet</c> build that draws it — a wharf-rig preset in a
+            /// decay state. Empty would mean "greybox only"; nothing declares that today.
+            /// </summary>
+            public readonly string BuildKey;
+
             public readonly Vector2 Position;
+
+            /// <summary>
+            /// The GREYBOX marker's size, and the footprint fallback for a tree with no baked sheets.
+            ///
+            /// <para>⚠ This is NOT the drawn building's footprint any more — see
+            /// <see cref="FootprintRadiusMetres"/>, which prefers the contract. Kept because a plot that
+            /// cannot draw itself still has to reserve ground plausibly, and because it is the number
+            /// the owner originally sized these sheds by.</para>
+            /// </summary>
             public readonly Vector2 SizeMetres;
+
             public readonly string Reason;
 
-            public Shed(string key, Vector2 position, Vector2 sizeMetres, string reason)
+            public Shed(string key, string buildKey, Vector2 position, Vector2 sizeMetres, string reason)
             {
                 Key = key;
+                BuildKey = buildKey;
                 Position = position;
                 SizeMetres = sizeMetres;
                 Reason = reason;
             }
 
+            /// <summary>The baked build that draws this shed, or an invalid placement when the kit has
+            /// not been baked in this working tree.</summary>
+            public VillageBuildingCatalog.Placement Placement =>
+                string.IsNullOrEmpty(BuildKey) ? default : VillageBuildingCatalog.Find(BuildKey);
+
             /// <summary>The ground this shed reserves at any facing — the same half-diagonal circle
             /// <see cref="StPetersVillage.FootprintRadiusMetres(VillageBuildingKit.Entry)"/> reserves a
             /// house with, and for the same reason: a quarter-turned building is deeper than a face-on
-            /// one, so the reservation may not be a rectangle.</summary>
-            public float FootprintRadiusMetres =>
-                0.5f * Mathf.Sqrt(SizeMetres.x * SizeMetres.x + SizeMetres.y * SizeMetres.y);
+            /// one, so the reservation may not be a rectangle.
+            ///
+            /// <para><b>⭐ FROM THE CONTRACT WHEN THERE IS ONE.</b> The rig's own <c>Wd</c>/<c>Ln</c>,
+            /// measured at bake time against the rendered silhouette — not the hand-sized marker, which
+            /// is 1.3 m narrower than the smallest building the rig can draw. Falling back to the marker
+            /// keeps an unbaked tree honest rather than reserving nothing.</para></summary>
+            public float FootprintRadiusMetres
+            {
+                get
+                {
+                    var placement = Placement;
+                    if (placement.IsValid) return StPetersVillage.FootprintRadiusMetres(placement);
+                    return 0.5f * Mathf.Sqrt(SizeMetres.x * SizeMetres.x + SizeMetres.y * SizeMetres.y);
+                }
+            }
         }
 
         /// <summary>
@@ -177,15 +232,32 @@ namespace HiddenHarbours.App.Editor
         /// walking gap, which <c>StPetersGinnyPlotTests</c> re-derives from the contract rather than
         /// trusting these numbers.
         /// </summary>
+        /// <para><b>⚠ ALL THREE MOVED ON 2026-08-19, AND THE MEASUREMENT IS WHY.</b> They were sited as
+        /// 2.6–3.4 m greybox markers (1.70–2.14 m of half-diagonal); the buildings that now draw them
+        /// reserve <b>3.20–3.45 m</b>, so every one of them grew by about 80 % where it stands. Measured
+        /// consequence, from the first test run after the bake: the woodshed came within
+        /// <b>1.98 m</b> of the camper against a 2.00 m walking gap, and the lean-to within
+        /// <b>1.33 m</b>. The camper is a home the owner parks and its lot was threaded through the old
+        /// gaps, so the SHEDS moved rather than the camper:
+        /// woodshed (91,34) → (93,34) · net store (93,23) → (95,22) · lean-to (77,35) → (74,33).
+        /// Each keeps its compass character and its sentence; each now clears the camper by 3.4–14.4 m
+        /// and the cottage by 1.2–4.1 m, and the plot's furthest reach is unchanged at 19.21 m (the
+        /// camper still dominates) against a 20 m clearing.</para>
+        ///
+        /// <para><b>⭐ THE DECAY STATE OF EACH ONE WAS READ OFF THESE SENTENCES, not chosen by eye.</b>
+        /// "The one still standing squarest" is <c>neglected</c>; "the furthest gone" is <c>ruin</c>;
+        /// "its back broken" is <c>collapsing</c>, which is precisely what that rung of the ladder draws
+        /// — a roof slope stove in with the rafters showing. The prose came first and the art was made to
+        /// match it, rather than the other way round.</para>
         public static IReadOnlyList<Shed> Sheds => new[]
         {
-            new Shed("woodshed", new Vector2(91f, 34f), new Vector2(3.0f, 2.4f),
+            new Shed("woodshed", "ginnyWoodshed", new Vector2(93f, 34f), new Vector2(3.0f, 2.4f),
                      "behind the cottage on the north side — the one still standing squarest, because a " +
                      "woodshed is the one you keep the roof on"),
-            new Shed("netStore", new Vector2(93f, 23f), new Vector2(3.4f, 2.6f),
+            new Shed("netStore", "ginnyNetStore", new Vector2(95f, 22f), new Vector2(3.4f, 2.6f),
                      "east, the furthest out — a net store from when this land was worked, and the " +
                      "furthest gone"),
-            new Shed("leanTo", new Vector2(77f, 35f), new Vector2(2.6f, 2.2f),
+            new Shed("leanTo", "ginnyLeanTo", new Vector2(74f, 33f), new Vector2(2.6f, 2.2f),
                      "north-west, first thing you pass walking up — a lean-to with its back broken"),
         };
 
@@ -386,6 +458,16 @@ namespace HiddenHarbours.App.Editor
             freezerGo.AddComponent<YSortSprite>();
 
             // ---- the sheds --------------------------------------------------------------------------
+            // ⭐ REAL BUILDINGS SINCE 2026-08-19 (the lifecycle pass). Each is a baked wharf-rig build in
+            // its own decay state, stood up through the SAME VillageBuildingCatalog path as the cottage
+            // above — so a derelict and a sound building are the same kind of object, sorted the same
+            // way, pivoted the same way, and a future repair mechanic swaps a sprite rather than
+            // swapping a class.
+            //
+            // ⚠ NOT enterable, and that is the kit's own limit rather than an omission: the pass draws
+            // no interior at any phase (a frame is see-through by geometry, not by a cutaway), and a
+            // ruin has no room to bake. StPetersInteriors is deliberately not called here.
+            int shedsDrawn = 0;
             foreach (var shed in Sheds)
             {
                 AssertDry(terrain, shed.Position, shed.Key);
@@ -394,16 +476,44 @@ namespace HiddenHarbours.App.Editor
                 shedGo.transform.SetParent(root.transform, worldPositionStays: false);
                 shedGo.transform.position = new Vector3(shed.Position.x, shed.Position.y, 0f);
 
-                var sr = shedGo.AddComponent<SpriteRenderer>();
-                sr.sprite = greybox;
-                // Weathered board, and DARKER than the cottage: the one thing a flat marker can say about
-                // a derelict building is that nobody has painted it this century.
-                sr.color = new Color(0.42f, 0.38f, 0.32f);
-                sr.sortingOrder = 2;   // pre-Play default only; the YSortSprite below OWNS the order
-                shedGo.transform.localScale = new Vector3(shed.SizeMetres.x, shed.SizeMetres.y, 1f);
+                // An outbuilding faces the house it serves, and the facing is DERIVED from the bake's own
+                // door anchors rather than given as an index — same rule as every village door, so a
+                // re-bake at a different facing count re-derives instead of pointing a doorway at a tree.
+                // Named for the shed, not just `placement`: the cottage above holds one of those in an
+                // enclosing scope, and C# refuses the shadow rather than picking the wrong one.
+                var shedPlacement = shed.Placement;
+                Sprite art = shedPlacement.IsValid
+                    ? VillageBuildingCatalog.LoadFacing(
+                          shedPlacement,
+                          StPetersVillage.FacingToward(shedPlacement.Entry, shed.Position, CottagePos))
+                    : null;
 
-                // A thing you walk around layers by world Y like the rest of the world (ADR 0032).
-                shedGo.AddComponent<YSortSprite>();
+                if (art != null)
+                {
+                    // The pivot IS the ground centre, so the site position is the position. No offset.
+                    VillageBuildingCatalog.Configure(shedGo, shedPlacement, art);
+                    shedsDrawn++;
+                }
+                else
+                {
+                    // The greybox fallback — an unbaked tree, or a sheet that is there but unsliced.
+                    // Weathered board, and DARKER than the cottage: the one thing a flat marker can say
+                    // about a derelict building is that nobody has painted it this century.
+                    var sr = shedGo.AddComponent<SpriteRenderer>();
+                    sr.sprite = greybox;
+                    sr.color = new Color(0.42f, 0.38f, 0.32f);
+                    sr.sortingOrder = 2;   // pre-Play default only; the YSortSprite below OWNS the order
+                    shedGo.transform.localScale = new Vector3(shed.SizeMetres.x, shed.SizeMetres.y, 1f);
+
+                    // A thing you walk around layers by world Y like the rest of the world (ADR 0032).
+                    shedGo.AddComponent<YSortSprite>();
+
+                    Debug.LogWarning(
+                        $"[StPetersGinnyPlot] '{shed.Key}' has no baked art for build '{shed.BuildKey}' " +
+                        "— standing a greybox marker instead. Re-bake (Hidden Harbours ▸ Art ▸ Bake " +
+                        "Village Buildings) and re-slice.");
+                }
+
                 placed++;
             }
 
@@ -417,7 +527,8 @@ namespace HiddenHarbours.App.Editor
             float need = RequiredClearingRadius();
             Debug.Log(
                 $"[StPetersGinnyPlot] Ginny's plot stands at ({CottagePos.x:0.#},{CottagePos.y:0.#}) — " +
-                $"{placed} building(s): the {CottageKey} cottage, {Sheds.Count} derelict shed(s) and the " +
+                $"{placed} building(s): the {CottageKey} cottage, {Sheds.Count} derelict shed(s) " +
+                $"({shedsDrawn} of them in baked art, the rest greybox) and the " +
                 $"camper on its lot at ({StPetersCamperLot.LotPos.x:0.#},{StPetersCamperLot.LotPos.y:0.#})" +
                 $", her freezer at ({FreezerPos.x:0.#},{FreezerPos.y:0.#}), her garden on the south side. " +
                 $"Furthest footprint reaches {need:0.0} m against a {ClearingRadius:0.0} m declared " +
