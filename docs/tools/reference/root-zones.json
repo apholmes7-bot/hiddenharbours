@@ -1,0 +1,104 @@
+{
+  "schema": "hiddenharbours.root-zones/1",
+  "note": "Path-prefix -> landing zone, per scene-writeback-contract.md 1.2. LONGEST PREFIX WINS, because roots mix: StPetersWharf holds an authored-looking Deck and generated Fittings under one name. Zone (c) is deliberately absent — it classifies an EDIT (anything that changes baked pixels), not an entity, so it cannot be a per-entity value. A prefix absent from this table exports no zone at all rather than a guessed one. A prefix with \"resolve\": false is deliberately left out of the rig-resolution map and is NOT counted as an unresolved gap.",
+  "zones": {
+    "a": "an authored table row — a literal list of constants; an edit here is a one-value change to one row",
+    "b": "a generator with no row to edit — scatters, spacing loops and hashed variants; moving one means an exception list the builder does not have yet"
+  },
+  "prefixes": [
+    {
+      "prefix": "CreekHouses",
+      "zone": "a",
+      "evidence": "NineMileCreekMainland.TownLots / ShantyRow — named in writeback 1.2 as zone (a)"
+    },
+    {
+      "prefix": "CreekShops",
+      "zone": "a",
+      "evidence": "the shop table row for each trade"
+    },
+    {
+      "prefix": "CreekPeople",
+      "zone": "a",
+      "evidence": "NineMileCreekPeople — a literal list of new Person(...)"
+    },
+    {
+      "prefix": "IslandVillage",
+      "zone": "a",
+      "evidence": "StPetersVillage.Sites + VillageBuildingKit.M1Set — named in writeback 1.2"
+    },
+    {
+      "prefix": "IslandShops",
+      "zone": "a",
+      "evidence": "StPetersShops.Sites — a literal IReadOnlyList<Site>"
+    },
+    {
+      "prefix": "IslandInhabitants",
+      "zone": "a",
+      "evidence": "StPetersInhabitants — a literal list of new Person(...)"
+    },
+    {
+      "prefix": "IslandWoods",
+      "zone": "b",
+      "evidence": "StPetersWoods.ScatterTrees — noise field, species by hash of position; named in writeback 1.2"
+    },
+    {
+      "prefix": "IslandFlowers",
+      "zone": "b",
+      "evidence": "ScatterFlowers — named in writeback 1.2"
+    },
+    {
+      "prefix": "IslandShrubs",
+      "zone": "b",
+      "evidence": "StPetersShrubs.Scatter — named in writeback 1.2"
+    },
+    {
+      "prefix": "ShorePlants",
+      "zone": "b",
+      "evidence": "StPetersShorePlants scatter; per-site scale is a hash of the cell"
+    },
+    {
+      "prefix": "ClamHoles",
+      "zone": "b",
+      "evidence": "ScatterClamHoles — the builder's own note: the jitter is a stable hash of the grid cell"
+    },
+    {
+      "prefix": "Shoreline",
+      "zone": "b",
+      "evidence": "the shore painter's scatter"
+    },
+    {
+      "prefix": "NineMileCreekWharf/Fittings",
+      "zone": "b",
+      "evidence": "NineMileCreekWharf.Fittings() — a bollard per BerthPos(i), tyres every Nth berth; named in writeback 1.2",
+      "resolve": false,
+      "resolveNote": "derived by rule, not placed from a row: a bollard per BerthPos(i), tyres midway between every TyreEveryNthBerth pair, the ladder in a computed gap in the tyre run. Ruled 2026-08-21 to carry NO family — a family would hand the owner a gesture the next regenerate throws away, and the editor's own WharfIso module auto-places its fittings, so a resolved fitting would double-draw. Absent from the resolution map on purpose: this is not a sheet whose rig link is missing."
+    },
+    {
+      "prefix": "NineMileCreekWharf/Breakwater",
+      "zone": "b",
+      "evidence": "BreakwaterBlocks() — count is floor(width / ArmourWidthMetres), variant by hash; named in writeback 1.2"
+    },
+    {
+      "prefix": "NineMileCreekWharf/ShoreArmour",
+      "zone": "b",
+      "evidence": "ArmourRun() — named in writeback 1.2"
+    },
+    {
+      "prefix": "NineMileCreekDressing",
+      "zone": "b",
+      "evidence": "kit-driven dressing loops over counts and station pools, not a row per object"
+    },
+    {
+      "prefix": "StPetersWharf",
+      "zone": "b",
+      "evidence": "the deck is a computed cell grid and the fittings are laid by BollardSpacing — loops, not rows"
+    },
+    {
+      "prefix": "StPetersWharf/Fittings",
+      "zone": "b",
+      "resolve": false,
+      "evidence": "laid by BollardSpacing loops in StPetersWharf — the same derived class",
+      "resolveNote": "derived by rule, not placed from a row: a bollard per BerthPos(i), tyres midway between every TyreEveryNthBerth pair, the ladder in a computed gap in the tyre run. Ruled 2026-08-21 to carry NO family — a family would hand the owner a gesture the next regenerate throws away, and the editor's own WharfIso module auto-places its fittings, so a resolved fitting would double-draw. Absent from the resolution map on purpose: this is not a sheet whose rig link is missing."
+    }
+  ]
+}

@@ -1,0 +1,1930 @@
+{
+  "schema": "hiddenharbours.scene/1",
+  "generatedBy": "Scene Editor.dc.html (art workspace)",
+  "generatedAt": "2026-08-19T01:35:41.831Z",
+  "region": {
+    "id": "region.nine_mile_creek",
+    "sceneName": "NineMileCreek",
+    "worldCenter": [
+      0,
+      0
+    ],
+    "worldSizeMeters": [
+      160,
+      120
+    ]
+  },
+  "frame": {
+    "units": "metres",
+    "scale_px_per_m": 32,
+    "axes": "+x east, +y north, origin = region centre",
+    "camera": "ADR-0006/0022 — ¾ from the south, elev 40°, orthographic",
+    "sort": "painter, descending world y (north draws first); sortBias breaks ties",
+    "pivots": "cell pivot is top-left origin; unityPivot is normalised bottom-left"
+  },
+  "terrain": {
+    "cellMeters": 1,
+    "cols": 160,
+    "rows": 120,
+    "originNW": [
+      -80,
+      60
+    ],
+    "note": "row 0 = north edge. 0 = no tile (water — never baked, the shader owns it). Layers paint in `order`; a cell's `head` rows sit ABOVE its ground square, `faceH` rows below.",
+    "legend": {
+      "g1": {
+        "layer": "ground",
+        "rig": "ShoreIso2",
+        "rigSource": "Art/shoreIsoKitRig2.js",
+        "material": "grass"
+      },
+      "g2": {
+        "layer": "ground",
+        "rig": "ShoreIso2",
+        "rigSource": "Art/shoreIsoKitRig2.js",
+        "material": "marram"
+      },
+      "g3": {
+        "layer": "ground",
+        "rig": "ShoreIso2",
+        "rigSource": "Art/shoreIsoKitRig2.js",
+        "material": "sand"
+      },
+      "g4": {
+        "layer": "ground",
+        "rig": "ShoreIso2",
+        "rigSource": "Art/shoreIsoKitRig2.js",
+        "material": "ripple"
+      },
+      "g5": {
+        "layer": "ground",
+        "rig": "ShoreIso2",
+        "rigSource": "Art/shoreIsoKitRig2.js",
+        "material": "shingle"
+      },
+      "g6": {
+        "layer": "ground",
+        "rig": "ShoreIso2",
+        "rigSource": "Art/shoreIsoKitRig2.js",
+        "material": "shelf"
+      },
+      "r1": {
+        "layer": "road",
+        "rig": "RoadKit3",
+        "rigSource": "Art/roadPathRig3.js",
+        "material": "dirt"
+      },
+      "r2": {
+        "layer": "road",
+        "rig": "RoadKit3",
+        "rigSource": "Art/roadPathRig3.js",
+        "material": "oiledDirt"
+      },
+      "r3": {
+        "layer": "road",
+        "rig": "RoadKit3",
+        "rigSource": "Art/roadPathRig3.js",
+        "material": "gravel"
+      },
+      "r4": {
+        "layer": "road",
+        "rig": "RoadKit3",
+        "rigSource": "Art/roadPathRig3.js",
+        "material": "shell"
+      },
+      "r5": {
+        "layer": "road",
+        "rig": "RoadKit3",
+        "rigSource": "Art/roadPathRig3.js",
+        "material": "sand"
+      },
+      "r6": {
+        "layer": "road",
+        "rig": "RoadKit3",
+        "rigSource": "Art/roadPathRig3.js",
+        "material": "concrete"
+      },
+      "r7": {
+        "layer": "road",
+        "rig": "RoadKit3",
+        "rigSource": "Art/roadPathRig3.js",
+        "material": "apron"
+      },
+      "r8": {
+        "layer": "road",
+        "rig": "RoadKit3",
+        "rigSource": "Art/roadPathRig3.js",
+        "material": "asphalt"
+      },
+      "r9": {
+        "layer": "road",
+        "rig": "RoadKit3",
+        "rigSource": "Art/roadPathRig3.js",
+        "material": "cobble"
+      },
+      "r10": {
+        "layer": "road",
+        "rig": "RoadKit3",
+        "rigSource": "Art/roadPathRig3.js",
+        "material": "brick"
+      },
+      "r11": {
+        "layer": "road",
+        "rig": "RoadKit3",
+        "rigSource": "Art/roadPathRig3.js",
+        "material": "boardwalk"
+      },
+      "c1": {
+        "layer": "cliff",
+        "rig": "CliffRig",
+        "rigSource": "Art/cliffRig.js",
+        "material": "sandstone"
+      },
+      "c2": {
+        "layer": "cliff",
+        "rig": "CliffRig",
+        "rigSource": "Art/cliffRig.js",
+        "material": "till"
+      },
+      "c3": {
+        "layer": "cliff",
+        "rig": "CliffRig",
+        "rigSource": "Art/cliffRig.js",
+        "material": "basalt"
+      }
+    },
+    "layers": {
+      "ground": {
+        "code": "g",
+        "order": 0,
+        "label": "Ground",
+        "rig": "ShoreIso2",
+        "cell": {
+          "w": 32,
+          "head": 0,
+          "plan": 32,
+          "faceH": 0
+        },
+        "layerOpts": {},
+        "rle": [
+          [
+            0,
+            5492
+          ],
+          [
+            "g1",
+            56
+          ],
+          [
+            0,
+            104
+          ],
+          [
+            "g1",
+            56
+          ],
+          [
+            0,
+            104
+          ],
+          [
+            "g1",
+            56
+          ],
+          [
+            0,
+            104
+          ],
+          [
+            "g1",
+            56
+          ],
+          [
+            0,
+            104
+          ],
+          [
+            "g1",
+            56
+          ],
+          [
+            0,
+            104
+          ],
+          [
+            "g1",
+            56
+          ],
+          [
+            0,
+            104
+          ],
+          [
+            "g1",
+            56
+          ],
+          [
+            0,
+            104
+          ],
+          [
+            "g1",
+            56
+          ],
+          [
+            0,
+            104
+          ],
+          [
+            "g1",
+            56
+          ],
+          [
+            0,
+            104
+          ],
+          [
+            "g1",
+            56
+          ],
+          [
+            0,
+            104
+          ],
+          [
+            "g1",
+            56
+          ],
+          [
+            0,
+            104
+          ],
+          [
+            "g1",
+            56
+          ],
+          [
+            0,
+            104
+          ],
+          [
+            "g1",
+            56
+          ],
+          [
+            0,
+            104
+          ],
+          [
+            "g1",
+            56
+          ],
+          [
+            0,
+            104
+          ],
+          [
+            "g1",
+            56
+          ],
+          [
+            0,
+            104
+          ],
+          [
+            "g1",
+            56
+          ],
+          [
+            0,
+            104
+          ],
+          [
+            "g1",
+            56
+          ],
+          [
+            0,
+            104
+          ],
+          [
+            "g1",
+            56
+          ],
+          [
+            0,
+            104
+          ],
+          [
+            "g1",
+            56
+          ],
+          [
+            0,
+            104
+          ],
+          [
+            "g1",
+            56
+          ],
+          [
+            0,
+            104
+          ],
+          [
+            "g1",
+            56
+          ],
+          [
+            0,
+            104
+          ],
+          [
+            "g1",
+            56
+          ],
+          [
+            0,
+            104
+          ],
+          [
+            "g1",
+            56
+          ],
+          [
+            0,
+            104
+          ],
+          [
+            "g1",
+            56
+          ],
+          [
+            0,
+            104
+          ],
+          [
+            "g1",
+            56
+          ],
+          [
+            0,
+            104
+          ],
+          [
+            "g3",
+            56
+          ],
+          [
+            0,
+            104
+          ],
+          [
+            "g3",
+            56
+          ],
+          [
+            0,
+            104
+          ],
+          [
+            "g3",
+            56
+          ],
+          [
+            0,
+            104
+          ],
+          [
+            "g3",
+            56
+          ],
+          [
+            0,
+            104
+          ],
+          [
+            "g3",
+            56
+          ],
+          [
+            0,
+            104
+          ],
+          [
+            "g3",
+            56
+          ],
+          [
+            0,
+            104
+          ],
+          [
+            "g3",
+            56
+          ],
+          [
+            0,
+            104
+          ],
+          [
+            "g3",
+            56
+          ],
+          [
+            0,
+            104
+          ],
+          [
+            "g3",
+            56
+          ],
+          [
+            0,
+            104
+          ],
+          [
+            "g3",
+            56
+          ],
+          [
+            0,
+            104
+          ],
+          [
+            "g3",
+            56
+          ],
+          [
+            0,
+            104
+          ],
+          [
+            "g3",
+            56
+          ],
+          [
+            0,
+            104
+          ],
+          [
+            "g4",
+            56
+          ],
+          [
+            0,
+            104
+          ],
+          [
+            "g4",
+            56
+          ],
+          [
+            0,
+            104
+          ],
+          [
+            "g4",
+            56
+          ],
+          [
+            0,
+            104
+          ],
+          [
+            "g4",
+            56
+          ],
+          [
+            0,
+            104
+          ],
+          [
+            "g4",
+            56
+          ],
+          [
+            0,
+            104
+          ],
+          [
+            "g4",
+            56
+          ],
+          [
+            0,
+            104
+          ],
+          [
+            "g4",
+            56
+          ],
+          [
+            0,
+            104
+          ],
+          [
+            "g4",
+            56
+          ],
+          [
+            0,
+            6612
+          ]
+        ]
+      },
+      "road": {
+        "code": "r",
+        "order": 1,
+        "label": "Road & path",
+        "rig": "RoadKit3",
+        "cell": {
+          "w": 32,
+          "head": 10,
+          "plan": 32,
+          "faceH": 22
+        },
+        "layerOpts": {
+          "profile": "path"
+        },
+        "rle": [
+          [
+            0,
+            4860
+          ],
+          [
+            "r3",
+            4
+          ],
+          [
+            0,
+            156
+          ],
+          [
+            "r3",
+            4
+          ],
+          [
+            0,
+            156
+          ],
+          [
+            "r3",
+            5
+          ],
+          [
+            0,
+            155
+          ],
+          [
+            "r3",
+            5
+          ],
+          [
+            0,
+            156
+          ],
+          [
+            "r3",
+            5
+          ],
+          [
+            0,
+            155
+          ],
+          [
+            "r3",
+            5
+          ],
+          [
+            0,
+            156
+          ],
+          [
+            "r3",
+            5
+          ],
+          [
+            0,
+            155
+          ],
+          [
+            "r3",
+            5
+          ],
+          [
+            0,
+            156
+          ],
+          [
+            "r3",
+            5
+          ],
+          [
+            0,
+            155
+          ],
+          [
+            "r3",
+            5
+          ],
+          [
+            0,
+            156
+          ],
+          [
+            "r3",
+            5
+          ],
+          [
+            0,
+            155
+          ],
+          [
+            "r3",
+            5
+          ],
+          [
+            0,
+            156
+          ],
+          [
+            "r3",
+            5
+          ],
+          [
+            0,
+            155
+          ],
+          [
+            "r3",
+            5
+          ],
+          [
+            0,
+            156
+          ],
+          [
+            "r3",
+            5
+          ],
+          [
+            0,
+            155
+          ],
+          [
+            "r3",
+            5
+          ],
+          [
+            0,
+            156
+          ],
+          [
+            "r3",
+            5
+          ],
+          [
+            0,
+            155
+          ],
+          [
+            "r3",
+            5
+          ],
+          [
+            0,
+            156
+          ],
+          [
+            "r3",
+            5
+          ],
+          [
+            0,
+            155
+          ],
+          [
+            "r3",
+            5
+          ],
+          [
+            0,
+            156
+          ],
+          [
+            "r3",
+            5
+          ],
+          [
+            0,
+            155
+          ],
+          [
+            "r3",
+            5
+          ],
+          [
+            0,
+            156
+          ],
+          [
+            "r3",
+            5
+          ],
+          [
+            0,
+            155
+          ],
+          [
+            "r3",
+            5
+          ],
+          [
+            0,
+            156
+          ],
+          [
+            "r3",
+            5
+          ],
+          [
+            0,
+            155
+          ],
+          [
+            "r3",
+            5
+          ],
+          [
+            0,
+            156
+          ],
+          [
+            "r3",
+            5
+          ],
+          [
+            0,
+            155
+          ],
+          [
+            "r3",
+            5
+          ],
+          [
+            0,
+            156
+          ],
+          [
+            "r3",
+            5
+          ],
+          [
+            0,
+            155
+          ],
+          [
+            "r3",
+            5
+          ],
+          [
+            0,
+            156
+          ],
+          [
+            "r3",
+            5
+          ],
+          [
+            0,
+            155
+          ],
+          [
+            "r3",
+            5
+          ],
+          [
+            0,
+            156
+          ],
+          [
+            "r3",
+            5
+          ],
+          [
+            0,
+            155
+          ],
+          [
+            "r3",
+            5
+          ],
+          [
+            0,
+            156
+          ],
+          [
+            "r3",
+            5
+          ],
+          [
+            0,
+            155
+          ],
+          [
+            "r3",
+            5
+          ],
+          [
+            0,
+            156
+          ],
+          [
+            "r3",
+            4
+          ],
+          [
+            0,
+            156
+          ],
+          [
+            "r3",
+            4
+          ],
+          [
+            0,
+            8078
+          ]
+        ]
+      },
+      "cliff": {
+        "code": "c",
+        "order": 3,
+        "label": "Cliff",
+        "rig": "CliffRig",
+        "cell": {
+          "w": 32,
+          "head": 64,
+          "plan": 32,
+          "faceH": 0
+        },
+        "layerOpts": {
+          "rows": 3,
+          "aspect": "S",
+          "step": "base"
+        },
+        "rle": [
+          [
+            0,
+            5508
+          ],
+          [
+            "c1",
+            3
+          ],
+          [
+            0,
+            150
+          ],
+          [
+            "c1",
+            8
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            "c1",
+            7
+          ],
+          [
+            0,
+            140
+          ],
+          [
+            "c1",
+            5
+          ],
+          [
+            0,
+            14
+          ],
+          [
+            "c1",
+            4
+          ],
+          [
+            0,
+            134
+          ],
+          [
+            "c1",
+            4
+          ],
+          [
+            0,
+            21
+          ],
+          [
+            "c1",
+            5
+          ],
+          [
+            0,
+            130
+          ],
+          [
+            "c1",
+            1
+          ],
+          [
+            0,
+            28
+          ],
+          [
+            "c1",
+            4
+          ],
+          [
+            0,
+            159
+          ],
+          [
+            "c1",
+            4
+          ],
+          [
+            0,
+            159
+          ],
+          [
+            "c1",
+            3
+          ],
+          [
+            0,
+            159
+          ],
+          [
+            "c1",
+            4
+          ],
+          [
+            0,
+            159
+          ],
+          [
+            "c1",
+            3
+          ],
+          [
+            0,
+            159
+          ],
+          [
+            "c1",
+            4
+          ],
+          [
+            0,
+            159
+          ],
+          [
+            "c1",
+            4
+          ],
+          [
+            0,
+            159
+          ],
+          [
+            "c1",
+            1
+          ],
+          [
+            0,
+            11897
+          ]
+        ],
+        "pieces": {
+          "note": "per-cell ledge piece laid by cliff lines; 0 = autotile from neighbours",
+          "legend": {
+            "1": "faceS",
+            "2": "cornSW",
+            "3": "cornSE",
+            "4": "innSW",
+            "5": "innSE",
+            "6": "sideW",
+            "7": "sideE",
+            "8": "diagSW",
+            "9": "diagSE",
+            "10": "roundSW",
+            "11": "roundSE",
+            "12": "notch"
+          },
+          "rle": [
+            [
+              0,
+              5508
+            ],
+            [
+              8,
+              1
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              9,
+              1
+            ],
+            [
+              0,
+              150
+            ],
+            [
+              8,
+              1
+            ],
+            [
+              1,
+              6
+            ],
+            [
+              8,
+              1
+            ],
+            [
+              0,
+              1
+            ],
+            [
+              9,
+              1
+            ],
+            [
+              1,
+              5
+            ],
+            [
+              9,
+              1
+            ],
+            [
+              0,
+              140
+            ],
+            [
+              8,
+              1
+            ],
+            [
+              1,
+              3
+            ],
+            [
+              8,
+              1
+            ],
+            [
+              0,
+              14
+            ],
+            [
+              9,
+              1
+            ],
+            [
+              1,
+              2
+            ],
+            [
+              9,
+              1
+            ],
+            [
+              0,
+              134
+            ],
+            [
+              11,
+              1
+            ],
+            [
+              1,
+              2
+            ],
+            [
+              8,
+              1
+            ],
+            [
+              0,
+              21
+            ],
+            [
+              9,
+              1
+            ],
+            [
+              1,
+              3
+            ],
+            [
+              9,
+              1
+            ],
+            [
+              0,
+              130
+            ],
+            [
+              7,
+              1
+            ],
+            [
+              0,
+              28
+            ],
+            [
+              9,
+              1
+            ],
+            [
+              1,
+              2
+            ],
+            [
+              9,
+              1
+            ],
+            [
+              0,
+              159
+            ],
+            [
+              9,
+              1
+            ],
+            [
+              1,
+              2
+            ],
+            [
+              9,
+              1
+            ],
+            [
+              0,
+              159
+            ],
+            [
+              9,
+              1
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              9,
+              1
+            ],
+            [
+              0,
+              159
+            ],
+            [
+              9,
+              1
+            ],
+            [
+              1,
+              2
+            ],
+            [
+              9,
+              1
+            ],
+            [
+              0,
+              159
+            ],
+            [
+              9,
+              1
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              9,
+              1
+            ],
+            [
+              0,
+              159
+            ],
+            [
+              9,
+              1
+            ],
+            [
+              1,
+              2
+            ],
+            [
+              9,
+              1
+            ],
+            [
+              0,
+              159
+            ],
+            [
+              9,
+              1
+            ],
+            [
+              1,
+              2
+            ],
+            [
+              10,
+              1
+            ],
+            [
+              0,
+              159
+            ],
+            [
+              6,
+              1
+            ],
+            [
+              0,
+              11897
+            ]
+          ]
+        }
+      }
+    }
+  },
+  "entities": [
+    {
+      "id": "dory_001",
+      "family": "dory",
+      "group": "Boats",
+      "rig": "DoryIso",
+      "rigSource": "Art/doryIsoRig.js",
+      "call": {
+        "fn": "render",
+        "args": [
+          "dir",
+          "opts"
+        ],
+        "opts": {
+          "build": "oars"
+        }
+      },
+      "pos": [
+        3,
+        -14
+      ],
+      "facing": "SE",
+      "facingIndex": 3,
+      "flipX": false,
+      "sortBias": 0,
+      "cell": {
+        "w": 160,
+        "h": 156,
+        "pivot": [
+          80,
+          88
+        ],
+        "pxPerM": 32,
+        "unityPivot": [
+          0.5,
+          0.435897
+        ]
+      },
+      "gameplaySidecar": "Art/gameplay/doryIsoRig.gameplay.json"
+    },
+    {
+      "id": "lobsterboat_002",
+      "family": "lobsterboat",
+      "group": "Boats",
+      "rig": "LobsterBoatIso",
+      "rigSource": "Art/lobsterBoatIsoRig.js",
+      "call": {
+        "fn": "render",
+        "args": [
+          "dir",
+          "opts"
+        ],
+        "opts": {}
+      },
+      "pos": [
+        11,
+        -19
+      ],
+      "facing": "SE",
+      "facingIndex": 3,
+      "flipX": false,
+      "sortBias": 0,
+      "cell": {
+        "w": 456,
+        "h": 420,
+        "pivot": [
+          228,
+          258
+        ],
+        "pxPerM": 32,
+        "unityPivot": [
+          0.5,
+          0.385714
+        ]
+      },
+      "gameplaySidecar": "Art/gameplay/lobsterBoatIsoRig.gameplay.json"
+    },
+    {
+      "id": "character_003",
+      "family": "character",
+      "group": "Characters",
+      "rig": "CharacterIso6",
+      "rigSource": "Art/characterIsoRig6.js",
+      "call": {
+        "fn": "render",
+        "args": [
+          "dir",
+          "opts"
+        ],
+        "opts": {
+          "build": "fisher"
+        }
+      },
+      "pos": [
+        -6,
+        5
+      ],
+      "facing": "S",
+      "facingIndex": 4,
+      "flipX": false,
+      "sortBias": 0,
+      "cell": {
+        "w": 64,
+        "h": 92,
+        "pivot": [
+          32,
+          82
+        ],
+        "pxPerM": 32,
+        "unityPivot": [
+          0.5,
+          0.108696
+        ]
+      }
+    },
+    {
+      "id": "pot_004",
+      "family": "pot",
+      "group": "Props",
+      "rig": "LobsterPots",
+      "rigSource": "Art/potRig.js",
+      "call": {
+        "fn": "render",
+        "args": [
+          "opts"
+        ],
+        "opts": {
+          "kind": "wood"
+        }
+      },
+      "pos": [
+        -9,
+        7
+      ],
+      "facing": null,
+      "facingIndex": null,
+      "flipX": false,
+      "sortBias": 0,
+      "cell": {
+        "w": 44,
+        "h": 36,
+        "pivot": [
+          22,
+          32
+        ],
+        "pxPerM": 32,
+        "unityPivot": [
+          0.5,
+          0.111111
+        ]
+      }
+    },
+    {
+      "id": "rock_005",
+      "family": "rock",
+      "group": "Nature",
+      "rig": "RockIso",
+      "rigSource": "Art/rockIsoRig.js",
+      "call": {
+        "fn": "render",
+        "args": [
+          "opts"
+        ],
+        "opts": {
+          "key": "Erratic",
+          "variant": 0,
+          "stone": "sandstone",
+          "dress": 0,
+          "tide": "dry"
+        }
+      },
+      "pos": [
+        15,
+        -3
+      ],
+      "facing": null,
+      "facingIndex": null,
+      "flipX": false,
+      "sortBias": 0,
+      "cell": {
+        "w": 52,
+        "h": 44,
+        "pivot": [
+          26,
+          44
+        ],
+        "pxPerM": 32,
+        "unityPivot": [
+          0.5,
+          0
+        ]
+      },
+      "footprint": {
+        "footprint": {
+          "rx": 0.45,
+          "ry": 0.33,
+          "ground": {
+            "x": 26,
+            "y": 34
+          }
+        },
+        "perch": {
+          "x": 24,
+          "y": 16,
+          "zM": 0.57,
+          "flat": false
+        },
+        "snags": [
+          {
+            "x": 22,
+            "y": 17,
+            "zM": 0.45
+          },
+          {
+            "x": 40,
+            "y": 27,
+            "zM": 0.27
+          },
+          {
+            "x": 11,
+            "y": 31,
+            "zM": 0.21
+          }
+        ],
+        "hazard": null,
+        "pool": null,
+        "weedLine": {
+          "y": 29,
+          "zM": 0.21
+        },
+        "pivot": {
+          "x": 26,
+          "y": 34
+        }
+      }
+    }
+  ],
+  "cliffLines": [
+    {
+      "id": "cliffline_001",
+      "layer": "cliff",
+      "material": "sandstone",
+      "landSide": "auto",
+      "corners": "round",
+      "closed": false,
+      "curve": {
+        "kind": "catmull-rom",
+        "uniform": true,
+        "tangentScale": 0.5
+      },
+      "nodes": [
+        [
+          -26,
+          22
+        ],
+        [
+          -10,
+          25
+        ],
+        [
+          6,
+          21
+        ],
+        [
+          22,
+          15
+        ]
+      ],
+      "tiles": 64
+    }
+  ],
+  "paths": [
+    {
+      "id": "path_001",
+      "layer": "road",
+      "material": "gravel",
+      "widthMeters": 3,
+      "closed": false,
+      "curve": {
+        "kind": "catmull-rom",
+        "uniform": true,
+        "tangentScale": 0.5
+      },
+      "nodes": [
+        [
+          -18,
+          28
+        ],
+        [
+          -11,
+          14
+        ],
+        [
+          -5,
+          2
+        ],
+        [
+          0,
+          -8
+        ]
+      ],
+      "polyline": [
+        [
+          -18,
+          28
+        ],
+        [
+          -17.88,
+          27.77
+        ],
+        [
+          -17.75,
+          27.51
+        ],
+        [
+          -17.61,
+          27.22
+        ],
+        [
+          -17.45,
+          26.91
+        ],
+        [
+          -17.29,
+          26.57
+        ],
+        [
+          -17.11,
+          26.21
+        ],
+        [
+          -16.92,
+          25.83
+        ],
+        [
+          -16.72,
+          25.44
+        ],
+        [
+          -16.51,
+          25.02
+        ],
+        [
+          -16.3,
+          24.59
+        ],
+        [
+          -16.07,
+          24.15
+        ],
+        [
+          -15.84,
+          23.69
+        ],
+        [
+          -15.61,
+          23.22
+        ],
+        [
+          -15.37,
+          22.74
+        ],
+        [
+          -15.12,
+          22.25
+        ],
+        [
+          -14.88,
+          21.75
+        ],
+        [
+          -14.62,
+          21.25
+        ],
+        [
+          -14.37,
+          20.74
+        ],
+        [
+          -14.12,
+          20.23
+        ],
+        [
+          -13.86,
+          19.72
+        ],
+        [
+          -13.6,
+          19.21
+        ],
+        [
+          -13.35,
+          18.7
+        ],
+        [
+          -13.1,
+          18.19
+        ],
+        [
+          -12.84,
+          17.69
+        ],
+        [
+          -12.6,
+          17.19
+        ],
+        [
+          -12.35,
+          16.7
+        ],
+        [
+          -12.11,
+          16.22
+        ],
+        [
+          -11.88,
+          15.75
+        ],
+        [
+          -11.65,
+          15.29
+        ],
+        [
+          -11.42,
+          14.85
+        ],
+        [
+          -11.21,
+          14.41
+        ],
+        [
+          -11,
+          14
+        ],
+        [
+          -10.76,
+          13.52
+        ],
+        [
+          -10.52,
+          13.04
+        ],
+        [
+          -10.28,
+          12.57
+        ],
+        [
+          -10.05,
+          12.1
+        ],
+        [
+          -9.81,
+          11.63
+        ],
+        [
+          -9.58,
+          11.16
+        ],
+        [
+          -9.35,
+          10.7
+        ],
+        [
+          -9.12,
+          10.24
+        ],
+        [
+          -8.89,
+          9.78
+        ],
+        [
+          -8.66,
+          9.32
+        ],
+        [
+          -8.43,
+          8.87
+        ],
+        [
+          -8.21,
+          8.42
+        ],
+        [
+          -7.99,
+          7.97
+        ],
+        [
+          -7.76,
+          7.53
+        ],
+        [
+          -7.54,
+          7.09
+        ],
+        [
+          -7.32,
+          6.65
+        ],
+        [
+          -7.11,
+          6.21
+        ],
+        [
+          -6.89,
+          5.78
+        ],
+        [
+          -6.67,
+          5.35
+        ],
+        [
+          -6.46,
+          4.92
+        ],
+        [
+          -6.25,
+          4.49
+        ],
+        [
+          -6.04,
+          4.07
+        ],
+        [
+          -5.83,
+          3.65
+        ],
+        [
+          -5.62,
+          3.23
+        ],
+        [
+          -5.41,
+          2.82
+        ],
+        [
+          -5.2,
+          2.41
+        ],
+        [
+          -5,
+          2
+        ],
+        [
+          -4.76,
+          1.52
+        ],
+        [
+          -4.51,
+          1.02
+        ],
+        [
+          -4.26,
+          0.52
+        ],
+        [
+          -4.01,
+          0.02
+        ],
+        [
+          -3.75,
+          -0.49
+        ],
+        [
+          -3.5,
+          -1
+        ],
+        [
+          -3.24,
+          -1.51
+        ],
+        [
+          -2.99,
+          -2.02
+        ],
+        [
+          -2.74,
+          -2.52
+        ],
+        [
+          -2.49,
+          -3.02
+        ],
+        [
+          -2.25,
+          -3.51
+        ],
+        [
+          -2.01,
+          -3.99
+        ],
+        [
+          -1.77,
+          -4.45
+        ],
+        [
+          -1.55,
+          -4.91
+        ],
+        [
+          -1.33,
+          -5.34
+        ],
+        [
+          -1.12,
+          -5.76
+        ],
+        [
+          -0.92,
+          -6.15
+        ],
+        [
+          -0.74,
+          -6.53
+        ],
+        [
+          -0.56,
+          -6.88
+        ],
+        [
+          -0.4,
+          -7.2
+        ],
+        [
+          -0.25,
+          -7.5
+        ],
+        [
+          -0.12,
+          -7.77
+        ],
+        [
+          0,
+          -8
+        ]
+      ],
+      "tiles": 196
+    }
+  ],
+  "collision": {
+    "note": "Derived, not authored. Boat hulls resolve through their gameplay sidecar; rig-measured footprints are inline on the entity.",
+    "sidecars": [
+      "Art/gameplay/doryIsoRig.gameplay.json",
+      "Art/gameplay/lobsterBoatIsoRig.gameplay.json"
+    ]
+  },
+  "stats": {
+    "entities": 5,
+    "tiles": {
+      "ground": 2520,
+      "road": 196,
+      "cliff": 64
+    }
+  }
+}
