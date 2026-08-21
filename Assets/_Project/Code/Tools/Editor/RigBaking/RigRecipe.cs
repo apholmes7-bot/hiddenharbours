@@ -828,11 +828,15 @@ namespace HiddenHarbours.Tools.RigBaking
                     var items = list.Cast<object>().ToList();
                     if (items.Count == 0) { sb.Append("[]"); return; }
                     sb.Append("[\n");
-                    for (int i = 0; i < items.Count; i++)
+                    // `n`, not `i` — `case int i:` above declares a pattern variable of that name in
+                    // this same switch. The spec scopes it to its own section, but a name collision
+                    // across switch sections is a compile error in some readings and this costs a
+                    // letter to avoid.
+                    for (int n = 0; n < items.Count; n++)
                     {
                         Indent(sb, depth + 1);
-                        WriteValue(sb, depth + 1, items[i]);
-                        if (i < items.Count - 1) sb.Append(',');
+                        WriteValue(sb, depth + 1, items[n]);
+                        if (n < items.Count - 1) sb.Append(',');
                         sb.Append('\n');
                     }
                     Indent(sb, depth);
