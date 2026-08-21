@@ -183,6 +183,35 @@ hashes against the working tree, the prerequisite closure against `RigCatalog`, 
 > the committed containers, and nothing outside Unity reproduces its zlib window and filter choices —
 > nor should it. What a recipe has to reproduce is the **image**.
 
+### 4.1 A third check, with neither the rigs nor the pixels
+
+```
+node tools/rig-recipes/check-slices.mjs
+```
+
+The committed `<stem>.png.meta` carries the **slicer's own view** of the sheet — one sprite rect per
+cell, plus the normalised pivot. `check-slices.mjs` holds the recipe to it: one rect per cell the
+axes produce, every rect exactly `pack.cellW × pack.cellH`, the rects spanning exactly
+`pack.sheetW × pack.sheetH`, and the sprite pivot equal to ADR 0026's
+`(pivotX/cellW, (cellH − pivotY)/cellH)` of the recipe's.
+
+Two independently-committed artefacts describing one sheet, made to agree. It **cannot** tell you the
+pixels are right — only §4 does that — but it needs **no rig and no LFS object**, so it runs on any
+checkout, and a recipe that disagrees with the slicer beside it is wrong whatever the pixels say. It
+catches a one-pixel pivot error.
+
+### 4.2 Where the ledger's facts came from
+
+```
+node tools/rig-recipes/bake-ledger.mjs --provenance
+```
+
+Prints, per kit, `path:line` for every fact a plan was scraped from — **and the cited line itself**,
+so the report is self-verifying. A backfilled recipe's whole claim is that it was re-derived from the
+baker's own code rather than transcribed beside it, and a claim like that is worth exactly as much as
+its citation. The citations are **computed**, never written down: a line number in prose is stale the
+first time somebody adds a paragraph of comment above the table.
+
 **Writing the ledger** goes through the same compare, per kit:
 
 ```
@@ -193,9 +222,16 @@ node tools/rig-recipes/bake-ledger.mjs --kit camper --write   # write iff every 
 A kit where one sheet disagrees is **refused whole** and named in the report. A ledger that is right
 about 83 of 84 sheets is worse than none, because nothing downstream can tell which one is the lie.
 
-On a checkout without the LFS objects, the sheets are ~130-byte pointers and every compare would
-"fail" for a reason that has nothing to do with the recipe; the tools resolve those through the
-repo's own LFS endpoint into a cache outside the working tree (`git lfs pull` makes it a no-op).
+On a checkout without the LFS objects — the cloud lanes — the sheets are ~130-byte pointers and every
+compare would "fail" for a reason that has nothing to do with the recipe. `lib/lfs.mjs` resolves
+those through the repo's own LFS endpoint into a cache **outside** the working tree; `git lfs pull`
+makes it a no-op.
+
+**That path does not weaken the proof, and the reason is content addressing.** An LFS pointer's
+`oid sha256` *is* the sha256 of the content, the pointer is committed text, and the fetched blob is
+re-hashed against it before it is cached — a mismatch throws rather than being compared. So the bytes
+the compare sees are the committed sheet's bytes or the run refuses. Demonstrated, not asserted: a
+cache poisoned with a different (valid, committed) sheet under the right oid is caught.
 
 ---
 

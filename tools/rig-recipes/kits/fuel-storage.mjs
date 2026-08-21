@@ -3,7 +3,7 @@
 // Every fact below is SCRAPED from the baker's own source, not retyped beside it:
 // FuelStorageKit states the axes and the tunables, FuelSheetBaker states the call. The two
 // transcribed lines are the sheet-key rule and the grid, and the byte-compare is what proves them.
-import { constant, array, dictionary } from '../lib/csharp.mjs';
+import { constant, array, dictionary, cite, citeLine } from '../lib/csharp.mjs';
 import { dirForCell } from '../lib/rigHost.mjs';
 
 const KIT = 'Assets/_Project/Art/Editor/FuelStorageKit.cs';
@@ -13,6 +13,24 @@ export default {
   id: 'fuel-storage',
   baker: 'FuelSheetBaker',
   outputFolder: 'Assets/_Project/Art/Sprites/FuelStorage/Iso',
+
+  /** Where every fact in a plan comes from — computed, so the citation cannot go stale. */
+  provenance() {
+    const B = 'Assets/_Project/Code/Tools/Editor/RigBaking/FuelSheetBaker.cs';
+    return [
+      ['the sheet list (type × size × grade)', cite(KIT, 'Builds')],
+      ['sizes per vessel', cite(KIT, 'Sizes')],
+      ['grades', cite(KIT, 'Grades')],
+      ['the fill ladder', cite(KIT, 'Fills')],
+      ['which vessels are carried', cite(KIT, 'CarryTypes')],
+      ['which hold no volume', cite(KIT, 'HoldsNothing')],
+      ['facings (carry / store)', `${cite(KIT, 'CarryFacings')}, ${cite(KIT, 'StoreFacings')}`],
+      ['the baked wear', cite(KIT, 'BakedWear')],
+      ['carriables bake at rest', cite(KIT, 'BakeCarryTypesAtRest')],
+      ['the opts dict', cite(B, 'OptsOf')],
+      ['the grid (cols = facings, rows = fills)', citeLine(B, /int cols = facings, rows = fills\.Count/)],
+    ];
+  },
 
   plans({ catalog }) {
     const convention = catalog['fuel'].convention;

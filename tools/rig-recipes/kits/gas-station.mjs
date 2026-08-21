@@ -1,7 +1,7 @@
 // The gas-station kit — 21 exterior pieces plus 2 sales floors = 23 sheets, over TWO globals with
 // two different argument orders (StationIso is render(type, dir, opts); StationInterior is
 // render(size, dir, opts), and neither throws when handed the other's shape).
-import { constant, array, dictionary } from '../lib/csharp.mjs';
+import { constant, array, dictionary, cite, citeLine } from '../lib/csharp.mjs';
 import { dirForCell } from '../lib/rigHost.mjs';
 
 const KIT = 'Assets/_Project/Art/Editor/GasStationKit.cs';
@@ -10,6 +10,21 @@ export default {
   id: 'gas-station',
   baker: 'GasStationSheetBaker',
   outputFolder: 'Assets/_Project/Art/Sprites/GasStation/Iso',
+
+  provenance() {
+    const B = 'Assets/_Project/Code/Tools/Editor/RigBaking/GasStationSheetBaker.cs';
+    return [
+      ['the sheet list (21 pieces + 2 sales floors)', cite(KIT, 'Builds')],
+      ['sizes per piece', cite(KIT, 'Sizes')],
+      ['the interior sizes', cite(KIT, 'InteriorSizes')],
+      ['the 180° fold', `${cite(KIT, 'Fold180Types')}, ${cite(KIT, 'FoldedFacings')}`],
+      ['facings', cite(KIT, 'Facings')],
+      ['the opts dict', cite(B, 'OptsOf')],
+      ['the two argument orders', citeLine(B, /InteriorGlobalName\}\.render/)],
+      ['the column solver', `${cite(KIT, 'Columns')} (called at ${citeLine(B, /int cols = GasStationKit\.Columns/)})`],
+      ['the import cap', cite(KIT, 'ImportSizeCap')],
+    ];
+  },
 
   plans({ catalog }) {
     const convention = catalog['gasStation'].convention;

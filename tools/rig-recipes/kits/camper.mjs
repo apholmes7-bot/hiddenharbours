@@ -5,7 +5,7 @@
 //     off for an `enter` one, because the Clipper's default awning stands over its own door and
 //     hides the cue it exists to show;
 //   · both roles of a variant share ONE crop, so the two sheets slice into identical rects.
-import { constant, array } from '../lib/csharp.mjs';
+import { constant, array, cite, citeLine } from '../lib/csharp.mjs';
 import { dirForCell } from '../lib/rigHost.mjs';
 
 const KIT = 'Assets/_Project/Art/Editor/CamperKit.cs';
@@ -15,6 +15,20 @@ export default {
   id: 'camper',
   baker: 'CamperSheetBaker',
   outputFolder: 'Assets/_Project/Art/Sprites/Camper/Iso',
+
+  provenance() {
+    const B = 'Assets/_Project/Code/Tools/Editor/RigBaking/CamperSheetBaker.cs';
+    return [
+      ['the sheet list (variants × roles)', cite(KIT, 'Builds')],
+      ['the variants', cite(KIT, 'Variants')],
+      ['facings', cite(KIT, 'Facings')],
+      ['the swing ladder', `${cite(KIT, 'CueFrames')}, ${cite(KIT, 'RestFrames')}`],
+      ['the awning rule (rest defers to the rig)', cite(KIT, 'AwningOverride')],
+      ['the opts dict', cite(B, 'OptsOf')],
+      ['one crop per VARIANT, over both roles', citeLine(B, /GroupBy\(b => b\.Variant/)],
+      ['the grid (cols = swing, rows = facings)', citeLine(B, /int cols = frames, rows = facings/)],
+    ];
+  },
 
   plans({ catalog, rig }) {
     const convention = catalog[RIG_KEY].convention;

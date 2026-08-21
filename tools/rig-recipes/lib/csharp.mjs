@@ -79,6 +79,51 @@ export function dictionary(relPath, name) {
   return out;
 }
 
+/**
+ * `path:line` for a DECLARATION in a C# file — the PROVENANCE of a scraped fact.
+ *
+ * A backfilled recipe's whole claim is that it was re-derived from the baker's own code rather than
+ * transcribed beside it, and a claim like that is worth exactly as much as its citation. Computing
+ * the line rather than writing it down is what stops the citation going stale the first time
+ * somebody adds a paragraph of comment above the table.
+ *
+ * ⚠️ It looks for the DECLARATION, not the first mention. A bare `name(` matches every CALL SITE
+ * too, and a citation that points at a call instead of the table is worse than none — it reads as
+ * precise and sends the reader to the wrong place.
+ */
+export function cite(relPath, name) {
+  const lines = source(relPath).split('\n');
+  const decl = new RegExp(
+    `\\b(public|internal|protected|private|static|const|readonly|override|sealed)\\b[^;=]*` +
+    `\\b${name}\\b\\s*(=|=>|\\()`);
+  for (let i = 0; i < lines.length; i++) {
+    if (/^\s*(\/\/|\/\*|\*)/.test(lines[i])) continue;      // a mention in a comment is not a declaration
+    if (decl.test(lines[i])) return `${relPath}:${i + 1}`;
+  }
+  throw new Error(`${relPath}: cannot cite '${name}' — no declaration of it there`);
+}
+
+/**
+ * `path:line` for the first line matching `pattern` — for the facts that live in a STATEMENT rather
+ * than in a named declaration (the grid arithmetic, a cast that truncates a pivot). Same reason as
+ * `cite`: a hand-written line number is stale the next time anyone edits above it.
+ */
+export function citeLine(relPath, pattern) {
+  const lines = source(relPath).split('\n');
+  for (let i = 0; i < lines.length; i++) {
+    if (/^\s*(\/\/|\/\*|\*)/.test(lines[i])) continue;
+    if (pattern.test(lines[i])) return `${relPath}:${i + 1}`;
+  }
+  throw new Error(`${relPath}: nothing matches ${pattern} there`);
+}
+
+/** The cited line's own text — so a provenance report can SHOW what it points at. */
+export function lineAt(citation) {
+  const at = citation.lastIndexOf(':');
+  const [rel, n] = [citation.slice(0, at), Number(citation.slice(at + 1))];
+  return source(rel).split('\n')[n - 1].trim();
+}
+
 // ---- the rig catalog ------------------------------------------------------------------------
 
 /**

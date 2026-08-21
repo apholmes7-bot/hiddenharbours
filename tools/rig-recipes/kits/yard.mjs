@@ -3,7 +3,7 @@
 // The build table is a C# array of `new Build(...)` rows, so this kit reads it with its own row
 // pattern rather than the generic array scraper. Anything the pattern cannot parse throws: a short
 // table would bake a short kit, in silence, and that is this repo's most-repeated failure.
-import { constant, source } from '../lib/csharp.mjs';
+import { constant, source, cite, citeLine } from '../lib/csharp.mjs';
 import { dirForCell } from '../lib/rigHost.mjs';
 
 const KIT = 'Assets/_Project/Art/Editor/YardKit.cs';
@@ -39,6 +39,19 @@ export default {
   id: 'yard',
   baker: 'YardSheetBaker',
   outputFolder: 'Assets/_Project/Art/Sprites/Yard',
+
+  provenance() {
+    const B = 'Assets/_Project/Code/Tools/Editor/RigBaking/YardSheetBaker.cs';
+    return [
+      ['the build table', cite(KIT, 'Builds')],
+      ['the run / fixed len dials', `${cite(KIT, 'RunLen')}, ${cite(KIT, 'FixedLen')}`],
+      ['facings', cite(KIT, 'Facings')],
+      ['the dressing every sheet bakes at', cite(KIT, 'BakedPhase')],
+      ['the options expression', cite(KIT, 'OptionsJs')],
+      ['the opts dict, checked against it at bake time', cite(B, 'AssertOptionsAgree')],
+      ['the grid (cols = facings, one row)', citeLine(B, /int cols = facings, rows = 1/)],
+    ];
+  },
 
   plans({ catalog }) {
     const convention = catalog[RIG_KEY].convention;

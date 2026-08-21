@@ -5,7 +5,7 @@
 //     'working' ships, so a per-sheet ink union would give a tighter rect than what shipped and a
 //     placed mark would hop as it weathered;
 //   · the native pivot is TRUNCATED (`(int)`), not rounded, unlike every other baker in the repo.
-import { constant, array, source } from '../lib/csharp.mjs';
+import { constant, array, source, cite, citeLine } from '../lib/csharp.mjs';
 import { dirForCell } from '../lib/rigHost.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -18,6 +18,20 @@ export default {
   id: 'nav-buoy',
   baker: 'NavBuoySheetBaker',
   outputFolder: 'Assets/_Project/Art/Sprites/NavBuoys/Iso',
+
+  provenance() {
+    const B = 'Assets/_Project/Code/Tools/Editor/RigBaking/NavBuoySheetBaker.cs';
+    return [
+      ['the shipping marks', cite(KIT, 'BakeTypes')],
+      ['the hull diameters', cite(KIT, 'Sizes')],
+      ['facings', cite(KIT, 'Facings')],
+      ['the shipped wear and lamp state', `${cite(KIT, 'BakeWear')}, ${cite(KIT, 'BakeLit')}`],
+      ['the WEAR-INVARIANT cell', cite(KIT, 'MeasureCell')],
+      ['the opts dict', cite(KIT, 'OptsOf')],
+      ['the TRUNCATED native pivot', citeLine(B, /int npx = \(int\)/)],
+      ['the sheet plan', 'Assets/_Project/Art/Sprites/NavBuoys/Iso/navBuoyKit.contract.json'],
+    ];
+  },
 
   plans({ catalog }) {
     const rigKey = RIG_KEY_RE.exec(source(KIT))[1];

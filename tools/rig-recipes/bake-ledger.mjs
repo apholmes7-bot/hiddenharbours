@@ -5,6 +5,7 @@
 //   node tools/rig-recipes/bake-ledger.mjs                       # verify every kit, write nothing
 //   node tools/rig-recipes/bake-ledger.mjs --write               # write the kits that reproduce
 //   node tools/rig-recipes/bake-ledger.mjs --kit camper --verbose
+//   node tools/rig-recipes/bake-ledger.mjs --provenance      # where each kit's facts were scraped
 //
 // ⭐ THE RULE THAT MAKES THIS LEDGER TRUE RATHER THAN PLAUSIBLE: a recipe is written only when
 // running it back through the rigs reproduces the COMMITTED sheet byte for byte. A kit where one
@@ -16,7 +17,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import { REPO, rigCatalog } from './lib/csharp.mjs';
+import { REPO, rigCatalog, lineAt } from './lib/csharp.mjs';
 import { decodePng } from './lib/png.mjs';
 import * as lfs from './lib/lfs.mjs';
 import { install, bytes } from './lib/rigHost.mjs';
@@ -250,6 +251,25 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const write = argv.includes('--write');
   const verbose = argv.includes('--verbose');
   const only = argv.includes('--kit') ? argv[argv.indexOf('--kit') + 1] : null;
+
+  // --provenance prints WHERE each kit's facts were scraped from. A backfilled recipe's whole
+  // claim is that it was re-derived from the baker's own code rather than transcribed beside it,
+  // and that claim is worth exactly as much as its citation.
+  if (argv.includes('--provenance')) {
+    for (const id of KITS) {
+      if (only && only !== id) continue;
+      const kit = (await import(`./kits/${id}.mjs`)).default;
+      console.log(`\n${id}  →  ${kit.baker}`);
+      for (const [what, where] of kit.provenance()) {
+        console.log(`  ${what.padEnd(42)} ${where}`);
+        // Print the cited LINE too. A citation nobody can check is a decoration; this makes the
+        // report self-verifying, and makes a citation that has slid off its fact obvious on sight.
+        for (const c of where.match(/[\w./-]+\.cs:\d+/g) ?? [])
+          console.log(`  ${' '.repeat(42)}   ↳ ${lineAt(c)}`);
+      }
+    }
+    process.exit(0);
+  }
 
   const report = [];
   for (const id of KITS) {

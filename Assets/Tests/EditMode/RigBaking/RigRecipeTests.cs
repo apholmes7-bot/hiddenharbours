@@ -200,6 +200,102 @@ namespace HiddenHarbours.Tests.RigBaking
         }
 
         // =============================================================================================
+        //  ⭐ the recipe against the SLICER — two committed artefacts, one sheet
+        // =============================================================================================
+
+        /// <summary>
+        /// The importer holds one sprite rect per baked cell, plus the normalised pivot. That is the
+        /// SLICER's view of the sheet, arrived at independently of the recipe, and the two have to
+        /// agree: same cell size, same span, same cell count, same pivot.
+        ///
+        /// <para>This is deliberately NOT the pixel proof — it cannot tell you the art is right, only
+        /// that the two descriptions of it match. What it buys is that it needs no rig host and no
+        /// render, so it runs in the ordinary EditMode pass. `tools/rig-recipes/check-slices.mjs` is
+        /// the same check outside Unity, off the raw `.meta` text; it catches a ONE-PIXEL pivot
+        /// error.</para>
+        /// </summary>
+        [Test]
+        public void EveryCommittedRecipe_AgreesWithTheSlicersOwnRects()
+        {
+            var wrong = new List<string>();
+            int checkedSheets = 0, unsliced = 0;
+
+            foreach (string rel in RecipePaths)
+            {
+                var r = RigRecipe.Parse(Lf(ReadText(rel)), rel);
+                string sheet = $"{rel.Substring(0, rel.LastIndexOf('/'))}/{r.Sheet}";
+
+                var rects = SpriteRectsOf(sheet);
+                if (rects == null || rects.Count == 0) { unsliced++; continue; }
+                checkedSheets++;
+
+                var p = r.Pack;
+                int cells = r.Grid.Axes.Aggregate(1, (n, a) => n * a.Values.Count);
+
+                if (rects.Count != cells)
+                    wrong.Add($"{rel}: the slicer holds {rects.Count} rect(s), the recipe's axes " +
+                              $"make {cells} cell(s)");
+
+                var odd = rects.Where(s => (int)s.rect.width != p.CellW ||
+                                           (int)s.rect.height != p.CellH).ToList();
+                if (odd.Count > 0)
+                    wrong.Add($"{rel}: {odd.Count} rect(s) are not {p.CellW}×{p.CellH} (e.g. " +
+                              $"{odd[0].name} is {(int)odd[0].rect.width}×{(int)odd[0].rect.height})");
+
+                int spanW = rects.Max(s => (int)(s.rect.x + s.rect.width));
+                int spanH = rects.Max(s => (int)(s.rect.y + s.rect.height));
+                if (spanW != p.SheetW || spanH != p.SheetH)
+                    wrong.Add($"{rel}: the rects span {spanW}×{spanH}, the recipe packs " +
+                              $"{p.SheetW}×{p.SheetH}");
+
+                // ADR 0026: a rig pivot is a CONTINUOUS coordinate from the cell's top-left, so the
+                // y term is (H − pivotY)/H and NOT (H − 1 − pivotY)/H. Upside-down here is silent.
+                float wantX = p.PivotX / (float)p.CellW;
+                float wantY = (p.CellH - p.PivotY) / (float)p.CellH;
+                // Half a pixel of tolerance, never a whole one: a tolerance loose enough to hide a
+                // pixel would hide the bug this catches.
+                float tol = 0.5f / UnityEngine.Mathf.Max(p.CellW, p.CellH);
+                var badPivot = rects.Where(s => UnityEngine.Mathf.Abs(s.pivot.x - wantX) > tol ||
+                                                UnityEngine.Mathf.Abs(s.pivot.y - wantY) > tol).ToList();
+                if (badPivot.Count > 0)
+                    wrong.Add($"{rel}: {badPivot.Count} sprite pivot(s) disagree — {badPivot[0].name} " +
+                              $"is ({badPivot[0].pivot.x}, {badPivot[0].pivot.y}), the recipe's " +
+                              $"({p.PivotX},{p.PivotY}) normalises to ({wantX}, {wantY})");
+            }
+
+            // Every sheet unsliced means the textures did not import — overwhelmingly because this
+            // checkout has LFS POINTERS where the PNGs should be. That is inconclusive, not a pass,
+            // and saying so is the difference between a gate and a decoration.
+            if (checkedSheets == 0 && unsliced > 0)
+                Assert.Ignore($"none of the {unsliced} sheets carries sprite rects. The likeliest " +
+                              "cause is a checkout without the Git-LFS objects: run `git lfs pull` " +
+                              "and re-run. (tools/rig-recipes/check-slices.mjs makes the same check " +
+                              "off the committed .meta text, which needs no LFS object at all.)");
+
+            Assert.IsEmpty(wrong,
+                $"checked {checkedSheets} sheet(s); the recipe and the slicer disagree on:\n  " +
+                string.Join("\n  ", wrong));
+        }
+
+        /// <summary>
+        /// The importer's persisted sprite rects. Read through <c>ISpriteEditorDataProvider</c>, never
+        /// <c>TextureImporter.spritesheet</c> — obsolete-as-error on Unity 6000.5.
+        /// </summary>
+        static List<UnityEditor.U2D.Sprites.SpriteRect> SpriteRectsOf(string assetPath)
+        {
+            if (!(UnityEditor.AssetImporter.GetAtPath(assetPath) is UnityEditor.TextureImporter importer))
+                return null;
+            if (importer.spriteImportMode != UnityEditor.SpriteImportMode.Multiple) return null;
+
+            var factory = new UnityEditor.U2D.Sprites.SpriteDataProviderFactories();
+            factory.Init();
+            var provider = factory.GetSpriteEditorDataProviderFromObject(importer);
+            if (provider == null) return null;
+            provider.InitSpriteEditorDataProvider();
+            return provider.GetSpriteRects().ToList();
+        }
+
+        // =============================================================================================
         //  the pack arithmetic — self-consistency a JSON file can be held to on its own
         // =============================================================================================
 

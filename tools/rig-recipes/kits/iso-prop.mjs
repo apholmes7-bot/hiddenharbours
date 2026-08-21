@@ -8,7 +8,7 @@
 // inferred from a family name.
 import fs from 'node:fs';
 import path from 'node:path';
-import { REPO, source, block } from '../lib/csharp.mjs';
+import { REPO, source, block, cite, citeLine } from '../lib/csharp.mjs';
 import { dirForCell } from '../lib/rigHost.mjs';
 
 const BAKER = 'Assets/_Project/Code/Tools/Editor/RigBaking/IsoPropSheetBaker.cs';
@@ -75,6 +75,16 @@ export default {
   baker: 'IsoPropSheetBaker',
   // Seven families over five sprite folders — resolved per plan below.
   outputFolder: null,
+
+  provenance() {
+    return [
+      ['the families and their call shapes', cite(BAKER, 'Shapes')],
+      ['each family\'s contract and sprite folder', cite(CONTRACT, 'Registry')],
+      ['the render call (opts are {} — rig defaults)', citeLine(BAKER, /EvaluateBytes\(\$"\{g\}\.render/)],
+      ['facings and the sheet plan', 'each family\'s committed *.contract.json'],
+      ['the grid comes from the plan, never re-derived', cite(CONTRACT, 'GridFor')],
+    ];
+  },
 
   plans({ catalog }) {
     const shp = shapes();
